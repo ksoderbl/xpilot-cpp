@@ -1,3 +1,17 @@
 lib_LIBRARIES = libxpcommon.a
 
-libxpcommon_a_SOURCES = checknames.c error.c list.c math.c net.c portability.c randommt.c shipshape.c socklib.c strcasecmp.c strdup.c strlcpy.c xpconfig.c xpmemory.c
+libxpcommon_a_SOURCES = \
+    checknames.cpp \
+    error.cpp \
+    list.cpp \
+    math.cpp \
+    net.cpp \
+    portability.cpp \
+    randommt.cpp \
+    shipshape.cpp \
+    socklib.cpp \
+    strcasecmp.cpp \
+    strdup.cpp \
+    strlcpy.cpp \
+    xpconfig.cpp \
+    xpmemory.cpp

@@ -1,7 +1,7 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/client
 
-bin_PROGRAMS = xpilot-replay
+bin_PROGRAMS = xpilot-cpp-replay
 
-xpilot_replay_SOURCES = buttons.c xpilot-replay.c
+xpilot_cpp_replay_SOURCES = buttons.cpp xpilot-replay.cpp
 
-xpilot_replay_LDADD = -lX11 -lm ../common/libxpcommon.a
+xpilot_cpp_replay_LDADD = -lX11 -lm ../common/libxpcommon.a

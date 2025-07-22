@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = xpilot-client$(EXEEXT)
+bin_PROGRAMS = xpilot-cpp-client$(EXEEXT)
 subdir = src/client
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -98,7 +98,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_xpilot_client_OBJECTS = about.$(OBJEXT) blockbitmaps.$(OBJEXT) \
+am_xpilot_cpp_client_OBJECTS = about.$(OBJEXT) blockbitmaps.$(OBJEXT) \
 	client.$(OBJEXT) colors.$(OBJEXT) configure.$(OBJEXT) \
 	datagram.$(OBJEXT) dbuff.$(OBJEXT) default.$(OBJEXT) \
 	gfx2d.$(OBJEXT) gfx3d.$(OBJEXT) guimap.$(OBJEXT) \
@@ -110,8 +110,8 @@ am_xpilot_client_OBJECTS = about.$(OBJEXT) blockbitmaps.$(OBJEXT) \
 	textinterface.$(OBJEXT) texture.$(OBJEXT) welcome.$(OBJEXT) \
 	widget.$(OBJEXT) xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) \
 	xinit.$(OBJEXT) xpilot.$(OBJEXT) xpmread.$(OBJEXT)
-xpilot_client_OBJECTS = $(am_xpilot_client_OBJECTS)
-xpilot_client_DEPENDENCIES = ../common/libxpcommon.a
+xpilot_cpp_client_OBJECTS = $(am_xpilot_cpp_client_OBJECTS)
+xpilot_cpp_client_DEPENDENCIES = ../common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -145,20 +145,21 @@ am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/blockbitmaps.Po \
 	./$(DEPDIR)/xeventhandlers.Po ./$(DEPDIR)/xinit.Po \
 	./$(DEPDIR)/xpilot.Po ./$(DEPDIR)/xpmread.Po
 am__mv = mv -f
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_@AM_V@)
-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
-SOURCES = $(xpilot_client_SOURCES)
-DIST_SOURCES = $(xpilot_client_SOURCES)
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX     " $@;
+am__v_CXX_1 = 
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD   " $@;
+am__v_CXXLD_1 = 
+SOURCES = $(xpilot_cpp_client_SOURCES)
+DIST_SOURCES = $(xpilot_cpp_client_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -190,12 +191,12 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CC = @CC@
-CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
+CXX = @CXX@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -233,7 +234,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
-ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -273,12 +274,48 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/src/common
-xpilot_client_SOURCES = about.c blockbitmaps.c client.c colors.c configure.c datagram.c dbuff.c default.c gfx2d.c gfx3d.c guimap.c guiobjects.c join.c ncdaudio.c netclient.c paint.c paintdata.c painthud.c paintmap.c paintobjects.c paintradar.c query.c record.c sim.c talk.c talkmacros.c textinterface.c texture.c welcome.c widget.c xevent.c xeventhandlers.c xinit.c xpilot.c xpmread.c
-xpilot_client_LDADD = -lX11 -lm ../common/libxpcommon.a
+xpilot_cpp_client_SOURCES = \
+    about.cpp \
+    blockbitmaps.cpp \
+    client.cpp \
+    colors.cpp \
+    configure.cpp \
+    datagram.cpp \
+    dbuff.cpp \
+    default.cpp \
+    gfx2d.cpp \
+    gfx3d.cpp \
+    guimap.cpp \
+    guiobjects.cpp \
+    join.cpp \
+    ncdaudio.cpp \
+    netclient.cpp \
+    paint.cpp \
+    paintdata.cpp \
+    painthud.cpp \
+    paintmap.cpp \
+    paintobjects.cpp \
+    paintradar.cpp \
+    query.cpp \
+    record.cpp \
+    sim.cpp \
+    talk.cpp \
+    talkmacros.cpp \
+    textinterface.cpp \
+    texture.cpp \
+    welcome.cpp \
+    widget.cpp \
+    xevent.cpp \
+    xeventhandlers.cpp \
+    xinit.cpp \
+    xpilot.cpp \
+    xpmread.cpp
+
+xpilot_cpp_client_LDADD = -lX11 -lm ../common/libxpcommon.a
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+.SUFFIXES: .cpp .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -351,9 +388,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-xpilot-client$(EXEEXT): $(xpilot_client_OBJECTS) $(xpilot_client_DEPENDENCIES) $(EXTRA_xpilot_client_DEPENDENCIES) 
-	@rm -f xpilot-client$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(xpilot_client_OBJECTS) $(xpilot_client_LDADD) $(LIBS)
+xpilot-cpp-client$(EXEEXT): $(xpilot_cpp_client_OBJECTS) $(xpilot_cpp_client_DEPENDENCIES) $(EXTRA_xpilot_cpp_client_DEPENDENCIES) 
+	@rm -f xpilot-cpp-client$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(xpilot_cpp_client_OBJECTS) $(xpilot_cpp_client_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -403,19 +440,19 @@ $(am__depfiles_remade):
 
 am--depfiles: $(am__depfiles_remade)
 
-.c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+.cpp.o:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
-.c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+.cpp.obj:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
