@@ -16,7 +16,6 @@ xpilot_cpp_client_SOURCES = \
     guimap.cpp \
     guiobjects.cpp \
     join.cpp \
-    ncdaudio.cpp \
     netclient.cpp \
     paint.cpp \
     paintdata.cpp \
