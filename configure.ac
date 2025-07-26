@@ -6,7 +6,6 @@ AC_CONFIG_FILES([
 	Makefile
 	contrib/Makefile
 	doc/Makefile
-	doc/man/Makefile
 	lib/Makefile
 	src/Makefile
 	src/common/Makefile
