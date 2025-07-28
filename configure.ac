@@ -13,6 +13,7 @@ AC_CONFIG_FILES([
 	src/common/Makefile
 	src/client/Makefile
 	src/client/items/Makefile
+	src/client/x11/Makefile
 	src/server/Makefile
 	src/replay/Makefile
 	src/replay/tools/Makefile

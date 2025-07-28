@@ -35,7 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
-src/client/xpilot-cpp-client
+src/client/x11/xpilot-cpp-client-x11
 src/server/xpilot-cpp-server
 src/replay/xpilot-cpp-replay
 src/mapedit/xpilot-cpp-mapedit

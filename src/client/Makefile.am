@@ -1,8 +1,8 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/common
 
-bin_PROGRAMS = xpilot-cpp-client
+noinst_LIBRARIES = libxpclient.a
 
-xpilot_cpp_client_SOURCES = \
+libxpclient_a_SOURCES = \
     about.cpp \
     blockbitmaps.cpp \
     blockbitmaps.h \
@@ -62,14 +62,7 @@ xpilot_cpp_client_SOURCES = \
     xeventhandlers.h \
     xinit.cpp \
     xinit.h \
-    xpilot.cpp \
     xpmread.cpp \
     xpmread.h
 
-xpilot_cpp_client_LDADD = -lX11 -lm ../common/libxpcommon.a
-
-## compiled with CC=gcc CFLAGS=-DSOUND=1  ./configure; make clean; make
-## needs libaudio-dev
-## xpilot_cpp_client_LDADD = -lX11 -lm -laudio ../common/libxpcommon.a
-
-SUBDIRS = items
+SUBDIRS = . items x11

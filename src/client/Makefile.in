@@ -86,7 +86,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = xpilot-cpp-client$(EXEEXT)
 subdir = src/client
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -96,9 +95,16 @@ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-PROGRAMS = $(bin_PROGRAMS)
-am_xpilot_cpp_client_OBJECTS = about.$(OBJEXT) blockbitmaps.$(OBJEXT) \
+LIBRARIES = $(noinst_LIBRARIES)
+AR = ar
+ARFLAGS = cru
+AM_V_AR = $(am__v_AR_@AM_V@)
+am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
+libxpclient_a_AR = $(AR) $(ARFLAGS)
+libxpclient_a_LIBADD =
+am_libxpclient_a_OBJECTS = about.$(OBJEXT) blockbitmaps.$(OBJEXT) \
 	caudio.$(OBJEXT) client.$(OBJEXT) colors.$(OBJEXT) \
 	configure.$(OBJEXT) datagram.$(OBJEXT) dbuff.$(OBJEXT) \
 	debugaudio.$(OBJEXT) default.$(OBJEXT) gfx2d.$(OBJEXT) \
@@ -109,9 +115,8 @@ am_xpilot_cpp_client_OBJECTS = about.$(OBJEXT) blockbitmaps.$(OBJEXT) \
 	record.$(OBJEXT) sim.$(OBJEXT) talk.$(OBJEXT) \
 	talkmacros.$(OBJEXT) textinterface.$(OBJEXT) welcome.$(OBJEXT) \
 	widget.$(OBJEXT) xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) \
-	xinit.$(OBJEXT) xpilot.$(OBJEXT) xpmread.$(OBJEXT)
-xpilot_cpp_client_OBJECTS = $(am_xpilot_cpp_client_OBJECTS)
-xpilot_cpp_client_DEPENDENCIES = ../common/libxpcommon.a
+	xinit.$(OBJEXT) xpmread.$(OBJEXT)
+libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -143,7 +148,7 @@ am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/blockbitmaps.Po \
 	./$(DEPDIR)/textinterface.Po ./$(DEPDIR)/welcome.Po \
 	./$(DEPDIR)/widget.Po ./$(DEPDIR)/xevent.Po \
 	./$(DEPDIR)/xeventhandlers.Po ./$(DEPDIR)/xinit.Po \
-	./$(DEPDIR)/xpilot.Po ./$(DEPDIR)/xpmread.Po
+	./$(DEPDIR)/xpmread.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -170,8 +175,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(xpilot_cpp_client_SOURCES)
-DIST_SOURCES = $(xpilot_cpp_client_SOURCES)
+SOURCES = $(libxpclient_a_SOURCES)
+DIST_SOURCES = $(libxpclient_a_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -328,7 +333,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/src/common
-xpilot_cpp_client_SOURCES = \
+noinst_LIBRARIES = libxpclient.a
+libxpclient_a_SOURCES = \
     about.cpp \
     blockbitmaps.cpp \
     blockbitmaps.h \
@@ -356,7 +362,7 @@ xpilot_cpp_client_SOURCES = \
     guiobjects.cpp \
     guiobjects.h \
     icon.h \
-    items join.cpp \
+    join.cpp \
     netclient.cpp \
     netclient.h \
     paint.cpp \
@@ -388,12 +394,10 @@ xpilot_cpp_client_SOURCES = \
     xeventhandlers.h \
     xinit.cpp \
     xinit.h \
-    xpilot.cpp \
     xpmread.cpp \
     xpmread.h
 
-xpilot_cpp_client_LDADD = -lX11 -lm ../common/libxpcommon.a
-SUBDIRS = items
+SUBDIRS = . items x11
 all: all-recursive
 
 .SUFFIXES:
@@ -427,52 +431,14 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p \
-	  ; then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' \
-	    -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	    } \
-	; done
 
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' \
-	`; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-
-xpilot-cpp-client$(EXEEXT): $(xpilot_cpp_client_OBJECTS) $(xpilot_cpp_client_DEPENDENCIES) $(EXTRA_xpilot_cpp_client_DEPENDENCIES) 
-	@rm -f xpilot-cpp-client$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(xpilot_cpp_client_OBJECTS) $(xpilot_cpp_client_LDADD) $(LIBS)
+libxpclient.a: $(libxpclient_a_OBJECTS) $(libxpclient_a_DEPENDENCIES) $(EXTRA_libxpclient_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libxpclient.a
+	$(AM_V_AR)$(libxpclient_a_AR) libxpclient.a $(libxpclient_a_OBJECTS) $(libxpclient_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libxpclient.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -513,7 +479,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xevent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xeventhandlers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinit.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpilot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmread.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -694,12 +659,9 @@ distdir-am: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(LIBRARIES)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -732,7 +694,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 		-rm -f ./$(DEPDIR)/about.Po
@@ -768,7 +730,6 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
-	-rm -f ./$(DEPDIR)/xpilot.Po
 	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -792,7 +753,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-html: install-html-recursive
 
@@ -848,7 +809,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
-	-rm -f ./$(DEPDIR)/xpilot.Po
 	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
@@ -865,24 +825,23 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am:
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--depfiles check check-am clean clean-binPROGRAMS \
-	clean-generic cscopelist-am ctags ctags-am distclean \
+	am--depfiles check check-am clean clean-generic \
+	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
