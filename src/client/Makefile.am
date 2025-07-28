@@ -6,6 +6,8 @@ libxpclient_a_SOURCES = \
     caudio.cpp \
     caudio.h \
     connectparam.h \
+    datagram.cpp \
+    datagram.h \
     debugaudio.cpp \
     gfx2d.cpp \
     gfx2d.h \

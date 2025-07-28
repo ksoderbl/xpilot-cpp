@@ -9,8 +9,6 @@ xpilot_cpp_client_x11_SOURCES = \
     configure.h \
     client.cpp \
     client.h \
-    datagram.cpp \
-    datagram.h \
     dbuff.cpp \
     dbuff.h \
     default.cpp \

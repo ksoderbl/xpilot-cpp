@@ -35,7 +35,7 @@
 
 #include "xpconfig.h"
 #include "xperror.h"
-#include "client.h"
+// #include "client.h"
 #include "socklib.h"
 #include "protoclient.h"
 #include "datagram.h"
