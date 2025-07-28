@@ -11,6 +11,8 @@ libxpclient_a_SOURCES = \
     gfx2d.h \
     gfx3d.cpp \
     gfx3d.h \
+    guimap.h \
+    guiobjects.h \
     icon.h \
     netclient.h \
     paintmacros.h \

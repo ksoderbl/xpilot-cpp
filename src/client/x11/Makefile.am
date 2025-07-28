@@ -16,9 +16,7 @@ xpilot_cpp_client_x11_SOURCES = \
     default.cpp \
     default.h \
     guimap.cpp \
-    guimap.h \
     guiobjects.cpp \
-    guiobjects.h \
     join.cpp \
     netclient.cpp \
     paint.cpp \
