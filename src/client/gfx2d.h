@@ -38,11 +38,11 @@ typedef unsigned int RGB_COLOR;
     has a non-black color value.  The xmax and ymax elements
     give the highest coordinate which has a non-black color.
     The number of pixels covered by one box is given by:
-	(xmax + 1 - xmin, ymax + 1 - ymin).
+        (xmax + 1 - xmin, ymax + 1 - ymin).
 */
 typedef struct {
-    int		xmin, ymin;
-    int		xmax, ymax;
+    int                xmin, ymin;
+    int                xmax, ymax;
 } bbox_t;
 
 
@@ -56,11 +56,11 @@ typedef struct {
 */
 
 typedef struct {
-    int		width, height;
-    int		images;
-    RGB_COLOR	**data;
+    int                width, height;
+    int                images;
+    RGB_COLOR        **data;
 
-    bbox_t	*bbox;
+    bbox_t        *bbox;
 } xp_picture_t;
 
 int Picture_init(xp_picture_t *picture, int height, int width, int images);
@@ -68,13 +68,13 @@ int Picture_load( xp_picture_t *picture, const char *path);
 void Picture_rotate(xp_picture_t *picture);
 
 void Picture_set_pixel(xp_picture_t *picture, int image, int x, int y, 
-		       RGB_COLOR color);
+                       RGB_COLOR color);
 RGB_COLOR Picture_get_rotated_pixel(const xp_picture_t *picture, 
-				    int x, int y, int image);
+                                    int x, int y, int image);
 RGB_COLOR Picture_get_pixel(const xp_picture_t *picture, int image,
-			    int x, int y);
+                            int x, int y);
 RGB_COLOR Picture_get_pixel_area(const xp_picture_t *picture, int image, 
-				 double x1, double y1, double dx, double dy);
+                                 double x1, double y1, double dx, double dy);
 void Picture_get_bounding_box(xp_picture_t *picture);
 
 #endif

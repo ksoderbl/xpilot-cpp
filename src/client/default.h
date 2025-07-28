@@ -26,15 +26,15 @@
 #define _DEFAULT_H_
 
 typedef struct {
-    const char		*name;		/* option name */
-    const char		*noArg;		/* value for non-argument options */
-    const char		*fallback;	/* default value */
-    keys_t		key;		/* key if not KEY_DUMMY */
-    const char		*help;		/* user help (multiline) */
-    unsigned		hash;		/* option name hashed. */
+    const char                *name;                /* option name */
+    const char                *noArg;                /* value for non-argument options */
+    const char                *fallback;        /* default value */
+    keys_t                key;                /* key if not KEY_DUMMY */
+    const char                *help;                /* user help (multiline) */
+    unsigned                hash;                /* option name hashed. */
 } option;
 
-extern option	options[];
-extern int		optionsCount;	/* NELEM(options) */
+extern option        options[];
+extern int                optionsCount;        /* NELEM(options) */
 
 #endif

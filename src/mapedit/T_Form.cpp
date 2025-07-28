@@ -706,8 +706,8 @@ void T_SetEntryField(T_Form_t *form, T_Field_t *field, int x)
 
    } else {
       if ( form->entry != NULL ) {
-	 /* BG hackfix: remember what our window is. */
-	 Window form_window = form->window;
+         /* BG hackfix: remember what our window is. */
+         Window form_window = form->window;
 
          charvar = form->entry->charvar;
          CallFieldHandler(form,(T_Field_t *) form->entry, 0,0,0,0,
@@ -718,8 +718,8 @@ void T_SetEntryField(T_Form_t *form, T_Field_t *field, int x)
           * the form entry handler then we get out of here immediately.
           */
          if (*SeekForm(form_window,0) != form) {
-	    return;
-	 }
+            return;
+         }
          form->entry = NULL;
          T_FormRedrawEntryField(charvar);
          free(form->entry_restore);

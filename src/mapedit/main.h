@@ -65,7 +65,7 @@
 typedef char    map_data_t[MAX_MAP_SIZE][MAX_MAP_SIZE];
 
 typedef struct {
-   max_str_t	mapName, mapAuthor, mapFileName;
+   max_str_t        mapName, mapAuthor, mapFileName;
    int                   width, height;
    char                  width_str[4], height_str[4];
    map_data_t            data;

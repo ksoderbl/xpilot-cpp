@@ -29,7 +29,7 @@
 
 #include <stdlib.h>
 
-#define	SERVER
+#define        SERVER
 #include "xpconfig.h"
 #include "types.h"
 #include "serverconst.h"
@@ -43,14 +43,14 @@
 /*
  * Global variables
  */
-int			ObjCount = 0;
-int			NumPulses = 0;
-int			NumEcms = 0;
-int			NumTransporters = 0;
-object			*Obj[MAX_TOTAL_SHOTS];
-pulse_t			*Pulses[MAX_TOTAL_PULSES];
-ecm_t			*Ecms[MAX_TOTAL_ECMS];
-trans_t			*Transporters[MAX_TOTAL_TRANSPORTERS];
+int                        ObjCount = 0;
+int                        NumPulses = 0;
+int                        NumEcms = 0;
+int                        NumTransporters = 0;
+object                        *Obj[MAX_TOTAL_SHOTS];
+pulse_t                        *Pulses[MAX_TOTAL_PULSES];
+ecm_t                        *Ecms[MAX_TOTAL_ECMS];
+trans_t                        *Transporters[MAX_TOTAL_TRANSPORTERS];
 
 
 static void Object_incr_count(void)
@@ -65,14 +65,14 @@ static void Object_decr_count(void)
 
 object *Object_allocate(void)
 {
-    object	*obj = OBJ_PTR(NULL);
+    object        *obj = OBJ_PTR(NULL);
 
     if (ObjCount < MAX_TOTAL_SHOTS) {
-	obj = Obj[ObjCount];
-	Object_incr_count();
+        obj = Obj[ObjCount];
+        Object_incr_count();
 
-	obj->type = OBJ_DEBRIS;
-	obj->life = 0;
+        obj->type = OBJ_DEBRIS;
+        obj->life = 0;
     }
 
     return obj;
@@ -81,29 +81,29 @@ object *Object_allocate(void)
 void Object_free_ind(int ind)
 {
     if ((0 <= ind) && (ind < ObjCount) && (ObjCount <= MAX_TOTAL_SHOTS)) {
-	object *obj = Obj[ind];
-	Object_decr_count();
-	Obj[ind] = Obj[ObjCount];
-	Obj[ObjCount] = obj;
+        object *obj = Obj[ind];
+        Object_decr_count();
+        Obj[ind] = Obj[ObjCount];
+        Obj[ObjCount] = obj;
     }
     else {
-	xpwarn("Cannot free object %d, when count = %d, and total = %d !",
-	     ind, ObjCount, MAX_TOTAL_SHOTS);
+        xpwarn("Cannot free object %d, when count = %d, and total = %d !",
+             ind, ObjCount, MAX_TOTAL_SHOTS);
     }
 }
 
 void Object_free_ptr(object *obj)
 {
-    int		i;
+    int                i;
 
     for (i = ObjCount - 1; i >= 0; i--) {
-	if (Obj[i] == obj) {
-	    Object_free_ind(i);
-	    break;
-	}
+        if (Obj[i] == obj) {
+            Object_free_ind(i);
+            break;
+        }
     }
     if (i < 0) {
-	xpwarn("Could NOT free object!");
+        xpwarn("Could NOT free object!");
     }
 }
 
@@ -111,29 +111,29 @@ static anyobject *objArray;
 
 void Alloc_shots(int number)
 {
-    anyobject		*x;
-    int			i;
+    anyobject                *x;
+    int                        i;
 
     x = (anyobject *) calloc(number, sizeof(anyobject));
     if (!x) {
-	xperror("Not enough memory for shots.");
-	exit(1);
+        xperror("Not enough memory for shots.");
+        exit(1);
     }
 
     objArray = x;
     for (i = 0; i < number; i++) {
-	Obj[i] = &(x->obj);
-	MINE_PTR(Obj[i])->owner = NO_ID;
-	Cell_init_object(Obj[i]);
-	x++;
+        Obj[i] = &(x->obj);
+        MINE_PTR(Obj[i])->owner = NO_ID;
+        Cell_init_object(Obj[i]);
+        x++;
     }
 }
 
 void Free_shots(void)
 {
     if (objArray != NULL) {
-	free(objArray);
-	objArray = NULL;
+        free(objArray);
+        objArray = NULL;
     }
 }
 

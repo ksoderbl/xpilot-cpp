@@ -25,17 +25,17 @@
 #ifndef SOCKLIB_H
 #define SOCKLIB_H
 
-#define SOCK_HOSTNAME_LENGTH	256
-#define SOCK_FD_INVALID		(-1)
-#define SOCK_IS_ERROR		(-1)
-#define SOCK_IS_OK		(0)
-#define SOCK_TIMEOUT_SECONDS	3
+#define SOCK_HOSTNAME_LENGTH        256
+#define SOCK_FD_INVALID                (-1)
+#define SOCK_IS_ERROR                (-1)
+#define SOCK_IS_OK                (0)
+#define SOCK_TIMEOUT_SECONDS        3
 
 enum sock_flags_e {
-    SOCK_FLAG_INIT	= 1,
-    SOCK_FLAG_UDP	= 2,
-    SOCK_FLAG_TCP	= 4,
-    SOCK_FLAG_CONNECT	= 8
+    SOCK_FLAG_INIT        = 1,
+    SOCK_FLAG_UDP        = 2,
+    SOCK_FLAG_TCP        = 4,
+    SOCK_FLAG_CONNECT        = 8
 };
 
 typedef enum sock_call_e {
@@ -54,28 +54,28 @@ typedef enum sock_call_e {
 } sock_call_t;
 
 typedef struct sock_timeout_s {
-    long		seconds;
-    unsigned long	useconds;
+    long                seconds;
+    unsigned long        useconds;
 } sock_timeout_t;
 
 typedef struct sock_error_s {
-    int			error;
-    int			call;
-    int			line;
+    int                        error;
+    int                        call;
+    int                        line;
 } sock_error_t;
 
 typedef struct sock_s {
-    int			fd;
-    sock_timeout_t	timeout;
-    unsigned		flags;
-    sock_error_t	error;
-    void		*lastaddr;
-    char		*hostname;
+    int                        fd;
+    sock_timeout_t        timeout;
+    unsigned                flags;
+    sock_error_t        error;
+    void                *lastaddr;
+    char                *hostname;
 } sock_t;
 
 #if !defined(select) && defined(__linux__)
-#define select(N, R, W, E, T)	select((N),		\
-	(fd_set*)(R), (fd_set*)(W), (fd_set*)(E), (T))
+#define select(N, R, W, E, T)        select((N),                \
+        (fd_set*)(R), (fd_set*)(W), (fd_set*)(E), (T))
 #endif
 
 int sock_init(sock_t *sock);
@@ -94,7 +94,7 @@ int sock_write(sock_t *sock, char *buf, int len);
 char *sock_get_addr_by_name(const char *name);
 unsigned long sock_get_inet_by_addr(char *dotaddr);
 void sock_get_local_hostname(char *name, unsigned size,
-			     int search_domain_for_xpilot);
+                             int search_domain_for_xpilot);
 int sock_get_port(sock_t *sock);
 int sock_get_error(sock_t *sock);
 int sock_set_broadcast(sock_t *sock, int flag);

@@ -245,7 +245,7 @@ void ChangeMapData(int x, int y,char icon, int save)
    int                   x2,y2,xo=0,yo=0,wo=0,ho=0;
    char                  data;
 
-   map.changed = 1;	
+   map.changed = 1;        
    x2 = (x - map.view_x)*map.view_zoom;
    y2 = (y - map.view_y)*map.view_zoom;
 

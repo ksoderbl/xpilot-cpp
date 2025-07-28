@@ -35,8 +35,8 @@
 
 
 /* macros begin */
-#define X(co)	((int) ((co) - world.x))
-#define Y(co)	((int) (world.y + ext_view_height - (co)))
+#define X(co)        ((int) ((co) - world.x))
+#define Y(co)        ((int) (world.y + ext_view_height - (co)))
 /* macros end */
 
 

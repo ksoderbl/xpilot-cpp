@@ -25,13 +25,13 @@
 #ifndef TALK_H
 #define TALK_H
 
-#define TALK_FAST_NR_OF_MSGS		20               /* talk macros */
-#define TALK_FAST_MSG_SIZE		400
-#define TALK_FAST_MSG_FNLEN		100
-#define TALK_FAST_START_DELIMITER	'['
-#define TALK_FAST_END_DELIMITER		']'
-#define TALK_FAST_MIDDLE_DELIMITER	'|'
-#define TALK_FAST_SPECIAL_TALK_CHAR	'#'
+#define TALK_FAST_NR_OF_MSGS                20               /* talk macros */
+#define TALK_FAST_MSG_SIZE                400
+#define TALK_FAST_MSG_FNLEN                100
+#define TALK_FAST_START_DELIMITER        '['
+#define TALK_FAST_END_DELIMITER                ']'
+#define TALK_FAST_MIDDLE_DELIMITER        '|'
+#define TALK_FAST_SPECIAL_TALK_CHAR        '#'
 
 /*
 #define TEAM_PLAY               (1<<8)

@@ -21,8 +21,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	TUNER_H
-#define	TUNER_H
+#ifndef        TUNER_H
+#define        TUNER_H
 
 void tuner_plock(void);
 void tuner_shotsmax(void);

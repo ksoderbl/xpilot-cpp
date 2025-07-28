@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	NETSERVER_H
-#define	NETSERVER_H
+#ifndef        NETSERVER_H
+#define        NETSERVER_H
 
 #ifndef CONNECTION_H
 #include "connection.h"
@@ -61,29 +61,29 @@ static int Receive_fps_request(connection_t *connp);
 
 static int Send_motd(connection_t *connp);
 
-#endif	/* NETSERVER_C */
+#endif        /* NETSERVER_C */
 
 int Get_motd(char *buf, int offset, int maxlen, int *size_ptr);
 int Setup_net_server(void);
 void Destroy_connection(connection_t *connp, const char *reason);
 int Check_connection(char *real, char *nick, char *dpy, char *addr);
 int Setup_connection(char *real, char *nick, char *dpy, int team,
-		     char *addr, char *host, unsigned version);
+                     char *addr, char *host, unsigned version);
 int Input(void);
 int Send_reply(connection_t *connp, int replyto, int result);
 int Send_self(connection_t *connp, player *pl,
-	      int lock_id,
-	      int lock_dist,
-	      int lock_dir,
-	      int autopilotlight,
-	      long status,
-	      char *mods);
+              int lock_id,
+              int lock_dist,
+              int lock_dir,
+              int autopilotlight,
+              long status,
+              char *mods);
 int Send_leave(connection_t *connp, int id);
 int Send_war(connection_t *connp, int robot_id, int killer_id);
 int Send_seek(connection_t *connp, int programmer_id, int robot_id, int sought_id);
 int Send_player(connection_t *connp, int id);
 int Send_score(connection_t *connp, int id, int score,
-	       int life, int mychar, int alliance);
+               int life, int mychar, int alliance);
 int Send_score_object(connection_t *connp, int score, int x, int y, const char *string);
 int Send_team_score(connection_t *connp, int team, int score);
 int Send_timing(connection_t *connp, int id, int check, int round);
@@ -110,7 +110,7 @@ int Send_item(connection_t *connp, int x, int y, int type);
 int Send_paused(connection_t *connp, int x, int y, int count);
 int Send_ecm(connection_t *connp, int x, int y, int size);
 int Send_ship(connection_t *connp, int x, int y, int id, int dir, int shield, int cloak, int eshield, 
-			  int phased, int deflector);
+                          int phased, int deflector);
 int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1);
 int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor);
 int Send_laser(connection_t *connp, int color, int x, int y, int len, int dir);
@@ -126,7 +126,7 @@ int Send_time_left(connection_t *connp, long sec);
 int Send_eyes(connection_t *connp, int id);
 int Send_trans(connection_t *connp, int x1, int y1, int x2, int y2);
 void Get_display_parameters(connection_t *connp, int *width, int *height,
-			    int *debris_colors, int *spark_rand);
+                            int *debris_colors, int *spark_rand);
 int Get_player_id(connection_t *connp);
 int Get_conn_version(connection_t *connp);
 const char *Get_player_addr(connection_t *connp);

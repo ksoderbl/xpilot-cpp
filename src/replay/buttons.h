@@ -26,16 +26,16 @@
 #define BUTTONS_H
 
 union button_image {
-    const char		*string;
-    Pixmap		icon;
+    const char                *string;
+    Pixmap                icon;
 };
 
 typedef struct button *Button;
 
-#define BUTTON_PRESSED	1	/* Button is currently pressed in */
-#define BUTTON_RELEASE	2	/* Button pops out when mouse button released */
-#define BUTTON_DISABLED	4	/* Button is disabled */
-#define BUTTON_TEXT	8	/* Button has text on, rather than bitmap */
+#define BUTTON_PRESSED        1        /* Button is currently pressed in */
+#define BUTTON_RELEASE        2        /* Button pops out when mouse button released */
+#define BUTTON_DISABLED        4        /* Button is disabled */
+#define BUTTON_TEXT        8        /* Button has text on, rather than bitmap */
 
 /*
  * If a button is marked as BUTTON_RELEASE then callback action is taken when
@@ -45,8 +45,8 @@ typedef struct button *Button;
 void SetGlobalButtonAttributes(unsigned long, unsigned long, unsigned long, unsigned long);
 
 Button CreateButton(Display *, Window, int, int, unsigned int, unsigned int,
-		    union button_image, int, int, unsigned long, void (*)(void *),
-		    void *, int, int);
+                    union button_image, int, int, unsigned long, void (*)(void *),
+                    void *, int, int);
 int CheckButtonEvent(XEvent *);
 void RedrawButton(Button);
 void EnableButton(Button);

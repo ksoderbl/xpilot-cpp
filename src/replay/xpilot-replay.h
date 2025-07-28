@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	XP_REPLAY_H
-#define	XP_REPLAY_H
+#ifndef        XP_REPLAY_H
+#define        XP_REPLAY_H
 
 #define BLACK               0
 #define WHITE               1

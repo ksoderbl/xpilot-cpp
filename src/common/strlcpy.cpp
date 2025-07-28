@@ -28,36 +28,36 @@
 
 /*
     NAME
-	strlcpy
+        strlcpy
     ARGS
-	char *dest
-	const char *src
-	size_t size
+        char *dest
+        const char *src
+        size_t size
     DESC
-	Copy src to dest.
-	Dest may hold at most size - 1 characters
-	and will always be NUL terminated,
-	except if size equals zero.
-	Return strlen(src).
-	There was not enough room in dest if the
-	return value is bigger or equal than size.
+        Copy src to dest.
+        Dest may hold at most size - 1 characters
+        and will always be NUL terminated,
+        except if size equals zero.
+        Return strlen(src).
+        There was not enough room in dest if the
+        return value is bigger or equal than size.
 */
 size_t strlcpy(char *dest, const char *src, size_t size)
 {
-    char		*d = dest;
-    const char		*s = src;
-    char		*maxd = dest + (size - 1);
+    char                *d = dest;
+    const char                *s = src;
+    char                *maxd = dest + (size - 1);
 
     if (size > 0) {
-	while (*s && d < maxd) {
-	    *d = *s;
-	    s++;
-	    d++;
-	}
-	*d = '\0';
+        while (*s && d < maxd) {
+            *d = *s;
+            s++;
+            d++;
+        }
+        *d = '\0';
     }
     while (*s) {
-	s++;
+        s++;
     }
     return (s - src);
 }
@@ -65,41 +65,41 @@ size_t strlcpy(char *dest, const char *src, size_t size)
 
 /*
     NAME
-	strlcat
+        strlcat
     ARGS
-	char *dest
-	const char *src
-	size_t size
+        char *dest
+        const char *src
+        size_t size
     DESC
-	Append src to dest.
-	Dest may hold at most size - 1 characters
-	and will always be NUL terminated,
-	except if size equals zero.
-	Return strlen(src) + strlen(dest).
-	There was not enough room in dest if the
-	return value is bigger or equal than size.
+        Append src to dest.
+        Dest may hold at most size - 1 characters
+        and will always be NUL terminated,
+        except if size equals zero.
+        Return strlen(src) + strlen(dest).
+        There was not enough room in dest if the
+        return value is bigger or equal than size.
 */
 size_t strlcat(char *dest, const char *src, size_t size)
 {
-    char		*d = dest;
-    const char		*s = src;
-    char		*maxd = dest + (size - 1);
-    size_t		dlen = 0;
+    char                *d = dest;
+    const char                *s = src;
+    char                *maxd = dest + (size - 1);
+    size_t                dlen = 0;
 
     if (size > 0) {
-	while (*d && d < maxd) {
-	    d++;
-	}
-	dlen = (d - dest);
-	while (*s && d < maxd) {
-	    *d = *s;
-	    s++;
-	    d++;
-	}
-	*d = '\0';
+        while (*d && d < maxd) {
+            d++;
+        }
+        dlen = (d - dest);
+        while (*s && d < maxd) {
+            *d = *s;
+            s++;
+            d++;
+        }
+        *d = '\0';
     }
     while (*s) {
-	s++;
+        s++;
     }
     return dlen + (s - src);
 }

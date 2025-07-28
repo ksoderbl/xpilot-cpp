@@ -31,7 +31,7 @@
  * Uncomment this if your machine doesn't use
  * two's complement negative numbers.
  */
-/* #define MOD2(x, m)	mod(x, m) */
+/* #define MOD2(x, m)        mod(x, m) */
 
 
 /*
@@ -39,8 +39,8 @@
  * how often the server should draw a frame.  (Hmm...)
  */
 
-#ifndef	UPDATES_PR_FRAME
-#    define UPDATES_PR_FRAME	1
+#ifndef        UPDATES_PR_FRAME
+#    define UPDATES_PR_FRAME        1
 #endif
 
 /*
@@ -52,9 +52,9 @@
 
 #if defined(_WINDOWS)
 #    ifdef COMPRESSED_MAPS
-	/*
-	 * Couldn't find a popen(), also compress and gzip don't exist.
-	 */
+        /*
+         * Couldn't find a popen(), also compress and gzip don't exist.
+         */
 #        undef COMPRESSED_MAPS
 #    endif
 #else
@@ -62,32 +62,32 @@
 #endif
 
 #ifdef _WINDOWS
-#	ifdef	_DEBUG
-#		define	DEBUG	1
-#		define	D(x)	{x;}
-#	else
-#		define	D(x)
-#	endif
+#        ifdef        _DEBUG
+#                define        DEBUG        1
+#                define        D(x)        {x;}
+#        else
+#                define        D(x)
+#        endif
 #else
-#	ifdef	DEBUG
-#		define D(x)	{ {x}; fflush(stdout); }
-#	else
-#		define D(x)
-#	endif
+#        ifdef        DEBUG
+#                define D(x)        { {x}; fflush(stdout); }
+#        else
+#                define D(x)
+#        endif
 #endif
 
 /* Windows doesn't play with stdin/out well at all... */
 /* So for the client i route the "debug" printfs to the debug stream */
 /* The server gets 'real' messages routed to the messages window */
 #ifdef _WINDOWS
-#	ifdef	_XPILOTNTSERVER_
-#	define	xpprintf	xpprintfW
-/*#	define	xpprintf	_Trace */
-#	else
-#	define	xpprintf	_Trace
-#	endif
+#        ifdef        _XPILOTNTSERVER_
+#        define        xpprintf        xpprintfW
+/*#        define        xpprintf        _Trace */
+#        else
+#        define        xpprintf        _Trace
+#        endif
 #else
-#	define	xpprintf	printf
+#        define        xpprintf        printf
 #endif
 
 /*
@@ -96,7 +96,7 @@ warning C4244: 'initializing' : conversion from 'double ' to 'int ', possible lo
 a million times.  I used to fix each warning added by the Unix people, but
 this makes for harder to read code (and was tiring with each patch)
 */
-#ifdef	_WINDOWS
+#ifdef        _WINDOWS
 #pragma warning (disable : 4244 4761)
 #endif
 

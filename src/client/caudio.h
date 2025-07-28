@@ -29,9 +29,9 @@
 
 #ifdef SOUND
 
-extern	int	Handle_audio(int type, int volume);
-extern	void	audioInit(char *display);
-extern	void	audioCleanup();
-extern	void	audioEvents();
+extern        int        Handle_audio(int type, int volume);
+extern        void        audioInit(char *display);
+extern        void        audioCleanup();
+extern        void        audioEvents();
 
 #endif

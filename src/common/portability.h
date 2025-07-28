@@ -32,7 +32,7 @@
  * Macros to block out Windows only code (and never Windows code)
  */
 #ifndef _WINDOWS
-#define IFNWINDOWS(x)	x
+#define IFNWINDOWS(x)        x
 #else
 #define IFNWINDOWS(x)
 #endif
@@ -48,7 +48,7 @@
 /*
  * Prototypes for OS function wrappers in portability.c.
  */
-extern int Get_process_id(void);	/* getpid */
+extern int Get_process_id(void);        /* getpid */
 extern void Get_login_name(char *buf, int size);
 
 #endif /* PORTABILITY_H_INCLUDED */

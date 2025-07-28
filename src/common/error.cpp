@@ -24,9 +24,9 @@
 /*
  * This file defines two entry points:
  *
- * init_error()		- Initialize the error routine, accepts program name
- *			  as input.
- * xperror()		- perror() with printf functionality.
+ * init_error()                - Initialize the error routine, accepts program name
+ *                          as input.
+ * xperror()                - perror() with printf functionality.
  */
 
 
@@ -34,8 +34,8 @@
 /*
  * File local static data.
  */
-#define	MAX_PROG_LENGTH	32
-static char		progname[MAX_PROG_LENGTH];
+#define        MAX_PROG_LENGTH        32
+static char                progname[MAX_PROG_LENGTH];
 
 
 
@@ -66,19 +66,19 @@ void init_error(const char *prog)
  */
 void xperror(const char *fmt, ...)
 {
-    va_list	 ap;
-    int		 e = errno;
+    va_list         ap;
+    int                 e = errno;
 
     va_start(ap, fmt);
 
     if (progname[0] != '\0') {
-	fprintf(stderr, "%s: ", progname);
+        fprintf(stderr, "%s: ", progname);
     }
 
     vfprintf(stderr, fmt, ap);
 
     if (e != 0) {
-	fprintf(stderr, ": (%s)", strerror(e));
+        fprintf(stderr, ": (%s)", strerror(e));
     }
     fprintf(stderr, "\n");
 
@@ -87,20 +87,20 @@ void xperror(const char *fmt, ...)
 
 void xpwarn(const char *fmt, ...)
 {
-    int		len;
-    va_list	ap;
+    int                len;
+    va_list        ap;
 
     va_start(ap, fmt);
 
     if (progname[0] != '\0') {
-	fprintf(stderr, "%s: ", progname);
+        fprintf(stderr, "%s: ", progname);
     }
 
     vfprintf(stderr, fmt, ap);
 
     len = strlen(fmt);
     if (len == 0 || fmt[len - 1] != '\n') {
-	fprintf(stderr, "\n");
+        fprintf(stderr, "\n");
     }
 
     va_end(ap);
@@ -108,12 +108,12 @@ void xpwarn(const char *fmt, ...)
 
 void xpfatal(const char *fmt, ...)
 {
-    va_list	 ap;
+    va_list         ap;
 
     va_start(ap, fmt);
 
     if (progname[0] != '\0') {
-	fprintf(stderr, "%s: ", progname);
+        fprintf(stderr, "%s: ", progname);
     }
 
     vfprintf(stderr, fmt, ap);
@@ -127,12 +127,12 @@ void xpfatal(const char *fmt, ...)
 
 void xpdumpcore(const char *fmt, ...)
 {
-    va_list	 ap;
+    va_list         ap;
 
     va_start(ap, fmt);
 
     if (progname[0] != '\0') {
-	fprintf(stderr, "%s: ", progname);
+        fprintf(stderr, "%s: ", progname);
     }
 
     vfprintf(stderr, fmt, ap);

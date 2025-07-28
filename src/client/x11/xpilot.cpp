@@ -52,24 +52,24 @@
 #include "commonproto.h"
 
 
-char			hostname[SOCK_HOSTNAME_LENGTH];
+char                        hostname[SOCK_HOSTNAME_LENGTH];
 
-char			**Argv;
-int			Argc;
+char                        **Argv;
+int                        Argc;
 
 
 static void printfile(const char *filename)
 {
-    FILE		*fp;
-    int			c;
+    FILE                *fp;
+    int                        c;
 
 
     if ((fp = fopen(filename, "r")) == NULL) {
-	return;
+        return;
     }
 
     while ((c = fgetc(fp)) != EOF)
-	putchar(c);
+        putchar(c);
 
     fclose(fp);
 }
@@ -80,27 +80,27 @@ static void printfile(const char *filename)
  */
 int main(int argc, char *argv[])
 {
-    int				result;
-    bool			auto_connect = false,
-				text = false,
-				list_servers = false,
-				auto_shutdown = false,
-				noLocalMotd = false;
-    char			*cp;
-    Connect_param_t		*conpar;
-    static char			shutdown_reason[MAX_CHARS];
+    int                                result;
+    bool                        auto_connect = false,
+                                text = false,
+                                list_servers = false,
+                                auto_shutdown = false,
+                                noLocalMotd = false;
+    char                        *cp;
+    Connect_param_t                *conpar;
+    static char                        shutdown_reason[MAX_CHARS];
 
     /*
      * --- Output copyright notice ---
      */
     printf("  " COPYRIGHT ".\n"
-	   "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
-	      "for details see the\n"
-	   "  provided LICENSE file.\n\n");
+           "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
+              "for details see the\n"
+           "  provided LICENSE file.\n\n");
     if (strcmp(Conf_localguru(), "xpilot@xpilot.org")
-	&& strcmp(Conf_localguru(), "xpilot@cs.uit.no")) {
-	printf("  %s is responsible for the local installation.\n\n",
-	       Conf_localguru());
+        && strcmp(Conf_localguru(), "xpilot@cs.uit.no")) {
+        printf("  %s is responsible for the local installation.\n\n",
+               Conf_localguru());
     }
 
     Argc = argc;
@@ -115,87 +115,87 @@ int main(int argc, char *argv[])
 
     conpar = (Connect_param_t *) calloc(1, sizeof(Connect_param_t));
     if (!conpar) {
-	xperror("Not enough memory");
-	exit(1);
+        xperror("Not enough memory");
+        exit(1);
     }
     conpar->contact_port = SERVER_PORT;
     conpar->team = TEAM_NOT_SET;
 
     cp = getenv("XPILOTHOST");
     if (cp) {
-	strlcpy(hostname, cp, sizeof(hostname));
+        strlcpy(hostname, cp, sizeof(hostname));
     }
     else {
         sock_get_local_hostname(hostname, sizeof hostname, 0);
     }
     if (Check_host_name(hostname) == NAME_ERROR) {
-	xpprintf("fixing host from \"%s\" ", hostname);
-	Fix_host_name(hostname);
-	xpprintf("to \"%s\"\n", hostname);
+        xpprintf("fixing host from \"%s\" ", hostname);
+        Fix_host_name(hostname);
+        xpprintf("to \"%s\"\n", hostname);
     }
 
     cp = getenv("XPILOTUSER");
     if (cp) {
-	strlcpy(conpar->real_name, cp, sizeof(conpar->real_name));
+        strlcpy(conpar->real_name, cp, sizeof(conpar->real_name));
     }
     else {
-	Get_login_name(conpar->real_name, sizeof(conpar->real_name) - 1);
+        Get_login_name(conpar->real_name, sizeof(conpar->real_name) - 1);
     }
     if (Check_real_name(conpar->real_name) == NAME_ERROR) {
-	xpprintf("fixing name from \"%s\" ", conpar->real_name);
-	Fix_real_name(conpar->real_name);
-	xpprintf("to \"%s\"\n", conpar->real_name);
+        xpprintf("fixing name from \"%s\" ", conpar->real_name);
+        Fix_real_name(conpar->real_name);
+        xpprintf("to \"%s\"\n", conpar->real_name);
     }
 
     /*
      * --- Check commandline arguments and resource files ---
      */
     Parse_options(&argc, argv, conpar->real_name,
-		  &conpar->contact_port, &conpar->team,
-		  &text, &list_servers,
-		  &auto_connect, &noLocalMotd,
-		  conpar->nick_name, conpar->disp_name,
-		  hostname, shutdown_reason);
+                  &conpar->contact_port, &conpar->team,
+                  &text, &list_servers,
+                  &auto_connect, &noLocalMotd,
+                  conpar->nick_name, conpar->disp_name,
+                  hostname, shutdown_reason);
     if (Check_nick_name(conpar->nick_name) == NAME_ERROR) {
-	xpprintf("fixing nick from \"%s\" ", conpar->nick_name);
-	Fix_nick_name(conpar->nick_name);
-	xpprintf("to \"%s\"\n", conpar->nick_name);
+        xpprintf("fixing nick from \"%s\" ", conpar->nick_name);
+        Fix_nick_name(conpar->nick_name);
+        xpprintf("to \"%s\"\n", conpar->nick_name);
     }
 
     if (list_servers) {
-	auto_connect = true;
+        auto_connect = true;
     }
     if (shutdown_reason[0] != '\0') {
-	auto_shutdown = true;
-	auto_connect = true;
+        auto_shutdown = true;
+        auto_connect = true;
     }
 
     /*
      * --- Message of the Day ---
      */
     if (!noLocalMotd)
-	printfile(Conf_localmotdfile());
+        printfile(Conf_localmotdfile());
 
     Simulate();
 
     if (text || auto_connect || argv[1]) {
-	if (list_servers)
-	    printf("LISTING AVAILABLE SERVERS:\n");
+        if (list_servers)
+            printf("LISTING AVAILABLE SERVERS:\n");
 
-	result = Contact_servers(argc - 1, &argv[1],
-				 auto_connect, list_servers,
-				 auto_shutdown, shutdown_reason,
-				 0, 0, 0, 0, 0,
-				 conpar);
+        result = Contact_servers(argc - 1, &argv[1],
+                                 auto_connect, list_servers,
+                                 auto_shutdown, shutdown_reason,
+                                 0, 0, 0, 0, 0,
+                                 conpar);
     }
     else {
-	IFNWINDOWS(result = Welcome_screen(conpar);)
+        IFNWINDOWS(result = Welcome_screen(conpar);)
     }
 
     if (result == 1) {
-	return Join(conpar->server_addr, conpar->server_name, conpar->login_port,
-		    conpar->real_name, conpar->nick_name, conpar->team,
-		    conpar->disp_name, conpar->server_version);
+        return Join(conpar->server_addr, conpar->server_name, conpar->login_port,
+                    conpar->real_name, conpar->nick_name, conpar->team,
+                    conpar->disp_name, conpar->server_version);
     }
     return 1;
 }

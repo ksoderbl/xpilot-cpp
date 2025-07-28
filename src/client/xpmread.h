@@ -48,31 +48,31 @@ extern XImage *xpm_image_from_pixmap(Pixmap pixmap);
  * Different visual keys in the XPM format.
  */
 enum XPM_key {
-    XPM_m,		/* mono visual */
-    XPM_g4,		/* 4-level grayscale visual */
-    XPM_g,		/* grayscale visual */
-    XPM_c,		/* (pseudo-)color visual */
-    XPM_s,		/* symbolic color name ("None") */
-    XPM_nkeys		/* number of color keys supported  */
+    XPM_m,                /* mono visual */
+    XPM_g4,                /* 4-level grayscale visual */
+    XPM_g,                /* grayscale visual */
+    XPM_c,                /* (pseudo-)color visual */
+    XPM_s,                /* symbolic color name ("None") */
+    XPM_nkeys                /* number of color keys supported  */
 };
 
 /*
  * Structure for an XPM color.
  */
 typedef struct XPM_color_struct {
-    char		*keys[XPM_nkeys];	/* X color names */
+    char                *keys[XPM_nkeys];        /* X color names */
 } XPM_color;
 
 /*
  * The real XPM user-level structure.
  */
 typedef struct XPM_struct {
-    unsigned		width;			/* pixmap width */
-    unsigned		height;			/* pixmap height */
-    unsigned		ncolors;		/* number of colors */
-    unsigned		cpp;			/* chars-per-pixel. */
-    XPM_color		*colors;		/* color definitions */
-    unsigned char	*pixels;		/* as colors[] indices */
+    unsigned                width;                        /* pixmap width */
+    unsigned                height;                        /* pixmap height */
+    unsigned                ncolors;                /* number of colors */
+    unsigned                cpp;                        /* chars-per-pixel. */
+    XPM_color                *colors;                /* color definitions */
+    unsigned char        *pixels;                /* as colors[] indices */
 } XPM;
 
 /*
@@ -80,16 +80,16 @@ typedef struct XPM_struct {
  * or processing a statically linked XPM structure.
  */
 typedef struct XPM_read_struct {
-    char		*filename;
-    char		*data;
-    const char		**static_data;
-    unsigned		data_size;
-    char		*ptr;
-    char		*token;
-    XPM			*xpm;
-    char		**chars_ptr;	/* color representation pointers */
-    char		*chars_mem;	/* color representation memory */
-    const char		*error_str;	/* string giving error reason */
+    char                *filename;
+    char                *data;
+    const char                **static_data;
+    unsigned                data_size;
+    char                *ptr;
+    char                *token;
+    XPM                        *xpm;
+    char                **chars_ptr;        /* color representation pointers */
+    char                *chars_mem;        /* color representation memory */
+    const char                *error_str;        /* string giving error reason */
 } XPM_read;
 
 #endif

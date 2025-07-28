@@ -25,8 +25,8 @@
 #ifndef CHECKNAMES_H
 #define CHECKNAMES_H
 
-#define NAME_OK		1
-#define NAME_ERROR	0
+#define NAME_OK                1
+#define NAME_ERROR        0
 
 int Check_real_name(char *name);
 void Fix_real_name(char *name);

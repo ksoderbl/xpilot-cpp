@@ -39,12 +39,12 @@
 
 void SCORE(int ind, int points, int x, int y, const char *msg)
 {
-    player	*pl = Players[ind];
+    player        *pl = Players[ind];
 
     pl->score += (points);
 
     if (pl->connp != NULL)
-	Send_score_object(pl->connp, points, x, y, msg);
+        Send_score_object(pl->connp, points, x, y, msg);
 
     updateScores = true;
 }
@@ -55,7 +55,7 @@ int Rate(int winner, int loser)
 
     t = ((RATE_SIZE / 2) * RATE_RANGE) / (ABS(loser - winner) + RATE_RANGE);
     if (loser > winner)
-	t = RATE_SIZE - t;
+        t = RATE_SIZE - t;
     return (t);
 }
 
@@ -75,25 +75,25 @@ int Rate(int winner, int loser)
  * KK 7-11-1: And for killing a member of your alliance
  */
 void Score_players(int winner, int winner_score, char *winner_msg,
-		   int loser, int loser_score, char *loser_msg)
+                   int loser, int loser_score, char *loser_msg)
 {
     if (TEAM(winner, loser)
-	|| (Players[winner]->alliance != ALLIANCE_NOT_SET
-	    && Players[winner]->alliance == Players[loser]->alliance)
-	|| (IS_TANK_IND(loser)
-	    && GetInd[Players[loser]->lock.pl_id] == winner)) {
-	if (winner_score > 0)
-	    winner_score = -winner_score;
-	if (loser_score > 0)
-	    loser_score = -loser_score;
+        || (Players[winner]->alliance != ALLIANCE_NOT_SET
+            && Players[winner]->alliance == Players[loser]->alliance)
+        || (IS_TANK_IND(loser)
+            && GetInd[Players[loser]->lock.pl_id] == winner)) {
+        if (winner_score > 0)
+            winner_score = -winner_score;
+        if (loser_score > 0)
+            loser_score = -loser_score;
     }
     SCORE(winner, winner_score,
-	  OBJ_X_IN_BLOCKS(Players[loser]),
-	  OBJ_Y_IN_BLOCKS(Players[loser]),
-	  winner_msg);
+          OBJ_X_IN_BLOCKS(Players[loser]),
+          OBJ_Y_IN_BLOCKS(Players[loser]),
+          winner_msg);
     SCORE(loser, loser_score,
-	  OBJ_X_IN_BLOCKS(Players[loser]),
-	  OBJ_Y_IN_BLOCKS(Players[loser]),
-	  loser_msg);
+          OBJ_X_IN_BLOCKS(Players[loser]),
+          OBJ_Y_IN_BLOCKS(Players[loser]),
+          loser_msg);
 }
 

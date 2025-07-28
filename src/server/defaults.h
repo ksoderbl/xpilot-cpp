@@ -26,15 +26,15 @@
 #define DEFAULTS_H
 
 enum valType {
-    valVoid,		/* variable is not a variable */
-    valInt,		/* variable is type int */
-    valReal,		/* variable is type float */
-    valBool,		/* variable is type bool */
-    valIPos,		/* variable is type ipos */
-    valString,		/* variable is type char* */
-    valSec,		/* variable is type int (converted to frames) */
-    valPerSec,		/* variable is type float (converted to per-frame) */
-    valList		/* variable is a list of elements of type char* */
+    valVoid,                /* variable is not a variable */
+    valInt,                /* variable is type int */
+    valReal,                /* variable is type float */
+    valBool,                /* variable is type bool */
+    valIPos,                /* variable is type ipos */
+    valString,                /* variable is type char* */
+    valSec,                /* variable is type int (converted to frames) */
+    valPerSec,                /* variable is type float (converted to per-frame) */
+    valList                /* variable is a list of elements of type char* */
 };
 
 
@@ -42,11 +42,11 @@ enum valType {
  * bitflags for the origin of an option.
  */
 enum _optOrigin {
-    OPT_INIT		= 0,
-    OPT_MAP		= 1,
-    OPT_DEFAULTS	= 2,
-    OPT_COMMAND		= 4,
-    OPT_PASSWORD	= 8
+    OPT_INIT                = 0,
+    OPT_MAP                = 1,
+    OPT_DEFAULTS        = 2,
+    OPT_COMMAND                = 4,
+    OPT_PASSWORD        = 8
 };
 typedef enum _optOrigin optOrigin;
 
@@ -55,32 +55,32 @@ typedef enum _optOrigin optOrigin;
  * extended bitflags for option origin.
  */
 enum _optOriginAny {
-    OPT_NONE		= 0,	/* not settable */
-    OPT_ORIGIN_ANY	= 7,	/* allow any of {map,defaults,command} */
-    OPT_VISIBLE		= 16	/* can we query this option value? */
+    OPT_NONE                = 0,        /* not settable */
+    OPT_ORIGIN_ANY        = 7,        /* allow any of {map,defaults,command} */
+    OPT_VISIBLE                = 16        /* can we query this option value? */
 };
 
 
 typedef struct _option_desc {
-    const char		*name;
-    const char		*commandLineOption;
-    const char		*defaultValue;
-    void		*variable;
-    enum valType	type;
-    void		(*tuner)(void);
-    const char		*helpLine;
-    int			flags;		/* allowable option origins. */
+    const char                *name;
+    const char                *commandLineOption;
+    const char                *defaultValue;
+    void                *variable;
+    enum valType        type;
+    void                (*tuner)(void);
+    const char                *helpLine;
+    int                        flags;                /* allowable option origins. */
 } option_desc;
 
 
-option_desc*	Find_option_by_name(const char* name);
-option_desc*	Get_option_descs(int *count_ptr);
-bool		Option_add_desc(option_desc *desc);
-void		Option_set_value(
-			const char	*name,
-			const char	*value,
-			int		override,
-			optOrigin	opt_origin);
-char*		Option_get_value(const char *name, optOrigin *origin_ptr);
+option_desc*        Find_option_by_name(const char* name);
+option_desc*        Get_option_descs(int *count_ptr);
+bool                Option_add_desc(option_desc *desc);
+void                Option_set_value(
+                        const char        *name,
+                        const char        *value,
+                        int                override,
+                        optOrigin        opt_origin);
+char*                Option_get_value(const char *name, optOrigin *origin_ptr);
 
 #endif

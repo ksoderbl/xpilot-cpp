@@ -74,20 +74,20 @@ void MainEventLoop(void)
             MapwinKeyPress(&report);
             break;
 
-	 case ClientMessage:
-	    if (report.xclient.message_type == ProtocolAtom
-	       && report.xclient.format == 32
-	       && report.xclient.data.l[0] == KillAtom) {
-		    if (report.xclient.window == mapwin) {
-				XDestroyWindow(display, mapwin);
-				XSync(display, True);
-				XCloseDisplay(display);
-		       		exit(0);
-		    }
-		    else {
-				XUnmapWindow(display, report.xclient.window);
-			}
-	   }
+         case ClientMessage:
+            if (report.xclient.message_type == ProtocolAtom
+               && report.xclient.format == 32
+               && report.xclient.data.l[0] == KillAtom) {
+                    if (report.xclient.window == mapwin) {
+                                XDestroyWindow(display, mapwin);
+                                XSync(display, True);
+                                XCloseDisplay(display);
+                                       exit(0);
+                    }
+                    else {
+                                XUnmapWindow(display, report.xclient.window);
+                        }
+           }
       } /* end switch */
    }
 

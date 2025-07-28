@@ -35,8 +35,8 @@
 
 
 
-DFLOAT		tbl_sin[TABLE_SIZE];
-DFLOAT		tbl_cos[TABLE_SIZE];
+DFLOAT                tbl_sin[TABLE_SIZE];
+DFLOAT                tbl_cos[TABLE_SIZE];
 
 int ON(char *optval);
 int OFF(char *optval);
@@ -47,26 +47,26 @@ void Make_table(void);
 int ON(char *optval)
 {
     return (strncasecmp(optval, "true", 4) == 0
-	    || strncasecmp(optval, "on", 2) == 0
-	    || strncasecmp(optval, "yes", 3) == 0);
+            || strncasecmp(optval, "on", 2) == 0
+            || strncasecmp(optval, "yes", 3) == 0);
 }
 
 
 int OFF(char *optval)
 {
     return (strncasecmp(optval, "false", 5) == 0
-	    || strncasecmp(optval, "off", 3) == 0
-	    || strncasecmp(optval, "no", 2) == 0);
+            || strncasecmp(optval, "off", 3) == 0
+            || strncasecmp(optval, "no", 2) == 0);
 }
 
 
 int mod(int x, int y)
 {
     if (x >= y || x < 0)
-	x = x - y*(x/y);
+        x = x - y*(x/y);
 
     if (x < 0)
-	x += y;
+        x += y;
 
     return x;
 }
@@ -82,12 +82,12 @@ DFLOAT findDir(DFLOAT x, DFLOAT y)
     DFLOAT angle;
 
     if (x != 0.0 || y != 0.0)
-	angle = atan2(y, x) / (2 * PI);
+        angle = atan2(y, x) / (2 * PI);
     else
-	angle = 0.0;
+        angle = 0.0;
 
     if (angle < 0)
-	angle++;
+        angle++;
     return angle * RES;
 }
 
@@ -107,8 +107,8 @@ void Make_table(void)
     int i;
 
     for (i = 0; i < TABLE_SIZE; i++) {
-	tbl_sin[i] = sin(i * (2.0 * PI / TABLE_SIZE));
-	tbl_cos[i] = cos(i * (2.0 * PI / TABLE_SIZE));
+        tbl_sin[i] = sin(i * (2.0 * PI / TABLE_SIZE));
+        tbl_cos[i] = cos(i * (2.0 * PI / TABLE_SIZE));
     }
 }
 

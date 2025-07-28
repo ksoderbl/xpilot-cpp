@@ -45,7 +45,7 @@ extern xp_picture_t radar_colors;
 
 
 void Block_bitmap_create(Display* dpy, Drawable d, xp_pixmap_t *xp_pixmap, int number,
-		   int width, int height);
+                   int width, int height);
 static void Block_bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image);
 static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image);
 
@@ -62,49 +62,49 @@ static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image);
 
 
 xp_pixmap_t xp_pixmaps[] = {
-    { "holder1.ppm"	    , 1 , 35, 35},
-    { "holder2.ppm"	    , 1 , 35, 35},
-    { "ball.ppm"	    , 1 , 21, 21},
-    { "ship_red.ppm"	    , 128, 32, 32},
-    { "ship_blue.ppm"	    , 128, 32, 32},
-    { "ship_red2.ppm"	    , 128, 32, 32},
-    { "bullet.ppm"	    , -8 ,  8,  8},
+    { "holder1.ppm"            , 1 , 35, 35},
+    { "holder2.ppm"            , 1 , 35, 35},
+    { "ball.ppm"            , 1 , 21, 21},
+    { "ship_red.ppm"            , 128, 32, 32},
+    { "ship_blue.ppm"            , 128, 32, 32},
+    { "ship_red2.ppm"            , 128, 32, 32},
+    { "bullet.ppm"            , -8 ,  8,  8},
     { "bullet_blue.ppm"    ,  -8 ,  8,  8},
-    { "base_down.ppm"	    , 1 , 35, 35},
-    { "base_left.ppm"	    , 1 , 35, 35},
-    { "base_up.ppm"	    , 1 , 35, 35},
-    { "base_right.ppm"	    , 1 , 35, 35},
-    { "fuelcell.ppm"	    , 1 , 35, 35},
-    { "fuel2.ppm"	    , -16, 29, 29},
-    { "allitems.ppm"	    , -30, 16, 16},
+    { "base_down.ppm"            , 1 , 35, 35},
+    { "base_left.ppm"            , 1 , 35, 35},
+    { "base_up.ppm"            , 1 , 35, 35},
+    { "base_right.ppm"            , 1 , 35, 35},
+    { "fuelcell.ppm"            , 1 , 35, 35},
+    { "fuel2.ppm"            , -16, 29, 29},
+    { "allitems.ppm"            , -30, 16, 16},
     { "cannon_down.ppm"    , 1 , 35, 35},
     { "cannon_left.ppm"    , 1 , 35, 35},
-    { "cannon_up.ppm"	    , 1 , 35, 35},
+    { "cannon_up.ppm"            , 1 , 35, 35},
     { "cannon_right.ppm"   , 1 , 35, 35},
-    { "sparks.ppm"	    , -8, 2 , 2},
-    { "paused.ppm"	    , -2, 35 , 35},
-    { "wall_top.ppm"	    , 1, 35 , 35},
-    { "wall_left.ppm"	    , 1, 35 , 35},
+    { "sparks.ppm"            , -8, 2 , 2},
+    { "paused.ppm"            , -2, 35 , 35},
+    { "wall_top.ppm"            , 1, 35 , 35},
+    { "wall_left.ppm"            , 1, 35 , 35},
     { "wall_bottom.ppm"    , 1, 35 , 35},
-    { "wall_right.ppm"	    , 1, 35 , 35},
-    { "wall_ul.ppm"	    , 1, 35 , 35},
-    { "wall_ur.ppm"	    , 1, 35 , 35},
-    { "wall_dl.ppm"	    , 1, 35 , 35},
-    { "wall_dr.ppm"	    , 1, 35 , 35},
-    { "wall_fi.ppm"	    , 1, 35 , 35},
-    { "wall_url.ppm"	    , 1, 35 , 35},
-    { "wall_ull.ppm"	    , 1, 35 , 35},
-    { "clouds.ppm"	    , 1, 256, BG_IMAGE_HEIGHT},
-    { "logo.ppm"	    , 1, 256, LOGO_HEIGHT},
-    { "refuel.ppm"	    , -4, 8, 8},
-    { "wormhole.ppm"	    , 8, 35, 35},
-    { "mine_team.ppm"	    , 1, 21, 15},
-    { "mine_other.ppm"	    , 1, 21, 15},
+    { "wall_right.ppm"            , 1, 35 , 35},
+    { "wall_ul.ppm"            , 1, 35 , 35},
+    { "wall_ur.ppm"            , 1, 35 , 35},
+    { "wall_dl.ppm"            , 1, 35 , 35},
+    { "wall_dr.ppm"            , 1, 35 , 35},
+    { "wall_fi.ppm"            , 1, 35 , 35},
+    { "wall_url.ppm"            , 1, 35 , 35},
+    { "wall_ull.ppm"            , 1, 35 , 35},
+    { "clouds.ppm"            , 1, 256, BG_IMAGE_HEIGHT},
+    { "logo.ppm"            , 1, 256, LOGO_HEIGHT},
+    { "refuel.ppm"            , -4, 8, 8},
+    { "wormhole.ppm"            , 8, 35, 35},
+    { "mine_team.ppm"            , 1, 21, 15},
+    { "mine_other.ppm"            , 1, 21, 15},
     { "concentrator.ppm"    , 32, 35, 35},
-    { "plus.ppm"	    , 1, 35, 35},
-    { "minus.ppm"	    , 1, 35, 35},
-    { "checkpoint.ppm"	    , -2, 35, 35},
-    { "meter.ppm"	    , -2, 200, 11},
+    { "plus.ppm"            , 1, 35, 35},
+    { "minus.ppm"            , 1, 35, 35},
+    { "checkpoint.ppm"            , -2, 35, 35},
+    { "meter.ppm"            , -2, 200, 11},
     { "asteroidconcentrator.ppm"    , 32, 35, 35},
 };
 
@@ -131,51 +131,51 @@ int Block_bitmap_images(int type)
 */
 int Block_bitmaps_create(void)
 {
-    int		i, j, images;
-    static int	block_bitmaps_loaded = 0;
+    int                i, j, images;
+    static int        block_bitmaps_loaded = 0;
     
     if (block_bitmaps_loaded) {
-	return (block_bitmaps_loaded == 2) ? 0 : -1;
+        return (block_bitmaps_loaded == 2) ? 0 : -1;
     }
 
     block_bitmaps_loaded = 1;
 
     for (i = 0 ; i < NUM_BITMAPS; i++) {
-	images = (xp_pixmaps[i].rotations > 0 ) ? 
-			    xp_pixmaps[i].rotations : 
-			    -xp_pixmaps[i].rotations;
+        images = (xp_pixmaps[i].rotations > 0 ) ? 
+                            xp_pixmaps[i].rotations : 
+                            -xp_pixmaps[i].rotations;
 
-	xp_pixmaps[i].bitmaps = (xp_bitmap_t *) malloc(images * sizeof(xp_bitmap_t));
-	if (!xp_pixmaps[i].bitmaps) {
-	    xperror("Not enough memory.");
-	    break;
-	}
-	for (j = 0; j < images; j++) {
-	    xp_pixmaps[i].bitmaps[j].scale_height = -1;
-	    xp_pixmaps[i].bitmaps[j].scale_width = -1;
-	    xp_pixmaps[i].bitmaps[j].bitmap = None;
-	    xp_pixmaps[i].bitmaps[j].mask = None;
-	}
+        xp_pixmaps[i].bitmaps = (xp_bitmap_t *) malloc(images * sizeof(xp_bitmap_t));
+        if (!xp_pixmaps[i].bitmaps) {
+            xperror("Not enough memory.");
+            break;
+        }
+        for (j = 0; j < images; j++) {
+            xp_pixmaps[i].bitmaps[j].scale_height = -1;
+            xp_pixmaps[i].bitmaps[j].scale_width = -1;
+            xp_pixmaps[i].bitmaps[j].bitmap = None;
+            xp_pixmaps[i].bitmaps[j].mask = None;
+        }
 
-	if (Picture_init(&xp_pixmaps[i].picture,
-			  xp_pixmaps[i].height, 
-			  xp_pixmaps[i].width,
-			  images) == -1) {
-	    break;
-	}
-	if (Picture_load(&xp_pixmaps[i].picture,
-			  xp_pixmaps[i].filename) == -1) {
-	    break;
-	}
+        if (Picture_init(&xp_pixmaps[i].picture,
+                          xp_pixmaps[i].height, 
+                          xp_pixmaps[i].width,
+                          images) == -1) {
+            break;
+        }
+        if (Picture_load(&xp_pixmaps[i].picture,
+                          xp_pixmaps[i].filename) == -1) {
+            break;
+        }
     
-	if (xp_pixmaps[i].rotations > 1) {
-	    Picture_rotate(&xp_pixmaps[i].picture);
-	}
-	Picture_get_bounding_box(&xp_pixmaps[i].picture);
+        if (xp_pixmaps[i].rotations > 1) {
+            Picture_rotate(&xp_pixmaps[i].picture);
+        }
+        Picture_get_bounding_box(&xp_pixmaps[i].picture);
     }
 
     if (i == NUM_BITMAPS) {
-	block_bitmaps_loaded = 2;
+        block_bitmaps_loaded = 2;
     }
 
     return (block_bitmaps_loaded == 2) ? 0 : -1;
@@ -192,13 +192,13 @@ int Block_bitmaps_create(void)
 */
 
 void PaintBitmap(Drawable d, int type, int x, int y, int width, int height,
-		 int number)
+                 int number)
 {
     if (!xp_pixmaps[type].bitmaps)
-		return;
-	if (xp_pixmaps[type].bitmaps[number].scale_height != height) {
-	Block_bitmap_create(dpy, d, &xp_pixmaps[type], number, width, height);
-	scaled_bitmaps++;
+                return;
+        if (xp_pixmaps[type].bitmaps[number].scale_height != height) {
+        Block_bitmap_create(dpy, d, &xp_pixmaps[type], number, width, height);
+        scaled_bitmaps++;
     }
     Block_bitmap_paint(d, type, x, y, width, height, number);
 }
@@ -209,13 +209,13 @@ void PaintBitmap(Drawable d, int type, int x, int y, int width, int height,
     (size is height of the slice that should be draw)
 */
 void PaintFuelSlice(Drawable d, int type,
-		    int x, int y,
-		    int width, int height,
-		    int image, int size)
+                    int x, int y,
+                    int width, int height,
+                    int image, int size)
 {
     if (xp_pixmaps[type].bitmaps[image].scale_height != height) {
-	Block_bitmap_create(dpy, d, &xp_pixmaps[type], image, width, height);
-	scaled_bitmaps++;
+        Block_bitmap_create(dpy, d, &xp_pixmaps[type], image, width, height);
+        scaled_bitmaps++;
     }
     Block_bitmap_paint_fuel_slice(d, type, x, y, width, height, image, size);
 }
@@ -229,12 +229,12 @@ void PaintFuelSlice(Drawable d, int type,
 void PaintMeter(Drawable d, int type, int x, int y, int width, int height, int size)
 {
     if (xp_pixmaps[type].bitmaps[0].scale_height != height) {
-	Block_bitmap_create(dpy, d, &xp_pixmaps[type], 0, width, height);
-	scaled_bitmaps++;
+        Block_bitmap_create(dpy, d, &xp_pixmaps[type], 0, width, height);
+        scaled_bitmaps++;
     }
     if (xp_pixmaps[type].bitmaps[1].scale_height != height) {
-	Block_bitmap_create(dpy, d, &xp_pixmaps[type], 1, width, height);
-	scaled_bitmaps++;
+        Block_bitmap_create(dpy, d, &xp_pixmaps[type], 1, width, height);
+        scaled_bitmaps++;
     }
     Block_bitmap_paint_meter(d, type, x, y, width, height, size);
 }
@@ -256,25 +256,25 @@ void Cache_ships(Drawable d)
     static int number=0;
     return;
     if (scaled_bitmaps < 3) {
-	for (i=0; i < 3 - scaled_bitmaps;i++) {
-	    number++;
-	    if (number == xp_pixmaps[rotation_types[type]].picture.images) {
-		type++;
-		number = 0;
-		if (type == 3) {
-		type = 0;
-		}
-	    }
+        for (i=0; i < 3 - scaled_bitmaps;i++) {
+            number++;
+            if (number == xp_pixmaps[rotation_types[type]].picture.images) {
+                type++;
+                number = 0;
+                if (type == 3) {
+                type = 0;
+                }
+            }
 
-	    if (xp_pixmaps[rotation_types[type]].bitmaps[number].scale_height
-		!= WINSCALE(32))
-	    {
-    		Block_bitmap_create(dpy, d,
-				    &xp_pixmaps[rotation_types[type]],
-				    number, WINSCALE(32), WINSCALE(32));
-	    }
-	}	
-	
+            if (xp_pixmaps[rotation_types[type]].bitmaps[number].scale_height
+                != WINSCALE(32))
+            {
+                    Block_bitmap_create(dpy, d,
+                                    &xp_pixmaps[rotation_types[type]],
+                                    number, WINSCALE(32), WINSCALE(32));
+            }
+        }        
+        
     }
     scaled_bitmaps = 0;
 }
@@ -290,15 +290,15 @@ void Cache_ships(Drawable d)
 
 static void Block_bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image)
 {
-    int		x, y;
-    RGB_COLOR	color;
+    int                x, y;
+    RGB_COLOR        color;
 
     for (y=0; y < xp_pixmap->height; y++)
-	for (x=0; x < xp_pixmap->width; x++) {
-	    color = Picture_get_pixel(&(xp_pixmap->picture), 
-					    image, x, y);
-	    Block_bitmap_set_pixel(xp_pixmap, image, x, y, color);
-	}
+        for (x=0; x < xp_pixmap->width; x++) {
+            color = Picture_get_pixel(&(xp_pixmap->picture), 
+                                            image, x, y);
+            Block_bitmap_set_pixel(xp_pixmap, image, x, y, color);
+        }
 
 
     /* copy bounding box from original picture. */
@@ -316,12 +316,12 @@ static void Block_bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image)
     
 static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
 {
-    int		x, y;
-    RGB_COLOR	color;
-    double	x_scaled, y_scaled;
+    int                x, y;
+    RGB_COLOR        color;
+    double        x_scaled, y_scaled;
     double      dx_scaled, dy_scaled;
-    double	orig_height, orig_width;
-    int		height, width;
+    double        orig_height, orig_width;
+    int                height, width;
     
     orig_height = xp_pixmap->height; 
     orig_width = xp_pixmap->width;
@@ -333,27 +333,27 @@ static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
     y_scaled = 0;
     for (y = 0; y < height; y++) {
 
-	x_scaled = 0;
-	for (x=0; x < width; x++) {
-	    color = Picture_get_pixel_area(&(xp_pixmap->picture), image,
-					       x_scaled, y_scaled,
-					       dx_scaled, dy_scaled);
-	    Block_bitmap_set_pixel(xp_pixmap, image, x, y, color);
-	    x_scaled += dx_scaled;
-	}
-	y_scaled += dy_scaled;
+        x_scaled = 0;
+        for (x=0; x < width; x++) {
+            color = Picture_get_pixel_area(&(xp_pixmap->picture), image,
+                                               x_scaled, y_scaled,
+                                               dx_scaled, dy_scaled);
+            Block_bitmap_set_pixel(xp_pixmap, image, x, y, color);
+            x_scaled += dx_scaled;
+        }
+        y_scaled += dy_scaled;
     }
 
 
     /* scale bounding box as well. */
     {
-	bbox_t	*src = &xp_pixmap->picture.bbox[image];
-	bbox_t	*dst = &xp_pixmap->bitmaps[image].bbox;
+        bbox_t        *src = &xp_pixmap->picture.bbox[image];
+        bbox_t        *dst = &xp_pixmap->bitmaps[image].bbox;
 
-	dst->xmin = (int)((width * src->xmin) / orig_width);
-	dst->ymin = (int)((height * src->ymin) / orig_height);
-	dst->xmax = (int)(((width * src->xmax) + (orig_width - 1 )) / orig_width);
-	dst->ymax = (int)(((height * src->ymax) + (orig_height - 1 )) / orig_height);
+        dst->xmin = (int)((width * src->xmin) / orig_width);
+        dst->ymin = (int)((height * src->ymin) / orig_height);
+        dst->xmax = (int)(((width * src->xmax) + (orig_width - 1 )) / orig_width);
+        dst->ymax = (int)(((height * src->ymax) + (orig_height - 1 )) / orig_height);
     }
 }
 
@@ -373,19 +373,19 @@ static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
   */
 
 void Block_bitmap_create(Display* dpy, Drawable d,
-			 xp_pixmap_t *xp_pixmap, 
-			 int image, int width, int height)
+                         xp_pixmap_t *xp_pixmap, 
+                         int image, int width, int height)
 {
     Block_bitmap_create_begin(d, xp_pixmap, image, width, height);
 
-    xp_pixmap->bitmaps[image].scale_width = width;		
-    xp_pixmap->bitmaps[image].scale_height = height;		
+    xp_pixmap->bitmaps[image].scale_width = width;                
+    xp_pixmap->bitmaps[image].scale_height = height;                
 
     if (height == xp_pixmap->height && width == xp_pixmap->width) {
-	/* exactly same size as original */
-	Block_bitmap_picture_copy(xp_pixmap, image);
+        /* exactly same size as original */
+        Block_bitmap_picture_copy(xp_pixmap, image);
     } else {
-	Block_bitmap_picture_scale(xp_pixmap, image);
+        Block_bitmap_picture_scale(xp_pixmap, image);
     }
     Block_bitmap_create_end(d);
 }
@@ -397,10 +397,10 @@ void Block_bitmap_create(Display* dpy, Drawable d,
 
 #include "paintdata.h"
 
-extern int		dispDepth;
-extern unsigned long	(*RGB)(unsigned char r, unsigned char g, unsigned char b);
+extern int                dispDepth;
+extern unsigned long        (*RGB)(unsigned char r, unsigned char g, unsigned char b);
 
-static GC		maskGC;
+static GC                maskGC;
 
 /*
     Purpose: to allocate and prepare a pixmap for drawing.
@@ -408,50 +408,50 @@ static GC		maskGC;
   */
 
 void Block_bitmap_create_begin(Drawable d,
-			       xp_pixmap_t * xp_pixmap,int image,
-			       int width, int height)
+                               xp_pixmap_t * xp_pixmap,int image,
+                               int width, int height)
 {
-    Drawable		pixmap;
+    Drawable                pixmap;
 
     if (xp_pixmap->bitmaps[image].bitmap) {
-	XFreePixmap(dpy, xp_pixmap->bitmaps[image].bitmap);
-	xp_pixmap->bitmaps[image].bitmap = None;
+        XFreePixmap(dpy, xp_pixmap->bitmaps[image].bitmap);
+        xp_pixmap->bitmaps[image].bitmap = None;
     }
     if (xp_pixmap->bitmaps[image].mask) {
-	XFreePixmap(dpy, xp_pixmap->bitmaps[image].mask);
-	xp_pixmap->bitmaps[image].mask = None;
+        XFreePixmap(dpy, xp_pixmap->bitmaps[image].mask);
+        xp_pixmap->bitmaps[image].mask = None;
     }
 
     pixmap = XCreatePixmap(dpy, d,
-			   width, height,
-			   dispDepth);
+                           width, height,
+                           dispDepth);
     if (!pixmap) {
-	xperror("Could not create pixmap");
-	exit(1);
+        xperror("Could not create pixmap");
+        exit(1);
     }
     xp_pixmap->bitmaps[image].bitmap = pixmap;
 
     pixmap = XCreatePixmap(dpy, d,
-			   width, height,
-			   1);
+                           width, height,
+                           1);
     if (!pixmap) {
-	xperror("Could not create mask pixmap");
-	exit(1);
+        xperror("Could not create mask pixmap");
+        exit(1);
     }
     xp_pixmap->bitmaps[image].mask = pixmap;
 
     if (!maskGC) {
-	XGCValues	xgc;
-	unsigned long	values;
+        XGCValues        xgc;
+        unsigned long        values;
 
-	xgc.line_width = 0;
-	xgc.line_style = LineSolid;
-	xgc.cap_style = CapButt;
-	xgc.join_style = JoinMiter;
-	xgc.graphics_exposures = False;
-	values = 
-	    GCLineWidth|GCLineStyle|GCCapStyle|GCJoinStyle|GCGraphicsExposures;
-	maskGC = XCreateGC(dpy, pixmap, values, &xgc);
+        xgc.line_width = 0;
+        xgc.line_style = LineSolid;
+        xgc.cap_style = CapButt;
+        xgc.join_style = JoinMiter;
+        xgc.graphics_exposures = False;
+        values = 
+            GCLineWidth|GCLineStyle|GCCapStyle|GCJoinStyle|GCGraphicsExposures;
+        maskGC = XCreateGC(dpy, pixmap, values, &xgc);
     }
 }
 
@@ -467,11 +467,11 @@ void Block_bitmap_create_end(Drawable d)
 */
 
 void Block_bitmap_set_pixel(xp_pixmap_t * xp_pixmap,
-			    int image, int x, int y,
-			    RGB_COLOR color)
+                            int image, int x, int y,
+                            RGB_COLOR color)
 {
-    unsigned long	pixel;
-    unsigned char	r, g, b;
+    unsigned long        pixel;
+    unsigned char        r, g, b;
 
     r = RED_VALUE(color);
     g = GREEN_VALUE(color);
@@ -479,12 +479,12 @@ void Block_bitmap_set_pixel(xp_pixmap_t * xp_pixmap,
     pixel = (RGB)(r, g, b);
     SET_FG(pixel);
     XDrawPoint(dpy, xp_pixmap->bitmaps[image].bitmap, gc,
-	       x, y);
+               x, y);
 
     pixel = (color) ? 1 : 0;
     XSetForeground(dpy, maskGC, pixel);
     XDrawPoint(dpy, xp_pixmap->bitmaps[image].mask, maskGC,
-	       x, y);
+               x, y);
 }
 
 /*
@@ -493,24 +493,24 @@ void Block_bitmap_set_pixel(xp_pixmap_t * xp_pixmap,
     by drawing less than the height in the image specify.
 */
 void Block_bitmap_paint_fuel_slice(Drawable d, int type, 
-				   int x, int y, 
-				   int width, int height, 
-				   int image, int size)
+                                   int x, int y, 
+                                   int width, int height, 
+                                   int image, int size)
 {
-    xp_pixmap_t	*pix = &xp_pixmaps[type];
-    xp_bitmap_t	*bit = &pix->bitmaps[image];
-    bbox_t	*box = &bit->bbox;
+    xp_pixmap_t        *pix = &xp_pixmaps[type];
+    xp_bitmap_t        *bit = &pix->bitmaps[image];
+    bbox_t        *box = &bit->bbox;
 
     /*
     assert(width >= box->xmax);
     assert(height >= box->ymax);
     */
     XCopyArea(dpy, xp_pixmaps[type].bitmaps[image].bitmap,
-	      d, gc,
-	      0 + box->xmin, 0 + box->ymin,
-	      box->xmax + 1 - box->xmin,
-	      size * (box->ymax + 1 - box->ymin) / bit->scale_width,
-	      x + box->xmin, y + box->ymin);
+              d, gc,
+              0 + box->xmin, 0 + box->ymin,
+              box->xmax + 1 - box->xmin,
+              size * (box->ymax + 1 - box->ymin) / bit->scale_width,
+              x + box->xmin, y + box->ymin);
 }
 
 /*
@@ -520,24 +520,24 @@ void Block_bitmap_paint_fuel_slice(Drawable d, int type,
 */
 
 void Block_bitmap_paint_meter(Drawable d, int type, 
-			      int x, int y, 
-			      int width, int height, 
-			      int size) 
+                              int x, int y, 
+                              int width, int height, 
+                              int size) 
 {
 
     /*First draw the part of the meter that should be filled */
     XCopyArea(dpy, xp_pixmaps[type].bitmaps[1].bitmap, /* 1 = filled image */
-	      d, gc,
-	      0, 0,
-	      size, xp_pixmaps[type].height,
-	      x, y); 
+              d, gc,
+              0, 0,
+              size, xp_pixmaps[type].height,
+              x, y); 
     /*Then draw the part of the meter that should be empty */
 
-    XCopyArea(dpy, xp_pixmaps[type].bitmaps[0].bitmap,	/* 0 = empty image */
-	      d, gc,
-	      size, 0,
-	      xp_pixmaps[type].width - size, xp_pixmaps[type].height,
-	      x + size, y); 
+    XCopyArea(dpy, xp_pixmaps[type].bitmaps[0].bitmap,        /* 0 = empty image */
+              d, gc,
+              size, 0,
+              xp_pixmaps[type].width - size, xp_pixmaps[type].height,
+              x + size, y); 
 }
 
 /*
@@ -545,19 +545,19 @@ void Block_bitmap_paint_meter(Drawable d, int type,
 */
 
 void Block_bitmap_paint(Drawable d, int type, int x, int y, int width,
-			int height, int number)
+                        int height, int number)
 {
-    xp_pixmap_t		*pix = &xp_pixmaps[type];
-    xp_bitmap_t		*bit = &pix->bitmaps[number];
-    bbox_t		*box = &bit->bbox;
+    xp_pixmap_t                *pix = &xp_pixmaps[type];
+    xp_bitmap_t                *bit = &pix->bitmaps[number];
+    bbox_t                *box = &bit->bbox;
 
     XSetClipOrigin(dpy, gc, x, y);
     XSetClipMask(dpy, gc, bit->mask);
     XCopyArea(dpy, bit->bitmap,
-	      d, gc,
-	      0 + box->xmin, 0 + box->ymin,
-	      box->xmax + 1 - box->xmin, box->ymax + 1 - box->ymin,
-	      x + box->xmin, y + box->ymin);
+              d, gc,
+              0 + box->xmin, 0 + box->ymin,
+              box->xmax + 1 - box->xmin, box->ymax + 1 - box->ymin,
+              x + box->xmin, y + box->ymin);
     XSetClipMask(dpy, gc, None);
 }
 

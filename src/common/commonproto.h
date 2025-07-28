@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	COMMONPROTO_H
-#define	COMMONPROTO_H
+#ifndef        COMMONPROTO_H
+#define        COMMONPROTO_H
 
 #ifndef TYPES_H
 /* need DFLOAT */

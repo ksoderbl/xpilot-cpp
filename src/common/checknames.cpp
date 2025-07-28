@@ -40,13 +40,13 @@ int Check_real_name(char *name)
 
     name[MAX_NAME_LEN - 1] = '\0';
     if (!*name) {
-	return NAME_ERROR;
+        return NAME_ERROR;
     }
     str = (unsigned char *) name;
     for (; *str; str++) {
-	if (!isgraph(*str)) {
-	    return NAME_ERROR;
-	}
+        if (!isgraph(*str)) {
+            return NAME_ERROR;
+        }
     }
 
     return NAME_OK;
@@ -58,14 +58,14 @@ void Fix_real_name(char *name)
 
     name[MAX_NAME_LEN - 1] = '\0';
     if (!*name) {
-	strlcpy(name, "X", sizeof(name));
-	return;
+        strlcpy(name, "X", sizeof(name));
+        return;
     }
     str = (unsigned char *) name;
     for (; *str; str++) {
-	if (!isgraph(*str)) {
-	    *str = 'x';
-	}
+        if (!isgraph(*str)) {
+            *str = 'x';
+        }
     }
 }
 
@@ -75,20 +75,20 @@ int Check_nick_name(char *name)
 
     name[MAX_NAME_LEN - 1] = '\0';
     if (!*name) {
-	return NAME_ERROR;
+        return NAME_ERROR;
     }
     str = (unsigned char *) name;
     if (!isupper(*str)) {
-	return NAME_ERROR;
+        return NAME_ERROR;
     }
     for (; *str; str++) {
-	if (!isprint(*str)) {
-	    return NAME_ERROR;
-	}
+        if (!isprint(*str)) {
+            return NAME_ERROR;
+        }
     }
     --str;
     if (isspace(*str)) {
-	return NAME_ERROR;
+        return NAME_ERROR;
     }
 
     return NAME_OK;
@@ -100,26 +100,26 @@ void Fix_nick_name(char *name)
 
     name[MAX_NAME_LEN - 1] = '\0';
     if (!*name) {
-	static int n;
-	sprintf(name, "X%d", n++);
-	return;
+        static int n;
+        sprintf(name, "X%d", n++);
+        return;
     }
     str = (unsigned char *) name;
     if (!isupper(*str)) {
-	if (islower(*str)) {
-	    *str = toupper(*str);
-	} else {
-	    *str = 'X';
-	}
+        if (islower(*str)) {
+            *str = toupper(*str);
+        } else {
+            *str = 'X';
+        }
     }
     for (; *str; str++) {
-	if (!isprint(*str)) {
-	    *str = 'x';
-	}
+        if (!isprint(*str)) {
+            *str = 'x';
+        }
     }
     --str;
     while (isspace(*str)) {
-	*str-- = '\0';
+        *str-- = '\0';
     }
 }
 
@@ -139,19 +139,19 @@ int Check_host_name(char *name)
     name[MAX_HOST_LEN - 1] = '\0';
     str = (unsigned char *) name;
     if (!is_alpha_numeric(*str)) {
-	return NAME_ERROR;
+        return NAME_ERROR;
     }
     for (; *str; str++) {
-	if (!is_alpha_numeric(*str)) {
-	    if (*str == '.' || *str == '-') {
-		if (str[1] == '.' || str[1] == '-' || !str[1]) {
-		    return NAME_ERROR;
-		}
-	    }
-	    else {
-		return NAME_ERROR;
-	    }
-	}
+        if (!is_alpha_numeric(*str)) {
+            if (*str == '.' || *str == '-') {
+                if (str[1] == '.' || str[1] == '-' || !str[1]) {
+                    return NAME_ERROR;
+                }
+            }
+            else {
+                return NAME_ERROR;
+            }
+        }
     }
     return NAME_OK;
 }
@@ -163,20 +163,20 @@ void Fix_host_name(char *name)
     name[MAX_HOST_LEN - 1] = '\0';
     str = (unsigned char *) name;
     if (!is_alpha_numeric(*str)) {
-	strlcpy(name, "xxx.xxx", sizeof(name));
-	return;
+        strlcpy(name, "xxx.xxx", sizeof(name));
+        return;
     }
     for (; *str; str++) {
-	if (!is_alpha_numeric(*str)) {
-	    if (*str == '.' || *str == '-') {
-		if (str[1] == '.' || str[1] == '-' || !str[1]) {
-		    *str = 'x';
-		}
-	    }
-	    else {
-		*str = 'x';
-	    }
-	}
+        if (!is_alpha_numeric(*str)) {
+            if (*str == '.' || *str == '-') {
+                if (str[1] == '.' || str[1] == '-' || !str[1]) {
+                    *str = 'x';
+                }
+            }
+            else {
+                *str = 'x';
+            }
+        }
     }
 }
 
@@ -189,9 +189,9 @@ int Check_disp_name(char *name)
     name[MAX_NAME_LEN] = '\0';
     str = (unsigned char *) name;
     for (; *str; str++) {
-	if (!isgraph(*str)) {
-	    return NAME_ERROR;
-	}
+        if (!isgraph(*str)) {
+            return NAME_ERROR;
+        }
     }
     return NAME_OK;
 }
@@ -203,9 +203,9 @@ void Fix_disp_name(char *name)
     name[MAX_NAME_LEN] = '\0';
     str = (unsigned char *) name;
     for (; *str; str++) {
-	if (!isgraph(*str)) {
-	    *str = 'x';
-	}
+        if (!isgraph(*str)) {
+            *str = 'x';
+        }
     }
 }
 

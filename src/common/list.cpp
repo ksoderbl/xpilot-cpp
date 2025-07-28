@@ -32,35 +32,35 @@
 
 /* store a list node. */
 struct ListNode {
-    struct ListNode	*next;
-    struct ListNode	*prev;
-    void		*data;
+    struct ListNode        *next;
+    struct ListNode        *prev;
+    void                *data;
 };
 typedef struct ListNode list_node_t;
 
 /* store the list header. */
 struct List {
-    list_node_t		tail;
-    int			size;
+    list_node_t                tail;
+    int                        size;
 };
 /* typedef struct List *list_t; */
 /* typedef struct ListNode *list_iter_t; */
 
-static int		lists_allocated;
-static int		nodes_allocated;
+static int                lists_allocated;
+static int                nodes_allocated;
 
 /* create a new list. */
 list_t List_new(void)
 {
-    list_t		list = (list_t) malloc(sizeof(*list));
+    list_t                list = (list_t) malloc(sizeof(*list));
 
     if (list) {
-	lists_allocated++;
+        lists_allocated++;
 
-	list->tail.next = &list->tail;
-	list->tail.prev = &list->tail;
-	list->tail.data = NULL;
-	list->size = 0;
+        list->tail.next = &list->tail;
+        list->tail.prev = &list->tail;
+        list->tail.data = NULL;
+        list->size = 0;
     }
 
     return list;
@@ -70,11 +70,11 @@ list_t List_new(void)
 void List_delete(list_t list)
 {
     if (list) {
-	List_clear(list);
-	list->tail.next = list->tail.prev = NULL;
-	free(list);
+        List_clear(list);
+        list->tail.next = list->tail.prev = NULL;
+        free(list);
 
-	lists_allocated--;
+        lists_allocated--;
     }
 }
 
@@ -106,7 +106,7 @@ void* List_front(list_t list)
 void List_clear(list_t list)
 {
     while (!List_empty(list)) {
-	List_pop_front(list);
+        List_pop_front(list);
     }
 }
 
@@ -122,7 +122,7 @@ list_iter_t List_erase(list_t list, list_iter_t pos)
     list_iter_t next, prev;
 
     if (pos == &list->tail) {
-	return List_end(list);
+        return List_end(list);
     }
 
     next = pos->next;
@@ -145,7 +145,7 @@ list_iter_t List_erase(list_t list, list_iter_t pos)
 list_iter_t List_erase_range(list_t list, list_iter_t first, list_iter_t last)
 {
     while (first != last) {
-	first = List_erase(list, first);
+        first = List_erase(list, first);
     }
     return first;
 }
@@ -154,17 +154,17 @@ list_iter_t List_erase_range(list_t list, list_iter_t first, list_iter_t last)
  * and return new position or NULL on failure. */
 list_iter_t List_insert(list_t list, list_iter_t pos, void *data)
 {
-    list_iter_t		node = (list_iter_t) malloc(sizeof(*node));
+    list_iter_t                node = (list_iter_t) malloc(sizeof(*node));
 
     if (node) {
-	node->next = pos;
-	node->prev = pos->prev;
-	node->data = data;
-	node->prev->next = node;
-	node->next->prev = node;
-	list->size++;
+        node->next = pos;
+        node->prev = pos->prev;
+        node->data = data;
+        node->prev->next = node;
+        node->next->prev = node;
+        list->size++;
 
-	nodes_allocated++;
+        nodes_allocated++;
     }
 
     return node;
@@ -216,10 +216,10 @@ list_iter_t List_find(list_t list, void *data)
  */
 list_iter_t List_find_range(list_iter_t first, list_iter_t last, void *data)
 {
-    list_iter_t		pos = first;
+    list_iter_t                pos = first;
 
     while (pos != last && pos->data != data) {
-	pos = pos->next;
+        pos = pos->next;
     }
 
     return pos;
@@ -232,16 +232,16 @@ list_iter_t List_find_range(list_iter_t first, list_iter_t last, void *data)
  */
 int List_remove(list_t list, void *data)
 {
-    list_iter_t		pos = List_begin(list);
-    list_iter_t		end = List_end(list);
-    int			count = 0;
+    list_iter_t                pos = List_begin(list);
+    list_iter_t                end = List_end(list);
+    int                        count = 0;
 
     while (pos != end) {
-	pos = List_find_range(pos, end, data);
-	if (pos != end) {
-	    pos = List_erase(list, pos);
-	    count++;
-	}
+        pos = List_find_range(pos, end, data);
+        if (pos != end) {
+            pos = List_erase(list, pos);
+            count++;
+        }
     }
 
     return count;

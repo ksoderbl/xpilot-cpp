@@ -27,7 +27,7 @@
 
 #ifdef SOUND
 
-#define	MAX_RANDOM_SOUNDS	6
+#define        MAX_RANDOM_SOUNDS        6
 
 #define _CAUDIO_C_
 
@@ -45,12 +45,12 @@
 #include "error.h"
 #include "commonproto.h"
 
-static int	audioEnabled;
+static int        audioEnabled;
 
 static struct {
-    char	**filenames;
-    void	**private_data;
-    int		nsounds;
+    char        **filenames;
+    void        **private_data;
+    int                nsounds;
 } table[MAX_SOUNDS];
 
 
@@ -61,52 +61,52 @@ void audioInit(char *display)
     int             i, j;
 
     if (!maxVolume) {
-	printf("maxVolume is 0: no sound.\n");
-	return;
+        printf("maxVolume is 0: no sound.\n");
+        return;
     }
     if (!(fp = fopen(sounds, "r"))) {
-	xperror("Could not open soundfile %s", sounds);
-	return;
+        xperror("Could not open soundfile %s", sounds);
+        return;
     }
 
     while (fgets(buf, sizeof(buf), fp)) {
-	/* ignore comments */
-	if (*buf == '\n' || *buf == '#')
-	    continue;
+        /* ignore comments */
+        if (*buf == '\n' || *buf == '#')
+            continue;
 
-	sound = strtok(buf, " \t");
-	file = strtok(NULL, " \t\n");
+        sound = strtok(buf, " \t");
+        file = strtok(NULL, " \t\n");
 
-	for (i = 0; i < MAX_SOUNDS; i++)
-	    if (!strcmp(sound, soundNames[i])) {
-		size_t filename_ptrs_size = sizeof(char *) * MAX_RANDOM_SOUNDS;
-		size_t private_data_ptrs_size = sizeof(void *) * MAX_RANDOM_SOUNDS;
-		table[i].filenames = (char **)malloc(filename_ptrs_size);
-		table[i].private_data = (void **)malloc(private_data_ptrs_size);
-		memset(table[i].private_data, 0, private_data_ptrs_size);
-		ifile = strtok(file, " \t\n|");
-		j = 0;
-		while (ifile && j < MAX_RANDOM_SOUNDS) {
-		    if (*ifile == '/')
-			table[i].filenames[j] = xp_strdup(ifile);
-		    else {
-			size_t filename_size = strlen(Conf_sounddir())
-					     + strlen(ifile) + 1;
-			table[i].filenames[j] = (char *)malloc(filename_size);
-			if (table[i].filenames[j] != NULL) {
-			    strcpy(table[i].filenames[j], Conf_sounddir());
-			    strcat(table[i].filenames[j], ifile);
-			}
-		    }
-		    j++;
-		    ifile = strtok(NULL, " \t\n|");
-		    table[i].nsounds = j;
-		}
-		break;
-	    }
+        for (i = 0; i < MAX_SOUNDS; i++)
+            if (!strcmp(sound, soundNames[i])) {
+                size_t filename_ptrs_size = sizeof(char *) * MAX_RANDOM_SOUNDS;
+                size_t private_data_ptrs_size = sizeof(void *) * MAX_RANDOM_SOUNDS;
+                table[i].filenames = (char **)malloc(filename_ptrs_size);
+                table[i].private_data = (void **)malloc(private_data_ptrs_size);
+                memset(table[i].private_data, 0, private_data_ptrs_size);
+                ifile = strtok(file, " \t\n|");
+                j = 0;
+                while (ifile && j < MAX_RANDOM_SOUNDS) {
+                    if (*ifile == '/')
+                        table[i].filenames[j] = xp_strdup(ifile);
+                    else {
+                        size_t filename_size = strlen(Conf_sounddir())
+                                             + strlen(ifile) + 1;
+                        table[i].filenames[j] = (char *)malloc(filename_size);
+                        if (table[i].filenames[j] != NULL) {
+                            strcpy(table[i].filenames[j], Conf_sounddir());
+                            strcat(table[i].filenames[j], ifile);
+                        }
+                    }
+                    j++;
+                    ifile = strtok(NULL, " \t\n|");
+                    table[i].nsounds = j;
+                }
+                break;
+            }
 
-	if (i == MAX_SOUNDS)
-	    fprintf(stderr, "Unknown sound '%s' (ignored)\n", sound);
+        if (i == MAX_SOUNDS)
+            fprintf(stderr, "Unknown sound '%s' (ignored)\n", sound);
 
     }
 
@@ -118,58 +118,58 @@ void audioInit(char *display)
 void audioCleanup(void)
 {
     /* release malloc'ed memory here */
-    int			i;
+    int                        i;
 
     for (i = 0; i < MAX_SOUNDS; i++) {
-	if (table[i].filenames) {
-	    free(table[i].filenames);
-	    table[i].filenames = NULL;
-	}
-	if (table[i].private_data) {
-	    free(table[i].private_data);
-	    table[i].private_data = NULL;
-	}
+        if (table[i].filenames) {
+            free(table[i].filenames);
+            table[i].filenames = NULL;
+        }
+        if (table[i].private_data) {
+            free(table[i].private_data);
+            table[i].private_data = NULL;
+        }
     }
 }
 
 void audioEvents(void)
 {
     if (audioEnabled)
-	audioDeviceEvents();
+        audioDeviceEvents();
 }
 
 int Handle_audio(int type, int volume)
 {
-    int		pick = 0;
+    int                pick = 0;
 
     if (!audioEnabled || !table[type].filenames)
-	return 0;
+        return 0;
 
     if (table[type].nsounds > 1)
     {
-	/*
-	 * Multiple sounds were specified.  Pick one at random.
-	 */
-	pick = randomMT() % table[type].nsounds;
+        /*
+         * Multiple sounds were specified.  Pick one at random.
+         */
+        pick = randomMT() % table[type].nsounds;
     }
 
     if (!table[type].private_data[pick]) {
-	int i;
+        int i;
 
-	/* eliminate duplicate sounds */
-	for (i = 0; i < MAX_SOUNDS; i++)
-	    if (i != type
-		&& table[i].filenames
-		&& table[i].private_data[pick]
-		&& strcmp(table[type].filenames[0], table[i].filenames[0]) == 0)
-	    {
-		table[type].private_data[0] = table[i].private_data[0];
-		break;
-	    }
+        /* eliminate duplicate sounds */
+        for (i = 0; i < MAX_SOUNDS; i++)
+            if (i != type
+                && table[i].filenames
+                && table[i].private_data[pick]
+                && strcmp(table[type].filenames[0], table[i].filenames[0]) == 0)
+            {
+                table[type].private_data[0] = table[i].private_data[0];
+                break;
+            }
     }
 
     audioDevicePlay(table[type].filenames[pick], type, MIN(volume, maxVolume),
-		    &table[type].private_data[pick]);
+                    &table[type].private_data[pick]);
 
     return 0;
 }

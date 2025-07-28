@@ -45,9 +45,9 @@
 **
 **
 ** Adapted for XPilot by Bert Gijsbers:
-**	Changes for ANSI C.
-**	Indentation.
-**	No typedefs in external interface.
+**        Changes for ANSI C.
+**        Indentation.
+**        No typedefs in external interface.
 **
 ** $Id: randommt.c,v 5.1 2001/06/02 21:02:19 bertg Exp $
 */
@@ -67,17 +67,17 @@ unsigned int randomMT(void);
 
 typedef unsigned int uint32;
 
-#define N              (624)			/* length of state vector */
-#define M              (397)			/* a period parameter */
-#define K              (0x9908B0DFU)		/* a magic constant */
-#define hiBit(u)       ((u) & 0x80000000U)	/* mask all but highest   bit of u */
-#define loBit(u)       ((u) & 0x00000001U)	/* mask all but lowest    bit of u */
-#define loBits(u)      ((u) & 0x7FFFFFFFU)	/* mask     the highest   bit of u */
-#define mixBits(u, v)  (hiBit(u)|loBits(v))	/* move hi bit of u to hi bit of v */
+#define N              (624)                        /* length of state vector */
+#define M              (397)                        /* a period parameter */
+#define K              (0x9908B0DFU)                /* a magic constant */
+#define hiBit(u)       ((u) & 0x80000000U)        /* mask all but highest   bit of u */
+#define loBit(u)       ((u) & 0x00000001U)        /* mask all but lowest    bit of u */
+#define loBits(u)      ((u) & 0x7FFFFFFFU)        /* mask     the highest   bit of u */
+#define mixBits(u, v)  (hiBit(u)|loBits(v))        /* move hi bit of u to hi bit of v */
 
-static uint32 state[N + 1];	/* state vector + 1 extra to not violate ANSI C */
-static uint32 *next;		/* next random value is computed from here */
-static int left = -1;		/* can *next++ this many times before reloading */
+static uint32 state[N + 1];        /* state vector + 1 extra to not violate ANSI C */
+static uint32 *next;                /* next random value is computed from here */
+static int left = -1;                /* can *next++ this many times before reloading */
 
 
 void seedMT(unsigned int seed)
@@ -141,15 +141,15 @@ unsigned int reloadMT(void)
     int j;
 
     if (left < -1)
-	seedMT(4357U);
+        seedMT(4357U);
 
     left = N - 1, next = state + 1;
 
     for (s0 = state[0], s1 = state[1], j = N - M + 1; --j; s0 = s1, s1 = *p2++)
-	*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+        *p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
 
     for (pM = state, j = M; --j; s0 = s1, s1 = *p2++)
-	*p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
+        *p0++ = *pM++ ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
 
     s1 = state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0U);
     s1 ^= (s1 >> 11);
@@ -164,7 +164,7 @@ unsigned int randomMT(void)
     uint32 y;
 
     if (--left < 0)
-	return (reloadMT());
+        return (reloadMT());
 
     y = *next++;
     y ^= (y >> 11);
@@ -194,8 +194,8 @@ int main(void)
     /* print the first 2,002 random numbers seven to a line as an example */
 
     for (j = 0; j < 2002; j++)
-	printf(" %10lu%s", (unsigned long)randomMT(),
-	       (j % 7) == 6 ? "\n" : "");
+        printf(" %10lu%s", (unsigned long)randomMT(),
+               (j % 7) == 6 ? "\n" : "");
 
     return (EXIT_SUCCESS);
 }

@@ -45,29 +45,29 @@
 #define MAX_MINE                99
 #define MAX_MISSILE             99
 #define MAX_ECM                 99
-#define MAX_ARMOR		99
+#define MAX_ARMOR                99
 #define MAX_EMERGENCY_THRUST    99
 #define MAX_AUTOPILOT           99
 #define MAX_EMERGENCY_SHIELD    99
 #define MAX_DEFLECTOR           99
-#define MAX_MIRROR		99
+#define MAX_MIRROR                99
 #define MAX_PHASING             99
 #define MAX_HYPERJUMP           99
-#define MAX_LASER		99
-#define MAX_TRACTOR_BEAM	99
+#define MAX_LASER                99
+#define MAX_TRACTOR_BEAM        99
 
-long	KILLING_SHOTS = (OBJ_SHOT|OBJ_CANNON_SHOT|OBJ_SMART_SHOT
-			 |OBJ_TORPEDO|OBJ_HEAT_SHOT|OBJ_PULSE);
-long	DEF_BITS = 0;
-long	KILL_BITS = (THRUSTING|PLAYING|KILLED|SELF_DESTRUCT|WARPING|WARPED);
-long	DEF_HAVE =
-	(HAS_SHIELD|HAS_COMPASS|HAS_REFUEL|HAS_REPAIR|HAS_CONNECTOR
-	|HAS_SHOT|HAS_LASER);
-long	DEF_USED = (HAS_SHIELD|HAS_COMPASS);
-long	USED_KILL =
-	(HAS_REFUEL|HAS_REPAIR|HAS_CONNECTOR|HAS_SHOT|HAS_LASER|HAS_ARMOR
-	|HAS_TRACTOR_BEAM|HAS_CLOAKING_DEVICE|HAS_PHASING_DEVICE
-	|HAS_DEFLECTOR|HAS_MIRROR|HAS_EMERGENCY_SHIELD|HAS_EMERGENCY_THRUST);
+long        KILLING_SHOTS = (OBJ_SHOT|OBJ_CANNON_SHOT|OBJ_SMART_SHOT
+                         |OBJ_TORPEDO|OBJ_HEAT_SHOT|OBJ_PULSE);
+long        DEF_BITS = 0;
+long        KILL_BITS = (THRUSTING|PLAYING|KILLED|SELF_DESTRUCT|WARPING|WARPED);
+long        DEF_HAVE =
+        (HAS_SHIELD|HAS_COMPASS|HAS_REFUEL|HAS_REPAIR|HAS_CONNECTOR
+        |HAS_SHOT|HAS_LASER);
+long        DEF_USED = (HAS_SHIELD|HAS_COMPASS);
+long        USED_KILL =
+        (HAS_REFUEL|HAS_REPAIR|HAS_CONNECTOR|HAS_SHOT|HAS_LASER|HAS_ARMOR
+        |HAS_TRACTOR_BEAM|HAS_CLOAKING_DEVICE|HAS_PHASING_DEVICE
+        |HAS_DEFLECTOR|HAS_MIRROR|HAS_EMERGENCY_SHIELD|HAS_EMERGENCY_THRUST);
 
 
 
@@ -77,43 +77,43 @@ long	USED_KILL =
  */
 static void Set_item_chance(int item)
 {
-    DFLOAT	max = itemProbMult * maxItemDensity * World.x * World.y;
-    DFLOAT	sum = 0;
-    int		i, num = 0;
+    DFLOAT        max = itemProbMult * maxItemDensity * World.x * World.y;
+    DFLOAT        sum = 0;
+    int                i, num = 0;
 
     if (itemProbMult * World.items[item].prob > 0) {
-	World.items[item].chance = (int)(1.0
-	    / (itemProbMult * World.items[item].prob * World.x * World.y * FPS));
-	World.items[item].chance = MAX(World.items[item].chance, 1);
+        World.items[item].chance = (int)(1.0
+            / (itemProbMult * World.items[item].prob * World.x * World.y * FPS));
+        World.items[item].chance = MAX(World.items[item].chance, 1);
     } else {
-	World.items[item].chance = 0;
+        World.items[item].chance = 0;
     }
     if (max > 0) {
-	if (max < 1) {
-	    World.items[item].max = 1;
-	} else {
-	    World.items[item].max = (int)max;
-	}
+        if (max < 1) {
+            World.items[item].max = 1;
+        } else {
+            World.items[item].max = (int)max;
+        }
     } else {
-	World.items[item].max = 0;
+        World.items[item].max = 0;
     }
     if (!BIT(CANNON_USE_ITEM, 1U << item)) {
-	World.items[item].cannonprob = 0;
-	return;
+        World.items[item].cannonprob = 0;
+        return;
     }
     for (i = 0; i < NUM_ITEMS; i++) {
-	if (World.items[i].prob > 0
-	    && BIT(CANNON_USE_ITEM, 1U << i)) {
-	    sum += World.items[i].prob;
-	    num++;
-	}
+        if (World.items[i].prob > 0
+            && BIT(CANNON_USE_ITEM, 1U << i)) {
+            sum += World.items[i].prob;
+            num++;
+        }
     }
     if (num) {
-	World.items[item].cannonprob = World.items[item].prob
-				       * (num / sum)
-				       * (maxItemDensity / 0.00012);
+        World.items[item].cannonprob = World.items[item].prob
+                                       * (num / sum)
+                                       * (maxItemDensity / 0.00012);
     } else {
-	World.items[item].cannonprob = 0;
+        World.items[item].cannonprob = 0;
     }
 }
 
@@ -126,47 +126,47 @@ static void Set_item_chance(int item)
  */
 void Tune_item_probs(void)
 {
-    int			i, j, excess;
+    int                        i, j, excess;
 
     for (i = 0; i < NUM_ITEMS; i++) {
-	Set_item_chance(i);
-	excess = World.items[i].num - World.items[i].max;
-	if (excess > 0) {
-	    for (j = 0; j < NumObjs; j++) {
-		object *obj = Obj[j];
-		if (obj->type == OBJ_ITEM) {
-		    if (obj->info == i) {
-			Delete_shot(j);
-			j--;
-			if (--excess == 0) {
-			    break;
-			}
-		    }
-		}
-	    }
-	}
+        Set_item_chance(i);
+        excess = World.items[i].num - World.items[i].max;
+        if (excess > 0) {
+            for (j = 0; j < NumObjs; j++) {
+                object *obj = Obj[j];
+                if (obj->type == OBJ_ITEM) {
+                    if (obj->info == i) {
+                        Delete_shot(j);
+                        j--;
+                        if (--excess == 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 void Tune_asteroid_prob(void)
 {
-    DFLOAT	max = maxAsteroidDensity * World.x * World.y;
+    DFLOAT        max = maxAsteroidDensity * World.x * World.y;
 
     if (World.asteroids.prob > 0) {
-	World.asteroids.chance = (int)(1.0
-			/ (World.asteroids.prob * World.x * World.y * FPS));
-	World.asteroids.chance = MAX(World.asteroids.chance, 1);
+        World.asteroids.chance = (int)(1.0
+                        / (World.asteroids.prob * World.x * World.y * FPS));
+        World.asteroids.chance = MAX(World.asteroids.chance, 1);
     } else {
-	World.asteroids.chance = 0;
+        World.asteroids.chance = 0;
     }
     if (max > 0) {
-	if (max < 1) {
-	    World.asteroids.max = 1;
-	} else {
-	    World.asteroids.max = (int)max;
-	}
+        if (max < 1) {
+            World.asteroids.max = 1;
+        } else {
+            World.asteroids.max = (int)max;
+        }
     } else {
-	World.asteroids.max = 0;
+        World.asteroids.max = 0;
     }
     /* superfluous asteroids are handled by Asteroid_update() */
 
@@ -209,7 +209,7 @@ static void Init_item(int item, int minpp, int maxpp)
  */
 void Set_initial_resources(void)
 {
-    int			i;
+    int                        i;
 
     LIMIT(World.items[ITEM_FUEL].limit, 0, MAX_FUEL);
     LIMIT(World.items[ITEM_WIDEANGLE].limit, 0, MAX_WIDEANGLE);
@@ -234,38 +234,38 @@ void Set_initial_resources(void)
     LIMIT(World.items[ITEM_ARMOR].limit, 0, MAX_ARMOR);
 
     for (i = 0; i < NUM_ITEMS; i++) {
-	LIMIT(World.items[i].initial, 0, World.items[i].limit);
+        LIMIT(World.items[i].initial, 0, World.items[i].limit);
     }
 
     CLR_BIT(DEF_HAVE,
-	HAS_CLOAKING_DEVICE |
-	HAS_EMERGENCY_THRUST |
-	HAS_EMERGENCY_SHIELD |
-	HAS_PHASING_DEVICE |
-	HAS_TRACTOR_BEAM |
-	HAS_AUTOPILOT |
-	HAS_DEFLECTOR |
-	HAS_MIRROR |
-	HAS_ARMOR);
+        HAS_CLOAKING_DEVICE |
+        HAS_EMERGENCY_THRUST |
+        HAS_EMERGENCY_SHIELD |
+        HAS_PHASING_DEVICE |
+        HAS_TRACTOR_BEAM |
+        HAS_AUTOPILOT |
+        HAS_DEFLECTOR |
+        HAS_MIRROR |
+        HAS_ARMOR);
 
     if (World.items[ITEM_CLOAK].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_CLOAKING_DEVICE);
+        SET_BIT(DEF_HAVE, HAS_CLOAKING_DEVICE);
     if (World.items[ITEM_EMERGENCY_THRUST].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_EMERGENCY_THRUST);
+        SET_BIT(DEF_HAVE, HAS_EMERGENCY_THRUST);
     if (World.items[ITEM_EMERGENCY_SHIELD].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_EMERGENCY_SHIELD);
+        SET_BIT(DEF_HAVE, HAS_EMERGENCY_SHIELD);
     if (World.items[ITEM_PHASING].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_PHASING_DEVICE);
+        SET_BIT(DEF_HAVE, HAS_PHASING_DEVICE);
     if (World.items[ITEM_TRACTOR_BEAM].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_TRACTOR_BEAM);
+        SET_BIT(DEF_HAVE, HAS_TRACTOR_BEAM);
     if (World.items[ITEM_AUTOPILOT].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_AUTOPILOT);
+        SET_BIT(DEF_HAVE, HAS_AUTOPILOT);
     if (World.items[ITEM_DEFLECTOR].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_DEFLECTOR);
+        SET_BIT(DEF_HAVE, HAS_DEFLECTOR);
     if (World.items[ITEM_MIRROR].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_MIRROR);
+        SET_BIT(DEF_HAVE, HAS_MIRROR);
     if (World.items[ITEM_ARMOR].initial > 0)
-	SET_BIT(DEF_HAVE, HAS_ARMOR);
+        SET_BIT(DEF_HAVE, HAS_ARMOR);
 }
 
 
@@ -283,7 +283,7 @@ void Set_misc_item_limits(void)
     LIMIT(asteroidItemProb, 0.0, 1.0);
 
     if (asteroidMaxItems < 0)
-	asteroidMaxItems = 0;
+        asteroidMaxItems = 0;
 }
 
 
@@ -343,17 +343,17 @@ void Set_world_rules(void)
     World.rules = &rules;
 
     if (BIT(World.rules->mode, TEAM_PLAY)) {
-	CLR_BIT(World.rules->mode, ALLIANCES);
+        CLR_BIT(World.rules->mode, ALLIANCES);
     }
 
     if (!BIT(World.rules->mode, PLAYER_KILLINGS)) {
-	CLR_BIT(KILLING_SHOTS,
-		OBJ_SHOT|OBJ_CANNON_SHOT|OBJ_SMART_SHOT
-		|OBJ_TORPEDO|OBJ_HEAT_SHOT|OBJ_PULSE);
+        CLR_BIT(KILLING_SHOTS,
+                OBJ_SHOT|OBJ_CANNON_SHOT|OBJ_SMART_SHOT
+                |OBJ_TORPEDO|OBJ_HEAT_SHOT|OBJ_PULSE);
     }
 
     if (!BIT(World.rules->mode, PLAYER_SHIELDING)) {
-	CLR_BIT(DEF_HAVE, HAS_SHIELD);
+        CLR_BIT(DEF_HAVE, HAS_SHIELD);
     }
 
     DEF_USED &= DEF_HAVE;

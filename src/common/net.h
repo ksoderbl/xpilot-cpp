@@ -22,54 +22,54 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	NET_H
-#define	NET_H
+#ifndef        NET_H
+#define        NET_H
 
 #ifndef SOCKLIB_H
 /* need sock_t */
 #include "socklib.h"
 #endif
 
-#define MIN_SOCKBUF_SIZE	1024
-#define MAX_SOCKBUF_SIZE	(50*1024)
+#define MIN_SOCKBUF_SIZE        1024
+#define MAX_SOCKBUF_SIZE        (50*1024)
 
-#define SERVER_RECV_SIZE	MIN_SOCKBUF_SIZE
-#define SERVER_SEND_SIZE	(4*1024)
+#define SERVER_RECV_SIZE        MIN_SOCKBUF_SIZE
+#define SERVER_SEND_SIZE        (4*1024)
 
-#define CLIENT_SEND_SIZE	SERVER_RECV_SIZE
-#define CLIENT_RECV_SIZE	SERVER_SEND_SIZE
+#define CLIENT_SEND_SIZE        SERVER_RECV_SIZE
+#define CLIENT_RECV_SIZE        SERVER_SEND_SIZE
 
 /*
  * Definitions for the states a socket buffer can be in.
  */
-#define SOCKBUF_READ		0x01	/* if readable */
-#define SOCKBUF_WRITE		0x02	/* if writeable */
-#define SOCKBUF_LOCK		0x04	/* if locked against kernel i/o */
-#define SOCKBUF_ERROR		0x08	/* if i/o error occurred */
-#define SOCKBUF_DGRAM		0x10	/* if datagram socket */
+#define SOCKBUF_READ                0x01        /* if readable */
+#define SOCKBUF_WRITE                0x02        /* if writeable */
+#define SOCKBUF_LOCK                0x04        /* if locked against kernel i/o */
+#define SOCKBUF_ERROR                0x08        /* if i/o error occurred */
+#define SOCKBUF_DGRAM                0x10        /* if datagram socket */
 
 /*
  * Hack: leave some spare room for the last terminating packet
  * of a frame update.
  */
-#define SOCKBUF_WRITE_SPARE	8
+#define SOCKBUF_WRITE_SPARE        8
 
 /*
  * Maximum number of socket i/o retries if datagram socket.
  */
-#define MAX_SOCKBUF_RETRIES	2
+#define MAX_SOCKBUF_RETRIES        2
 
 /*
  * A buffer to reduce the number of system calls made and to reduce
  * the number of network packets.
  */
 typedef struct {
-    sock_t	sock;		/* socket descriptor */
-    char	*buf;		/* i/o data buffer */
-    int		size;		/* size of buffer */
-    int		len;		/* amount of data in buffer (writing/reading) */
-    char	*ptr;		/* current position in buffer (reading) */
-    int		state;		/* read/write/locked/error status flags */
+    sock_t        sock;                /* socket descriptor */
+    char        *buf;                /* i/o data buffer */
+    int                size;                /* size of buffer */
+    int                len;                /* amount of data in buffer (writing/reading) */
+    char        *ptr;                /* current position in buffer (reading) */
+    int                state;                /* read/write/locked/error status flags */
 } sockbuf_t;
 
 extern int last_packet_of_frame;

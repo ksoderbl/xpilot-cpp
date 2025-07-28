@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	DATAGRAM_H
-#define	DATAGRAM_H
+#ifndef        DATAGRAM_H
+#define        DATAGRAM_H
 
 #ifndef SOCKLIB_H
 /* need sock_t */

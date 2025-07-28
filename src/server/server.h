@@ -26,14 +26,14 @@
 #define SERVER_H
 
 enum TeamPickType {
-    PickForHuman	= 1,
-    PickForRobot	= 2
+    PickForHuman        = 1,
+    PickForRobot        = 2
 };
 
-#ifndef	_WINDOWS
-#define	APPNAME	"xpilots"
+#ifndef        _WINDOWS
+#define        APPNAME        "xpilots"
 #else
-#define	APPNAME	"XPilotServer"
+#define        APPNAME        "XPilotServer"
 #endif
 
 #endif

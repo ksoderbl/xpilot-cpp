@@ -33,16 +33,16 @@
 
 
 typedef struct Connect_param {
-    int			contact_port,
-			server_port,
-			login_port;
-    char		nick_name[MAX_NAME_LEN],
-			real_name[MAX_NAME_LEN],
-			server_addr[MAX_HOST_LEN],
-			server_name[MAX_HOST_LEN],
-			disp_name[MAX_DISP_LEN];
-    unsigned		server_version;
-    int			team;
+    int                        contact_port,
+                        server_port,
+                        login_port;
+    char                nick_name[MAX_NAME_LEN],
+                        real_name[MAX_NAME_LEN],
+                        server_addr[MAX_HOST_LEN],
+                        server_name[MAX_HOST_LEN],
+                        disp_name[MAX_DISP_LEN];
+    unsigned                server_version;
+    int                        team;
 } Connect_param_t;
 
 

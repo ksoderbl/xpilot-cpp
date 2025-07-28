@@ -129,10 +129,10 @@ void DrawTools(void)
    for(i=0;i<7;i++)
    for(j=0;j<5;j++) {
       sel = i*5+j+1;
-	if ( sel == drawicon) 
-	  DrawMapPic(mapwin,14+j*w,9+i*w,mapicon_ptr[iconmenu[sel]-32],w-7);
-	else 
-	  DrawMapPic(mapwin,13+j*w,8+i*w,mapicon_ptr[iconmenu[sel]-32],w-7);
+        if ( sel == drawicon) 
+          DrawMapPic(mapwin,14+j*w,9+i*w,mapicon_ptr[iconmenu[sel]-32],w-7);
+        else 
+          DrawMapPic(mapwin,13+j*w,8+i*w,mapicon_ptr[iconmenu[sel]-32],w-7);
    }
 }
 
@@ -299,16 +299,16 @@ void DrawMapPic(Window win, int x, int y, int picnum, int zoom)
    /*------------------------------------------------------------*/
    if ((picnum >= 0) && (picnum <= 4)) {/* Walls */
      XDrawLines(display, win, Wall_GC, points,
-		 mapicon_seg[picnum].num_points, CoordModeOrigin);
+                 mapicon_seg[picnum].num_points, CoordModeOrigin);
       return;
    } else if (picnum == 5) {
      XDrawLines(display, win, Wall_GC, points,
-		 mapicon_seg[picnum].num_points, CoordModeOrigin);
+                 mapicon_seg[picnum].num_points, CoordModeOrigin);
       XFillRectangle(display,win, Fuel_GC, x+1,y+1,zoom-1,zoom-1);
       return;
    } else if ((picnum >= 6) && (picnum <= 9)) {/* Cannons */
      XDrawLines(display, win, Cannon_GC, points,
-		 mapicon_seg[picnum].num_points, CoordModeOrigin);
+                 mapicon_seg[picnum].num_points, CoordModeOrigin);
       return;
    } else if (picnum == 10) {/* Bases */
       XDrawLines(display, win, Base_GC, points,
@@ -452,7 +452,7 @@ void DrawSmallMap(void)
          }
 #else
    switch ( mapicon_ptr[ map.data[(int)(j*smlmap_xscale)]
-		       [(int)(i*smlmap_yscale)] - 32 ] ) {
+                       [(int)(i*smlmap_yscale)] - 32 ] ) {
      
    case 0:
    case 1:
@@ -518,7 +518,7 @@ void DrawSmallMap(void)
 #endif
    
    XCopyArea(display,smlmap_pixmap,mapwin,White_GC,1,0,TOOLSWIDTH-2,
-	     TOOLSWIDTH,1,TOOLSHEIGHT-TOOLSWIDTH);
+             TOOLSWIDTH,1,TOOLSHEIGHT-TOOLSWIDTH);
    DrawViewBox();
 }
 

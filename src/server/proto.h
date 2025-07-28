@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	PROTO_H
-#define	PROTO_H
+#ifndef        PROTO_H
+#define        PROTO_H
 
 #ifndef OBJECT_H
 /* need player */
@@ -93,13 +93,13 @@ DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy);
 unsigned short Find_closest_team(int posx, int posy);
 
 int Wildmap(
-	int width,
-	int height,
-	char *name,
-	char *author,
-	char **data,
-	int *width_ptr,
-	int *height_ptr);
+        int width,
+        int height,
+        char *name,
+        char *author,
+        char **data,
+        int *width_ptr,
+        int *height_ptr);
 
 /*
  * Prototypes for math.c
@@ -139,11 +139,11 @@ void Place_item(int type, int ind);
 int Choose_random_item(void);
 void Tractor_beam(int ind);
 void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
-			  int items, int target, bool pressor);
+                          int items, int target, bool pressor);
 void Place_mine(int ind);
 void Place_moving_mine(int ind);
 void Place_general_mine(int ind, unsigned short team, long status, DFLOAT x, DFLOAT y,
-  			DFLOAT vx, DFLOAT vy, modifiers mods);
+                          DFLOAT vx, DFLOAT vy, modifiers mods);
 void Detonate_mines(int ind);
 char *Describe_shot(int type, long status, modifiers mods, int hit);
 void Fire_ecm(int ind);
@@ -151,8 +151,8 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y);
 void Move_ball(int ind);
 void Fire_shot(int ind, int type, int dir);
 void Fire_general_shot(int ind, unsigned short team, bool cannon,
-		       DFLOAT x, DFLOAT y, int type, int dir,
-		       modifiers mods, int target);
+                       DFLOAT x, DFLOAT y, int type, int dir,
+                       modifiers mods, int target);
 void Fire_normal_shots(int ind);
 void Fire_main_shot(int ind, int type, int dir);
 void Fire_shot(int ind, int type, int dir);
@@ -165,48 +165,48 @@ int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
 void Fire_laser(int ind);
 void Fire_general_laser(int ind, unsigned short team, DFLOAT x, DFLOAT y, int dir,
-			modifiers mods);
+                        modifiers mods);
 void Do_deflector(int ind);
 void Do_transporter(int ind);
 void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
-			    int *item, long *amount);
+                            int *item, long *amount);
 void do_hyperjump(player *pl);
 void do_lose_item(int ind);
 void Move_smart_shot(int ind);
 void Move_mine(int ind);
 void Make_debris(
-	    /* pos.x, pos.y   */ DFLOAT  x,          DFLOAT y,
-	    /* vel.x, vel.y   */ DFLOAT  velx,       DFLOAT vely,
-	    /* owner id       */ int    id,
-	    /* owner team     */ unsigned short team,
-	    /* type           */ int    type,
-	    /* mass           */ DFLOAT  mass,
-	    /* status         */ long   status,
-	    /* color          */ int    color,
-	    /* radius         */ int    radius,
-	    /* min,max debris */ int    min_debris, int    max_debris,
-	    /* min,max dir    */ int    min_dir,    int    max_dir,
-	    /* min,max speed  */ DFLOAT  min_speed,  DFLOAT  max_speed,
-	    /* min,max life   */ int    min_life,   int    max_life
-	    );
+            /* pos.x, pos.y   */ DFLOAT  x,          DFLOAT y,
+            /* vel.x, vel.y   */ DFLOAT  velx,       DFLOAT vely,
+            /* owner id       */ int    id,
+            /* owner team     */ unsigned short team,
+            /* type           */ int    type,
+            /* mass           */ DFLOAT  mass,
+            /* status         */ long   status,
+            /* color          */ int    color,
+            /* radius         */ int    radius,
+            /* min,max debris */ int    min_debris, int    max_debris,
+            /* min,max dir    */ int    min_dir,    int    max_dir,
+            /* min,max speed  */ DFLOAT  min_speed,  DFLOAT  max_speed,
+            /* min,max life   */ int    min_life,   int    max_life
+            );
 void Make_wreckage(
-	    /* pos.x, pos.y   */ DFLOAT x,          DFLOAT y,
-	    /* vel.x, vel.y   */ DFLOAT velx,       DFLOAT vely,
-	    /* owner id       */ int    id,
-	    /* owner team     */ unsigned short team,
-	    /* min,max mass   */ DFLOAT min_mass,   DFLOAT max_mass,
-	    /* total mass     */ DFLOAT total_mass,
-	    /* status         */ long   status,
-	    /* color          */ int    color,
-	    /* max wreckage   */ int    max_wreckage,
-	    /* min,max dir    */ int    min_dir,    int    max_dir,
-	    /* min,max speed  */ DFLOAT min_speed,  DFLOAT max_speed,
-	    /* min,max life   */ int    min_life,   int    max_life
-	    );
+            /* pos.x, pos.y   */ DFLOAT x,          DFLOAT y,
+            /* vel.x, vel.y   */ DFLOAT velx,       DFLOAT vely,
+            /* owner id       */ int    id,
+            /* owner team     */ unsigned short team,
+            /* min,max mass   */ DFLOAT min_mass,   DFLOAT max_mass,
+            /* total mass     */ DFLOAT total_mass,
+            /* status         */ long   status,
+            /* color          */ int    color,
+            /* max wreckage   */ int    max_wreckage,
+            /* min,max dir    */ int    min_dir,    int    max_dir,
+            /* min,max speed  */ DFLOAT min_speed,  DFLOAT max_speed,
+            /* min,max life   */ int    min_life,   int    max_life
+            );
 void Make_item(int px, int py,
-	       int vx, int vy,
-	       int item, int num_per_pack,
-	       long status);
+               int vx, int vy,
+               int item, int num_per_pack,
+               long status);
 void Explode(int ind);
 void Explode_fighter(int ind);
 void Throw_items(int ind);

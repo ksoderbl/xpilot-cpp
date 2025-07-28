@@ -47,140 +47,140 @@
 #include "dbuff.h"
 #include "commonproto.h"
 
-refuel_t	*refuel_ptr;
-int		 num_refuel, max_refuel;
-connector_t	*connector_ptr;
-int		 num_connector, max_connector;
-laser_t		*laser_ptr;
-int		 num_laser, max_laser;
-missile_t	*missile_ptr;
-int		 num_missile, max_missile;
-ball_t		*ball_ptr;
-int		 num_ball, max_ball;
-ship_t		*ship_ptr;
-int		 num_ship, max_ship;
-mine_t		*mine_ptr;
-int		 num_mine, max_mine;
-itemtype_t	*itemtype_ptr;
-int		 num_itemtype, max_itemtype;
-ecm_t		*ecm_ptr;
-int		 num_ecm, max_ecm;
-trans_t		*trans_ptr;
-int		 num_trans, max_trans;
-paused_t	*paused_ptr;
-int		 num_paused, max_paused;
-radar_t		*radar_ptr;
-int		 num_radar, max_radar;
-vcannon_t	*vcannon_ptr;
-int		 num_vcannon, max_vcannon;
-vfuel_t		*vfuel_ptr;
-int		 num_vfuel, max_vfuel;
-vbase_t		*vbase_ptr;
-int		 num_vbase, max_vbase;
-debris_t	*debris_ptr[DEBRIS_TYPES];
-int		 num_debris[DEBRIS_TYPES],
-		 max_debris[DEBRIS_TYPES];
-debris_t	*fastshot_ptr[DEBRIS_TYPES * 2];
-int		 num_fastshot[DEBRIS_TYPES * 2],
-		 max_fastshot[DEBRIS_TYPES * 2];
-vdecor_t	*vdecor_ptr;
-int		 num_vdecor, max_vdecor;
-wreckage_t	*wreckage_ptr;
-int		 num_wreckage, max_wreckage;
-asteroid_t	*asteroid_ptr;
-int		 num_asteroids, max_asteroids;
-wormhole_t	*wormhole_ptr;
-int		 num_wormholes, max_wormholes;
+refuel_t        *refuel_ptr;
+int                 num_refuel, max_refuel;
+connector_t        *connector_ptr;
+int                 num_connector, max_connector;
+laser_t                *laser_ptr;
+int                 num_laser, max_laser;
+missile_t        *missile_ptr;
+int                 num_missile, max_missile;
+ball_t                *ball_ptr;
+int                 num_ball, max_ball;
+ship_t                *ship_ptr;
+int                 num_ship, max_ship;
+mine_t                *mine_ptr;
+int                 num_mine, max_mine;
+itemtype_t        *itemtype_ptr;
+int                 num_itemtype, max_itemtype;
+ecm_t                *ecm_ptr;
+int                 num_ecm, max_ecm;
+trans_t                *trans_ptr;
+int                 num_trans, max_trans;
+paused_t        *paused_ptr;
+int                 num_paused, max_paused;
+radar_t                *radar_ptr;
+int                 num_radar, max_radar;
+vcannon_t        *vcannon_ptr;
+int                 num_vcannon, max_vcannon;
+vfuel_t                *vfuel_ptr;
+int                 num_vfuel, max_vfuel;
+vbase_t                *vbase_ptr;
+int                 num_vbase, max_vbase;
+debris_t        *debris_ptr[DEBRIS_TYPES];
+int                 num_debris[DEBRIS_TYPES],
+                 max_debris[DEBRIS_TYPES];
+debris_t        *fastshot_ptr[DEBRIS_TYPES * 2];
+int                 num_fastshot[DEBRIS_TYPES * 2],
+                 max_fastshot[DEBRIS_TYPES * 2];
+vdecor_t        *vdecor_ptr;
+int                 num_vdecor, max_vdecor;
+wreckage_t        *wreckage_ptr;
+int                 num_wreckage, max_wreckage;
+asteroid_t        *asteroid_ptr;
+int                 num_asteroids, max_asteroids;
+wormhole_t        *wormhole_ptr;
+int                 num_wormholes, max_wormholes;
 
-long		time_left = -1;
-long		start_loops, end_loops;
+long                time_left = -1;
+long                start_loops, end_loops;
 
-XRectangle	*rect_ptr[MAX_COLORS];
-int		num_rect[MAX_COLORS], max_rect[MAX_COLORS];
-XArc		*arc_ptr[MAX_COLORS];
-int		num_arc[MAX_COLORS], max_arc[MAX_COLORS];
-XSegment	*seg_ptr[MAX_COLORS];
-int		num_seg[MAX_COLORS], max_seg[MAX_COLORS];
+XRectangle        *rect_ptr[MAX_COLORS];
+int                num_rect[MAX_COLORS], max_rect[MAX_COLORS];
+XArc                *arc_ptr[MAX_COLORS];
+int                num_arc[MAX_COLORS], max_arc[MAX_COLORS];
+XSegment        *seg_ptr[MAX_COLORS];
+int                num_seg[MAX_COLORS], max_seg[MAX_COLORS];
 
-int		eyesId;		/* Player we get frame updates for */
-short		snooping;	/* are we snooping on someone else? */
+int                eyesId;                /* Player we get frame updates for */
+short                snooping;        /* are we snooping on someone else? */
 
-unsigned long	current_foreground;
+unsigned long        current_foreground;
 
-erase_t		erase[2], *erp;
+erase_t                erase[2], *erp;
 
 void Erase_do_start(void)
 {
-    int			i;
+    int                        i;
 
     if (damaged > 0) {
-	xperror("BUG: Erase_start while damaged");
-	return;
+        xperror("BUG: Erase_start while damaged");
+        return;
     }
 
     if (erase[0].flags == 0) {
-	printf("ERASE is On!\n");
-	erp = &erase[0];
+        printf("ERASE is On!\n");
+        erp = &erase[0];
     }
     if (BIT(erp->flags, ERASE_INITIALIZED) == 0) {
-	SET_FG(colors[BLACK].pixel);
-	XFillRectangle(dpy, p_draw, gc, 0, 0, draw_width, draw_height);
-	SET_BIT(erp->flags, ERASE_INITIALIZED);
+        SET_FG(colors[BLACK].pixel);
+        XFillRectangle(dpy, p_draw, gc, 0, 0, draw_width, draw_height);
+        SET_BIT(erp->flags, ERASE_INITIALIZED);
     }
     erp->num_rect = 0;
     erp->num_arc = 0;
     for (i = 0; i <= MAX_LINE_WIDTH; i++) {
-	erp->num_seg[i] = 0;
+        erp->num_seg[i] = 0;
     }
 }
 
 void Erase_do_end(void)
 {
-    int			i,
-			linewidth = false;
+    int                        i,
+                        linewidth = false;
 
     if (damaged > 0) {
-	xperror("BUG: Erase_do_end while damaged");
-	return;
+        xperror("BUG: Erase_do_end while damaged");
+        return;
     }
 #ifndef _WINDOWS
     /* BG fix 2000-03-19 use same erase buffer if not color switching. */
     if (dbuf_state->type == COLOR_SWITCH) {
-	if (erp == &erase[0]) {
-	    erp = &erase[1];
-	} else {
-	    erp = &erase[0];
-	}
+        if (erp == &erase[0]) {
+            erp = &erase[1];
+        } else {
+            erp = &erase[0];
+        }
     }
 #endif
     SET_FG(colors[BLACK].pixel);
 
     if (erp->num_rect != 0) {
-	XFillRectangles(dpy, p_draw, gc, erp->rect_ptr, erp->num_rect);
-	UNEXPAND(erp->rect_ptr, erp->num_rect, erp->max_rect);
+        XFillRectangles(dpy, p_draw, gc, erp->rect_ptr, erp->num_rect);
+        UNEXPAND(erp->rect_ptr, erp->num_rect, erp->max_rect);
     }
     if (erp->num_arc != 0) {
-	XDrawArcs(dpy, p_draw, gc, erp->arc_ptr, erp->num_arc);
-	UNEXPAND(erp->arc_ptr, erp->num_arc, erp->max_arc);
+        XDrawArcs(dpy, p_draw, gc, erp->arc_ptr, erp->num_arc);
+        UNEXPAND(erp->arc_ptr, erp->num_arc, erp->max_arc);
     }
     for (i = 0; i <= MAX_LINE_WIDTH; i++) {
-	if (erp->num_seg[i] != 0) {
-	    XSetLineAttributes(dpy, gc, i,
-			       LineSolid, CapProjecting, JoinMiter);
-	    linewidth = true;
-	    XDrawSegments(dpy, p_draw, gc, erp->seg_ptr[i], erp->num_seg[i]);
-	    UNEXPAND(erp->seg_ptr[i], erp->num_seg[i], erp->max_seg[i]);
-	}
+        if (erp->num_seg[i] != 0) {
+            XSetLineAttributes(dpy, gc, i,
+                               LineSolid, CapProjecting, JoinMiter);
+            linewidth = true;
+            XDrawSegments(dpy, p_draw, gc, erp->seg_ptr[i], erp->num_seg[i]);
+            UNEXPAND(erp->seg_ptr[i], erp->num_seg[i], erp->max_seg[i]);
+        }
     }
     if (linewidth == true) {
-	XSetLineAttributes(dpy, gc, 0,
-			   LineSolid, CapButt, JoinMiter);
+        XSetLineAttributes(dpy, gc, 0,
+                           LineSolid, CapButt, JoinMiter);
     }
 }
 
 void Erase_do_rectangle(int x, int y, int width, int height)
 {
-    XRectangle		*p;
+    XRectangle                *p;
 
     EXPAND(erp->rect_ptr, erp->num_rect, erp->max_rect, XRectangle, 1);
     p = &erp->rect_ptr[erp->num_rect++];
@@ -198,9 +198,9 @@ void Erase_do_rectangles(XRectangle *rectp, int n)
 }
 
 void Erase_do_arc(int x, int y, int width, int height,
-		      int angle1, int angle2)
+                      int angle1, int angle2)
 {
-    XArc		*p;
+    XArc                *p;
 
     EXPAND(erp->arc_ptr, erp->num_arc, erp->max_arc, XArc, 1);
     p = &erp->arc_ptr[erp->num_arc++];
@@ -221,10 +221,10 @@ void Erase_do_arcs(XArc *arcp, int n)
 
 void Erase_do_segment(int width, int x1, int y1, int x2, int y2)
 {
-    XSegment		*p;
+    XSegment                *p;
 
     EXPAND(erp->seg_ptr[width], erp->num_seg[width], erp->max_seg[width],
-	   XSegment, 1);
+           XSegment, 1);
     p = &erp->seg_ptr[width][erp->num_seg[width]++];
     p->x1 = x1;
     p->y1 = y1;
@@ -235,36 +235,36 @@ void Erase_do_segment(int width, int x1, int y1, int x2, int y2)
 void Erase_do_segments(XSegment *segp, int n)
 {
     EXPAND(erp->seg_ptr[0], erp->num_seg[0], erp->max_seg[0],
-	   XSegment, n);
+           XSegment, n);
     memcpy(&erp->seg_ptr[0][erp->num_seg[0]], segp, n * sizeof(XSegment));
     erp->num_seg[0] += n;
 }
 
 void Erase_do_points(int width, XPoint *pointp, int n)
 {
-    XSegment		*p;
-    int			i;
+    XSegment                *p;
+    int                        i;
 
     EXPAND(erp->seg_ptr[width], erp->num_seg[width], erp->max_seg[width],
-	   XSegment, n - 1);
+           XSegment, n - 1);
     p = &erp->seg_ptr[width][erp->num_seg[width]];
     for (i = 1; i < n; i++) {
-	p->x1 = pointp->x;
-	p->y1 = pointp->y;
-	pointp++;
-	p->x2 = pointp->x;
-	p->y2 = pointp->y;
-	p++;
+        p->x1 = pointp->x;
+        p->y1 = pointp->y;
+        pointp++;
+        p->x2 = pointp->x;
+        p->y2 = pointp->y;
+        p++;
     }
     erp->num_seg[width] += n - 1;
 }
 
 void Erase_do_4point(int x, int y, int width, int height)
 {
-    XSegment		*p;
+    XSegment                *p;
 
     EXPAND(erp->seg_ptr[0], erp->num_seg[0], erp->max_seg[0],
-	   XSegment, 4);
+           XSegment, 4);
     p = &erp->seg_ptr[0][erp->num_seg[0]];
     p->x1 = x;
     p->y1 = y;
@@ -294,7 +294,7 @@ void Rectangle_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++) {
-	num_rect[i] = 0;
+        num_rect[i] = 0;
     }
 }
 
@@ -303,18 +303,18 @@ void Rectangle_end(void)
     int i;
 
     for (i = 0; i < maxColors; i++) {
-	if (num_rect[i] > 0) {
-	    SET_FG(colors[i].pixel);
-	    rd.fillRectangles(dpy, p_draw, gc, rect_ptr[i], num_rect[i]);
-	    Erase_rectangles(rect_ptr[i], num_rect[i]);
-	    RELEASE(rect_ptr[i], num_rect[i], max_rect[i]);
-	}
+        if (num_rect[i] > 0) {
+            SET_FG(colors[i].pixel);
+            rd.fillRectangles(dpy, p_draw, gc, rect_ptr[i], num_rect[i]);
+            Erase_rectangles(rect_ptr[i], num_rect[i]);
+            RELEASE(rect_ptr[i], num_rect[i], max_rect[i]);
+        }
     }
 }
 
 int Rectangle_add(int color, int x, int y, int width, int height)
 {
-    XRectangle		t;
+    XRectangle                t;
 
     t.x = WINSCALE(x);
     t.y = WINSCALE(y);
@@ -330,7 +330,7 @@ void Arc_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++) {
-	num_arc[i] = 0;
+        num_arc[i] = 0;
     }
 }
 
@@ -339,19 +339,19 @@ void Arc_end(void)
     int i;
 
     for (i = 0; i < maxColors; i++) {
-	if (num_arc[i] > 0) {
-	    SET_FG(colors[i].pixel);
-	    rd.drawArcs(dpy, p_draw, gc, arc_ptr[i], num_arc[i]);
-	    Erase_arcs(arc_ptr[i], num_arc[i]);
-	    RELEASE(arc_ptr[i], num_arc[i], max_arc[i]);
-	}
+        if (num_arc[i] > 0) {
+            SET_FG(colors[i].pixel);
+            rd.drawArcs(dpy, p_draw, gc, arc_ptr[i], num_arc[i]);
+            Erase_arcs(arc_ptr[i], num_arc[i]);
+            RELEASE(arc_ptr[i], num_arc[i], max_arc[i]);
+        }
     }
 }
 
 int Arc_add(int color,
-	    int x, int y,
-	    int width, int height,
-	    int angle1, int angle2)
+            int x, int y,
+            int width, int height,
+            int angle1, int angle2)
 {
     XArc t;
 
@@ -371,7 +371,7 @@ void Segment_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++) {
-	num_seg[i] = 0;
+        num_seg[i] = 0;
     }
 }
 
@@ -380,13 +380,13 @@ void Segment_end(void)
     int i;
 
     for (i = 0; i < maxColors; i++) {
-	if (num_seg[i] > 0) {
-	    SET_FG(colors[i].pixel);
-	    rd.drawSegments(dpy, p_draw, gc,
-		seg_ptr[i], num_seg[i]);
-	    Erase_segments(seg_ptr[i], num_seg[i]);
-	    RELEASE(seg_ptr[i], num_seg[i], max_seg[i]);
-	}
+        if (num_seg[i] > 0) {
+            SET_FG(colors[i].pixel);
+            rd.drawSegments(dpy, p_draw, gc,
+                seg_ptr[i], num_seg[i]);
+            Erase_segments(seg_ptr[i], num_seg[i]);
+            RELEASE(seg_ptr[i], num_seg[i], max_seg[i]);
+        }
     }
 }
 
@@ -404,7 +404,7 @@ int Segment_add(int color, int x1, int y1, int x2, int y2)
 
 int Handle_start(long server_loops)
 {
-    int			i;
+    int                        i;
 
     start_loops = server_loops;
 
@@ -424,7 +424,7 @@ int Handle_start(long server_loops)
     num_vbase = 0;
     num_vdecor = 0;
     for (i = 0; i < DEBRIS_TYPES; i++) {
-	num_debris[i] = 0;
+        num_debris[i] = 0;
     }
 
     damaged = 0;
@@ -453,11 +453,11 @@ int Handle_self_items(u_byte *newNumItems)
 }
 
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
-		float newPower, float newTurnspeed, float newTurnresistance,
-		int newLockId, int newLockDist, int newLockBearing,
-		int newNextCheckPoint, int newAutopilotLight,
-		u_byte *newNumItems, int newCurrentTank,
-		int newFuelSum, int newFuelMax, int newPacketSize)
+                float newPower, float newTurnspeed, float newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                u_byte *newNumItems, int newCurrentTank,
+                int newFuelSum, int newFuelMax, int newPacketSize)
 {
     pos.x = x;
     pos.y = y;
@@ -475,33 +475,33 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(u_byte));
     fuelCurrent = newCurrentTank;
     if (newFuelSum > fuelSum && selfVisible != 0) {
-	fuelCount = FUEL_NOTIFY;
+        fuelCount = FUEL_NOTIFY;
     }
     fuelSum = newFuelSum;
     fuelMax = newFuelMax;
     selfVisible = 0;
     if (newPacketSize + 16 < packet_size) {
-	packet_size -= 16;
+        packet_size -= 16;
     } else {
-	packet_size = newPacketSize;
+        packet_size = newPacketSize;
     }
 
     world.x = pos.x - (ext_view_width / 2);
     world.y = pos.y - (ext_view_height / 2);
     realWorld = world;
     if (BIT(Setup->mode, WRAP_PLAY)) {
-	if (world.x < 0 && world.x + ext_view_width < Setup->width) {
-	    world.x += Setup->width;
-	}
-	else if (world.x > 0 && world.x + ext_view_width >= Setup->width) {
-	    realWorld.x -= Setup->width;
-	}
-	if (world.y < 0 && world.y + ext_view_height < Setup->height) {
-	    world.y += Setup->height;
-	}
-	else if (world.y > 0 && world.y + ext_view_height >= Setup->height) {
-	    realWorld.y -= Setup->height;
-	}
+        if (world.x < 0 && world.x + ext_view_width < Setup->width) {
+            world.x += Setup->width;
+        }
+        else if (world.x > 0 && world.x + ext_view_width >= Setup->width) {
+            realWorld.x -= Setup->width;
+        }
+        if (world.y < 0 && world.y + ext_view_height < Setup->height) {
+            world.y += Setup->height;
+        }
+        else if (world.y > 0 && world.y + ext_view_height >= Setup->height) {
+            realWorld.y -= Setup->height;
+        }
     }
     return 0;
 }
@@ -562,14 +562,14 @@ int Handle_phasingtime(int count, int max)
 
 int Handle_rounddelay(int count, int max)
 {
-	roundDelay = count;
-	roundDelayMax = max;
-	return(0);
+        roundDelay = count;
+        roundDelayMax = max;
+        return(0);
 }
 
 int Handle_refuel(int x0, int y0, int x1, int y1)
 {
-    refuel_t	t;
+    refuel_t        t;
 
     t.x0 = x0;
     t.x1 = x1;
@@ -581,7 +581,7 @@ int Handle_refuel(int x0, int y0, int x1, int y1)
 
 int Handle_connector(int x0, int y0, int x1, int y1, int tractor)
 {
-    connector_t	t;
+    connector_t        t;
 
     t.x0 = x0;
     t.x1 = x1;
@@ -594,7 +594,7 @@ int Handle_connector(int x0, int y0, int x1, int y1, int tractor)
 
 int Handle_laser(int color, int x, int y, int len, int dir)
 {
-    laser_t	t;
+    laser_t        t;
 
     t.color = color;
     t.x = x;
@@ -607,7 +607,7 @@ int Handle_laser(int color, int x, int y, int len, int dir)
 
 int Handle_missile(int x, int y, int len, int dir)
 {
-    missile_t	t;
+    missile_t        t;
 
     t.x = x;
     t.y = y;
@@ -619,7 +619,7 @@ int Handle_missile(int x, int y, int len, int dir)
 
 int Handle_ball(int x, int y, int id)
 {
-    ball_t	t;
+    ball_t        t;
 
     t.x = x;
     t.y = y;
@@ -629,9 +629,9 @@ int Handle_ball(int x, int y, int id)
 }
 
 int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, 
-				int phased, int deflector)
+                                int phased, int deflector)
 {
-    ship_t	t;
+    ship_t        t;
 
     t.x = x;
     t.y = y;
@@ -651,12 +651,12 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshiel
      * while self could be NULL here.
      */
     if (!selfVisible && ((x == pos.x && y == pos.y) || (self && id == self->id))) {
-	int radarx, radary;
+        int radarx, radary;
         eyesId = id;
-	selfVisible = (self && (id == self->id));
-	radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
-	radary = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
-	return Handle_radar(radarx, radary, 3);
+        selfVisible = (self && (id == self->id));
+        radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
+        radary = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
+        return Handle_radar(radarx, radary, 3);
     }
 
     return 0;
@@ -664,7 +664,7 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshiel
 
 int Handle_mine(int x, int y, int teammine, int id)
 {
-    mine_t	t;
+    mine_t        t;
 
     t.x = x;
     t.y = y;
@@ -676,7 +676,7 @@ int Handle_mine(int x, int y, int teammine, int id)
 
 int Handle_item(int x, int y, int type)
 {
-    itemtype_t	t;
+    itemtype_t        t;
 
     t.x = x;
     t.y = y;
@@ -686,33 +686,33 @@ int Handle_item(int x, int y, int type)
 }
 
 #define STORE_DEBRIS(typ_e, _p, _n) \
-    if (_n > max_) {						\
-	if (max_ == 0) {						\
-	    ptr_ = (debris_t *)malloc(n * sizeof(*ptr_));		\
-	} else {						\
-	    ptr_ = (debris_t *)realloc(ptr_, _n * sizeof(*ptr_));	\
-	}							\
-	if (ptr_ == NULL) {					\
-	    xperror("No memory for debris");			\
-	    num_ = max_ = 0;					\
-	    return -1;						\
-	}							\
-	max_ = _n;						\
-    }								\
-    else if (_n <= 0) {						\
-	printf("debris %d < 0\n", _n);				\
-	return 0;						\
-    }								\
-    num_ = _n;							\
-    memcpy(ptr_, _p, _n * sizeof(*ptr_));				\
+    if (_n > max_) {                                                \
+        if (max_ == 0) {                                                \
+            ptr_ = (debris_t *)malloc(n * sizeof(*ptr_));                \
+        } else {                                                \
+            ptr_ = (debris_t *)realloc(ptr_, _n * sizeof(*ptr_));        \
+        }                                                        \
+        if (ptr_ == NULL) {                                        \
+            xperror("No memory for debris");                        \
+            num_ = max_ = 0;                                        \
+            return -1;                                                \
+        }                                                        \
+        max_ = _n;                                                \
+    }                                                                \
+    else if (_n <= 0) {                                                \
+        printf("debris %d < 0\n", _n);                                \
+        return 0;                                                \
+    }                                                                \
+    num_ = _n;                                                        \
+    memcpy(ptr_, _p, _n * sizeof(*ptr_));                                \
     return 0;
 
 
 int Handle_fastshot(int type, u_byte *p, int n)
 {
-#define num_		(num_fastshot[type])
-#define max_		(max_fastshot[type])
-#define ptr_		(fastshot_ptr[type])
+#define num_                (num_fastshot[type])
+#define max_                (max_fastshot[type])
+#define ptr_                (fastshot_ptr[type])
     STORE_DEBRIS(type, p, n);
 #undef num_
 #undef max_
@@ -721,9 +721,9 @@ int Handle_fastshot(int type, u_byte *p, int n)
 
 int Handle_debris(int type, u_byte *p, int n)
 {
-#define num_		(num_debris[type])
-#define max_		(max_debris[type])
-#define ptr_		(debris_ptr[type])
+#define num_                (num_debris[type])
+#define max_                (max_debris[type])
+#define ptr_                (debris_ptr[type])
     STORE_DEBRIS(type, p, n);
 #undef num_
 #undef max_
@@ -732,7 +732,7 @@ int Handle_debris(int type, u_byte *p, int n)
 
 int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
 {
-    wreckage_t	t;
+    wreckage_t        t;
 
     t.x = x;
     t.y = y;
@@ -745,7 +745,7 @@ int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
 
 int Handle_asteroid(int x, int y, int type, int size, int rotation)
 {
-    asteroid_t	t;
+    asteroid_t        t;
 
     t.x = x;
     t.y = y;
@@ -758,7 +758,7 @@ int Handle_asteroid(int x, int y, int type, int size, int rotation)
 
 int Handle_wormhole(int x, int y)
 {
-    wormhole_t	t;
+    wormhole_t        t;
 
     t.x = x - BLOCK_SZ / 2;
     t.y = y - BLOCK_SZ / 2;
@@ -768,7 +768,7 @@ int Handle_wormhole(int x, int y)
 
 int Handle_ecm(int x, int y, int size)
 {
-    ecm_t	t;
+    ecm_t        t;
 
     t.x = x;
     t.y = y;
@@ -779,7 +779,7 @@ int Handle_ecm(int x, int y, int size)
 
 int Handle_trans(int x1, int y1, int x2, int y2)
 {
-    trans_t	t;
+    trans_t        t;
 
     t.x1 = x1;
     t.y1 = y1;
@@ -791,7 +791,7 @@ int Handle_trans(int x1, int y1, int x2, int y2)
 
 int Handle_paused(int x, int y, int count)
 {
-    paused_t	t;
+    paused_t        t;
 
     t.x = x;
     t.y = y;
@@ -802,7 +802,7 @@ int Handle_paused(int x, int y, int count)
 
 int Handle_radar(int x, int y, int size)
 {
-    radar_t	t;
+    radar_t        t;
 
     t.x = x;
     t.y = y;
@@ -820,8 +820,8 @@ int Handle_message(char *msg)
 int Handle_time_left(long sec)
 {
     if (sec >= 0 && sec < 10 && (time_left > sec || sec == 0)) {
-	XBell(dpy, 0);
-	XFlush(dpy);
+        XBell(dpy, 0);
+        XFlush(dpy);
     }
     time_left = (sec >= 0) ? sec : 0;
     return 0;
@@ -829,7 +829,7 @@ int Handle_time_left(long sec)
 
 int Handle_vcannon(int x, int y, int type)
 {
-    vcannon_t	t;
+    vcannon_t        t;
 
     t.x = x;
     t.y = y;
@@ -840,7 +840,7 @@ int Handle_vcannon(int x, int y, int type)
 
 int Handle_vfuel(int x, int y, long fuel)
 {
-    vfuel_t	t;
+    vfuel_t        t;
 
     t.x = x;
     t.y = y;
@@ -851,7 +851,7 @@ int Handle_vfuel(int x, int y, long fuel)
 
 int Handle_vbase(int x, int y, int xi, int yi, int type)
 {
-    vbase_t	t;
+    vbase_t        t;
 
     t.x = x;
     t.y = y;
@@ -864,7 +864,7 @@ int Handle_vbase(int x, int y, int xi, int yi, int type)
 
 int Handle_vdecor(int x, int y, int xi, int yi, int type)
 {
-    vdecor_t	t;
+    vdecor_t        t;
 
     t.x = x;
     t.y = y;
@@ -880,174 +880,174 @@ void paintdataCleanup(void)
     int i;
 
     for (i = 0; i < MAX_COLORS; i++) {
-	if (max_rect[i] > 0 && rect_ptr[i]) {
-	    max_rect[i] = 0;
-	    free(rect_ptr[i]);
-	}
-	if (max_arc[i] > 0 && arc_ptr[i]) {
-	    max_arc[i] = 0;
-	    free(arc_ptr[i]);
-	}
-	if (max_seg[i] > 0 && seg_ptr[i]) {
-	    max_seg[i] = 0;
-	    free(seg_ptr[i]);
-	}
+        if (max_rect[i] > 0 && rect_ptr[i]) {
+            max_rect[i] = 0;
+            free(rect_ptr[i]);
+        }
+        if (max_arc[i] > 0 && arc_ptr[i]) {
+            max_arc[i] = 0;
+            free(arc_ptr[i]);
+        }
+        if (max_seg[i] > 0 && seg_ptr[i]) {
+            max_seg[i] = 0;
+            free(seg_ptr[i]);
+        }
     }
     if (max_refuel > 0 && refuel_ptr) {
-	max_refuel = 0;
-	free(refuel_ptr);
-	refuel_ptr = 0;
+        max_refuel = 0;
+        free(refuel_ptr);
+        refuel_ptr = 0;
     }
     if (max_connector > 0 && connector_ptr) {
-	max_connector = 0;
-	free(connector_ptr);
-	connector_ptr = 0;
+        max_connector = 0;
+        free(connector_ptr);
+        connector_ptr = 0;
     }
     if (max_laser > 0 && laser_ptr) {
-	max_laser = 0;
-	free(laser_ptr);
-	laser_ptr = 0;
+        max_laser = 0;
+        free(laser_ptr);
+        laser_ptr = 0;
     }
     if (max_missile > 0 && missile_ptr) {
-	max_missile = 0;
-	free(missile_ptr);
-	missile_ptr = 0;
+        max_missile = 0;
+        free(missile_ptr);
+        missile_ptr = 0;
     }
     if (max_ball > 0 && ball_ptr) {
-	max_ball = 0;
-	free(ball_ptr);
-	ball_ptr = 0;
+        max_ball = 0;
+        free(ball_ptr);
+        ball_ptr = 0;
     }
     if (max_ship > 0 && ship_ptr) {
-	max_ship = 0;
-	free(ship_ptr);
-	ship_ptr = 0;
+        max_ship = 0;
+        free(ship_ptr);
+        ship_ptr = 0;
     }
     if (max_mine > 0 && mine_ptr) {
-	max_mine = 0;
-	free(mine_ptr);
-	mine_ptr = 0;
+        max_mine = 0;
+        free(mine_ptr);
+        mine_ptr = 0;
     }
     if (max_ecm > 0 && ecm_ptr) {
-	max_ecm = 0;
-	free(ecm_ptr);
-	ecm_ptr = 0;
+        max_ecm = 0;
+        free(ecm_ptr);
+        ecm_ptr = 0;
     }
     if (max_trans > 0 && trans_ptr) {
-	max_trans = 0;
-	free(trans_ptr);
-	trans_ptr = 0;
+        max_trans = 0;
+        free(trans_ptr);
+        trans_ptr = 0;
     }
     if (max_paused > 0 && paused_ptr) {
-	max_paused = 0;
-	free(paused_ptr);
-	paused_ptr = 0;
+        max_paused = 0;
+        free(paused_ptr);
+        paused_ptr = 0;
     }
     if (max_radar > 0 && radar_ptr) {
-	max_radar = 0;
-	free(radar_ptr);
-	radar_ptr = 0;
+        max_radar = 0;
+        free(radar_ptr);
+        radar_ptr = 0;
     }
     if (max_vcannon > 0 && vcannon_ptr) {
-	max_vcannon = 0;
-	free(vcannon_ptr);
-	vcannon_ptr = 0;
+        max_vcannon = 0;
+        free(vcannon_ptr);
+        vcannon_ptr = 0;
     }
     if (max_vfuel > 0 && vfuel_ptr) {
-	max_vfuel = 0;
-	free(vfuel_ptr);
-	vfuel_ptr = 0;
+        max_vfuel = 0;
+        free(vfuel_ptr);
+        vfuel_ptr = 0;
     }
     if (max_vbase > 0 && vbase_ptr) {
-	max_vbase = 0;
-	free(vbase_ptr);
-	vbase_ptr = 0;
+        max_vbase = 0;
+        free(vbase_ptr);
+        vbase_ptr = 0;
     }
     if (max_vdecor > 0 && vdecor_ptr) {
-	max_vdecor = 0;
-	free(vdecor_ptr);
-	vdecor_ptr = 0;
+        max_vdecor = 0;
+        free(vdecor_ptr);
+        vdecor_ptr = 0;
     }
     if (max_itemtype > 0 && itemtype_ptr) {
-	max_itemtype = 0;
-	free(itemtype_ptr);
-	itemtype_ptr = 0;
+        max_itemtype = 0;
+        free(itemtype_ptr);
+        itemtype_ptr = 0;
     }
     if (max_wreckage > 0 && wreckage_ptr) {
-	max_wreckage = 0;
-	free(wreckage_ptr);
-	wreckage_ptr = 0;
+        max_wreckage = 0;
+        free(wreckage_ptr);
+        wreckage_ptr = 0;
     }
     if (max_asteroids > 0 && asteroid_ptr) {
-	max_asteroids = 0;
-	free(asteroid_ptr);
-	asteroid_ptr = 0;
+        max_asteroids = 0;
+        free(asteroid_ptr);
+        asteroid_ptr = 0;
     }
     if (max_wormholes > 0 && wormhole_ptr) {
-	max_wormholes = 0;
-	free(wormhole_ptr);
-	wormhole_ptr = 0;
+        max_wormholes = 0;
+        free(wormhole_ptr);
+        wormhole_ptr = 0;
     }
 }
 
-#define SCALE_ARRAY_SIZE	32768
-short	scaleArray[SCALE_ARRAY_SIZE];
+#define SCALE_ARRAY_SIZE        32768
+short        scaleArray[SCALE_ARRAY_SIZE];
 
 void Init_scale_array(void)
 {
-    int		i, start, end, n;
-    double	scaleMultFactor;
+    int                i, start, end, n;
+    double        scaleMultFactor;
 
     if (scaleFactor == 0.0)
-	scaleFactor = 1.0;
+        scaleFactor = 1.0;
     if (scaleFactor < 0.1)
-	scaleFactor = 0.1;
+        scaleFactor = 0.1;
     if (scaleFactor > 10.0)
-	scaleFactor = 10.0;
+        scaleFactor = 10.0;
     scaleMultFactor = 1.0 / scaleFactor;
 
     scaleArray[0] = 0;
 
     for (i = 1; i < NELEM(scaleArray); i++) {
-	n = (int)floor(i * scaleMultFactor + 0.5);
-	if (n == 0) {
-	    /* keep values for non-zero indices at least 1. */
-	    scaleArray[i] = 1;
-	} else {
-	    break;
-	}
+        n = (int)floor(i * scaleMultFactor + 0.5);
+        if (n == 0) {
+            /* keep values for non-zero indices at least 1. */
+            scaleArray[i] = 1;
+        } else {
+            break;
+        }
     }
     start = i;
 
     for (i = NELEM(scaleArray) - 1; i >= 0; i--) {
-	n = (int)floor(i * scaleMultFactor + 0.5);
-	if (n > 32767) {
-	    /* keep values lower or equal to max short. */
-	    scaleArray[i] = 32767;
-	} else {
-	    break;
-	}
+        n = (int)floor(i * scaleMultFactor + 0.5);
+        if (n > 32767) {
+            /* keep values lower or equal to max short. */
+            scaleArray[i] = 32767;
+        } else {
+            break;
+        }
     }
     end = i;
 
     for (i = start; i <= end; i++) {
-	scaleArray[i] = (int)floor(i * scaleMultFactor + 0.5);
+        scaleArray[i] = (int)floor(i * scaleMultFactor + 0.5);
     }
 
     /* verify correct calculations, because of reported gcc optimization bugs. */
     for (i = 1; i < NELEM(scaleArray); i++) {
-	if (scaleArray[i] < 1) {
-	    break;
-	}
+        if (scaleArray[i] < 1) {
+            break;
+        }
     }
 
     if (i != SCALE_ARRAY_SIZE) {
-	fprintf(stderr,
-		"Error: Illegal value %d in scaleArray[%d].\n"
-		"\tThis error may be due to a bug in your compiler.\n"
-		"\tEither try a lower optimization level,\n"
-		"\tor a different compiler version or vendor.\n",
-		scaleArray[i], i);
-	exit(1);
+        fprintf(stderr,
+                "Error: Illegal value %d in scaleArray[%d].\n"
+                "\tThis error may be due to a bug in your compiler.\n"
+                "\tEither try a lower optimization level,\n"
+                "\tor a different compiler version or vendor.\n",
+                scaleArray[i], i);
+        exit(1);
     }
 }

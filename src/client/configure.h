@@ -22,8 +22,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	CONFIGURE_H
-#define	CONFIGURE_H
+#ifndef        CONFIGURE_H
+#define        CONFIGURE_H
 
 int Config(bool);
 void Config_redraw(void);

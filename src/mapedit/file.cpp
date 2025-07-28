@@ -76,13 +76,13 @@ static char* GetMapDir(void)
 #endif
       /* remove duplicate slashes. */
       for (dst = src = mapdir; (*dst = *src) != '\0'; src++) {
-	 if (*dst != '/' || dst == mapdir || dst[-1] != '/') {
-	    dst++;
-	 }
+         if (*dst != '/' || dst == mapdir || dst[-1] != '/') {
+            dst++;
+         }
       }
       /* remove trailing slash. */
       if (dst > mapdir && dst[-1] == '/') {
-	  *--dst = '\0';
+          *--dst = '\0';
       }
    }
    return mapdir;
@@ -303,39 +303,39 @@ int LoadMap(const char *file)
       ifile = fopen(filename, "r");                    /* "FILE.xp" */
 
       if (ifile == NULL) {
-	 free(filename);
-	 filename = (char *) malloc(strlen(file)+5);
-	 sprintf(filename,"%s.map",file);
-	 ifile = fopen(filename, "r");                    /* "FILE.map" */
+         free(filename);
+         filename = (char *) malloc(strlen(file)+5);
+         sprintf(filename,"%s.map",file);
+         ifile = fopen(filename, "r");                    /* "FILE.map" */
 
-	 if (ifile == NULL) {
-	    free(filename);
-	    filename = (char *) malloc(strlen(file)+strlen(mapdir)+2);
-	    sprintf( filename, "%s/%s", mapdir, file);
-	    ifile = fopen(filename, "r");                 /* "MAPDIR/FILE" */
-	   
-	    if (ifile == NULL) {
-	       free(filename);
-	       filename = (char *) malloc(strlen(file)+strlen(mapdir)+5);
-	       sprintf(filename,"%s/%s.xp", mapdir, file);
-	       ifile = fopen(filename, "r");              /* "MAPDIR/FILE.xp" */
-	       
-	       if (ifile == NULL) {
-		  free(filename);
-		  filename = (char *) malloc(strlen(file)+strlen(mapdir)+6);
-		  sprintf(filename,"%s/%s.map", mapdir, file);
-		  ifile = fopen(filename, "r");              /* "MAPDIR/FILE.map" */
-		  
-		  if (ifile == NULL) {
-		     tmpstr = (char *) malloc(strlen(file)+21);
-		     sprintf(tmpstr,"Couldn't find file: %s",file);
-		     T_PopupAlert(1,tmpstr,"Ok","Cancel",NULL,NULL);
-		     free(tmpstr);
-		     return 1;
-		  }
-	       }
-	    }
-	 }
+         if (ifile == NULL) {
+            free(filename);
+            filename = (char *) malloc(strlen(file)+strlen(mapdir)+2);
+            sprintf( filename, "%s/%s", mapdir, file);
+            ifile = fopen(filename, "r");                 /* "MAPDIR/FILE" */
+           
+            if (ifile == NULL) {
+               free(filename);
+               filename = (char *) malloc(strlen(file)+strlen(mapdir)+5);
+               sprintf(filename,"%s/%s.xp", mapdir, file);
+               ifile = fopen(filename, "r");              /* "MAPDIR/FILE.xp" */
+               
+               if (ifile == NULL) {
+                  free(filename);
+                  filename = (char *) malloc(strlen(file)+strlen(mapdir)+6);
+                  sprintf(filename,"%s/%s.map", mapdir, file);
+                  ifile = fopen(filename, "r");              /* "MAPDIR/FILE.map" */
+                  
+                  if (ifile == NULL) {
+                     tmpstr = (char *) malloc(strlen(file)+21);
+                     sprintf(tmpstr,"Couldn't find file: %s",file);
+                     T_PopupAlert(1,tmpstr,"Ok","Cancel",NULL,NULL);
+                     free(tmpstr);
+                     return 1;
+                  }
+               }
+            }
+         }
       }
    }
    if (map.comments)
@@ -862,7 +862,7 @@ char *StrToNum(const char *string, int len, int type)
    while ( (string[0] != '\0') && (strlen(returnval) <= (len-1) ) ) {
 
       if ( type == FLOAT || type == POSFLOAT ) {
-	/*         if ( ((string[0] >= '0') && (string[0] <= '9')) || (string[0] == '.'))*/
+        /*         if ( ((string[0] >= '0') && (string[0] <= '9')) || (string[0] == '.'))*/
             sprintf(returnval,"%s%c",returnval,string[0]);
 
       } else if ((string[0] >= '0') && (string[0] <= '9'))

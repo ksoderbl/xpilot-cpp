@@ -35,23 +35,23 @@
 
 char *showtime(void)
 {
-    time_t		now;
-    static time_t	past;
-    struct tm		*tmp;
-    static char		month_names[13][4] = {
-			    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-			    "Bug"
-			};
-    static char		buf[80];
+    time_t                now;
+    static time_t        past;
+    struct tm                *tmp;
+    static char                month_names[13][4] = {
+                            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                            "Bug"
+                        };
+    static char                buf[80];
 
     time(&now);
     if (now != past) {
-	tmp = localtime(&now);
-	sprintf(buf, "%02d %s %02d:%02d:%02d",
-		tmp->tm_mday, month_names[tmp->tm_mon],
-		tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
-	past = now;
+        tmp = localtime(&now);
+        sprintf(buf, "%02d %s %02d:%02d:%02d",
+                tmp->tm_mday, month_names[tmp->tm_mon],
+                tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+        past = now;
     }
 
     return buf;

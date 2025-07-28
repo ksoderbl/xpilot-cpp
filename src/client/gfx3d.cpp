@@ -28,14 +28,14 @@ int Angle_add(int x, int dx)
 {
     x += dx;
     if ( x > RES) 
-	x -= RES;
+        x -= RES;
     if ( x < 0) 
-	x += RES;
+        x += RES;
     return x;
 }
 
 void Rotate_point3d(point3d *sv, point3d *v,
-		  int angle_x, int angle_y, int angle_z) 
+                  int angle_x, int angle_y, int angle_z) 
 {
 
 

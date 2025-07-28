@@ -40,14 +40,14 @@ int strncasecmp(const char *str1, const char *str2, size_t n);
  */
 int strcasecmp(const char *str1, const char *str2)
 {
-    int	c1, c2;
+    int        c1, c2;
 
 
     do {
-	c1 = *str1++;
-	c2 = *str2++;
-	c1 = tolower(c1);
-	c2 = tolower(c2);
+        c1 = *str1++;
+        c2 = *str2++;
+        c1 = tolower(c1);
+        c2 = tolower(c2);
     } while (c1 == c2 && c1 != 0);
 
     return (c1 - c2);
@@ -58,16 +58,16 @@ int strcasecmp(const char *str1, const char *str2)
  */
 int strncasecmp(const char *str1, const char *str2, size_t n)
 {
-    int	c1, c2;
+    int        c1, c2;
 
     do {
-	if (n-- <= 0) {
-	    return 0;
-	}
-	c1 = *str1++;
-	c2 = *str2++;
-	c1 = tolower(c1);
-	c2 = tolower(c2);
+        if (n-- <= 0) {
+            return 0;
+        }
+        c1 = *str1++;
+        c2 = *str2++;
+        c1 = tolower(c1);
+        c2 = tolower(c2);
     } while (c1 == c2 && c1 != 0);
 
     return (c1 - c2);

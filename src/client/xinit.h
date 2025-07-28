@@ -22,45 +22,45 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	XINIT_H
-#define	XINIT_H
+#ifndef        XINIT_H
+#define        XINIT_H
 
-#define MAX_VISUAL_NAME	12
+#define MAX_VISUAL_NAME        12
 
-#define MIN_TOP_WIDTH	(640 + 2)
-#define MAX_TOP_WIDTH	(2560 + 2)  // was (1280 + 2)
-#define DEF_TOP_WIDTH	(1280 + 2)  // was (1024 + 2)
-#define MIN_TOP_HEIGHT	480
-#define MAX_TOP_HEIGHT	1440        // was 1024
-#define DEF_TOP_HEIGHT	1024        // was 768
+#define MIN_TOP_WIDTH        (640 + 2)
+#define MAX_TOP_WIDTH        (2560 + 2)  // was (1280 + 2)
+#define DEF_TOP_WIDTH        (1280 + 2)  // was (1024 + 2)
+#define MIN_TOP_HEIGHT        480
+#define MAX_TOP_HEIGHT        1440        // was 1024
+#define DEF_TOP_HEIGHT        1024        // was 768
 
-#define MAX_POINTER_BUTTONS	5
-#define MAX_BUTTON_DEFS		3
-#define NUM_BUTTON_DEFS(i)	numButtonDefs[i]
+#define MAX_POINTER_BUTTONS        5
+#define MAX_BUTTON_DEFS                3
+#define NUM_BUTTON_DEFS(i)        numButtonDefs[i]
 
-extern Atom		ProtocolAtom, KillAtom;
-extern int		buttonColor, windowColor, borderColor;
-extern int		ButtonHeight;
-extern char		visualName[MAX_VISUAL_NAME];
-extern Visual		*visual;
-extern int		dispDepth;
-extern bool		mono;
-extern bool		useErase;
-extern bool		blockBitmaps;
-extern bool		colorSwitch;
-extern bool		multibuffer;
-extern char		color_names[MAX_COLORS][MAX_COLOR_LEN];
-extern int		top_width, top_height;
-extern int		draw_width, draw_height;
-extern int		players_width, players_height;
-extern char		*geometry;
-extern bool		autoServerMotdPopup;
-extern bool		refreshMotd;
-extern char		sparkColors[MSG_LEN];
-extern int		spark_color[MAX_COLORS];
-extern int		num_spark_colors;
-extern bool		ignoreWindowManager;
-extern bool		quitting;
+extern Atom                ProtocolAtom, KillAtom;
+extern int                buttonColor, windowColor, borderColor;
+extern int                ButtonHeight;
+extern char                visualName[MAX_VISUAL_NAME];
+extern Visual                *visual;
+extern int                dispDepth;
+extern bool                mono;
+extern bool                useErase;
+extern bool                blockBitmaps;
+extern bool                colorSwitch;
+extern bool                multibuffer;
+extern char                color_names[MAX_COLORS][MAX_COLOR_LEN];
+extern int                top_width, top_height;
+extern int                draw_width, draw_height;
+extern int                players_width, players_height;
+extern char                *geometry;
+extern bool                autoServerMotdPopup;
+extern bool                refreshMotd;
+extern char                sparkColors[MSG_LEN];
+extern int                spark_color[MAX_COLORS];
+extern int                num_spark_colors;
+extern bool                ignoreWindowManager;
+extern bool                quitting;
 
 /*
  * Prototypes for xinit.c
@@ -90,11 +90,11 @@ extern void Draw_score_table(void);
 extern void Resize(Window w, int width, int height);
 
 extern int DrawShadowText(Display*, Window w, GC gc,
-			  int x_border, int start_y, const char *str,
-			  unsigned long fg, unsigned long bg);
+                          int x_border, int start_y, const char *str,
+                          unsigned long fg, unsigned long bg);
 extern void ShadowDrawString(Display*, Window w, GC gc,
-			     int x, int start_y, const char *str,
-			     unsigned long fg, unsigned long bg);
+                             int x, int start_y, const char *str,
+                             unsigned long fg, unsigned long bg);
 /*
  * about.c
  */

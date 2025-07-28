@@ -31,8 +31,8 @@
  * Bert Gijsbers <bert@xpilot.org> added warn, fatal, coredump.
  */
 
-#ifndef	ERROR_H
-#define	ERROR_H
+#ifndef        ERROR_H
+#define        ERROR_H
 
 #include <stdarg.h>
 
@@ -43,4 +43,4 @@ extern void xpdumpcore(const char *fmt, ...);
 
 extern void init_error(const char *prog);
 
-#endif	/* ERROR_H */
+#endif        /* ERROR_H */

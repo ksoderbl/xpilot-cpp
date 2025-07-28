@@ -61,14 +61,14 @@
 /*
  * Map objects a robot can fly through without damage.
  */
-#define EMPTY_SPACE(s)	BIT(1 << (s), SPACE_BLOCKS)
+#define EMPTY_SPACE(s)        BIT(1 << (s), SPACE_BLOCKS)
 
 
 /*
  * Structure which contains our own per robot instance data.
  */
 typedef struct stratbot_data {
-    int		not_really_used_yet;
+    int                not_really_used_yet;
 } stratbot_data_t;
 
 
@@ -148,12 +148,12 @@ static void Stratbot_round_tick(void)
  */
 static void Stratbot_create(int ind, char *str)
 {
-    player			*pl = Players[ind];
-    stratbot_data_t		*my_data;
+    player                        *pl = Players[ind];
+    stratbot_data_t                *my_data;
 
     if (!(my_data = (stratbot_data_t *)malloc(sizeof(*my_data)))) {
-	xperror("no mem for stratbot robot");
-	End_game();
+        xperror("no mem for stratbot robot");
+        End_game();
     }
 
     pl->robot_data_ptr->private_data = (void *)my_data;
@@ -165,8 +165,8 @@ static void Stratbot_create(int ind, char *str)
 static void Stratbot_go_home(int ind)
 {
 #if 0
-    player			*pl = Players[ind];
-    stratbot_data_t		*my_data = Stratbot_get_data(pl);
+    player                        *pl = Players[ind];
+    stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 
 }
@@ -186,8 +186,8 @@ static void Stratbot_play(int ind)
 static void Stratbot_set_war(int ind, int victim_id)
 {
 #if 0
-    player			*pl = Players[ind];
-    stratbot_data_t		*my_data = Stratbot_get_data(pl);
+    player                        *pl = Players[ind];
+    stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 
     if (victim_id == NO_ID) {
@@ -201,8 +201,8 @@ static void Stratbot_set_war(int ind, int victim_id)
 static int Stratbot_war_on_player(int ind)
 {
 #if 0
-    player			*pl = Players[ind];
-    stratbot_data_t		*my_data = Stratbot_get_data(pl);
+    player                        *pl = Players[ind];
+    stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 
     return NO_ID;
@@ -214,12 +214,12 @@ static int Stratbot_war_on_player(int ind)
 static void Stratbot_message(int ind, const char *message)
 {
 #if 0
-    player			*pl = Players[ind];
-    stratbot_data_t		*my_data = Stratbot_get_data(pl);
-    int				len;
-    char			*ptr;
-    char			sender_name[MAX_NAME_LEN];
-    char			msg[MSG_LEN];
+    player                        *pl = Players[ind];
+    stratbot_data_t                *my_data = Stratbot_get_data(pl);
+    int                                len;
+    char                        *ptr;
+    char                        sender_name[MAX_NAME_LEN];
+    char                        msg[MSG_LEN];
 
     /*
      * Extract the message body and the sender name from the message string.
@@ -227,18 +227,18 @@ static void Stratbot_message(int ind, const char *message)
 
     ptr = strrchr(message, ']');/* get end of message */
     if (!ptr) {
-	return;		/* Make sure to ignore server messages, oops! */
+        return;                /* Make sure to ignore server messages, oops! */
     }
-    while (*--ptr != '[');	/* skip back over receiver name */
-    while (*--ptr != '[');	/* skip back over sender name */
-    strlcpy(sender_name, ptr + 1, sizeof sender_name);	/* copy sender */
-    len = ptr - message;	/* find read message length */
-    if (message[len] == ' ') {	/* ignore the readability space */
-	len--;
+    while (*--ptr != '[');        /* skip back over receiver name */
+    while (*--ptr != '[');        /* skip back over sender name */
+    strlcpy(sender_name, ptr + 1, sizeof sender_name);        /* copy sender */
+    len = ptr - message;        /* find read message length */
+    if (message[len] == ' ') {        /* ignore the readability space */
+        len--;
     }
-    strlcpy(msg, message, len);	/* copy real message */
+    strlcpy(msg, message, len);        /* copy real message */
     if ((ptr = strchr(sender_name, ']')) != NULL) {
-	*ptr = '\0';	/* remove the ']' separator */
+        *ptr = '\0';        /* remove the ']' separator */
     }
     printf("%s got message \"%s\" from \"%s\"\n", pl->name, msg, sender_name);
 #endif
@@ -249,7 +249,7 @@ static void Stratbot_message(int ind, const char *message)
  */
 static void Stratbot_destroy(int ind)
 {
-    player			*pl = Players[ind];
+    player                        *pl = Players[ind];
 
     free(pl->robot_data_ptr->private_data);
     pl->robot_data_ptr->private_data = NULL;
@@ -267,11 +267,11 @@ static void Stratbot_invite(int ind, int inv_ind)
 #if 0
 static bool Really_empty_space(int ind, int x, int y)
 {
-    player	*pl = Players[ind];
-    int		type = World.block[x][y];
+    player        *pl = Players[ind];
+    int                type = World.block[x][y];
 
     if (EMPTY_SPACE(type))
-	return true;
+        return true;
     switch (type) {
     case FILLED:
     case REC_LU:
@@ -280,36 +280,36 @@ static bool Really_empty_space(int ind, int x, int y)
     case REC_RD:
     case FUEL:
     case TREASURE:
-	return false;
+        return false;
 
     case WORMHOLE:
-	if (!wormholeVisible
-	    || World.wormHoles[World.itemID[x][y]].type == WORM_OUT) {
-	    return true;
-	} else {
-	    return false;
-	}
+        if (!wormholeVisible
+            || World.wormHoles[World.itemID[x][y]].type == WORM_OUT) {
+            return true;
+        } else {
+            return false;
+        }
 
     case TARGET:
-	if (!targetTeamCollision
-	    && BIT(World.rules->mode, TEAM_PLAY)
-	    && World.targets[World.itemID[x][y]].team == pl->team) {
-	    return true;
-	} else {
-	    return false;
-	}
+        if (!targetTeamCollision
+            && BIT(World.rules->mode, TEAM_PLAY)
+            && World.targets[World.itemID[x][y]].team == pl->team) {
+            return true;
+        } else {
+            return false;
+        }
 
     case CANNON:
-	if (teamImmunity
-	    && BIT(World.rules->mode, TEAM_PLAY)
-	    && World.cannon[World.itemID[x][y]].team == pl->team) {
-	    return true;
-	} else {
-	    return false;
-	}
+        if (teamImmunity
+            && BIT(World.rules->mode, TEAM_PLAY)
+            && World.cannon[World.itemID[x][y]].team == pl->team) {
+            return true;
+        } else {
+            return false;
+        }
 
     default:
-	break;
+        break;
     }
     return false;
 }

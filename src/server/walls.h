@@ -41,8 +41,8 @@
  * Therefore a fixed point sub-pixel resolution is used called clicks.
  */
 
-#define FLOAT_TO_INT(F)		((F) < 0 ? -(int)(0.5f-(F)) : (int)((F)+0.5f))
-#define DOUBLE_TO_INT(D)	((D) < 0 ? -(int)(0.5-(D)) : (int)((D)+0.5))
+#define FLOAT_TO_INT(F)                ((F) < 0 ? -(int)(0.5f-(F)) : (int)((F)+0.5f))
+#define DOUBLE_TO_INT(D)        ((D) < 0 ? -(int)(0.5-(D)) : (int)((D)+0.5))
 
 typedef enum {
     NotACrash = 0,
@@ -72,44 +72,44 @@ typedef enum {
 } move_bounce_t;
 
 typedef struct {
-    int			edge_wrap;
-    int			edge_bounce;
-    int			wall_bounce;
-    int			cannon_crashes;
-    int			target_crashes;
-    int			treasure_crashes;
-    int			wormhole_warps;
-    int			phased;
-    object		*obj;
-    player		*pl;
+    int                        edge_wrap;
+    int                        edge_bounce;
+    int                        wall_bounce;
+    int                        cannon_crashes;
+    int                        target_crashes;
+    int                        treasure_crashes;
+    int                        wormhole_warps;
+    int                        phased;
+    object                *obj;
+    player                *pl;
 } move_info_t;
 
 typedef struct {
-    const move_info_t	*mip;
-    move_crash_t	crash;
-    move_bounce_t	bounce;
-    clpos		pos;
-    vector		vel;
-    clvec		todo;
-    clvec		done;
-    int			dir;
-    int			cannon;
-    int			wormhole;
-    int			target;
-    int			treasure;
+    const move_info_t        *mip;
+    move_crash_t        crash;
+    move_bounce_t        bounce;
+    clpos                pos;
+    vector                vel;
+    clvec                todo;
+    clvec                done;
+    int                        dir;
+    int                        cannon;
+    int                        wormhole;
+    int                        target;
+    int                        treasure;
 } move_state_t;
 
 struct move_parameters {
-    click_t		click_width;		/* Map width in clicks */
-    click_t		click_height;		/* Map width in clicks */
+    click_t                click_width;                /* Map width in clicks */
+    click_t                click_height;                /* Map width in clicks */
 
-    int			max_shielded_angle;	/* max player bounce angle */
-    int			max_unshielded_angle;	/* max player bounce angle */
+    int                        max_shielded_angle;        /* max player bounce angle */
+    int                        max_unshielded_angle;        /* max player bounce angle */
 
-    unsigned long	obj_bounce_mask;	/* which objects bounce? */
-    unsigned long	obj_cannon_mask;	/* objects crash cannons? */
-    unsigned long	obj_target_mask;	/* object target hit? */
-    unsigned long	obj_treasure_mask;	/* objects treasure crash? */
+    unsigned long        obj_bounce_mask;        /* which objects bounce? */
+    unsigned long        obj_cannon_mask;        /* objects crash cannons? */
+    unsigned long        obj_target_mask;        /* object target hit? */
+    unsigned long        obj_treasure_mask;        /* objects treasure crash? */
 };
 
 void Move_segment(move_state_t *ms);

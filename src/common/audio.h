@@ -26,8 +26,8 @@
 #ifndef _audio_h
 #define _audio_h
 
-#define SOUND_MAX_VOLUME	100
-#define SOUND_MIN_VOLUME	10
+#define SOUND_MAX_VOLUME        100
+#define SOUND_MIN_VOLUME        10
 
 enum {
     START_SOUND,
@@ -205,14 +205,14 @@ static char    *soundNames[] =
     "asteroid_break",
 };
 
-#endif						/* _CAUDIO_C_ */
+#endif                                                /* _CAUDIO_C_ */
 
-extern	void audioInit(char* display);
-extern	void audioCleanup(void);
-extern	int	Handle_audio(int type, int volume);
+extern        void audioInit(char* display);
+extern        void audioCleanup(void);
+extern        int        Handle_audio(int type, int volume);
 
-extern	int	audioDeviceInit(char *display);
-extern	void	audioDeviceEvents(void);
-extern	void	audioDevicePlay(char *filename, int type, int volume, void **private_data);
+extern        int        audioDeviceInit(char *display);
+extern        void        audioDeviceEvents(void);
+extern        void        audioDevicePlay(char *filename, int type, int volume, void **private_data);
 
-#endif						/* _audio_h */
+#endif                                                /* _audio_h */
