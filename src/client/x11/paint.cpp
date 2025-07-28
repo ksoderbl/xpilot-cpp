@@ -46,7 +46,6 @@
 #include "rules.h"
 #include "setup.h"
 #include "dbuff.h"
-#include "texture.h"
 #include "paint.h"
 #include "paintdata.h"
 #include "record.h"

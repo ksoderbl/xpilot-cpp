@@ -44,7 +44,6 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "texture.h"
 #include "paint.h"
 #include "paintdata.h"
 #include "paintmacros.h"
