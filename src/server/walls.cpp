@@ -36,7 +36,7 @@
 #include "score.h"
 #include "saudio.h"
 #include "item.h"
-#include "error.h"
+#include "xperror.h"
 #include "walls.h"
 #include "click.h"
 #include "objpos.h"

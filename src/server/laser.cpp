@@ -37,7 +37,7 @@
 #include "map.h"
 #include "score.h"
 #include "saudio.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "objpos.h"
 #include "asteroid.h"

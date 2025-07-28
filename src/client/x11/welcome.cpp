@@ -40,7 +40,7 @@
 #include "xinit.h"
 #include "list.h"
 #include "widget.h"
-#include "error.h"
+#include "xperror.h"
 #include "dbuff.h"
 #include "socklib.h"
 #include "net.h"

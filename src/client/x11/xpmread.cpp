@@ -40,7 +40,7 @@
 #include "const.h"
 #include "paint.h"
 #include "xinit.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 #define XPM_READ_C

@@ -44,7 +44,7 @@
 #include "bit.h"
 #include "netserver.h"
 #include "saudio.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 

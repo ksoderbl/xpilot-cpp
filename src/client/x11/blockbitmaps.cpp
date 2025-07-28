@@ -34,7 +34,7 @@
 #include "gfx2d.h"
 
 #include "version.h"
-#include "error.h"
+#include "xperror.h"
 #include "const.h"
 #include "paint.h"
 #include "portability.h"

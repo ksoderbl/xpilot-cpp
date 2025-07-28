@@ -37,7 +37,7 @@
 #include "proto.h"
 #include "map.h"
 #include "bit.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 #define GRAV_RANGE  10

@@ -46,7 +46,7 @@
 #include "pack.h"
 #include "metaserver.h"
 #include "saudio.h"
-#include "error.h"
+#include "xperror.h"
 #include "netserver.h"
 #include "commonproto.h"
 

@@ -78,7 +78,7 @@
 #include "widget.h"
 #include "configure.h"
 #include "setup.h"
-#include "error.h"
+#include "xperror.h"
 #include "protoclient.h"
 #include "portability.h"
 #include "commonproto.h"

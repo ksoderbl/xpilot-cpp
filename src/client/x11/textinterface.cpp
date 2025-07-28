@@ -41,7 +41,7 @@
 #include "types.h"
 #include "pack.h"
 #include "bit.h"
-#include "error.h"
+#include "xperror.h"
 #include "socklib.h"
 #include "net.h"
 #include "datagram.h"

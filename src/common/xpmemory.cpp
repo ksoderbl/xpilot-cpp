@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 void *xp_malloc(size_t size)

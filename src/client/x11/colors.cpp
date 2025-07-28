@@ -40,7 +40,7 @@
 #include "types.h"
 #include "paint.h"
 #include "xinit.h"
-#include "error.h"
+#include "xperror.h"
 #include "dbuff.h"
 #include "protoclient.h"
 

@@ -120,7 +120,7 @@
 #include "socklib.h"
 #include "sched.h"
 #include "net.h"
-#include "error.h"
+#include "xperror.h"
 #define NETSERVER_C
 #include "netserver.h"
 #include "packet.h"

@@ -34,7 +34,7 @@
 #include "global.h"
 #include "proto.h"
 #include "saudio.h"
-#include "error.h"
+#include "xperror.h"
 #include "objpos.h"
 #include "netserver.h"
 #include "commonproto.h"

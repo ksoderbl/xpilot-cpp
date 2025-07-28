@@ -35,7 +35,7 @@
 #include "serverconst.h"
 #include "global.h"
 #include "proto.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "commonproto.h"
 

@@ -38,7 +38,7 @@
 #include "cannon.h"
 #include "objpos.h"
 #include "netserver.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 

@@ -35,7 +35,7 @@
 
 #include "xpconfig.h"
 #include "gfx2d.h"
-#include "error.h"
+#include "xperror.h"
 #include "const.h"
 #include "portability.h"
 #include "commonproto.h"

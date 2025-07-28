@@ -34,7 +34,7 @@
 #endif
 
 #include "xpconfig.h"
-#include "error.h"
+#include "xperror.h"
 #include "client.h"
 #include "socklib.h"
 #include "protoclient.h"

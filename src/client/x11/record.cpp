@@ -39,7 +39,7 @@
 #endif
 
 #include "xpconfig.h"
-#include "error.h"
+#include "xperror.h"
 #include "const.h"
 #include "client.h"
 #include "paint.h"

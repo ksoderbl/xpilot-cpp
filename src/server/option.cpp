@@ -38,7 +38,7 @@
 #include "global.h"
 #include "proto.h"
 #include "defaults.h"
-#include "error.h"
+#include "xperror.h"
 #include "types.h"
 #include "commonproto.h"
 

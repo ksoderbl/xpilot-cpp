@@ -48,7 +48,7 @@
 #include "net.h"
 #include "netserver.h"
 #include "sched.h"
-#include "error.h"
+#include "xperror.h"
 #include "checknames.h"
 #include "server.h"
 #include "commonproto.h"

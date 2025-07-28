@@ -40,7 +40,7 @@
 #include "cannon.h"
 #endif
 #include "netserver.h"
-#include "error.h"
+#include "xperror.h"
 #include "objpos.h"
 #include "commonproto.h"
 

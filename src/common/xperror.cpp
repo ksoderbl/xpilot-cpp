@@ -8,14 +8,15 @@
  */
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cstdarg>
 
 #include "xpconfig.h"
 #include "const.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "commonproto.h"
 

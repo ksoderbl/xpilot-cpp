@@ -39,7 +39,7 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "error.h"
+#include "xperror.h"
 #include "types.h"
 #include "sched.h"
 #include "global.h"

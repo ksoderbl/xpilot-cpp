@@ -39,7 +39,7 @@
 #include "const.h"
 #include "paint.h"
 #include "xinit.h"
-#include "error.h"
+#include "xperror.h"
 #include "netclient.h"
 #include "protoclient.h"
 #include "keys.h"

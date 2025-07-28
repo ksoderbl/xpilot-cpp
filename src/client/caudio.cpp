@@ -42,7 +42,7 @@
 #include "types.h"
 #include "audio.h"
 #include "client.h"
-#include "error.h"
+#include "xperror.h"
 #include "commonproto.h"
 
 static int        audioEnabled;

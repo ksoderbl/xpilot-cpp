@@ -38,7 +38,7 @@
 #include "bit.h"
 #include "netserver.h"
 #include "saudio.h"
-#include "error.h"
+#include "xperror.h"
 #include "objpos.h"
 #include "draw.h"
 #include "commonproto.h"

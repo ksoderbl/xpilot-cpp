@@ -42,7 +42,7 @@
 #include "item.h"
 #include "netserver.h"
 #include "pack.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "objpos.h"
 #include "asteroid.h"

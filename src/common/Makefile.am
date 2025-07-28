@@ -9,8 +9,6 @@ libxpcommon_a_SOURCES = \
     commonproto.h \
     const.h \
     draw.h \
-    error.cpp \
-    error.h \
     item.h \
     keys.h \
     list.cpp \
@@ -37,4 +35,6 @@ libxpcommon_a_SOURCES = \
     wreckshape.h \
     xpconfig.cpp \
     xpconfig.h \
+    xperror.cpp \
+    xperror.h \
     xpmemory.cpp

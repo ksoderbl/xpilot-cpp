@@ -59,7 +59,7 @@
 #include "bit.h"
 #include "sched.h"
 #include "netserver.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "server.h"
 #include "commonproto.h"

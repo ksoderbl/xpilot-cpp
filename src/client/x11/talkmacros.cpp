@@ -33,7 +33,7 @@
 #include "netclient.h"                /* Net_talk(char *str) */
 #include "setup.h"
 #include "bit.h"
-#include "error.h"
+#include "xperror.h"
 #include "protoclient.h"
 #include "portability.h"
 #include "talk.h"

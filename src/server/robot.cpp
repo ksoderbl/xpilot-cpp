@@ -46,7 +46,7 @@
 #include "netserver.h"
 #include "pack.h"
 #include "robot.h"
-#include "error.h"
+#include "xperror.h"
 #include "server.h"
 #include "commonproto.h"
 

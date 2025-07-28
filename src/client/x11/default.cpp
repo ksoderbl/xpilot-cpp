@@ -47,7 +47,7 @@
 #include "keys.h"
 #include "netclient.h"
 #include "xinit.h"
-#include "error.h"
+#include "xperror.h"
 #include "types.h"
 #include "protoclient.h"
 #include "audio.h"

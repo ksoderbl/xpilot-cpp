@@ -33,7 +33,7 @@
 #include "global.h"
 #include "proto.h"
 #include "defaults.h"
-#include "error.h"
+#include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
 #include "commonproto.h"

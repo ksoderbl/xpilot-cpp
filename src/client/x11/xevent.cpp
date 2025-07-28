@@ -45,7 +45,7 @@
 #include "setup.h"
 #include "netclient.h"
 #include "widget.h"
-#include "error.h"
+#include "xperror.h"
 #include "record.h"
 #include "portability.h"
 #include "paintdata.h"

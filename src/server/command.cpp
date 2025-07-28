@@ -36,7 +36,7 @@
 #include "serverconst.h"
 #include "global.h"
 #include "proto.h"
-#include "error.h"
+#include "xperror.h"
 #include "netserver.h"
 #include "commonproto.h"
 #include "score.h"

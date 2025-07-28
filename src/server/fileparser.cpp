@@ -40,7 +40,7 @@
 #include "proto.h"
 #include "defaults.h"
 #include "map.h"
-#include "error.h"
+#include "xperror.h"
 #include "types.h"
 #include "commonproto.h"
 

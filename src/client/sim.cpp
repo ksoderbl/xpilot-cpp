@@ -43,7 +43,7 @@ int simulating;
 #include "xpconfig.h"
 #include "const.h"
 #include "setup.h"
-#include "error.h"
+#include "xperror.h"
 #include "rules.h"
 #include "bit.h"
 #include "netclient.h"
