@@ -160,6 +160,18 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 SOURCES = $(xpilot_cpp_server_SOURCES)
 DIST_SOURCES = $(xpilot_cpp_server_SOURCES)
 am__can_run_installinfo = \
@@ -279,41 +291,61 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/common
 xpilot_cpp_server_SOURCES = \
     alliance.cpp \
     asteroid.cpp \
+    asteroid.h \
     cannon.cpp \
+    cannon.h \
     cell.cpp \
+    click.h \
     cmdline.cpp \
     collision.cpp \
     command.cpp \
+    connection.h \
     contact.cpp \
+    defaults.h \
     event.cpp \
     fileparser.cpp \
     frame.cpp \
+    global.h \
     id.cpp \
     item.cpp \
     laser.cpp \
     map.cpp \
+    map.h \
     metaserver.cpp \
+    metaserver.h \
     netserver.cpp \
+    netserver.h \
     object.cpp \
+    object.h \
     objpos.cpp \
+    objpos.h \
     option.cpp \
     parser.cpp \
     play.cpp \
     player.cpp \
+    proto.h \
     robot.cpp \
     robotdef.cpp \
+    robot.h \
     rules.cpp \
     saudio.cpp \
+    saudio.h \
     sched.cpp \
+    sched.h \
     score.cpp \
+    score.h \
+    serverconst.h \
     server.cpp \
+    server.h \
     ship.cpp \
     shot.cpp \
     showtime.cpp \
     stratbot.cpp \
     tuner.cpp \
+    tuner.h \
     update.cpp \
     walls.cpp \
+    walls.h \
     wildmap.cpp
 
 xpilot_cpp_server_LDADD = -lm ../common/libxpcommon.a

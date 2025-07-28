@@ -7,11 +7,15 @@ AC_CONFIG_FILES([
 	contrib/Makefile
 	doc/Makefile
 	lib/Makefile
+	lib/maps/Makefile
+	lib/textures/Makefile
 	src/Makefile
 	src/common/Makefile
 	src/client/Makefile
+	src/client/items/Makefile
 	src/server/Makefile
 	src/replay/Makefile
+	src/replay/tools/Makefile
 	src/mapedit/Makefile
 ])
 AC_OUTPUT

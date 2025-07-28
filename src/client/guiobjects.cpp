@@ -73,21 +73,21 @@ void Gui_paint_ball(int x, int y)
     if (!blockBitmaps) {
 	static Pixmap   ballTile = None;
 
-	if (BIT(instruments, SHOW_TEXTURED_BALLS)) {
-	    if (ballTile == None) {
-		ballTile = Texture_ball();
-		if (ballTile == None) {
-		    CLR_BIT(instruments, SHOW_TEXTURED_BALLS);
-		}
-	    }
-	    if (ballTile != None) {
-		XSetTile(dpy, gc, ballTile);
-		XSetFillStyle(dpy, gc, FillTiled);
-	    }
-	}
-	else {
+	// if (BIT(instruments, SHOW_TEXTURED_BALLS)) {
+	//     if (ballTile == None) {
+	// 	ballTile = Texture_ball();
+	// 	if (ballTile == None) {
+	// 	    CLR_BIT(instruments, SHOW_TEXTURED_BALLS);
+	// 	}
+	//     }
+	//     if (ballTile != None) {
+	// 	XSetTile(dpy, gc, ballTile);
+	// 	XSetFillStyle(dpy, gc, FillTiled);
+	//     }
+	// }
+	// else {
 	    ballTile = None;
-	}
+	// }
 
 	x = X(x);
 	y = Y(y);

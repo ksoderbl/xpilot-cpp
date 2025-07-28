@@ -56,8 +56,6 @@
 /* XXX better include a header. */
 extern int	wallColor;		/* Color index for wall drawing */
 extern int	decorColor;		/* Color index for decoration drawing */
-extern char	*wallTextureFile;	/* Filename of wall texture */
-extern char	*decorTextureFile;	/* Filename of decor texture */
 
 
 extern setup_t	*Setup;
@@ -546,18 +544,18 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
 	decor[SETUP_DECOR_LD] = DECOR_LEFT | DECOR_DOWN | DECOR_CLOSED | DECOR_BELOW;
     }
 
-    if (BIT(instruments, SHOW_TEXTURED_DECOR)) {
-	if (!decorTileReady) {
-	    decorTile = Texture_decor();
-	    decorTileReady = (decorTile == None) ? -1 : 1;
-	}
-	if (decorTileReady == 1) {
-	    decorTileDoit = true;
-	    XSetTile(dpy, gc, decorTile);
-	    XSetTSOrigin(dpy, gc, -WINSCALE(realWorld.x), WINSCALE(realWorld.y));
-	    XSetFillStyle(dpy, gc, FillTiled);
-	}
-    }
+//     if (BIT(instruments, SHOW_TEXTURED_DECOR)) {
+// 	if (!decorTileReady) {
+// 	    decorTile = Texture_decor();
+// 	    decorTileReady = (decorTile == None) ? -1 : 1;
+// 	}
+// 	if (decorTileReady == 1) {
+// 	    decorTileDoit = true;
+// 	    XSetTile(dpy, gc, decorTile);
+// 	    XSetTSOrigin(dpy, gc, -WINSCALE(realWorld.x), WINSCALE(realWorld.y));
+// 	    XSetFillStyle(dpy, gc, FillTiled);
+// 	}
+//     }
 
     mask = decor[type];
     

@@ -161,17 +161,17 @@ void Paint_world(void)
     int			wallTileDoit = false;
     XPoint		points[5];
 
-    if (BIT(instruments, SHOW_TEXTURED_WALLS)) {
-	if (!wallTileReady) {
-	    wallTile = Texture_wall();
-	    wallTileReady = (wallTile == None) ? -1 : 1;
-	}
-	if (wallTileReady == 1) {
-	    wallTileDoit = true;
-	    XSetTile(dpy, gc, wallTile);
-	    XSetTSOrigin(dpy, gc, -WINSCALE(realWorld.x), WINSCALE(realWorld.y));
-	}
-    }
+//     if (BIT(instruments, SHOW_TEXTURED_WALLS)) {
+// 	if (!wallTileReady) {
+// 	    wallTile = Texture_wall();
+// 	    wallTileReady = (wallTile == None) ? -1 : 1;
+// 	}
+// 	if (wallTileReady == 1) {
+// 	    wallTileDoit = true;
+// 	    XSetTile(dpy, gc, wallTile);
+// 	    XSetTSOrigin(dpy, gc, -WINSCALE(realWorld.x), WINSCALE(realWorld.y));
+// 	}
+//     }
 
     wormDrawCount = (wormDrawCount + 1) & 7;
 
