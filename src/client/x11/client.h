@@ -333,7 +333,6 @@ int Client_power(void);
 int Client_fd(void);
 int Client_input(int);
 void Client_flush(void);
-void Client_sync(void);
 int Client_wrap_mode(void);
 void Reset_shields(void);
 void Set_toggle_shield(bool on);

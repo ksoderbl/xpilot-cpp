@@ -1,5 +1,4 @@
-/* $Id: join.c,v 5.0 2001/04/07 20:00:58 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,26 +21,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <signal.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <csignal>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-#endif
-
-#ifdef _WINDOWS
-# include <winsock.h>
-# include "NT/winClient.h"
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #include "version.h"
 #include "xpconfig.h"
@@ -52,6 +45,7 @@
 #include "netclient.h"
 #include "protoclient.h"
 #include "portability.h"
+#include "paint.h"
 
 char join_version[] = VERSION;
 
@@ -172,7 +166,7 @@ static void Input_loop(void)
                     xperror("Bad net flush before sync");
                     return;
                 }
-                Client_sync();
+                XSync(dpy, False);
                 if (Client_input(1) == -1) {
                     return;
                 }

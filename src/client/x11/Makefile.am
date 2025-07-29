@@ -42,6 +42,8 @@ xpilot_cpp_client_x11_SOURCES = \
     xeventhandlers.h \
     xinit.cpp \
     xinit.h \
+    xpaint.cpp \
+    xpaint.h \
     xpilot.cpp \
     xpmread.cpp
 

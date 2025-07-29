@@ -1555,11 +1555,6 @@ void Client_flush(void)
     XFlush(dpy);
 }
 
-void Client_sync(void)
-{
-    XSync(dpy, False);
-}
-
 int Client_wrap_mode(void)
 {
     return (BIT(Setup->mode, WRAP_PLAY) != 0);

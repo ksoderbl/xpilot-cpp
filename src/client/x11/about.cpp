@@ -21,22 +21,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-#endif
-
-#ifdef _WINDOWS
-# include "NT/winX.h"
-# include "NT/winXXPilot.h"
-# include "NT/winClient.h"
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
 
 #include "xpconfig.h"
 #include "const.h"

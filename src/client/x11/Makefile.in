@@ -107,8 +107,8 @@ am_xpilot_cpp_client_x11_OBJECTS = about.$(OBJEXT) \
 	paintradar.$(OBJEXT) record.$(OBJEXT) sim.$(OBJEXT) \
 	talk.$(OBJEXT) talkmacros.$(OBJEXT) textinterface.$(OBJEXT) \
 	welcome.$(OBJEXT) widget.$(OBJEXT) xevent.$(OBJEXT) \
-	xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) xpilot.$(OBJEXT) \
-	xpmread.$(OBJEXT)
+	xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) xpaint.$(OBJEXT) \
+	xpilot.$(OBJEXT) xpmread.$(OBJEXT)
 xpilot_cpp_client_x11_OBJECTS = $(am_xpilot_cpp_client_x11_OBJECTS)
 xpilot_cpp_client_x11_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
@@ -141,8 +141,8 @@ am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/blockbitmaps.Po \
 	./$(DEPDIR)/talkmacros.Po ./$(DEPDIR)/textinterface.Po \
 	./$(DEPDIR)/welcome.Po ./$(DEPDIR)/widget.Po \
 	./$(DEPDIR)/xevent.Po ./$(DEPDIR)/xeventhandlers.Po \
-	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpilot.Po \
-	./$(DEPDIR)/xpmread.Po
+	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpaint.Po \
+	./$(DEPDIR)/xpilot.Po ./$(DEPDIR)/xpmread.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -327,6 +327,8 @@ xpilot_cpp_client_x11_SOURCES = \
     xeventhandlers.h \
     xinit.cpp \
     xinit.h \
+    xpaint.cpp \
+    xpaint.h \
     xpilot.cpp \
     xpmread.cpp
 
@@ -444,6 +446,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xevent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xeventhandlers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinit.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpaint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpilot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmread.Po@am__quote@ # am--include-marker
 
@@ -620,6 +623,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
+	-rm -f ./$(DEPDIR)/xpaint.Po
 	-rm -f ./$(DEPDIR)/xpilot.Po
 	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
@@ -694,6 +698,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
+	-rm -f ./$(DEPDIR)/xpaint.Po
 	-rm -f ./$(DEPDIR)/xpilot.Po
 	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
