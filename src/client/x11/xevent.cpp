@@ -21,19 +21,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
 
-#ifndef _WINDOWS
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-# include <X11/keysym.h>
-# include <X11/Xatom.h>
-# include <X11/Xmd.h>
-#endif
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
+#include <X11/keysym.h>
+#include <X11/Xatom.h>
+#include <X11/Xmd.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -53,6 +51,7 @@
 #include "configure.h"
 #include "xeventhandlers.h"
 #include "xevent.h"
+#include "option.h"
 
 extern char *talk_fast_msgs[];        /* talk macros */
 
@@ -143,35 +142,7 @@ static void Joystick_event(void)
 
 keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
-    keys_t ret = KEY_DUMMY;
-    static int i = 0;
-
-    if (reset) {
-        /* binary search since keyDefs is sorted on keysym. */
-        int lo = 0, hi = maxKeyDefs - 1;
-        while (lo < hi) {
-            i = (lo + hi) >> 1;
-            if (ks > keyDefs[i].keysym) {
-                lo = i + 1;
-            } else {
-                hi = i;
-            }
-        }
-        if (lo == hi && ks == keyDefs[lo].keysym) {
-            while (lo > 0 && ks == keyDefs[lo - 1].keysym) {
-                lo--;
-            }
-            i = lo;
-            ret = keyDefs[i].key;
-            i++;
-        }
-    }
-    else {
-        if (i < maxKeyDefs && ks == keyDefs[i].keysym) {
-            ret = keyDefs[i].key;
-            i++;
-        }
-    }
+    keys_t ret = Generic_lookup_key((xp_keysym_t)ks, reset);
 
 #ifdef DEVELOPMENT
     if (reset && ret == KEY_DUMMY) {

@@ -62,9 +62,48 @@ void init_error(const char *prog)
 
 
 
-/*
- * Ok, let's do it the ANSI C way.
- */
+void xpinfo(const char *fmt, ...)
+{
+    size_t                len;
+    va_list        ap;
+
+    va_start(ap, fmt);
+
+    if (progname[0] != '\0') {
+        fprintf(stderr, "%s: ", progname);
+    }
+
+    vfprintf(stderr, fmt, ap);
+
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n') {
+        fprintf(stderr, "\n");
+    }
+
+    va_end(ap);
+}
+
+void xpwarn(const char *fmt, ...)
+{
+    size_t                len;
+    va_list        ap;
+
+    va_start(ap, fmt);
+
+    if (progname[0] != '\0') {
+        fprintf(stderr, "%s: ", progname);
+    }
+
+    vfprintf(stderr, fmt, ap);
+
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n') {
+        fprintf(stderr, "\n");
+    }
+
+    va_end(ap);
+}
+
 void xperror(const char *fmt, ...)
 {
     va_list         ap;
@@ -82,27 +121,6 @@ void xperror(const char *fmt, ...)
         fprintf(stderr, ": (%s)", strerror(e));
     }
     fprintf(stderr, "\n");
-
-    va_end(ap);
-}
-
-void warn(const char *fmt, ...)
-{
-    int                len;
-    va_list        ap;
-
-    va_start(ap, fmt);
-
-    if (progname[0] != '\0') {
-        fprintf(stderr, "%s: ", progname);
-    }
-
-    vfprintf(stderr, fmt, ap);
-
-    len = strlen(fmt);
-    if (len == 0 || fmt[len - 1] != '\n') {
-        fprintf(stderr, "\n");
-    }
 
     va_end(ap);
 }

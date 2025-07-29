@@ -121,9 +121,6 @@ char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 char        *texturePath = NULL;                /* Path list of texture directories */
 bool        useErase;                /* use Erase hack for slow X */
 
-int                maxKeyDefs;
-keydefs_t        *keyDefs = NULL;
-
 other_t     *self;          /* player info */
 
 long        loops = 0;

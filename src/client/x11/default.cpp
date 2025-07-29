@@ -2067,25 +2067,6 @@ unsigned String_hash(const char *s)
 }
 
 
-char* Get_keyHelpString(keys_t key)
-{
-    int                        i;
-    char                *nl;
-    static char                buf[MAX_CHARS];
-
-    for (i = 0; i < NELEM(options); i++) {
-        if (options[i].key == key) {
-            strlcpy(buf, options[i].help, sizeof buf);
-            if ((nl = strchr(buf, '\n')) != NULL) {
-                *nl = '\0';
-            }
-            return buf;
-        }
-    }
-
-    return NULL;
-}
-
 
 const char* Get_keyResourceString(keys_t key)
 {

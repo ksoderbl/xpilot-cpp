@@ -24,6 +24,8 @@
 #ifndef MESSAGES_H
 #define MESSAGES_H
 
+#include "const.h"
+
 /* constants begin */
 #define MAX_MSGS                15        /* Max. messages displayed ever */
 #define MAX_HIST_MSGS        128                /* maximum */

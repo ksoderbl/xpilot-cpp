@@ -166,7 +166,6 @@ extern char        *ballTextureFile;        /* Filename of ball texture */
 //                 (Display *disp, Drawable d, GC gc,
 //                  int x, int y, unsigned width, unsigned height);
 
-extern int        maxKeyDefs;
 extern long        loops;
 extern int        maxMessages;
 extern int        messagesToStdout;

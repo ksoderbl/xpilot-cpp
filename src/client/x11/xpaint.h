@@ -166,7 +166,6 @@ extern int        (*radarDrawRectanglePtr)        /* Function to draw player on 
                 (Display *disp, Drawable d, GC gc,
                  int x, int y, unsigned width, unsigned height);
 
-extern int        maxKeyDefs;
 extern long        loops;
 
 extern DFLOAT        scaleFactor;                /* scale the draw (main playfield) window */

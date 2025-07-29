@@ -21,19 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef _DEFAULT_H_
-#define _DEFAULT_H_
+#ifndef XPMATH_H
+#define XPMATH_H
 
-typedef struct {
-    const char                *name;                /* option name */
-    const char                *noArg;                /* value for non-argument options */
-    const char                *fallback;        /* default value */
-    keys_t                key;                /* key if not KEY_DUMMY */
-    const char                *help;                /* user help (multiline) */
-    unsigned                hash;                /* option name hashed. */
-} option;
+#include "types.h"
 
-extern option        options[];
-extern int                optionsCount;        /* NELEM(options) */
+int ON(const char *optval);
+int OFF(const char *optval);
+int mod(int x, int y);
+int f2i(DFLOAT f);
+DFLOAT findDir(DFLOAT x, DFLOAT y);
+void Make_table(void);
 
 #endif

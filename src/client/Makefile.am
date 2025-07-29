@@ -21,11 +21,14 @@ libxpclient_a_SOURCES = \
     messages.cpp \
     messages.h \
     netclient.h \
+    option.cpp \
+    option.h \
     paint.cpp \
     paint.h \
     paintmacros.h \
     protoclient.h \
     query.cpp \
+    storemacros.h \
     talk.h \
     xpmread.h
 

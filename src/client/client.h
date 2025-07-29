@@ -92,6 +92,15 @@
 
 
 typedef struct {
+    bool help;
+    bool version;
+    bool text;
+    bool list_servers; /* list */
+    bool auto_connect; /* join */
+    char shutdown_reason[MAX_CHARS]; /* shutdown reason */
+} xp_args_t;
+
+typedef struct {
     DFLOAT        ratio;
     short        id;
     short        team;
@@ -154,7 +163,7 @@ typedef struct {
 } score_object_t;
 
 
-
+extern xp_args_t        xpArgs;
 
 extern ipos        pos;
 extern ipos        vel;
@@ -315,6 +324,7 @@ extern        void audioEvents();
 
 int Init_playing_windows(void);
 void Platform_specific_cleanup(void);
+const char *Program_name(void);
 
 #endif
 

@@ -1550,7 +1550,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_int(fp, "maxMessages", maxMessages);
     Config_save_int(fp, "messagesToStdout", messagesToStdout);
     Config_save_int(fp, "oldMessagesColor", oldMessagesColor);
-    Config_save_bool(fp, "reverseScroll", BIT(instruments, SHOW_REVERSE_SCROLL));
     Config_save_bool(fp, "showHUD", BIT(instruments, SHOW_HUD_INSTRUMENTS));
     Config_save_bool(fp, "showHUDRadar", BIT(instruments, SHOW_HUD_RADAR));
     Config_save_bool(fp, "verticalHUDLine", BIT(instruments, SHOW_HUD_VERTICAL));

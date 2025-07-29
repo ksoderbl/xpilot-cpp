@@ -49,6 +49,8 @@
 #include "talk.h"
 #include "commonproto.h"
 
+xp_args_t xpArgs;
+
 #define MAX_CHECKPOINT        26
 
 char        *talk_fast_msgs[TALK_FAST_NR_OF_MSGS];        /* talk macros */
@@ -313,7 +315,7 @@ int Handle_cannon(int ind, int dead_time)
 int Handle_target(int num, int dead_time, int damage)
 {
     if (num < 0 || num >= num_targets) {
-        warn("Bad target index (%d)", num);
+        xpwarn("Bad target index (%d)", num);
         return 0;
     }
     if (dead_time == 0
@@ -1086,7 +1088,7 @@ int Handle_war(int robot_id, int killer_id)
     char                msg[MSG_LEN];
 
     if ((robot = Other_by_id(robot_id)) == NULL) {
-        warn("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
+        xpwarn("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     if (killer_id == -1) {
@@ -1097,7 +1099,7 @@ int Handle_war(int robot_id, int killer_id)
         return 0;
     }
     if ((killer = Other_by_id(killer_id)) == NULL) {
-        warn("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
+        xpwarn("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     robot->war_id = killer_id;

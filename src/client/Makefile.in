@@ -106,8 +106,8 @@ libxpclient_a_AR = $(AR) $(ARFLAGS)
 libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
 	datagram.$(OBJEXT) debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) \
-	gfx3d.$(OBJEXT) messages.$(OBJEXT) paint.$(OBJEXT) \
-	query.$(OBJEXT)
+	gfx3d.$(OBJEXT) messages.$(OBJEXT) option.$(OBJEXT) \
+	paint.$(OBJEXT) query.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -127,8 +127,8 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
 	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
 	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/gfx3d.Po \
-	./$(DEPDIR)/messages.Po ./$(DEPDIR)/paint.Po \
-	./$(DEPDIR)/query.Po
+	./$(DEPDIR)/messages.Po ./$(DEPDIR)/option.Po \
+	./$(DEPDIR)/paint.Po ./$(DEPDIR)/query.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -333,11 +333,14 @@ libxpclient_a_SOURCES = \
     messages.cpp \
     messages.h \
     netclient.h \
+    option.cpp \
+    option.h \
     paint.cpp \
     paint.h \
     paintmacros.h \
     protoclient.h \
     query.cpp \
+    storemacros.h \
     talk.h \
     xpmread.h
 
@@ -397,6 +400,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx2d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx3d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/option.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@ # am--include-marker
 
@@ -623,6 +627,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/gfx3d.Po
 	-rm -f ./$(DEPDIR)/messages.Po
+	-rm -f ./$(DEPDIR)/option.Po
 	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f Makefile
@@ -677,6 +682,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/gfx3d.Po
 	-rm -f ./$(DEPDIR)/messages.Po
+	-rm -f ./$(DEPDIR)/option.Po
 	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f Makefile

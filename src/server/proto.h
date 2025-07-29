@@ -102,17 +102,6 @@ int Wildmap(
         int *height_ptr);
 
 /*
- * Prototypes for math.c
- */
-int ON(char *optval);
-int OFF(char *optval);
-int mod(int x, int y);
-int f2i(DFLOAT f);
-DFLOAT findDir(DFLOAT x, DFLOAT y);
-void Make_table(void);
-
-
-/*
  * Prototypes for cmdline.c
  */
 void tuner_none(void);

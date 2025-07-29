@@ -33,18 +33,10 @@
 #include "xperror.h"
 #include "commonproto.h"
 
-
-
 DFLOAT                tbl_sin[TABLE_SIZE];
 DFLOAT                tbl_cos[TABLE_SIZE];
 
-int ON(char *optval);
-int OFF(char *optval);
-int f2i(DFLOAT f);
-DFLOAT findDir(DFLOAT x, DFLOAT y);
-void Make_table(void);
-
-int ON(char *optval)
+int ON(const char *optval)
 {
     return (strncasecmp(optval, "true", 4) == 0
             || strncasecmp(optval, "on", 2) == 0
@@ -52,7 +44,7 @@ int ON(char *optval)
 }
 
 
-int OFF(char *optval)
+int OFF(const char *optval)
 {
     return (strncasecmp(optval, "false", 5) == 0
             || strncasecmp(optval, "off", 3) == 0
