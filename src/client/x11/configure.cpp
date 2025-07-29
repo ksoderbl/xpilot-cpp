@@ -21,52 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/*
- * Configure.c: real-time option control.
- * To add your own option to the XPilot client do the following:
- * 1: Define storage for the option value in either client.c/paint.c/xinit.c
- *    or use a bit in the instruments option set (using the SHOW_XXX macros).
- * 2: Add a declaration for this storage to either client.h/paint.h/xinit.h
- *    or, in case a bit in instruments is used, add a SHOW_ macro to client.h.
- * 3: Add an X resource record to the XrmOptionDescRec options[] table in
- *    default.c to have it recognised by the X resource manager routines.
- * 4: Have it set at startup by the Parse_options() routine in default.c.
- * 5: Add the functionality of your option, probably in the same file
- *    as the storage for the option was defined in.
- * 6: Add it to configure.c (this file) as follows:
- *   a) Determine if it needs either a bool/int/float widget
- *      and find a similar option from which you can copy code.
- *   b) Add the Config_create_XXX function prototype at the top of this file.
- *   c) Add the Config_create_XXX function name to the config_creator[] table.
- *      The order in this table determines the order of the options on screen.
- *   d) Define the Config_create_XXX function similar to one of the others.
- *   e) If it needs a callback when the value changes then add a
- *      Config_update_XXX() function after the other update callbacks
- *      and declare a prototype for the callback at the top of this file.
- *      The Config_update_XXX() function should be given as an argument to
- *      the Config_create_bool/int/float() creator in Config_create_XXX().
- *      If the option doesn't need a callback then the calback argument
- *      should be given as NULL.
- *   f) Add one line to the Config_save() routine to have the option saved.
- * 7: Document your option in the manual page for the client.
- * 8: Mail a context diff (diff -c old new) of your changes to
- *    xpilot@xpilot.org.
- */
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <climits>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
-
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <pwd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-#endif
+#include <unistd.h>
+#include <pwd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -82,6 +48,7 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "commonproto.h"
+#include "colors.h"
 
 #ifndef PATH_MAX
 #define PATH_MAX        1023

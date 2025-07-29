@@ -38,16 +38,6 @@ extern int motd_viewer;                /* so Windows can clean him up */
 extern int keys_viewer;
 
 /*
- * colors.c
- */
-void List_visuals(void);
-int Colors_init(void);
-int Colors_init_block_bitmaps(void);
-void Colors_free_block_bitmaps(void);
-void Colors_cleanup(void);
-void Colors_debug(void);
-
-/*
  * default.c
  */
 extern void Parse_options(int *argcp, char **argvp, char *realName, int *port,

@@ -21,18 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "version.h"
 #include "xpconfig.h"
@@ -48,6 +46,7 @@
 #include "dbuff.h"
 #include "protoclient.h"
 #include "portability.h"
+#include "colors.h"
 
 /*
  * Item structures.
@@ -419,7 +418,6 @@ static void Init_disp_prop(Display *d, Window win,
  */
 int Init_top(void)
 {
-#ifndef _WINDOWS
     int                                        i;
     int                                        top_x, top_y;
     int                                        x, y;
@@ -460,7 +458,6 @@ int Init_top(void)
             shieldDrawMode = 1;
         }
     }
-#endif
 
     if (hudColor >= maxColors || hudColor <= 0) {
         hudColor = BLUE;

@@ -55,6 +55,7 @@
 #include "default.h"
 #include "checknames.h"
 #include "xpmath.h"
+#include "colors.h"
 
 
 #define DISPLAY_ENV        "DISPLAY"
