@@ -3,6 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/common
 noinst_LIBRARIES = libxpclient.a
 
 libxpclient_a_SOURCES = \
+    about.h \
     caudio.cpp \
     caudio.h \
     connectparam.h \

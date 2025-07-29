@@ -46,6 +46,7 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "paint.h"
+#include "about.h"
 
 char join_version[] = VERSION;
 

@@ -29,15 +29,6 @@
 #endif
 
 /*
- * about.c
- */
-extern int Handle_motd(long off, char *buf, int len, long filesize);
-extern void aboutCleanup(void);
-
-extern int motd_viewer;                /* so Windows can clean him up */
-extern int keys_viewer;
-
-/*
  * default.c
  */
 extern void Parse_options(int *argcp, char **argvp, char *realName, int *port,
@@ -78,12 +69,6 @@ extern int Query_all(sock_t *sockfd, int port, char *msg, int msglen);
 #ifdef        LIMIT_ACCESS
 extern bool                Is_allowed(char *);
 #endif
-
-/*
- * record.c
- */
-extern void Record_cleanup(void);
-extern void Record_init(char *filename);
 
 /*
  * sim.c
