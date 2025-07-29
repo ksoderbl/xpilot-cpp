@@ -41,7 +41,7 @@
 #include "version.h"
 #include "client.h"
 #include "messages.h"
-#include "storemacros.h"
+#include "commonmacros.h"
 #include "option.h"
 
 

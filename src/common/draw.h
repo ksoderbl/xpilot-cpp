@@ -1,5 +1,4 @@
-/* $Id: draw.h,v 5.6 2003/09/16 21:02:32 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -25,11 +24,9 @@
 #ifndef        DRAW_H
 #define        DRAW_H
 
-#ifndef TYPES_H
 /* need position */
 #include "types.h"
 #include "const.h"
-#endif
 
 /*
  * Abstract (non-display system specific) drawing definitions.

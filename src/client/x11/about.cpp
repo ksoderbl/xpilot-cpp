@@ -41,7 +41,7 @@
 #include "netclient.h"
 #include "dbuff.h"
 #include "protoclient.h"
-#include "storemacros.h"
+#include "commonmacros.h"
 #include "option.h"
 
 
@@ -332,7 +332,7 @@ static void About_create_window(void)
                         mask, &sattr);
     XStoreName(dpy, about_w, "XPilot - information");
     XSetIconName(dpy, about_w, "XPilot/info");
-    XSetTransientForHint(dpy, about_w, top);
+    XSetTransientForHint(dpy, about_w, topWindow);
 
     textWidth = XTextWidth(buttonFont, "CLOSE", 5);
     about_close_b

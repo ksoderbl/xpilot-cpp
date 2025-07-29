@@ -21,11 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
 
 #include <unistd.h>
 #include <X11/Xlib.h>
@@ -46,6 +46,7 @@
 #include "dbuff.h"
 #include "protoclient.h"
 #include "portability.h"
+#include "messages.h"
 
 /*
  * Item structures.
@@ -94,7 +95,7 @@ extern int                RadarHeight;
  */
 int                        ButtonHeight;
 Atom                        ProtocolAtom, KillAtom;
-int                        buttonColor, windowColor, borderColor;
+
 bool                        quitting = false;
 int                        top_width, top_height, top_x, top_y, top_posmask;
 int                        draw_width, draw_height;
@@ -425,7 +426,7 @@ int Init_top(void)
     XSetWindowAttributes                sattr;
     unsigned long                        mask;
 
-    if (top) {
+    if (topWindow) {
         xperror("Init_top called twice");
         exit(1);
     }

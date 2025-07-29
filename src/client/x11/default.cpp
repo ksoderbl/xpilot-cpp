@@ -21,22 +21,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <climits>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xos.h>
-# include <X11/keysym.h>
-# include <X11/Xlib.h>
-# include <X11/Xresource.h>
-# include <sys/param.h>
-#endif
+#include <unistd.h>
+#include <X11/Xos.h>
+#include <X11/keysym.h>
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
+#include <sys/param.h>
 
 #include "version.h"
 #include "xpconfig.h"
@@ -633,13 +631,6 @@ option options[] = {
         KEY_DUMMY,
         "Send messages to standard output.\n0: Don't.\n1: Only player "
         "messages.\n2: Player and status messages.\n"
-    },
-    {
-        "reverseScroll",
-        NULL,
-        "No",
-        KEY_DUMMY,
-        "Reverse scroll direction of messages.\n"
     },
     {
         "selectionAndHistory",

@@ -21,24 +21,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "xpconfig.h"
 #include "const.h"
 #include "types.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "xperror.h"
 #include "dbuff.h"
@@ -82,7 +80,7 @@ bool                colorSwitch;
 bool                multibuffer;
 bool                blockBitmaps;                /* Whether to draw everything as bitmaps. */
 
-#ifndef _WINDOWS
+int                        buttonColor, windowColor, borderColor;
 
 /*
  * Dimensions of color cubes in decreasing
@@ -1014,6 +1012,3 @@ void Colors_debug(void)
     exit(1);
 }
 #endif        /* DEVELOPMENT */
-
-
-#endif        /* _WINDOWS */

@@ -63,16 +63,6 @@
 /* macros end */
 
 
-/* typedefs begin */
-typedef struct {
-    char                txt[MSG_LEN];
-    short                len;
-    short                pixelLen;
-    int                        life;
-} message_t;
-/* typedefs end */
-
-
 /* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
 #define TALK_MSG_SCREENPOS(_total,_pos) \
     (BIT(instruments, SHOW_REVERSE_SCROLL)?(_total)-(_pos):(_pos))
@@ -121,7 +111,7 @@ extern Pixmap        itemBitmaps[];
 extern GC        gc, messageGC, radarGC, buttonGC, scoreListGC, textGC, talkGC;
 extern GC        motdGC;
 extern XGCValues gcv;
-extern Window        top, draw, keyboard, radar, players;
+extern Window        topWindow, draw, keyboard, radar, players;
 extern Pixmap        p_draw;                        /* Drawing area pixmap */
 extern Pixmap        p_radar;                /* Radar drawing pixmap */
 extern Pixmap        s_radar;                /* Second radar drawing pixmap */

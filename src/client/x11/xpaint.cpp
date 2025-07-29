@@ -89,7 +89,7 @@ GC        talkGC;                        /* GC for the message window */
 GC        motdGC;                        /* GC for the motd text */
 XGCValues        gcv;
 
-Window        top;                        /* Top-level window (topshell) */
+Window        topWindow;                        /* Top-level window (topshell) */
 Window        draw;                        /* Main play window */
 Window        keyboard;                /* Keyboard window */
 

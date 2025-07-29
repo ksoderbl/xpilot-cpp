@@ -7,6 +7,7 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
+    configure.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
@@ -28,7 +29,6 @@ libxpclient_a_SOURCES = \
     paintmacros.h \
     protoclient.h \
     query.cpp \
-    storemacros.h \
     talk.h \
     xpmread.h
 

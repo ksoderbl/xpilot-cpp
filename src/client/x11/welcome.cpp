@@ -21,22 +21,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
+#include <ctime>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <X11/Xlib.h>
 
 #include "xpconfig.h"
 #include "const.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "list.h"
 #include "widget.h"
@@ -2122,7 +2120,7 @@ int Welcome_screen(Connect_param_t *conpar)
                       conpar->disp_name,
                       conpar->server_version);
     } else {
-        Quit();
+        Platform_specific_cleanup();
     }
 
     return result;

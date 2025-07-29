@@ -24,6 +24,9 @@
 #ifndef        XINIT_H
 #define        XINIT_H
 
+#include "const.h"
+#include "paint.h"
+
 #define MAX_VISUAL_NAME        12
 
 #define MIN_TOP_WIDTH        (640 + 2)
@@ -77,8 +80,6 @@ extern void Talk_window_cut(XButtonEvent *xbutton);
 extern void Talk_cut_from_messages(XButtonEvent *xbutton);
 extern void Clear_selection(void);
 extern void Print_messages_to_stdout(void);
-extern void Talk_reverse_cut(void);
-extern void Quit(void);
 extern int FatalError(Display *dpy);
 extern void Resize(Window w, int width, int height);
 
