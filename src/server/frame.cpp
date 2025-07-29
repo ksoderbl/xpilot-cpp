@@ -1,5 +1,4 @@
-/* $Id: frame.c,v 5.42 2002/05/13 20:38:10 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,19 +21,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <errno.h>
-#include <time.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
+#include <cerrno>
+#include <ctime>
+#include <climits>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/param.h>
-#endif
+#include <unistd.h>
+#include <sys/param.h>
 
 #define SERVER
 #include "xpconfig.h"
@@ -46,6 +43,7 @@
 #include "saudio.h"
 #include "xperror.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 #define MAX_SHUFFLE_INDEX        65535

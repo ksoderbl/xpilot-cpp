@@ -23,16 +23,14 @@
 /* Robot code originally submitted by Maurice Abraham. */
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <errno.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
+#include <cerrno>
+#include <climits>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 #define SERVER
 #include "version.h"
@@ -50,6 +48,7 @@
 #include "xperror.h"
 #include "portability.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 

@@ -21,9 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
 
 #define SERVER
 #include "xpconfig.h"
@@ -39,6 +39,7 @@
 #include "asteroid.h"
 #include "commonproto.h"
 #include "netserver.h"
+#include "xpmath.h"
 
 #define TURN_FUEL(acc)          (0.005*FUEL_SCALE_FACT*ABS(acc))
 #define TURN_SPARKS(tf)         (5+((tf)>>((FUEL_SCALE_BITS)-6)))

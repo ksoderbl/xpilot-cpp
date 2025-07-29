@@ -13,7 +13,6 @@ libxpcommon_a_SOURCES = \
     keys.h \
     list.cpp \
     list.h \
-    math.cpp \
     net.cpp \
     net.h \
     packet.h \
@@ -37,4 +36,6 @@ libxpcommon_a_SOURCES = \
     xpconfig.h \
     xperror.cpp \
     xperror.h \
+    xpmath.cpp \
+    xpmath.h \
     xpmemory.cpp

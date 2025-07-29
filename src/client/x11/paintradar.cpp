@@ -21,16 +21,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -670,3 +668,12 @@ void Paint_radar_block(int xi, int yi, int color)
     }
 }
 
+void Radar_show_target(int x, int y)
+{
+    Paint_radar_block(x, y, targetRadarColor);
+}
+
+void Radar_hide_target(int x, int y)
+{
+    Paint_radar_block(x, y, BLACK);
+}

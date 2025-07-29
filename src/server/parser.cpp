@@ -22,10 +22,10 @@
  */
 /* Original options parsing code contributed by Ted Lemon <mellon@ncd.com> */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
 
 #define SERVER
 #include "version.h"
@@ -38,6 +38,7 @@
 #include "portability.h"
 #include "checknames.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 /*

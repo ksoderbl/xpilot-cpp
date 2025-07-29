@@ -21,14 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <cstdlib>
+#include <ctime>
+
 #define        SERVER
-#include <stdlib.h>
-#include <time.h>
 #include "serverconst.h"
 #include "global.h"
 #include "proto.h"
 #include "xperror.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 extern time_t gameOverTime;

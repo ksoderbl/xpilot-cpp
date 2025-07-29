@@ -1,5 +1,4 @@
-/* $Id: player.c,v 5.31 2003/09/16 21:01:39 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,11 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <cerrno>
 
 #define SERVER
 #include "xpconfig.h"
@@ -42,6 +41,7 @@
 #include "objpos.h"
 #include "draw.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 

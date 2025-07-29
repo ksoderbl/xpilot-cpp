@@ -1,5 +1,4 @@
-/* $Id: protoclient.h,v 5.5 2004/02/11 18:58:52 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -66,17 +65,6 @@ extern void Get_xpilotrc_file(char *, unsigned);
 extern int Join(char *server_addr, char *server_name, int port,
                 char *real, char *nick, int my_team,
                 char *display, unsigned version);
-
-/*
- * metaclient.c
- */
-extern int metaclient(int, char **);
-
-/*
- * math.c
- */
-extern int ON(char *optval);
-extern int OFF(char *optval);
 
 /*
  * paintdata.c

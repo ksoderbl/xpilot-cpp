@@ -1,5 +1,4 @@
-/* $Id: robot.c,v 5.22 2002/04/21 19:08:15 kimiko Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -23,16 +22,14 @@
  */
 /* Robot code originally submitted by Maurice Abraham. */
 
-#include <stdlib.h>
-#include <errno.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdio.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cerrno>
+#include <cctype>
+#include <cstring>
+#include <cstdio>
+#include <climits>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 #define SERVER
 #include "xpconfig.h"
@@ -49,6 +46,7 @@
 #include "xperror.h"
 #include "server.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 #define DEFAULT_ROBOT_TYPE        "default"
 

@@ -21,12 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
+#include <climits>
 
 #define SERVER
 #include "xpconfig.h"
@@ -39,6 +39,7 @@
 #include "netserver.h"
 #include "commonproto.h"
 #include "proto.h"
+#include "xpmath.h"
 
 
 

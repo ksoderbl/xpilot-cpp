@@ -22,19 +22,17 @@
  */
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cmath>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <X11/Xlib.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -44,11 +42,13 @@
 #include "bit.h"
 #include "netclient.h"
 #include "paint.h"
+#include "paintradar.h"
 #include "xinit.h"
 #include "protoclient.h"
 #include "portability.h"
 #include "talk.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 #define MAX_CHECKPOINT        26
 
@@ -331,11 +331,11 @@ int Handle_target(int num, int dead_time, int damage)
     }
     if (targets[num].dead_time > 0 && dead_time == 0) {
         int pos = targets[num].pos;
-        Paint_radar_block(pos / Setup->y, pos % Setup->y, targetRadarColor);
+        Radar_show_target(pos / Setup->y, pos % Setup->y);
     }
     else if (targets[num].dead_time == 0 && dead_time > 0) {
         int pos = targets[num].pos;
-        Paint_radar_block(pos / Setup->y, pos % Setup->y, BLACK);
+        Radar_hide_target(pos / Setup->y, pos % Setup->y);
     }
 
     targets[num].dead_time = dead_time;

@@ -22,12 +22,12 @@
  */
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cmath>
+#include <ctime>
 #include <sys/types.h>
 
 #include <unistd.h>
@@ -48,6 +48,7 @@
 #include "portability.h"
 #include "talk.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 xp_args_t xpArgs;
 

@@ -22,20 +22,18 @@
  */
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <time.h>
-#include <limits.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <ctime>
+#include <climits>
+#include <cmath>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -58,6 +56,7 @@
 #include "guiobjects.h"
 #include "pack.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 extern setup_t                *Setup;

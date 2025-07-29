@@ -21,12 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
+#include <climits>
 
 #define SERVER
 #include "xpconfig.h"
@@ -41,6 +41,7 @@
 #include "click.h"
 #include "objpos.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 #define WALLDIST_MASK        \
         (FILLED_BIT | REC_LU_BIT | REC_LD_BIT | REC_RU_BIT | REC_RD_BIT \

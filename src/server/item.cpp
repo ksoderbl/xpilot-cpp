@@ -21,12 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <errno.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
+#include <cerrno>
+#include <climits>
 
 #define SERVER
 #include "xpconfig.h"
@@ -43,6 +43,7 @@
 #include "xperror.h"
 #include "objpos.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 #define CONFUSED_TIME        3

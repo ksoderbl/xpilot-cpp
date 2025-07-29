@@ -21,23 +21,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <signal.h>
-#include <errno.h>
-#include <time.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cstdio>
+#include <csignal>
+#include <cerrno>
+#include <ctime>
+#include <climits>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <pwd.h>
-# include <sys/param.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <pwd.h>
+#include <sys/param.h>
 
 #ifdef PLOCKSERVER
 # if defined(__linux__)
@@ -63,6 +61,7 @@
 #include "portability.h"
 #include "server.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 char server_version[] = VERSION;
 

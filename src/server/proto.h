@@ -1,5 +1,4 @@
-/* $Id: proto.h,v 5.48 2003/09/16 21:01:48 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -100,17 +99,6 @@ int Wildmap(
         char **data,
         int *width_ptr,
         int *height_ptr);
-
-/*
- * Prototypes for math.c
- */
-int ON(char *optval);
-int OFF(char *optval);
-int mod(int x, int y);
-int f2i(DFLOAT f);
-DFLOAT findDir(DFLOAT x, DFLOAT y);
-void Make_table(void);
-
 
 /*
  * Prototypes for cmdline.c

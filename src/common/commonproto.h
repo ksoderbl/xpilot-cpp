@@ -1,5 +1,4 @@
-/* $Id: commonproto.h,v 5.7 2003/09/16 21:02:23 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -34,11 +33,6 @@
 extern void seedMT(unsigned int seed);
 extern unsigned int reloadMT(void);
 extern unsigned int randomMT(void);
-
-/* math.c */
-extern double rfrac(void);
-extern int mod(int x, int y);
-extern void Make_table(void);
 
 /* strdup.c */
 extern char *xp_strdup(const char *);

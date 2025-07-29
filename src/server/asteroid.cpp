@@ -5,7 +5,7 @@
  *      Ken Ronny Schouten
  *      Bert Gijsbers
  *      Dick Balaska
- *          Kimiko Koopman
+ *      Kimiko Koopman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
+#include <climits>
 
 #define SERVER
 #include "xpconfig.h"
@@ -39,6 +39,7 @@
 #include "objpos.h"
 #include "asteroid.h"
 #include "commonproto.h"
+#include "xpmath.h"
 
 
 /* list containing pointers to all asteroids */
