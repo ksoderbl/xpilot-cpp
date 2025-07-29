@@ -1539,15 +1539,7 @@ void Client_cleanup(void)
 
 int Client_input(int new_input)
 {
-#ifndef _WINDOWS
     return x_event(new_input);
-#else
-    return 0;
-#endif
-}
-void Client_flush(void)
-{
-    XFlush(dpy);
 }
 
 int Client_wrap_mode(void)

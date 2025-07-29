@@ -331,7 +331,6 @@ int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
 int Client_input(int);
-void Client_flush(void);
 int Client_wrap_mode(void);
 void Reset_shields(void);
 void Set_toggle_shield(bool on);
@@ -340,12 +339,7 @@ void Set_auto_shield(bool on);
 #ifdef XlibSpecificationRelease
 void Key_event(XEvent *event);
 #endif
-#ifndef _WINDOWS
 int x_event(int);
-#else
-int win_xevent(XEvent event);
-void MarkPlayersForRedraw(void);
-#endif
 
 int Key_init(void);
 int Key_update(void);
@@ -356,4 +350,3 @@ extern        void audioEvents();
 #endif
 
 #endif
-

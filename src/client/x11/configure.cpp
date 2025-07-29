@@ -1497,7 +1497,7 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
 
     *strptr = "Saving...";
     Widget_draw(widget_desc);
-    Client_flush();
+    XFlush(dpy);
 
     Get_xpilotrc_file(oldfile, sizeof(oldfile));
     if (oldfile[0] == '\0') {
