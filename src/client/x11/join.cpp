@@ -80,7 +80,7 @@ static void Input_loop(void)
     if (Net_flush() == -1) {
         return;
     }
-    if ((clientfd = Client_fd()) == -1) {
+    if ((clientfd = ConnectionNumber(dpy)) == -1) {
         xperror("Bad client filedescriptor");
         return;
     }

@@ -330,7 +330,6 @@ void Client_cleanup(void);
 int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
-int Client_fd(void);
 int Client_input(int);
 void Client_flush(void);
 int Client_wrap_mode(void);

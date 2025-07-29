@@ -1537,11 +1537,6 @@ void Client_cleanup(void)
     Map_cleanup();
 }
 
-int Client_fd(void)
-{
-    return ConnectionNumber(dpy);
-}
-
 int Client_input(int new_input)
 {
 #ifndef _WINDOWS
