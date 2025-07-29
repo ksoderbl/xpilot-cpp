@@ -86,7 +86,7 @@ void xperror(const char *fmt, ...)
     va_end(ap);
 }
 
-void xpwarn(const char *fmt, ...)
+void warn(const char *fmt, ...)
 {
     int                len;
     va_list        ap;

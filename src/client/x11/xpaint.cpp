@@ -30,11 +30,9 @@
 #include <time.h>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
 
 #include "version.h"
 #include "xpconfig.h"
@@ -94,20 +92,11 @@ XGCValues        gcv;
 Window        top;                        /* Top-level window (topshell) */
 Window        draw;                        /* Main play window */
 Window        keyboard;                /* Keyboard window */
-#ifdef _WINDOWS                /* Windows needs some dummy windows (size 0,0) */
-                                /* so we can store the active fonts.  Windows only */
-                                /* supports 1 active font per window */
-Window        textWindow;                /* for the GC into the config window */
-Window        msgWindow;                /* for meesages into the playfield */
-Window        buttonWindow;                /* to calculate size of buttons */
-#endif
 
 Pixmap        p_draw;                        /* Saved pixmap for the drawing */
                                 /* area (monochromes use this) */
 Window        players;                /* Player list window */
                                 /* monochromes) */
-int        maxMessages;                /* Max. number of messages to display */
-int        messagesToStdout;        /* Send messages to standard output */
 Window        about_w;                /* About window */
 Window        about_close_b;                /* About window's close button */
 Window        about_next_b;                /* About window's next button */

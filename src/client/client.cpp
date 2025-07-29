@@ -30,21 +30,20 @@
 #include <time.h>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
 
+#include "client.h"
 #include "xpconfig.h"
 #include "const.h"
 #include "setup.h"
 #include "xperror.h"
 #include "rules.h"
 #include "bit.h"
+#include "messages.h"
 #include "netclient.h"
 #include "paint.h"
-#include "xinit.h"
+#include "paintradar.h"
 #include "protoclient.h"
 #include "portability.h"
 #include "talk.h"
@@ -183,14 +182,8 @@ static checkpoint_t        checks[MAX_CHECKPOINT];
 score_object_t                score_objects[MAX_SCORE_OBJECTS];
 int                        score_object = 0;
 
-#ifndef  _WINDOWS
 /* provide cut&paste and message history */
 extern        selection_t        selection;
-static        char                *HistoryBlock = NULL;
-extern        char                *HistoryMsg[MAX_HIST_MSGS];
-#endif
-bool                        selectionAndHistory = false;
-int                        maxLinesInHistory;
 
 static fuelstation_t *Fuelstation_by_pos(int x, int y)
 {
@@ -320,8 +313,7 @@ int Handle_cannon(int ind, int dead_time)
 int Handle_target(int num, int dead_time, int damage)
 {
     if (num < 0 || num >= num_targets) {
-        errno = 0;
-        xperror("Bad target index (%d)", num);
+        warn("Bad target index (%d)", num);
         return 0;
     }
     if (dead_time == 0
@@ -331,11 +323,11 @@ int Handle_target(int num, int dead_time, int damage)
     }
     if (targets[num].dead_time > 0 && dead_time == 0) {
         int pos = targets[num].pos;
-        Paint_radar_block(pos / Setup->y, pos % Setup->y, targetRadarColor);
+        Radar_show_target(pos / Setup->y, pos % Setup->y);
     }
     else if (targets[num].dead_time == 0 && dead_time > 0) {
         int pos = targets[num].pos;
-        Paint_radar_block(pos / Setup->y, pos % Setup->y, BLACK);
+        Radar_hide_target(pos / Setup->y, pos % Setup->y);
     }
 
     targets[num].dead_time = dead_time;
@@ -1094,8 +1086,7 @@ int Handle_war(int robot_id, int killer_id)
     char                msg[MSG_LEN];
 
     if ((robot = Other_by_id(robot_id)) == NULL) {
-        errno = 0;
-        IFNWINDOWS(xperror("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);)
+        warn("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     if (killer_id == -1) {
@@ -1106,8 +1097,7 @@ int Handle_war(int robot_id, int killer_id)
         return 0;
     }
     if ((killer = Other_by_id(killer_id)) == NULL) {
-        errno = 0;
-        IFNWINDOWS(xperror("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);)
+        warn("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     robot->war_id = killer_id;
@@ -1201,8 +1191,10 @@ int Handle_score_object(int score, int x, int y, char *msg)
     if (msg[0] != '\0') {
         sprintf(sobj->hud_msg, "%s %d", msg, score);
         sobj->hud_msg_len = strlen(sobj->hud_msg);
-        sobj->hud_msg_width = XTextWidth(gameFont,
-                                         sobj->hud_msg, sobj->hud_msg_len);
+        // TODO
+        // sobj->hud_msg_width = XTextWidth(gameFont,
+        //                                  sobj->hud_msg, sobj->hud_msg_len);
+        sobj->hud_msg_width = -1;
     } else
         sobj->hud_msg_len = 0;
 
@@ -1210,7 +1202,9 @@ int Handle_score_object(int score, int x, int y, char *msg)
     sprintf(sobj->msg, "%d", score);
 
     sobj->msg_len = strlen(sobj->msg);
-    sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);
+    // TODO
+    // sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);
+    sobj->msg_width = -1;
 
     /* Update global index variable */
     score_object = (score_object + 1) % MAX_SCORE_OBJECTS;
@@ -1378,49 +1372,6 @@ void Client_score_table(void)
     scoresChanged = 0;
 }
 
-#ifndef _WINDOWS
-static int Alloc_history(void)
-{
-    char        *hist_ptr;
-    int                i;
-
-    /* maxLinesInHistory is a runtime constant */
-    if ((hist_ptr = (char *)malloc(maxLinesInHistory * MAX_CHARS)) == NULL) {
-        xperror("No memory for history");
-        return -1;
-    }
-    HistoryBlock        = hist_ptr;
-
-    for (i = 0; i < maxLinesInHistory; i++) {
-        HistoryMsg[i]        = hist_ptr;
-        hist_ptr[0]        = '\0';
-        hist_ptr        += MAX_CHARS;
-    }
-    return 0;
-}
-
-static void Free_selectionAndHistory(void)
-{
-    if (HistoryBlock) {
-        free(HistoryBlock);
-        HistoryBlock = NULL;
-    }
-    if (selection.txt) {
-        free(selection.txt);
-        selection.txt = NULL;
-    }
-}
-#else
-static int Alloc_history(void)
-{
-    return 0;
-}
-
-static void Free_selectionAndHistory(void)
-{
-}
-#endif
-
 int Client_init(char *server, unsigned server_version)
 {
     version = server_version;
@@ -1500,7 +1451,8 @@ int Client_power(void)
         || Send_turnresistance(turnresistance) == -1
         || Send_turnresistance_s(turnresistance_s) == -1
         || Send_display() == -1
-        || Startup_server_motd() == -1) {
+        // || Startup_server_motd() == -1
+        ) {
         return -1;
     }
     for (i = 0; i < NUM_MODBANKS; i++) {
@@ -1523,8 +1475,9 @@ void Client_cleanup(void)
 {
     int                i;
 
-    Quit();
+    Platform_specific_cleanup();
     Free_selectionAndHistory();
+    Free_msgs();
     if (max_others > 0) {
         for (i = 0; i < num_others; i++) {
             other_t* other = &Others[i];
@@ -1537,27 +1490,9 @@ void Client_cleanup(void)
     Map_cleanup();
 }
 
-int Client_fd(void)
-{
-    return ConnectionNumber(dpy);
-}
-
 int Client_input(int new_input)
 {
-#ifndef _WINDOWS
     return x_event(new_input);
-#else
-    return 0;
-#endif
-}
-void Client_flush(void)
-{
-    XFlush(dpy);
-}
-
-void Client_sync(void)
-{
-    XSync(dpy, False);
 }
 
 int Client_wrap_mode(void)

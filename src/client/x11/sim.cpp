@@ -237,7 +237,7 @@ static int Simulate_frames(void)
                         xpilotShutdown();
                         return;
                 }
-                Client_sync();
+                XSync(dpy, False);
                 ++i;
         }
 }

@@ -1,5 +1,4 @@
-/* $Id: join.c,v 5.0 2001/04/07 20:00:58 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -30,18 +29,14 @@
 #include <time.h>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
 
-#ifdef _WINDOWS
-# include <winsock.h>
-# include "NT/winClient.h"
-#endif
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #include "version.h"
 #include "xpconfig.h"
@@ -52,6 +47,7 @@
 #include "netclient.h"
 #include "protoclient.h"
 #include "portability.h"
+#include "xpaint.h"
 
 char join_version[] = VERSION;
 
@@ -64,7 +60,6 @@ void xpilotShutdown(void);
 extern void Record_cleanup(void);
 
 
-#ifndef _WINDOWS
 static void Input_loop(void)
 {
     fd_set                rfds;
@@ -86,7 +81,7 @@ static void Input_loop(void)
     if (Net_flush() == -1) {
         return;
     }
-    if ((clientfd = Client_fd()) == -1) {
+    if ((clientfd = ConnectionNumber(dpy)) == -1) {
         xperror("Bad client filedescriptor");
         return;
     }
@@ -172,7 +167,7 @@ static void Input_loop(void)
                     xperror("Bad net flush before sync");
                     return;
                 }
-                Client_sync();
+                XSync(dpy, False);
                 if (Client_input(1) == -1) {
                     return;
                 }
@@ -180,7 +175,6 @@ static void Input_loop(void)
         }
     }
 }
-#endif        /* _WINDOWS */
 
 void xpilotShutdown()
 {

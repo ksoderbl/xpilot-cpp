@@ -880,17 +880,14 @@ static int Net_packet(void)
         type = (*rbuf.ptr & 0xFF);
 
         if (receive_tbl[type] == NULL) {
-            errno = 0;
-            IFNWINDOWS(xperror("Received unknown packet type (%d, %d), dropping frame.", 
-                        type, prev_type);)
+            warn("Received unknown packet type (%d, %d), dropping frame.", type, prev_type);
             Sockbuf_clear(&rbuf);
             break;
         }
         else if ((result = (*receive_tbl[type])()) <= 0) {
             if (result == -1) {
                 if (type != PKT_QUIT) {
-                    errno = 0;
-                    xperror("Processing packet type (%d, %d) failed", type, prev_type);
+                    warn("Processing packet type (%d, %d) failed", type, prev_type);
                 }
                 return -1;
             }
@@ -915,9 +912,8 @@ static int Net_packet(void)
         }
         else if (reliable_tbl[type] == NULL) {
             int i;
-            errno = 0;
-            IFNWINDOWS(xperror("Received unknown reliable data packet type (%d,%d,%d)",
-                                        type, cbuf.ptr - cbuf.buf, cbuf.len);)
+            warn("Received unknown reliable data packet type (%d,%d,%d)",
+                                        type, cbuf.ptr - cbuf.buf, cbuf.len);
             printf("\tdumping buffer for debugging:\n");
             for (i = 0; i < cbuf.len; i++) {
                 printf("%3d", cbuf.buf[i] & 0xFF);
@@ -2778,7 +2774,6 @@ int Send_display(void)
 
     return 0;
 }
-
 
 int Send_modifier_bank(int bank)
 {

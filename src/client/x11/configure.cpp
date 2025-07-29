@@ -60,13 +60,11 @@
 #include <errno.h>
 #include <limits.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <pwd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-#endif
+#include <unistd.h>
+#include <pwd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -678,15 +676,6 @@ static int Config_create_messagesToStdout(int widget_desc, int *height)
                            NULL, NULL);
 }
 
-static int Config_create_reverseScroll(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "reverseScroll",
-                            BIT(instruments, SHOW_REVERSE_SCROLL)
-                                ? true : false,
-                            Config_update_instruments,
-                            (void *) SHOW_REVERSE_SCROLL);
-}
-
 static int Config_create_oldMessagesColor(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
@@ -1108,14 +1097,6 @@ static int Config_create_clockAMPM(int widget_desc, int *height)
                               (void *) SHOW_CLOCK_AMPM_FORMAT);
 }
 
-#ifdef _WINDOWS
-static int Config_create_threadedDraw(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "threadedDraw",
-                              ThreadedDraw, Config_update_bool, &ThreadedDraw);
-}
-#endif
-
 static int Config_create_scaleFactor(int widget_desc, int *height)
 {
     return Config_create_float(widget_desc, height,
@@ -1217,7 +1198,7 @@ static int Config_update_instruments(int widget_desc, void *data, bool *val)
     }
     if (BIT(bit, SHOW_REVERSE_SCROLL)) {
         /* a callback for `reverseScroll' in the config menu */
-        IFNWINDOWS( Talk_reverse_cut(); )
+        Talk_reverse_cut();
     }
 
     return 0;
@@ -1530,7 +1511,7 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
 
     *strptr = "Saving...";
     Widget_draw(widget_desc);
-    Client_flush();
+    XFlush(dpy);
 
     Get_xpilotrc_file(oldfile, sizeof(oldfile));
     if (oldfile[0] == '\0') {
@@ -1617,9 +1598,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
 #if SOUND
     Config_save_int(fp, "maxVolume", maxVolume);
 #endif
-#ifdef _WINDOWS
-    Config_save_bool(fp, "threadedDraw", ThreadedDraw);
-#endif
     Config_save_float(fp, "scaleFactor", scaleFactor);
     Config_save_float(fp, "altScaleFactor", scaleFactor_s);
 
@@ -1632,7 +1610,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
         Config_save_resource(fp, buf, modBankStr[i]);
     }
 
-#ifndef _WINDOWS
     Xpilotrc_end(fp);
     fclose(fp);
     sprintf(newfile, "%s.bak", oldfile);
@@ -1640,7 +1617,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     unlink(oldfile);
     sprintf(newfile, "%s.new", oldfile);
     rename(newfile, oldfile);
-#endif
 
     if (config_save_confirm_desc != NO_WIDGET) {
         Widget_destroy(config_save_confirm_desc);

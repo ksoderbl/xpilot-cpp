@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
                                  conpar);
     }
     else {
-        IFNWINDOWS(result = Welcome_screen(conpar);)
+        result = Welcome_screen(conpar);
     }
 
     if (result == 1) {

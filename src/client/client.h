@@ -58,7 +58,6 @@
 #define SHOW_TEXTURED_DECOR        (1L << 23)
 #define SHOW_CLOCK_AMPM_FORMAT        (1L << 24)
 #define SHOW_TEXTURED_BALLS        (1L << 25)
-#define SHOW_REVERSE_SCROLL        (1L << 26)
 #define SHOW_HUD_RADAR          (1L << 27)
 #define SHOW_PACKET_LAG_METER        (1L << 28)
 
@@ -155,39 +154,6 @@ typedef struct {
 } score_object_t;
 
 
-/*
- * is a selection pending (in progress), done, drawn emphasized?
- */
-#define SEL_NONE       (1 << 0)
-#define SEL_PENDING    (1 << 1)
-#define SEL_SELECTED   (1 << 2)
-#define SEL_EMPHASIZED (1 << 3)
-
-/*
- * a selection (text, string indices, state,...)
- */
-typedef struct {
-    /* a selection in the talk window */
-    struct {
-        int     state;        /* current state of the selection */
-        int     x1;        /* string indices */
-        int     x2;
-        bool    incl_nl;/* include a `\n'? */
-    } talk ;
-    /* a selection in the draw window */
-    struct {
-        int     state;
-        int     x1;        /* string indices (for TalkMsg[].txt) */
-        int     x2;        /* they are modified when the emphasized area */
-        int     y1;        /* is scrolled down by new messages coming in */
-        int     y2;
-    } draw;
-    char        *txt;   /* allocated when needed */
-    int                txt_size;        /* size of txt buffer */
-    int                len;
-    /* when a message `jumps' from talk window to the player messages: */
-    bool        keep_emphasizing;
-} selection_t;
 
 
 extern ipos        pos;
@@ -296,9 +262,6 @@ extern char         audioServer[MAX_CHARS];        /* audio server */
 extern int         maxVolume;                /* maximum volume (in percent) */
 #endif /* SOUND */
 
-extern int        maxLinesInHistory;        /* number of lines to save in history */
-#define MAX_HIST_MSGS        128                /* maximum */
-
 int Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, int *damage);
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage);
@@ -330,10 +293,7 @@ void Client_cleanup(void);
 int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
-int Client_fd(void);
 int Client_input(int);
-void Client_flush(void);
-void Client_sync(void);
 int Client_wrap_mode(void);
 void Reset_shields(void);
 void Set_toggle_shield(bool on);
@@ -342,12 +302,8 @@ void Set_auto_shield(bool on);
 #ifdef XlibSpecificationRelease
 void Key_event(XEvent *event);
 #endif
-#ifndef _WINDOWS
+
 int x_event(int);
-#else
-int win_xevent(XEvent event);
-void MarkPlayersForRedraw(void);
-#endif
 
 int Key_init(void);
 int Key_update(void);
@@ -356,6 +312,9 @@ int Check_client_fps(void);
 #ifdef        SOUND
 extern        void audioEvents();
 #endif
+
+int Init_playing_windows(void);
+void Platform_specific_cleanup(void);
 
 #endif
 

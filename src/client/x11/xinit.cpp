@@ -27,19 +27,17 @@
 #include <string.h>
 #include <errno.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
 #include "keys.h"
 #include "icon.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "widget.h"
 #include "configure.h"
@@ -109,9 +107,6 @@ char                        sparkColors[MSG_LEN];
 int                        spark_color[MAX_COLORS];
 int                        num_spark_colors;
 bool                        ignoreWindowManager;
-
-static message_t        *MsgBlock = NULL;
-static message_t        *MsgBlock_pending = NULL;
 
 
 /*
@@ -851,71 +846,6 @@ int Init_playing_windows(void)
     return 0;
 }
 
-int Alloc_msgs(void)
-{
-    message_t                *x, *x2 = 0;
-    int                        i;
-
-    if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL){
-        xperror("No memory for messages");
-        return -1;
-    }
-
-#ifndef _WINDOWS
-    if (selectionAndHistory &&
-        ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)){
-        xperror("No memory for history messages");
-        free(x);
-        return -1;
-    }
-    if (selectionAndHistory) {
-        MsgBlock_pending        = x2;
-    }
-#endif
-
-    MsgBlock                = x;
-
-    for (i = 0; i < 2 * MAX_MSGS; i++) {
-        if (i < MAX_MSGS) {
-            TalkMsg[i] = x;
-            IFNWINDOWS( if (selectionAndHistory) TalkMsg_pending[i] = x2; )
-        } else {
-            GameMsg[i - MAX_MSGS] = x;
-            IFNWINDOWS( if (selectionAndHistory) GameMsg_pending[i - MAX_MSGS] = x2; )
-        }
-        x->txt[0] = '\0';
-        x->len = 0;
-        x->life = 0;
-        x++;
-
-#ifndef _WINDOWS
-        if (selectionAndHistory) {
-            x2->txt[0] = '\0';
-            x2->len = 0;
-            x2->life = 0;
-            x2++;
-        }
-#endif
-    }
-    return 0;
-}
-
-void Free_msgs(void)
-{
-    if (MsgBlock) {
-        free(MsgBlock);
-        MsgBlock = NULL;
-    }
-
-#ifndef _WINDOWS
-    if (MsgBlock_pending) {
-        free(MsgBlock_pending);
-        MsgBlock_pending = NULL;
-    }
-#endif
-}
-
-
 static int Config_callback(int widget_desc, void *data, const char **str)
 {
     Config(true);
@@ -993,9 +923,8 @@ void Resize(Window w, int width, int height)
 /*
  * Cleanup player structure, close the display etc.
  */
-void Quit(void)
+void Platform_specific_cleanup(void)
 {
-#ifndef _WINDOWS
     if (dpy != NULL) {
         XAutoRepeatOn(dpy);
         Colors_cleanup();
@@ -1007,13 +936,6 @@ void Quit(void)
             kdpy = NULL;
         }
     }
-#else
-    if (button_form) {
-        Widget_destroy(button_form);
-        button_form = 0;
-    }
-#endif
-    Free_msgs();
     Widget_cleanup();
 }
 

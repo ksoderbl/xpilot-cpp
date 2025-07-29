@@ -20,26 +20,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-/*
- * Adapted from 'The UNIX Programming Environment' by Kernighan & Pike
- * and an example from the manualpage for vprintf by
- * Gaute Nessan, University of Tromsoe (gaute@staff.cs.uit.no).
- *
- * Modified by Bjoern Stabell <bjoern@xpilot.org>.
- * Dick Balaska <dick@xpilot.org> added the memory/leak checking.
- * Bert Gijsbers <bert@xpilot.org> added warn, fatal, coredump.
- */
 
-#ifndef        ERROR_H
-#define        ERROR_H
+#ifndef PAINTRADAR_H
+#define PAINTRADAR_H
 
-#include <cstdarg>
+void Radar_show_target(int x, int y);
+void Radar_hide_target(int x, int y);
 
-extern void warn(const char *fmt, ...);
-extern void xperror(const char *fmt, ...);
-extern void xpfatal(const char *fmt, ...);
-extern void xpdumpcore(const char *fmt, ...);
-
-extern void init_error(const char *prog);
-
-#endif        /* ERROR_H */
+#endif

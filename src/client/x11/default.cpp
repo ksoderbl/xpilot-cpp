@@ -2692,8 +2692,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bool_resource(rDB, "colorSwitch", &colorSwitch);
     Get_bool_resource(rDB, "multibuffer", &multibuffer);
 
-    /* Windows already derived maxColors in InitWinX */
-    IFNWINDOWS( Get_int_resource(rDB, "maxColors", &maxColors); )
+    Get_int_resource(rDB, "maxColors", &maxColors);
 
     Get_string_resource(rDB, "black", color_names[0], sizeof(color_names[0]));
     Get_string_resource(rDB, "white", color_names[1], sizeof(color_names[1]));
@@ -2747,7 +2746,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bit_resource(rDB, "filledDecor", &instruments, SHOW_FILLED_DECOR);
     Get_bit_resource(rDB, "texturedDecor", &instruments, SHOW_TEXTURED_DECOR);
     Get_bit_resource(rDB, "texturedBalls", &instruments, SHOW_TEXTURED_BALLS);
-    Get_bit_resource(rDB, "reverseScroll", &instruments, SHOW_REVERSE_SCROLL);
 
     Get_bool_resource(rDB, "texturedObjects", &blockBitmaps);
     Get_bool_resource(rDB, "pointerControl", &initialPointerControl);
@@ -2771,11 +2769,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_int_resource(rDB, "maxMessages", &maxMessages);
     Get_int_resource(rDB, "messagesToStdout", &messagesToStdout);
-#ifndef _WINDOWS
     Get_bool_resource(rDB, "selectionAndHistory", &selectionAndHistory);
     Get_int_resource(rDB, "maxLinesInHistory", &maxLinesInHistory);
     LIMIT(maxLinesInHistory, 1, MAX_HIST_MSGS);
-#endif
 
     Get_int_resource(rDB, "receiveWindowSize", &receive_window_size);
     LIMIT(receive_window_size, MIN_RECEIVE_WINDOW_SIZE, MAX_RECEIVE_WINDOW_SIZE);

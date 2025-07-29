@@ -1,5 +1,4 @@
-/* $Id: paint.h,v 5.6 2002/01/30 21:29:39 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,8 +21,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef PAINT_H
-#define PAINT_H
+#ifndef XPAINT_H
+#define XPAINT_H
 
 
 /* includes begin */
@@ -117,19 +116,12 @@ extern int        radar_exposures;        /* Is radar window exposed? */
                                         /* windows has 2 sets of item bitmaps */
 #define        ITEM_HUD        0                /* one color for the HUD */
 #define        ITEM_PLAYFIELD        1                /* and one color for the playfield */
-#ifdef _WINDOWS
-extern Pixmap        itemBitmaps[][2];
-#else
 extern Pixmap        itemBitmaps[];
-#endif
 
 extern GC        gc, messageGC, radarGC, buttonGC, scoreListGC, textGC, talkGC;
 extern GC        motdGC;
 extern XGCValues gcv;
 extern Window        top, draw, keyboard, radar, players;
-#ifdef _WINDOWS                                /* see paint.c for details */
-extern Window        textWindow, msgWindow, buttonWindow;
-#endif
 extern Pixmap        p_draw;                        /* Drawing area pixmap */
 extern Pixmap        p_radar;                /* Radar drawing pixmap */
 extern Pixmap        s_radar;                /* Second radar drawing pixmap */
@@ -176,9 +168,6 @@ extern int        (*radarDrawRectanglePtr)        /* Function to draw player on 
 
 extern int        maxKeyDefs;
 extern long        loops;
-extern int        maxMessages;
-extern int        messagesToStdout;
-extern bool        selectionAndHistory;
 
 extern DFLOAT        scaleFactor;                /* scale the draw (main playfield) window */
 extern DFLOAT        scaleFactor_s;
@@ -190,7 +179,6 @@ extern void        Init_scale_array(void);
  * Prototypes from the paint*.c files.
  */
 
-void Add_message(const char *message);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
 int Handle_self(int x, int y, int vx, int vy, int dir,
