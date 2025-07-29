@@ -5,9 +5,6 @@ noinst_LIBRARIES = libxpclient.a
 libxpclient_a_SOURCES = \
     caudio.cpp \
     caudio.h \
-    client.cpp \
-    client.h \
-    configure.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
@@ -19,16 +16,12 @@ libxpclient_a_SOURCES = \
     guimap.h \
     guiobjects.h \
     icon.h \
-    messages.cpp \
-    messages.h \
     netclient.h \
-    option.cpp \
-    option.h \
-    paint.cpp \
-    paint.h \
     paintmacros.h \
     protoclient.h \
     query.cpp \
+    simbloods.h \
+    sim.cpp \
     talk.h \
     xpmread.h
 

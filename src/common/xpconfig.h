@@ -24,6 +24,16 @@
 #ifndef XPCONFIG_H
 #define XPCONFIG_H
 
+#ifdef MOD2
+#error "MOD2 already defined - config.h should be included before const.h"
+#endif
+/*
+ * Uncomment this if your machine doesn't use
+ * two's complement negative numbers.
+ */
+/* #define MOD2(x, m)        mod(x, m) */
+
+
 /*
  * The following macros decide the speed of the game and
  * how often the server should draw a frame.  (Hmm...)
@@ -40,15 +50,55 @@
  * ZCAT_EXT should define the proper compressed file extension.
  */
 
-#define COMPRESSED_MAPS
-
-#ifdef        DEBUG
-#    define D(x)        { {x}; fflush(stdout); }
+#if defined(_WINDOWS)
+#    ifdef COMPRESSED_MAPS
+        /*
+         * Couldn't find a popen(), also compress and gzip don't exist.
+         */
+#        undef COMPRESSED_MAPS
+#    endif
 #else
-#    define D(x)
+#    define COMPRESSED_MAPS
 #endif
 
-#define        xpprintf        printf
+#ifdef _WINDOWS
+#        ifdef        _DEBUG
+#                define        DEBUG        1
+#                define        D(x)        {x;}
+#        else
+#                define        D(x)
+#        endif
+#else
+#        ifdef        DEBUG
+#                define D(x)        { {x}; fflush(stdout); }
+#        else
+#                define D(x)
+#        endif
+#endif
+
+/* Windows doesn't play with stdin/out well at all... */
+/* So for the client i route the "debug" printfs to the debug stream */
+/* The server gets 'real' messages routed to the messages window */
+#ifdef _WINDOWS
+#        ifdef        _XPILOTNTSERVER_
+#        define        xpprintf        xpprintfW
+/*#        define        xpprintf        _Trace */
+#        else
+#        define        xpprintf        _Trace
+#        endif
+#else
+#        define        xpprintf        printf
+#endif
+
+/*
+ XPilot on Windows does lots of double to int conversions. So we have:
+warning C4244: 'initializing' : conversion from 'double ' to 'int ', possible loss of data
+a million times.  I used to fix each warning added by the Unix people, but
+this makes for harder to read code (and was tiring with each patch)
+*/
+#ifdef        _WINDOWS
+#pragma warning (disable : 4244 4761)
+#endif
 
 char *Conf_libdir(void);
 char *Conf_defaults_file_name(void);

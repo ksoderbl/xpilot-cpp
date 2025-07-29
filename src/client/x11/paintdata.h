@@ -1,4 +1,5 @@
-/*
+/* $Id: paintdata.h,v 5.2 2002/01/18 22:34:25 kimiko Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -28,6 +29,26 @@
 #ifndef        TYPES_H
 #include "types.h"
 #endif
+
+/*
+ * Macro to add one new element of a given type to a dynamic array.
+ * T is the type of the element.
+ * P is the pointer to the array memory.
+ * N is the current number of elements in the array.
+ * M is the current size of the array.
+ * V is the new element to add.
+ * The goal is to keep the number of malloc/realloc calls low
+ * while not wasting too much memory because of over-allocation.
+ */
+#define STORE(T,P,N,M,V)                                                \
+    if (N >= M && ((M <= 0)                                                \
+        ? (P = (T *) malloc((M = 1) * sizeof(*P)))                        \
+        : (P = (T *) realloc(P, (M += M) * sizeof(*P)))) == NULL) {        \
+        xperror("No memory");                                                \
+        N = M = 0;                                                        \
+        return -1;                                                        \
+    } else                                                                \
+        (P[N++] = V)
 
 /*
  * Local types and data for painting.
@@ -197,6 +218,39 @@ typedef struct {
 extern erase_t                erase[2],
                         *erp;
 
+/*
+ * Macro to make room in a given dynamic array for new elements.
+ * P is the pointer to the array memory.
+ * N is the current number of elements in the array.
+ * M is the current size of the array.
+ * T is the type of the elements.
+ * E is the number of new elements to store in the array.
+ * The goal is to keep the number of malloc/realloc calls low
+ * while not wasting too much memory because of over-allocation.
+ */
+#define EXPAND(P,N,M,T,E)                                                \
+    if ((N) + (E) > (M)) {                                                \
+        if ((M) <= 0) {                                                        \
+            M = (E) + 2;                                                \
+            P = (T *) malloc((M) * sizeof(T));                                \
+            N = 0;                                                        \
+        } else {                                                        \
+            M = ((M) << 1) + (E);                                        \
+            P = (T *) realloc(P, (M) * sizeof(T));                        \
+        }                                                                \
+        if (P == NULL) {                                                \
+            xperror("No memory");                                                \
+            N = M = 0;                                                        \
+            return;        /* ! */                                                \
+        }                                                                \
+    }
+
+#define UNEXPAND(P,N,M)                                                        \
+    if ((N) < ((M) >> 2)) {                                                \
+        free(P);                                                        \
+        M = 0;                                                                \
+    }                                                                        \
+    N = 0;
 
 #ifndef PAINT_FREE
 # define PAINT_FREE        1

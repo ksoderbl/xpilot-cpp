@@ -1,4 +1,5 @@
-/*
+/* $Id: draw.h,v 5.6 2003/09/16 21:02:32 bertg Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -24,9 +25,11 @@
 #ifndef        DRAW_H
 #define        DRAW_H
 
+#ifndef TYPES_H
 /* need position */
 #include "types.h"
 #include "const.h"
+#endif
 
 /*
  * Abstract (non-display system specific) drawing definitions.
@@ -72,6 +75,9 @@
 #define DEF_SPARK_RAND            0x55        /* 66% */
 
 #define DSIZE                    4            /* Size of diamond (on radar) */
+
+#define MSG_DURATION            1024
+#define MSG_FLASH            892
 
 #define TITLE_DELAY            500
 #define        UPDATE_SCORE_DELAY  (FPS)

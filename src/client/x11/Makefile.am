@@ -5,8 +5,10 @@ xpilot_cpp_client_x11_SOURCES = \
     blockbitmaps.cpp \
     blockbitmaps.h \
     colors.cpp \
-    colors.h \
     configure.cpp \
+    configure.h \
+    client.cpp \
+    client.h \
     dbuff.cpp \
     dbuff.h \
     default.cpp \
@@ -15,6 +17,8 @@ xpilot_cpp_client_x11_SOURCES = \
     guiobjects.cpp \
     join.cpp \
     netclient.cpp \
+    paint.cpp \
+    paint.h \
     paintdata.cpp \
     paintdata.h \
     painthud.cpp \
@@ -23,8 +27,6 @@ xpilot_cpp_client_x11_SOURCES = \
     paintradar.cpp \
     record.cpp \
     record.h \
-    sim.cpp \
-    simbloods.h \
     talk.cpp \
     talkmacros.cpp \
     textinterface.cpp \
@@ -37,8 +39,6 @@ xpilot_cpp_client_x11_SOURCES = \
     xeventhandlers.h \
     xinit.cpp \
     xinit.h \
-    xpaint.cpp \
-    xpaint.h \
     xpilot.cpp \
     xpmread.cpp
 

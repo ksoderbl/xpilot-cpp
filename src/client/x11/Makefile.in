@@ -100,14 +100,14 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_xpilot_cpp_client_x11_OBJECTS = about.$(OBJEXT) \
 	blockbitmaps.$(OBJEXT) colors.$(OBJEXT) configure.$(OBJEXT) \
-	dbuff.$(OBJEXT) default.$(OBJEXT) guimap.$(OBJEXT) \
-	guiobjects.$(OBJEXT) join.$(OBJEXT) netclient.$(OBJEXT) \
-	paintdata.$(OBJEXT) painthud.$(OBJEXT) paintmap.$(OBJEXT) \
-	paintobjects.$(OBJEXT) paintradar.$(OBJEXT) record.$(OBJEXT) \
-	sim.$(OBJEXT) talk.$(OBJEXT) talkmacros.$(OBJEXT) \
-	textinterface.$(OBJEXT) welcome.$(OBJEXT) widget.$(OBJEXT) \
-	xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) \
-	xpaint.$(OBJEXT) xpilot.$(OBJEXT) xpmread.$(OBJEXT)
+	client.$(OBJEXT) dbuff.$(OBJEXT) default.$(OBJEXT) \
+	guimap.$(OBJEXT) guiobjects.$(OBJEXT) join.$(OBJEXT) \
+	netclient.$(OBJEXT) paint.$(OBJEXT) paintdata.$(OBJEXT) \
+	painthud.$(OBJEXT) paintmap.$(OBJEXT) paintobjects.$(OBJEXT) \
+	paintradar.$(OBJEXT) record.$(OBJEXT) talk.$(OBJEXT) \
+	talkmacros.$(OBJEXT) textinterface.$(OBJEXT) welcome.$(OBJEXT) \
+	widget.$(OBJEXT) xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) \
+	xinit.$(OBJEXT) xpilot.$(OBJEXT) xpmread.$(OBJEXT)
 xpilot_cpp_client_x11_OBJECTS = $(am_xpilot_cpp_client_x11_OBJECTS)
 xpilot_cpp_client_x11_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
@@ -128,18 +128,18 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/blockbitmaps.Po \
-	./$(DEPDIR)/colors.Po ./$(DEPDIR)/configure.Po \
-	./$(DEPDIR)/dbuff.Po ./$(DEPDIR)/default.Po \
-	./$(DEPDIR)/guimap.Po ./$(DEPDIR)/guiobjects.Po \
-	./$(DEPDIR)/join.Po ./$(DEPDIR)/netclient.Po \
+	./$(DEPDIR)/client.Po ./$(DEPDIR)/colors.Po \
+	./$(DEPDIR)/configure.Po ./$(DEPDIR)/dbuff.Po \
+	./$(DEPDIR)/default.Po ./$(DEPDIR)/guimap.Po \
+	./$(DEPDIR)/guiobjects.Po ./$(DEPDIR)/join.Po \
+	./$(DEPDIR)/netclient.Po ./$(DEPDIR)/paint.Po \
 	./$(DEPDIR)/paintdata.Po ./$(DEPDIR)/painthud.Po \
 	./$(DEPDIR)/paintmap.Po ./$(DEPDIR)/paintobjects.Po \
 	./$(DEPDIR)/paintradar.Po ./$(DEPDIR)/record.Po \
-	./$(DEPDIR)/sim.Po ./$(DEPDIR)/talk.Po \
-	./$(DEPDIR)/talkmacros.Po ./$(DEPDIR)/textinterface.Po \
-	./$(DEPDIR)/welcome.Po ./$(DEPDIR)/widget.Po \
-	./$(DEPDIR)/xevent.Po ./$(DEPDIR)/xeventhandlers.Po \
-	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpaint.Po \
+	./$(DEPDIR)/talk.Po ./$(DEPDIR)/talkmacros.Po \
+	./$(DEPDIR)/textinterface.Po ./$(DEPDIR)/welcome.Po \
+	./$(DEPDIR)/widget.Po ./$(DEPDIR)/xevent.Po \
+	./$(DEPDIR)/xeventhandlers.Po ./$(DEPDIR)/xinit.Po \
 	./$(DEPDIR)/xpilot.Po ./$(DEPDIR)/xpmread.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -288,8 +288,10 @@ xpilot_cpp_client_x11_SOURCES = \
     blockbitmaps.cpp \
     blockbitmaps.h \
     colors.cpp \
-    colors.h \
     configure.cpp \
+    configure.h \
+    client.cpp \
+    client.h \
     dbuff.cpp \
     dbuff.h \
     default.cpp \
@@ -298,6 +300,8 @@ xpilot_cpp_client_x11_SOURCES = \
     guiobjects.cpp \
     join.cpp \
     netclient.cpp \
+    paint.cpp \
+    paint.h \
     paintdata.cpp \
     paintdata.h \
     painthud.cpp \
@@ -306,8 +310,6 @@ xpilot_cpp_client_x11_SOURCES = \
     paintradar.cpp \
     record.cpp \
     record.h \
-    sim.cpp \
-    simbloods.h \
     talk.cpp \
     talkmacros.cpp \
     textinterface.cpp \
@@ -320,8 +322,6 @@ xpilot_cpp_client_x11_SOURCES = \
     xeventhandlers.h \
     xinit.cpp \
     xinit.h \
-    xpaint.cpp \
-    xpaint.h \
     xpilot.cpp \
     xpmread.cpp
 
@@ -414,6 +414,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/about.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/blockbitmaps.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/colors.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/configure.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbuff.Po@am__quote@ # am--include-marker
@@ -422,13 +423,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guiobjects.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/join.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netclient.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintdata.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/painthud.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintmap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintobjects.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintradar.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/record.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sim.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talk.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talkmacros.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textinterface.Po@am__quote@ # am--include-marker
@@ -437,7 +438,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xevent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xeventhandlers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinit.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpaint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpilot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmread.Po@am__quote@ # am--include-marker
 
@@ -589,6 +589,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/about.Po
 	-rm -f ./$(DEPDIR)/blockbitmaps.Po
+	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/colors.Po
 	-rm -f ./$(DEPDIR)/configure.Po
 	-rm -f ./$(DEPDIR)/dbuff.Po
@@ -597,13 +598,13 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/guiobjects.Po
 	-rm -f ./$(DEPDIR)/join.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
+	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/paintdata.Po
 	-rm -f ./$(DEPDIR)/painthud.Po
 	-rm -f ./$(DEPDIR)/paintmap.Po
 	-rm -f ./$(DEPDIR)/paintobjects.Po
 	-rm -f ./$(DEPDIR)/paintradar.Po
 	-rm -f ./$(DEPDIR)/record.Po
-	-rm -f ./$(DEPDIR)/sim.Po
 	-rm -f ./$(DEPDIR)/talk.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po
@@ -612,7 +613,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
-	-rm -f ./$(DEPDIR)/xpaint.Po
 	-rm -f ./$(DEPDIR)/xpilot.Po
 	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
@@ -662,6 +662,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/about.Po
 	-rm -f ./$(DEPDIR)/blockbitmaps.Po
+	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/colors.Po
 	-rm -f ./$(DEPDIR)/configure.Po
 	-rm -f ./$(DEPDIR)/dbuff.Po
@@ -670,13 +671,13 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/guiobjects.Po
 	-rm -f ./$(DEPDIR)/join.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
+	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/paintdata.Po
 	-rm -f ./$(DEPDIR)/painthud.Po
 	-rm -f ./$(DEPDIR)/paintmap.Po
 	-rm -f ./$(DEPDIR)/paintobjects.Po
 	-rm -f ./$(DEPDIR)/paintradar.Po
 	-rm -f ./$(DEPDIR)/record.Po
-	-rm -f ./$(DEPDIR)/sim.Po
 	-rm -f ./$(DEPDIR)/talk.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po
@@ -685,7 +686,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
-	-rm -f ./$(DEPDIR)/xpaint.Po
 	-rm -f ./$(DEPDIR)/xpilot.Po
 	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile

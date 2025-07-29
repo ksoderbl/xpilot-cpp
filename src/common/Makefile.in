@@ -105,10 +105,10 @@ am__v_AR_1 =
 libxpcommon_a_AR = $(AR) $(ARFLAGS)
 libxpcommon_a_LIBADD =
 am_libxpcommon_a_OBJECTS = checknames.$(OBJEXT) list.$(OBJEXT) \
-	net.$(OBJEXT) portability.$(OBJEXT) randommt.$(OBJEXT) \
-	shipshape.$(OBJEXT) socklib.$(OBJEXT) strcasecmp.$(OBJEXT) \
-	strdup.$(OBJEXT) strlcpy.$(OBJEXT) xpconfig.$(OBJEXT) \
-	xperror.$(OBJEXT) xpmath.$(OBJEXT) xpmemory.$(OBJEXT)
+	math.$(OBJEXT) net.$(OBJEXT) portability.$(OBJEXT) \
+	randommt.$(OBJEXT) shipshape.$(OBJEXT) socklib.$(OBJEXT) \
+	strcasecmp.$(OBJEXT) strdup.$(OBJEXT) strlcpy.$(OBJEXT) \
+	xpconfig.$(OBJEXT) xperror.$(OBJEXT) xpmemory.$(OBJEXT)
 libxpcommon_a_OBJECTS = $(am_libxpcommon_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -126,12 +126,12 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/checknames.Po ./$(DEPDIR)/list.Po \
-	./$(DEPDIR)/net.Po ./$(DEPDIR)/portability.Po \
-	./$(DEPDIR)/randommt.Po ./$(DEPDIR)/shipshape.Po \
-	./$(DEPDIR)/socklib.Po ./$(DEPDIR)/strcasecmp.Po \
-	./$(DEPDIR)/strdup.Po ./$(DEPDIR)/strlcpy.Po \
-	./$(DEPDIR)/xpconfig.Po ./$(DEPDIR)/xperror.Po \
-	./$(DEPDIR)/xpmath.Po ./$(DEPDIR)/xpmemory.Po
+	./$(DEPDIR)/math.Po ./$(DEPDIR)/net.Po \
+	./$(DEPDIR)/portability.Po ./$(DEPDIR)/randommt.Po \
+	./$(DEPDIR)/shipshape.Po ./$(DEPDIR)/socklib.Po \
+	./$(DEPDIR)/strcasecmp.Po ./$(DEPDIR)/strdup.Po \
+	./$(DEPDIR)/strlcpy.Po ./$(DEPDIR)/xpconfig.Po \
+	./$(DEPDIR)/xperror.Po ./$(DEPDIR)/xpmemory.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -280,7 +280,6 @@ libxpcommon_a_SOURCES = \
     bit.h \
     checknames.cpp \
     checknames.h \
-    commonmacros.h \
     commonproto.h \
     const.h \
     draw.h \
@@ -288,6 +287,7 @@ libxpcommon_a_SOURCES = \
     keys.h \
     list.cpp \
     list.h \
+    math.cpp \
     net.cpp \
     net.h \
     packet.h \
@@ -311,8 +311,6 @@ libxpcommon_a_SOURCES = \
     xpconfig.h \
     xperror.cpp \
     xperror.h \
-    xpmath.cpp \
-    xpmath.h \
     xpmemory.cpp
 
 all: all-am
@@ -365,6 +363,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/checknames.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/math.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/portability.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/randommt.Po@am__quote@ # am--include-marker
@@ -375,7 +374,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlcpy.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpconfig.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xperror.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmath.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmemory.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -523,6 +521,7 @@ clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/checknames.Po
 	-rm -f ./$(DEPDIR)/list.Po
+	-rm -f ./$(DEPDIR)/math.Po
 	-rm -f ./$(DEPDIR)/net.Po
 	-rm -f ./$(DEPDIR)/portability.Po
 	-rm -f ./$(DEPDIR)/randommt.Po
@@ -533,7 +532,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/strlcpy.Po
 	-rm -f ./$(DEPDIR)/xpconfig.Po
 	-rm -f ./$(DEPDIR)/xperror.Po
-	-rm -f ./$(DEPDIR)/xpmath.Po
 	-rm -f ./$(DEPDIR)/xpmemory.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -582,6 +580,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/checknames.Po
 	-rm -f ./$(DEPDIR)/list.Po
+	-rm -f ./$(DEPDIR)/math.Po
 	-rm -f ./$(DEPDIR)/net.Po
 	-rm -f ./$(DEPDIR)/portability.Po
 	-rm -f ./$(DEPDIR)/randommt.Po
@@ -592,7 +591,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/strlcpy.Po
 	-rm -f ./$(DEPDIR)/xpconfig.Po
 	-rm -f ./$(DEPDIR)/xperror.Po
-	-rm -f ./$(DEPDIR)/xpmath.Po
 	-rm -f ./$(DEPDIR)/xpmemory.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

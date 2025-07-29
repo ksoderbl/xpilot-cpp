@@ -1,4 +1,5 @@
-/*
+/* $Id: error.h,v 5.3 2001/05/30 18:34:15 dik Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -30,12 +31,11 @@
  * Bert Gijsbers <bert@xpilot.org> added warn, fatal, coredump.
  */
 
-#ifndef        XPERROR_H
-#define        XPERROR_H
+#ifndef        ERROR_H
+#define        ERROR_H
 
-#include <cstdarg>
+#include <stdarg.h>
 
-extern void xpinfo(const char *fmt, ...);
 extern void xpwarn(const char *fmt, ...);
 extern void xperror(const char *fmt, ...);
 extern void xpfatal(const char *fmt, ...);
@@ -43,4 +43,4 @@ extern void xpdumpcore(const char *fmt, ...);
 
 extern void init_error(const char *prog);
 
-#endif        /* XPERROR_H */
+#endif        /* ERROR_H */

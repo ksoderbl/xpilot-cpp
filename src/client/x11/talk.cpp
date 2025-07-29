@@ -27,20 +27,21 @@
 #include <string.h>
 #include <errno.h>
 
-#include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <X11/Xmd.h>
+#ifndef _WINDOWS
+# include <unistd.h>
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <X11/Xatom.h>
+# include <X11/Xmd.h>
+#endif
 
 #include "xpconfig.h"
 #include "const.h"
-#include "xpaint.h"
+#include "paint.h"
 #include "xinit.h"
 #include "xperror.h"
 #include "netclient.h"
 #include "protoclient.h"
-#include "messages.h"
 #include "keys.h"
 #include "bit.h"
 #include "commonproto.h"
@@ -324,6 +325,42 @@ static char *Get_msg_from_history(int* pos, char *message, keys_t direction)
     return NULL; /* no history */
 }
 
+/*
+ * Print all available messages to stdout.
+ */
+void Print_messages_to_stdout(void)
+{
+    int i, k;
+    int direction, offset;
+
+    if (!selectionAndHistory)
+        return;
+
+    if (BIT(instruments, SHOW_REVERSE_SCROLL)) {
+        direction        = -1;
+        offset                = maxMessages - 1;
+    } else {
+        direction        = 1;
+        offset                = 0;
+    }
+
+    xpprintf("[talk messages]\n");
+    for (k = 0; k < maxMessages; k++) {
+        i = direction * k + offset;
+        if (TalkMsg[i] && TalkMsg[i]->len > 0) {
+            xpprintf("  %s\n", TalkMsg[i]->txt);
+        }
+    }
+
+    xpprintf("[server messages]\n");
+    for (k = maxMessages - 1; k >= 0; k--) {
+        i = direction * k + offset;
+        if (GameMsg[i] && GameMsg[i]->len > 0) {
+            xpprintf("  %s\n", GameMsg[i]->txt);
+        }
+    }
+    xpprintf("\n");
+}
 
 /*
  * Pressing a key while there is an emphasized text in the talk window
@@ -1336,6 +1373,7 @@ void Talk_cut_from_messages(XButtonEvent* xbutton)
          */
         char        cut_str[MSG_LEN]; /* for fetching the messages line by line */
         int        cut_str_len;
+        int        next = 0;        /* how to walk through the messages */
         int         current_line;        /* when going through a multi line selection */
 
 
@@ -1501,10 +1539,17 @@ void Talk_cut_from_messages(XButtonEvent* xbutton)
 
         current_line = TALK_MSG_SCREENPOS(last_msg_index, selection.draw.y1);
 
+        /* how to walk through the messages */
+        if (BIT(instruments, SHOW_REVERSE_SCROLL)) {
+            next = -1;
+        } else {
+            next = +1;
+        }
+
         /* fetch the first line */
         strlcpy(cut_str, TalkMsg[current_line]->txt, sizeof(cut_str));
         cut_str_len = TalkMsg[current_line]->len;
-        current_line ++;
+        current_line += next;
 
         if (selection.draw.y1 == selection.draw.y2) {
         /* ...it's the only line */
@@ -1526,7 +1571,7 @@ void Talk_cut_from_messages(XButtonEvent* xbutton)
             for (i = selection.draw.y1 + 1; i < selection.draw.y2; i++) {
                 strlcpy(cut_str, TalkMsg[current_line]->txt, sizeof(cut_str));
                 cut_str_len = TalkMsg[current_line]->len;
-                current_line++;
+                current_line += next;
                 strlcat(selection.txt, cut_str, selection.txt_size);
                 strlcat(selection.txt, "\n", selection.txt_size);
             }
@@ -1534,7 +1579,7 @@ void Talk_cut_from_messages(XButtonEvent* xbutton)
             /* the last line */
             strlcpy(cut_str, TalkMsg[current_line]->txt, sizeof(cut_str));
             cut_str_len = TalkMsg[current_line]->len;
-            current_line++;
+            current_line += next;
             strncat(selection.txt, cut_str, selection.draw.x2 + 1);
             if (c2.x_off == 1) {
                 strlcat(selection.txt, "\n", selection.txt_size);
@@ -1561,5 +1606,16 @@ void Talk_cut_from_messages(XButtonEvent* xbutton)
     /* ButtonRelease */
     } else {
         return; /* neither ButtonPress nor ButtonRelease ? */
+    }
+}
+
+void Talk_reverse_cut(void)
+{
+    /*
+     * think twice: it can't work (yet) without hacking all the
+     * c&p stuff even more. thus only unemphasize:
+     */
+    if (selectionAndHistory && selection.draw.state == SEL_EMPHASIZED) {
+        selection.draw.state = SEL_SELECTED;
     }
 }

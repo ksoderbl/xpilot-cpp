@@ -28,9 +28,11 @@
 #include <math.h>
 #include <sys/types.h>
 
-#include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/Xos.h>
+#ifndef _WINDOWS
+# include <unistd.h>
+# include <X11/Xlib.h>
+# include <X11/Xos.h>
+#endif
 
 #include "xpconfig.h"
 #include "const.h"
@@ -40,7 +42,7 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "xpaint.h"
+#include "paint.h"
 #include "paintdata.h"
 #include "paintmacros.h"
 #include "record.h"
@@ -759,7 +761,9 @@ void Paint_messages(void)
         last_msg_index--; /* make it an index */
     }
 
-    for (i = 0; i < 2 * maxMessages; i ++) {
+    for (i = (BIT(instruments, SHOW_REVERSE_SCROLL) ? 2 * maxMessages - 1 : 0);
+         (BIT(instruments, SHOW_REVERSE_SCROLL) ? i >= 0 : i < 2 * maxMessages);
+         i += (BIT(instruments, SHOW_REVERSE_SCROLL) ? -1 : 1)) {
         if (i < maxMessages) {
             msg = TalkMsg[i];
         } else {
@@ -774,9 +778,12 @@ void Paint_messages(void)
          */
         if (
             msg->life > MSG_FLASH
+#ifndef _WINDOWS
             || !selectionAndHistory
             || (selection.draw.state != SEL_PENDING
-                && selection.draw.state != SEL_EMPHASIZED)) {
+                && selection.draw.state != SEL_EMPHASIZED)
+#endif
+            ) {
 
             if (msg->life-- <= 0) {
                 msg->txt[0] = '\0';
@@ -785,6 +792,15 @@ void Paint_messages(void)
                 continue;
             }
         } 
+#ifdef _WINDOWS
+        else if (msg->life-- <= 0) {
+                msg->txt[0] = '\0';
+                msg->len = 0;
+                msg->life = 0;
+                continue;
+            }
+#endif
+        
         if (i < maxMessages) {
             x = BORDER;
             y = top_y;
@@ -942,7 +958,10 @@ void Add_message(const char *message)
     message_t                *tmp, **msg_set;
     bool                is_drawn_talk_message        = false; /* not pending */
     int                        last_msg_index;
+    bool                show_reverse_scroll        = false;
     bool                scrolling                = false; /* really moving */
+
+    show_reverse_scroll = BIT(instruments, SHOW_REVERSE_SCROLL);
 
     len = strlen(message);
     if (message[len - 1] == ']' || strncmp(message, " <", 2) == 0) {
@@ -969,7 +988,15 @@ void Add_message(const char *message)
             last_msg_index++;
         }
         last_msg_index--; /* make it an index */
-       
+
+        /*
+         * if show_reverse_scroll, it will really _scroll if there were
+         * already maxMessages (one will be added now)
+         */
+        if (show_reverse_scroll && last_msg_index == maxMessages - 1) {
+            scrolling = true;
+        }
+        
         /*
          * keep the emphasizing (`jumping' from talk window to talk messages)
          */

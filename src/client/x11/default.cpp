@@ -21,20 +21,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cctype>
-#include <cerrno>
-#include <climits>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 #include <sys/types.h>
 
-#include <unistd.h>
-#include <X11/Xos.h>
-#include <X11/keysym.h>
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
-#include <sys/param.h>
+#ifndef _WINDOWS
+# include <unistd.h>
+# include <X11/Xos.h>
+# include <X11/keysym.h>
+# include <X11/Xlib.h>
+# include <X11/Xresource.h>
+# include <sys/param.h>
+#endif
 
 #include "version.h"
 #include "xpconfig.h"
@@ -631,6 +633,13 @@ option options[] = {
         KEY_DUMMY,
         "Send messages to standard output.\n0: Don't.\n1: Only player "
         "messages.\n2: Player and status messages.\n"
+    },
+    {
+        "reverseScroll",
+        NULL,
+        "No",
+        KEY_DUMMY,
+        "Reverse scroll direction of messages.\n"
     },
     {
         "selectionAndHistory",
@@ -2058,6 +2067,25 @@ unsigned String_hash(const char *s)
 }
 
 
+char* Get_keyHelpString(keys_t key)
+{
+    int                        i;
+    char                *nl;
+    static char                buf[MAX_CHARS];
+
+    for (i = 0; i < NELEM(options); i++) {
+        if (options[i].key == key) {
+            strlcpy(buf, options[i].help, sizeof buf);
+            if ((nl = strchr(buf, '\n')) != NULL) {
+                *nl = '\0';
+            }
+            return buf;
+        }
+    }
+
+    return NULL;
+}
+
 
 const char* Get_keyResourceString(keys_t key)
 {
@@ -2664,7 +2692,8 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bool_resource(rDB, "colorSwitch", &colorSwitch);
     Get_bool_resource(rDB, "multibuffer", &multibuffer);
 
-    Get_int_resource(rDB, "maxColors", &maxColors);
+    /* Windows already derived maxColors in InitWinX */
+    IFNWINDOWS( Get_int_resource(rDB, "maxColors", &maxColors); )
 
     Get_string_resource(rDB, "black", color_names[0], sizeof(color_names[0]));
     Get_string_resource(rDB, "white", color_names[1], sizeof(color_names[1]));
@@ -2718,6 +2747,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bit_resource(rDB, "filledDecor", &instruments, SHOW_FILLED_DECOR);
     Get_bit_resource(rDB, "texturedDecor", &instruments, SHOW_TEXTURED_DECOR);
     Get_bit_resource(rDB, "texturedBalls", &instruments, SHOW_TEXTURED_BALLS);
+    Get_bit_resource(rDB, "reverseScroll", &instruments, SHOW_REVERSE_SCROLL);
 
     Get_bool_resource(rDB, "texturedObjects", &blockBitmaps);
     Get_bool_resource(rDB, "pointerControl", &initialPointerControl);
@@ -2741,9 +2771,11 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_int_resource(rDB, "maxMessages", &maxMessages);
     Get_int_resource(rDB, "messagesToStdout", &messagesToStdout);
+#ifndef _WINDOWS
     Get_bool_resource(rDB, "selectionAndHistory", &selectionAndHistory);
     Get_int_resource(rDB, "maxLinesInHistory", &maxLinesInHistory);
     LIMIT(maxLinesInHistory, 1, MAX_HIST_MSGS);
+#endif
 
     Get_int_resource(rDB, "receiveWindowSize", &receive_window_size);
     LIMIT(receive_window_size, MIN_RECEIVE_WINDOW_SIZE, MAX_RECEIVE_WINDOW_SIZE);

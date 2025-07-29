@@ -1,4 +1,5 @@
-/*
+/* $Id: blockbitmaps.c,v 5.4 2002/02/10 19:29:39 bertg Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -21,11 +22,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <cstdlib>
-#include <cstdio>
-#include <cerrno>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
 
-#include <X11/Xlib.h>
+#ifndef _WINDOWS
+# include <X11/Xlib.h>
+#endif
 
 #include "blockbitmaps.h"
 #include "gfx2d.h"
@@ -33,7 +36,7 @@
 #include "version.h"
 #include "xperror.h"
 #include "const.h"
-#include "xpaint.h"
+#include "paint.h"
 #include "portability.h"
 
 

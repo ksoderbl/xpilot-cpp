@@ -1,4 +1,5 @@
-/*
+/* $Id: configure.h,v 5.0 2001/04/07 20:00:58 dik Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -21,27 +22,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        TYPES_H
-#define        TYPES_H
+#ifndef        CONFIGURE_H
+#define        CONFIGURE_H
 
-typedef unsigned char        u_byte;
-
-/*
- * On some systems an enum is smaller than an int.
- * On others bool is already a builtin type.
- * Using preprocessor macros to circumvent both situations.
- */
-#ifndef __cplusplus
-#define false        0
-#define true        1
-#define bool        int
-#endif
-
-typedef        float        DFLOAT;
-
-typedef struct { DFLOAT x, y; }        vector;
-typedef vector                        position;
-typedef struct { int x, y; }        ivec;
-typedef ivec                        ipos;
+int Config(bool);
+void Config_redraw(void);
+void Config_resize(void);
+void Config_destroy(void);
 
 #endif

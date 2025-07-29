@@ -74,10 +74,6 @@ static void printfile(const char *filename)
     fclose(fp);
 }
 
-const char *Program_name(void)
-{
-    return "xpilot-cpp-client-x11";
-}
 
 /*
  * Oh glorious main(), without thee we cannot exist.
@@ -193,7 +189,7 @@ int main(int argc, char *argv[])
                                  conpar);
     }
     else {
-        result = Welcome_screen(conpar);
+        IFNWINDOWS(result = Welcome_screen(conpar);)
     }
 
     if (result == 1) {
