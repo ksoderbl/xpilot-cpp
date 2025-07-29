@@ -27,6 +27,8 @@ xpilot_cpp_client_x11_SOURCES = \
     paintradar.cpp \
     record.cpp \
     record.h \
+    simbloods.h \
+    sim.cpp \
     talk.cpp \
     talkmacros.cpp \
     textinterface.cpp \

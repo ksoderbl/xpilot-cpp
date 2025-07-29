@@ -20,8 +20,6 @@ libxpclient_a_SOURCES = \
     paintmacros.h \
     protoclient.h \
     query.cpp \
-    simbloods.h \
-    sim.cpp \
     talk.h \
     xpmread.h
 

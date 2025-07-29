@@ -104,10 +104,11 @@ am_xpilot_cpp_client_x11_OBJECTS = about.$(OBJEXT) \
 	guimap.$(OBJEXT) guiobjects.$(OBJEXT) join.$(OBJEXT) \
 	netclient.$(OBJEXT) paint.$(OBJEXT) paintdata.$(OBJEXT) \
 	painthud.$(OBJEXT) paintmap.$(OBJEXT) paintobjects.$(OBJEXT) \
-	paintradar.$(OBJEXT) record.$(OBJEXT) talk.$(OBJEXT) \
-	talkmacros.$(OBJEXT) textinterface.$(OBJEXT) welcome.$(OBJEXT) \
-	widget.$(OBJEXT) xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) \
-	xinit.$(OBJEXT) xpilot.$(OBJEXT) xpmread.$(OBJEXT)
+	paintradar.$(OBJEXT) record.$(OBJEXT) sim.$(OBJEXT) \
+	talk.$(OBJEXT) talkmacros.$(OBJEXT) textinterface.$(OBJEXT) \
+	welcome.$(OBJEXT) widget.$(OBJEXT) xevent.$(OBJEXT) \
+	xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) xpilot.$(OBJEXT) \
+	xpmread.$(OBJEXT)
 xpilot_cpp_client_x11_OBJECTS = $(am_xpilot_cpp_client_x11_OBJECTS)
 xpilot_cpp_client_x11_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
@@ -136,11 +137,12 @@ am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/blockbitmaps.Po \
 	./$(DEPDIR)/paintdata.Po ./$(DEPDIR)/painthud.Po \
 	./$(DEPDIR)/paintmap.Po ./$(DEPDIR)/paintobjects.Po \
 	./$(DEPDIR)/paintradar.Po ./$(DEPDIR)/record.Po \
-	./$(DEPDIR)/talk.Po ./$(DEPDIR)/talkmacros.Po \
-	./$(DEPDIR)/textinterface.Po ./$(DEPDIR)/welcome.Po \
-	./$(DEPDIR)/widget.Po ./$(DEPDIR)/xevent.Po \
-	./$(DEPDIR)/xeventhandlers.Po ./$(DEPDIR)/xinit.Po \
-	./$(DEPDIR)/xpilot.Po ./$(DEPDIR)/xpmread.Po
+	./$(DEPDIR)/sim.Po ./$(DEPDIR)/talk.Po \
+	./$(DEPDIR)/talkmacros.Po ./$(DEPDIR)/textinterface.Po \
+	./$(DEPDIR)/welcome.Po ./$(DEPDIR)/widget.Po \
+	./$(DEPDIR)/xevent.Po ./$(DEPDIR)/xeventhandlers.Po \
+	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpilot.Po \
+	./$(DEPDIR)/xpmread.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -310,6 +312,8 @@ xpilot_cpp_client_x11_SOURCES = \
     paintradar.cpp \
     record.cpp \
     record.h \
+    simbloods.h \
+    sim.cpp \
     talk.cpp \
     talkmacros.cpp \
     textinterface.cpp \
@@ -430,6 +434,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintobjects.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintradar.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/record.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sim.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talk.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talkmacros.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textinterface.Po@am__quote@ # am--include-marker
@@ -605,6 +610,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/paintobjects.Po
 	-rm -f ./$(DEPDIR)/paintradar.Po
 	-rm -f ./$(DEPDIR)/record.Po
+	-rm -f ./$(DEPDIR)/sim.Po
 	-rm -f ./$(DEPDIR)/talk.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po
@@ -678,6 +684,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/paintobjects.Po
 	-rm -f ./$(DEPDIR)/paintradar.Po
 	-rm -f ./$(DEPDIR)/record.Po
+	-rm -f ./$(DEPDIR)/sim.Po
 	-rm -f ./$(DEPDIR)/talk.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po

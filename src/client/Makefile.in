@@ -106,7 +106,7 @@ libxpclient_a_AR = $(AR) $(ARFLAGS)
 libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) datagram.$(OBJEXT) \
 	debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) gfx3d.$(OBJEXT) \
-	query.$(OBJEXT) sim.$(OBJEXT)
+	query.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -125,7 +125,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/datagram.Po \
 	./$(DEPDIR)/debugaudio.Po ./$(DEPDIR)/gfx2d.Po \
-	./$(DEPDIR)/gfx3d.Po ./$(DEPDIR)/query.Po ./$(DEPDIR)/sim.Po
+	./$(DEPDIR)/gfx3d.Po ./$(DEPDIR)/query.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -329,8 +329,6 @@ libxpclient_a_SOURCES = \
     paintmacros.h \
     protoclient.h \
     query.cpp \
-    simbloods.h \
-    sim.cpp \
     talk.h \
     xpmread.h
 
@@ -389,7 +387,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx2d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx3d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sim.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -613,7 +610,6 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/gfx3d.Po
 	-rm -f ./$(DEPDIR)/query.Po
-	-rm -f ./$(DEPDIR)/sim.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -665,7 +661,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/gfx3d.Po
 	-rm -f ./$(DEPDIR)/query.Po
-	-rm -f ./$(DEPDIR)/sim.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
