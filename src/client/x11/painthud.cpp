@@ -70,11 +70,9 @@ message_t        *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
 /* history of the talk window */
 char                *HistoryMsg[MAX_HIST_MSGS];
 
-#ifndef _WINDOWS
 /* selection in talk- or draw-window */
 extern selection_t selection;
 extern void Delete_pending_messages(void);
-#endif
 
 
 /*
@@ -776,15 +774,10 @@ void Paint_messages(void)
          * while there is something emphasized, freeze the life time counter
          * of a message if it is not drawn `flashed' (red) anymore
          */
-        if (
-            msg->life > MSG_FLASH
-#ifndef _WINDOWS
+        if (msg->life > MSG_FLASH
             || !selectionAndHistory
             || (selection.draw.state != SEL_PENDING
-                && selection.draw.state != SEL_EMPHASIZED)
-#endif
-            ) {
-
+                && selection.draw.state != SEL_EMPHASIZED)) {
             if (msg->life-- <= 0) {
                 msg->txt[0] = '\0';
                 msg->len = 0;
@@ -792,15 +785,6 @@ void Paint_messages(void)
                 continue;
             }
         } 
-#ifdef _WINDOWS
-        else if (msg->life-- <= 0) {
-                msg->txt[0] = '\0';
-                msg->len = 0;
-                msg->life = 0;
-                continue;
-            }
-#endif
-        
         if (i < maxMessages) {
             x = BORDER;
             y = top_y;
@@ -822,7 +806,6 @@ void Paint_messages(void)
             msg_color = oldMessagesColor;
         }
 
-#ifndef _WINDOWS
         /*
          * it's an emphasized talk message 
          */
@@ -927,8 +910,8 @@ void Paint_messages(void)
                 rd.drawString(dpy, p_draw, messageGC, x + xoff3, y, ptr3, l3);
             }
 
-        } else /* not emphasized */
-#endif
+        }
+        else /* not emphasized */
         {
             XSetForeground(dpy, messageGC, colors[msg_color].pixel);
             rd.drawString(dpy, p_draw, messageGC, x, y, msg->txt, len);
@@ -1089,7 +1072,6 @@ void Add_message(const char *message)
 }
 
 
-#ifndef _WINDOWS
 /*
  * clear the buffer for the pending messages
  */
@@ -1136,7 +1118,6 @@ void Add_pending_messages(void)
     }
     Delete_pending_messages();
 }
-#endif
 
 
 void Paint_recording(void)

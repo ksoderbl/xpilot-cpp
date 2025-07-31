@@ -232,11 +232,7 @@ static struct {
         "absorbs shots in the absence of shields"
     },
 };
-#ifdef _WINDOWS
-Pixmap        itemBitmaps[NUM_ITEMS][2];        /* Bitmaps for the items in 2 colors */
-#else
 Pixmap        itemBitmaps[NUM_ITEMS];                /* Bitmaps for the items */
-#endif
 
 char dashes[NUM_DASHES];
 char cdashes[NUM_CDASHES];
@@ -265,17 +261,12 @@ static XFontStruct* Set_font(Display* dpy, GC gc,
 {
     XFontStruct*        font;
 
-#ifndef _WINDOWS
     if ((font = XLoadQueryFont(dpy, fontName)) == NULL) {
         xperror("Couldn't find font '%s' for %s, using default font",
               fontName, resName);
         font = XQueryFont(dpy, XGContextFromGC(gc));
     } else
         XSetFont(dpy, gc, font->fid);
-#else
-        font = WinXLoadFont(fontName);
-        XSetFont(dpy, gc, font->fid);
-#endif
 
     return font;
 }
@@ -341,7 +332,6 @@ static void Init_spark_colors(void)
 /*
  * Initialize miscellaneous window hints and properties.
  */
-#ifndef _WINDOWS
 extern char                **Argv;
 extern int                Argc;
 extern char                myClass[];
@@ -410,7 +400,6 @@ static void Init_disp_prop(Display *d, Window win,
     XSetWMProtocols(d, win, &KillAtom, 1);
     XSetIOErrorHandler(FatalError);
 }
-#endif
 
 
 /*
@@ -495,7 +484,6 @@ int Init_top(void)
     /*
      * Get toplevel geometry.
      */
-#ifndef _WINDOWS
     top_flags = 0;
     if (geometry != NULL && geometry[0] != '\0') {
         mask = XParseGeometry(geometry, &x, &y, &w, &h);
@@ -585,19 +573,7 @@ int Init_top(void)
         Init_disp_prop(kdpy, keyboard, top_width, top_height,
                        top_x, top_y, top_flags);
     }
-#else        /* _WINDOWS */
-        /* MFC already gave us a nice top window...use it */
-        {
-                XRectangle        rect;
-                WinXGetWindowRectangle(0, &rect);
-                top_x = rect.x;
-                top_y = rect.y;
-                top_width = rect.width;
-                top_height = rect.height;
-        }
-#endif        /* _WINDOWS */
 
-#ifndef _WINDOWS
     /*
      * Create item bitmaps
      */
@@ -680,8 +656,6 @@ int Init_top(void)
         XSetPlaneMask(dpy, gc, dbuf_state->drawing_planes);
     }
 
-#endif
-
     if (mono) {
         buttonColor = BLACK;
         windowColor = BLACK;
@@ -702,13 +676,9 @@ int Init_top(void)
  */
 int Init_playing_windows(void)
 {
-#ifndef _WINDOWS
     unsigned                        w, h;
     Pixmap                        pix;
     GC                                cursorGC;
-#else
-    int                                i;
-#endif
 
     if (!top) {
         if (Init_top()) {
@@ -777,7 +747,7 @@ int Init_playing_windows(void)
      */
     XSelectInput(dpy, radar, ExposureMask);
     XSelectInput(dpy, players, ExposureMask);
-#ifndef _WINDOWS
+
     if (!selectionAndHistory) {
         XSelectInput(dpy, draw, 0);
     } else {
@@ -840,10 +810,6 @@ int Init_playing_windows(void)
         XMapWindow(kdpy, keyboard);
         XSync(kdpy, False);
     }
-#else
-        /* WinXSetEvent(players, WM_PAINT, WinXPaintPlayers); */
-        pointerControlCursor = !None;
-#endif
 
     Init_spark_colors();
 
@@ -860,7 +826,6 @@ int Alloc_msgs(void)
         return -1;
     }
 
-#ifndef _WINDOWS
     if (selectionAndHistory &&
         ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)){
         xperror("No memory for history messages");
@@ -870,31 +835,28 @@ int Alloc_msgs(void)
     if (selectionAndHistory) {
         MsgBlock_pending        = x2;
     }
-#endif
 
     MsgBlock                = x;
 
     for (i = 0; i < 2 * MAX_MSGS; i++) {
         if (i < MAX_MSGS) {
             TalkMsg[i] = x;
-            IFNWINDOWS( if (selectionAndHistory) TalkMsg_pending[i] = x2; )
+            if (selectionAndHistory) TalkMsg_pending[i] = x2;
         } else {
             GameMsg[i - MAX_MSGS] = x;
-            IFNWINDOWS( if (selectionAndHistory) GameMsg_pending[i - MAX_MSGS] = x2; )
+            if (selectionAndHistory) GameMsg_pending[i - MAX_MSGS] = x2;
         }
         x->txt[0] = '\0';
         x->len = 0;
         x->life = 0;
         x++;
 
-#ifndef _WINDOWS
         if (selectionAndHistory) {
             x2->txt[0] = '\0';
             x2->len = 0;
             x2->life = 0;
             x2++;
         }
-#endif
     }
     return 0;
 }
@@ -905,13 +867,10 @@ void Free_msgs(void)
         free(MsgBlock);
         MsgBlock = NULL;
     }
-
-#ifndef _WINDOWS
     if (MsgBlock_pending) {
         free(MsgBlock_pending);
         MsgBlock_pending = NULL;
     }
-#endif
 }
 
 
@@ -972,18 +931,13 @@ void Resize(Window w, int width, int height)
     Send_display();
     Net_flush();
     XResizeWindow(dpy, draw, draw_width, draw_height);
-#ifndef _WINDOWS
     if (dbuf_state->type == PIXMAP_COPY) {
         XFreePixmap(dpy, p_draw);
         p_draw = XCreatePixmap(dpy, draw, draw_width, draw_height, dispDepth);
     }
-#endif
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
     XResizeWindow(dpy, players,
                   players_width, players_height);
-#ifdef _WINDOWS
-    WinXResize();
-#endif
     Talk_resize();
     Config_resize();
 }
@@ -994,7 +948,6 @@ void Resize(Window w, int width, int height)
  */
 void Quit(void)
 {
-#ifndef _WINDOWS
     if (dpy != NULL) {
         XAutoRepeatOn(dpy);
         Colors_cleanup();
@@ -1006,12 +959,6 @@ void Quit(void)
             kdpy = NULL;
         }
     }
-#else
-    if (button_form) {
-        Widget_destroy(button_form);
-        button_form = 0;
-    }
-#endif
     Free_msgs();
     Widget_cleanup();
 }

@@ -176,7 +176,6 @@ int main(int argc, char **argv)
     if (Setup_net_server() == -1) {
         End_game();
     }
-#ifndef _WINDOWS
     if (NoQuit) {
         signal(SIGHUP, SIG_IGN);
     } else {
@@ -188,7 +187,6 @@ int main(int argc, char **argv)
 #ifdef IGNORE_FPE
     signal(SIGFPE, SIG_IGN);
 #endif
-#endif        /* _WINDOWS */
     /*
      * Set the time the server started
      */
@@ -204,16 +202,11 @@ int main(int argc, char **argv)
     else {
         timer_tick_rate = FPS;
     }
-#ifdef _WINDOWS
-    /* Windows returns here, we let the worker thread call sched() */
-    install_timer_tick(ServerThreadTimerProc, timer_tick_rate);
-#else
     install_timer_tick(Main_loop, timer_tick_rate);
 
     sched();
     xpprintf("sched returned!?");
     End_game();
-#endif
 
     return 1;
 }
@@ -317,10 +310,7 @@ int End_game(void)
     Free_options();
     Log_game("END");                            /* Log end */
 
-#ifndef _WINDOWS
     exit (0);
-#endif
-        return(FALSE);                  /* return FALSE so windows bubbles out of the main loop */
 }
 
 /*
@@ -559,7 +549,6 @@ static void Handle_signal(int sig_no)
 {
     errno = 0;
 
-#ifndef _WINDOWS
     switch (sig_no) {
 
     case SIGHUP:
@@ -584,7 +573,6 @@ static void Handle_signal(int sig_no)
         End_game();
         break;
     }
-#endif
     _exit(sig_no);        /* just in case */
 }
 

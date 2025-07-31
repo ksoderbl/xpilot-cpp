@@ -76,8 +76,6 @@
  */
 #define SI_DATA(it)                ((server_info_t *)LI_DATA(it))
 
-#ifndef _WINDOWS
-
 /*
  * All the fields for a server in one line of meta output.
  */
@@ -1968,7 +1966,6 @@ static int Welcome_process_one_event(XEvent *event)
         }
         break;
 
-#ifndef _WINDOWS
     case MapNotify:
         if (ignoreWindowManager == 1) {
             XSetInputFocus(dpy, top, RevertToParent, CurrentTime);
@@ -2011,7 +2008,6 @@ static int Welcome_process_one_event(XEvent *event)
             Widget_event(event);
         }
         break;
-#endif
 
     default:
         Widget_event(event);
@@ -2128,12 +2124,3 @@ int Welcome_screen(Connect_param_t *conpar)
 
     return result;
 }
-
-#else
-
-int Welcome_screen(Connect_param_t *conpar)
-{
-    return 0;
-}
-
-#endif

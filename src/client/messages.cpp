@@ -28,12 +28,6 @@
 #include <math.h>
 #include <sys/types.h>
 
-// #ifndef _WINDOWS
-// # include <unistd.h>
-// # include <X11/Xlib.h>
-// # include <X11/Xos.h>
-// #endif
-
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
@@ -77,11 +71,9 @@ int                        maxLinesInHistory;
 int        maxMessages;                /* Max. number of messages to display */
 int        messagesToStdout;        /* Send messages to standard output */
 
-// #ifndef _WINDOWS
 // /* selection in talk- or draw-window */
 // extern selection_t selection;
 // extern void Delete_pending_messages(void);
-// #endif
 
 static message_t        *MsgBlock = NULL;
 static message_t        *MsgBlock_pending = NULL;

@@ -21,13 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
 
-#ifndef _WINDOWS
-# include <sys/time.h>
-#endif
+#include <sys/time.h>
 
 #define SERVER
 #include "proto.h"

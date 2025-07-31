@@ -25,20 +25,18 @@ int simulating;
 
 #ifdef SIMULATING_ONLY
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <csignal>
+#include <cstring>
+#include <cerrno>
+#include <cmath>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <X11/Xlib.h>
 
 #include "xpconfig.h"
 #include "const.h"

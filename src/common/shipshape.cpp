@@ -29,16 +29,6 @@
 #include <ctype.h>
 #include <math.h>
 
-#if defined(_WINDOWS)
-        /* need this for printf wrappers. */
-#        ifdef        _XPILOTNTSERVER_
-#                include "../server/NT/winServer.h"
-#        elif !defined(_XPMONNT_)
-#                include "NT/winX.h"
-#                include "../client/NT/winClient.h"
-#        endif
-#endif
-
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"

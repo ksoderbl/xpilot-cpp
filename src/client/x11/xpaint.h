@@ -108,19 +108,12 @@ extern int        radar_exposures;        /* Is radar window exposed? */
                                         /* windows has 2 sets of item bitmaps */
 #define        ITEM_HUD        0                /* one color for the HUD */
 #define        ITEM_PLAYFIELD        1                /* and one color for the playfield */
-#ifdef _WINDOWS
-extern Pixmap        itemBitmaps[][2];
-#else
 extern Pixmap        itemBitmaps[];
-#endif
 
 extern GC        gc, messageGC, radarGC, buttonGC, scoreListGC, textGC, talkGC;
 extern GC        motdGC;
 extern XGCValues gcv;
 extern Window        top, draw, keyboard, radar, players;
-#ifdef _WINDOWS                                /* see paint.c for details */
-extern Window        textWindow, msgWindow, buttonWindow;
-#endif
 extern Pixmap        p_draw;                        /* Drawing area pixmap */
 extern Pixmap        p_radar;                /* Radar drawing pixmap */
 extern Pixmap        s_radar;                /* Second radar drawing pixmap */

@@ -269,11 +269,6 @@ static bool Process_commands(sockbuf_t *ibuf,
     time_t                qsent = 0;
     static char                localhost[] = "127.0.0.1";
 
-#ifdef _WINDOWS
-    auto_connect = TRUE;        /* I want to join */
-    auto_shutdown = FALSE;
-#endif
-
     if (auto_connect && !list_servers && !auto_shutdown) {
         xpprintf("*** Connected to %s\n", conpar->server_name);
     }

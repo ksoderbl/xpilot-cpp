@@ -22,13 +22,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
 
-#ifndef _WINDOWS
-# include <X11/Xlib.h>
-#endif
+#include <X11/Xlib.h>
 
 #include "blockbitmaps.h"
 #include "gfx2d.h"
@@ -390,7 +388,6 @@ void Block_bitmap_create(Display* dpy, Drawable d,
     Block_bitmap_create_end(d);
 }
 
-#ifndef _WINDOWS
 /*
  * Maybe move this part to a sperate file.
  */
@@ -560,6 +557,3 @@ void Block_bitmap_paint(Drawable d, int type, int x, int y, int width,
               x + box->xmin, y + box->ymin);
     XSetClipMask(dpy, gc, None);
 }
-
-
-#endif

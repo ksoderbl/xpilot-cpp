@@ -684,11 +684,7 @@ static option_desc options[] = {
     {
         "noQuit",
         "noQuit",
-#ifdef _WINDOWS
-        "true",
-#else
         "false",
-#endif
         &NoQuit,
         valBool,
         tuner_dummy,

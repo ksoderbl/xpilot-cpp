@@ -95,13 +95,6 @@ XGCValues        gcv;
 Window        top;                        /* Top-level window (topshell) */
 Window        draw;                        /* Main play window */
 Window        keyboard;                /* Keyboard window */
-#ifdef _WINDOWS                /* Windows needs some dummy windows (size 0,0) */
-                                /* so we can store the active fonts.  Windows only */
-                                /* supports 1 active font per window */
-Window        textWindow;                /* for the GC into the config window */
-Window        msgWindow;                /* for meesages into the playfield */
-Window        buttonWindow;                /* to calculate size of buttons */
-#endif
 
 Pixmap        p_draw;                        /* Saved pixmap for the drawing */
                                 /* area (monochromes use this) */
@@ -168,10 +161,6 @@ void Paint_frame(void)
     static int                prev_damaged = 0;
     static int                prev_prev_damaged = 0;
 
-#ifdef _WINDOWS        /* give any outgoing data a head start to the server */
-    Net_flush();        /* send anything to the server before returning to Windows */
-#endif
-
     if (start_loops != end_loops) {
         errno = 0;
         xperror("Start neq. End (%ld,%ld,%ld)", start_loops, end_loops, loops);
@@ -192,12 +181,6 @@ void Paint_frame(void)
     /* This seems to have a bug (in Windows) 'cause last frame we ended
        with an XSetForeground(white) confusing SET_FG */
     SET_FG(colors[BLACK].pixel);
-
-#ifdef _WINDOWS
-    p_draw = draw;                /* let's try this */
-    XSetForeground(dpy, gc, colors[BLACK].pixel);
-    XFillRectangle(dpy, p_draw, gc, 0, 0, draw_width, draw_height);
-#endif
 
     rd.newFrame();
 
@@ -280,13 +263,8 @@ void Paint_frame(void)
     if (p_radar != radar && radar_exposures > 0) {
         if (BIT(instruments, SHOW_SLIDING_RADAR) == 0
             || BIT(Setup->mode, WRAP_PLAY) == 0) {
-#ifndef _WINDOWS
             XCopyArea(dpy, p_radar, radar, gc,
                       0, 0, 256, RadarHeight, 0, 0);
-#else
-            WinXBltPixToWin(p_radar, radar, 
-                            0, 0, 256, RadarHeight, 0, 0);
-#endif
         } else {
 
             int x, y, w, h;
@@ -310,7 +288,6 @@ void Paint_frame(void)
             w = 256 - x;
             h = RadarHeight - y;
 
-#ifndef _WINDOWS        
             XCopyArea(dpy, p_radar, radar, gc,
                       0, 0, x, y, w, h);
             XCopyArea(dpy, p_radar, radar, gc,
@@ -319,16 +296,12 @@ void Paint_frame(void)
                       0, y, x, h, w, 0);
             XCopyArea(dpy, p_radar, radar, gc,
                       x, y, w, h, 0, 0);
-#else
-            Paint_world_radar();                          
-#endif
         }
     }
     else if (radar_exposures > 2) {
         Paint_world_radar();
     }
 
-#ifndef _WINDOWS
     if (dbuf_state->type == PIXMAP_COPY) {
         XCopyArea(dpy, p_draw, draw, gc,
                   0, 0, ext_view_width, ext_view_height, 0, 0);
@@ -340,7 +313,6 @@ void Paint_frame(void)
         XSetPlaneMask(dpy, gc, dbuf_state->drawing_planes);
         XSetPlaneMask(dpy, messageGC, dbuf_state->drawing_planes);
     }
-#endif
 
     if (!damaged) {
         /* Prepare invisible buffer for next frame by clearing. */
@@ -352,16 +324,13 @@ void Paint_frame(void)
              * DBE's XdbeBackground switch option is
              * probably faster than XFillRectangle.
              */
-#ifndef _WINDOWS
             if (dbuf_state->multibuffer_type != MULTIBUFFER_DBE) {
                 SET_FG(colors[BLACK].pixel);
                 XFillRectangle(dpy, p_draw, gc, 0, 0, draw_width, draw_height);
             }
-#endif
         }
     }
 
-#ifndef _WINDOWS
     if (talk_mapped == true) {
         static bool toggle;
         static long last_toggled;
@@ -372,12 +341,6 @@ void Paint_frame(void)
         }
         Talk_cursor(toggle);
     }
-#endif
-
-#ifdef _WINDOWS
-    Client_score_table();
-    PaintWinClient();
-#endif
 
     Paint_clock(0);
 

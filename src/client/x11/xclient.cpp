@@ -179,12 +179,11 @@ static checkpoint_t        checks[MAX_CHECKPOINT];
 score_object_t                score_objects[MAX_SCORE_OBJECTS];
 int                        score_object = 0;
 
-#ifndef  _WINDOWS
 /* provide cut&paste and message history */
 extern        selection_t        selection;
 static        char                *HistoryBlock = NULL;
 extern        char                *HistoryMsg[MAX_HIST_MSGS];
-#endif
+
 bool                        selectionAndHistory = false;
 int                        maxLinesInHistory;
 
@@ -1091,7 +1090,7 @@ int Handle_war(int robot_id, int killer_id)
 
     if ((robot = Other_by_id(robot_id)) == NULL) {
         errno = 0;
-        IFNWINDOWS(xperror("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);)
+        xperror("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     if (killer_id == -1) {
@@ -1103,7 +1102,7 @@ int Handle_war(int robot_id, int killer_id)
     }
     if ((killer = Other_by_id(killer_id)) == NULL) {
         errno = 0;
-        IFNWINDOWS(xperror("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);)
+        xperror("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     robot->war_id = killer_id;
@@ -1374,7 +1373,6 @@ void Client_score_table(void)
     scoresChanged = 0;
 }
 
-#ifndef _WINDOWS
 static int Alloc_history(void)
 {
     char        *hist_ptr;
@@ -1406,16 +1404,6 @@ static void Free_selectionAndHistory(void)
         selection.txt = NULL;
     }
 }
-#else
-static int Alloc_history(void)
-{
-    return 0;
-}
-
-static void Free_selectionAndHistory(void)
-{
-}
-#endif
 
 int Client_init(char *server, unsigned server_version)
 {

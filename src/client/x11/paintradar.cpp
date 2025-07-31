@@ -69,7 +69,6 @@ static int        slidingradar_y;
 
 static void Copy_static_radar(void)
 {
-#ifndef _WINDOWS
     if (s_radar != p_radar) {
         /* Draw static radar onto radar */
         XCopyArea(dpy, s_radar, p_radar, gc,
@@ -80,47 +79,8 @@ static void Copy_static_radar(void)
         XFillRectangle(dpy, p_radar,
                        radarGC, 0, 0, 256, RadarHeight);
     }
-#else
-    WinXBltPixToWin(s_radar, radar, 0, 0, 256, RadarHeight, 0, 0);
-    p_radar = radar;
-#endif
     XSetForeground(dpy, radarGC, colors[WHITE].pixel);
 }
-
-
-#ifdef _WINDOWS
-static void Windows_copy_sliding_radar(float xf, float yf)
-{
-    slidingradar_x = (int)((pos.x * xf + 0.5) + 128) % 256;
-    slidingradar_y = (RadarHeight - (int)(pos.y * yf + 0.5) - 1 + RadarHeight/2)
-                    % RadarHeight;
-
-    /*
-     * Draw slidingradar in four chunks onto the screen.
-     */
-    WinXBltPixToWin(s_radar, radar,
-                    slidingradar_x , slidingradar_y,
-                    256-slidingradar_x, RadarHeight-slidingradar_y,
-                    0, 0);
-    WinXBltPixToWin(s_radar, radar,
-                    0, slidingradar_y,
-                    slidingradar_x, RadarHeight-slidingradar_y,
-                    256-slidingradar_x, 0);
-    WinXBltPixToWin(s_radar, radar,
-                    slidingradar_x, 1,
-                    256-slidingradar_x, slidingradar_y
-                    , 0,
-                    RadarHeight-slidingradar_y);
-    WinXBltPixToWin(s_radar, radar,
-                    0, 1,
-                    slidingradar_x, slidingradar_y,
-                    256-slidingradar_x, RadarHeight-slidingradar_y);
-    p_radar = radar;
-
-    XSetForeground(dpy, radarGC, colors[WHITE].pixel);
-}
-#endif
-
 
 static void Paint_checkpoint_radar(float xf, float yf)
 {
@@ -260,20 +220,7 @@ void Paint_radar(void)
     slidingradar_x = 0;
     slidingradar_y = 0;
 
-#ifdef _WINDOWS
-    if (BIT(instruments, SHOW_SLIDING_RADAR) != 0) {
-        /*
-         * Hack to fix slidingradar in windows.
-         */
-        Windows_copy_sliding_radar(xf, yf);
-    }
-    else
-    {
-        Copy_static_radar();
-    }
-#else
     Copy_static_radar();
-#endif
 
     /* Checkpoints */
     Paint_checkpoint_radar(xf, yf);
@@ -333,10 +280,6 @@ void Paint_world_radar(void)
 
     radar_exposures = 2;
 
-#ifdef _WINDOWS
-    XSetForeground(dpy, s_radar, colors[BLACK].pixel);
-    XFillRectangle(dpy, s_radar, radarGC, 0, 0, 256, RadarHeight);
-#else
     if (s_radar == p_radar) {
         XSetPlaneMask(dpy, radarGC,
                       AllPlanes & ~(dpl_1[0] | dpl_1[1]));
@@ -348,7 +291,6 @@ void Paint_world_radar(void)
     } else {
         XClearWindow(dpy, radar);
     }
-#endif
 
     /*
      * Calculate an array which is later going to be indexed
@@ -449,11 +391,7 @@ void Paint_world_radar(void)
                         }
                         start = end = yp;
                         currColor = visibleColor[type];
-#ifdef _WINDOWS
-                        XSetForeground(dpy, s_radar, currColor);
-#else
                         XSetForeground(dpy, radarGC, colors[currColor].pixel);
-#endif
                     } else {
                         end = yp;
                         visibleColorChange = (visibleColor[type] != currColor);
@@ -538,11 +476,7 @@ void Paint_world_radar(void)
                         }
                         start = end = yp;
                         currColor = visibleColor[type];
-#ifdef _WINDOWS
-                        XSetForeground(dpy, s_radar, currColor);
-#else
                         XSetForeground(dpy, radarGC, colors[currColor].pixel);
-#endif
                     } else {
                         end = yp;
                         visibleColorChange = visibleColor[type] != currColor;
@@ -588,11 +522,7 @@ void Paint_world_radar(void)
                     }
                     start = end = yp;
                     currColor = visibleColor[type];
-#ifdef _WINDOWS
-                    XSetForeground(dpy, s_radar, currColor);
-#else
                     XSetForeground(dpy, radarGC, colors[currColor].pixel);
-#endif
                 }
             }
         }

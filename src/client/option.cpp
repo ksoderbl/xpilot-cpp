@@ -34,6 +34,7 @@
 #include <cctype>
 #include <sys/types.h>
 
+#include "strdup.h"
 #include "strlcpy.h"
 
 #include "xperror.h"

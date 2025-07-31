@@ -124,9 +124,6 @@ static int Config_create_packetLagMeter(int widget_desc, int *height);
 static int Config_create_clock(int widget_desc, int *height);
 static int Config_create_clockAMPM(int widget_desc, int *height);
 static int Config_create_markingLights(int widget_desc, int *height);
-#ifdef _WINDOWS
-static int Config_create_threadedDraw(int widget_desc, int *height);
-#endif
 static int Config_create_scaleFactor(int widget_desc, int *height);
 static int Config_create_altScaleFactor(int widget_desc, int *height);
 
@@ -252,9 +249,6 @@ static int                (*config_creator[])(int widget_desc, int *height) = {
     Config_create_packetLagMeter,
     Config_create_clock,
     Config_create_clockAMPM,
-#ifdef _WINDOWS
-    Config_create_threadedDraw,
-#endif
     Config_create_scaleFactor,
     Config_create_altScaleFactor,
     Config_create_save                        /* must be last */
@@ -1079,14 +1073,6 @@ static int Config_create_clockAMPM(int widget_desc, int *height)
                               (void *) SHOW_CLOCK_AMPM_FORMAT);
 }
 
-#ifdef _WINDOWS
-static int Config_create_threadedDraw(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "threadedDraw",
-                              ThreadedDraw, Config_update_bool, &ThreadedDraw);
-}
-#endif
-
 static int Config_create_scaleFactor(int widget_desc, int *height)
 {
     return Config_create_float(widget_desc, height,
@@ -1188,7 +1174,7 @@ static int Config_update_instruments(int widget_desc, void *data, bool *val)
     }
     if (BIT(bit, SHOW_REVERSE_SCROLL)) {
         /* a callback for `reverseScroll' in the config menu */
-        IFNWINDOWS( Talk_reverse_cut(); )
+        Talk_reverse_cut();
     }
 
     return 0;
@@ -1315,7 +1301,6 @@ static void Config_save_failed(const char *reason, const char **strptr)
     *strptr = "Saving failed...";
 }
 
-#ifndef _WINDOWS
 static int Xpilotrc_add(char *line)
 {
     int                        size;
@@ -1390,10 +1375,8 @@ static void Xpilotrc_use(char *line)
         }
     }
 }
-#endif
 
 
-#ifndef _WINDOWS
 static void Config_save_resource(FILE *fp, const char *resource, char *value)
 {
     char                buf[256];
@@ -1402,7 +1385,6 @@ static void Config_save_resource(FILE *fp, const char *resource, char *value)
     Xpilotrc_use(buf);
     fprintf(fp, "%s", buf);
 }
-#endif
 
 
 static void Config_save_float(FILE *fp, const char *resource, DFLOAT value)
@@ -1495,7 +1477,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     int                        i;
     FILE                *fp = NULL;
     char                buf[512];
-#ifndef _WINDOWS        /* Windows does no file handling on its own. */
         char        oldfile[PATH_MAX + 1],
                         newfile[PATH_MAX + 1 + 4];
 
@@ -1520,7 +1501,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
         Config_save_failed("Can't open file to save to.", strptr);
         return 1;
     }
-#endif
 
     Config_save_resource(fp, "name", name);
     Config_save_float(fp, "power", power);
@@ -1588,9 +1568,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
 #if SOUND
     Config_save_int(fp, "maxVolume", maxVolume);
 #endif
-#ifdef _WINDOWS
-    Config_save_bool(fp, "threadedDraw", ThreadedDraw);
-#endif
     Config_save_float(fp, "scaleFactor", scaleFactor);
     Config_save_float(fp, "altScaleFactor", scaleFactor_s);
 
@@ -1603,7 +1580,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
         Config_save_resource(fp, buf, modBankStr[i]);
     }
 
-#ifndef _WINDOWS
     Xpilotrc_end(fp);
     fclose(fp);
     sprintf(newfile, "%s.bak", oldfile);
@@ -1611,7 +1587,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     unlink(oldfile);
     sprintf(newfile, "%s.new", oldfile);
     rename(newfile, oldfile);
-#endif
 
     if (config_save_confirm_desc != NO_WIDGET) {
         Widget_destroy(config_save_confirm_desc);

@@ -83,7 +83,6 @@ extern bool save_talk_str;
 time_t        back_in_play_since;
 #endif
 
-#ifndef _WINDOWS
 /*
  * code for the following three functions and the selectionEvents
  * happily and with benediction taken from the terminal emulator
@@ -265,7 +264,6 @@ void ConfigureNotify_event(XEvent *event)
         Widget_event(event);
     }
 }
-#endif
 
 void KeyChanged_event(XEvent *event)
 {
@@ -314,7 +312,6 @@ void ButtonPress_event(XEvent *event)
                 }
             }
         } 
-#ifndef _WINDOWS
         else if (selectionAndHistory) {
             switch (event->xbutton.button) {
             case Button1:
@@ -349,7 +346,6 @@ void ButtonPress_event(XEvent *event)
             } /* switch */
               /* end of selectionAndHistory */
         }
-#endif /* not _WINDOWS */
         return;
     }
     if (Widget_event(event) != 0) {
@@ -391,7 +387,6 @@ int ButtonRelease_event(XEvent *event)
                 }
             }
         } 
-#ifndef _WINDOWS
         else if (!selectionAndHistory) {
             return 0;
         }
@@ -413,7 +408,6 @@ int ButtonRelease_event(XEvent *event)
                 Talk_window_cut(&(event->xbutton));
             }
         }
-#endif /* not _WINDOWS */
         return 0;
     }
     if (Widget_event(event) != 0) {

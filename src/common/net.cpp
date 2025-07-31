@@ -21,20 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
 #include <sys/types.h>
-#include <time.h>
+#include <ctime>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #include "version.h"
 #include "xpconfig.h"
@@ -312,9 +310,6 @@ int Sockbuf_read(sockbuf_t *sbuf)
             if (len == 0) {
                 return 0;
             }
-#ifdef _WINDOWS
-                errno = WSAGetLastError();
-#endif
             if (errno == EINTR) {
                 errno = 0;
                 continue;

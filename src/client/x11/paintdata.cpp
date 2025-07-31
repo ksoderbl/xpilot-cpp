@@ -144,7 +144,6 @@ void Erase_do_end(void)
         xperror("BUG: Erase_do_end while damaged");
         return;
     }
-#ifndef _WINDOWS
     /* BG fix 2000-03-19 use same erase buffer if not color switching. */
     if (dbuf_state->type == COLOR_SWITCH) {
         if (erp == &erase[0]) {
@@ -153,7 +152,6 @@ void Erase_do_end(void)
             erp = &erase[0];
         }
     }
-#endif
     SET_FG(colors[BLACK].pixel);
 
     if (erp->num_rect != 0) {

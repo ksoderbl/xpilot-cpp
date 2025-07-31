@@ -40,55 +40,15 @@
  * ZCAT_EXT should define the proper compressed file extension.
  */
 
-#if defined(_WINDOWS)
-#    ifdef COMPRESSED_MAPS
-        /*
-         * Couldn't find a popen(), also compress and gzip don't exist.
-         */
-#        undef COMPRESSED_MAPS
-#    endif
+#define COMPRESSED_MAPS
+
+#ifdef        DEBUG
+#        define D(x)        { {x}; fflush(stdout); }
 #else
-#    define COMPRESSED_MAPS
+#        define D(x)
 #endif
 
-#ifdef _WINDOWS
-#        ifdef        _DEBUG
-#                define        DEBUG        1
-#                define        D(x)        {x;}
-#        else
-#                define        D(x)
-#        endif
-#else
-#        ifdef        DEBUG
-#                define D(x)        { {x}; fflush(stdout); }
-#        else
-#                define D(x)
-#        endif
-#endif
-
-/* Windows doesn't play with stdin/out well at all... */
-/* So for the client i route the "debug" printfs to the debug stream */
-/* The server gets 'real' messages routed to the messages window */
-#ifdef _WINDOWS
-#        ifdef        _XPILOTNTSERVER_
-#        define        xpprintf        xpprintfW
-/*#        define        xpprintf        _Trace */
-#        else
-#        define        xpprintf        _Trace
-#        endif
-#else
-#        define        xpprintf        printf
-#endif
-
-/*
- XPilot on Windows does lots of double to int conversions. So we have:
-warning C4244: 'initializing' : conversion from 'double ' to 'int ', possible loss of data
-a million times.  I used to fix each warning added by the Unix people, but
-this makes for harder to read code (and was tiring with each patch)
-*/
-#ifdef        _WINDOWS
-#pragma warning (disable : 4244 4761)
-#endif
+#define        xpprintf        printf
 
 char *Conf_libdir(void);
 char *Conf_defaults_file_name(void);

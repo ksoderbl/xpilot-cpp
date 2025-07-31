@@ -166,11 +166,7 @@ option options[] = {
     {
         "autoServerMotdPopup",
         NULL,
-#ifdef _WINDOWS
-        "No",                        /* temporary till i straighten out the motd woes. */
-#else
         "Yes",
-#endif
         KEY_DUMMY,
         "Automatically popup the MOTD of the server on startup.\n"
     },
@@ -1607,7 +1603,6 @@ option options[] = {
         KEY_LOSE_ITEM,
         "Lose the selected item.\n"
     },
-#ifndef _WINDOWS
     {
         "keyPrintMessagesStdout",
         NULL,
@@ -1643,7 +1638,6 @@ option options[] = {
         KEY_TALK_CURSOR_DOWN,
         "Browsing in the history of the talk window.\n"
     },
-#endif
     {
         "keyPointerControl",
         NULL,
@@ -1715,22 +1709,6 @@ option options[] = {
         KEY_DUMMY,
         "Use UDP ports clientPortStart - clientPortEnd (for firewalls).\n"
     },
-#ifdef _WINDOWS
-    {
-        "threadedDraw",
-        NULL,
-        "No",
-        KEY_DUMMY,
-        "Tell Windows to do the heavy BitBlt in another thread\n"
-        },
-    {
-        "radarDivisor",
-        NULL,
-        "1",
-        KEY_DUMMY,
-        "Specifies how many frames between radar window updates.\n"
-        },
-#endif
     {
         "scaleFactor",
         NULL,
@@ -2160,7 +2138,6 @@ static void Usage(void)
 static int Find_resource(XrmDatabase db, const char *resource,
                          char *result, unsigned size, int *index)
 {
-#ifndef _WINDOWS
     int                        i;
     int                        len;
     char                str_name[80],
@@ -2197,12 +2174,6 @@ static int Find_resource(XrmDatabase db, const char *resource,
     strlcpy(result, options[*index].fallback, size);
 
     return 0;
-
-#else        /* _WINDOWS */
-    Config_get_resource(resource, result, size, index);
-
-    return 1;
-#endif
 }
 
 
@@ -2335,7 +2306,6 @@ static void Get_shipshape_resource(XrmDatabase db, char **ship_shape)
 }
 
 
-#ifndef _WINDOWS
 void Get_xpilotrc_file(char *path, unsigned size)
 {
     const char                *home = getenv("HOME");
@@ -2354,10 +2324,8 @@ void Get_xpilotrc_file(char *path, unsigned size)
         strlcpy(path, "", size);
     }
 }
-#endif
 
 
-#ifndef _WINDOWS
 static void Get_file_defaults(XrmDatabase *rDBptr)
 {
     int                        len;
@@ -2440,7 +2408,6 @@ static void Get_file_defaults(XrmDatabase *rDBptr)
         XrmMergeDatabases(tmpDB, rDBptr);
     }
 }
-#endif        /* _WINDOWS*/
 
 
 void Parse_options(int *argcp, char **argvp, char *realName, int *port,
@@ -2461,7 +2428,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     char                resValue[MAX(2*MSG_LEN, PATH_MAX + 1)];
     XrmDatabase                argDB = 0, rDB = 0;
 
-#ifndef _WINDOWS
     XrmOptionDescRec        *xopt;
     int                        size;
 
@@ -2579,7 +2545,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_string_resource(rDB, "geometry", resValue, sizeof resValue);
     geometry = xp_strdup(resValue);
-#endif
 
     if ((talk_fast_temp_buf_big = (char *)malloc(TALK_FAST_MSG_SIZE)) != NULL) {
         for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i) {
@@ -2699,7 +2664,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bool_resource(rDB, "multibuffer", &multibuffer);
 
     /* Windows already derived maxColors in InitWinX */
-    IFNWINDOWS( Get_int_resource(rDB, "maxColors", &maxColors); )
+    Get_int_resource(rDB, "maxColors", &maxColors);
 
     Get_string_resource(rDB, "black", color_names[0], sizeof(color_names[0]));
     Get_string_resource(rDB, "white", color_names[1], sizeof(color_names[1]));
@@ -2777,11 +2742,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_int_resource(rDB, "maxMessages", &maxMessages);
     Get_int_resource(rDB, "messagesToStdout", &messagesToStdout);
-#ifndef _WINDOWS
     Get_bool_resource(rDB, "selectionAndHistory", &selectionAndHistory);
     Get_int_resource(rDB, "maxLinesInHistory", &maxLinesInHistory);
     LIMIT(maxLinesInHistory, 1, MAX_HIST_MSGS);
-#endif
 
     Get_int_resource(rDB, "receiveWindowSize", &receive_window_size);
     LIMIT(receive_window_size, MIN_RECEIVE_WINDOW_SIZE, MAX_RECEIVE_WINDOW_SIZE);
@@ -2924,11 +2887,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         }
     }
 
-#ifndef _WINDOWS
     XrmDestroyDatabase(rDB);
 
     free(xopt);
-#endif
 
 #ifdef SOUND
     audioInit(dispName);

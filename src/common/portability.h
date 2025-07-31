@@ -1,5 +1,4 @@
-/* $Id: portability.h,v 5.4 2002/01/27 12:41:15 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -28,22 +27,7 @@
 #ifndef PORTABILITY_H_INCLUDED
 #define PORTABILITY_H_INCLUDED
 
-/*
- * Macros to block out Windows only code (and never Windows code)
- */
-#ifndef _WINDOWS
-#define IFNWINDOWS(x)        x
-#else
-#define IFNWINDOWS(x)
-#endif
-
-
-#ifdef _WINDOWS
-#define PATHNAME_SEP    '\\'
-#else
 #define PATHNAME_SEP    '/'
-#endif
-
 
 /*
  * Prototypes for OS function wrappers in portability.c.

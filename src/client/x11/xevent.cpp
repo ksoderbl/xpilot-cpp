@@ -220,8 +220,6 @@ void Pointer_control_set_state(bool on)
     XFlush(dpy);
 }
 
-#ifndef _WINDOWS
-
 static void Talk_set_state(bool onoff)
 {
 
@@ -246,30 +244,6 @@ static void Talk_set_state(bool onoff)
         }
     }
 }
-
-#else
-
-static void Talk_set_state(bool onoff)
-{
-        char* wintalkstr;
-
-    if (pointerControl) {
-        initialPointerControl = true;
-        Pointer_control_set_state(false);
-    }
-        wintalkstr = (char*)mfcDoTalkWindow();
-        if (*wintalkstr)
-            Net_talk(wintalkstr);
-
-    if (initialPointerControl) {
-        initialPointerControl = false;
-        Pointer_control_set_state(true);
-    }
-
-    scoresChanged = 1;
-}
-#endif
-
 
 int Key_init(void)
 {
@@ -450,14 +424,12 @@ bool Key_press_toggle_record(keys_t key)
     return false;        /* server doesn't need to know */
 }
 
-#ifndef _WINDOWS
 bool Key_press_msgs_stdout(keys_t key)
 {
     if (selectionAndHistory)
         Print_messages_to_stdout();
     return false;        /* server doesn't need to know */
 }
-#endif
 
 bool Key_press_select_lose_item(keys_t key)
 {
@@ -544,10 +516,10 @@ bool Key_press(keys_t key)
 
     case KEY_TOGGLE_RECORD:
         return Key_press_toggle_record(key);
-#ifndef _WINDOWS
+
     case KEY_PRINT_MSGS_STDOUT:
         return Key_press_msgs_stdout(key);
-#endif
+
     case KEY_SELECT_ITEM:
     case KEY_LOSE_ITEM:
         if (!Key_press_select_lose_item(key)) 
@@ -723,10 +695,8 @@ XEvent        talk_key_repeat_event;
 
 void xevent_keyboard(int queued)
 {
-#ifndef _WINDOWS
     int                        i, n;
     XEvent                event;
-#endif
 
     if (talk_key_repeat_count > 0) {
         if (++talk_key_repeat_count >= FPS
@@ -737,7 +707,6 @@ void xevent_keyboard(int queued)
         }
     }
 
-#ifndef _WINDOWS
     if (kdpy) {
         n = XEventsQueued(kdpy, queued);
         for (i = 0; i < n; i++) {
@@ -767,7 +736,6 @@ void xevent_keyboard(int queued)
             }
         }
     }
-#endif
 }
 
 ipos        delta;
@@ -777,27 +745,10 @@ int        movement;        /* horizontal mouse movement. */
 
 void xevent_pointer(void)
 { 
-#ifndef _WINDOWS
     XEvent                event;
-#endif
 
     if (pointerControl) {
         if (!talk_mapped) {
-
-#ifdef _WINDOWS
-            /* This is a HACK to fix mouse control under windows. */
-            {
-                 POINT point;
-
-                 GetCursorPos(&point);
-                 movement = point.x - draw_width/2; 
-                 XWarpPointer(dpy, None, draw,
-                              0, 0, 0, 0,
-                              draw_width/2, draw_height/2);
-            }
-                /* fix end */
-#endif 
-
             if (movement != 0) {
                 Send_pointer_move(movement);
                 delta.x = draw_width / 2 - mouse.x;
@@ -805,7 +756,6 @@ void xevent_pointer(void)
                 if (ABS(delta.x) > 3 * draw_width / 8
                     || ABS(delta.y) > 1 * draw_height / 8) {
 
-#ifndef _WINDOWS
                     memset(&event, 0, sizeof(event));
                     event.type = MotionNotify;
                     event.xmotion.display = dpy;
@@ -816,7 +766,6 @@ void xevent_pointer(void)
                     XWarpPointer(dpy, None, draw,
                                  0, 0, 0, 0,
                                  draw_width/2, draw_height/2);
-#endif
                     XFlush(dpy);
                 }
             }
@@ -824,17 +773,11 @@ void xevent_pointer(void)
     }
 }
 
-#ifndef _WINDOWS
 int x_event(int new_input)
-#else
-int win_xevent(XEvent event)
-#endif
 {
     int                        queued = 0;
-#ifndef _WINDOWS
     int                        i, n;
     XEvent                event;
-#endif
 
 #ifdef SOUND
     audioEvents();
@@ -846,7 +789,6 @@ int win_xevent(XEvent event)
 
     movement = 0;
 
-#ifndef _WINDOWS
     switch (new_input) {
     case 0: queued = QueuedAlready; break;
     case 1: queued = QueuedAfterReading; break;
@@ -859,10 +801,8 @@ int win_xevent(XEvent event)
     n = XEventsQueued(dpy, queued);
     for (i = 0; i < n; i++) {
         XNextEvent(dpy, &event);
-#endif
-        switch (event.type) {
 
-#ifndef _WINDOWS
+        switch (event.type) {
             /*
              * after requesting a selection we are notified that we
              * can access it.
@@ -911,7 +851,6 @@ int win_xevent(XEvent event)
         case ConfigureNotify:
             ConfigureNotify_event(&event);
             break;
-#endif
 
         case KeyPress:
             talk_key_repeat_count = 0;
@@ -945,9 +884,7 @@ int win_xevent(XEvent event)
         default:
             break;
         }
-#ifndef _WINDOWS
     }
-#endif
 
     xevent_keyboard(queued);        
     xevent_pointer();

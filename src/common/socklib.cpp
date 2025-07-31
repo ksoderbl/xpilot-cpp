@@ -342,7 +342,6 @@ int sock_open_tcp_connected_non_blocking(sock_t *sock, char *host, int port)
         dest.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr_list[0]))->s_addr;
     }
 
-#ifndef _WINDOWS
     if (connect(sock->fd, (struct sockaddr *)&dest, sizeof(struct sockaddr_in)) < 0
         && errno != EINPROGRESS)
     {
@@ -350,7 +349,6 @@ int sock_open_tcp_connected_non_blocking(sock_t *sock, char *host, int port)
         sock_close(sock);
         return SOCK_IS_ERROR;
     }
-#endif
 
     sock_flags_add(sock, SOCK_FLAG_CONNECT);
 
@@ -566,11 +564,9 @@ void sock_get_local_hostname(char *name, unsigned size,
 {
     struct hostent        *he = NULL;
     struct hostent         *xpilot_he = NULL;
-#ifndef _WINDOWS
     int                        xpilot_len;
     char                *dot;
     char                xpilot_hostname[SOCK_HOSTNAME_LENGTH];
-#endif
     static const char        xpilot[] = "xpilot";
 
     gethostname(name, size);
@@ -621,8 +617,6 @@ void sock_get_local_hostname(char *name, unsigned size,
         return;
     }
 
-#ifndef _WINDOWS        /* the lookup of xpilot can take FOREVER! zzzz...  */
-
     /* if name starts with "xpilot" then we're done. */
     xpilot_len = strlen(xpilot);
     if (!strncmp(name, xpilot, xpilot_len)) {
@@ -650,8 +644,6 @@ void sock_get_local_hostname(char *name, unsigned size,
     if (xpilot_he != NULL) {
         strlcpy(name, xpilot_hostname, size);
     }
-
-#endif
 }
 
 int sock_get_port(sock_t *sock)
@@ -759,8 +751,6 @@ static void sock_catch_alarm(int signum)
 
 static struct hostent *sock_get_host_by_name(const char *name)
 {
-#ifndef _WINDOWS
-
     struct hostent        *hp;
 
     if (setjmp(env)) {
@@ -778,40 +768,10 @@ static struct hostent *sock_get_host_by_name(const char *name)
     signal(SIGALRM, SIG_DFL);
 
     return hp;
-
-#else
-    
-    /*
-     * If you aren't connected to the net, then gethostbyname()
-     * can take many minutes to time out.  WSACancelBlockingCall()
-     * doesn't affect it.
-     */
-    
-    static char     chp[MAXGETHOSTSTRUCT+1];
-    struct hostent* hp = (struct hostent*)&chp;
-    HANDLE h;
-    MSG msg;
-    int i;
-    
-    h = WSAAsyncGetHostByName(notifyWnd, WM_GETHOSTNAME, name, 
-        chp, MAXGETHOSTSTRUCT);
-    
-    for(i = 0; i < SOCK_GETHOST_TIMEOUT; i++) {
-        if (PeekMessage(&msg, NULL, WM_GETHOSTNAME, WM_GETHOSTNAME, PM_REMOVE)) {
-            return (WSAGETASYNCERROR(msg.lParam)) ? NULL : hp;
-        }
-        Sleep(1000);
-    }
-    WSACancelAsyncRequest(h);
-    return NULL;
-
-#endif
 }
 
 static struct hostent *sock_get_host_by_addr(const char *addr, int len, int type)
 {
-#ifndef _WINDOWS
-
     struct hostent        *hp;
 
     if (setjmp(env)) {
@@ -829,15 +789,4 @@ static struct hostent *sock_get_host_by_addr(const char *addr, int len, int type
     signal(SIGALRM, SIG_DFL);
 
     return hp;
-
-#else
-
-    struct hostent        *hp;
-
-    hp = gethostbyaddr(addr, len, type);
-
-    return hp;
-
-#endif
 }
-

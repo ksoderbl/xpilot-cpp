@@ -83,12 +83,8 @@ static int                record_dash_dirty = 0;        /* Has dashes list chang
 static void Dummy_newFrame(void) {}
 static void Dummy_endFrame(void) {}
 
-#ifdef _WINDOWS
-extern void paintItemSymbol(unsigned char type, Drawable drawable, GC mygc, int x, int y, int color);
-#else
 static void Dummy_paintItemSymbol(unsigned char type, Drawable drawable,
                                   GC mygc, int x, int y, int color) {}
-#endif
 
 extern char        hostname[];
 
@@ -191,15 +187,9 @@ static void RWriteHeader(void)
     putc(maxColors, recordFP);
     for (i = 0; i < maxColors; i++) {
         RWriteULong(colors[i].pixel);
-#ifdef _WINDOWS
-        RWriteUShort(256*GetRValue(objs[i].color));
-        RWriteUShort(256*GetGValue(objs[i].color));
-        RWriteUShort(256*GetBValue(objs[i].color));
-#else
         RWriteUShort(colors[i].red);
         RWriteUShort(colors[i].green);
         RWriteUShort(colors[i].blue);
-#endif
     }
     RWriteString(gameFontName);
     RWriteString(messageFontName);
@@ -232,7 +222,6 @@ static int RGetPixelIndex(unsigned long pixel)
 
 static void RWriteTile(Pixmap tile)
 {
-#ifndef _WINDOWS
     typedef struct tile_list {
         struct tile_list        *next;
         Pixmap                        tile;
@@ -292,7 +281,6 @@ static void RWriteTile(Pixmap tile)
     XDestroyImage(img);
 
     next_tile_id++;
-#endif
 }
 
 static void RWriteGC(GC gc, unsigned long req_mask)
@@ -662,9 +650,6 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
 static void RPaintItemSymbol(unsigned char type, Drawable drawable, GC mygc,
                              int x, int y, int color)
 {
-#ifdef _WINDOWS
-        paintItemSymbol(type, drawable, mygc, x, y, color);
-#endif
     if (drawable == p_draw) {
         putc(RC_PAINTITEMSYMBOL, recordFP);
         RWriteGC(gc, GCForeground | GCBackground);
@@ -786,11 +771,7 @@ static struct recordable_drawing Xdrawing = {
     (draw_string_proto_t)XDrawString,
     XFillArc,
     XFillPolygon,
-#ifdef _WINDOWS
-    paintItemSymbol,
-#else
     Dummy_paintItemSymbol,
-#endif
     XFillRectangle,
     XFillRectangles,
     XDrawArcs,
@@ -844,9 +825,6 @@ long Record_size(void)
  */
 void Record_toggle(void)
 {
-#if !(defined(_WINDOWS) && defined(PENS_OF_PLENTY))
-/* No recording available with PEN_OF_PLENTY under Windows.
-*/
     if (record_filename != NULL) {
         if (!record_start) {
             record_start = True;
@@ -858,9 +836,6 @@ void Record_toggle(void)
                     record_start = False;
                 } else {
                     setvbuf(recordFP, NULL, _IOFBF, (size_t)(8 * 1024));
-# ifdef _WINDOWS
-                        setmode(fileno(recordFP), O_BINARY);
-# endif
                 }
             }
         } else {
@@ -873,7 +848,6 @@ void Record_toggle(void)
             recording = False;
         }
     }
-#endif
 }
 
 /*

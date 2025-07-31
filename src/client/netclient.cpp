@@ -35,7 +35,6 @@
 #include <netdb.h>
 #include <sys/param.h>
 #include <sys/time.h>
-// #include <X11/Xlib.h>
 
 #include "item.h"
 #include "strlcpy.h"
@@ -49,7 +48,6 @@
 #include "packet.h"
 #include "bit.h"
 #include "paint.h"
-// #include "xinit.h"
 #include "pack.h"
 #include "types.h"
 #include "socklib.h"
@@ -80,9 +78,7 @@ typedef struct {
 setup_t                        *Setup;
 int                        receive_window_size;
 long                        last_loops;
-#ifdef _WINDOWS
-int                        received_self = FALSE;
-#endif
+
 /*
  * Local variables.
  */
@@ -516,9 +512,7 @@ int Net_init(char *server, int port)
     unsigned                size;
     sock_t                sock;
 
-#ifndef _WINDOWS
     signal(SIGPIPE, SIG_IGN);
-#endif
 
     Receive_init();
     if (!clientPortStart || !clientPortEnd || (clientPortStart > clientPortEnd))
@@ -885,8 +879,7 @@ static int Net_packet(void)
 
         if (receive_tbl[type] == NULL) {
             errno = 0;
-            IFNWINDOWS(xperror("Received unknown packet type (%d, %d), dropping frame.", 
-                        type, prev_type);)
+            xperror("Received unknown packet type (%d, %d), dropping frame.", type, prev_type);
             Sockbuf_clear(&rbuf);
             break;
         }
@@ -920,8 +913,8 @@ static int Net_packet(void)
         else if (reliable_tbl[type] == NULL) {
             int i;
             errno = 0;
-            IFNWINDOWS(xperror("Received unknown reliable data packet type (%d,%d,%d)",
-                                        type, cbuf.ptr - cbuf.buf, cbuf.len);)
+            xperror("Received unknown reliable data packet type (%d,%d,%d)",
+                                        type, cbuf.ptr - cbuf.buf, cbuf.len);
             printf("\tdumping buffer for debugging:\n");
             for (i = 0; i < cbuf.len; i++) {
                 printf("%3d", cbuf.buf[i] & 0xFF);
@@ -1219,13 +1212,7 @@ int Net_input(void)
                 }
             }
         }
-        if ((i == receive_window_size - 1 && i > 0)
-#ifdef _WINDOWS
-                || drawPending
-                || (ThreadedDraw && 
-                                !WaitForSingleObject(dinfo.eventNotDrawing, 0) == WAIT_OBJECT_0)
-#endif
-                ) {
+        if (i == receive_window_size - 1 && i > 0) {
             /*
              * Drop oldest packet.
              */

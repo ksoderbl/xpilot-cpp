@@ -21,18 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <errno.h>
-#include <string.h>
-#include <limits.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cerrno>
+#include <cstring>
+#include <climits>
 
-#ifndef _WINDOWS
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-#endif
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "xpconfig.h"
 #include "const.h"
@@ -661,9 +659,6 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
             break;
         intw = (widget_int_t *) widget->sub;
         sprintf(buf, "%d", *intw->val);
-#ifdef _WINDOWS
-        SET_FG(WHITE);
-#endif
         Widget_draw_input(widget, buf);
         break;
 
@@ -679,9 +674,6 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
         } else {
             sprintf(buf, "%d", (int) *floatw->val);
         }
-#ifdef _WINDOWS
-        SET_FG(WHITE);
-#endif
         Widget_draw_input(widget, buf);
         break;
 
@@ -1787,9 +1779,6 @@ int Widget_create_popup(int width, int height, int border,
         sattr.colormap = colormap;
         mask |= CWColormap;
     }
-#ifdef _WINDOWS
-    border = 3;                        /* make it a popup w/title window */
-#endif
     window = XCreateWindow(dpy,
                            DefaultRootWindow(dpy),
                            x, y,

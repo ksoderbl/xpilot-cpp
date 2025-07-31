@@ -22,18 +22,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <signal.h>
-#include <errno.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <csignal>
+#include <cerrno>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
 
 #define        SERVER
 #include "version.h"
@@ -53,27 +51,17 @@ int sched_running = false;
 volatile long        timer_ticks;        /* SIGALRMs that have occurred */
 static long                timers_used;        /* SIGALRMs that have been used */
 static long                timer_freq;        /* rate at which timer ticks. (in FPS) */
-#ifndef _WINDOWS
 static void                (*timer_handler)(void);
-#else
-static        TIMERPROC        timer_handler;
-#endif
 static time_t                current_time;
 static int                ticks_till_second;
 
-/* Windows incorrectly uses u_int in FD_CLR */
-#ifdef _WINDOWS
-typedef        u_int        FDTYPE;
-#else
 typedef        int                FDTYPE;
-#endif
 
 /*
  * Block or unblock a single signal.
  */
 static void sig_ok(int signum, int flag)
 {
-#if !defined(_WINDOWS)
     sigset_t    sigset;
 
     sigemptyset(&sigset);
@@ -82,7 +70,6 @@ static void sig_ok(int signum, int flag)
         xperror("sigprocmask(%d,%d)", signum, flag);
         exit(1);
     }
-#endif
 }
 
 /*
@@ -91,9 +78,7 @@ static void sig_ok(int signum, int flag)
  */
 void block_timer(void)
 {
-#ifndef _WINDOWS
     sig_ok(SIGALRM, 0);
-#endif
 }
 
 /*
@@ -102,9 +87,7 @@ void block_timer(void)
  */
 void allow_timer(void)
 {
-#ifndef _WINDOWS
     sig_ok(SIGALRM, 1);
-#endif
 }
 
 
@@ -140,7 +123,6 @@ static void catch_timer_counts(int signum)
  */
 static void setup_timer(void)
 {
-#ifndef _WINDOWS
     struct itimerval itv;
     struct sigaction act;
 
@@ -182,14 +164,6 @@ static void setup_timer(void)
     timers_used = timer_ticks;
     time(&current_time);
     ticks_till_second = timer_freq;
-#else
-/*
-    UINT cr = SetTimer(NULL, 0, 1000/timer_freq, timer_handler);
-    UINT cr = SetTimer(NULL, 0, 20, (TIMERPROC)ServerThreadTimerProc);
-    if (!cr)
-        xperror("Can't create timer");
-*/
-#endif
     /*
      * Allow the real-time timer to generate SIGALRM signals.
      */
@@ -199,25 +173,12 @@ static void setup_timer(void)
 /*
  * Configure timer tick callback.
  */
-#ifndef _WINDOWS
 void install_timer_tick(void (*func)(void), int freq)
 {
     timer_handler = func;
     timer_freq = freq;
     setup_timer();
 } 
-#else
-
-typedef void (__stdcall *windows_timer_t)(void *, unsigned int, unsigned int, unsigned long);
-
-void install_timer_tick(windows_timer_t func, int freq)
-{
-    timer_handler = (TIMERPROC)func;
-    timer_freq = freq;
-    setup_timer();
-}
-#endif
-
 
 /*
  * Linked list of timeout callbacks.
@@ -339,22 +300,7 @@ static void timeout_chime(void)
     }
 }
 
-#ifndef _WINDOWS
 #define NUM_SELECT_FD                ((int)sizeof(int) * 8)
-#else
-/*
-    Windoze:
-    The first call to socket() returns 560ish.  Successive calls keep bumping
-    up the SOCKET returned until about 880 when it wraps back to 8.
-    (It seems to increment by 8 with each connect - but that's not important)
-    I can't find a manifest constant to tell me what the upper limit will be
-    *sigh*
-
-    --- Now, the Windoze gurus tell me that SOCKET is an opaque data type.
-    So i need to make a lookup array for the lookup array :(
-*/
-#define        NUM_SELECT_FD                2000
-#endif
 
 struct io_handler {
     int                        fd;
@@ -439,15 +385,7 @@ extern int End_game(void);
 
 static void sched_select_error(void)
 {
-#ifndef _WINDOWS
     xperror("sched select error");
-#else
-    char        msg[MSG_LEN];
-
-    sprintf(msg, "sched select error e=%d (%s)",
-            errno, _GetWSockErrText(errno));
-    xperror("%s", msg);
-#endif
 
     End_game();
 }
@@ -462,7 +400,6 @@ void sched(void)
     int                        i, n, io_todo = 3;
     struct timeval        tv, *tvp = &tv;
 
-#ifndef _WINDOWS
     if (sched_running) {
         xperror("sched already running");
         exit(1);
@@ -475,35 +412,13 @@ void sched(void)
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 
-#else
-
-        if (NumPlayers > NumRobots + NumPseudoPlayers
-            || login_in_progress != 0
-            || NumQueuedPlayers > 0) {
-
-            /* need fast I/O checks now! (2 or 3 times per frames) */
-            tv.tv_sec = 0;
-            /* KOERBER */
-            /*        tv.tv_usec = 1000000 / (3 * timer_freq + 1); */
-            tv.tv_usec = 1000000 / (10 * timer_freq + 1); 
-        }
-        else {
-            /* slow I/O checks are possible here... (2 times per second) */ ; 
-            tv.tv_sec = 0;
-            tv.tv_usec = 500000;
-        }
-
-#endif
-
         if (io_todo == 0 && timers_used < timer_ticks) {
             io_todo = 1 + (timer_ticks - timers_used);
             tvp = &tv;
 
-#ifndef _WINDOWS
             if (timer_handler) {
                 (*timer_handler)();
             }
-#endif
 
             do {
                 ++timers_used;
@@ -543,8 +458,6 @@ void sched(void)
                 tvp = NULL;
             }
         }
-#ifndef _WINDOWS
     }
-#endif
 }
 

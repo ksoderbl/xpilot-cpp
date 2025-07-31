@@ -116,21 +116,17 @@ static int wrap(int *xp, int *yp)
 void Paint_item_symbol(u_byte type, Drawable d, GC mygc, int x, int y, int color)
 {
     if (!blockBitmaps) {
-#ifdef _WINDOWS
-    rd.paintItemSymbol(type, d, mygc, x, y, color);
-#else
-    gcv.stipple = itemBitmaps[type];
-    gcv.fill_style = FillStippled;
-    gcv.ts_x_origin = x;
-    gcv.ts_y_origin = y;
-    XChangeGC(dpy, mygc,
-              GCStipple|GCFillStyle|GCTileStipXOrigin|GCTileStipYOrigin,
-              &gcv);
-    rd.paintItemSymbol(type, d, mygc, x, y, color);
-    XFillRectangle(dpy, d, mygc, x, y, ITEM_SIZE, ITEM_SIZE);
-    gcv.fill_style = FillSolid;
-    XChangeGC(dpy, mygc, GCFillStyle, &gcv);
-#endif
+        gcv.stipple = itemBitmaps[type];
+        gcv.fill_style = FillStippled;
+        gcv.ts_x_origin = x;
+        gcv.ts_y_origin = y;
+        XChangeGC(dpy, mygc,
+                GCStipple|GCFillStyle|GCTileStipXOrigin|GCTileStipYOrigin,
+                &gcv);
+        rd.paintItemSymbol(type, d, mygc, x, y, color);
+        XFillRectangle(dpy, d, mygc, x, y, ITEM_SIZE, ITEM_SIZE);
+        gcv.fill_style = FillSolid;
+        XChangeGC(dpy, mygc, GCFillStyle, &gcv);
     } else {
           PaintBitmap(d, BM_ALL_ITEMS, x, y, ITEM_SIZE, ITEM_SIZE, type);         
     }

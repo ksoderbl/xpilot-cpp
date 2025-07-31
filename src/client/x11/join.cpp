@@ -60,7 +60,6 @@ void xpilotShutdown(void);
 extern void Record_cleanup(void);
 
 
-#ifndef _WINDOWS
 static void Input_loop(void)
 {
     fd_set                rfds;
@@ -176,7 +175,6 @@ static void Input_loop(void)
         }
     }
 }
-#endif        /* _WINDOWS */
 
 void xpilotShutdown()
 {
@@ -202,10 +200,8 @@ int Join(char *server_addr, char *server_name, int port, char *real,
 {
     signal(SIGINT, sigcatch);
     signal(SIGTERM, sigcatch);
-#ifndef _WINDOWS
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
-#endif
 
     if (Client_init(server_name, version) == -1) {
         return -1;

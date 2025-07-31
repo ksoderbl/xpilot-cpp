@@ -34,29 +34,25 @@
 ** implied warranty.
  */
 
-#if !defined(_WINDOWS)
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
-#include <errno.h>
-#include <math.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <csignal>
+#include <cerrno>
+#include <cmath>
+#include <ctime>
+#include <cstdarg>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <sys/time.h>
-# include <stdarg.h>
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-# if !defined(select) && defined(__linux__)
-#  define select(N, R, W, E, T)   select((N),             \
-        (fd_set*)(R), (fd_set*)(W), (fd_set*)(E), (T))
-# endif
+#include <sys/time.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#if !defined(select) && defined(__linux__)
+#define select(N, R, W, E, T)   select((N),             \
+      (fd_set*)(R), (fd_set*)(W), (fd_set*)(E), (T))
 #endif
 
 #include "recordfmt.h"

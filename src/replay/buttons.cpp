@@ -1,5 +1,4 @@
-/* $Id: buttons.c,v 5.0 2001/04/07 20:01:00 dik Exp $
- *
+/*
  * XPilot-Replay, playback an XPilot session.  Copyright (C) 1994-98 by
  *
  *      Bjørn Stabell
@@ -22,14 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
 
 #include "buttons.h"
 #include "xpilot-replay.h"

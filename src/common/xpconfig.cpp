@@ -38,72 +38,36 @@
 #endif
 
 #ifndef        DEFAULT_MAP
-#    ifdef _WINDOWS
-#         define DEFAULT_MAP                "default.xp"
-#    else
-#         define DEFAULT_MAP                "globe.xp"
-#    endif
+#    define DEFAULT_MAP                "globe.xp"
 #endif
 
 #ifndef LIBDIR
-#    if defined(_WINDOWS)
-#        define LIBDIR                "lib/"
-#    else
-#        define LIBDIR                "/usr/local/games/lib/xpilot/"
-#    endif
+#    define LIBDIR                "/usr/local/games/lib/xpilot/"
 #endif
 
 #ifndef DEFAULTS_FILE_NAME
-#    if defined(_WINDOWS)
-#        define DEFAULTS_FILE_NAME        LIBDIR "defaults.txt"
-#    else
-#        define DEFAULTS_FILE_NAME        LIBDIR "defaults"
-#    endif
+#    define DEFAULTS_FILE_NAME        LIBDIR "defaults"
 #endif
 #ifndef PASSWORD_FILE_NAME
-#    if defined(_WINDOWS)
-#        define PASSWORD_FILE_NAME        LIBDIR "password.txt"
-#    else
-#        define PASSWORD_FILE_NAME        LIBDIR "password"
-#    endif
+#    define PASSWORD_FILE_NAME        LIBDIR "password"
 #endif
 #ifndef ROBOTFILE
-#    if defined(_WINDOWS)
-#                 define        ROBOTFILE        LIBDIR "robots.txt"
-#    else
-#        define ROBOTFILE        LIBDIR "robots"
-#    endif
+#    define ROBOTFILE        LIBDIR "robots"
 #endif
 #ifndef SERVERMOTDFILE
-#    if defined(_WINDOWS)
-#         define        SERVERMOTDFILE        LIBDIR "servermotd.txt"
-#    else
-#        define SERVERMOTDFILE        LIBDIR "servermotd"
-#    endif
+#    define SERVERMOTDFILE        LIBDIR "servermotd"
 #endif
 #ifndef LOCALMOTDFILE
-#    if defined(_WINDOWS)
-#         define        LOCALMOTDFILE        LIBDIR "localmotd.txt"
-#    else
-#        define LOCALMOTDFILE        LIBDIR "localmotd"
-#    endif
+#    define LOCALMOTDFILE        LIBDIR "localmotd"
 #endif
 #ifndef LOGFILE
-#    if defined(_WINDOWS)
-#         define        LOGFILE                LIBDIR "log.txt"
-#    else
-#        define LOGFILE                LIBDIR "log"
-#    endif
+#    define LOGFILE                LIBDIR "log"
 #endif
 #ifndef MAPDIR
 #    define MAPDIR                LIBDIR "maps/"
 #endif
 #ifndef SHIP_FILE
-#    if defined(_WINDOWS)
-#         define SHIP_FILE        "XPilot.shp"
-#    else
-#        define SHIP_FILE       ""
-#    endif
+#    define SHIP_FILE       ""
 #endif
 #ifndef TEXTUREDIR
 #    define TEXTUREDIR        LIBDIR "textures/"
@@ -113,11 +77,7 @@
 #endif
 
 #ifndef SOUNDFILE
-#    if defined(_WINDOWS)
-#        define SOUNDFILE        LIBDIR "sounds.txt"
-#    else
-#        define SOUNDFILE        LIBDIR "sounds"
-#    endif
+#    define SOUNDFILE        LIBDIR "sounds"
 #endif
 
 #ifndef ZCAT_EXT
