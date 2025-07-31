@@ -36,7 +36,7 @@
 #include "xpconfig.h"
 #include "const.h"
 #include "types.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "xperror.h"
 #include "dbuff.h"

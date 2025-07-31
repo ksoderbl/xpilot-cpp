@@ -42,7 +42,7 @@
 #include "xperror.h"
 #include "const.h"
 #include "client.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "setup.h"
 #include "record.h"
 #include "recordfmt.h"

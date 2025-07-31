@@ -43,7 +43,7 @@
 #include "rules.h"
 #include "bit.h"
 #include "netclient.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "paintradar.h"
 #include "xinit.h"
 #include "protoclient.h"

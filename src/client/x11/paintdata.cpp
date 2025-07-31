@@ -39,7 +39,7 @@
 #include "client.h"
 #include "setup.h"
 #include "rules.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "paintdata.h"
 #include "record.h"
 #include "xinit.h"

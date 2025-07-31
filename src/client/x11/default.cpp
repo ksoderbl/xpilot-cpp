@@ -43,7 +43,7 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "pack.h"
 #include "bit.h"
 #include "keys.h"

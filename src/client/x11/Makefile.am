@@ -4,12 +4,12 @@ xpilot_cpp_client_x11_SOURCES = \
     about.cpp \
     blockbitmaps.cpp \
     blockbitmaps.h \
+    client.cpp \
+    client.h \
     colors.cpp \
     colors.h \
     configure.cpp \
     configure.h \
-    client.cpp \
-    client.h \
     dbuff.cpp \
     dbuff.h \
     default.cpp \
@@ -18,8 +18,6 @@ xpilot_cpp_client_x11_SOURCES = \
     guiobjects.cpp \
     join.cpp \
     netclient.cpp \
-    paint.cpp \
-    paint.h \
     paintdata.cpp \
     paintdata.h \
     painthud.cpp \

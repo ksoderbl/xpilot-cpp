@@ -37,7 +37,7 @@
 #include "const.h"
 #include "keys.h"
 #include "icon.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "widget.h"
 #include "configure.h"

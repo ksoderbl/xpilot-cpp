@@ -39,7 +39,7 @@
 
 #include "xpconfig.h"
 #include "const.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "bit.h"
 #include "keys.h"

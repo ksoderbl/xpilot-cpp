@@ -47,7 +47,7 @@
 #include "setup.h"
 #include "packet.h"
 #include "bit.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "pack.h"
 #include "types.h"

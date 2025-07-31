@@ -36,7 +36,7 @@
 #include "version.h"
 #include "xperror.h"
 #include "const.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "portability.h"
 
 

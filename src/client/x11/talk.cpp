@@ -37,7 +37,7 @@
 
 #include "xpconfig.h"
 #include "const.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "xperror.h"
 #include "netclient.h"

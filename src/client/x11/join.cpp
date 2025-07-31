@@ -45,7 +45,7 @@
 #include "netclient.h"
 #include "protoclient.h"
 #include "portability.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "about.h"
 
 char join_version[] = VERSION;

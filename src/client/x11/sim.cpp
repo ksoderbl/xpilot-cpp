@@ -47,7 +47,7 @@ int simulating;
 #include "rules.h"
 #include "bit.h"
 #include "netclient.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "xinit.h"
 #include "pack.h"
 #include "protoclient.h"

@@ -37,7 +37,7 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "paint.h"
+#include "xpaint.h"
 #include "paintdata.h"
 #include "xinit.h"
 
