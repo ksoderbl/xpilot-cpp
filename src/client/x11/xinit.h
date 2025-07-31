@@ -25,6 +25,8 @@
 #ifndef        XINIT_H
 #define        XINIT_H
 
+#include "xpaint.h"
+
 #define MAX_VISUAL_NAME        12
 
 #define MIN_TOP_WIDTH        (640 + 2)

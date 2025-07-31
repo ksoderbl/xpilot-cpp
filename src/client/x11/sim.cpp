@@ -52,7 +52,6 @@ int simulating;
 #include "pack.h"
 #include "protoclient.h"
 #include "portability.h"
-#include "commonproto.h"
 
 DFLOAT findDir(DFLOAT x, DFLOAT y);
 

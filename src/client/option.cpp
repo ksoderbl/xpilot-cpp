@@ -36,7 +36,6 @@
 
 #include "xperror.h"
 #include "const.h"
-#include "commonproto.h"
 #include "xpmath.h"
 #include "version.h"
 #include "client.h"

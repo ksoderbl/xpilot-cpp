@@ -55,7 +55,6 @@
 #include "robot.h"
 #include "xperror.h"
 #include "portability.h"
-#include "commonproto.h"
 
 
 /*

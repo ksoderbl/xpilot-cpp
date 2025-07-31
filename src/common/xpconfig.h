@@ -24,16 +24,6 @@
 #ifndef XPCONFIG_H
 #define XPCONFIG_H
 
-#ifdef MOD2
-#error "MOD2 already defined - config.h should be included before const.h"
-#endif
-/*
- * Uncomment this if your machine doesn't use
- * two's complement negative numbers.
- */
-/* #define MOD2(x, m)        mod(x, m) */
-
-
 /*
  * The following macros decide the speed of the game and
  * how often the server should draw a frame.  (Hmm...)

@@ -49,7 +49,6 @@
 // #include "xinit.h"
 // #include "protoclient.h"
 // #include "blockbitmaps.h"
-#include "commonproto.h"
 #include "messages.h"
 
 

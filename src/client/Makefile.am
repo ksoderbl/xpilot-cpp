@@ -12,13 +12,13 @@ libxpclient_a_SOURCES = \
     debugaudio.cpp \
     gfx2d.cpp \
     gfx2d.h \
-    gfx3d.cpp \
-    gfx3d.h \
     guimap.h \
     guiobjects.h \
     icon.h \
     netclient.h \
+    paint.h \
     paintmacros.h \
+    paintradar.h \
     protoclient.h \
     query.cpp \
     talk.h \

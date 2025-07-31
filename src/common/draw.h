@@ -25,11 +25,9 @@
 #ifndef        DRAW_H
 #define        DRAW_H
 
-#ifndef TYPES_H
 /* need position */
 #include "types.h"
 #include "const.h"
-#endif
 
 /*
  * Abstract (non-display system specific) drawing definitions.
