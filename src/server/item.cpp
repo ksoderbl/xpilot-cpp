@@ -35,14 +35,9 @@
 #include "proto.h"
 #include "saudio.h"
 #include "score.h"
-#if 0
-#include "bit.h"
-#include "cannon.h"
-#endif
 #include "netserver.h"
 #include "xperror.h"
 #include "objpos.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

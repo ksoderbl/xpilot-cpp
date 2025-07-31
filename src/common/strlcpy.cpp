@@ -1,5 +1,4 @@
-/* $Id: strlcpy.c,v 5.5 2001/05/07 20:06:09 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -23,7 +22,7 @@
  */
 
 #include <stdlib.h>
-#include "commonproto.h"
+#include "strlcpy.h"
 
 
 /*

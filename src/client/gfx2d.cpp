@@ -21,24 +21,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
-#include <limits.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
+#include <climits>
+#include <cctype>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-#endif
+#include <unistd.h>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "gfx2d.h"
 #include "xperror.h"
 #include "const.h"
 #include "portability.h"
-#include "commonproto.h"
 
 
 #ifndef PATH_MAX

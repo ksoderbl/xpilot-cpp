@@ -1,5 +1,4 @@
-/* $Id: strdup.c,v 5.3 2001/05/27 12:27:20 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,11 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "xperror.h"
-#include "commonproto.h"
+#include "strdup.h"
 
 char *xp_strdup(const char *old_string)
 {

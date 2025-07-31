@@ -35,6 +35,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
 
+#include "strlcpy.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
@@ -55,7 +57,6 @@
 #include "astershape.h"
 #include "guiobjects.h"
 #include "pack.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

@@ -22,10 +22,12 @@
  */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
+
+#include "randommt.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -38,7 +40,6 @@
 #include "portability.h"
 #include "talk.h"
 #include "rules.h"                /* TEAM_PLAY, LIMITED_LIVES */
-#include "commonproto.h"
 
 
 /*

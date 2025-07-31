@@ -21,39 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        COMMONPROTO_H
-#define        COMMONPROTO_H
+#ifndef        RANDOMMT_H
+#define        RANDOMMT_H
 
-#ifndef TYPES_H
-/* need DFLOAT */
-#include "types.h"
-#endif
-
-/* randommt.c */
 extern void seedMT(unsigned int seed);
 extern unsigned int reloadMT(void);
 extern unsigned int randomMT(void);
-
-/* strdup.c */
-extern char *xp_strdup(const char *);
-extern char *xp_safe_strdup(const char *old_string);
-
-/* default.c */
-unsigned String_hash(const char *s);
-
-/* strlcpy.c */
-size_t strlcpy(char *dest, const char *src, size_t size);
-size_t strlcat(char *dest, const char *src, size_t size);
-
-/* xpmemory.c */
-
-void *xp_malloc(size_t size);
-void *xp_realloc(void *oldptr, size_t size);
-void *xp_calloc(size_t nmemb, size_t size);
-void xp_free(void *p);
-void *xp_safe_malloc(size_t size);
-void *xp_safe_realloc(void *oldptr, size_t size);
-void *xp_safe_calloc(size_t nmemb, size_t size);
-void xp_safe_free(void *p);
 
 #endif

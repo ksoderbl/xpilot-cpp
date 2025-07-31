@@ -21,18 +21,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <cctype>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
 #include "pack.h"
 #include "checknames.h"
-#include "commonproto.h"
 
 int Check_real_name(char *name)
 {

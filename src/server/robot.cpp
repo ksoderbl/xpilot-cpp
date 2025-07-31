@@ -31,6 +31,8 @@
 
 #include <unistd.h>
 
+#include "strlcpy.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -45,7 +47,6 @@
 #include "robot.h"
 #include "xperror.h"
 #include "server.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 #define DEFAULT_ROBOT_TYPE        "default"

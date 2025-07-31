@@ -1,5 +1,4 @@
-/* $Id: configure.h,v 5.0 2001/04/07 20:00:58 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,16 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        CONFIGURE_H
-#define        CONFIGURE_H
+#ifndef        STRLCPY_H
+#define        STRLCPY_H
 
-#define CONFIG_NONE    0
-#define CONFIG_DEFAULT 1
-#define CONFIG_COLORS  2
+#include <cstdlib>
 
-int Config(bool);
-void Config_redraw(void);
-void Config_resize(void);
-void Config_destroy(void);
+size_t strlcpy(char *dest, const char *src, size_t size);
+size_t strlcat(char *dest, const char *src, size_t size);
 
 #endif

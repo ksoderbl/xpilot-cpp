@@ -21,17 +21,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <limits.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
+#include <climits>
+#include <cerrno>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-#endif
+#include <unistd.h>
+
+#include "strdup.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -42,7 +42,6 @@
 #include "map.h"
 #include "xperror.h"
 #include "types.h"
-#include "commonproto.h"
 
 
 

@@ -29,7 +29,6 @@
 #include "global.h"
 #include "proto.h"
 #include "xperror.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

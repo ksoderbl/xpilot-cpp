@@ -28,6 +28,8 @@
 #include <cmath>
 #include <climits>
 
+#include "randommt.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -37,7 +39,6 @@
 #include "objpos.h"
 #include "cannon.h"
 #include "saudio.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

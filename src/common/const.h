@@ -24,12 +24,11 @@
 #ifndef CONST_H
 #define CONST_H
 
-#include <limits.h>
-#include <math.h>
+#include <climits>
+#include <cmath>
 
-#ifndef TYPES_H
+#include "randommt.h"
 #include "types.h"
-#endif
 
 /*
  * FLT_MAX is ANSI C standard, but some systems (BSD) use

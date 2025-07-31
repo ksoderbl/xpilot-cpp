@@ -40,7 +40,6 @@
 #include "xperror.h"
 #include "objpos.h"
 #include "draw.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

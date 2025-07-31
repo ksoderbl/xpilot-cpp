@@ -27,6 +27,9 @@
 #include <cstring>
 #include <cerrno>
 
+#include "strdup.h"
+#include "strlcpy.h"
+
 #define SERVER
 #include "version.h"
 #include "xpconfig.h"
@@ -37,7 +40,6 @@
 #include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

@@ -28,6 +28,8 @@
 #include <cmath>
 #include <climits>
 
+#include "strlcpy.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -37,7 +39,6 @@
 #include "xperror.h"
 #include "objpos.h"
 #include "netserver.h"
-#include "commonproto.h"
 #include "proto.h"
 #include "xpmath.h"
 

@@ -1,5 +1,4 @@
-/* $Id: xpmread.h,v 5.0 2001/04/07 20:00:59 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -36,9 +35,8 @@
  */
 extern Pixmap xpm_pixmap_from_data(const char **data);
 extern Pixmap xpm_pixmap_from_file(char *filename);
-#ifndef _WINDOWS
 extern XImage *xpm_image_from_pixmap(Pixmap pixmap);
-#endif
+
 #ifdef XPM_READ_C
 /*
  * The rest are private implementation details.

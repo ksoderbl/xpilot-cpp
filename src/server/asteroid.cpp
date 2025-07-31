@@ -38,7 +38,6 @@
 #include "bit.h"
 #include "objpos.h"
 #include "asteroid.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

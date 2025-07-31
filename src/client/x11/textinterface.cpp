@@ -21,20 +21,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <ctime>
 #include <sys/types.h>
 
-#if !defined(_WINDOWS)
-# include <unistd.h>
-# include <sys/param.h>
-# include <netdb.h>
-# include <sys/time.h>
-#endif
+#include <unistd.h>
+#include <sys/param.h>
+#include <netdb.h>
+#include <sys/time.h>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -49,7 +49,6 @@
 #include "checknames.h"
 #include "connectparam.h"
 #include "protoclient.h"
-#include "commonproto.h"
 
 
 #define MAX_LINE        MSG_LEN        /* should not be smaller than MSG_LEN */

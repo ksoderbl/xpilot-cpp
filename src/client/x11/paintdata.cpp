@@ -21,16 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cmath>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -45,7 +45,6 @@
 #include "xinit.h"
 #include "protoclient.h"
 #include "dbuff.h"
-#include "commonproto.h"
 
 refuel_t        *refuel_ptr;
 int                 num_refuel, max_refuel;

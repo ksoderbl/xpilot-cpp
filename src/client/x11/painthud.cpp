@@ -21,18 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -49,7 +49,6 @@
 #include "xinit.h"
 #include "protoclient.h"
 #include "blockbitmaps.h"
-#include "commonproto.h"
 
 
 

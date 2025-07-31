@@ -21,12 +21,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <errno.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <csignal>
+#include <cerrno>
+#include <ctime>
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -35,6 +36,8 @@
 #include <sys/param.h>
 #include <sys/time.h>
 #include <X11/Xlib.h>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -52,7 +55,6 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "talk.h"
-#include "commonproto.h"
 #include "about.h"
 
 #ifdef        SOUND

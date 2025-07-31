@@ -14,11 +14,12 @@
 #include <cerrno>
 #include <cstdarg>
 
+#include "strlcpy.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
 #include "portability.h"
-#include "commonproto.h"
 
 
 

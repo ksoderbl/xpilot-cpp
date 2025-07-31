@@ -21,27 +21,26 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <climits>
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
+#include "strdup.h"
 
 #include "xpconfig.h"
 #include "const.h"
 #include "paint.h"
 #include "xinit.h"
 #include "xperror.h"
-#include "commonproto.h"
 
 #define XPM_READ_C
 #include "xpmread.h"

@@ -37,6 +37,9 @@
 #include <pwd.h>
 #include <sys/param.h>
 
+#include "strdup.h"
+#include "strlcpy.h"
+
 #ifdef PLOCKSERVER
 # if defined(__linux__)
 #  include <sys/mman.h>
@@ -60,7 +63,6 @@
 #include "xperror.h"
 #include "portability.h"
 #include "server.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 char server_version[] = VERSION;

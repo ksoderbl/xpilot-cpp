@@ -37,7 +37,6 @@
 #include "objpos.h"
 #include "cannon.h"
 #include "asteroid.h"
-#include "commonproto.h"
 #include "netserver.h"
 #include "xpmath.h"
 

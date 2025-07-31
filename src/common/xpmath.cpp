@@ -21,17 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cmath>
+
+#include "randommt.h"
 
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
-#include "commonproto.h"
 
 DFLOAT                tbl_sin[TABLE_SIZE];
 DFLOAT                tbl_cos[TABLE_SIZE];

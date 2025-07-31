@@ -46,7 +46,6 @@
 #include "portability.h"
 #include "objpos.h"
 #include "asteroid.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

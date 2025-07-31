@@ -27,7 +27,7 @@
  */
 
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #define        SERVER
 #include "xpconfig.h"
@@ -37,7 +37,6 @@
 #include "proto.h"
 #include "xperror.h"
 #include "portability.h"
-#include "commonproto.h"
 
 
 /*

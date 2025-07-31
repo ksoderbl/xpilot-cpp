@@ -21,17 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        CONFIGURE_H
-#define        CONFIGURE_H
+#ifndef        XPMEMORY_H
+#define        XPMEMORY_H
 
-#define CONFIG_NONE    0
-#define CONFIG_DEFAULT 1
-#define CONFIG_COLORS  2
+#include <cstdlib>
 
-void Config_init(void);
-int Config(bool, int);
-void Config_redraw(void);
-void Config_resize(void);
-void Config_destroy(void);
+void *xp_malloc(size_t size);
+void *xp_realloc(void *oldptr, size_t size);
+void *xp_calloc(size_t nmemb, size_t size);
+void xp_free(void *p);
+void *xp_safe_malloc(size_t size);
+void *xp_safe_realloc(void *oldptr, size_t size);
+void *xp_safe_calloc(size_t nmemb, size_t size);
+void xp_safe_free(void *p);
 
 #endif

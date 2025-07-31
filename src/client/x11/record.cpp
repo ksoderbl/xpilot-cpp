@@ -21,22 +21,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cctype>
+#include <ctime>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/X.h>
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-# include <X11/Xos.h>
-#else
-# include <fcntl.h>
-#endif
+#include <unistd.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+
+#include "strdup.h"
+#include "strlcpy.h"
+#include "xpmemory.h"
 
 #include "xpconfig.h"
 #include "xperror.h"
@@ -47,7 +47,6 @@
 #include "record.h"
 #include "recordfmt.h"
 #include "xpmread.h"
-#include "commonproto.h"
 #include "xinit.h"
 
 /*

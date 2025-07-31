@@ -34,6 +34,9 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
+#include "strdup.h"
+#include "strlcpy.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "paint.h"
@@ -47,7 +50,6 @@
 #include "xperror.h"
 #include "protoclient.h"
 #include "portability.h"
-#include "commonproto.h"
 #include "colors.h"
 
 #ifndef PATH_MAX

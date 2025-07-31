@@ -21,19 +21,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-# include <X11/Xatom.h>
-# include <X11/Xmd.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#include <X11/Xmd.h>
+
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -44,7 +44,6 @@
 #include "protoclient.h"
 #include "keys.h"
 #include "bit.h"
-#include "commonproto.h"
 
 
 /* avoid trouble with Atoms and 64 bit archs */

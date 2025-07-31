@@ -39,7 +39,6 @@
 #include "objpos.h"
 #include "netserver.h"
 #include "xperror.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

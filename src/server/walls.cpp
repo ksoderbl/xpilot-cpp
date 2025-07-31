@@ -40,7 +40,6 @@
 #include "walls.h"
 #include "click.h"
 #include "objpos.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 #define WALLDIST_MASK        \

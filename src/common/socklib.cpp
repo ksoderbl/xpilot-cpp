@@ -22,37 +22,31 @@
  */
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <errno.h>
-#include <time.h>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <csignal>
+#include <csetjmp>
+#include <cerrno>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/param.h>
-# include <sys/ioctl.h>
-# include <sys/time.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netinet/tcp.h>
-# include <arpa/inet.h>
-# include <netdb.h>
-#endif
+#include <unistd.h>
+#include <sys/param.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #include <fcntl.h>
 
-#ifdef TERMNET
-/* support for running clients over term, but not servers please. */
-#include "termnet.h"
-#endif
-
 /* Socklib Includes And Definitions */
 #include "socklib.h"
-#include "commonproto.h"
+
+#include "strlcpy.h"
 
 /* Debug macro */
 #ifdef DEBUG

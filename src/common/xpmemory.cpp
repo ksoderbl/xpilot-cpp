@@ -1,5 +1,4 @@
-/* $Id: xpmemory.c,v 5.0 2001/05/27 20:29:02 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,11 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "xperror.h"
-#include "commonproto.h"
+#include "xpmemory.h"
 
 void *xp_malloc(size_t size)
 {

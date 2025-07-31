@@ -21,19 +21,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <time.h>
-#include <errno.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cstdio>
+#include <ctime>
+#include <cerrno>
+#include <climits>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+
+#include "strdup.h"
+#include "strlcpy.h"
+#include "xpmemory.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -51,7 +53,6 @@
 #include "xperror.h"
 #include "checknames.h"
 #include "server.h"
-#include "commonproto.h"
 #include "portability.h"
 #include "connection.h"
 

@@ -21,20 +21,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <sys/param.h>
-# include <netdb.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/param.h>
+#include <netdb.h>
+
+#include "randommt.h"
+#include "strlcpy.h"
 
 #include "version.h"
 #include "xpconfig.h"
@@ -49,7 +50,6 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "checknames.h"
-#include "commonproto.h"
 
 
 char                        hostname[SOCK_HOSTNAME_LENGTH];

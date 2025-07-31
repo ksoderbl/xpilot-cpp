@@ -22,19 +22,19 @@
  */
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <limits.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <climits>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+
+#include "strlcpy.h"
 
 #include "version.h"
 #include "xpconfig.h"
@@ -53,7 +53,6 @@
 #include "blockbitmaps.h"
 #include "portability.h"
 #include "client.h"
-#include "commonproto.h"
 
 extern setup_t                *Setup;
 extern int                RadarHeight;

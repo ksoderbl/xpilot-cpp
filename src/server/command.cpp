@@ -21,15 +21,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-#endif
+#include <unistd.h>
+
+#include "strlcpy.h"
 
 #define SERVER
 #include "version.h"
@@ -38,7 +38,6 @@
 #include "proto.h"
 #include "xperror.h"
 #include "netserver.h"
-#include "commonproto.h"
 #include "score.h"
 
 

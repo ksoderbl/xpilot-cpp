@@ -21,18 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <cstdio>
+#include <ctime>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+
+#include "strlcpy.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -48,7 +48,6 @@
 #include "saudio.h"
 #include "xperror.h"
 #include "netserver.h"
-#include "commonproto.h"
 
 #define META_VERSION        VERSION
 

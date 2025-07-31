@@ -34,6 +34,8 @@
 #include <sys/time.h>
 #include <X11/Xlib.h>
 
+#include "strlcpy.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "setup.h"
@@ -47,7 +49,6 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "talk.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 #define MAX_CHECKPOINT        26

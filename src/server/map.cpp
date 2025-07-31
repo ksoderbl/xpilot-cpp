@@ -30,6 +30,8 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 
+#include "strlcpy.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -38,7 +40,6 @@
 #include "map.h"
 #include "bit.h"
 #include "xperror.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 #define GRAV_RANGE  10

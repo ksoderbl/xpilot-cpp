@@ -98,14 +98,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/param.h>
-# include <sys/time.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-#endif
+#include <unistd.h>
+#include <sys/param.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+#include "strdup.h"
+#include "strlcpy.h"
 
 #define SERVER
 #include "version.h"
@@ -130,7 +131,6 @@
 #include "saudio.h"
 #include "checknames.h"
 #include "server.h"
-#include "commonproto.h"
 #include "asteroid.h"
 #include "score.h"
 

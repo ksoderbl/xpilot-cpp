@@ -1,5 +1,4 @@
-/* $Id: portability.c,v 5.3 2002/01/13 16:18:20 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -26,15 +25,14 @@
  * This file contains function wrappers around OS specific services.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
 
-#if !defined(_WINDOWS)
-# include <unistd.h>
-# include <pwd.h>
-#endif
+#include <unistd.h>
+#include <pwd.h>
+
 
 #ifdef PLOCKSERVER
 # if defined(__linux__)
@@ -44,18 +42,15 @@
 # endif
 #endif
 
+#include "strlcpy.h"
+
 #include "xpconfig.h"
 #include "portability.h"
-#include "commonproto.h"
 
 
 int Get_process_id(void)
 {
-#if defined(_WINDOWS)
-    return _getpid();
-#else
     return getpid();
-#endif
 }
 
 

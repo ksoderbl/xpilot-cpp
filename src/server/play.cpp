@@ -35,7 +35,6 @@
 #include "saudio.h"
 #include "score.h"
 #include "objpos.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

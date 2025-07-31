@@ -20,6 +20,7 @@ libxpcommon_a_SOURCES = \
     portability.cpp \
     portability.h \
     randommt.cpp \
+    randommt.h \
     recordfmt.h \
     rules.h \
     setup.h \
@@ -28,7 +29,9 @@ libxpcommon_a_SOURCES = \
     socklib.h \
     strcasecmp.cpp \
     strdup.cpp \
+    strdup.h \
     strlcpy.cpp \
+    strlcpy.h \
     types.h \
     version.h \
     wreckshape.h \
@@ -38,4 +41,5 @@ libxpcommon_a_SOURCES = \
     xperror.h \
     xpmath.cpp \
     xpmath.h \
-    xpmemory.cpp
+    xpmemory.cpp \
+    xpmemory.h

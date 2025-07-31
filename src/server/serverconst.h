@@ -1,5 +1,4 @@
-/* $Id: serverconst.h,v 5.3 2002/01/17 18:15:41 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

@@ -36,7 +36,6 @@
 #include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
-#include "commonproto.h"
 #include "tuner.h"
 
 

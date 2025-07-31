@@ -21,18 +21,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
+#include <ctime>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <sys/time.h>
-# include <X11/Xlib.h>
-#endif
+#include <unistd.h>
+#include <sys/time.h>
+#include <X11/Xlib.h>
+
+#include "strdup.h"
+#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -49,7 +50,6 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "socklib.h"
-#include "commonproto.h"
 
 
 /*

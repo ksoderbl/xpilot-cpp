@@ -33,6 +33,8 @@
 #include <unistd.h>
 #include <sys/param.h>
 
+#include "strlcpy.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -42,7 +44,6 @@
 #include "netserver.h"
 #include "saudio.h"
 #include "xperror.h"
-#include "commonproto.h"
 #include "xpmath.h"
 
 

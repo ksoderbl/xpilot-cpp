@@ -36,6 +36,10 @@
 #include <X11/Xresource.h>
 #include <sys/param.h>
 
+#include "strdup.h"
+#include "strlcpy.h"
+#include "xpmemory.h"
+
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
@@ -49,7 +53,6 @@
 #include "types.h"
 #include "protoclient.h"
 #include "audio.h"
-#include "commonproto.h"
 #include "portability.h"
 #include "talk.h"
 #include "default.h"
@@ -2057,7 +2060,7 @@ option options[] = {
 
 int optionsCount = NELEM(options);
 
-unsigned String_hash(const char *s)
+static unsigned String_hash(const char *s)
 {
     unsigned                hash = 0;
 
