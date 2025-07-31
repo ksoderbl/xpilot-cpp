@@ -35,8 +35,9 @@
 #include <netdb.h>
 #include <sys/param.h>
 #include <sys/time.h>
-#include <X11/Xlib.h>
+// #include <X11/Xlib.h>
 
+#include "item.h"
 #include "strlcpy.h"
 
 #include "xpconfig.h"
@@ -48,7 +49,7 @@
 #include "packet.h"
 #include "bit.h"
 #include "paint.h"
-#include "xinit.h"
+// #include "xinit.h"
 #include "pack.h"
 #include "types.h"
 #include "socklib.h"

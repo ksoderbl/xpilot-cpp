@@ -34,6 +34,9 @@
 
 #include "strlcpy.h"
 
+#include "client.h"
+#include "paint.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
@@ -42,9 +45,7 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "xpaint.h"
 #include "paintdata.h"
-#include "paintmacros.h"
 #include "record.h"
 #include "xinit.h"
 #include "protoclient.h"

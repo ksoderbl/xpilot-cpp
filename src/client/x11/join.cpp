@@ -36,11 +36,12 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+#include "client.h"
+
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
-#include "client.h"
 #include "types.h"
 #include "netclient.h"
 #include "protoclient.h"

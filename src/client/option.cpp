@@ -38,7 +38,7 @@
 #include "const.h"
 #include "xpmath.h"
 #include "version.h"
-#include "client.h"
+#include "xclient.h"
 #include "messages.h"
 #include "commonmacros.h"
 #include "option.h"

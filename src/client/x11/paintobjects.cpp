@@ -34,6 +34,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
 
+#include "client.h"
+#include "paint.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
@@ -42,9 +45,7 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "xpaint.h"
 #include "paintdata.h"
-#include "paintmacros.h"
 #include "record.h"
 #include "xinit.h"
 #include "protoclient.h"
@@ -80,7 +81,7 @@ static int asteroidRawShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS][2] = {
 position *asteroidShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS];
 
 
-u_byte        debris_colors;                /* Number of debris intensities from server */
+
 bool        markingLights;
 char        *ballTextureFile;        /* Filename of ball texture */
 

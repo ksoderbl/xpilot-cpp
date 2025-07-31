@@ -104,8 +104,9 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libxpclient_a_AR = $(AR) $(ARFLAGS)
 libxpclient_a_LIBADD =
-am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) datagram.$(OBJEXT) \
-	debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) query.$(OBJEXT)
+am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
+	datagram.$(OBJEXT) debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) \
+	netclient.$(OBJEXT) paint.$(OBJEXT) query.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -122,9 +123,10 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/datagram.Po \
-	./$(DEPDIR)/debugaudio.Po ./$(DEPDIR)/gfx2d.Po \
-	./$(DEPDIR)/query.Po
+am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
+	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
+	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/netclient.Po \
+	./$(DEPDIR)/paint.Po ./$(DEPDIR)/query.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -314,6 +316,8 @@ libxpclient_a_SOURCES = \
     about.h \
     caudio.cpp \
     caudio.h \
+    client.cpp \
+    client.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
@@ -323,9 +327,10 @@ libxpclient_a_SOURCES = \
     guimap.h \
     guiobjects.h \
     icon.h \
+    netclient.cpp \
     netclient.h \
+    paint.cpp \
     paint.h \
-    paintmacros.h \
     paintradar.h \
     protoclient.h \
     query.cpp \
@@ -382,9 +387,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/caudio.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datagram.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debugaudio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx2d.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netclient.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -604,9 +612,12 @@ clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 		-rm -f ./$(DEPDIR)/caudio.Po
+	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
 	-rm -f ./$(DEPDIR)/gfx2d.Po
+	-rm -f ./$(DEPDIR)/netclient.Po
+	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -654,9 +665,12 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
 		-rm -f ./$(DEPDIR)/caudio.Po
+	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
 	-rm -f ./$(DEPDIR)/gfx2d.Po
+	-rm -f ./$(DEPDIR)/netclient.Po
+	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

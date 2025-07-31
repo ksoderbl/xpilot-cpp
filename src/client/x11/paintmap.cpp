@@ -43,7 +43,6 @@
 #include "setup.h"
 #include "xpaint.h"
 #include "paintdata.h"
-#include "paintmacros.h"
 #include "record.h"
 #include "xinit.h"
 #include "protoclient.h"

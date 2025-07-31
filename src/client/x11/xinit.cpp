@@ -100,7 +100,7 @@ Atom                        ProtocolAtom, KillAtom;
 int                        buttonColor, windowColor, borderColor;
 bool                        quitting = false;
 int                        top_width, top_height, top_x, top_y, top_posmask;
-int                        draw_width, draw_height;
+// int                        draw_width, draw_height;
 int                        players_width, players_height;
 char                        *geometry;
 bool                        autoServerMotdPopup;
@@ -108,7 +108,7 @@ bool                        refreshMotd;
 Cursor                        pointerControlCursor;
 char                        sparkColors[MSG_LEN];
 int                        spark_color[MAX_COLORS];
-int                        num_spark_colors;
+// int                        num_spark_colors;
 bool                        ignoreWindowManager;
 
 static message_t        *MsgBlock = NULL;

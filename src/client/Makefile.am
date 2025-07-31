@@ -6,6 +6,8 @@ libxpclient_a_SOURCES = \
     about.h \
     caudio.cpp \
     caudio.h \
+    client.cpp \
+    client.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
@@ -15,9 +17,10 @@ libxpclient_a_SOURCES = \
     guimap.h \
     guiobjects.h \
     icon.h \
+    netclient.cpp \
     netclient.h \
+    paint.cpp \
     paint.h \
-    paintmacros.h \
     paintradar.h \
     protoclient.h \
     query.cpp \

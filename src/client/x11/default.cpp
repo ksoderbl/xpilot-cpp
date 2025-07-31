@@ -40,6 +40,8 @@
 #include "strlcpy.h"
 #include "xpmemory.h"
 
+#include "paint.h"
+
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"

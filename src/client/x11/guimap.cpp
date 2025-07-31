@@ -21,17 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
 #include <sys/types.h>
 
-#ifndef _WINDOWS
-# include <unistd.h>
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-#endif
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+
+#include "client.h"
+#include "paint.h"
 
 #include "gfx2d.h"
 #include "xpconfig.h"
@@ -44,7 +45,6 @@
 #include "setup.h"
 #include "xpaint.h"
 #include "paintdata.h"
-#include "paintmacros.h"
 #include "record.h"
 #include "xinit.h"
 #include "protoclient.h"

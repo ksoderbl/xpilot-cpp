@@ -38,10 +38,11 @@
 #include "strlcpy.h"
 #include "xpmemory.h"
 
+#include "paint.h"
+
 #include "xpconfig.h"
 #include "xperror.h"
 #include "const.h"
-#include "client.h"
 #include "xpaint.h"
 #include "setup.h"
 #include "record.h"

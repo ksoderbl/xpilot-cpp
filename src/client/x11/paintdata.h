@@ -1,5 +1,4 @@
-/* $Id: paintdata.h,v 5.2 2002/01/18 22:34:25 kimiko Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,13 +21,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef PAINTTYPES_H
-#define PAINTTYPES_H
+#ifndef PAINTDATA_H
+#define PAINTDATA_H
 
-/* need u_byte */
-#ifndef        TYPES_H
+#include "draw.h"
 #include "types.h"
-#endif
+
+#include "xpaint.h"
 
 /*
  * Macro to add one new element of a given type to a dynamic array.

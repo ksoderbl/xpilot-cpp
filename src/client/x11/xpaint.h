@@ -24,18 +24,10 @@
 #ifndef XPAINT_H
 #define XPAINT_H
 
+#include <X11/Xlib.h>
 
-/* includes begin */
-#ifndef TYPES_H
-/* need u_byte */
 #include "types.h"
-#endif
-#ifndef CLIENT_H
-/* need other_t */
-#include "client.h"
-#endif
-/* includes end */
-
+#include "xclient.h"
 
 /* constants begin */
 #define MAX_COLORS                16        /* Max. switched colors ever */
@@ -109,7 +101,7 @@ extern char motdFontName[FONT_LEN];
 extern Display        *dpy;                        /* Display of player (pointer) */
 extern Display        *kdpy;                        /* Keyboard display */
 extern short        about_page;                /* Which page is the player on? */
-extern unsigned short        team;                /* What team is the player on? */
+// extern unsigned short        team;                /* What team is the player on? */
 extern bool        players_exposed;        /* Is score window exposed? */
 extern int        radar_exposures;        /* Is radar window exposed? */
 
@@ -152,13 +144,13 @@ extern int        decorRadarColor;        /* Color index for decorations on rada
 extern int        oldMessagesColor;        /* Color index for old message strings */
 extern bool        gotFocus;                /* Do we have the mouse pointer */
 extern bool        talk_mapped;                /* Is talk window visible */
-extern short        ext_view_width;                /* Width of extended visible area */
-extern short        ext_view_height;        /* Height of extended visible area */
-extern int        active_view_width;        /* Width of active map area displayed. */
-extern int        active_view_height;        /* Height of active map area displayed. */
-extern int        ext_view_x_offset;        /* Offset of ext_view_width */
-extern int        ext_view_y_offset;        /* Offset of ext_view_height */
-extern u_byte        debris_colors;                /* Number of debris intensities */
+// extern short        ext_view_width;                /* Width of extended visible area */
+// extern short        ext_view_height;        /* Height of extended visible area */
+// extern int        active_view_width;        /* Width of active map area displayed. */
+// extern int        active_view_height;        /* Height of active map area displayed. */
+// extern int        ext_view_x_offset;        /* Offset of ext_view_width */
+// extern int        ext_view_y_offset;        /* Offset of ext_view_height */
+// extern u_byte        debris_colors;                /* Number of debris intensities */
 extern DFLOAT        charsPerTick;                /* Output speed of messages */
 extern bool        markingLights;                /* Marking lights on ships */
 extern bool        titleFlip;                /* Do special titlebar flipping? */
@@ -174,7 +166,7 @@ extern int        (*radarDrawRectanglePtr)        /* Function to draw player on 
                  int x, int y, unsigned width, unsigned height);
 
 extern int        maxKeyDefs;
-extern long        loops;
+// extern long        loops;
 extern int        maxMessages;
 extern int        messagesToStdout;
 extern bool        selectionAndHistory;

@@ -58,41 +58,40 @@
 char        *talk_fast_msgs[TALK_FAST_NR_OF_MSGS];        /* talk macros */
 
 int                        scoresChanged = 0;
-int                        RadarHeight = 0;
-int                        RadarWidth = 256;        /* must always be 256! */
+// int                        RadarHeight = 0;
+// int                        RadarWidth = 256;        /* must always be 256! */
 
-ipos        pos;
-ipos        vel;
-ipos        world;
-ipos        realWorld;
-short        heading;
-short        nextCheckPoint;
+// ipos        pos;
+// ipos        vel;
+// ipos        world;
+// ipos        realWorld;
+// short        heading;
+// short        nextCheckPoint;
 
-u_byte        numItems[NUM_ITEMS];        /* Count of currently owned items */
-u_byte        lastNumItems[NUM_ITEMS];/* Last item count shown */
-int        numItemsTime[NUM_ITEMS];/* Number of frames to show this item count */
-DFLOAT        showItemsTime;                /* How long to show changed item count for */
+// u_byte        numItems[NUM_ITEMS];        /* Count of currently owned items */
+// u_byte        lastNumItems[NUM_ITEMS];/* Last item count shown */
+// int        numItemsTime[NUM_ITEMS];/* Number of frames to show this item count */
+// DFLOAT        showItemsTime;                /* How long to show changed item count for */
+// short        autopilotLight;
 
-short        autopilotLight;
+// short        lock_id;                /* Id of player locked onto */
+// short        lock_dir;                /* Direction of lock */
+// short        lock_dist;                /* Distance to player locked onto */
 
-short        lock_id;                /* Id of player locked onto */
-short        lock_dir;                /* Direction of lock */
-short        lock_dist;                /* Distance to player locked onto */
+// short        selfVisible;                /* Are we alive and playing? */
+// short        damaged;                /* Damaged by ECM */
+// short        destruct;                /* If self destructing */
+// short        shutdown_delay;
+// short        shutdown_count;
+// short        thrusttime;
+// short        thrusttimemax;
+// short        shieldtime;
+// short        shieldtimemax;
+// short        phasingtime;
+// short        phasingtimemax;
 
-short        selfVisible;                /* Are we alive and playing? */
-short        damaged;                /* Damaged by ECM */
-short        destruct;                /* If self destructing */
-short        shutdown_delay;
-short        shutdown_count;
-short        thrusttime;
-short        thrusttimemax;
-short        shieldtime;
-short        shieldtimemax;
-short        phasingtime;
-short        phasingtimemax;
-
-int                roundDelay;                        /* != 0 means we're in a delay */
-int                roundDelayMax;                /* (not yet) used for graph of time remaining in delay */
+// int                roundDelay;                        /* != 0 means we're in a delay */
+// int                roundDelayMax;                /* (not yet) used for graph of time remaining in delay */
 
 int        map_point_distance;        /* spacing of navigation points */
 int        map_point_size;                /* size of navigation points */
@@ -101,8 +100,8 @@ int        shot_size;                /* size of shot */
 int        teamshot_size;                /* size of team shot */
 bool        showNastyShots = false;                /* show original flavor shots or the new "nasty shots" */
 long        control_count;                /* Display control for how long? */
-u_byte        spark_rand;                /* Sparkling effect */
-u_byte        old_spark_rand;                /* previous value of spark_rand */
+// u_byte        spark_rand;                /* Sparkling effect */
+// u_byte        old_spark_rand;                /* previous value of spark_rand */
 
 long        fuelSum;                        /* Sum of fuel in all tanks */
 long        fuelMax;                        /* How much fuel can you take? */
@@ -113,7 +112,7 @@ int        fuelLevel1;                        /* Fuel critical level */
 int        fuelLevel2;                        /* Fuel warning level */
 int        fuelLevel3;                        /* Fuel notify level */
 
-char        *shipShape;                /* Shape of player's ship */
+// char        *shipShape;                /* Shape of player's ship */
 DFLOAT        power;                        /* Force of thrust */
 DFLOAT        power_s;                /* Saved power fiks */
 DFLOAT        turnspeed;                /* How fast player acc-turns */
@@ -128,20 +127,20 @@ int     charsPerSecond;         /* Message output speed (configurable) */
 
 DFLOAT        hud_move_fact;                /* scale the hud-movement (speed) */
 DFLOAT        ptr_move_fact;                /* scale the speed pointer length */
-long        instruments;                /* Instruments on screen (bitmask) */
+// long        instruments;                /* Instruments on screen (bitmask) */
 char        mods[MAX_CHARS];        /* Current modifiers in effect */
-int        packet_size;                /* Current frame update packet size */
-int        packet_loss;                /* lost packets per second */
-int        packet_drop;                /* dropped packets per second */
-int        packet_lag;                /* approximate lag in frames */
-char        *packet_measure;        /* packet measurement in a second */
-long        packet_loop;                /* start of measurement */
+// int        packet_size;                /* Current frame update packet size */
+// int        packet_loss;                /* lost packets per second */
+// int        packet_drop;                /* dropped packets per second */
+// int        packet_lag;                /* approximate lag in frames */
+// char        *packet_measure;        /* packet measurement in a second */
+// long        packet_loop;                /* start of measurement */
 
 bool        showRealName = false;        /* Show realname instead of nick name */
 char        name[MAX_CHARS];        /* Nick-name of player */
 char        realname[MAX_CHARS];        /* Real name of player */
 char        servername[MAX_CHARS];        /* Name of server connecting to */
-unsigned        version;        /* Version of the server */
+// unsigned        version;        /* Version of the server */
 bool        toggle_shield;          /* Are shields toggled by a press? */
 int     shields = 1;            /* When shields are considered up */
 
@@ -150,14 +149,14 @@ bool    auto_shield = 1;        /* shield drops for fire */
 int        maxFPS;                        /* Client's own FPS */
 int        oldMaxFPS;
 
-int        clientPortStart = 0;        /* First UDP port for clients */
-int        clientPortEnd = 0;        /* Last one (these are for firewalls) */
+// int        clientPortStart = 0;        /* First UDP port for clients */
+// int        clientPortEnd = 0;        /* Last one (these are for firewalls) */
 
-u_byte        lose_item;                /* index for dropping owned item */
+// u_byte        lose_item;                /* index for dropping owned item */
 int        lose_item_active;        /* one of the lose keys is pressed */
 
-DFLOAT scaleFactor;
-DFLOAT scaleFactor_s;
+// DFLOAT scaleFactor;
+// DFLOAT scaleFactor_s;
 
 #ifdef SOUND
 char         sounds[MAX_CHARS];        /* audio mappings */

@@ -54,7 +54,7 @@
 #include "xinit.h"
 #include "blockbitmaps.h"
 #include "portability.h"
-#include "client.h"
+#include "xclient.h"
 
 extern setup_t                *Setup;
 extern int                RadarHeight;
@@ -80,7 +80,7 @@ char        motdFontName[FONT_LEN];
 Display        *dpy;                        /* Display of player (pointer) */
 Display        *kdpy;                        /* Keyboard display */
 short        about_page;                /* Which page is the player on? */
-unsigned short        team;                /* What team is the player on? */
+// unsigned short        team;                /* What team is the player on? */
 
 GC        gc;                        /* GC for the game area */
 GC        messageGC;                /* GC for messages in the game area */
@@ -120,25 +120,25 @@ Colormap        colormap;        /* Private colormap */
 int        maxColors;                /* Max. number of colors to use */
 bool        gotFocus;
 bool        players_exposed;
-short        ext_view_width;                /* Width of extended visible area */
-short        ext_view_height;        /* Height of extended visible area */
-int        active_view_width;        /* Width of active map area displayed. */
-int        active_view_height;        /* Height of active map area displayed. */
-int        ext_view_x_offset;        /* Offset ext_view_width */
-int        ext_view_y_offset;        /* Offset ext_view_height */
+// short        ext_view_width;                /* Width of extended visible area */
+// short        ext_view_height;        /* Height of extended visible area */
+// int        active_view_width;        /* Width of active map area displayed. */
+// int        active_view_height;        /* Height of active map area displayed. */
+// int        ext_view_x_offset;        /* Offset ext_view_width */
+// int        ext_view_y_offset;        /* Offset ext_view_height */
 
 bool        titleFlip;                /* Do special title bar flipping? */
 int        shieldDrawMode = -1;        /* Either LineOnOffDash or LineSolid */
-char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
+// char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 char        *texturePath = NULL;                /* Path list of texture directories */
 bool        useErase;                /* use Erase hack for slow X */
 
 int                maxKeyDefs;
 keydefs_t        *keyDefs = NULL;
 
-other_t     *self;          /* player info */
+// other_t     *self;          /* player info */
 
-long        loops = 0;
+// long        loops = 0;
 
 int        cacheShips = 0;                /* cache some ship bitmaps every frame */
 

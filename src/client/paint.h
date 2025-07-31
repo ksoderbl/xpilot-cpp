@@ -28,6 +28,36 @@
 
 #include "client.h"
 
+// from xinit.cpp
+extern int                draw_width, draw_height;
+
+extern int                num_spark_colors;
+
+
+extern unsigned short        team;                /* What team is the player on? */
+
+extern short        ext_view_width;                /* Width of extended visible area */
+extern short        ext_view_height;        /* Height of extended visible area */
+extern int        active_view_width;        /* Width of active map area displayed. */
+extern int        active_view_height;        /* Height of active map area displayed. */
+extern int        ext_view_x_offset;        /* Offset of ext_view_width */
+extern int        ext_view_y_offset;        /* Offset of ext_view_height */
+extern u_byte        debris_colors;                /* Number of debris intensities */
+
+extern char        modBankStr[][MAX_CHARS];        /* modifier banks strings */
+
+// extern int        maxKeyDefs;
+extern long        loops;
+// extern int        maxMessages;
+// extern int        messagesToStdout;
+// extern bool        selectionAndHistory;
+
+extern DFLOAT        scaleFactor;                /* scale the draw (main playfield) window */
+extern DFLOAT        scaleFactor_s;
+// extern short        scaleArray[];
+// extern void        Init_scale_array(void);
+// #define        WINSCALE(__n)        ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
+
 void Add_message(const char *message);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);

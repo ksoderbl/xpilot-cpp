@@ -41,7 +41,7 @@
 #include "const.h"
 #include "types.h"
 #include "audio.h"
-#include "client.h"
+#include "xclient.h"
 #include "xperror.h"
 
 static int        audioEnabled;
