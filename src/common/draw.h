@@ -1,5 +1,4 @@
-/* $Id: draw.h,v 5.6 2003/09/16 21:02:32 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -45,18 +44,6 @@
 #define WHITE                    1
 #define BLUE                    2
 #define RED                    3
-
-/*
- * Windows deals in Pens, not Colors.  So each pen has to have all of its
- * attributes defined.
- */
-#if defined(_WINDOWS) && !defined(PENS_OF_PLENTY)
-#define        CLOAKCOLOROFS        15                /* colors 16 and 17 are dashed white/blue */
-#define        MISSILECOLOR        18                /* wide white pen */
-#define        LASERCOLOR                19                /* wide red pen */
-#define        LASERTEAMCOLOR        20                /* wide blue pen */
-#define        FUNKCOLORS                6                /* 6 funky colors here (15-20) */
-#endif
 
 /*
  * The minimum and maximum playing window sizes supported by the server.

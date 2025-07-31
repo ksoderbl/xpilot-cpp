@@ -21,23 +21,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
 
-#ifndef _WINDOWS
-# include <X11/Xlib.h>
-# include <X11/Xos.h>
-# include <X11/Xutil.h>
-# include <X11/keysym.h>
-# include <X11/Xatom.h>
-# include <X11/Xmd.h>
-#endif
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
+#include <X11/keysym.h>
+#include <X11/Xatom.h>
+#include <X11/Xmd.h>
+
+#include "client.h"
 
 #include "xpconfig.h"
 #include "const.h"
-#include "xpaint.h"
 #include "xinit.h"
 #include "keys.h"
 #include "packet.h"

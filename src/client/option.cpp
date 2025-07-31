@@ -34,6 +34,8 @@
 #include <cctype>
 #include <sys/types.h>
 
+#include "strlcpy.h"
+
 #include "xperror.h"
 #include "const.h"
 #include "xpmath.h"

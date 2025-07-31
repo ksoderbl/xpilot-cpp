@@ -32,6 +32,7 @@
 #include <sys/time.h>
 #include <X11/Xlib.h>
 
+#include "draw.h"
 #include "strdup.h"
 #include "strlcpy.h"
 

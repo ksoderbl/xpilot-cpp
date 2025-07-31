@@ -30,10 +30,14 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 
+#include "draw.h"
+#include "item.h"
+
+#include "client.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "keys.h"
-#include "xpaint.h"
 #include "xinit.h"
 #include "widget.h"
 #include "configure.h"

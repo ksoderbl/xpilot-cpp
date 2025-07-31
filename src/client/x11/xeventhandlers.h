@@ -1,5 +1,4 @@
-/* $Id: xeventhandlers.h,v 5.0 2001/04/07 20:00:58 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -25,6 +24,8 @@
 #ifndef XEVENTHANDLERS_H
 #define XEVENTHANDLERS_H
 
+#include <X11/Xlib.h>
+
 void SelectionNotify_event(XEvent *event);
 void SelectionRequest_event(XEvent *event);
 void MapNotify_event(XEvent *event);
@@ -37,4 +38,5 @@ void KeyChanged_event(XEvent *event);
 void ButtonPress_event(XEvent *xevent);
 void MotionNotify_event(XEvent *event);
 int ButtonRelease_event(XEvent *event);
+
 #endif
