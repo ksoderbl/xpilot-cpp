@@ -21,8 +21,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        PROTO_H
-#define        PROTO_H
+#ifndef PROTO_H
+#define PROTO_H
 
 #ifndef OBJECT_H
 /* need player */
@@ -92,13 +92,13 @@ DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy);
 unsigned short Find_closest_team(int posx, int posy);
 
 int Wildmap(
-        int width,
-        int height,
-        char *name,
-        char *author,
-        char **data,
-        int *width_ptr,
-        int *height_ptr);
+    int width,
+    int height,
+    char *name,
+    char *author,
+    char **data,
+    int *width_ptr,
+    int *height_ptr);
 
 /*
  * Prototypes for cmdline.c
@@ -108,20 +108,19 @@ void tuner_dummy(void);
 bool Init_options(void);
 void Free_options(void);
 
-
 /*
  * Prototypes for play.c
  */
 void Thrust(int ind);
-void Turn_thrust(int ind,int num_sparks);
+void Turn_thrust(int ind, int num_sparks);
 void Recoil(object *ship, object *shot);
 void Record_shove(player *pl, player *pusher, long time);
 void Delta_mv(object *ship, object *obj);
 void Delta_mv_elastic(object *obj1, object *obj2);
 void Obj_repel(object *obj1, object *obj2, int repel_dist);
 void Item_damage(int ind, DFLOAT prob);
-void Tank_handle_detach(player*);
-void Add_fuel(pl_fuel_t*, long);
+void Tank_handle_detach(player *);
+void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
 void Place_item(int type, int ind);
 int Choose_random_item(void);
@@ -131,7 +130,7 @@ void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
 void Place_mine(int ind);
 void Place_moving_mine(int ind);
 void Place_general_mine(int ind, unsigned short team, long status, DFLOAT x, DFLOAT y,
-                          DFLOAT vx, DFLOAT vy, modifiers mods);
+                        DFLOAT vx, DFLOAT vy, modifiers mods);
 void Detonate_mines(int ind);
 char *Describe_shot(int type, long status, modifiers mods, int hit);
 void Fire_ecm(int ind);
@@ -163,34 +162,32 @@ void do_lose_item(int ind);
 void Move_smart_shot(int ind);
 void Move_mine(int ind);
 void Make_debris(
-            /* pos.x, pos.y   */ DFLOAT  x,          DFLOAT y,
-            /* vel.x, vel.y   */ DFLOAT  velx,       DFLOAT vely,
-            /* owner id       */ int    id,
-            /* owner team     */ unsigned short team,
-            /* type           */ int    type,
-            /* mass           */ DFLOAT  mass,
-            /* status         */ long   status,
-            /* color          */ int    color,
-            /* radius         */ int    radius,
-            /* min,max debris */ int    min_debris, int    max_debris,
-            /* min,max dir    */ int    min_dir,    int    max_dir,
-            /* min,max speed  */ DFLOAT  min_speed,  DFLOAT  max_speed,
-            /* min,max life   */ int    min_life,   int    max_life
-            );
+    /* pos.x, pos.y   */ DFLOAT x, DFLOAT y,
+    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
+    /* owner id       */ int id,
+    /* owner team     */ unsigned short team,
+    /* type           */ int type,
+    /* mass           */ DFLOAT mass,
+    /* status         */ long status,
+    /* color          */ int color,
+    /* radius         */ int radius,
+    /* min,max debris */ int min_debris, int max_debris,
+    /* min,max dir    */ int min_dir, int max_dir,
+    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
+    /* min,max life   */ int min_life, int max_life);
 void Make_wreckage(
-            /* pos.x, pos.y   */ DFLOAT x,          DFLOAT y,
-            /* vel.x, vel.y   */ DFLOAT velx,       DFLOAT vely,
-            /* owner id       */ int    id,
-            /* owner team     */ unsigned short team,
-            /* min,max mass   */ DFLOAT min_mass,   DFLOAT max_mass,
-            /* total mass     */ DFLOAT total_mass,
-            /* status         */ long   status,
-            /* color          */ int    color,
-            /* max wreckage   */ int    max_wreckage,
-            /* min,max dir    */ int    min_dir,    int    max_dir,
-            /* min,max speed  */ DFLOAT min_speed,  DFLOAT max_speed,
-            /* min,max life   */ int    min_life,   int    max_life
-            );
+    /* pos.x, pos.y   */ DFLOAT x, DFLOAT y,
+    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
+    /* owner id       */ int id,
+    /* owner team     */ unsigned short team,
+    /* min,max mass   */ DFLOAT min_mass, DFLOAT max_mass,
+    /* total mass     */ DFLOAT total_mass,
+    /* status         */ long status,
+    /* color          */ int color,
+    /* max wreckage   */ int max_wreckage,
+    /* min,max dir    */ int min_dir, int max_dir,
+    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
+    /* min,max life   */ int min_life, int max_life);
 void Make_item(int px, int py,
                int vx, int vy,
                int item, int num_per_pack,
@@ -202,7 +199,6 @@ void Detonate_items(int ind);
 void add_temp_wormholes(int xin, int yin, int xout, int yout);
 void remove_temp_wormhole(int ind);
 
-
 /*
  * Prototypes for asteroid.c
  */
@@ -211,7 +207,6 @@ void Asteroid_update(void);
 #ifdef LIST_H_INCLUDED
 list_t Asteroid_get_list(void);
 #endif
-
 
 /*
  * Prototypes for cannon.c
@@ -285,7 +280,7 @@ void Tune_asteroid_prob(void);
 /*
  * Prototypes for server.c
  */
-int End_game(void);
+void End_game(void);
 int Pick_team(int pick_for_type);
 void Server_info(char *str, unsigned max_size);
 void Log_game(const char *heading);
@@ -294,12 +289,11 @@ void Server_log_admin_message(int ind, const char *str);
 int plock_server(bool on);
 void Main_loop(void);
 
-
 /*
  * Prototypes for contact.c
  */
 void Contact_cleanup(void);
-int Contact_init(void);
+bool Contact_init(void);
 void Contact(int fd, void *arg);
 void Queue_loop(void);
 int Queue_advance_player(char *name, char *msg);
