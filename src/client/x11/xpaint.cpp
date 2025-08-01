@@ -123,7 +123,6 @@ bool titleFlip;          /* Do special title bar flipping? */
 int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 char *texturePath = NULL; /* Path list of texture directories */
-bool useErase;            /* use Erase hack for slow X */
 
 int maxKeyDefs;
 keydefs_t *keyDefs = NULL;
