@@ -995,7 +995,7 @@ static int Config_create_maxVolume(int widget_desc, int *height)
 static int Config_create_maxFPS(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "maxFPS", &maxFPS, FPS / 2, FPS,
+                             "maxFPS", &maxFPS, 1, 255,
                              Config_update_maxFPS, NULL);
 }
 
@@ -1408,12 +1408,7 @@ static void Xpilotrc_end(FILE *fp)
     }
     for (i = 0; i < num_xpilotrc; i++)
     {
-        /* a bug in 3.2.8 saved maxFPS, which is wrong!  don't save maxFPS! */
-        if (strncmp(xpilotrc_ptr[i].line + 7, "maxFPS:",
-                    xpilotrc_ptr[i].size + 1) != 0)
-        {
-            fprintf(fp, "%s", xpilotrc_ptr[i].line);
-        }
+        fprintf(fp, "%s", xpilotrc_ptr[i].line);
         free(xpilotrc_ptr[i].line);
     }
     free(xpilotrc_ptr);
