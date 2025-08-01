@@ -24,24 +24,28 @@
 #include "paint.h"
 
 // from xinit.cpp
-int                        draw_width, draw_height;
+int draw_width, draw_height;
 
-int                        num_spark_colors;
+int num_spark_colors;
 
+unsigned short team; /* What team is the player on? */
 
-unsigned short        team;                /* What team is the player on? */
+short ext_view_width;   /* Width of extended visible area */
+short ext_view_height;  /* Height of extended visible area */
+int active_view_width;  /* Width of active map area displayed. */
+int active_view_height; /* Height of active map area displayed. */
+int ext_view_x_offset;  /* Offset ext_view_width */
+int ext_view_y_offset;  /* Offset ext_view_height */
+u_byte debris_colors;   /* Number of debris intensities from server */
 
-short        ext_view_width;                /* Width of extended visible area */
-short        ext_view_height;        /* Height of extended visible area */
-int        active_view_width;        /* Width of active map area displayed. */
-int        active_view_height;        /* Height of active map area displayed. */
-int        ext_view_x_offset;        /* Offset ext_view_width */
-int        ext_view_y_offset;        /* Offset ext_view_height */
-u_byte        debris_colors;                /* Number of debris intensities from server */
+char modBankStr[NUM_MODBANKS][MAX_CHARS]; /* modifier banks */
 
-char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
-
-long        loops = 0;
+int maxKeyDefs;
+long loops = 0;
+int maxMessages;      /* Max. number of messages to display */
+int messagesToStdout; /* Send messages to standard output */
+bool selectionAndHistory = false;
 
 DFLOAT scaleFactor;
 DFLOAT scaleFactor_s;
+short scaleArray[SCALE_ARRAY_SIZE];

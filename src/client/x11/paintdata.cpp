@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 
+#include "const.h"
 #include "strlcpy.h"
 
 #include "paint.h"
@@ -851,9 +852,6 @@ void paintdataCleanup(void)
         wormhole_ptr = 0;
     }
 }
-
-#define SCALE_ARRAY_SIZE 32768
-short scaleArray[SCALE_ARRAY_SIZE];
 
 void Init_scale_array(void)
 {

@@ -27,6 +27,8 @@
 
 #include <X11/Xlib.h>
 
+#include "paint.h"
+
 #include "bitmaps.h"
 #include "gfx2d.h"
 

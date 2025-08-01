@@ -98,8 +98,6 @@ Pixmap p_draw;             /* Saved pixmap for the drawing */
                            /* area (monochromes use this) */
 Window players;            /* Player list window */
                            /* monochromes) */
-int maxMessages;           /* Max. number of messages to display */
-int messagesToStdout;      /* Send messages to standard output */
 Window about_w;            /* About window */
 Window about_close_b;      /* About window's close button */
 Window about_next_b;       /* About window's next button */
@@ -123,7 +121,6 @@ int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 char *texturePath = NULL; /* Path list of texture directories */
 
-int maxKeyDefs;
 keydefs_t *keyDefs = NULL;
 
 // other_t     *self;          /* player info */

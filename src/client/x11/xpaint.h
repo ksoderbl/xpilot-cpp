@@ -150,18 +150,6 @@ extern int(*radarDrawRectanglePtr) /* Function to draw player on radar */
     (Display *disp, Drawable d, GC gc,
      int x, int y, unsigned width, unsigned height);
 
-extern int maxKeyDefs;
-// extern long        loops;
-extern int maxMessages;
-extern int messagesToStdout;
-extern bool selectionAndHistory;
-
-extern DFLOAT scaleFactor; /* scale the draw (main playfield) window */
-extern DFLOAT scaleFactor_s;
-extern short scaleArray[];
-extern void Init_scale_array(void);
-#define WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
-
 void Paint_item_symbol(u_byte type, Drawable d, GC mygc, int x, int y, int color);
 void Paint_item(u_byte type, Drawable d, GC mygc, int x, int y);
 

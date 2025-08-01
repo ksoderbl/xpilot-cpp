@@ -28,45 +28,46 @@
 
 #include "client.h"
 
+#define SCALE_ARRAY_SIZE 32768
+
 // from xinit.cpp
-extern int                draw_width, draw_height;
+extern int draw_width, draw_height;
 
-extern int                num_spark_colors;
+extern int num_spark_colors;
 
+extern unsigned short team; /* What team is the player on? */
 
-extern unsigned short        team;                /* What team is the player on? */
+extern short ext_view_width;   /* Width of extended visible area */
+extern short ext_view_height;  /* Height of extended visible area */
+extern int active_view_width;  /* Width of active map area displayed. */
+extern int active_view_height; /* Height of active map area displayed. */
+extern int ext_view_x_offset;  /* Offset of ext_view_width */
+extern int ext_view_y_offset;  /* Offset of ext_view_height */
+extern u_byte debris_colors;   /* Number of debris intensities */
 
-extern short        ext_view_width;                /* Width of extended visible area */
-extern short        ext_view_height;        /* Height of extended visible area */
-extern int        active_view_width;        /* Width of active map area displayed. */
-extern int        active_view_height;        /* Height of active map area displayed. */
-extern int        ext_view_x_offset;        /* Offset of ext_view_width */
-extern int        ext_view_y_offset;        /* Offset of ext_view_height */
-extern u_byte        debris_colors;                /* Number of debris intensities */
+extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
-extern char        modBankStr[][MAX_CHARS];        /* modifier banks strings */
+extern int maxKeyDefs;
+extern long loops;
+extern int maxMessages;
+extern int messagesToStdout;
+extern bool selectionAndHistory;
 
-// extern int        maxKeyDefs;
-extern long        loops;
-// extern int        maxMessages;
-// extern int        messagesToStdout;
-// extern bool        selectionAndHistory;
-
-extern DFLOAT        scaleFactor;                /* scale the draw (main playfield) window */
-extern DFLOAT        scaleFactor_s;
-// extern short        scaleArray[];
-// extern void        Init_scale_array(void);
-// #define        WINSCALE(__n)        ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
+extern DFLOAT scaleFactor; /* scale the draw (main playfield) window */
+extern DFLOAT scaleFactor_s;
+extern short scaleArray[SCALE_ARRAY_SIZE];
+extern void Init_scale_array(void);
+#define WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
 
 void Add_message(const char *message);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
 int Handle_self(int x, int y, int vx, int vy, int dir,
-    float power, float turnspeed, float turnresistance,
-    int lock_id, int lock_dist, int lock_dir,
-    int nextCheckPoint, int autopilotLight,
-    u_byte *newNumItems,
-    int currentTank, int fuel_sum, int fuel_max, int packet_size);
+                float power, float turnspeed, float turnresistance,
+                int lock_id, int lock_dist, int lock_dir,
+                int nextCheckPoint, int autopilotLight,
+                u_byte *newNumItems,
+                int currentTank, int fuel_sum, int fuel_max, int packet_size);
 int Handle_self_items(u_byte *newNumItems);
 int Handle_modifiers(char *m);
 int Handle_damaged(int damaged);
@@ -112,12 +113,12 @@ void Paint_vfuel(void);
 void Paint_vbase(void);
 void Paint_vdecor(void);
 void Paint_world(void);
-void Paint_score_entry(int entry_num, other_t* other, bool best);
+void Paint_score_entry(int entry_num, other_t *other, bool best);
 void Paint_score_start(void);
 void Paint_score_objects(void);
 void Paint_meters(void);
 void Paint_HUD(void);
-int  Get_message(int* pos, char * message, int req_length, int key );
+int Get_message(int *pos, char *message, int req_length, int key);
 void Paint_messages(void);
 void Add_pending_messages(void);
 void Paint_recording(void);
