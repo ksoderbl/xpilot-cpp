@@ -2,8 +2,8 @@ bin_PROGRAMS = xpilot-cpp-client-x11
 AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" -I$(top_srcdir)/src/common -I$(top_srcdir)/src/client
 xpilot_cpp_client_x11_SOURCES = \
     about.cpp \
-    blockbitmaps.cpp \
-    blockbitmaps.h \
+    bitmaps.cpp \
+    bitmaps.h \
     colors.cpp \
     colors.h \
     configure.cpp \
