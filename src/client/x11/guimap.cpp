@@ -208,7 +208,6 @@ void Gui_paint_cannon(int x, int y, int type)
         }
         points[3] = points[0];
         rd.drawLines(dpy, p_draw, gc, points, 4, 0);
-        Erase_points(0, points, 4);
     }
     else
     {
@@ -266,17 +265,6 @@ void Gui_paint_fuel(int x, int y, int fuel)
         }
         SET_FG(colors[RED].pixel);
         size = (BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL;
-        if (useErase)
-        {
-            /* speedup for slow old cheap graphics cards like cg3.
-                or Xterminals with slow connection */
-            rd.drawLine(dpy, p_draw, gc,
-                        WINSCALE(X(x + FUEL_BORDER)),
-                        WINSCALE(Y(y + FUEL_BORDER + size)),
-                        WINSCALE(X(x + FUEL_BORDER + (BLOCK_SZ - 2 * FUEL_BORDER))),
-                        WINSCALE(Y(y + FUEL_BORDER + size)));
-        }
-        else
         {
             rd.fillRectangle(dpy, p_draw, gc,
                              WINSCALE(X(x + FUEL_BORDER)),
@@ -284,11 +272,6 @@ void Gui_paint_fuel(int x, int y, int fuel)
                              WINSCALE(BLOCK_SZ - 2 * FUEL_BORDER + 1),
                              WINSCALE(size + 1));
         }
-        if (!text_is_bigger)
-            Erase_rectangle(WINSCALE(X(x)) - 1,
-                            WINSCALE(Y(y + BLOCK_SZ)) - 1,
-                            WINSCALE(BLOCK_SZ) + 2,
-                            WINSCALE(BLOCK_SZ) + 2);
 
         /* Draw F in fuel cells */
         XSetFunction(dpy, gc, GXxor);
@@ -297,10 +280,6 @@ void Gui_paint_fuel(int x, int y, int fuel)
         y = WINSCALE(Y(y + BLOCK_SZ / 2)) + gameFont->ascent / 2,
         rd.drawString(dpy, p_draw, gc, x, y, s, 1);
         XSetFunction(dpy, gc, GXcopy);
-
-        if (text_is_bigger)
-            Erase_rectangle(x - 2, y - gameFont->ascent,
-                            text_width + 4, gameFont->ascent + gameFont->descent);
     }
     else
     {
@@ -327,10 +306,6 @@ void Gui_paint_fuel(int x, int y, int fuel)
                        WINSCALE(BLOCK_SZ - 2 * BITMAP_FUEL_BORDER),
                        WINSCALE(BLOCK_SZ - 2 * BITMAP_FUEL_BORDER),
                        image, WINSCALE(size));
-
-        Erase_rectangle(WINSCALE(X(x)) - 1,
-                        WINSCALE(Y(y + BLOCK_SZ)) - 1,
-                        WINSCALE(BLOCK_SZ) + 2, WINSCALE(BLOCK_SZ) + 2);
     }
 }
 
@@ -433,19 +408,12 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
         if (size)
         {
             rd.drawString(dpy, p_draw, gc, x, y, s, other ? 2 : 1);
-            Erase_rectangle(x - 1, y - gameFont->ascent - 1,
-                            size + 2,
-                            gameFont->ascent + gameFont->descent + 2);
             x += size;
         }
         if (other)
         {
             rd.drawString(dpy, p_draw, gc, x, y,
                           other->name, other->name_len);
-            Erase_rectangle(x - 1,
-                            y - gameFont->ascent - 1,
-                            other->name_width + 2,
-                            gameFont->ascent + gameFont->descent + 2);
         }
     }
     else
@@ -541,17 +509,11 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
         if (size)
         {
             rd.drawString(dpy, p_draw, gc, x, y, s, other ? 2 : 1);
-            Erase_rectangle(x - 1, y - gameFont->ascent - 1,
-                            size + 2, gameFont->ascent + gameFont->descent + 2);
             x += size;
         }
         if (other)
         {
             rd.drawString(dpy, p_draw, gc, x, y, other->name, other->name_len);
-            Erase_rectangle(x - 1,
-                            y - gameFont->ascent - 1,
-                            other->name_width + 2,
-                            gameFont->ascent + gameFont->descent + 2);
         }
     }
 }
@@ -728,15 +690,6 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
             rd.fillPolygon(dpy, p_draw, gc,
                            points, 5,
                            Convex, CoordModeOrigin);
-            if (useErase)
-            {
-                int left_x = MIN(fill_bottom_left, fill_top_left);
-                int right_x = MAX(fill_bottom_right, fill_top_right);
-                Erase_rectangle(WINSCALE(X(left_x)) - 1,
-                                WINSCALE(Y(y + BLOCK_SZ)) - 1,
-                                WINSCALE(right_x - left_x) + 4,
-                                WINSCALE(BLOCK_SZ) + 3);
-            }
             fill_top_left =
                 fill_top_right =
                     fill_bottom_left =
@@ -767,19 +720,11 @@ void Gui_paint_setup_check(int x, int y, int xi, int yi)
 
         if (Check_index_by_pos(xi, yi) == nextCheckPoint)
         {
-            rd.fillPolygon(dpy, p_draw, gc,
-                           points, 5,
-                           Convex, CoordModeOrigin);
-            Erase_rectangle(WINSCALE(X(x)),
-                            WINSCALE(Y(y + BLOCK_SZ)),
-                            WINSCALE(BLOCK_SZ),
-                            WINSCALE(BLOCK_SZ));
+            rd.fillPolygon(dpy, p_draw, gc, points, 5, Convex, CoordModeOrigin);
         }
         else
         {
-            rd.drawLines(dpy, p_draw, gc,
-                         points, 5, 0);
-            Erase_points(0, points, 5);
+            rd.drawLines(dpy, p_draw, gc, points, 5, 0);
         }
     }
     else
@@ -794,10 +739,6 @@ void Gui_paint_setup_check(int x, int y, int xi, int yi)
             PaintBitmap(p_draw, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
                         WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 0);
         }
-        Erase_rectangle(WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)),
-                        WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ));
     }
 }
 
@@ -1081,7 +1022,6 @@ void Gui_paint_setup_item_concentrator(int x, int y)
             pts[3] = pts[0];
             rd.drawLines(dpy, p_draw, gc,
                          pts, NELEM(pts), CoordModeOrigin);
-            Erase_points(0, pts, NELEM(pts));
         }
     }
     else
@@ -1152,7 +1092,6 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
             pts[4] = pts[0];
             rd.drawLines(dpy, p_draw, gc,
                          pts, NELEM(pts), CoordModeOrigin);
-            Erase_points(0, pts, NELEM(pts));
         }
     }
     else
@@ -1192,9 +1131,6 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
                      WINSCALE(Y(y + 3 * BLOCK_SZ / 4)),
                      WINSCALE(BLOCK_SZ / 2),
                      WINSCALE(BLOCK_SZ / 2));
-    Erase_4point(WINSCALE(X(x + (BLOCK_SZ + 2) / 4)),
-                 WINSCALE(Y(y + 3 * BLOCK_SZ / 4)),
-                 WINSCALE(BLOCK_SZ / 2), WINSCALE(BLOCK_SZ / 2));
 
     if (BIT(Setup->mode, TEAM_PLAY))
     {
@@ -1205,10 +1141,6 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
                       WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
                       WINSCALE(Y(y + BLOCK_SZ / 2)) + gameFont->ascent / 2,
                       s, 1);
-        Erase_rectangle(WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2 - 1,
-                        WINSCALE(Y(y + BLOCK_SZ / 2)) + gameFont->ascent / 2 - gameFont->ascent - 1,
-                        size + 2,
-                        gameFont->ascent + gameFont->descent + 2);
     }
 
     if (damage != TARGET_DAMAGE)
@@ -1261,10 +1193,6 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
             rd.drawString(dpy, p_draw, gc,
                           WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
                           WINSCALE(Y(y + 2 * BALL_RADIUS)), s, 1);
-            Erase_rectangle(WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2 - 1,
-                            WINSCALE(Y(y + 2 * BALL_RADIUS)) - gameFont->ascent - 1,
-                            size + 2,
-                            gameFont->ascent + gameFont->descent + 2);
         }
     }
     else
@@ -1291,10 +1219,6 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
             rd.drawString(dpy, p_draw, gc,
                           WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
                           WINSCALE(Y(y + BALL_RADIUS + 5)), s, 1);
-            Erase_rectangle(WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2 - 1,
-                            WINSCALE(Y(y + BALL_RADIUS + 5)) - gameFont->ascent - 1,
-                            size + 2,
-                            gameFont->ascent + gameFont->descent + 2);
         }
     }
 }

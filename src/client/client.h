@@ -285,7 +285,6 @@ extern int shields;                /* When shields are considered up */
 extern bool auto_shield;           /* drops shield for fire */
 extern bool initialPointerControl; /* Start by using mouse for control? */
 extern bool pointerControl;        /* current state of mouse ship flying */
-extern bool useErase;              /* use the Erase hack for slow X */
 
 extern int maxFPS; /* Client's own FPS */
 extern int oldMaxFPS;

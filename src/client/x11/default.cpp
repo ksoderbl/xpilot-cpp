@@ -617,11 +617,6 @@ option options[] = {
      "",
      KEY_DUMMY,
      "Only use black and white (may be very slow).\n"},
-    {"erase",
-     "Yes",
-     "",
-     KEY_DUMMY,
-     "Use Erase(-hack) for slow X.\n"},
     {"colorSwitch",
      NULL,
      "Yes",
@@ -2277,7 +2272,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_bool_resource(rDB, "texturedObjects", &blockBitmaps);
     Get_bool_resource(rDB, "pointerControl", &initialPointerControl);
-    Get_bool_resource(rDB, "erase", &useErase);
     Get_float_resource(rDB, "showItemsTime", &showItemsTime);
     LIMIT(showItemsTime, MIN_SHOW_ITEMS_TIME, MAX_SHOW_ITEMS_TIME);
 

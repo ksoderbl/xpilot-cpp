@@ -78,161 +78,119 @@
 #include "items/itemAutopilot.xbm"
 #include "items/itemEmergencyShield.xbm"
 
-
 /* How far away objects should be placed from each other etc... */
-#define BORDER                        10
-#define BTN_BORDER                4
+#define BORDER 10
+#define BTN_BORDER 4
 
 /* Information window dimensions */
-#define ABOUT_WINDOW_WIDTH        600
-#define ABOUT_WINDOW_HEIGHT        700
+#define ABOUT_WINDOW_WIDTH 600
+#define ABOUT_WINDOW_HEIGHT 700
 
-extern message_t        *TalkMsg[], *GameMsg[];
-extern message_t        *TalkMsg_pending[], *GameMsg_pending[];
-extern char                *HistMsg[];
-extern int                RadarHeight;
+extern message_t *TalkMsg[], *GameMsg[];
+extern message_t *TalkMsg_pending[], *GameMsg_pending[];
+extern char *HistMsg[];
+extern int RadarHeight;
 
 /*
  * Globals.
  */
-int                        ButtonHeight;
-Atom                        ProtocolAtom, KillAtom;
-int                        buttonColor, windowColor, borderColor;
-bool                        quitting = false;
-int                        top_width, top_height, top_x, top_y, top_posmask;
+int ButtonHeight;
+Atom ProtocolAtom, KillAtom;
+int buttonColor, windowColor, borderColor;
+bool quitting = false;
+int top_width, top_height, top_x, top_y, top_posmask;
 // int                        draw_width, draw_height;
-int                        players_width, players_height;
-char                        *geometry;
-bool                        autoServerMotdPopup;
-bool                        refreshMotd;
-Cursor                        pointerControlCursor;
-char                        sparkColors[MSG_LEN];
-int                        spark_color[MAX_COLORS];
+int players_width, players_height;
+char *geometry;
+bool autoServerMotdPopup;
+bool refreshMotd;
+Cursor pointerControlCursor;
+char sparkColors[MSG_LEN];
+int spark_color[MAX_COLORS];
 // int                        num_spark_colors;
-bool                        ignoreWindowManager;
+bool ignoreWindowManager;
 
-static message_t        *MsgBlock = NULL;
-static message_t        *MsgBlock_pending = NULL;
-
+static message_t *MsgBlock = NULL;
+static message_t *MsgBlock_pending = NULL;
 
 /*
  * NB!  Is dependent on the order of the items in item.h!
  */
-static struct {
-    unsigned char*        data;
-    const char*                keysText;
+static struct
+{
+    unsigned char *data;
+    const char *keysText;
 } itemBitmapData[NUM_ITEMS] = {
-    {
-        itemEnergyPack_bits,
-        "Extra energy/fuel"
-    },
-    {
-        itemWideangleShot_bits,
-        "Extra front cannons"
-    },
-    {
-        itemRearShot_bits,
-        "Extra rear cannon"
-    },
-    {
-        itemAfterburner_bits,
-        "Afterburner; makes your engines more powerful"
-    },
-    {
-        itemCloakingDevice_bits,
-        "Cloaking device; "
-        "makes you almost invisible, both on radar and on screen"
-    },
-    {
-        itemSensorPack_bits,
-        "Sensor; "
-        "enables you to see cloaked opponents more easily"
-    },
-    {
-        itemTransporter_bits,
-        "Transporter; enables you to steal equipment from "
-        "other players"
-    },
-    {
-        itemTank_bits,
-        "Tank; "
-        "makes refueling quicker, increases maximum fuel "
-        "capacity and can be jettisoned to confuse enemies"
-    },
-    {
-        itemMinePack_bits,
-        "Mine; "
-        "can be dropped as a bomb or as a stationary mine"
-    },
-    {
-        itemRocketPack_bits,
-        "Rocket; can be utilized as smart missile, "
-        "heatseeking missile, nuclear missile or just a "
-        "plain unguided missile (torpedo)"
-    },
-    {
-        itemEcm_bits,
-        "ECM (Electronic Counter Measures); "
-        "can be used to disturb electronic equipment, for instance "
-        "can it be used to confuse smart missiles and reprogram "
-        "robots to seek certain players"
-    },
-    {
-        itemLaser_bits,
-        "Laser; "
-        "limited range laser beam, costs a lot of fuel, "
-        "having more laser items increases the range of the laser, "
-        "they can be irrepairably damaged by ECMs"
-    },
-    {
-        itemEmergencyThrust_bits,
-        "Emergency Thrust; "
-        "gives emergency thrust capabilities for a limited period"
-    },
-    {   itemTractorBeam_bits,
-        "Tractor Beam; "
-        "gives mutual attractive force to currently locked on ship, "
-        "this means the heavier your ship, the less likely you will move "
-        "when being tractored or using a tractor"
-    },
-    {
-        itemAutopilot_bits,
-        "Autopilot; "
-        "when on, the ship will turn and thrust against the "
-        "direction of travel"
-    },
-    {
-        itemEmergencyShield_bits,
-        "EmergencyShield; "
-        "gives emergency shield capabilities for a limited period"
-    },
-    {
-        itemDeflector_bits,
-        "Deflector; "
-        "pushes hostile objects away from your ship"
-    },
-    {
-        itemHyperJump_bits,
-        "Hyperjump; "
-        "enables you to teleport to a random map location"
-    },
-    {
-        itemPhasingDevice_bits,
-        "Phasing Device; "
-        "lets you fly through anything for a limited period"
-    },
-    {
-        itemMirror_bits,
-        "Mirror; "
-        "reflects laser beams"
-    },
-    {
-        itemArmor_bits,
-        "Armor; "
-        "absorbs shots in the absence of shields"
-    },
+    {itemEnergyPack_bits,
+     "Extra energy/fuel"},
+    {itemWideangleShot_bits,
+     "Extra front cannons"},
+    {itemRearShot_bits,
+     "Extra rear cannon"},
+    {itemAfterburner_bits,
+     "Afterburner; makes your engines more powerful"},
+    {itemCloakingDevice_bits,
+     "Cloaking device; "
+     "makes you almost invisible, both on radar and on screen"},
+    {itemSensorPack_bits,
+     "Sensor; "
+     "enables you to see cloaked opponents more easily"},
+    {itemTransporter_bits,
+     "Transporter; enables you to steal equipment from "
+     "other players"},
+    {itemTank_bits,
+     "Tank; "
+     "makes refueling quicker, increases maximum fuel "
+     "capacity and can be jettisoned to confuse enemies"},
+    {itemMinePack_bits,
+     "Mine; "
+     "can be dropped as a bomb or as a stationary mine"},
+    {itemRocketPack_bits,
+     "Rocket; can be utilized as smart missile, "
+     "heatseeking missile, nuclear missile or just a "
+     "plain unguided missile (torpedo)"},
+    {itemEcm_bits,
+     "ECM (Electronic Counter Measures); "
+     "can be used to disturb electronic equipment, for instance "
+     "can it be used to confuse smart missiles and reprogram "
+     "robots to seek certain players"},
+    {itemLaser_bits,
+     "Laser; "
+     "limited range laser beam, costs a lot of fuel, "
+     "having more laser items increases the range of the laser, "
+     "they can be irrepairably damaged by ECMs"},
+    {itemEmergencyThrust_bits,
+     "Emergency Thrust; "
+     "gives emergency thrust capabilities for a limited period"},
+    {itemTractorBeam_bits,
+     "Tractor Beam; "
+     "gives mutual attractive force to currently locked on ship, "
+     "this means the heavier your ship, the less likely you will move "
+     "when being tractored or using a tractor"},
+    {itemAutopilot_bits,
+     "Autopilot; "
+     "when on, the ship will turn and thrust against the "
+     "direction of travel"},
+    {itemEmergencyShield_bits,
+     "EmergencyShield; "
+     "gives emergency shield capabilities for a limited period"},
+    {itemDeflector_bits,
+     "Deflector; "
+     "pushes hostile objects away from your ship"},
+    {itemHyperJump_bits,
+     "Hyperjump; "
+     "enables you to teleport to a random map location"},
+    {itemPhasingDevice_bits,
+     "Phasing Device; "
+     "lets you fly through anything for a limited period"},
+    {itemMirror_bits,
+     "Mirror; "
+     "reflects laser beams"},
+    {itemArmor_bits,
+     "Armor; "
+     "absorbs shots in the absence of shields"},
 };
-Pixmap        itemBitmaps[NUM_ITEMS];                /* Bitmaps for the items */
+Pixmap itemBitmaps[NUM_ITEMS]; /* Bitmaps for the items */
 
 char dashes[NUM_DASHES];
 char cdashes[NUM_CDASHES];
@@ -255,17 +213,19 @@ const char *Item_get_text(int i)
  * Return font that is used for this GC, even if setting a new
  * font failed (return default font in that case).
  */
-static XFontStruct* Set_font(Display* dpy, GC gc,
-                             const char* fontName,
+static XFontStruct *Set_font(Display *dpy, GC gc,
+                             const char *fontName,
                              const char *resName)
 {
-    XFontStruct*        font;
+    XFontStruct *font;
 
-    if ((font = XLoadQueryFont(dpy, fontName)) == NULL) {
+    if ((font = XLoadQueryFont(dpy, fontName)) == NULL)
+    {
         xperror("Couldn't find font '%s' for %s, using default font",
-              fontName, resName);
+                fontName, resName);
         font = XQueryFont(dpy, XGContextFromGC(gc));
-    } else
+    }
+    else
         XSetFont(dpy, gc, font->fid);
 
     return font;
@@ -278,10 +238,10 @@ static XFontStruct* Set_font(Display* dpy, GC gc,
  */
 static void Init_spark_colors(void)
 {
-    char                buf[MSG_LEN];
-    char                *src, *dst;
-    unsigned                col;
-    int                        i;
+    char buf[MSG_LEN];
+    char *src, *dst;
+    unsigned col;
+    int i;
 
     num_spark_colors = 0;
     /*
@@ -289,11 +249,14 @@ static void Init_spark_colors(void)
      * any possible separator.  Only look at numbers.
      */
 
-     /* hack but protocol will allow max 9 (MM) */ 
-    for (src = sparkColors; *src && (num_spark_colors < 9); src++) {
-        if (isascii(*src) && isdigit(*src)) {
+    /* hack but protocol will allow max 9 (MM) */
+    for (src = sparkColors; *src && (num_spark_colors < 9); src++)
+    {
+        if (isascii(*src) && isdigit(*src))
+        {
             dst = &buf[0];
-            do {
+            do
+            {
                 *dst++ = *src++;
             } while (*src &&
                      isascii(*src) &&
@@ -301,30 +264,38 @@ static void Init_spark_colors(void)
                      ((dst - buf) < (sizeof(buf) - 1)));
             *dst = '\0';
             src--;
-            if (sscanf(buf, "%u", &col) == 1) {
-                if (col < (unsigned)maxColors) {
+            if (sscanf(buf, "%u", &col) == 1)
+            {
+                if (col < (unsigned)maxColors)
+                {
                     spark_color[num_spark_colors++] = col;
                 }
             }
         }
     }
-    if (num_spark_colors == 0) {
-        if (maxColors <= 8) {
+    if (num_spark_colors == 0)
+    {
+        if (maxColors <= 8)
+        {
             /* 3 colors ranging from 5 up to 7 */
-            for (i = 5; i < maxColors; i++) {
+            for (i = 5; i < maxColors; i++)
+            {
                 spark_color[num_spark_colors++] = i;
             }
         }
-        else {
+        else
+        {
             /* 7 colors ranging from 5 till 11 */
-            for (i = 5; i < 12; i++) {
+            for (i = 5; i < 12; i++)
+            {
                 spark_color[num_spark_colors++] = i;
             }
         }
         /* default spark colors always include RED. */
         spark_color[num_spark_colors++] = RED;
     }
-    for (i = num_spark_colors; i < MAX_COLORS; i++) {
+    for (i = num_spark_colors; i < MAX_COLORS; i++)
+    {
         spark_color[i] = spark_color[num_spark_colors - 1];
     }
 }
@@ -332,41 +303,41 @@ static void Init_spark_colors(void)
 /*
  * Initialize miscellaneous window hints and properties.
  */
-extern char                **Argv;
-extern int                Argc;
-extern char                myClass[];
+extern char **Argv;
+extern int Argc;
+extern char myClass[];
 
 static void Init_disp_prop(Display *d, Window win,
                            int w, int h, int x, int y,
                            int flags)
 {
-    XClassHint                xclh;
-    XWMHints                xwmh;
-    XSizeHints                xsh;
-    char                msg[256];
+    XClassHint xclh;
+    XWMHints xwmh;
+    XSizeHints xsh;
+    char msg[256];
 
-    xwmh.flags           = InputHint|StateHint|IconPixmapHint;
-    xwmh.input           = True;
+    xwmh.flags = InputHint | StateHint | IconPixmapHint;
+    xwmh.input = True;
     xwmh.initial_state = NormalState;
-    xwmh.icon_pixmap   = XCreateBitmapFromData(d, win,
-                                               (char *)icon_bits,
-                                               icon_width, icon_height);
+    xwmh.icon_pixmap = XCreateBitmapFromData(d, win,
+                                             (char *)icon_bits,
+                                             icon_width, icon_height);
 
-    xsh.flags = (flags|PMinSize|PMaxSize|PBaseSize|PResizeInc);
+    xsh.flags = (flags | PMinSize | PMaxSize | PBaseSize | PResizeInc);
     xsh.width = w;
     xsh.base_width =
-    xsh.min_width = MIN_TOP_WIDTH;
+        xsh.min_width = MIN_TOP_WIDTH;
     xsh.max_width = MAX_TOP_WIDTH;
     xsh.width_inc = 1;
     xsh.height = h;
     xsh.base_height =
-    xsh.min_height = MIN_TOP_HEIGHT;
+        xsh.min_height = MIN_TOP_HEIGHT;
     xsh.max_height = MAX_TOP_HEIGHT;
     xsh.height_inc = 1;
     xsh.x = x;
     xsh.y = y;
 
-    xclh.res_name = NULL;        /* NULL: Automatically uses Argv[0], */
+    xclh.res_name = NULL;     /* NULL: Automatically uses Argv[0], */
     xclh.res_class = myClass; /* stripped of directory prefixes. */
 
     /*
@@ -389,7 +360,7 @@ static void Init_disp_prop(Display *d, Window win,
     XSetIconName(d, win, msg);
 
     if (d != dpy)
-            return;
+        return;
 
     /*
      * Specify IO error handler and the WM_DELETE_WINDOW atom in
@@ -401,7 +372,6 @@ static void Init_disp_prop(Display *d, Window win,
     XSetIOErrorHandler(FatalError);
 }
 
-
 /*
  * The following function initializes a toplevel window.
  * It returns 0 if the initialization was successful,
@@ -409,72 +379,72 @@ static void Init_disp_prop(Display *d, Window win,
  */
 int Init_top(void)
 {
-    int                                        i;
-    int                                        top_x, top_y;
-    int                                        x, y;
-    unsigned                                w, h;
-    int                                        values;
-    int                                        top_flags;
-    XGCValues                                xgc;
-    XSetWindowAttributes                sattr;
-    unsigned long                        mask;
+    int i;
+    int top_x, top_y;
+    int x, y;
+    unsigned w, h;
+    int values;
+    int top_flags;
+    XGCValues xgc;
+    XSetWindowAttributes sattr;
+    unsigned long mask;
 
-    if (top) {
+    if (top)
+    {
         xperror("Init_top called twice");
         exit(1);
     }
 
-    if (Colors_init() == -1) {
+    if (Colors_init() == -1)
+    {
         return -1;
     }
 
-    if (shieldDrawMode == -1) {
+    if (shieldDrawMode == -1)
+    {
         shieldDrawMode = 0;
         /*
          * Default is solid for NCD X11 servers.  My NCD mono 19 inch
          * terminal, vendor release 2002 suffers from terrible slowness
          * when drawing dashed arcs with thick lines.
          */
-        if (strcmp (ServerVendor (dpy),
-                    "DECWINDOWS (Compatibility String) "
-                    "Network Computing Devices Inc.") == 0
-            && ProtocolVersion (dpy) == 11)
+        if (strcmp(ServerVendor(dpy),
+                   "DECWINDOWS (Compatibility String) "
+                   "Network Computing Devices Inc.") == 0 &&
+            ProtocolVersion(dpy) == 11)
             shieldDrawMode = 1;
-
-        if (useErase){
-        /*
-         * The NeWS X server doesn't orrectly erase shields.
-         */
-        if (!strcmp(ServerVendor(dpy), "X11/NeWS - Sun Microsystems Inc."))
-            shieldDrawMode = 1;
-        }
     }
 
-    if (hudColor >= maxColors || hudColor <= 0) {
+    if (hudColor >= maxColors || hudColor <= 0)
+    {
         hudColor = BLUE;
     }
-    if (hudLockColor >= maxColors || hudLockColor <= 0) {
+    if (hudLockColor >= maxColors || hudLockColor <= 0)
+    {
         hudLockColor = hudColor;
     }
-    if (wallColor >= maxColors || wallColor <= 0) {
+    if (wallColor >= maxColors || wallColor <= 0)
+    {
         wallColor = BLUE;
     }
-    if (wallRadarColor >= maxColors
-        || ((wallRadarColor & 1) && colorSwitch)) {
+    if (wallRadarColor >= maxColors || ((wallRadarColor & 1) && colorSwitch))
+    {
         wallRadarColor = BLUE;
     }
-    if (targetRadarColor >= maxColors
-        || ((targetRadarColor & 1) && colorSwitch)) {
+    if (targetRadarColor >= maxColors || ((targetRadarColor & 1) && colorSwitch))
+    {
         targetRadarColor = BLUE;
     }
-    if (oldMessagesColor >= maxColors || oldMessagesColor < 0) {
+    if (oldMessagesColor >= maxColors || oldMessagesColor < 0)
+    {
         oldMessagesColor = WHITE;
     }
-    if (decorColor >= maxColors || decorColor <= 0) {
+    if (decorColor >= maxColors || decorColor <= 0)
+    {
         decorColor = RED;
     }
-    if (decorRadarColor >= maxColors
-        || ((decorRadarColor & 1) && colorSwitch)) {
+    if (decorRadarColor >= maxColors || ((decorRadarColor & 1) && colorSwitch))
+    {
         decorRadarColor = 2;
     }
 
@@ -485,50 +455,72 @@ int Init_top(void)
      * Get toplevel geometry.
      */
     top_flags = 0;
-    if (geometry != NULL && geometry[0] != '\0') {
+    if (geometry != NULL && geometry[0] != '\0')
+    {
         mask = XParseGeometry(geometry, &x, &y, &w, &h);
-    } else {
+    }
+    else
+    {
         mask = 0;
     }
-    if ((mask & WidthValue) != 0) {
+    if ((mask & WidthValue) != 0)
+    {
         top_width = w;
         top_flags |= USSize;
-    } else {
+    }
+    else
+    {
         top_width = DEF_TOP_WIDTH;
         top_flags |= PSize;
     }
     LIMIT(top_width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
-    if ((mask & HeightValue) != 0) {
+    if ((mask & HeightValue) != 0)
+    {
         top_height = h;
         top_flags |= USSize;
-    } else {
+    }
+    else
+    {
         top_height = DEF_TOP_HEIGHT;
         top_flags |= PSize;
     }
     LIMIT(top_height, MIN_TOP_HEIGHT, MAX_TOP_HEIGHT);
-    if ((mask & XValue) != 0) {
-        if ((mask & XNegative) != 0) {
+    if ((mask & XValue) != 0)
+    {
+        if ((mask & XNegative) != 0)
+        {
             top_x = DisplayWidth(dpy, DefaultScreen(dpy)) - top_width + x;
-        } else {
+        }
+        else
+        {
             top_x = x;
         }
         top_flags |= USPosition;
-    } else {
-        top_x = (DisplayWidth(dpy, DefaultScreen(dpy)) - top_width) /2;
+    }
+    else
+    {
+        top_x = (DisplayWidth(dpy, DefaultScreen(dpy)) - top_width) / 2;
         top_flags |= PPosition;
     }
-    if ((mask & YValue) != 0) {
-        if ((mask & YNegative) != 0) {
+    if ((mask & YValue) != 0)
+    {
+        if ((mask & YNegative) != 0)
+        {
             top_y = DisplayHeight(dpy, DefaultScreen(dpy)) - top_height + y;
-        } else {
+        }
+        else
+        {
             top_y = y;
         }
         top_flags |= USPosition;
-    } else {
-        top_y = (DisplayHeight(dpy, DefaultScreen(dpy)) - top_height) /2;
+    }
+    else
+    {
+        top_y = (DisplayHeight(dpy, DefaultScreen(dpy)) - top_height) / 2;
         top_flags |= PPosition;
     }
-    if (geometry != NULL) {
+    if (geometry != NULL)
+    {
         free(geometry);
         geometry = NULL;
     }
@@ -542,11 +534,13 @@ int Init_top(void)
     mask |= CWBackPixel;
     sattr.border_pixel = colors[WHITE].pixel;
     mask |= CWBorderPixel;
-    if (colormap != 0) {
+    if (colormap != 0)
+    {
         sattr.colormap = colormap;
         mask |= CWColormap;
     }
-    if (ignoreWindowManager) {
+    if (ignoreWindowManager)
+    {
         sattr.override_redirect = True;
         mask |= CWOverrideRedirect;
     }
@@ -558,10 +552,10 @@ int Init_top(void)
                         InputOutput, visual,
                         mask, &sattr);
     XSelectInput(dpy, top,
-                 KeyPressMask | KeyReleaseMask
-                 | FocusChangeMask | StructureNotifyMask);
+                 KeyPressMask | KeyReleaseMask | FocusChangeMask | StructureNotifyMask);
     Init_disp_prop(dpy, top, top_width, top_height, top_x, top_y, top_flags);
-    if (kdpy) {
+    if (kdpy)
+    {
         int scr = DefaultScreen(kdpy);
         keyboard = XCreateSimpleWindow(kdpy,
                                        DefaultRootWindow(kdpy),
@@ -577,11 +571,11 @@ int Init_top(void)
     /*
      * Create item bitmaps
      */
-    for (i = 0; i < NUM_ITEMS; i++) {
-        itemBitmaps[i]
-            = XCreateBitmapFromData(dpy, top,
-                                    (char *)itemBitmapData[i].data,
-                                    ITEM_SIZE, ITEM_SIZE);
+    for (i = 0; i < NUM_ITEMS; i++)
+    {
+        itemBitmaps[i] = XCreateBitmapFromData(dpy, top,
+                                               (char *)itemBitmapData[i].data,
+                                               ITEM_SIZE, ITEM_SIZE);
     }
 
     /*
@@ -590,46 +584,30 @@ int Init_top(void)
     xgc.line_width = 0;
     xgc.line_style = LineSolid;
     xgc.cap_style = CapButt;
-    xgc.join_style = JoinMiter;                /* I think this is fastest, is it? */
+    xgc.join_style = JoinMiter; /* I think this is fastest, is it? */
     xgc.graphics_exposures = False;
-    values
-        = GCLineWidth|GCLineStyle|GCCapStyle|GCJoinStyle|GCGraphicsExposures;
+    values = GCLineWidth | GCLineStyle | GCCapStyle | GCJoinStyle | GCGraphicsExposures;
 
-    messageGC
-        = XCreateGC(dpy, top, values, &xgc);
-    radarGC
-        = XCreateGC(dpy, top, values, &xgc);
-    buttonGC
-        = XCreateGC(dpy, top, values, &xgc);
-    scoreListGC
-        = XCreateGC(dpy, top, values, &xgc);
-    textGC
-        = XCreateGC(dpy, top, values, &xgc);
-    talkGC
-        = XCreateGC(dpy, top, values, &xgc);
-    motdGC
-        = XCreateGC(dpy, top, values, &xgc);
-    gc
-        = XCreateGC(dpy, top, values, &xgc);
+    messageGC = XCreateGC(dpy, top, values, &xgc);
+    radarGC = XCreateGC(dpy, top, values, &xgc);
+    buttonGC = XCreateGC(dpy, top, values, &xgc);
+    scoreListGC = XCreateGC(dpy, top, values, &xgc);
+    textGC = XCreateGC(dpy, top, values, &xgc);
+    talkGC = XCreateGC(dpy, top, values, &xgc);
+    motdGC = XCreateGC(dpy, top, values, &xgc);
+    gc = XCreateGC(dpy, top, values, &xgc);
     XSetBackground(dpy, gc, colors[BLACK].pixel);
 
     /*
      * Set fonts
      */
-    gameFont
-        = Set_font(dpy, gc, gameFontName, "gameFont");
-    messageFont
-        = Set_font(dpy, messageGC, messageFontName, "messageFont");
-    scoreListFont
-        = Set_font(dpy, scoreListGC, scoreListFontName, "scoreListFont");
-    buttonFont
-        = Set_font(dpy, buttonGC, buttonFontName, "buttonFont");
-    textFont
-        = Set_font(dpy, textGC, textFontName, "textFont");
-    talkFont
-        = Set_font(dpy, talkGC, talkFontName, "talkFont");
-    motdFont
-        = Set_font(dpy, motdGC, motdFontName, "motdFont");
+    gameFont = Set_font(dpy, gc, gameFontName, "gameFont");
+    messageFont = Set_font(dpy, messageGC, messageFontName, "messageFont");
+    scoreListFont = Set_font(dpy, scoreListGC, scoreListFontName, "scoreListFont");
+    buttonFont = Set_font(dpy, buttonGC, buttonFontName, "buttonFont");
+    textFont = Set_font(dpy, textGC, textFontName, "textFont");
+    talkFont = Set_font(dpy, talkGC, talkFontName, "talkFont");
+    motdFont = Set_font(dpy, motdGC, motdFontName, "motdFont");
 
     XSetState(dpy, gc,
               WhitePixel(dpy, DefaultScreen(dpy)),
@@ -652,15 +630,19 @@ int Init_top(void)
               BlackPixel(dpy, DefaultScreen(dpy)),
               GXcopy, AllPlanes);
 
-    if (dbuf_state->type == COLOR_SWITCH) {
+    if (dbuf_state->type == COLOR_SWITCH)
+    {
         XSetPlaneMask(dpy, gc, dbuf_state->drawing_planes);
     }
 
-    if (mono) {
+    if (mono)
+    {
         buttonColor = BLACK;
         windowColor = BLACK;
         borderColor = WHITE;
-    } else {
+    }
+    else
+    {
         windowColor = BLUE;
         buttonColor = RED;
         borderColor = WHITE;
@@ -669,19 +651,20 @@ int Init_top(void)
     return 0;
 }
 
-
 /*
  * Creates the playing windows.
  * Returns 0 on success, -1 on error.
  */
 int Init_playing_windows(void)
 {
-    unsigned                        w, h;
-    Pixmap                        pix;
-    GC                                cursorGC;
+    unsigned w, h;
+    Pixmap pix;
+    GC cursorGC;
 
-    if (!top) {
-        if (Init_top()) {
+    if (!top)
+    {
+        if (Init_top())
+        {
             return -1;
         }
     }
@@ -698,29 +681,27 @@ int Init_playing_windows(void)
                                 colors[BLACK].pixel);
 
     /* Create buttons */
-#define BUTTON_WIDTH        84
-    ButtonHeight = buttonFont->ascent + buttonFont->descent + 2*BTN_BORDER;
+#define BUTTON_WIDTH 84
+    ButtonHeight = buttonFont->ascent + buttonFont->descent + 2 * BTN_BORDER;
 
-    button_form
-        = Widget_create_form(0, top,
-                             0, RadarHeight,
-                             256, ButtonHeight + 2,
-                             0);
+    button_form = Widget_create_form(0, top,
+                                     0, RadarHeight,
+                                     256, ButtonHeight + 2,
+                                     0);
     Widget_create_activate(button_form,
-                           0 + 0*BUTTON_WIDTH, 0,
+                           0 + 0 * BUTTON_WIDTH, 0,
                            BUTTON_WIDTH, ButtonHeight,
                            1, "QUIT",
                            Quit_callback, NULL);
     Widget_create_activate(button_form,
-                           1 + 1*BUTTON_WIDTH, 0,
+                           1 + 1 * BUTTON_WIDTH, 0,
                            BUTTON_WIDTH, ButtonHeight,
                            1, "ABOUT",
                            About_callback, NULL);
-    menu_button
-        = Widget_create_menu(button_form,
-                             2 + 2*BUTTON_WIDTH, 0,
-                             BUTTON_WIDTH, ButtonHeight,
-                             1, "MENU");
+    menu_button = Widget_create_menu(button_form,
+                                     2 + 2 * BUTTON_WIDTH, 0,
+                                     BUTTON_WIDTH, ButtonHeight,
+                                     1, "MENU");
     Widget_add_pulldown_entry(menu_button,
                               "KEYS", Keys_callback, NULL);
     Widget_add_pulldown_entry(menu_button,
@@ -736,35 +717,37 @@ int Init_playing_windows(void)
     /* Create score list window */
     players_width = RadarWidth;
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
-    players
-        = XCreateSimpleWindow(dpy, top,
-                              0, RadarHeight + ButtonHeight + 2,
-                              players_width, players_height,
-                              0, 0,
-                              colors[windowColor].pixel);
+    players = XCreateSimpleWindow(dpy, top,
+                                  0, RadarHeight + ButtonHeight + 2,
+                                  players_width, players_height,
+                                  0, 0,
+                                  colors[windowColor].pixel);
     /*
      * Selecting the events we can handle.
      */
     XSelectInput(dpy, radar, ExposureMask);
     XSelectInput(dpy, players, ExposureMask);
 
-    if (!selectionAndHistory) {
+    if (!selectionAndHistory)
+    {
         XSelectInput(dpy, draw, 0);
-    } else {
+    }
+    else
+    {
         XSelectInput(dpy, draw, ButtonPressMask | ButtonReleaseMask);
     }
-
 
     /*
      * Initialize misc. pixmaps if we're not color switching.
      * (This could be in dbuff_init_buffer completely IMHO, -- Metalite)
      */
-    switch (dbuf_state->type) {
+    switch (dbuf_state->type)
+    {
 
     case PIXMAP_COPY:
         p_radar = XCreatePixmap(dpy, radar, 256, RadarHeight, dispDepth);
         s_radar = XCreatePixmap(dpy, radar, 256, RadarHeight, dispDepth);
-        p_draw  = XCreatePixmap(dpy, draw, draw_width, draw_height, dispDepth);
+        p_draw = XCreatePixmap(dpy, draw, draw_width, draw_height, dispDepth);
         break;
 
     case MULTIBUFFER:
@@ -781,8 +764,9 @@ int Init_playing_windows(void)
         break;
     }
 
-    XAutoRepeatOff(dpy);        /* We don't want any autofire, yet! */
-    if (kdpy) {
+    XAutoRepeatOff(dpy); /* We don't want any autofire, yet! */
+    if (kdpy)
+    {
         XAutoRepeatOff(kdpy);
     }
 
@@ -806,7 +790,8 @@ int Init_playing_windows(void)
     XMapWindow(dpy, top);
     XSync(dpy, False);
 
-    if (kdpy) {
+    if (kdpy)
+    {
         XMapWindow(kdpy, keyboard);
         XSync(kdpy, False);
     }
@@ -818,40 +803,50 @@ int Init_playing_windows(void)
 
 int Alloc_msgs(void)
 {
-    message_t                *x, *x2 = 0;
-    int                        i;
+    message_t *x, *x2 = 0;
+    int i;
 
-    if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL){
+    if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)
+    {
         xperror("No memory for messages");
         return -1;
     }
 
     if (selectionAndHistory &&
-        ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)){
+        ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL))
+    {
         xperror("No memory for history messages");
         free(x);
         return -1;
     }
-    if (selectionAndHistory) {
-        MsgBlock_pending        = x2;
+    if (selectionAndHistory)
+    {
+        MsgBlock_pending = x2;
     }
 
-    MsgBlock                = x;
+    MsgBlock = x;
 
-    for (i = 0; i < 2 * MAX_MSGS; i++) {
-        if (i < MAX_MSGS) {
+    for (i = 0; i < 2 * MAX_MSGS; i++)
+    {
+        if (i < MAX_MSGS)
+        {
             TalkMsg[i] = x;
-            if (selectionAndHistory) TalkMsg_pending[i] = x2;
-        } else {
+            if (selectionAndHistory)
+                TalkMsg_pending[i] = x2;
+        }
+        else
+        {
             GameMsg[i - MAX_MSGS] = x;
-            if (selectionAndHistory) GameMsg_pending[i - MAX_MSGS] = x2;
+            if (selectionAndHistory)
+                GameMsg_pending[i - MAX_MSGS] = x2;
         }
         x->txt[0] = '\0';
         x->len = 0;
         x->life = 0;
         x++;
 
-        if (selectionAndHistory) {
+        if (selectionAndHistory)
+        {
             x2->txt[0] = '\0';
             x2->len = 0;
             x2->life = 0;
@@ -863,16 +858,17 @@ int Alloc_msgs(void)
 
 void Free_msgs(void)
 {
-    if (MsgBlock) {
+    if (MsgBlock)
+    {
         free(MsgBlock);
         MsgBlock = NULL;
     }
-    if (MsgBlock_pending) {
+    if (MsgBlock_pending)
+    {
         free(MsgBlock_pending);
         MsgBlock_pending = NULL;
     }
 }
-
 
 static int Config_callback(int widget_desc, void *data, const char **str)
 {
@@ -880,28 +876,27 @@ static int Config_callback(int widget_desc, void *data, const char **str)
     return 0;
 }
 
-
 static int Score_callback(int widget_desc, void *data, const char **str)
 {
     Config(false);
-    if (showRealName != false) {
+    if (showRealName != false)
+    {
         showRealName = false;
         scoresChanged = 1;
     }
     return 0;
 }
 
-
 static int Player_callback(int widget_desc, void *data, const char **str)
 {
     Config(false);
-    if (showRealName != true) {
+    if (showRealName != true)
+    {
         showRealName = true;
         scoresChanged = 1;
     }
     return 0;
 }
-
 
 static int Quit_callback(int widget_desc, void *data, const char **str)
 {
@@ -909,21 +904,23 @@ static int Quit_callback(int widget_desc, void *data, const char **str)
     return 0;
 }
 
-
 void Resize(Window w, int width, int height)
 {
-    if (w != top) {
+    if (w != top)
+    {
         return;
     }
     /* ignore illegal resizes */
     LIMIT(width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
     LIMIT(height, MIN_TOP_HEIGHT, MAX_TOP_HEIGHT);
-    if (width == top_width && height == top_height) {
+    if (width == top_width && height == top_height)
+    {
         return;
     }
     top_width = width;
     top_height = height;
-    if (!draw) {
+    if (!draw)
+    {
         return;
     }
     draw_width = top_width - 258;
@@ -931,7 +928,8 @@ void Resize(Window w, int width, int height)
     Send_display();
     Net_flush();
     XResizeWindow(dpy, draw, draw_width, draw_height);
-    if (dbuf_state->type == PIXMAP_COPY) {
+    if (dbuf_state->type == PIXMAP_COPY)
+    {
         XFreePixmap(dpy, p_draw);
         p_draw = XCreatePixmap(dpy, draw, draw_width, draw_height, dispDepth);
     }
@@ -942,18 +940,19 @@ void Resize(Window w, int width, int height)
     Config_resize();
 }
 
-
 /*
  * Cleanup player structure, close the display etc.
  */
 void Quit(void)
 {
-    if (dpy != NULL) {
+    if (dpy != NULL)
+    {
         XAutoRepeatOn(dpy);
         Colors_cleanup();
         XCloseDisplay(dpy);
         dpy = NULL;
-        if (kdpy) {
+        if (kdpy)
+        {
             XAutoRepeatOn(kdpy);
             XCloseDisplay(kdpy);
             kdpy = NULL;
@@ -963,7 +962,6 @@ void Quit(void)
     Widget_cleanup();
 }
 
-
 int FatalError(Display *dpy)
 {
     Net_cleanup();
@@ -972,7 +970,7 @@ int FatalError(Display *dpy)
      * It's already a fatal I/O error, nothing to cleanup.
      */
     exit(0);
-    return(0);
+    return (0);
 }
 
 void Scale_dashes()

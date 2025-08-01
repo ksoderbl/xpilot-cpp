@@ -176,10 +176,6 @@ static void Paint_items(void)
             {
                 Paint_item((u_byte)itemtype_ptr[i].type, p_draw, gc,
                            WINSCALE(X(x)), WINSCALE(Y(y)));
-                Erase_rectangle(WINSCALE(X(x)) - ITEM_TRIANGLE_SIZE,
-                                WINSCALE(Y(y)) - ITEM_TRIANGLE_SIZE,
-                                2 * ITEM_TRIANGLE_SIZE + 1,
-                                2 * ITEM_TRIANGLE_SIZE + 1);
             }
         }
         RELEASE(itemtype_ptr, num_itemtype, max_itemtype);

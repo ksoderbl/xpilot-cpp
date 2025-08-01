@@ -123,7 +123,6 @@ bool titleFlip;          /* Do special title bar flipping? */
 int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 char *texturePath = NULL; /* Path list of texture directories */
-bool useErase;            /* use Erase hack for slow X */
 
 int maxKeyDefs;
 keydefs_t *keyDefs = NULL;
@@ -197,8 +196,6 @@ void Paint_frame(void)
             SET_FG(colors[BLACK].pixel);
             XFillRectangle(dpy, draw, gc, 0, 0, draw_width, draw_height);
         }
-
-        Erase_start();
 
         Arc_start();
 
@@ -334,22 +331,15 @@ void Paint_frame(void)
 
     if (!damaged)
     {
-        /* Prepare invisible buffer for next frame by clearing. */
-        if (useErase)
+
+        /*
+         * DBE's XdbeBackground switch option is
+         * probably faster than XFillRectangle.
+         */
+        if (dbuf_state->multibuffer_type != MULTIBUFFER_DBE)
         {
-            Erase_end();
-        }
-        else
-        {
-            /*
-             * DBE's XdbeBackground switch option is
-             * probably faster than XFillRectangle.
-             */
-            if (dbuf_state->multibuffer_type != MULTIBUFFER_DBE)
-            {
-                SET_FG(colors[BLACK].pixel);
-                XFillRectangle(dpy, p_draw, gc, 0, 0, draw_width, draw_height);
-            }
+            SET_FG(colors[BLACK].pixel);
+            XFillRectangle(dpy, p_draw, gc, 0, 0, draw_width, draw_height);
         }
     }
 
