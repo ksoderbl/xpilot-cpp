@@ -38,7 +38,6 @@
 #include "const.h"
 #include "xperror.h"
 #include "bit.h"
-#include "xclient.h"
 #include "setup.h"
 #include "rules.h"
 #include "xpaint.h"

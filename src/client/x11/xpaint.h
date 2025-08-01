@@ -27,7 +27,6 @@
 #include <X11/Xlib.h>
 
 #include "types.h"
-#include "xclient.h"
 
 /* constants begin */
 #define MAX_COLORS 16    /* Max. switched colors ever */

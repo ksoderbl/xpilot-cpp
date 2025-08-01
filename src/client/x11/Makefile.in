@@ -315,7 +315,6 @@ xpilot_cpp_client_x11_SOURCES = \
     widget.cpp \
     widget.h \
     xclient.cpp \
-    xclient.h \
     xevent.cpp \
     xevent.h \
     xeventhandlers.cpp \

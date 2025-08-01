@@ -53,7 +53,6 @@
 #include "xinit.h"
 #include "bitmaps.h"
 #include "portability.h"
-#include "xclient.h"
 
 extern setup_t *Setup;
 extern int RadarHeight;
