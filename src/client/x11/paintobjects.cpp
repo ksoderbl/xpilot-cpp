@@ -44,7 +44,7 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "paintdata.h"
+#include "xpaintdata.h"
 #include "record.h"
 #include "xinit.h"
 #include "protoclient.h"

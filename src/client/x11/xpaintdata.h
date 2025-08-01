@@ -21,8 +21,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef PAINTDATA_H
-#define PAINTDATA_H
+#ifndef XPAINTDATA_H
+#define XPAINTDATA_H
 
 #include "draw.h"
 #include "types.h"

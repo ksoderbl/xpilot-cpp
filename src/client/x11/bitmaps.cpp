@@ -395,7 +395,7 @@ void Block_bitmap_create(Display *dpy, Drawable d,
  * Maybe move this part to a sperate file.
  */
 
-#include "paintdata.h"
+#include "xpaintdata.h"
 
 extern int dispDepth;
 extern unsigned long (*RGB)(unsigned char r, unsigned char g, unsigned char b);

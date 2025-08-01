@@ -42,7 +42,7 @@
 #include "setup.h"
 #include "rules.h"
 #include "xpaint.h"
-#include "paintdata.h"
+#include "xpaintdata.h"
 #include "record.h"
 #include "xinit.h"
 #include "protoclient.h"

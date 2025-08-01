@@ -48,7 +48,7 @@
 #include "setup.h"
 #include "dbuff.h"
 #include "xpaint.h"
-#include "paintdata.h"
+#include "xpaintdata.h"
 #include "record.h"
 #include "xinit.h"
 #include "bitmaps.h"
