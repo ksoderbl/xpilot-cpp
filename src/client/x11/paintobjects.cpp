@@ -33,6 +33,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
 
+#include "commonmacros.h"
+
 #include "client.h"
 #include "paint.h"
 

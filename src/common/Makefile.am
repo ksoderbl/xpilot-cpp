@@ -6,6 +6,7 @@ libxpcommon_a_SOURCES = \
     bit.h \
     checknames.cpp \
     checknames.h \
+    commonmacros.h \
     const.h \
     draw.h \
     item.h \

@@ -31,6 +31,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
 
+#include "commonmacros.h"
+
 #include "paint.h"
 
 #include "xpconfig.h"

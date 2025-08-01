@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 
+#include "commonmacros.h"
 #include "const.h"
 #include "strlcpy.h"
 

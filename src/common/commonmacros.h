@@ -37,13 +37,16 @@
  * The goal is to keep the number of malloc/realloc calls low
  * while not wasting too much memory because of over-allocation.
  */
-#define STORE(T,P,N,M,V)                                                \
-    if (N >= M && ((M <= 0)                                                \
-        ? (P = (T *) malloc((M = 1) * sizeof(*P)))                        \
-        : (P = (T *) realloc(P, (M += M) * sizeof(*P)))) == NULL) {        \
-        xperror("No memory");                                                \
-        N = M = 0;                                                        \
-    } else                                                                \
+#define STORE(T, P, N, M, V)                                                    \
+    if (N >= M && ((M <= 0)                                                     \
+                       ? (P = (T *)malloc((M = 1) * sizeof(*P)))                \
+                       : (P = (T *)realloc(P, (M += M) * sizeof(*P)))) == NULL) \
+    {                                                                           \
+        xperror("No memory");                                                   \
+        N = M = 0;                                                              \
+        return -1;                                                              \
+    }                                                                           \
+    else                                                                        \
         (P[N++] = V)
 
 /*
@@ -56,41 +59,65 @@
  * The goal is to keep the number of malloc/realloc calls low
  * while not wasting too much memory because of over-allocation.
  */
-#define EXPAND(P,N,M,T,E)                                                \
-    if ((N) + (E) > (M)) {                                                \
-        if ((M) <= 0) {                                                        \
-            M = (E) + 2;                                                \
-            P = (T *) malloc((M) * sizeof(T));                                \
-            N = 0;                                                        \
-        } else {                                                        \
-            M = ((M) << 1) + (E);                                        \
-            P = (T *) realloc(P, (M) * sizeof(T));                        \
-        }                                                                \
-        if (P == NULL) {                                                \
-            xperror("No memory");                                                \
-            N = M = 0;                                                        \
-            return;        /* ! */                                                \
-        }                                                                \
+#define EXPAND(P, N, M, T, E)                     \
+    if ((N) + (E) > (M))                          \
+    {                                             \
+        if ((M) <= 0)                             \
+        {                                         \
+            M = (E) + 2;                          \
+            P = (T *)malloc((M) * sizeof(T));     \
+            N = 0;                                \
+        }                                         \
+        else                                      \
+        {                                         \
+            M = ((M) << 1) + (E);                 \
+            P = (T *)realloc(P, (M) * sizeof(T)); \
+        }                                         \
+        if (P == NULL)                            \
+        {                                         \
+            xperror("No memory");                 \
+            N = M = 0;                            \
+            return; /* ! */                       \
+        }                                         \
     }
 
-#define UNEXPAND(P,N,M)                                                        \
-    if ((N) < ((M) >> 2)) {                                                \
-        free(P);                                                        \
-        M = 0;                                                                \
-    }                                                                        \
+#define UNEXPAND(P, N, M) \
+    if ((N) < ((M) >> 2)) \
+    {                     \
+        free(P);          \
+        M = 0;            \
+    }                     \
     N = 0;
+
+#ifndef PAINT_FREE
+#define PAINT_FREE 1
+#endif
+#if PAINT_FREE
+#define RELEASE(P, N, M) \
+    if (!(N))            \
+        ;                \
+    else                 \
+        (free(P), (M) = 0, (N) = 0)
+#else
+#define RELEASE(P, N, M) ((N) = 0)
+#endif
 
 /* borrowed from autobook */
 #define XCALLOC(type, num) \
-        ((type *) calloc ((num), sizeof(type)))
+    ((type *)calloc((num), sizeof(type)))
 #define XMALLOC(type, num) \
-        ((type *) malloc ((num) * sizeof(type)))
+    ((type *)malloc((num) * sizeof(type)))
 #define XREALLOC(type, p, num) \
-        ((type *) realloc ((p), (num) * sizeof(type)))
-#define XFREE(ptr) \
-do { \
-    if (ptr) { free(ptr);  ptr = NULL; } \
-} while (0)
+    ((type *)realloc((p), (num) * sizeof(type)))
+#define XFREE(ptr)      \
+    do                  \
+    {                   \
+        if (ptr)        \
+        {               \
+            free(ptr);  \
+            ptr = NULL; \
+        }               \
+    } while (0)
 
 /* Use this to remove unused parameter warning. */
 #define UNUSED_PARAM(x) x = x
