@@ -46,6 +46,7 @@ extern char visualName[MAX_VISUAL_NAME];
 extern Visual *visual;
 extern int dispDepth;
 extern bool mono;
+extern bool useErase;
 extern bool blockBitmaps;
 extern bool colorSwitch;
 extern bool multibuffer;
