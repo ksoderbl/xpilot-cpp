@@ -22,20 +22,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        NETCLIENT_H
-#define        NETCLIENT_H
+#ifndef NETCLIENT_H
+#define NETCLIENT_H
 
-#ifndef TYPES_H
-/* need u_byte */
+#include "setup.h"
 #include "types.h"
-#endif
 
-#define MIN_RECEIVE_WINDOW_SIZE                1
-#define MAX_RECEIVE_WINDOW_SIZE                4
+#define MIN_RECEIVE_WINDOW_SIZE 1
+#define MAX_RECEIVE_WINDOW_SIZE 4
 
-extern int        simulating;
-extern int        receive_window_size;
-extern long        last_loops;
+#define MAX_SUPPORTED_FPS 255
+
+extern int simulating;
+extern setup_t *Setup;
+extern int receive_window_size;
+extern long last_loops;
 
 int Net_setup(void);
 int Net_verify(char *real, char *nick, char *dpy, int my_team);

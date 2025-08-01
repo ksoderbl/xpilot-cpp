@@ -943,7 +943,7 @@ void Resize(Window w, int width, int height)
 /*
  * Cleanup player structure, close the display etc.
  */
-void Quit(void)
+void Platform_specific_cleanup(void)
 {
     if (dpy != NULL)
     {

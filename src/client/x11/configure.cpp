@@ -37,6 +37,7 @@
 #include "strdup.h"
 #include "strlcpy.h"
 
+#include "client.h"
 #include "paint.h"
 
 #include "xpconfig.h"

@@ -33,6 +33,7 @@
 #include "commonmacros.h"
 
 #include "paint.h"
+#include "paintdata.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -42,7 +43,7 @@
 #include "rules.h"
 #include "setup.h"
 #include "xpaint.h"
-#include "xpaintdata.h"
+#include "paintdata.h"
 #include "xinit.h"
 
 extern DFLOAT tbl_sin[];

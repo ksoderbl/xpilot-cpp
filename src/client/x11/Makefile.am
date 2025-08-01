@@ -15,6 +15,8 @@ xpilot_cpp_client_x11_SOURCES = \
     guimap.cpp \
     guiobjects.cpp \
     join.cpp \
+    paintdata.cpp \
+    paintdata.h \
     painthud.cpp \
     paintmap.cpp \
     paintobjects.cpp \
@@ -29,7 +31,6 @@ xpilot_cpp_client_x11_SOURCES = \
     welcome.cpp \
     widget.cpp \
     widget.h \
-    xclient.cpp \
     xevent.cpp \
     xevent.h \
     xeventhandlers.cpp \
@@ -38,8 +39,6 @@ xpilot_cpp_client_x11_SOURCES = \
     xinit.h \
     xpaint.cpp \
     xpaint.h \
-    xpaintdata.cpp \
-    xpaintdata.h \
     xpilot.cpp \
     xpmread.cpp
 

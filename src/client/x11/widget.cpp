@@ -35,7 +35,7 @@
 #include "xpconfig.h"
 #include "const.h"
 #include "xpaint.h"
-#include "xpaintdata.h"
+#include "paintdata.h"
 #include "xinit.h"
 #include "bit.h"
 #include "xperror.h"

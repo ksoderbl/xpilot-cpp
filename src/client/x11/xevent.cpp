@@ -47,7 +47,7 @@
 #include "xperror.h"
 #include "record.h"
 #include "portability.h"
-#include "xpaintdata.h"
+#include "paintdata.h"
 #include "talk.h"
 #include "configure.h"
 #include "xeventhandlers.h"

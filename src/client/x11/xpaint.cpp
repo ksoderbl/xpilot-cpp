@@ -36,6 +36,7 @@
 #include "strlcpy.h"
 
 #include "paint.h"
+#include "paintdata.h"
 
 #include "version.h"
 #include "xpconfig.h"
@@ -48,14 +49,11 @@
 #include "setup.h"
 #include "dbuff.h"
 #include "xpaint.h"
-#include "xpaintdata.h"
+#include "paintdata.h"
 #include "record.h"
 #include "xinit.h"
 #include "bitmaps.h"
 #include "portability.h"
-
-extern setup_t *Setup;
-extern int RadarHeight;
 
 /*
  * Globals.
@@ -108,7 +106,7 @@ XColor colors[MAX_COLORS]; /* Colors */
 Colormap colormap;         /* Private colormap */
 int maxColors;             /* Max. number of colors to use */
 bool gotFocus;
-bool players_exposed;
+// bool players_exposed;
 // short        ext_view_width;                /* Width of extended visible area */
 // short        ext_view_height;        /* Height of extended visible area */
 // int        active_view_width;        /* Width of active map area displayed. */

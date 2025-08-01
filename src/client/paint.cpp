@@ -29,6 +29,7 @@ int draw_width, draw_height;
 int num_spark_colors;
 
 unsigned short team; /* What team is the player on? */
+bool players_exposed;
 
 short ext_view_width;   /* Width of extended visible area */
 short ext_view_height;  /* Height of extended visible area */

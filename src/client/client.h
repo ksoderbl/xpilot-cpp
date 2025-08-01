@@ -304,6 +304,169 @@ extern int maxVolume;               /* maximum volume (in percent) */
 extern int maxLinesInHistory; /* number of lines to save in history */
 #define MAX_HIST_MSGS 128     /* maximum */
 
+/*
+ * Local types and data for painting.
+ */
+
+typedef struct
+{
+    short x0, y0, x1, y1;
+} refuel_t;
+
+typedef struct
+{
+    short x0, y0, x1, y1;
+    u_byte tractor;
+} connector_t;
+
+typedef struct
+{
+    unsigned char color, dir;
+    short x, y, len;
+} laser_t;
+
+typedef struct
+{
+    short x, y, dir;
+    unsigned char len;
+} missile_t;
+
+typedef struct
+{
+    short x, y, id;
+} ball_t;
+
+typedef struct
+{
+    short x, y, id, dir;
+    u_byte shield, cloak, eshield;
+    u_byte phased, deflector;
+} ship_t;
+
+typedef struct
+{
+    short x, y, teammine, id;
+} mine_t;
+
+typedef struct
+{
+    short x, y, type;
+} itemtype_t;
+
+typedef struct
+{
+    short x, y, size;
+} ecm_t;
+
+typedef struct
+{
+    short x1, y1, x2, y2;
+} trans_t;
+
+typedef struct
+{
+    short x, y, count;
+} paused_t;
+
+typedef struct
+{
+    short x, y, size;
+} radar_t;
+
+typedef struct
+{
+    short x, y, type;
+} vcannon_t;
+
+typedef struct
+{
+    short x, y;
+    long fuel;
+} vfuel_t;
+
+typedef struct
+{
+    short x, y, xi, yi, type;
+} vbase_t;
+
+typedef struct
+{
+    u_byte x, y;
+} debris_t;
+
+typedef struct
+{
+    short x, y, xi, yi, type;
+} vdecor_t;
+
+typedef struct
+{
+    short x, y;
+    u_byte wrecktype, size, rotation;
+} wreckage_t;
+
+typedef struct
+{
+    short x, y;
+    u_byte type, size, rotation;
+} asteroid_t;
+
+typedef struct
+{
+    short x, y;
+} wormhole_t;
+
+extern refuel_t *refuel_ptr;
+extern int num_refuel, max_refuel;
+extern connector_t *connector_ptr;
+extern int num_connector, max_connector;
+extern laser_t *laser_ptr;
+extern int num_laser, max_laser;
+extern missile_t *missile_ptr;
+extern int num_missile, max_missile;
+extern ball_t *ball_ptr;
+extern int num_ball, max_ball;
+extern ship_t *ship_ptr;
+extern int num_ship, max_ship;
+extern mine_t *mine_ptr;
+extern int num_mine, max_mine;
+extern itemtype_t *itemtype_ptr;
+extern int num_itemtype, max_itemtype;
+extern ecm_t *ecm_ptr;
+extern int num_ecm, max_ecm;
+extern trans_t *trans_ptr;
+extern int num_trans, max_trans;
+extern paused_t *paused_ptr;
+extern int num_paused, max_paused;
+extern radar_t *radar_ptr;
+extern int num_radar, max_radar;
+extern vcannon_t *vcannon_ptr;
+extern int num_vcannon, max_vcannon;
+extern vfuel_t *vfuel_ptr;
+extern int num_vfuel, max_vfuel;
+extern vbase_t *vbase_ptr;
+extern int num_vbase, max_vbase;
+extern debris_t *debris_ptr[DEBRIS_TYPES];
+extern int num_debris[DEBRIS_TYPES],
+    max_debris[DEBRIS_TYPES];
+extern debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
+extern int num_fastshot[DEBRIS_TYPES * 2],
+    max_fastshot[DEBRIS_TYPES * 2];
+extern vdecor_t *vdecor_ptr;
+extern int num_vdecor, max_vdecor;
+extern wreckage_t *wreckage_ptr;
+extern int num_wreckage, max_wreckage;
+extern asteroid_t *asteroid_ptr;
+extern int num_asteroids, max_asteroids;
+extern wormhole_t *wormhole_ptr;
+extern int num_wormholes, max_wormholes;
+
+extern long start_loops, end_loops;
+extern long time_left;
+
+extern int eyesId;     /* Player we get frame updates for */
+extern short snooping; /* are we snooping on someone else? */
+
 int Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, int *damage);
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage);
@@ -335,7 +498,6 @@ void Client_cleanup(void);
 int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
-int Client_input(int);
 int Client_wrap_mode(void);
 void Reset_shields(void);
 void Set_toggle_shield(bool on);
@@ -353,5 +515,11 @@ int Check_client_fps(void);
 #ifdef SOUND
 extern void audioEvents();
 #endif
+
+extern int Init_playing_windows(void);
+extern int Alloc_msgs(void);
+extern int Startup_server_motd(void);
+
+void Platform_specific_cleanup(void);
 
 #endif

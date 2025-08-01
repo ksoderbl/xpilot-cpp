@@ -52,40 +52,49 @@
 char join_version[] = VERSION;
 
 #ifndef SCORE_UPDATE_DELAY
-# define SCORE_UPDATE_DELAY        4
+#define SCORE_UPDATE_DELAY 4
 #endif
 
 void xpilotShutdown(void);
 
 extern void Record_cleanup(void);
 
+static int Handle_input(int new_input)
+{
+    return x_event(new_input);
+}
 
 static void Input_loop(void)
 {
-    fd_set                rfds;
-    fd_set                tfds;
-    int                        max,
-                        n,
-                        netfd,
-                        result,
-                        clientfd;
-    struct timeval        tv;
+    fd_set rfds;
+    fd_set tfds;
+    int max,
+        n,
+        netfd,
+        result,
+        clientfd;
+    struct timeval tv;
 
-    if ((result = Net_input()) == -1) {
+    if ((result = Net_input()) == -1)
+    {
         xperror("Bad server input");
         return;
     }
-    if (Client_input(2) == -1) {
+    if (Handle_input(2) == -1)
+    {
         return;
     }
-    if (Net_flush() == -1) {
+    if (Net_flush() == -1)
+    {
         return;
     }
-    if ((clientfd = ConnectionNumber(dpy)) == -1) {
+    if ((clientfd = ConnectionNumber(dpy)) == -1)
+    {
         xperror("Bad client filedescriptor");
         return;
     }
-    if ((netfd = Net_fd()) == -1) {
+    if ((netfd = Net_fd()) == -1)
+    {
         xperror("Bad socket filedescriptor");
         return;
     }
@@ -94,58 +103,76 @@ static void Input_loop(void)
     FD_SET(clientfd, &rfds);
     FD_SET(netfd, &rfds);
     max = (clientfd > netfd) ? clientfd : netfd;
-    for (tfds = rfds; ; rfds = tfds) {
-        if ((scoresChanged != 0 && ++scoresChanged > SCORE_UPDATE_DELAY)
-            || result > 1) {
-            if (scoresChanged > 2 * SCORE_UPDATE_DELAY) {
+    for (tfds = rfds;; rfds = tfds)
+    {
+        if ((scoresChanged != 0 && ++scoresChanged > SCORE_UPDATE_DELAY) || result > 1)
+        {
+            if (scoresChanged > 2 * SCORE_UPDATE_DELAY)
+            {
                 Client_score_table();
                 tv.tv_sec = 10;
                 tv.tv_usec = 0;
-            } else {
+            }
+            else
+            {
                 tv.tv_sec = 0;
                 tv.tv_usec = 0;
             }
-        } else {
+        }
+        else
+        {
             tv.tv_sec = 10;
             tv.tv_usec = 0;
         }
-        if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1) {
-            if (errno == EINTR) {
+        if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1)
+        {
+            if (errno == EINTR)
+            {
                 continue;
             }
             xperror("Select failed");
             return;
         }
-        if (n == 0) {
-            if (scoresChanged > SCORE_UPDATE_DELAY) {
+        if (n == 0)
+        {
+            if (scoresChanged > SCORE_UPDATE_DELAY)
+            {
                 Client_score_table();
-                if (Client_input(2) == -1) {
+                if (Handle_input(2) == -1)
+                {
                     return;
                 }
                 continue;
             }
-            else if (result <= 1) {
+            else if (result <= 1)
+            {
                 errno = 0;
                 xperror("No response from server");
                 continue;
             }
         }
-        if (FD_ISSET(clientfd, &rfds)) {
-            if (Client_input(1) == -1) {
+        if (FD_ISSET(clientfd, &rfds))
+        {
+            if (Handle_input(1) == -1)
+            {
                 return;
             }
-            if (Net_flush() == -1) {
+            if (Net_flush() == -1)
+            {
                 xperror("Bad net flush after X input");
                 return;
             }
         }
-        if (FD_ISSET(netfd, &rfds) || result > 1) {
-            if ((result = Net_input()) == -1) {
+        if (FD_ISSET(netfd, &rfds) || result > 1)
+        {
+            if ((result = Net_input()) == -1)
+            {
                 errno = 0;
                 xperror("Bad net input.  Have a nice day!");
                 return;
             }
-            if (result > 0) {
+            if (result > 0)
+            {
                 /*
                  * Now there's a frame being drawn by the X server.
                  * So we shouldn't try to send more drawing
@@ -160,15 +187,18 @@ static void Input_loop(void)
                  * keyboard events and then we wait until the X server
                  * has finished the drawing of our current frame.
                  */
-                if (Client_input(1) == -1) {
+                if (Handle_input(1) == -1)
+                {
                     return;
                 }
-                if (Net_flush() == -1) {
+                if (Net_flush() == -1)
+                {
                     xperror("Bad net flush before sync");
                     return;
                 }
                 XSync(dpy, False);
-                if (Client_input(1) == -1) {
+                if (Handle_input(1) == -1)
+                {
                     return;
                 }
             }
@@ -203,36 +233,43 @@ int Join(char *server_addr, char *server_name, int port, char *real,
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
 
-    if (Client_init(server_name, version) == -1) {
+    if (Client_init(server_name, version) == -1)
+    {
         return -1;
     }
-    if (Net_init(server_addr, port) == -1) {
+    if (Net_init(server_addr, port) == -1)
+    {
         Client_cleanup();
         return -1;
     }
-    if (Net_verify(real, nick, display, my_team) == -1) {
+    if (Net_verify(real, nick, display, my_team) == -1)
+    {
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
-    if (Net_setup() == -1) {
+    if (Net_setup() == -1)
+    {
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
-    if (Client_setup() == -1) {
+    if (Client_setup() == -1)
+    {
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
-    if (Net_start() == -1) {
+    if (Net_start() == -1)
+    {
         errno = 0;
         xperror("Network start failed");
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
-    if (Client_start() == -1) {
+    if (Client_start() == -1)
+    {
         errno = 0;
         xperror("Window init failed");
         Net_cleanup();
@@ -245,4 +282,3 @@ int Join(char *server_addr, char *server_name, int port, char *real,
 
     return 0;
 }
-

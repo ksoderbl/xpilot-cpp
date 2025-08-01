@@ -53,21 +53,28 @@ int simulating;
 
 DFLOAT findDir(DFLOAT x, DFLOAT y);
 
-typedef struct rpos_s {
+typedef struct rpos_s
+{
         DFLOAT x, y;
         DFLOAT vx, vy;
         DFLOAT ax, ay;
         int last_dir_change;
 } rpos_t;
 
-Rpos_Update(rpos_t *rp, int loops) {
+Rpos_Update(rpos_t *rp, int loops)
+{
         rp->x += rp->vx;
         rp->y += rp->vy;
-        while (rp->x < 0) rp->x += Setup->width;
-        while (rp->y < 0) rp->y += Setup->height;
-        while (rp->x > Setup->width) rp->x -= Setup->width;
-        while (rp->y > Setup->height) rp->y -= Setup->height;
-        if ((loops - rp->last_dir_change) > 30 + rfrac() * 30) {
+        while (rp->x < 0)
+                rp->x += Setup->width;
+        while (rp->y < 0)
+                rp->y += Setup->height;
+        while (rp->x > Setup->width)
+                rp->x -= Setup->width;
+        while (rp->y > Setup->height)
+                rp->y -= Setup->height;
+        if ((loops - rp->last_dir_change) > 30 + rfrac() * 30)
+        {
                 rp->ax = rfrac();
                 rp->ay = rfrac();
                 rp->last_dir_change = loops;
@@ -78,7 +85,6 @@ Rpos_Update(rpos_t *rp, int loops) {
         rp->vy *= 0.65;
 }
 
-
 /*
  * This should be a nice random map generator and it should go in common
  * and the server should use it.
@@ -88,22 +94,48 @@ static int Random_map(void)
         int i;
         unsigned char *data;
         unsigned char typemap[] = {
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_SPACE, SETUP_SPACE, SETUP_SPACE, SETUP_SPACE,
-                SETUP_FILLED, SETUP_FILLED, SETUP_FILLED,
-                SETUP_DECOR_FILLED, SETUP_DECOR_LU,
-                SETUP_REC_RU, SETUP_REC_RD,
-                SETUP_CANNON_UP,
-                SETUP_TREASURE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_SPACE,
+            SETUP_FILLED,
+            SETUP_FILLED,
+            SETUP_FILLED,
+            SETUP_DECOR_FILLED,
+            SETUP_DECOR_LU,
+            SETUP_REC_RU,
+            SETUP_REC_RD,
+            SETUP_CANNON_UP,
+            SETUP_TREASURE,
         };
 
-        for (i = Setup->x * Setup->y, data = &Setup->map_data[0] ; i-- > 0; ++data) {
-                int type = (int) (rfrac() * sizeof(typemap));
+        for (i = Setup->x * Setup->y, data = &Setup->map_data[0]; i-- > 0; ++data)
+        {
+                int type = (int)(rfrac() * sizeof(typemap));
 
                 *data = typemap[type];
         }
@@ -115,7 +147,8 @@ static int Fake_setup(void)
 {
         const int x = 100, y = 100;
 
-        if ((Setup = (setup_t *) malloc(sizeof(setup_t) + x * y)) == NULL) {
+        if ((Setup = (setup_t *)malloc(sizeof(setup_t) + x * y)) == NULL)
+        {
                 xperror("No memory for setup data");
                 return -1;
         }
@@ -147,23 +180,28 @@ static void Fake_others(void)
         char fakename[15];
         int i;
 
-        for (i = 0; i < N_FAKE_SHIPS; ++i) {
-                if (i != 0) {
+        for (i = 0; i < N_FAKE_SHIPS; ++i)
+        {
+                if (i != 0)
+                {
                         int namelen;
                         char *p;
 
                         namelen = rfrac() * (sizeof(fakename) - 2) + 1;
                         p = fakename;
-                        while (namelen--) {
+                        while (namelen--)
+                        {
                                 *p++ = 'a' + (int)(rfrac() * 26);
                         }
                         *p = '\0';
-                } else {
+                }
+                else
+                {
                         strlcpy(fakename, name, sizeof(fakename));
                 }
 
                 Handle_player(i, i > 3 ? 4 : 2, ' ', fakename,
-                                "fake", "fake.org", "");
+                              "fake", "fake.org", "");
         }
 }
 
@@ -206,8 +244,10 @@ static int Simulate_frames(void)
 
         alarm(duration);
         old_i = i = 0;
-        while (1) {
-                if (alarmed) {
+        while (1)
+        {
+                if (alarmed)
+                {
                         char buf[80];
                         alarmed = 0;
                         sprintf(buf, "%d frames/sec", (i - old_i) / duration);
@@ -217,20 +257,22 @@ static int Simulate_frames(void)
                 }
                 Handle_start(i);
                 Send_display();
-                Handle_self((int)fake_ships[0].x, (int)fake_ships[0].y, (int)fake_ships[0].vx, (int)fake_ships[0].vy, 
-                        (int)findDir(fake_ships[0].vx, fake_ships[0].vy),
-                0.0, 0.0, 0.0, 1, 0, 0, 0, 0, 
-                        newitems, 0, 
-                1000 << FUEL_SCALE_BITS,
-                MAX_PLAYER_FUEL,
-                        1400);
-                for (j = 0; j < N_FAKE_SHIPS; ++j) {
+                Handle_self((int)fake_ships[0].x, (int)fake_ships[0].y, (int)fake_ships[0].vx, (int)fake_ships[0].vy,
+                            (int)findDir(fake_ships[0].vx, fake_ships[0].vy),
+                            0.0, 0.0, 0.0, 1, 0, 0, 0, 0,
+                            newitems, 0,
+                            1000 << FUEL_SCALE_BITS,
+                            MAX_PLAYER_FUEL,
+                            1400);
+                for (j = 0; j < N_FAKE_SHIPS; ++j)
+                {
                         Handle_ship((int)fake_ships[j].x, (int)fake_ships[j].y, j, (int)findDir(fake_ships[j].vx, fake_ships[j].vy), 0, 0, 0, 0, 0);
                         Handle_radar((int)fake_ships[j].x, (int)fake_ships[j].y, 3);
                         Rpos_Update(&fake_ships[j], i);
                 }
                 Handle_end(i);
-                if (Client_input(2) == -1) {
+                if (x_event(2) == -1)
+                {
                         xpilotShutdown();
                         return;
                 }
@@ -241,10 +283,10 @@ static int Simulate_frames(void)
 
 void Simulate(void)
 {
-    simulating = 1;
-    Simulate_init();
-    Simulate_frames();
-    exit(0);
+        simulating = 1;
+        Simulate_init();
+        Simulate_frames();
+        exit(0);
 }
 
 #else
@@ -253,7 +295,7 @@ void Simulate(void);
 
 void Simulate(void)
 {
-    simulating = 0;
+        simulating = 0;
 }
 
 #endif /* SIMULATING_ONLY */

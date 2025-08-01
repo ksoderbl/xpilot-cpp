@@ -67,8 +67,8 @@ extern bool quitting;
  */
 extern const char *Item_get_text(int i);
 extern int Init_top(void);
-extern int Init_playing_windows(void);
-extern int Alloc_msgs(void);
+// extern int Init_playing_windows(void);
+// extern int Alloc_msgs(void);
 extern void Free_msgs(void);
 extern void Expose_button_window(int color, Window w);
 extern void Talk_resize(void);
@@ -82,9 +82,7 @@ extern void Talk_cut_from_messages(XButtonEvent *xbutton);
 extern void Clear_selection(void);
 extern void Print_messages_to_stdout(void);
 extern void Talk_reverse_cut(void);
-extern void Quit(void);
 extern int FatalError(Display *dpy);
-extern void Draw_score_table(void);
 extern void Resize(Window w, int width, int height);
 
 extern int DrawShadowText(Display *, Window w, GC gc,
@@ -104,6 +102,6 @@ extern int Motd_callback(int, void *, const char **);
 extern void Motd_destroy(void);
 extern void Expose_about_window(void);
 extern void Scale_dashes(void);
-extern int Startup_server_motd(void);
+// extern int Startup_server_motd(void);
 
 #endif

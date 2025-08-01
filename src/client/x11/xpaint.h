@@ -26,50 +26,45 @@
 
 #include <X11/Xlib.h>
 
+#include "paint.h"
+
 #include "types.h"
 
-/* constants begin */
-#define MAX_COLORS 16    /* Max. switched colors ever */
-#define MAX_COLOR_LEN 32 /* Max. length of a color name */
+// /* constants begin */
+// #define MAX_COLORS 16    /* Max. switched colors ever */
+// #define MAX_COLOR_LEN 32 /* Max. length of a color name */
 
-#define MAX_MSGS 15 /* Max. messages displayed ever */
+// #define MAX_MSGS 15 /* Max. messages displayed ever */
 
-#define NUM_DASHES 2
-#define NUM_CDASHES 2
-#define DASHES_LENGTH 12
+// #define NUM_DASHES 2
+// #define NUM_CDASHES 2
+// #define DASHES_LENGTH 12
 
-#define HUD_SIZE 90   /* Size/2 of HUD lines */
-#define HUD_OFFSET 20 /* Hud line offset */
-#define FUEL_GAUGE_OFFSET 6
-#define HUD_FUEL_GAUGE_SIZE (2 * (HUD_SIZE - HUD_OFFSET - FUEL_GAUGE_OFFSET))
-#define FUEL_NOTIFY (3 * FPS)
+// #define HUD_SIZE 90   /* Size/2 of HUD lines */
+// #define HUD_OFFSET 20 /* Hud line offset */
+// #define FUEL_GAUGE_OFFSET 6
+// #define HUD_FUEL_GAUGE_SIZE (2 * (HUD_SIZE - HUD_OFFSET - FUEL_GAUGE_OFFSET))
+// #define FUEL_NOTIFY (3 * FPS)
 
-#define WARNING_DISTANCE (VISIBILITY_DISTANCE * 0.8)
-/* constants end */
+// #define WARNING_DISTANCE (VISIBILITY_DISTANCE * 0.8)
+// /* constants end */
 
-/* typedefs begin */
-typedef struct
-{
-    char txt[MSG_LEN];
-    short len;
-    short pixelLen;
-    int life;
-} message_t;
-/* typedefs end */
+// /* typedefs begin */
+// typedef struct
+// {
+//     char txt[MSG_LEN];
+//     short len;
+//     short pixelLen;
+//     int life;
+// } message_t;
+// /* typedefs end */
 
-/* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
-#define TALK_MSG_SCREENPOS(_total, _pos) \
-    (BIT(instruments, SHOW_REVERSE_SCROLL) ? (_total) - (_pos) : (_pos))
+// /* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
+// #define TALK_MSG_SCREENPOS(_total, _pos) \
+//     (BIT(instruments, SHOW_REVERSE_SCROLL) ? (_total) - (_pos) : (_pos))
 
-/* how to draw a selection */
-#define DRAW_EMPHASIZED BLUE
-
-/*
- * Global objects.
- */
-
-extern char dashes[NUM_DASHES];
-extern char cdashes[NUM_CDASHES];
+// /* how to draw a selection */
+// #define DRAW_EMPHASIZED BLUE
 
 /* The fonts used in the game */
 extern XFontStruct *gameFont;
@@ -94,8 +89,8 @@ extern Display *dpy;     /* Display of player (pointer) */
 extern Display *kdpy;    /* Keyboard display */
 extern short about_page; /* Which page is the player on? */
 // extern unsigned short        team;                /* What team is the player on? */
-extern bool players_exposed; /* Is score window exposed? */
-extern int radar_exposures;  /* Is radar window exposed? */
+// extern bool players_exposed; /* Is score window exposed? */
+extern int radar_exposures; /* Is radar window exposed? */
 
 /* windows has 2 sets of item bitmaps */
 #define ITEM_HUD 0       /* one color for the HUD */
