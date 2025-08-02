@@ -51,7 +51,6 @@ extern DFLOAT tbl_cos[];
 extern setup_t *Setup;
 extern int RadarHeight;
 
-Window radar;            /* Radar window */
 Pixmap p_radar, s_radar; /* Pixmaps for the radar (implements */
                          /* the planes hack on the radar for */
                          /* monochromes) */
@@ -267,11 +266,11 @@ void Paint_sliding_radar(void)
     }
     if (BIT(instruments, SHOW_SLIDING_RADAR) != 0)
     {
-        if (s_radar != radar)
+        if (s_radar != radarWindow)
         {
             return;
         }
-        s_radar = XCreatePixmap(dpy, radar,
+        s_radar = XCreatePixmap(dpy, radarWindow,
                                 256, RadarHeight,
                                 dispDepth);
         p_radar = s_radar;
@@ -282,13 +281,13 @@ void Paint_sliding_radar(void)
     }
     else
     {
-        if (s_radar == radar)
+        if (s_radar == radarWindow)
         {
             return;
         }
         XFreePixmap(dpy, s_radar);
-        s_radar = radar;
-        p_radar = radar;
+        s_radar = radarWindow;
+        p_radar = radarWindow;
         if (radar_exposures > 0)
         {
             Paint_world_radar();
@@ -318,7 +317,7 @@ void Paint_world_radar(void)
         XSetPlaneMask(dpy, radarGC,
                       AllPlanes & ~(dpl_1[0] | dpl_1[1]));
     }
-    if (s_radar != radar)
+    if (s_radar != radarWindow)
     {
         /* Clear radar */
         XSetForeground(dpy, radarGC, colors[BLACK].pixel);
@@ -326,7 +325,7 @@ void Paint_world_radar(void)
     }
     else
     {
-        XClearWindow(dpy, radar);
+        XClearWindow(dpy, radarWindow);
     }
 
     /*

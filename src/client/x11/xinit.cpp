@@ -552,14 +552,14 @@ int Init_top(void)
     if (kdpy)
     {
         int scr = DefaultScreen(kdpy);
-        keyboard = XCreateSimpleWindow(kdpy,
-                                       DefaultRootWindow(kdpy),
-                                       top_x, top_y,
-                                       top_width, top_height,
-                                       0, 0, BlackPixel(dpy, scr));
-        XSelectInput(kdpy, keyboard,
+        keyboardWindow = XCreateSimpleWindow(kdpy,
+                                             DefaultRootWindow(kdpy),
+                                             top_x, top_y,
+                                             top_width, top_height,
+                                             0, 0, BlackPixel(dpy, scr));
+        XSelectInput(kdpy, keyboardWindow,
                      KeyPressMask | KeyReleaseMask | FocusChangeMask);
-        Init_disp_prop(kdpy, keyboard, top_width, top_height,
+        Init_disp_prop(kdpy, keyboardWindow, top_width, top_height,
                        top_x, top_y, top_flags);
     }
 
@@ -668,12 +668,12 @@ int Init_playing_windows(void)
 
     draw_width = top_width - (256 + 2);
     draw_height = top_height;
-    draw = XCreateSimpleWindow(dpy, topWindow, 258, 0,
-                               draw_width, draw_height,
-                               0, 0, colors[BLACK].pixel);
-    radar = XCreateSimpleWindow(dpy, topWindow, 0, 0,
-                                256, RadarHeight, 0, 0,
-                                colors[BLACK].pixel);
+    drawWindow = XCreateSimpleWindow(dpy, topWindow, 258, 0,
+                                     draw_width, draw_height,
+                                     0, 0, colors[BLACK].pixel);
+    radarWindow = XCreateSimpleWindow(dpy, topWindow, 0, 0,
+                                      256, RadarHeight, 0, 0,
+                                      colors[BLACK].pixel);
 
     /* Create buttons */
 #define BUTTON_WIDTH 84
@@ -712,24 +712,24 @@ int Init_playing_windows(void)
     /* Create score list window */
     players_width = RadarWidth;
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
-    players = XCreateSimpleWindow(dpy, topWindow,
-                                  0, RadarHeight + ButtonHeight + 2,
-                                  players_width, players_height,
-                                  0, 0,
-                                  colors[windowColor].pixel);
+    playersWindow = XCreateSimpleWindow(dpy, topWindow,
+                                        0, RadarHeight + ButtonHeight + 2,
+                                        players_width, players_height,
+                                        0, 0,
+                                        colors[windowColor].pixel);
     /*
      * Selecting the events we can handle.
      */
-    XSelectInput(dpy, radar, ExposureMask);
-    XSelectInput(dpy, players, ExposureMask);
+    XSelectInput(dpy, radarWindow, ExposureMask);
+    XSelectInput(dpy, playersWindow, ExposureMask);
 
     if (!selectionAndHistory)
     {
-        XSelectInput(dpy, draw, 0);
+        XSelectInput(dpy, drawWindow, 0);
     }
     else
     {
-        XSelectInput(dpy, draw, ButtonPressMask | ButtonReleaseMask);
+        XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
     }
 
     /*
@@ -740,21 +740,21 @@ int Init_playing_windows(void)
     {
 
     case PIXMAP_COPY:
-        p_radar = XCreatePixmap(dpy, radar, 256, RadarHeight, dispDepth);
-        s_radar = XCreatePixmap(dpy, radar, 256, RadarHeight, dispDepth);
-        p_draw = XCreatePixmap(dpy, draw, draw_width, draw_height, dispDepth);
+        p_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        s_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        p_draw = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
         break;
 
     case MULTIBUFFER:
-        p_radar = XCreatePixmap(dpy, radar, 256, RadarHeight, dispDepth);
-        s_radar = XCreatePixmap(dpy, radar, 256, RadarHeight, dispDepth);
+        p_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        s_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         dbuff_init_buffer(dbuf_state);
         break;
 
     case COLOR_SWITCH:
-        s_radar = radar;
-        p_radar = radar;
-        p_draw = draw;
+        s_radar = radarWindow;
+        p_radar = radarWindow;
+        p_draw = drawWindow;
         Paint_sliding_radar();
         break;
     }
@@ -768,8 +768,8 @@ int Init_playing_windows(void)
     /*
      * Define a blank cursor for use with pointer control
      */
-    XQueryBestCursor(dpy, draw, 1, 1, &w, &h);
-    pix = XCreatePixmap(dpy, draw, w, h, 1);
+    XQueryBestCursor(dpy, drawWindow, 1, 1, &w, &h);
+    pix = XCreatePixmap(dpy, drawWindow, w, h, 1);
     cursorGC = XCreateGC(dpy, pix, 0, NULL);
     XSetForeground(dpy, cursorGC, 0);
     XFillRectangle(dpy, pix, cursorGC, 0, 0, w, h);
@@ -787,7 +787,7 @@ int Init_playing_windows(void)
 
     if (kdpy)
     {
-        XMapWindow(kdpy, keyboard);
+        XMapWindow(kdpy, keyboardWindow);
         XSync(kdpy, False);
     }
 
@@ -845,7 +845,7 @@ void Resize(Window w, int width, int height)
     }
     top_width = width;
     top_height = height;
-    if (!draw)
+    if (!drawWindow)
     {
         return;
     }
@@ -853,14 +853,14 @@ void Resize(Window w, int width, int height)
     draw_height = top_height;
     Send_display();
     Net_flush();
-    XResizeWindow(dpy, draw, draw_width, draw_height);
+    XResizeWindow(dpy, drawWindow, draw_width, draw_height);
     if (dbuf_state->type == PIXMAP_COPY)
     {
         XFreePixmap(dpy, p_draw);
-        p_draw = XCreatePixmap(dpy, draw, draw_width, draw_height, dispDepth);
+        p_draw = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
     }
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
-    XResizeWindow(dpy, players,
+    XResizeWindow(dpy, playersWindow,
                   players_width, players_height);
     Talk_resize();
     Config_resize();

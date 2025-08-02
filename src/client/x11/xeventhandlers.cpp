@@ -140,7 +140,7 @@ static void Selection_request(void)
     else
     {
         prop = XInternAtom(dpy, "VT_SELECTION", False);
-        XConvertSelection(dpy, XA_PRIMARY, XA_STRING, prop, talk_w,
+        XConvertSelection(dpy, XA_PRIMARY, XA_STRING, prop, talkWindow,
                           CurrentTime);
         /* the selectionNotify event `will do the rest' */
     }
@@ -297,7 +297,7 @@ void KeyChanged_event(XEvent *event)
     {
         Key_event(event);
     }
-    else if (event->xkey.window == talk_w)
+    else if (event->xkey.window == talkWindow)
     {
         if (event->type == KeyPress)
         {
@@ -317,7 +317,7 @@ void KeyChanged_event(XEvent *event)
 
 void ButtonPress_event(XEvent *event)
 {
-    if (event->xbutton.window == draw || event->xbutton.window == talk_w)
+    if (event->xbutton.window == drawWindow || event->xbutton.window == talkWindow)
     {
         if (pointerControl && !talk_mapped && event->xbutton.button <= MAX_POINTER_BUTTONS)
         {
@@ -343,7 +343,7 @@ void ButtonPress_event(XEvent *event)
                 else
                 {
                     /* start cutting from ... */
-                    if (event->xbutton.window == draw)
+                    if (event->xbutton.window == drawWindow)
                     {
                         /* ...the talk messages */
                         Talk_cut_from_messages(&(event->xbutton));
@@ -359,7 +359,7 @@ void ButtonPress_event(XEvent *event)
             case Button2:
                 if (talk_mapped)
                 {
-                    if (event->xbutton.window == talk_w)
+                    if (event->xbutton.window == talkWindow)
                     {
                         Talk_place_cursor(&(event->xbutton), false);
                     }
@@ -383,7 +383,7 @@ void ButtonPress_event(XEvent *event)
 
 void MotionNotify_event(XEvent *event)
 {
-    if (event->xmotion.window == draw)
+    if (event->xmotion.window == drawWindow)
     {
         if (pointerControl)
         {
@@ -406,7 +406,7 @@ void MotionNotify_event(XEvent *event)
 
 int ButtonRelease_event(XEvent *event)
 {
-    if (event->xbutton.window == draw || event->xbutton.window == talk_w)
+    if (event->xbutton.window == drawWindow || event->xbutton.window == talkWindow)
     {
 
         if (pointerControl && !talk_mapped && event->xbutton.button <= MAX_POINTER_BUTTONS)
@@ -436,7 +436,7 @@ int ButtonRelease_event(XEvent *event)
             /*
              * finish a cut from ...
              */
-            if (event->xbutton.window == draw && selection.draw.state == SEL_PENDING)
+            if (event->xbutton.window == drawWindow && selection.draw.state == SEL_PENDING)
             {
                 Talk_cut_from_messages(&(event->xbutton));
             }
@@ -469,7 +469,7 @@ int ButtonRelease_event(XEvent *event)
 
 void Expose_event(XEvent *event)
 {
-    if (event->xexpose.window == players)
+    if (event->xexpose.window == playersWindow)
     {
         if (event->xexpose.count == 0)
         {
@@ -484,7 +484,7 @@ void Expose_event(XEvent *event)
             Expose_about_window();
         }
     }
-    else if (event->xexpose.window == radar)
+    else if (event->xexpose.window == radarWindow)
     {
         if (event->xexpose.count <= 1)
         {
@@ -495,7 +495,7 @@ void Expose_event(XEvent *event)
             radar_exposures++;
         }
     }
-    else if (event->xexpose.window == talk_w)
+    else if (event->xexpose.window == talkWindow)
     {
         if (event->xexpose.count == 0)
         {

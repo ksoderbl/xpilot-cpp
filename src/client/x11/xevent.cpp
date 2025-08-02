@@ -224,24 +224,24 @@ void Pointer_control_set_state(bool on)
     if (on)
     {
         pointerControl = true;
-        XGrabPointer(dpy, draw, true, 0, GrabModeAsync,
-                     GrabModeAsync, draw, pointerControlCursor, CurrentTime);
-        XWarpPointer(dpy, None, draw,
+        XGrabPointer(dpy, drawWindow, true, 0, GrabModeAsync,
+                     GrabModeAsync, drawWindow, pointerControlCursor, CurrentTime);
+        XWarpPointer(dpy, None, drawWindow,
                      0, 0, 0, 0,
                      draw_width / 2, draw_height / 2);
-        XDefineCursor(dpy, draw, pointerControlCursor);
-        XSelectInput(dpy, draw,
+        XDefineCursor(dpy, drawWindow, pointerControlCursor);
+        XSelectInput(dpy, drawWindow,
                      PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
     }
     else
     {
         pointerControl = false;
         XUngrabPointer(dpy, CurrentTime);
-        XDefineCursor(dpy, draw, None);
+        XDefineCursor(dpy, drawWindow, None);
         if (!selectionAndHistory)
-            XSelectInput(dpy, draw, 0);
+            XSelectInput(dpy, drawWindow, 0);
         else
-            XSelectInput(dpy, draw, ButtonPressMask | ButtonReleaseMask);
+            XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
     }
     XFlush(dpy);
 }
@@ -259,7 +259,7 @@ static void Talk_set_state(bool onoff)
         }
         if (selectionAndHistory)
         {
-            XSelectInput(dpy, draw, PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
+            XSelectInput(dpy, drawWindow, PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
         }
         Talk_map_window(true);
     }
@@ -829,11 +829,11 @@ void xevent_pointer(void)
                     memset(&event, 0, sizeof(event));
                     event.type = MotionNotify;
                     event.xmotion.display = dpy;
-                    event.xmotion.window = draw;
+                    event.xmotion.window = drawWindow;
                     event.xmotion.x = draw_width / 2;
                     event.xmotion.y = draw_height / 2;
-                    XSendEvent(dpy, draw, False, PointerMotionMask, &event);
-                    XWarpPointer(dpy, None, draw,
+                    XSendEvent(dpy, drawWindow, False, PointerMotionMask, &event);
+                    XWarpPointer(dpy, None, drawWindow,
                                  0, 0, 0, 0,
                                  draw_width / 2, draw_height / 2);
                     XFlush(dpy);
