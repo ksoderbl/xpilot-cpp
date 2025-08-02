@@ -106,7 +106,8 @@ libxpclient_a_AR = $(AR) $(ARFLAGS)
 libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
 	datagram.$(OBJEXT) debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) \
-	netclient.$(OBJEXT) paint.$(OBJEXT) query.$(OBJEXT)
+	messages.$(OBJEXT) netclient.$(OBJEXT) paint.$(OBJEXT) \
+	query.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -125,8 +126,9 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
 	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
-	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/netclient.Po \
-	./$(DEPDIR)/paint.Po ./$(DEPDIR)/query.Po
+	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/messages.Po \
+	./$(DEPDIR)/netclient.Po ./$(DEPDIR)/paint.Po \
+	./$(DEPDIR)/query.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -327,6 +329,8 @@ libxpclient_a_SOURCES = \
     guimap.h \
     guiobjects.h \
     icon.h \
+    messages.h \
+    messages.cpp \
     netclient.cpp \
     netclient.h \
     paint.cpp \
@@ -391,6 +395,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datagram.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debugaudio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx2d.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netclient.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@ # am--include-marker
@@ -616,6 +621,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
 	-rm -f ./$(DEPDIR)/gfx2d.Po
+	-rm -f ./$(DEPDIR)/messages.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
 	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/query.Po
@@ -669,6 +675,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
 	-rm -f ./$(DEPDIR)/gfx2d.Po
+	-rm -f ./$(DEPDIR)/messages.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
 	-rm -f ./$(DEPDIR)/paint.Po
 	-rm -f ./$(DEPDIR)/query.Po

@@ -38,6 +38,7 @@
 #include "strlcpy.h"
 
 #include "client.h"
+#include "messages.h"
 #include "paint.h"
 
 #include "xpconfig.h"

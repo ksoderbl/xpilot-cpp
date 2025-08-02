@@ -32,6 +32,7 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
+#include "messages.h"
 #include "paint.h"
 
 #include "version.h"
@@ -86,9 +87,6 @@
 #define ABOUT_WINDOW_WIDTH 600
 #define ABOUT_WINDOW_HEIGHT 700
 
-extern message_t *TalkMsg[], *GameMsg[];
-extern message_t *TalkMsg_pending[], *GameMsg_pending[];
-extern char *HistMsg[];
 extern int RadarHeight;
 
 /*

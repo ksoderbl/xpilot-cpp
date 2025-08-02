@@ -29,16 +29,16 @@
 #include "client.h"
 
 /* constants begin */
-#define MAX_COLORS 16	 /* Max. switched colors ever */
+#define MAX_COLORS 16    /* Max. switched colors ever */
 #define MAX_COLOR_LEN 32 /* Max. length of a color name */
 
-#define MAX_MSGS 15 /* Max. messages displayed ever */
+// #define MAX_MSGS 15 /* Max. messages displayed ever */
 
 #define NUM_DASHES 2
 #define NUM_CDASHES 2
 #define DASHES_LENGTH 12
 
-#define HUD_SIZE 90	  /* Size/2 of HUD lines */
+#define HUD_SIZE 90   /* Size/2 of HUD lines */
 #define HUD_OFFSET 20 /* Hud line offset */
 #define FUEL_GAUGE_OFFSET 6
 #define HUD_FUEL_GAUGE_SIZE (2 * (HUD_SIZE - HUD_OFFSET - FUEL_GAUGE_OFFSET))
@@ -49,19 +49,19 @@
 #define SCALE_ARRAY_SIZE 32768
 /* constants end */
 
-/* typedefs begin */
-typedef struct
-{
-	char txt[MSG_LEN];
-	short len;
-	short pixelLen;
-	int life;
-} message_t;
-/* typedefs end */
+// /* typedefs begin */
+// typedef struct
+// {
+//     char txt[MSG_LEN];
+//     short len;
+//     short pixelLen;
+//     int life;
+// } message_t;
+// /* typedefs end */
 
 /* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
 #define TALK_MSG_SCREENPOS(_total, _pos) \
-	(BIT(instruments, SHOW_REVERSE_SCROLL) ? (_total) - (_pos) : (_pos))
+    (BIT(instruments, SHOW_REVERSE_SCROLL) ? (_total) - (_pos) : (_pos))
 
 /* how to draw a selection */
 #define DRAW_EMPHASIZED BLUE
@@ -73,7 +73,7 @@ extern char cdashes[NUM_CDASHES];
 
 extern int num_spark_colors;
 
-extern unsigned short team;	 /* What team is the player on? */
+extern unsigned short team;  /* What team is the player on? */
 extern bool players_exposed; /* Is score window exposed? */
 
 extern short ext_view_width;   /* Width of extended visible area */
@@ -102,11 +102,11 @@ void Add_message(const char *message);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
 int Handle_self(int x, int y, int vx, int vy, int dir,
-				float power, float turnspeed, float turnresistance,
-				int lock_id, int lock_dist, int lock_dir,
-				int nextCheckPoint, int autopilotLight,
-				u_byte *newNumItems,
-				int currentTank, int fuel_sum, int fuel_max, int packet_size);
+                float power, float turnspeed, float turnresistance,
+                int lock_id, int lock_dist, int lock_dir,
+                int nextCheckPoint, int autopilotLight,
+                u_byte *newNumItems,
+                int currentTank, int fuel_sum, int fuel_max, int packet_size);
 int Handle_self_items(u_byte *newNumItems);
 int Handle_modifiers(char *m);
 int Handle_damaged(int damaged);

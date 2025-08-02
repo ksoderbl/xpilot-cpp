@@ -35,6 +35,7 @@
 #include "strlcpy.h"
 
 #include "client.h"
+#include "messages.h"
 #include "paint.h"
 #include "paintdata.h"
 
@@ -62,12 +63,6 @@ int hudColor;              /* Color index for HUD drawing */
 int hudLockColor;          /* Color index for lock on HUD drawing */
 int oldMessagesColor;      /* Color index for old messages */
 DFLOAT charsPerTick = 0.0; /* Output speed of messages */
-
-message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
-/* store incoming messages while a cut is pending */
-message_t *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
-/* history of the talk window */
-char *HistoryMsg[MAX_HIST_MSGS];
 
 /* selection in talk- or draw-window */
 extern selection_t selection;
