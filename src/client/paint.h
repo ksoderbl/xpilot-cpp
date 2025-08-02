@@ -88,9 +88,6 @@ extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
 extern int maxKeyDefs;
 extern long loops;
-extern int maxMessages;
-extern int messagesToStdout;
-extern bool selectionAndHistory;
 
 extern DFLOAT scaleFactor; /* scale the draw (main playfield) window */
 extern DFLOAT scaleFactor_s;

@@ -25,15 +25,17 @@
 
 // #include <stdlib.h>
 #include <cstring>
-// #include <stdio.h>
+#include <cstdio>
 // #include <errno.h>
 // #include <math.h>
 // #include <sys/types.h>
 
-// #include "xpconfig.h"
 // #include "const.h"
 // #include "xperror.h"
 #include "bit.h"
+#include "strlcpy.h"
+#include "xpconfig.h"
+
 // // #include "types.h"
 // // #include "keys.h"
 // // #include "rules.h"
@@ -47,40 +49,22 @@
 
 #include "client.h"
 
-// // extern setup_t                *Setup;
-// // extern int                RadarHeight;
-// // extern score_object_t        score_objects[MAX_SCORE_OBJECTS];
-// // extern int                score_object;
-// // extern XGCValues        gcv;
-
-// // int        hudColor;                /* Color index for HUD drawing */
-// // int        hudLockColor;                /* Color index for lock on HUD drawing */
-// // int        oldMessagesColor;        /* Color index for old messages */
-// // DFLOAT        charsPerTick = 0.0;        /* Output speed of messages */
-
-// message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
-// /* store incoming messages while a cut is pending */
-// message_t *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
-// /* history of the talk window */
-// char *HistoryMsg[MAX_HIST_MSGS];
-
 message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 /* store incoming messages while a cut is pending */
 message_t *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
 /* history of the talk window */
 char *HistoryMsg[MAX_HIST_MSGS];
 
-// /* provide cut&paste and message history */
-// selection_t selection;
+int maxMessages;      /* Max. number of messages to display */
+int messagesToStdout; /* Send messages to standard output */
+bool selectionAndHistory = false;
+// int maxLinesInHistory;
+
+/* selections in draw and talk window */
+selection_t selection;
 // static char *HistoryBlock = NULL;
 // extern char *HistoryMsg[MAX_HIST_MSGS];
-// bool selectionAndHistory = false;
-// int maxLinesInHistory;
-// int maxMessages;      /* Max. number of messages to display */
-// int messagesToStdout; /* Send messages to standard output */
 
-// // /* selection in talk- or draw-window */
-// // extern selection_t selection;
 // // extern void Delete_pending_messages(void);
 
 // static message_t *MsgBlock = NULL;
@@ -348,7 +332,7 @@ void Add_message(const char *message)
     }
 #endif
 
-    msg_set[0]->pixelLen = XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
+    msg_set[0]->pixelLen = 0; // TODO in painthud.cpp: XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
 
     /* Print messages to standard output.
      */
@@ -357,7 +341,6 @@ void Add_message(const char *message)
          message[0] &&
          message[strlen(message) - 1] == ']'))
     {
-
         xpprintf("%s\n", message);
     }
 }

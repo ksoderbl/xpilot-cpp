@@ -34,6 +34,7 @@
 #include <X11/Xmd.h>
 
 #include "client.h"
+#include "messages.h"
 #include "paint.h"
 
 #include "xpconfig.h"
@@ -71,9 +72,6 @@ extern int movement; /* horizontal mouse movement. */
 
 /* avoid trouble with Atoms and 64 bit archs */
 typedef CARD32 Atom32;
-
-/* selection in talk or draw window */
-extern selection_t selection;
 
 /* store message in history, when it is sent? */
 extern bool save_talk_str;

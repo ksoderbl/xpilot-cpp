@@ -82,8 +82,6 @@ static int history_pos = 0;
 #define CRS_START_HOPPING 7
 #define CRS_HOP 4
 
-/* selections in draw and talk window */
-selection_t selection;
 bool save_talk_str = false; /* see Get_msg_from_history */
 
 extern keys_t Lookup_key(XEvent *event, KeySym ks, bool reset);

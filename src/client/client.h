@@ -160,43 +160,6 @@ typedef struct
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
 
-/*
- * is a selection pending (in progress), done, drawn emphasized?
- */
-#define SEL_NONE (1 << 0)
-#define SEL_PENDING (1 << 1)
-#define SEL_SELECTED (1 << 2)
-#define SEL_EMPHASIZED (1 << 3)
-
-/*
- * a selection (text, string indices, state,...)
- */
-typedef struct
-{
-    /* a selection in the talk window */
-    struct
-    {
-        int state; /* current state of the selection */
-        int x1;    /* string indices */
-        int x2;
-        bool incl_nl; /* include a `\n'? */
-    } talk;
-    /* a selection in the draw window */
-    struct
-    {
-        int state;
-        int x1; /* string indices (for TalkMsg[].txt) */
-        int x2; /* they are modified when the emphasized area */
-        int y1; /* is scrolled down by new messages coming in */
-        int y2;
-    } draw;
-    char *txt;    /* allocated when needed */
-    int txt_size; /* size of txt buffer */
-    int len;
-    /* when a message `jumps' from talk window to the player messages: */
-    bool keep_emphasizing;
-} selection_t;
-
 extern ipos pos;
 extern ipos vel;
 extern ipos world;

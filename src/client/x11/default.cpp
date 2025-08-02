@@ -40,6 +40,7 @@
 #include "strlcpy.h"
 #include "xpmemory.h"
 
+#include "messages.h"
 #include "paint.h"
 
 #include "version.h"

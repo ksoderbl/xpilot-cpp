@@ -43,9 +43,6 @@ char modBankStr[NUM_MODBANKS][MAX_CHARS]; /* modifier banks */
 
 int maxKeyDefs;
 long loops = 0;
-int maxMessages;      /* Max. number of messages to display */
-int messagesToStdout; /* Send messages to standard output */
-bool selectionAndHistory = false;
 
 DFLOAT scaleFactor;
 DFLOAT scaleFactor_s;

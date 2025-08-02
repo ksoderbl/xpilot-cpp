@@ -33,6 +33,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xmd.h>
 
+#include "messages.h"
 #include "paint.h"
 
 #include "xpconfig.h"

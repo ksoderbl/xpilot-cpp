@@ -37,6 +37,7 @@
 #include "xpmath.h"
 
 #include "client.h"
+#include "messages.h"
 #include "netclient.h"
 #include "paint.h"
 #include "paintradar.h"
@@ -225,9 +226,8 @@ score_object_t score_objects[MAX_SCORE_OBJECTS];
 int score_object = 0;
 
 /* provide cut&paste and message history */
-extern selection_t selection;
+
 static char *HistoryBlock = NULL;
-extern char *HistoryMsg[MAX_HIST_MSGS];
 
 int maxLinesInHistory;
 
