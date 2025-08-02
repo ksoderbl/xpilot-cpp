@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(top_srcdir)/src/common
+AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" -I$(top_srcdir)/src/common
 
 bin_PROGRAMS = xpilot-cpp-mapedit
 

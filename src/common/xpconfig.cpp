@@ -27,106 +27,35 @@
 
 #include "xpconfig.h"
 
-
-/*
- * Configure these, that's what they're here for.
- * Explanation about all these compile time configuration options
- * is in the Makefile.std and in the Imakefile.
- */
-#ifndef LOCALGURU
-#    define LOCALGURU                "xpilot@xpilot.org"
-#endif
-
-#ifndef        DEFAULT_MAP
-#    define DEFAULT_MAP                "globe.xp"
-#endif
-
-#ifndef LIBDIR
-#    define LIBDIR                "/usr/local/games/lib/xpilot/"
-#endif
-
-#ifndef DEFAULTS_FILE_NAME
-#    define DEFAULTS_FILE_NAME        LIBDIR "defaults"
-#endif
-#ifndef PASSWORD_FILE_NAME
-#    define PASSWORD_FILE_NAME        LIBDIR "password"
-#endif
-#ifndef ROBOTFILE
-#    define ROBOTFILE        LIBDIR "robots"
-#endif
-#ifndef SERVERMOTDFILE
-#    define SERVERMOTDFILE        LIBDIR "servermotd"
-#endif
-#ifndef LOCALMOTDFILE
-#    define LOCALMOTDFILE        LIBDIR "localmotd"
-#endif
-#ifndef LOGFILE
-#    define LOGFILE                LIBDIR "log"
-#endif
-#ifndef MAPDIR
-#    define MAPDIR                LIBDIR "maps/"
-#endif
-#ifndef SHIP_FILE
-#    define SHIP_FILE       ""
-#endif
-#ifndef TEXTUREDIR
-#    define TEXTUREDIR        LIBDIR "textures/"
-#endif
-#ifndef        SOUNDDIR
-#    define SOUNDDIR        LIBDIR "sound/"
-#endif
-
-#ifndef SOUNDFILE
-#    define SOUNDFILE        LIBDIR "sounds"
-#endif
-
-#ifndef ZCAT_EXT
-#    define ZCAT_EXT        ".gz"
-#endif
-
-#ifndef ZCAT_FORMAT
-#    define ZCAT_FORMAT "gzip -d -c < %s"
-#endif
-
-/*
- * Please don't change this one.
- */
-#ifndef CONTACTADDRESS
-#    define CONTACTADDRESS        "xpilot@xpilot.org"
-#endif
-
-
-
-
-char *Conf_libdir(void)
+char *Conf_datadir(void)
 {
-    static char conf[] = LIBDIR;
+    static char conf[] = CONF_DATADIR;
 
     return conf;
 }
 
 char *Conf_defaults_file_name(void)
 {
-    static char conf[] = DEFAULTS_FILE_NAME;
+    static char conf[] = CONF_DEFAULTS_FILE_NAME;
 
     return conf;
 }
 
 char *Conf_password_file_name(void)
 {
-    static char conf[] = PASSWORD_FILE_NAME;
+    static char conf[] = CONF_PASSWORD_FILE_NAME;
 
     return conf;
 }
 
 char *Conf_mapdir(void)
 {
-    static char conf[] = MAPDIR;
+    static char conf[] = CONF_MAPDIR;
 
     return conf;
 }
 
-static char conf_default_map_string[] = DEFAULT_MAP;
+static char conf_default_map_string[] = CONF_DEFAULT_MAP;
 
 char *Conf_default_map(void)
 {
@@ -135,12 +64,13 @@ char *Conf_default_map(void)
 
 char *Conf_servermotdfile(void)
 {
-    static char conf[] = SERVERMOTDFILE;
+    static char conf[] = CONF_SERVERMOTDFILE;
     static char env[] = "XPILOTSERVERMOTD";
     char *filename;
 
     filename = getenv(env);
-    if (filename == NULL) {
+    if (filename == NULL)
+    {
         filename = conf;
     }
 
@@ -149,12 +79,12 @@ char *Conf_servermotdfile(void)
 
 char *Conf_localmotdfile(void)
 {
-    static char conf[] = LOCALMOTDFILE;
+    static char conf[] = CONF_LOCALMOTDFILE;
 
     return conf;
 }
 
-char conf_logfile_string[] = LOGFILE;
+char conf_logfile_string[] = CONF_LOGFILE;
 
 char *Conf_logfile(void)
 {
@@ -162,7 +92,7 @@ char *Conf_logfile(void)
 }
 
 /* needed by client/default.c */
-char conf_ship_file_string[] = SHIP_FILE;
+char conf_ship_file_string[] = CONF_SHIP_FILE;
 
 char *Conf_ship_file(void)
 {
@@ -170,7 +100,7 @@ char *Conf_ship_file(void)
 }
 
 /* needed by client/default.c */
-char conf_texturedir_string[] = TEXTUREDIR;
+char conf_texturedir_string[] = CONF_TEXTUREDIR;
 
 char *Conf_texturedir(void)
 {
@@ -178,7 +108,7 @@ char *Conf_texturedir(void)
 }
 
 /* needed by client/default.c */
-char conf_soundfile_string[] = SOUNDFILE;
+char conf_soundfile_string[] = CONF_SOUNDFILE;
 
 char *Conf_soundfile(void)
 {
@@ -187,19 +117,19 @@ char *Conf_soundfile(void)
 
 char *Conf_localguru(void)
 {
-    static char conf[] = LOCALGURU;
+    static char conf[] = CONF_LOCALGURU;
 
     return conf;
 }
 
 char *Conf_contactaddress(void)
 {
-    static char conf[] = CONTACTADDRESS;
+    static char conf[] = CONF_CONTACTADDRESS;
 
     return conf;
 }
 
-static char conf_robotfile_string[] = ROBOTFILE;
+static char conf_robotfile_string[] = CONF_ROBOTFILE;
 
 char *Conf_robotfile(void)
 {
@@ -208,22 +138,21 @@ char *Conf_robotfile(void)
 
 char *Conf_zcat_ext(void)
 {
-    static char conf[] = ZCAT_EXT;
+    static char conf[] = CONF_ZCAT_EXT;
 
     return conf;
 }
 
 char *Conf_zcat_format(void)
 {
-    static char conf[] = ZCAT_FORMAT;
+    static char conf[] = CONF_ZCAT_FORMAT;
 
     return conf;
 }
 
 char *Conf_sounddir(void)
 {
-    static char conf[] = SOUNDDIR;
+    static char conf[] = CONF_SOUNDDIR;
 
     return conf;
 }
-

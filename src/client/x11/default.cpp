@@ -1833,7 +1833,7 @@ static void Get_file_defaults(XrmDatabase *rDBptr)
         path[PATH_MAX + 1];
     XrmDatabase tmpDB;
 
-    sprintf(path, "%s%s", Conf_libdir(), myClass);
+    sprintf(path, "%s%s", Conf_datadir(), myClass);
     *rDBptr = XrmGetFileDatabase(path);
 
     if (lang != NULL)

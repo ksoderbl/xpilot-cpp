@@ -24,13 +24,76 @@
 #ifndef XPCONFIG_H
 #define XPCONFIG_H
 
-/*
- * The following macros decide the speed of the game and
- * how often the server should draw a frame.  (Hmm...)
- */
+#ifndef CONF_DATADIR
+#error "CONF_DATADIR NOT DEFINED. GIVING UP."
+#endif
 
-#ifndef        UPDATES_PR_FRAME
-#    define UPDATES_PR_FRAME        1
+#ifndef CONF_LOCALGURU
+#define CONF_LOCALGURU PACKAGE_BUGREPORT
+#endif
+
+#ifndef CONF_DEFAULT_MAP
+#define CONF_DEFAULT_MAP "globe.xp"
+#endif
+
+// #ifndef CONF_DATADIR
+// #define CONF_DATADIR "/usr/local/games/lib/xpilot/"
+// #endif
+
+#ifndef CONF_MAPDIR
+#define CONF_MAPDIR CONF_DATADIR "maps/"
+#endif
+
+#ifndef CONF_TEXTUREDIR
+#define CONF_TEXTUREDIR CONF_DATADIR "textures/"
+#endif
+
+#ifndef CONF_SOUNDDIR
+#define CONF_SOUNDDIR CONF_DATADIR "sound/"
+#endif
+
+#ifndef CONF_DEFAULTS_FILE_NAME
+#define CONF_DEFAULTS_FILE_NAME CONF_DATADIR "defaults.txt"
+#endif
+
+#ifndef CONF_PASSWORD_FILE_NAME
+#define CONF_PASSWORD_FILE_NAME CONF_DATADIR "password.txt"
+#endif
+
+#ifndef CONF_ROBOTFILE
+#define CONF_ROBOTFILE CONF_DATADIR "robots.txt"
+#endif
+
+#ifndef CONF_SERVERMOTDFILE
+#define CONF_SERVERMOTDFILE CONF_DATADIR "servermotd.txt"
+#endif
+
+#ifndef CONF_LOCALMOTDFILE
+#define CONF_LOCALMOTDFILE CONF_DATADIR "localmotd.txt"
+#endif
+
+#ifndef CONF_LOGFILE
+#define CONF_LOGFILE CONF_DATADIR "log.txt"
+#endif
+
+#ifndef CONF_SHIP_FILE
+#define CONF_SHIP_FILE CONF_DATADIR "shipshapes.txt"
+#endif
+
+#ifndef CONF_SOUNDFILE
+#define CONF_SOUNDFILE CONF_DATADIR "sounds.sounds"
+#endif
+
+#ifndef CONF_ZCAT_EXT
+#define CONF_ZCAT_EXT ".gz"
+#endif
+
+#ifndef CONF_ZCAT_FORMAT
+#define CONF_ZCAT_FORMAT "gzip -d -c < %s"
+#endif
+
+#ifndef CONF_CONTACTADDRESS
+#define CONF_CONTACTADDRESS "xpilot@xpilot.org"
 #endif
 
 /*
@@ -42,15 +105,19 @@
 
 #define COMPRESSED_MAPS
 
-#ifdef        DEBUG
-#        define D(x)        { {x}; fflush(stdout); }
+#ifdef DEBUG
+#define D(x)                    \
+        {                       \
+                {x};            \
+                fflush(stdout); \
+        }
 #else
-#        define D(x)
+#define D(x)
 #endif
 
-#define        xpprintf        printf
+#define xpprintf printf
 
-char *Conf_libdir(void);
+char *Conf_datadir(void);
 char *Conf_defaults_file_name(void);
 char *Conf_password_file_name(void);
 char *Conf_mapdir(void);

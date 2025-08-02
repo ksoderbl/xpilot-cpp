@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/client
+AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" -I$(top_srcdir)/src/common -I$(top_srcdir)/src/client
 
 bin_PROGRAMS = xpilot-cpp-replay
 

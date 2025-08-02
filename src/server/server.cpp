@@ -268,6 +268,13 @@ void Main_loop(void)
 
         Update_objects();
 
+        /*
+         * The following macros decide the speed of the game and
+         * how often the server should draw a frame.  (Hmm...)
+         */
+
+#define UPDATES_PR_FRAME 1
+
         if ((main_loops % UPDATES_PR_FRAME) == 0)
         {
             Frame_update();
