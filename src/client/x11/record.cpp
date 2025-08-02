@@ -53,29 +53,28 @@
 /*
  * GC elements for line drawing operations.
  */
-#define RSTROKEGC        (GCForeground | GCBackground | \
-                         GCLineWidth | GCLineStyle | \
-                         GCDashOffset | GCFunction)
+#define RSTROKEGC (GCForeground | GCBackground | \
+                   GCLineWidth | GCLineStyle |   \
+                   GCDashOffset | GCFunction)
 /*
  * GC elements for polygon filling (except GCForeground).
  */
-#define RTILEGC                (GCFillStyle | GCTile | \
-                         GCTileStipXOrigin | GCTileStipYOrigin)
-
+#define RTILEGC (GCFillStyle | GCTile | \
+                 GCTileStipXOrigin | GCTileStipYOrigin)
 
 /*
  * Functions and variables for recording
  */
-static char                *record_filename = NULL;/* Name of recordfile. */
-static FILE                *recordFP = NULL;        /* File handle for writing
-                                                 * recording frames to. */
-int                        recording = False;        /* Are we recording or not. */
-static int                record_start = False;        /* Should we start recording
-                                                 * at the next frame. */
-static int                record_frame_count = 0;        /* How many recorded frames. */
-static const char        *record_dashes;                /* Which dash list to use. */
-static int                record_num_dashes;        /* How big is dashes list. */
-static int                record_dash_dirty = 0;        /* Has dashes list changed? */
+static char *record_filename = NULL; /* Name of recordfile. */
+static FILE *recordFP = NULL;        /* File handle for writing
+                                      * recording frames to. */
+int recording = False;               /* Are we recording or not. */
+static int record_start = False;     /* Should we start recording
+                                      * at the next frame. */
+static int record_frame_count = 0;   /* How many recorded frames. */
+static const char *record_dashes;    /* Which dash list to use. */
+static int record_num_dashes;        /* How big is dashes list. */
+static int record_dash_dirty = 0;    /* Has dashes list changed? */
 
 /*
  * Dummy functions for "recordable drawing" interface, when not recording.
@@ -86,8 +85,7 @@ static void Dummy_endFrame(void) {}
 static void Dummy_paintItemSymbol(unsigned char type, Drawable drawable,
                                   GC mygc, int x, int y, int color) {}
 
-extern char        hostname[];
-
+extern char hostname[];
 
 /*
  * Miscellaneous recording functions.
@@ -136,11 +134,12 @@ static void RWriteULong(unsigned long i)
 
 static void RWriteString(char *str)
 {
-    int                                len = strlen(str);
-    int                                i;
+    int len = strlen(str);
+    int i;
 
     RWriteUShort(len);
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         putc(str[i], recordFP);
     }
 }
@@ -151,10 +150,10 @@ static void RWriteString(char *str)
  */
 static void RWriteHeader(void)
 {
-    time_t                        t;
-    char                        buf[256];
-    char                        *ptr;
-    int                                i;
+    time_t t;
+    char buf[256];
+    char *ptr;
+    int i;
 
     rewind(recordFP);
 
@@ -178,14 +177,16 @@ static void RWriteHeader(void)
     RWriteByte(FPS);
     time(&t);
     strlcpy(buf, ctime(&t), sizeof(buf));
-    if ((ptr = strchr(buf, '\n')) != NULL) {
+    if ((ptr = strchr(buf, '\n')) != NULL)
+    {
         *ptr = '\0';
     }
     RWriteString(buf);
 
     /* Write info about graphics setup. */
     putc(maxColors, recordFP);
-    for (i = 0; i < maxColors; i++) {
+    for (i = 0; i < maxColors; i++)
+    {
         RWriteULong(colors[i].pixel);
         RWriteUShort(colors[i].red);
         RWriteUShort(colors[i].green);
@@ -204,15 +205,19 @@ static void RWriteHeader(void)
 
 static int RGetPixelIndex(unsigned long pixel)
 {
-    int                        i;
+    int i;
 
-    for (i = 0; i < maxColors; i++) {
-        if (pixel == colors[i].pixel) {
+    for (i = 0; i < maxColors; i++)
+    {
+        if (pixel == colors[i].pixel)
+        {
             return i;
         }
     }
-    for (i = 1; i < maxColors; i++) {
-        if (pixel == (colors[BLACK].pixel ^ colors[i].pixel)) {
+    for (i = 1; i < maxColors; i++)
+    {
+        if (pixel == (colors[BLACK].pixel ^ colors[i].pixel))
+        {
             return i + maxColors;
         }
     }
@@ -222,20 +227,23 @@ static int RGetPixelIndex(unsigned long pixel)
 
 static void RWriteTile(Pixmap tile)
 {
-    typedef struct tile_list {
-        struct tile_list        *next;
-        Pixmap                        tile;
-        unsigned char                tile_id;
+    typedef struct tile_list
+    {
+        struct tile_list *next;
+        Pixmap tile;
+        unsigned char tile_id;
     } tile_list_t;
-    static tile_list_t                *list = NULL;
-    tile_list_t                        *lptr;
-    static int                        next_tile_id = 1;
-    unsigned                        x, y;
-    int                                i;
-    XImage                        *img;
+    static tile_list_t *list = NULL;
+    tile_list_t *lptr;
+    static int next_tile_id = 1;
+    unsigned x, y;
+    int i;
+    XImage *img;
 
-    for (lptr = list; lptr != NULL; lptr = lptr->next) {
-        if (lptr->tile == tile) {
+    for (lptr = list; lptr != NULL; lptr = lptr->next)
+    {
+        if (lptr->tile == tile)
+        {
             /* tile already sent before. */
             RWriteByte(RC_TILE);
             RWriteByte(lptr->tile_id);
@@ -245,7 +253,8 @@ static void RWriteTile(Pixmap tile)
 
     /* a first time tile. */
 
-    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t)))) {
+    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
+    {
         xperror("Not enough memory");
         RWriteByte(RC_TILE);
         RWriteByte(0);
@@ -256,7 +265,8 @@ static void RWriteTile(Pixmap tile)
     lptr->tile_id = next_tile_id;
     list = lptr;
 
-    if (!(img = xpm_image_from_pixmap(tile))) {
+    if (!(img = xpm_image_from_pixmap(tile)))
+    {
         RWriteByte(RC_TILE);
         RWriteByte(0);
         lptr->tile_id = 0;
@@ -266,11 +276,15 @@ static void RWriteTile(Pixmap tile)
     RWriteByte(lptr->tile_id);
     RWriteUShort(img->width);
     RWriteUShort(img->height);
-    for (y = 0; y < img->height; y++) {
-        for (x = 0; x < img->width; x++) {
+    for (y = 0; y < img->height; y++)
+    {
+        for (x = 0; x < img->width; x++)
+        {
             unsigned long pixel = XGetPixel(img, x, y);
-            for (i = 0; i < maxColors - 1; i++) {
-                if (pixel == colors[i].pixel) {
+            for (i = 0; i < maxColors - 1; i++)
+            {
+                if (pixel == colors[i].pixel)
+                {
                     break;
                 }
             }
@@ -285,74 +299,104 @@ static void RWriteTile(Pixmap tile)
 
 static void RWriteGC(GC gc, unsigned long req_mask)
 {
-    XGCValues                        values;
-    unsigned long                write_mask;
-    static unsigned long        prev_mask;
-    static XGCValues                prev_values;
-    static int                        prev_frame_count = -1;
-    unsigned short                gc_mask;
+    XGCValues values;
+    unsigned long write_mask;
+    static unsigned long prev_mask;
+    static XGCValues prev_values;
+    static int prev_frame_count = -1;
+    unsigned short gc_mask;
 
-    if (prev_frame_count != record_frame_count) {
+    if (prev_frame_count != record_frame_count)
+    {
         prev_frame_count = record_frame_count;
         write_mask = RSTROKEGC | RTILEGC;
         XGetGCValues(dpy, gc, write_mask, &values);
-        if (values.fill_style != FillTiled) {
-            write_mask &= ~(GCTileStipXOrigin | GCTileStipYOrigin
-                            | GCTile);
+        if (values.fill_style != FillTiled)
+        {
+            write_mask &= ~(GCTileStipXOrigin | GCTileStipYOrigin | GCTile);
         }
         prev_mask = write_mask;
         prev_values = values;
     }
-    else {
+    else
+    {
         write_mask = req_mask | GCFunction;
         XGetGCValues(dpy, gc, write_mask, &values);
 
-        if ((write_mask & prev_mask & GCForeground) != 0) {
-            if (prev_values.foreground == values.foreground) {
+        if ((write_mask & prev_mask & GCForeground) != 0)
+        {
+            if (prev_values.foreground == values.foreground)
+            {
                 write_mask &= ~GCForeground;
-            } else {
+            }
+            else
+            {
                 prev_values.foreground = values.foreground;
             }
         }
-        if ((write_mask & prev_mask & GCBackground) != 0) {
-            if (prev_values.background == values.background) {
+        if ((write_mask & prev_mask & GCBackground) != 0)
+        {
+            if (prev_values.background == values.background)
+            {
                 write_mask &= ~GCBackground;
-            } else {
+            }
+            else
+            {
                 prev_values.background = values.background;
             }
         }
-        if ((write_mask & prev_mask & GCLineWidth) != 0) {
-            if (prev_values.line_width == values.line_width) {
+        if ((write_mask & prev_mask & GCLineWidth) != 0)
+        {
+            if (prev_values.line_width == values.line_width)
+            {
                 write_mask &= ~GCLineWidth;
-            } else {
+            }
+            else
+            {
                 prev_values.line_width = values.line_width;
             }
         }
-        if ((write_mask & prev_mask & GCLineStyle) != 0) {
-            if (prev_values.line_style == values.line_style) {
+        if ((write_mask & prev_mask & GCLineStyle) != 0)
+        {
+            if (prev_values.line_style == values.line_style)
+            {
                 write_mask &= ~GCLineStyle;
-            } else {
+            }
+            else
+            {
                 prev_values.line_style = values.line_style;
             }
         }
-        if ((write_mask & prev_mask & GCDashOffset) != 0) {
-            if (prev_values.dash_offset == values.dash_offset) {
+        if ((write_mask & prev_mask & GCDashOffset) != 0)
+        {
+            if (prev_values.dash_offset == values.dash_offset)
+            {
                 write_mask &= ~GCDashOffset;
-            } else {
+            }
+            else
+            {
                 prev_values.dash_offset = values.dash_offset;
             }
         }
-        if ((write_mask & prev_mask & GCFunction) != 0) {
-            if (prev_values.function == values.function) {
+        if ((write_mask & prev_mask & GCFunction) != 0)
+        {
+            if (prev_values.function == values.function)
+            {
                 write_mask &= ~GCFunction;
-            } else {
+            }
+            else
+            {
                 prev_values.function = values.function;
             }
         }
-        if ((write_mask & prev_mask & GCFillStyle) != 0) {
-            if (prev_values.fill_style == values.fill_style) {
+        if ((write_mask & prev_mask & GCFillStyle) != 0)
+        {
+            if (prev_values.fill_style == values.fill_style)
+            {
                 write_mask &= ~GCFillStyle;
-            } else {
+            }
+            else
+            {
                 prev_values.fill_style = values.fill_style;
             }
             /*
@@ -361,36 +405,50 @@ static void RWriteGC(GC gc, unsigned long req_mask)
              * e.g., no use for tile origins and tiles
              * if fill style is not tiled.
              */
-            if (values.fill_style == FillTiled) {
-                if ((write_mask & prev_mask & GCTileStipXOrigin) != 0) {
-                    if (prev_values.ts_x_origin == values.ts_x_origin) {
+            if (values.fill_style == FillTiled)
+            {
+                if ((write_mask & prev_mask & GCTileStipXOrigin) != 0)
+                {
+                    if (prev_values.ts_x_origin == values.ts_x_origin)
+                    {
                         write_mask &= ~GCTileStipXOrigin;
-                    } else {
+                    }
+                    else
+                    {
                         prev_values.ts_x_origin = values.ts_x_origin;
                     }
                 }
-                if ((write_mask & prev_mask & GCTileStipYOrigin) != 0) {
-                    if (prev_values.ts_y_origin == values.ts_y_origin) {
+                if ((write_mask & prev_mask & GCTileStipYOrigin) != 0)
+                {
+                    if (prev_values.ts_y_origin == values.ts_y_origin)
+                    {
                         write_mask &= ~GCTileStipYOrigin;
-                    } else {
+                    }
+                    else
+                    {
                         prev_values.ts_y_origin = values.ts_y_origin;
                     }
                 }
-                if ((write_mask & prev_mask & GCTile) != 0) {
-                    if (prev_values.tile == values.tile) {
+                if ((write_mask & prev_mask & GCTile) != 0)
+                {
+                    if (prev_values.tile == values.tile)
+                    {
                         write_mask &= ~GCTile;
-                    } else {
+                    }
+                    else
+                    {
                         prev_values.tile = values.tile;
                     }
                 }
             }
-            else {
-                write_mask &= ~(GCTileStipXOrigin | GCTileStipYOrigin
-                                | GCTile);
+            else
+            {
+                write_mask &= ~(GCTileStipXOrigin | GCTileStipYOrigin | GCTile);
             }
         }
 
-        if (!write_mask && !record_dash_dirty) {
+        if (!write_mask && !record_dash_dirty)
+        {
             putc(RC_NOGC, recordFP);
             return;
         }
@@ -413,15 +471,18 @@ static void RWriteGC(GC gc, unsigned long req_mask)
         gc_mask |= RC_GC_DO;
     if (write_mask & GCFunction)
         gc_mask |= RC_GC_FU;
-    if (record_dash_dirty) {
+    if (record_dash_dirty)
+    {
         gc_mask |= RC_GC_DA;
-        if ((write_mask & GCDashOffset) == 0) {
+        if ((write_mask & GCDashOffset) == 0)
+        {
             write_mask |= GCDashOffset;
             values.dash_offset = prev_values.dash_offset;
             gc_mask |= RC_GC_DO;
         }
     }
-    if (write_mask & RTILEGC) {
+    if (write_mask & RTILEGC)
+    {
         gc_mask |= RC_GC_B2;
         if (write_mask & GCFillStyle)
             gc_mask |= RC_GC_FS;
@@ -434,7 +495,8 @@ static void RWriteGC(GC gc, unsigned long req_mask)
     }
 
     RWriteByte(gc_mask);
-    if (gc_mask & RC_GC_B2) {
+    if (gc_mask & RC_GC_B2)
+    {
         RWriteByte(gc_mask >> 8);
     }
 
@@ -450,21 +512,25 @@ static void RWriteGC(GC gc, unsigned long req_mask)
         RWriteByte(values.dash_offset);
     if (write_mask & GCFunction)
         RWriteByte(values.function);
-    if (record_dash_dirty) {
+    if (record_dash_dirty)
+    {
         int i;
         RWriteByte(record_num_dashes);
-        for (i = 0; i < record_num_dashes; i++) {
+        for (i = 0; i < record_num_dashes; i++)
+        {
             RWriteByte(record_dashes[i]);
         }
     }
-    if (write_mask & RTILEGC) {
+    if (write_mask & RTILEGC)
+    {
         if (write_mask & GCFillStyle)
             RWriteByte(values.fill_style);
         if (write_mask & GCTileStipXOrigin)
             RWriteLong(values.ts_x_origin);
         if (write_mask & GCTileStipYOrigin)
             RWriteLong(values.ts_y_origin);
-        if (write_mask & GCTile) {
+        if (write_mask & GCTile)
+        {
             RWriteTile(values.tile);
         }
     }
@@ -472,9 +538,10 @@ static void RWriteGC(GC gc, unsigned long req_mask)
 
 static void RNewFrame(void)
 {
-    static int                before;
+    static int before;
 
-    if (!before++) {
+    if (!before++)
+    {
         RWriteHeader();
     }
 
@@ -487,21 +554,25 @@ static void RNewFrame(void)
 
 static void REndFrame(void)
 {
-    if (damaged) {
-        XGCValues                        values;
+    if (damaged)
+    {
+        XGCValues values;
 
-        XGetGCValues(dpy, gc, GCForeground, &values);
+        XGetGCValues(dpy, gameGC, GCForeground, &values);
 
         RWriteByte(RC_DAMAGED);
-        if ((damaged & 1) != 0) {
-            XSetForeground(dpy, gc, colors[BLUE].pixel);
-        } else {
-            XSetForeground(dpy, gc, colors[BLACK].pixel);
+        if ((damaged & 1) != 0)
+        {
+            XSetForeground(dpy, gameGC, colors[BLUE].pixel);
         }
-        RWriteGC(gc, GCForeground | RTILEGC);
+        else
+        {
+            XSetForeground(dpy, gameGC, colors[BLACK].pixel);
+        }
+        RWriteGC(gameGC, GCForeground | RTILEGC);
         RWriteByte(damaged);
 
-        XSetForeground(dpy, gc, values.foreground);
+        XSetForeground(dpy, gameGC, values.foreground);
     }
 
     putc(RC_ENDFRAME, recordFP);
@@ -510,7 +581,7 @@ static void REndFrame(void)
 
     recording = False;
 
-    record_frame_count++;        /* Number of frames written sofar. */
+    record_frame_count++; /* Number of frames written sofar. */
 }
 
 static int RDrawArc(Display *display, Drawable drawable, GC gc,
@@ -519,7 +590,8 @@ static int RDrawArc(Display *display, Drawable drawable, GC gc,
                     int angle1, int angle2)
 {
     XDrawArc(display, drawable, gc, x, y, width, height, angle1, angle2);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         putc(RC_DRAWARC, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteShort(x);
@@ -536,14 +608,16 @@ static int RDrawLines(Display *display, Drawable drawable, GC gc,
                       XPoint *points, int npoints, int mode)
 {
     XDrawLines(display, drawable, gc, points, npoints, mode);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         int i;
         XPoint *xp = points;
 
         putc(RC_DRAWLINES, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteUShort(npoints);
-        for (i = 0; i < npoints; i++, xp++) {
+        for (i = 0; i < npoints; i++, xp++)
+        {
             RWriteShort(xp->x);
             RWriteShort(xp->y);
         }
@@ -557,7 +631,8 @@ static int RDrawLine(Display *display, Drawable drawable, GC gc,
                      int x2, int y2)
 {
     XDrawLine(display, drawable, gc, x1, y1, x2, y2);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         putc(RC_DRAWLINE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteShort(x1);
@@ -573,7 +648,8 @@ static int RDrawRectangle(Display *display, Drawable drawable, GC gc,
                           unsigned width, unsigned height)
 {
     XDrawRectangle(display, drawable, gc, x, y, width, height);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         putc(RC_DRAWRECTANGLE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteShort(x);
@@ -589,7 +665,8 @@ static int RDrawString(Display *display, Drawable drawable, GC gc,
                        const char *string, int length)
 {
     XDrawString(display, drawable, gc, x, y, string, length);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         int i;
         XGCValues values;
 
@@ -605,14 +682,15 @@ static int RDrawString(Display *display, Drawable drawable, GC gc,
     }
     return 0;
 }
-   
+
 static int RFillArc(Display *display, Drawable drawable, GC gc,
                     int x, int y,
                     unsigned height, unsigned width,
                     int angle1, int angle2)
 {
     XFillArc(display, drawable, gc, x, y, width, height, angle1, angle2);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         putc(RC_FILLARC, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteShort(x);
@@ -630,14 +708,16 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
                         int shape, int mode)
 {
     XFillPolygon(display, drawable, gc, points, npoints, shape, mode);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         int i;
         XPoint *xp = points;
 
         putc(RC_FILLPOLYGON, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteUShort(npoints);
-        for (i = 0; i < npoints; i++, xp++) {
+        for (i = 0; i < npoints; i++, xp++)
+        {
             RWriteShort(xp->x);
             RWriteShort(xp->y);
         }
@@ -650,9 +730,10 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
 static void RPaintItemSymbol(unsigned char type, Drawable drawable, GC mygc,
                              int x, int y, int color)
 {
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         putc(RC_PAINTITEMSYMBOL, recordFP);
-        RWriteGC(gc, GCForeground | GCBackground);
+        RWriteGC(gameGC, GCForeground | GCBackground);
         putc(type, recordFP);
         RWriteShort(x);
         RWriteShort(y);
@@ -664,7 +745,8 @@ static int RFillRectangle(Display *display, Drawable drawable, GC gc,
                           unsigned width, unsigned height)
 {
     XFillRectangle(display, drawable, gc, x, y, width, height);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         putc(RC_FILLRECTANGLE, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteShort(x);
@@ -679,13 +761,15 @@ static int RFillRectangles(Display *display, Drawable drawable, GC gc,
                            XRectangle *rectangles, int nrectangles)
 {
     XFillRectangles(display, drawable, gc, rectangles, nrectangles);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         int i;
 
         putc(RC_FILLRECTANGLES, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteUShort(nrectangles);
-        for (i = 0; i < nrectangles; i++) {
+        for (i = 0; i < nrectangles; i++)
+        {
             RWriteShort(rectangles[i].x);
             RWriteShort(rectangles[i].y);
             RWriteByte(rectangles[i].width);
@@ -699,13 +783,15 @@ static int RDrawArcs(Display *display, Drawable drawable, GC gc,
                      XArc *arcs, int narcs)
 {
     XDrawArcs(display, drawable, gc, arcs, narcs);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         int i;
 
         putc(RC_DRAWARCS, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteUShort(narcs);
-        for (i = 0; i < narcs; i++) {
+        for (i = 0; i < narcs; i++)
+        {
             RWriteShort(arcs[i].x);
             RWriteShort(arcs[i].y);
             RWriteByte(arcs[i].width);
@@ -721,13 +807,15 @@ static int RDrawSegments(Display *display, Drawable drawable, GC gc,
                          XSegment *segments, int nsegments)
 {
     XDrawSegments(display, drawable, gc, segments, nsegments);
-    if (drawable == p_draw) {
+    if (drawable == p_draw)
+    {
         int i;
 
         putc(RC_DRAWSEGMENTS, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteUShort(nsegments);
-        for (i = 0; i < nsegments; i++) {
+        for (i = 0; i < nsegments; i++)
+        {
             RWriteShort(segments[i].x1);
             RWriteShort(segments[i].y1);
             RWriteShort(segments[i].x2);
@@ -741,12 +829,11 @@ static int RSetDashes(Display *display, GC gc,
                       int dash_offset, const char *dash_list, int n)
 {
     XSetDashes(display, gc, dash_offset, dash_list, n);
-    record_dashes = dash_list;        /* supposedly static memory */
+    record_dashes = dash_list; /* supposedly static memory */
     record_num_dashes = n;
     record_dash_dirty = True;
     return 0;
 }
-
 
 /*
  * The `_Xconst' trick from <X11/Xfuncproto.h> doesn't work
@@ -825,25 +912,36 @@ long Record_size(void)
  */
 void Record_toggle(void)
 {
-    if (record_filename != NULL) {
-        if (!record_start) {
+    if (record_filename != NULL)
+    {
+        if (!record_start)
+        {
             record_start = True;
-            if (!recordFP) {
-                if ((recordFP = fopen(record_filename, "w")) == NULL) {
+            if (!recordFP)
+            {
+                if ((recordFP = fopen(record_filename, "w")) == NULL)
+                {
                     perror("Unable to open record file");
                     free(record_filename);
                     record_filename = NULL;
                     record_start = False;
-                } else {
+                }
+                else
+                {
                     setvbuf(recordFP, NULL, _IOFBF, (size_t)(8 * 1024));
                 }
             }
-        } else {
+        }
+        else
+        {
             record_start = False;
         }
-        if (record_start) {
+        if (record_start)
+        {
             rd = Rdrawing;
-        } else {
+        }
+        else
+        {
             rd = Xdrawing;
             recording = False;
         }
@@ -856,7 +954,8 @@ void Record_toggle(void)
  */
 void Record_cleanup(void)
 {
-    if (record_filename != NULL && record_frame_count > 0) {
+    if (record_filename != NULL && record_frame_count > 0)
+    {
         fflush(recordFP);
         printf("Recorded %d frames to %s\n",
                record_frame_count, record_filename);
@@ -870,8 +969,8 @@ void Record_cleanup(void)
 void Record_init(char *filename)
 {
     rd = Xdrawing;
-    if (filename != NULL && filename[0] != '\0') {
+    if (filename != NULL && filename[0] != '\0')
+    {
         record_filename = xp_strdup(filename);
     }
 }
-

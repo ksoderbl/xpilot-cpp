@@ -470,18 +470,18 @@ void Paint_world(void)
                         points[4] = points[0];
                         if (wallTileDoit)
                         {
-                            XSetFillStyle(dpy, gc, FillTiled);
+                            XSetFillStyle(dpy, gameGC, FillTiled);
                         }
                         else
                         {
                             SET_FG(colors[wallColor].pixel);
                         }
-                        rd.fillPolygon(dpy, p_draw, gc,
+                        rd.fillPolygon(dpy, p_draw, gameGC,
                                        points, 5,
                                        Convex, CoordModeOrigin);
                         if (wallTileDoit)
                         {
-                            XSetFillStyle(dpy, gc, FillSolid);
+                            XSetFillStyle(dpy, gameGC, FillSolid);
                         }
                         fill_top_left =
                             fill_top_right =
@@ -505,18 +505,18 @@ void Paint_world(void)
             points[4] = points[0];
             if (wallTileDoit)
             {
-                XSetFillStyle(dpy, gc, FillTiled);
+                XSetFillStyle(dpy, gameGC, FillTiled);
             }
             else
             {
                 SET_FG(colors[wallColor].pixel);
             }
-            rd.fillPolygon(dpy, p_draw, gc,
+            rd.fillPolygon(dpy, p_draw, gameGC,
                            points, 5,
                            Convex, CoordModeOrigin);
             if (wallTileDoit)
             {
-                XSetFillStyle(dpy, gc, FillSolid);
+                XSetFillStyle(dpy, gameGC, FillSolid);
             }
             fill_top_left =
                 fill_top_right =

@@ -483,7 +483,7 @@ void Block_bitmap_set_pixel(xp_pixmap_t *xp_pixmap,
     b = BLUE_VALUE(color);
     pixel = (RGB)(r, g, b);
     SET_FG(pixel);
-    XDrawPoint(dpy, xp_pixmap->bitmaps[image].bitmap, gc,
+    XDrawPoint(dpy, xp_pixmap->bitmaps[image].bitmap, gameGC,
                x, y);
 
     pixel = (color) ? 1 : 0;
@@ -511,7 +511,7 @@ void Block_bitmap_paint_fuel_slice(Drawable d, int type,
     assert(height >= box->ymax);
     */
     XCopyArea(dpy, xp_pixmaps[type].bitmaps[image].bitmap,
-              d, gc,
+              d, gameGC,
               0 + box->xmin, 0 + box->ymin,
               box->xmax + 1 - box->xmin,
               size * (box->ymax + 1 - box->ymin) / bit->scale_width,
@@ -532,14 +532,14 @@ void Block_bitmap_paint_meter(Drawable d, int type,
 
     /*First draw the part of the meter that should be filled */
     XCopyArea(dpy, xp_pixmaps[type].bitmaps[1].bitmap, /* 1 = filled image */
-              d, gc,
+              d, gameGC,
               0, 0,
               size, xp_pixmaps[type].height,
               x, y);
     /*Then draw the part of the meter that should be empty */
 
     XCopyArea(dpy, xp_pixmaps[type].bitmaps[0].bitmap, /* 0 = empty image */
-              d, gc,
+              d, gameGC,
               size, 0,
               xp_pixmaps[type].width - size, xp_pixmaps[type].height,
               x + size, y);
@@ -556,12 +556,12 @@ void Block_bitmap_paint(Drawable d, int type, int x, int y, int width,
     xp_bitmap_t *bit = &pix->bitmaps[number];
     bbox_t *box = &bit->bbox;
 
-    XSetClipOrigin(dpy, gc, x, y);
-    XSetClipMask(dpy, gc, bit->mask);
+    XSetClipOrigin(dpy, gameGC, x, y);
+    XSetClipMask(dpy, gameGC, bit->mask);
     XCopyArea(dpy, bit->bitmap,
-              d, gc,
+              d, gameGC,
               0 + box->xmin, 0 + box->ymin,
               box->xmax + 1 - box->xmin, box->ymax + 1 - box->ymin,
               x + box->xmin, y + box->ymin);
-    XSetClipMask(dpy, gc, None);
+    XSetClipMask(dpy, gameGC, None);
 }

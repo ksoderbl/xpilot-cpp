@@ -203,7 +203,7 @@ void MapNotify_event(XEvent *event)
 {
     if (ignoreWindowManager == 1)
     {
-        XSetInputFocus(dpy, top, RevertToParent, CurrentTime);
+        XSetInputFocus(dpy, topWindow, RevertToParent, CurrentTime);
         ignoreWindowManager = 2;
     }
 }
@@ -225,7 +225,7 @@ int ClientMessage_event(XEvent *event)
     cmev = (XClientMessageEvent *)event;
     if (cmev->message_type == ProtocolAtom && cmev->format == 32 && cmev->data.l[0] == KillAtom)
     {
-        XDestroyWindow(dpy, top);
+        XDestroyWindow(dpy, topWindow);
         XSync(dpy, True);
         printf("Quit\n");
         return -1;
@@ -266,7 +266,7 @@ void ConfigureNotify_event(XEvent *event)
     XConfigureEvent *conf;
 
     conf = &(event->xconfigure);
-    if (conf->window == top)
+    if (conf->window == topWindow)
     {
         Resize(conf->window, conf->width, conf->height);
     }
@@ -293,7 +293,7 @@ void KeyChanged_event(XEvent *event)
         }
     }
 #endif
-    if (event->xkey.window == top)
+    if (event->xkey.window == topWindow)
     {
         Key_event(event);
     }
@@ -477,7 +477,7 @@ void Expose_event(XEvent *event)
             scoresChanged++;
         }
     }
-    else if (event->xexpose.window == about_w)
+    else if (event->xexpose.window == aboutWindow)
     {
         if (event->xexpose.count == 0)
         {

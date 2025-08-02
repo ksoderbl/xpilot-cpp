@@ -97,16 +97,16 @@ extern int radar_exposures; /* Is radar window exposed? */
 #define ITEM_PLAYFIELD 1 /* and one color for the playfield */
 extern Pixmap itemBitmaps[];
 
-extern GC gc, messageGC, radarGC, buttonGC, scoreListGC, textGC, talkGC;
+extern GC gameGC, messageGC, radarGC, buttonGC, scoreListGC, textGC, talkGC;
 extern GC motdGC;
 extern XGCValues gcv;
-extern Window top, draw, keyboard, radar, players;
+extern Window topWindow, draw, keyboard, radar, players;
 extern Pixmap p_draw;             /* Drawing area pixmap */
 extern Pixmap p_radar;            /* Radar drawing pixmap */
 extern Pixmap s_radar;            /* Second radar drawing pixmap */
 extern long dpl_1[2];             /* Used by radar hack */
 extern long dpl_2[2];             /* Used by radar hack */
-extern Window about_w;            /* The About window */
+extern Window aboutWindow;        /* The About window */
 extern Window about_close_b;      /* About close button */
 extern Window about_next_b;       /* About next page button */
 extern Window about_prev_b;       /* About prev page button */

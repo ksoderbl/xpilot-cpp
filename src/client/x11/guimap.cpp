@@ -207,7 +207,7 @@ void Gui_paint_cannon(int x, int y, int type)
             return;
         }
         points[3] = points[0];
-        rd.drawLines(dpy, p_draw, gc, points, 4, 0);
+        rd.drawLines(dpy, p_draw, gameGC, points, 4, 0);
     }
     else
     {
@@ -266,7 +266,7 @@ void Gui_paint_fuel(int x, int y, int fuel)
         SET_FG(colors[RED].pixel);
         size = (BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL;
         {
-            rd.fillRectangle(dpy, p_draw, gc,
+            rd.fillRectangle(dpy, p_draw, gameGC,
                              WINSCALE(X(x + FUEL_BORDER)),
                              WINSCALE(Y(y + FUEL_BORDER + size)),
                              WINSCALE(BLOCK_SZ - 2 * FUEL_BORDER + 1),
@@ -274,12 +274,12 @@ void Gui_paint_fuel(int x, int y, int fuel)
         }
 
         /* Draw F in fuel cells */
-        XSetFunction(dpy, gc, GXxor);
+        XSetFunction(dpy, gameGC, GXxor);
         SET_FG(colors[BLACK].pixel ^ colors[RED].pixel);
         x = WINSCALE(X(x + BLOCK_SZ / 2)) - text_width / 2,
         y = WINSCALE(Y(y + BLOCK_SZ / 2)) + gameFont->ascent / 2,
-        rd.drawString(dpy, p_draw, gc, x, y, s, 1);
-        XSetFunction(dpy, gc, GXcopy);
+        rd.drawString(dpy, p_draw, gameGC, x, y, s, 1);
+        XSetFunction(dpy, gameGC, GXcopy);
     }
     else
     {
@@ -407,12 +407,12 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
         }
         if (size)
         {
-            rd.drawString(dpy, p_draw, gc, x, y, s, other ? 2 : 1);
+            rd.drawString(dpy, p_draw, gameGC, x, y, s, other ? 2 : 1);
             x += size;
         }
         if (other)
         {
-            rd.drawString(dpy, p_draw, gc, x, y,
+            rd.drawString(dpy, p_draw, gameGC, x, y,
                           other->name, other->name_len);
         }
     }
@@ -508,12 +508,12 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
         }
         if (size)
         {
-            rd.drawString(dpy, p_draw, gc, x, y, s, other ? 2 : 1);
+            rd.drawString(dpy, p_draw, gameGC, x, y, s, other ? 2 : 1);
             x += size;
         }
         if (other)
         {
-            rd.drawString(dpy, p_draw, gc, x, y, other->name, other->name_len);
+            rd.drawString(dpy, p_draw, gameGC, x, y, other->name, other->name_len);
         }
     }
 }
@@ -687,7 +687,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
             points[3].x = WINSCALE(X(fill_bottom_right));
             points[3].y = WINSCALE(Y(y));
             points[4] = points[0];
-            rd.fillPolygon(dpy, p_draw, gc,
+            rd.fillPolygon(dpy, p_draw, gameGC,
                            points, 5,
                            Convex, CoordModeOrigin);
             fill_top_left =
@@ -698,7 +698,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
     }
     if (decorTileDoit && last)
     {
-        XSetFillStyle(dpy, gc, FillSolid);
+        XSetFillStyle(dpy, gameGC, FillSolid);
     }
 }
 
@@ -720,11 +720,11 @@ void Gui_paint_setup_check(int x, int y, int xi, int yi)
 
         if (Check_index_by_pos(xi, yi) == nextCheckPoint)
         {
-            rd.fillPolygon(dpy, p_draw, gc, points, 5, Convex, CoordModeOrigin);
+            rd.fillPolygon(dpy, p_draw, gameGC, points, 5, Convex, CoordModeOrigin);
         }
         else
         {
-            rd.drawLines(dpy, p_draw, gc, points, 5, 0);
+            rd.drawLines(dpy, p_draw, gameGC, points, 5, 0);
         }
     }
     else
@@ -1020,7 +1020,7 @@ void Gui_paint_setup_item_concentrator(int x, int y)
                     pts[1].x, pts[1].y, pts[2].x, pts[2].y, pts[3].x, pts[3].y); */
 
             pts[3] = pts[0];
-            rd.drawLines(dpy, p_draw, gc,
+            rd.drawLines(dpy, p_draw, gameGC,
                          pts, NELEM(pts), CoordModeOrigin);
         }
     }
@@ -1090,7 +1090,7 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
                     pts[1].x, pts[1].y, pts[2].x, pts[2].y, pts[3].x, pts[3].y); */
 
             pts[4] = pts[0];
-            rd.drawLines(dpy, p_draw, gc,
+            rd.drawLines(dpy, p_draw, gameGC,
                          pts, NELEM(pts), CoordModeOrigin);
         }
     }
@@ -1126,7 +1126,7 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
     Segment_add(color, a1, b1, a2, b1);
     Segment_add(color, a1, b2, a2, b2);
 
-    rd.drawRectangle(dpy, p_draw, gc,
+    rd.drawRectangle(dpy, p_draw, gameGC,
                      WINSCALE(X(x + (BLOCK_SZ + 2) / 4)),
                      WINSCALE(Y(y + 3 * BLOCK_SZ / 4)),
                      WINSCALE(BLOCK_SZ / 2),
@@ -1137,7 +1137,7 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
         s[0] = '0' + target;
         s[1] = '\0';
         size = XTextWidth(gameFont, s, 1);
-        rd.drawString(dpy, p_draw, gc,
+        rd.drawString(dpy, p_draw, gameGC,
                       WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
                       WINSCALE(Y(y + BLOCK_SZ / 2)) + gameFont->ascent / 2,
                       s, 1);
@@ -1190,7 +1190,7 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
             s[1] = '\0';
             s[0] = '0' + treasure;
             size = XTextWidth(gameFont, s, 1);
-            rd.drawString(dpy, p_draw, gc,
+            rd.drawString(dpy, p_draw, gameGC,
                           WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
                           WINSCALE(Y(y + 2 * BALL_RADIUS)), s, 1);
         }
@@ -1216,7 +1216,7 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
             s[1] = '\0';
             s[0] = '0' + treasure;
             size = XTextWidth(gameFont, s, 1);
-            rd.drawString(dpy, p_draw, gc,
+            rd.drawString(dpy, p_draw, gameGC,
                           WINSCALE(X(x + BLOCK_SZ / 2)) - size / 2,
                           WINSCALE(Y(y + BALL_RADIUS + 5)), s, 1);
         }

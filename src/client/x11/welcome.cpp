@@ -1933,7 +1933,7 @@ static int Welcome_create_windows(Connect_param_t *conpar)
     LIMIT(form_width, 400, 1282);
     LIMIT(form_height, 400, 1024);
     form_widget =
-        Widget_create_form(0, top,
+        Widget_create_form(0, topWindow,
                            form_x, form_y,
                            form_width, form_height,
                            form_border);
@@ -1998,7 +1998,7 @@ static int Welcome_create_windows(Connect_param_t *conpar)
     Welcome_create_label(1, "Welcome to XPilot!");
 
     Widget_map_sub(form_widget);
-    XMapSubwindows(dpy, top);
+    XMapSubwindows(dpy, topWindow);
 
     return 0;
 }
@@ -2086,7 +2086,7 @@ static int Welcome_process_one_event(XEvent *event)
              * DestroyNotify event before closing the connection
              * with the X server.
              */
-            XDestroyWindow(dpy, top);
+            XDestroyWindow(dpy, topWindow);
             XSync(dpy, True);
             printf("Quit\n");
             return -1;
@@ -2096,7 +2096,7 @@ static int Welcome_process_one_event(XEvent *event)
     case MapNotify:
         if (ignoreWindowManager == 1)
         {
-            XSetInputFocus(dpy, top, RevertToParent, CurrentTime);
+            XSetInputFocus(dpy, topWindow, RevertToParent, CurrentTime);
             ignoreWindowManager = 2;
         }
         break;
@@ -2120,7 +2120,7 @@ static int Welcome_process_one_event(XEvent *event)
 
     case ConfigureNotify:
         conf = &event->xconfigure;
-        if (conf->window == top)
+        if (conf->window == topWindow)
         {
             top_width = conf->width;
             top_height = conf->height;
@@ -2211,8 +2211,8 @@ static int Welcome_doit(Connect_param_t *conpar)
     {
         return -1;
     }
-    XMapSubwindows(dpy, top);
-    XMapWindow(dpy, top);
+    XMapSubwindows(dpy, topWindow);
+    XMapWindow(dpy, topWindow);
     XSync(dpy, False);
 
     result = Welcome_process_pending_events(conpar);

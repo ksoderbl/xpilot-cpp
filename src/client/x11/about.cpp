@@ -143,7 +143,7 @@ void Expose_about_window(void)
 {
     int i, y, old_y, box_start, box_end, first, last;
 
-    XClearWindow(dpy, about_w);
+    XClearWindow(dpy, aboutWindow);
 
     switch (about_page)
     {
@@ -151,7 +151,7 @@ void Expose_about_window(void)
     case 1:
         if (about_page == 0)
         {
-            y = DrawShadowText(dpy, about_w, textGC,
+            y = DrawShadowText(dpy, aboutWindow, textGC,
                                BORDER, BORDER,
                                "BONUS ITEMS\n"
                                "\n"
@@ -167,7 +167,7 @@ void Expose_about_window(void)
         }
         else
         {
-            y = DrawShadowText(dpy, about_w, textGC,
+            y = DrawShadowText(dpy, aboutWindow, textGC,
                                BORDER, BORDER,
                                "BONUS ITEMS CONTINUED\n",
                                colors[WHITE].pixel, colors[BLACK].pixel);
@@ -185,7 +185,7 @@ void Expose_about_window(void)
 
             /* Draw description text */
             old_y = y;
-            y = DrawShadowText(dpy, about_w, textGC,
+            y = DrawShadowText(dpy, aboutWindow, textGC,
                                5 * BORDER + 2 * ITEM_SIZE, old_y,
                                Item_get_text(i),
                                colors[WHITE].pixel, colors[BLACK].pixel);
@@ -201,11 +201,11 @@ void Expose_about_window(void)
 
             /* Paint the item on the left side */
             XSetForeground(dpy, textGC, colors[BLACK].pixel);
-            XFillRectangle(dpy, about_w, textGC,
+            XFillRectangle(dpy, aboutWindow, textGC,
                            BORDER, box_start,
                            2 * ITEM_SIZE + 2 * BORDER, box_end - box_start);
             XSetForeground(dpy, textGC, colors[RED].pixel);
-            Paint_item((u_byte)i, about_w, textGC, 2 * BORDER + ITEM_SIZE,
+            Paint_item((u_byte)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
                        old_y + ITEM_TRIANGLE_SIZE);
             XSetForeground(dpy, textGC, colors[WHITE].pixel);
 
@@ -218,7 +218,7 @@ void Expose_about_window(void)
             {
                 itemsplit = i - 1;
                 XSetForeground(dpy, textGC, colors[windowColor].pixel);
-                XFillRectangle(dpy, about_w, textGC,
+                XFillRectangle(dpy, aboutWindow, textGC,
                                BORDER, box_start,
                                ABOUT_WINDOW_WIDTH, box_end - box_start);
                 XSetForeground(dpy, textGC, colors[WHITE].pixel);
@@ -239,7 +239,7 @@ void Expose_about_window(void)
         break;
 
     case 2:
-        DrawShadowText(dpy, about_w, textGC,
+        DrawShadowText(dpy, aboutWindow, textGC,
                        BORDER, BORDER,
                        "GAME OBJECTIVE\n"
                        "\n"
@@ -268,7 +268,7 @@ void Expose_about_window(void)
         break;
 
     case 3:
-        DrawShadowText(dpy, about_w, textGC,
+        DrawShadowText(dpy, aboutWindow, textGC,
                        BORDER, BORDER,
                        "ABOUT XPILOT\n"
                        "\n"
@@ -327,19 +327,19 @@ static void About_create_window(void)
     sattr.backing_store = Always;
     mask |= CWBackingStore;
 
-    about_w = XCreateWindow(dpy,
-                            DefaultRootWindow(dpy),
-                            0, 0,
-                            windowWidth, windowHeight,
-                            2, dispDepth,
-                            InputOutput, visual,
-                            mask, &sattr);
-    XStoreName(dpy, about_w, "XPilot - information");
-    XSetIconName(dpy, about_w, "XPilot/info");
-    XSetTransientForHint(dpy, about_w, top);
+    aboutWindow = XCreateWindow(dpy,
+                                DefaultRootWindow(dpy),
+                                0, 0,
+                                windowWidth, windowHeight,
+                                2, dispDepth,
+                                InputOutput, visual,
+                                mask, &sattr);
+    XStoreName(dpy, aboutWindow, "XPilot - information");
+    XSetIconName(dpy, aboutWindow, "XPilot/info");
+    XSetTransientForHint(dpy, aboutWindow, topWindow);
 
     textWidth = XTextWidth(buttonFont, "CLOSE", 5);
-    about_close_b = XCreateSimpleWindow(dpy, about_w,
+    about_close_b = XCreateSimpleWindow(dpy, aboutWindow,
                                         BORDER, (windowHeight - BORDER - buttonWindowHeight - 4),
                                         2 * BTN_BORDER + textWidth,
                                         buttonWindowHeight,
@@ -350,14 +350,14 @@ static void About_create_window(void)
      * Create 'buttons' in the window.
      */
     textWidth = XTextWidth(buttonFont, "NEXT", 4);
-    about_next_b = XCreateSimpleWindow(dpy, about_w,
+    about_next_b = XCreateSimpleWindow(dpy, aboutWindow,
                                        windowWidth / 2 - BTN_BORDER - textWidth / 2,
                                        windowHeight - BORDER - buttonWindowHeight - 4,
                                        2 * BTN_BORDER + textWidth, buttonWindowHeight,
                                        0, 0,
                                        colors[buttonColor].pixel);
     textWidth = XTextWidth(buttonFont, "PREV", 4);
-    about_prev_b = XCreateSimpleWindow(dpy, about_w,
+    about_prev_b = XCreateSimpleWindow(dpy, aboutWindow,
                                        windowWidth - BORDER - 2 * BTN_BORDER - textWidth,
                                        windowHeight - BORDER - buttonWindowHeight - 4,
                                        2 * BTN_BORDER + textWidth, buttonWindowHeight,
@@ -370,11 +370,11 @@ static void About_create_window(void)
                  ExposureMask | ButtonPressMask | ButtonReleaseMask);
     XSelectInput(dpy, about_prev_b,
                  ExposureMask | ButtonPressMask | ButtonReleaseMask);
-    XSelectInput(dpy, about_w, ExposureMask);
+    XSelectInput(dpy, aboutWindow, ExposureMask);
 
     Expose_about_window();
 
-    XMapSubwindows(dpy, about_w);
+    XMapSubwindows(dpy, aboutWindow);
 }
 
 void Expose_button_window(int color, Window w)
@@ -423,7 +423,7 @@ void About(Window w)
     if (w == about_close_b)
     {
         about_page = 0;
-        XUnmapWindow(dpy, about_w);
+        XUnmapWindow(dpy, aboutWindow);
     }
     else if (w == about_next_b)
     {
@@ -452,7 +452,7 @@ int About_callback(int widget_desc, void *data, const char **str)
         About_create_window();
         about_created = true;
     }
-    XMapWindow(dpy, about_w);
+    XMapWindow(dpy, aboutWindow);
     return 0;
 }
 

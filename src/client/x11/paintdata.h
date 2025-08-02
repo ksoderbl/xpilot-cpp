@@ -34,7 +34,7 @@
     if ((PIXEL) == current_foreground) \
         ;                              \
     else                               \
-        XSetForeground(dpy, gc, current_foreground = (PIXEL))
+        XSetForeground(dpy, gameGC, current_foreground = (PIXEL))
 
 extern unsigned long current_foreground;
 

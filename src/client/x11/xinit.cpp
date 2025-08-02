@@ -384,7 +384,7 @@ int Init_top(void)
     XSetWindowAttributes sattr;
     unsigned long mask;
 
-    if (top)
+    if (topWindow)
     {
         xperror("Init_top called twice");
         exit(1);
@@ -539,16 +539,16 @@ int Init_top(void)
         sattr.override_redirect = True;
         mask |= CWOverrideRedirect;
     }
-    top = XCreateWindow(dpy,
-                        DefaultRootWindow(dpy),
-                        top_x, top_y,
-                        top_width, top_height,
-                        0, dispDepth,
-                        InputOutput, visual,
-                        mask, &sattr);
-    XSelectInput(dpy, top,
+    topWindow = XCreateWindow(dpy,
+                              DefaultRootWindow(dpy),
+                              top_x, top_y,
+                              top_width, top_height,
+                              0, dispDepth,
+                              InputOutput, visual,
+                              mask, &sattr);
+    XSelectInput(dpy, topWindow,
                  KeyPressMask | KeyReleaseMask | FocusChangeMask | StructureNotifyMask);
-    Init_disp_prop(dpy, top, top_width, top_height, top_x, top_y, top_flags);
+    Init_disp_prop(dpy, topWindow, top_width, top_height, top_x, top_y, top_flags);
     if (kdpy)
     {
         int scr = DefaultScreen(kdpy);
@@ -568,7 +568,7 @@ int Init_top(void)
      */
     for (i = 0; i < NUM_ITEMS; i++)
     {
-        itemBitmaps[i] = XCreateBitmapFromData(dpy, top,
+        itemBitmaps[i] = XCreateBitmapFromData(dpy, topWindow,
                                                (char *)itemBitmapData[i].data,
                                                ITEM_SIZE, ITEM_SIZE);
     }
@@ -583,20 +583,20 @@ int Init_top(void)
     xgc.graphics_exposures = False;
     values = GCLineWidth | GCLineStyle | GCCapStyle | GCJoinStyle | GCGraphicsExposures;
 
-    messageGC = XCreateGC(dpy, top, values, &xgc);
-    radarGC = XCreateGC(dpy, top, values, &xgc);
-    buttonGC = XCreateGC(dpy, top, values, &xgc);
-    scoreListGC = XCreateGC(dpy, top, values, &xgc);
-    textGC = XCreateGC(dpy, top, values, &xgc);
-    talkGC = XCreateGC(dpy, top, values, &xgc);
-    motdGC = XCreateGC(dpy, top, values, &xgc);
-    gc = XCreateGC(dpy, top, values, &xgc);
-    XSetBackground(dpy, gc, colors[BLACK].pixel);
+    messageGC = XCreateGC(dpy, topWindow, values, &xgc);
+    radarGC = XCreateGC(dpy, topWindow, values, &xgc);
+    buttonGC = XCreateGC(dpy, topWindow, values, &xgc);
+    scoreListGC = XCreateGC(dpy, topWindow, values, &xgc);
+    textGC = XCreateGC(dpy, topWindow, values, &xgc);
+    talkGC = XCreateGC(dpy, topWindow, values, &xgc);
+    motdGC = XCreateGC(dpy, topWindow, values, &xgc);
+    gameGC = XCreateGC(dpy, topWindow, values, &xgc);
+    XSetBackground(dpy, gameGC, colors[BLACK].pixel);
 
     /*
      * Set fonts
      */
-    gameFont = Set_font(dpy, gc, gameFontName, "gameFont");
+    gameFont = Set_font(dpy, gameGC, gameFontName, "gameFont");
     messageFont = Set_font(dpy, messageGC, messageFontName, "messageFont");
     scoreListFont = Set_font(dpy, scoreListGC, scoreListFontName, "scoreListFont");
     buttonFont = Set_font(dpy, buttonGC, buttonFontName, "buttonFont");
@@ -604,7 +604,7 @@ int Init_top(void)
     talkFont = Set_font(dpy, talkGC, talkFontName, "talkFont");
     motdFont = Set_font(dpy, motdGC, motdFontName, "motdFont");
 
-    XSetState(dpy, gc,
+    XSetState(dpy, gameGC,
               WhitePixel(dpy, DefaultScreen(dpy)),
               BlackPixel(dpy, DefaultScreen(dpy)),
               GXcopy, AllPlanes);
@@ -627,7 +627,7 @@ int Init_top(void)
 
     if (dbuf_state->type == COLOR_SWITCH)
     {
-        XSetPlaneMask(dpy, gc, dbuf_state->drawing_planes);
+        XSetPlaneMask(dpy, gameGC, dbuf_state->drawing_planes);
     }
 
     if (mono)
@@ -656,7 +656,7 @@ int Init_playing_windows(void)
     Pixmap pix;
     GC cursorGC;
 
-    if (!top)
+    if (!topWindow)
     {
         if (Init_top())
         {
@@ -668,10 +668,10 @@ int Init_playing_windows(void)
 
     draw_width = top_width - (256 + 2);
     draw_height = top_height;
-    draw = XCreateSimpleWindow(dpy, top, 258, 0,
+    draw = XCreateSimpleWindow(dpy, topWindow, 258, 0,
                                draw_width, draw_height,
                                0, 0, colors[BLACK].pixel);
-    radar = XCreateSimpleWindow(dpy, top, 0, 0,
+    radar = XCreateSimpleWindow(dpy, topWindow, 0, 0,
                                 256, RadarHeight, 0, 0,
                                 colors[BLACK].pixel);
 
@@ -679,7 +679,7 @@ int Init_playing_windows(void)
 #define BUTTON_WIDTH 84
     ButtonHeight = buttonFont->ascent + buttonFont->descent + 2 * BTN_BORDER;
 
-    button_form = Widget_create_form(0, top,
+    button_form = Widget_create_form(0, topWindow,
                                      0, RadarHeight,
                                      256, ButtonHeight + 2,
                                      0);
@@ -712,7 +712,7 @@ int Init_playing_windows(void)
     /* Create score list window */
     players_width = RadarWidth;
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
-    players = XCreateSimpleWindow(dpy, top,
+    players = XCreateSimpleWindow(dpy, topWindow,
                                   0, RadarHeight + ButtonHeight + 2,
                                   players_width, players_height,
                                   0, 0,
@@ -781,8 +781,8 @@ int Init_playing_windows(void)
     /*
      * Maps the windows, makes the visible. Voila!
      */
-    XMapSubwindows(dpy, top);
-    XMapWindow(dpy, top);
+    XMapSubwindows(dpy, topWindow);
+    XMapWindow(dpy, topWindow);
     XSync(dpy, False);
 
     if (kdpy)
@@ -832,7 +832,7 @@ static int Quit_callback(int widget_desc, void *data, const char **str)
 
 void Resize(Window w, int width, int height)
 {
-    if (w != top)
+    if (w != topWindow)
     {
         return;
     }
@@ -907,5 +907,5 @@ void Scale_dashes()
     cdashes[0] = WINSCALE(3);
     cdashes[1] = WINSCALE(9);
 
-    XSetDashes(dpy, gc, 0, dashes, NUM_DASHES);
+    XSetDashes(dpy, gameGC, 0, dashes, NUM_DASHES);
 }
