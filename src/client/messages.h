@@ -79,17 +79,24 @@ typedef struct
 extern message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 extern message_t *TalkMsg_pending[], *GameMsg_pending[];
 extern char *HistoryMsg[MAX_HIST_MSGS];
+extern char *HistoryBlock;
+extern message_t *MsgBlock;
+extern message_t *MsgBlock_pending;
+
 extern selection_t selection;
 
-// extern int        maxLinesInHistory;        /* number of lines to save in history */
+extern int maxLinesInHistory; /* number of lines to save in history */
 extern int maxMessages;
 extern int messagesToStdout;
 extern bool selectionAndHistory;
 
 void Add_message(const char *message);
-// int Alloc_msgs(void);
-// void Free_msgs(void);
-// int Alloc_history(void);
-// void Free_selectionAndHistory(void);
+void Delete_pending_messages(void);
+void Add_pending_messages(void);
+int Alloc_msgs(void);
+void Free_msgs(void);
+int Alloc_history(void);
+void Free_selectionAndHistory(void);
+void Print_messages_to_stdout(void);
 
 #endif

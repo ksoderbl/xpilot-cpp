@@ -64,8 +64,6 @@ int hudLockColor;          /* Color index for lock on HUD drawing */
 int oldMessagesColor;      /* Color index for old messages */
 DFLOAT charsPerTick = 0.0; /* Output speed of messages */
 
-extern void Delete_pending_messages(void);
-
 /*
  * Draw a meter of some kind on screen.
  * When the x-offset is specified as a negative value then
@@ -874,58 +872,6 @@ void Paint_messages(void)
             width = msg->pixelLen;
         }
     }
-}
-
-/*
- * clear the buffer for the pending messages
- */
-void Delete_pending_messages(void)
-{
-    message_t *msg;
-    int i;
-    if (!selectionAndHistory)
-        return;
-
-    for (i = 0; i < maxMessages; i++)
-    {
-        msg = TalkMsg_pending[i];
-        if (msg->len > 0)
-        {
-            msg->txt[0] = '\0';
-            msg->len = 0;
-        }
-        msg = GameMsg_pending[i];
-        if (msg->len > 0)
-        {
-            msg->txt[0] = '\0';
-            msg->len = 0;
-        }
-    }
-}
-
-/*
- * after a pending cut has been completed,
- * add the (buffered) messages which were coming in meanwhile.
- */
-void Add_pending_messages(void)
-{
-    int i;
-
-    if (!selectionAndHistory)
-        return;
-    /* just through all messages */
-    for (i = maxMessages - 1; i >= 0; i--)
-    {
-        if (TalkMsg_pending[i]->len > 0)
-        {
-            Add_message(TalkMsg_pending[i]->txt);
-        }
-        if (GameMsg_pending[i]->len > 0)
-        {
-            Add_message(GameMsg_pending[i]->txt);
-        }
-    }
-    Delete_pending_messages();
 }
 
 void Paint_recording(void)

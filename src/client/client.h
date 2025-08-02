@@ -264,9 +264,6 @@ extern char audioServer[MAX_CHARS]; /* audio server */
 extern int maxVolume;               /* maximum volume (in percent) */
 #endif                              /* SOUND */
 
-extern int maxLinesInHistory; /* number of lines to save in history */
-#define MAX_HIST_MSGS 128     /* maximum */
-
 /*
  * Local types and data for painting.
  */

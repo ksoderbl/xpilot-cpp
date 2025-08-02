@@ -85,7 +85,6 @@ static int history_pos = 0;
 bool save_talk_str = false; /* see Get_msg_from_history */
 
 extern keys_t Lookup_key(XEvent *event, KeySym ks, bool reset);
-extern void Add_pending_messages(void);
 
 static void Talk_create_window(void)
 {
@@ -336,50 +335,6 @@ static char *Get_msg_from_history(int *pos, char *message, keys_t direction)
         }
     }
     return NULL; /* no history */
-}
-
-/*
- * Print all available messages to stdout.
- */
-void Print_messages_to_stdout(void)
-{
-    int i, k;
-    int direction, offset;
-
-    if (!selectionAndHistory)
-        return;
-
-    if (BIT(instruments, SHOW_REVERSE_SCROLL))
-    {
-        direction = -1;
-        offset = maxMessages - 1;
-    }
-    else
-    {
-        direction = 1;
-        offset = 0;
-    }
-
-    xpprintf("[talk messages]\n");
-    for (k = 0; k < maxMessages; k++)
-    {
-        i = direction * k + offset;
-        if (TalkMsg[i] && TalkMsg[i]->len > 0)
-        {
-            xpprintf("  %s\n", TalkMsg[i]->txt);
-        }
-    }
-
-    xpprintf("[server messages]\n");
-    for (k = maxMessages - 1; k >= 0; k--)
-    {
-        i = direction * k + offset;
-        if (GameMsg[i] && GameMsg[i]->len > 0)
-        {
-            xpprintf("  %s\n", GameMsg[i]->txt);
-        }
-    }
-    xpprintf("\n");
 }
 
 /*

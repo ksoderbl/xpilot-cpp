@@ -225,12 +225,6 @@ static checkpoint_t checks[MAX_CHECKPOINT];
 score_object_t score_objects[MAX_SCORE_OBJECTS];
 int score_object = 0;
 
-/* provide cut&paste and message history */
-
-static char *HistoryBlock = NULL;
-
-int maxLinesInHistory;
-
 int Handle_start(long server_loops)
 {
     int i;
@@ -2049,42 +2043,6 @@ void Client_score_table(void)
     free(order);
 
     scoresChanged = 0;
-}
-
-static int Alloc_history(void)
-{
-    char *hist_ptr;
-    int i;
-
-    /* maxLinesInHistory is a runtime constant */
-    if ((hist_ptr = (char *)malloc(maxLinesInHistory * MAX_CHARS)) == NULL)
-    {
-        xperror("No memory for history");
-        return -1;
-    }
-    HistoryBlock = hist_ptr;
-
-    for (i = 0; i < maxLinesInHistory; i++)
-    {
-        HistoryMsg[i] = hist_ptr;
-        hist_ptr[0] = '\0';
-        hist_ptr += MAX_CHARS;
-    }
-    return 0;
-}
-
-static void Free_selectionAndHistory(void)
-{
-    if (HistoryBlock)
-    {
-        free(HistoryBlock);
-        HistoryBlock = NULL;
-    }
-    if (selection.txt)
-    {
-        free(selection.txt);
-        selection.txt = NULL;
-    }
 }
 
 int Client_init(char *server, unsigned server_version)

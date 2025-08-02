@@ -31,10 +31,11 @@
 // #include <sys/types.h>
 
 // #include "const.h"
-// #include "xperror.h"
+
 #include "bit.h"
 #include "strlcpy.h"
 #include "xpconfig.h"
+#include "xperror.h"
 
 // // #include "types.h"
 // // #include "keys.h"
@@ -54,126 +55,122 @@ message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 message_t *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
 /* history of the talk window */
 char *HistoryMsg[MAX_HIST_MSGS];
+char *HistoryBlock = NULL;
+message_t *MsgBlock = NULL;
+message_t *MsgBlock_pending = NULL;
 
 int maxMessages;      /* Max. number of messages to display */
 int messagesToStdout; /* Send messages to standard output */
 bool selectionAndHistory = false;
-// int maxLinesInHistory;
+int maxLinesInHistory; /* provide cut&paste and message history */
 
 /* selections in draw and talk window */
 selection_t selection;
-// static char *HistoryBlock = NULL;
-// extern char *HistoryMsg[MAX_HIST_MSGS];
 
-// // extern void Delete_pending_messages(void);
+int Alloc_msgs(void)
+{
+    message_t *x, *x2 = 0;
+    int i;
 
-// static message_t *MsgBlock = NULL;
-// static message_t *MsgBlock_pending = NULL;
+    if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)
+    {
+        xperror("No memory for messages");
+        return -1;
+    }
 
-// int Alloc_msgs(void)
-// {
-//     message_t *x, *x2 = 0;
-//     int i;
+    if (selectionAndHistory &&
+        ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL))
+    {
+        xperror("No memory for history messages");
+        free(x);
+        return -1;
+    }
+    if (selectionAndHistory)
+    {
+        MsgBlock_pending = x2;
+    }
 
-//     if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)
-//     {
-//         xperror("No memory for messages");
-//         return -1;
-//     }
+    MsgBlock = x;
 
-//     if (selectionAndHistory &&
-//         ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL))
-//     {
-//         xperror("No memory for history messages");
-//         free(x);
-//         return -1;
-//     }
-//     if (selectionAndHistory)
-//     {
-//         MsgBlock_pending = x2;
-//     }
+    for (i = 0; i < 2 * MAX_MSGS; i++)
+    {
+        if (i < MAX_MSGS)
+        {
+            TalkMsg[i] = x;
+            if (selectionAndHistory)
+                TalkMsg_pending[i] = x2;
+        }
+        else
+        {
+            GameMsg[i - MAX_MSGS] = x;
+            if (selectionAndHistory)
+                GameMsg_pending[i - MAX_MSGS] = x2;
+        }
+        x->txt[0] = '\0';
+        x->len = 0;
+        x->life = 0;
+        x++;
 
-//     MsgBlock = x;
+        if (selectionAndHistory)
+        {
+            x2->txt[0] = '\0';
+            x2->len = 0;
+            x2->life = 0;
+            x2++;
+        }
+    }
+    return 0;
+}
 
-//     for (i = 0; i < 2 * MAX_MSGS; i++)
-//     {
-//         if (i < MAX_MSGS)
-//         {
-//             TalkMsg[i] = x;
-//             if (selectionAndHistory)
-//                 TalkMsg_pending[i] = x2;
-//         }
-//         else
-//         {
-//             GameMsg[i - MAX_MSGS] = x;
-//             if (selectionAndHistory)
-//                 GameMsg_pending[i - MAX_MSGS] = x2;
-//         }
-//         x->txt[0] = '\0';
-//         x->len = 0;
-//         x->life = 0;
-//         x++;
+void Free_msgs(void)
+{
+    if (MsgBlock)
+    {
+        free(MsgBlock);
+        MsgBlock = NULL;
+    }
+    if (MsgBlock_pending)
+    {
+        free(MsgBlock_pending);
+        MsgBlock_pending = NULL;
+    }
+}
 
-//         if (selectionAndHistory)
-//         {
-//             x2->txt[0] = '\0';
-//             x2->len = 0;
-//             x2->life = 0;
-//             x2++;
-//         }
-//     }
-//     return 0;
-// }
+int Alloc_history(void)
+{
+    char *hist_ptr;
+    int i;
 
-// void Free_msgs(void)
-// {
-//     if (MsgBlock)
-//     {
-//         free(MsgBlock);
-//         MsgBlock = NULL;
-//     }
-//     if (MsgBlock_pending)
-//     {
-//         free(MsgBlock_pending);
-//         MsgBlock_pending = NULL;
-//     }
-// }
+    /* maxLinesInHistory is a runtime constant */
+    if ((hist_ptr = (char *)malloc(maxLinesInHistory * MAX_CHARS)) == NULL)
+    {
+        xperror("No memory for history");
+        return -1;
+    }
+    HistoryBlock = hist_ptr;
 
-// int Alloc_history(void)
-// {
-//     char *hist_ptr;
-//     int i;
+    for (i = 0; i < maxLinesInHistory; i++)
+    {
+        HistoryMsg[i] = hist_ptr;
+        hist_ptr[0] = '\0';
+        hist_ptr += MAX_CHARS;
+    }
+    return 0;
+}
 
-//     /* maxLinesInHistory is a runtime constant */
-//     if ((hist_ptr = (char *)malloc(maxLinesInHistory * MAX_CHARS)) == NULL)
-//     {
-//         xperror("No memory for history");
-//         return -1;
-//     }
-//     HistoryBlock = hist_ptr;
-
-//     for (i = 0; i < maxLinesInHistory; i++)
-//     {
-//         HistoryMsg[i] = hist_ptr;
-//         hist_ptr[0] = '\0';
-//         hist_ptr += MAX_CHARS;
-//     }
-//     return 0;
-// }
-
-// void Free_selectionAndHistory(void)
-// {
-//     if (HistoryBlock)
-//     {
-//         free(HistoryBlock);
-//         HistoryBlock = NULL;
-//     }
-//     if (selection.txt)
-//     {
-//         free(selection.txt);
-//         selection.txt = NULL;
-//     }
-// }
+void Free_selectionAndHistory(void)
+{
+    if (HistoryBlock)
+    {
+        free(HistoryBlock);
+        HistoryBlock = NULL;
+    }
+    if (selection.txt)
+    {
+        free(selection.txt);
+        selection.txt = NULL;
+    }
+}
 
 /*
  * add an incoming talk/game message.
@@ -345,88 +342,98 @@ void Add_message(const char *message)
     }
 }
 
-// /*
-//  * clear the buffer for the pending messages
-//  */
-// void Delete_pending_messages(void)
-// {
-//     message_t *msg;
-//     int i;
-//     if (!selectionAndHistory)
-//         return;
+/*
+ * clear the buffer for the pending messages
+ */
+void Delete_pending_messages(void)
+{
+    message_t *msg;
+    int i;
+    if (!selectionAndHistory)
+        return;
 
-//     for (i = 0; i < maxMessages; i++)
-//     {
-//         msg = TalkMsg_pending[i];
-//         if (msg->len > 0)
-//         {
-//             msg->txt[0] = '\0';
-//             msg->len = 0;
-//         }
-//         msg = GameMsg_pending[i];
-//         if (msg->len > 0)
-//         {
-//             msg->txt[0] = '\0';
-//             msg->len = 0;
-//         }
-//     }
-// }
+    for (i = 0; i < maxMessages; i++)
+    {
+        msg = TalkMsg_pending[i];
+        if (msg->len > 0)
+        {
+            msg->txt[0] = '\0';
+            msg->len = 0;
+        }
+        msg = GameMsg_pending[i];
+        if (msg->len > 0)
+        {
+            msg->txt[0] = '\0';
+            msg->len = 0;
+        }
+    }
+}
 
-// // /*
-// //  * after a pending cut has been completed,
-// //  * add the (buffered) messages which were coming in meanwhile.
-// //  */
-// // void Add_pending_messages(void)
-// // {
-// //     int                        i;
+/*
+ * after a pending cut has been completed,
+ * add the (buffered) messages which were coming in meanwhile.
+ */
+void Add_pending_messages(void)
+{
+    int i;
 
-// //     if (!selectionAndHistory)
-// //         return;
-// //     /* just through all messages */
-// //     for (i = maxMessages-1; i >= 0; i--) {
-// //         if (TalkMsg_pending[i]->len > 0) {
-// //             Add_message(TalkMsg_pending[i]->txt);
-// //         }
-// //         if (GameMsg_pending[i]->len > 0) {
-// //             Add_message(GameMsg_pending[i]->txt);
-// //         }
-// //     }
-// //     Delete_pending_messages();
-// // }
-// // #endif
+    if (!selectionAndHistory)
+        return;
+    /* just through all messages */
+    for (i = maxMessages - 1; i >= 0; i--)
+    {
+        if (TalkMsg_pending[i]->len > 0)
+        {
+            Add_message(TalkMsg_pending[i]->txt);
+        }
+        if (GameMsg_pending[i]->len > 0)
+        {
+            Add_message(GameMsg_pending[i]->txt);
+        }
+    }
+    Delete_pending_messages();
+}
 
-// /*
-//  * Print all available messages to stdout.
-//  */
-// void Print_messages_to_stdout(void)
-// {
-//     int i, k;
-//     int direction, offset;
+/*
+ * Print all available messages to stdout.
+ */
+void Print_messages_to_stdout(void)
+{
+    int i, k;
+    int direction, offset;
 
-//     if (!selectionAndHistory)
-//         return;
+    if (!selectionAndHistory)
+        return;
 
-//     direction = 1;
-//     offset = 0;
+    if (BIT(instruments, SHOW_REVERSE_SCROLL)) // TODO: REMOVE
+    {
+        direction = -1;
+        offset = maxMessages - 1;
+    }
+    else
+    {
+        direction = 1;
+        offset = 0;
+    }
 
-//     xpprintf("[talk messages]\n");
-//     for (k = 0; k < maxMessages; k++)
-//     {
-//         i = direction * k + offset;
-//         if (TalkMsg[i] && TalkMsg[i]->len > 0)
-//         {
-//             xpprintf("  %s\n", TalkMsg[i]->txt);
-//         }
-//     }
+    xpprintf("[talk messages]\n");
+    for (k = 0; k < maxMessages; k++)
+    {
+        i = direction * k + offset;
+        if (TalkMsg[i] && TalkMsg[i]->len > 0)
+        {
+            xpprintf("  %s\n", TalkMsg[i]->txt);
+        }
+    }
 
-//     xpprintf("[server messages]\n");
-//     for (k = maxMessages - 1; k >= 0; k--)
-//     {
-//         i = direction * k + offset;
-//         if (GameMsg[i] && GameMsg[i]->len > 0)
-//         {
-//             xpprintf("  %s\n", GameMsg[i]->txt);
-//         }
-//     }
-//     xpprintf("\n");
-// }
+    xpprintf("[server messages]\n");
+    for (k = maxMessages - 1; k >= 0; k--)
+    {
+        i = direction * k + offset;
+        if (GameMsg[i] && GameMsg[i]->len > 0)
+        {
+            xpprintf("  %s\n", GameMsg[i]->txt);
+        }
+    }
+    xpprintf("\n");
+}
