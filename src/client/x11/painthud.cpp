@@ -877,176 +877,176 @@ void Paint_messages(void)
     }
 }
 
-/*
- * add an incoming talk/game message.
- * however, buffer new messages if there is a pending selection.
- * Add_pending_messages() will be called later in Talk_cut_from_messages().
- */
-void Add_message(const char *message)
-{
-    int i, len;
-    message_t *tmp, **msg_set;
-    bool is_drawn_talk_message = false; /* not pending */
-    int last_msg_index;
-    bool show_reverse_scroll = false;
-    bool scrolling = false; /* really moving */
+// /*
+//  * add an incoming talk/game message.
+//  * however, buffer new messages if there is a pending selection.
+//  * Add_pending_messages() will be called later in Talk_cut_from_messages().
+//  */
+// void Add_message(const char *message)
+// {
+//     int i, len;
+//     message_t *tmp, **msg_set;
+//     bool is_drawn_talk_message = false; /* not pending */
+//     int last_msg_index;
+//     bool show_reverse_scroll = false;
+//     bool scrolling = false; /* really moving */
 
-    show_reverse_scroll = BIT(instruments, SHOW_REVERSE_SCROLL);
+//     show_reverse_scroll = BIT(instruments, SHOW_REVERSE_SCROLL);
 
-    len = strlen(message);
-    if (message[len - 1] == ']' || strncmp(message, " <", 2) == 0)
-    {
-        if (selectionAndHistory && selection.draw.state == SEL_PENDING)
-        {
-            /* the buffer for the pending messages */
-            msg_set = TalkMsg_pending;
-        }
-        else
-        {
-            msg_set = TalkMsg;
-            is_drawn_talk_message = true;
-        }
-    }
-    else
-    {
-        if (selectionAndHistory && selection.draw.state == SEL_PENDING)
-        {
-            msg_set = GameMsg_pending;
-        }
-        else
-        {
-            msg_set = GameMsg;
-        }
-    }
+//     len = strlen(message);
+//     if (message[len - 1] == ']' || strncmp(message, " <", 2) == 0)
+//     {
+//         if (selectionAndHistory && selection.draw.state == SEL_PENDING)
+//         {
+//             /* the buffer for the pending messages */
+//             msg_set = TalkMsg_pending;
+//         }
+//         else
+//         {
+//             msg_set = TalkMsg;
+//             is_drawn_talk_message = true;
+//         }
+//     }
+//     else
+//     {
+//         if (selectionAndHistory && selection.draw.state == SEL_PENDING)
+//         {
+//             msg_set = GameMsg_pending;
+//         }
+//         else
+//         {
+//             msg_set = GameMsg;
+//         }
+//     }
 
-    if (selectionAndHistory && is_drawn_talk_message)
-    {
-        /* how many talk messages */
-        last_msg_index = 0;
-        while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
-        {
-            last_msg_index++;
-        }
-        last_msg_index--; /* make it an index */
+//     if (selectionAndHistory && is_drawn_talk_message)
+//     {
+//         /* how many talk messages */
+//         last_msg_index = 0;
+//         while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
+//         {
+//             last_msg_index++;
+//         }
+//         last_msg_index--; /* make it an index */
 
-        /*
-         * if show_reverse_scroll, it will really _scroll if there were
-         * already maxMessages (one will be added now)
-         */
-        if (show_reverse_scroll && last_msg_index == maxMessages - 1)
-        {
-            scrolling = true;
-        }
+//         /*
+//          * if show_reverse_scroll, it will really _scroll if there were
+//          * already maxMessages (one will be added now)
+//          */
+//         if (show_reverse_scroll && last_msg_index == maxMessages - 1)
+//         {
+//             scrolling = true;
+//         }
 
-        /*
-         * keep the emphasizing (`jumping' from talk window to talk messages)
-         */
-        if (selection.keep_emphasizing)
-        {
-            selection.keep_emphasizing = false;
-            selection.talk.state = SEL_NONE;
-            selection.draw.state = SEL_EMPHASIZED;
-            if (!show_reverse_scroll)
-            {
-                selection.draw.y1 = -1;
-                selection.draw.y2 = -1;
-            }
-            else if (show_reverse_scroll)
-            {
-                selection.draw.y1 = last_msg_index + 1;
-                selection.draw.y2 = last_msg_index + 1;
-            }
-        } /* talk window emphasized */
-    } /* talk messages */
+//         /*
+//          * keep the emphasizing (`jumping' from talk window to talk messages)
+//          */
+//         if (selection.keep_emphasizing)
+//         {
+//             selection.keep_emphasizing = false;
+//             selection.talk.state = SEL_NONE;
+//             selection.draw.state = SEL_EMPHASIZED;
+//             if (!show_reverse_scroll)
+//             {
+//                 selection.draw.y1 = -1;
+//                 selection.draw.y2 = -1;
+//             }
+//             else if (show_reverse_scroll)
+//             {
+//                 selection.draw.y1 = last_msg_index + 1;
+//                 selection.draw.y2 = last_msg_index + 1;
+//             }
+//         } /* talk window emphasized */
+//     } /* talk messages */
 
-    tmp = msg_set[maxMessages - 1];
-    for (i = maxMessages - 1; i > 0; i--)
-    {
-        msg_set[i] = msg_set[i - 1];
-    }
-    msg_set[0] = tmp;
+//     tmp = msg_set[maxMessages - 1];
+//     for (i = maxMessages - 1; i > 0; i--)
+//     {
+//         msg_set[i] = msg_set[i - 1];
+//     }
+//     msg_set[0] = tmp;
 
-    msg_set[0]->life = MSG_DURATION;
-    strlcpy(msg_set[0]->txt, message, MSG_LEN);
-    msg_set[0]->len = len;
+//     msg_set[0]->life = MSG_DURATION;
+//     strlcpy(msg_set[0]->txt, message, MSG_LEN);
+//     msg_set[0]->len = len;
 
-    /*
-     * scroll also the emphasizing
-     */
-    if (selectionAndHistory && is_drawn_talk_message && selection.draw.state == SEL_EMPHASIZED)
-    {
+//     /*
+//      * scroll also the emphasizing
+//      */
+//     if (selectionAndHistory && is_drawn_talk_message && selection.draw.state == SEL_EMPHASIZED)
+//     {
 
-        if ((scrolling && selection.draw.y2 == 0) || (!show_reverse_scroll && selection.draw.y1 == maxMessages - 1))
-        {
-            /*
-             * the emphasizing vanishes, as it's `last' line
-             * is `scrolled away'
-             */
-            selection.draw.state = SEL_SELECTED;
-        }
-        else
-        {
-            if (scrolling)
-            {
-                selection.draw.y2--;
-                if (selection.draw.y1 == 0)
-                {
-                    selection.draw.x1 = 0;
-                }
-                else
-                {
-                    selection.draw.y1--;
-                }
-            }
-            else if (!show_reverse_scroll)
-            {
-                selection.draw.y1++;
-                if (selection.draw.y2 == maxMessages - 1)
-                {
-                    selection.draw.x2 = msg_set[selection.draw.y2]->len - 1;
-                }
-                else
-                {
-                    selection.draw.y2++;
-                }
-            }
-        }
-    }
+//         if ((scrolling && selection.draw.y2 == 0) || (!show_reverse_scroll && selection.draw.y1 == maxMessages - 1))
+//         {
+//             /*
+//              * the emphasizing vanishes, as it's `last' line
+//              * is `scrolled away'
+//              */
+//             selection.draw.state = SEL_SELECTED;
+//         }
+//         else
+//         {
+//             if (scrolling)
+//             {
+//                 selection.draw.y2--;
+//                 if (selection.draw.y1 == 0)
+//                 {
+//                     selection.draw.x1 = 0;
+//                 }
+//                 else
+//                 {
+//                     selection.draw.y1--;
+//                 }
+//             }
+//             else if (!show_reverse_scroll)
+//             {
+//                 selection.draw.y1++;
+//                 if (selection.draw.y2 == maxMessages - 1)
+//                 {
+//                     selection.draw.x2 = msg_set[selection.draw.y2]->len - 1;
+//                 }
+//                 else
+//                 {
+//                     selection.draw.y2++;
+//                 }
+//             }
+//         }
+//     }
 
-#ifdef DEVELOPMENT
-    /* Anti-censor hack restores original 4 letter words.
-     * XPilot is not assumed to be a game for children
-     * who are still under parental guidance.
-     */
-    for (i = 0; i < len - 3; i++)
-    {
-        static char censor_text[] = "@&$*";
-        static char rough_text[][5] = {"fuck", "shit", "damn"};
-        static int rough_index = 0;
-        if (msg_set[0]->txt[i] == censor_text[0] && !strncmp(&msg_set[0]->txt[i], censor_text, 4))
-        {
-            if (++rough_index >= 3)
-            {
-                rough_index = 0;
-            }
-            memcpy(&msg_set[0]->txt[i], rough_text[rough_index], 4);
-        }
-    }
-#endif
+// #ifdef DEVELOPMENT
+//     /* Anti-censor hack restores original 4 letter words.
+//      * XPilot is not assumed to be a game for children
+//      * who are still under parental guidance.
+//      */
+//     for (i = 0; i < len - 3; i++)
+//     {
+//         static char censor_text[] = "@&$*";
+//         static char rough_text[][5] = {"fuck", "shit", "damn"};
+//         static int rough_index = 0;
+//         if (msg_set[0]->txt[i] == censor_text[0] && !strncmp(&msg_set[0]->txt[i], censor_text, 4))
+//         {
+//             if (++rough_index >= 3)
+//             {
+//                 rough_index = 0;
+//             }
+//             memcpy(&msg_set[0]->txt[i], rough_text[rough_index], 4);
+//         }
+//     }
+// #endif
 
-    msg_set[0]->pixelLen = XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
+//     msg_set[0]->pixelLen = XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
 
-    /* Print messages to standard output.
-     */
-    if (messagesToStdout == 2 ||
-        (messagesToStdout == 1 &&
-         message[0] &&
-         message[strlen(message) - 1] == ']'))
-    {
+//     /* Print messages to standard output.
+//      */
+//     if (messagesToStdout == 2 ||
+//         (messagesToStdout == 1 &&
+//          message[0] &&
+//          message[strlen(message) - 1] == ']'))
+//     {
 
-        xpprintf("%s\n", message);
-    }
-}
+//         xpprintf("%s\n", message);
+//     }
+// }
 
 /*
  * clear the buffer for the pending messages

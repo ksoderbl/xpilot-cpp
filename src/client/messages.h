@@ -83,7 +83,7 @@ extern char *HistoryMsg[MAX_HIST_MSGS];
 // extern int        messagesToStdout;
 // extern bool        selectionAndHistory;
 
-// void Add_message(const char *message);
+void Add_message(const char *message);
 // int Alloc_msgs(void);
 // void Free_msgs(void);
 // int Alloc_history(void);
