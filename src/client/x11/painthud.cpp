@@ -238,7 +238,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     int i, dir = 96;
     int hudShipColor = hudColor;
     other_t *target;
-    shipobj *ship;
+    shipobj_t *ship;
     char str[50];
     static int warningCount;
     static int mapdiag = 0;

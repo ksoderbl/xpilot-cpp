@@ -2915,7 +2915,7 @@ int Send_keyboard(u_byte *keyboard_vector)
 
 int Send_shape(char *str)
 {
-    shipobj *w;
+    shipobj_t *w;
     char buf[MSG_LEN], ext[MSG_LEN];
 
     w = Convert_shape_str(str);

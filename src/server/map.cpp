@@ -165,7 +165,7 @@ static void Alloc_map(void)
     World.itemID =
         (unsigned short **)malloc(sizeof(unsigned short *) * World.x + World.x * sizeof(unsigned short) * World.y);
     World.gravity =
-        (vector **)malloc(sizeof(vector *) * World.x + World.x * sizeof(vector) * World.y);
+        (vector_t **)malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
     World.grav = NULL;
     World.base = NULL;
     World.fuel = NULL;
@@ -177,7 +177,7 @@ static void Alloc_map(void)
     {
         Free_map();
         xperror("Couldn't allocate memory for map (%d bytes)",
-                World.x * (World.y * (sizeof(unsigned char) + sizeof(vector)) + sizeof(vector *) + sizeof(unsigned char *)));
+                World.x * (World.y * (sizeof(unsigned char) + sizeof(vector_t)) + sizeof(vector_t *) + sizeof(unsigned char *)));
         exit(-1);
     }
     else
@@ -186,15 +186,15 @@ static void Alloc_map(void)
         unsigned char **map_pointer;
         unsigned short *item_line;
         unsigned short **item_pointer;
-        vector *grav_line;
-        vector **grav_pointer;
+        vector_t *grav_line;
+        vector_t **grav_pointer;
 
         map_pointer = World.block;
         map_line = (unsigned char *)((unsigned char **)map_pointer + World.x);
         item_pointer = World.itemID;
         item_line = (unsigned short *)((unsigned short **)item_pointer + World.x);
         grav_pointer = World.gravity;
-        grav_line = (vector *)((vector **)grav_pointer + World.x);
+        grav_line = (vector_t *)((vector_t **)grav_pointer + World.x);
 
         for (x = 0; x < World.x; x++)
         {
@@ -1287,7 +1287,7 @@ static void Compute_global_gravity(void)
     int xi, yi, dx, dy;
     DFLOAT xforce, yforce, strength;
     double theta;
-    vector *grav;
+    vector_t *grav;
 
     if (gravityPointSource == false)
     {
@@ -1345,7 +1345,7 @@ static void Compute_global_gravity(void)
     }
 }
 
-static void Compute_grav_tab(vector grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1])
+static void Compute_grav_tab(vector_t grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1])
 {
     int x, y;
     double strength;
@@ -1368,7 +1368,7 @@ static void Compute_local_gravity(void)
     int first_xi, last_xi, first_yi, last_yi, mod_xi, mod_yi;
     int min_xi, max_xi, min_yi, max_yi;
     DFLOAT force, fx, fy;
-    vector *v, *grav, *tab, grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1];
+    vector_t *v, *grav, *tab, grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1];
 
     Compute_grav_tab(grav_tab);
 

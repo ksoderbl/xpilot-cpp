@@ -56,20 +56,18 @@
 #include "xperror.h"
 #include "portability.h"
 
-
 /*
  * Map objects a robot can fly through without damage.
  */
-#define EMPTY_SPACE(s)        BIT(1 << (s), SPACE_BLOCKS)
-
+#define EMPTY_SPACE(s) BIT(1 << (s), SPACE_BLOCKS)
 
 /*
  * Structure which contains our own per robot instance data.
  */
-typedef struct stratbot_data {
-    int                not_really_used_yet;
+typedef struct stratbot_data
+{
+    int not_really_used_yet;
 } stratbot_data_t;
-
 
 /*
  * Prototypes for methods of the stratbot type.
@@ -83,8 +81,7 @@ static int Stratbot_war_on_player(int ind);
 static void Stratbot_message(int ind, const char *str);
 static void Stratbot_destroy(int ind);
 static void Stratbot_invite(int ind, int inv_ind);
-       int Stratbot_setup(robot_type_t *type_ptr);
-
+int Stratbot_setup(robot_type_t *type_ptr);
 
 /*
  * The robot type structure for the default robot.
@@ -99,9 +96,7 @@ static robot_type_t stratbot_type = {
     Stratbot_war_on_player,
     Stratbot_message,
     Stratbot_destroy,
-    Stratbot_invite
-};
-
+    Stratbot_invite};
 
 /*
  * The only thing we export from this file.
@@ -120,18 +115,16 @@ int Stratbot_setup(robot_type_t *type_ptr)
     return 0;
 }
 
-
 /*
  * Function to cast from player structure to robot data structure.
  * This isolates casts (aka. type violations) to a few places.
  */
 #if 0
-static stratbot_data_t *Stratbot_get_data(player *pl)
+static stratbot_data_t *Stratbot_get_data(player_t *pl)
 {
     return (stratbot_data_t *)pl->robot_data_ptr->private_data;
 }
 #endif
-
 
 /*
  * This is called each round.
@@ -141,16 +134,16 @@ static void Stratbot_round_tick(void)
 {
 }
 
-
 /*
  * A stratbot is created.
  */
 static void Stratbot_create(int ind, char *str)
 {
-    player                        *pl = Players[ind];
-    stratbot_data_t                *my_data;
+    player_t *pl = Players[ind];
+    stratbot_data_t *my_data;
 
-    if (!(my_data = (stratbot_data_t *)malloc(sizeof(*my_data)))) {
+    if (!(my_data = (stratbot_data_t *)malloc(sizeof(*my_data))))
+    {
         xperror("no mem for stratbot robot");
         End_game();
     }
@@ -167,9 +160,7 @@ static void Stratbot_go_home(int ind)
     player                        *pl = Players[ind];
     stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
-
 }
-
 
 /*
  * A stratbot plays this frame.
@@ -177,7 +168,6 @@ static void Stratbot_go_home(int ind)
 static void Stratbot_play(int ind)
 {
 }
-
 
 /*
  * A stratbot is declaring war (or resetting war).
@@ -189,8 +179,11 @@ static void Stratbot_set_war(int ind, int victim_id)
     stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 
-    if (victim_id == NO_ID) {
-    } else {
+    if (victim_id == NO_ID)
+    {
+    }
+    else
+    {
     }
 }
 
@@ -248,7 +241,7 @@ static void Stratbot_message(int ind, const char *message)
  */
 static void Stratbot_destroy(int ind)
 {
-    player                        *pl = Players[ind];
+    player_t *pl = Players[ind];
 
     free(pl->robot_data_ptr->private_data);
     pl->robot_data_ptr->private_data = NULL;
@@ -261,7 +254,6 @@ static void Stratbot_invite(int ind, int inv_ind)
 {
     Refuse_alliance(ind, inv_ind);
 }
-
 
 #if 0
 static bool Really_empty_space(int ind, int x, int y)
@@ -315,4 +307,3 @@ static bool Really_empty_space(int ind, int x, int y)
 #endif
 
 #endif
-

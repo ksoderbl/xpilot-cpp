@@ -24,25 +24,18 @@
 #ifndef PROTO_H
 #define PROTO_H
 
-#ifndef OBJECT_H
-/* need player */
 #include "object.h"
-#endif
-
-#ifndef LIST_H_INCLUDED
-/* need list_t */
 #include "list.h"
-#endif
 
 /*
  * Prototypes for cell.c
  */
 void Free_cells(void);
 void Alloc_cells(void);
-void Cell_init_object(object *obj);
-void Cell_add_object(object *obj);
-void Cell_remove_object(object *obj);
-void Cell_get_objects(int x, int y, int r, int max, object ***list, int *count);
+void Cell_init_object(object_t *obj);
+void Cell_add_object(object_t *obj);
+void Cell_remove_object(object_t *obj);
+void Cell_get_objects(int x, int y, int r, int max, object_t ***list, int *count);
 
 /*
  * Prototypes for collision.c
@@ -51,8 +44,8 @@ void Check_collision(void);
 int wormXY(int x, int y);
 int IsOffensiveItem(enum Item i);
 int IsDefensiveItem(enum Item i);
-int CountOffensiveItems(player *pl);
-int CountDefensiveItems(player *pl);
+int CountOffensiveItems(player_t *pl);
+int CountDefensiveItems(player_t *pl);
 
 /*
  * Prototypes for id.c
@@ -67,7 +60,7 @@ void release_ID(int id);
 void Walls_init(void);
 void Treasure_init(void);
 void Move_init(void);
-void Move_object(object *obj);
+void Move_object(object_t *obj);
 void Move_player(int ind);
 void Turn_player(int ind);
 
@@ -78,7 +71,7 @@ int Handle_keyboard(int);
 void Pause_player(int ind, bool on);
 int Player_lock_closest(int ind, int next);
 bool team_dead(int team);
-void filter_mods(modifiers *mods);
+void filter_mods(modifiers_t *mods);
 
 /*
  * Prototypes for map.c
@@ -113,11 +106,11 @@ void Free_options(void);
  */
 void Thrust(int ind);
 void Turn_thrust(int ind, int num_sparks);
-void Recoil(object *ship, object *shot);
-void Record_shove(player *pl, player *pusher, long time);
-void Delta_mv(object *ship, object *obj);
-void Delta_mv_elastic(object *obj1, object *obj2);
-void Obj_repel(object *obj1, object *obj2, int repel_dist);
+void Recoil(object_t *ship, object_t *shot);
+void Record_shove(player_t *pl, player *pusher, long time);
+void Delta_mv(object_t *ship, object_t *obj);
+void Delta_mv_elastic(object_t *obj1, object_t *obj2);
+void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
 void Item_damage(int ind, DFLOAT prob);
 void Tank_handle_detach(player *);
 void Add_fuel(pl_fuel_t *, long);
@@ -130,16 +123,16 @@ void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
 void Place_mine(int ind);
 void Place_moving_mine(int ind);
 void Place_general_mine(int ind, unsigned short team, long status, DFLOAT x, DFLOAT y,
-                        DFLOAT vx, DFLOAT vy, modifiers mods);
+                        DFLOAT vx, DFLOAT vy, modifiers_t mods);
 void Detonate_mines(int ind);
-char *Describe_shot(int type, long status, modifiers mods, int hit);
+char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(int ind);
 void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y);
 void Move_ball(int ind);
 void Fire_shot(int ind, int type, int dir);
 void Fire_general_shot(int ind, unsigned short team, bool cannon,
                        DFLOAT x, DFLOAT y, int type, int dir,
-                       modifiers mods, int target);
+                       modifiers_t mods, int target);
 void Fire_normal_shots(int ind);
 void Fire_main_shot(int ind, int type, int dir);
 void Fire_shot(int ind, int type, int dir);
@@ -152,12 +145,12 @@ int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
 void Fire_laser(int ind);
 void Fire_general_laser(int ind, unsigned short team, DFLOAT x, DFLOAT y, int dir,
-                        modifiers mods);
+                        modifiers_t mods);
 void Do_deflector(int ind);
 void Do_transporter(int ind);
 void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
                             int *item, long *amount);
-void do_hyperjump(player *pl);
+void do_hyperjump(player_t *pl);
 void do_lose_item(int ind);
 void Move_smart_shot(int ind);
 void Move_mine(int ind);
@@ -204,9 +197,7 @@ void remove_temp_wormhole(int ind);
  */
 void Break_asteroid(int ind);
 void Asteroid_update(void);
-#ifdef LIST_H_INCLUDED
 list_t Asteroid_get_list(void);
-#endif
 
 /*
  * Prototypes for cannon.c
@@ -220,7 +211,7 @@ void Cannon_check_fire(int ind);
 /*
  * Prototypes for command.c
  */
-void Handle_player_command(player *pl, char *cmd);
+void Handle_player_command(player_t *pl, char *cmd);
 
 /*
  * Prototypes for player.c
@@ -233,7 +224,7 @@ void Player_remove_tank(int ind, int which_tank);
 void Player_hit_armor(int ind);
 void Player_used_kill(int ind);
 void Player_set_mass(int ind);
-int Init_player(int ind, shipobj *ship);
+int Init_player(int ind, shipobj_t *ship);
 void Alloc_players(int number);
 void Free_players(void);
 void Update_score_table(void);
@@ -314,7 +305,7 @@ void Meta_update(int change);
  */
 void Frame_update(void);
 void Set_message(const char *message);
-void Set_player_message(player *pl, const char *message);
+void Set_player_message(player_t *pl, const char *message);
 
 /*
  * Prototypes for update.c
@@ -378,9 +369,9 @@ void Alliance_player_list(int ind);
 /*
  * Prototypes for object.c
  */
-object *Object_allocate(void);
+object_t *Object_allocate(void);
 void Object_free_ind(int ind);
-void Object_free_ptr(object *obj);
+void Object_free_ptr(object_t *obj);
 void Alloc_shots(int number);
 void Free_shots(void);
 

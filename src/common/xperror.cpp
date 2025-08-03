@@ -7,7 +7,6 @@
  * Windows mods and memory leak detection by Dick Balaska.
  */
 
-
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -21,8 +20,6 @@
 #include "xperror.h"
 #include "portability.h"
 
-
-
 /*
  * This file defines two entry points:
  *
@@ -31,17 +28,13 @@
  * xperror()                - perror() with printf functionality.
  */
 
-
-
 /*
  * File local static data.
  */
-#define        MAX_PROG_LENGTH        32
-static char                progname[MAX_PROG_LENGTH];
+#define MAX_PROG_LENGTH 32
+static char progname[MAX_PROG_LENGTH];
 
-
-
-static const char* prog_basename(const char *prog)
+static const char *prog_basename(const char *prog)
 {
     const char *p;
 
@@ -50,36 +43,78 @@ static const char* prog_basename(const char *prog)
     return (p != NULL) ? (p + 1) : prog;
 }
 
-
 /*
  * Functions.
  */
 void init_error(const char *prog)
 {
-    const char *p = prog_basename(prog);   /* Beautify arv[0] */
+    const char *p = prog_basename(prog); /* Beautify arv[0] */
 
     strlcpy(progname, p, MAX_PROG_LENGTH);
 }
 
-
-
-/*
- * Ok, let's do it the ANSI C way.
- */
-void xperror(const char *fmt, ...)
+void xpinfo(const char *fmt, ...)
 {
-    va_list         ap;
-    int                 e = errno;
+    int len;
+    va_list ap;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0') {
+    if (progname[0] != '\0')
+    {
         fprintf(stderr, "%s: ", progname);
     }
 
     vfprintf(stderr, fmt, ap);
 
-    if (e != 0) {
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+    {
+        fprintf(stderr, "\n");
+    }
+
+    va_end(ap);
+}
+
+void xpwarn(const char *fmt, ...)
+{
+    int len;
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
+
+    vfprintf(stderr, fmt, ap);
+
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+    {
+        fprintf(stderr, "\n");
+    }
+
+    va_end(ap);
+}
+
+void xperror(const char *fmt, ...)
+{
+    va_list ap;
+    int e = errno;
+
+    va_start(ap, fmt);
+
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
+
+    vfprintf(stderr, fmt, ap);
+
+    if (e != 0)
+    {
         fprintf(stderr, ": (%s)", strerror(e));
     }
     fprintf(stderr, "\n");
@@ -87,34 +122,14 @@ void xperror(const char *fmt, ...)
     va_end(ap);
 }
 
-void xpwarn(const char *fmt, ...)
-{
-    int                len;
-    va_list        ap;
-
-    va_start(ap, fmt);
-
-    if (progname[0] != '\0') {
-        fprintf(stderr, "%s: ", progname);
-    }
-
-    vfprintf(stderr, fmt, ap);
-
-    len = strlen(fmt);
-    if (len == 0 || fmt[len - 1] != '\n') {
-        fprintf(stderr, "\n");
-    }
-
-    va_end(ap);
-}
-
 void xpfatal(const char *fmt, ...)
 {
-    va_list         ap;
+    va_list ap;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0') {
+    if (progname[0] != '\0')
+    {
         fprintf(stderr, "%s: ", progname);
     }
 
@@ -129,11 +144,12 @@ void xpfatal(const char *fmt, ...)
 
 void xpdumpcore(const char *fmt, ...)
 {
-    va_list         ap;
+    va_list ap;
 
     va_start(ap, fmt);
 
-    if (progname[0] != '\0') {
+    if (progname[0] != '\0')
+    {
         fprintf(stderr, "%s: ", progname);
     }
 

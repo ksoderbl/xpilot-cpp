@@ -67,7 +67,7 @@ extern bool initialPointerControl;
 extern bool pointerControl;
 extern keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS];
 extern int numButtonDefs[MAX_POINTER_BUTTONS];
-extern ipos mouse;   /* position of mouse pointer. */
+extern ipos_t mouse; /* position of mouse pointer. */
 extern int movement; /* horizontal mouse movement. */
 
 /* avoid trouble with Atoms and 64 bit archs */

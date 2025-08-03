@@ -44,10 +44,10 @@
 #include "protoclient.h"
 #include "talk.h"
 
-ipos pos;
-ipos vel;
-ipos world;
-ipos realWorld;
+ipos_t pos;
+ipos_t vel;
+ipos_t world;
+ipos_t realWorld;
 short heading;
 short nextCheckPoint;
 
@@ -1588,7 +1588,7 @@ other_t *Other_by_id(int id)
     return NULL;
 }
 
-shipobj *Ship_by_id(int id)
+shipobj_t *Ship_by_id(int id)
 {
     other_t *other;
 

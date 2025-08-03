@@ -107,7 +107,7 @@ typedef struct
     short war_id;
     short name_width; /* In pixels */
     short name_len;   /* In bytes */
-    shipobj *ship;
+    shipobj_t *ship;
     char name[MAX_CHARS];
     char real[MAX_CHARS];
     char host[MAX_CHARS];
@@ -160,10 +160,10 @@ typedef struct
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
 
-extern ipos pos;
-extern ipos vel;
-extern ipos world;
-extern ipos realWorld;
+extern ipos_t pos;
+extern ipos_t vel;
+extern ipos_t world;
+extern ipos_t realWorld;
 extern short heading;
 extern short nextCheckPoint;
 extern u_byte numItems[NUM_ITEMS];
@@ -439,7 +439,7 @@ int Handle_base(int id, int ind);
 int Check_pos_by_index(int ind, int *xp, int *yp);
 int Check_index_by_pos(int x, int y);
 other_t *Other_by_id(int id);
-shipobj *Ship_by_id(int id);
+shipobj_t *Ship_by_id(int id);
 int Handle_leave(int id);
 int Handle_player(int id, int team, int mychar, char *player_name,
                   char *real_name, char *host_name, char *shape);

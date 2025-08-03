@@ -33,10 +33,9 @@
 #include "object.h"
 #include "objpos.h"
 
-
-void Object_position_set_clicks(object *obj, int cx, int cy)
+void Object_position_set_clicks(object_t *obj, int cx, int cy)
 {
-    struct _objposition                *pos = (struct _objposition *)&obj->pos;
+    struct _objposition *pos = (struct _objposition *)&obj->pos;
 
 #if 0
     if (cx < 0 || cx >= PIXEL_TO_CLICK(World.width) || 
@@ -54,25 +53,25 @@ void Object_position_set_clicks(object *obj, int cx, int cy)
     pos->by = pos->y / BLOCK_SZ;
 }
 
-void Object_position_set_pixels(object *obj, DFLOAT x, DFLOAT y)
+void Object_position_set_pixels(object_t *obj, DFLOAT x, DFLOAT y)
 {
     Object_position_set_clicks(obj, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
 }
 
-void Object_position_init_pixels(object *obj, DFLOAT x, DFLOAT y)
+void Object_position_init_pixels(object_t *obj, DFLOAT x, DFLOAT y)
 {
     Object_position_set_clicks(obj, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
     Object_position_remember(obj);
 }
 
-void Player_position_restore(player *pl)
+void Player_position_restore(player_t *pl)
 {
     Player_position_set_pixels(pl, pl->prevpos.x, pl->prevpos.y);
 }
 
-void Player_position_set_clicks(player *pl, int cx, int cy)
+void Player_position_set_clicks(player_t *pl, int cx, int cy)
 {
-    struct _objposition                *pos = (struct _objposition *)&pl->pos;
+    struct _objposition *pos = (struct _objposition *)&pl->pos;
 
 #if 0
     if (cx < 0 || cx >= PIXEL_TO_CLICK(World.width) || 
@@ -90,36 +89,38 @@ void Player_position_set_clicks(player *pl, int cx, int cy)
     pos->by = pos->y / BLOCK_SZ;
 }
 
-void Player_position_set_pixels(player *pl, DFLOAT x, DFLOAT y)
+void Player_position_set_pixels(player_t *pl, DFLOAT x, DFLOAT y)
 {
     Player_position_set_clicks(pl, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
 }
 
-void Player_position_init_pixels(player *pl, DFLOAT x, DFLOAT y)
+void Player_position_init_pixels(player_t *pl, DFLOAT x, DFLOAT y)
 {
     Player_position_set_clicks(pl, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
     Player_position_remember(pl);
 }
 
-void Player_position_limit(player *pl)
+void Player_position_limit(player_t *pl)
 {
-    int                        x = pl->pos.x, ox = x;
-    int                        y = pl->pos.y, oy = y;
+    int x = pl->pos.x, ox = x;
+    int y = pl->pos.y, oy = y;
 
     LIMIT(x, 0, World.width - 1);
     LIMIT(y, 0, World.height - 1);
-    if (x != ox || y != oy) {
+    if (x != ox || y != oy)
+    {
         Player_position_set_clicks(pl, PIXEL_TO_CLICK(x), PIXEL_TO_CLICK(y));
     }
 }
 
-void Player_position_debug(player *pl, const char *msg)
+void Player_position_debug(player_t *pl, const char *msg)
 {
 #if DEVELOPMENT
-    int                        i;
+    int i;
 
     printf("pl %s pos dump: ", pl->name);
-    if (msg) printf("(%s)", msg);
+    if (msg)
+        printf("(%s)", msg);
     printf("\n");
     printf("\tB %d, %d, P %d, %d, C %d, %d, O %d, %d\n",
            pl->pos.bx,
@@ -130,9 +131,10 @@ void Player_position_debug(player *pl, const char *msg)
            pl->pos.cy,
            pl->prevpos.x,
            pl->prevpos.y);
-    for (i = 0; i < pl->ship->num_points; i++) {
+    for (i = 0; i < pl->ship->num_points; i++)
+    {
         printf("\t%2d\tB %d, %d, P %d, %d, C %d, %d, O %d, %d\n",
-                i,
+               i,
                (int)((pl->pos.x + pl->ship->pts[i][pl->dir].x) / BLOCK_SZ),
                (int)((pl->pos.y + pl->ship->pts[i][pl->dir].y) / BLOCK_SZ),
                (int)(pl->pos.x + pl->ship->pts[i][pl->dir].x),
@@ -144,4 +146,3 @@ void Player_position_debug(player *pl, const char *msg)
     }
 #endif
 }
-

@@ -1114,7 +1114,7 @@ static int Handle_setup(connection_t *connp)
  */
 static int Handle_login(connection_t *connp, char *errmsg, int errsize)
 {
-    player *pl;
+    player_t *pl;
     int i,
         war_on_id,
         conn_bit;
@@ -1570,7 +1570,7 @@ static int Send_modifiers(connection_t *connp, char *mods)
  * receives counts for items it doesn't know about.
  * This is new since pack version 4203.
  */
-static int Send_self_items(connection_t *connp, player *pl)
+static int Send_self_items(connection_t *connp, player_t *pl)
 {
     unsigned item_mask = 0;
     int i, n;
@@ -1622,7 +1622,7 @@ static int Send_self_items(connection_t *connp, player *pl)
  * Send all frame data related to the player self and his HUD.
  */
 int Send_self(connection_t *connp,
-              player *pl,
+              player_t *pl,
               int lock_id,
               int lock_dist,
               int lock_dir,
@@ -1835,7 +1835,7 @@ int Send_seek(connection_t *connp, int programmer_id, int robot_id, int sought_i
  */
 int Send_player(connection_t *connp, int id)
 {
-    player *pl = Players[GetInd[id]];
+    player_t *pl = Players[GetInd[id]];
     int n;
     char buf[MSG_LEN], ext[MSG_LEN];
     int sbuf_len = connp->c.len;
@@ -2430,7 +2430,7 @@ int Send_end_of_frame(connection_t *connp)
 
 static int Receive_keyboard(connection_t *connp)
 {
-    player *pl;
+    player_t *pl;
     long change;
     u_byte ch;
     int size = KEYBOARD_SIZE;
@@ -2533,7 +2533,7 @@ static int Receive_play(connection_t *connp)
 
 static int Receive_power(connection_t *connp)
 {
-    player *pl;
+    player_t *pl;
     unsigned char ch;
     short tmp;
     int n;
@@ -2979,7 +2979,7 @@ static int Receive_ack_target(connection_t *connp)
  */
 static void Handle_talk(connection_t *connp, char *str)
 {
-    player *pl = Players[GetInd[connp->id]];
+    player_t *pl = Players[GetInd[connp->id]];
     int i, sent, team;
     unsigned int len;
     char *cp,
@@ -3149,12 +3149,12 @@ static int str2num(char **strp, int min, int max)
 
 static int Receive_modifier_bank(connection_t *connp)
 {
-    player *pl;
+    player_t *pl;
     unsigned char bank;
     char str[MAX_CHARS];
     unsigned char ch;
     char *cp;
-    modifiers mods;
+    modifiers_t mods;
     int n;
 
     if ((n = Packet_scanf(&connp->r, "%c%c%s", &ch, &bank, str)) <= 0)
@@ -3473,7 +3473,7 @@ static int Send_motd(connection_t *connp)
 
 static int Receive_pointer_move(connection_t *connp)
 {
-    player *pl;
+    player_t *pl;
     unsigned char ch;
     short movement;
     int n;
@@ -3523,7 +3523,7 @@ static int Receive_pointer_move(connection_t *connp)
 
 static int Receive_fps_request(connection_t *connp)
 {
-    player *pl;
+    player_t *pl;
     int n;
     unsigned char ch;
     unsigned char fps;
@@ -3564,7 +3564,7 @@ static int Receive_fps_request(connection_t *connp)
 
 static int Receive_audio_request(connection_t *connp)
 {
-    player *pl;
+    player_t *pl;
     int n;
     unsigned char ch;
     unsigned char onoff;

@@ -34,7 +34,7 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
                      char *addr, char *host, unsigned version);
 int Input(void);
 int Send_reply(connection_t *connp, int replyto, int result);
-int Send_self(connection_t *connp, player *pl,
+int Send_self(connection_t *connp, player_t *pl,
               int lock_id,
               int lock_dist,
               int lock_dir,

@@ -791,7 +791,7 @@ static int num_ok_options = 0;
  * Here is some sort of pseudo regular expression:
  * xpilot{.*}option[whitespace]:[whitespace][value][; comment]
  */
-static void Parse_xpilotrc_line(const char *line)
+static int Parse_xpilotrc_line(const char *line)
 {
     char *lcpy = xp_safe_strdup(line);
     char *l = lcpy, *colon, *name, *value, *semicolon, *comment = nullptr;

@@ -31,11 +31,12 @@
  * Bert Gijsbers <bert@xpilot.org> added warn, fatal, coredump.
  */
 
-#ifndef        ERROR_H
-#define        ERROR_H
+#ifndef XPERROR_H
+#define XPERROR_H
 
-#include <stdarg.h>
+#include <cstdarg>
 
+extern void xpinfo(const char *fmt, ...);
 extern void xpwarn(const char *fmt, ...);
 extern void xperror(const char *fmt, ...);
 extern void xpfatal(const char *fmt, ...);
@@ -43,4 +44,4 @@ extern void xpdumpcore(const char *fmt, ...);
 
 extern void init_error(const char *prog);
 
-#endif        /* ERROR_H */
+#endif /* XPERROR_H */

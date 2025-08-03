@@ -40,10 +40,8 @@
 #include "asteroid.h"
 #include "xpmath.h"
 
-
 /* list containing pointers to all asteroids */
-static list_t        Asteroid_list = NULL;
-
+static list_t Asteroid_list = NULL;
 
 /*
 ** Prototypes.
@@ -51,7 +49,6 @@ static list_t        Asteroid_list = NULL;
 static void Make_asteroid(DFLOAT x, DFLOAT y,
                           int size, int dir,
                           DFLOAT speed);
-
 
 /*
 ** Return the asteroid list.
@@ -61,19 +58,21 @@ list_t Asteroid_get_list(void)
     return Asteroid_list;
 }
 
-
-static bool Asteroid_add_to_list(wireobject *ast)
+static bool Asteroid_add_to_list(wireobject_t *ast)
 {
-    list_iter_t                list_pos;
-    bool                result = false;
+    list_iter_t list_pos;
+    bool result = false;
 
-    if (Asteroid_list == NULL) {
+    if (Asteroid_list == NULL)
+    {
         Asteroid_list = List_new();
     }
 
-    if (Asteroid_list != NULL) {
+    if (Asteroid_list != NULL)
+    {
         list_pos = List_push_back(Asteroid_list, ast);
-        if (list_pos != NULL) {
+        if (list_pos != NULL)
+        {
             result = true;
         }
     }
@@ -81,15 +80,16 @@ static bool Asteroid_add_to_list(wireobject *ast)
     return result;
 }
 
-
-static bool Asteroid_remove_from_list(wireobject *ast)
+static bool Asteroid_remove_from_list(wireobject_t *ast)
 {
-    list_iter_t                list_pos;
-    bool                result = false;
+    list_iter_t list_pos;
+    bool result = false;
 
-    if (Asteroid_list != NULL) {
+    if (Asteroid_list != NULL)
+    {
         list_pos = List_find(Asteroid_list, ast);
-        if (list_pos != List_end(Asteroid_list)) {
+        if (list_pos != List_end(Asteroid_list))
+        {
             List_erase(Asteroid_list, list_pos);
             result = true;
         }
@@ -97,7 +97,6 @@ static bool Asteroid_remove_from_list(wireobject *ast)
 
     return result;
 }
-
 
 /*
  * Breaks up an asteroid:
@@ -110,14 +109,15 @@ static bool Asteroid_remove_from_list(wireobject *ast)
  */
 void Break_asteroid(int ind)
 {
-    wireobject        *asteroid = WIRE_IND(ind);
-    DFLOAT        mass, mass3;
-    DFLOAT        speed, speed1, speed2, radius;
-    DFLOAT        /* velx1, vely1, velx2, vely2,*/ velx3, vely3;
-    int                dir, dir1, dir2, split_dir;
-    int                x1, y1, x2, y2;
+    wireobject_t *asteroid = WIRE_IND(ind);
+    DFLOAT mass, mass3;
+    DFLOAT speed, speed1, speed2, radius;
+    DFLOAT /* velx1, vely1, velx2, vely2,*/ velx3, vely3;
+    int dir, dir1, dir2, split_dir;
+    int x1, y1, x2, y2;
 
-    if (asteroid->size == 1) {
+    if (asteroid->size == 1)
+    {
         mass = asteroid->mass / 2;
         Make_wreckage(asteroid->pos.x, asteroid->pos.y,
                       asteroid->vel.x, asteroid->vel.y,
@@ -128,7 +128,7 @@ void Break_asteroid(int ind)
                       GRAVITY,
                       WHITE,
                       10,
-                      0, RES-1,
+                      0, RES - 1,
                       5, 10,
                       3, 10);
         Make_debris(asteroid->pos.x, asteroid->pos.y,
@@ -141,31 +141,27 @@ void Break_asteroid(int ind)
                     RED,
                     8,
                     20, 50,
-                    0, RES-1,
+                    0, RES - 1,
                     5, 10,
                     3, 10);
-    } else {
+    }
+    else
+    {
         /* foo[12] refer to the mini-asteroids
            foo3 refers to the wreckage and debris */
         speed = VECTOR_LENGTH(asteroid->vel);
         dir = (int)findDir(asteroid->vel.x, asteroid->vel.y);
         mass3 = asteroid->mass * ASTEROID_DUST_FACT;
         mass = ASTEROID_MASS(asteroid->size - 1);
-        dir1 = MOD2((int)(dir
-                          - ASTEROID_DELTA_DIR / 4
-                          - (rfrac() * ASTEROID_DELTA_DIR / 4)), RES);
-        dir2 = MOD2((int)(dir
-                          + ASTEROID_DELTA_DIR / 4
-                          + (rfrac() * ASTEROID_DELTA_DIR / 4)), RES);
-        speed1 = (speed * (1 - ASTEROID_DUST_FACT))
-                 / tcos(ABS(dir - dir1));
-        speed2 = (speed * (1 - ASTEROID_DUST_FACT))
-                 / tcos(ABS(dir2 - dir));
+        dir1 = MOD2((int)(dir - ASTEROID_DELTA_DIR / 4 - (rfrac() * ASTEROID_DELTA_DIR / 4)), RES);
+        dir2 = MOD2((int)(dir + ASTEROID_DELTA_DIR / 4 + (rfrac() * ASTEROID_DELTA_DIR / 4)), RES);
+        speed1 = (speed * (1 - ASTEROID_DUST_FACT)) / tcos(ABS(dir - dir1));
+        speed2 = (speed * (1 - ASTEROID_DUST_FACT)) / tcos(ABS(dir2 - dir));
         /* velx1 = tcos(dir1) * speed1;
         vely1 = tsin(dir1) * speed1;
         velx2 = tcos(dir2) * speed2;
         vely2 = tsin(dir2) * speed2; */
-        split_dir = MOD2(dir - RES/4, RES);
+        split_dir = MOD2(dir - RES / 4, RES);
         radius = ASTEROID_RADIUS(asteroid->size - 1);
         x1 = WRAP_XPIXEL(asteroid->pos.x + tcos(split_dir) * radius);
         y1 = WRAP_YPIXEL(asteroid->pos.y + tsin(split_dir) * radius);
@@ -184,7 +180,7 @@ void Break_asteroid(int ind)
                       GRAVITY,
                       WHITE,
                       10,
-                      0, RES-1,
+                      0, RES - 1,
                       5, 10,
                       3, 10);
         Make_debris(asteroid->pos.x, asteroid->pos.y,
@@ -197,20 +193,22 @@ void Break_asteroid(int ind)
                     RED,
                     8,
                     20, 50,
-                    0, RES-1,
+                    0, RES - 1,
                     5, 10,
                     3, 10);
     }
 
-    if ((asteroidMaxItems > 0) && (rfrac() < asteroidItemProb)) {
-        int        nitems = (int)(rfrac() * asteroidMaxItems) + 1;
-        int        i;
-        int        vx, vy;
-        int        item, item_dir, num_per_pack;
-        DFLOAT        item_speed;
-        long        status;
+    if ((asteroidMaxItems > 0) && (rfrac() < asteroidItemProb))
+    {
+        int nitems = (int)(rfrac() * asteroidMaxItems) + 1;
+        int i;
+        int vx, vy;
+        int item, item_dir, num_per_pack;
+        DFLOAT item_speed;
+        long status;
 
-        for (i = 0; i < nitems; i++) {
+        for (i = 0; i < nitems; i++)
+        {
             item = Choose_random_item();
             item_dir = (int)(rfrac() * RES);
             item_speed = rfrac() * 10;
@@ -219,12 +217,13 @@ void Break_asteroid(int ind)
             status = GRAVITY;
             if (rfrac() < randomItemProb)
                 status |= RANDOM_ITEM;
-            if (World.items[item].min_per_pack == World.items[item].max_per_pack) {
+            if (World.items[item].min_per_pack == World.items[item].max_per_pack)
+            {
                 num_per_pack = World.items[item].max_per_pack;
-            } else {
-                num_per_pack = World.items[item].min_per_pack
-                             + (int)(rfrac() * (1 + World.items[item].max_per_pack
-                                                  - World.items[item].min_per_pack));
+            }
+            else
+            {
+                num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
             }
 
             Make_item(asteroid->pos.x, asteroid->pos.y,
@@ -232,15 +231,14 @@ void Break_asteroid(int ind)
                       item, num_per_pack,
                       status);
         }
-    }        
-        
+    }
+
     sound_play_sensors(asteroid->pos.x, asteroid->pos.y, ASTEROID_BREAK_SOUND);
 
     World.asteroids.num -= 1 << (asteroid->size - 1);
 
     Asteroid_remove_from_list(asteroid);
 }
-
 
 /*
  * Creates an asteroid with the given characteristics.
@@ -249,37 +247,49 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
                           int size, int dir,
                           DFLOAT speed)
 {
-    wireobject        *asteroid;
-    DFLOAT        radius;
-        int                bx;
-        int                by;
+    wireobject_t *asteroid;
+    DFLOAT radius;
+    int bx;
+    int by;
 
-    if (NumObjs >= MAX_TOTAL_SHOTS) {
+    if (NumObjs >= MAX_TOTAL_SHOTS)
+    {
         return;
     }
 
-    if (size < 1 || size > ASTEROID_MAX_SIZE) {
+    if (size < 1 || size > ASTEROID_MAX_SIZE)
+    {
         return;
     }
 
-    if (BIT(World.rules->mode, WRAP_PLAY)) {
-        if (x < 0) x += World.width;
-        else if (x >= World.width) x -= World.width;
-        if (y < 0) y += World.height;
-        else if (y >= World.height) y -= World.height;
+    if (BIT(World.rules->mode, WRAP_PLAY))
+    {
+        if (x < 0)
+            x += World.width;
+        else if (x >= World.width)
+            x -= World.width;
+        if (y < 0)
+            y += World.height;
+        else if (y >= World.height)
+            y -= World.height;
     }
-    if (x < 0 || x >= World.width || y < 0 || y >= World.height) {
+    if (x < 0 || x >= World.width || y < 0 || y >= World.height)
+    {
         return;
     }
 
     bx = x / BLOCK_SZ;
-        by = y / BLOCK_SZ;
-    if (BIT(World.block[bx][by], FILLED_BIT|FUEL_BIT|TARGET_BIT|TREASURE_BIT)) {
+    by = y / BLOCK_SZ;
+    if (BIT(World.block[bx][by], FILLED_BIT | FUEL_BIT | TARGET_BIT | TREASURE_BIT))
+    {
         return;
-    } else if (BIT(World.block[bx][by], REC_LU|REC_RU|REC_LD|REC_RD)) {
-        DFLOAT        x_in_b = x - bx * BLOCK_SZ,
-                y_in_b = y - by * BLOCK_SZ;
-        switch (World.block[bx][by]) {
+    }
+    else if (BIT(World.block[bx][by], REC_LU | REC_RU | REC_LD | REC_RD))
+    {
+        DFLOAT x_in_b = x - bx * BLOCK_SZ,
+               y_in_b = y - by * BLOCK_SZ;
+        switch (World.block[bx][by])
+        {
         case REC_LU:
             if (x_in_b < y_in_b)
                 return;
@@ -300,7 +310,8 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
     }
 
     asteroid = WIRE_PTR(Object_allocate());
-    if (asteroid == NULL) {
+    if (asteroid == NULL)
+    {
         return;
     }
 
@@ -328,15 +339,16 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
     asteroid->status = GRAVITY;
     CLEAR_MODS(asteroid->mods);
 
-    if (Asteroid_add_to_list(asteroid) == true) {
+    if (Asteroid_add_to_list(asteroid) == true)
+    {
         World.asteroids.num += 1 << (size - 1);
         Cell_add_object(OBJ_PTR(asteroid));
     }
-    else {
+    else
+    {
         Object_free_ptr(OBJ_PTR(asteroid));
     }
 }
-
 
 /*
  * Tries to place a new asteroid on the map.
@@ -344,68 +356,85 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
  */
 static void Place_asteroid(void)
 {
-    int                        place_count;
-    int                        px = 0, py = 0;
-    int                        bx, by;
-    int                        dir, dist;
-    unsigned                space;
-    int                        okay;
-    asteroid_concentrator_t        *con;
+    int place_count;
+    int px = 0, py = 0;
+    int bx, by;
+    int dir, dist;
+    unsigned space;
+    int okay;
+    asteroid_concentrator_t *con;
 
     space = SPACE_BLOCKS;
     space &= ~(BASE_BIT | WORMHOLE_BIT);
     space |= FRICTION_BIT;
     /* would be dubious: space |= CANNON_BIT; */
 
-    if (World.NumAsteroidConcs > 0 && rfrac() < asteroidConcentratorProb) {
+    if (World.NumAsteroidConcs > 0 && rfrac() < asteroidConcentratorProb)
+    {
         con = &World.asteroidConcs[(int)(rfrac() * World.NumAsteroidConcs)];
-    } else {
+    }
+    else
+    {
         con = NULL;
     }
 
     /* we bail out after 8 unsuccessful attempts to avoid wasting
      * too much time on crowded maps */
     okay = false;
-    for (place_count = 0; okay != true; place_count++) {
-        if (place_count >= 10) {
+    for (place_count = 0; okay != true; place_count++)
+    {
+        if (place_count >= 10)
+        {
             return;
         }
 
-        if (con) {
+        if (con)
+        {
             dir = (int)(rfrac() * RES);
             dist = (int)(rfrac() * ((asteroidConcentratorRadius * BLOCK_SZ) + 1));
             px = (int)((con->pos.x + 0.5) * BLOCK_SZ + dist * tcos(dir));
             py = (int)((con->pos.y + 0.5) * BLOCK_SZ + dist * tsin(dir));
 
-            if (BIT(World.rules->mode, WRAP_PLAY)) {
-                if (px < 0) px += World.width;
-                if (py < 0) py += World.height;
-                if (px > World.width) px -= World.width;
-                if (py > World.height) py -= World.height;
+            if (BIT(World.rules->mode, WRAP_PLAY))
+            {
+                if (px < 0)
+                    px += World.width;
+                if (py < 0)
+                    py += World.height;
+                if (px > World.width)
+                    px -= World.width;
+                if (py > World.height)
+                    py -= World.height;
             }
-            if (px < 0 || px >= World.width
-                || py < 0 || py >= World.height) {
+            if (px < 0 || px >= World.width || py < 0 || py >= World.height)
+            {
                 continue;
             }
-        } else {
+        }
+        else
+        {
             px = (int)(rfrac() * World.width);
             py = (int)(rfrac() * World.height);
         }
         bx = px / BLOCK_SZ;
         by = py / BLOCK_SZ;
 
-        if (BIT(1U << World.block[bx][by], space)) {
+        if (BIT(1U << World.block[bx][by], space))
+        {
             int i, dpx, dpy, ox, oy;
 
             okay = true;
 
-            for (i = 0; i < NumPlayers; i++) {
-                if (IS_HUMAN_IND(i)) {
+            for (i = 0; i < NumPlayers; i++)
+            {
+                if (IS_HUMAN_IND(i))
+                {
                     ox = OBJ_X_IN_PIXELS(Players[i]);
                     oy = OBJ_Y_IN_PIXELS(Players[i]);
                     dpx = WRAP_DX(px - ox);
                     dpy = WRAP_DY(py - oy);
-                    if (sqr(dpx) + sqr(dpy) < sqr(ASTEROID_MIN_DIST)) {
+                    if (sqr(dpx) + sqr(dpy) < sqr(ASTEROID_MIN_DIST))
+                    {
                         /* too close to player */
                         okay = false;
                         break;
@@ -414,7 +443,8 @@ static void Place_asteroid(void)
             }
         }
     }
-    if (okay == true) {
+    if (okay == true)
+    {
         Make_asteroid(px, py,
                       (int)(1 + rfrac() * ASTEROID_MAX_SIZE),
                       (int)(rfrac() * RES),
@@ -422,19 +452,16 @@ static void Place_asteroid(void)
     }
 }
 
-
-static void Asteroid_move(wireobject *wireobj)
+static void Asteroid_move(wireobject_t *wireobj)
 {
-    Move_object((object *) wireobj);
+    Move_object((object_t *)wireobj);
 }
 
-
-static void Asteroid_rotate(wireobject *wireobj)
+static void Asteroid_rotate(wireobject_t *wireobj)
 {
     wireobj->rotation =
-        (wireobj->rotation + (int) (wireobj->turnspeed * RES)) % RES;
+        (wireobj->rotation + (int)(wireobj->turnspeed * RES)) % RES;
 }
-
 
 /*
 ** Called once each frame update to update everything
@@ -443,13 +470,14 @@ static void Asteroid_rotate(wireobject *wireobj)
 */
 void Asteroid_update(void)
 {
-    int                num;
-    list_t        list;
-    list_iter_t        iter;
-    wireobject        *asteroid;
+    int num;
+    list_t list;
+    list_iter_t iter;
+    wireobject_t *asteroid;
 
     list = Asteroid_get_list();
-    if (list) {
+    if (list)
+    {
         /* if there are more asteroids than are wanted, mark
          * all asteroids to be removed (by Delete_shot()),
          * until enough of size 1 have been removed
@@ -459,18 +487,23 @@ void Asteroid_update(void)
          * the rest are left until the next frame then
          * */
         num = World.asteroids.num;
-        if (num > World.asteroids.max) {
+        if (num > World.asteroids.max)
+        {
             for (iter = List_begin(list);
                  iter != List_end(list);
-                 LI_FORWARD(iter)) {
-                asteroid = (wireobject *) LI_DATA(iter);
-                if (asteroid->life > 0) {
+                 LI_FORWARD(iter))
+            {
+                asteroid = (wireobject_t *)LI_DATA(iter);
+                if (asteroid->life > 0)
+                {
                     asteroid->life = 0;
-                    if (asteroid->size == 1) {
+                    if (asteroid->size == 1)
+                    {
                         num--;
                     }
                 }
-                if (num <= World.asteroids.max) {
+                if (num <= World.asteroids.max)
+                {
                     break;
                 }
             }
@@ -479,9 +512,11 @@ void Asteroid_update(void)
         /* rotate asteroids */
         for (iter = List_begin(list);
              iter != List_end(list);
-             LI_FORWARD(iter)) {
-            asteroid = (wireobject *) LI_DATA(iter);
-            if (asteroid->life > 0) {
+             LI_FORWARD(iter))
+        {
+            asteroid = (wireobject_t *)LI_DATA(iter);
+            if (asteroid->life > 0)
+            {
                 Asteroid_rotate(asteroid);
             }
         }
@@ -489,22 +524,26 @@ void Asteroid_update(void)
         /* move asteroids */
         for (iter = List_begin(list);
              iter != List_end(list);
-             LI_FORWARD(iter)) {
-            asteroid = (wireobject *) LI_DATA(iter);
-            if (asteroid->life > 0) {
+             LI_FORWARD(iter))
+        {
+            asteroid = (wireobject_t *)LI_DATA(iter);
+            if (asteroid->life > 0)
+            {
                 Asteroid_move(asteroid);
             }
         }
     }
 
     /* place new asteroid if room left */
-    if (World.asteroids.chance > 0) {
+    if (World.asteroids.chance > 0)
+    {
         int incr = (1 << (ASTEROID_MAX_SIZE - 1));
-        if (World.asteroids.num + incr < World.asteroids.max) {
-            if ((rfrac() * World.asteroids.chance) < 1.0f) {
+        if (World.asteroids.num + incr < World.asteroids.max)
+        {
+            if ((rfrac() * World.asteroids.chance) < 1.0f)
+            {
                 Place_asteroid();
             }
         }
     }
 }
-

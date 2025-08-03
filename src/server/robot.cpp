@@ -664,7 +664,7 @@ static void Robot_talks(enum robot_talk_t says_what,
 
 static void Robot_create(void)
 {
-    player *robot;
+    player_t *robot;
     robot_t *rob;
     int i,
         num;
@@ -736,7 +736,7 @@ static void Robot_create(void)
 
     Init_player(NumPlayers, (allowShipShapes)
                                 ? Parse_shape_str(rob->shape)
-                                : (shipobj *)NULL);
+                                : (shipobj_t *)NULL);
     robot = Players[NumPlayers];
     SET_BIT(robot->type_ext, OBJ_EXT_ROBOT);
     robot->robot_data_ptr = new_data;
@@ -816,7 +816,7 @@ static void Robot_create(void)
 
 void Robot_destroy(int ind)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
 
     (*robot_types[pl->robot_data_ptr->robot_types_ind].destroy)(ind);
     free(Players[ind]->robot_data_ptr);
@@ -871,7 +871,7 @@ void Robot_delete(int ind, int kicked)
  */
 void Robot_invite(int ind, int inv_ind)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
 
     (*robot_types[pl->robot_data_ptr->robot_types_ind].invite)(ind, inv_ind);
 }
@@ -881,7 +881,7 @@ void Robot_invite(int ind, int inv_ind)
  */
 static void Robot_set_war(int ind, int victim_id)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
 
     (*robot_types[pl->robot_data_ptr->robot_types_ind].set_war)(ind, victim_id);
 }
@@ -910,7 +910,7 @@ void Robot_program(int ind, int victim_id)
  */
 int Robot_war_on_player(int ind)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
     robot_type_t *rob_type =
         &robot_types[pl->robot_data_ptr->robot_types_ind];
 
@@ -925,8 +925,8 @@ int Robot_war_on_player(int ind)
  */
 void Robot_war(int ind, int killer)
 {
-    player *pl = Players[ind],
-           *kp = Players[killer];
+    player_t *pl = Players[ind],
+             *kp = Players[killer];
     int i;
 
     if (killer == ind)
@@ -989,7 +989,7 @@ void Robot_go_home(int ind)
  */
 void Robot_message(int ind, const char *message)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
     robot_type_t *rob_type =
         &robot_types[pl->robot_data_ptr->robot_types_ind];
 
@@ -1011,7 +1011,7 @@ static void Robot_play(int ind)
  */
 static bool Robot_check_leave(int ind)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
     char msg[MSG_LEN];
 
     if (robotsLeave && pl->life > 0 && !BIT(World.rules->mode, LIMITED_LIVES) && (BIT(pl->status, PLAYING) || pl->count <= 0))
@@ -1062,7 +1062,7 @@ static void Robot_round_tick(void)
  */
 static void Tank_play(int ind)
 {
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
     int t = frame_loops % (TANK_NOTHRUST_TIME + TANK_THRUST_TIME);
 
     if (t == 0)
@@ -1077,7 +1077,7 @@ static void Tank_play(int ind)
 
 void Robot_update(void)
 {
-    player *pl;
+    player_t *pl;
     int i;
     static int new_robot_delay;
     int num_playing_ships;

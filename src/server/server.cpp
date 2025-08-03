@@ -72,7 +72,7 @@ char server_version[] = VERSION;
  */
 int NumPlayers = 0;
 int NumAlliances = 0;
-player **Players;
+player_t **Players;
 int GetInd_1;
 int GetInd[NUM_IDS + 1];
 server_t Server;
@@ -304,7 +304,7 @@ void Main_loop(void)
  */
 void End_game(void)
 {
-    player *pl;
+    player_t *pl;
     char msg[MSG_LEN];
 
     if (ShutdownServer == 0)
@@ -371,7 +371,7 @@ int Pick_team(int pick_for_type)
         num_available_teams = 0,
         playing_teams = 0,
         losing_team;
-    player *pl;
+    player_t *pl;
     int playing[MAX_TEAMS];
     int free_bases[MAX_TEAMS];
     int available_teams[MAX_TEAMS];
@@ -512,7 +512,7 @@ int Pick_team(int pick_for_type)
 void Server_info(char *str, unsigned max_size)
 {
     int i, j, k;
-    player *pl, **order, *best = NULL;
+    player_t *pl, **order, *best = NULL;
     DFLOAT ratio, best_ratio = -1e7;
     char name[MAX_CHARS * 2 + 4];
     char lblstr[MAX_CHARS];
@@ -801,7 +801,7 @@ void Server_log_admin_message(int ind, const char *str)
     const int logfile_size_limit = adminMessageFileSizeLimit;
     FILE *fp;
     struct stat st;
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
     char msg[MSG_LEN * 2];
 
     if ((logfilename != NULL) &&

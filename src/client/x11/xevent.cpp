@@ -56,8 +56,6 @@
 
 extern char *talk_fast_msgs[]; /* talk macros */
 
-extern setup_t *Setup;
-
 static BITV_DECL(keyv, NUM_KEYS);
 
 bool initialPointerControl = false;
@@ -806,8 +804,8 @@ void xevent_keyboard(int queued)
     }
 }
 
-ipos delta;
-ipos mouse;   /* position of mouse pointer. */
+ipos_t delta;
+ipos_t mouse; /* position of mouse pointer. */
 int movement; /* horizontal mouse movement. */
 
 void xevent_pointer(void)

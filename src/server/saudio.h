@@ -28,17 +28,17 @@
 
 #if defined(SERVER_SOUND) && defined(SERVER) && !defined(SOUND)
 /* Enable only sound support in the server, not in the client. */
-#define SOUND        1
+#define SOUND 1
 #endif
 
-#define SDBG(x)        /*#x*/
+#define SDBG(x) /*#x*/
 
 #ifndef SOUND
 
 /*
  * Define like this to avoid having to put #ifdef SOUND all over the place.
  */
-#define sound_player_init(player)                ((player)->audio = NULL)
+#define sound_player_init(player) ((player)->audio = NULL)
 #define sound_player_onoff(player, onoff)
 #define sound_play_player(player, index)
 #define sound_play_all(index)
@@ -46,18 +46,18 @@
 #define sound_play_queued(player)
 #define sound_close(player)
 
-#else                                                /* SOUND */
+#else /* SOUND */
 
 #include "audio.h"
 
-int                sound_player_init(player *);
-void                sound_player_onoff(player *pl, bool on);
-void                sound_play_player(player *, int);
-void                sound_play_all(int);
-void                sound_play_sensors(DFLOAT, DFLOAT, int);
-void                sound_play_queued(player * pl);
-void                sound_close(player * pl);
+int sound_player_init(player_t *p);
+void sound_player_onoff(player_t *pl, bool on);
+void sound_play_player(player_t *p, int);
+void sound_play_all(int);
+void sound_play_sensors(DFLOAT, DFLOAT, int);
+void sound_play_queued(player_t *ppl);
+void sound_close(player_t *ppl);
 
-#endif                                                /* SOUND */
+#endif /* SOUND */
 
-#endif                                                /* _saudio_h */
+#endif /* _saudio_h */

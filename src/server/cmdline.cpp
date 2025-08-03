@@ -132,7 +132,7 @@ bool edgeWrap;                       /* Do objects wrap when they cross
 bool edgeBounce;                     /* Do objects bounce when they hit
                                  the edge of the Universe? */
 bool extraBorder;                    /* Give map an extra border? */
-ipos gravityPoint;                   /* Where does gravity originate? */
+ipos_t gravityPoint;                 /* Where does gravity originate? */
 DFLOAT gravityAngle;                 /* If gravity is along a uniform line,
                              at what angle is that line? */
 bool gravityPointSource;             /* Is gravity a point source? */

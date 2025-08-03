@@ -21,27 +21,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        TYPES_H
-#define        TYPES_H
+#ifndef TYPES_H
+#define TYPES_H
 
-typedef unsigned char        u_byte;
+#include <cstdint>
+
+typedef uint8_t u_byte;
 
 /*
  * On some systems an enum is smaller than an int.
  * On others bool is already a builtin type.
  * Using preprocessor macros to circumvent both situations.
  */
-#ifndef __cplusplus
-#define false        0
-#define true        1
-#define bool        int
-#endif
+typedef float DFLOAT;
 
-typedef        float        DFLOAT;
-
-typedef struct { DFLOAT x, y; }        vector;
-typedef vector                        position;
-typedef struct { int x, y; }        ivec;
-typedef ivec                        ipos;
+typedef struct
+{
+        DFLOAT x, y;
+} vector_t;
+typedef vector_t position_t;
+typedef struct
+{
+        int x, y;
+} ivec_t;
+typedef ivec_t ipos_t;
 
 #endif
