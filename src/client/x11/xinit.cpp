@@ -740,20 +740,20 @@ int Init_playing_windows(void)
     {
 
     case PIXMAP_COPY:
-        p_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        s_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        radarPixmap = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        radarPixmap2 = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
         break;
 
     case MULTIBUFFER:
-        p_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        s_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        radarPixmap = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
+        radarPixmap2 = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         dbuff_init_buffer(dbuf_state);
         break;
 
     case COLOR_SWITCH:
-        s_radar = radarWindow;
-        p_radar = radarWindow;
+        radarPixmap2 = radarWindow;
+        radarPixmap = radarWindow;
         drawPixmap = drawWindow;
         Paint_sliding_radar();
         break;

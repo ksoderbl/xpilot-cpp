@@ -259,11 +259,11 @@ void Paint_frame(void)
     /*
      * Now switch planes and clear the screen.
      */
-    if (p_radar != radarWindow && radar_exposures > 0)
+    if (radarPixmap != radarWindow && radar_exposures > 0)
     {
         if (BIT(instruments, SHOW_SLIDING_RADAR) == 0 || BIT(Setup->mode, WRAP_PLAY) == 0)
         {
-            XCopyArea(dpy, p_radar, radarWindow, gameGC,
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
                       0, 0, 256, RadarHeight, 0, 0);
         }
         else
@@ -296,13 +296,13 @@ void Paint_frame(void)
             w = 256 - x;
             h = RadarHeight - y;
 
-            XCopyArea(dpy, p_radar, radarWindow, gameGC,
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
                       0, 0, x, y, w, h);
-            XCopyArea(dpy, p_radar, radarWindow, gameGC,
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
                       x, 0, w, y, 0, h);
-            XCopyArea(dpy, p_radar, radarWindow, gameGC,
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
                       0, y, x, h, w, 0);
-            XCopyArea(dpy, p_radar, radarWindow, gameGC,
+            XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
                       x, y, w, h, 0, 0);
         }
     }
