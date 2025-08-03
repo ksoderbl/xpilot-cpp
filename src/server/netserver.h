@@ -1,5 +1,4 @@
-/* $Id: netserver.h,v 5.11 2002/08/21 14:22:32 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,46 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef        NETSERVER_H
-#define        NETSERVER_H
+#ifndef NETSERVER_H
+#define NETSERVER_H
 
-#ifndef CONNECTION_H
 #include "connection.h"
-#endif
-
-#ifdef NETSERVER_C
-
-
-static int Compress_map(unsigned char *map, int size);
-static int Init_setup(void);
-static int Handle_listening(connection_t *connp);
-static int Handle_setup(connection_t *connp);
-static int Handle_login(connection_t *connp, char *errmsg, int errsize);
-static void Handle_input(int fd, void *arg);
-
-
-static int Receive_keyboard(connection_t *connp);
-static int Receive_quit(connection_t *connp);
-static int Receive_play(connection_t *connp);
-static int Receive_power(connection_t *connp);
-static int Receive_ack(connection_t *connp);
-static int Receive_ack_cannon(connection_t *connp);
-static int Receive_ack_fuel(connection_t *connp);
-static int Receive_ack_target(connection_t *connp);
-static int Receive_discard(connection_t *connp);
-static int Receive_undefined(connection_t *connp);
-static int Receive_talk(connection_t *connp);
-static int Receive_display(connection_t *connp);
-static int Receive_modifier_bank(connection_t *connp);
-static int Receive_motd(connection_t *connp);
-static int Receive_shape(connection_t *connp);
-static int Receive_pointer_move(connection_t *connp);
-static int Receive_audio_request(connection_t *connp);
-static int Receive_fps_request(connection_t *connp);
-
-static int Send_motd(connection_t *connp);
-
-#endif        /* NETSERVER_C */
 
 int Get_motd(char *buf, int offset, int maxlen, int *size_ptr);
 int Setup_net_server(void);
@@ -109,8 +72,8 @@ int Send_audio(connection_t *connp, int type, int vol);
 int Send_item(connection_t *connp, int x, int y, int type);
 int Send_paused(connection_t *connp, int x, int y, int count);
 int Send_ecm(connection_t *connp, int x, int y, int size);
-int Send_ship(connection_t *connp, int x, int y, int id, int dir, int shield, int cloak, int eshield, 
-                          int phased, int deflector);
+int Send_ship(connection_t *connp, int x, int y, int id, int dir, int shield, int cloak, int eshield,
+              int phased, int deflector);
 int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1);
 int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor);
 int Send_laser(connection_t *connp, int color, int x, int y, int len, int dir);
@@ -135,4 +98,3 @@ int Send_shape(connection_t *connp, int shape);
 int Check_max_clients_per_IP(char *host_addr);
 
 #endif
-

@@ -36,7 +36,7 @@
 
 #include "strlcpy.h"
 
-// #include "client.h"
+#include "netclient.h"
 #include "paint.h"
 
 #include "xpconfig.h"

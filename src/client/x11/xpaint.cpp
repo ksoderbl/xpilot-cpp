@@ -35,6 +35,7 @@
 
 #include "strlcpy.h"
 
+#include "netclient.h"
 #include "paint.h"
 #include "paintdata.h"
 

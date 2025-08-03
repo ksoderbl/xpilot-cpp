@@ -36,6 +36,7 @@
 
 #include "client.h"
 #include "messages.h"
+#include "netclient.h"
 #include "paint.h"
 #include "paintdata.h"
 

@@ -31,6 +31,7 @@
 #define MIN_RECEIVE_WINDOW_SIZE 1
 #define MAX_RECEIVE_WINDOW_SIZE 4
 
+#define FPS (Setup->frames_per_second)
 #define MAX_SUPPORTED_FPS 255
 
 extern int simulating;

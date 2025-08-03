@@ -39,6 +39,7 @@
 #include "xpmemory.h"
 
 #include "paint.h"
+#include "netclient.h"
 
 #include "xpconfig.h"
 #include "xperror.h"
