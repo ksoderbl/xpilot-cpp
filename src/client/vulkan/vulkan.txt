@@ -1,0 +1,4 @@
+#install this: 
+apt install libglfw3-dev
+apt install vulkan-tools libvulkan-dev vulkan-validationlayers-dev spirv-tools
+apt install glslc # gl shader language compiler?
