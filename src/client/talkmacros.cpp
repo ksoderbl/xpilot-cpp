@@ -21,7 +21,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -33,37 +32,36 @@
 
 #include "xpconfig.h"
 #include "const.h"
-#include "netclient.h"                /* Net_talk(char *str) */
+#include "netclient.h" /* Net_talk(char *str) */
 #include "setup.h"
 #include "bit.h"
 #include "xperror.h"
 #include "protoclient.h"
 #include "portability.h"
 #include "talk.h"
-#include "rules.h"                /* TEAM_PLAY, LIMITED_LIVES */
-
+#include "rules.h" /* TEAM_PLAY, LIMITED_LIVES */
 
 /*
  * Abandon your hope, all you enter here
  */
 
 /* The final string, sent to the server */
-static char        final_str[MAX_CHARS];
+static char final_str[MAX_CHARS];
 
-extern int        eyesId;                /* Player we get frame updates for */
-extern short        snooping;        /* Are we snooping on someone else? */
+extern int eyesId;     /* Player we get frame updates for */
+extern short snooping; /* Are we snooping on someone else? */
 
 /* exported (to xevent.c) */
-int                Talk_macro(char *str);
+int Talk_macro(char *str);
 
-#define MSG_PARSED_FIELD_LEN      20
+#define MSG_PARSED_FIELD_LEN 20
 
 /*
  * Returns a pointer to the first character after the fields
  */
-static char *Talk_macro_fields_info (char *buf, int *n_fields)
+static char *Talk_macro_fields_info(char *buf, int *n_fields)
 {
-    int                        end_found = 0, level = 0;
+    int end_found = 0, level = 0;
 
     *n_fields = 0;
     while (!end_found)
@@ -96,13 +94,12 @@ static char *Talk_macro_fields_info (char *buf, int *n_fields)
     return buf;
 }
 
-
 /* Returns a string pointer to the wanted_field
  * This pointer must be freed after using it
  */
-static char *Talk_macro_get_field (char *buf, int wanted_field)
+static char *Talk_macro_get_field(char *buf, int wanted_field)
 {
-    int  finished = 0, level = 0, field = 0, len;
+    int finished = 0, level = 0, field = 0, len;
     char *field_ptr, *start_ptr = NULL, *end_ptr = NULL;
 
     while (!finished)
@@ -149,35 +146,33 @@ static char *Talk_macro_get_field (char *buf, int wanted_field)
             break;
         }
         buf++;
-
     }
     len = end_ptr - start_ptr;
-    if ((field_ptr = (char *) malloc (len + 1)) == NULL) {
+    if ((field_ptr = (char *)malloc(len + 1)) == NULL)
+    {
         xperror("Can't allocate memory for talk macro");
         return NULL;
     }
-    strncpy (field_ptr, start_ptr, len);
+    strncpy(field_ptr, start_ptr, len);
     field_ptr[len] = '\0';
     return field_ptr;
 }
 
-
 static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
 {
-    FILE        *fp;
-    char        c;
-    long        fsize;
-    int                i;
-    int                done = 0;
-    int                n_fields;
-    char        *tmpptr;
-    char        *tmpptr1;
-    char        *tmpptr2;
-    char        *tmpptr3 = 0;
-    char        *nextpos;
-    char        *filename;
-    other_t        *player = NULL;
-
+    FILE *fp;
+    char c;
+    long fsize;
+    int i;
+    int done = 0;
+    int n_fields;
+    char *tmpptr;
+    char *tmpptr1;
+    char *tmpptr2;
+    char *tmpptr3 = 0;
+    char *nextpos;
+    char *filename;
+    other_t *player = NULL;
 
     while (!done && (c = *inbuf++) != '\0')
     {
@@ -186,17 +181,20 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
             if (outbuf == final_str) /* parsing to the talk buffer */
             {
                 outbuf[pos] = '\0';
-                if (Net_talk(outbuf) == -1) {
+                if (Net_talk(outbuf) == -1)
+                {
                     return -1;
                 }
                 pos = 0;
             }
-            else {
+            else
+            {
                 break;
             }
         }
 
-        if (player != NULL) {
+        if (player != NULL)
+        {
             switch (c)
             {
             case 'l':
@@ -210,7 +208,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                 break;
             case 's':
                 if (pos < max - 1 - 6) /* short - "-16535" max no of chars */
-                    pos += sprintf (outbuf+pos, "%d", player->score);
+                    pos += sprintf(outbuf + pos, "%d", player->score);
                 break;
             case 't':
                 if (BIT(Setup->mode, TEAM_PLAY))
@@ -220,156 +218,176 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                 break;
             }
             player = NULL;
-        } else {
-            switch (c) {
+        }
+        else
+        {
+            switch (c)
+            {
             case TALK_FAST_SPECIAL_TALK_CHAR:
-                if ((c = *inbuf++) == '\0') {
+                if ((c = *inbuf++) == '\0')
+                {
                     done = 1;
                     break;
                 }
-                switch (c) {
-                case '=':  /* String comparison */
-                    nextpos = Talk_macro_fields_info (inbuf, &n_fields);
+                switch (c)
+                {
+                case '=': /* String comparison */
+                    nextpos = Talk_macro_fields_info(inbuf, &n_fields);
                     if (n_fields < 3 || n_fields > 4 || nextpos == NULL)
                         break;
                     /* parse field 1 */
-                    if ((tmpptr = Talk_macro_get_field (inbuf, 1)) == NULL) {
+                    if ((tmpptr = Talk_macro_get_field(inbuf, 1)) == NULL)
+                    {
                         xperror("Talk_macro_get_field (1) error!");
                         break;
                     }
-                    if ((tmpptr1 = (char *)malloc (MSG_PARSED_FIELD_LEN))
-                            == NULL) {
+                    if ((tmpptr1 = (char *)malloc(MSG_PARSED_FIELD_LEN)) == NULL)
+                    {
                         xperror("Can't allocate memory for talk macro.");
                         free(tmpptr); /* successful malloc from before */
                         break;
                     }
-                    Talk_macro_parse_mesg (tmpptr1, tmpptr, 0,
-                                            MSG_PARSED_FIELD_LEN);
-                    free (tmpptr);
+                    Talk_macro_parse_mesg(tmpptr1, tmpptr, 0,
+                                          MSG_PARSED_FIELD_LEN);
+                    free(tmpptr);
                     /* parse field 2 */
-                    if ((tmpptr = Talk_macro_get_field (inbuf, 2)) == NULL) {
+                    if ((tmpptr = Talk_macro_get_field(inbuf, 2)) == NULL)
+                    {
                         xperror("Talk_macro_get_field (2) error!");
                         break;
                     }
-                    if ((tmpptr2 = (char *)malloc (MSG_PARSED_FIELD_LEN))
-                            == NULL) {
+                    if ((tmpptr2 = (char *)malloc(MSG_PARSED_FIELD_LEN)) == NULL)
+                    {
                         xperror("Can't allocate memory for talk macro.");
-                        free (tmpptr); /* successful malloc from before */
+                        free(tmpptr); /* successful malloc from before */
                         break;
                     }
-                    Talk_macro_parse_mesg (tmpptr2, tmpptr, 0, MSG_PARSED_FIELD_LEN);
-                    free (tmpptr);
-                    if (!strcmp(tmpptr1, tmpptr2)) {
+                    Talk_macro_parse_mesg(tmpptr2, tmpptr, 0, MSG_PARSED_FIELD_LEN);
+                    free(tmpptr);
+                    if (!strcmp(tmpptr1, tmpptr2))
+                    {
                         /* True */
-                        if ((tmpptr3 = Talk_macro_get_field (inbuf, 3)) == NULL)
+                        if ((tmpptr3 = Talk_macro_get_field(inbuf, 3)) == NULL)
                         {
                             xperror("Talk_macro_get_field (3) error!");
-                            free (tmpptr1);
-                            free (tmpptr2);
+                            free(tmpptr1);
+                            free(tmpptr2);
                             break;
                         }
-                        pos = Talk_macro_parse_mesg (outbuf, tmpptr3, pos, max);
+                        pos = Talk_macro_parse_mesg(outbuf, tmpptr3, pos, max);
                     }
                     else if (n_fields == 4)
                     {
                         /* False */
-                        if ((tmpptr3 = Talk_macro_get_field (inbuf, 4)) == NULL)
+                        if ((tmpptr3 = Talk_macro_get_field(inbuf, 4)) == NULL)
                         {
                             xperror("Talk_macro_get_field (4) error!");
-                            free (tmpptr1);
-                            free (tmpptr2);
+                            free(tmpptr1);
+                            free(tmpptr2);
                             break;
                         }
-                        pos = Talk_macro_parse_mesg (outbuf, tmpptr3, pos, max);
+                        pos = Talk_macro_parse_mesg(outbuf, tmpptr3, pos, max);
                     }
                     inbuf = nextpos;
-                    free (tmpptr1);
-                    free (tmpptr2);
-                    free (tmpptr3);
+                    free(tmpptr1);
+                    free(tmpptr2);
+                    free(tmpptr3);
                     break;
                 case 'f':
-                    nextpos = Talk_macro_fields_info (inbuf, &n_fields);
-                    if (n_fields != 1 || nextpos == NULL) {
+                    nextpos = Talk_macro_fields_info(inbuf, &n_fields);
+                    if (n_fields != 1 || nextpos == NULL)
+                    {
                         break;
                     }
-                    if ((tmpptr = Talk_macro_get_field (inbuf, 1)) == NULL) {
+                    if ((tmpptr = Talk_macro_get_field(inbuf, 1)) == NULL)
+                    {
                         xperror("Talk_macro_get_field error!");
                         break;
                     }
                     inbuf = nextpos;
-                    if ((filename = (char *)malloc (TALK_FAST_MSG_FNLEN))
-                            == NULL) {
+                    if ((filename = (char *)malloc(TALK_FAST_MSG_FNLEN)) == NULL)
+                    {
                         xperror("Can't allocate memory for talk macro.");
                         break;
                     }
 
-                    Talk_macro_parse_mesg (filename, tmpptr, 0,
-                                            TALK_FAST_MSG_FNLEN);
-                    free (tmpptr);
-                    if ((fp = fopen (filename, "r")) == NULL) {
+                    Talk_macro_parse_mesg(filename, tmpptr, 0,
+                                          TALK_FAST_MSG_FNLEN);
+                    free(tmpptr);
+                    if ((fp = fopen(filename, "r")) == NULL)
+                    {
                         xperror("Couldn't open file %s", tmpptr);
-                        free (filename);
+                        free(filename);
                         break;
                     }
-                    free (filename);
+                    free(filename);
 
                     /* Get filesize */
-                    fseek (fp, 0L, SEEK_END);
-                    fsize = ftell (fp);
-                    rewind (fp);
+                    fseek(fp, 0L, SEEK_END);
+                    fsize = ftell(fp);
+                    rewind(fp);
 
-                    if ((tmpptr = (char *)malloc(fsize+1)) == NULL) {
-                        fclose (fp);
+                    if ((tmpptr = (char *)malloc(fsize + 1)) == NULL)
+                    {
+                        fclose(fp);
                         break;
                     }
-                    fread (tmpptr, 1, fsize, fp);
+                    fread(tmpptr, 1, fsize, fp);
                     tmpptr[fsize] = '\0';
-                    fclose (fp);
-                    pos = Talk_macro_parse_mesg (outbuf, tmpptr, pos, max);
-                    free (tmpptr);
+                    fclose(fp);
+                    pos = Talk_macro_parse_mesg(outbuf, tmpptr, pos, max);
+                    free(tmpptr);
                     break;
                 case 'h':
-                    tmpptr = getenv ("HOME");
-                    if (tmpptr != NULL) {
-                        while (*tmpptr != '\0' && pos < max - 2) {
+                    tmpptr = getenv("HOME");
+                    if (tmpptr != NULL)
+                    {
+                        while (*tmpptr != '\0' && pos < max - 2)
+                        {
                             outbuf[pos++] = *tmpptr++;
                         }
                     }
                     break;
                 case 'r':
-                    nextpos = Talk_macro_fields_info (inbuf, &n_fields);
+                    nextpos = Talk_macro_fields_info(inbuf, &n_fields);
                     if (n_fields <= 0 || nextpos == NULL)
-                      break;
-                    if ((tmpptr = Talk_macro_get_field (inbuf,
-                                                    randomMT() % n_fields + 1))
-                          == NULL) {
+                        break;
+                    if ((tmpptr = Talk_macro_get_field(inbuf,
+                                                       randomMT() % n_fields + 1)) == NULL)
+                    {
                         xperror("Talk_macro_get_field error (random)");
                         break;
                     }
                     inbuf = nextpos;
-                    pos = Talk_macro_parse_mesg (outbuf, tmpptr, pos, max);
-                    free (tmpptr);
+                    pos = Talk_macro_parse_mesg(outbuf, tmpptr, pos, max);
+                    free(tmpptr);
                     break;
                 case 'n':
                     outbuf[pos] = '\0';
 
-                    if ( Net_talk(outbuf) == -1 ) {
+                    if (Net_talk(outbuf) == -1)
+                    {
                         return -1;
                     }
                     pos = 0;
                     break;
                 case 'l':
-                    if ( !snooping ) {
-                        if ((player = Other_by_id(lock_id)) == NULL) {
-                          pos = 0;
-                          done = 1;
-                          break;
+                    if (!snooping)
+                    {
+                        if ((player = Other_by_id(lock_id)) == NULL)
+                        {
+                            pos = 0;
+                            done = 1;
+                            break;
                         }
-                    } else {
-                        if ((player = Other_by_id(eyesId)) == NULL) {
-                          pos = 0;
-                          done = 1;
-                          break;
+                    }
+                    else
+                    {
+                        if ((player = Other_by_id(eyesId)) == NULL)
+                        {
+                            pos = 0;
+                            done = 1;
+                            break;
                         }
                     }
                     break;
@@ -377,8 +395,9 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     player = self;
                     break;
                 case 't':
-                    if (BIT(Setup->mode, TEAM_PLAY)) {
-                      outbuf[pos++] = self->team + '0';
+                    if (BIT(Setup->mode, TEAM_PLAY))
+                    {
+                        outbuf[pos++] = self->team + '0';
                     }
                     break;
                 case TALK_FAST_SPECIAL_TALK_CHAR:
@@ -402,18 +421,17 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
     return pos;
 }
 
-
 int Talk_macro(char *str)
 {
     /* Comment: sizeof str === MAX_CHARS */
-    if (str == NULL) {
+    if (str == NULL)
+    {
         return 1;
     }
 
-    if (Talk_macro_parse_mesg (final_str, str, 0L, MAX_CHARS) > 0) {
+    if (Talk_macro_parse_mesg(final_str, str, 0L, MAX_CHARS) > 0)
+    {
         Net_talk(final_str);
     }
     return 0;
 }
-
-

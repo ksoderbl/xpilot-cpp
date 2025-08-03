@@ -27,6 +27,8 @@ libxpclient_a_SOURCES = \
     protoclient.h \
     query.cpp \
     talk.h \
+    talkmacros.cpp \
+    textinterface.cpp \
     xpmread.h
 
 SUBDIRS = . items x11

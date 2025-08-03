@@ -26,8 +26,6 @@ xpilot_cpp_client_x11_SOURCES = \
     simbloods.h \
     sim.cpp \
     talk.cpp \
-    talkmacros.cpp \
-    textinterface.cpp \
     welcome.cpp \
     widget.cpp \
     widget.h \
