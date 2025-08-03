@@ -108,11 +108,11 @@ extern Window radarWindow;
 extern Window playersWindow;
 extern Window aboutWindow; /* The About window */
 
-extern Pixmap p_draw;  /* Drawing area pixmap */
-extern Pixmap p_radar; /* Radar drawing pixmap */
-extern Pixmap s_radar; /* Second radar drawing pixmap */
-extern long dpl_1[2];  /* Used by radar hack */
-extern long dpl_2[2];  /* Used by radar hack */
+extern Pixmap drawPixmap; /* Drawing area pixmap */
+extern Pixmap p_radar;    /* Radar drawing pixmap */
+extern Pixmap s_radar;    /* Second radar drawing pixmap */
+extern long dpl_1[2];     /* Used by radar hack */
+extern long dpl_2[2];     /* Used by radar hack */
 
 extern Window about_close_b;      /* About close button */
 extern Window about_next_b;       /* About next page button */

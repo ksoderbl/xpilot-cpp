@@ -177,7 +177,7 @@ static void Paint_items(void)
             y = itemtype_ptr[i].y;
             if (wrap(&x, &y))
             {
-                Paint_item((u_byte)itemtype_ptr[i].type, p_draw, gameGC,
+                Paint_item((u_byte)itemtype_ptr[i].type, drawPixmap, gameGC,
                            WINSCALE(X(x)), WINSCALE(Y(y)));
             }
         }

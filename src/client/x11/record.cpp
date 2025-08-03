@@ -590,7 +590,7 @@ static int RDrawArc(Display *display, Drawable drawable, GC gc,
                     int angle1, int angle2)
 {
     XDrawArc(display, drawable, gc, x, y, width, height, angle1, angle2);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         putc(RC_DRAWARC, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
@@ -608,7 +608,7 @@ static int RDrawLines(Display *display, Drawable drawable, GC gc,
                       XPoint *points, int npoints, int mode)
 {
     XDrawLines(display, drawable, gc, points, npoints, mode);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         int i;
         XPoint *xp = points;
@@ -631,7 +631,7 @@ static int RDrawLine(Display *display, Drawable drawable, GC gc,
                      int x2, int y2)
 {
     XDrawLine(display, drawable, gc, x1, y1, x2, y2);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         putc(RC_DRAWLINE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
@@ -648,7 +648,7 @@ static int RDrawRectangle(Display *display, Drawable drawable, GC gc,
                           unsigned width, unsigned height)
 {
     XDrawRectangle(display, drawable, gc, x, y, width, height);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         putc(RC_DRAWRECTANGLE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
@@ -665,7 +665,7 @@ static int RDrawString(Display *display, Drawable drawable, GC gc,
                        const char *string, int length)
 {
     XDrawString(display, drawable, gc, x, y, string, length);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         int i;
         XGCValues values;
@@ -689,7 +689,7 @@ static int RFillArc(Display *display, Drawable drawable, GC gc,
                     int angle1, int angle2)
 {
     XFillArc(display, drawable, gc, x, y, width, height, angle1, angle2);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         putc(RC_FILLARC, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
@@ -708,7 +708,7 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
                         int shape, int mode)
 {
     XFillPolygon(display, drawable, gc, points, npoints, shape, mode);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         int i;
         XPoint *xp = points;
@@ -730,7 +730,7 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
 static void RPaintItemSymbol(unsigned char type, Drawable drawable, GC mygc,
                              int x, int y, int color)
 {
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         putc(RC_PAINTITEMSYMBOL, recordFP);
         RWriteGC(gameGC, GCForeground | GCBackground);
@@ -745,7 +745,7 @@ static int RFillRectangle(Display *display, Drawable drawable, GC gc,
                           unsigned width, unsigned height)
 {
     XFillRectangle(display, drawable, gc, x, y, width, height);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         putc(RC_FILLRECTANGLE, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
@@ -761,7 +761,7 @@ static int RFillRectangles(Display *display, Drawable drawable, GC gc,
                            XRectangle *rectangles, int nrectangles)
 {
     XFillRectangles(display, drawable, gc, rectangles, nrectangles);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         int i;
 
@@ -783,7 +783,7 @@ static int RDrawArcs(Display *display, Drawable drawable, GC gc,
                      XArc *arcs, int narcs)
 {
     XDrawArcs(display, drawable, gc, arcs, narcs);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         int i;
 
@@ -807,7 +807,7 @@ static int RDrawSegments(Display *display, Drawable drawable, GC gc,
                          XSegment *segments, int nsegments)
 {
     XDrawSegments(display, drawable, gc, segments, nsegments);
-    if (drawable == p_draw)
+    if (drawable == drawPixmap)
     {
         int i;
 

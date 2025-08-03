@@ -96,8 +96,8 @@ Window playersWindow;  /* Player list window */
 Window aboutWindow;    /* About window */
 Window talkWindow;     /* Talk window */
 
-Pixmap p_draw; /* Saved pixmap for the drawing */
-               /* area (monochromes use this) */
+Pixmap drawPixmap; /* Saved pixmap for the drawing */
+                   /* area (monochromes use this) */
 
 Window about_close_b; /* About window's close button */
 Window about_next_b;  /* About window's next button */
@@ -313,7 +313,7 @@ void Paint_frame(void)
 
     if (dbuf_state->type == PIXMAP_COPY)
     {
-        XCopyArea(dpy, p_draw, drawWindow, gameGC,
+        XCopyArea(dpy, drawPixmap, drawWindow, gameGC,
                   0, 0, ext_view_width, ext_view_height, 0, 0);
     }
 
@@ -335,7 +335,7 @@ void Paint_frame(void)
         if (dbuf_state->multibuffer_type != MULTIBUFFER_DBE)
         {
             SET_FG(colors[BLACK].pixel);
-            XFillRectangle(dpy, p_draw, gameGC, 0, 0, draw_width, draw_height);
+            XFillRectangle(dpy, drawPixmap, gameGC, 0, 0, draw_width, draw_height);
         }
     }
 

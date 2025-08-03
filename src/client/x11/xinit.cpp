@@ -742,7 +742,7 @@ int Init_playing_windows(void)
     case PIXMAP_COPY:
         p_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         s_radar = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        p_draw = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
+        drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
         break;
 
     case MULTIBUFFER:
@@ -754,7 +754,7 @@ int Init_playing_windows(void)
     case COLOR_SWITCH:
         s_radar = radarWindow;
         p_radar = radarWindow;
-        p_draw = drawWindow;
+        drawPixmap = drawWindow;
         Paint_sliding_radar();
         break;
     }
@@ -856,8 +856,8 @@ void Resize(Window w, int width, int height)
     XResizeWindow(dpy, drawWindow, draw_width, draw_height);
     if (dbuf_state->type == PIXMAP_COPY)
     {
-        XFreePixmap(dpy, p_draw);
-        p_draw = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
+        XFreePixmap(dpy, drawPixmap);
+        drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
     }
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
     XResizeWindow(dpy, playersWindow,

@@ -93,7 +93,7 @@ void Gui_paint_ball(int x, int y)
         if (ballTile != None)
         {
             XSetTSOrigin(dpy, gameGC, WINSCALE(x - BALL_RADIUS), WINSCALE(y - BALL_RADIUS));
-            rd.fillArc(dpy, p_draw, gameGC,
+            rd.fillArc(dpy, drawPixmap, gameGC,
                        WINSCALE(x - BALL_RADIUS), WINSCALE(y - BALL_RADIUS),
                        WINSCALE(2 * BALL_RADIUS), WINSCALE(2 * BALL_RADIUS),
                        0, 64 * 360);
@@ -113,7 +113,7 @@ void Gui_paint_ball(int x, int y)
 
         x = X(x);
         y = Y(y);
-        PaintBitmap(p_draw, BM_BALL, WINSCALE(x - BALL_RADIUS),
+        PaintBitmap(drawPixmap, BM_BALL, WINSCALE(x - BALL_RADIUS),
                     WINSCALE(y - BALL_RADIUS), WINSCALE(BALL_RADIUS * 2 + 1),
                     WINSCALE(BALL_RADIUS * 2 + 1), 0);
     }
@@ -143,7 +143,7 @@ static void Gui_paint_mine_name(int x, int y, char *name)
 
     if (name != NULL)
     {
-        rd.drawString(dpy, p_draw, gameGC,
+        rd.drawString(dpy, drawPixmap, gameGC,
                       WINSCALE(x) - name_width / 2,
                       WINSCALE(y + 4) + gameFont->ascent + 1,
                       name, name_len);
@@ -197,13 +197,13 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
         if (teammine == 0)
         {
             SET_FG(colors[BLUE].pixel);
-            rd.fillRectangle(dpy, p_draw, gameGC,
+            rd.fillRectangle(dpy, drawPixmap, gameGC,
                              WINSCALE(x - 7), WINSCALE(y - 2),
                              WINSCALE(15), WINSCALE(5));
         }
 
         SET_FG(colors[WHITE].pixel);
-        rd.drawLines(dpy, p_draw, gameGC,
+        rd.drawLines(dpy, drawPixmap, gameGC,
                      mine_points, 21, CoordModePrevious);
 
         if (name)
@@ -218,13 +218,13 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
         if (teammine == 0)
         {
             SET_FG(colors[BLUE].pixel);
-            PaintBitmap(p_draw, BM_MINE_OTHER, WINSCALE(x - 10), WINSCALE(y - 7),
+            PaintBitmap(drawPixmap, BM_MINE_OTHER, WINSCALE(x - 10), WINSCALE(y - 7),
                         WINSCALE(21), WINSCALE(15), 0);
         }
         else
         {
             SET_FG(colors[WHITE].pixel);
-            PaintBitmap(p_draw, BM_MINE_TEAM, WINSCALE(x - 10), WINSCALE(y - 7),
+            PaintBitmap(drawPixmap, BM_MINE_TEAM, WINSCALE(x - 10), WINSCALE(y - 7),
                         WINSCALE(21), WINSCALE(15), 0);
         }
 
@@ -262,7 +262,7 @@ void Gui_paint_wreck(int x, int y, bool deadly, int wtype, int rot, int size)
 
     color = (deadly) ? WHITE : RED;
     SET_FG(colors[color].pixel);
-    rd.drawLines(dpy, p_draw, gameGC, points, cnt, 0);
+    rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
 }
 
 void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
@@ -281,7 +281,7 @@ void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
     points[cnt++] = points[0];
 
     SET_FG(colors[WHITE].pixel);
-    rd.drawLines(dpy, p_draw, gameGC, points, cnt, 0);
+    rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
 }
 
 static void Gui_paint_nastyshot(int color, int x, int y, int size)
@@ -330,7 +330,7 @@ void Gui_paint_fastshot(int color, int x, int y)
     {
         int s_size = (shot_size > 8) ? 8 : shot_size;
         int z = s_size / 2;
-        PaintBitmap(p_draw, BM_BULLET, WINSCALE(x) - z, WINSCALE(y) - z, 8, 8, s_size - 1);
+        PaintBitmap(drawPixmap, BM_BULLET, WINSCALE(x) - z, WINSCALE(y) - z, 8, 8, s_size - 1);
     }
 }
 
@@ -344,7 +344,7 @@ void Gui_paint_teamshot(int color, int x, int y)
     {
         int s_size = (teamshot_size > 8) ? 8 : shot_size;
         int z = s_size / 2;
-        PaintBitmap(p_draw, BM_BULLET_OWN, WINSCALE(x) - z, WINSCALE(y) - z, 8, 8, s_size - 1);
+        PaintBitmap(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z, WINSCALE(y) - z, 8, 8, s_size - 1);
     }
 }
 
@@ -369,7 +369,7 @@ void Gui_paint_missile(int x, int y, int len, int dir)
     y1 = Y(y);
     x2 = (int)(x1 - tcos(dir) * len);
     y2 = (int)(y1 + tsin(dir) * len);
-    rd.drawLine(dpy, p_draw, gameGC,
+    rd.drawLine(dpy, drawPixmap, gameGC,
                 WINSCALE(x1), WINSCALE(y1), WINSCALE(x2), WINSCALE(y2));
 }
 
@@ -396,7 +396,7 @@ void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
         color = WHITE;
     }
     SET_FG(colors[color].pixel);
-    rd.drawLine(dpy, p_draw, gameGC,
+    rd.drawLine(dpy, drawPixmap, gameGC,
                 WINSCALE(X(x1)), WINSCALE(Y(y1)),
                 WINSCALE(X(x2)), WINSCALE(Y(y2)));
 }
@@ -418,18 +418,18 @@ void Gui_paint_paused(int x, int y, int count)
         SET_FG(colors[BLUE].pixel);
         x0 = X(x - half_pause_size);
         y0 = Y(y + half_pause_size);
-        rd.fillRectangle(dpy, p_draw, gameGC,
+        rd.fillRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(x0), WINSCALE(y0),
                          WINSCALE(2 * half_pause_size + 1), WINSCALE(2 * half_pause_size + 1));
         if (count <= 0 || loops % 10 >= 5)
         {
             SET_FG(colors[mono ? BLACK : WHITE].pixel);
-            rd.drawRectangle(dpy, p_draw, gameGC,
+            rd.drawRectangle(dpy, drawPixmap, gameGC,
                              WINSCALE(x0 - 1),
                              WINSCALE(y0 - 1),
                              WINSCALE(2 * (half_pause_size + 1)),
                              WINSCALE(2 * (half_pause_size + 1)));
-            rd.drawString(dpy, p_draw, gameGC,
+            rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(X(x)) - pauseCharWidth / 2,
                           WINSCALE(Y(y - 1)) + gameFont->ascent / 2,
                           "P", 1);
@@ -437,7 +437,7 @@ void Gui_paint_paused(int x, int y, int count)
     }
     else
     {
-        PaintBitmap(p_draw, BM_PAUSED, WINSCALE(X(x - BLOCK_SZ / 2)),
+        PaintBitmap(drawPixmap, BM_PAUSED, WINSCALE(X(x - BLOCK_SZ / 2)),
                     WINSCALE(Y(y + BLOCK_SZ / 2)), WINSCALE(35), WINSCALE(35),
                     (count <= 0 || loops % 10 >= 5) ? 1 : 0);
     }
@@ -455,7 +455,7 @@ void Gui_paint_refuel(int x0, int y0, int x1, int y1)
 {
     if (!blockBitmaps)
     {
-        rd.drawLine(dpy, p_draw, gameGC,
+        rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(X(x0)), WINSCALE(Y(y0)),
                     WINSCALE(X(x1)), WINSCALE(Y(y1)));
     }
@@ -474,7 +474,7 @@ void Gui_paint_refuel(int x0, int y0, int x1, int y1)
         dy = (double)(y1 - y0) / 16;
         for (i = 0; i < 16; i++)
         {
-            PaintBitmap(p_draw, BM_REFUEL, (int)(x0 + (dx * i) - size / 2),
+            PaintBitmap(drawPixmap, BM_REFUEL, (int)(x0 + (dx * i) - size / 2),
                         (int)(y0 + (dy * i) - size / 2), size, size,
                         fuel[(loops + 16 - i) % 16]);
         }
@@ -491,7 +491,7 @@ void Gui_paint_connector(int x0, int y0, int x1, int y1, int tractor)
     {
         rd.setDashes(dpy, gameGC, 0, dashes, NUM_DASHES);
     }
-    rd.drawLine(dpy, p_draw, gameGC,
+    rd.drawLine(dpy, drawPixmap, gameGC,
                 WINSCALE(X(x0)), WINSCALE(Y(y0)),
                 WINSCALE(X(x1)), WINSCALE(Y(y1)));
     if (tractor)
@@ -502,7 +502,7 @@ void Gui_paint_connector(int x0, int y0, int x1, int y1, int tractor)
 
 void Gui_paint_transporter(int x0, int y0, int x1, int y1)
 {
-    rd.drawLine(dpy, p_draw, gameGC,
+    rd.drawLine(dpy, drawPixmap, gameGC,
                 WINSCALE(X(x0)), WINSCALE(Y(y0)),
                 WINSCALE(X(x1)), WINSCALE(Y(y1)));
 }
@@ -549,7 +549,7 @@ static void Gui_paint_rounddelay(int x, int y)
     t = strlen(s);
     SET_FG(colors[WHITE].pixel);
     text_width = XTextWidth(gameFont, s, t);
-    rd.drawString(dpy, p_draw, gameGC,
+    rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(X(x)) - text_width / 2,
                   WINSCALE(Y(y)) + gameFont->ascent / 2,
                   s, t);
@@ -560,7 +560,7 @@ static void Gui_paint_ship_name(int x, int y, other_t *other)
 {
     FIND_NAME_WIDTH(other);
     SET_FG(colors[WHITE].pixel);
-    rd.drawString(dpy, p_draw, gameGC,
+    rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(X(x)) - other->name_width / 2,
                   WINSCALE(Y(y) + 16) + gameFont->ascent,
                   other->name, other->name_len);
@@ -691,7 +691,7 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
     if (ecolor != -1)
     { /* outer shield */
         SET_FG(colors[ecolor].pixel);
-        rd.drawArc(dpy, p_draw, gameGC,
+        rd.drawArc(dpy, drawPixmap, gameGC,
                    WINSCALE(X(x - half_e_radius)),
                    WINSCALE(Y(y + half_e_radius)),
                    WINSCALE(e_radius), WINSCALE(e_radius),
@@ -700,7 +700,7 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
     if (scolor != -1)
     {
         SET_FG(colors[scolor].pixel);
-        rd.drawArc(dpy, p_draw, gameGC,
+        rd.drawArc(dpy, drawPixmap, gameGC,
                    WINSCALE(X(x - half_radius)),
                    WINSCALE(Y(y + half_radius)),
                    WINSCALE(radius), WINSCALE(radius),
@@ -713,7 +713,7 @@ static void Set_drawstyle_dashed(int ship_color, int cloak);
 static void Gui_paint_ship_cloaked(int ship_color, XPoint *points, int point_count)
 {
     Set_drawstyle_dashed(ship_color, 1);
-    rd.drawLines(dpy, p_draw, gameGC, points, point_count, 0);
+    rd.drawLines(dpy, drawPixmap, gameGC, points, point_count, 0);
 }
 
 static void Gui_paint_ship_phased(int ship_color, XPoint *points, int point_count)
@@ -723,7 +723,7 @@ static void Gui_paint_ship_phased(int ship_color, XPoint *points, int point_coun
 
 static void generic_paint_ship(int x, int y, int ang, int ship)
 {
-    PaintBitmap(p_draw, ship, WINSCALE(X(x) - 16), WINSCALE(Y(y) - 16),
+    PaintBitmap(drawPixmap, ship, WINSCALE(X(x) - 16), WINSCALE(Y(y) - 16),
                 WINSCALE(32), WINSCALE(32), ang);
 }
 
@@ -736,10 +736,10 @@ static void Gui_paint_ship_uncloaked(int id, XPoint *points,
         XChangeGC(dpy, gameGC, GCLineStyle, &gcv);
     }
     SET_FG(colors[ship_color].pixel);
-    rd.drawLines(dpy, p_draw, gameGC, points, point_count, 0);
+    rd.drawLines(dpy, drawPixmap, gameGC, points, point_count, 0);
     if (lock_id == id && id != -1 && lock_dist != 0)
     {
-        rd.fillPolygon(dpy, p_draw, gameGC,
+        rd.fillPolygon(dpy, drawPixmap, gameGC,
                        points, point_count,
                        Complex, CoordModeOrigin);
     }

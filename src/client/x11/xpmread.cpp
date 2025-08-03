@@ -56,12 +56,11 @@ static const char *xpm_key_strings[XPM_nkeys] = {
     "g4",
     "g",
     "c",
-    "s"
-};
+    "s"};
 
 static void xpm_print_error(XPM_read *xpmr)
 {
-    char                buf[1024 + 256];
+    char buf[1024 + 256];
 
     sprintf(buf, "XPM read %s%s%s",
             xpmr->filename ? xpmr->filename : "internal data",
@@ -88,19 +87,22 @@ static int xpm_read_error(XPM_read *xpmr, const char *err_str)
  */
 static char *xpm_next_token(XPM_read *xpmr)
 {
-    char                *ptr, *tok;
+    char *ptr, *tok;
 
     /* free any previous token */
-    if (xpmr->token) {
+    if (xpmr->token)
+    {
         free(xpmr->token);
         xpmr->token = NULL;
     }
 
     ptr = xpmr->ptr;
 
-    do {
+    do
+    {
         /* skip whitespace */
-        while (isascii(*ptr) && isspace(*ptr)) {
+        while (isascii(*ptr) && isspace(*ptr))
+        {
             ptr++;
         }
 
@@ -108,9 +110,12 @@ static char *xpm_next_token(XPM_read *xpmr)
         tok = ptr;
 
         /* skip comments. */
-        if (*ptr == '/' && ptr[1] == '*') {
-            for (ptr += 2; *ptr; ptr++) {
-                if (*ptr == '*' && ptr[1] == '/') {
+        if (*ptr == '/' && ptr[1] == '*')
+        {
+            for (ptr += 2; *ptr; ptr++)
+            {
+                if (*ptr == '*' && ptr[1] == '/')
+                {
                     ptr += 2;
                     break;
                 }
@@ -121,25 +126,32 @@ static char *xpm_next_token(XPM_read *xpmr)
     } while (*ptr && ptr > tok);
 
     /* if some data remains... */
-    if (*ptr) {
+    if (*ptr)
+    {
 
         /* find end of token and let `ptr' point to last char of token. */
 
         /* if it's a string. */
-        if (*ptr == '"') {
+        if (*ptr == '"')
+        {
             /* find end of string. */
-            for (ptr++; *ptr; ptr++) {
-                if (*ptr == '"') {
+            for (ptr++; *ptr; ptr++)
+            {
+                if (*ptr == '"')
+                {
                     break;
                 }
             }
         }
         /* if it's something else. */
-#define ISKEYWORD(c)        (isupper(c) || islower(c) || (c) == '_')
-#define ISKEYWORDEXT(c)        (ISKEYWORD(c) || isdigit(c))
-        else if (isascii(*ptr) && ISKEYWORD(*ptr)) {
-            for (ptr++; *ptr; ptr++) {
-                if (!isascii(*ptr) || !ISKEYWORDEXT(*ptr)) {
+#define ISKEYWORD(c) (isupper(c) || islower(c) || (c) == '_')
+#define ISKEYWORDEXT(c) (ISKEYWORD(c) || isdigit(c))
+        else if (isascii(*ptr) && ISKEYWORD(*ptr))
+        {
+            for (ptr++; *ptr; ptr++)
+            {
+                if (!isascii(*ptr) || !ISKEYWORDEXT(*ptr))
+                {
                     break;
                 }
             }
@@ -148,9 +160,11 @@ static char *xpm_next_token(XPM_read *xpmr)
         }
 
         /* if a token remains copy it. */
-        if (*ptr) {
+        if (*ptr)
+        {
             int len = ptr - tok + 1;
-            if ((xpmr->token = (char *)malloc(len + 1)) != NULL) {
+            if ((xpmr->token = (char *)malloc(len + 1)) != NULL)
+            {
                 memcpy(xpmr->token, tok, len);
                 xpmr->token[len] = '\0';
             }
@@ -172,8 +186,10 @@ static char *xpm_next_token(XPM_read *xpmr)
  */
 static char *xpm_next_string(XPM_read *xpmr)
 {
-    if (xpmr->static_data) {
-        if (xpmr->token) {
+    if (xpmr->static_data)
+    {
+        if (xpmr->token)
+        {
             free(xpmr->token);
         }
         /* point to next string. */
@@ -181,15 +197,19 @@ static char *xpm_next_string(XPM_read *xpmr)
         /* static_data may point to read-only memory (Linux). */
         xpmr->token = xp_strdup(*xpmr->static_data);
     }
-    else {
+    else
+    {
         /* skip any non-string tokens. */
-        while (xpm_next_token(xpmr)) {
-            if (xpmr->token[0] == '"') {
+        while (xpm_next_token(xpmr))
+        {
+            if (xpmr->token[0] == '"')
+            {
                 /* strip the string double quotes. */
                 char *str = xp_strdup(xpmr->token + 1);
                 free(xpmr->token);
                 xpmr->token = str;
-                if (str && (str = strchr(str, '"')) != NULL) {
+                if (str && (str = strchr(str, '"')) != NULL)
+                {
                     *str = '\0';
                 }
                 break;
@@ -203,46 +223,55 @@ static char *xpm_next_string(XPM_read *xpmr)
 
 static int xpm_parse_data(XPM_read *xpmr)
 {
-    unsigned                size;
-    int                        i, j, k, m, num_keys;
-    char                *key, *str;
-    unsigned char        *pixelp;
+    unsigned size;
+    int i, j, k, m, num_keys;
+    char *key, *str;
+    unsigned char *pixelp;
 
     if (sscanf(xpmr->token, "%u %u %u %u",
                &xpmr->xpm->width, &xpmr->xpm->height,
-               &xpmr->xpm->ncolors, &xpmr->xpm->cpp) != 4) {
+               &xpmr->xpm->ncolors, &xpmr->xpm->cpp) != 4)
+    {
         return xpm_read_error(xpmr, "Incorrect values specification");
     }
 
-    if (xpmr->xpm->ncolors > 256) {
+    if (xpmr->xpm->ncolors > 256)
+    {
         return xpm_read_error(xpmr, "Too many colors defined");
     }
 
     size = xpmr->xpm->ncolors * sizeof(XPM_color);
-    if (!(xpmr->xpm->colors = (XPM_color *)malloc(size))) {
+    if (!(xpmr->xpm->colors = (XPM_color *)malloc(size)))
+    {
         return xpm_read_error(xpmr, "Not enough memory");
     }
     memset(xpmr->xpm->colors, 0, size);
 
     size = xpmr->xpm->ncolors * sizeof(char *);
-    if (!(xpmr->chars_ptr = (char **)malloc(size))) {
+    if (!(xpmr->chars_ptr = (char **)malloc(size)))
+    {
         return xpm_read_error(xpmr, "Not enough memory");
     }
     memset(xpmr->chars_ptr, 0, size);
 
     size = xpmr->xpm->ncolors * (xpmr->xpm->cpp + 1);
-    if (!(xpmr->chars_mem = (char *)malloc(size))) {
+    if (!(xpmr->chars_mem = (char *)malloc(size)))
+    {
         return xpm_read_error(xpmr, "Not enough memory");
     }
     memset(xpmr->chars_mem, 0, size);
 
-    for (i = 0; i < xpmr->xpm->ncolors; i++) {
+    for (i = 0; i < xpmr->xpm->ncolors; i++)
+    {
         xpmr->chars_ptr[i] = &xpmr->chars_mem[i * (xpmr->xpm->cpp + 1)];
-        if (!xpm_next_string(xpmr)) {
+        if (!xpm_next_string(xpmr))
+        {
             return xpm_read_error(xpmr, "Premature end-of-data");
         }
-        for (j = 0; j < xpmr->xpm->cpp; j++) {
-            if (!(xpmr->chars_ptr[i][j] = xpmr->token[j])) {
+        for (j = 0; j < xpmr->xpm->cpp; j++)
+        {
+            if (!(xpmr->chars_ptr[i][j] = xpmr->token[j]))
+            {
                 return xpm_read_error(xpmr, "Incomplete color specification");
             }
         }
@@ -250,47 +279,61 @@ static int xpm_parse_data(XPM_read *xpmr)
         num_keys = 0;
         for (key = strtok(&xpmr->token[j + 1], " \t");
              key != NULL && (str = strtok(NULL, " \t")) != NULL;
-             key = strtok(NULL, " \t")) {
-             for (k = 0; k < XPM_nkeys; k++) {
-                 if (!strcmp(xpm_key_strings[k], key)) {
-                     if (xpmr->xpm->colors[i].keys[k]) {
-                         /* key already defined for this color! */
-                         break;
-                     }
-                     xpmr->xpm->colors[i].keys[k] = xp_strdup(str);
-                     num_keys++;
-                     break;
-                 }
-             }
+             key = strtok(NULL, " \t"))
+        {
+            for (k = 0; k < XPM_nkeys; k++)
+            {
+                if (!strcmp(xpm_key_strings[k], key))
+                {
+                    if (xpmr->xpm->colors[i].keys[k])
+                    {
+                        /* key already defined for this color! */
+                        break;
+                    }
+                    xpmr->xpm->colors[i].keys[k] = xp_strdup(str);
+                    num_keys++;
+                    break;
+                }
+            }
         }
-        if (num_keys == 0) {
+        if (num_keys == 0)
+        {
             return xpm_read_error(xpmr, "Incomplete color specification");
         }
     }
 
     size = xpmr->xpm->width * xpmr->xpm->height;
-    if (!(xpmr->xpm->pixels = (unsigned char *)malloc(size))) {
+    if (!(xpmr->xpm->pixels = (unsigned char *)malloc(size)))
+    {
         return xpm_read_error(xpmr, "Not enough memory");
     }
     pixelp = xpmr->xpm->pixels;
-    for (j = 0; j < xpmr->xpm->height; j++) {
-        if (!xpm_next_string(xpmr)) {
+    for (j = 0; j < xpmr->xpm->height; j++)
+    {
+        if (!xpm_next_string(xpmr))
+        {
             return xpm_read_error(xpmr, "Premature end-of-data");
         }
         str = xpmr->token;
-        for (i = 0; i < xpmr->xpm->width; i++) {
-            for (k = 0; k < xpmr->xpm->ncolors; k++) {
-                for (m = 0; m < xpmr->xpm->cpp; m++) {
-                    if (xpmr->chars_ptr[k][m] != str[m]) {
+        for (i = 0; i < xpmr->xpm->width; i++)
+        {
+            for (k = 0; k < xpmr->xpm->ncolors; k++)
+            {
+                for (m = 0; m < xpmr->xpm->cpp; m++)
+                {
+                    if (xpmr->chars_ptr[k][m] != str[m])
+                    {
                         break;
                     }
                 }
-                if (m == xpmr->xpm->cpp) {
+                if (m == xpmr->xpm->cpp)
+                {
                     *pixelp = k;
                     break;
                 }
             }
-            if (k == xpmr->xpm->ncolors) {
+            if (k == xpmr->xpm->ncolors)
+            {
                 return xpm_read_error(xpmr, "Unmatched pixel");
             }
             pixelp++;
@@ -303,19 +346,23 @@ static int xpm_parse_data(XPM_read *xpmr)
 
 static int xpm_parse_buffer(XPM_read *xpmr)
 {
-    static const char        XPM_header[] = "/* XPM */";
+    static const char XPM_header[] = "/* XPM */";
 
-    if ((xpmr->ptr = strstr(xpmr->ptr, XPM_header)) == NULL) {
+    if ((xpmr->ptr = strstr(xpmr->ptr, XPM_header)) == NULL)
+    {
         return xpm_read_error(xpmr, "Can't find XPM header");
     }
     xpmr->ptr += strlen(XPM_header);
 
-    while (xpm_next_token(xpmr)) {
-        if (!strcmp(xpmr->token, "{")) {        /* no matching "}" */
+    while (xpm_next_token(xpmr))
+    {
+        if (!strcmp(xpmr->token, "{"))
+        { /* no matching "}" */
             break;
         }
     }
-    if (!xpm_next_string(xpmr)) {
+    if (!xpm_next_string(xpmr))
+    {
         return xpm_read_error(xpmr, "Premature end-of-data");
     }
 
@@ -324,24 +371,28 @@ static int xpm_parse_buffer(XPM_read *xpmr)
 
 static int xpm_load_data(XPM_read *xpmr)
 {
-    int                        fd;
-    unsigned                size;
-    struct stat                st;
+    int fd;
+    unsigned size;
+    struct stat st;
 
-    if ((fd = open(xpmr->filename, O_RDONLY)) == -1) {
+    if ((fd = open(xpmr->filename, O_RDONLY)) == -1)
+    {
         return xpm_read_error(xpmr, NULL);
     }
-    if (fstat(fd, &st)) {
+    if (fstat(fd, &st))
+    {
         close(fd);
         return xpm_read_error(xpmr, xpmr->filename);
     }
     size = (unsigned)st.st_size;
     xpmr->data_size = size;
-    if (!(xpmr->data = (char *)malloc(size + 1))) {
+    if (!(xpmr->data = (char *)malloc(size + 1)))
+    {
         close(fd);
         return xpm_read_error(xpmr, "Not enough memory");
     }
-    if (read(fd, xpmr->data, size) != size) {
+    if (read(fd, xpmr->data, size) != size)
+    {
         free(xpmr->data);
         xpmr->data = NULL;
         close(fd);
@@ -356,19 +407,23 @@ static int xpm_load_data(XPM_read *xpmr)
 
 static void xpm_free_xpmr(XPM_read *xpmr)
 {
-    if (xpmr->data) {
+    if (xpmr->data)
+    {
         free(xpmr->data);
         xpmr->data = NULL;
     }
-    if (xpmr->token) {
+    if (xpmr->token)
+    {
         free(xpmr->token);
         xpmr->token = NULL;
     }
-    if (xpmr->chars_ptr) {
+    if (xpmr->chars_ptr)
+    {
         free(xpmr->chars_ptr);
         xpmr->chars_ptr = NULL;
     }
-    if (xpmr->chars_mem) {
+    if (xpmr->chars_mem)
+    {
         free(xpmr->chars_mem);
         xpmr->chars_mem = NULL;
     }
@@ -376,11 +431,13 @@ static void xpm_free_xpmr(XPM_read *xpmr)
 
 static void xpm_free_xpm(XPM *xpm)
 {
-    if (xpm->colors) {
+    if (xpm->colors)
+    {
         free(xpm->colors);
         xpm->colors = NULL;
     }
-    if (xpm->pixels) {
+    if (xpm->pixels)
+    {
         free(xpm->pixels);
         xpm->pixels = NULL;
     }
@@ -388,17 +445,19 @@ static void xpm_free_xpm(XPM *xpm)
 
 static int xpm_read_xpm_from_file(char *filename, XPM *xpm)
 {
-    XPM_read                xpmr;
+    XPM_read xpmr;
 
     memset(&xpmr, 0, sizeof(xpmr));
     xpmr.filename = filename;
     xpmr.xpm = xpm;
 
-    if (xpm_load_data(&xpmr) == 0) {
+    if (xpm_load_data(&xpmr) == 0)
+    {
         xpm_parse_buffer(&xpmr);
         xpm_free_xpmr(&xpmr);
     }
-    if (xpmr.error_str) {
+    if (xpmr.error_str)
+    {
         xpm_print_error(&xpmr);
         xpm_free_xpm(xpm);
         return -1;
@@ -408,7 +467,7 @@ static int xpm_read_xpm_from_file(char *filename, XPM *xpm)
 
 static int xpm_read_xpm_from_data(const char **data, XPM *xpm)
 {
-    XPM_read                xpmr;
+    XPM_read xpmr;
 
     memset(&xpmr, 0, sizeof(xpmr));
     xpmr.xpm = xpm;
@@ -417,7 +476,8 @@ static int xpm_read_xpm_from_data(const char **data, XPM *xpm)
 
     xpm_parse_data(&xpmr);
     xpm_free_xpmr(&xpmr);
-    if (xpmr.error_str) {
+    if (xpmr.error_str)
+    {
         xpm_print_error(&xpmr);
         xpm_free_xpm(xpm);
         return -1;
@@ -428,30 +488,38 @@ static int xpm_read_xpm_from_data(const char **data, XPM *xpm)
 static int xpm_colors_to_pixels(XPM *xpm, enum XPM_key key,
                                 unsigned long *pixels)
 {
-    int                        i, j, k;
-    XColor                xcolor;
-    char                *color_name;
+    int i, j, k;
+    XColor xcolor;
+    char *color_name;
 
-    for (i = 0; i < xpm->ncolors; i++) {
+    for (i = 0; i < xpm->ncolors; i++)
+    {
         memset(&xcolor, 0, sizeof(xcolor));
         color_name = NULL;
-        for (k = key; k >= 0; k--) {
-            if (xpm->colors[i].keys[k]) {
+        for (k = key; k >= 0; k--)
+        {
+            if (xpm->colors[i].keys[k])
+            {
                 color_name = xpm->colors[i].keys[k];
                 if (XParseColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
-                                color_name, &xcolor)) {
+                                color_name, &xcolor))
+                {
                     break;
                 }
                 printf("Can't parse color \"%s\"\n", color_name);
                 color_name = NULL;
             }
         }
-        if (!color_name) {
-            for (k = key + 1; k <= XPM_c; k++) {
-                if (xpm->colors[i].keys[k]) {
+        if (!color_name)
+        {
+            for (k = key + 1; k <= XPM_c; k++)
+            {
+                if (xpm->colors[i].keys[k])
+                {
                     color_name = xpm->colors[i].keys[k];
                     if (XParseColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
-                                    color_name, &xcolor)) {
+                                    color_name, &xcolor))
+                    {
                         break;
                     }
                     printf("Can't parse color \"%s\"\n", color_name);
@@ -459,24 +527,29 @@ static int xpm_colors_to_pixels(XPM *xpm, enum XPM_key key,
                 }
             }
         }
-        if (!color_name) {
-            if (xpm->colors[i].keys[XPM_s]
-                && !strcmp(xpm->colors[i].keys[XPM_s], "None")) {
+        if (!color_name)
+        {
+            if (xpm->colors[i].keys[XPM_s] && !strcmp(xpm->colors[i].keys[XPM_s], "None"))
+            {
                 pixels[i] = colors[BLACK].pixel;
             }
-            else {
+            else
+            {
                 return -1;
             }
         }
-        else {
-            unsigned        dr, dg, db, dist, mindist = UINT_MAX;
+        else
+        {
+            unsigned dr, dg, db, dist, mindist = UINT_MAX;
 
-            for (j = 0; j < maxColors; j++) {
+            for (j = 0; j < maxColors; j++)
+            {
                 dr = xcolor.red - colors[j].red;
                 dg = xcolor.green - colors[j].green;
                 db = xcolor.blue - colors[j].blue;
                 dist = sqr(dr) + sqr(dg) + sqr(db);
-                if (dist < mindist) {
+                if (dist < mindist)
+                {
                     mindist = dist;
                     pixels[i] = colors[j].pixel;
                 }
@@ -488,47 +561,58 @@ static int xpm_colors_to_pixels(XPM *xpm, enum XPM_key key,
 
 static XImage *xpm_convert_to_image(XPM *xpm)
 {
-    XImage                *img;
-    int                        i, j;
-    unsigned char        *ptr;
-    enum XPM_key        key;
-    unsigned long        pixels[256];
+    XImage *img;
+    int i, j;
+    unsigned char *ptr;
+    enum XPM_key key;
+    unsigned long pixels[256];
 
-    if (mono) {
+    if (mono)
+    {
         key = XPM_m;
     }
-    else if (visual->class == GrayScale) {
-        if (maxColors == 4) {
+    else if (visual->class == GrayScale)
+    {
+        if (maxColors == 4)
+        {
             key = XPM_g4;
         }
-        else {
+        else
+        {
             key = XPM_g;
         }
     }
-    else {
+    else
+    {
         key = XPM_c;
     }
 
-    if (xpm_colors_to_pixels(xpm, key, pixels)) {
+    if (xpm_colors_to_pixels(xpm, key, pixels))
+    {
         return NULL;
     }
 
     img = XCreateImage(dpy, visual, dispDepth, ZPixmap,
                        0, NULL, xpm->width, xpm->height,
-                       (dispDepth <= 8) ? 8 : (dispDepth <= 16) ? 16 : 32,
+                       (dispDepth <= 8) ? 8 : (dispDepth <= 16) ? 16
+                                                                : 32,
                        0);
-    if (!img) {
+    if (!img)
+    {
         xperror("Can't create XImage");
         return NULL;
     }
-    if (!(img->data = (char *)malloc(img->bytes_per_line * xpm->height))) {
+    if (!(img->data = (char *)malloc(img->bytes_per_line * xpm->height)))
+    {
         xperror("Can't allocate XImage data");
         XDestroyImage(img);
         return NULL;
     }
     ptr = (unsigned char *)xpm->pixels;
-    for (j = 0; j < xpm->height; j++) {
-        for (i = 0; i < xpm->width; i++) {
+    for (j = 0; j < xpm->height; j++)
+    {
+        for (i = 0; i < xpm->width; i++)
+        {
             XPutPixel(img, i, j, pixels[*ptr]);
             ptr++;
         }
@@ -538,15 +622,18 @@ static XImage *xpm_convert_to_image(XPM *xpm)
 
 static Pixmap xpm_image_to_pixmap(XPM *xpm, XImage *img)
 {
-    Pixmap                pixmap;
-    GC                        pixgc;
+    Pixmap pixmap;
+    GC pixgc;
 
-    pixmap = XCreatePixmap(dpy, p_draw, xpm->width, xpm->height, dispDepth);
-    if (pixmap != None) {
+    pixmap = XCreatePixmap(dpy, drawPixmap, xpm->width, xpm->height, dispDepth);
+    if (pixmap != None)
+    {
         pixgc = XCreateGC(dpy, pixmap, 0, NULL);
         XPutImage(dpy, pixmap, pixgc, img, 0, 0, 0, 0, xpm->width, xpm->height);
         XFreeGC(dpy, pixgc);
-    } else {
+    }
+    else
+    {
         xperror("Can't create XPM pixmap");
     }
     return pixmap;
@@ -554,10 +641,11 @@ static Pixmap xpm_image_to_pixmap(XPM *xpm, XImage *img)
 
 static Pixmap xpm_convert_to_pixmap(XPM *xpm)
 {
-    Pixmap                pixmap;
-    XImage                *img;
+    Pixmap pixmap;
+    XImage *img;
 
-    if (!(img = xpm_convert_to_image(xpm))) {
+    if (!(img = xpm_convert_to_image(xpm)))
+    {
         return None;
     }
     pixmap = xpm_image_to_pixmap(xpm, img);
@@ -570,11 +658,12 @@ static Pixmap xpm_convert_to_pixmap(XPM *xpm)
 
 Pixmap xpm_pixmap_from_data(const char **data)
 {
-    XPM                        xpm;
-    Pixmap                pixmap;
+    XPM xpm;
+    Pixmap pixmap;
 
     memset(&xpm, 0, sizeof(xpm));
-    if (xpm_read_xpm_from_data(data, &xpm)) {
+    if (xpm_read_xpm_from_data(data, &xpm))
+    {
         return None;
     }
     pixmap = xpm_convert_to_pixmap(&xpm);
@@ -584,11 +673,12 @@ Pixmap xpm_pixmap_from_data(const char **data)
 
 Pixmap xpm_pixmap_from_file(char *filename)
 {
-    XPM                        xpm;
-    Pixmap                pixmap;
+    XPM xpm;
+    Pixmap pixmap;
 
     memset(&xpm, 0, sizeof(xpm));
-    if (xpm_read_xpm_from_file(filename, &xpm)) {
+    if (xpm_read_xpm_from_file(filename, &xpm))
+    {
         return None;
     }
     pixmap = xpm_convert_to_pixmap(&xpm);
@@ -598,15 +688,16 @@ Pixmap xpm_pixmap_from_file(char *filename)
 
 XImage *xpm_image_from_pixmap(Pixmap pixmap)
 {
-    XImage                *img;
-    Window                rootw;
-    int                        x, y;
-    unsigned                width, height, border_width, depth;
+    XImage *img;
+    Window rootw;
+    int x, y;
+    unsigned width, height, border_width, depth;
 
     if (!XGetGeometry(dpy, pixmap, &rootw,
                       &x, &y,
                       &width, &height,
-                      &border_width, &depth)) {
+                      &border_width, &depth))
+    {
         xperror("Can't get pixmap geometry");
         return NULL;
     }
@@ -614,7 +705,8 @@ XImage *xpm_image_from_pixmap(Pixmap pixmap)
                     0, 0,
                     width, height,
                     AllPlanes, ZPixmap);
-    if (!img) {
+    if (!img)
+    {
         xperror("Can't get Image from Pixmap");
         return NULL;
     }
@@ -692,4 +784,3 @@ char **xpm_data_from_pixmap(Pixmap pixmap)
 }
 
 #endif
-
