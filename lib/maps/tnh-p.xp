@@ -1,0 +1,472 @@
+# Created by xp-mapedit on Mon Mar  8 16:14:52 2004
+
+itemmass:0.1
+port:9900
+contactport:9900
+clientportstart:9900
+clientportend:9915
+firewallportlist:9900-9915
+maxclientsperip:20
+numcontrolconnections:10
+idlerun:yes
+pausescorereduce:0
+logrobots:no
+robotfile:/usr/local/xpilot/lib/beatles
+
+mapwidth : 200
+mapheight : 200
+mapname : TAG - Nuke Hell (poly required)
+mapauthor : Venable.us
+limitedlives : no
+selfimmunity : yes
+gravity : 0.0
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : no
+gravityvisible : yes
+coriolis : 0
+friction : 0.0
+blockfriction : 0.0
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+shipmass : 7
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 80
+maxplayershots : 256
+firerepeatrate : 2
+keepshots : yes
+edgewrap : yes
+extraborder : no
+turnthrust : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 7
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 10
+robotrealname : robot
+robothostname : xpilot.org
+shotswallbounce : yes
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : yes
+debriswallbounce : yes
+asteroidswallbounce : yes
+wreckagecollisionmaykill : no
+tankrealname : tank
+tankhostname : tanks.org
+maxobjectwallbouncespeed : 40
+maxshieldedwallbouncespeed : 180
+maxunshieldedwallbouncespeed : 180
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.4
+objectwallbouncebrakefactor : 0.4
+objectwallbouncelifefactor : 1.0
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+wormholevisible : yes
+itemconcentratorvisible : yes
+blockfrictionvisible : yes
+wormtime : 0
+playerstartsshielded : yes
+shieldeditempickup : no
+shieldedmining : no
+allowalliances : yes
+announcealliances : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+targetdeadtime : 60
+treasurekillteam : no
+treasurecollisiondestroys : no
+treasurecollisionmaykill : no
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+connectorisstring : no
+ballcollisions : no
+ballsparkcollisions : yes
+ballmass : 50.0
+playersonradar : yes
+missilesonradar : yes
+minesonradar : yes
+nukesonradar : yes
+treasuresonradar : no
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+capturetheflag : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : yes
+cannonsdefend : no
+cannonsmartness : 1
+cannondeadtime : 72
+cannonflak : yes
+identifymines : yes
+maxminesperpack : 2
+minelife : 0
+minefusetime : 0
+baseminerange : 0
+mineshotdetonatedistance : 0
+roguemineprob : 0
+nukeminmines : 4
+minminespeed : 0
+nukeclusterdamage : 1.0
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+distinguishmissiles : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 0
+nukeminsmarts : 2
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+asteroidconcentratorvisible : yes
+asteroidconcentratorradius : 10
+asteroidmaxitems : 0
+allowshipshapes : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+laserisstungun : yes
+maxroundtime : 0
+gameduration : 0.0
+rounddelay : 0
+roundstoplay : 0
+reset : no
+resetonhuman : 0
+maxpausetime : 0
+checkpointradius : 6.0
+racelaps : 3
+ballrace : no
+ballraceconnected : no
+itemconcentratorradius : 10
+usewreckage : yes
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 14
+initialfuel : 2500
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 0
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 1
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 0
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxfuel : 10000
+maxtanks : 8
+maxecms : 10
+maxmines : 99
+maxmissiles : 99
+maxcloaks : 99
+maxsensors : 10
+maxwideangles : 15
+maxrearshots : 10
+maxafterburners : 15
+maxtransporters : 10
+maxdeflectors : 99
+maxphasings : 15
+maxhyperjumps : 99
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxmirrors : 10
+maxarmor : 10
+maxoffensiveitems : 700
+maxdefensiveitems : 700
+maxitemdensity : 0.000346021
+itemenergypackprob : 4.01323e-09
+itemtankprob : 2.40292e-09
+itemecmprob : 1.92426e-09
+itemmineprob : 6.40779e-09
+itemmissileprob : 1.92426e-09
+itemcloakprob : 1.60596e-09
+itemsensorprob : 1.60596e-09
+itemwideangleprob : 2.70371e-09
+itemrearshotprob : 2.94386e-09
+itemafterburnerprob : 2.7462e-09
+itemtransporterprob : 0
+itemlaserprob : 1.60596e-09
+itememergencythrustprob : 0
+itemtractorbeamprob : 0
+itemautopilotprob : 0
+itememergencyshieldprob : 1.60596e-09
+itemdeflectorprob : 1e-09
+itemhyperjumpprob : 1e-09
+itemphasingprob : 1e-09
+itemmirrorprob : 1e-09
+itemarmorprob : 1e-09
+movingitemprob : 0.3
+dropitemonkillprob : 1.0
+detonateitemonkillprob : 0.0
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+randomitemprob : 0.04
+asteroidprob : 5e-7
+asteroidconcentratorprob : 1.0
+asteroiditemprob : 0.0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidpoints : 1.0
+asteroidmaxscore : 100.0
+cannonpoints : 1.0
+cannonmaxscore : 1000.0
+teamsharescore : no
+
+mapData: \multiline: EndOfMapdata
+                                                                               !!!                    axxxxxx                                                                                           
+            !!!!!!!!!!!!!!!!!!!!!                                             q!!!w                       axx                                           !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            
+                                                                              !!!!!w                                                                                                                    
+                                                                           @  !!!!!!                                                                                                                    
+                                                                              !!!!s                                                                                                                     
+                                                                              !!!s                                                                                                                      
+                                                                              a!s    @                                                                                                                  
+                                                                               !                                                                                                                        
+                                                                                                                                              xw                    qxxxxxxxxxxxx!xx!xx!xx!xw           
+                                                                                                                                              ax!!!!!!xx   !!!!!!!  axxxxxxxxxxxx!xx!xx!xx!xx           
+                                                                               @                                                                      ax             axxxxxs      cc cc cc!!!           
+                                                                                                    x!xxxxx                                            xw             axxxx               dxx           
+          qxxxxxxxxxxxxx!x                                                                         qx!xxxxxw                                           ax               axx               dxx           
+          xxxxxxxxxxxx!!!s                                                                         xx     xxw                                           !                axw               !!           
+  !       xxs    ( !!x!xs                                                                          xxxxxx   xw                                          xw                ax              dxx           
+  !       xx       x!!!s                                xw                                         xxx xxx#  xxw                                        axw                #w             dxx           
+  !       xx       xxxx                                 xxxw                                       xx        xxxxx                                       xxw               ##w             !!           
+  !       xx       xxxs                                qxxxxxwqx  xx                               ax  xxxxxxxxxxx                                        axxw              ##w           dxx           
+  !       xx _    qxxx                               xxxxxxxxxxxwqxxxxw                             xx  xxx     xs                                          axw              ##w          dxx           
+  !       xx      ##s                                axxf   xxxxxx   xx                             axx xx!!#xx xw                                           axxw             ##w          !!           
+  !       xx     q#                                   xxf    #xxxx!x  xw                             xx    xx   xxxx                                           axw             axw        dxx           
+  !       xx   q###                                   xx     #xxxx!x  xx                             xxx  xx  xx  xxw                                           ax              axw       dxx           
+  !       xxw qxx#                                    xxx    #xxxx!x xxs                             xxxxxx   xx   xx                                            !               axw       xx           
+  !       xxxxxxs                                       axxx  xxxx!x                                 xxxxx   xx#!x  xw                                           xw               axw     qxx           
+  !       xxxxxs                                         xxxx !xxx!xxxx                              axxxxx  xxx!xx xx                                           ax                axxxxxxxxx           
+  !       xxxxs                                           axxx!xx#!xxxxw                               axxxx  xx  x xxw                                           xw                axxxxxxxx           
+  !       xxxs                                             xxx! x#!xxxxxxxx                               axx  x  x xxxxx                                         ax                 axxxxxxx           
+  !       xxs                                              xxxx  #!xxxxxxs                                 axx   xx  xxxxw                                         xw                 axxxxxx           
+  !       xs                                                axxx   xxxxxxw                                  axx##xxx !!xxxw                                        ax                  axxxxx           
+  !                                                          xxxxx   xxxxx                                   xxf   xxx  xxx                                         xw                   axxx           
+  !                                                          xxxxxxx  xxxx                                   xxf    xxx xxx                                         axw                   xxx           
+  !                                                          xxxxxxxx   xxw                                  axxxxx   x  xxw                                         axxw                 axx           
+  !                                                            axxxxxxx!!xxxx                                 xxsqs   xx   xw                                          axxw                ax           
+  !                                                             xxxxxxxx  xxxxx                               xs x    xxxx  xw                                           axw                            
+  !                                                               axxxxxx  xxxxw                                 xx      xx !#x                                           axxw                          
+  !                                                                xsaxxxx  xxxxxxw                              axxxxxx  xx!#x                                             axw                         
+  !                                                                x  xxxxx    xxxxxx                               axsax   !#x                                              axw                        
+  !                                                                   axxxxx       xxw                                  xxxxxxx                                               xx                        
+  !                                                                    xsaxx       d#x                                   axxxs                                                ax            !           
+  !                                                                       xx       d#x                                                                                         xw           !           
+  !                                                                       axx      d#s                                                                                         ax           !           
+                                                                           axxxxxxxxs                                                                                           xw          !           
+                                                                            xxxxsaxs                                                                                            axw         !           
+                                                                                                                                                                                 ax                     
+                                                                                                                                                                                  xw                    
+                                                                                                                                                                                  axw     qx            
+                          !                                                                                                                                                        ax!!!!!xs            
+                          !                                                                                                                                                                             
+                          !                                                                                                                                         !                                   
+                          !                                                                                                                                         !                                   
+                          !                !                                                 !w        !!                                           !               !                                   
+                          !                !                                       qx!!      !!        a!       !!!!!xw                             xw              !                                   
+                          !                !                                      qxs        a!         !            ax!!!!!w                       ax              !                                   
+                          !                !                                 !!!!!!           !         !                   !!!!xw                   xw             !                                   
+  !                       !                !                              !!!                 !          !                      ax!!!!xw             ax             !                      !            
+  !                      q!                 !                         !!!!                   !!          !!                           ax!!!xw         xw            !                      !            
+  !                   !!!!!                 !                        !                       !            !!                               ax         ax            !                      !            
+  !                      a!                 !                      !!                                                                                  xw           !w                     !            
+  !                       !                 !                    !!                                                                                    ax           !!!!!!                 !            
+  !                   !   !                  !                 !!!                                                                                      xw          !s                     !            
+  !                   !w_q!                  !                                                                                                          ax          !                      !            
+  !                   !!!!!                  !                                                                        !!                                 xw         !    !                 !            
+  !                      a!                  !                                                                          !!                               ax         !    !                 !            
+  !                       !                   !                                                                           !!                              xw        !w_ q!                 !            
+  !                       !                   !                                                                             !!                            axw       !!!!!!                 !            
+  !                       !                   !                                                                               !                            ax       !s                     !            
+  !                       !                   !                           !                                                    !xw                                  !                      !            
+  !                       !                    !                          !                                                     axxw                                !                      !            
+  !                       !                    !                         !                                                        axxw                              !                      !            
+  !                       !                    !                         !                                                           x!                             !                      !            
+  !                   !!!!!                    !                        !                                                              !                            !                      !            
+  !                       !                    !                       !                                                                !!                          !                      !            
+  !                   ! ( !                     !                      !                                                                  !!                        !                      !            
+  !f                  !   !                     !                     !                                                                     !!                      !                     d!            
+  !                   ! _ !                     !                    !                                                                        !!                    !!!!!!                 !            
+  !                   !!!!!                     !                    !                                                                          !                   !                      !            
+  !                       !                      !                  !                                                                            !                  ! (  !                 !            
+  !                       !                      !                 !                                                                                                !    !                 !            
+  !                       !                      !                r!                                        )                                                       !    !                 !            
+  !                       !                      !               r!                                                                                                 ! _  !                 !            
+  !                       !                       !              !            )                                                                                     !!!!!!                 !            
+  !                       !                       !             r!                                                                                                  !                      !            
+  !                       !                       !            r!                                                                                                   !                      !            
+  !                   !!!!!     !!                !            !                                                                                                    !                      !            
+  !                      !!       !                !                                                      !                                                         !                      !            
+  !                       !        !                                                                      !r                                                        !                      !            
+  !                   !   !         !                                                                      !r                                                       !                      !            
+  !                   ! _ !          !                                                                      !r                                                      !!!!!!                 !            
+  !                   !!!!!           !                                                                      !r                                                     !                      !            
+  !                       !            !                                                                      !                                                     !                      !            
+                          !             !                                                                     !                                                     !    !                              
+                          !              !                                                                     !                                                    !    !                              
+                          !               !                                !                                    !                                     !             ! _  !                              
+  !                       !                !!                             !                                      !                                    !             !!!!!!                 !            
+  !                       !                  !                           !                                        x                                   !             !                      !            
+  !                       !                   !                         !                                         x                                   !             !                      !            
+  !                       !                    !                       !                                           !                                  !             !                      !            
+  !                       !                     !                     !                                             !                                 !             !                      !            
+  !                   !!!!!                      !                   !                                               !                               !              !                      !            
+  !                       !                       !                 !                                                 x                              !              !                      !            
+  !                   ! ( !                        !               !                                                  x                              !              !                      !            
+  !f                  !   !                         !             !                                                    !                             !              !!!!!!                d!            
+  !                   ! _ !                          !           !                          @                           !                            !              !                      !            
+  !                   !!!!!                           !         !                                                        !                           !              ! (  !                 !            
+  !                       !                                    !                           !!!!                           x                         !               !    !                 !            
+  !                       !                                   !                            !!!! @                         x                         !               !    !                 !            
+  !                       !                                  !                           @ !!!!                            !                        !               ! _  !                 !            
+  !                       !                                 !                              !!!!                             !                       !               !!!!!!                 !            
+  !                       !                                !                                                                 !                      !               !                      !            
+  !                       !                              qxs                                 @                                !                     !               !                      !            
+  !                       !                             qxs                                                                                        !                !                      !            
+  !                       !                            qxs                                                                                         !                !                      !            
+  !                       !                           qxs                                                                                          !                !                      !            
+  !                   !!!!!                          qxs                                                                                           !                !                      !            
+  !                       !                         qxs                                                                                            !                !                      !            
+  !                       !                        qxs                                                                                             !                !!!!!!                 !            
+  !                   !   !                       qxs                                                                                             !                 !                      !            
+  !                   ! _ !           !           !s                                                                                                                !                      !            
+  !                   !!!!!           !           !                                                                                                                 !    !                 !            
+  !                       !           !                                                                                                                             !    !                 !            
+  !                       !           !                                     _     _     _          _     _       _       _                                          !w_ q!                 !            
+  !                       !           !                                     !!!!!!!!!!!!!!!        !!!!!!!!!!!!!!!!!!!!!!!                                          !!!!!!                 !            
+  !                       !           !                                                                                                                             !s                     !            
+  !                       !           !                                                                                                                             !                      !            
+  !                       !           !                     xw                                                                                                      !                      !            
+  !                       !           !                     axw                                                                                                     !                      !            
+  !                   !!!!!           !                      axw                                                                                                    !                      !            
+  !                       !           !                       axw                                                                         r                         !w                     !            
+  !                   ! ( !           !                        axw                                                                        !                         !!!!!!                 !            
+  !                   !   !           !                         axw                                                                      !                          !s                     !            
+  !f                  ! _ !           !                          axxw                                                                   !                           ! (  !                d!            
+  !                   !!!!!           xw                           axw                                                                !!                            !    !                 !            
+  !                       !           ax                            axw        )                                                     !                              !    !                 !            
+  !                       !            !                             axw                                            )               !                 qx            !w_ q!                 !            
+  !                       !            !                              axw                                                         !!                qxxs            !!!!!!                 !            
+  !                       !            !              r                axw                                                       !                qxxs              !s                     !            
+  !                       !            !              xxw               axxw                                                   !!                xxs                !                      !            
+  !                       !            !               axxw               axw                                                 !                !!s                  !                      !            
+  !                   !!!!!            !                 axw               axw                                               !              !!!                     !                      !            
+                          !            !                  axxw              axw                                            !!             !!                        !                                   
+                          !            !                    axxw             axw                                          !             !!                          !                                   
+                      !   !            !                      axw             axw                                       !!            !!                            !                                   
+                      ! _ !            !                       axxw            axxw                                    !            !!                              !                                   
+  !                   !!!!!            !                         axxw            axw                                  !          !!!                                !                                   
+  !                       !            !                           axw            axw                              qx!                                              !                                   
+  !                       !            !                            ax             axw                            qxs                                               !w                                  
+  !                       !            xw                                           axw                          !xs                                                !!!!!!                              
+  !                       !            ax                                            ax!                                                                            !s                                  
+  !                       !                                                                                                                                         !                                   
+                          !                                                               _                                                                         !    !                              
+                          !                                                         qx!!!!!                     _       _      _      _     _                       !    !                              
+                          !                                                   qx!!!!xs                       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                       !w_ q!                              
+                          !                                             qx!!!!xs                                                                                    !!!!!!                              
+                          !                                       qx!!!!xs                                                                                          !s                                  
+                          !                                       xs                                                                                                !                                   
+  !     !  !!w            !                                                                                                                                         !                                   
+  !     !   a!!w          !                                                                                                                                         !                     qx!xw         
+  !     !     a!!w        !                                                                                                                                         !                   qxxs ax         
+  !     !       a!!w      !                                                                                                                                         !                qx!xs    xw        
+  !     !         ax                                                                                                                                                !              qxxs       ax        
+  !     !                                                                                                                                                                         qxs          !        
+  !     !                                                                                                                                                                         xs           !        
+  !     !               !                         qxxxxxxxw                                                                                                                      qx            !        
+  !     !               !w                        xxxxxxxxxxw                                                                                                                   qxs            !        
+  !                     axw                       !!!xx#xxxxx                                                                                                                   xs             !        
+  !                      a!                       xx xxc  xxx                                                                                                                  qx                       
+  !                       !w                      xx xx x   xw  xw                                                                                                            qxs                       
+  !                       axw                     x  xx xxx xxwqxxxxx                                                                                                         xs                        
+  !     !!                 a!                     x xxx  xx!x#xx   xxw                                                                                                       qx                         
+  !     xxw                 !w                    x  ##  xx!xc  !x d xw                                                                                                     qxs                         
+  !     !!xw                axw                   xx !! xx  x xxxxx# xxx                                                                                                    xs              qxxx        
+  !     xxxxw                a!                   xxxxxxxx x  xcccxx  xx                                             xw                                                    qx              qxxxx        
+  !     !!xxxw                !w                  xxxxxxxx x  x   xxx xx                                       qxxxw axx                                                  qxs             qxxxxx        
+  !     xxxxxxw               axw                 axx#f   rxx x   xxx  x                                      xxxxxxwqxxw                                                qxs             qxxxxxx        
+  !     !!xxxxxw               a!                  axxx xx#x  x    xxx!x                                      axxxxxxxxxxxwqx                                          qxxs             qxxxxxxx        
+  !     xxxxxxxxw               !w                  xxx    ! x      x#!x                                      qx#x     xxxxxs                                         qxs              #xxxxxxxx        
+  !     !!xxxxxxx#              axw                   ax xxxx#f     x#!x                                      xxc  xxx  xxxx                                        qxxs              #xxxxxxxxx        
+  !     xxxxxxxxxx#              ax                    xxxxxx#f        x                                      xx xxx  x xxs                                        qxs               #xxxxxxxxxx        
+  !     !!xxxxxxxxx#                                   xxs axxf        x                                     qxx!xx   x xx                                       qxxs               #s      axxx        
+  !     xxs        a#                                       xxf       #x                                     xxx!x  #rx xxw                                     qxs               ##s       dxxx        
+  !     !!          a#                                      ax        xs                                     xxx x  xx  xxx                                    qxs               ##s        dxxx        
+  !     xx           #                                       xx      #x                                      xxx xx    xxs                                    qxs               qxs         dxxx        
+  !     xx           xw                !                     xxx    #xs                                   xwqxxx  xx  xxx                                     !!               qxs          dxxx        
+  !     !!           xxw               !w                     axxxxxxs                                    xxxx ax  xxxxs                                      !!              qxx           dxxx        
+  !     xx           xxxw              axw                                                               qxx   d#  xxxx                                       xs             qxxx           dxxx        
+  !     xx           xxxxw              a!                                                              qxxx!xxxx xxxxx                                      qx             qxxxx           dxxx        
+  !     !!           xxxxxw              !w                                                            xxxxx!xx   xxxxx                                      xs            qxxxxx           dxxx        
+  !     xx           xxxxxxw             axw                                                           axxxx    xxxxxxx                                     qx            qxxxxxx           dxxx        
+  !     xx          qxxxxxxxw             a!                                                           qxxx  xxxxxxxxxs                                     xs           qxxxxxxx           dxxx        
+  !     !!!rr rr rr xxxxxxxxxw                                                                        xxxxx xxxxxxxxxx                                     qx           qxxxxxxxxw          qxxx        
+        xx!xx!xx!xx!xxxxxxxxxx                                                                        xx!      x#xxs                                       !s          qxxxxxxxxxxxxxxxxxxxxxxxx        
+        ax!xx!xx!xx!xxxxxxxxxx   !!!!!!!!                                                             xx!xxxxx  cxx                                                    xxxxxxxxxxxxxxxxxxxxxxxxx        
+                                                                                                      xx    d#xx xx                                         !!!!!!!    xxxxxxxxxxxxxxxxxxxxxxxxs        
+                                                                                                   xwqxxxxxxxxxx xx                                                                                     
+                                                                                                   xxxxx      !! xx                                                                                     
+                                                                                                   xxxx  xxxx xxxxs                                                                                     
+                                                                                                   axx  #!!!xxxsax                                                                                      
+                                                                                                   qxx xx x axx                                                                                         
+                                                                               **   @              xxx  x xw                                                                                            
+                                                                               !!w                  axx   xxw                                                                                           
+EndOfMapdata
