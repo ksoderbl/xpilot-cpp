@@ -1,0 +1,171 @@
+#Created by MapXpress 4.5.0 on Sat Apr 08 15:06:56 2006
+
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+mapwidth : 200
+mapheight : 100
+mapname : The Warp Acclerator V4
+mapauthor : AcnotAlpha
+maxplayershots : 999
+edgebounce : no
+edgewrap : yes
+selfimmunity : yes
+maxrobots : 3
+shotswallbounce : yes
+mineswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : yes
+debriswallbounce : yes
+keepshots : yes
+minesonradar : yes
+treasuresonradar : yes
+shieldeditempickup : yes
+cannonsuseitems : yes
+allowplayerkilling : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+initialfuel : 2000
+maxtanks : 50
+maxmines : 30
+maxmissiles : 20
+maxwideangles : 20
+maxrearshots : 20
+itemecmprob : 1e-5
+itemmineprob : 1e-5
+itemwideangleprob : 1e-5
+itemrearshotprob : 1e-3
+
+mapData: \multiline: EndOfMapdata
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                @                                                                                                                                                       
+                                   @                                                                                                                                                                    
+                                         @               @                                                                                                                                              
+                                                                                                       mmmjjjjjjjjjjj                                                                                   
+                                                  @                                                    m------------j                                                                                   
+                 @        @           @                            @        @                          m-mjjjjjjjjj-j                                                                                   
+                                                                                                       m-m        i-i                                                                                   
+                                @                        @                                             m-m        i-i                                                                                   
+                                             @                                                         m-m   )    i-i                                                                                   
+                                                                                                       m-m  ) )   i-i                                                                                   
+                                  @                  @        @                                        m-m   )    i-i                                                                                   
+                                                @    @              @      @                           m-m        i-i                                                                                   
+                         @                                                                             m-m        i-i                                                                                   
+                                                                              @                        k-kkkkkkkkki-i                                                                                   
+                                      @                                                                k------------i                                                                                   
+                @                                       @     @                                        kkkkkkkkkkkiii                                                                                   
+                                                                                                                                                                                                        
+                                              @                       @                                                                                                                                 
+                                                                                                                                                                                                        
+                          @                                                                                                                                                                             
+                                          @                                                                                                                                                             
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                       @                                                                                                                                                
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                                                                             
+             _$kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk                                                                                                                             
+               kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk                                                                                                                             
+             _$kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk                                                                                                                             
+               ------------------------------------------------------------                                                                                                                             
+             _$------------------------------------------------------------                                                                                                                             
+               kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk                                                                                                                             
+             _$kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk                                                                                                                             
+               kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk                                                                                                                             
+               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                                                                             
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                           %                                                                                                                                                            
+                                                                                                                                                                                                        
+                %               %                     %                                                                                                                                                 
+                                                                                                                                                                                                        
+                                          %                                                                                                                                                             
+                      %                           %                                                                                                                                                     
+                                                              %                                                                                                                                         
+                              %                                                                                                                                                                         
+                                                                                                                                                                                                        
+                                     %                               %                                                                                                                                  
+                                                        %                                                                                                                                               
+                %                                                                                                                                                                                       
+                                                               %                                                                                                                                        
+                        %                       %                                                                                                                                                       
+                                        %                            #   _         _         _  #                                                                                                       
+                                                                     ############################                                                                                                       
+                                                                                                                                                                                                        
+                                               %          %                                                                                                                                             
+                                                                                                                                                                                                        
+                               %                                                                                                                                                                        
+                                                                     %                                                                                                                                  
+                                        %            %                                                                                                                                                  
+                   %                                                                                                                                                                                    
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                             %                 %                                                                                                                                                        
+                                     %                              #                          #                                                                                                        
+                                                                    ############################                                                                                                        
+                                                       %                                                                                                                                                
+                                            %                                                                                                                                                           
+                                                                                                                                                                                                        
+                                  %                                                                                                                                                                     
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+rrrrrrrrrrrrrrrrrrrrrrrrrrrr                                                                                     rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr                                                     
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx                                                                                     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                                     
+EndOfMapdata
+

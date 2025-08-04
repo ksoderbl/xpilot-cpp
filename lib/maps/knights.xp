@@ -1,0 +1,505 @@
+# Created by ./xp-mapedit on Sun Jul  1 20:37:19 2001
+
+oneplayeronly:no
+timerresolution:0
+ignore20maxfps:yes
+reporttometaserver:yes
+idlerun:yes
+noquit:yes
+contactport:15345
+plockserver:no
+analyticalcollisiondetection:yes
+
+mapwidth : 200
+mapheight : 250
+mapname : Azeroth (knights Only)
+mapauthor : Sir Striker & The Queen
+limitedlives : no
+worldlives : 0
+selfimmunity : no
+gravity : -0.14
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : no
+gravityvisible : no
+coriolis : 0
+friction : 0.0
+blockfriction : 0.0
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+shipmass : 20.0
+shotmass : 0.1
+shotspeed : 30
+shotlife : 45
+maxplayershots : 900
+firerepeatrate : 1
+keepshots : yes
+edgebounce : yes
+edgewrap : yes
+extraborder : no
+turnthrust : no
+robotstalk : no
+robotsleave : no
+robotleavelife : 50
+robotleavescore : -75
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : no
+reserverobotteam : no
+minrobots : -1
+maxrobots : 6
+robotrealname : robot
+robothostname : xpilot.org
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : no
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : no
+debriswallbounce : no
+asteroidswallbounce : yes
+wreckagecollisionmaykill : no
+tankrealname : tank
+tankhostname : tanks.org
+maxobjectwallbouncespeed : 1000
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.4
+objectwallbouncebrakefactor : 0.7
+objectwallbouncelifefactor : 0.99
+wallbouncefueldrainmult : 0.1
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+wormholevisible : no
+itemconcentratorvisible : no
+blockfrictionvisible : yes
+wormtime : 0
+playerstartsshielded : no
+shieldeditempickup : yes
+shieldedmining : yes
+targetkillteam : yes
+targetteamcollision : no
+targetsync : no
+targetdeadtime : 60
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+playersonradar : no
+missilesonradar : no
+minesonradar : no
+nukesonradar : no
+treasuresonradar : yes
+teamplay : no
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+capturetheflag : no
+cloakedexhaust : no
+cloakedshield : yes
+cannonsuseitems : no
+cannonsmartness : 1
+cannondeadtime : 72
+identifymines : yes
+maxminesperpack : 2
+minelife : 0
+minefusetime : 0
+baseminerange : 0
+roguemineprob : 0
+nukeminmines : 3
+minminespeed : 0
+nukeclusterdamage : 1.0
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+distinguishmissiles : yes
+maxmissilesperpack : 2
+missilelife : 0
+rogueheatprob : 0
+nukeminsmarts : 4
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+allowshipshapes : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : no
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : no
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+laserisstungun : no
+maxroundtime : 0
+gameduration : 00
+rounddelay : 0
+roundstoplay : 0
+reset : yes
+timing : no
+checkpointradius : 6.0
+racelaps : 3
+itemconcentratorradius : 10
+usewreckage : yes
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 12
+initialfuel : 900000000
+initialtanks : 3
+initialecms : 2
+initialmines : 4
+initialmissiles : 1
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 1
+initialrearshots : 2
+initialafterburners : 3
+initialtransporters : 0
+initialdeflectors : 1
+initialphasings : 2
+initialhyperjumps : 2
+initialemergencythrusts : 2
+initiallasers : 1
+initialtractorbeams : 1
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 1
+initialarmor : 0
+maxfuel : 10000
+maxtanks : 8
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxdeflectors : 10
+maxphasings : 10
+maxhyperjumps : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxmirrors : 10
+maxarmor : 10
+maxoffensiveitems : 50
+maxdefensiveitems : 50
+maxitemdensity : 0.0001
+itemenergypackprob : 1e-7
+itemtankprob : 1e-7
+itemecmprob : 1e-7
+itemmineprob : 1e-7
+itemmissileprob : 1e-7
+itemcloakprob : 1e-7
+itemsensorprob : 1e-7
+itemwideangleprob : 1e-7
+itemrearshotprob : 1e-7
+itemafterburnerprob : 1e-7
+itemtransporterprob : 1e-7
+itemlaserprob : 1e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 1e-7
+itemautopilotprob : 1e-7
+itememergencyshieldprob : 1e-7
+itemdeflectorprob : 1e-7
+itemhyperjumpprob : 1e-7
+itemphasingprob : 1e-7
+itemmirrorprob : 1e-7
+itemarmorprob : 1e-7
+movingitemprob : 0.3
+dropitemonkillprob : 0.8
+detonateitemonkillprob : 0.1
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 0.05
+cannonitemprobmult : 1.0
+randomitemprob : 0.0
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                     b                                                                  
+                                                                                                                                     b                                                                  
+                                                                                                                                     b                                                                  
+                                                                                                                                     b                                                                  
+                                                                                                                                     b  b                                                               
+                                                                                                                                     b  b                                                               
+                                tby            b                                                                                     b tb  b                                                            
+                                b b            b                 b     b                                                             b b      y       t      tbby         tbbbbby                       
+                               tb by           b                 b     b                                                             b gb  b  bbby tbbb      b  b         b     b                       
+                               bh gb           b  b              b     b   tbby                                                      b  b  b  b  b b  b      gy b         b     b                       
+                               b % b           b  b  $    #      b   bbbbb b  b                                                      b  b  b  b  b b  b       gyb         b     b                       
+                              tb   by          b th y_         t b     b   b                                     $                   b  b  b  b  b gbbb      tbgy y       b     b                       
+                              b bbb b          b b  bbb   b tbbb bbby  b   gbby                        qxxxxxw   _  qxxxxxxxxxw                       b      b  gyb       b     b  b   b tbby  tbby  y  
+y                            tb     by         b gy b  b  b b  b b  b  b      b                       qx    ax(x#x#xxs       axxxxw                   b      b   gy       b  by b  b   b b  b  b  b  bbb
+b                            bh     gb         b  b b  b  b b  b b  b  b   b  b                       x      axs                  x                   b      b  tbgy      b  gbyb  b   b bbbh  bbb   b  
+b                            b       b         b  b b  b  b gbbb b  b  b   gbbh                       x                  x        #               b   b      gbbbh gy     b   gbb  b   b b     b     b  
+b                                                              b                                      #                   x       #               gbbbh             gy    gbbbbbby gbbbh gbbb  gbbb  b  
+                                                               b                                      #                  qx      qx                                             gby                     
+                                                            b  b                                      xw                 x      qxs                                b             gby                    
+                   (                                        gbbh                                      axw                       xs                                 b                                    
+                                                                               b                       axx   xwqx               xw                    b            b                                    
+$                                                                              b                        ax    xx                 x                    b bby        b                                    
+i                                                            b by              b                         x      qxs            qxs                    b   b        b                                    
+_                                                            b  b        tbby  b                         x     qxs            qxs                     b   b        b                                    
+                                                             b  b  tbby  b  b  b  y                      axxxxxxsaxxxxxxw    qxs                      b   b  b  b  b tbby                               
++                                                            b  b  b  b     b  b  bbb bby                          _   axxx#xxs   r                   b  b   b  b  b b  b                               
+                                                             b b   b  b  tbbb  b  b gbh b          r               $             d#f                  b   b  b  b  b bbbh                               
+                                                             b  b  bbbh  b  b  b  b  b  b         qxw                             c                   b   b  b  b  b b                                  
+                                                             b  b  b     b  by b  b     b         a-s                                                 b   b  gbbh  b gbbb                               
+                                                             b  b  gbbh  gbb b b  b     b  qxxxxxw x                                                                                                    
+                                                                                    $      x     xbx                                                                                                    
+                                                                                    _      x     x x                                                                                                    
+                                                                                  qxxxxxxxxx     x x                                                                                                    
+                            $                                                     x        x     x x                                                                                                    
+                            _  qxxxxxxxw                                          x        x     x x                                                                                                    
+                          qxxxxxs     axxxxxxw    qxxxxxw                        wx        x     x x                                                                                                    
+                        qxx                 ax###xxs   axxw                       x              x x                                                                                                    
+                       qxs       qw                      axw                      aw       x     x x                                                                                                    
+                       x         s                        ax                       xxx     x     x x                                                                                                    
+                       axw                                qx                      qs             x x                                                                                                    
+                        axxxxxw              qw          qxs                      x        x     xbx                                                                                                    
+                             axw  qxxxxxw     a         qxs                       x       qxxxxxxs x                                                                                                    
+                              axxxxs@ axxw         qxx#xxs                        x       x+      x x                                                                                                   
+                                        axxxxx##xxxxs                             x       aw      x+x                                                                                                   
+                                                                                  x        x      x+x                                                                                                   
+                                                                                  axxxxxxxxs      x+x                                                                                                   
+                                                                                                  x+x                  bbbbbbb b                                                                        
+                b by                                                                              x+x                     b    b$   tbbby                                                               
+                b  b                                                                              x+x                     b    b_   b  %b                                                               
+                b b  y               y                                                            x+x                     b    bbby bbbbh                                                 b   b         
+                b  b bby tby  b b bh bby b  b                                                     x+x                     b    b  b b                         tby                         b   b         
+                b  b b b bxb  b b bb b b b  b                                                     x+x                     b    b  b b   b    y                b b                         b   b         
+                b b  b   gb b  b  by b   gbbh                                                     x+x                     b    b  b gbbbh    gy    y         tb by  bbbbb tbby y        bbbbb b         
+                                          th                r                                     x+x                                         gy   by        bh gb     b  b  b bbb  tbby  b   bbby      
+                                         th                qxw                                    x+x                                          gbbbbbk       b b b    b   bbbh b  b b  b  b   b  b      
+                                      b th                qxxxw                                   x+x                                              bh        b   by  b    b    b    b  b  b   b  b      
+                                      gbh                dxxxxxf                                  x+x_$                                            h        bh   gb bbbbb gbbh b    gbbh  b   b  b      
+                                                          ax+xs                                   x+x                                                                                                   
+                                                          ds@af                                   x+x                                                                                                   
+                                                                                       by         x+x                                                               b                b                  
+                                                                                        b         x+x                                                               b                b                  
+                                                                                                  x+x                                                               b  b             b                  
+                                                                                                  x+x                                                               b tb b           b      y           
+                                          $                                                       x+x                                                               b b    y   tbb tbb  tby bb by       
+                                          _                                                       x+x                                                               b gb b bbb bxb b by bxb b b b       
+                                                                                                  x+x                                                               b  b b b b gbb gb b gbh b   b       
+                                          +                                                       x+x                                                                            b         $            
+                                                                                                  x+x                                                                         b  b         _            
+                                                                                                  x+x                                                                          bb          i            
+                                                                                                  x+x                                                                                      +            
+                                                                                                  x+x                                                                                                   
+               @                                                                                  x+x                     b                                                                             
+                                                                                                  x+x            xxxx     b                  b                                                          
+                                                                   xxxx      xxxxxx       xxxxxxiix+xixxxxxxi i ix% x  bbbbbbb               b                                                          
+                                                                   x% xi i i x    xi i i ix    x  x+x x    x     x  x     b                  b                                                          
+                                                                   x  x      x    x       x    x  x+x x    x     x  x     b y    b  b  tbbb  b                                                          
+                                                                   x  xrrrrrrx    xrrrrrrrx    xrrx+xrx    xrrrrrx  x     b bbby b  b  b    bbb                                                         
+                                                                   x  xxxxxxxx    xxxxxxxxx    xxxxxxxx    xxxxxxx  x     b b  b b  b  gbby  b                                                          
+                                                                   x                  _                             x     b b    b  b     b  b                           $                              
+                                                                   x                  $                             x     b b    b  by b  b  b                           _                              
+                           b                                       x                                                x     b b    gbb b gbbh  b                         xxxxxxxxxxxxxxx                  
+                           b                                       x                                                x                                                  x             x                  
+               b           b                                       x                                                x                                                  x             x                  
+               b   b       b                                       x                                                x                                                  x             x                  
+               b   b  bby  b                                       x                                                x                                                  x             x                  
+               by tb    b  b tbby y                                x                                                x                                                  x             x                  
+               gb bh tbbb  b b  b bbby                             x                                       b        x                                                  x             x                  
+                b b  b  b  b b  b b  b                             x          b                            b        x                                                  x  qxxwxw     x                  
+                gbh  gbb b b gbbh b                                x          b                            b        x                                                  x qxbbx x     x                  
+                                                                   x          b                            b        x                                                  x x bbx x     x                  
+                                                                   x          b                         bbbbbbb     x                                                  x x gbx       x                  
+                                                                   x      bbbbbbbbb                        b        x                                                  x x  bx       x                  
+                                                                   x          b                            b        x                                 xxxxxiiixxxxxiiixxxxxibxxxxxxiix xxxxxiiixxxxxx   
+                                                                   x          b                            b        x                                 x   x   x   x   x   xigxx   x  x x   x   x    x   
+                                                                   x          b                            b        x                                 x   x   x   x   x   x ixx   x  x x   x   x    x   
+                                                                   x          b                            b        x                                 x   xrrrx   xrrrx   xrrxx   xrrx x   xrrrx    x   
+                                                                   x          b                            b        x                                 x   xxxxx   xxxxx   xxxxx   xxxxxx   xxxxx    x   
+                                                                  (x          b                                     x                                 x                                             x   
+                                                                 qxx                                                x                                 x                                             x   
+                                                                 x+x                        @                       x                                 x                                             x   
+                                                                 x+x                                                x                                 x                                             x i 
+                                                                 x+x                                                x                                 x                                             x $ 
+                                                                 x+x                                                x                                 x                                             xi_i
+xx                                                               x+x                                                x                                 x      )                                      xxxx
+ x                                                               x+x                                                x                                 x                            (                x   
+ x                              dxxxx ii xxxxxxi i ixxxxxxi i ixxxxx                                                x           $                     x                                             xf  
+ x   i                          dx% x    x    x     x    x     x  %x                                                x(          _                     x                                             xf  
+ x   $                          dx  xrrrrx    xrrrrrx    xrrrrrx   x                                                xxxxxx    xxxxxx     xxxx         x                                             xf  
+ x  i_i                         dx  xxxxxx    xxxxxxx    xxxxxxx   x                                                x%   xiiiix    xi i ix %x         x                                             xf  
+ xxxxxxx i xxxxi ixxxx          dx              _                  x         ###                          ###       x    x    x    x     x  x         x                                             xf  
+       x   x  x   x  x          dx              $                  x         #-#                          #-#       x    xrrrrx    xrrrrrx  x         x                                             xf  
+       xrrrx  xrrrx  x          dx                                 x         #-#                          #-#       x    xxxxxx    xxxxxxx  x         x                                             xf  
+       xxxxx  xxxxx  x          dx                                 x         #-#                          #-#       x                       x         x                                (            xf  
+                     x          dx                                 x         #+#                          #+#       x                       x         x                                             xf  
+                     x          dx               qxxxw           $_x         #+#                          #+#       x                       x         x                                             xf  
+                     x          dx               x   x             x         #+#                          #+#       x      qxxxxxxw         x         x                                             xf  
+                     x          dx               x   x             x          b           _                b        x      x++++++x         x         x                                             xf  
+                     x          dx               x   x             x          b      qxxxxxxxxxxxxxw       b        x      x+%  %+x         x         x                                             xf  
+                     x          dx               x   x             x          b     qx  b   b   b axw      b        x      x+ %% +x         x         x                                             xf  
+                     x          dx              xxxxxxx            b          b    qxs  b   b   b  axw     b        x      x+    +x         x         x                                             xf  
+                                dx                                 b         tb   qxsbbbbbbbbbbbbbbbbxw    by       b      x+% % +x         x         x        xxxixxxxiixxxxiiixxx                 xf  
+                                dx                                 b         bh  qxsb   b   b   b   baxw   gb       b      x+)% %+x         x         x        x xrx  xrrx  xrrrx x                 xf  
+                                dx                                 b         b   xsbbbbbbbbbbbbbbbbbbbax    b       b     xxxxxxxxxx        x         x        x xxx  xxxx  xxxxx x                 xf  
+                     x          dx                                 b         b   x  b   b   b   b   b  x    b       b          _            x         x        x                  x                 xf  
+                     x          dx      tbby                       x         b   xbbbbbbbbbbbbbbbbbbbbbx    b       b          $            x         x        x                  x                xxx  
+                     x          dx      b  b  b                    x        tb   x  b   b   b   b   b  x    b       b                       x  $      x        x                  x                x x  
+                     x          dx      b       y                  x        bh   x  b   b   b   b   b  x    by      x                       x  _      x@       x                  xxxxxxxxxxxxxxxxxx x  
+x!!!!!!!!!!!!!!!!!!xxxxxxxxxxxxxxx       bby  b bbby               x        b    xbbbbbbbbbbbbbbbbbbbbbx    gb      x                       xxxxxxxxxxxxxxxxxxxx                  x                  xxx
+                        _                  b  b b  b               x        b    x  b   b   b   b   b  x     b      x                                                             x                  x  
+                        $               b  b  b b                  x       tb    x  b   b   b   b   b  x     b      x                                                             x                  x  
+                                        gbbh  b b                  x       bh    x g#h g#h g#h g#h g#h x     b      x                                                             x                  x  
+                                                                   x       b     xf c   c   c   c   c dx     b      x                                                             x                  x  
+                                                                   x       b     xf                   dx     by     x_$                                                           x                  x  
+                                                                   x       b     xf                   dx     gb     x                                                             x                  x  
+                                                                   x      tb     xf                   dx      b     x                                                             x                  x  
+                                                                 $_x      bh     xf   %           %   dx      b     x                                                             x                  x  
+                                                                   x      b      xf          )        dx      b     x    tbby                                                     x                  x  
+                                                                   x      b      xf                   dx      b     x    b  b                                                     x                  x  
+                                                                   x      b      xf                   dx      by    x    b        t       b y   tbby                              x                  xx 
+                                                                   x     tb      xf                   dx      gb    x    gbby  tbbb  b  b   bby b  b                              x                   x 
+                                                                   x     bh      x)rrrrrrrrrrrrrrrrrrrdx       b    x       b  b  b  b  b b b b bbbh                              x                   x 
+                                                                   x     b       xxxxxxxxx#####xxxxxxxxx       b    x    b  b  b  b  b  b b b   b                                 x                   x 
+                                                                   x     b     xx  x   x  x   x  x  x   xx     b    x    gbbh  gbbb  gbbh b b   gbb                               x                   x 
+                                                                   x    tb   xx   x    x  x      b   x    xx   by   x             b                                               x                   x 
+                                                                   x    bh xx    b   b     b  x   x   b     xx gb   x             b                                               x                   x 
+yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyx    bxx     x      x   x  b        x      xxb   xyyyyyyyyyyyyyb  yyyyyyyyyyyyyyyyy  yyyyyyyyyyyyyyyyyyyyyyyy  x   yyyyyyyyyyyyy   x 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxb bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                                                                      yx                                         xt                b                                                                    
+                                                                     yyx                                         xt                                                                                     
+                                                                    yyx                                           xt                                                                                    
+                                                                   yyx                                             xtt                                                                                  
+                                                                  y x                                               xtt                                                                                 
+                                                                 yyx                 tt                              xtt                                                                                
+                                                               yyyx                    t                              xt                                                                                
+                                                               y x                     t                               xt                                                                               
+                                                               yx                      t                                xt                                                                              
+                                                             yyx                                                        xtt                                                                             
+                                                            yyx                                                          xtt                                                         b   b              
+                                                           yyx                                                            xt                                                         b   b              
+   b  b                                                  yy x                                                              xtt                                                       b   b              
+   b  b                                                 yy x                                  y                             xtt                        tbby  b               $       b   b$             
+   b  b   $                                            yy x                                                           t      xt                        b  b  b             y _     bbbbb b_             
+   b  b   _  y         y                               y x                       xx                                           xt                       b     b  y    tbby  bbby      b   bbby           
+   bbbb tbby bbby tbby bbby                            yx                       xx   t                                        xxtt                     gbby bbb bbby b  b  b  b tbby b   b  b           
+   b  b b  b b  b b  b b  b                           yx                        x%  tt                                         xxt                        b  b  b  b bbbh  b  b b% b b   b  b           
+   b  b b  b b  b b  b b                            yyx                          x                     y                        xttt                   b  b  b  b    b     b  b b  b b   b  b           
+   b  b gbbh b  b gbbh b                           yyx               t                                                           x t                   gbbh  b  b    gbbb  b  b gbbb b   b  b           
+                                                   yx               t                                                             xttt                                             b                    
+                                                 yyx                t                                                              x t                                             b                    
+                                                 yx                 t                                                               xt                                          b  b                    
+                                               yyx                 t                                                                xxtt                                        gbbh                    
+                                              yyx                                         t                                          xtt                                                                
+                                            yy x                                          %                                          xxtt                                                               
+                                            y x                                                                                       xxx                                                               
+                                           yyx                                                                                         xxttt                                                            
+                                           yx                                                                                            x tt                                                           
+                                          yyx          yyy                                                                                x t                                                           
+                                         yyx        yyy                                                                                    xt                                                           
+                                        yyx       yy                                                                                        xt                                                          
+                                       yyx                                                                                                  xxtt                                                        
+                                      yyx                                                                                                     xt                                                        
+                                     y x                                                            y                                          xt                                                       
+                                    yyx                             y             $                                                             xt                                                      
+                                  yyyx                                            _                                                             xxtt                                                    
+                                  y x                                                                                                            x t                                                    
+                                 y x                                                    y                                                         xtt                                                   
+                               yyyx                                                                                 t                              xtt                                                  
+                              yy x                                                                                   t                              xt                                                  
+                             yy x                                                                                    t                               ttt                                                
+                           yy  x                                                                               yy     tt                              xtt                                               
+                           y  x                                                                                         ttt                            x t                                              
+                          yy x                                                                                             tt                           xtt                                             
+                         y  x                                                                                                ttt                         xtt                                            
+                        y  x                                                                                 t                  tt                        xt                                            
+                       y  x                                                                                                       t                       xtt                                           
+                       y x                         $                                                                                                       xttt                                         
+                      yyx                          _                                                                                                        x t                                         
+                     yyx                                                                                                                                     x t                                        
+                    yyx                                                                                                                                       x ttt                                     
+                   yyx                                                                                                                                         x  t                                     
+                  yyx                                            t                                                                                              x t                                     
+                yy x                                           tt                                                                                                xt                                     
+                y x                                                                                                                                               ttt                                   
+               yyx                      y                                                                                                                         x tt                                  
+               y x                       yyy                                                                                                                       x t                                  
+               yx                                                                                                                                                   xtt                                 
+             yyx                                                                                                                                                     xttt                               
+            yyx                                                                                                                                                       x t                               
+           yyx                                                                                                           yyy                                           xtt                              
+          yyx                                                                                                                                                           xtt                             
+         yyx                                                                                                                                                             xtt                            
+        yyx                                                                 t                                                                                             xt                            
+       yyx                                                                                                                                                                xt                            
+      yyx                                                                                                                                                                 xxt                           
+     y x                                                                                                                                                                    xttt                        
+   yyyx                                                                                                                                                                      x tt                       
+  yy x                                                                                                                                 t                                      x t                       
+  y x                                                                                                                                                                          xttt                     
+ yyx                                                                                                                                                                            x tttttt                
+ yx                                                                                                                                                                              x     ttttttttttttttttt
+xx                                                                                                                                                   $                            xxxxxxxxxxxxxxxxxxxxxx
+                                                                                                                                                     _                                                  
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+EndOfMapdata
+
+------------0xKhTmLbOuNdAr

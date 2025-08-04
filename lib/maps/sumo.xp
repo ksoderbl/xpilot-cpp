@@ -1,0 +1,282 @@
+#Created by MapXpress 2.0.2 on Wed May 16 11:30:58 2001
+
+#
+#
+#
+#
+#
+
+mapwidth : 50
+mapheight : 50
+mapname : Sumo Wrestling
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+limitedlives : no
+worldlives : 0
+reset : yes
+shipmass : 30.0
+gravity : 0
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 0
+firerepeatrate : 0
+friction : 0.0
+edgebounce : yes
+edgewrap : no
+extraborder : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 4
+playerstartsshielded : yes
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : no
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : yes
+debriswallbounce : no
+maxobjectwallbouncespeed : 40
+maxshieldedwallbouncespeed : 5
+maxunshieldedwallbouncespeed : 5
+maxshieldedplayerwallbounceangle : 10
+maxunshieldedplayerwallbounceangle : 10
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 0.80
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+oneplayeronly : no
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+wreckagecollisionmaykill : no
+distinguishmissiles : yes
+keepshots : no
+identifymines : yes
+playersonradar : yes
+missilesonradar : yes
+minesonradar : yes
+nukesonradar : yes
+treasuresonradar : no
+shieldeditempickup : yes
+shieldedmining : yes
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : no
+cannonsmartness : 1
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 0
+itemconcentratorvisible : yes
+allowsmartmissiles : no
+allowheatseekers : no
+allowtorpedoes : no
+allowplayercrashes : no
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : no
+allowclusters : no
+allowmodifiers : yes
+allowlasermodifiers : no
+allowshipshapes : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 1.0
+maxminesperpack : 3
+minelife : 0
+minefusetime : 0.0
+baseminerange : 0
+roguemineprob : 1.0
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 0.0
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 7
+nukeminmines : 4
+nukeclusterdamage : 1.0
+itemconcentratorradius : 10
+maxitemdensity : 0.00012
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : no
+reporttometaserver : yes
+contactport : 15345
+noquit : no
+idlerun : no
+plockserver : no
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 12
+ignore20maxfps : yes
+analyticalcollisiondetection : yes
+timerresolution : 0
+usewreckage : yes
+initialfuel : 2600
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 2
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 2
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 1
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 100
+maxdefensiveitems : 500
+maxfuel : 10000
+maxtanks : 8
+maxecms : 100
+maxmines : 100
+maxmissiles : 100
+maxcloaks : 100
+maxsensors : 100
+maxwideangles : 100
+maxrearshots : 100
+maxafterburners : 100
+maxtransporters : 100
+maxdeflectors : 100
+maxphasings : 100
+maxhyperjumps : 100
+maxemergencythrusts : 100
+maxlasers : 100
+maxtractorbeams : 100
+maxautopilots : 100
+maxemergencyshields : 100
+maxmirrors : 100
+maxarmor : 100
+itemenergypackprob : 3e-7
+itemtankprob : 5e-7
+itemecmprob : 1e-7
+itemmineprob : 1e-7
+itemmissileprob : 0e-7
+itemcloakprob : 0e-7
+itemsensorprob : 0e-7
+itemwideangleprob : 0e-7
+itemrearshotprob : 0e-7
+itemafterburnerprob : 3e-7
+itemtransporterprob : 0e-7
+itemlaserprob : 0e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 5e-7
+itemautopilotprob : 0e-7
+itememergencyshieldprob : 0e-7
+itemdeflectorprob : 0e-7
+itemhyperjumpprob : 0e-7
+itemphasingprob : 0e-7
+itemmirrorprob : 0e-7
+itemarmorprob : 0e-7
+movingitemprob : 1.0
+dropitemonkillprob : 1.0
+detonateitemonkillprob : 1.0
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 1.0
+runoverkillscoremult : 1.0
+ballkillscoremult : 1.0
+explosionkillscoremult : 1.0
+shovekillscoremult : 2.0
+crashscoremult : 0.0
+minescoremult : 0.0
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxs           axxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxs                 axxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxs                     axxxxxxxxxxxxx
+xxxxxxxxxxxxxs                       axxxxxxxxxxxx
+xxxxxxxxxxxs                           axxxxxxxxxx
+xxxxxxxxxxs                             axxxxxxxxx
+xxxxxxxxxs                               axxxxxxxx
+xxxxxxxxs                                 axxxxxxx
+xxxxxxxs                                   axxxxxx
+xxxxxxx                                     xxxxxx
+xxxxxxs                                     axxxxx
+xxxxxs                                       axxxx
+xxxxx                                         xxxx
+xxxxs                                         axxx
+xxxx                                           xxx
+xxxx                   3 3 3                   xxx
+xxxs                   $ $ $                   axx
+xxx                   3 3 3 3                   xx
+xxx                   $ $ $ $                   xx
+xxx                 1$       $2                 xx
+xxx               1$           $2               xx
+xxx                 1$       $2                 xx
+xxx               1$           $2               xx
+xxx                 1$       $2                 xx
+xxx               1$           $2               xx
+xxx                 1$       $2                 xx
+xxx                   $ $ $ $                   xx
+xxx                   4 4 4 4                   xx
+xxxw                   $ $ $                   qxx
+xxxx                   4 4 4                   xxx
+xxxx                                           xxx
+xxxxw                                         qxxx
+xxxxx                                         xxxx
+xxxxxw                                       qxxxx
+xxxxxxw                                     qxxxxx
+xxxxxxx                                     xxxxxx
+xxxxxxxw                                   qxxxxxx
+xxxxxxxxw                                 qxxxxxxx
+xxxxxxxxxw                               qxxxxxxxx
+xxxxxxxxxxw                             qxxxxxxxxx
+xxxxxxxxxxxw                           qxxxxxxxxxx
+xxxxxxxxxxxxxw                       qxxxxxxxxxxxx
+xxxxxxxxxxxxxxw                     qxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxw                 qxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxw           qxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

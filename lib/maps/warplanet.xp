@@ -1,0 +1,574 @@
+#Created by MapXpress 4.4.0a on Wed Jun 20 18:44:51 2001
+
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#
+#
+#
+#
+#
+#
+#
+#
+
+mapwidth : 299
+mapheight : 299
+mapname : Warring Planets
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+limitedlives : yes
+worldlives : 5
+shipmass : 20.0
+gravity : -0.14
+gravityangle : 90
+gravitypoint : 150,150
+gravitypointsource : yes
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 256
+firerepeatrate : 2
+friction : 0.0
+edgebounce : yes
+edgewrap : no
+extraborder : yes
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+selfimmunity : no
+turnthrust : no
+coriolis : 1
+blockfriction : 0.0
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 4
+playerstartsshielded : yes
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : no
+debriswallbounce : no
+maxobjectwallbouncespeed : 100
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 200
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 0.80
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+robotrealname : robot
+robothostname : xpilot.org
+tankrealname : tank
+tankhostname : tanks.org
+logrobots : yes
+asteroidswallbounce : yes
+limitedvisibility : yes
+minvisibilitydistance : 25.0
+maxvisibilitydistance : 50.0
+oneplayeronly : no
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : yes
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : yes
+wreckagecollisionmaykill : no
+distinguishmissiles : yes
+keepshots : no
+identifymines : yes
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : yes
+shieldeditempickup : no
+shieldedmining : no
+cloakedexhaust : yes
+cloakedshield : yes
+capturetheflag : no
+targetdeadtime : 120
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+cannonsuseitems : yes
+cannonsmartness : 1
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : no
+wormholevisible : no
+wormtime : 0
+itemconcentratorvisible : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : no
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+allowshipshapes : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 0.0
+maxminesperpack : 2
+minelife : 0
+minefusetime : 0.0
+baseminerange : 0
+roguemineprob : 1.0
+minminespeed : 0
+blockfrictionvisible : yes
+cannondeadtime : 72
+asteroidcollisionmaykill : no
+asteroidsonradar : no
+maxasteroiddensity : 0.1
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 0.0
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 4
+nukeminmines : 4
+nukeclusterdamage : 1.0
+itemconcentratorradius : 4.0
+maxitemdensity : 0.00012
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : no
+reporttometaserver : yes
+contactport : 15345
+noquit : no
+idlerun : no
+plockserver : no
+lockotherteam : yes
+allowviewing : no
+framespersecond : 14
+ignore20maxfps : yes
+analyticalcollisiondetection : yes
+timerresolution : 0
+usewreckage : yes
+searchdomainforxpilot : no
+clientportstart : 0
+clientportend : 0
+reset : yes
+initialfuel : 2600
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 1
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 2
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 1000
+maxdefensiveitems : 1000
+maxfuel : 10000
+maxtanks : 8
+maxecms : 100
+maxmines : 100
+maxmissiles : 100
+maxcloaks : 100
+maxsensors : 100
+maxwideangles : 100
+maxrearshots : 100
+maxafterburners : 100
+maxtransporters : 100
+maxdeflectors : 100
+maxphasings : 100
+maxhyperjumps : 100
+maxemergencythrusts : 100
+maxlasers : 100
+maxtractorbeams : 100
+maxautopilots : 100
+maxemergencyshields : 100
+maxmirrors : 100
+maxarmor : 100
+itemenergypackprob : 5e-8
+itemtankprob : 0e-8
+itemecmprob : 1e-8
+itemmineprob : 7e-8
+itemmissileprob : 6e-8
+itemcloakprob : 0e-8
+itemsensorprob : 0e-8
+itemwideangleprob : 0e-8
+itemrearshotprob : 0e-8
+itemafterburnerprob : 0e-8
+itemtransporterprob : 1e-8
+itemlaserprob : 0e-8
+itememergencythrustprob : 1e-8
+itemtractorbeamprob : 0e-8
+itemautopilotprob : 0e-8
+itememergencyshieldprob : 0e-8
+itemdeflectorprob : 1e-8
+itemhyperjumpprob : 1e-8
+itemphasingprob : 1e-8
+itemmirrorprob : 0e-8
+itemarmorprob : 1e-8
+movingitemprob : 1.0
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 0.0
+randomitemprob : 0.5
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 0.5
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                              qxbbbxw                                                                                   qxbbbxw                                                                                            
+                                                                                                             qxxwbqxxw                                                                                 qxxwbqxxw                                                                                           
+                                                                                                             xxxxbxxxx                                                                                 xxxxbxxxx                                                                                           
+                                                                                                             baxx(xxsb                                                                                 baxx(xxsb                                                                                           
+                                                                                                             bbb(-(bbb                                                                                 bbb(-(bbb                                                                                           
+                                                                                                             bqxx(xxwb                                                                                 bqxx(xxwb                                                                                           
+                                                                                                             xxxxbxxxx                                                                                 xxxxbxxxx                                                                                           
+                                                                                                             axxsbaxxs                                                                                 axxsbaxxs                                                                                           
+                                                                                                              axbbbxs                                                                                   axbbbxs                                                                                            
+                                                                       $     $                                                                                                                                                                                                                             
+                                                                       1     1                                                                                                                                                                                                                             
+                                                                    qxx#xx!xx#xxw                                                                                                                                                                                                                          
+                                                                  qxxxxxxx*xxxxxxxw                                                                                                                                                                                                                        
+                                                                qxxxxxxxxxxxxxxxxxxxw                                                                                                                                                                                                                      
+                                                               qxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                                                                                                     
+                                                              qxxxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                                                                                                    
+                                                             qxxxxxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                                                                                                   
+                                                             xxxxxxxxxxxxxxxxxxxxxxxxxxx                                                                                                                                                              $     $                                              
+                                                            qxxxxxxxxx-x-x-x-x-xxxxxxxxxw                                                                                                                                                             2     2                                              
+                                                            xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                                                                                                                                          qxx#xx!xx#xxw                                           
+                                                           qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                                       qxxxxxxx*xxxxxxxw                                         
+                                                           xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                                                                                                                                     qxxxxxxxxxxxxxxxxxxxw                                       
+                                                           xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                                    qxxxxxxxxxxxxxxxxxxxxxw                                      
+                                                         $1#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#1$                                                                                                                                                 qxxxxxxxxxxxxxxxxxxxxxxxw                                     
+                                                           xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                                  qxxxxxxxxxxxxxxxxxxxxxxxxxw                                    
+                                                           xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                                                                                                                                  xxxxxxxxxxxxxxxxxxxxxxxxxxx                                    
+                                                           !*xxxxx-xxxxxx^)^xxxxxx-xxxxx*!                                                                                                                                                 qxxxxxxxxx-x-x-x-x-xxxxxxxxxw                                   
+                                                           xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                                                                                                                                 xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                   
+                                                           xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                                qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw                                  
+                                                         $1#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#1$                                                                                                                                              xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                  
+                                                           xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                                xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                  
+                                                           xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                                                                                                                              $2#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#2$                                
+                                                           axxxxxxxxxxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                  
+                                                            xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                                                                                                                                 xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                  
+                                                            axxxxxxxxx-x-x-x-x-xxxxxxxxxs                                                                                                                                                 !*xxxxx-xxxxxx^)^xxxxxx-xxxxx*!                                  
+                                                             xxxxxxxxxxxxxxxxxxxxxxxxxxx                                                                                                                                                  xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                  
+                                                             axxxxxxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                  xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                  
+                                                              axxxxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                 $2#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#2$                                
+                                                               axxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                    xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                  
+                                                                axxxxxxxxxxxxxxxxxxxs                                                                                                                                                     xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                  
+                                                                  axxxxxxx*xxxxxxxs                                                                                                                                                       axxxxxxxxxxxxxxxxxxxxxxxxxxxxxs                                  
+                                                                    axx#xx!xx#xxs                                                                                                                                                          xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                   
+                                                                       1     1                                                                                                                                                             axxxxxxxxx-x-x-x-x-xxxxxxxxxs                                   
+                                                                       $     $                                                                                                                                                              xxxxxxxxxxxxxxxxxxxxxxxxxxx                                    
+                                                                                                                                                                                                                                            axxxxxxxxxxxxxxxxxxxxxxxxxs                                    
+                                                                                                                                                                                                                                             axxxxxxxxxxxxxxxxxxxxxxxs                                     
+                                                                                                                                                                                                                                              axxxxxxxxxxxxxxxxxxxxxs                                      
+                                                                                                                                                                                                                                               axxxxxxxxxxxxxxxxxxxs                                       
+                                                                                                                                                                                                                                                 axxxxxxx*xxxxxxxs                                         
+                                                                                                                                                                                                                                                   axx#xx!xx#xxs                                           
+                                                                                                                                                                                                                                                      2     2                                              
+                                                                                                                                                                                                                                                      $     $                                              
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                              rrrrrrrrrrrrrrr                                                                                                                                              
+                                                                                                                                            rq###############wr                                                                                                                                            
+                                                                                                                                         rrq###xxxxxxxxxxxxx###wrr                                                                                                                                         
+                                                                                                                                        q###xxxxxxxxxxxxxxxxxxx###w                                                                                                                                        
+                                                                                                                                      rq##xxxxxxxxxxxxxxxxxxxxxxx##wr                                                                                                                                      
+                                                                                                                                     q##xxxxxxxxxxxxxxxxxxxxxxxxxxx##w                                                                                                                                     
+                                                                                                                                    q##xxxxxxxxxxxxxxxxxxxxxxxxxxxxx##w                                                                                                                                    
+                                                                                                                                   q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                                   
+                                                                                                                                  q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                                  
+                                                                                                                                 q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                                 
+                                                                                                                                q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                                
+                                                                                                                               d##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##f                                                                                                                               
+                                                                                                                               q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                               
+                                                                                                                              q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                              
+                                                                                                                             d##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##f                                                                                                                             
+                                                                                                                             d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                             
+                                                                                                                             q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                             
+                                                                                                                            d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                            
+                                                                                                                            q#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#w                                                                                                                            
+                                                                                                                           d##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                           
+                                                                                                                           d##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##f                                                                                                                           
+                                                                                                                            a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                            
+                                                                                                                            d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                            
+                                                                                                                             a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                             
+                                                                                                                             d#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#f                                                                                                                             
+                                                                                                                             d##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##f                                                                                                                             
+                                                                                                                              a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                              
+                                                                                                                               a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                               
+                                                                                                                               d##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##f                                                                                                                               
+                                                                                                                                a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                                
+                                                                                                                                 a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                                 
+                                                                                                                                  a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                                  
+                                                                                                                                   a#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#s                                                                                                                                   
+                                                                                                                                    a##xxxxxxxxxxxxxxxxxxxxxxxxxxxxx##s                                                                                                                                    
+                                                                                                                                     a##xxxxxxxxxxxxxxxxxxxxxxxxxxx##s                                                                                                                                     
+                                                                                                                                      ca##xxxxxxxxxxxxxxxxxxxxxxx##sc                                                                                                                                      
+                                                                                                                                        a###xxxxxxxxxxxxxxxxxxx###s                                                                                                                                        
+                                                                                                                                         cca###xxxxxxxxxxxxx###scc                                                                                                                                         
+                                                                                                                                            ca###############sc                                                                                                                                            
+                                                                                                                                              ccccccccccccccc                                                                                                                                              
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                        $     $                                                            
+                                                                                                                                                                                                                                        3     3                                                            
+                                                                                                                                                                                                                                     qxx#xx!xx#xxw                                                         
+                                                                                                                                                                                                                                   qxxxxxxx*xxxxxxxw                                                       
+                                                                                                                                                                                                                                 qxxxxxxxxxxxxxxxxxxxw                                                     
+                                                                                                           qxbbbxw                                                                                                              qxxxxxxxxxxxxxxxxxxxxxw                                                    
+                                                                                                          qxxwbqxxw                                                                                                            qxxxxxxxxxxxxxxxxxxxxxxxw                                                   
+                                                                                                          xxxxbxxxx                                                                                                           qxxxxxxxxxxxxxxxxxxxxxxxxxw                                                  
+                                                                                                          baxx(xxsb                                                                                                           xxxxxxxxxxxxxxxxxxxxxxxxxxx                                                  
+                                                                  $     $                                 bbb(-(bbb                                                                                                          qxxxxxxxxx-x-x-x-x-xxxxxxxxxw                                                 
+                                                                  4     4                                 bqxx(xxwb                                                                                                          xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                                 
+                                                               qxx#xx!xx#xxw                              xxxxbxxxx                                                                                                         qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw                                                
+                                                             qxxxxxxx*xxxxxxxw                            axxsbaxxs                                                                                                         xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                                
+                                                           qxxxxxxxxxxxxxxxxxxxw                           axbbbxs                                                                                                          xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                
+                                                          qxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                         $3#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#3$                                              
+                                                         qxxxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                          xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                
+                                                        qxxxxxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                         xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                                
+                                                        xxxxxxxxxxxxxxxxxxxxxxxxxxx                                                                                                                                         !*xxxxx-xxxxxx^)^xxxxxx-xxxxx*!                                                
+                                                       qxxxxxxxxx-x-x-x-x-xxxxxxxxxw                                                                                                                                        xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                                
+                                                       xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                                                                                                                        xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                
+                                                      qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw                                                                                                                                     $3#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#3$                                              
+                                                      xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                                                                                                                       xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                
+                                                      xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                       xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                                
+                                                    $4#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#4$                                                                                                                                     axxxxxxxxxxxxxxxxxxxxxxxxxxxxxs                                                
+                                                      xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                        xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                                 
+                                                      xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                                                                                                                        axxxxxxxxx-x-x-x-x-xxxxxxxxxs                                                 
+                                                      !*xxxxx-xxxxxx^)^xxxxxx-xxxxx*!                                                                                                                                         xxxxxxxxxxxxxxxxxxxxxxxxxxx                                                  
+                                                      xxxxxxxxxxxxxx^^^xxxxxxxxxxxxxx                                                                                                                                         axxxxxxxxxxxxxxxxxxxxxxxxxs                                                  
+                                                      xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                          axxxxxxxxxxxxxxxxxxxxxxxs                                                   
+                                                    $4#xxxxxxxxxxxxxxxxxxxxxxxxxxxxx#4$                                                                                                                                         axxxxxxxxxxxxxxxxxxxxxs                                                    
+                                                      xxxxxxx-xxxxxxxxxxxxxxx-xxxxxxx                                                                                                                                            axxxxxxxxxxxxxxxxxxxs                                                     
+                                                      xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxx                                                                                                                                              axxxxxxx*xxxxxxxs                                                       
+                                                      axxxxxxxxxxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                axx#xx!xx#xxs                                                         
+                                                       xxxxxxxxx-xxxxxxxxx-xxxxxxxxx                                                                                                                                                    3     3                                                            
+                                                       axxxxxxxxx-x-x-x-x-xxxxxxxxxs                                                                                                                                                    $     $                                                            
+                                                        xxxxxxxxxxxxxxxxxxxxxxxxxxx                                                                                                                                                                                                                        
+                                                        axxxxxxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                                                                                        
+                                                         axxxxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                                                                                         
+                                                          axxxxxxxxxxxxxxxxxxxxxs                                                                                                                                                                                                                          
+                                                           axxxxxxxxxxxxxxxxxxxs                                                                                                                                                                                                                           
+                                                             axxxxxxx*xxxxxxxs                                                                                                                                                                                                                             
+                                                               axx#xx!xx#xxs                                                                                                                                                                                                                               
+                                                                  4     4                                                                                                                                                                                                           qxbbbxw                
+                                                                  $     $                                                                                                                                                                                                          qxxwbqxxw               
+                                                                                                                                                                                                                                                                                   xxxxbxxxx               
+                                                                                                                                                                                                                                                                                   baxx(xxsb               
+                                                                                                                                                                                                                                                                                   bbb(-(bbb               
+                                                                                                                                                                                                                                                                                   bqxx(xxwb               
+                                                                                                                                                                                                                                                                                   xxxxbxxxx               
+                                                                                                                                                                                                                                                                                   axxsbaxxs               
+                                                                                                                                                                                                                                                                                    axbbbxs                
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                                           
+EndOfMapdata
+

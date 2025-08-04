@@ -1,0 +1,177 @@
+#Created by MapXpress 4.4.0a on Fri Jul 27 12:13:44 2001
+
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+mapwidth : 99
+mapheight : 70
+mapname : Skyscraper
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+shipmass : 20.0
+gravity : -2.37
+shotspeed : 33.0
+extraborder : yes
+sparkswallbounce : yes
+maxobjectwallbouncespeed : 200
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 200
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.65
+objectwallbouncebrakefactor : 0.85
+wallbouncefueldrainmult : 0.3
+teamplay : yes
+targetkillteam : no
+treasurecollisiondestroys : no
+treasuresonradar : yes
+ballconnectorlength : 95
+maxballconnectorratio : 0.20
+ballmass : 10.0
+gravityvisible : no
+allowshields : no
+initialfuel : 2000
+initialafterburners : 4
+initialemergencythrusts : 1
+initialautopilots : 1
+itemenergypackprob : 0
+itemtankprob : 0
+itemecmprob : 0
+itemmineprob : 0
+itemmissileprob : 0
+itemcloakprob : 0
+itemsensorprob : 0
+itemwideangleprob : 0
+itemrearshotprob : 0
+itemafterburnerprob : 0
+itemtransporterprob : 0
+itemlaserprob : 0
+itememergencythrustprob : 0
+itemtractorbeamprob : 0
+itemautopilotprob : 0
+itememergencyshieldprob : 0
+itemdeflectorprob : 0
+itemhyperjumpprob : 0
+itemphasingprob : 0
+itemmirrorprob : 0
+itemarmorprob : 0
+
+mapData: \multiline: EndOfMapdata
+                                                                                                   
+                                                                                                   
+                                             dxxxxxxxf                                             
+                                             dx     xf                                             
+                                             dx bib xf                                             
+                                             dx bbb xf                                             
+                                                b b                                                
+                                                bbb                                                
+                        w                      qbibw                      q                        
+                        xxxxxxxxxxxxxxxxxxxxxxxxbbbxxxxxxxxxxxxxxxxxxxxxxxx                        
+                        x                       b b                       x                        
+                        x                       bbb                       x                        
+                        x b b                   bib                   b b x                        
+                        x bbb                   bbb                   bbb x                        
+                        x bib                   b b                   bib x                        
+                        x bbb                   bbb                   bbb x                        
+                        x b b                   bib                   b b x                        
+                        x bbb                   bbb                   bbb x                        
+                        x bibw                  b b                  qbib x                        
+                        x bbbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxbbb x                        
+                        x b b                    x                    b b x                        
+                        x bbb                    x                    bbb x                        
+                        x bib                b b x b b                bib x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x b b                bib x bib                b b x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x bib                b b x b b                bib x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x b b               qbib x bibw               b b x                        
+                        xxxxxxxxxxxxxxxxxxxxxbbb x bbbxxxxxxxxxxxxxxxxxxxxx                        
+                        x                    b b x b b                    x                        
+                        x                    bbb x bbb                    x                        
+                        x b b                bib x bib                b b x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x bib                b b x b b                bib x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x b b                bib x bib                b b x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x bibw               b b x b b               qbib x                        
+                        x bbbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxbbb x                        
+                        x b b                    x                    b b x                        
+                        x bbb                    x                    bbb x                        
+                        x bib                b b x b b                bib x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x b b                bib x bib                b b x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x bib                b b x b b                bib x                        
+                        x bbb                bbb x bbb                bbb x                        
+                        x b b               qbib x bibw               b b x                        
+                        xxxxxxxxxxxxxxxxxxxxxbbb x bbbxxxxxxxxxxxxxxxxxxxxx                        
+                        x                    b b x b b                    x                        
+                        x b b                bbb x bbb                b b x                        
+                        x bbb                bib x bib                bbb x                        
+                        x b b                bbb x bbb                b b x                        
+                        x bbb                b b x b b                bbb x                        
+                        x bib                bbb x bbb                bib x                        
+                        x bbb                bib x bib                bbb x                        
+                        x b b                bbb x bbb                b b x                        
+                        x bbbw               b b x b b               qbbb x                        
+                        x bibxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxbib x                        
+                          bbb                   *x*                   bbb                          
+                          b b                    x                    b b                          
+                          bbb                   ixi                   bbb                          
+                          bib                    x                    bib                          
+                          bbb                    x                    bbb                          
+                          b b                    x                    b b                          
+                          bbb                    x                    bbb                          
+                          bib                    x                    bib                          
+                          bbb                    x                    bbb                          
+                       qw b b  1    1    1    1  x  2    2    2    2  b b qw                       
+EndOfMapdata
+

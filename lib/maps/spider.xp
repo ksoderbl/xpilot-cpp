@@ -1,0 +1,160 @@
+#Created by MapXpress 4.4.0a on Tue Sep 18 20:55:31 2001
+
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#
+#
+#
+
+mapwidth : 99
+mapheight : 99
+mapname : Spider Web
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+gravitypoint : 50,50
+gravitypointsource : yes
+maxplayershots : 15
+edgebounce : no
+extraborder : yes
+blockfriction : 0.60
+maxshieldedwallbouncespeed : 100
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+teamplay : yes
+treasuresonradar : yes
+allowplayercrashes : no
+allowshields : no
+allowmodifiers : yes
+initialsensors : 1
+initialafterburners : 2
+initialemergencythrusts : 1
+initialautopilots : 1
+itemenergypackprob : 0e-7
+itemtankprob : 0e-7
+itemecmprob : 0e-7
+itemmineprob : 0e-7
+itemmissileprob : 0e-7
+itemcloakprob : 0e-7
+itemsensorprob : 0e-7
+itemwideangleprob : 0e-7
+itemrearshotprob : 0e-7
+itemafterburnerprob : 0e-7
+itemtransporterprob : 0e-7
+itemlaserprob : 0e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 0e-7
+itemautopilotprob : 0e-7
+itememergencyshieldprob : 0e-7
+itemdeflectorprob : 0e-7
+itemhyperjumpprob : 1e-7
+itemphasingprob : 5e-7
+itemmirrorprob : 0e-7
+itemarmorprob : 0e-7
+movingitemprob : 0.0
+dropitemonkillprob : 0.0
+detonateitemonkillprob : 0.0
+
+mapData: \multiline: EndOfMapdata
+                                                                                                   
+                                            zy                                                     
+                                            gz                                                     
+                                             z                                                     
+                                             z                                                     
+                                             z                                                     
+                                                                                                   
+                                                                                                   
+                                                                                                   
+     !               x                       z                          x             !            
+    !*!              x                       z                          aw           !*!           
+     !              qs                       z                           x3$          !            
+                  $2xy                       z                          ta $                       
+                   qszy                      z                         tz w3                       
+                   x gzy                     zy                        zh axw                      
+                  qs  g                      gz                             a                      
+                $2x                           z                              w                     
+                 qs                      tzzzzzzzzzy                         aw                    
+                qs       zy         tzzzzzh   z   gz   zy          tz         xw                   
+               qs        gzy   tzzzzzh        z        gzzzzzy     zh         axw                  
+            $ qs           zzzzzh                           gzzzzz z            aw                 
+            2qs          tzhzh                                    zh             aw                
+           qs           tzh zy                                  tzz               x3$              
+          qs           tzh  gzy               z                 zhgzy             aw $             
+       $ qs            zh    gzy              z                tz  gzy             aw3             
+       2qs                    gz              z               tzh   gz           tz axw            
+      qxs                      zy             z               zh                 zh   ax           
+    xxs                        gz             z                                                    
+     gzy                                      zy                        zy   tz                    
+      gz           tz                         gz                        gzytzzh                    
+                  tzh                          z           z              zz                       
+            zzy  tzh               zy          z          tz            tz zy                      
+             gzz zh                gzy         z         tzh          tzzh gz                      
+                zz                  gzy       tzy       tzh           zh    zy                     
+               zhgzzzzy              gz       zzz   zzzzzh                  gz                     
+               z    gzzzy             zyzzz   gzh       zy       tz          zy                    
+               z      gzz             zz       z      tz zy     tzh          gz                    
+               z                       gzy     z      zh gzy  tzzh            zy                   
+              tz             zzy        gz                gzytzh              gz                   
+              zh             gzzzytz     zy                 zz                 zy                  
+              z                  zz      gzy       tz    tzz zy                gz                  
+              z                  z zzz    gzy  z   zh   tzh  gz                 zy                 
+zy            z                  z  gz     gz  z   z  tzzh                      gz               tz
+gzzz   zzzzy  z                  z       zy z qx   xwzzh                        tz     tzzz   zzzzh
+          gzzzzzzzzzzzy          z       gzzzqs     aw                      tzzzzzzzzzzzh          
+               z     gzzz   zzzz z          q*!     !*w        tzytzzz   zzzzh   z                 
+               z               gzzzzz   zzzqs!       !awzz   zzzzzzh             z                 
+               z                 z         x           x        z                z                 
+               zy                                               z                z                 
+               gz                                1                               z                 
+                z                       tzz                                                        
+                z                z    tzzh x           xzzy                                        
+                                 zy tzzh   aw!       !qs gzz    z                                  
+                                 gzzzh      a*!     !*sz       tz               tz                 
+                                  zh       z aw     qs zy     zzzy              zh                 
+                 z             tzzzy          ax   xs  gz      tzzy             z                  
+                 z             zh gz          z     z          zhgzy            z                  
+                 z                      tz    z     z             gzzy          z                  
+                 zy      tz             zh          z     zy        gzzy        z                  
+                 gz     tzh           zyz                 gztz        gzzy      z                  
+                  z   tzzh            tzz     z            gzh          gzzy    z                  
+                  zytzzh             tzhgzy   z      z     tzy            gzzy  z                  
+                 tzzzh              tzh  gzzy z      zy    zgzy             gzytz                  
+                tzzh                zh     gzyzzzz    ztz    gzy             gzzh                  
+               tzhgzy               z       gzh     zzzz      gz              tzzzy                
+              zzh  gzy                       z        z        zy            tzh gzz               
+                    gz                       z        gz       gzy           zh                    
+         tz                      z           z         z        gzy                    zy          
+        tzh                     tz           z         z         gz                    gzyx        
+     xwtzh                     tzh           z         zy         zy                    gzs        
+      axw                     tzh           tz         gz         gzy    tz             qs         
+       4axw             zy   tzh            zh          z          gzy  tzh          qxxs          
+       $  aw            gzy  zh             z           zy          gz tzh          q 5            
+           a             gzytz                          gz           ztzh          qs $            
+            w             gzzh                           z          tzzh         qs                
+            a             tzzy                           zy       tzzhgzy       qs                 
+             aw           zhgzzy                         gz       zh   gz       s                  
+            $4x          tz   gzzy         tz             z   tz        z     qs                   
+              aw        tzh     gzz        zh             z tzzh              x5$                  
+               a        zh                 z              ztzh               qs                    
+                w                     zy   z               zh              zqs                     
+              $4x                     gzzy zzzzzzz   zzzzzzz               gs                      
+                x                       gzzzh             gzy              q                       
+                aw  tz                    gz               gz             qs                       
+                 x tzh                    tz                z             x5$                      
+        !        awzh                     zh                zy           qs                        
+       !*!        xh                      z                 gz           x            !            
+        !       $4x                                          z           x5$         !*!           
+                  x                                          z           x            !            
+                  x                                          z          qx                         
+                  x                                                     xs                         
+                  x                      tz                            xs                          
+                                         zh                                                        
+                                         z                     z                                   
+                                         z                     z                                   
+                                         z                     zy                                  
+                                         z                     gz                                  
+                                         z                      z                                  
+                                         z                      z                                  
+EndOfMapdata
+

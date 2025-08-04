@@ -1,0 +1,128 @@
+#Created by MapXpress 4.5.0 on Sat Mar 18 09:29:30 2006
+
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#
+#
+#
+#
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : The Chatroom
+mapauthor : AcnotKid
+selfimmunity : yes
+robotstalk : yes
+robotsleave : no
+maxrobots : 0
+ballswallbounce : no
+itemswallbounce : no
+asteroidswallbounce : no
+
+mapData: \multiline: EndOfMapdata
+                                                                                                    
+                                                                                                    
+  bbbbbbbbbbbb   bbbbbbbbbbbbbbbbb  bb            bb  bbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb          
+  bbbbbbbbbbbb   bbbbbbbbbbbbbbbbb  bb            bb  bbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb          
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bb   &    bb   bb     &       bb  bb            bb  bb             bb                             
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bb        bb   bb             bb  bb            bb  bb             bb                             
+  bbbbbbbbbbbb   bbbbbbbbbbbbbbbbb  bb            bb  bb             bb                             
+  bbbbbbbbbbbb   bbbbbbbbbbbbbbbbb  bb            bb  bb             bb                             
+  bb             bb             bb  bb            bb  bbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb          
+  bb             bb             bb  bb            bb  bbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb          
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb     &      bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb      &      bb     &       bb  bb            bb              bb bb        &                    
+  bb             bb             bb  bb            bb       &      bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bb            bb              bb bb                             
+  bb             bb             bb  bbbbbbbbbbbbbbbb  bbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb          
+  bb             bb             bb  bbbbbbbbbbbbbbbb  bbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb          
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx          
+  bbbbbbbbbbbbbb   bb        bb  bbbbbbbbbbbbb  bbbbbbbbbbbbbbbbbb                                  
+  bbbbbbbbbbbbbb   bb        bb  bb         bb  bbbbbbbbbbbbbbbbbb                                  
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb   &     bb     &    bb                                          
+  bb               bb   &    bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bbbbbbbbbbbbb          bb                                          
+  bb      &        bbbbbbbbbbbb  bbbbbbbbbbbbb          bb                                          
+  bb               bbbbbbbbbbbb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb   &     bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb   &    bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bb               bb        bb  bb         bb          bb                                          
+  bbbbbbbbbbbbbb   bb        bb  bb         bb          bb                                          
+  bbbbbbbbbbbbbb   bb        bb  bb         bb          bb                                          
+                   bb        bb  bb         bb          bb                                          
+                                                        bb                                          
+                                                                                                    
+                                                                                                    
+                       &               &           &                                                
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x             
+          x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x_x             
+          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx             
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+EndOfMapdata
+

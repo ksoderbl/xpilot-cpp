@@ -1,0 +1,361 @@
+#Created by MapXpress 4.4.0a on Thu Jun 14 20:59:40 2001
+
+#Options updated for Xpilot 4.4.0
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : Nuclear Power Plant II
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+limitedlives : no
+worldlives : 0
+shipmass : 20
+gravity : 0
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+shotmass : 0.5
+shotspeed : 21.0
+shotlife : 20
+maxplayershots : 20
+firerepeatrate : 2
+friction : 0.03
+edgebounce : no
+edgewrap : yes
+extraborder : no
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+selfimmunity : no
+turnthrust : no
+coriolis : 0
+blockfriction : 0.10
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 3
+playerstartsshielded : yes
+shotswallbounce : yes
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : yes
+debriswallbounce : yes
+maxobjectwallbouncespeed : 30
+maxshieldedwallbouncespeed : 100
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.87
+objectwallbouncebrakefactor : 0.3
+objectwallbouncelifefactor : 0.8
+wallbouncefueldrainmult : 0.3
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : yes
+robotrealname : robot
+robothostname : xpilot.org
+tankrealname : tank
+tankhostname : tanks.org
+logrobots : yes
+asteroidswallbounce : yes
+limitedvisibility : yes
+minvisibilitydistance : 20
+maxvisibilitydistance : 25
+oneplayeronly : no
+teamplay : no
+teamassign : yes
+teamimmunity : yes
+teamcannons : yes
+teamfuel : no
+targetkillteam : no
+targetteamcollision : no
+targetsync : yes
+treasurekillteam : yes
+treasurecollisiondestroys : no
+treasurecollisionmaykill : no
+wreckagecollisionmaykill : no
+distinguishmissiles : no
+keepshots : yes
+identifymines : yes
+playersonradar : yes
+missilesonradar : yes
+minesonradar : yes
+nukesonradar : yes
+treasuresonradar : yes
+shieldeditempickup : no
+shieldedmining : no
+cloakedexhaust : yes
+cloakedshield : no
+capturetheflag : no
+targetdeadtime : 60
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+cannonsuseitems : no
+cannonsmartness : 1
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : no
+wormholevisible : yes
+wormtime : 0
+itemconcentratorvisible : no
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : no
+allowclusters : no
+allowmodifiers : yes
+allowlasermodifiers : yes
+allowshipshapes : yes
+maxmissilesperpack : 5
+missilelife : 0
+rogueheatprob : 0.1
+maxminesperpack : 5
+minelife : 0
+minefusetime : 00
+baseminerange : 10
+roguemineprob : 0.1
+minminespeed : 0
+blockfrictionvisible : yes
+cannondeadtime : 72
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 00
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 4
+nukeminmines : 3
+nukeclusterdamage : 1.0
+itemconcentratorradius : 10
+maxitemdensity : 0.01
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : no
+reporttometaserver : yes
+contactport : 15345
+noquit : yes
+idlerun : no
+plockserver : no
+lockotherteam : yes
+allowviewing : no
+framespersecond : 12
+ignore20maxfps : yes
+analyticalcollisiondetection : yes
+timerresolution : 0
+usewreckage : yes
+searchdomainforxpilot : no
+clientportstart : 0
+clientportend : 0
+reset : yes
+initialfuel : 2000
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 2
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 3
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 1
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 1000
+maxdefensiveitems : 1000
+maxfuel : 4000
+maxtanks : 8
+maxecms : 99
+maxmines : 99
+maxmissiles : 99
+maxcloaks : 99
+maxsensors : 99
+maxwideangles : 99
+maxrearshots : 99
+maxafterburners : 99
+maxtransporters : 99
+maxdeflectors : 99
+maxphasings : 99
+maxhyperjumps : 99
+maxemergencythrusts : 99
+maxlasers : 5
+maxtractorbeams : 99
+maxautopilots : 1
+maxemergencyshields : 0
+maxmirrors : 99
+maxarmor : 99
+itemenergypackprob : 15e-8
+itemtankprob : 1e-8
+itemecmprob : 3e-8
+itemmineprob : 7e-8
+itemmissileprob : 8e-8
+itemcloakprob : 1e-8
+itemsensorprob : 3e-8
+itemwideangleprob : 1e-8
+itemrearshotprob : 1e-8
+itemafterburnerprob : 2e-8
+itemtransporterprob : 2e-8
+itemlaserprob : 2e-8
+itememergencythrustprob : 1e-8
+itemtractorbeamprob : 3e-8
+itemautopilotprob : 0e-8
+itememergencyshieldprob : 0e-8
+itemdeflectorprob : 3e-8
+itemhyperjumpprob : 1e-8
+itemphasingprob : 10e-8
+itemmirrorprob : 1e-7
+itemarmorprob : 1e-7
+movingitemprob : 1.0
+dropitemonkillprob : 0.0
+detonateitemonkillprob : 1.0
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+randomitemprob : 0.0
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxs qxxx zz xx zzzzzzzzzzzzzzzzzzzzzzzzzzxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxxxxxstzz xxxxxxxxxxxxx
+xxxxxxs qxxxx zz xx zzhxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxxxstzzhqxxxxxxxxxxxxx
+xxxxxs qxxxxx zz xx zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxstzzhqxxxxxxxxxxxxxx
+xxxxs qxxxxxx zz ax zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxstzzhqxxxxxxxxxxxxxxx
+xxxs qxxxxxxx     a zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxstzzhqxxxxxxxxxxxxxxxx
+xxs qxxxxxxxxxxxxw  zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxstzzhqxxxxxxxxxxxxxxxxx
+xs qxxxxxxxxxxxxxxw zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxxxw ax+xxxxxxxxstzzhqxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxstzzhqxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxx zzhqxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxxxx-x  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxx$xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxx zzyaxxxxxxxxxxxxxxxxxxx_xxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxwgzzyaxxxxxxxxxxxxxxxxxx$xxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxxwgzzyaxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxs  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxxxwgzzyaxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxx_$ xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxxxxwgzzyaxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxw  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxxxxxwgzzyaxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxx  xxxxxxx zz xxxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxxxxxxwgzzyaxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxx  xxxxxxs zz axxxxxxxxxxxxxxxxxxxx
+x  xxxxxxxxxxxxxxxxxxxxxxwgzz xxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxx  xxxxxs  zz  axxxxxxxxxxxxxxxxxx-
+x  xxxxxxxxxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxst xxxxs   zz   axxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxstz xxxs    zz    axxxxxxxxxxxxxxxs_
+    xxxxxxxxxxxxxxxxxxxxxs zzyaxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxstzhqxxs    thgy    axxxxxxxxxxxxxs $
+    xxxxxxxxxxxxxxxxxxxxs  zzzzzzzzzzzzzzzzzzzzyaxxxxxxxxxxxxxstzhqxxs    thqwgy    axxxxxxxxxxxs   
+   qxxxxxxxxxxxxxxxxxxxs q zzzzzzzzzzzzzzzzzzzzzyaxxxxxxxxxxxstzhqxxs    thq++wgy    axxxxxxxxxs    
+xxxxxxxxxxxxxxxxxxxxxxs qx zzhqxxxxxxxxxxxxxxxxwgyaxxxxxxxxxstzhqxxs    thqs++awgy    axxxxxxxxxxxxx
+   qxxxxxxxxxxxxxxxxxs qxx zz xxxxxxxxxxxxxxxxxxwgyaxxxxxxxstzhqxxs    thqxxxxxxwgy    axxxxxxxs    
+  qxxxxxxxxxxxxxxxxxs qxxx zz xxxxxxxxxxxxxxxxxxxwgyaxxxxxstzhqxxs    thqs      awgy    axxxxxx     
+ qxxxxxxxxxxxxxxxxxs qxxxx zz xxxxxxxxxxxxxxxxxxxxwgyaxxxstzhqxxs     zqs        awz               $
+qxxxxxxxxxxxxxxxxxs qxxxxx zz xxxxxxxxxxxxxxxxxxxxxwgyaxstzhqxxx      z            z               _
+xxxxxxxxxxxxxxxxxs qxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxwgy tzhqxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxxxxs qxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxw    qxxxxx  #  #z #  #  #  # z#  #  xxxxxx  x-
+xxxxxxxxxxxxxxxs qxxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxxs qxxxxxxx<x zz x>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxs qxxxxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxs qxxxxxxx     zz     axxxxxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxs qxxxxxxxx     zz      axxxxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxs qxxxxxxxxx     zz       axxxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxs qxxxxxxxxxx     gzytzy    axxxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxs qxxxxxxxxxxx      gzzzzy    axxxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+x        qxxxxxxxxxxxx      tzh gzy    axxxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+x_$     qxxxxxxxxxxxxx     tzhqw gzy    axxxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxxxxxxxxxx    tzhq<<w gzy    axxxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxxxxxxxxxx   tzhq>+->w zzy    axxxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxxxxxxxxxx   zz a>-+>stzzzy    axxxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx  xx
+xxxxxxxxxxxxxxxxxxxxxx   gzy a<<stzzzzzy    axxxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx qxx
+xxxxxxxxxxxxxxxxxxxxxx    gzy astzzzh gzy    axxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxw    gzy tzzzhqw gzy    xxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxw    gzzzzzhq>>w gzy   xxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxxw    zzzzhq<-+<w zz   xxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxxxw  tzzzz a<+-<stzh   xxxxxxxxxxxxxxxxxx  #  #z #  #  #  # z#  #  xxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx tzzzzzy a>>stzh    xxxxxxxxxxxxxxxxxxzz#zz#zz#zz#zz#zz#zz#zz#zzxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxx>stzzzh gzy astzz     xxxxxxxxxxxxxxxxxxzz#zz#zz#zz#zz#zz#zz#zz#zzxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxxstzzzh   gzy tzzzy    xxxxxxxxxxxxxxxxxxzz#zz#zz#zz#zz#zz#zz#zz#zzxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxxstzzzh     gzzzh gzy   xxxxxxxxxxxxxxxxxxzz#zz#zz#zz#zz#zz#zz#zz#zzxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxxstzzzhqxw    gzh   gzy  xxxxxxxxxxxxxxxxxxzz#zz#zz#zz#zz#zz#zz#zz#zzxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxxstzzzhq<xxw          gzy xxxxxxxxxxxxxxxxxxgzzzzzzzzzzzzzzzzzzzzzzzzhxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxxstzzzhqxxxxxw          gz xxxxxxxxxxxxxxxxxxwgzzzzzzzzzzzzzzzzzzzzzzhqxxxxxx xxx
+xxxxxxxxxxxxxxxxxxxstzzzhqxxxxxxxw            a>xxxxxxxxxxxxxxxxxwgzzzzzzzzzzzzzzzzzzzzhqxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zzzhqxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzzzzzzzzzzzzzzzhqxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zzhqxxxxxxxxxxxxxxxxxxxxx<w axxxxxxxxxxxxxxxxxxwgzzzzzzzzzzzzzzzzhqxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzzzzzzzzzzzhqxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzzzzzzzzzhqxxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzzzzzzzhqxxxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zzyaxxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzzzzzhqxxxxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zzzyaxxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzzzhqxxxxxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zzzzyaxxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzzzhqxxxxxxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zzhgzyaxxxxxxxxxxxxxxxxxxxxxxxxxxw axxxxxxxxxxxxxxxxxxwgzzhqxxxxxxxxxxxxxxxx xxx
+xxxxxxxxxxxxxxxxxxx zz wgzyaxxxxxxxxxxxxxxxxxxxxxxxxxxwzxxxxxxxxxxxxxxxxxxx zz xxxxxxxxxxxxxxxxxwaxx
+xxxxxxxxxxxxxxxxxxx zz xwgzyaxxxxxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxwgzyaxxxxxxxxxxxxxxxxxwax
+xxxxxxxxxxxxxxxxxxx zz xxwgzyaxxxxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxwgzyaxxxxxxxxxxxxxxxxxwa
+axxxxxxxxxxxxxxxxxx zz xxxwgzyaxxxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxwgzyaxxxxxxxxxxxxxxxxxw
+waxxxxxxxxxxxxxxxxs   qxxxxwgzyaxxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxwgzyaxxxxxxxxxxxxxxxxx
+xwaxxxxs axxxxxxxs qxxxxxxxxwgzyaxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxxxxxxxwgzyaxxxxxxxxxxxxxxxx
+xxwaxxstzyaxxxxxs  xxxxxxxxxxwgz xxxxxxxxxxxxxxxxxxxxxxzzzzzzzzzzzzzzzzzzyaxxxxxwgzyaxxxxxxxxxxxxxxx
+xxxw  th gyaxxxs   axxxxxxxxxxwgyaxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxwgyxxxxxxwgzyaxxxxxxxxxxxxxx
+xxxx thqxwgyaxs qxxwaxxxxxxxxxxwgyaxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxxxxwzxxxxxxxwgzyaxxxxxxxxxxxxx
+xxxsthqxxxwgy  qxxxxwaxxxxxxxxxxwgyaxxxxxxxxxxxxxxxxxxszxxxxxxxxxxxxxxxxxxzxxxxxxxxwgzyaxxxxxxxxxxxx
+xxsthqxxxxxwgy xxxxxxwaxxxxxxxxxxwgyaxxxxxxxxxxxxxxxxs zxxxxxxxxxxxxxxxxxxzxxxxxxxxxwgzyaxxxxxxxxxxx
+xsthqxxxxxxxwgyaxxxxxxwaxxxxxxxxxxwgyaxxxxxxxxxxxxxxs qzxxxxxxxxxxxxxxxxxxzxxxxxxxxxxwgzyaxxxxxxxxxx
+sthqxxxxxxxxx zyaxxxxxxwaxxxxxxxxxxwgyaxxxxxxxxxxxxs qxzxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxwgzyaxxxxxxxxx
+thqxxxxxxxxxx zz xxxxxxxwaxxxxxxxxxxwgyaxxxxxxxxxxs qxxzxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxwgzyaxxxxxxxs
+hqxxxxxxxxxxx zz xxxxxxxxwaxxxxxxxxxxwgyaxxxxxxxxs qxxxzxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxwgzyaxxxxxst
+qxxxxxxxxxxxx zz xxxxxxxxxwaxxxxxxxxxxwgyaxxxxxxs qxxxxzxxxxxxxxxxxxxxxxxxzxxxxxxxxxxxxxxwgzyaxxxsth
+xxxxxxxxxxxxx zz xxxxxxxxxxwaxxxxxxxxxxwgyaxxxxs qxxxxxzzzzzzzzzzzzzzzzzzzzaxxxxxxxxxxxxxxwgzyaxsthq
+xxxxxxxxxxxxx zz xxxxxxxxxxxwaxxxxxxxxxxwgyaxxs qxxxxxxzxxxxxxxxzxxxxxxxxxz axxxxxxxxxxxxxxwgzy thqx
+xxxxxxxxxxxxx zz xxxxxxxxxxxxwaxxxxxxxxxxwgyast xxxxxxxzxxxxxxxxzxxxxxxxxxzw axxxxxxxxxxxxxxwgzzhqxx
+xxxxxxxxxxxxx zz xxxxxxxxxxxxsqxxxxxxxxxxx zytzyaxxxxxxzxxxxxxxxzxxxxxxxxxzxw axxxxxxxxxxxxxx zhqxxx
+xxxxxxxxxxxxx zz xxxxxxxxxxxsqxxxxxxxxxxxstzzzzzyaxxxxxzxxxxxxxxzxxxxxxxxxzxxw axxxxxxxxxxxxstz xxxx
+xxxxxxxxxxxxx zz xxxxxxxxxxsqxxxxxxxxxxxstzzzzzzzyaxxxxzxxxxxxxsz    axxxxzx<xw axxxxxxxxxxstzhqxxxx
+xxxxxxxxxxxxx zz xxxxxxxxxsqxxxxxxxxxxxx zzzzzzzzz xxxxzxxxxxxx zzzzy xxxxzx<<xw axxxxxxxxstzhqxxxxx
+xxxxxxxxxxxxx zz xxxxxxxxsqxxxxxxxxxxxxx zzzzzzzzz xxxxzxxxxxxx zzzzz xxxxzxxxxxw xxxxxxxstzhqxxxxxx
+xxxxxxxxxxxxx zz xxxxxxxsqxxxxxxxxxxxxxx zzzzzzzzz xxxxzxxxxxxx zzzzz x-xx_zzzzzzzxxxxxxstzhqxxxxxxx
+xxxxxxxxxxxxs zz xx     qxxxxxxxxxxxxxxx zzzzzzzzz xxxxzxxxxxxx gzzzh xxxxxxxxxxxxxxxxxstzhqxxxxxxxx
+xxxxxxxxxxxs  zz xx zzhqxxxxxxxxxxxxxxxxwgzzzzzzzhqxxxxzxxxxxxxw  _  qxxxxxxxxxxxxxxxxstzhqxxxxxxxxx
+xxxxxxxxxxs   zz xx zz xxxxxxxxxxxxxxxxxxw   z   qxxxxxzaxxxxx+xxxxxxxxxxxxxxxxxxxxxxstzhqxxxxxxxxxx
+xxxxxxxxxs qx zz xx zz xxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxw axxxxxxxxxxxxxxxxxxxxxxxxxxstzhqxxxxxxxxxxx
+xxxxxxxxs qxx zz xx zzyxxxxxxxxxxxxxxxxxxxxxxzxxxxxxxxxxw axxxxxxxxxxxxxxxxxxxxxxxxstzhqxxxxxxxxxxxx
+EndOfMapdata
+

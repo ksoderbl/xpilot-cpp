@@ -1,0 +1,200 @@
+# Map created with XPmap/XPilot Map Editor 1.0.1
+# Last saved on 03/10/01 21:24:18
+mapwidth: 50
+mapheight: 50
+mapname: Drunken Special
+mapauthor: Drunken Russian
+limitedlives: yes
+worldlives: 4
+reset: yes
+shipmass: 20.0
+gravity: 0.0
+gravityangle: 90
+gravitypoint: 0,0
+gravitypointsource: yes
+gravityclockwise: no
+gravityanticlockwise: yes
+shotsgravity: yes
+shotmass: 0.1
+shotspeed: 21.0
+shotlife: 60
+maxplayershots: 256
+firerepeatrate: 2
+friction: 0.0
+edgebounce: no
+edgewrap: yes
+extraborder: no
+robotstalk: yes
+robotsleave: yes
+robotleavelife: 50
+robotleavescore: -90
+robotleaveratio: -5
+maxrobots: 0
+playerstartsshielded: yes
+shotswallbounce: no
+ballswallbounce: yes
+mineswallbounce: yes
+itemswallbounce: yes
+missileswallbounce: no
+sparkswallbounce: yes
+debriswallbounce: no
+maxobjectwallbouncespeed: 9999999
+maxshieldedwallbouncespeed: 999999
+maxunshieldedwallbouncespeed: 9999999
+maxshieldedplayerwallbounceangle: 180
+maxunshieldedplayerwallbounceangle: 180
+playerwallbouncebrakefactor: 0.50
+objectwallbouncebrakefactor: 0.95
+objectwallbouncelifefactor: 0.80
+wallbouncefueldrainmult: 0
+wallbouncedestroyitemprob: 0.0
+loseitemdestroys: no
+limitedvisibility: no
+minvisibilitydistance: 0.0
+maxvisibilitydistance: 0.0
+oneplayeronly: no
+teamplay: yes
+teamcannons: yes
+teamassign: yes
+teamimmunity: yes
+targetkillteam: yes
+targetteamcollision: yes
+targetsync: yes
+treasurekillteam: yes
+treasurecollisiondestroys: no
+treasurecollisionmaykill: yes
+distinguishmissiles: no
+identifymines: yes
+playersonradar: yes
+missilesonradar: no
+minesonradar: no
+nukesonradar: yes
+treasuresonradar: no
+shieldeditempickup: yes
+shieldedmining: yes
+ecmsreprogrammines: yes
+allowplayercrashes: no
+allowplayerbounces: yes
+allowplayerkilling: yes
+allowshields: no
+allownukes: yes
+allowclusters: yes
+allowmodifiers: yes
+allowlasermodifiers: yes
+allowshipshapes: yes
+maxmissilesperpack: 4
+rogueheatprob: 0
+minefusetime: 0.0
+roguemineprob: 0
+timing: no
+gameduration: 0.0
+laserisstungun: no
+nukeminsmarts: 7
+nukeminmines: 4
+nukeclusterdamage: 1.0
+itemconcentratorradius: 2
+maxitemdensity: 0.00012
+checkpointradius: 6.0
+racelaps: 3
+reporttometaserver: yes
+contactport: 15345
+noquit: yes
+idlerun: no
+plockserver: no
+lockotherteam: yes
+framespersecond: 14
+initialfuel: 1000
+initialtanks: 0
+initialecms: 0
+initialmines: 0
+initialmissiles: 0
+initialcloaks: 0
+initialsensors: 0
+initialwideangles: 0
+initialrearshots: 0
+initialafterburners: 2
+initialtransporters: 0
+initialemergencythrusts: 0
+initiallasers: 0
+initialtractorbeams: 0
+initialautopilots: 1
+initialemergencyshields: 0
+maxoffensiveitems: 999
+maxdefensiveitems: 999
+itemenergypackprob: 1e-9
+itemtankprob: 1e-9
+itemecmprob: 1e-9
+itemmineprob: 1e-9
+itemmissileprob: 1e-9
+itemcloakprob: 1e-9
+itemsensorprob: 1e-9
+itemwideangleprob: 1e-9
+itemrearshotprob: 1e-9
+itemafterburnerprob: 1e-9
+itemtransporterprob: 1e-9
+itemlaserprob: 1e-9
+itememergencythrustprob: 1e-9
+itemtractorbeamprob: 1e-9
+itemautopilotprob: 1e-9
+itememergencyshieldprob: 1e-9
+movingitemprob: 0.2
+dropitemonkillprob: 1
+detonateitemonkillprob: 0
+destroyitemincollisionprob: 0.0
+itemconcentratorprob: 1.0
+itemprobmult: 1.0
+motd: motd.txt
+playerMinimumStartFuel: 900
+mapData: \multiline: EndOfMapData
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x99999xf c                                       x
+x$$$$$  x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw x
+x*xxxxxxs                                     @x x
+xxs                                            x x
+xc                                             x x
+x x                                            x x
+x x       xxxxxxx              xxxxxxx         x x
+x x     xx!!!    xx          xx       xx       x x
+x x    xx!!!      xx        xx         xx      x x
+x x    x!!!        x        x           x      x x
+x x   x!!!          x      x             x     x x
+x x   x!!           x      x             x     x x
+x x   x!     %      x      x             x     x x
+x x   x             x      x      %      x     x x
+x x   x             x      x             x     x x
+x x   x             x      x             x     x x
+x x   x             x      x             x     x x
+x x    x          @x        x           x      x x
+x x    xx         xx        xx@        xx      x x
+x x     xx       xx@        @xx       xx       x x
+x x       xxxxxxx              xxxxxxx         x x
+x x                                            x x
+x x                                            x x
+x x                                            x x
+x x       xxxxxxxxx                            x x
+x x      x         x@         xxxxxxxxx        x x
+x x    xx           xx      @xx       xx       x x
+x x    x            @x      x           x      x x
+x x   x               x    x@            x     x x
+x x  x                 x  xx             xx    x x
+x x  x                 x  x               x    x x
+x x  x                 x  x               x    x x
+x x  x                 x  x               x    x x
+x x  x         %       x  x       %       x    x x
+x x  x                 x  x               x    x x
+x x  x                 x  x             !!x    x x
+x x  x                 x  x             !!x    x x
+x x  x                 x  xx           !!xx    x x
+x x   x               x    x          !!!x     x x
+x x    x             x      x       !!!!x      x x
+x x    xx           xx       xx     !!xx       x x
+x x      x         x          xxxxxxxxx        x x
+x x       xxxxxxxxx                            x x
+x x                                             rx
+x x                                            qxx
+x x@                                     qxxxxxx*x
+x axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx x       x
+x                                       r dx11111x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapData
+

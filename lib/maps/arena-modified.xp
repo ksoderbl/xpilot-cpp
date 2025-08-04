@@ -1,0 +1,317 @@
+# Created by ./xp-mapedit on Wed Jun 13 21:49:31 2001
+
+limitedlives : yes
+mapwidth : 75
+mapheight : 75
+mapname : ARENA
+mapauthor : ME
+limitedlives : yes
+worldlives : 3
+selfimmunity : no
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : yes
+gravityanticlockwise : yes
+shotsgravity : yes
+gravityvisible : no
+coriolis : 0
+friction : 0.0
+blockfriction : .09
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 256
+firerepeatrate : 10
+keepshots : yes
+edgebounce : yes
+edgewrap : yes
+extraborder : no
+turnthrust : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 2
+robotrealname : robot
+robothostname : xpilot.org
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : yes
+debriswallbounce : yes
+asteroidswallbounce : yes
+wreckagecollisionmaykill : yes
+tankrealname : tank
+tankhostname : tanks.org
+maxobjectwallbouncespeed : 900000000
+maxshieldedwallbouncespeed : 900000000
+maxunshieldedwallbouncespeed : 900000000
+maxshieldedplayerwallbounceangle : 360
+maxunshieldedplayerwallbounceangle : 360
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 0.80
+wallbouncefueldrainmult : 0.1
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 1.0
+maxvisibilitydistance : 2.0
+wormholevisible : no
+itemconcentratorvisible : no
+blockfrictionvisible : yes
+wormtime : 0
+playerstartsshielded : yes
+shieldeditempickup : yes
+shieldedmining : yes
+targetkillteam : yes
+targetteamcollision : no
+targetsync : yes
+targetdeadtime : 10
+treasurekillteam : yes
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : no
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : yes
+teamfuel : yes
+capturetheflag : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : yes
+cannonsmartness : 72
+cannondeadtime : 8
+identifymines : yes
+maxminesperpack : 2
+minelife : 0
+minefusetime : 00
+baseminerange : 0
+roguemineprob : 1.0
+nukeminmines : 4
+minminespeed : 0
+nukeclusterdamage : 1.0
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+distinguishmissiles : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 1.0
+nukeminsmarts : 7
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+allowshipshapes : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allownukes : no
+allowclusters : no
+allowmodifiers : no
+allowlasermodifiers : no
+laserisstungun : no
+maxroundtime : 0
+gameduration : 0.0
+rounddelay : 0
+roundstoplay : 0
+reset : yes
+resetonhuman : 0
+checkpointradius : 6.0
+racelaps : 3
+itemconcentratorradius : 10
+usewreckage : yes
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 14
+initialfuel : 5000
+initialtanks : 10
+initialecms : 1
+initialmines : 2
+initialmissiles : 4
+initialcloaks : 0
+initialsensors : 1
+initialwideangles : 10
+initialrearshots : 5
+initialafterburners : 2
+initialtransporters : 1
+initialdeflectors : 3
+initialphasings : 1
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 5
+initialtractorbeams : 1
+initialautopilots : 1
+initialemergencyshields : 1
+initialmirrors : 1
+initialarmor : 20
+maxfuel : 10000
+maxtanks : 10
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxdeflectors : 10
+maxphasings : 10
+maxhyperjumps : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxmirrors : 10
+maxarmor : 10
+maxoffensiveitems : 100
+maxdefensiveitems : 100
+maxitemdensity : 0.00012
+itemenergypackprob : 1e-9
+itemtankprob : 1e-9
+itemecmprob : 1e-9
+itemmineprob : 1e-9
+itemmissileprob : 1e-9
+itemcloakprob : 1e-9
+itemsensorprob : 1e-9
+itemwideangleprob : 1e-9
+itemrearshotprob : 1e-9
+itemafterburnerprob : 1e-9
+itemtransporterprob : 1e-9
+itemlaserprob : 1e-9
+itememergencythrustprob : 1e-9
+itemtractorbeamprob : 1e-9
+itemautopilotprob : 1e-9
+itememergencyshieldprob : 1e-9
+itemdeflectorprob : 1e-9
+itemhyperjumpprob : 1e-9
+itemphasingprob : 1e-9
+itemmirrorprob : 1e-9
+itemarmorprob : 1e-9
+movingitemprob : 0.2
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+randomitemprob : 0.0
+asteroidprob : 5e-7
+shotkillscoremult : 2.0
+torpedokillscoremult : 2.5
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 4.0
+runoverkillscoremult : 0.33
+ballkillscoremult : 3.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.9
+crashscoremult : 0
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+       #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx      
+     ##s                                                          axxx     
+  q##s                                                              axx    
+#xxs^                                                                 axrr)
+#xx^^                                                                  x# r
+#xs                                                                    a#w3
+#x                                                                    <<<##
+xxw                                      xxxxxxx                      <d#xx
+###f                           xxxxxxxxxxxcccccxxxxx                  <d##x
+* !f                         xxccccccccccc*    ccccxxx                <d!1x
+2$!f                        xx          xxx        ccxxx        ^^    <d!$x
+###f                        x             *          cc         ^^    <d###
+xx!                         x                          x              < ! *
+xx                                                     x              <<   
+xx                                                     x               <<<<
+xx                                                     x                   
+xx                                                     xx                  
+xx                                 xxxxxxxxxxxxxx       x                  
+xs                          xf                  x      *                   
+x                           xf                  xx    dx                   
+x                           xf          %%       x    dx                   
+x                           xf          %%       x    dx                   
+x                           xf                  xx   ddx                   
+x                           xf                 xx    ddx                   
+x                           xf              xxxx      dx                   
+x                            x      * xxxxxxx         dxxx                 
+x                            xxrrrrrx                    xxx               
+x                             xxxxxxx                      xx              
+x                                                         xxx              
+x                                                                          
+x                                                                          
+x                                                             x            
+x                                                              x           
+x                                   x                          xx          
+x                                 xxx                           x          
+x                                xx                             x          
+x                               xxs                             x          
+x                              qxs                              x          
+x                              xx                               x          
+x                              xs                               x          
+x                              xf                               x          
+x                             qxf                              xx          
+x                            dxxf                                          
+x                            dxs                                           
+x bb     b   bbbbbbb         dx      zzzzzz     bbbbbbb    bbbbbb   bbbbbb 
+x bbb    b   b     b         dx      z@z )z     b     b    b    b   b      
+x b bb   b   b     b         dx      z z  z     b     b    b   xx   b      
+x b  b   b   b     b         dx      z z  z     b     b    b    bx  b      
+x b  bb  b   b     b         dx      zzzzzz     b     b    b    xx  b      
+x b   b  b   bbbbbbb                            bbbbbbb    bbbbbx   bbb    
+x b    b b   b     b                            b     b    b b  x   b      
+x b    b b   b     b                            b     b    b  b x   b      
+x b    b b   b     b          qw                b     b    b xxxx   b      
+x b     bb   b     b          axf               b     b    b    b   b      
+x b      b   b     b          dxw               b     b    b    b   bbbbbb 
+x                             dxxf                                         
+x                              dxf                                         
+x                              dxw                                         
+x                              dxxw                                        
+x                              dxxxw                                       
+x                                axx                                      x
+                                  axx                                     x
+                                    xx                                   qx
+                                     xx                                 qxx
+w                                     x                                 xxx
+xw                                                                      x(x
+!xxw                                                                   qx  
+!axxw                                                                 q#s  
+!^axxw                                                               qx#   
+ ^^ axw                                                              x#s   
+%%%  xxw                                                            q#s %%%
+%%%   axw                                                         qx#s  %%%
+%%%    xxxw                                                       x#s   %%%
+%%%     axxw                                                     qxs    %%%
+         xxxw                   0000000000000000000             xxx*r      
+EndOfMapdata
+

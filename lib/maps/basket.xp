@@ -1,0 +1,146 @@
+#Created by MapXpress 4.4.0a on Wed Aug 01 16:03:43 2001
+
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#
+#
+#
+#
+#
+#
+#
+#
+
+mapwidth : 96
+mapheight : 68
+mapname : Basketball Court
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+gravity : 0
+shotlife : 3
+maxplayershots : 1
+firerepeatrate : 1
+friction : 0.01
+blockfriction : 2.0
+robotteam : 0
+maxrobots : 0
+maxobjectwallbouncespeed : 100
+maxshieldedwallbouncespeed : 100
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+teamplay : yes
+teamfuel : yes
+treasurecollisiondestroys : no
+treasuresonradar : yes
+ballconnectorlength : 80
+maxballconnectorratio : 0.30
+ballconnectordamping : 0.4
+ballconnectorspringconstant : 300.0
+ballmass : 10
+allowplayercrashes : no
+allowshields : no
+initialfuel : 1500
+initialafterburners : 2
+initialtractorbeams : 1
+initialautopilots : 1
+itemenergypackprob : 0
+itemtankprob : 0
+itemecmprob : 0
+itemmineprob : 0
+itemmissileprob : 0
+itemcloakprob : 0
+itemsensorprob : 0
+itemwideangleprob : 0
+itemrearshotprob : 0
+itemafterburnerprob : 0
+itemtransporterprob : 0
+itemlaserprob : 0
+itememergencythrustprob : 0
+itemtractorbeamprob : 0
+itemautopilotprob : 0
+itememergencyshieldprob : 0
+itemdeflectorprob : 0
+itemhyperjumpprob : 0
+itemphasingprob : 0
+itemmirrorprob : 0
+itemarmorprob : 0
+shotkillscoremult : 0.2
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                              x
+x                                                                                              x
+x                 #####################                                                        x
+x                                                                                              x
+x                                                                                              x
+x     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb     x
+x     b                                         b                                        b     x
+x     b                                         b                                        b     x
+x     b                                         b                                        b     x
+x     b                                         b                                        b     x
+x     bbbbbby                                   b                                  tbbbbbb     x
+x     b     gbby                                b                               tbbh     b     x
+x     b        gby                              b                             tbh        b     x
+x     b          gby                            b                           tbh          b     x
+x     b            gy                           b                          th            b     x
+x     b             gy                          b                         th             b     x
+x     b              gy                         b                        th              b     x
+x     b               gy                        b                       th               b     x
+x     b                gy                       b                      th                b     x
+x     b                 gy                      b                     th                 b     x
+x     b                  gy                     b                    th                  b     x
+x     b                   b                     b                    b                   b     x
+x     b                   gy                    b                   th                   b     x
+x     b                    b                    b                   b                    b     x
+x     b                    gy                   b                  th                    b     x
+x     b                     b                   b                  b                     b     x
+x     b                     b                   b                  b                     b     x
+x     b                     gy                  b                 th                     b     x
+x     bbbbbbbbbbbbbbbbbbbbby b               tbbbbby              b tbbbbbbbbbbbbbbbbbbbbb     x
+x     b                 b  gyb              th  b  gy             bth  b                 b     x
+x     b    x            b   gb          1$ th   b   gy $2         bh   b            x    b     x
+x     b    x            b    b             b    b    b            b    b            x    b     x
+x     b    xszw         b    b          1$ b   zzz   b $2         b    b         qzax    b     x
+x     b    x ^z         b    b             b1$0z*z0$2b            b    b         z^ xbbbbb     x
+x     b    xwzs         b    b          1$ b   zzz   b $2         b    b         azqx    b     x
+x     b    x            b    b             b    b    b            b    b            x    b     x
+x     b    x            b   tb          1$ gy   b   th $2         by   b            x    b     x
+x     b                 b  thb              gy  b  th             bgy  b                 b     x
+x     bbbbbbbbbbbbbbbbbbbbbh b               gbbbbbh              b gbbbbbbbbbbbbbbbbbbbbb     x
+x     b                     th                  b                 gy                     b     x
+x     b                     b                   b                  b                     b     x
+x     b                     b                   b                  b                     b     x
+x     b                    th                   b                  gy                    b     x
+x     b                    b                    b                   b                    b     x
+x     b                   th                    b                   gy                   b     x
+x     b                   b                     b                    b                   b     x
+x     b                  th                     b                    gy                  b     x
+x     b                 th                      b                     gy                 b     x
+x     b                th                       b                      gy                b     x
+x     b               th                        b                       gy               b     x
+x     b              th                         b                        gy              b     x
+x     b             th                          b                         gy             b     x
+x     b            th                           b                          gy            b     x
+x     b          tbh                            b                           gby          b     x
+x     b        tbh                              b                             gby        b     x
+x     b     tbbh                                b                               gbby     b     x
+x     bbbbbbh                                   b                                  gbbbbbb     x
+x     b                                         b                                        b     x
+x     b                                         b                                        b     x
+x     b                                         b                                        b     x
+x     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb     x
+x                                                                                              x
+x                                                                                              x
+x                                                         #####################                x
+x                                                                                              x
+x                                                                                              x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

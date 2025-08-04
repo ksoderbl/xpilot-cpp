@@ -1,0 +1,124 @@
+#Created by MapXpress 2.0.1 on Sun Jan 14 15:57:04 2001
+
+#
+#
+#
+#
+
+mapwidth : 128
+mapheight : 64
+mapname : Crosscountry racing
+mapauthor : J-a-r-n-o
+worldlives : 5
+gravity : 0.05
+gravityclockwise : yes
+maxplayershots : 0
+edgewrap : yes
+maxrobots : 0
+maxshieldedwallbouncespeed : 100
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.7
+allowsmartmissiles : no
+allowheatseekers : no
+allowplayercrashes : no
+allowshields : no
+allowmodifiers : yes
+allowlasermodifiers : yes
+timing : yes
+rounddelay : 10
+laserisstungun : yes
+checkpointradius : 8.0
+racelaps : 2
+framespersecond : 12
+password : RaceOn
+initialfuel : 500
+initialafterburners : 2
+maxafterburners : 100
+maxlasers : 50
+itemenergypackprob : 0
+itemtankprob : 0
+itemecmprob : 0
+itemmineprob : 0
+itemmissileprob : 0
+itemcloakprob : 0
+itemsensorprob : 0
+itemwideangleprob : 0
+itemrearshotprob : 0
+itememergencythrustprob : 0
+itemautopilotprob : 0
+itememergencyshieldprob : 0
+itemdeflectorprob : 0
+itemhyperjumpprob : 0
+itemphasingprob : 0
+itemmirrorprob : 0
+itemarmorprob : 0
+movingitemprob : 0.5
+
+mapData: \multiline: EndOfMapdata
+                              axxs                              qxxxw   qxxxxxxxxxs axxxs                                       
+                               as                              qxxxxs   axxxxxxxxs   as                                         
+                                                              qxxxxs     axxxxxxx                                               
+    B                                                         xxxxs       axxxxxs                                               
+                                                              axs          a###s                                                
+                                                                                                                                
+                                                              qw                                                                
+                                                             qxx                                                                
+                                                             xxx                                                                
+             qw                                              axx                                                                
+            qxxw                                              as                                                                
+            axxxw                                                                                                               
+             axxxw                              A                                                              qw               
+              axxxw                                                                    qw                      xxxxw            
+               axxxw                                                                   axw            F        axxxxw           
+                axxxw                                                                   axxw                    axxxxxw         
+                 axxx                                                                    xxxw                    axxxxxw        
+                  xxx                                                                    xxxxw                    axxxxxxw      
+                  axx                                                                    xxxxx                       axxxx      
+                   as                                                                    axxxxw                       axxs      
+                                                $                                         xxxxxw                                
+                                              $ _ $                                       axxxxxw                               
+   qxxx                                       _   _                                        axxxxxw                              
+ qxxxxxw                                    $   $   $                     qw                axxxxxw                             
+qxxxxxxxw                                   _ $ _ $ _                     as                 axxxxxw                            
+xxxxxxxxx                                     _   _                                           xxxxxx                            
+xxxxxxxxxw                                  $   $   $                                       xqxxxxxxwqw                         
+xxxxxxxxxxw                               $ _ $ _ $ _ $                                      xxx#####xxw                        
+xxxxxxxxxxx                               _q#w_q#w_q#w_                            C         axxxx#xxxxx                        
+xxxxxxxxxxs                              qxxxxxxxxxxxxx                     qw                axxx#xxxxs                        
+xxxxxxxxxs                               xs axxxxxxxxxs                     ax                qxxx#xxxx                         
+xxxxxxxxxw                               xw  xxxxxxxxs                       x                ax#####xx                         
+xxxxxxxxxs                              qxx  axxxxxxxwqxxw                   xw                axxxxxxx                         
+xxxxxxxxs                               xxx   axxxxxxxxxxxw                  xx                 axxxxxx                         
+axs  as                                  axw   xxxxxxxxxxxx                  as               qw axxxxs                         
+                                          axxwqxxxxxxxxxxxx                                qw as  axxs                          
+                                           axxxxxxxxxxxxxxx                               qxs      as                           
+                                            asaxxxxxxxxxxxx                               as                                    
+           qw                                   axxxxxxxxxs                                                                     
+           xxw                                   xxxxxxxxx                                                                      
+           axxw                                  axxxxxxxx                                                                      
+            axxw                                  axsaxxxs                                                                      
+             xxx                                      xxs                                                                       
+             axxwqxwqxw                               axw                                                                       
+              axxxxxxxxw                               axw                                                                      
+                axxxxxxxw                               axw                                                                     
+                 xxxxxxxxw           D                   axw                                                                    
+                 xxxxxxxxx                                axw                                                    E              
+                 xxxxxxxxs                                 as                                                                   
+                qxxxxxxxx                                                                                                       
+                xxxxxxxxx                                                               qw                                      
+                xxxxxxs                                                                #xxxw qw                                 
+                xxxxxx                                                                ##xxxxxxxxw                               
+                axxxxs                                                                #xxxxxxxxxxw                              
+                  axs                                                                qxxxxxxxxxxxxxxxw                          
+                                                                                   xxxxxxxxxxxxxxxxxxxw                         
+                                 qxxw                            G                 axxxxxxxxxxxxxxxxxxxw                        
+                              qxxxxxxx                                             qxxxxxxxxxxxxxxxxxxxxw                       
+                            qxxxxxxxxx                                            qxxxxxxxxxxxxxxxxxxxxxx                       
+                         qxxxxxxxxxxxxw                                         qxxxxxxxxxxxxxxxxxxxxxxxx                       
+                         axxxxxxxxxxxxs                                        xxxxxxxxxxxxxxxxxxxxxxxxxx                       
+                         qxxxxxxxxxxxx                                         axxxxxxxxxxxxxxxxxxxxxxxxs                       
+                         xxxxxxxxxxxxx                                         qxxxxxxxxxxxxxxxxxxxxxxxx                        
+                         xxxxxxxxxxxxx                                        qxxxxxxxxxxxxxxxxxxxxxxs                          
+EndOfMapdata
