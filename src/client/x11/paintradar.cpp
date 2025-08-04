@@ -166,7 +166,7 @@ static void Paint_self_radar(float xf, float yf)
     }
 }
 
-static void Paint_objectradarPixmap2(void)
+static void Paint_objects_radar(void)
 {
     int i, x, y, xw, yw;
 
@@ -251,7 +251,7 @@ void Paint_radar(void)
     Paint_checkpoint_radar(xf, yf);
 
     Paint_self_radar(xf, yf);
-    Paint_objectradarPixmap2();
+    Paint_objects_radar();
 }
 
 void Paint_sliding_radar(void)

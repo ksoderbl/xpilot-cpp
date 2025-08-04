@@ -86,50 +86,30 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = @build@
-host_triplet = @host@
-target_triplet = @target@
-bin_PROGRAMS = xpilot-ng-sdl$(EXEEXT)
-@COND_SDL_GAMELOOP_TRUE@am__append_1 = gameloop.c
-@COND_SDL_GAMELOOP_FALSE@am__append_2 = gameloop_x.c
-@COND_WINDOWS_TRUE@am__append_3 = win32hacks.c
-@COND_WINDOWS_FALSE@am__append_4 = -lX11
+bin_PROGRAMS = xpilot-cpp-client-sdl$(EXEEXT)
 subdir = src/client/sdl
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
-mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config.h
+mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__xpilot_ng_sdl_SOURCES_DIST = asteroid_data.h DT_drawtext.c \
-	DT_drawtext.h SDL_console.c SDL_console.h SDL_gfxPrimitives.c \
-	SDL_gfxPrimitives.h SDL_gfxPrimitives_font.h console.c \
-	console.h glwidgets.c glwidgets.h images.c images.h main.c \
-	scrap.c scrap.h radar.c radar.h sdlevent.c sdlgui.c sdlinit.c \
-	sdlkeys.c sdlkeys.h sdlpaint.c sdlpaint.h sdlwindow.c \
-	sdlwindow.h text.c text.h todo.c sdlmeta.h sdlmeta.c sdlinit.h \
-	../xhacks.h xpclient_sdl.h gameloop.c gameloop_x.c \
-	win32hacks.c
-@COND_SDL_GAMELOOP_TRUE@am__objects_1 = gameloop.$(OBJEXT)
-@COND_SDL_GAMELOOP_FALSE@am__objects_2 = gameloop_x.$(OBJEXT)
-@COND_WINDOWS_TRUE@am__objects_3 = win32hacks.$(OBJEXT)
-am_xpilot_ng_sdl_OBJECTS = DT_drawtext.$(OBJEXT) SDL_console.$(OBJEXT) \
-	SDL_gfxPrimitives.$(OBJEXT) console.$(OBJEXT) \
-	glwidgets.$(OBJEXT) images.$(OBJEXT) main.$(OBJEXT) \
-	scrap.$(OBJEXT) radar.$(OBJEXT) sdlevent.$(OBJEXT) \
-	sdlgui.$(OBJEXT) sdlinit.$(OBJEXT) sdlkeys.$(OBJEXT) \
-	sdlpaint.$(OBJEXT) sdlwindow.$(OBJEXT) text.$(OBJEXT) \
-	todo.$(OBJEXT) sdlmeta.$(OBJEXT) $(am__objects_1) \
-	$(am__objects_2) $(am__objects_3)
-xpilot_ng_sdl_OBJECTS = $(am_xpilot_ng_sdl_OBJECTS)
-am__DEPENDENCIES_1 =
-xpilot_ng_sdl_DEPENDENCIES = $(top_builddir)/src/client/libxpclient.a \
-	$(top_builddir)/src/common/libxpcommon.a $(am__DEPENDENCIES_1)
+am_xpilot_cpp_client_sdl_OBJECTS = DT_drawtext.$(OBJEXT) \
+	SDL_console.$(OBJEXT) SDL_gfxPrimitives.$(OBJEXT) \
+	console.$(OBJEXT) glwidgets.$(OBJEXT) images.$(OBJEXT) \
+	main.$(OBJEXT) scrap.$(OBJEXT) radar.$(OBJEXT) \
+	sdlevent.$(OBJEXT) sdlgui.$(OBJEXT) sdlinit.$(OBJEXT) \
+	sdlkeys.$(OBJEXT) sdlpaint.$(OBJEXT) sdlwindow.$(OBJEXT) \
+	text.$(OBJEXT) todo.$(OBJEXT) sdlmeta.$(OBJEXT) \
+	gameloop_x.$(OBJEXT)
+xpilot_cpp_client_sdl_OBJECTS = $(am_xpilot_cpp_client_sdl_OBJECTS)
+xpilot_cpp_client_sdl_DEPENDENCIES =  \
+	$(top_builddir)/src/client/libxpclient.a \
+	$(top_builddir)/src/common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -142,21 +122,33 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
-depcomp = $(SHELL) $(top_srcdir)/config/depcomp
+DEFAULT_INCLUDES = -I.@am__isrc@
+depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/DT_drawtext.Po \
 	./$(DEPDIR)/SDL_console.Po ./$(DEPDIR)/SDL_gfxPrimitives.Po \
-	./$(DEPDIR)/console.Po ./$(DEPDIR)/gameloop.Po \
-	./$(DEPDIR)/gameloop_x.Po ./$(DEPDIR)/glwidgets.Po \
-	./$(DEPDIR)/images.Po ./$(DEPDIR)/main.Po ./$(DEPDIR)/radar.Po \
-	./$(DEPDIR)/scrap.Po ./$(DEPDIR)/sdlevent.Po \
-	./$(DEPDIR)/sdlgui.Po ./$(DEPDIR)/sdlinit.Po \
-	./$(DEPDIR)/sdlkeys.Po ./$(DEPDIR)/sdlmeta.Po \
-	./$(DEPDIR)/sdlpaint.Po ./$(DEPDIR)/sdlwindow.Po \
-	./$(DEPDIR)/text.Po ./$(DEPDIR)/todo.Po \
-	./$(DEPDIR)/win32hacks.Po
+	./$(DEPDIR)/console.Po ./$(DEPDIR)/gameloop_x.Po \
+	./$(DEPDIR)/glwidgets.Po ./$(DEPDIR)/images.Po \
+	./$(DEPDIR)/main.Po ./$(DEPDIR)/radar.Po ./$(DEPDIR)/scrap.Po \
+	./$(DEPDIR)/sdlevent.Po ./$(DEPDIR)/sdlgui.Po \
+	./$(DEPDIR)/sdlinit.Po ./$(DEPDIR)/sdlkeys.Po \
+	./$(DEPDIR)/sdlmeta.Po ./$(DEPDIR)/sdlpaint.Po \
+	./$(DEPDIR)/sdlwindow.Po ./$(DEPDIR)/text.Po \
+	./$(DEPDIR)/todo.Po
 am__mv = mv -f
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX     " $@;
+am__v_CXX_1 = 
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD   " $@;
+am__v_CXXLD_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_@AM_V@)
@@ -169,8 +161,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(xpilot_ng_sdl_SOURCES)
-DIST_SOURCES = $(am__xpilot_ng_sdl_SOURCES_DIST)
+SOURCES = $(xpilot_cpp_client_sdl_SOURCES)
+DIST_SOURCES = $(xpilot_cpp_client_sdl_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -193,8 +185,7 @@ am__define_uniq_tagged_files = \
   unique=`for i in $$list; do \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/config/depcomp \
-	$(top_srcdir)/config/mkinstalldirs TODO
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp TODO
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -203,13 +194,12 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CC = @CC@
-CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
-CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
+CXX = @CXX@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -218,7 +208,6 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 ETAGS = @ETAGS@
 EXEEXT = @EXEEXT@
-GL_LIBS = @GL_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -228,7 +217,6 @@ LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
-MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
 OBJEXT = @OBJEXT@
@@ -240,54 +228,30 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
-SDL_CFLAGS = @SDL_CFLAGS@
-SDL_EXTRA_LIBS = @SDL_EXTRA_LIBS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
-SOUND_LIBS = @SOUND_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
-W32_LIBS = @W32_LIBS@
-XMKMF = @XMKMF@
-XP_AUTHORS = @XP_AUTHORS@
-XP_COPYRIGHT = @XP_COPYRIGHT@
-XP_COPYRIGHTDATE = @XP_COPYRIGHTDATE@
-XP_DATADIR = @XP_DATADIR@
-XP_RELEASEDATE = @XP_RELEASEDATE@
-X_CFLAGS = @X_CFLAGS@
-X_EXTENSIONS_LIB = @X_EXTENSIONS_LIB@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
-ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
-build = @build@
 build_alias = @build_alias@
-build_cpu = @build_cpu@
-build_os = @build_os@
-build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
-host = @host@
 host_alias = @host_alias@
-host_cpu = @host_cpu@
-host_os = @host_os@
-host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -308,36 +272,40 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
-target = @target@
 target_alias = @target_alias@
-target_cpu = @target_cpu@
-target_os = @target_os@
-target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" \
 	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/client @SDL_CFLAGS@
 
-xpilot_ng_sdl_SOURCES = asteroid_data.h DT_drawtext.c DT_drawtext.h \
-	SDL_console.c SDL_console.h SDL_gfxPrimitives.c \
-	SDL_gfxPrimitives.h SDL_gfxPrimitives_font.h console.c \
-	console.h glwidgets.c glwidgets.h images.c images.h main.c \
-	scrap.c scrap.h radar.c radar.h sdlevent.c sdlgui.c sdlinit.c \
-	sdlkeys.c sdlkeys.h sdlpaint.c sdlpaint.h sdlwindow.c \
-	sdlwindow.h text.c text.h todo.c sdlmeta.h sdlmeta.c sdlinit.h \
-	../xhacks.h xpclient_sdl.h $(am__append_1) $(am__append_2) \
-	$(am__append_3)
-xpilot_ng_sdl_LDADD = $(top_builddir)/src/client/libxpclient.a \
-	$(top_builddir)/src/common/libxpcommon.a @GL_LIBS@ \
-	@SDL_EXTRA_LIBS@ @X_LIBS@ @X_PRE_LIBS@ @X_EXTENSIONS_LIB@ \
-	@X_EXTRA_LIBS@ @SOUND_LIBS@ @W32_LIBS@ $(am__append_4)
+
+# if COND_SDL_GAMELOOP
+#   xpilot_cpp_client_sdl_SOURCES += gameloop.cpp
+# else
+xpilot_cpp_client_sdl_SOURCES = asteroid_data.h DT_drawtext.cpp \
+	DT_drawtext.h SDL_console.cpp SDL_console.h \
+	SDL_gfxPrimitives.cpp SDL_gfxPrimitives.h \
+	SDL_gfxPrimitives_font.h console.cpp console.h glwidgets.cpp \
+	glwidgets.h images.cpp images.h main.cpp scrap.cpp scrap.h \
+	radar.cpp radar.h sdlevent.cpp sdlgui.cpp sdlinit.cpp \
+	sdlkeys.cpp sdlkeys.h sdlpaint.cpp sdlpaint.h sdlwindow.cpp \
+	sdlwindow.h text.cpp text.h todo.cpp sdlmeta.h sdlmeta.cpp \
+	sdlinit.h ../xhacks.h xpclient_sdl.h gameloop_x.cpp
+xpilot_cpp_client_sdl_LDADD = $(top_builddir)/src/client/libxpclient.a  $(top_builddir)/src/common/libxpcommon.a @GL_LIBS@ @SDL_EXTRA_LIBS@ @X_LIBS@ @X_PRE_LIBS@ @X_EXTENSIONS_LIB@ @X_EXTRA_LIBS@ @SOUND_LIBS@ @W32_LIBS@
+# endif
+
+# if COND_WINDOWS
+#   xpilot_cpp_client_sdl_SOURCES += win32hacks.cpp
+# else
+#   xpilot_cpp_client_sdl_LDADD += -lX11
+# endif
 EXTRA_DIST = xpilot.rc xpilot_sdl.dsp xpilot_sdl.dsw
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .cpp .o .obj
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -361,9 +329,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 install-binPROGRAMS: $(bin_PROGRAMS)
@@ -409,9 +377,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-xpilot-ng-sdl$(EXEEXT): $(xpilot_ng_sdl_OBJECTS) $(xpilot_ng_sdl_DEPENDENCIES) $(EXTRA_xpilot_ng_sdl_DEPENDENCIES) 
-	@rm -f xpilot-ng-sdl$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(xpilot_ng_sdl_OBJECTS) $(xpilot_ng_sdl_LDADD) $(LIBS)
+xpilot-cpp-client-sdl$(EXEEXT): $(xpilot_cpp_client_sdl_OBJECTS) $(xpilot_cpp_client_sdl_DEPENDENCIES) $(EXTRA_xpilot_cpp_client_sdl_DEPENDENCIES) 
+	@rm -f xpilot-cpp-client-sdl$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(xpilot_cpp_client_sdl_OBJECTS) $(xpilot_cpp_client_sdl_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -423,7 +391,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL_console.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL_gfxPrimitives.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/console.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameloop.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameloop_x.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glwidgets.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/images.Po@am__quote@ # am--include-marker
@@ -439,7 +406,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdlwindow.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/text.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/todo.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/win32hacks.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -447,19 +413,19 @@ $(am__depfiles_remade):
 
 am--depfiles: $(am__depfiles_remade)
 
-.c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+.cpp.o:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
-.c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+.cpp.obj:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -591,7 +557,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/SDL_console.Po
 	-rm -f ./$(DEPDIR)/SDL_gfxPrimitives.Po
 	-rm -f ./$(DEPDIR)/console.Po
-	-rm -f ./$(DEPDIR)/gameloop.Po
 	-rm -f ./$(DEPDIR)/gameloop_x.Po
 	-rm -f ./$(DEPDIR)/glwidgets.Po
 	-rm -f ./$(DEPDIR)/images.Po
@@ -607,7 +572,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/sdlwindow.Po
 	-rm -f ./$(DEPDIR)/text.Po
 	-rm -f ./$(DEPDIR)/todo.Po
-	-rm -f ./$(DEPDIR)/win32hacks.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -657,7 +621,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/SDL_console.Po
 	-rm -f ./$(DEPDIR)/SDL_gfxPrimitives.Po
 	-rm -f ./$(DEPDIR)/console.Po
-	-rm -f ./$(DEPDIR)/gameloop.Po
 	-rm -f ./$(DEPDIR)/gameloop_x.Po
 	-rm -f ./$(DEPDIR)/glwidgets.Po
 	-rm -f ./$(DEPDIR)/images.Po
@@ -673,7 +636,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/sdlwindow.Po
 	-rm -f ./$(DEPDIR)/text.Po
 	-rm -f ./$(DEPDIR)/todo.Po
-	-rm -f ./$(DEPDIR)/win32hacks.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
