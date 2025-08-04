@@ -318,50 +318,50 @@ void Move_init(void)
     mp.click_width = PIXEL_TO_CLICK(World.width);
     mp.click_height = PIXEL_TO_CLICK(World.height);
 
-    LIMIT(maxObjectWallBounceSpeed, 0, World.hypotenuse);
-    LIMIT(maxShieldedWallBounceSpeed, 0, World.hypotenuse);
-    LIMIT(maxUnshieldedWallBounceSpeed, 0, World.hypotenuse);
-    LIMIT(maxShieldedWallBounceAngle, 0, 180);
-    LIMIT(maxUnshieldedWallBounceAngle, 0, 180);
-    LIMIT(playerWallBrakeFactor, 0, 1);
-    LIMIT(objectWallBrakeFactor, 0, 1);
-    LIMIT(objectWallBounceLifeFactor, 0, 1);
-    LIMIT(wallBounceFuelDrainMult, 0, 1000);
-    wallBounceExplosionMult = sqrt(wallBounceFuelDrainMult);
+    LIMIT(options.maxObjectWallBounceSpeed, 0, World.hypotenuse);
+    LIMIT(options.maxShieldedWallBounceSpeed, 0, World.hypotenuse);
+    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, World.hypotenuse);
+    LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
+    LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);
+    LIMIT(options.playerWallBrakeFactor, 0, 1);
+    LIMIT(options.objectWallBrakeFactor, 0, 1);
+    LIMIT(options.objectWallBounceLifeFactor, 0, 1);
+    LIMIT(options.wallBounceFuelDrainMult, 0, 1000);
+    wallBounceExplosionMult = sqrt(options.wallBounceFuelDrainMult);
 
-    mp.max_shielded_angle = (int)(maxShieldedWallBounceAngle * RES / 360);
-    mp.max_unshielded_angle = (int)(maxUnshieldedWallBounceAngle * RES / 360);
+    mp.max_shielded_angle = (int)(options.maxShieldedWallBounceAngle * RES / 360);
+    mp.max_unshielded_angle = (int)(options.maxUnshieldedWallBounceAngle * RES / 360);
 
     mp.obj_bounce_mask = 0;
-    if (sparksWallBounce)
+    if (options.sparksWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_SPARK);
     }
-    if (debrisWallBounce)
+    if (options.debrisWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS);
     }
-    if (shotsWallBounce)
+    if (options.shotsWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_SHOT | OBJ_CANNON_SHOT);
     }
-    if (itemsWallBounce)
+    if (options.itemsWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_ITEM);
     }
-    if (missilesWallBounce)
+    if (options.missilesWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT);
     }
-    if (minesWallBounce)
+    if (options.minesWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_MINE);
     }
-    if (ballsWallBounce)
+    if (options.ballsWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_BALL);
     }
-    if (asteroidsWallBounce)
+    if (options.asteroidsWallBounce)
     {
         SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID);
     }
@@ -369,7 +369,7 @@ void Move_init(void)
     mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE | OBJ_SHOT | OBJ_PULSE |
                          OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT |
                          OBJ_ASTEROID;
-    if (cannonsUseItems)
+    if (options.cannonsUseItems)
         mp.obj_cannon_mask |= OBJ_ITEM;
     mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL | OBJ_SPARK;
     mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL | OBJ_PULSE;
@@ -872,7 +872,7 @@ void Move_segment(move_state_t *ms)
                  * player has been warped to.
                  */
                 int last = World.wormHoles[hole].lastdest;
-                if (last >= 0 && (World.wormHoles[hole].countdown > 0 || !wormTime) && last < World.NumWormholes && World.wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
+                if (last >= 0 && (World.wormHoles[hole].countdown > 0 || !options.wormTime) && last < World.NumWormholes && World.wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
                     ms->done.x += (World.wormHoles[last].pos.x - World.wormHoles[hole].pos.x) * BLOCK_CLICKS;
                     ms->done.y += (World.wormHoles[last].pos.y - World.wormHoles[hole].pos.y) * BLOCK_CLICKS;
@@ -904,7 +904,7 @@ void Move_segment(move_state_t *ms)
                 break;
             }
 
-            if (BIT(World.rules->mode, TEAM_PLAY) && (teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == World.cannon[i].team)
+            if (BIT(World.rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == World.cannon[i].team)
             {
                 break;
             }
@@ -1174,7 +1174,7 @@ void Move_segment(move_state_t *ms)
                         sprintf(msg, " < The ball was loose for %ld frames >",
                                 LONG_MAX - ball->life);
                         Set_message(msg);
-                        if (captureTheFlag && !World.treasures[ms->treasure].have && !World.treasures[ms->treasure].empty)
+                        if (options.captureTheFlag && !World.treasures[ms->treasure].have && !World.treasures[ms->treasure].empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(Players[GetInd[ball->owner]], msg);
@@ -1208,7 +1208,7 @@ void Move_segment(move_state_t *ms)
                      */
                     ms->target = i = World.itemID[block.x][block.y];
 
-                    if (!targetTeamCollision)
+                    if (!options.targetTeamCollision)
                     {
                         int team;
                         if (mi->pl)
@@ -1822,7 +1822,7 @@ static void Cannon_dies(move_state_t *ms)
     int killer = -1;
     player_t *pl = NULL;
 
-    cannon->dead_time = cannonDeadTime;
+    cannon->dead_time = options.cannonDeadTime;
     cannon->conn_mask = 0;
     World.block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
     Cannon_throw_items(ms->cannon);
@@ -1871,11 +1871,11 @@ static void Cannon_dies(move_state_t *ms)
     }
     if (pl)
     {
-        if (cannonPoints > 0)
+        if (options.cannonPoints > 0)
         {
-            if (pl->score <= cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
+            if (pl->score <= options.cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(killer, cannonPoints, cannon->blk_pos.x,
+                SCORE(killer, options.cannonPoints, cannon->blk_pos.x,
                       cannon->blk_pos.y, "");
             }
         }
@@ -1967,7 +1967,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     targ->update_mask = (unsigned)-1;
     targ->damage = TARGET_DAMAGE;
-    targ->dead_time = targetDeadTime;
+    targ->dead_time = options.targetDeadTime;
 
     /*
      * Destroy target.
@@ -2051,7 +2051,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
          * assume there are many used as shields.  Don't litter
          * the game with the message below.
          */
-        if (targetTeamCollision && targets_total < 10)
+        if (options.targetTeamCollision && targets_total < 10)
         {
             sprintf(msg, "%s blew up one of team %d's targets.",
                     Players[killer]->name, (int)targ->team);
@@ -2066,7 +2066,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             (targets_total > 1) ? "last " : "");
     Set_message(msg);
 
-    if (targetKillTeam)
+    if (options.targetKillTeam)
     {
         Players[killer]->kills++;
     }
@@ -2082,7 +2082,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         }
         if (Players[j]->team == targ->team)
         {
-            if (targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
+            if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(Players[j]->status, KILLED);
             SCORE(j, -sc, targ->pos.x, targ->pos.y,
                   "Target: ");
@@ -2205,7 +2205,7 @@ void Move_object(object_t *obj)
     mi.pl = NULL;
     mi.obj = obj;
     mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
-    mi.edge_bounce = edgeBounce;
+    mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = BIT(mp.obj_bounce_mask, obj->type);
     mi.cannon_crashes = BIT(mp.obj_cannon_mask, obj->type);
     mi.target_crashes = BIT(mp.obj_target_mask, obj->type);
@@ -2241,7 +2241,7 @@ void Move_object(object_t *obj)
             if (ms.bounce && ms.bounce != BounceEdge)
             {
                 if (obj->type != OBJ_BALL)
-                    obj->life = (long)(obj->life * objectWallBounceLifeFactor);
+                    obj->life = (long)(obj->life * options.objectWallBounceLifeFactor);
                 if (obj->life <= 0)
                 {
                     break;
@@ -2258,15 +2258,15 @@ void Move_object(object_t *obj)
                  */
                 if (!BIT(obj->status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK))
                     CLR_BIT(obj->status, OWNERIMMUNE);
-                if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(maxObjectWallBounceSpeed))
+                if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(options.maxObjectWallBounceSpeed))
                 {
                     obj->life = 0;
                     break;
                 }
-                ms.vel.x *= objectWallBrakeFactor;
-                ms.vel.y *= objectWallBrakeFactor;
-                ms.todo.x = (int)(ms.todo.x * objectWallBrakeFactor);
-                ms.todo.y = (int)(ms.todo.y * objectWallBrakeFactor);
+                ms.vel.x *= options.objectWallBrakeFactor;
+                ms.vel.y *= options.objectWallBrakeFactor;
+                ms.todo.x = (int)(ms.todo.x * options.objectWallBrakeFactor);
+                ms.todo.y = (int)(ms.todo.y * options.objectWallBrakeFactor);
             }
             if (++nothing_done >= 5)
             {
@@ -2478,7 +2478,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_len += name_len;
                     msg_ptr += name_len;
                 }
-                sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * shoveKillScoreMult) / total_pusher_count;
+                sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
                 SCORE(GetInd[pusher->id], sc,
                       OBJ_X_IN_BLOCKS(pl),
                       OBJ_Y_IN_BLOCKS(pl),
@@ -2488,7 +2488,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     pusher->kills++;
                 }
             }
-            sc = (int)floor(Rate(average_pusher_score, pl->score) * shoveKillScoreMult);
+            sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
             SCORE(ind, -sc,
                   OBJ_X_IN_BLOCKS(pl),
                   OBJ_Y_IN_BLOCKS(pl),
@@ -2555,22 +2555,22 @@ void Move_player(int ind)
     /* Figure out which friction to use. */
     if (BIT(pl->used, HAS_PHASING_DEVICE))
     {
-        fric = friction;
+        fric = options.friction;
     }
     else
     {
         switch (World.block[pl->pos.bx][pl->pos.by])
         {
         case FRICTION:
-            fric = blockFriction;
+            fric = options.blockFriction;
             break;
         default:
-            fric = friction;
+            fric = options.friction;
             break;
         }
     }
 
-    cor_res = MOD2(coriolis * RES / 360, RES);
+    cor_res = MOD2(options.coriolis * RES / 360, RES);
     oldvx = pl->vel.x;
     oldvy = pl->vel.y;
     pl->vel.x = (1.0f - fric) * (oldvx * tcos(cor_res) + oldvy * tsin(cor_res));
@@ -2597,7 +2597,7 @@ void Move_player(int ind)
     mi.pl = pl;
     mi.obj = (object_t *)pl;
     mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
-    mi.edge_bounce = edgeBounce;
+    mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;
     mi.treasure_crashes = true;
@@ -2740,14 +2740,14 @@ void Move_player(int ind)
                 DFLOAT speed = VECTOR_LENGTH(ms[worst].vel);
                 int v = (int)speed >> 2;
                 int m = (int)(pl->mass - pl->emptymass * 0.75f);
-                DFLOAT b = 1 - 0.5f * playerWallBrakeFactor;
+                DFLOAT b = 1 - 0.5f * options.playerWallBrakeFactor;
                 long cost = (long)(b * m * v);
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
                 DFLOAT max_speed = BIT(pl->used, HAS_SHIELD)
-                                       ? maxShieldedWallBounceSpeed
-                                       : maxUnshieldedWallBounceSpeed;
+                                       ? options.maxShieldedWallBounceSpeed
+                                       : options.maxUnshieldedWallBounceSpeed;
                 int max_angle = BIT(pl->used, HAS_SHIELD)
                                     ? mp.max_shielded_angle
                                     : mp.max_unshielded_angle;
@@ -2761,15 +2761,15 @@ void Move_player(int ind)
                     max_angle = RES;
                 }
 
-                ms[worst].vel.x *= playerWallBrakeFactor;
-                ms[worst].vel.y *= playerWallBrakeFactor;
-                ms[worst].todo.x = (int)(ms[worst].todo.x * playerWallBrakeFactor);
-                ms[worst].todo.y = (int)(ms[worst].todo.y * playerWallBrakeFactor);
+                ms[worst].vel.x *= options.playerWallBrakeFactor;
+                ms[worst].vel.y *= options.playerWallBrakeFactor;
+                ms[worst].todo.x = (int)(ms[worst].todo.x * options.playerWallBrakeFactor);
+                ms[worst].todo.y = (int)(ms[worst].todo.y * options.playerWallBrakeFactor);
 
                 /* only use armor if neccessary */
-                if (speed > max_speed && max_speed < maxShieldedWallBounceSpeed && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+                if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
                 {
-                    max_speed = maxShieldedWallBounceSpeed;
+                    max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;
                     Player_hit_armor(ind);
                 }
@@ -2825,7 +2825,7 @@ void Move_player(int ind)
                 /* only use armor if neccessary */
                 if (abs_delta_dir > max_angle && max_angle < mp.max_shielded_angle && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
                 {
-                    max_speed = maxShieldedWallBounceSpeed;
+                    max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;
                     Player_hit_armor(ind);
                 }
@@ -2837,7 +2837,7 @@ void Move_player(int ind)
                 }
                 if (abs_delta_dir <= RES / 16)
                 {
-                    pl->float_dir += (1.0f - playerWallBrakeFactor) * delta_dir;
+                    pl->float_dir += (1.0f - options.playerWallBrakeFactor) * delta_dir;
                     if (pl->float_dir >= RES)
                     {
                         pl->float_dir -= RES;
@@ -2857,10 +2857,10 @@ void Move_player(int ind)
                 cost = (cost * (RES / 2 + abs_delta_dir)) / RES;
                 if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
                 {
-                    Add_fuel(&pl->fuel, (long)(-((cost << FUEL_SCALE_BITS) * wallBounceFuelDrainMult)));
-                    Item_damage(ind, wallBounceDestroyItemProb);
+                    Add_fuel(&pl->fuel, (long)(-((cost << FUEL_SCALE_BITS) * options.wallBounceFuelDrainMult)));
+                    Item_damage(ind, options.wallBounceDestroyItemProb);
                 }
-                if (!pl->fuel.sum && wallBounceFuelDrainMult != 0)
+                if (!pl->fuel.sum && options.wallBounceFuelDrainMult != 0)
                 {
                     crash = worst;
                     ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallNoFuel);
@@ -2888,7 +2888,7 @@ void Move_player(int ind)
                     if (ms[worst].target >= 0)
                     {
                         cost <<= FUEL_SCALE_BITS;
-                        cost = (long)(cost * (wallBounceFuelDrainMult / 4.0));
+                        cost = (long)(cost * (options.wallBounceFuelDrainMult / 4.0));
                         Object_hits_target(&ms[worst], cost);
                     }
                 }
@@ -2999,7 +2999,7 @@ void Turn_player(int ind)
     mi.pl = pl;
     mi.obj = (object_t *)pl;
     mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
-    mi.edge_bounce = edgeBounce;
+    mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;
     mi.treasure_crashes = true;

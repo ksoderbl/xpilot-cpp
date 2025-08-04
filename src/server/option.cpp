@@ -1008,15 +1008,15 @@ static void Options_parse_expand(void)
         Option_parse_node(np);
     }
 
-    if (expandList != NULL)
+    if (options.expandList != NULL)
     {
         char *name;
-        while ((name = (char *)List_pop_front(expandList)) != NULL)
+        while ((name = (char *)List_pop_front(options.expandList)) != NULL)
         {
             expandKeyword(name);
         }
-        List_delete(expandList);
-        expandList = NULL;
+        List_delete(options.expandList);
+        options.expandList = NULL;
     }
 }
 
@@ -1040,7 +1040,7 @@ static void Options_parse_FPS(void)
         }
         else
         {
-            framesPerSecond = frames;
+            options.framesPerSecond = frames;
         }
     }
 

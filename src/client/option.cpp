@@ -373,7 +373,7 @@ keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
     return ret;
 }
 
-static void Store_keydef(int ks, keys_t key)
+static int Store_keydef(int ks, keys_t key)
 {
     int i;
     xp_keydefs_t keydef;
@@ -391,7 +391,7 @@ static void Store_keydef(int ks, keys_t key)
             /*
              * already exists, no need to store
              */
-            return;
+            return 0;
         }
     }
 
@@ -410,7 +410,7 @@ static void Store_keydef(int ks, keys_t key)
             assert(kd->keysym == XP_KS_UNKNOWN);
             /*xpwarn("Store_keydef: Found dummy at index %d", i);*/
             *kd = keydef;
-            return;
+            return 0;
         }
     }
 
@@ -418,6 +418,7 @@ static void Store_keydef(int ks, keys_t key)
      * no lazily deleted entry, ok, just store it then
      */
     STORE(xp_keydefs_t, keydefs, num_keydefs, max_keydefs, keydef);
+    return 0;
 }
 
 static void Remove_key_from_keydefs(keys_t key)
@@ -496,7 +497,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     return true;
 }
 
-static bool is_legal_value(xp_option_type_t type, const char *value)
+static bool is_legal_value(xp_option_type_t type, char *value)
 {
     if (type == xp_noarg_option || type == xp_bool_option)
     {

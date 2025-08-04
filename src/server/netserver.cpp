@@ -255,23 +255,23 @@ static int Init_setup(void)
             case DOWN_GRAV:
             case RIGHT_GRAV:
             case LEFT_GRAV:
-                if (!gravityVisible)
+                if (!options.gravityVisible)
                     type = SPACE;
                 break;
             case WORMHOLE:
-                if (!wormholeVisible)
+                if (!options.wormholeVisible)
                     type = SPACE;
                 break;
             case ITEM_CONCENTRATOR:
-                if (!itemConcentratorVisible)
+                if (!options.itemConcentratorVisible)
                     type = SPACE;
                 break;
             case ASTEROID_CONCENTRATOR:
-                if (!asteroidConcentratorVisible)
+                if (!options.asteroidConcentratorVisible)
                     type = SPACE;
                 break;
             case FRICTION:
-                if (!blockFrictionVisible)
+                if (!options.blockFrictionVisible)
                     type = SPACE;
                 else
                     type = DECOR_FILLED;
@@ -807,17 +807,17 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
     }
     connp = &Conn[free_conn_index];
     connp->conn_index = free_conn_index;
-    if (clientPortStart && (!clientPortEnd || clientPortEnd > 65535))
+    if (options.clientPortStart && (!options.clientPortEnd || options.clientPortEnd > 65535))
     {
-        clientPortEnd = 65535;
+        options.clientPortEnd = 65535;
     }
-    if (clientPortEnd && (!clientPortStart || clientPortStart < 1024))
+    if (options.clientPortEnd && (!options.clientPortStart || options.clientPortStart < 1024))
     {
-        clientPortStart = 1024;
+        options.clientPortStart = 1024;
     }
 
-    if (!clientPortStart || !clientPortEnd ||
-        (clientPortStart > clientPortEnd))
+    if (!options.clientPortStart || !options.clientPortEnd ||
+        (options.clientPortStart > options.clientPortEnd))
     {
 
         if (sock_open_udp(&sock, serverAddr, 0) == SOCK_IS_ERROR)
@@ -829,7 +829,7 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
     else
     {
         int found_socket = 0;
-        for (i = clientPortStart; i <= clientPortEnd; i++)
+        for (i = options.clientPortStart; i <= options.clientPortEnd; i++)
         {
             if (sock_open_udp(&sock, serverAddr, i) != SOCK_IS_ERROR)
             {
@@ -1129,7 +1129,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     }
     if (BIT(World.rules->mode, TEAM_PLAY))
     {
-        if (connp->team < 0 || connp->team >= MAX_TEAMS || (reserveRobotTeam && (connp->team == robotTeam)))
+        if (connp->team < 0 || connp->team >= MAX_TEAMS || (options.reserveRobotTeam && (connp->team == options.robotTeam)))
         {
             connp->team = TEAM_NOT_SET;
         }
@@ -1149,7 +1149,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         {
             connp->team = Pick_team(PickForHuman);
             if (connp->team == TEAM_NOT_SET ||
-                (connp->team == robotTeam && reserveRobotTeam))
+                (connp->team == options.robotTeam && options.reserveRobotTeam))
             {
                 errno = 0;
                 strlcpy(errmsg, "Can't pick team", errsize);
@@ -1289,7 +1289,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
                     sender);
             Set_player_message(pl, msg);
         }
-        if (connp->version < 0x4400 && maxAsteroidDensity > 0)
+        if (connp->version < 0x4400 && options.maxAsteroidDensity > 0)
         {
             sprintf(msg,
                     "Your client will see the %d asteroids as balls. %s",
@@ -1351,7 +1351,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
 
     num_logins++;
 
-    if (resetOnHuman > 0 && (NumPlayers - NumPseudoPlayers - NumRobots) <= resetOnHuman && !round_delay)
+    if (options.resetOnHuman > 0 && (NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman && !round_delay)
     {
         if (BIT(World.rules->mode, TIMING))
         {
@@ -1370,17 +1370,17 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     /* if the next round is delayed, delay it again */
     if (round_delay > 0 || NumPlayers == 1)
     {
-        round_delay = roundDelaySeconds * FPS;
-        if (maxRoundTime > 0 && roundDelaySeconds == 0)
+        round_delay = options.roundDelaySeconds * FPS;
+        if (options.maxRoundTime > 0 && options.roundDelaySeconds == 0)
         {
-            roundtime = maxRoundTime * FPS;
+            roundtime = options.maxRoundTime * FPS;
         }
         else
         {
             roundtime = -1;
         }
         sprintf(msg, "Player entered. Delaying %d seconds until next %s.",
-                roundDelaySeconds, (BIT(World.rules->mode, TIMING) ? "race" : "round"));
+                options.roundDelaySeconds, (BIT(World.rules->mode, TIMING) ? "race" : "round"));
         Set_message(msg);
     }
 
@@ -1897,7 +1897,7 @@ int Send_score(connection_t *connp, int id, int score,
         int allchar = ' ';
         if (alliance != ALLIANCE_NOT_SET)
         {
-            if (announceAlliances)
+            if (options.announceAlliances)
             {
                 allchar = alliance + '0';
             }
@@ -2089,7 +2089,7 @@ int Send_wreckage(connection_t *connp, int x, int y, u_byte wrtype, u_byte size,
         return 1;
     }
 
-    if (wreckageCollisionMayKill && connp->version > 0x4201)
+    if (options.wreckageCollisionMayKill && connp->version > 0x4201)
     {
         /* Set the highest bit when wreckage is deadly. */
         wrtype |= 0x80;
@@ -3359,7 +3359,7 @@ int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
 
         motd_loops = main_loops;
 
-        if ((fd = open(motdFileName, O_RDONLY)) == -1)
+        if ((fd = open(options.motdFileName, O_RDONLY)) == -1)
         {
             motd_size = 0;
             return -1;
@@ -3546,7 +3546,7 @@ static int Receive_fps_request(connection_t *connp)
             pl->player_fps = (FPS + 1) / 2;
         if (fps == 0)
             pl->player_fps = FPS;
-        if ((fps == 20) && ignore20MaxFPS)
+        if ((fps == 20) && options.ignore20MaxFPS)
             pl->player_fps = FPS;
         n = FPS - pl->player_fps;
         if (n <= 0)
@@ -3591,7 +3591,7 @@ int Check_max_clients_per_IP(char *host_addr)
     int i, clients_per_ip = 0;
     connection_t *connp;
 
-    if (maxClientsPerIP <= 0)
+    if (options.maxClientsPerIP <= 0)
         return 0;
 
     for (i = 0; i < max_connections; i++)
@@ -3601,7 +3601,7 @@ int Check_max_clients_per_IP(char *host_addr)
             clients_per_ip++;
     }
 
-    if (clients_per_ip >= maxClientsPerIP)
+    if (clients_per_ip >= options.maxClientsPerIP)
         return 1;
 
     return 0;

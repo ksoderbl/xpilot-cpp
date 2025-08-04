@@ -154,7 +154,7 @@ static bool Player_lock_allowed(int ind, int lock)
     }
 
     /* if lockOtherTeam is true then we can always lock on other teams. */
-    if (lockOtherTeam)
+    if (options.lockOtherTeam)
     {
         return true;
     }

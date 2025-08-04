@@ -107,7 +107,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
         {
             SCORE(i, -sc, tt->pos.x, tt->pos.y,
                   "Treasure: ");
-            if (treasureKillTeam)
+            if (options.treasureKillTeam)
                 SET_BIT(Players[i]->status, KILLED);
         }
         else if (Players[i]->team == tt->team &&
@@ -118,7 +118,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
         }
     }
 
-    if (treasureKillTeam)
+    if (options.treasureKillTeam)
     {
         Players[ind]->kills++;
     }
@@ -169,16 +169,16 @@ void Make_debris(
     }
     if (max_life < min_life)
         max_life = min_life;
-    if (ShotsLife >= FPS)
+    if (options.ShotsLife >= FPS)
     {
-        if (min_life > ShotsLife)
+        if (min_life > options.ShotsLife)
         {
-            min_life = ShotsLife;
-            max_life = ShotsLife;
+            min_life = options.ShotsLife;
+            max_life = options.ShotsLife;
         }
-        else if (max_life > ShotsLife)
+        else if (max_life > options.ShotsLife)
         {
-            max_life = ShotsLife;
+            max_life = options.ShotsLife;
         }
     }
     if (min_speed * max_life > World.hypotenuse)
@@ -193,7 +193,7 @@ void Make_debris(
     if (type == OBJ_SHOT)
     {
         SET_BIT(mods.warhead, CLUSTER);
-        if (!ShotsGravity)
+        if (!options.ShotsGravity)
         {
             CLR_BIT(status, GRAVITY);
         }

@@ -25,6 +25,9 @@
 #define SERVERCONST_H
 
 #include "const.h"
+#include "randommt.h"
+
+#include "option.h"
 
 /*
  * Two macros for edge wrap of x and y coordinates measured in pixels.
@@ -154,10 +157,10 @@
 
 #define THRUST_MASS 0.7
 
-#define ARMOR_MASS (ShipMass / 14)
+#define ARMOR_MASS (options.ShipMass / 14)
 
 #define MAX_TANKS 8
-#define TANK_MASS (ShipMass / 10)
+#define TANK_MASS (options.ShipMass / 10)
 #define TANK_CAP(n) (!(n) ? MAX_PLAYER_FUEL : (MAX_PLAYER_FUEL / 3))
 #define TANK_FUEL(n) ((TANK_CAP(n) * (5 + (randomMT() & 3))) / 32)
 #define TANK_REFILL_LIMIT (MIN_PLAYER_FUEL / 8)
@@ -172,7 +175,7 @@
 
 #define SHOT_MULT(o)                                                          \
         ((BIT((o)->mods.nuclear, NUCLEAR) && BIT((o)->mods.warhead, CLUSTER)) \
-             ? nukeClusterDamage                                              \
+             ? options.nukeClusterDamage                                      \
              : 1.0f)
 
 #define MINE_RADIUS 8
@@ -214,7 +217,7 @@
 #define HEAT_WIDE_TIMEOUT (8 * FPS)
 #define HEAT_WIDE_ERROR 16
 
-#define CLUSTER_MASS_SHOTS(mass) ((mass) * 0.9 / ShotsMass)
+#define CLUSTER_MASS_SHOTS(mass) ((mass) * 0.9 / options.ShotsMass)
 #define CLUSTER_MASS_DRAIN(mass) (CLUSTER_MASS_SHOTS(mass) * ED_SHOT)
 
 #define SMART_SHOT_LEN 12

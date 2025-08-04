@@ -360,7 +360,7 @@ static int Create_alliance(int ind1, int ind2)
     Alliance_add_player(alliance, pl1);
     Alliance_add_player(alliance, pl2);
     /* announcement */
-    if (announceAlliances)
+    if (options.announceAlliances)
     {
         sprintf(msg, " < %s and %s have formed alliance %d >", pl1->name,
                 pl2->name, alliance->id);
@@ -387,7 +387,7 @@ void Player_join_alliance(int ind, int ally_ind)
     if (!IS_TANK_IND(ind))
     {
         /* announce first to avoid sending the player two messages */
-        if (announceAlliances)
+        if (options.announceAlliances)
         {
             sprintf(msg, " < %s has joined alliance %d >",
                     pl->name, alliance->id);
@@ -443,7 +443,7 @@ int Leave_alliance(int ind)
     /* announcement */
     if (!IS_TANK_IND(ind))
     {
-        if (announceAlliances)
+        if (options.announceAlliances)
         {
             sprintf(msg, " < %s has left alliance %d >", pl->name,
                     alliance->id);
@@ -490,7 +490,7 @@ static void Dissolve_alliance(int id)
         if (Players[i]->alliance == id)
         {
             Alliance_remove_player(alliance, Players[i]);
-            if (!announceAlliances && IS_HUMAN_IND(i))
+            if (!options.announceAlliances && IS_HUMAN_IND(i))
             {
                 Set_player_message(Players[i],
                                    " < Your alliance has been dissolved >");
@@ -515,7 +515,7 @@ static void Dissolve_alliance(int id)
     /* move the last alliance to that index */
     Alliances[i] = Alliances[NumAlliances - 1];
     /* announcement */
-    if (announceAlliances)
+    if (options.announceAlliances)
     {
         char msg[MSG_LEN];
         sprintf(msg, " < Alliance %d has been dissolved >", alliance->id);
@@ -569,7 +569,7 @@ void Alliance_player_list(int ind)
     }
     else
     {
-        if (announceAlliances)
+        if (options.announceAlliances)
         {
             sprintf(msg, " < Alliance %d:", pl->alliance);
         }

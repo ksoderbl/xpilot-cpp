@@ -375,7 +375,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
         {
             sprintf(msg, "There are no bases for team %d on this map.", team);
         }
-        else if (reserveRobotTeam && team == robotTeam)
+        else if (options.reserveRobotTeam && team == options.robotTeam)
         {
             sprintf(msg, "You cannot join the robot team on this server.");
         }
@@ -667,9 +667,9 @@ static int Cmd_reset(char *arg, player_t *pl, int oper, char *msg)
             Players[i]->score = 0;
         }
         Reset_all_players();
-        if (gameDuration == -1)
+        if (options.gameDuration == -1)
         {
-            gameDuration = 0;
+            options.gameDuration = 0;
         }
         roundsPlayed = 0;
 
@@ -680,9 +680,9 @@ static int Cmd_reset(char *arg, player_t *pl, int oper, char *msg)
     else
     {
         Reset_all_players();
-        if (gameDuration == -1)
+        if (options.gameDuration == -1)
         {
-            gameDuration = 0;
+            options.gameDuration = 0;
         }
 
         sprintf(msg, " < Round reset by %s! >", pl->name);
@@ -695,7 +695,7 @@ static int Cmd_reset(char *arg, player_t *pl, int oper, char *msg)
 
 static int Cmd_password(char *arg, player_t *pl, int oper, char *msg)
 {
-    if (!password || !arg || strcmp(arg, password))
+    if (!options.password || !arg || strcmp(arg, options.password))
     {
         strcpy(msg, "Wrong.");
         if (pl->isoperator)

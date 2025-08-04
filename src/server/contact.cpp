@@ -95,7 +95,7 @@ bool Contact_init(void)
      * Create a socket which we can listen on.
      */
     if ((status = sock_open_udp(&contactSocket, serverAddr,
-                                contactPort)) == -1)
+                                options.contactPort)) == -1)
     {
         xperror("Could not create Dgram contactSocket");
         xperror("Perhaps %s is already running?", APPNAME);
@@ -132,7 +132,7 @@ static int Kick_robot_players(int team)
         return 0;
     if (team == TEAM_NOT_SET)
     {
-        if (BIT(World.rules->mode, TEAM_PLAY) && reserveRobotTeam)
+        if (BIT(World.rules->mode, TEAM_PLAY) && options.reserveRobotTeam)
         {
             /* kick robot with lowest score from any team but robotTeam */
             int low_score = INT_MAX;
@@ -140,7 +140,7 @@ static int Kick_robot_players(int team)
             int i;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (!IS_ROBOT_IND(i) || Players[i]->team == robotTeam)
+                if (!IS_ROBOT_IND(i) || Players[i]->team == options.robotTeam)
                     continue;
                 if (Players[i]->score < low_score)
                 {
@@ -762,12 +762,12 @@ void Contact(int fd, void *arg)
         }
         else
         {
-            maxRobots = max_robots;
-            if (maxRobots < minRobots)
+            options.maxRobots = max_robots;
+            if (options.maxRobots < options.minRobots)
             {
-                minRobots = maxRobots;
+                options.minRobots = options.maxRobots;
             }
-            while (maxRobots < NumRobots)
+            while (options.maxRobots < NumRobots)
             {
                 Robot_delete(-1, true);
             }
@@ -850,11 +850,11 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
      */
     if (BIT(World.rules->mode, TEAM_PLAY))
     {
-        if ((team < 0 || team >= MAX_TEAMS) || (team == robotTeam && reserveRobotTeam))
+        if ((team < 0 || team >= MAX_TEAMS) || (team == options.robotTeam && options.reserveRobotTeam))
         {
-            if (!teamAssign)
+            if (!options.teamAssign)
             {
-                if (team == robotTeam && reserveRobotTeam)
+                if (team == options.robotTeam && options.reserveRobotTeam)
                 {
                     return E_TEAM_FULL;
                 }
@@ -864,9 +864,9 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
                 }
             }
             team = Pick_team(PickForHuman);
-            if (team == TEAM_NOT_SET || (team == robotTeam && reserveRobotTeam))
+            if (team == TEAM_NOT_SET || (team == options.robotTeam && options.reserveRobotTeam))
             {
-                if (NumRobots > World.teams[robotTeam].NumRobots)
+                if (NumRobots > World.teams[options.robotTeam].NumRobots)
                 {
                     if (!Kick_robot_players(TEAM_NOT_SET))
                     {
@@ -1022,7 +1022,9 @@ void Queue_loop(void)
         {
 
             /* is there a homebase available? */
-            if (NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases || (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases) || (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases))
+            if (NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases ||
+                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases) ||
+                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases))
             {
 
                 /* find a team for this fellow. */
@@ -1035,7 +1037,7 @@ void Queue_loop(void)
                         if ((World.teams[qp->team].NumMembers >= World.teams[qp->team].NumBases &&
                              !Kick_robot_players(qp->team) &&
                              !Kick_paused_players(qp->team)) ||
-                            (qp->team == robotTeam && reserveRobotTeam))
+                            (qp->team == options.robotTeam && options.reserveRobotTeam))
                         {
                             qp->team = TEAM_NOT_SET;
                         }
@@ -1043,9 +1045,9 @@ void Queue_loop(void)
                     if (qp->team == TEAM_NOT_SET)
                     {
                         qp->team = Pick_team(PickForHuman);
-                        if (qp->team == TEAM_NOT_SET || (qp->team == robotTeam && reserveRobotTeam))
+                        if (qp->team == TEAM_NOT_SET || (qp->team == options.robotTeam && options.reserveRobotTeam))
                         {
-                            if (NumRobots > World.teams[robotTeam].NumRobots)
+                            if (NumRobots > World.teams[options.robotTeam].NumRobots)
                             {
                                 Kick_robot_players(TEAM_NOT_SET);
                                 qp->team = Pick_team(PickForHuman);
@@ -1356,7 +1358,7 @@ void Set_deny_hosts(void)
         free(addr_mask_list);
         addr_mask_list = 0;
     }
-    if (!(list = xp_strdup(denyHosts)))
+    if (!(list = xp_strdup(options.denyHosts)))
     {
         return;
     }
@@ -1366,7 +1368,7 @@ void Set_deny_hosts(void)
     }
     addr_mask_list = (struct addr_plus_mask *)malloc(n * sizeof(*addr_mask_list));
     num_addr_mask = n;
-    strcpy(list, denyHosts);
+    strcpy(list, options.denyHosts);
     for (tok = strtok(list, list_sep); tok; tok = strtok(NULL, list_sep))
     {
         slash = strchr(tok, '/');

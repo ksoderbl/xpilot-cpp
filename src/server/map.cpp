@@ -261,21 +261,21 @@ bool Grok_map(void)
 
     Init_map();
 
-    if (mapWidth <= 0 || mapWidth > MAX_MAP_SIZE ||
-        mapHeight <= 0 || mapHeight > MAX_MAP_SIZE)
+    if (options.mapWidth <= 0 || options.mapWidth > MAX_MAP_SIZE ||
+        options.mapHeight <= 0 || options.mapHeight > MAX_MAP_SIZE)
     {
         errno = 0;
         xperror("mapWidth or mapHeight exceeds map size limit [1, %d]",
                 MAX_MAP_SIZE);
-        free(mapData);
-        mapData = NULL;
+        free(options.mapData);
+        options.mapData = NULL;
     }
     else
     {
-        World.x = mapWidth;
-        World.y = mapHeight;
+        World.x = options.mapWidth;
+        World.y = options.mapHeight;
     }
-    if (extraBorder)
+    if (options.extraBorder)
     {
         World.x += 2;
         World.y += 2;
@@ -284,15 +284,15 @@ bool Grok_map(void)
     World.width = World.x * BLOCK_SZ;
     World.height = World.y * BLOCK_SZ;
     World.hypotenuse = (int)LENGTH(World.width, World.height);
-    strlcpy(World.name, mapName, sizeof(World.name));
-    strlcpy(World.author, mapAuthor, sizeof(World.author));
+    strlcpy(World.name, options.mapName, sizeof(World.name));
+    strlcpy(World.author, options.mapAuthor, sizeof(World.author));
 
-    if (!mapData)
+    if (!options.mapData)
     {
         errno = 0;
         xperror("Generating random map");
         Generate_random_map();
-        if (!mapData)
+        if (!options.mapData)
         {
             return false;
         }
@@ -313,13 +313,13 @@ bool Grok_map(void)
         CLR_BIT(World.rules->mode, TEAM_PLAY);
     }
 
-    s = mapData;
+    s = options.mapData;
     while (y >= 0)
     {
 
         x++;
 
-        if (extraBorder && (x == 0 || x == World.x - 1 || y == 0 || y == World.y - 1))
+        if (options.extraBorder && (x == 0 || x == World.x - 1 || y == 0 || y == World.y - 1))
         {
             if (x >= World.x)
             {
@@ -464,8 +464,8 @@ bool Grok_map(void)
         }
     }
 
-    free(mapData);
-    mapData = NULL;
+    free(options.mapData);
+    options.mapData = NULL;
 
     /*
      * Get space for special objects.
@@ -955,7 +955,7 @@ bool Grok_map(void)
             World.NumWormholes = 0;
         }
 
-        if (!wormTime)
+        if (!options.wormTime)
         {
             for (i = 0; i < World.NumWormholes; i++)
             {
@@ -1011,7 +1011,7 @@ bool Grok_map(void)
                 }
                 World.targets[i].team = team;
             }
-            if (teamCannons)
+            if (options.teamCannons)
             {
                 for (i = 0; i < World.NumCannons; i++)
                 {
@@ -1037,13 +1037,13 @@ bool Grok_map(void)
         }
     }
 
-    if (maxRobots == -1)
+    if (options.maxRobots == -1)
     {
-        maxRobots = World.NumBases;
+        options.maxRobots = World.NumBases;
     }
-    if (minRobots == -1)
+    if (options.minRobots == -1)
     {
-        minRobots = maxRobots;
+        options.minRobots = options.maxRobots;
     }
     if (BIT(World.rules->mode, TIMING))
     {
@@ -1068,11 +1068,11 @@ static void Generate_random_map(void)
 {
     int width, height;
 
-    edgeWrap = true;
+    options.edgeWrap = true;
     width = World.x;
     height = World.y;
 
-    Wildmap(width, height, World.name, World.author, &mapData, &width, &height);
+    Wildmap(width, height, World.name, World.author, &options.mapData, &width, &height);
 
     World.x = width;
     World.y = height;
@@ -1289,11 +1289,11 @@ static void Compute_global_gravity(void)
     double theta;
     vector_t *grav;
 
-    if (gravityPointSource == false)
+    if (options.gravityPointSource == false)
     {
-        theta = (gravityAngle * PI) / 180.0;
-        xforce = cos(theta) * Gravity;
-        yforce = sin(theta) * Gravity;
+        theta = (options.gravityAngle * PI) / 180.0;
+        xforce = cos(theta) * options.Gravity;
+        yforce = sin(theta) * options.Gravity;
         for (xi = 0; xi < World.x; xi++)
         {
             grav = World.gravity[xi];
@@ -1310,12 +1310,12 @@ static void Compute_global_gravity(void)
         for (xi = 0; xi < World.x; xi++)
         {
             grav = World.gravity[xi];
-            dx = (xi - gravityPoint.x) * BLOCK_SZ;
+            dx = (xi - options.gravityPoint.x) * BLOCK_SZ;
             dx = WRAP_DX(dx);
 
             for (yi = 0; yi < World.y; yi++, grav++)
             {
-                dy = (yi - gravityPoint.y) * BLOCK_SZ;
+                dy = (yi - options.gravityPoint.y) * BLOCK_SZ;
                 dy = WRAP_DX(dy);
 
                 if (dx == 0 && dy == 0)
@@ -1324,13 +1324,13 @@ static void Compute_global_gravity(void)
                     grav->y = 0.0;
                     continue;
                 }
-                strength = Gravity / LENGTH(dx, dy);
-                if (gravityClockwise)
+                strength = options.Gravity / LENGTH(dx, dy);
+                if (options.gravityClockwise)
                 {
                     grav->x = dy * strength;
                     grav->y = -dx * strength;
                 }
-                else if (gravityAnticlockwise)
+                else if (options.gravityAnticlockwise)
                 {
                     grav->x = -dy * strength;
                     grav->y = dx * strength;
@@ -1515,7 +1515,7 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     inhole.pos.y = yin;
     outhole.pos.x = xout;
     outhole.pos.y = yout;
-    inhole.countdown = outhole.countdown = wormTime;
+    inhole.countdown = outhole.countdown = options.wormTime;
     inhole.lastdest = World.NumWormholes + 1;
     inhole.temporary = outhole.temporary = 1;
     inhole.type = WORM_IN;

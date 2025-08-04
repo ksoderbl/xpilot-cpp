@@ -130,11 +130,11 @@ static void Laser_pulse_find_victims(
         {
             continue;
         }
-        if (vic->id == pulse->id && selfImmunity)
+        if (vic->id == pulse->id && options.selfImmunity)
         {
             continue;
         }
-        if (selfImmunity &&
+        if (options.selfImmunity &&
             IS_TANK_PTR(vic) &&
             vic->lock.pl_id == pulse->id)
         {
@@ -146,7 +146,7 @@ static void Laser_pulse_find_victims(
         }
         /* special case for cannon pulses */
         if (pulse->id == NO_ID &&
-            teamImmunity &&
+            options.teamImmunity &&
             BIT(World.rules->mode, TEAM_PLAY) &&
             pulse->team == vic->team)
         {
@@ -234,7 +234,7 @@ static void Laser_pulse_hits_player(
         return;
     if (!BIT(obj->type, KILLING_SHOTS))
         return;
-    if (BIT(pulse->mods.laser, STUN) || (laserIsStunGun == true && allowLaserModifiers == false))
+    if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
         if (BIT(vicpl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->status, THRUSTING))
         {
@@ -279,7 +279,7 @@ static void Laser_pulse_hits_player(
                         vicpl->name, pl->name);
                 if (vicpl->id == pl->id)
                 {
-                    sc = Rate(0, pl->score) * laserKillScoreMult * selfKillScoreMult;
+                    sc = Rate(0, pl->score) * options.laserKillScoreMult * options.selfKillScoreMult;
                     SCORE(victim->ind, -sc,
                           OBJ_X_IN_BLOCKS(vicpl),
                           OBJ_Y_IN_BLOCKS(vicpl),
@@ -290,7 +290,7 @@ static void Laser_pulse_hits_player(
                 {
                     sc = Rate(pl->score,
                               vicpl->score) *
-                         laserKillScoreMult;
+                         options.laserKillScoreMult;
                     Score_players(ind, sc, vicpl->name,
                                   victim->ind, -sc,
                                   pl->name);
@@ -662,9 +662,9 @@ void Laser_pulse_collision(void)
                                                        WIRE_PTR(ast)->size);
                         if (ast->life < 0)
                             ast->life = 0;
-                        if (ast->life == 0 && ind != -1 && asteroidPoints > 0 && Players[ind]->score <= asteroidMaxScore)
+                        if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && Players[ind]->score <= options.asteroidMaxScore)
                         {
-                            SCORE(ind, asteroidPoints,
+                            SCORE(ind, options.asteroidPoints,
                                   OBJ_X_IN_BLOCKS(ast), OBJ_Y_IN_BLOCKS(ast),
                                   "");
                         }

@@ -24,28 +24,27 @@
 #include <cstdlib>
 #include <ctime>
 
-#define        SERVER
+#define SERVER
 #include "serverconst.h"
 #include "global.h"
 #include "proto.h"
 #include "xperror.h"
 #include "xpmath.h"
 
-
 extern time_t gameOverTime;
-
 
 void tuner_plock(void)
 {
-    pLockServer = (plock_server(pLockServer) == 1) ? true : false;
+    options.pLockServer = (plock_server(options.pLockServer) == 1) ? true : false;
 }
 
 void tuner_shotsmax(void)
 {
     int i;
 
-    for (i = 0; i < NumPlayers; i++) {
-        Players[i]->shot_max = ShotsMax;
+    for (i = 0; i < NumPlayers; i++)
+    {
+        Players[i]->shot_max = options.ShotsMax;
     }
 }
 
@@ -53,8 +52,9 @@ void tuner_shipmass(void)
 {
     int i;
 
-    for (i = 0; i < NumPlayers; i++) {
-        Players[i]->emptymass = ShipMass;
+    for (i = 0; i < NumPlayers; i++)
+    {
+        Players[i]->emptymass = options.ShipMass;
     }
 }
 
@@ -62,36 +62,43 @@ void tuner_ballmass(void)
 {
     int i;
 
-    for (i = 0; i < NumObjs; i++) {
-        if (BIT(Obj[i]->type, OBJ_BALL)) {
-            Obj[i]->mass = ballMass;
+    for (i = 0; i < NumObjs; i++)
+    {
+        if (BIT(Obj[i]->type, OBJ_BALL))
+        {
+            Obj[i]->mass = options.ballMass;
         }
     }
 }
 
 void tuner_maxrobots(void)
 {
-    if (maxRobots < 0) {
-        maxRobots = World.NumBases;
+    if (options.maxRobots < 0)
+    {
+        options.maxRobots = World.NumBases;
     }
 
-    if (maxRobots < minRobots) {
-        minRobots = maxRobots;
+    if (options.maxRobots < options.minRobots)
+    {
+        options.minRobots = options.maxRobots;
     }
 
-    while (maxRobots < NumRobots) {
+    while (options.maxRobots < NumRobots)
+    {
         Robot_delete(-1, true);
     }
 }
 
 void tuner_minrobots(void)
 {
-    if (minRobots < 0) {
-        minRobots = maxRobots;
+    if (options.minRobots < 0)
+    {
+        options.minRobots = options.maxRobots;
     }
 
-    if (maxRobots < minRobots) {
-        maxRobots = minRobots;
+    if (options.maxRobots < options.minRobots)
+    {
+        options.maxRobots = options.minRobots;
     }
 }
 
@@ -101,11 +108,14 @@ void tuner_playershielding(void)
 
     Set_world_rules();
 
-    if (playerShielding) {
+    if (options.playerShielding)
+    {
         SET_BIT(DEF_HAVE, HAS_SHIELD);
 
-        for (i = 0; i < NumPlayers; i++) {
-            if (!IS_TANK_PTR(Players[i])) {
+        for (i = 0; i < NumPlayers; i++)
+        {
+            if (!IS_TANK_PTR(Players[i]))
+            {
                 if (!BIT(Players[i]->used, HAS_SHOT))
                     SET_BIT(Players[i]->used, HAS_SHIELD);
 
@@ -114,10 +124,12 @@ void tuner_playershielding(void)
             }
         }
     }
-    else {
+    else
+    {
         CLR_BIT(DEF_HAVE, HAS_SHIELD);
 
-        for (i = 0; i < NumPlayers; i++) {
+        for (i = 0; i < NumPlayers; i++)
+        {
             Players[i]->shield_time = 2 * FPS;
             /* 2 seconds to get to safety */
         }
@@ -126,30 +138,32 @@ void tuner_playershielding(void)
 
 void tuner_playerstartsshielded(void)
 {
-    if (playerShielding) {
-        playerStartsShielded = true;        /* Doesn't make sense
-                                           to turn off when
-                                           shields are on. */
+    if (options.playerShielding)
+    {
+        options.playerStartsShielded = true; /* Doesn't make sense
+                                    to turn off when
+                                    shields are on. */
     }
 }
 
 void tuner_worldlives(void)
 {
-    if (worldLives < 0)
-        worldLives = 0;
+    if (options.worldLives < 0)
+        options.worldLives = 0;
 
     Set_world_rules();
 
-    if (BIT(World.rules->mode, LIMITED_LIVES)) {
+    if (BIT(World.rules->mode, LIMITED_LIVES))
+    {
         Reset_all_players();
-        if (gameDuration == -1)
-            gameDuration = 0;
+        if (options.gameDuration == -1)
+            options.gameDuration = 0;
     }
 }
 
 void tuner_cannonsmartness(void)
 {
-    LIMIT(cannonSmartness, 0, 3);
+    LIMIT(options.cannonSmartness, 0, 3);
 }
 
 void tuner_teamcannons(void)
@@ -157,17 +171,21 @@ void tuner_teamcannons(void)
     int i;
     int team;
 
-    if (teamCannons) {
-        for (i = 0; i < World.NumCannons; i++) {
+    if (options.teamCannons)
+    {
+        for (i = 0; i < World.NumCannons; i++)
+        {
             team = Find_closest_team(World.cannon[i].blk_pos.x,
                                      World.cannon[i].blk_pos.y);
-            if (team == TEAM_NOT_SET) {
+            if (team == TEAM_NOT_SET)
+            {
                 xperror("Couldn't find a matching team for the cannon.");
             }
             World.cannon[i].team = team;
         }
     }
-    else {
+    else
+    {
         for (i = 0; i < World.NumCannons; i++)
             World.cannon[i].team = TEAM_NOT_SET;
     }
@@ -180,12 +198,14 @@ void tuner_cannonsuseitems(void)
 
     Move_init();
 
-    for (i = 0; i < World.NumCannons; i++) {
+    for (i = 0; i < World.NumCannons; i++)
+    {
         c = World.cannon + i;
-        for (j = 0; j < NUM_ITEMS; j++) {
+        for (j = 0; j < NUM_ITEMS; j++)
+        {
             c->item[j] = 0;
 
-            if (cannonsUseItems)
+            if (options.cannonsUseItems)
                 Cannon_add_item(i, j,
                                 (int)(rfrac() * (World.items[j].initial + 1)));
         }
@@ -196,16 +216,20 @@ void tuner_wormtime(void)
 {
     int i;
 
-    if (wormTime < 0)
-        wormTime = 0;
+    if (options.wormTime < 0)
+        options.wormTime = 0;
 
-    if (wormTime) {
-        for (i = 0; i < World.NumWormholes; i++) {
-            World.wormHoles[i].countdown = wormTime;
+    if (options.wormTime)
+    {
+        for (i = 0; i < World.NumWormholes; i++)
+        {
+            World.wormHoles[i].countdown = options.wormTime;
         }
     }
-    else {
-        for (i = 0; i < World.NumWormholes; i++) {
+    else
+    {
+        for (i = 0; i < World.NumWormholes; i++)
+        {
             if (World.wormHoles[i].temporary)
                 remove_temp_wormhole(i);
             else
@@ -220,7 +244,8 @@ void tuner_modifiers(void)
 
     Set_world_rules();
 
-    for (i = 0; i < NumPlayers; i++) {
+    for (i = 0; i < NumPlayers; i++)
+    {
         filter_mods(&Players[i]->mods);
     }
 }
@@ -230,17 +255,19 @@ void tuner_minelife(void)
     int i;
     int life;
 
-    if (mineLife < 0)
-        mineLife = 0;
+    if (options.mineLife < 0)
+        options.mineLife = 0;
 
-    for (i = 0; i < NumObjs; i++) {
+    for (i = 0; i < NumObjs; i++)
+    {
         if (Obj[i]->type != OBJ_MINE)
             continue;
 
-        if (!BIT(Obj[i]->status, FROMCANNON)) {
+        if (!BIT(Obj[i]->status, FROMCANNON))
+        {
             life =
-                (mineLife ? mineLife : MINE_LIFETIME) / (Obj[i]->mods.mini +
-                                                         1);
+                (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Obj[i]->mods.mini +
+                                                                         1);
 
             Obj[i]->life = (int)(rfrac() * life);
             /* We wouldn't want all the mines
@@ -255,18 +282,20 @@ void tuner_missilelife(void)
     int i;
     int life;
 
-    if (missileLife < 0)
-        missileLife = 0;
+    if (options.missileLife < 0)
+        options.missileLife = 0;
 
-    for (i = 0; i < NumObjs; i++) {
+    for (i = 0; i < NumObjs; i++)
+    {
         if (Obj[i]->type != OBJ_SMART_SHOT &&
             Obj[i]->type != OBJ_HEAT_SHOT && Obj[i]->type != OBJ_TORPEDO)
             continue;
 
-        if (!BIT(Obj[i]->status, FROMCANNON)) {
+        if (!BIT(Obj[i]->status, FROMCANNON))
+        {
             life =
-                (mineLife ? mineLife : MISSILE_LIFETIME) / (Obj[i]->mods.mini +
-                                                            1);
+                (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Obj[i]->mods.mini +
+                                                                            1);
 
             Obj[i]->life = (int)(rfrac() * life);
             /* Maybe all the missiles are full
@@ -278,29 +307,33 @@ void tuner_missilelife(void)
 
 void tuner_gameduration(void)
 {
-    if (gameDuration <= 0.0) {
-        gameOverTime = time((time_t *) NULL);
+    if (options.gameDuration <= 0.0)
+    {
+        gameOverTime = time((time_t *)NULL);
     }
 
     else
-        gameOverTime = (time_t) (gameDuration * 60) + time((time_t *) NULL);
+        gameOverTime = (time_t)(options.gameDuration * 60) + time((time_t *)NULL);
 }
 
 void tuner_racelaps(void)
 {
-    if (BIT(World.rules->mode, TIMING)) {
+    if (BIT(World.rules->mode, TIMING))
+    {
         Reset_all_players();
-        if (gameDuration == -1)
-            gameDuration = 0;
+        if (options.gameDuration == -1)
+            options.gameDuration = 0;
     }
 }
 
 void tuner_allowalliances(void)
 {
-    if (BIT(World.rules->mode, TEAM_PLAY)) {
+    if (BIT(World.rules->mode, TEAM_PLAY))
+    {
         CLR_BIT(World.rules->mode, ALLIANCES);
     }
-    if (!BIT(World.rules->mode, ALLIANCES) && NumAlliances > 0) {
+    if (!BIT(World.rules->mode, ALLIANCES) && NumAlliances > 0)
+    {
         Dissolve_all_alliances();
     }
 }

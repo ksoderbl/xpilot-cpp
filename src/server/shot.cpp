@@ -61,12 +61,12 @@ void Place_mine(int ind)
 {
     player_t *pl = Players[ind];
 
-    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !shieldedMining))
+    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
     {
         return;
     }
 
-    if (minMineSpeed > 0)
+    if (options.minMineSpeed > 0)
     {
         Place_moving_mine(ind);
         return;
@@ -82,24 +82,24 @@ void Place_moving_mine(int ind)
     DFLOAT vx = pl->vel.x;
     DFLOAT vy = pl->vel.y;
 
-    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !shieldedMining))
+    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
     {
         return;
     }
 
-    if (minMineSpeed > 0)
+    if (options.minMineSpeed > 0)
     {
-        if (pl->velocity < minMineSpeed)
+        if (pl->velocity < options.minMineSpeed)
         {
             if (pl->velocity >= 1)
             {
-                vx *= (minMineSpeed / pl->velocity);
-                vy *= (minMineSpeed / pl->velocity);
+                vx *= (options.minMineSpeed / pl->velocity);
+                vy *= (options.minMineSpeed / pl->velocity);
             }
             else
             {
-                vx = minMineSpeed * tcos(pl->dir);
-                vy = minMineSpeed * tsin(pl->dir);
+                vx = options.minMineSpeed * tcos(pl->dir);
+                vy = options.minMineSpeed * tsin(pl->dir);
             }
         }
     }
@@ -148,7 +148,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
     }
     else
     {
-        life = (mineLife ? mineLife : MINE_LIFETIME);
+        life = (options.mineLife ? options.mineLife : MINE_LIFETIME);
     }
 
     if (!BIT(mods.warhead, CLUSTER))
@@ -156,7 +156,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
     if (!mods.mini)
         mods.spread = 0;
 
-    if (nukeMinSmarts <= 0)
+    if (options.nukeMinSmarts <= 0)
     {
         CLR_BIT(mods.nuclear, NUCLEAR);
     }
@@ -166,11 +166,11 @@ void Place_general_mine(int ind, unsigned short team, long status,
         {
             used = (BIT(mods.nuclear, FULLNUCLEAR)
                         ? pl->item[ITEM_MINE]
-                        : nukeMinMines);
-            if (pl->item[ITEM_MINE] < nukeMinMines)
+                        : options.nukeMinMines);
+            if (pl->item[ITEM_MINE] < options.nukeMinMines)
             {
                 sprintf(msg, "You need at least %d mines to %s %s!",
-                        nukeMinMines,
+                        options.nukeMinMines,
                         (BIT(status, GRAVITY) ? "throw" : "drop"),
                         Describe_shot(OBJ_MINE, status, mods, 0));
                 Set_player_message(pl, msg);
@@ -179,7 +179,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
         }
         else
         {
-            used = nukeMinMines;
+            used = options.nukeMinMines;
         }
         mass = MINE_MASS * used * NUKE_MASS_MULT;
     }
@@ -205,7 +205,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
             Set_player_message(pl, msg);
             return;
         }
-        if (baseMineRange)
+        if (options.baseMineRange)
         {
             for (i = 0; i < NumPlayers; i++)
             {
@@ -213,7 +213,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
                 {
                     int dx = (int)(x / BLOCK_SZ - World.base[Players[i]->home_base].pos.x);
                     int dy = (int)(y / BLOCK_SZ - World.base[Players[i]->home_base].pos.y);
-                    if (sqr(dx) + sqr(dy) <= sqr(baseMineRange))
+                    if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
                         return;
@@ -254,7 +254,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
 
         mine->type = OBJ_MINE;
         mine->color = BLUE;
-        mine->info = mineFuseTime;
+        mine->info = options.mineFuseTime;
         mine->status = status;
         mine->id = (pl ? pl->id : NO_ID);
         mine->team = team;
@@ -374,9 +374,9 @@ void Make_treasure_ball(int treasure)
         return;
     }
 
-    ball->length = ballConnectorLength;
+    ball->length = options.ballConnectorLength;
     ball->life = LONG_MAX;
-    ball->mass = ballMass;
+    ball->mass = options.ballMass;
     ball->vel.x = 0; /* make the ball stuck a little */
     ball->vel.y = 0; /* longer to the ground */
     ball->acc.x = 0;
@@ -567,7 +567,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
     char msg[MSG_LEN];
     player_t *pl = (ind == -1 ? NULL : Players[ind]);
     int used,
-        life = ShotsLife,
+        life = options.ShotsLife,
         fuse = 0,
         lock = 0,
         status = GRAVITY,
@@ -581,8 +581,8 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
         side = 0,
         fired = 0;
     long drain;
-    DFLOAT mass = ShotsMass,
-           speed = ShotsSpeed,
+    DFLOAT mass = options.ShotsMass,
+           speed = options.ShotsSpeed,
            turnspeed = 0,
            max_speed = SPEED_LIMIT,
            angle,
@@ -624,7 +624,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
             sound_play_sensors(pl->pos.x, pl->pos.y, FIRE_SHOT_SOUND);
             pl->shots++;
         }
-        if (!ShotsGravity)
+        if (!options.ShotsGravity)
         {
             CLR_BIT(status, GRAVITY);
         }
@@ -632,9 +632,9 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
 
     case OBJ_SMART_SHOT:
     case OBJ_HEAT_SHOT:
-        if ((type == OBJ_HEAT_SHOT) ? !allowHeatSeekers : !allowSmartMissiles)
+        if ((type == OBJ_HEAT_SHOT) ? !options.allowHeatSeekers : !options.allowSmartMissiles)
         {
-            if (allowTorpedoes)
+            if (options.allowTorpedoes)
             {
                 type = OBJ_TORPEDO;
             }
@@ -654,7 +654,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
         if (pl && pl->item[ITEM_MISSILE] <= 0)
             return;
 
-        if (nukeMinSmarts <= 0)
+        if (options.nukeMinSmarts <= 0)
         {
             CLR_BIT(mods.nuclear, NUCLEAR);
         }
@@ -664,12 +664,12 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
             {
                 used = (BIT(mods.nuclear, FULLNUCLEAR)
                             ? pl->item[ITEM_MISSILE]
-                            : nukeMinSmarts);
-                if (pl->item[ITEM_MISSILE] < nukeMinSmarts)
+                            : options.nukeMinSmarts);
+                if (pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
                 {
                     sprintf(msg,
                             "You need at least %d missiles to fire %s!",
-                            nukeMinSmarts,
+                            options.nukeMinSmarts,
                             Describe_shot(type, status, mods, 0));
                     Set_player_message(pl, msg);
                     return;
@@ -677,7 +677,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
             }
             else
             {
-                used = nukeMinSmarts;
+                used = options.nukeMinSmarts;
             }
             mass = MISSILE_MASS * used * NUKE_MASS_MULT;
             pl_range = (type == OBJ_TORPEDO) ? (int)NUKE_RANGE : MISSILE_RANGE;
@@ -704,7 +704,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
         }
         else if (!cannon)
         {
-            life = (missileLife ? missileLife : MISSILE_LIFETIME);
+            life = (options.missileLife ? options.missileLife : MISSILE_LIFETIME);
         }
 
         switch (type)
@@ -1155,7 +1155,7 @@ void Fire_normal_shots(int ind)
     player_t *pl = Players[ind];
     int i, shot_angle;
 
-    if (frame_loops < pl->shot_time + fireRepeatRate)
+    if (frame_loops < pl->shot_time + options.fireRepeatRate)
     {
         return;
     }
@@ -1337,7 +1337,7 @@ void Delete_shot(int ind)
             {
                 color = WHITE;
             }
-            mass = ShotsMass;
+            mass = options.ShotsMass;
             mass *= 3;
             modv = 1 << shot->mods.velocity;
             num_modv = 4;
@@ -1445,7 +1445,7 @@ void Delete_shot(int ind)
                 shot->life = FPS * WARN_TIME;
                 return;
             }
-            if (shot->life == 0 && rfrac() < rogueHeatProb)
+            if (shot->life == 0 && rfrac() < options.rogueHeatProb)
             {
                 addHeat = 1;
             }
@@ -1458,7 +1458,7 @@ void Delete_shot(int ind)
                 shot->life = FPS * WARN_TIME;
                 return;
             }
-            if (shot->life == 0 && rfrac() < rogueMineProb)
+            if (shot->life == 0 && rfrac() < options.rogueMineProb)
             {
                 addMine = 1;
             }
@@ -1701,18 +1701,18 @@ void Move_ball(int ind)
         D.x = D.y = 0.0;
 
     /* compute the ratio for the spring action */
-    ratio = (ballConnectorLength - length) / ballConnectorLength;
+    ratio = (options.ballConnectorLength - length) / options.ballConnectorLength;
 
     /* compute force by spring for this length */
-    force = ballConnectorSpringConstant * ratio;
+    force = options.ballConnectorSpringConstant * ratio;
 
     /* If we have string-style connectors then it is allowed to be
      * shorted than its natural length. */
-    if (connectorIsString && ratio > 0.0)
+    if (options.connectorIsString && ratio > 0.0)
         return;
 
     /* if the tether is too long or too short, release it */
-    if (ABS(ratio) > maxBallConnectorRatio)
+    if (ABS(ratio) > options.maxBallConnectorRatio)
     {
         Detach_ball(GetInd[ball->id], ind);
         return;
@@ -1721,11 +1721,11 @@ void Move_ball(int ind)
 
     /* compute damping for player */
     cosine = (pl->vel.x * D.x) + (pl->vel.y * D.y);
-    pl_damping = -ballConnectorDamping * cosine;
+    pl_damping = -options.ballConnectorDamping * cosine;
 
     /* compute damping for ball */
     cosine = (ball->vel.x * -D.x) + (ball->vel.y * -D.y);
-    ball_damping = -ballConnectorDamping * cosine;
+    ball_damping = -options.ballConnectorDamping * cosine;
 
     /* compute accelleration for player, assume t = 1 */
     accell = (force + pl_damping + ball_damping) / pl->mass;

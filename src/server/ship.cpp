@@ -110,7 +110,7 @@ void Turn_thrust(int ind, int num_sparks)
     int y = pl->pos.y + pl->ship->pts[0][pl->dir].y;
     int dir = pl->dir + ((pl->turnacc > 0.0) ? (RES / 4) : (3 * (RES / 4)));
 
-    if (turnThrust && (!BIT(pl->used, HAS_CLOAKING_DEVICE) || cloakedExhaust))
+    if (options.turnThrust && (!BIT(pl->used, HAS_CLOAKING_DEVICE) || options.cloakedExhaust))
         Make_debris(
             /* pos.x, pos.y   */ x, y,
             /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
@@ -416,8 +416,8 @@ void Tank_handle_detach(player_t *pl)
      * Player structures contain pointers to dynamic memory...
      */
 
-    Init_player(NumPlayers, (allowShipShapes)
-                                ? Parse_shape_str(tankShipShape)
+    Init_player(NumPlayers, (options.allowShipShapes)
+                                ? Parse_shape_str(options.tankShipShape)
                                 : NULL);
     /* Released tanks don't have tanks... */
     while (dummy->fuel.num_tanks > 0)
@@ -440,15 +440,15 @@ void Tank_handle_detach(player_t *pl)
 
     strlcpy(dummy->name, pl->name, MAX_CHARS);
     strlcat(dummy->name, "'s tank", MAX_CHARS);
-    strlcpy(dummy->realname, tankRealName, MAX_CHARS);
-    strlcpy(dummy->hostname, tankHostName, MAX_CHARS);
+    strlcpy(dummy->realname, options.tankRealName, MAX_CHARS);
+    strlcpy(dummy->hostname, options.tankHostName, MAX_CHARS);
     dummy->home_base = pl->home_base;
     dummy->team = pl->team;
     dummy->pseudo_team = pl->pseudo_team;
     dummy->alliance = ALLIANCE_NOT_SET;
     dummy->invite = NO_ID;
     dummy->mychar = 'T';
-    dummy->score = pl->score - tankScoreDecrement;
+    dummy->score = pl->score - options.tankScoreDecrement;
     updateScores = true;
 
     /* Fuel is the one from choosen tank */
@@ -459,7 +459,7 @@ void Tank_handle_detach(player_t *pl)
     dummy->fuel.num_tanks = 0;
 
     /* Mass is only tank + fuel */
-    dummy->mass = (dummy->emptymass = ShipMass) + FUEL_MASS(dummy->fuel.sum);
+    dummy->mass = (dummy->emptymass = options.ShipMass) + FUEL_MASS(dummy->fuel.sum);
     dummy->power *= TANK_THRUST_FACT;
 
     /* Reset visibility. */
@@ -490,7 +490,7 @@ void Tank_handle_detach(player_t *pl)
     dummy->status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
     dummy->have = DEF_HAVE;
     dummy->used = (DEF_USED & ~USED_KILL & pl->have) | HAS_SHIELD;
-    if (playerShielding == 0)
+    if (options.playerShielding == 0)
     {
         dummy->shield_time = 30 * FPS;
         dummy->have |= HAS_SHIELD;
@@ -539,7 +539,7 @@ void Make_wreckage(
     modifiers_t mods;
     DFLOAT mass, sum_mass = 0.0;
 
-    if (!useWreckage)
+    if (!options.useWreckage)
     {
         return;
     }
@@ -560,12 +560,12 @@ void Make_wreckage(
     }
     if (max_life < min_life)
         max_life = min_life;
-    if (ShotsLife >= FPS)
+    if (options.ShotsLife >= FPS)
     {
-        if (min_life > ShotsLife)
+        if (min_life > options.ShotsLife)
         {
-            min_life = ShotsLife;
-            max_life = ShotsLife;
+            min_life = options.ShotsLife;
+            max_life = options.ShotsLife;
         }
     }
 

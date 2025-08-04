@@ -153,7 +153,7 @@ void Cloak(int ind, int on)
     {
         if (!BIT(pl->used, HAS_CLOAKING_DEVICE) && pl->item[ITEM_CLOAK] > 0)
         {
-            if (!cloakedShield)
+            if (!options.cloakedShield)
             {
                 if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
                 {
@@ -183,7 +183,7 @@ void Cloak(int ind, int on)
         {
             CLR_BIT(pl->have, HAS_CLOAKING_DEVICE);
         }
-        if (!cloakedShield)
+        if (!options.cloakedShield)
         {
             if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
             {
@@ -214,7 +214,7 @@ void Deflector(int ind, int on)
         if (!BIT(pl->used, HAS_DEFLECTOR) && pl->item[ITEM_DEFLECTOR] > 0)
         {
             /* only allow deflector when cloaked shielding or not cloaked */
-            if (cloakedShield || !BIT(pl->used, HAS_CLOAKING_DEVICE))
+            if (options.cloakedShield || !BIT(pl->used, HAS_CLOAKING_DEVICE))
             {
                 SET_BIT(pl->used, HAS_DEFLECTOR);
                 sound_play_player(pl, DEFLECTOR_SOUND);
@@ -290,7 +290,7 @@ void Emergency_shield(int ind, int on)
                 pl->emergency_shield_max = emergency_shield_time;
                 pl->item[ITEM_EMERGENCY_SHIELD]--;
             }
-            if (cloakedShield || !BIT(pl->used, HAS_CLOAKING_DEVICE))
+            if (options.cloakedShield || !BIT(pl->used, HAS_CLOAKING_DEVICE))
             {
                 SET_BIT(pl->have, HAS_SHIELD);
                 if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
@@ -565,7 +565,7 @@ void Update_objects(void)
      * the player loop below, because of collisions between the shots
      * and the auto-firing player that would otherwise occur.
      */
-    if (fireRepeatRate > 0)
+    if (options.fireRepeatRate > 0)
     {
         for (i = 0; i < NumPlayers; i++)
         {
@@ -706,7 +706,7 @@ void Update_objects(void)
         {
             /* don't check too often, because this gets quite expensive
                on maps with many cannons with defensive items */
-            if (cannonsUseItems && cannonsDefend && rfrac() < 0.65)
+            if (options.cannonsUseItems && options.cannonsDefend && rfrac() < 0.65)
             {
                 Cannon_check_defense(i);
             }
@@ -714,11 +714,11 @@ void Update_objects(void)
             {
                 Cannon_check_fire(i);
             }
-            else if (cannonsUseItems && itemProbMult > 0 && cannonItemProbMult > 0)
+            else if (options.cannonsUseItems && options.itemProbMult > 0 && options.cannonItemProbMult > 0)
             {
                 int item = (int)(rfrac() * NUM_ITEMS);
                 /* this gives the cannon an item about once every minute */
-                if (World.items[item].cannonprob > 0 && cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (cannonItemProbMult * World.items[item].cannonprob))
+                if (World.items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * World.items[item].cannonprob))
                 {
                     Cannon_add_item(i, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
                 }
@@ -779,7 +779,7 @@ void Update_objects(void)
                 World.targets[i].update_mask = (unsigned)-1;
                 World.targets[i].last_change = frame_loops;
 
-                if (targetSync)
+                if (options.targetSync)
                 {
                     unsigned short team = World.targets[i].team;
 
@@ -994,7 +994,7 @@ void Update_objects(void)
             pl->turnvel *= pl->turnresistance;
         }
 
-        if (turnThrust)
+        if (options.turnThrust)
         {
             tf = pl->oldturnvel - pl->turnvel;
             tf = TURN_FUEL(tf);
@@ -1062,7 +1062,10 @@ void Update_objects(void)
         {
             if ((Wrap_length(pl->pos.x - World.fuel[pl->fs].pix_pos.x,
                              pl->pos.y - World.fuel[pl->fs].pix_pos.y) > 90.0) ||
-                (pl->fuel.sum >= pl->fuel.max) || (World.block[World.fuel[pl->fs].blk_pos.x][World.fuel[pl->fs].blk_pos.y] != FUEL) || BIT(pl->used, HAS_PHASING_DEVICE) || (BIT(World.rules->mode, TEAM_PLAY) && teamFuel && World.fuel[pl->fs].team != pl->team))
+                (pl->fuel.sum >= pl->fuel.max) ||
+                (World.block[World.fuel[pl->fs].blk_pos.x][World.fuel[pl->fs].blk_pos.y] != FUEL) ||
+                BIT(pl->used, HAS_PHASING_DEVICE) ||
+                (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && World.fuel[pl->fs].team != pl->team))
             {
                 CLR_BIT(pl->used, HAS_REFUEL);
             }
@@ -1282,7 +1285,7 @@ void Update_objects(void)
                     w.x = OBJ_X_IN_PIXELS(pl);
                     w.y = OBJ_Y_IN_PIXELS(pl);
                 }
-                if (counter && wormTime && BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+                if (counter && options.wormTime && BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
                 {
                     add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
                                        OBJ_Y_IN_BLOCKS(pl),
@@ -1344,7 +1347,7 @@ void Update_objects(void)
                 World.wormHoles[pl->wormHoleHit].lastdest = j;
                 if (!World.wormHoles[j].temporary)
                 {
-                    World.wormHoles[pl->wormHoleHit].countdown = (wormTime ? wormTime : WORMCOUNT);
+                    World.wormHoles[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
                 }
             }
 
@@ -1360,11 +1363,11 @@ void Update_objects(void)
             Move_player(i);
         }
 
-        if ((!BIT(pl->used, HAS_CLOAKING_DEVICE) || cloakedExhaust) && !BIT(pl->used, HAS_PHASING_DEVICE))
+        if ((!BIT(pl->used, HAS_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, HAS_PHASING_DEVICE))
         {
             if (BIT(pl->status, THRUSTING))
                 Thrust(i);
-            if (tf && turnThrust)
+            if (tf && options.turnThrust)
                 Turn_thrust(i, TURN_SPARKS(tf));
         }
 
@@ -1444,7 +1447,7 @@ void Update_objects(void)
             }
         }
 
-        if (maxPauseTime > 0 && IS_HUMAN_PTR(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > maxPauseTime)
+        if (options.maxPauseTime > 0 && IS_HUMAN_PTR(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
             sprintf(msg,
                     "%s was auto-kicked for pausing too long [*Server notice*]",
@@ -1466,7 +1469,7 @@ void Update_objects(void)
      * Compute general game status, do we have a winner?
      * (not called after Game_Over() )
      */
-    if (gameDuration >= 0.0 || maxRoundTime > 0)
+    if (options.gameDuration >= 0.0 || options.maxRoundTime > 0)
     {
         Compute_game_status();
     }

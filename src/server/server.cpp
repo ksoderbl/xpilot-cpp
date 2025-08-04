@@ -80,7 +80,7 @@ char *serverAddr;
 int ShutdownServer = -1;
 int ShutdownDelay = 1000;
 char ShutdownReason[MAX_CHARS];
-int framesPerSecond = 18;
+
 long main_loops = 0; /* needed in events.c */
 
 #ifdef LOG
@@ -90,6 +90,8 @@ static bool NoPlayersEnteredYet = true;
 int game_lock = false;
 time_t gameOverTime = 0;
 time_t serverTime = 0;
+
+int roundsPlayed; /* # of rounds played sofar. */
 
 extern int login_in_progress;
 extern int NumQueuedPlayers;
@@ -127,8 +129,8 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    plock_server(pLockServer); /* Lock the server into memory */
-    Make_table();              /* Make trigonometric tables */
+    plock_server(options.pLockServer); /* Lock the server into memory */
+    Make_table();                      /* Make trigonometric tables */
     Compute_gravity();
     Find_base_direction();
     Walls_init();
@@ -147,23 +149,23 @@ int main(int argc, char **argv)
     /*
      * Get server's official name.
      */
-    if (serverHost)
+    if (options.serverHost)
     {
-        addr = sock_get_addr_by_name(serverHost);
+        addr = sock_get_addr_by_name(options.serverHost);
         if (addr == NULL)
         {
             errno = 0;
-            xperror("Failed name lookup on: %s", serverHost);
+            xperror("Failed name lookup on: %s", options.serverHost);
             return 1;
         }
         serverAddr = xp_strdup(addr);
-        strlcpy(Server.host, serverHost, sizeof(Server.host));
+        strlcpy(Server.host, options.serverHost, sizeof(Server.host));
     }
     else
     {
         sock_get_local_hostname(Server.host, sizeof Server.host,
-                                (reportToMetaServer != 0 &&
-                                 searchDomainForXPilot != 0));
+                                (options.reportToMetaServer != 0 &&
+                                 options.searchDomainForXPilot != 0));
     }
 
     Get_login_name(Server.owner, sizeof Server.owner);
@@ -182,7 +184,7 @@ int main(int argc, char **argv)
     {
         End_game();
     }
-    if (NoQuit)
+    if (options.NoQuit)
     {
         signal(SIGHUP, SIG_IGN);
     }
@@ -202,12 +204,12 @@ int main(int argc, char **argv)
     serverTime = time(NULL);
 
 #ifndef SILENT
-    xpprintf("%s Server runs at %d frames per second\n", showtime(), framesPerSecond);
+    xpprintf("%s Server runs at %d frames per second\n", showtime(), options.framesPerSecond);
 #endif
 
-    if (timerResolution > 0)
+    if (options.timerResolution > 0)
     {
-        timer_tick_rate = timerResolution;
+        timer_tick_rate = options.timerResolution;
     }
     else
     {
@@ -250,7 +252,7 @@ void Main_loop(void)
 
     Input();
 
-    if (NumPlayers > NumRobots + NumPseudoPlayers || RawMode)
+    if (NumPlayers > NumRobots + NumPseudoPlayers || options.RawMode)
     {
 
         if (NoPlayersEnteredYet)
@@ -258,10 +260,10 @@ void Main_loop(void)
             if (NumPlayers > NumRobots + NumPseudoPlayers)
             {
                 NoPlayersEnteredYet = false;
-                if (gameDuration > 0.0)
+                if (options.gameDuration > 0.0)
                 {
-                    xpprintf("%s Server will stop in %g minutes.\n", showtime(), gameDuration);
-                    gameOverTime = (time_t)(gameDuration * 60) + time((time_t *)NULL);
+                    xpprintf("%s Server will stop in %g minutes.\n", showtime(), options.gameDuration);
+                    gameOverTime = (time_t)(options.gameDuration * 60) + time((time_t *)NULL);
                 }
             }
         }
@@ -281,7 +283,7 @@ void Main_loop(void)
         }
     }
 
-    if (!NoQuit && NumPlayers == NumRobots + NumPseudoPlayers && !login_in_progress && !NumQueuedPlayers)
+    if (!options.NoQuit && NumPlayers == NumRobots + NumPseudoPlayers && !login_in_progress && !NumQueuedPlayers)
     {
 
         if (!NoPlayersEnteredYet)
@@ -385,13 +387,13 @@ int Pick_team(int pick_for_type)
         team_score[i] = 0;
         available_teams[i] = 0;
     }
-    if (restrictRobots)
+    if (options.restrictRobots)
     {
         if (pick_for_type == PickForRobot)
         {
-            if (free_bases[robotTeam] > 0)
+            if (free_bases[options.robotTeam] > 0)
             {
-                return robotTeam;
+                return options.robotTeam;
             }
             else
             {
@@ -399,11 +401,11 @@ int Pick_team(int pick_for_type)
             }
         }
     }
-    if (reserveRobotTeam)
+    if (options.reserveRobotTeam)
     {
         if (pick_for_type != PickForRobot)
         {
-            free_bases[robotTeam] = 0;
+            free_bases[options.robotTeam] = 0;
         }
     }
 
@@ -491,7 +493,7 @@ int Pick_team(int pick_for_type)
         losing_score = LONG_MAX;
         for (i = 0; i < num_available_teams; i++)
         {
-            if (team_score[available_teams[i]] < losing_score && available_teams[i] != robotTeam)
+            if (team_score[available_teams[i]] < losing_score && available_teams[i] != options.robotTeam)
             {
                 losing_team = available_teams[i];
                 losing_score = team_score[losing_team];
@@ -627,7 +629,7 @@ static void Handle_signal(int sig_no)
     {
 
     case SIGHUP:
-        if (NoQuit)
+        if (options.NoQuit)
         {
             signal(SIGHUP, SIG_IGN);
             return;
@@ -697,7 +699,7 @@ void Game_Over(void)
     /*
      * Hack to prevent Compute_Game_Status from starting over again...
      */
-    gameDuration = -1.0;
+    options.gameDuration = -1.0;
 
     if (BIT(World.rules->mode, TEAM_PLAY))
     {
@@ -797,8 +799,8 @@ void Server_log_admin_message(int ind, const char *str)
      * Only log the message if logfile already exists,
      * is writable and less than some KBs in size.
      */
-    const char *logfilename = adminMessageFileName;
-    const int logfile_size_limit = adminMessageFileSizeLimit;
+    const char *logfilename = options.adminMessageFileName;
+    const int logfile_size_limit = options.adminMessageFileSizeLimit;
     FILE *fp;
     struct stat st;
     player_t *pl = Players[ind];

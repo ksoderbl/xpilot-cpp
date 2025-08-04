@@ -69,13 +69,13 @@ long USED_KILL =
  */
 static void Set_item_chance(int item)
 {
-    DFLOAT max = itemProbMult * maxItemDensity * World.x * World.y;
+    DFLOAT max = options.itemProbMult * options.maxItemDensity * World.x * World.y;
     DFLOAT sum = 0;
     int i, num = 0;
 
-    if (itemProbMult * World.items[item].prob > 0)
+    if (options.itemProbMult * World.items[item].prob > 0)
     {
-        World.items[item].chance = (int)(1.0 / (itemProbMult * World.items[item].prob * World.x * World.y * FPS));
+        World.items[item].chance = (int)(1.0 / (options.itemProbMult * World.items[item].prob * World.x * World.y * FPS));
         World.items[item].chance = MAX(World.items[item].chance, 1);
     }
     else
@@ -112,7 +112,7 @@ static void Set_item_chance(int item)
     }
     if (num)
     {
-        World.items[item].cannonprob = World.items[item].prob * (num / sum) * (maxItemDensity / 0.00012);
+        World.items[item].cannonprob = World.items[item].prob * (num / sum) * (options.maxItemDensity / 0.00012);
     }
     else
     {
@@ -158,7 +158,7 @@ void Tune_item_probs(void)
 
 void Tune_asteroid_prob(void)
 {
-    DFLOAT max = maxAsteroidDensity * World.x * World.y;
+    DFLOAT max = options.maxAsteroidDensity * World.x * World.y;
 
     if (World.asteroids.prob > 0)
     {
@@ -187,8 +187,8 @@ void Tune_asteroid_prob(void)
     /* superfluous asteroids are handled by Asteroid_update() */
 
     /* Tune asteroid concentrator parameters */
-    LIMIT(asteroidConcentratorRadius, 1, World.diagonal);
-    LIMIT(asteroidConcentratorProb, 0.0, 1.0);
+    LIMIT(options.asteroidConcentratorRadius, 1, World.diagonal);
+    LIMIT(options.asteroidConcentratorProb, 0.0, 1.0);
 }
 
 /*
@@ -196,8 +196,8 @@ void Tune_asteroid_prob(void)
  */
 void Tune_item_packs(void)
 {
-    World.items[ITEM_MINE].max_per_pack = maxMinesPerPack;
-    World.items[ITEM_MISSILE].max_per_pack = maxMissilesPerPack;
+    World.items[ITEM_MINE].max_per_pack = options.maxMinesPerPack;
+    World.items[ITEM_MISSILE].max_per_pack = options.maxMissilesPerPack;
 }
 
 /*
@@ -285,19 +285,19 @@ void Set_initial_resources(void)
 
 void Set_misc_item_limits(void)
 {
-    LIMIT(dropItemOnKillProb, 0.0, 1.0);
-    LIMIT(detonateItemOnKillProb, 0.0, 1.0);
-    LIMIT(movingItemProb, 0.0, 1.0);
-    LIMIT(randomItemProb, 0.0, 1.0);
-    LIMIT(destroyItemInCollisionProb, 0.0, 1.0);
+    LIMIT(options.dropItemOnKillProb, 0.0, 1.0);
+    LIMIT(options.detonateItemOnKillProb, 0.0, 1.0);
+    LIMIT(options.movingItemProb, 0.0, 1.0);
+    LIMIT(options.randomItemProb, 0.0, 1.0);
+    LIMIT(options.destroyItemInCollisionProb, 0.0, 1.0);
 
-    LIMIT(itemConcentratorRadius, 1, World.diagonal);
-    LIMIT(itemConcentratorProb, 0.0, 1.0);
+    LIMIT(options.itemConcentratorRadius, 1, World.diagonal);
+    LIMIT(options.itemConcentratorProb, 0.0, 1.0);
 
-    LIMIT(asteroidItemProb, 0.0, 1.0);
+    LIMIT(options.asteroidItemProb, 0.0, 1.0);
 
-    if (asteroidMaxItems < 0)
-        asteroidMaxItems = 0;
+    if (options.asteroidMaxItems < 0)
+        options.asteroidMaxItems = 0;
 }
 
 /*
@@ -309,8 +309,8 @@ void Set_world_items(void)
     Init_item(ITEM_TANK, 1, 1);
     Init_item(ITEM_ECM, 1, 1);
     Init_item(ITEM_ARMOR, 1, 1);
-    Init_item(ITEM_MINE, 1, maxMinesPerPack);
-    Init_item(ITEM_MISSILE, 1, maxMissilesPerPack);
+    Init_item(ITEM_MINE, 1, options.maxMinesPerPack);
+    Init_item(ITEM_MISSILE, 1, options.maxMissilesPerPack);
     Init_item(ITEM_CLOAK, 1, 1);
     Init_item(ITEM_SENSOR, 1, 1);
     Init_item(ITEM_WIDEANGLE, 1, 1);
@@ -337,8 +337,8 @@ void Set_world_rules(void)
     static rules_t rules;
 
     rules.mode =
-        ((crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (playerKillings ? PLAYER_KILLINGS : 0) | (playerShielding ? PLAYER_SHIELDING : 0) | (limitedVisibility ? LIMITED_VISIBILITY : 0) | (limitedLives ? LIMITED_LIVES : 0) | (teamPlay ? TEAM_PLAY : 0) | (allowAlliances ? ALLIANCES : 0) | (timing ? TIMING : 0) | (allowNukes ? ALLOW_NUKES : 0) | (allowClusters ? ALLOW_CLUSTERS : 0) | (allowModifiers ? ALLOW_MODIFIERS : 0) | (allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (edgeWrap ? WRAP_PLAY : 0));
-    rules.lives = worldLives;
+        ((options.crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (options.bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (options.playerKillings ? PLAYER_KILLINGS : 0) | (options.playerShielding ? PLAYER_SHIELDING : 0) | (options.limitedVisibility ? LIMITED_VISIBILITY : 0) | (options.limitedLives ? LIMITED_LIVES : 0) | (options.teamPlay ? TEAM_PLAY : 0) | (options.allowAlliances ? ALLIANCES : 0) | (options.timing ? TIMING : 0) | (options.allowNukes ? ALLOW_NUKES : 0) | (options.allowClusters ? ALLOW_CLUSTERS : 0) | (options.allowModifiers ? ALLOW_MODIFIERS : 0) | (options.allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (options.edgeWrap ? WRAP_PLAY : 0));
+    rules.lives = options.worldLives;
     World.rules = &rules;
 
     if (BIT(World.rules->mode, TEAM_PLAY))

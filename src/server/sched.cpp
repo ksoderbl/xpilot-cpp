@@ -109,9 +109,9 @@ static void catch_timer_counts(int signum)
     static unsigned int timer_count = 0;
 
     timer_count += FPS;
-    if (timer_count >= (unsigned)timerResolution)
+    if (timer_count >= (unsigned)options.timerResolution)
     {
-        timer_count -= timerResolution;
+        timer_count -= options.timerResolution;
         timer_ticks++;
     }
 }
@@ -133,7 +133,7 @@ static void setup_timer(void)
     /*
      * Install a signal handler for the alarm signal.
      */
-    act.sa_handler = (timerResolution > 0)
+    act.sa_handler = (options.timerResolution > 0)
                          ? (catch_timer_counts)
                          : (catch_timer_ticks);
     act.sa_flags = 0;

@@ -34,6 +34,7 @@ xpilot_cpp_server_SOURCES = \
     objpos.cpp \
     objpos.h \
     option.cpp \
+    option.h \
     parser.cpp \
     play.cpp \
     player.cpp \

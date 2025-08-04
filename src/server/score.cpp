@@ -21,11 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cmath>
+#include <climits>
 
 #define SERVER
 #include "version.h"
@@ -36,10 +36,9 @@
 #include "score.h"
 #include "netserver.h"
 
-
 void SCORE(int ind, int points, int x, int y, const char *msg)
 {
-    player        *pl = Players[ind];
+    player *pl = Players[ind];
 
     pl->score += (points);
 
@@ -77,11 +76,10 @@ int Rate(int winner, int loser)
 void Score_players(int winner, int winner_score, char *winner_msg,
                    int loser, int loser_score, char *loser_msg)
 {
-    if (TEAM(winner, loser)
-        || (Players[winner]->alliance != ALLIANCE_NOT_SET
-            && Players[winner]->alliance == Players[loser]->alliance)
-        || (IS_TANK_IND(loser)
-            && GetInd[Players[loser]->lock.pl_id] == winner)) {
+    if (TEAM(winner, loser) ||
+        (Players[winner]->alliance != ALLIANCE_NOT_SET && Players[winner]->alliance == Players[loser]->alliance) ||
+        (IS_TANK_IND(loser) && GetInd[Players[loser]->lock.pl_id] == winner))
+    {
         if (winner_score > 0)
             winner_score = -winner_score;
         if (loser_score > 0)
@@ -96,4 +94,3 @@ void Score_players(int winner, int winner_score, char *winner_msg,
           OBJ_Y_IN_BLOCKS(Players[loser]),
           loser_msg);
 }
-

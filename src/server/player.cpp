@@ -212,10 +212,10 @@ void Go_home(int ind)
     memset(pl->prev_keyv, 0, sizeof(pl->prev_keyv));
     Player_used_kill(ind);
 
-    if (playerStartsShielded != 0)
+    if (options.playerStartsShielded != 0)
     {
         SET_BIT(pl->used, HAS_SHIELD);
-        if (playerShielding == 0)
+        if (options.playerShielding == 0)
         {
             pl->shield_time = 2 * FPS;
             SET_BIT(pl->have, HAS_SHIELD);
@@ -251,18 +251,18 @@ void Compute_sensor_range(player_t *pl)
 
     if (!init)
     {
-        if (minVisibilityDistance <= 0.0)
-            minVisibilityDistance = VISIBILITY_DISTANCE;
+        if (options.minVisibilityDistance <= 0.0)
+            options.minVisibilityDistance = VISIBILITY_DISTANCE;
         else
-            minVisibilityDistance *= BLOCK_SZ;
-        if (maxVisibilityDistance <= 0.0)
-            maxVisibilityDistance = World.hypotenuse;
+            options.minVisibilityDistance *= BLOCK_SZ;
+        if (options.maxVisibilityDistance <= 0.0)
+            options.maxVisibilityDistance = World.hypotenuse;
         else
-            maxVisibilityDistance *= BLOCK_SZ;
+            options.maxVisibilityDistance *= BLOCK_SZ;
 
         if (World.items[ITEM_FUEL].initial > 0.0)
         {
-            EnergyRangeFactor = minVisibilityDistance /
+            EnergyRangeFactor = options.minVisibilityDistance /
                                 (World.items[ITEM_FUEL].initial * (1.0 + ((DFLOAT)World.items[ITEM_SENSOR].initial * 0.25)));
             EnergyRangeFactor /= FUEL_SCALE_FACT;
         }
@@ -275,10 +275,10 @@ void Compute_sensor_range(player_t *pl)
 
     pl->sensor_range = pl->fuel.sum * EnergyRangeFactor;
     pl->sensor_range *= (1.0 + ((DFLOAT)pl->item[ITEM_SENSOR] * 0.25));
-    if (pl->sensor_range < minVisibilityDistance)
-        pl->sensor_range = minVisibilityDistance;
-    if (pl->sensor_range > maxVisibilityDistance)
-        pl->sensor_range = maxVisibilityDistance;
+    if (pl->sensor_range < options.minVisibilityDistance)
+        pl->sensor_range = options.minVisibilityDistance;
+    if (pl->sensor_range > options.maxVisibilityDistance)
+        pl->sensor_range = options.maxVisibilityDistance;
 }
 
 /*
@@ -382,7 +382,7 @@ void Player_set_mass(int ind)
             break;
 
         default:
-            item_mass = pl->item[item] * minItemMass;
+            item_mass = pl->item[item] * options.minItemMass;
             break;
         }
 
@@ -407,7 +407,7 @@ static void Player_init_fuel(int ind, long total_fuel)
     pl->fuel.max = TANK_CAP(0);
     pl->fuel.sum = MIN(fuel, pl->fuel.max);
     pl->fuel.tank[0] = pl->fuel.sum;
-    pl->emptymass = ShipMass;
+    pl->emptymass = options.ShipMass;
     pl->item[ITEM_TANK] = pl->fuel.num_tanks;
 
     fuel -= pl->fuel.sum;
@@ -431,8 +431,8 @@ int Init_player(int ind, shipobj_t *ship)
     pl->turnvel = 0.0;
     pl->oldturnvel = 0.0;
     pl->turnacc = 0.0;
-    pl->mass = ShipMass;
-    pl->emptymass = ShipMass;
+    pl->mass = options.ShipMass;
+    pl->emptymass = options.ShipMass;
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
@@ -445,7 +445,7 @@ int Init_player(int ind, shipobj_t *ship)
     pl->fuel.sum = World.items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
     Player_init_fuel(ind, pl->fuel.sum);
 
-    if (allowShipShapes == true && ship)
+    if (options.allowShipShapes == true && ship)
     {
         pl->ship = ship;
     }
@@ -454,7 +454,7 @@ int Init_player(int ind, shipobj_t *ship)
         /*
                 pl->ship = Default_ship();
         */
-        shipobj_t *tryship = Parse_shape_str(defaultShipShape);
+        shipobj_t *tryship = Parse_shape_str(options.defaultShipShape);
 
         if (tryship)
             pl->ship = tryship;
@@ -485,7 +485,7 @@ int Init_player(int ind, shipobj_t *ship)
     pl->missile_rack = 0;
     pl->forceVisible = 0;
     Compute_sensor_range(pl);
-    pl->shot_max = ShotsMax;
+    pl->shot_max = options.ShotsMax;
     pl->shot_time = 0;
     pl->color = WHITE;
     pl->score = 0;
@@ -707,7 +707,7 @@ void Reset_all_players(void)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (endOfRoundReset)
+        if (options.endOfRoundReset)
         {
             if (BIT(pl->status, PAUSE))
             {
@@ -782,7 +782,7 @@ void Reset_all_players(void)
             World.teams[i].TreasuresLeft = World.teams[i].NumTreasures - World.teams[i].NumEmptyTreasures;
         }
 
-        if (endOfRoundReset)
+        if (options.endOfRoundReset)
         {
             /* Reset the targets */
             for (i = 0; i < World.NumTargets; i++)
@@ -800,7 +800,7 @@ void Reset_all_players(void)
         }
     }
 
-    if (endOfRoundReset)
+    if (options.endOfRoundReset)
     {
         for (i = 0; i < NumObjs; i++)
         {
@@ -821,21 +821,21 @@ void Reset_all_players(void)
     {
         round_delay_send--;
     }
-    if (roundDelaySeconds)
+    if (options.roundDelaySeconds)
     {
         /* Hold your horses! The next round will start in a few moments. */
-        round_delay = roundDelaySeconds * FPS;
+        round_delay = options.roundDelaySeconds * FPS;
         /* Send him an extra seconds worth to be sure he gets the 0. */
         round_delay_send = round_delay + FPS;
         roundtime = -1;
         sprintf(msg, "Delaying %d seconds until start of next %s.",
-                roundDelaySeconds,
+                options.roundDelaySeconds,
                 (BIT(World.rules->mode, TIMING) ? "race" : "round"));
         Set_message(msg);
     }
     else
     {
-        roundtime = maxRoundTime * FPS;
+        roundtime = options.maxRoundTime * FPS;
     }
 
     Update_score_table();
@@ -992,7 +992,7 @@ static void Count_rounds(void)
 {
     char msg[MSG_LEN];
 
-    if (!roundsToPlay)
+    if (!options.roundsToPlay)
     {
         return;
     }
@@ -1000,9 +1000,9 @@ static void Count_rounds(void)
     ++roundsPlayed;
 
     sprintf(msg, " < Round %d out of %d completed. >",
-            roundsPlayed, roundsToPlay);
+            roundsPlayed, options.roundsToPlay);
     Set_message(msg);
-    if (roundsPlayed >= roundsToPlay)
+    if (roundsPlayed >= options.roundsToPlay)
     {
         Game_Over();
     }
@@ -1329,7 +1329,7 @@ void Compute_game_status(void)
             sprintf(msg, "%s starts now.",
                     (BIT(World.rules->mode, TIMING) ? "Race" : "Round"));
             Set_message(msg);
-            roundtime = maxRoundTime * FPS;
+            roundtime = options.maxRoundTime * FPS;
             /* make sure players get the full 60 seconds of allowed idle time */
             for (i = 0; i < NumPlayers; i++)
             {
@@ -1485,7 +1485,7 @@ void Compute_game_status(void)
         /*
          * If the maximum allowed time for this race is over, end it.
          */
-        if (maxRoundTime > 0 && roundtime == 0)
+        if (options.maxRoundTime > 0 && roundtime == 0)
         {
             Set_message("Timer expired. Race ends now.");
             Race_game_over();
@@ -1634,12 +1634,12 @@ void Compute_game_status(void)
             /*
              * Game is not over if more than one team has treasure.
              */
-            if ((teams_with_treasure > 1 || !max_destroyed) && (roundtime != 0 || maxRoundTime <= 0))
+            if ((teams_with_treasure > 1 || !max_destroyed) && (roundtime != 0 || options.maxRoundTime <= 0))
             {
                 return;
             }
 
-            if (maxRoundTime > 0 && roundtime == 0)
+            if (options.maxRoundTime > 0 && roundtime == 0)
             {
                 Set_message("Timer expired. Round ends now.");
             }
@@ -1817,7 +1817,7 @@ void Compute_game_status(void)
         {
             Individual_game_over(-2);
         }
-        else if (maxRoundTime > 0 && roundtime == 0)
+        else if (options.maxRoundTime > 0 && roundtime == 0)
         {
             Set_message("Timer expired. Round ends now.");
             Individual_game_over(-1);
@@ -1859,7 +1859,7 @@ void Delete_player(int ind)
             }
             else
             {
-                if (!keepShots)
+                if (!options.keepShots)
                 {
                     obj->life = 0;
                     if (BIT(obj->type,
@@ -1883,7 +1883,7 @@ void Delete_player(int ind)
                 if (mine->owner == id)
                 {
                     mine->owner = NO_ID;
-                    if (!keepShots)
+                    if (!options.keepShots)
                     {
                         obj->life = 0;
                         obj->mass = 0;
@@ -1892,7 +1892,7 @@ void Delete_player(int ind)
             }
             else if (BIT(obj->type, OBJ_CANNON_SHOT))
             {
-                if (!keepShots)
+                if (!options.keepShots)
                 {
                     obj->life = 0;
                     obj->mass = 0;
@@ -1968,7 +1968,7 @@ void Delete_player(int ind)
         if (IS_TANK_IND(i) && Players[i]->lock.pl_id == id)
         {
             /* remove tanks which were released by this player. */
-            if (keepShots)
+            if (options.keepShots)
             {
                 Players[i]->lock.pl_id = NO_ID;
             }
@@ -2083,7 +2083,7 @@ void Player_death_reset(int ind)
 
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
-    pl->emptymass = pl->mass = ShipMass;
+    pl->emptymass = pl->mass = options.ShipMass;
     pl->status |= DEF_BITS;
     pl->status &= ~(KILL_BITS);
 
@@ -2096,7 +2096,7 @@ void Player_death_reset(int ind)
     }
 
     pl->forceVisible = 0;
-    pl->shot_max = ShotsMax;
+    pl->shot_max = options.ShotsMax;
     pl->count = MAX(RECOVERY_DELAY, pl->count);
     pl->ecmcount = 0;
     pl->emergency_thrust_left = 0;
@@ -2140,7 +2140,7 @@ void Player_death_reset(int ind)
             {
                 if (IS_ROBOT_PTR(pl))
                 {
-                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) || (robotsLeave && pl->score < robotLeaveScore))
+                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
                     {
                         Robot_delete(ind, false);
                         return;
@@ -2174,7 +2174,7 @@ int Team_immune(int id1, int id2)
         /* owned stuff is never team immune */
         return 0;
     }
-    if (!teamImmunity)
+    if (!options.teamImmunity)
     {
         return 0;
     }
