@@ -111,16 +111,16 @@ DFLOAT displayedTurnresistance; /* What the server is sending us */
 DFLOAT spark_prob;              /* Sparkling effect user configurable */
 int charsPerSecond;             /* Message output speed (configurable) */
 
-DFLOAT hud_move_fact; /* scale the hud-movement (speed) */
-DFLOAT ptr_move_fact; /* scale the speed pointer length */
-long instruments;     /* Instruments on screen (bitmask) */
-char mods[MAX_CHARS]; /* Current modifiers in effect */
-int packet_size;      /* Current frame update packet size */
-int packet_loss;      /* lost packets per second */
-int packet_drop;      /* dropped packets per second */
-int packet_lag;       /* approximate lag in frames */
-char *packet_measure; /* packet measurement in a second */
-long packet_loop;     /* start of measurement */
+DFLOAT hud_move_fact;      /* scale the hud-movement (speed) */
+DFLOAT ptr_move_fact;      /* scale the speed pointer length */
+instruments_t instruments; /* Instruments on screen */
+char mods[MAX_CHARS];      /* Current modifiers in effect */
+int packet_size;           /* Current frame update packet size */
+int packet_loss;           /* lost packets per second */
+int packet_drop;           /* dropped packets per second */
+int packet_lag;            /* approximate lag in frames */
+char *packet_measure;      /* packet measurement in a second */
+long packet_loop;          /* start of measurement */
 
 bool showRealName = false;  /* Show realname instead of nick name */
 char name[MAX_CHARS];       /* Nick-name of player */
@@ -1075,7 +1075,7 @@ void Map_dots(void)
      */
     memset(dot, 0, sizeof dot);
     dot[SETUP_SPACE] = 1;
-    if (!BIT(instruments, SHOW_DECOR))
+    if (!instruments.showDecor)
     {
         dot[SETUP_DECOR_FILLED] = 1;
         dot[SETUP_DECOR_RU] = 1;
@@ -1234,7 +1234,8 @@ void Map_blue(int startx, int starty, int width, int height)
         type,
         newtype;
     unsigned char blue[256];
-    const long outline_mask = SHOW_OUTLINE_WORLD | SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS;
+    // const long outline_mask = SHOW_OUTLINE_WORLD | SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS;
+    bool fixThis = true; // TODO: BIT(instruments, outline_mask);
 
     /*
      * Optimize the map for blue.
@@ -1323,13 +1324,13 @@ void Map_blue(int startx, int starty, int width, int height)
                            !(blue[Setup->map_data[x * Setup->y + Setup->y - 1]] & BLUE_UP))
                         : !(blue[Setup->map_data[x * Setup->y + (y - 1)]] & BLUE_UP))
                     newtype |= BLUE_DOWN;
-                if (!BIT(instruments, outline_mask) || ((x == Setup->x - 1)
-                                                            ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
-                                                            : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
+                if (!fixThis || ((x == Setup->x - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
+                                     : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
                     newtype |= BLUE_RIGHT;
-                if (!BIT(instruments, outline_mask) || ((y == Setup->y - 1)
-                                                            ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
-                                                            : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
+                if (!fixThis || ((y == Setup->y - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
+                                     : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
                     newtype |= BLUE_UP;
                 break;
 
@@ -1340,21 +1341,21 @@ void Map_blue(int startx, int starty, int width, int height)
                            !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
                         : !(blue[Setup->map_data[(x - 1) * Setup->y + y]] & BLUE_RIGHT))
                     newtype |= BLUE_LEFT;
-                if (!BIT(instruments, outline_mask) || ((y == Setup->y - 1)
-                                                            ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
-                                                            : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
+                if (!fixThis || ((y == Setup->y - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
+                                     : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
                     newtype |= BLUE_UP;
                 break;
 
             case SETUP_REC_RU:
                 newtype = BLUE_BIT | BLUE_CLOSED;
-                if (!BIT(instruments, outline_mask) || ((x == Setup->x - 1)
-                                                            ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
-                                                            : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
+                if (!fixThis || ((x == Setup->x - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
+                                     : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
                     newtype |= BLUE_RIGHT;
-                if (!BIT(instruments, outline_mask) || ((y == Setup->y - 1)
-                                                            ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
-                                                            : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
+                if (!fixThis || ((y == Setup->y - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
+                                     : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
                     newtype |= BLUE_UP;
                 break;
 
@@ -1374,9 +1375,9 @@ void Map_blue(int startx, int starty, int width, int height)
 
             case SETUP_REC_RD:
                 newtype = BLUE_BIT | BLUE_BELOW | BLUE_OPEN;
-                if (!BIT(instruments, outline_mask) || ((x == Setup->x - 1)
-                                                            ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
-                                                            : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
+                if (!fixThis || ((x == Setup->x - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
+                                     : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
                     newtype |= BLUE_RIGHT;
                 if ((y == 0)
                         ? (!BIT(Setup->mode, WRAP_PLAY) ||

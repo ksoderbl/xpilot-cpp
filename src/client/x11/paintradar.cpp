@@ -264,7 +264,7 @@ void Paint_sliding_radar(void)
     {
         return;
     }
-    if (BIT(instruments, SHOW_SLIDING_RADAR) != 0)
+    if (instruments.slidingRadar != 0)
     {
         if (radarPixmap2 != radarWindow)
         {
@@ -350,7 +350,7 @@ void Paint_world_radar(void)
     {
         visible[i] = 1;
     }
-    if (BIT(instruments, SHOW_DECOR))
+    if (instruments.showDecor)
     {
         visible[SETUP_DECOR_FILLED] = 1;
         visible[SETUP_DECOR_LU] = 1;
@@ -379,7 +379,7 @@ void Paint_world_radar(void)
     {
         visibleColor[i] = wallRadarColor;
     }
-    if (BIT(instruments, SHOW_DECOR))
+    if (instruments.showDecor)
     {
         visibleColor[SETUP_DECOR_FILLED] =
             visibleColor[SETUP_DECOR_LU] =

@@ -60,8 +60,7 @@
 // /* typedefs end */
 
 /* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
-#define TALK_MSG_SCREENPOS(_total, _pos) \
-    (BIT(instruments, SHOW_REVERSE_SCROLL) ? (_total) - (_pos) : (_pos))
+#define TALK_MSG_SCREENPOS(_total, _pos) (_pos)
 
 /* how to draw a selection */
 #define DRAW_EMPHASIZED BLUE

@@ -36,6 +36,7 @@
 #include <X11/Xresource.h>
 #include <sys/param.h>
 
+#include "commonmacros.h"
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"
@@ -1738,19 +1739,6 @@ static void Get_bool_resource(XrmDatabase db, const char *resource, bool *result
     *result = (ON(resValue) != 0);
 }
 
-static void Get_bit_resource(XrmDatabase db, const char *resource,
-                             long *mask, int bit)
-{
-    int index;
-    char resValue[MAX_CHARS];
-
-    Find_resource(db, resource, resValue, sizeof resValue, &index);
-    if (ON(resValue))
-    {
-        SET_BIT(*mask, bit);
-    }
-}
-
 static void Get_shipshape_resource(XrmDatabase db, char **ship_shape)
 {
     char resValue[MAX(2 * MSG_LEN, PATH_MAX + 1)];
@@ -2241,35 +2229,34 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_int_resource(rDB, "oldMessagesColor", &oldMessagesColor);
     Get_resource(rDB, "sparkColors", sparkColors, MSG_LEN);
 
-    instruments = 0;
-    Get_bit_resource(rDB, "showShipName", &instruments, SHOW_SHIP_NAME);
-    Get_bit_resource(rDB, "showMineName", &instruments, SHOW_MINE_NAME);
-    Get_bit_resource(rDB, "showMessages", &instruments, SHOW_MESSAGES);
-    Get_bit_resource(rDB, "showHUD", &instruments, SHOW_HUD_INSTRUMENTS);
-    Get_bit_resource(rDB, "showHUDRadar", &instruments, SHOW_HUD_RADAR);
-    Get_bit_resource(rDB, "verticalHUDLine", &instruments, SHOW_HUD_VERTICAL);
-    Get_bit_resource(rDB, "horizontalHUDLine", &instruments, SHOW_HUD_HORIZONTAL);
-    Get_bit_resource(rDB, "fuelMeter", &instruments, SHOW_FUEL_METER);
-    Get_bit_resource(rDB, "fuelGauge", &instruments, SHOW_FUEL_GAUGE);
-    Get_bit_resource(rDB, "turnSpeedMeter", &instruments, SHOW_TURNSPEED_METER);
-    Get_bit_resource(rDB, "powerMeter", &instruments, SHOW_POWER_METER);
-    Get_bit_resource(rDB, "packetSizeMeter", &instruments, SHOW_PACKET_SIZE_METER);
-    Get_bit_resource(rDB, "packetLossMeter", &instruments, SHOW_PACKET_LOSS_METER);
-    Get_bit_resource(rDB, "packetDropMeter", &instruments, SHOW_PACKET_DROP_METER);
-    Get_bit_resource(rDB, "packetLagMeter", &instruments, SHOW_PACKET_LAG_METER);
-    Get_bit_resource(rDB, "slidingRadar", &instruments, SHOW_SLIDING_RADAR);
-    Get_bit_resource(rDB, "showItems", &instruments, SHOW_ITEMS);
-    Get_bit_resource(rDB, "clock", &instruments, SHOW_CLOCK);
-    Get_bit_resource(rDB, "clockAMPM", &instruments, SHOW_CLOCK_AMPM_FORMAT);
-    Get_bit_resource(rDB, "outlineWorld", &instruments, SHOW_OUTLINE_WORLD);
-    Get_bit_resource(rDB, "filledWorld", &instruments, SHOW_FILLED_WORLD);
-    Get_bit_resource(rDB, "texturedWalls", &instruments, SHOW_TEXTURED_WALLS);
-    Get_bit_resource(rDB, "showDecor", &instruments, SHOW_DECOR);
-    Get_bit_resource(rDB, "outlineDecor", &instruments, SHOW_OUTLINE_DECOR);
-    Get_bit_resource(rDB, "filledDecor", &instruments, SHOW_FILLED_DECOR);
-    Get_bit_resource(rDB, "texturedDecor", &instruments, SHOW_TEXTURED_DECOR);
-    Get_bit_resource(rDB, "texturedBalls", &instruments, SHOW_TEXTURED_BALLS);
-    Get_bit_resource(rDB, "reverseScroll", &instruments, SHOW_REVERSE_SCROLL);
+    // instruments = 0;
+    memset(&instruments, 0, sizeof(instruments_t));
+    Get_bool_resource(rDB, "showShipName", &instruments.showShipName);
+    Get_bool_resource(rDB, "showMineName", &instruments.showMineName);
+    Get_bool_resource(rDB, "showMessages", &instruments.showMessages);
+    Get_bool_resource(rDB, "showHUD", &instruments.showHUD);
+    Get_bool_resource(rDB, "showHUDRadar", &instruments.showHUDRadar);
+    Get_bool_resource(rDB, "verticalHUDLine", &instruments.verticalHUDLine);
+    Get_bool_resource(rDB, "horizontalHUDLine", &instruments.horizontalHUDLine);
+    Get_bool_resource(rDB, "fuelMeter", &instruments.fuelMeter);
+    Get_bool_resource(rDB, "fuelGauge", &instruments.fuelGauge);
+    Get_bool_resource(rDB, "turnSpeedMeter", &instruments.turnSpeedMeter);
+    Get_bool_resource(rDB, "powerMeter", &instruments.powerMeter);
+    Get_bool_resource(rDB, "packetSizeMeter", &instruments.packetSizeMeter);
+    Get_bool_resource(rDB, "packetLossMeter", &instruments.packetLossMeter);
+    Get_bool_resource(rDB, "packetDropMeter", &instruments.packetDropMeter);
+    Get_bool_resource(rDB, "packetLagMeter", &instruments.packetLagMeter);
+    Get_bool_resource(rDB, "slidingRadar", &instruments.slidingRadar);
+    Get_bool_resource(rDB, "showItems", &instruments.showItems);
+    Get_bool_resource(rDB, "clock", &instruments.clock);
+    Get_bool_resource(rDB, "clockAMPM", &instruments.clockAMPM);
+    Get_bool_resource(rDB, "outlineWorld", &instruments.outlineWorld);
+    Get_bool_resource(rDB, "filledWorld", &instruments.filledWorld);
+    Get_bool_resource(rDB, "texturedWalls", &instruments.texturedWalls);
+    Get_bool_resource(rDB, "showDecor", &instruments.showDecor);
+    Get_bool_resource(rDB, "outlineDecor", &instruments.outlineDecor);
+    Get_bool_resource(rDB, "filledDecor", &instruments.filledDecor);
+    Get_bool_resource(rDB, "texturedDecor", &instruments.texturedDecor);
 
     Get_bool_resource(rDB, "texturedObjects", &blockBitmaps);
     Get_bool_resource(rDB, "pointerControl", &initialPointerControl);
@@ -2471,37 +2458,12 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
 void defaultCleanup(void)
 {
-    if (keyDefs)
-    {
-        free(keyDefs);
-        keyDefs = NULL;
-    }
-    if (texturePath)
-    {
-        free(texturePath);
-        texturePath = NULL;
-    }
-    if (wallTextureFile)
-    {
-        free(wallTextureFile);
-        wallTextureFile = NULL;
-    }
-    if (decorTextureFile)
-    {
-        free(decorTextureFile);
-        decorTextureFile = NULL;
-    }
-    if (ballTextureFile)
-    {
-        free(ballTextureFile);
-        ballTextureFile = NULL;
-    }
-    if (shipShape)
-    {
-        free(shipShape);
-        shipShape = NULL;
-    }
-
+    XFREE(keyDefs);
+    XFREE(texturePath);
+    XFREE(wallTextureFile);
+    XFREE(decorTextureFile);
+    XFREE(ballTextureFile);
+    XFREE(shipShape);
 #ifdef SOUND
     audioCleanup();
 #endif /* SOUND */

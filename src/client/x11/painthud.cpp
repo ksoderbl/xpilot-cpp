@@ -185,23 +185,23 @@ void Paint_score_objects(void)
 
 void Paint_meters(void)
 {
-    if (BIT(instruments, SHOW_FUEL_METER))
+    if (instruments.fuelMeter)
         Paint_meter(-10, 20, "Fuel", (int)fuelSum, (int)fuelMax);
-    if (BIT(instruments, SHOW_POWER_METER) || control_count)
+    if (instruments.powerMeter || control_count)
         Paint_meter(-10, 40, "Power", (int)displayedPower, (int)MAX_PLAYER_POWER);
-    if (BIT(instruments, SHOW_TURNSPEED_METER) || control_count)
+    if (instruments.turnSpeedMeter || control_count)
         Paint_meter(-10, 60, "Turnspeed",
                     (int)displayedTurnspeed, (int)MAX_PLAYER_TURNSPEED);
     if (control_count > 0)
         control_count--;
-    if (BIT(instruments, SHOW_PACKET_SIZE_METER))
+    if (instruments.packetSizeMeter)
         Paint_meter(-10, 80, "Packet",
                     (packet_size >= 4096) ? 4096 : packet_size, 4096);
-    if (BIT(instruments, SHOW_PACKET_LOSS_METER))
+    if (instruments.packetLossMeter)
         Paint_meter(-10, 100, "Loss", packet_loss, FPS);
-    if (BIT(instruments, SHOW_PACKET_DROP_METER))
+    if (instruments.packetDropMeter)
         Paint_meter(-10, 120, "Drop", packet_drop, FPS);
-    if (BIT(instruments, SHOW_PACKET_LAG_METER))
+    if (instruments.packetLagMeter)
         Paint_meter(-10, 140, "Lag", MIN(packet_lag, 1 * FPS), 1 * FPS);
 
     if (thrusttime >= 0 && thrusttimemax > 0)
@@ -426,10 +426,10 @@ void Paint_HUD(void)
                     (int)(ext_view_height / 2 + ptr_move_fact * vel.y));
     }
 
-    if (BIT(instruments, SHOW_HUD_RADAR))
+    if (instruments.showHUDRadar)
         Paint_hudradar();
 
-    if (!BIT(instruments, SHOW_HUD_INSTRUMENTS))
+    if (!instruments.showHUD)
     {
         return;
     }
@@ -446,7 +446,7 @@ void Paint_HUD(void)
     gcv.line_style = LineOnOffDash;
     XChangeGC(dpy, gameGC, GCLineStyle | GCDashOffset, &gcv);
 
-    if (BIT(instruments, SHOW_HUD_HORIZONTAL))
+    if (instruments.horizontalHUDLine)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(hud_pos_x - HUD_SIZE), WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET),
@@ -455,7 +455,7 @@ void Paint_HUD(void)
                     WINSCALE(hud_pos_x - HUD_SIZE), WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET),
                     WINSCALE(hud_pos_x + HUD_SIZE), WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET));
     }
-    if (BIT(instruments, SHOW_HUD_VERTICAL))
+    if (instruments.verticalHUDLine)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(hud_pos_x - HUD_SIZE + HUD_OFFSET), WINSCALE(hud_pos_y - HUD_SIZE),
@@ -485,7 +485,7 @@ void Paint_HUD(void)
         if (i == ITEM_FUEL)
             continue;
 
-        if (BIT(instruments, SHOW_ITEMS))
+        if (instruments.showItems)
         {
             lastNumItems[i] = num;
             if (num <= 0)
@@ -597,7 +597,7 @@ void Paint_HUD(void)
         {
             if (j == 0 &&
                 sobj->hud_msg_width > WINSCALE(2 * HUD_SIZE - HUD_OFFSET * 2) &&
-                (did_fuel || BIT(instruments, SHOW_HUD_VERTICAL)))
+                (did_fuel || instruments.verticalHUDLine))
                 ++j;
             rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(hud_pos_x) - sobj->hud_msg_width / 2,
@@ -639,7 +639,7 @@ void Paint_HUD(void)
     }
 
     /* Fuel gauge, must be last */
-    if (BIT(instruments, SHOW_FUEL_GAUGE) == 0 || !((fuelCount) || (fuelSum < fuelLevel3 && ((fuelSum < fuelLevel1 && (loops % 4) < 2) || (fuelSum < fuelLevel2 && fuelSum > fuelLevel1 && (loops % 8) < 4) || (fuelSum > fuelLevel2)))))
+    if (instruments.fuelGauge == 0 || !((fuelCount) || (fuelSum < fuelLevel3 && ((fuelSum < fuelLevel1 && (loops % 4) < 2) || (fuelSum < fuelLevel2 && fuelSum > fuelLevel1 && (loops % 8) < 4) || (fuelSum > fuelLevel2)))))
         return;
 
     rd.drawRectangle(dpy, drawPixmap, gameGC,
@@ -681,9 +681,7 @@ void Paint_messages(void)
         last_msg_index--; /* make it an index */
     }
 
-    for (i = (BIT(instruments, SHOW_REVERSE_SCROLL) ? 2 * maxMessages - 1 : 0);
-         (BIT(instruments, SHOW_REVERSE_SCROLL) ? i >= 0 : i < 2 * maxMessages);
-         i += (BIT(instruments, SHOW_REVERSE_SCROLL) ? -1 : 1))
+    for (i = 0; i < 2 * maxMessages; i++)
     {
         if (i < maxMessages)
         {
@@ -718,7 +716,7 @@ void Paint_messages(void)
         }
         else
         {
-            if (!BIT(instruments, SHOW_MESSAGES))
+            if (!instruments.showMessages)
             {
                 continue;
             }

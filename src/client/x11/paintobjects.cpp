@@ -256,7 +256,7 @@ static void Paint_mines(void)
                  * We do not know who is safe for mines sent with id==0
                  */
                 name = NULL;
-                if (BIT(instruments, SHOW_MINE_NAME))
+                if (instruments.showMineName)
                 {
                     if (mine_ptr[i].id != 0)
                     {

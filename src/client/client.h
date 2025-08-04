@@ -28,34 +28,66 @@
 #include "item.h"
 #include "types.h"
 
-#define SHOW_HUD_INSTRUMENTS (1L << 0)
-#define SHOW_HUD_VERTICAL (1L << 1)
-#define SHOW_HUD_HORIZONTAL (1L << 2)
-#define SHOW_FUEL_METER (1L << 3)
-#define SHOW_FUEL_GAUGE (1L << 4)
-#define SHOW_TURNSPEED_METER (1L << 5)
-#define SHOW_POWER_METER (1L << 6)
-#define SHOW_SHIP_NAME (1L << 7)
-#define SHOW_SLIDING_RADAR (1L << 8)
-#define SHOW_PACKET_SIZE_METER (1L << 10)
-#define SHOW_PACKET_LOSS_METER (1L << 11)
-#define SHOW_PACKET_DROP_METER (1L << 12)
-#define SHOW_CLOCK (1L << 13)
-#define SHOW_ITEMS (1L << 14)
-#define SHOW_MESSAGES (1L << 15)
-#define SHOW_MINE_NAME (1L << 16)
-#define SHOW_OUTLINE_WORLD (1L << 17)
-#define SHOW_FILLED_WORLD (1L << 18)
-#define SHOW_TEXTURED_WALLS (1L << 19)
-#define SHOW_DECOR (1L << 20)
-#define SHOW_OUTLINE_DECOR (1L << 21)
-#define SHOW_FILLED_DECOR (1L << 22)
-#define SHOW_TEXTURED_DECOR (1L << 23)
-#define SHOW_CLOCK_AMPM_FORMAT (1L << 24)
-#define SHOW_TEXTURED_BALLS (1L << 25)
-#define SHOW_REVERSE_SCROLL (1L << 26)
-#define SHOW_HUD_RADAR (1L << 27)
-#define SHOW_PACKET_LAG_METER (1L << 28)
+typedef struct
+{
+    bool talking;        /* Some talk window is open? */
+    bool pointerControl; /* Pointer (mouse) control is on? */
+    bool restorePointerControl;
+    /* Pointer control should be restored later? */
+    bool quitMode; /* Client is in quit mode? */
+    double clientLag;
+    double scaleFactor;
+    double scale;
+    float fscale;
+    double altScaleFactor;
+} client_data_t;
+
+typedef struct
+{
+    bool blockProtocol;
+    bool clientRanker;
+    bool clock;
+    bool clockAMPM;
+    bool filledDecor;
+    bool filledWorld;
+    bool fuelGauge;
+    bool fuelMeter;
+    bool horizontalHUDLine;
+    bool outlineDecor;
+    bool outlineWorld;
+    bool packetDropMeter;
+    bool packetLagMeter;
+    bool packetLossMeter;
+    bool packetSizeMeter;
+    bool powerMeter;
+    bool showDecor;
+    bool showHUD;
+    bool showHUDRadar;
+    bool showItems;
+    bool showLivesByShip;
+    bool showMessages;
+    bool showMineName;
+    bool showMyShipShape;
+    bool showNastyShots;
+    bool showShipName;
+    bool showShipShapes;
+    bool showShipShapesHack;
+    bool slidingRadar;
+    bool texturedDecor;
+    bool texturedWalls;
+    bool turnSpeedMeter;
+    bool verticalHUDLine;
+} instruments_t;
+
+typedef struct
+{
+    bool help;
+    bool version;
+    bool text;
+    bool list_servers;               /* list */
+    bool auto_connect;               /* join */
+    char shutdown_reason[MAX_CHARS]; /* shutdown reason */
+} xp_args_t;
 
 #define PACKET_LOSS 0
 #define PACKET_DROP 1
@@ -226,16 +258,16 @@ extern DFLOAT displayedTurnresistance; /* What the server is sending us */
 extern DFLOAT spark_prob;              /* Sparkling effect configurable */
 extern int charsPerSecond;             /* Message output speed (config) */
 
-extern DFLOAT hud_move_fact; /* scale the hud-movement (speed) */
-extern DFLOAT ptr_move_fact; /* scale the speed pointer length */
-extern char mods[MAX_CHARS]; /* Current modifiers in effect */
-extern long instruments;     /* Instruments on screen (bitmask) */
-extern int packet_size;      /* Current frame update packet size */
-extern int packet_loss;      /* lost packets per second */
-extern int packet_drop;      /* dropped packets per second */
-extern int packet_lag;       /* approximate lag in frames */
-extern char *packet_measure; /* packet measurement in a second */
-extern long packet_loop;     /* start of measurement */
+extern DFLOAT hud_move_fact;      /* scale the hud-movement (speed) */
+extern DFLOAT ptr_move_fact;      /* scale the speed pointer length */
+extern char mods[MAX_CHARS];      /* Current modifiers in effect */
+extern instruments_t instruments; /* Instruments on screen */
+extern int packet_size;           /* Current frame update packet size */
+extern int packet_loss;           /* lost packets per second */
+extern int packet_drop;           /* dropped packets per second */
+extern int packet_lag;            /* approximate lag in frames */
+extern char *packet_measure;      /* packet measurement in a second */
+extern long packet_loop;          /* start of measurement */
 
 extern bool showRealName;          /* Show realname instead of nickname */
 extern char name[MAX_CHARS];       /* Nick-name of player */

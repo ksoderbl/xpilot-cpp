@@ -186,7 +186,7 @@ void Add_message(const char *message)
     bool show_reverse_scroll = false;
     bool scrolling = false; /* really moving */
 
-    show_reverse_scroll = BIT(instruments, SHOW_REVERSE_SCROLL);
+    show_reverse_scroll = false;
 
     len = strlen(message);
     if (message[len - 1] == ']' || strncmp(message, " <", 2) == 0)
@@ -405,12 +405,6 @@ void Print_messages_to_stdout(void)
     if (!selectionAndHistory)
         return;
 
-    if (BIT(instruments, SHOW_REVERSE_SCROLL)) // TODO: REMOVE
-    {
-        direction = -1;
-        offset = maxMessages - 1;
-    }
-    else
     {
         direction = 1;
         offset = 0;

@@ -167,7 +167,7 @@ void Paint_world(void)
     int wallTileDoit = false;
     XPoint points[5];
 
-    //     if (BIT(instruments, SHOW_TEXTURED_WALLS)) {
+    //     if (instruments.texturedWalls) {
     //         if (!wallTileReady) {
     //             wallTile = Texture_wall();
     //             wallTileReady = (wallTile == None) ? -1 : 1;
@@ -260,7 +260,8 @@ void Paint_world(void)
                 {
 
                 case SETUP_FILLED_NO_DRAW:
-                    if (BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS) && fill_top_left == -1)
+                    // if (BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS) && fill_top_left == -1)
+                    if ((instruments.filledWorld || instruments.texturedWalls) && fill_top_left == -1)
                     {
                         fill_top_left = fill_bottom_left = x;
                     }
@@ -350,7 +351,7 @@ void Paint_world(void)
                 case SETUP_DECOR_RU:
                 case SETUP_DECOR_LD:
                 case SETUP_DECOR_LU:
-                    if (BIT(instruments, SHOW_DECOR))
+                    if (instruments.showDecor)
                         Handle_vdecor(x, y, xi, yi, type);
                     break;
 
@@ -404,7 +405,8 @@ void Paint_world(void)
             }
             else
             {
-                if (!BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS))
+                // if (!BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS))
+                if (!(instruments.filledWorld || instruments.texturedWalls))
                 {
                     Gui_paint_walls(x, y, type, xi, yi);
 

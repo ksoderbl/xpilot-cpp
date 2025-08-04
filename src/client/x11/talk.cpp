@@ -1662,11 +1662,6 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
         current_line = TALK_MSG_SCREENPOS(last_msg_index, selection.draw.y1);
 
         /* how to walk through the messages */
-        if (BIT(instruments, SHOW_REVERSE_SCROLL))
-        {
-            next = -1;
-        }
-        else
         {
             next = +1;
         }
@@ -1739,17 +1734,5 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
     else
     {
         return; /* neither ButtonPress nor ButtonRelease ? */
-    }
-}
-
-void Talk_reverse_cut(void)
-{
-    /*
-     * think twice: it can't work (yet) without hacking all the
-     * c&p stuff even more. thus only unemphasize:
-     */
-    if (selectionAndHistory && selection.draw.state == SEL_EMPHASIZED)
-    {
-        selection.draw.state = SEL_SELECTED;
     }
 }

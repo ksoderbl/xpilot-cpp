@@ -72,11 +72,11 @@ void Gui_paint_ball(int x, int y)
     {
         static Pixmap ballTile = None;
 
-        // if (BIT(instruments, SHOW_TEXTURED_BALLS)) {
+        // if (instruments.texturedBalls) {
         //     if (ballTile == None) {
         //         ballTile = Texture_ball();
         //         if (ballTile == None) {
-        //             CLR_BIT(instruments, SHOW_TEXTURED_BALLS);
+        //             CLR_instruments.texturedBalls;
         //         }
         //     }
         //     if (ballTile != None) {
@@ -802,7 +802,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
      * Determine if the name of the player should be drawn below
      * his/her ship.
      */
-    if (BIT(instruments, SHOW_SHIP_NAME) && self != NULL && self->id != id && other != NULL)
+    if (instruments.showShipName && self != NULL && self->id != id && other != NULL)
     {
 
         Gui_paint_ship_name(x, y, other);

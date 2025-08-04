@@ -432,13 +432,13 @@ bool Key_press_talk(keys_t key)
 
 bool Key_press_show_items(keys_t key)
 {
-    TOGGLE_BIT(instruments, SHOW_ITEMS);
+    instruments.showItems = !instruments.showItems;
     return false; /* server doesn't need to know */
 }
 
 bool Key_press_show_messages(keys_t key)
 {
-    TOGGLE_BIT(instruments, SHOW_MESSAGES);
+    instruments.showMessages = !instruments.showMessages;
     return false; /* server doesn't need to know */
 }
 
@@ -470,16 +470,6 @@ bool Key_press_msgs_stdout(keys_t key)
 
 bool Key_press_select_lose_item(keys_t key)
 {
-    if (version < 0x3400)
-    {
-        static int before;
-        if (!before++)
-        {
-            errno = 0;
-            xperror("Servers less than 3.4.0 dont know how to drop items");
-        }
-        return false;
-    }
     if (lose_item_active == 1)
     {
         lose_item_active = 2;

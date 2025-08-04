@@ -37,6 +37,7 @@
 #include <sys/time.h>
 
 #include "item.h"
+#include "commonmacros.h"
 #include "strlcpy.h"
 
 #include "xpconfig.h"
@@ -79,6 +80,7 @@ typedef struct
 setup_t *Setup;
 int receive_window_size;
 long last_loops;
+bool packetMeasurement;
 
 /*
  * Local variables.
@@ -921,6 +923,7 @@ int Net_start(void)
         break;
     }
     packet_measure = NULL;
+    packetMeasurement = true;
     Net_init_measurement();
     Net_init_lag_measurement();
     errno = 0;
@@ -932,26 +935,27 @@ void Net_init_measurement(void)
     packet_loss = 0;
     packet_drop = 0;
     packet_loop = 0;
-    if (BIT(instruments, SHOW_PACKET_LOSS_METER | SHOW_PACKET_DROP_METER) != 0)
+    if (packetMeasurement)
     {
         if (packet_measure == NULL)
         {
-            if ((packet_measure = (char *)malloc(FPS)) == NULL)
+            /*
+             * Server FPS can change so we had better allocate enough.
+             */
+            if ((packet_measure = XMALLOC(char, MAX_SUPPORTED_FPS)) == NULL)
             {
                 xperror("No memory for packet measurement");
-                CLR_BIT(instruments,
-                        SHOW_PACKET_LOSS_METER | SHOW_PACKET_DROP_METER);
+                packetMeasurement = false;
             }
             else
             {
-                memset(packet_measure, PACKET_DRAW, FPS);
+                memset(packet_measure, PACKET_DRAW, MAX_SUPPORTED_FPS);
             }
         }
     }
     else if (packet_measure != NULL)
     {
-        free(packet_measure);
-        packet_measure = NULL;
+        XFREE(packet_measure);
     }
 }
 

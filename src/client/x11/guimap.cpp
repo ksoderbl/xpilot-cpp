@@ -348,7 +348,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             return;
         }
         /* only draw base teams if ship naming is on, SKS 25/05/94 */
-        if (!BIT(instruments, SHOW_SHIP_NAME) ||
+        if (!instruments.showShipName ||
             Base_info_by_pos(xi, yi, &id, &team) == -1)
             return;
 
@@ -453,7 +453,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             return;
         }
         /* only draw base teams if ship naming is on, SKS 25/05/94 */
-        if (!BIT(instruments, SHOW_SHIP_NAME) ||
+        if (!instruments.showShipName ||
             Base_info_by_pos(xi, yi, &id, &team) == -1)
             return;
 
@@ -545,7 +545,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
         decor[SETUP_DECOR_LD] = DECOR_LEFT | DECOR_DOWN | DECOR_CLOSED | DECOR_BELOW;
     }
 
-    //     if (BIT(instruments, SHOW_TEXTURED_DECOR)) {
+    //     if (instruments.texturedDecor) {
     //         if (!decorTileReady) {
     //             decorTile = Texture_decor();
     //             decorTileReady = (decorTile == None) ? -1 : 1;
@@ -560,7 +560,8 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
 
     mask = decor[type];
 
-    if (!BIT(instruments, SHOW_FILLED_DECOR | SHOW_TEXTURED_DECOR))
+    // if (!BIT(instruments, SHOW_FILLED_DECOR | SHOW_TEXTURED_DECOR))
+    if (!(instruments.filledDecor || instruments.texturedDecor))
     {
         if (mask & DECOR_LEFT)
         {
@@ -592,9 +593,9 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
         }
         if (mask & DECOR_RIGHT)
         {
-            if (!BIT(instruments, SHOW_OUTLINE_DECOR) || ((xi == Setup->x - 1)
-                                                              ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[yi]] & DECOR_LEFT))
-                                                              : !(decor[Setup->map_data[(xi + 1) * Setup->y + yi]] & DECOR_LEFT)))
+            if (!instruments.outlineDecor || ((xi == Setup->x - 1)
+                                                  ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[yi]] & DECOR_LEFT))
+                                                  : !(decor[Setup->map_data[(xi + 1) * Setup->y + yi]] & DECOR_LEFT)))
             {
                 Segment_add(decorColor,
                             X(x + BLOCK_SZ),
@@ -605,9 +606,9 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
         }
         if (mask & DECOR_UP)
         {
-            if (!BIT(instruments, SHOW_OUTLINE_DECOR) || ((yi == Setup->y - 1)
-                                                              ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[xi * Setup->y]] & DECOR_DOWN))
-                                                              : !(decor[Setup->map_data[xi * Setup->y + (yi + 1)]] & DECOR_DOWN)))
+            if (!instruments.outlineDecor || ((yi == Setup->y - 1)
+                                                  ? (!BIT(Setup->mode, WRAP_PLAY) || !(decor[Setup->map_data[xi * Setup->y]] & DECOR_DOWN))
+                                                  : !(decor[Setup->map_data[xi * Setup->y + (yi + 1)]] & DECOR_DOWN)))
             {
                 Segment_add(decorColor,
                             X(x),
