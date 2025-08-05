@@ -28,7 +28,6 @@ libxpclient_a_SOURCES = \
     query.cpp \
     talk.h \
     talkmacros.cpp \
-    textinterface.cpp \
-    xpmread.h
+    textinterface.cpp
 
 SUBDIRS = . items x11

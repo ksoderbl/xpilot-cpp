@@ -48,7 +48,6 @@
 #include "setup.h"
 #include "record.h"
 #include "recordfmt.h"
-#include "xpmread.h"
 #include "xinit.h"
 
 /*
@@ -226,77 +225,77 @@ static int RGetPixelIndex(unsigned long pixel)
     return WHITE;
 }
 
-static void RWriteTile(Pixmap tile)
-{
-    typedef struct tile_list
-    {
-        struct tile_list *next;
-        Pixmap tile;
-        unsigned char tile_id;
-    } tile_list_t;
-    static tile_list_t *list = NULL;
-    tile_list_t *lptr;
-    static int next_tile_id = 1;
-    unsigned x, y;
-    int i;
-    XImage *img;
+// static void RWriteTile(Pixmap tile)
+// {
+//     typedef struct tile_list
+//     {
+//         struct tile_list *next;
+//         Pixmap tile;
+//         unsigned char tile_id;
+//     } tile_list_t;
+//     static tile_list_t *list = NULL;
+//     tile_list_t *lptr;
+//     static int next_tile_id = 1;
+//     unsigned x, y;
+//     int i;
+//     XImage *img;
 
-    for (lptr = list; lptr != NULL; lptr = lptr->next)
-    {
-        if (lptr->tile == tile)
-        {
-            /* tile already sent before. */
-            RWriteByte(RC_TILE);
-            RWriteByte(lptr->tile_id);
-            return;
-        }
-    }
+//     for (lptr = list; lptr != NULL; lptr = lptr->next)
+//     {
+//         if (lptr->tile == tile)
+//         {
+//             /* tile already sent before. */
+//             RWriteByte(RC_TILE);
+//             RWriteByte(lptr->tile_id);
+//             return;
+//         }
+//     }
 
-    /* a first time tile. */
+//     /* a first time tile. */
 
-    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
-    {
-        xperror("Not enough memory");
-        RWriteByte(RC_TILE);
-        RWriteByte(0);
-        return;
-    }
-    lptr->next = list;
-    lptr->tile = tile;
-    lptr->tile_id = next_tile_id;
-    list = lptr;
+//     if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
+//     {
+//         xperror("Not enough memory");
+//         RWriteByte(RC_TILE);
+//         RWriteByte(0);
+//         return;
+//     }
+//     lptr->next = list;
+//     lptr->tile = tile;
+//     lptr->tile_id = next_tile_id;
+//     list = lptr;
 
-    if (!(img = xpm_image_from_pixmap(tile)))
-    {
-        RWriteByte(RC_TILE);
-        RWriteByte(0);
-        lptr->tile_id = 0;
-        return;
-    }
-    RWriteByte(RC_NEW_TILE);
-    RWriteByte(lptr->tile_id);
-    RWriteUShort(img->width);
-    RWriteUShort(img->height);
-    for (y = 0; y < img->height; y++)
-    {
-        for (x = 0; x < img->width; x++)
-        {
-            unsigned long pixel = XGetPixel(img, x, y);
-            for (i = 0; i < maxColors - 1; i++)
-            {
-                if (pixel == colors[i].pixel)
-                {
-                    break;
-                }
-            }
-            RWriteByte(i);
-        }
-    }
+//     if (!(img = xpm_image_from_pixmap(tile)))
+//     {
+//         RWriteByte(RC_TILE);
+//         RWriteByte(0);
+//         lptr->tile_id = 0;
+//         return;
+//     }
+//     RWriteByte(RC_NEW_TILE);
+//     RWriteByte(lptr->tile_id);
+//     RWriteUShort(img->width);
+//     RWriteUShort(img->height);
+//     for (y = 0; y < img->height; y++)
+//     {
+//         for (x = 0; x < img->width; x++)
+//         {
+//             unsigned long pixel = XGetPixel(img, x, y);
+//             for (i = 0; i < maxColors - 1; i++)
+//             {
+//                 if (pixel == colors[i].pixel)
+//                 {
+//                     break;
+//                 }
+//             }
+//             RWriteByte(i);
+//         }
+//     }
 
-    XDestroyImage(img);
+//     XDestroyImage(img);
 
-    next_tile_id++;
-}
+//     next_tile_id++;
+// }
 
 static void RWriteGC(GC gc, unsigned long req_mask)
 {
@@ -530,10 +529,10 @@ static void RWriteGC(GC gc, unsigned long req_mask)
             RWriteLong(values.ts_x_origin);
         if (write_mask & GCTileStipYOrigin)
             RWriteLong(values.ts_y_origin);
-        if (write_mask & GCTile)
-        {
-            RWriteTile(values.tile);
-        }
+        // if (write_mask & GCTile)
+        // {
+        //     RWriteTile(values.tile);
+        // }
     }
 }
 

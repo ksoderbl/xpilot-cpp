@@ -520,9 +520,6 @@ int Colors_init(void)
         Fill_colormap();
     }
 
-    /*
-     * Initialize the double buffering routine.
-     */
     {
         dbuf_state = start_dbuff(dpy,
                                  (colormap != 0)

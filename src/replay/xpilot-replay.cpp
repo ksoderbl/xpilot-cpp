@@ -1,5 +1,4 @@
-/* $Id: xpilot-replay.c,v 5.1 2001/04/24 13:51:06 bertg Exp $
- *
+/*
  * XPilot-Replay, playback an XPilot session.  Copyright (C) 1994-98 by
  *
  *      Bjørn Stabell
@@ -23,15 +22,15 @@
  */
 /*
  * The scaling and gamma correction subroutines are adaptations from pbmplus:
-**
-** Copyright (C) 1989, 1991 by Jef Poskanzer.
-**
-** Permission to use, copy, modify, and distribute this software and its
-** documentation for any purpose and without fee is hereby granted, provided
-** that the above copyright notice appear in all copies and that both that
-** copyright notice and this permission notice appear in supporting
-** documentation.  This software is provided "as is" without express or
-** implied warranty.
+ **
+ ** Copyright (C) 1989, 1991 by Jef Poskanzer.
+ **
+ ** Permission to use, copy, modify, and distribute this software and its
+ ** documentation for any purpose and without fee is hereby granted, provided
+ ** that the above copyright notice appear in all copies and that both that
+ ** copyright notice and this permission notice appear in supporting
+ ** documentation.  This software is provided "as is" without express or
+ ** implied warranty.
  */
 
 #include <unistd.h>
@@ -51,8 +50,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #if !defined(select) && defined(__linux__)
-#define select(N, R, W, E, T)   select((N),             \
-      (fd_set*)(R), (fd_set*)(W), (fd_set*)(E), (T))
+#define select(N, R, W, E, T) select((N), \
+                                     (fd_set *)(R), (fd_set *)(W), (fd_set *)(E), (T))
 #endif
 
 #include "recordfmt.h"
@@ -91,198 +90,219 @@
 #include "tools/rewind.xbm"
 #include "tools/stop.xbm"
 
-struct rGC {
-    struct rGC                *next;                /* linked list */
-    long                mask;                /* XGCValues mask */
-    unsigned long        foreground;
-    unsigned long        background;
-    unsigned char        line_width;
-    unsigned char        line_style;
-    unsigned char        dash_offset;
-    unsigned char        function;
-    unsigned char        fill_style;
-    unsigned char        num_dashes;
-    char                *dash_list;
-    int                        ts_x_origin;
-    int                        ts_y_origin;
-    Pixmap                tile;
+struct rGC
+{
+    struct rGC *next; /* linked list */
+    long mask;        /* XGCValues mask */
+    unsigned long foreground;
+    unsigned long background;
+    unsigned char line_width;
+    unsigned char line_style;
+    unsigned char dash_offset;
+    unsigned char function;
+    unsigned char fill_style;
+    unsigned char num_dashes;
+    char *dash_list;
+    int ts_x_origin;
+    int ts_y_origin;
+    Pixmap tile;
 };
 
-struct rArc {
-    short                x;
-    short                y;
-    unsigned short        width;
-    unsigned short        height;
-    short                angle1;
-    short                angle2;
+struct rArc
+{
+    short x;
+    short y;
+    unsigned short width;
+    unsigned short height;
+    short angle1;
+    short angle2;
 };
 
-struct rLines {
-    XPoint                *points;
-    unsigned short        npoints;
-    short                mode;
+struct rLines
+{
+    XPoint *points;
+    unsigned short npoints;
+    short mode;
 };
 
-struct rLine {
-    short                x1;
-    short                y1;
-    short                x2;
-    short                y2;
+struct rLine
+{
+    short x1;
+    short y1;
+    short x2;
+    short y2;
 };
 
-struct rString {
-    short                x;
-    short                y;
-    unsigned char        font;
-    short                length;
-    char                *string;
+struct rString
+{
+    short x;
+    short y;
+    unsigned char font;
+    short length;
+    char *string;
 };
 
-struct rPolygon {
-    XPoint                *points;
-    unsigned short        npoints;
-    unsigned char        shape;
-    unsigned char        mode;
+struct rPolygon
+{
+    XPoint *points;
+    unsigned short npoints;
+    unsigned char shape;
+    unsigned char mode;
 };
 
-struct rSymbol {
-    unsigned char        type;
-    short                x;
-    short                y;
+struct rSymbol
+{
+    unsigned char type;
+    short x;
+    short y;
 };
 
-struct rRectangle {
-    short                x;
-    short                y;
-    unsigned short        width;
-    unsigned short        height;
+struct rRectangle
+{
+    short x;
+    short y;
+    unsigned short width;
+    unsigned short height;
 };
 
-struct rRectangles {
-    unsigned short        nrectangles;
-    XRectangle                *rectangles;
+struct rRectangles
+{
+    unsigned short nrectangles;
+    XRectangle *rectangles;
 };
 
-struct rArcs {
-    unsigned short        narcs;
-    XArc                *arcs;
+struct rArcs
+{
+    unsigned short narcs;
+    XArc *arcs;
 };
 
-struct rSegments {
-    unsigned short        nsegments;
-    XSegment                *segments;
+struct rSegments
+{
+    unsigned short nsegments;
+    XSegment *segments;
 };
 
-struct rDamage {
-    unsigned char        damaged;
+struct rDamage
+{
+    unsigned char damaged;
 };
 
-union shapep {
-    struct rArc                arc;
-    struct rLines        lines;
-    struct rLine        line;
-    struct rString        string;
-    struct rPolygon        polygon;
-    struct rSymbol        symbol;
-    struct rRectangle        rectangle;
-    struct rRectangles        rectangles;
-    struct rArcs        arcs;
-    struct rSegments        segments;
-    struct rDamage        damage;
+union shapep
+{
+    struct rArc arc;
+    struct rLines lines;
+    struct rLine line;
+    struct rString string;
+    struct rPolygon polygon;
+    struct rSymbol symbol;
+    struct rRectangle rectangle;
+    struct rRectangles rectangles;
+    struct rArcs arcs;
+    struct rSegments segments;
+    struct rDamage damage;
 };
 
 /*
  * Shape holds all info for one X windows drawing call.
  */
-struct shape {
-    struct shape        *next;                /* to next shape on frame list */
-    char                type;                /* which drawing call */
-    struct rGC                *gc;                /* Graphics Context */
-    union shapep        shape;                /* actual shape data */
+struct shape
+{
+    struct shape *next; /* to next shape on frame list */
+    char type;          /* which drawing call */
+    struct rGC *gc;     /* Graphics Context */
+    union shapep shape; /* actual shape data */
 };
 
-struct frame {
-    struct frame        *next;                /* to next on frame list */
-    struct frame        *prev;                /* to previous on frame list */
-    struct frame        *older;                /* to next on LRU list */
-    struct frame        *newer;                /* to previous on LRU list */
-    long                filepos;        /* position in record file */
-    unsigned short        width;                /* width of view window */
-    unsigned short        height;                /* height of view window */
-    struct shape        *shapes;        /* head of shape list */
-    int                        number;                /* frame sequence number */
+struct frame
+{
+    struct frame *next;    /* to next on frame list */
+    struct frame *prev;    /* to previous on frame list */
+    struct frame *older;   /* to next on LRU list */
+    struct frame *newer;   /* to previous on LRU list */
+    long filepos;          /* position in record file */
+    unsigned short width;  /* width of view window */
+    unsigned short height; /* height of view window */
+    struct shape *shapes;  /* head of shape list */
+    int number;            /* frame sequence number */
 };
 
-typedef struct tile_list {
-    struct tile_list        *next;
-    Pixmap                tile;
-    unsigned char        tile_id;
-    int                        flag;
+typedef struct tile_list
+{
+    struct tile_list *next;
+    Pixmap tile;
+    unsigned char tile_id;
+    int flag;
 } tile_list_t;
 
-struct errorwin {
-    Window                win;                        /* Error display window */
-    GC                        gc;                        /* GC for drawing therein */
-    XFontStruct                *font;                        /* Font to use */
-    char                message[4096];                /* Current error message */
-    int                        len;                        /* length thereof */
-    Button                but;                        /* OK button */
-    Bool                grabbed;                /* Have we grabbed the pointer ? */
+struct errorwin
+{
+    Window win;         /* Error display window */
+    GC gc;              /* GC for drawing therein */
+    XFontStruct *font;  /* Font to use */
+    char message[4096]; /* Current error message */
+    int len;            /* length thereof */
+    Button but;         /* OK button */
+    Bool grabbed;       /* Have we grabbed the pointer ? */
 };
 
-struct recordwin {
-    Window                win;                /* Error display window */
-    GC                        gc;                /* GC for drawing therein */
-    Button                mark_start_but;        /* Mark start button */
-    Button                mark_end_but;        /* Mark end button */
-    Button                recbut;                /* Record button */
-    struct errorwin        *ewin;                /* Pointer to error window */
+struct recordwin
+{
+    Window win;            /* Error display window */
+    GC gc;                 /* GC for drawing therein */
+    Button mark_start_but; /* Mark start button */
+    Button mark_end_but;   /* Mark end button */
+    Button recbut;         /* Record button */
+    struct errorwin *ewin; /* Pointer to error window */
 };
 
-struct xprc {
-    char                *filename;        /* name of input */
-    FILE                *fp;                /* FILE pointer for input */
-    int                        seekable;        /* only seek if file is regular */
-    int                        eof;                /* if EOF encountered */
-    int                        majorversion;        /* major version of protocol */
-    int                        minorversion;        /* minor version of protocol */
-    char                *nickname;        /* XPilot nick name of player */
-    char                *realname;        /* login name of player */
-    char                *hostname;        /* hostname of player */
-    char                *servername;        /* hostname of server */
-    int                        fps;                /* frames per second of game */
-    char                *recorddate;        /* date of game played */
-    unsigned char        maxColors;        /* number of colors used */
-    XColor                *colors;        /* pointer to color info */
-    unsigned long        *pixels;        /* pointer to my pixel values */
-    char                *gameFontName;        /* name of font used */
-    char                *msgFontName;        /* name of font used */
-    struct frame        *head;                /* to first frame */
-    struct frame        *tail;                /* to last frame read sofar */
-    struct frame        *cur;                /* current frame drawn */
-    struct frame        *newest;        /* to first frame in LRU list */
-    struct frame        *oldest;        /* to last frame in LRU list */
-    struct frame        *save_first;        /* first frame to include in saving */
-    struct frame        *save_last;        /* last frame to include in saving */
-    XFontStruct                *gameFont;        /* X font for game situations */
-    XFontStruct                *msgFont;        /* X font for messages */
-    unsigned short        view_width;        /* initial width of viewing area */
-    unsigned short        view_height;        /* initial height of viewing area */
-    Window                topview;        /* Window to display frames in */
-    GC                        gc;                /* GC to use for frame display */
-    double                scale;                /* scale reduction when saving */
-    double                gamma;                /* gamma correction when saving */
-    struct errorwin        *ewin;                /* Error display window */
-    tile_list_t                *tlist;                /* list of pixmaps */
+struct xprc
+{
+    char *filename;             /* name of input */
+    FILE *fp;                   /* FILE pointer for input */
+    int seekable;               /* only seek if file is regular */
+    int eof;                    /* if EOF encountered */
+    int majorversion;           /* major version of protocol */
+    int minorversion;           /* minor version of protocol */
+    char *nickname;             /* XPilot nick name of player */
+    char *realname;             /* login name of player */
+    char *hostname;             /* hostname of player */
+    char *servername;           /* hostname of server */
+    int fps;                    /* frames per second of game */
+    char *recorddate;           /* date of game played */
+    unsigned char maxColors;    /* number of colors used */
+    XColor *colors;             /* pointer to color info */
+    unsigned long *pixels;      /* pointer to my pixel values */
+    char *gameFontName;         /* name of font used */
+    char *msgFontName;          /* name of font used */
+    struct frame *head;         /* to first frame */
+    struct frame *tail;         /* to last frame read sofar */
+    struct frame *cur;          /* current frame drawn */
+    struct frame *newest;       /* to first frame in LRU list */
+    struct frame *oldest;       /* to last frame in LRU list */
+    struct frame *save_first;   /* first frame to include in saving */
+    struct frame *save_last;    /* last frame to include in saving */
+    XFontStruct *gameFont;      /* X font for game situations */
+    XFontStruct *msgFont;       /* X font for messages */
+    unsigned short view_width;  /* initial width of viewing area */
+    unsigned short view_height; /* initial height of viewing area */
+    Window topview;             /* Window to display frames in */
+    GC gc;                      /* GC to use for frame display */
+    double scale;               /* scale reduction when saving */
+    double gamma;               /* gamma correction when saving */
+    struct errorwin *ewin;      /* Error display window */
+    tile_list_t *tlist;         /* list of pixmaps */
 };
 
-enum LabelDataTypes {
+enum LabelDataTypes
+{
     LABEL_INTEGER,
     LABEL_STRING,
     LABEL_TIME
 };
 
-enum LabelTypes {
+enum LabelTypes
+{
     LABEL_POSITION,
     LABEL_FPS,
     LABEL_SERVER,
@@ -292,20 +312,23 @@ enum LabelTypes {
     NUM_LABELS
 };
 
-struct label {
-    int                        x, y;                /* position */
-    int                        w;                /* width (used to line up values) */
-    Bool                j;                /* True for right justification */
-    const char                *name;                /* Field name */
-    enum LabelDataTypes        type;                /* data type */
-    union {
-        int                *i;
-        char                *s;
-        struct frame        **f;
-    } data;                                /* pointer to data */
+struct label
+{
+    int x, y;                 /* position */
+    int w;                    /* width (used to line up values) */
+    Bool j;                   /* True for right justification */
+    const char *name;         /* Field name */
+    enum LabelDataTypes type; /* data type */
+    union
+    {
+        int *i;
+        char *s;
+        struct frame **f;
+    } data; /* pointer to data */
 };
 
-enum ButtonTypes {
+enum ButtonTypes
+{
     BUTTON_RECORD,
     BUTTON_REWIND,
     BUTTON_REVERSE_PLAY,
@@ -333,7 +356,8 @@ static void markSaveEnd(void *);
 static void saveStartToEndPPM(void *);
 static void saveStartToEndXPR(void *);
 
-static struct button_init {
+static struct button_init
+{
     unsigned char *data;
     char colour;
     int width;
@@ -342,100 +366,85 @@ static struct button_init {
     int flags;
     int group;
 } buttonInit[] = {
-    {
-        record_bits, 1, record_width, record_height,
-        recordCallback,
-        BUTTON_RELEASE, 0
-    },
-    {
-        rewind_bits, 0, rewind_width, rewind_height,
-        rewindCallback,
-        0, 1
-    },
-    {
-        revplay_bits, 0, revplay_width, revplay_height,
-        revplayCallback,
-        0, 1
-    },
-    {
-        play_bits, 0, play_width, play_height,
-        playCallback,
-        0, 1
-    },
-    {
-        fastf_bits, 0, fastf_width, fastf_height,
-        fastfCallback,
-        0, 1
-    },
-    {
-        pause_bits, 0, pause_width, pause_height,
-        pauseCallback,
-        0, 1
-    },
-    {
-        stop_bits, 0, stop_width, stop_height,
-        stopCallback,
-        BUTTON_PRESSED, 1
-    },
-    {
-        eject_bits, 0, eject_width, eject_height,
-        quitCallback,
-        BUTTON_RELEASE, 0
-    },
+    {record_bits, 1, record_width, record_height,
+     recordCallback,
+     BUTTON_RELEASE, 0},
+    {rewind_bits, 0, rewind_width, rewind_height,
+     rewindCallback,
+     0, 1},
+    {revplay_bits, 0, revplay_width, revplay_height,
+     revplayCallback,
+     0, 1},
+    {play_bits, 0, play_width, play_height,
+     playCallback,
+     0, 1},
+    {fastf_bits, 0, fastf_width, fastf_height,
+     fastfCallback,
+     0, 1},
+    {pause_bits, 0, pause_width, pause_height,
+     pauseCallback,
+     0, 1},
+    {stop_bits, 0, stop_width, stop_height,
+     stopCallback,
+     BUTTON_PRESSED, 1},
+    {eject_bits, 0, eject_width, eject_height,
+     quitCallback,
+     BUTTON_RELEASE, 0},
 };
 
-#define NUM_BUTTONS        (sizeof(buttonInit) / sizeof(struct button_init))
+#define NUM_BUTTONS (sizeof(buttonInit) / sizeof(struct button_init))
 
 static enum playStates {
     STATE_PLAYING,
     STATE_PAUSED
 } playState = STATE_PLAYING;
 
-static int        currentSpeed = 0, frameStep = 0;
+static int currentSpeed = 0, frameStep = 0;
 
-struct xui {
-    Window                topmain;
-    GC                        gc;
-    unsigned long        black;
-    unsigned long        white;
-    unsigned long        mainbg;
-    unsigned long        red;
-    XFontStruct                *smallFont;
-    XFontStruct                *boldFont;
-    Button                buttons[NUM_BUTTONS];
-    struct label        *labels;
-    struct errorwin        *ewin;
-    struct recordwin        *rwin;
+struct xui
+{
+    Window topmain;
+    GC gc;
+    unsigned long black;
+    unsigned long white;
+    unsigned long mainbg;
+    unsigned long red;
+    XFontStruct *smallFont;
+    XFontStruct *boldFont;
+    Button buttons[NUM_BUTTONS];
+    struct label *labels;
+    struct errorwin *ewin;
+    struct recordwin *rwin;
 };
 
 static char small_font[] = "-*-helvetica-medium-r-*--14-*-*-*-*-*-iso8859-1";
 static char small_bold_font[] =
-        "-*-helvetica-bold-r-*--14-*-*-*-*-*-iso8859-1";
+    "-*-helvetica-bold-r-*--14-*-*-*-*-*-iso8859-1";
 
-static int                Argc;
-static char                **Argv;
+static int Argc;
+static char **Argv;
 
-static int                debug = 0;        /* want debugging output */
-static int                verbose = 0;        /* want extra info messages */
-static int                compress = 0;        /* save files in compressed format */
-static int                frame_count;        /* number of frame next read in */
-static int                frames_in_core;        /* number of frame next read in */
-static struct rGC        *gclist;        /* list of all GCs used */
-static int                forceRedraw = False;
-static int                quit = 0;
-static struct xprc        *purge_argument;
-static void                 Purge(struct xprc *rc);
+static int debug = 0;      /* want debugging output */
+static int verbose = 0;    /* want extra info messages */
+static int compress = 0;   /* save files in compressed format */
+static int frame_count;    /* number of frame next read in */
+static int frames_in_core; /* number of frame next read in */
+static struct rGC *gclist; /* list of all GCs used */
+static int forceRedraw = False;
+static int quit = 0;
+static struct xprc *purge_argument;
+static void Purge(struct xprc *rc);
 
-static Display                *dpy;
-static Colormap                colormap;
-static int                screen_num;
+static Display *dpy;
+static Colormap colormap;
+static int screen_num;
 
-static char        *mem_lowest;                        /* lowest pointer seen */
-static char        *mem_highest;                        /* highest pointer seen */
-static long        mem_program_used;                /* max. size of malloced mem */
-static long        mem_all_types_used;                /* frame memory in use */
-static long        mem_typed_used[NUM_MEMTYPES];        /* debugging & analysis */
-static long        max_mem = 8 * 1024 * 1024;        /* memory limit (soft) */
+static char *mem_lowest;                  /* lowest pointer seen */
+static char *mem_highest;                 /* highest pointer seen */
+static long mem_program_used;             /* max. size of malloced mem */
+static long mem_all_types_used;           /* frame memory in use */
+static long mem_typed_used[NUM_MEMTYPES]; /* debugging & analysis */
+static long max_mem = 8 * 1024 * 1024;    /* memory limit (soft) */
 
 static void openErrorWindow(struct errorwin *, const char *, ...);
 
@@ -444,7 +453,8 @@ static void openErrorWindow(struct errorwin *, const char *, ...);
  */
 static void MemPrint(void)
 {
-    if (!debug) {
+    if (!debug)
+    {
         return;
     }
     printf("after %d frames (%d in core):\n", frame_count, frames_in_core);
@@ -468,18 +478,21 @@ static void MemPrint(void)
  */
 static void MemStats(char *p, size_t size, enum MemTypes mt)
 {
-    long                prev_mem_program_used = mem_program_used;
+    long prev_mem_program_used = mem_program_used;
 
-    if (!mem_lowest || p < mem_lowest) {
+    if (!mem_lowest || p < mem_lowest)
+    {
         mem_lowest = p;
     }
-    if (!mem_highest || p + size > mem_highest) {
+    if (!mem_highest || p + size > mem_highest)
+    {
         mem_highest = p + size;
     }
     mem_typed_used[mt] += size;
     mem_all_types_used += size;
     mem_program_used = mem_highest - mem_lowest;
-    if (mem_program_used >> 20 != prev_mem_program_used >> 20) {
+    if (mem_program_used >> 20 != prev_mem_program_used >> 20)
+    {
         MemPrint();
     }
 }
@@ -490,7 +503,8 @@ static void MemStats(char *p, size_t size, enum MemTypes mt)
  */
 static void MyFree(void *p, size_t size, enum MemTypes mt)
 {
-    if (p) {
+    if (p)
+    {
         free(p);
         mem_typed_used[mt] -= size;
         mem_all_types_used -= size;
@@ -505,22 +519,27 @@ void *MyMalloc(size_t size, enum MemTypes mt)
 {
     void *p;
 
-    if (!(p = malloc(size))) {
-        if (!size) {
+    if (!(p = malloc(size)))
+    {
+        if (!size)
+        {
             /*
              * caller shouldn't actually be using zero-sized memory anyway.
              */
             return NULL;
         }
-        if (debug) {
+        if (debug)
+        {
             printf("no memory\n");
             MemPrint();
         }
         max_mem = mem_typed_used[MEM_FRAME] / 2;
-        if (purge_argument != NULL) {
+        if (purge_argument != NULL)
+        {
             Purge(purge_argument);
         }
-        if (!(p = malloc(size))) {
+        if (!(p = malloc(size)))
+        {
             fprintf(stderr, "Not enough memory after allocating %ld bytes.\n",
                     mem_program_used);
             exit(1);
@@ -549,7 +568,7 @@ static char *MyStrDup(const char *str)
  */
 static unsigned char RReadByte(FILE *fp)
 {
-    return (unsigned char) (getc(fp));
+    return (unsigned char)(getc(fp));
 }
 
 /*
@@ -572,7 +591,7 @@ static short RReadShort(FILE *fp)
 {
     short i;
 
-    i = (short) RReadUShort(fp);
+    i = (short)RReadUShort(fp);
 
     if (i & 0x8000)
         i = -(-i & 0xffff);
@@ -585,7 +604,7 @@ static short RReadShort(FILE *fp)
  */
 static unsigned long RReadULong(FILE *fp)
 {
-    unsigned long        i;
+    unsigned long i;
 
     i = (getc(fp) & 0xFF);
     i |= (getc(fp) & 0xFF) << 8;
@@ -602,7 +621,7 @@ static long RReadLong(FILE *fp)
 {
     long i;
 
-    i = (long) RReadULong(fp);
+    i = (long)RReadULong(fp);
 
     if (i & 0x80000000)
         i = -(-i & 0xffffffff);
@@ -616,14 +635,15 @@ static long RReadLong(FILE *fp)
  */
 static char *RReadString(FILE *fp)
 {
-    char                *s;
-    int                        i;
-    int                        len;
+    char *s;
+    int i;
+    int len;
 
     len = RReadUShort(fp);
-    s = (char *) MyMalloc(len + 1, MEM_STRING);
+    s = (char *)MyMalloc(len + 1, MEM_STRING);
     s[len] = '\0';
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         s[i] = getc(fp);
     }
     return s;
@@ -634,12 +654,12 @@ static char *RReadString(FILE *fp)
  */
 static int RReadHeader(struct xprc *rc)
 {
-    char                magic[5];
-    unsigned char        minor;
-    unsigned char        major;
-    char                dot;
-    char                nl;
-    int                        i;
+    char magic[5];
+    unsigned char minor;
+    unsigned char major;
+    char dot;
+    char nl;
+    int i;
 
     magic[0] = getc(rc->fp);
     magic[1] = getc(rc->fp);
@@ -650,7 +670,8 @@ static int RReadHeader(struct xprc *rc)
     dot = getc(rc->fp);
     minor = getc(rc->fp);
     nl = getc(rc->fp);
-    if (strcmp(magic, "XPRC") || dot != '.' || nl != '\n') {
+    if (strcmp(magic, "XPRC") || dot != '.' || nl != '\n')
+    {
         fprintf(stderr, "Error: Not a valid XPilot Recording file.\n");
         return -1;
     }
@@ -659,7 +680,8 @@ static int RReadHeader(struct xprc *rc)
      * and with older versions whose major version number
      * differs from ours.
      */
-    if (major != RC_MAJORVERSION || minor > RC_MINORVERSION) {
+    if (major != RC_MAJORVERSION || minor > RC_MINORVERSION)
+    {
         fprintf(stderr,
                 "Error: Incompatible version. (file: %c.%c)(program: %c.%c)\n",
                 major, minor, RC_MAJORVERSION, RC_MINORVERSION);
@@ -673,9 +695,10 @@ static int RReadHeader(struct xprc *rc)
     rc->servername = RReadString(rc->fp);
     rc->fps = RReadByte(rc->fp);
     rc->recorddate = RReadString(rc->fp);
-    rc->maxColors = (unsigned char) getc(rc->fp);
-    rc->colors = (XColor *) MyMalloc(rc->maxColors * sizeof(XColor), MEM_MISC);
-    for (i = 0; i < rc->maxColors; i++) {
+    rc->maxColors = (unsigned char)getc(rc->fp);
+    rc->colors = (XColor *)MyMalloc(rc->maxColors * sizeof(XColor), MEM_MISC);
+    for (i = 0; i < rc->maxColors; i++)
+    {
         rc->colors[i].pixel = RReadULong(rc->fp);
         rc->colors[i].red = RReadUShort(rc->fp);
         rc->colors[i].green = RReadUShort(rc->fp);
@@ -687,7 +710,8 @@ static int RReadHeader(struct xprc *rc)
     rc->view_width = RReadUShort(rc->fp);
     rc->view_height = RReadUShort(rc->fp);
 
-    if (verbose) {
+    if (verbose)
+    {
         printf("Player is %s (in real life %s@%s).\n",
                rc->nickname, rc->realname, rc->hostname);
         printf("Server was %s, running at %d frames per second.\n",
@@ -703,29 +727,34 @@ static int RReadHeader(struct xprc *rc)
  */
 static Pixmap RReadTile(struct xprc *rc)
 {
-    tile_list_t                        *lptr;
-    unsigned                        width, height;
-    unsigned                        x, y;
-    unsigned                        depth;
-    XImage                        *img;
-    unsigned char                ch;
-    Pixmap                        tile;
-    unsigned char                tile_id;
+    tile_list_t *lptr;
+    unsigned width, height;
+    unsigned x, y;
+    unsigned depth;
+    XImage *img;
+    unsigned char ch;
+    Pixmap tile;
+    unsigned char tile_id;
 
     ch = RReadByte(rc->fp);
     tile_id = RReadByte(rc->fp);
-    if (ch == RC_TILE) {
-        if (tile_id == 0) {
+    if (ch == RC_TILE)
+    {
+        if (tile_id == 0)
+        {
             return None;
         }
-        for (lptr = rc->tlist; lptr != NULL; lptr = lptr->next) {
-            if (lptr->tile_id == tile_id) {
+        for (lptr = rc->tlist; lptr != NULL; lptr = lptr->next)
+        {
+            if (lptr->tile_id == tile_id)
+            {
                 return lptr->tile;
             }
         }
         return None;
     }
-    if (ch != RC_NEW_TILE) {
+    if (ch != RC_NEW_TILE)
+    {
         fprintf(stderr, "Error: New tile expected, not found! (%d)\n", ch);
         exit(1);
     }
@@ -736,29 +765,35 @@ static Pixmap RReadTile(struct xprc *rc)
                        depth, ZPixmap,
                        0, NULL,
                        width, height,
-                       (depth <= 8) ? 8 : (depth <= 16) ? 16 : 32,
+                       (depth <= 8) ? 8 : (depth <= 16) ? 16
+                                                        : 32,
                        0);
-    if (!img) {
+    if (!img)
+    {
         fprintf(stderr, "Can't create XImage %ux%u", width, height);
         exit(1);
     }
     img->data = (char *)MyMalloc(img->bytes_per_line * height, MEM_GC);
-    for (y = 0; y < img->height; y++) {
-        for (x = 0; x < img->width; x++) {
+    for (y = 0; y < img->height; y++)
+    {
+        for (x = 0; x < img->width; x++)
+        {
             ch = RReadByte(rc->fp);
             XPutPixel(img, x, y, rc->pixels[ch]);
         }
     }
     tile = XCreatePixmap(dpy, RootWindow(dpy, screen_num),
                          width, height, depth);
-    if (!tile) {
+    if (!tile)
+    {
         fprintf(stderr, "Can't create Pixmap %ux%u", width, height);
         exit(1);
     }
     XPutImage(dpy, tile, rc->gc, img, 0, 0, 0, 0, width, height);
     XDestroyImage(img);
 
-    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t)))) {
+    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
+    {
         perror("memory");
         exit(1);
     }
@@ -775,83 +810,104 @@ static Pixmap RReadTile(struct xprc *rc)
  */
 static struct rGC *RReadGCValues(struct xprc *rc)
 {
-    int                        c = getc(rc->fp);
-    struct rGC                gc, *gcp;
-    unsigned short        input_mask;
+    int c = getc(rc->fp);
+    struct rGC gc, *gcp;
+    unsigned short input_mask;
 
     memset(&gc, 0, sizeof(gc));
 
-    if (c == RC_NOGC) {
+    if (c == RC_NOGC)
+    {
         gc.mask = 0;
     }
-    else if (c != RC_GC) {
+    else if (c != RC_GC)
+    {
         openErrorWindow(rc->ewin, "GC expected on position %ld, not %d",
                         ftell(rc->fp), c);
         return NULL;
     }
-    else {
+    else
+    {
         input_mask = RReadByte(rc->fp);
-        if (input_mask & RC_GC_B2) {
+        if (input_mask & RC_GC_B2)
+        {
             input_mask |= (RReadByte(rc->fp) << 8);
         }
         gc.mask = 0;
-        if (input_mask & RC_GC_FG) {
+        if (input_mask & RC_GC_FG)
+        {
             gc.mask |= GCForeground;
             gc.foreground = rc->pixels[RReadByte(rc->fp)];
         }
-        if (input_mask & RC_GC_BG) {
+        if (input_mask & RC_GC_BG)
+        {
             gc.mask |= GCBackground;
             gc.background = rc->pixels[RReadByte(rc->fp)];
         }
-        if (input_mask & RC_GC_LW) {
+        if (input_mask & RC_GC_LW)
+        {
             gc.mask |= GCLineWidth;
             gc.line_width = RReadByte(rc->fp);
         }
-        if (input_mask & RC_GC_LS) {
+        if (input_mask & RC_GC_LS)
+        {
             gc.mask |= GCLineStyle;
             gc.line_style = RReadByte(rc->fp);
         }
-        if (input_mask & RC_GC_DO) {
+        if (input_mask & RC_GC_DO)
+        {
             gc.mask |= GCDashOffset;
             gc.dash_offset = RReadByte(rc->fp);
         }
-        if (input_mask & RC_GC_FU) {
+        if (input_mask & RC_GC_FU)
+        {
             gc.mask |= GCFunction;
             gc.function = RReadByte(rc->fp);
         }
-        if (input_mask & RC_GC_DA) {
+        if (input_mask & RC_GC_DA)
+        {
             int i;
             gc.num_dashes = RReadByte(rc->fp);
-            if (gc.num_dashes == 0) {
+            if (gc.num_dashes == 0)
+            {
                 gc.dash_list = NULL;
-            } else {
-                gc.dash_list = (char *) MyMalloc(gc.num_dashes, MEM_GC);
-                for (i = 0; i < gc.num_dashes; i++) {
+            }
+            else
+            {
+                gc.dash_list = (char *)MyMalloc(gc.num_dashes, MEM_GC);
+                for (i = 0; i < gc.num_dashes; i++)
+                {
                     gc.dash_list[i] = RReadByte(rc->fp);
                 }
             }
         }
-        if (input_mask & RC_GC_B2) {
-            if (input_mask & RC_GC_FS) {
+        if (input_mask & RC_GC_B2)
+        {
+            if (input_mask & RC_GC_FS)
+            {
                 gc.mask |= GCFillStyle;
                 gc.fill_style = RReadByte(rc->fp);
             }
-            if (input_mask & RC_GC_XO) {
+            if (input_mask & RC_GC_XO)
+            {
                 gc.mask |= GCTileStipXOrigin;
                 gc.ts_x_origin = RReadLong(rc->fp);
             }
-            if (input_mask & RC_GC_YO) {
+            if (input_mask & RC_GC_YO)
+            {
                 gc.mask |= GCTileStipYOrigin;
                 gc.ts_y_origin = RReadLong(rc->fp);
             }
-            if (input_mask & RC_GC_TI) {
+            if (input_mask & RC_GC_TI)
+            {
                 gc.mask |= GCTile;
                 gc.tile = RReadTile(rc);
             }
         }
     }
 
-    for (gcp = gclist; gcp != NULL; gcp = gcp->next) {
+    for (gcp = gclist; gcp != NULL; gcp = gcp->next)
+    {
         if (gcp->mask != gc.mask)
             continue;
         if ((gc.mask & GCForeground) && gc.foreground != gcp->foreground)
@@ -876,14 +932,15 @@ static struct rGC *RReadGCValues(struct xprc *rc)
             continue;
         if (gc.num_dashes != gcp->num_dashes)
             continue;
-        if (gc.num_dashes > 0) {
+        if (gc.num_dashes > 0)
+        {
             if (memcmp(gc.dash_list, gcp->dash_list, gc.num_dashes))
                 continue;
             MyFree(gc.dash_list, gc.num_dashes, MEM_GC);
         }
         return gcp;
     }
-    gcp = (struct rGC *) MyMalloc(sizeof(*gcp), MEM_GC);
+    gcp = (struct rGC *)MyMalloc(sizeof(*gcp), MEM_GC);
     memcpy(gcp, &gc, sizeof(*gcp));
     gcp->next = gclist;
     gclist = gcp;
@@ -893,16 +950,20 @@ static struct rGC *RReadGCValues(struct xprc *rc)
 
 static void RemoveFrameFromLRU(struct xprc *rc, struct frame *f)
 {
-    if (f->older != NULL) {
+    if (f->older != NULL)
+    {
         f->older->newer = f->newer;
     }
-    if (rc->newest == f) {
+    if (rc->newest == f)
+    {
         rc->newest = f->older;
     }
-    if (f->newer != NULL) {
+    if (f->newer != NULL)
+    {
         f->newer->older = f->older;
     }
-    if (rc->oldest == f) {
+    if (rc->oldest == f)
+    {
         rc->oldest = f->newer;
     }
     f->newer = NULL;
@@ -913,9 +974,12 @@ static void AddFrameToLRU(struct xprc *rc, struct frame *f)
 {
     f->newer = NULL;
     f->older = rc->newest;
-    if (rc->newest) {
+    if (rc->newest)
+    {
         rc->newest->newer = f;
-    } else {
+    }
+    else
+    {
         rc->oldest = f;
     }
     rc->newest = f;
@@ -923,7 +987,8 @@ static void AddFrameToLRU(struct xprc *rc, struct frame *f)
 
 static void TouchFrame(struct xprc *rc, struct frame *f)
 {
-    if (rc->newest != f) {
+    if (rc->newest != f)
+    {
         RemoveFrameFromLRU(rc, f);
         AddFrameToLRU(rc, f);
     }
@@ -934,14 +999,16 @@ static void TouchFrame(struct xprc *rc, struct frame *f)
  */
 static void FreeShapes(struct shape *shp)
 {
-    struct shape        *nextshp;
+    struct shape *nextshp;
 
-    while (shp) {
+    while (shp)
+    {
 
         nextshp = shp->next;
         shp->next = NULL;
 
-        switch (shp->type) {
+        switch (shp->type)
+        {
 
         case RC_DRAWLINES:
             MyFree(shp->shape.lines.points,
@@ -991,7 +1058,8 @@ static void FreeShapes(struct shape *shp)
  */
 static void FreeFrameData(struct frame *f)
 {
-    if (!f) {
+    if (!f)
+    {
         return;
     }
     FreeShapes(f->shapes);
@@ -1005,23 +1073,29 @@ static void FreeFrameData(struct frame *f)
  */
 static void FreeFrame(struct xprc *rc, struct frame *f)
 {
-    if (!f) {
+    if (!f)
+    {
         return;
     }
     FreeFrameData(f);
-    if (f->next) {
+    if (f->next)
+    {
         f->next->prev = f->prev;
     }
-    if (f->prev) {
+    if (f->prev)
+    {
         f->prev->next = f->next;
     }
-    if (f == rc->head) {
+    if (f == rc->head)
+    {
         rc->head = f->next;
     }
-    if (f == rc->tail) {
+    if (f == rc->tail)
+    {
         rc->tail = f->prev;
     }
-    if (f == rc->cur) {
+    if (f == rc->cur)
+    {
         rc->cur = (f->next != NULL) ? f->next : f->prev;
     }
     f->next = NULL;
@@ -1035,7 +1109,8 @@ static void FreeFrame(struct xprc *rc, struct frame *f)
  */
 static void FreeXPRCData(struct xprc *rc)
 {
-    while (rc->head) {
+    while (rc->head)
+    {
         FreeFrame(rc, rc->head);
     }
 }
@@ -1046,27 +1121,28 @@ static void FreeXPRCData(struct xprc *rc)
  */
 static void Purge(struct xprc *rc)
 {
-    long                goal = (3 * max_mem) / 4;        /* free one quarter */
-    int                        max_purge = 3;                /* don't purge too much */
-    struct frame        *keep_frame;
-    struct frame        *f;
+    long goal = (3 * max_mem) / 4; /* free one quarter */
+    int max_purge = 3;             /* don't purge too much */
+    struct frame *keep_frame;
+    struct frame *f;
 
     /*
      * If there are a huge number of recorded frames
      * then the frame headers could take up all of the reserved memory.
      * If this happens permit ourselves to use more memory.
      */
-    if (goal < mem_typed_used[MEM_FRAME]) {
+    if (goal < mem_typed_used[MEM_FRAME])
+    {
         max_mem = mem_typed_used[MEM_FRAME] + (max_mem - goal);
         goal = (3 * max_mem) / 4;
     }
-    if (!(keep_frame = rc->newest) || !(keep_frame = keep_frame->older)) {
+    if (!(keep_frame = rc->newest) || !(keep_frame = keep_frame->older))
+    {
         /* should at least keep two frames. */
         return;
     }
-    while (mem_all_types_used > goal
-        && rc->oldest != keep_frame
-        && max_purge > 0) {
+    while (mem_all_types_used > goal && rc->oldest != keep_frame && max_purge > 0)
+    {
         f = rc->oldest;
         RemoveFrameFromLRU(rc, f);
         FreeFrameData(f);
@@ -1082,29 +1158,32 @@ static void Purge(struct xprc *rc)
  */
 static int readFrameData(struct xprc *rc, struct frame *f)
 {
-    int                        c = 0, prev_c;
-    struct shape        *shp = NULL,
-                        *shphead = NULL,
-                        *newshp;
-    XPoint                *xpp;
-    XRectangle                *xrp;
-    XArc                *xap;
-    XSegment                *xsp;
-    char                *cp;
-    int                        done = False;
+    int c = 0, prev_c;
+    struct shape *shp = NULL,
+                 *shphead = NULL,
+                 *newshp;
+    XPoint *xpp;
+    XRectangle *xrp;
+    XArc *xap;
+    XSegment *xsp;
+    char *cp;
+    int done = False;
 
     clearerr(rc->fp);
-    if (rc->seekable && fseek(rc->fp, f->filepos, 0) != 0) {
+    if (rc->seekable && fseek(rc->fp, f->filepos, 0) != 0)
+    {
         perror("Can't reposition file");
         exit(1);
     }
 
-    while (!done) {
+    while (!done)
+    {
 
         prev_c = c;
         c = getc(rc->fp);
 
-        switch (c) {
+        switch (c)
+        {
 
         case EOF:
             openErrorWindow(rc->ewin,
@@ -1130,26 +1209,30 @@ static int readFrameData(struct xprc *rc, struct frame *f)
         case RC_DRAWARCS:
         case RC_DRAWSEGMENTS:
         case RC_DAMAGED:
-            newshp = (struct shape *) MyMalloc(sizeof(struct shape),
-                                               MEM_SHAPE);
+            newshp = (struct shape *)MyMalloc(sizeof(struct shape),
+                                              MEM_SHAPE);
             newshp->next = NULL;
             newshp->type = 0;
-            if ((newshp->gc = RReadGCValues(rc)) == NULL) {
+            if ((newshp->gc = RReadGCValues(rc)) == NULL)
+            {
                 MyFree(newshp, sizeof(struct shape), MEM_SHAPE);
                 done = True;
                 continue;
             }
-            if (shp == NULL) {
+            if (shp == NULL)
+            {
                 shp = newshp;
                 shphead = shp;
             }
-            else {
+            else
+            {
                 shp->next = newshp;
                 shp = shp->next;
             }
             shp->type = c;
 
-            switch (c) {
+            switch (c)
+            {
 
             case RC_DRAWARC:
             case RC_FILLARC:
@@ -1164,7 +1247,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
             case RC_DRAWLINES:
                 shp->shape.lines.npoints = c = RReadUShort(rc->fp);
                 shp->shape.lines.points = xpp =
-                    (XPoint *) MyMalloc(sizeof(XPoint) * c, MEM_POINT);
+                    (XPoint *)MyMalloc(sizeof(XPoint) * c, MEM_POINT);
                 while (c--)
                 {
                     xpp->x = RReadShort(rc->fp);
@@ -1194,7 +1277,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
                 shp->shape.string.y = RReadShort(rc->fp);
                 shp->shape.string.font = RReadByte(rc->fp);
                 shp->shape.string.length = c = RReadUShort(rc->fp);
-                shp->shape.string.string = cp = (char *) MyMalloc(c, MEM_STRING);
+                shp->shape.string.string = cp = (char *)MyMalloc(c, MEM_STRING);
                 while (c--)
                     *cp++ = getc(rc->fp);
                 break;
@@ -1202,7 +1285,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
             case RC_FILLPOLYGON:
                 shp->shape.polygon.npoints = c = RReadUShort(rc->fp);
                 shp->shape.polygon.points = xpp =
-                    (XPoint *) MyMalloc(sizeof(XPoint) * c, MEM_POINT);
+                    (XPoint *)MyMalloc(sizeof(XPoint) * c, MEM_POINT);
                 while (c--)
                 {
                     xpp->x = RReadShort(rc->fp);
@@ -1222,7 +1305,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
             case RC_FILLRECTANGLES:
                 shp->shape.rectangles.nrectangles = c = RReadUShort(rc->fp);
                 shp->shape.rectangles.rectangles = xrp =
-                    (XRectangle *) MyMalloc(sizeof(XRectangle) * c, MEM_POINT);
+                    (XRectangle *)MyMalloc(sizeof(XRectangle) * c, MEM_POINT);
                 while (c--)
                 {
                     xrp->x = RReadShort(rc->fp);
@@ -1236,7 +1319,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
             case RC_DRAWARCS:
                 shp->shape.arcs.narcs = c = RReadUShort(rc->fp);
                 shp->shape.arcs.arcs = xap =
-                    (XArc *) MyMalloc(sizeof(XArc) * c, MEM_POINT);
+                    (XArc *)MyMalloc(sizeof(XArc) * c, MEM_POINT);
                 while (c--)
                 {
                     xap->x = RReadShort(rc->fp);
@@ -1252,7 +1335,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
             case RC_DRAWSEGMENTS:
                 shp->shape.segments.nsegments = c = RReadUShort(rc->fp);
                 shp->shape.segments.segments = xsp =
-                    (XSegment *) MyMalloc(sizeof(XSegment) * c, MEM_POINT);
+                    (XSegment *)MyMalloc(sizeof(XSegment) * c, MEM_POINT);
                 while (c--)
                 {
                     xsp->x1 = RReadShort(rc->fp);
@@ -1278,10 +1361,10 @@ static int readFrameData(struct xprc *rc, struct frame *f)
             done = True;
             continue;
         }
-
     }
 
-    if (c != RC_ENDFRAME) {
+    if (c != RC_ENDFRAME)
+    {
         FreeShapes(shphead);
         return -1;
     }
@@ -1292,7 +1375,8 @@ static int readFrameData(struct xprc *rc, struct frame *f)
 
     AddFrameToLRU(rc, f);
 
-    if (mem_all_types_used >= max_mem) {
+    if (mem_all_types_used >= max_mem)
+    {
         Purge(rc);
     }
 
@@ -1301,24 +1385,28 @@ static int readFrameData(struct xprc *rc, struct frame *f)
 
 static int readNewFrame(struct xprc *rc)
 {
-    int                        c;
-    struct frame        *f = NULL;
+    int c;
+    struct frame *f = NULL;
 
-    if (rc->eof) {
+    if (rc->eof)
+    {
         return -1;
     }
-    if ((c = getc(rc->fp)) == EOF) {
+    if ((c = getc(rc->fp)) == EOF)
+    {
         rc->eof = True;
         MemPrint();
         return -1;
     }
-    if (c != RC_NEWFRAME) {
+    if (c != RC_NEWFRAME)
+    {
         openErrorWindow(rc->ewin, "Corrupt record file, next frame expected, "
-                        "not %d.  Truncating.", c);
+                                  "not %d.  Truncating.",
+                        c);
         rc->eof = True;
         return -1;
     }
-    f = (struct frame *) MyMalloc(sizeof(struct frame), MEM_FRAME);
+    f = (struct frame *)MyMalloc(sizeof(struct frame), MEM_FRAME);
     f->width = RReadUShort(rc->fp);
     f->height = RReadUShort(rc->fp);
     f->shapes = NULL;
@@ -1327,24 +1415,28 @@ static int readNewFrame(struct xprc *rc)
     f->newer = NULL;
     f->older = NULL;
     f->number = frame_count;
-    if (rc->seekable && (f->filepos = ftell(rc->fp)) == -1) {
+    if (rc->seekable && (f->filepos = ftell(rc->fp)) == -1)
+    {
         openErrorWindow(rc->ewin, "Can't get file position. Truncating.");
         rc->eof = True;
         MyFree(f, sizeof(struct frame), MEM_FRAME);
         return -1;
     }
 
-    if (readFrameData(rc, f) == -1) {
+    if (readFrameData(rc, f) == -1)
+    {
         FreeFrame(rc, f);
         return -1;
     }
 
-    if (rc->tail == NULL) {
+    if (rc->tail == NULL)
+    {
         f->next = NULL;
         f->prev = NULL;
         rc->tail = rc->head = rc->cur = f;
     }
-    else {
+    else
+    {
         f->prev = rc->tail;
         f->next = NULL;
         rc->tail->next = f;
@@ -1356,11 +1448,11 @@ static int readNewFrame(struct xprc *rc)
     return 0;
 }
 
-static Atom                ProtocolAtom;
-static Atom                KillAtom;
+static Atom ProtocolAtom;
+static Atom KillAtom;
 
-static Pixmap                itemBitmaps[NUM_ITEMS];         /* Bitmaps for the items */
-static unsigned char        *itemData[NUM_ITEMS] = {
+static Pixmap itemBitmaps[NUM_ITEMS]; /* Bitmaps for the items */
+static unsigned char *itemData[NUM_ITEMS] = {
     itemEnergyPack_bits,
     itemWideangleShot_bits,
     itemRearShot_bits,
@@ -1381,14 +1473,14 @@ static unsigned char        *itemData[NUM_ITEMS] = {
     itemHyperJump_bits,
     itemPhasingDevice_bits,
     itemMirror_bits,
-    itemArmor_bits
-};
+    itemArmor_bits};
 
 static XFontStruct *loadQueryFont(const char *fontName, GC gc)
 {
-    XFontStruct                *font;
+    XFontStruct *font;
 
-    if ((font = XLoadQueryFont(dpy, fontName)) == NULL) {
+    if ((font = XLoadQueryFont(dpy, fontName)) == NULL)
+    {
         fprintf(stderr, "Can't load font \"%s\".\n", fontName);
         font = XQueryFont(dpy, XGContextFromGC(gc));
     }
@@ -1397,70 +1489,81 @@ static XFontStruct *loadQueryFont(const char *fontName, GC gc)
 
 static void allocViewColors(struct xprc *rc)
 {
-    XColor                *cp, *cp2, myColor;
-    int                        i, j;
+    XColor *cp, *cp2, myColor;
+    int i, j;
 
     rc->pixels = (unsigned long *)
-                MyMalloc(2 * rc->maxColors * sizeof(*rc->pixels), MEM_MISC);
+        MyMalloc(2 * rc->maxColors * sizeof(*rc->pixels), MEM_MISC);
 
-    for (i = 0; i < rc->maxColors; i++) {
+    for (i = 0; i < rc->maxColors; i++)
+    {
         cp = &rc->colors[i];
-        for (j = 0; j < i; j++) {
+        for (j = 0; j < i; j++)
+        {
             cp2 = &rc->colors[j];
             if (cp->red == cp2->red &&
                 cp->green == cp2->green &&
-                cp->blue == cp2->blue) {
+                cp->blue == cp2->blue)
+            {
                 break;
             }
         }
-        if (j < i) {
+        if (j < i)
+        {
             rc->pixels[j] = rc->pixels[i];
             continue;
         }
         if (cp->red < 0x0100 &&
             cp->green < 0x0100 &&
             cp->blue < 0x0100 &&
-            colormap == DefaultColormap(dpy, screen_num)) {
+            colormap == DefaultColormap(dpy, screen_num))
+        {
             rc->pixels[i] = BlackPixel(dpy, screen_num);
             continue;
         }
         if (cp->red >= 0xFF00 &&
             cp->green >= 0xFF00 &&
             cp->blue >= 0xFF00 &&
-            colormap == DefaultColormap(dpy, screen_num)) {
+            colormap == DefaultColormap(dpy, screen_num))
+        {
             rc->pixels[i] = WhitePixel(dpy, screen_num);
             continue;
         }
         myColor = *cp;
-        if (!XAllocColor(dpy, colormap, &myColor)) {
+        if (!XAllocColor(dpy, colormap, &myColor))
+        {
             fprintf(stderr, "Hmm, not enough colors? (%d: %04x,%04x,%04x)\n",
                     i, cp->red, cp->green, cp->blue);
             rc->pixels[i] = (i == 0)
-                            ? BlackPixel(dpy, screen_num)
-                            : WhitePixel(dpy, screen_num);
+                                ? BlackPixel(dpy, screen_num)
+                                : WhitePixel(dpy, screen_num);
         }
-        else if (i > 0
-                 && myColor.pixel == BlackPixel(dpy, screen_num)
-                 && colormap == DefaultColormap(dpy, screen_num)) {
+        else if (i > 0 && myColor.pixel == BlackPixel(dpy, screen_num) && colormap == DefaultColormap(dpy, screen_num))
+        {
             rc->pixels[i] = WhitePixel(dpy, screen_num);
-        } else {
+        }
+        else
+        {
             rc->pixels[i] = myColor.pixel;
         }
     }
-    for (i = 0; i < rc->maxColors; i++) {
+    for (i = 0; i < rc->maxColors; i++)
+    {
         rc->pixels[i + rc->maxColors] = rc->pixels[BLACK] ^ rc->pixels[i];
     }
 }
 
 static unsigned long allocColor(const char *name)
 {
-    XColor                color;
+    XColor color;
 
-    if (!XParseColor(dpy, colormap, name, &color)) {
+    if (!XParseColor(dpy, colormap, name, &color))
+    {
         fprintf(stderr, "Can't parse color \"%s\"\n", name);
         return WhitePixel(dpy, screen_num);
     }
-    if (!XAllocColor(dpy, colormap, &color)) {
+    if (!XAllocColor(dpy, colormap, &color))
+    {
         fprintf(stderr, "Can't allocate color \"%s\"\n", name);
         return WhitePixel(dpy, screen_num);
     }
@@ -1469,12 +1572,15 @@ static unsigned long allocColor(const char *name)
 
 static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
 {
-    struct shape        *sp;
-    XGCValues                values;
+    struct shape *sp;
+    XGCValues values;
 
-    for (sp = f->shapes; sp != NULL; sp = sp->next) {
-        if (sp->gc != NULL) {
-            if (sp->gc->mask != 0) {
+    for (sp = f->shapes; sp != NULL; sp = sp->next)
+    {
+        if (sp->gc != NULL)
+        {
+            if (sp->gc->mask != 0)
+            {
                 values.foreground = sp->gc->foreground;
                 values.background = sp->gc->background;
                 values.line_width = sp->gc->line_width;
@@ -1487,7 +1593,8 @@ static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
                 values.tile = sp->gc->tile;
                 XChangeGC(dpy, rc->gc, sp->gc->mask, &values);
             }
-            if (sp->gc->num_dashes > 0) {
+            if (sp->gc->num_dashes > 0)
+            {
                 XSetDashes(dpy, rc->gc,
                            sp->gc->dash_offset,
                            sp->gc->dash_list,
@@ -1495,7 +1602,8 @@ static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
             }
         }
 
-        switch(sp->type) {
+        switch (sp->type)
+        {
 
         case RC_DRAWARC:
             XDrawArc(dpy, drawable, rc->gc,
@@ -1559,8 +1667,7 @@ static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
             values.fill_style = FillStippled;
             values.ts_x_origin = sp->shape.symbol.x;
             values.ts_y_origin = sp->shape.symbol.y;
-            XChangeGC(dpy, rc->gc, GCStipple | GCFillStyle |
-                      GCTileStipXOrigin | GCTileStipYOrigin, &values);
+            XChangeGC(dpy, rc->gc, GCStipple | GCFillStyle | GCTileStipXOrigin | GCTileStipYOrigin, &values);
             XFillRectangle(dpy, drawable, rc->gc,
                            sp->shape.symbol.x, sp->shape.symbol.y,
                            ITEM_SIZE, ITEM_SIZE);
@@ -1586,30 +1693,31 @@ static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
             break;
 
         case RC_DAMAGED:
-            if (sp->shape.damage.damaged) {
+            if (sp->shape.damage.damaged)
+            {
                 XFillRectangle(dpy, drawable, rc->gc,
                                0, 0,
                                f->width, f->height);
             }
             break;
-
         }
     }
 }
 
 static void OverWriteMsg(struct xprc *rc, const char *msg)
 {
-    XFontStruct                *font = rc->gameFont;
-    int                        len = strlen(msg);
-    int                        text_w = XTextWidth(font, msg, len);
-    int                        text_h = font->ascent + font->descent;
-    int                        text_x = (rc->cur->width - text_w) / 2;
-    int                        text_y = (rc->cur->height - text_h) / 2;
-    int                        area_w = (text_w < rc->cur->width / 2)
-                                 ? (rc->cur->width / 2) : text_w;
-    int                        area_h = rc->cur->height / 4;
-    int                        area_x = (rc->cur->width - area_w) / 2;
-    int                        area_y = (rc->cur->height - area_h) / 2;
+    XFontStruct *font = rc->gameFont;
+    int len = strlen(msg);
+    int text_w = XTextWidth(font, msg, len);
+    int text_h = font->ascent + font->descent;
+    int text_x = (rc->cur->width - text_w) / 2;
+    int text_y = (rc->cur->height - text_h) / 2;
+    int area_w = (text_w < rc->cur->width / 2)
+                     ? (rc->cur->width / 2)
+                     : text_w;
+    int area_h = rc->cur->height / 4;
+    int area_x = (rc->cur->width - area_w) / 2;
+    int area_y = (rc->cur->height - area_h) / 2;
 
     XSetForeground(dpy, rc->gc, rc->pixels[BLACK]);
     XFillRectangle(dpy, rc->topview, rc->gc,
@@ -1629,12 +1737,14 @@ static void OverWriteMsg(struct xprc *rc, const char *msg)
 
 static void redrawWindow(struct xprc *rc)
 {
-    XWindowAttributes        attrib;
+    XWindowAttributes attrib;
 
-    if (!rc->cur->shapes) {
+    if (!rc->cur->shapes)
+    {
         readFrameData(rc, rc->cur);
     }
-    else if (rc->seekable) {
+    else if (rc->seekable)
+    {
         TouchFrame(rc, rc->cur);
     }
 
@@ -1669,32 +1779,32 @@ static void Init_wm_prop(Window win,
                          int max_w, int max_h,
                          int flags)
 {
-    XClassHint                xclh;
-    XWMHints                xwmh;
-    XSizeHints                xsh;
-    char                msg[256];
-    static char                myClass[] = "XP-replay";
+    XClassHint xclh;
+    XWMHints xwmh;
+    XSizeHints xsh;
+    char msg[256];
+    static char myClass[] = "XP-replay";
 
-    xwmh.flags           = InputHint|StateHint;
-    xwmh.input           = True;
+    xwmh.flags = InputHint | StateHint;
+    xwmh.input = True;
     xwmh.initial_state = NormalState;
 
-    xsh.flags = (flags|PResizeInc);
+    xsh.flags = (flags | PResizeInc);
     xsh.x = x;
     xsh.width = w;
     xsh.base_width =
-    xsh.min_width = min_w;
+        xsh.min_width = min_w;
     xsh.max_width = max_w;
     xsh.width_inc = 1;
     xsh.height = h;
     xsh.base_height =
-    xsh.min_height = min_h;
+        xsh.min_height = min_h;
     xsh.max_height = max_h;
     xsh.height_inc = 1;
     xsh.y = y;
 
-    xclh.res_name = NULL;                /* NULL: Automatically uses Argv[0], */
-    xclh.res_class = myClass;                /* stripped of directory prefixes. */
+    xclh.res_name = NULL;     /* NULL: Automatically uses Argv[0], */
+    xclh.res_class = myClass; /* stripped of directory prefixes. */
 
     /*
      * Set the above properties.
@@ -1722,11 +1832,11 @@ static void Init_wm_prop(Window win,
 
 static struct recordwin *Init_recordwindow(unsigned long bg, void *data)
 {
-    struct recordwin        *rwin = (struct recordwin *)
-                                MyMalloc(sizeof(struct recordwin), MEM_UI);
-    int                        w, h, x, y;
-    XWindowChanges        values;
-    union button_image        image;
+    struct recordwin *rwin = (struct recordwin *)
+        MyMalloc(sizeof(struct recordwin), MEM_UI);
+    int w, h, x, y;
+    XWindowChanges values;
+    union button_image image;
 
     w = 100;
     h = 50;
@@ -1806,7 +1916,7 @@ static struct recordwin *Init_recordwindow(unsigned long bg, void *data)
     values.height = y;
     values.x = (DisplayWidth(dpy, screen_num) - values.width) / 2;
     values.y = (DisplayHeight(dpy, screen_num) - values.height) / 2;
-    
+
     XReconfigureWMWindow(dpy, rwin->win, screen_num,
                          CWX | CWY | CWWidth | CWHeight, &values);
 
@@ -1816,7 +1926,7 @@ static struct recordwin *Init_recordwindow(unsigned long bg, void *data)
                  0, 0,
                  0, 0,
                  PSize | PPosition);
-    return(rwin);
+    return (rwin);
 }
 
 static void openErrorWindow(struct errorwin *ewin, const char *fmt, ...)
@@ -1835,12 +1945,12 @@ static void openErrorWindow(struct errorwin *ewin, const char *fmt, ...)
     w = 0;
     h = 0;
 
-    while(*p != '\0')
+    while (*p != '\0')
     {
-        while(*p != '\0' && *p != '\n')
+        while (*p != '\0' && *p != '\n')
             p++;
         if (p != q)
-            if ((i = XTextWidth(ewin->font, q, p-q)) > w)
+            if ((i = XTextWidth(ewin->font, q, p - q)) > w)
                 w = i;
         if (*p != '\0')
             p++;
@@ -1856,8 +1966,8 @@ static void openErrorWindow(struct errorwin *ewin, const char *fmt, ...)
     values.height += h;
     if (values.width < w + 10)
         values.width = w + 10;
-    values.x = (DisplayWidth(dpy, screen_num) - values.width)/2;
-    values.y = (DisplayHeight(dpy, screen_num) - values.height)/2;
+    values.x = (DisplayWidth(dpy, screen_num) - values.width) / 2;
+    values.y = (DisplayHeight(dpy, screen_num) - values.height) / 2;
 
     XReconfigureWMWindow(dpy, ewin->win, screen_num,
                          CWX | CWY | CWWidth | CWHeight, &values);
@@ -1881,7 +1991,7 @@ static void openErrorWindow(struct errorwin *ewin, const char *fmt, ...)
 
 static void closeErrorWindow(void *data)
 {
-    struct errorwin *ewin = (struct errorwin *) data;
+    struct errorwin *ewin = (struct errorwin *)data;
 
     XUngrabPointer(dpy, CurrentTime);
     XUnmapWindow(dpy, ewin->win);
@@ -1914,7 +2024,7 @@ static struct errorwin *Init_errorwindow(unsigned long bg)
     ewin->but = CreateButton(dpy, ewin->win, 5, 15,
                              0, 0, image, 0, 0,
                              BlackPixel(dpy, screen_num),
-                             closeErrorWindow, (void *) ewin,
+                             closeErrorWindow, (void *)ewin,
                              BUTTON_TEXT | BUTTON_RELEASE, 0);
     XSelectInput(dpy, ewin->win, ExposureMask);
     *ewin->message = '\0';
@@ -1926,16 +2036,16 @@ static struct errorwin *Init_errorwindow(unsigned long bg)
                  0, 0,
                  0, 0,
                  PSize | PPosition);
-    return(ewin);
+    return (ewin);
 }
 
 static void Init_topview(struct xprc *rc)
 {
-    int                        i;
-    int                        w = rc->view_width;
-    int                        h = rc->view_height;
-    int                        x = 0;
-    int                        y = (DisplayHeight(dpy, screen_num) - h) / 2;
+    int i;
+    int w = rc->view_width;
+    int h = rc->view_height;
+    int x = 0;
+    int y = (DisplayHeight(dpy, screen_num) - h) / 2;
 
     rc->topview = XCreateSimpleWindow(dpy, RootWindow(dpy, screen_num),
                                       x, y,
@@ -1955,9 +2065,9 @@ static void Init_topview(struct xprc *rc)
 
     XSelectInput(dpy, rc->topview,
                  ExposureMask |
-                 KeyPressMask | KeyReleaseMask | ButtonPressMask);
+                     KeyPressMask | KeyReleaseMask | ButtonPressMask);
 
-    for (i=0; i<NUM_ITEMS; i++)
+    for (i = 0; i < NUM_ITEMS; i++)
         itemBitmaps[i] = XCreateBitmapFromData(dpy, rc->topview,
                                                (char *)itemData[i],
                                                ITEM_SIZE, ITEM_SIZE);
@@ -1972,8 +2082,8 @@ static void Init_topview(struct xprc *rc)
 
 static void Init_topmain(struct xui *ui, struct xprc *rc)
 {
-    int                        topx, topy, topw, toph, i, x, y, w, mw;
-    XWindowChanges        values;
+    int topx, topy, topw, toph, i, x, y, w, mw;
+    XWindowChanges values;
 
     ui->black = BlackPixel(dpy, screen_num);
     ui->white = WhitePixel(dpy, screen_num);
@@ -1983,17 +2093,17 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
     topw = 26 - BUTTON_SPACING;
     toph = 0;
 
-    for (i = 0; i < NUM_BUTTONS; i++) {
+    for (i = 0; i < NUM_BUTTONS; i++)
+    {
 
         topw += buttonInit[i].width + BUTTON_BORDER + BUTTON_SPACING;
         if (toph < buttonInit[i].height)
             toph = buttonInit[i].height;
     }
 
-
-   ui->topmain = XCreateSimpleWindow(dpy, RootWindow(dpy, screen_num),
+    ui->topmain = XCreateSimpleWindow(dpy, RootWindow(dpy, screen_num),
                                       0, 0,
-                                      topw, toph+100,
+                                      topw, toph + 100,
                                       1,
                                       BlackPixel(dpy, screen_num),
                                       ui->mainbg);
@@ -2002,8 +2112,8 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
 
     XSelectInput(dpy, ui->topmain,
                  ExposureMask |
-                 KeyPressMask | KeyReleaseMask |
-                 ButtonPressMask | ButtonReleaseMask);
+                     KeyPressMask | KeyReleaseMask |
+                     ButtonPressMask | ButtonReleaseMask);
 
     ui->smallFont = loadQueryFont(small_font, ui->gc);
     ui->boldFont = loadQueryFont(small_bold_font, ui->gc);
@@ -2011,13 +2121,13 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
     SetGlobalButtonAttributes(ui->mainbg, ui->white, ui->black, ui->black);
 
     x = 5;
-    y = (toph>>1) + 5;
-    for (i=0; i<NUM_BUTTONS; i++)
+    y = (toph >> 1) + 5;
+    for (i = 0; i < NUM_BUTTONS; i++)
     {
         union button_image p;
 
         p.icon = XCreateBitmapFromData(dpy, ui->topmain,
-                                       (char *) buttonInit[i].data,
+                                       (char *)buttonInit[i].data,
                                        buttonInit[i].width,
                                        buttonInit[i].height);
 
@@ -2025,18 +2135,18 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
             x += 16;
 
         ui->buttons[i] =
-            CreateButton(dpy, ui->topmain, x, y - (buttonInit[i].height>>1),
-                         buttonInit[i].width+4, buttonInit[i].height+4, p,
+            CreateButton(dpy, ui->topmain, x, y - (buttonInit[i].height >> 1),
+                         buttonInit[i].width + 4, buttonInit[i].height + 4, p,
                          buttonInit[i].width, buttonInit[i].height,
                          (buttonInit[i].colour == 0) ? ui->black : ui->red,
-                         buttonInit[i].callback, (void *) ui,
+                         buttonInit[i].callback, (void *)ui,
                          buttonInit[i].flags, buttonInit[i].group);
-        x += buttonInit[i].width+BUTTON_BORDER+BUTTON_SPACING;
+        x += buttonInit[i].width + BUTTON_BORDER + BUTTON_SPACING;
     }
 
     ui->labels = (struct label *)
-                    MyMalloc(NUM_LABELS * sizeof(struct label),
-                             MEM_UI);
+        MyMalloc(NUM_LABELS * sizeof(struct label),
+                 MEM_UI);
     memset(ui->labels, 0, NUM_LABELS * sizeof(struct label));
     ui->labels[0].name = "Position";
     ui->labels[0].type = LABEL_TIME;
@@ -2066,21 +2176,20 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
     mw = 0;
     ui->labels[0].x = 5;
     ui->labels[0].y = toph + 15;
-    for (i=1; i<5; i++)
+    for (i = 1; i < 5; i++)
     {
-        ui->labels[i].x = ui->labels[i-1].x;
-        ui->labels[i].y = ui->labels[i-1].y
-            + ui->boldFont->ascent + ui->boldFont->descent + 2;
+        ui->labels[i].x = ui->labels[i - 1].x;
+        ui->labels[i].y = ui->labels[i - 1].y + ui->boldFont->ascent + ui->boldFont->descent + 2;
     }
     toph = ui->labels[4].y + ui->boldFont->ascent + ui->boldFont->descent + 5;
-    for (i=0; i<5; i++)
+    for (i = 0; i < 5; i++)
     {
         w = XTextWidth(ui->boldFont, ui->labels[i].name,
                        strlen(ui->labels[i].name));
         if (w > mw)
             mw = w;
     }
-    for (i=0; i<5; i++)
+    for (i = 0; i < 5; i++)
         ui->labels[i].w = mw;
     ui->labels[5].x = topw - ui->labels[0].x;
     ui->labels[5].y = ui->labels[0].y;
@@ -2105,17 +2214,18 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
                  PSize | PPosition);
 
     ui->ewin = Init_errorwindow(ui->mainbg);
-    ui->rwin = Init_recordwindow(ui->mainbg, (void *) rc);
+    ui->rwin = Init_recordwindow(ui->mainbg, (void *)rc);
 }
 
 static void redrawLabel(struct xui *ui, struct xprc *rc, struct label *lb)
 {
-    int                        fn, hr, min, sec, fr, lw, vw, cw;
-    char                value_str[256];
+    int fn, hr, min, sec, fr, lw, vw, cw;
+    char value_str[256];
 
     XSetForeground(dpy, ui->gc, ui->black);
 
-    switch (lb->type) {
+    switch (lb->type)
+    {
 
     case LABEL_TIME:
         fn = (*lb->data.f)->number;
@@ -2131,7 +2241,7 @@ static void redrawLabel(struct xui *ui, struct xprc *rc, struct label *lb)
         break;
 
     case LABEL_STRING:
-        strcpy(value_str,lb->data.s);
+        strcpy(value_str, lb->data.s);
         break;
     }
 
@@ -2155,13 +2265,13 @@ static void redrawLabel(struct xui *ui, struct xprc *rc, struct label *lb)
                False);
     if (lb->j)
     {
-        lw = -lw-cw-vw;
-        cw = -cw-vw;
+        lw = -lw - cw - vw;
+        cw = -cw - vw;
         vw = -vw;
     }
     else
     {
-        vw = lw+cw;
+        vw = lw + cw;
         cw = lw;
         lw = 0;
     }
@@ -2180,9 +2290,10 @@ static void redrawLabel(struct xui *ui, struct xprc *rc, struct label *lb)
 
 static void redrawMain(struct xui *ui, struct xprc *rc)
 {
-    int                        i;
+    int i;
 
-    for (i = 0; i < NUM_LABELS; i++) {
+    for (i = 0; i < NUM_LABELS; i++)
+    {
         redrawLabel(ui, rc, &(ui->labels[i]));
     }
 }
@@ -2195,14 +2306,14 @@ static void redrawError(struct errorwin *ewin)
     if (!ewin->grabbed)
         XGrabPointer(dpy, ewin->win, True, 0, GrabModeAsync, GrabModeSync,
                      ewin->win, None, CurrentTime);
-    ewin->grabbed = True;        /* Only try once */
+    ewin->grabbed = True; /* Only try once */
 
-    while(*p != '\0')
+    while (*p != '\0')
     {
-        while(*p != '\0' && *p != '\n')
+        while (*p != '\0' && *p != '\n')
             p++;
         if (p != q)
-            XDrawString(dpy, ewin->win, ewin->gc, 5, y, q, p-q);
+            XDrawString(dpy, ewin->win, ewin->gc, 5, y, q, p - q);
         if (*p != '\0')
             p++;
         q = p;
@@ -2212,21 +2323,25 @@ static void redrawError(struct errorwin *ewin)
 
 static void BuildGamma(unsigned char tbl[256], double gamma)
 {
-    int                        i, v;
-    double                one_over_gamma, ind;
+    int i, v;
+    double one_over_gamma, ind;
     /* extern double        pow(double, double); */
 
     one_over_gamma = 1.0 / gamma;
-    for (i = 0 ; i <= 255; i++) {
-        ind = (double) i / 255.0;
+    for (i = 0; i <= 255; i++)
+    {
+        ind = (double)i / 255.0;
         v = (int)((255.0 * pow(ind, one_over_gamma)) + 0.5);
         tbl[i] = (v > 255) ? 255 : v;
     }
-    if (debug) {
+    if (debug)
+    {
         printf("gamma table for gamma correction factor %f:\n", gamma);
-        for (i = 0 ; i <= 255; i++) {
+        for (i = 0; i <= 255; i++)
+        {
             printf("%02x  ", tbl[i]);
-            if (!((i + 1) & 0x0F)) {
+            if (!((i + 1) & 0x0F))
+            {
                 printf("\n");
             }
         }
@@ -2235,7 +2350,8 @@ static void BuildGamma(unsigned char tbl[256], double gamma)
 
 static void GammaCorrect(unsigned char *data, int size, unsigned char tbl[256])
 {
-    while (size) {
+    while (size)
+    {
         *data = tbl[*data];
         size--;
         data++;
@@ -2245,49 +2361,51 @@ static void GammaCorrect(unsigned char *data, int size, unsigned char tbl[256])
 static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
                      double scale, double gamma, FILE *fp)
 {
-#define SCALE                4096
-#define HALFSCALE        2048
+#define SCALE 4096
+#define HALFSCALE 2048
 
-    unsigned char        *xelrow;
-    unsigned char        *tempxelrow;
-    unsigned char        *newxelrow;
-    unsigned char        *xP;
-    unsigned char        *nxP;
-    int                        rowsread, newrows, newcols;
-    int                        row, col, needtoreadrow;
-    double                xscale, yscale;
-    long                sxscale, syscale;
-    long                fracrowtofill, fracrowleft;
-    long                *rs;
-    long                *gs;
-    long                *bs;
-    long                r, g, b;
-    long                fraccoltofill, fraccolleft;
-    int                        needcol;
-    size_t                size_tempxelrow, size_newxelrow, size_rsgsbs;
-    unsigned char        gammatbl[256];
+    unsigned char *xelrow;
+    unsigned char *tempxelrow;
+    unsigned char *newxelrow;
+    unsigned char *xP;
+    unsigned char *nxP;
+    int rowsread, newrows, newcols;
+    int row, col, needtoreadrow;
+    double xscale, yscale;
+    long sxscale, syscale;
+    long fracrowtofill, fracrowleft;
+    long *rs;
+    long *gs;
+    long *bs;
+    long r, g, b;
+    long fraccoltofill, fraccolleft;
+    int needcol;
+    size_t size_tempxelrow, size_newxelrow, size_rsgsbs;
+    unsigned char gammatbl[256];
 
-    if (gamma > 0) {
+    if (gamma > 0)
+    {
         BuildGamma(gammatbl, gamma);
     }
 
-    newcols = (int) (cols * scale + 0.999);
-    newrows = (int) (rows * scale + 0.999);
-    xscale = (double) newcols / (double) cols;
-    yscale = (double) newrows / (double) rows;
-    sxscale = (long) (xscale * SCALE);
-    syscale = (long) (yscale * SCALE);
+    newcols = (int)(cols * scale + 0.999);
+    newrows = (int)(rows * scale + 0.999);
+    xscale = (double)newcols / (double)cols;
+    yscale = (double)newrows / (double)rows;
+    sxscale = (long)(xscale * SCALE);
+    syscale = (long)(yscale * SCALE);
     size_newxelrow = 3 * newcols;
     size_tempxelrow = 3 * cols;
     size_rsgsbs = cols * sizeof(long);
-    newxelrow = (unsigned char *) MyMalloc(size_newxelrow, MEM_MISC);
-    tempxelrow = (unsigned char *) MyMalloc(size_tempxelrow, MEM_MISC);
-    rs = (long *) MyMalloc(size_rsgsbs, MEM_MISC);
-    gs = (long *) MyMalloc(size_rsgsbs, MEM_MISC);
-    bs = (long *) MyMalloc(size_rsgsbs, MEM_MISC);
+    newxelrow = (unsigned char *)MyMalloc(size_newxelrow, MEM_MISC);
+    tempxelrow = (unsigned char *)MyMalloc(size_tempxelrow, MEM_MISC);
+    rs = (long *)MyMalloc(size_rsgsbs, MEM_MISC);
+    gs = (long *)MyMalloc(size_rsgsbs, MEM_MISC);
+    bs = (long *)MyMalloc(size_rsgsbs, MEM_MISC);
     fracrowtofill = SCALE;
     fracrowleft = syscale;
-    for (col = 0; col < cols; col++) {
+    for (col = 0; col < cols; col++)
+    {
         rs[col] = gs[col] = bs[col] = HALFSCALE;
     }
 
@@ -2298,15 +2416,20 @@ static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
     xelrow = rgbdata;
     rowsread = 1;
     needtoreadrow = 0;
-    for (row = 0; row < newrows; row++) {
-        while (fracrowleft < fracrowtofill) {
-            if (needtoreadrow) {
-                if (rowsread < rows) {
+    for (row = 0; row < newrows; row++)
+    {
+        while (fracrowleft < fracrowtofill)
+        {
+            if (needtoreadrow)
+            {
+                if (rowsread < rows)
+                {
                     xelrow = &rgbdata[3 * rowsread * cols];
                     rowsread++;
                 }
             }
-            for (col = 0, xP = xelrow; col < cols; col++) {
+            for (col = 0, xP = xelrow; col < cols; col++)
+            {
                 rs[col] += fracrowleft * *xP++;
                 gs[col] += fracrowleft * *xP++;
                 bs[col] += fracrowleft * *xP++;
@@ -2317,30 +2440,37 @@ static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
         }
 
         /* Now fracrowleft is >= fracrowtofill, so we can produce a row. */
-        if (needtoreadrow) {
-            if (rowsread < rows) {
+        if (needtoreadrow)
+        {
+            if (rowsread < rows)
+            {
                 xelrow = &rgbdata[3 * rowsread * cols];
                 rowsread++;
                 needtoreadrow = 0;
             }
         }
-        for (col = 0, xP = xelrow, nxP = tempxelrow; col < cols; col++) {
+        for (col = 0, xP = xelrow, nxP = tempxelrow; col < cols; col++)
+        {
             r = rs[col] + fracrowtofill * *xP++;
             g = gs[col] + fracrowtofill * *xP++;
             b = bs[col] + fracrowtofill * *xP++;
             r /= SCALE;
-            if (r > 255) r = 255;
+            if (r > 255)
+                r = 255;
             g /= SCALE;
-            if (g > 255) g = 255;
+            if (g > 255)
+                g = 255;
             b /= SCALE;
-            if (b > 255) b = 255;
+            if (b > 255)
+                b = 255;
             *nxP++ = r;
             *nxP++ = g;
             *nxP++ = b;
             rs[col] = gs[col] = bs[col] = HALFSCALE;
         }
         fracrowleft -= fracrowtofill;
-        if (fracrowleft == 0) {
+        if (fracrowleft == 0)
+        {
             fracrowleft = syscale;
             needtoreadrow = 1;
         }
@@ -2351,21 +2481,27 @@ static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
         fraccoltofill = SCALE;
         r = g = b = HALFSCALE;
         needcol = 0;
-        for (col = 0, xP = tempxelrow; col < cols; col++, xP += 3) {
+        for (col = 0, xP = tempxelrow; col < cols; col++, xP += 3)
+        {
             fraccolleft = sxscale;
-            while (fraccolleft >= fraccoltofill) {
-                if (needcol) {
+            while (fraccolleft >= fraccoltofill)
+            {
+                if (needcol)
+                {
                     r = g = b = HALFSCALE;
                 }
                 r += fraccoltofill * xP[0];
                 g += fraccoltofill * xP[1];
                 b += fraccoltofill * xP[2];
                 r /= SCALE;
-                if (r > 255) r = 255;
+                if (r > 255)
+                    r = 255;
                 g /= SCALE;
-                if (g > 255) g = 255;
+                if (g > 255)
+                    g = 255;
                 b /= SCALE;
-                if (b > 255) b = 255;
+                if (b > 255)
+                    b = 255;
                 *nxP++ = r;
                 *nxP++ = g;
                 *nxP++ = b;
@@ -2373,8 +2509,10 @@ static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
                 fraccoltofill = SCALE;
                 needcol = 1;
             }
-            if (fraccolleft > 0) {
-                if (needcol) {
+            if (fraccolleft > 0)
+            {
+                if (needcol)
+                {
                     r = g = b = HALFSCALE;
                     needcol = 0;
                 }
@@ -2384,24 +2522,30 @@ static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
                 fraccoltofill -= fraccolleft;
             }
         }
-        if (!needcol) {
-            if (fraccoltofill > 0) {
+        if (!needcol)
+        {
+            if (fraccoltofill > 0)
+            {
                 xP -= 3;
                 r += fraccoltofill * *xP++;
                 g += fraccoltofill * *xP++;
                 b += fraccoltofill * *xP++;
             }
             r /= SCALE;
-            if (r > 255) r = 255;
+            if (r > 255)
+                r = 255;
             g /= SCALE;
-            if (g > 255) g = 255;
+            if (g > 255)
+                g = 255;
             b /= SCALE;
-            if (b > 255) b = 255;
+            if (b > 255)
+                b = 255;
             *nxP++ = r;
             *nxP++ = g;
             *nxP++ = b;
         }
-        if (gamma > 0) {
+        if (gamma > 0)
+        {
             GammaCorrect(newxelrow, 3 * newcols, gammatbl);
         }
         fwrite(newxelrow, 1, 3 * newcols, fp);
@@ -2418,34 +2562,40 @@ static void ScalePPM(unsigned char *rgbdata, int cols, int rows,
 
 static void SaveFramesPPM(struct xprc *rc)
 {
-    struct frame        *begin = rc->save_first;
-    struct frame        *end = rc->save_last;
-    struct frame        *save;
-    Pixmap                pixmap;
-    XImage                *img;
-    unsigned long        pixel;
-    int                        i, x, y;
-    int                        done = 0;
-    FILE                *fp;
-    unsigned char        *ptr, *line, *rgbdata;
-    char                buf[256];
+    struct frame *begin = rc->save_first;
+    struct frame *end = rc->save_last;
+    struct frame *save;
+    Pixmap pixmap;
+    XImage *img;
+    unsigned long pixel;
+    int i, x, y;
+    int done = 0;
+    FILE *fp;
+    unsigned char *ptr, *line, *rgbdata;
+    char buf[256];
 
-    if (!begin) {
+    if (!begin)
+    {
         openErrorWindow(rc->ewin, "The first frame to save hasn't been set.");
     }
-    else if (!end) {
+    else if (!end)
+    {
         openErrorWindow(rc->ewin, "The last frame to save hasn't been set.");
     }
-    if (!begin || !end) {
+    if (!begin || !end)
+    {
         return;
     }
-    if (begin->number > end->number) {
+    if (begin->number > end->number)
+    {
         openErrorWindow(rc->ewin, "First save frame exceeds last save frame, "
-                        "not saving");
+                                  "not saving");
         return;
     }
-    if (!rc->seekable) {
-        if (!begin->shapes) {
+    if (!rc->seekable)
+    {
+        if (!begin->shapes)
+        {
             openErrorWindow(rc->ewin, "Save failed for standard input");
             return;
         }
@@ -2454,19 +2604,24 @@ static void SaveFramesPPM(struct xprc *rc)
     pixmap = XCreatePixmap(dpy, RootWindow(dpy, screen_num),
                            rc->view_width, rc->view_height,
                            DefaultDepth(dpy, screen_num));
-    if (pixmap == BadAlloc || pixmap == BadValue) {
+    if (pixmap == BadAlloc || pixmap == BadValue)
+    {
         openErrorWindow(rc->ewin, "Can't allocate a pixmap. Unable to save");
         return;
     }
-    if (rc->scale > 0) {
+    if (rc->scale > 0)
+    {
         rgbdata = (unsigned char *)MyMalloc(3 * rc->view_width * rc->view_height, MEM_MISC);
         line = NULL;
-    } else {
+    }
+    else
+    {
         line = (unsigned char *)MyMalloc(3 * rc->view_width, MEM_MISC);
         rgbdata = NULL;
     }
 
-    for (save = begin; !done; save = save->next) {
+    for (save = begin; !done; save = save->next)
+    {
         sprintf(buf, "Saving frame %d (of %d) ...\n",
                 save->number - begin->number + 1,
                 end->number - begin->number + 1);
@@ -2476,28 +2631,37 @@ static void SaveFramesPPM(struct xprc *rc)
                        0, 0,
                        rc->view_width, rc->view_height);
         XFlush(dpy);
-        if (!save->shapes) {
+        if (!save->shapes)
+        {
             readFrameData(rc, save);
         }
         drawShapes(save, pixmap, rc);
         XFlush(dpy);
 
-        if (!compress) {
+        if (!compress)
+        {
             sprintf(buf, "xp%05d.ppm", save->number);
-            if (!(fp = fopen(buf, "w"))) {
+            if (!(fp = fopen(buf, "w")))
+            {
                 perror(buf);
                 break;
-            } else {
+            }
+            else
+            {
                 setvbuf(fp, NULL, _IOFBF, (size_t)(8 * 1024));
             }
-        } else {
+        }
+        else
+        {
             sprintf(buf, "compress > xp%05d.ppm.Z", save->number);
-            if (!(fp = popen(buf, "w"))) {
+            if (!(fp = popen(buf, "w")))
+            {
                 perror(buf);
                 break;
             }
         }
-        if (!(rc->scale > 0)) {
+        if (!(rc->scale > 0))
+        {
             fprintf(fp, "P6\n");
             fprintf(fp, "%d %d\n", rc->view_width, rc->view_height);
             fprintf(fp, "%d\n", 255);
@@ -2507,19 +2671,27 @@ static void SaveFramesPPM(struct xprc *rc)
                         0, 0,
                         rc->view_width, rc->view_height,
                         AllPlanes, ZPixmap);
-        for (y = 0; y < rc->view_height; y++) {
-            if (rc->scale > 0) {
+        for (y = 0; y < rc->view_height; y++)
+        {
+            if (rc->scale > 0)
+            {
                 ptr = line = rgbdata + (3 * y * rc->view_width);
-            } else {
+            }
+            else
+            {
                 ptr = line;
             }
-            for (x = 0; x < rc->view_width; x++) {
+            for (x = 0; x < rc->view_width; x++)
+            {
                 pixel = XGetPixel(img, x, y);
-                for (i = 0;;) {
-                    if (pixel == rc->pixels[i]) {
+                for (i = 0;;)
+                {
+                    if (pixel == rc->pixels[i])
+                    {
                         break;
                     }
-                    if (++i >= rc->maxColors) {
+                    if (++i >= rc->maxColors)
+                    {
                         /* impossible? */
                         i = 0;
                         break;
@@ -2529,15 +2701,19 @@ static void SaveFramesPPM(struct xprc *rc)
                 *ptr++ = rc->colors[i].green >> 8;
                 *ptr++ = rc->colors[i].blue >> 8;
             }
-            if (rc->scale > 0) {
+            if (rc->scale > 0)
+            {
                 line = ptr;
-            } else {
+            }
+            else
+            {
                 fwrite(line, 1, 3 * rc->view_width, fp);
             }
         }
         XDestroyImage(img);
 
-        if (rc->scale > 0) {
+        if (rc->scale > 0)
+        {
             sprintf(buf, "Scaling frame %d (of %d) ...\n",
                     save->number - begin->number + 1,
                     end->number - begin->number + 1);
@@ -2546,26 +2722,35 @@ static void SaveFramesPPM(struct xprc *rc)
                      rc->scale, rc->gamma, fp);
         }
 
-        if (!compress) {
+        if (!compress)
+        {
             fclose(fp);
-        } else {
+        }
+        else
+        {
             pclose(fp);
         }
 
         done = (save == end);
     }
 
-    if (rc->scale > 0) {
+    if (rc->scale > 0)
+    {
         MyFree(rgbdata, 3 * rc->view_width * rc->view_height, MEM_MISC);
-    } else {
+    }
+    else
+    {
         MyFree(line, 3 * rc->view_width, MEM_MISC);
     }
     XFreePixmap(dpy, pixmap);
 
-    if (done) {
+    if (done)
+    {
         sprintf(buf, "Saved %d frames OK.\n", end->number - begin->number + 1);
         OverWriteMsg(rc, buf);
-    } else {
+    }
+    else
+    {
         sprintf(buf, "Saving failed!\n");
         OverWriteMsg(rc, buf);
     }
@@ -2614,21 +2799,24 @@ static void RWriteULong(unsigned long i, FILE *fp)
 
 static void RWriteString(char *str, FILE *fp)
 {
-    int                                len = strlen(str);
-    int                                i;
+    int len = strlen(str);
+    int i;
 
     RWriteUShort(len, fp);
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         putc(str[i], fp);
     }
 }
 
 static int pixel2index(struct xprc *rc, unsigned long pixel)
 {
-    int                                i;
+    int i;
 
-    for (i = 0; i < 2 * rc->maxColors; i++) {
-        if (rc->pixels[i] == pixel) {
+    for (i = 0; i < 2 * rc->maxColors; i++)
+    {
+        if (rc->pixels[i] == pixel)
+        {
             return i;
         }
     }
@@ -2638,22 +2826,24 @@ static int pixel2index(struct xprc *rc, unsigned long pixel)
 
 static XImage *pixmap2image(Pixmap pixmap)
 {
-    XImage                *img;
-    Window                rootw;
-    int                        x, y;
-    unsigned                width, height, border_width, depth;
+    XImage *img;
+    Window rootw;
+    int x, y;
+    unsigned width, height, border_width, depth;
 
     if (!XGetGeometry(dpy, pixmap, &rootw,
                       &x, &y,
                       &width, &height,
-                      &border_width, &depth)) {
+                      &border_width, &depth))
+    {
         return NULL;
     }
     img = XGetImage(dpy, pixmap,
                     0, 0,
                     width, height,
                     AllPlanes, ZPixmap);
-    if (!img) {
+    if (!img)
+    {
         return NULL;
     }
     return img;
@@ -2661,26 +2851,31 @@ static XImage *pixmap2image(Pixmap pixmap)
 
 static void RWriteTile(struct xprc *rc, struct rGC *gcp, FILE *fp)
 {
-    tile_list_t                        *tptr;
-    XImage                        *img;
-    int                                i, x, y;
+    tile_list_t *tptr;
+    XImage *img;
+    int i, x, y;
 
-    for (tptr = rc->tlist; tptr; tptr = tptr->next) {
-        if (tptr->tile == gcp->tile) {
+    for (tptr = rc->tlist; tptr; tptr = tptr->next)
+    {
+        if (tptr->tile == gcp->tile)
+        {
             break;
         }
     }
-    if (!tptr || tptr->tile_id == 0 || tptr->tile == None) {
+    if (!tptr || tptr->tile_id == 0 || tptr->tile == None)
+    {
         RWriteByte(RC_TILE, fp);
         RWriteByte(0, fp);
         return;
     }
-    if (tptr->flag) {
+    if (tptr->flag)
+    {
         RWriteByte(RC_TILE, fp);
         RWriteByte(tptr->tile_id, fp);
         return;
     }
-    if (!(img = pixmap2image(tptr->tile))) {
+    if (!(img = pixmap2image(tptr->tile)))
+    {
         RWriteByte(RC_TILE, fp);
         RWriteByte(0, fp);
         return;
@@ -2690,11 +2885,15 @@ static void RWriteTile(struct xprc *rc, struct rGC *gcp, FILE *fp)
     RWriteByte(tptr->tile_id, fp);
     RWriteUShort(img->width, fp);
     RWriteUShort(img->height, fp);
-    for (y = 0; y < img->height; y++) {
-        for (x = 0; x < img->width; x++) {
+    for (y = 0; y < img->height; y++)
+    {
+        for (x = 0; x < img->width; x++)
+        {
             unsigned long pixel = XGetPixel(img, x, y);
-            for (i = 0; i < rc->maxColors - 1; i++) {
-                if (pixel == rc->pixels[i]) {
+            for (i = 0; i < rc->maxColors - 1; i++)
+            {
+                if (pixel == rc->pixels[i])
+                {
                     break;
                 }
             }
@@ -2707,101 +2906,128 @@ static void RWriteTile(struct xprc *rc, struct rGC *gcp, FILE *fp)
 
 static void RWriteGC(struct xprc *rc, struct rGC *gcp, FILE *fp)
 {
-    int                                mask = 0;
-    int                                i;
+    int mask = 0;
+    int i;
 
-    if (gcp->mask == 0) {
+    if (gcp->mask == 0)
+    {
         RWriteByte(RC_NOGC, fp);
         return;
     }
 
     RWriteByte(RC_GC, fp);
 
-    if (gcp->mask & GCForeground) {
+    if (gcp->mask & GCForeground)
+    {
         mask |= RC_GC_FG;
     }
-    if (gcp->mask & GCBackground) {
+    if (gcp->mask & GCBackground)
+    {
         mask |= RC_GC_BG;
     }
-    if (gcp->mask & GCLineWidth) {
+    if (gcp->mask & GCLineWidth)
+    {
         mask |= RC_GC_LW;
     }
-    if (gcp->mask & GCLineStyle) {
+    if (gcp->mask & GCLineStyle)
+    {
         mask |= RC_GC_LS;
     }
-    if (gcp->mask & GCDashOffset) {
+    if (gcp->mask & GCDashOffset)
+    {
         mask |= RC_GC_DO;
     }
-    if (gcp->mask & GCFunction) {
+    if (gcp->mask & GCFunction)
+    {
         mask |= RC_GC_FU;
     }
-    if (gcp->num_dashes > 0 || (gcp->mask & GCDashOffset)) {
+    if (gcp->num_dashes > 0 || (gcp->mask & GCDashOffset))
+    {
         mask |= RC_GC_DA;
-        if (gcp->mask & GCDashOffset) {
+        if (gcp->mask & GCDashOffset)
+        {
             mask |= RC_GC_DO;
         }
     }
-    if (gcp->mask & GCFillStyle) {
+    if (gcp->mask & GCFillStyle)
+    {
         mask |= RC_GC_FS;
     }
-    if (gcp->mask & GCTileStipXOrigin) {
+    if (gcp->mask & GCTileStipXOrigin)
+    {
         mask |= RC_GC_XO;
     }
-    if (gcp->mask & GCTileStipYOrigin) {
+    if (gcp->mask & GCTileStipYOrigin)
+    {
         mask |= RC_GC_YO;
     }
-    if (gcp->mask & GCTile) {
+    if (gcp->mask & GCTile)
+    {
         mask |= RC_GC_TI;
     }
-    if ((mask & 0xFF00) != 0) {
+    if ((mask & 0xFF00) != 0)
+    {
         mask |= RC_GC_B2;
     }
 
     RWriteByte(mask, fp);
-    if (mask & RC_GC_B2) {
+    if (mask & RC_GC_B2)
+    {
         RWriteByte(mask >> 8, fp);
     }
-    if (mask & RC_GC_FG) {
+    if (mask & RC_GC_FG)
+    {
         RWriteByte(pixel2index(rc, gcp->foreground), fp);
     }
-    if (mask & RC_GC_BG) {
+    if (mask & RC_GC_BG)
+    {
         RWriteByte(pixel2index(rc, gcp->background), fp);
     }
-    if (mask & RC_GC_LW) {
+    if (mask & RC_GC_LW)
+    {
         RWriteByte(gcp->line_width, fp);
     }
-    if (mask & RC_GC_LS) {
+    if (mask & RC_GC_LS)
+    {
         RWriteByte(gcp->line_style, fp);
     }
-    if (mask & RC_GC_DO) {
+    if (mask & RC_GC_DO)
+    {
         RWriteByte(gcp->dash_offset, fp);
     }
-    if (mask & RC_GC_FU) {
+    if (mask & RC_GC_FU)
+    {
         RWriteByte(gcp->function, fp);
     }
-    if (mask & RC_GC_DA) {
+    if (mask & RC_GC_DA)
+    {
         RWriteByte(gcp->num_dashes, fp);
-        for (i = 0; i < gcp->num_dashes; i++) {
+        for (i = 0; i < gcp->num_dashes; i++)
+        {
             RWriteByte(gcp->dash_list[i], fp);
         }
     }
-    if (mask & RC_GC_FS) {
+    if (mask & RC_GC_FS)
+    {
         RWriteByte(gcp->fill_style, fp);
     }
-    if (mask & RC_GC_XO) {
+    if (mask & RC_GC_XO)
+    {
         RWriteLong(gcp->ts_x_origin, fp);
     }
-    if (mask & RC_GC_YO) {
+    if (mask & RC_GC_YO)
+    {
         RWriteLong(gcp->ts_y_origin, fp);
     }
-    if (mask & RC_GC_TI) {
+    if (mask & RC_GC_TI)
+    {
         RWriteTile(rc, gcp, fp);
     }
 }
 
 static void WriteHeader(struct xprc *rc, FILE *fp)
 {
-    int                                i;
+    int i;
 
     rewind(fp);
 
@@ -2827,7 +3053,8 @@ static void WriteHeader(struct xprc *rc, FILE *fp)
 
     /* Write info about graphics setup. */
     putc(rc->maxColors, fp);
-    for (i = 0; i < rc->maxColors; i++) {
+    for (i = 0; i < rc->maxColors; i++)
+    {
         RWriteULong(rc->colors[i].pixel, fp);
         RWriteUShort(rc->colors[i].red, fp);
         RWriteUShort(rc->colors[i].green, fp);
@@ -2843,16 +3070,18 @@ static void WriteHeader(struct xprc *rc, FILE *fp)
 static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
 {
     /* drawShapes(save, pixmap, rc); */
-    struct shape        *sp;
-    int                        i;
+    struct shape *sp;
+    int i;
 
     putc(RC_NEWFRAME, fp);
     RWriteUShort(f->width, fp);
     RWriteUShort(f->height, fp);
 
-    for (sp = f->shapes; sp != NULL; sp = sp->next) {
+    for (sp = f->shapes; sp != NULL; sp = sp->next)
+    {
 
-        switch(sp->type) {
+        switch (sp->type)
+        {
 
         case RC_DRAWARC:
             putc(RC_DRAWARC, fp);
@@ -2869,7 +3098,8 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             putc(RC_DRAWLINES, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.lines.npoints, fp);
-            for (i = 0; i < sp->shape.lines.npoints; i++) {
+            for (i = 0; i < sp->shape.lines.npoints; i++)
+            {
                 RWriteShort(sp->shape.lines.points[i].x, fp);
                 RWriteShort(sp->shape.lines.points[i].y, fp);
             }
@@ -2901,7 +3131,8 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             RWriteShort(sp->shape.string.y, fp);
             RWriteByte(sp->shape.string.font, fp);
             RWriteUShort(sp->shape.string.length, fp);
-            for (i = 0; i < sp->shape.string.length; i++) {
+            for (i = 0; i < sp->shape.string.length; i++)
+            {
                 putc(sp->shape.string.string[i], fp);
             }
             break;
@@ -2921,7 +3152,8 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             putc(RC_FILLPOLYGON, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.polygon.npoints, fp);
-            for (i = 0; i < sp->shape.polygon.npoints; i++) {
+            for (i = 0; i < sp->shape.polygon.npoints; i++)
+            {
                 RWriteShort(sp->shape.polygon.points[i].x, fp);
                 RWriteShort(sp->shape.polygon.points[i].y, fp);
             }
@@ -2950,7 +3182,8 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             putc(RC_FILLRECTANGLES, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.rectangles.nrectangles, fp);
-            for (i = 0; i < sp->shape.rectangles.nrectangles; i++) {
+            for (i = 0; i < sp->shape.rectangles.nrectangles; i++)
+            {
                 RWriteShort(sp->shape.rectangles.rectangles[i].x, fp);
                 RWriteShort(sp->shape.rectangles.rectangles[i].y, fp);
                 RWriteByte(sp->shape.rectangles.rectangles[i].width, fp);
@@ -2962,7 +3195,8 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             putc(RC_DRAWARCS, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.arcs.narcs, fp);
-            for (i = 0; i < sp->shape.arcs.narcs; i++) {
+            for (i = 0; i < sp->shape.arcs.narcs; i++)
+            {
                 RWriteShort(sp->shape.arcs.arcs[i].x, fp);
                 RWriteShort(sp->shape.arcs.arcs[i].y, fp);
                 RWriteByte(sp->shape.arcs.arcs[i].width, fp);
@@ -2976,7 +3210,8 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             putc(RC_DRAWSEGMENTS, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.segments.nsegments, fp);
-            for (i = 0; i < sp->shape.segments.nsegments; i++) {
+            for (i = 0; i < sp->shape.segments.nsegments; i++)
+            {
                 RWriteShort(sp->shape.segments.segments[i].x1, fp);
                 RWriteShort(sp->shape.segments.segments[i].y1, fp);
                 RWriteShort(sp->shape.segments.segments[i].x2, fp);
@@ -2997,49 +3232,63 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
 
 static void SaveFramesXPR(struct xprc *rc)
 {
-    struct frame        *begin = rc->save_first;
-    struct frame        *end = rc->save_last;
-    struct frame        *save;
-    int                        done = 0;
-    FILE                *fp;
-    tile_list_t                *tptr;
-    char                buf[256];
+    struct frame *begin = rc->save_first;
+    struct frame *end = rc->save_last;
+    struct frame *save;
+    int done = 0;
+    FILE *fp;
+    tile_list_t *tptr;
+    char buf[256];
 
-    if (!begin) {
+    if (!begin)
+    {
         openErrorWindow(rc->ewin, "The first frame to save hasn't been set.");
     }
-    else if (!end) {
+    else if (!end)
+    {
         openErrorWindow(rc->ewin, "The last frame to save hasn't been set.");
     }
-    if (!begin || !end) {
+    if (!begin || !end)
+    {
         return;
     }
-    if (begin->number > end->number) {
+    if (begin->number > end->number)
+    {
         openErrorWindow(rc->ewin, "First save frame exceeds last save frame, "
-                        "not saving");
+                                  "not saving");
         return;
     }
-    if (!rc->seekable) {
-        if (!begin->shapes) {
+    if (!rc->seekable)
+    {
+        if (!begin->shapes)
+        {
             openErrorWindow(rc->ewin, "Save failed for standard input");
             return;
         }
     }
-    for (tptr = rc->tlist; tptr; tptr = tptr->next) {
+    for (tptr = rc->tlist; tptr; tptr = tptr->next)
+    {
         tptr->flag = 0;
     }
 
-    if (!compress) {
+    if (!compress)
+    {
         sprintf(buf, "xp%d-%d.xpr", begin->number, end->number);
-        if (!(fp = fopen(buf, "w"))) {
+        if (!(fp = fopen(buf, "w")))
+        {
             perror(buf);
             return;
-        } else {
+        }
+        else
+        {
             setvbuf(fp, NULL, _IOFBF, (size_t)(8 * 1024));
         }
-    } else {
+    }
+    else
+    {
         sprintf(buf, "compress > xp%d-%d.xpr.Z", begin->number, end->number);
-        if (!(fp = popen(buf, "w"))) {
+        if (!(fp = popen(buf, "w")))
+        {
             perror(buf);
             return;
         }
@@ -3047,12 +3296,14 @@ static void SaveFramesXPR(struct xprc *rc)
 
     WriteHeader(rc, fp);
 
-    for (save = begin; !done; save = save->next) {
+    for (save = begin; !done; save = save->next)
+    {
         sprintf(buf, "Saving frame %d (of %d) ...\n",
                 save->number - begin->number + 1,
                 end->number - begin->number + 1);
         OverWriteMsg(rc, buf);
-        if (!save->shapes) {
+        if (!save->shapes)
+        {
             readFrameData(rc, save);
         }
         WriteFrame(rc, save, fp);
@@ -3062,10 +3313,13 @@ static void SaveFramesXPR(struct xprc *rc)
 
     fclose(fp);
 
-    if (done) {
+    if (done)
+    {
         sprintf(buf, "Saved %d frames OK.\n", end->number - begin->number + 1);
         OverWriteMsg(rc, buf);
-    } else {
+    }
+    else
+    {
         sprintf(buf, "Saving failed!\n");
         OverWriteMsg(rc, buf);
     }
@@ -3073,12 +3327,12 @@ static void SaveFramesXPR(struct xprc *rc)
 
 static void dox(struct xui *ui, struct xprc *rc)
 {
-    XEvent                event;
-    int                        count;
-    KeySym                keysym;
-    XComposeStatus        compose;
-    char                c;
-    struct timeval        tv0, tv1;
+    XEvent event;
+    int count;
+    KeySym keysym;
+    XComposeStatus compose;
+    char c;
+    struct timeval tv0, tv1;
 
     screen_num = DefaultScreen(dpy);
     colormap = DefaultColormap(dpy, screen_num);
@@ -3086,7 +3340,8 @@ static void dox(struct xui *ui, struct xprc *rc)
     Init_topview(rc);
 
     readNewFrame(rc);
-    if (rc->cur == NULL) {
+    if (rc->cur == NULL)
+    {
         fprintf(stderr, "No frames, nothing to do.\n");
         return;
     }
@@ -3103,24 +3358,27 @@ static void dox(struct xui *ui, struct xprc *rc)
 
     gettimeofday(&tv0, NULL);
 
-    for (;;) {
+    for (;;)
+    {
 
-        while (XEventsQueued(dpy, QueuedAfterFlush) > 0
-               || (!currentSpeed && !forceRedraw && !frameStep)) {
+        while (XEventsQueued(dpy, QueuedAfterFlush) > 0 || (!currentSpeed && !forceRedraw && !frameStep))
+        {
 
             XNextEvent(dpy, &event);
 
-            if (CheckButtonEvent(&event)) {
+            if (CheckButtonEvent(&event))
+            {
                 if (quit)
                     return;
                 continue;
             }
 
-            switch(event.type) {
+            switch (event.type)
+            {
 
             case ClientMessage:
-                if (event.xclient.message_type == ProtocolAtom
-                    && event.xclient.data.l[0] == KillAtom) {
+                if (event.xclient.message_type == ProtocolAtom && event.xclient.data.l[0] == KillAtom)
+                {
                     return;
                 }
                 break;
@@ -3128,23 +3386,29 @@ static void dox(struct xui *ui, struct xprc *rc)
             case Expose:
                 if (event.xexpose.count != 0)
                     break;
-                if (event.xany.window == rc->topview) {
+                if (event.xany.window == rc->topview)
+                {
                     forceRedraw = True;
                 }
-                if (event.xany.window == ui->topmain) {
+                if (event.xany.window == ui->topmain)
+                {
                     redrawMain(ui, rc);
                 }
-                if (event.xany.window == ui->ewin->win) {
+                if (event.xany.window == ui->ewin->win)
+                {
                     redrawError(ui->ewin);
                 }
                 break;
 
             case ButtonPress:
-                if (event.xany.window == rc->topview) {
-                    if (event.xbutton.button == 1) {
+                if (event.xany.window == rc->topview)
+                {
+                    if (event.xbutton.button == 1)
+                    {
                         frameStep--;
                     }
-                    else if (event.xbutton.button == 2) {
+                    else if (event.xbutton.button == 2)
+                    {
                         frameStep++;
                     }
                 }
@@ -3156,11 +3420,13 @@ static void dox(struct xui *ui, struct xprc *rc)
             case KeyPress:
                 count = XLookupString(&(event.xkey), &c, 1,
                                       &keysym, &compose);
-                if (count == NoSymbol) {
+                if (count == NoSymbol)
+                {
                     break;
                 }
 
-                switch(c) {
+                switch (c)
+                {
 
                 case 'f':
                 case 'F':
@@ -3207,64 +3473,78 @@ static void dox(struct xui *ui, struct xprc *rc)
             default:
                 break;
             }
-
         }
 
         gettimeofday(&tv1, NULL);
-        if (frameStep != 0) {
+        if (frameStep != 0)
+        {
             tv0 = tv1;
         }
-        else if (!forceRedraw && currentSpeed != 0) {
-            long        delta_sec = tv1.tv_sec - tv0.tv_sec;
-            long        delta_usec = (long)tv1.tv_usec - (long)tv0.tv_usec;
-            long        delta_time = 1000000L * delta_sec + delta_usec;
-            long        frame_rate = 1000000L / rc->fps;
+        else if (!forceRedraw && currentSpeed != 0)
+        {
+            long delta_sec = tv1.tv_sec - tv0.tv_sec;
+            long delta_usec = (long)tv1.tv_usec - (long)tv0.tv_usec;
+            long delta_time = 1000000L * delta_sec + delta_usec;
+            long frame_rate = 1000000L / rc->fps;
 
-            if (delta_time + 1000 < frame_rate) {
-                fd_set        rset;
-                int        rfd = ConnectionNumber(dpy);
-                int        num;
+            if (delta_time + 1000 < frame_rate)
+            {
+                fd_set rset;
+                int rfd = ConnectionNumber(dpy);
+                int num;
 
                 tv1.tv_sec = 0;
                 tv1.tv_usec = frame_rate - delta_time;
                 FD_ZERO(&rset);
                 FD_SET(rfd, &rset);
                 num = select(rfd + 1, &rset, NULL, NULL, &tv1);
-                if (num == 1) {
+                if (num == 1)
+                {
                     continue;
                 }
                 tv0.tv_usec = tv0.tv_usec + frame_rate;
-                if (tv0.tv_usec >= 1000000) {
+                if (tv0.tv_usec >= 1000000)
+                {
                     tv0.tv_usec -= 1000000;
                     tv0.tv_sec++;
                 }
             }
-            else {
+            else
+            {
                 tv0 = tv1;
             }
             frameStep += currentSpeed;
         }
 
-        while (frameStep > 0) {
-            if (rc->cur->next == NULL) {
-                if (rc->eof == False) {
+        while (frameStep > 0)
+        {
+            if (rc->cur->next == NULL)
+            {
+                if (rc->eof == False)
+                {
                     readNewFrame(rc);
                 }
             }
-            if (rc->cur->next != NULL) {
+            if (rc->cur->next != NULL)
+            {
                 rc->cur = rc->cur->next;
                 forceRedraw = True;
                 frameStep--;
             }
-            else {
+            else
+            {
                 frameStep = 0;
             }
         }
-        while (frameStep < 0) {
-            if (rc->cur->prev != NULL) {
-                if (!rc->seekable && rc->cur->prev->shapes == NULL) {
+        while (frameStep < 0)
+        {
+            if (rc->cur->prev != NULL)
+            {
+                if (!rc->seekable && rc->cur->prev->shapes == NULL)
+                {
                     static int before;
-                    if (!before++) {
+                    if (!before++)
+                    {
                         openErrorWindow(rc->ewin,
                                         "Can't go backwards any further, "
                                         "because input is not a regular "
@@ -3272,18 +3552,21 @@ static void dox(struct xui *ui, struct xprc *rc)
                     }
                     frameStep = 0;
                 }
-                else {
+                else
+                {
                     rc->cur = rc->cur->prev;
                     forceRedraw = True;
                     frameStep++;
                 }
             }
-            else {
+            else
+            {
                 frameStep = 0;
             }
         }
 
-        if (forceRedraw == True) {
+        if (forceRedraw == True)
+        {
             redrawWindow(rc);
             redrawLabel(ui, rc, &(ui->labels[LABEL_POSITION]));
         }
@@ -3292,67 +3575,85 @@ static void dox(struct xui *ui, struct xprc *rc)
 
 static void TestInput(struct xprc *rc)
 {
-    int                        fd = fileno(rc->fp);
-    struct stat                st;
-    unsigned char        ch0, ch1;
-    char                buf[1024];
+    int fd = fileno(rc->fp);
+    struct stat st;
+    unsigned char ch0, ch1;
+    char buf[1024];
 
     rc->seekable = False;
-    if (fstat(fd, &st)) {
+    if (fstat(fd, &st))
+    {
         perror("Can't stat input");
         return;
     }
     rc->seekable = S_ISREG(st.st_mode);
-    if (rc->seekable) {
+    if (rc->seekable)
+    {
         ch0 = getc(rc->fp);
         ch1 = getc(rc->fp);
         rewind(rc->fp);
-        if (ch0 == 0x1F && ch1 == 0x9D) {
-            if (verbose) {
+        if (ch0 == 0x1F && ch1 == 0x9D)
+        {
+            if (verbose)
+            {
                 fprintf(stderr, "%s: \"%s\" is in compressed format, starting compress...\n",
                         *Argv, rc->filename);
             }
             lseek(fd, 0L, SEEK_SET);
-            if (rc->fp == stdin) {
+            if (rc->fp == stdin)
+            {
                 sprintf(buf, "compress -d");
-            } else {
+            }
+            else
+            {
                 fclose(rc->fp);
                 sprintf(buf, "compress -d < %s", rc->filename);
             }
-            if ((rc->fp = popen(buf, "r")) == NULL) {
+            if ((rc->fp = popen(buf, "r")) == NULL)
+            {
                 perror("Unable to start compress");
                 exit(1);
             }
             rc->seekable = 0;
         }
-        if (ch0 == 0x1F && ch1 == 0x8B) {
-            if (verbose) {
+        if (ch0 == 0x1F && ch1 == 0x8B)
+        {
+            if (verbose)
+            {
                 fprintf(stderr, "%s: \"%s\" is in gzip format, starting gzip...\n",
                         *Argv, rc->filename);
             }
             lseek(fd, 0L, SEEK_SET);
-            if (rc->fp == stdin) {
+            if (rc->fp == stdin)
+            {
                 sprintf(buf, "gzip -d");
-            } else {
+            }
+            else
+            {
                 fclose(rc->fp);
                 sprintf(buf, "gzip -d < %s", rc->filename);
             }
-            if ((rc->fp = popen(buf, "r")) == NULL) {
+            if ((rc->fp = popen(buf, "r")) == NULL)
+            {
                 perror("Unable to start gzip");
                 exit(1);
             }
             rc->seekable = 0;
         }
     }
-    if (!rc->seekable) {
-        if (verbose) {
+    if (!rc->seekable)
+    {
+        if (verbose)
+        {
             fprintf(stderr,
                     "Input is not a regular file, this may result\n"
                     "in limited reverse playback functionality.\n");
         }
     }
-    else {
-        if (max_mem > 1 * 1024 * 1024) {
+    else
+    {
+        if (max_mem > 1 * 1024 * 1024)
+        {
             max_mem = 1 * 1024 * 1024;
         }
     }
@@ -3362,121 +3663,143 @@ static void usage(void)
 {
     fprintf(stderr, "Usage: %s [options] filename\n", *Argv);
     fprintf(stderr,
-"    If filename is a dash - then standard input is used.\n"
-"    Valid options are:\n"
-"        -scale \"factor\"\n"
-"               Set the scale reduction factor for saving operations.\n"
-"               Valid scale factors are in the range [0.01 - 1.0].\n"
-"        -gamma \"factor\"\n"
-"               Set the gamma correction factor when saving scaled frames.\n"
-"               Valid gamma correction factors are in the range [0.1 - 10].\n"
-"        -compress\n"
-"               Save frames compressed using the \"compress\" program.\n"
-"        -debug\n"
-"        -verbose\n"
-"        -help\n"
-"    In addition to the pushbuttons you can use the following keys:\n"
-"        f  -  move forwards to the next frame.\n"
-"        b  -  move backwards to the next frame.\n"
-"        z  -  move backwards to the first frame.\n"
-"        [  -  mark the current frame as the first frame to be saved.\n"
-"        ]  -  mark the current frame as the last frame to be saved.\n"
-"        *  -  save the marked frames in PPM format.\n"
-"              WARNING: saving many frames takes HUGE amounts of diskspace!\n"
-"        &  -  save the marked frames in XPilot Recording format.\n"
-"        q  -  quit the program.\n"
-    );
+            "    If filename is a dash - then standard input is used.\n"
+            "    Valid options are:\n"
+            "        -scale \"factor\"\n"
+            "               Set the scale reduction factor for saving operations.\n"
+            "               Valid scale factors are in the range [0.01 - 1.0].\n"
+            "        -gamma \"factor\"\n"
+            "               Set the gamma correction factor when saving scaled frames.\n"
+            "               Valid gamma correction factors are in the range [0.1 - 10].\n"
+            "        -compress\n"
+            "               Save frames compressed using the \"compress\" program.\n"
+            "        -debug\n"
+            "        -verbose\n"
+            "        -help\n"
+            "    In addition to the pushbuttons you can use the following keys:\n"
+            "        f  -  move forwards to the next frame.\n"
+            "        b  -  move backwards to the next frame.\n"
+            "        z  -  move backwards to the first frame.\n"
+            "        [  -  mark the current frame as the first frame to be saved.\n"
+            "        ]  -  mark the current frame as the last frame to be saved.\n"
+            "        *  -  save the marked frames in PPM format.\n"
+            "              WARNING: saving many frames takes HUGE amounts of diskspace!\n"
+            "        &  -  save the marked frames in XPilot Recording format.\n"
+            "        q  -  quit the program.\n");
     exit(2);
 }
 
 int main(int argc, char **argv)
 {
-    FILE                *fp;
-    int                        argi;
-    char                *filename;
-    struct xprc                *rc;
-    struct xui                *ui;
-    double                scale = 0;
-    double                gamma = 0;
+    FILE *fp;
+    int argi;
+    char *filename;
+    struct xprc *rc;
+    struct xui *ui;
+    double scale = 0;
+    double gamma = 0;
 
     Argc = argc;
     Argv = argv;
 
-    for (argi = 1; argi < argc; argi++) {
-        if (argv[argi][0] != '-' || argv[argi][1] == '\0') {
+    for (argi = 1; argi < argc; argi++)
+    {
+        if (argv[argi][0] != '-' || argv[argi][1] == '\0')
+        {
             break;
         }
-        else if (!strcmp(argv[argi], "-debug")) {
+        else if (!strcmp(argv[argi], "-debug"))
+        {
             debug = 1;
             verbose = 1;
         }
-        else if (!strcmp(argv[argi], "-verbose")) {
+        else if (!strcmp(argv[argi], "-verbose"))
+        {
             verbose = 1;
         }
-        else if (!strcmp(argv[argi], "-compress")) {
+        else if (!strcmp(argv[argi], "-compress"))
+        {
             compress = 1;
         }
-        else if (!strcmp(argv[argi], "-scale")) {
-            if (++argi == argc || sscanf(argv[argi], "%lf", &scale) != 1) {
+        else if (!strcmp(argv[argi], "-scale"))
+        {
+            if (++argi == argc || sscanf(argv[argi], "%lf", &scale) != 1)
+            {
                 usage();
             }
-            if (scale < 0.01 || scale > 1.0) {
+            if (scale < 0.01 || scale > 1.0)
+            {
                 usage();
             }
-            if (scale >= 1.0) {
+            if (scale >= 1.0)
+            {
                 scale = 0;
             }
         }
-        else if (!strcmp(argv[argi], "-gamma")) {
-            if (++argi == argc || sscanf(argv[argi], "%lf", &gamma) != 1) {
+        else if (!strcmp(argv[argi], "-gamma"))
+        {
+            if (++argi == argc || sscanf(argv[argi], "%lf", &gamma) != 1)
+            {
                 usage();
             }
-            if (gamma < 0.1 || gamma > 100) {
+            if (gamma < 0.1 || gamma > 100)
+            {
                 usage();
             }
-            if (gamma == 1.0) {
+            if (gamma == 1.0)
+            {
                 gamma = 0;
             }
         }
-        else {
+        else
+        {
             if (!strncmp(argv[argi], "-h", 2) ||
                 !strncmp(argv[argi], "--h", 3) ||
-                !strcmp(argv[argi], "-?")) {
+                !strcmp(argv[argi], "-?"))
+            {
                 usage();
             }
-            else if (argi < argc - 1) {
+            else if (argi < argc - 1)
+            {
                 fprintf(stderr, "%s: Unknown option \"%s\"\n", Argv[0], argv[argi]);
                 fprintf(stderr, "\tType: \"%s -help\" for some help.\n", Argv[0]);
                 exit(2);
             }
-            else {
+            else
+            {
                 break;
             }
         }
     }
-    if (argi != argc - 1) {
+    if (argi != argc - 1)
+    {
         usage();
     }
     filename = argv[argc - 1];
-    if (!strcmp(filename, "-")) {
+    if (!strcmp(filename, "-"))
+    {
         fp = stdin;
-    } else {
-        if ((fp = fopen(filename, "r")) == NULL) {
+    }
+    else
+    {
+        if ((fp = fopen(filename, "r")) == NULL)
+        {
             perror("Unable to open record file");
             fprintf(stderr, "Type: \"%s -help\" to get some help.\n", *argv);
             return 1;
         }
     }
 
-    if ((dpy = XOpenDisplay(NULL)) == NULL) {
+    if ((dpy = XOpenDisplay(NULL)) == NULL)
+    {
         fprintf(stderr, "Cannot connect to X server %s\n", XDisplayName(NULL));
         exit(1);
     }
 
-    ui = (struct xui *) MyMalloc(sizeof(*ui), MEM_UI);
+    ui = (struct xui *)MyMalloc(sizeof(*ui), MEM_UI);
     memset(ui, 0, sizeof(*ui));
 
-    rc = (struct xprc *) MyMalloc(sizeof(*rc), MEM_MISC);
+    rc = (struct xprc *)MyMalloc(sizeof(*rc), MEM_MISC);
     memset(rc, 0, sizeof(*rc));
     rc->filename = filename;
     rc->fp = fp;
@@ -3484,7 +3807,8 @@ int main(int argc, char **argv)
     rc->gamma = gamma;
     TestInput(rc);
     purge_argument = rc;
-    if (RReadHeader(rc) >= 0) {
+    if (RReadHeader(rc) >= 0)
+    {
         dox(ui, rc);
         FreeXPRCData(rc);
     }
@@ -3494,7 +3818,8 @@ int main(int argc, char **argv)
     MyFree(ui, sizeof(struct xui), MEM_UI);
     XCloseDisplay(dpy);
 
-    if (fp != NULL && fp != stdin) {
+    if (fp != NULL && fp != stdin)
+    {
         fclose(fp);
     }
 
@@ -3511,7 +3836,7 @@ static void quitCallback(void *data)
 
 static void stopCallback(void *data)
 {
-    struct xui *ui = (struct xui *) data;
+    struct xui *ui = (struct xui *)data;
 
     playState = STATE_PLAYING;
     currentSpeed = 0;
@@ -3528,7 +3853,7 @@ static void stopCallback(void *data)
 
 static void pauseCallback(void *data)
 {
-    struct xui *ui = (struct xui *) data;
+    struct xui *ui = (struct xui *)data;
 
     playState = STATE_PAUSED;
     currentSpeed = 0;
@@ -3546,7 +3871,7 @@ static void pauseCallback(void *data)
 /* ARGSUSED */
 static void rewindCallback(void *data)
 {
-    switch(playState)
+    switch (playState)
     {
     case STATE_PLAYING:
         currentSpeed = -10;
@@ -3560,7 +3885,7 @@ static void rewindCallback(void *data)
 /* ARGSUSED */
 static void fastfCallback(void *data)
 {
-    switch(playState)
+    switch (playState)
     {
     case STATE_PLAYING:
         currentSpeed = 10;
@@ -3574,7 +3899,7 @@ static void fastfCallback(void *data)
 /* ARGSUSED */
 static void playCallback(void *data)
 {
-    switch(playState)
+    switch (playState)
     {
     case STATE_PLAYING:
         currentSpeed = 1;
@@ -3588,7 +3913,7 @@ static void playCallback(void *data)
 /* ARGSUSED */
 static void revplayCallback(void *data)
 {
-    switch(playState)
+    switch (playState)
     {
     case STATE_PLAYING:
         currentSpeed = -1;
@@ -3601,36 +3926,35 @@ static void revplayCallback(void *data)
 
 static void recordCallback(void *data)
 {
-    struct xui *ui = (struct xui *) data;
+    struct xui *ui = (struct xui *)data;
 
     XMapWindow(dpy, ui->rwin->win);
 }
 
 static void markSaveStart(void *data)
 {
-    struct xprc                *rc = (struct xprc *) data;
+    struct xprc *rc = (struct xprc *)data;
 
     rc->save_first = rc->cur;
 }
 
 static void markSaveEnd(void *data)
 {
-    struct xprc                *rc = (struct xprc *) data;
+    struct xprc *rc = (struct xprc *)data;
 
     rc->save_last = rc->cur;
 }
 
 static void saveStartToEndPPM(void *data)
 {
-    struct xprc                *rc = (struct xprc *) data;
+    struct xprc *rc = (struct xprc *)data;
 
     SaveFramesPPM(rc);
 }
 
 static void saveStartToEndXPR(void *data)
 {
-    struct xprc                *rc = (struct xprc *) data;
+    struct xprc *rc = (struct xprc *)data;
 
     SaveFramesXPR(rc);
 }
-

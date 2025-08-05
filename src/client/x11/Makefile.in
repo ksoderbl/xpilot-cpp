@@ -106,7 +106,7 @@ am_xpilot_cpp_client_x11_OBJECTS = about.$(OBJEXT) bitmaps.$(OBJEXT) \
 	record.$(OBJEXT) sim.$(OBJEXT) talk.$(OBJEXT) \
 	welcome.$(OBJEXT) widget.$(OBJEXT) xevent.$(OBJEXT) \
 	xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) xpaint.$(OBJEXT) \
-	xpilot.$(OBJEXT) xpmread.$(OBJEXT)
+	xpilot.$(OBJEXT)
 xpilot_cpp_client_x11_OBJECTS = $(am_xpilot_cpp_client_x11_OBJECTS)
 xpilot_cpp_client_x11_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
@@ -137,7 +137,7 @@ am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/bitmaps.Po \
 	./$(DEPDIR)/welcome.Po ./$(DEPDIR)/widget.Po \
 	./$(DEPDIR)/xevent.Po ./$(DEPDIR)/xeventhandlers.Po \
 	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpaint.Po \
-	./$(DEPDIR)/xpilot.Po ./$(DEPDIR)/xpmread.Po
+	./$(DEPDIR)/xpilot.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -317,8 +317,7 @@ xpilot_cpp_client_x11_SOURCES = \
     xinit.h \
     xpaint.cpp \
     xpaint.h \
-    xpilot.cpp \
-    xpmread.cpp
+    xpilot.cpp
 
 xpilot_cpp_client_x11_LDADD = $(top_builddir)/src/client/libxpclient.a $(top_builddir)/src/common/libxpcommon.a -lX11 -lm
 all: all-am
@@ -431,7 +430,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinit.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpaint.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpilot.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmread.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -603,7 +601,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/xinit.Po
 	-rm -f ./$(DEPDIR)/xpaint.Po
 	-rm -f ./$(DEPDIR)/xpilot.Po
-	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -673,7 +670,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/xinit.Po
 	-rm -f ./$(DEPDIR)/xpaint.Po
 	-rm -f ./$(DEPDIR)/xpilot.Po
-	-rm -f ./$(DEPDIR)/xpmread.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
