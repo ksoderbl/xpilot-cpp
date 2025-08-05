@@ -34,10 +34,19 @@
 #define FPS (Setup->frames_per_second)
 #define MAX_SUPPORTED_FPS 255
 
+typedef struct
+{
+        int view_width;
+        int view_height;
+        int spark_rand;
+        int num_spark_colors;
+} display_t;
+
 extern int simulating;
 extern setup_t *Setup;
 extern int receive_window_size;
 extern long last_loops;
+extern display_t server_display; /* the servers idea about our display */
 
 int Net_setup(void);
 int Net_verify(char *real, char *nick, char *dpy, int my_team);
