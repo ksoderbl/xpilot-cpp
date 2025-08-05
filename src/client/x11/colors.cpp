@@ -68,7 +68,6 @@ static const char *gray_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visual;
 int dispDepth;
-bool colorSwitch;
 bool blockBitmaps; /* Whether to draw everything as bitmaps. */
 
 /*
@@ -223,8 +222,7 @@ static void Choose_visual(void)
         {
             if (sscanf(visualName, "%x", &visual_id) < 1)
             {
-                errno = 0;
-                xperror("Bad visual id \"%s\", using default\n", visualName);
+                warn("Bad visual id \"%s\", using default\n", visualName);
                 visual_id = -1;
             }
         }
@@ -241,9 +239,8 @@ static void Choose_visual(void)
             }
             if (visual_class == -1)
             {
-                errno = 0;
-                xperror("Unknown visual class named \"%s\", using default\n",
-                        visualName);
+                warn("Unknown visual class named \"%s\", using default\n",
+                     visualName);
             }
         }
     }
@@ -281,9 +278,8 @@ static void Choose_visual(void)
         {
             if (using_default == false)
             {
-                errno = 0;
-                xperror("No visuals available with class name \"%s\", using default",
-                        visualName);
+                warn("No visuals available with class name \"%s\", using default",
+                     visualName);
             }
             visual_class = -1;
         }
@@ -386,8 +382,9 @@ static void Fill_colormap(void)
     unsigned long pixels[256];
     XColor mycolors[256];
 
-    if (colormap == 0 || colorSwitch != true)
+    if (colormap == 0 || false != true)
     {
+        printf("Fill_colormap: returning early\n");
         return;
     }
     cells_needed = (maxColors == 16)  ? 256
@@ -444,40 +441,29 @@ int Colors_init(void)
 
     Choose_visual();
 
+    printf("Colors_init: Using visual %s\n", Visual_class_name(visual->c_class));
+
     /*
      * Get misc. display info.
      */
-    if (visual->c_class == StaticGray ||
-        visual->c_class == StaticColor ||
-        visual->c_class == TrueColor)
-    {
-        colorSwitch = false;
-    }
-    if (visual->map_entries < 16)
-    {
-        colorSwitch = false;
-    }
-    if (colorSwitch == true)
-    {
-        maxColors = (maxColors >= 16 && visual->map_entries >= 256) ? 16
-                    : (maxColors >= 8 && visual->map_entries >= 64) ? 8
-                                                                    : 4;
-    }
-    else
-    {
-        maxColors = (maxColors >= 16 && visual->map_entries >= 16) ? 16
-                    : (maxColors >= 8 && visual->map_entries >= 8) ? 8
-                                                                   : 4;
-    }
+    printf("Colors_init: maxColors 1: %d\n", maxColors);
+    printf("Colors_init: visual->map_entries: %d\n", visual->map_entries);
+    maxColors = (maxColors >= 16 && visual->map_entries >= 16) ? 16
+                : (maxColors >= 8 && visual->map_entries >= 8) ? 8
+                                                               : 4;
+    printf("Colors_init: maxColors 2: %d\n", maxColors);
     num_planes = (maxColors == 16)  ? 4
                  : (maxColors == 8) ? 3
                                     : 2;
+    printf("Colors_init: num_planes: %d\n", num_planes);
 
     if (Parse_colors(DefaultColormap(dpy, DefaultScreen(dpy))) == -1)
     {
         printf("Color parsing failed\n");
         return -1;
     }
+
+    printf("Colors_init: colormap: %d\n", colormap);
 
     if (colormap != 0)
     {
@@ -490,7 +476,7 @@ int Colors_init(void)
                                      ? colormap
                                      : DefaultColormap(dpy,
                                                        DefaultScreen(dpy)),
-                                 ((colorSwitch) ? COLOR_SWITCH : PIXMAP_COPY),
+                                 PIXMAP_COPY,
                                  num_planes,
                                  colors);
     }
@@ -506,7 +492,7 @@ int Colors_init(void)
         if (dbuf_state == NULL)
         {
             dbuf_state = start_dbuff(dpy, colormap,
-                                     ((colorSwitch) ? COLOR_SWITCH : PIXMAP_COPY),
+                                     PIXMAP_COPY,
                                      num_planes,
                                      colors);
         }
@@ -523,10 +509,6 @@ int Colors_init(void)
 
     switch (dbuf_state->type)
     {
-    case COLOR_SWITCH:
-        printf("Using color switching\n");
-        break;
-
     case PIXMAP_COPY:
         printf("Using pixmap copying\n");
         break;
@@ -636,14 +618,6 @@ static int Colors_init_block_bitmap_colors(void)
  */
 int Colors_init_block_bitmaps(void)
 {
-    if (dbuf_state->type == COLOR_SWITCH)
-    {
-        if (blockBitmaps)
-        {
-            printf("Can't do blockBitmaps if colorSwitch\n");
-            blockBitmaps = false;
-        }
-    }
     if (blockBitmaps)
     {
         if (Colors_init_block_bitmap_colors() == -1)

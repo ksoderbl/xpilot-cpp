@@ -46,7 +46,6 @@ extern char visualName[MAX_VISUAL_NAME];
 extern Visual *visual;
 extern int dispDepth;
 extern bool blockBitmaps;
-extern bool colorSwitch;
 extern char color_names[MAX_COLORS][MAX_COLOR_LEN];
 extern int top_width, top_height;
 // extern int                draw_width, draw_height;

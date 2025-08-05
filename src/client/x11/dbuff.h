@@ -27,8 +27,7 @@
 
 typedef enum
 {
-    PIXMAP_COPY,
-    COLOR_SWITCH
+    PIXMAP_COPY
 } dbuff_t;
 
 typedef struct

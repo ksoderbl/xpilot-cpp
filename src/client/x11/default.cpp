@@ -606,12 +606,6 @@ option options[] = {
      "Specify which visual to use for allocating colors.\n"
      "To get a listing of all possible visuals on your dislay\n"
      "set the argument for this option to list.\n"},
-    {"colorSwitch",
-     NULL,
-     "Yes",
-     KEY_DUMMY,
-     "Use color buffering or not.\n"
-     "Usually color buffering is faster, especially on 8-bit PseudoColor displays.\n"},
     {"maxColors",
      NULL,
      "8",
@@ -2176,7 +2170,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_resource(rDB, "modifierBank4", modBankStr[3], sizeof modBankStr[3]);
 
     Get_resource(rDB, "visual", visualName, sizeof visualName);
-    Get_bool_resource(rDB, "colorSwitch", &colorSwitch);
 
     Get_int_resource(rDB, "maxColors", &maxColors);
 

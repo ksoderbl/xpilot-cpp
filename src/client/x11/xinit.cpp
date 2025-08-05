@@ -413,11 +413,11 @@ int Init_top(void)
     {
         wallColor = BLUE;
     }
-    if (wallRadarColor >= maxColors || ((wallRadarColor & 1) && colorSwitch))
+    if (wallRadarColor >= maxColors)
     {
         wallRadarColor = BLUE;
     }
-    if (targetRadarColor >= maxColors || ((targetRadarColor & 1) && colorSwitch))
+    if (targetRadarColor >= maxColors)
     {
         targetRadarColor = BLUE;
     }
@@ -429,9 +429,9 @@ int Init_top(void)
     {
         decorColor = RED;
     }
-    if (decorRadarColor >= maxColors || ((decorRadarColor & 1) && colorSwitch))
+    if (decorRadarColor >= maxColors)
     {
-        decorRadarColor = 2;
+        decorRadarColor = BLUE;
     }
 
     shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
@@ -615,11 +615,6 @@ int Init_top(void)
               BlackPixel(dpy, DefaultScreen(dpy)),
               GXcopy, AllPlanes);
 
-    if (dbuf_state->type == COLOR_SWITCH)
-    {
-        XSetPlaneMask(dpy, gameGC, dbuf_state->drawing_planes);
-    }
-
     windowColor = BLUE;
     buttonColor = RED;
     borderColor = WHITE;
@@ -719,18 +714,10 @@ int Init_playing_windows(void)
      */
     switch (dbuf_state->type)
     {
-
     case PIXMAP_COPY:
         radarPixmap = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         radarPixmap2 = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
-        break;
-
-    case COLOR_SWITCH:
-        radarPixmap2 = radarWindow;
-        radarPixmap = radarWindow;
-        drawPixmap = drawWindow;
-        Paint_sliding_radar();
         break;
     }
 

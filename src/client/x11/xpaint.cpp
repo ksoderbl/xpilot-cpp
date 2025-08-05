@@ -324,12 +324,6 @@ void Paint_frame(void)
 
     dbuff_switch(dbuf_state);
 
-    if (dbuf_state->type == COLOR_SWITCH)
-    {
-        XSetPlaneMask(dpy, gameGC, dbuf_state->drawing_planes);
-        XSetPlaneMask(dpy, messageGC, dbuf_state->drawing_planes);
-    }
-
     if (!damaged)
     {
         SET_FG(colors[BLACK].pixel);

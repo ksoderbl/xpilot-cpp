@@ -97,7 +97,6 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
         state->colormaps[0] == NULL ||
         state->planes == NULL)
     {
-
         dbuff_release(state);
         return NULL;
     }
@@ -110,20 +109,6 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     {
     case PIXMAP_COPY:
         state->colormap_index = 0;
-        break;
-
-    case COLOR_SWITCH:
-        if (XAllocColorCells(state->display,
-                             state->xcolormap,
-                             False,
-                             state->planes,
-                             2 * num_planes,
-                             &state->pixel,
-                             1) == 0)
-        {
-            dbuff_release(state);
-            return NULL;
-        }
         break;
 
     default:
@@ -140,15 +125,7 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
         state->drawing_plane_masks[1] &= ~state->planes[num_planes + i];
     }
 
-    if (state->type == COLOR_SWITCH)
-    {
-        for (i = 0; i < (1 << num_planes); i++)
-        {
-            colors[i].pixel = dbuff_color(state, i | (i << num_planes));
-            colors[i].flags = DoRed | DoGreen | DoBlue;
-        }
-    }
-    else if (num_planes > 1)
+    if (num_planes > 1)
     {
         for (i = 0; i < (1 << num_planes); i++)
         {
@@ -183,37 +160,16 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
 
     state->drawing_planes = state->drawing_plane_masks[state->colormap_index];
 
-    if (state->type == COLOR_SWITCH)
-    {
-        XStoreColors(state->display,
-                     state->xcolormap,
-                     state->colormaps[state->colormap_index],
-                     state->colormap_size);
-    }
-
     return state;
 }
 
 void dbuff_switch(dbuff_state_t *state)
 {
     state->colormap_index ^= 1;
-
-    if (state->type == COLOR_SWITCH)
-    {
-        XStoreColors(state->display, state->xcolormap,
-                     state->colormaps[state->colormap_index], state->colormap_size);
-    }
     state->drawing_planes = state->drawing_plane_masks[state->colormap_index];
 }
 
 void end_dbuff(dbuff_state_t *state)
 {
-    if (state->type == COLOR_SWITCH)
-    {
-        XFreeColors(state->display, state->xcolormap,
-                    &state->pixel, 1,
-                    ~(state->drawing_plane_masks[0] &
-                      state->drawing_plane_masks[1]));
-    }
     dbuff_release(state);
 }
