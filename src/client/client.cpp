@@ -44,8 +44,8 @@
 #include "protoclient.h"
 #include "talk.h"
 
-ipos_t pos;
-ipos_t vel;
+ipos_t selfPos;
+ipos_t selfVel;
 ipos_t world;
 ipos_t realWorld;
 short heading;
@@ -134,6 +134,8 @@ bool auto_shield = 1; /* shield drops for fire */
 
 int maxFPS; /* Client's own FPS */
 int oldMaxFPS;
+double clientFPS = 1.0; /* FPS client is drawing at */
+int clientLag = 0;
 
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
@@ -283,10 +285,10 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 uint8_t *newNumItems, int newCurrentTank,
                 int newFuelSum, int newFuelMax, int newPacketSize)
 {
-    pos.x = x;
-    pos.y = y;
-    vel.x = vx;
-    vel.y = vy;
+    selfPos.x = x;
+    selfPos.y = y;
+    selfVel.x = vx;
+    selfVel.y = vy;
     heading = newHeading;
     displayedPower = newPower;
     displayedTurnspeed = newTurnspeed;
@@ -314,8 +316,8 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
         packet_size = newPacketSize;
     }
 
-    world.x = pos.x - (ext_view_width / 2);
-    world.y = pos.y - (ext_view_height / 2);
+    world.x = selfPos.x - (ext_view_width / 2);
+    world.y = selfPos.y - (ext_view_height / 2);
     realWorld = world;
     if (BIT(Setup->mode, WRAP_PLAY))
     {
@@ -481,7 +483,7 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshiel
      * BG: XXX there was a bug here.  self was dereferenced at "self->id"
      * while self could be NULL here.
      */
-    if (!selfVisible && ((x == pos.x && y == pos.y) || (self && id == self->id)))
+    if (!selfVisible && ((x == selfPos.x && y == selfPos.y) || (self && id == self->id)))
     {
         int radarx, radary;
         eyesId = id;

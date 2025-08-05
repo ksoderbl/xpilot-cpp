@@ -192,8 +192,8 @@ typedef struct
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
 
-extern ipos_t pos;
-extern ipos_t vel;
+extern ipos_t selfPos;
+extern ipos_t selfVel;
 extern ipos_t world;
 extern ipos_t realWorld;
 extern short heading;
@@ -283,6 +283,8 @@ extern bool pointerControl;        /* current state of mouse ship flying */
 
 extern int maxFPS; /* Client's own FPS */
 extern int oldMaxFPS;
+extern double clientFPS; /* FPS client is drawing at */
+extern int clientLag;
 
 extern int clientPortStart; /* First UDP port for clients */
 extern int clientPortEnd;   /* Last one (these are for firewalls) */

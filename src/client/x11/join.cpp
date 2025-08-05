@@ -165,6 +165,9 @@ static void Input_loop(void)
         }
         if (FD_ISSET(netfd, &rfds) || result > 1)
         {
+            struct timeval tv1, tv2;
+
+            gettimeofday(&tv1, NULL);
             if ((result = Net_input()) == -1)
             {
                 errno = 0;
@@ -200,6 +203,23 @@ static void Input_loop(void)
                 if (Handle_input(1) == -1)
                 {
                     return;
+                }
+            }
+
+            {
+                int s, us;
+                static time_t olds = 0;
+
+                gettimeofday(&tv2, NULL);
+
+                s = tv2.tv_sec - tv1.tv_sec;
+                us = tv2.tv_usec - tv1.tv_usec;
+
+                us += s * 1000000;
+                if (olds != tv2.tv_sec)
+                {
+                    clientLag = us;
+                    olds = tv2.tv_sec;
                 }
             }
         }

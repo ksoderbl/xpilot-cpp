@@ -21,6 +21,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <iostream>
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -110,14 +112,9 @@ Colormap colormap;         /* Private colormap */
 int maxColors;             /* Max. number of colors to use */
 bool gotFocus;
 // bool players_exposed;
-// short        ext_view_width;                /* Width of extended visible area */
-// short        ext_view_height;        /* Height of extended visible area */
-// int        active_view_width;        /* Width of active map area displayed. */
-// int        active_view_height;        /* Height of active map area displayed. */
-// int        ext_view_x_offset;        /* Offset ext_view_width */
-// int        ext_view_y_offset;        /* Offset ext_view_height */
 
-bool titleFlip;          /* Do special title bar flipping? */
+// TODO: Remove titleFlip
+bool titleFlip = true;   /* Do special title bar flipping? */
 int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 char *texturePath = NULL; /* Path list of texture directories */
@@ -168,6 +165,7 @@ void Paint_frame(void)
     /*
      * Switch between two different window titles.
      */
+#define TITLE_DELAY 100
     if (titleFlip && (loops % TITLE_DELAY) == 0)
     {
         scroll_i = !scroll_i;
@@ -222,6 +220,8 @@ void Paint_frame(void)
         Paint_ships();
         Paint_meters();
         Paint_HUD();
+        Paint_HUD_values();
+
         Paint_recording();
 
         Rectangle_end();
@@ -273,8 +273,8 @@ void Paint_frame(void)
             int x, y, w, h;
             float xp, yp, xo, yo;
 
-            xp = (float)(pos.x * 256) / Setup->width;
-            yp = (float)(pos.y * RadarHeight) / Setup->height;
+            xp = (float)(selfPos.x * 256) / Setup->width;
+            yp = (float)(selfPos.y * RadarHeight) / Setup->height;
             xo = (float)256 / 2;
             yo = (float)RadarHeight / 2;
             if (xo <= xp)
@@ -314,8 +314,13 @@ void Paint_frame(void)
 
     if (dbuf_state->type == PIXMAP_COPY)
     {
-        XCopyArea(dpy, drawPixmap, drawWindow, gameGC,
-                  0, 0, ext_view_width, ext_view_height, 0, 0);
+        // std::cout << "Paint_frame: drawWindow size: " << draw_width << "x" << draw_height << std::endl;
+        // std::cout << "Paint_frame: ext view   size: " << ext_view_width << "x" << ext_view_height << std::endl;
+
+        // BUGFIX: This old code was buggy, because sometimes (with scalefactor < 1 ?) ext_view_width and ext_view_height are
+        // smaller than the draw window, e.g. resulting in the rightmost and bottom part of the draw window not being drawn.
+        // XCopyArea(dpy, drawPixmap, drawWindow, gameGC, 0, 0, ext_view_width, ext_view_height, 0, 0);
+        XCopyArea(dpy, drawPixmap, drawWindow, gameGC, 0, 0, draw_width, draw_height, 0, 0);
     }
 
     dbuff_switch(dbuf_state);

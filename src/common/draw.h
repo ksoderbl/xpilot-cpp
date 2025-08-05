@@ -61,10 +61,6 @@
 
 #define DSIZE 4 /* Size of diamond (on radar) */
 
-#define MSG_DURATION 1024
-#define MSG_FLASH 892
-
-#define TITLE_DELAY 500
 #define UPDATE_SCORE_DELAY (FPS)
 #define CONTROL_DELAY 100
 

@@ -21,6 +21,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <iostream>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cctype>
@@ -836,21 +838,33 @@ void Resize(Window w, int width, int height)
     {
         return;
     }
-    /* ignore illegal resizes */
+
+    std::cout << "Resize: size: " << width << "x" << height << std::endl;
+
+    // Limits for resizing
     LIMIT(width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
     LIMIT(height, MIN_TOP_HEIGHT, MAX_TOP_HEIGHT);
     if (width == top_width && height == top_height)
     {
+        // Same size as before, don't need to do anything.
         return;
     }
+
     top_width = width;
     top_height = height;
+
+    std::cout << "Resize: topWindow size: " << top_width << "x" << top_height << std::endl;
+
     if (!drawWindow)
     {
         return;
     }
+    // Draw window does not include the top left radar or the scorelist/config area.
     draw_width = top_width - 258;
     draw_height = top_height;
+
+    std::cout << "Resize: drawWindow size: " << width << "x" << height << std::endl;
+
     Send_display();
     Net_flush();
     XResizeWindow(dpy, drawWindow, draw_width, draw_height);
@@ -859,6 +873,7 @@ void Resize(Window w, int width, int height)
         XFreePixmap(dpy, drawPixmap);
         drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
     }
+    // Players window is the scorelist/config area below the radar.
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
     XResizeWindow(dpy, playersWindow,
                   players_width, players_height);

@@ -29,8 +29,8 @@
 #define MAX_MSGS 15       /* Max. messages displayed ever */
 #define MAX_HIST_MSGS 128 /* maximum */
 
-// #define MSG_DURATION            1024
-// #define MSG_FLASH            892
+#define MSG_DURATION 1024
+#define MSG_FLASH 892
 
 /*
  * is a selection pending (in progress), done, drawn emphasized?

@@ -132,15 +132,4 @@ typedef struct
     /* plus more mapdata here (HACK) */
 } setup_t;
 
-// #ifndef NETSERVER_C
-// #ifdef FPS
-// #error "FPS needs a different definition in the client"
-// #undef FPS
-// #endif
-// #define FPS (Setup->frames_per_second)
-
-// extern setup_t *Setup;
-
-// #endif
-
 #endif

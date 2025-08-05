@@ -417,13 +417,13 @@ void Paint_HUD(void)
     /*
      * Show speed pointer
      */
-    if (ptr_move_fact != 0.0 && selfVisible != 0 && (vel.x != 0 || vel.y != 0))
+    if (ptr_move_fact != 0.0 && selfVisible != 0 && (selfVel.x != 0 || selfVel.y != 0))
     {
         Segment_add(hudColor,
                     ext_view_width / 2,
                     ext_view_height / 2,
-                    (int)(ext_view_width / 2 - ptr_move_fact * vel.x),
-                    (int)(ext_view_height / 2 + ptr_move_fact * vel.y));
+                    (int)(ext_view_width / 2 - ptr_move_fact * selfVel.x),
+                    (int)(ext_view_height / 2 + ptr_move_fact * selfVel.y));
     }
 
     if (instruments.showHUDRadar)
@@ -439,8 +439,8 @@ void Paint_HUD(void)
      */
     SET_FG(colors[hudColor].pixel);
 
-    hud_pos_x = (int)(ext_view_width / 2 - hud_move_fact * vel.x);
-    hud_pos_y = (int)(ext_view_height / 2 + hud_move_fact * vel.y);
+    hud_pos_x = (int)(ext_view_width / 2 - hud_move_fact * selfVel.x);
+    hud_pos_y = (int)(ext_view_height / 2 + hud_move_fact * selfVel.y);
 
     /* HUD frame */
     gcv.line_style = LineOnOffDash;
@@ -894,4 +894,33 @@ void Paint_recording(void)
     x = WINSCALE(ext_view_width) - 10 - w;
     y = 10 + gameFont->ascent;
     XDrawString(dpy, drawPixmap, gameGC, x, y, buf, len);
+}
+
+void Paint_HUD_values(void)
+{
+    int w, x, y, len, w2, len2, wmax;
+    static char buf[32], buf2[32];
+
+    // if (!hudColor)
+    //     return;
+    // SET_FG(colors[hudColor].pixel);
+    SET_FG(colors[4].pixel); // TODO
+
+    sprintf(buf, "CL.FPS : %.3f", clientFPS);
+    sprintf(buf2, "CL.LAG : %d us", clientLag);
+
+    len = strlen(buf);
+    w = XTextWidth(gameFont, buf, len);
+    len2 = strlen(buf2);
+    w2 = XTextWidth(gameFont, buf2, len2);
+
+    wmax = MAX(w, w2);
+
+    x = WINSCALE(ext_view_width) - 10 - wmax;
+    y = 200 + gameFont->ascent;
+    rd.drawString(dpy, drawPixmap, gameGC, x, y, buf, len);
+
+    x = WINSCALE(ext_view_width) - 10 - wmax;
+    y = 220 + gameFont->ascent;
+    rd.drawString(dpy, drawPixmap, gameGC, x, y, buf2, len2);
 }

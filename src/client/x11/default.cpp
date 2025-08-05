@@ -551,13 +551,6 @@ option options[] = {
      "0",
      KEY_DUMMY,
      "Specifies the size of the background points.  0 means no points.\n"},
-    {"titleFlip",
-     NULL,
-     "Yes",
-     KEY_DUMMY,
-     "Should the title bar change or not.\n"
-     "Some window managers like twm may have problems with\n"
-     "flipping title bars.  Hence this option to turn it off.\n"},
     {"toggleShield",
      NULL,
      "No",
@@ -2173,7 +2166,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_int_resource(rDB, "teamShotSize", &teamshot_size);
     LIMIT(teamshot_size, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
     Get_bool_resource(rDB, "showNastyShots", &showNastyShots);
-    Get_bool_resource(rDB, "titleFlip", &titleFlip);
     /*
      * This is a special value; default or not defined means choose depending
      * on the display, otherwise its a boolean value.
