@@ -27,6 +27,8 @@
 #include <cerrno>
 #include <cmath>
 
+#include <sys/time.h>
+
 #include "bit.h"
 #include "commonmacros.h"
 #include "const.h"
@@ -264,10 +266,37 @@ int Handle_start(long server_loops)
     return 0;
 }
 
+static void update_timing(void)
+{
+    static int frame_counter = 0;
+    static struct timeval old_tv = {0, 0};
+    struct timeval now;
+    bool newSecond = false;
+
+    frame_counter++;
+    gettimeofday(&now, NULL);
+    if (now.tv_sec != old_tv.tv_sec)
+    {
+        double usecs, fps;
+
+        /*currentTime = time(NULL);*/
+        usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
+        fps = (1e6 * frame_counter) / usecs;
+        old_tv = now;
+        newSecond = true;
+        /*clientFPS = MAX(1.0, fps);*/
+        clientFPS = fps;
+        frame_counter = 0;
+    }
+    else
+        newSecond = false;
+}
+
 int Handle_end(long server_loops)
 {
     end_loops = server_loops;
     snooping = self && (eyesId != self->id);
+    update_timing();
     Paint_frame();
     return 0;
 }
