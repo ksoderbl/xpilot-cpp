@@ -198,8 +198,8 @@ extern ipos_t world;
 extern ipos_t realWorld;
 extern short heading;
 extern short nextCheckPoint;
-extern u_byte numItems[NUM_ITEMS];
-extern u_byte lastNumItems[NUM_ITEMS];
+extern uint8_t numItems[NUM_ITEMS];
+extern uint8_t lastNumItems[NUM_ITEMS];
 extern int numItemsTime[NUM_ITEMS];
 extern DFLOAT showItemsTime;
 extern short autopilotLight;
@@ -233,8 +233,8 @@ extern int shot_size;          /* size of shot */
 extern int teamshot_size;      /* size of team shot */
 extern bool showNastyShots;    /* show original flavor shots or the new "nasty shots" */
 extern long control_count;     /* Display control for how long? */
-extern u_byte spark_rand;      /* Sparkling effect */
-extern u_byte old_spark_rand;  /* previous value of spark_rand */
+extern uint8_t spark_rand;     /* Sparkling effect */
+extern uint8_t old_spark_rand; /* previous value of spark_rand */
 
 extern long fuelSum;      /* Sum of fuel in all tanks */
 extern long fuelMax;      /* How much fuel can you take? */
@@ -287,7 +287,7 @@ extern int oldMaxFPS;
 extern int clientPortStart; /* First UDP port for clients */
 extern int clientPortEnd;   /* Last one (these are for firewalls) */
 
-extern u_byte lose_item;     /* flag and index to drop item */
+extern uint8_t lose_item;    /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */
 
 #ifdef SOUND
@@ -308,7 +308,7 @@ typedef struct
 typedef struct
 {
     short x0, y0, x1, y1;
-    u_byte tractor;
+    uint8_t tractor;
 } connector_t;
 
 typedef struct
@@ -331,8 +331,8 @@ typedef struct
 typedef struct
 {
     short x, y, id, dir;
-    u_byte shield, cloak, eshield;
-    u_byte phased, deflector;
+    uint8_t shield, cloak, eshield;
+    uint8_t phased, deflector;
 } ship_t;
 
 typedef struct
@@ -383,7 +383,7 @@ typedef struct
 
 typedef struct
 {
-    u_byte x, y;
+    uint8_t x, y;
 } debris_t;
 
 typedef struct
@@ -394,13 +394,13 @@ typedef struct
 typedef struct
 {
     short x, y;
-    u_byte wrecktype, size, rotation;
+    uint8_t wrecktype, size, rotation;
 } wreckage_t;
 
 typedef struct
 {
     short x, y;
-    u_byte type, size, rotation;
+    uint8_t type, size, rotation;
 } asteroid_t;
 
 typedef struct

@@ -101,9 +101,9 @@ static struct rgb_cube_size
     {4, 4, 3}, /* 48 */
 };
 
-unsigned long (*RGB)(u_byte r, u_byte g, u_byte b);
-static unsigned long RGB_PC(u_byte r, u_byte g, u_byte b);
-static unsigned long RGB_TC(u_byte r, u_byte g, u_byte b);
+unsigned long (*RGB)(uint8_t r, uint8_t g, uint8_t b);
+static unsigned long RGB_PC(uint8_t r, uint8_t g, uint8_t b);
+static unsigned long RGB_TC(uint8_t r, uint8_t g, uint8_t b);
 
 /*
  * Visual names.
@@ -746,7 +746,7 @@ int Colors_init_block_bitmaps(void)
 /*
  * Calculate a pixel from a RGB triplet for a PseudoColor visual.
  */
-static unsigned long RGB_PC(u_byte r, u_byte g, u_byte b)
+static unsigned long RGB_PC(uint8_t r, uint8_t g, uint8_t b)
 {
     int i;
 
@@ -761,7 +761,7 @@ static unsigned long RGB_PC(u_byte r, u_byte g, u_byte b)
 /*
  * Calculate a pixel from a RGB triplet for a TrueColor visual.
  */
-static unsigned long RGB_TC(u_byte r, u_byte g, u_byte b)
+static unsigned long RGB_TC(uint8_t r, uint8_t g, uint8_t b)
 {
     unsigned long pixel = 0;
 

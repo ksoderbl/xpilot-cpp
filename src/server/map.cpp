@@ -161,7 +161,7 @@ static void Alloc_map(void)
         Free_map();
 
     World.block =
-        (unsigned char **)malloc(sizeof(unsigned char *) * World.x + World.x * sizeof(unsigned char) * World.y);
+        (uint8_t **)malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
     World.itemID =
         (unsigned short **)malloc(sizeof(unsigned short *) * World.x + World.x * sizeof(unsigned short) * World.y);
     World.gravity =
@@ -177,20 +177,20 @@ static void Alloc_map(void)
     {
         Free_map();
         xperror("Couldn't allocate memory for map (%d bytes)",
-                World.x * (World.y * (sizeof(unsigned char) + sizeof(vector_t)) + sizeof(vector_t *) + sizeof(unsigned char *)));
+                World.x * (World.y * (sizeof(uint8_t) + sizeof(vector_t)) + sizeof(vector_t *) + sizeof(uint8_t *)));
         exit(-1);
     }
     else
     {
-        unsigned char *map_line;
-        unsigned char **map_pointer;
+        uint8_t *map_line;
+        uint8_t **map_pointer;
         unsigned short *item_line;
         unsigned short **item_pointer;
         vector_t *grav_line;
         vector_t **grav_pointer;
 
         map_pointer = World.block;
-        map_line = (unsigned char *)((unsigned char **)map_pointer + World.x);
+        map_line = (uint8_t *)((uint8_t **)map_pointer + World.x);
         item_pointer = World.itemID;
         item_line = (unsigned short *)((unsigned short **)item_pointer + World.x);
         grav_pointer = World.gravity;
@@ -568,7 +568,7 @@ bool Grok_map(void)
 
         for (x = 0; x < World.x; x++)
         {
-            u_byte *line = World.block[x];
+            uint8_t *line = World.block[x];
             unsigned short *itemID = World.itemID[x];
 
             for (y = 0; y < World.y; y++)

@@ -110,7 +110,7 @@ static int wrap(int *xp, int *yp)
 
 /*db960828 added color parameter cause Windows needs to blt a different
          bitmap based on the color. Unix ignores this parameter*/
-void Paint_item_symbol(u_byte type, Drawable d, GC mygc, int x, int y, int color)
+void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color)
 {
     if (!blockBitmaps)
     {
@@ -132,7 +132,7 @@ void Paint_item_symbol(u_byte type, Drawable d, GC mygc, int x, int y, int color
     }
 }
 
-void Paint_item(u_byte type, Drawable d, GC mygc, int x, int y)
+void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y)
 {
     const int SIZE = ITEM_TRIANGLE_SIZE;
     XPoint points[5];
@@ -177,7 +177,7 @@ static void Paint_items(void)
             y = itemtype_ptr[i].y;
             if (wrap(&x, &y))
             {
-                Paint_item((u_byte)itemtype_ptr[i].type, drawPixmap, gameGC,
+                Paint_item((uint8_t)itemtype_ptr[i].type, drawPixmap, gameGC,
                            WINSCALE(X(x)), WINSCALE(Y(y)));
             }
         }

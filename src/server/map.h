@@ -177,7 +177,7 @@ typedef struct
         countdown;  /* if >0 warp to lastdest else random */
     bool temporary; /* wormhole was left by hyperjump */
     wormType type;
-    u_byte lastblock; /* block it occluded */
+    uint8_t lastblock; /* block it occluded */
     unsigned short lastID;
 } wormhole_t;
 
@@ -227,7 +227,7 @@ typedef struct
     char name[MAX_CHARS];
     char author[MAX_CHARS];
 
-    u_byte **block; /* type of item in each block */
+    uint8_t **block; /* type of item in each block */
 
     /* index into mapobject depending on value of corresponding block,
     ** -1 for space, walls, etc */

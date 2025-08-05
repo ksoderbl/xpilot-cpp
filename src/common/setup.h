@@ -116,19 +116,19 @@
  */
 typedef struct
 {
-    long setup_size;           /* size including map data */
-    long map_data_len;         /* num. compressed map bytes */
-    long mode;                 /* playing mode */
-    short lives;               /* max. number of lives */
-    short x;                   /* width in blocks */
-    short y;                   /* height in blocks */
-    short width;               /* width in pixels */
-    short height;              /* height in pixels */
-    short frames_per_second;   /* FPS */
-    short map_order;           /* row major or col major */
-    char name[MAX_CHARS];      /* name of map */
-    char author[MAX_CHARS];    /* name of author of map */
-    unsigned char map_data[4]; /* compressed map data */
+    long setup_size;         /* size including map data */
+    long map_data_len;       /* num. compressed map bytes */
+    long mode;               /* playing mode */
+    short lives;             /* max. number of lives */
+    short x;                 /* width in blocks */
+    short y;                 /* height in blocks */
+    short width;             /* width in pixels */
+    short height;            /* height in pixels */
+    short frames_per_second; /* FPS */
+    short map_order;         /* row major or col major */
+    char name[MAX_CHARS];    /* name of map */
+    char author[MAX_CHARS];  /* name of author of map */
+    uint8_t map_data[4];     /* compressed map data */
     /* plus more mapdata here (HACK) */
 } setup_t;
 

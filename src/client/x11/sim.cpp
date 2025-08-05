@@ -227,7 +227,7 @@ static int zot(void)
 static int Simulate_frames(void)
 {
         const int duration = 2;
-        u_byte newitems[NUM_ITEMS];
+        uint8_t newitems[NUM_ITEMS];
         int i, old_i;
         int j;
 

@@ -196,9 +196,9 @@ static void Receive_init(void)
  */
 static int Uncompress_map(void)
 {
-    u_byte *cmp, /* compressed map pointer */
-        *ump,    /* uncompressed map pointer */
-        *p;      /* temporary search pointer */
+    uint8_t *cmp, /* compressed map pointer */
+        *ump,     /* uncompressed map pointer */
+        *p;       /* temporary search pointer */
     int i,
         count;
 
@@ -1227,7 +1227,7 @@ static int Net_read(frame_buf_t *frame)
 {
     int n;
     long loop;
-    u_byte ch;
+    uint8_t ch;
 
     frame->loops = 0;
     for (;;)
@@ -1517,7 +1517,7 @@ int Receive_start(void)
 {
     int n;
     long loops;
-    u_byte ch;
+    uint8_t ch;
     long key_ack;
 
     if ((n = Packet_scanf(&rbuf,
@@ -1571,7 +1571,7 @@ int Receive_end(void)
 {
     int n;
     long loops;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%ld", &ch, &loops)) <= 0)
     {
@@ -1592,7 +1592,7 @@ int Receive_end(void)
 int Receive_message(void)
 {
     int n;
-    u_byte ch;
+    uint8_t ch;
     char msg[MSG_LEN];
 
     if ((n = Packet_scanf(&cbuf, "%c%S", &ch, msg)) <= 0)
@@ -1612,7 +1612,7 @@ int Receive_message(void)
 int Receive_time_left(void)
 {
     int n;
-    u_byte ch;
+    uint8_t ch;
     long sec;
 
     if ((n = Packet_scanf(&rbuf, "%c%ld", &ch, &sec)) <= 0)
@@ -1633,7 +1633,7 @@ int Receive_eyes(void)
 {
     int n,
         id;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd", &ch, &id)) <= 0)
     {
@@ -1651,7 +1651,7 @@ int Receive_eyes(void)
  */
 int Receive_motd(void)
 {
-    u_byte ch;
+    uint8_t ch;
     long off,
         size;
     short len;
@@ -1739,9 +1739,9 @@ int Receive_self_items(void)
 {
     unsigned mask;
     int i, n;
-    u_byte ch;
+    uint8_t ch;
     char *rbuf_ptr_start = rbuf.ptr;
-    u_byte num_items[NUM_ITEMS];
+    uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf, "%c%u", &ch, &mask);
     if (n <= 0)
@@ -1782,9 +1782,9 @@ int Receive_self(void)
     int n;
     short x, y, vx, vy, lockId, lockDist,
         fuelSum, fuelMax;
-    u_byte ch, heading, power, turnspeed, turnresistance,
+    uint8_t ch, heading, power, turnspeed, turnresistance,
         nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
-    u_byte num_items[NUM_ITEMS];
+    uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf,
                      "%c"
@@ -1929,7 +1929,7 @@ int Receive_modifiers(void)
 {
     int n;
     char mods[MAX_CHARS];
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%s", &ch, mods)) <= 0)
     {
@@ -1944,7 +1944,7 @@ int Receive_refuel(void)
 {
     int n;
     short x0, y0, x1, y1;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%hd",
                           &ch, &x0, &y0, &x1, &y1)) <= 0)
@@ -1962,7 +1962,7 @@ int Receive_connector(void)
 {
     int n;
     short x0, y0, x1, y1;
-    u_byte ch, tractor;
+    uint8_t ch, tractor;
 
     n = Packet_scanf(&rbuf, "%c%hd%hd%hd%hd%c",
                      &ch, &x0, &y0, &x1, &y1, &tractor);
@@ -1979,7 +1979,7 @@ int Receive_laser(void)
 {
     int n;
     short x, y, len;
-    u_byte ch, color, dir;
+    uint8_t ch, color, dir;
 
     if ((n = Packet_scanf(&rbuf, "%c%c%hd%hd%hd%c",
                           &ch, &color, &x, &y, &len, &dir)) <= 0)
@@ -1997,7 +1997,7 @@ int Receive_missile(void)
 {
     int n;
     short x, y;
-    u_byte ch, dir, len;
+    uint8_t ch, dir, len;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c", &ch, &x, &y, &len, &dir)) <= 0)
     {
@@ -2014,7 +2014,7 @@ int Receive_ball(void)
 {
     int n;
     short x, y, id;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
     {
@@ -2031,7 +2031,7 @@ int Receive_ship(void)
 {
     int n, shield, cloak, eshield, phased, deflector;
     short x, y, id;
-    u_byte ch, dir, flags;
+    uint8_t ch, dir, flags;
 
     if ((n = Packet_scanf(&rbuf,
                           "%c%hd%hd%hd"
@@ -2058,7 +2058,7 @@ int Receive_mine(void)
 {
     int n;
     short x, y, id;
-    u_byte ch, teammine;
+    uint8_t ch, teammine;
 
     n = Packet_scanf(&rbuf, "%c%hd%hd%c%hd", &ch, &x, &y, &teammine, &id);
     if (n <= 0)
@@ -2076,7 +2076,7 @@ int Receive_item(void)
 {
     int n;
     short x, y;
-    u_byte ch, type;
+    uint8_t ch, type;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c", &ch, &x, &y, &type)) <= 0)
     {
@@ -2096,7 +2096,7 @@ int Receive_destruct(void)
 {
     int n;
     short count;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd", &ch, &count)) <= 0)
     {
@@ -2113,7 +2113,7 @@ int Receive_shutdown(void)
 {
     int n;
     short count, delay;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &delay)) <= 0)
     {
@@ -2130,7 +2130,7 @@ int Receive_thrusttime(void)
 {
     int n;
     short count, max;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
     {
@@ -2147,7 +2147,7 @@ int Receive_shieldtime(void)
 {
     int n;
     short count, max;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
     {
@@ -2164,7 +2164,7 @@ int Receive_phasingtime(void)
 {
     int n;
     short count, max;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
     {
@@ -2181,7 +2181,7 @@ int Receive_rounddelay(void)
 {
     int n;
     short count, max;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
     {
@@ -2210,7 +2210,7 @@ int Receive_fastshot(void)
     {
         return 0;
     }
-    r = Handle_fastshot(type, (u_byte *)rbuf.ptr, n);
+    r = Handle_fastshot(type, (uint8_t *)rbuf.ptr, n);
     rbuf.ptr += n * 2;
 
     return (r == -1) ? -1 : 1;
@@ -2230,7 +2230,7 @@ int Receive_debris(void)
     {
         return 0;
     }
-    r = Handle_debris(type - PKT_DEBRIS, (u_byte *)rbuf.ptr, n);
+    r = Handle_debris(type - PKT_DEBRIS, (uint8_t *)rbuf.ptr, n);
     rbuf.ptr += n * 2;
 
     return (r == -1) ? -1 : 1;
@@ -2240,7 +2240,7 @@ int Receive_wreckage(void) /* since 3.8.0 */
 {
     int n;
     short x, y;
-    u_byte ch, wrecktype, size, rot;
+    uint8_t ch, wrecktype, size, rot;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c%c", &ch, &x, &y,
                           &wrecktype, &size, &rot)) <= 0)
@@ -2263,7 +2263,7 @@ int Receive_asteroid(void) /* since 4.4.0 */
 {
     int n;
     short x, y;
-    u_byte ch, type_size, type, size, rot;
+    uint8_t ch, type_size, type, size, rot;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c", &ch, &x, &y,
                           &type_size, &rot)) <= 0)
@@ -2285,7 +2285,7 @@ int Receive_wormhole(void) /* since 4.5.0 */
 {
     int n;
     short x, y;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &x, &y)) <= 0)
     {
@@ -2303,7 +2303,7 @@ int Receive_ecm(void)
 {
     int n;
     short x, y, size;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &size)) <= 0)
     {
@@ -2320,7 +2320,7 @@ int Receive_trans(void)
 {
     int n;
     short x1, y1, x2, y2;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%hd",
                           &ch, &x1, &y1, &x2, &y2)) <= 0)
@@ -2338,7 +2338,7 @@ int Receive_paused(void)
 {
     int n;
     short x, y, count;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &count)) <= 0)
     {
@@ -2355,7 +2355,7 @@ int Receive_radar(void)
 {
     int n;
     short x, y;
-    u_byte ch, size;
+    uint8_t ch, size;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c", &ch, &x, &y, &size)) <= 0)
     {
@@ -2415,7 +2415,7 @@ int Receive_fastradar(void)
 int Receive_damaged(void)
 {
     int n;
-    u_byte ch, damaged;
+    uint8_t ch, damaged;
 
     if ((n = Packet_scanf(&rbuf, "%c%c", &ch, &damaged)) <= 0)
     {
@@ -2432,7 +2432,7 @@ int Receive_leave(void)
 {
     int n;
     short id;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd", &ch, &id)) <= 0)
     {
@@ -2449,7 +2449,7 @@ int Receive_war(void)
 {
     int n;
     short robot_id, killer_id;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd",
                           &ch, &robot_id, &killer_id)) <= 0)
@@ -2467,7 +2467,7 @@ int Receive_seek(void)
 {
     int n;
     short programmer_id, robot_id, sought_id;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd%hd", &ch,
                           &programmer_id, &robot_id, &sought_id)) <= 0)
@@ -2485,7 +2485,7 @@ int Receive_player(void)
 {
     int n;
     short id;
-    u_byte ch, myteam, mychar;
+    uint8_t ch, myteam, mychar;
     char name[MAX_CHARS],
         real[MAX_CHARS],
         host[MAX_CHARS],
@@ -2526,7 +2526,7 @@ int Receive_score_object(void)
     unsigned short x, y;
     int score = 0;
     char msg[MAX_CHARS];
-    u_byte ch;
+    uint8_t ch;
 
     if (version < 0x4500)
     {
@@ -2558,7 +2558,7 @@ int Receive_score(void)
     int n;
     short id, life;
     int score = 0;
-    u_byte ch, mychar, alliance = ' ';
+    uint8_t ch, mychar, alliance = ' ';
 
     if (version < 0x4500)
     {
@@ -2590,7 +2590,7 @@ int Receive_score(void)
 int Receive_team_score(void)
 {
     int n;
-    u_byte ch;
+    uint8_t ch;
     short team;
     int rcv_score;
 
@@ -2608,7 +2608,7 @@ int Receive_timing(void)
         round;
     short id;
     unsigned short timing;
-    u_byte ch;
+    uint8_t ch;
 
     n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &timing);
     if (n <= 0)
@@ -2628,7 +2628,7 @@ int Receive_fuel(void)
 {
     int n;
     unsigned short num, fuel;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &fuel)) <= 0)
     {
@@ -2649,7 +2649,7 @@ int Receive_cannon(void)
 {
     int n;
     unsigned short num, dead_time;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &dead_time)) <= 0)
     {
@@ -2672,7 +2672,7 @@ int Receive_target(void)
     unsigned short num,
         dead_time,
         damage;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
                           &num, &dead_time, &damage)) <= 0)
@@ -2695,7 +2695,7 @@ int Receive_base(void)
     int n;
     short id;
     unsigned short num;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &num)) <= 0)
     {
@@ -2711,7 +2711,7 @@ int Receive_base(void)
 int Receive_magic(void)
 {
     int n;
-    u_byte ch;
+    uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%u", &ch, &magic)) <= 0)
     {
@@ -2723,7 +2723,7 @@ int Receive_magic(void)
 int Receive_string(void)
 {
     int n;
-    u_byte ch,
+    uint8_t ch,
         type;
     unsigned short arg1,
         arg2;
@@ -2742,7 +2742,7 @@ int Receive_string(void)
 int Receive_loseitem(void)
 {
     int n;
-    u_byte pkt;
+    uint8_t pkt;
     /* Most of the Receive_ funcs call a */
     /* Handle_ func but that seems */
     /* unecessary here */
@@ -2774,7 +2774,7 @@ int Receive_reliable(void)
 {
     int n;
     short len;
-    u_byte ch;
+    uint8_t ch;
     long rel,
         rel_loops;
 
@@ -2871,7 +2871,7 @@ int Receive_reliable(void)
 int Receive_reply(int *replyto, int *result)
 {
     int n;
-    u_byte type, ch1, ch2;
+    uint8_t type, ch1, ch2;
 
     n = Packet_scanf(&cbuf, "%c%c%c", &type, &ch1, &ch2);
     if (n <= 0)
@@ -2888,7 +2888,7 @@ int Receive_reply(int *replyto, int *result)
     return 1;
 }
 
-int Send_keyboard(u_byte *keyboard_vector)
+int Send_keyboard(uint8_t *keyboard_vector)
 {
     int size = KEYBOARD_SIZE;
 

@@ -81,7 +81,7 @@ extern int active_view_width;  /* Width of active map area displayed. */
 extern int active_view_height; /* Height of active map area displayed. */
 extern int ext_view_x_offset;  /* Offset of ext_view_width */
 extern int ext_view_y_offset;  /* Offset of ext_view_height */
-extern u_byte debris_colors;   /* Number of debris intensities */
+extern uint8_t debris_colors;  /* Number of debris intensities */
 
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
@@ -100,9 +100,9 @@ int Handle_self(int x, int y, int vx, int vy, int dir,
                 float power, float turnspeed, float turnresistance,
                 int lock_id, int lock_dist, int lock_dir,
                 int nextCheckPoint, int autopilotLight,
-                u_byte *newNumItems,
+                uint8_t *newNumItems,
                 int currentTank, int fuel_sum, int fuel_max, int packet_size);
-int Handle_self_items(u_byte *newNumItems);
+int Handle_self_items(uint8_t *newNumItems);
 int Handle_modifiers(char *m);
 int Handle_damaged(int damaged);
 int Handle_destruct(int count);
@@ -119,8 +119,8 @@ int Handle_ball(int x, int y, int id);
 int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
 int Handle_mine(int x, int y, int teammine, int id);
 int Handle_item(int x, int y, int type);
-int Handle_fastshot(int type, u_byte *p, int n);
-int Handle_debris(int type, u_byte *p, int n);
+int Handle_fastshot(int type, uint8_t *p, int n);
+int Handle_debris(int type, uint8_t *p, int n);
 int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation);
 int Handle_asteroid(int x, int y, int type, int size, int rotation);
 int Handle_wormhole(int x, int y);
@@ -134,8 +134,8 @@ int Handle_vbase(int x, int y, int xi, int yi, int type);
 int Handle_vdecor(int x, int y, int xi, int yi, int type);
 int Handle_message(char *msg);
 int Handle_eyes(int id);
-// void Paint_item_symbol(u_byte type, Drawable d, GC mygc, int x, int y, int color);
-// void Paint_item(u_byte type, Drawable d, GC mygc, int x, int y);
+// void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
+// void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);
 void Paint_shots(void);
 void Paint_ships(void);
 void Paint_radar(void);
@@ -156,7 +156,7 @@ void Paint_messages(void);
 void Paint_recording(void);
 void Paint_frame(void);
 int Handle_time_left(long sec);
-void Game_over_action(u_byte stat);
+void Game_over_action(uint8_t stat);
 
 /*
  * Prototype from blockbitmaps.c

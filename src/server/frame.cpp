@@ -77,7 +77,7 @@ typedef struct
 
 typedef struct
 {
-    unsigned char x, y;
+    uint8_t x, y;
 } debris_t;
 
 typedef struct
@@ -164,8 +164,8 @@ static int block_inview(block_visibility_t *bv, int x, int y)
             return;                                                                                                     \
         }                                                                                                               \
     }                                                                                                                   \
-    ptr_[num_].x = (unsigned char)xd;                                                                                   \
-    ptr_[num_].y = (unsigned char)yd;                                                                                   \
+    ptr_[num_].x = (uint8_t)xd;                                                                                         \
+    ptr_[num_].y = (uint8_t)yd;                                                                                         \
     num_++;
 
 static void fastshot_store(int xf, int yf, int color, int offset)
@@ -199,7 +199,7 @@ static void fastshot_end(connection_t *connp)
         if (fastshot_num[i] != 0)
         {
             Send_fastshot(connp, i,
-                          (unsigned char *)fastshot_ptr[i],
+                          (uint8_t *)fastshot_ptr[i],
                           fastshot_num[i]);
             fastshot_num[i] = 0;
         }
@@ -215,7 +215,7 @@ static void debris_end(connection_t *connp)
         if (debris_num[i] != 0)
         {
             Send_debris(connp, i,
-                        (unsigned char *)debris_ptr[i],
+                        (uint8_t *)debris_ptr[i],
                         debris_num[i]);
             debris_num[i] = 0;
         }
@@ -290,7 +290,7 @@ static void Frame_radar_buffer_send(connection_t *connp)
     }
     else
     {
-        unsigned char buf[3 * 256];
+        uint8_t buf[3 * 256];
         int buf_index = 0;
         int fast_count = 0;
 
@@ -307,14 +307,14 @@ static void Frame_radar_buffer_send(connection_t *connp)
             {
                 continue;
             }
-            buf[buf_index++] = (unsigned char)(radar_x);
-            buf[buf_index++] = (unsigned char)(radar_y & 0xFF);
-            buf[buf_index] = (unsigned char)((radar_y >> 2) & 0xC0);
+            buf[buf_index++] = (uint8_t)(radar_x);
+            buf[buf_index++] = (uint8_t)(radar_y & 0xFF);
+            buf[buf_index] = (uint8_t)((radar_y >> 2) & 0xC0);
             if (p->size & 0x80)
             {
-                buf[buf_index] |= (unsigned char)(0x20);
+                buf[buf_index] |= (uint8_t)(0x20);
             }
-            buf[buf_index] |= (unsigned char)(p->size & 0x07);
+            buf[buf_index] |= (uint8_t)(p->size & 0x07);
             buf_index++;
             fast_count++;
         }
@@ -846,7 +846,7 @@ static void Frame_shots(connection_t *connp, int ind)
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
-                Send_wreckage(connp, x, y, (u_byte)wreck->info,
+                Send_wreckage(connp, x, y, (uint8_t)wreck->info,
                               wreck->size, wreck->rotation);
             }
             break;
@@ -855,7 +855,7 @@ static void Frame_shots(connection_t *connp, int ind)
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(connp, x, y,
-                          (u_byte)ast->info, ast->size, ast->rotation);
+                          (uint8_t)ast->info, ast->size, ast->rotation);
         }
         break;
 

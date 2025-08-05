@@ -20,6 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstdio>
 #include <cerrno>
@@ -32,69 +33,70 @@
 
 #include "portability.h"
 
-#define NELEM(a)        (sizeof(a) / sizeof(a[0]))
+#define NELEM(a) (sizeof(a) / sizeof(a[0]))
 
-#define FUZZ_MASK        0xFFFFFFFFU
-#define MAX_FUZZ        FUZZ_MASK
+#define FUZZ_MASK 0xFFFFFFFFU
+#define MAX_FUZZ FUZZ_MASK
 
-#define MAPOFFLEFT(i)        (((i) >= 1) ? (i) - 1 : map.datasize - 1)
-#define MAPOFFRIGHT(i)        (((i) + 1 < map.datasize) ? (i) + 1 : 0)
-#define MAPOFFUP(i)        (((i) >= map.linewidth) \
-                                ? (i) - map.linewidth \
-                                : (i) - map.linewidth + map.datasize)
-#define MAPOFFDOWN(i)        (((i) + map.linewidth < map.datasize) \
-                                ? (i) + map.linewidth \
-                                : (i) + map.linewidth - map.datasize)
-#define MAPLEFT(i)        map.data[MAPOFFLEFT(i)]
-#define MAPRIGHT(i)        map.data[MAPOFFRIGHT(i)]
-#define MAPUP(i)        map.data[MAPOFFUP(i)]
-#define MAPDOWN(i)        map.data[MAPOFFDOWN(i)]
+#define MAPOFFLEFT(i) (((i) >= 1) ? (i) - 1 : map.datasize - 1)
+#define MAPOFFRIGHT(i) (((i) + 1 < map.datasize) ? (i) + 1 : 0)
+#define MAPOFFUP(i) (((i) >= map.linewidth)    \
+                         ? (i) - map.linewidth \
+                         : (i) - map.linewidth + map.datasize)
+#define MAPOFFDOWN(i) (((i) + map.linewidth < map.datasize) \
+                           ? (i) + map.linewidth            \
+                           : (i) + map.linewidth - map.datasize)
+#define MAPLEFT(i) map.data[MAPOFFLEFT(i)]
+#define MAPRIGHT(i) map.data[MAPOFFRIGHT(i)]
+#define MAPUP(i) map.data[MAPOFFUP(i)]
+#define MAPDOWN(i) map.data[MAPOFFDOWN(i)]
 
 #ifndef MAX_MAP_SIZE
-#define MAX_MAP_SIZE        900
+#define MAX_MAP_SIZE 900
 #endif
 
-#define BLOCK_SPACE                ' '
-#define BLOCK_SOLID                'x'
-#define BLOCK_UP_RIGHT                'a'
-#define BLOCK_UP_LEFT                's'
-#define BLOCK_DOWN_LEFT                'w'
-#define BLOCK_DOWN_RIGHT        'q'
-#define BLOCK_CANNON_RIGHT        'd'
-#define BLOCK_CANNON_DOWN        'r'
-#define BLOCK_CANNON_LEFT        'f'
-#define BLOCK_CANNON_UP                'c'
-#define BLOCK_FUEL                '#'
-#define BLOCK_GRAV_POS                '+'
-#define BLOCK_GRAV_NEG                '-'
-#define BLOCK_GRAV_CLOCK        '>'
-#define BLOCK_GRAV_ANTI_CLOCK        '<'
-#define BLOCK_WORM_BOTH                '@'
-#define BLOCK_WORM_IN                '('
-#define BLOCK_WORM_OUT                ')'
+#define BLOCK_SPACE ' '
+#define BLOCK_SOLID 'x'
+#define BLOCK_UP_RIGHT 'a'
+#define BLOCK_UP_LEFT 's'
+#define BLOCK_DOWN_LEFT 'w'
+#define BLOCK_DOWN_RIGHT 'q'
+#define BLOCK_CANNON_RIGHT 'd'
+#define BLOCK_CANNON_DOWN 'r'
+#define BLOCK_CANNON_LEFT 'f'
+#define BLOCK_CANNON_UP 'c'
+#define BLOCK_FUEL '#'
+#define BLOCK_GRAV_POS '+'
+#define BLOCK_GRAV_NEG '-'
+#define BLOCK_GRAV_CLOCK '>'
+#define BLOCK_GRAV_ANTI_CLOCK '<'
+#define BLOCK_WORM_BOTH '@'
+#define BLOCK_WORM_IN '('
+#define BLOCK_WORM_OUT ')'
 
-struct map {
-    unsigned                seed,
-                        fuzz_word;
-    char                *data;
-    double                fill_ratio,
-                        seed_ratio,
-                        cannon_ratio,
-                        fuel_ratio,
-                        grav_ratio,
-                        worm_ratio;
-    int                        width,
-                        height,
-                        linewidth,
-                        datasize,
-                        num_bases,
-                        num_teams,
-                        flood_marker,
-                        flood_trigger,
-                        flood_count[256];
+struct map
+{
+    unsigned seed,
+        fuzz_word;
+    char *data;
+    double fill_ratio,
+        seed_ratio,
+        cannon_ratio,
+        fuel_ratio,
+        grav_ratio,
+        worm_ratio;
+    int width,
+        height,
+        linewidth,
+        datasize,
+        num_bases,
+        num_teams,
+        flood_marker,
+        flood_trigger,
+        flood_count[256];
 };
 
-static struct map        map;
+static struct map map;
 
 static unsigned fuzz(void)
 {
@@ -117,7 +119,7 @@ static unsigned fuzz_bound(unsigned max)
      * Return a pseudo-random unsigned integer
      * in the range: [0-max] inclusive.
      */
-    return (unsigned)(((double) fuzz() * (double) max) / (double) MAX_FUZZ);
+    return (unsigned)(((double)fuzz() * (double)max) / (double)MAX_FUZZ);
 }
 
 static void Default_map(void)
@@ -130,120 +132,142 @@ static void Default_map(void)
     map.num_bases = 26;
     map.num_teams = 3;
     map.cannon_ratio = 0.0020;
-    map.fuel_ratio   = 0.0006;
-    map.grav_ratio   = 0.0006;
-    map.worm_ratio   = 0.0004;
+    map.fuel_ratio = 0.0006;
+    map.grav_ratio = 0.0006;
+    map.worm_ratio = 0.0004;
 }
 
 static void Option_map(int argc, char **argv)
 {
-    struct map_opt {
-        const char        *name;
-        int                *intp;
-        unsigned        *unsp;
-        double                *dblp;
-        double                min;
-        double                max;
+    struct map_opt
+    {
+        const char *name;
+        int *intp;
+        unsigned *unsp;
+        double *dblp;
+        double min;
+        double max;
     };
     static struct map_opt mapopts[] = {
-        { "mapWidth", &map.width, 0, 0, 90, MAX_MAP_SIZE },
-        { "mapHeight", &map.height, 0, 0, 90, MAX_MAP_SIZE },
-        { "seed", 0, &map.seed, 0, 0, MAX_FUZZ },
-        { "seedRatio", 0, 0, &map.seed_ratio, 0.02, 0.22 },
-        { "fillRatio", 0, 0, &map.fill_ratio, 0.02, 0.80 },
-        { "numBases", &map.num_bases, 0, 0, 2, 100 },
-        { "numTeams", &map.num_teams, 0, 0, 3, 10 },
-        { "cannonRatio", 0, 0, &map.cannon_ratio, 0.0, 0.2 },
-        { "fuelRatio", 0, 0, &map.fuel_ratio, 0.0, 0.1 },
-        { "gravRatio", 0, 0, &map.grav_ratio, 0.0, 0.1 },
-        { "wormRatio", 0, 0, &map.worm_ratio, 0.0, 0.1 }
-    };
-    int                        i,
-                        j,
-                        intval;
-    unsigned                unsval;
-    char                *opt = NULL,
-                        *arg = NULL;
-    double                dblval;
+        {"mapWidth", &map.width, 0, 0, 90, MAX_MAP_SIZE},
+        {"mapHeight", &map.height, 0, 0, 90, MAX_MAP_SIZE},
+        {"seed", 0, &map.seed, 0, 0, MAX_FUZZ},
+        {"seedRatio", 0, 0, &map.seed_ratio, 0.02, 0.22},
+        {"fillRatio", 0, 0, &map.fill_ratio, 0.02, 0.80},
+        {"numBases", &map.num_bases, 0, 0, 2, 100},
+        {"numTeams", &map.num_teams, 0, 0, 3, 10},
+        {"cannonRatio", 0, 0, &map.cannon_ratio, 0.0, 0.2},
+        {"fuelRatio", 0, 0, &map.fuel_ratio, 0.0, 0.1},
+        {"gravRatio", 0, 0, &map.grav_ratio, 0.0, 0.1},
+        {"wormRatio", 0, 0, &map.worm_ratio, 0.0, 0.1}};
+    int i,
+        j,
+        intval;
+    unsigned unsval;
+    char *opt = NULL,
+         *arg = NULL;
+    double dblval;
 
-    for (i = 1; i < argc; i += 2) {
+    for (i = 1; i < argc; i += 2)
+    {
         opt = argv[i];
         arg = NULL;
-        if (*opt != '-') {
+        if (*opt != '-')
+        {
             break;
         }
-        for (j = 0; j < NELEM(mapopts); j++) {
-            if (strcmp(&opt[1], mapopts[j].name) == 0) {
+        for (j = 0; j < NELEM(mapopts); j++)
+        {
+            if (strcmp(&opt[1], mapopts[j].name) == 0)
+            {
                 break;
             }
         }
-        if (j == NELEM(mapopts)) {
+        if (j == NELEM(mapopts))
+        {
             break;
         }
-        if (i + 1 == argc) {
+        if (i + 1 == argc)
+        {
             break;
         }
         arg = argv[i + 1];
-        if (mapopts[j].intp) {
-            if (sscanf(arg, "%d", &intval) != 1) {
+        if (mapopts[j].intp)
+        {
+            if (sscanf(arg, "%d", &intval) != 1)
+            {
                 break;
             }
-            if (intval < mapopts[j].min || intval > mapopts[j].max) {
+            if (intval < mapopts[j].min || intval > mapopts[j].max)
+            {
                 break;
             }
             *mapopts[j].intp = intval;
         }
-        else if (mapopts[j].unsp) {
-            if (sscanf(arg, "%u", &unsval) != 1) {
+        else if (mapopts[j].unsp)
+        {
+            if (sscanf(arg, "%u", &unsval) != 1)
+            {
                 break;
             }
-            if (unsval < mapopts[j].min || unsval > mapopts[j].max) {
+            if (unsval < mapopts[j].min || unsval > mapopts[j].max)
+            {
                 break;
             }
             *mapopts[j].unsp = unsval;
         }
-        else if (mapopts[j].dblp) {
-            if (sscanf(arg, "%lf", &dblval) != 1) {
+        else if (mapopts[j].dblp)
+        {
+            if (sscanf(arg, "%lf", &dblval) != 1)
+            {
                 break;
             }
-            if (dblval < mapopts[j].min || dblval > mapopts[j].max) {
+            if (dblval < mapopts[j].min || dblval > mapopts[j].max)
+            {
                 break;
             }
             *mapopts[j].dblp = dblval;
         }
     }
-    if (i < argc) {
-        if (strcmp(opt, "-help")) {
+    if (i < argc)
+    {
+        if (strcmp(opt, "-help"))
+        {
             fprintf(stderr, "Invalid option: %s %s\n", opt, arg ? arg : "");
         }
         fprintf(stderr, "Usage: %s [-option value] ...\n", *argv);
         fprintf(stderr, "Where options include:\n");
-        for (i = 0; i < NELEM(mapopts); i++) {
+        for (i = 0; i < NELEM(mapopts); i++)
+        {
             fprintf(stderr, "    -%-11s <value>\t", mapopts[i].name);
-            if (mapopts[i].intp) {
+            if (mapopts[i].intp)
+            {
                 fprintf(stderr, "(= %d, min: %d, max: %d)",
-                    (int)*mapopts[i].intp,
-                    (int)mapopts[i].min, (int)mapopts[i].max);
+                        (int)*mapopts[i].intp,
+                        (int)mapopts[i].min, (int)mapopts[i].max);
             }
-            else if (mapopts[i].unsp) {
+            else if (mapopts[i].unsp)
+            {
                 fprintf(stderr, "(= %u, min: %u, max: %u)",
-                    (unsigned)*mapopts[i].unsp,
-                    (unsigned)mapopts[i].min, (unsigned)mapopts[i].max);
-            } else {
+                        (unsigned)*mapopts[i].unsp,
+                        (unsigned)mapopts[i].min, (unsigned)mapopts[i].max);
+            }
+            else
+            {
                 fprintf(stderr, "(= %-6.4f, min: %-6.4f, max: %-6.4f)",
-                    (double)*mapopts[i].dblp,
-                    (double)mapopts[i].min, (double)mapopts[i].max);
+                        (double)*mapopts[i].dblp,
+                        (double)mapopts[i].min, (double)mapopts[i].max);
             }
             fprintf(stderr, "\n");
         }
         fprintf(stderr,
-"SeedRatio is the chance that a map object starts as solid instead of empty.\n"
-"FillRatio is the amount of wall space divided by the total map size.\n"
-"Seed is the seed for the random number generator and determines the map\n"
-"layout uniquely given the values for seedRatio, fillRatio and the map size.\n"
-"To get thick walls increase seedRatio.\n"
-"For maps with lots of space to fly in decrease fillRatio.\n"
-"\n");
+                "SeedRatio is the chance that a map object starts as solid instead of empty.\n"
+                "FillRatio is the amount of wall space divided by the total map size.\n"
+                "Seed is the seed for the random number generator and determines the map\n"
+                "layout uniquely given the values for seedRatio, fillRatio and the map size.\n"
+                "To get thick walls increase seedRatio.\n"
+                "For maps with lots of space to fly in decrease fillRatio.\n"
+                "\n");
         exit(1);
     }
 }
@@ -259,8 +283,9 @@ static void Alloc_map(void)
     map.fuzz_word = map.seed;
     map.linewidth = map.width + 1;
     map.datasize = map.linewidth * map.height;
-    map.data = (char *) malloc(map.datasize + 1);
-    if (!map.data) {
+    map.data = (char *)malloc(map.datasize + 1);
+    if (!map.data)
+    {
         printf("no mem\n");
         exit(1);
     }
@@ -276,18 +301,20 @@ static void Flood_map(int i)
      * been processed.
      */
 
-#define INTARR_SIZE        1024
+#define INTARR_SIZE 1024
 
-    struct int_arr {
-        struct int_arr        *next;
-        int                n;
-        int                arr[INTARR_SIZE];
+    struct int_arr
+    {
+        struct int_arr *next;
+        int n;
+        int arr[INTARR_SIZE];
     };
 
-    struct int_arr        intarr, *putp = &intarr, *getp, *tmpp;
-    int                        k, j;
+    struct int_arr intarr, *putp = &intarr, *getp, *tmpp;
+    int k, j;
 
-    if (map.data[i] != map.flood_trigger) {
+    if (map.data[i] != map.flood_trigger)
+    {
         return;
     }
     map.data[i] = map.flood_marker;
@@ -295,13 +322,17 @@ static void Flood_map(int i)
     putp->n = 1;
     putp->arr[0] = i;
 
-    for (getp = &intarr; getp != NULL; getp = tmpp) {
+    for (getp = &intarr; getp != NULL; getp = tmpp)
+    {
 
-        while (getp->n > 0) {
+        while (getp->n > 0)
+        {
             k = getp->arr[--getp->n];
-            if (putp->n + 4 > INTARR_SIZE) {
+            if (putp->n + 4 > INTARR_SIZE)
+            {
                 if ((putp->next = (struct int_arr *)
-                                  malloc(sizeof(struct int_arr))) == NULL) {
+                         malloc(sizeof(struct int_arr))) == NULL)
+                {
                     fprintf(stderr, "No mem\n");
                     exit(1);
                 }
@@ -310,28 +341,33 @@ static void Flood_map(int i)
                 putp->n = 0;
             }
             j = MAPOFFUP(k);
-            if (map.data[j] == map.flood_trigger) {
+            if (map.data[j] == map.flood_trigger)
+            {
                 map.data[j] = map.flood_marker;
                 putp->arr[putp->n++] = j;
             }
             j = MAPOFFLEFT(k);
-            if (map.data[j] == map.flood_trigger) {
+            if (map.data[j] == map.flood_trigger)
+            {
                 map.data[j] = map.flood_marker;
                 putp->arr[putp->n++] = j;
             }
             j = MAPOFFDOWN(k);
-            if (map.data[j] == map.flood_trigger) {
+            if (map.data[j] == map.flood_trigger)
+            {
                 map.data[j] = map.flood_marker;
                 putp->arr[putp->n++] = j;
             }
             j = MAPOFFRIGHT(k);
-            if (map.data[j] == map.flood_trigger) {
+            if (map.data[j] == map.flood_trigger)
+            {
                 map.data[j] = map.flood_marker;
                 putp->arr[putp->n++] = j;
             }
         }
         tmpp = getp->next;
-        if (getp != &intarr) {
+        if (getp != &intarr)
+        {
             free(getp);
         }
     }
@@ -339,56 +375,70 @@ static void Flood_map(int i)
 
 static void Generate_map(void)
 {
-    /* 
+    /*
      * Initialize the map with noise.
      * Later the noise is either removed or connected,
      * depending upon the outcome of a randomizer.
      */
 
-    int                        todo, i;
-    unsigned                edge;
+    int todo, i;
+    unsigned edge;
 
     map.flood_trigger = 1;
     map.flood_marker = 2;
 
     edge = MAX_FUZZ * map.seed_ratio;
-    for (todo = map.datasize; todo--; ) {
+    for (todo = map.datasize; todo--;)
+    {
         map.data[todo] = (fuzz() < edge);
     }
 
     edge = (MAX_FUZZ / map.datasize);
-    for (todo = map.datasize; todo--; ) {
+    for (todo = map.datasize; todo--;)
+    {
         i = fuzz_bound(map.datasize - 1);
-        if (map.data[i] == 0) {
-            if (MAPUP(i) == 1) MAPUP(i) = 0;
-            if (MAPLEFT(i) == 1) MAPLEFT(i) = 0;
-            if (MAPDOWN(i) == 1) MAPDOWN(i) = 0;
-            if (MAPRIGHT(i) == 1) MAPRIGHT(i) = 0;
+        if (map.data[i] == 0)
+        {
+            if (MAPUP(i) == 1)
+                MAPUP(i) = 0;
+            if (MAPLEFT(i) == 1)
+                MAPLEFT(i) = 0;
+            if (MAPDOWN(i) == 1)
+                MAPDOWN(i) = 0;
+            if (MAPRIGHT(i) == 1)
+                MAPRIGHT(i) = 0;
         }
-        else {
-            if (map.data[i] == 0) {
+        else
+        {
+            if (map.data[i] == 0)
+            {
                 map.data[i] = 1;
                 Flood_map(i);
                 map.data[i] = 1;
             }
-            else if (map.data[i] == 1) {
+            else if (map.data[i] == 1)
+            {
                 Flood_map(i);
-                if (MAPUP(i) == 0) {
+                if (MAPUP(i) == 0)
+                {
                     MAPUP(i) = 1;
                     Flood_map(MAPOFFUP(i));
                     MAPUP(i) = 1;
                 }
-                if (MAPLEFT(i) == 0) {
+                if (MAPLEFT(i) == 0)
+                {
                     MAPLEFT(i) = 1;
                     Flood_map(MAPOFFLEFT(i));
                     MAPLEFT(i) = 1;
                 }
-                if (MAPDOWN(i) == 0) {
+                if (MAPDOWN(i) == 0)
+                {
                     MAPDOWN(i) = 1;
                     Flood_map(MAPOFFDOWN(i));
                     MAPDOWN(i) = 1;
                 }
-                if (MAPRIGHT(i) == 0) {
+                if (MAPRIGHT(i) == 0)
+                {
                     MAPRIGHT(i) = 1;
                     Flood_map(MAPOFFRIGHT(i));
                     MAPRIGHT(i) = 1;
@@ -405,13 +455,14 @@ static void Connect_map(void)
      * to one another (1 or only 2 blocks apart).
      */
 
-    char                *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9, *pa;
-    char                *maxp;
-    int                        n;
+    char *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9, *pa;
+    char *maxp;
+    int n;
 
     maxp = &map.data[map.datasize];
 
-    do {
+    do
+    {
         n = 0;
 
         p0 = &map.data[map.datasize];
@@ -427,126 +478,132 @@ static void Connect_map(void)
         pa = p7 - map.linewidth;
         p0 = map.data;
 
-        while (p0 < maxp) {
-            if (*p0) {
-                if (!*p1) {
-                    if (*p2) {
+        while (p0 < maxp)
+        {
+            if (*p0)
+            {
+                if (!*p1)
+                {
+                    if (*p2)
+                    {
                         *p1 = *p0;
                         n++;
                     }
-                    else if (*p3) {
+                    else if (*p3)
+                    {
                         *p2 = *p1 = *p0;
                         n++;
                     }
                 }
-                if (!*p4) {
-                    if (*p7) {
+                if (!*p4)
+                {
+                    if (*p7)
+                    {
                         *p4 = *p0;
                         n++;
                     }
-                    else if (*pa) {
+                    else if (*pa)
+                    {
                         *p7 = *p4 = *p0;
                         n++;
                     }
                 }
-                if (*p5) {
-                    if (!*p1 && !*p4) {
+                if (*p5)
+                {
+                    if (!*p1 && !*p4)
+                    {
                         *p4 = *p1 = *p0;
                         n++;
                     }
                 }
-            } else {
-                if (!*p5 && *p1 && *p4) {
+            }
+            else
+            {
+                if (!*p5 && *p1 && *p4)
+                {
                     *p0 = *p5 = *p1;
                     n++;
                 }
             }
-            if (!*p5) {
-                if ((*p0 || (*p1 && *p4)) && *p9) {
+            if (!*p5)
+            {
+                if ((*p0 || (*p1 && *p4)) && *p9)
+                {
                     *p5 = *p0;
                     n++;
                 }
-                else if (*p6 && *p8 && *p0) {
+                else if (*p6 && *p8 && *p0)
+                {
                     *p5 = *p0;
                     n++;
                 }
-                else if (*p2 && (*p7 || (*p4 && *p8))) {
+                else if (*p2 && (*p7 || (*p4 && *p8)))
+                {
                     *p5 = *p2;
                     n++;
                 }
-                else if (*p7 && *p1 && *p6) {
+                else if (*p7 && *p1 && *p6)
+                {
                     *p5 = *p7;
                     n++;
                 }
-                else if (!*p0 && !*p1 && *p2
-                        && !*p4 && *p6
-                        && *p7 && *p8 && *p9) {
+                else if (!*p0 && !*p1 && *p2 && !*p4 && *p6 && *p7 && *p8 && *p9)
+                {
                     *p5 = *p9;
                     n++;
                 }
-                else if (*p0 && !*p1 && !*p2
-                        && *p4 && !*p6
-                        && *p7 && *p8 && *p9) {
+                else if (*p0 && !*p1 && !*p2 && *p4 && !*p6 && *p7 && *p8 && *p9)
+                {
                     *p5 = *p7;
                     n++;
                 }
-                else if (*p0 && *p1 && *p2
-                        && *p4 && !*p6
-                        && *p7 && !*p8 && !*p9) {
+                else if (*p0 && *p1 && *p2 && *p4 && !*p6 && *p7 && !*p8 && !*p9)
+                {
                     *p5 = *p0;
                     n++;
                 }
-                else if (*p0 && *p1 && *p2
-                        && !*p4 && *p6
-                        && !*p7 && !*p8 && *p9) {
+                else if (*p0 && *p1 && *p2 && !*p4 && *p6 && !*p7 && !*p8 && *p9)
+                {
                     *p5 = *p0;
                     n++;
                 }
-                else if (*p0 && !*p1 && !*p2
-                        && !*p4 && !*p6
-                        && !*p7 && *p8 && !*p9) {
+                else if (*p0 && !*p1 && !*p2 && !*p4 && !*p6 && !*p7 && *p8 && !*p9)
+                {
                     *p5 = *p8;
                     n++;
                 }
-                else if (!*p0 && !*p1 && *p2
-                        && !*p4 && !*p6
-                        && !*p7 && *p8 && !*p9) {
+                else if (!*p0 && !*p1 && *p2 && !*p4 && !*p6 && !*p7 && *p8 && !*p9)
+                {
                     *p5 = *p8;
                     n++;
                 }
-                else if (*p0 && !*p1 && !*p2
-                        && !*p4 && *p6
-                        && !*p7 && !*p8 && !*p9) {
+                else if (*p0 && !*p1 && !*p2 && !*p4 && *p6 && !*p7 && !*p8 && !*p9)
+                {
                     *p5 = *p6;
                     n++;
                 }
-                else if (!*p0 && !*p1 && !*p2
-                        && !*p4 && *p6
-                        && *p7 && !*p8 && !*p9) {
+                else if (!*p0 && !*p1 && !*p2 && !*p4 && *p6 && *p7 && !*p8 && !*p9)
+                {
                     *p5 = *p6;
                     n++;
                 }
-                else if (!*p0 && *p1 && !*p2
-                        && !*p4 && !*p6
-                        && !*p7 && !*p8 && *p9) {
+                else if (!*p0 && *p1 && !*p2 && !*p4 && !*p6 && !*p7 && !*p8 && *p9)
+                {
                     *p5 = *p1;
                     n++;
                 }
-                else if (!*p0 && *p1 && !*p2
-                        && !*p4 && !*p6
-                        && *p7 && !*p8 && !*p9) {
+                else if (!*p0 && *p1 && !*p2 && !*p4 && !*p6 && *p7 && !*p8 && !*p9)
+                {
                     *p5 = *p1;
                     n++;
                 }
-                else if (!*p0 && !*p1 && !*p2
-                        && *p4 && !*p6
-                        && !*p7 && !*p8 && *p9) {
+                else if (!*p0 && !*p1 && !*p2 && *p4 && !*p6 && !*p7 && !*p8 && *p9)
+                {
                     *p5 = *p4;
                     n++;
                 }
-                else if (!*p0 && !*p1 && *p2
-                        && *p4 && !*p6
-                        && !*p7 && !*p8 && !*p9) {
+                else if (!*p0 && !*p1 && *p2 && *p4 && !*p6 && !*p7 && !*p8 && !*p9)
+                {
                     *p5 = *p4;
                     n++;
                 }
@@ -557,15 +614,18 @@ static void Connect_map(void)
             p0++;
             p6 = p5;
             p5 = p4;
-            if (++p4 >= maxp) {
+            if (++p4 >= maxp)
+            {
                 p4 = map.data;
             }
             p9 = p8;
             p8 = p7;
-            if (++p7 >= maxp) {
+            if (++p7 >= maxp)
+            {
                 p7 = map.data;
             }
-            if (++pa >= maxp) {
+            if (++pa >= maxp)
+            {
                 pa = map.data;
             }
         }
@@ -579,12 +639,13 @@ static void Count_labels(void)
      * For each possible map value count the number of occurences.
      */
 
-    int                        todo;
+    int todo;
 
     memset(map.flood_count, 0, sizeof map.flood_count);
 
-    for (todo = map.datasize; todo--; ) {
-        map.flood_count[(unsigned char) map.data[todo]]++;
+    for (todo = map.datasize; todo--;)
+    {
+        map.flood_count[(uint8_t)map.data[todo]]++;
     }
 }
 
@@ -595,7 +656,7 @@ static void Sort_labels(int tbl[256])
      * close to zero and small map constructs with high map values.
      */
 
-    int                        i, j, n;
+    int i, j, n;
 
     Count_labels();
 
@@ -604,11 +665,16 @@ static void Sort_labels(int tbl[256])
     tbl[0] = 0;
     tbl[1] = 1;
     n = 2;
-    for (i = 2; i < 256; i++) {
-        for (j = n; j > 2; j--) {
-            if (map.flood_count[i] > map.flood_count[tbl[j - 1]]) {
+    for (i = 2; i < 256; i++)
+    {
+        for (j = n; j > 2; j--)
+        {
+            if (map.flood_count[i] > map.flood_count[tbl[j - 1]])
+            {
                 tbl[j] = tbl[j - 1];
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
@@ -625,32 +691,39 @@ static void Label_map(int label)
      * running out of label values.
      */
 
-    int                        todo,
-                        i,
-                        tbl[256],
-                        del[256];
+    int todo,
+        i,
+        tbl[256],
+        del[256];
 
     memset(tbl, 0, sizeof tbl);
     tbl[label] = 1;
-    for (todo = map.datasize; todo--; ) {
-        map.data[todo] = tbl[(unsigned char)map.data[todo]];
+    for (todo = map.datasize; todo--;)
+    {
+        map.data[todo] = tbl[(uint8_t)map.data[todo]];
     }
 
     map.flood_trigger = 1;
     map.flood_marker = 2;
 
-    for (todo = map.datasize; todo--; ) {
-        if (map.data[todo] == map.flood_trigger) {
-            if (map.flood_marker >= 256) {
+    for (todo = map.datasize; todo--;)
+    {
+        if (map.data[todo] == map.flood_trigger)
+        {
+            if (map.flood_marker >= 256)
+            {
                 Sort_labels(tbl);
-                for (i = 0; i < 224; i++) {
+                for (i = 0; i < 224; i++)
+                {
                     del[tbl[i]] = i;
                 }
-                for (i = 224; i < 256; i++) {
+                for (i = 224; i < 256; i++)
+                {
                     del[tbl[i]] = 0;
                 }
-                for (i = map.datasize; i--; ) {
-                    map.data[i] = del[(unsigned char)map.data[i]];
+                for (i = map.datasize; i--;)
+                {
+                    map.data[i] = del[(uint8_t)map.data[i]];
                 }
                 map.flood_marker = 224;
             }
@@ -667,55 +740,65 @@ static void Partition_map(void)
      * And remove enough small map constructs to meet our fillRatio.
      */
 
-    int                        todo,
-                        i,
-                        j,
-                        marker,
-                        count,
-                        excess,
-                        tbl[256],
-                        del[256];
+    int todo,
+        i,
+        j,
+        marker,
+        count,
+        excess,
+        tbl[256],
+        del[256];
 
     Label_map(0);
     Count_labels();
     marker = 0;
-    for (i = 2; i < 256; i++) {
-        if (map.flood_count[i] > map.flood_count[marker]) {
+    for (i = 2; i < 256; i++)
+    {
+        if (map.flood_count[i] > map.flood_count[marker])
+        {
             marker = i;
         }
     }
     memset(tbl, 0, sizeof tbl);
     tbl[marker] = 1;
-    for (todo = map.datasize; todo--; ) {
-        map.data[todo] = tbl[(unsigned char)map.data[todo]];
+    for (todo = map.datasize; todo--;)
+    {
+        map.data[todo] = tbl[(uint8_t)map.data[todo]];
     }
 
     Label_map(0);
     Sort_labels(tbl);
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         del[tbl[i]] = tbl[i];
     }
     count = 0;
-    excess = map.datasize - map.flood_count[0]
-        - (int)(map.fill_ratio * map.datasize + 0.5);
-    for (i = 256; i-- > 2; ) {
-        if (excess < count) {
+    excess = map.datasize - map.flood_count[0] - (int)(map.fill_ratio * map.datasize + 0.5);
+    for (i = 256; i-- > 2;)
+    {
+        if (excess < count)
+        {
             break;
         }
         count += map.flood_count[tbl[i]];
     }
-    if (++i < 256) {
-        for (j = i + 1; j < 256; j++) {
-            if (count - map.flood_count[tbl[j]] > excess) {
-                if (2 * map.flood_count[tbl[j]] >= map.flood_count[tbl[i]]) {
+    if (++i < 256)
+    {
+        for (j = i + 1; j < 256; j++)
+        {
+            if (count - map.flood_count[tbl[j]] > excess)
+            {
+                if (2 * map.flood_count[tbl[j]] >= map.flood_count[tbl[i]])
+                {
                     continue;
                 }
             }
             del[tbl[j]] = 0;
         }
         del[tbl[i]] = 0;
-        for (todo = map.datasize; todo--; ) {
-            map.data[todo] = del[(unsigned char)map.data[todo]];
+        for (todo = map.datasize; todo--;)
+        {
+            map.data[todo] = del[(uint8_t)map.data[todo]];
         }
     }
 }
@@ -726,17 +809,19 @@ static void Smooth_map(void)
      * Round all sharp edges and corners.
      */
 
-    char                *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8;
-    char                *maxp;
-    int                        todo, n;
+    char *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8;
+    char *maxp;
+    int todo, n;
 
-    for (todo = map.datasize; todo--; ) {
+    for (todo = map.datasize; todo--;)
+    {
         map.data[todo] = (map.data[todo] ? BLOCK_SOLID : BLOCK_SPACE);
     }
 
     maxp = &map.data[map.datasize];
 
-    do {
+    do
+    {
         n = 0;
 
         p0 = &map.data[map.datasize];
@@ -750,62 +835,61 @@ static void Smooth_map(void)
         p8 = p7 - 2;
         p0 = map.data;
 
-        while (p0 < maxp) {
+        while (p0 < maxp)
+        {
 
-            if (*p4 == BLOCK_SPACE || *p4 == BLOCK_SOLID) {
-                if (*p0 == BLOCK_SOLID && *p1 == BLOCK_SOLID
-                    && *p3 == BLOCK_SOLID && *p5 == BLOCK_SPACE
-                    && *p7 == BLOCK_SPACE && *p8 == BLOCK_SPACE) {
+            if (*p4 == BLOCK_SPACE || *p4 == BLOCK_SOLID)
+            {
+                if (*p0 == BLOCK_SOLID && *p1 == BLOCK_SOLID && *p3 == BLOCK_SOLID && *p5 == BLOCK_SPACE && *p7 == BLOCK_SPACE && *p8 == BLOCK_SPACE)
+                {
                     *p4 = BLOCK_DOWN_RIGHT;
                     n++;
                 }
-                else if (*p1 == BLOCK_SOLID && *p2 == BLOCK_SOLID
-                    && *p3 == BLOCK_SPACE && *p5 == BLOCK_SOLID
-                    && *p6 == BLOCK_SPACE && *p7 == BLOCK_SPACE) {
+                else if (*p1 == BLOCK_SOLID && *p2 == BLOCK_SOLID && *p3 == BLOCK_SPACE && *p5 == BLOCK_SOLID && *p6 == BLOCK_SPACE && *p7 == BLOCK_SPACE)
+                {
                     *p4 = BLOCK_DOWN_LEFT;
                     n++;
                 }
-                else if (*p0 == BLOCK_SPACE && *p1 == BLOCK_SPACE
-                    && *p3 == BLOCK_SPACE && *p5 == BLOCK_SOLID
-                    && *p7 == BLOCK_SOLID && *p8 == BLOCK_SOLID) {
+                else if (*p0 == BLOCK_SPACE && *p1 == BLOCK_SPACE && *p3 == BLOCK_SPACE && *p5 == BLOCK_SOLID && *p7 == BLOCK_SOLID && *p8 == BLOCK_SOLID)
+                {
                     *p4 = BLOCK_UP_LEFT;
                     n++;
                 }
-                else if (*p1 == BLOCK_SPACE && *p2 == BLOCK_SPACE
-                    && *p3 == BLOCK_SOLID && *p5 == BLOCK_SPACE
-                    && *p6 == BLOCK_SOLID && *p7 == BLOCK_SOLID) {
+                else if (*p1 == BLOCK_SPACE && *p2 == BLOCK_SPACE && *p3 == BLOCK_SOLID && *p5 == BLOCK_SPACE && *p6 == BLOCK_SOLID && *p7 == BLOCK_SOLID)
+                {
                     *p4 = BLOCK_UP_RIGHT;
                     n++;
                 }
-                else if (*p4 == BLOCK_SOLID) {
-                    if (*p5 == BLOCK_SPACE && *p8 == BLOCK_SPACE
-                        && *p7 == BLOCK_SPACE
-                        && *p6 == BLOCK_SPACE && *p3 == BLOCK_SPACE) {
-                        if (*p2 != BLOCK_SOLID && *p0 != BLOCK_SOLID) {
+                else if (*p4 == BLOCK_SOLID)
+                {
+                    if (*p5 == BLOCK_SPACE && *p8 == BLOCK_SPACE && *p7 == BLOCK_SPACE && *p6 == BLOCK_SPACE && *p3 == BLOCK_SPACE)
+                    {
+                        if (*p2 != BLOCK_SOLID && *p0 != BLOCK_SOLID)
+                        {
                             *p4 = BLOCK_SPACE;
                             n++;
                         }
                     }
-                    else if (*p7 == BLOCK_SPACE && *p6 == BLOCK_SPACE
-                        && *p3 == BLOCK_SPACE
-                        && *p0 == BLOCK_SPACE && *p1 == BLOCK_SPACE) {
-                        if (*p8 != BLOCK_SOLID && *p2 != BLOCK_SOLID) {
+                    else if (*p7 == BLOCK_SPACE && *p6 == BLOCK_SPACE && *p3 == BLOCK_SPACE && *p0 == BLOCK_SPACE && *p1 == BLOCK_SPACE)
+                    {
+                        if (*p8 != BLOCK_SOLID && *p2 != BLOCK_SOLID)
+                        {
                             *p4 = BLOCK_SPACE;
                             n++;
                         }
                     }
-                    else if (*p3 == BLOCK_SPACE && *p0 == BLOCK_SPACE
-                        && *p1 == BLOCK_SPACE
-                        && *p2 == BLOCK_SPACE && *p5 == BLOCK_SPACE) {
-                        if (*p6 != BLOCK_SOLID && *p8 != BLOCK_SOLID) {
+                    else if (*p3 == BLOCK_SPACE && *p0 == BLOCK_SPACE && *p1 == BLOCK_SPACE && *p2 == BLOCK_SPACE && *p5 == BLOCK_SPACE)
+                    {
+                        if (*p6 != BLOCK_SOLID && *p8 != BLOCK_SOLID)
+                        {
                             *p4 = BLOCK_SPACE;
                             n++;
                         }
                     }
-                    else if (*p1 == BLOCK_SPACE && *p2 == BLOCK_SPACE
-                        && *p5 == BLOCK_SPACE
-                        && *p8 == BLOCK_SPACE && *p7 == BLOCK_SPACE) {
-                        if (*p0 != BLOCK_SOLID && *p6 != BLOCK_SOLID) {
+                    else if (*p1 == BLOCK_SPACE && *p2 == BLOCK_SPACE && *p5 == BLOCK_SPACE && *p8 == BLOCK_SPACE && *p7 == BLOCK_SPACE)
+                    {
+                        if (*p0 != BLOCK_SOLID && *p6 != BLOCK_SOLID)
+                        {
                             *p4 = BLOCK_SPACE;
                             n++;
                         }
@@ -818,12 +902,14 @@ static void Smooth_map(void)
             p0++;
             p5 = p4;
             p4 = p3;
-            if (++p3 >= maxp) {
+            if (++p3 >= maxp)
+            {
                 p3 = map.data;
             }
             p8 = p7;
             p7 = p6;
-            if (++p6 >= maxp) {
+            if (++p6 >= maxp)
+            {
                 p6 = map.data;
             }
         }
@@ -839,69 +925,81 @@ static void Decorate_map(void)
      * A homebase should be free from influence from gravity objects.
      */
 
-    struct xy {
-        int                x,
-                        y;
+    struct xy
+    {
+        int x,
+            y;
     };
 
-    int                        margin,
-                        h,
-                        i,
-                        hori,
-                        vert,
-                        off,
-                        x,
-                        y,
-                        base,
-                        cannon,
-                        num_cannons,
-                        grav,
-                        num_gravs,
-                        fuel,
-                        num_fuels,
-                        worm,
-                        num_worms,
-                        type,
-                        wall_offset,
-                        team,
-                        tries;
-    struct xy                *home;
-    unsigned                size;
+    int margin,
+        h,
+        i,
+        hori,
+        vert,
+        off,
+        x,
+        y,
+        base,
+        cannon,
+        num_cannons,
+        grav,
+        num_gravs,
+        fuel,
+        num_fuels,
+        worm,
+        num_worms,
+        type,
+        wall_offset,
+        team,
+        tries;
+    struct xy *home;
+    unsigned size;
 
     size = map.num_bases * sizeof(struct xy);
-    if ((home = (struct xy *) malloc(size)) == NULL) {
+    if ((home = (struct xy *)malloc(size)) == NULL)
+    {
         fprintf(stderr, "No mem\n");
         exit(1);
     }
     margin = 2;
-    if (map.num_teams > map.num_bases) {
+    if (map.num_teams > map.num_bases)
+    {
         map.num_teams = map.num_bases;
     }
     team = map.num_teams;
-    for (i = 0; i < map.num_bases; i++) {
-        for (tries = map.datasize; tries; tries--) {
-            x = margin + fuzz_bound(map.width - 2*margin - 1);
-            y = margin + fuzz_bound(map.height - 2*margin - 1);
+    for (i = 0; i < map.num_bases; i++)
+    {
+        for (tries = map.datasize; tries; tries--)
+        {
+            x = margin + fuzz_bound(map.width - 2 * margin - 1);
+            y = margin + fuzz_bound(map.height - 2 * margin - 1);
             base = x + y * map.linewidth;
-            if (map.data[base] != BLOCK_SPACE) {
+            if (map.data[base] != BLOCK_SPACE)
+            {
                 continue;
             }
-            if (map.data[base + map.linewidth] != BLOCK_SOLID) {
+            if (map.data[base + map.linewidth] != BLOCK_SOLID)
+            {
                 continue;
             }
-            if (map.data[base - map.linewidth] != BLOCK_SPACE) {
+            if (map.data[base - map.linewidth] != BLOCK_SPACE)
+            {
                 continue;
             }
-            if (map.data[base - 2 * map.linewidth] != BLOCK_SPACE) {
+            if (map.data[base - 2 * map.linewidth] != BLOCK_SPACE)
+            {
                 continue;
             }
-            if (map.data[base - 1] != BLOCK_SPACE) {
+            if (map.data[base - 1] != BLOCK_SPACE)
+            {
                 continue;
             }
-            if (map.data[base + 1] != BLOCK_SPACE) {
+            if (map.data[base + 1] != BLOCK_SPACE)
+            {
                 continue;
             }
-            if (--team < 0) {
+            if (--team < 0)
+            {
                 team = map.num_teams - 1;
             }
             map.data[base] = '0' + team;
@@ -909,15 +1007,18 @@ static void Decorate_map(void)
             home[i].y = y;
             break;
         }
-        if (tries == 0) {
+        if (tries == 0)
+        {
             break;
         }
     }
 
     num_cannons = map.cannon_ratio * map.datasize;
     margin = 1;
-    for (i = 0; i < num_cannons; i++) {
-        switch (fuzz_bound(3)) {
+    for (i = 0; i < num_cannons; i++)
+    {
+        switch (fuzz_bound(3))
+        {
         case 0:
             type = BLOCK_CANNON_RIGHT;
             wall_offset = 1;
@@ -935,94 +1036,114 @@ static void Decorate_map(void)
             wall_offset = -map.linewidth;
             break;
         }
-        for (tries = map.datasize; tries; tries--) {
-            x = margin + fuzz_bound(map.width - 2*margin - 1);
-            y = margin + fuzz_bound(map.height - 2*margin - 1);
+        for (tries = map.datasize; tries; tries--)
+        {
+            x = margin + fuzz_bound(map.width - 2 * margin - 1);
+            y = margin + fuzz_bound(map.height - 2 * margin - 1);
             cannon = x + y * map.linewidth;
-            if (map.data[cannon] != BLOCK_SPACE) {
+            if (map.data[cannon] != BLOCK_SPACE)
+            {
                 continue;
             }
-            if (map.data[cannon + wall_offset] == BLOCK_SPACE) {
+            if (map.data[cannon + wall_offset] == BLOCK_SPACE)
+            {
                 continue;
             }
-            if (map.data[cannon + wall_offset] != BLOCK_SOLID) {
-                switch (type) {
+            if (map.data[cannon + wall_offset] != BLOCK_SOLID)
+            {
+                switch (type)
+                {
                 case BLOCK_CANNON_RIGHT:
                     if (map.data[cannon + wall_offset] != BLOCK_UP_LEFT &&
-                        map.data[cannon + wall_offset] != BLOCK_DOWN_LEFT) {
+                        map.data[cannon + wall_offset] != BLOCK_DOWN_LEFT)
+                    {
                         continue;
                     }
                     break;
                 case BLOCK_CANNON_DOWN:
                     if (map.data[cannon + wall_offset] != BLOCK_UP_LEFT &&
-                        map.data[cannon + wall_offset] != BLOCK_UP_RIGHT) {
+                        map.data[cannon + wall_offset] != BLOCK_UP_RIGHT)
+                    {
                         continue;
                     }
                     break;
                 case BLOCK_CANNON_LEFT:
                     if (map.data[cannon + wall_offset] != BLOCK_UP_RIGHT &&
-                        map.data[cannon + wall_offset] != BLOCK_DOWN_RIGHT) {
+                        map.data[cannon + wall_offset] != BLOCK_DOWN_RIGHT)
+                    {
                         continue;
                     }
                     break;
                 default:
                     if (map.data[cannon + wall_offset] != BLOCK_DOWN_LEFT &&
-                        map.data[cannon + wall_offset] != BLOCK_DOWN_LEFT) {
+                        map.data[cannon + wall_offset] != BLOCK_DOWN_LEFT)
+                    {
                         continue;
                     }
                     break;
                 }
             }
-            for (h = 0; h < map.num_bases; h++) {
+            for (h = 0; h < map.num_bases; h++)
+            {
                 if (((x < home[h].x)
-                        ? (x + margin < home[h].x)
-                        : (x - margin > home[h].x))
-                    && ((y < home[h].y)
-                        ? (y + margin < home[h].y)
-                        : (y - margin > home[h].y))) {
+                         ? (x + margin < home[h].x)
+                         : (x - margin > home[h].x)) &&
+                    ((y < home[h].y)
+                         ? (y + margin < home[h].y)
+                         : (y - margin > home[h].y)))
+                {
                     continue;
                 }
                 break;
             }
-            if (h < map.num_bases) {
+            if (h < map.num_bases)
+            {
                 continue;
             }
             map.data[cannon] = type;
             break;
         }
-        if (tries == 0) {
+        if (tries == 0)
+        {
             break;
         }
     }
 
     num_fuels = map.fuel_ratio * map.datasize;
     margin = 1;
-    for (i = 0; i < num_fuels; i++) {
-        for (tries = map.datasize; tries; tries--) {
-            x = margin + fuzz_bound(map.width - 2*margin - 1);
-            y = margin + fuzz_bound(map.height - 2*margin - 1);
+    for (i = 0; i < num_fuels; i++)
+    {
+        for (tries = map.datasize; tries; tries--)
+        {
+            x = margin + fuzz_bound(map.width - 2 * margin - 1);
+            y = margin + fuzz_bound(map.height - 2 * margin - 1);
             fuel = x + y * map.linewidth;
-            if (map.data[fuel] != BLOCK_SOLID) {
+            if (map.data[fuel] != BLOCK_SOLID)
+            {
                 continue;
             }
             if (map.data[fuel + 1] != BLOCK_SPACE &&
                 map.data[fuel - 1] != BLOCK_SPACE &&
                 map.data[fuel + map.linewidth] != BLOCK_SPACE &&
-                map.data[fuel - map.linewidth] != BLOCK_SPACE) {
+                map.data[fuel - map.linewidth] != BLOCK_SPACE)
+            {
                 continue;
             }
             map.data[fuel] = BLOCK_FUEL;
             break;
         }
-        if (tries == 0) {
+        if (tries == 0)
+        {
             break;
         }
     }
 
     margin = 11;
     num_gravs = map.grav_ratio * map.datasize;
-    for (i = 0; i < num_gravs; i++) {
-        switch (fuzz_bound(3)) {
+    for (i = 0; i < num_gravs; i++)
+    {
+        switch (fuzz_bound(3))
+        {
         case 0:
             type = BLOCK_GRAV_POS;
             break;
@@ -1036,9 +1157,10 @@ static void Decorate_map(void)
             type = BLOCK_GRAV_ANTI_CLOCK;
             break;
         }
-        for (tries = map.datasize; tries; tries--) {
-            x = margin + fuzz_bound(map.width - 2*margin - 1);
-            y = margin + fuzz_bound(map.height - 2*margin - 1);
+        for (tries = map.datasize; tries; tries--)
+        {
+            x = margin + fuzz_bound(map.width - 2 * margin - 1);
+            y = margin + fuzz_bound(map.height - 2 * margin - 1);
             grav = x + y * map.linewidth;
             if (map.data[grav] != BLOCK_SPACE ||
                 map.data[grav + 1] != BLOCK_SPACE ||
@@ -1048,38 +1170,46 @@ static void Decorate_map(void)
                 map.data[grav + map.linewidth + 1] != BLOCK_SPACE ||
                 map.data[grav - map.linewidth + 1] != BLOCK_SPACE ||
                 map.data[grav + map.linewidth - 1] != BLOCK_SPACE ||
-                map.data[grav - map.linewidth - 1] != BLOCK_SPACE) {
+                map.data[grav - map.linewidth - 1] != BLOCK_SPACE)
+            {
                 continue;
             }
 
-            for (h = 0; h < map.num_bases; h++) {
+            for (h = 0; h < map.num_bases; h++)
+            {
                 if ((x < home[h].x)
                         ? (x + margin < home[h].x)
-                        : (x - margin > home[h].x)) {
+                        : (x - margin > home[h].x))
+                {
                     continue;
                 }
                 if ((y < home[h].y)
                         ? (y + margin < home[h].y)
-                        : (y - margin > home[h].y)) {
+                        : (y - margin > home[h].y))
+                {
                     continue;
                 }
                 break;
             }
-            if (h < map.num_bases) {
+            if (h < map.num_bases)
+            {
                 continue;
             }
             map.data[grav] = type;
             break;
         }
-        if (tries == 0) {
+        if (tries == 0)
+        {
             break;
         }
     }
 
     margin = 3;
     num_worms = map.worm_ratio * map.datasize;
-    for (i = 0; i < num_worms; i++) {
-        switch (fuzz_bound(3)) {
+    for (i = 0; i < num_worms; i++)
+    {
+        switch (fuzz_bound(3))
+        {
         case 0:
             type = BLOCK_WORM_IN;
             break;
@@ -1090,18 +1220,23 @@ static void Decorate_map(void)
             type = BLOCK_WORM_BOTH;
             break;
         }
-        for (tries = map.datasize; tries; tries--) {
-            x = margin + fuzz_bound(map.width - 2*margin - 1);
-            y = margin + fuzz_bound(map.height - 2*margin - 1);
+        for (tries = map.datasize; tries; tries--)
+        {
+            x = margin + fuzz_bound(map.width - 2 * margin - 1);
+            y = margin + fuzz_bound(map.height - 2 * margin - 1);
             worm = x + y * map.linewidth;
-            if (map.data[worm] != BLOCK_SPACE) {
+            if (map.data[worm] != BLOCK_SPACE)
+            {
                 continue;
             }
 
-            for (vert = -margin; vert <= margin; vert++) {
+            for (vert = -margin; vert <= margin; vert++)
+            {
                 off = x - margin + (y + vert) * map.linewidth;
-                for (hori = -margin; hori <= margin; hori++, off++) {
-                    switch (map.data[off]) {
+                for (hori = -margin; hori <= margin; hori++, off++)
+                {
+                    switch (map.data[off])
+                    {
                     case BLOCK_SPACE:
                     case BLOCK_GRAV_POS:
                     case BLOCK_GRAV_NEG:
@@ -1116,34 +1251,41 @@ static void Decorate_map(void)
                     }
                     break;
                 }
-                if (hori <= margin) {
+                if (hori <= margin)
+                {
                     break;
                 }
             }
-            if (vert <= margin) {
+            if (vert <= margin)
+            {
                 continue;
             }
 
-            for (h = 0; h < map.num_bases; h++) {
+            for (h = 0; h < map.num_bases; h++)
+            {
                 if ((x < home[h].x)
                         ? (x + margin < home[h].x)
-                        : (x - margin > home[h].x)) {
+                        : (x - margin > home[h].x))
+                {
                     continue;
                 }
                 if ((y < home[h].y)
                         ? (y + margin < home[h].y)
-                        : (y - margin > home[h].y)) {
+                        : (y - margin > home[h].y))
+                {
                     continue;
                 }
                 break;
             }
-            if (h < map.num_bases) {
+            if (h < map.num_bases)
+            {
                 continue;
             }
             map.data[worm] = type;
             break;
         }
-        if (tries == 0) {
+        if (tries == 0)
+        {
             break;
         }
     }
@@ -1153,35 +1295,40 @@ static void Decorate_map(void)
 
 static void Border_map(void)
 {
-    int                        i;
-    char                *left, *middle, *right;
+    int i;
+    char *left, *middle, *right;
 
     left = &map.data[map.width - 1];
     middle = left + 1;
     right = &map.data[0];
-    for (i = 0; i < map.height; i++) {
+    for (i = 0; i < map.height; i++)
+    {
         *middle = '\n';
-        if (*right == BLOCK_SOLID) {
-            if (*left == BLOCK_DOWN_LEFT || *left == BLOCK_UP_LEFT) {
+        if (*right == BLOCK_SOLID)
+        {
+            if (*left == BLOCK_DOWN_LEFT || *left == BLOCK_UP_LEFT)
+            {
                 *left = BLOCK_SOLID;
             }
         }
-        if (*right == BLOCK_SPACE
-            || *right == BLOCK_DOWN_RIGHT
-            || *right == BLOCK_UP_RIGHT) {
-            if (*left == BLOCK_DOWN_RIGHT || *left == BLOCK_UP_RIGHT) {
+        if (*right == BLOCK_SPACE || *right == BLOCK_DOWN_RIGHT || *right == BLOCK_UP_RIGHT)
+        {
+            if (*left == BLOCK_DOWN_RIGHT || *left == BLOCK_UP_RIGHT)
+            {
                 *left = BLOCK_SPACE;
             }
         }
-        if (*left == BLOCK_SOLID) {
-            if (*right == BLOCK_DOWN_RIGHT || *right == BLOCK_UP_RIGHT) {
+        if (*left == BLOCK_SOLID)
+        {
+            if (*right == BLOCK_DOWN_RIGHT || *right == BLOCK_UP_RIGHT)
+            {
                 *right = BLOCK_SOLID;
             }
         }
-        if (*left == BLOCK_SPACE
-            || *left == BLOCK_UP_LEFT
-            || *left == BLOCK_DOWN_LEFT) {
-            if (*right == BLOCK_DOWN_LEFT || *right == BLOCK_UP_LEFT) {
+        if (*left == BLOCK_SPACE || *left == BLOCK_UP_LEFT || *left == BLOCK_DOWN_LEFT)
+        {
+            if (*right == BLOCK_DOWN_LEFT || *right == BLOCK_UP_LEFT)
+            {
                 *right = BLOCK_SPACE;
             }
         }
@@ -1215,23 +1362,26 @@ static void Dump_map(char *name, char *author, char **data,
 static void Picture_map(void)
 {
 #ifdef DEVELOPMENT
-    char                name[1024];
-    FILE                *fp;
-    int                        x, y;
-    unsigned char        *line;
+    char name[1024];
+    FILE *fp;
+    int x, y;
+    uint8_t *line;
 
-    if (!getenv("WILDMAPDUMP")) {
+    if (!getenv("WILDMAPDUMP"))
+    {
         return;
     }
 
     sprintf(name, "wildmap.ppm");
     fp = fopen(name, "w");
-    if (!fp) {
+    if (!fp)
+    {
         perror(name);
         return;
     }
-    line = (unsigned char *)malloc(3 * map.width);
-    if (!line) {
+    line = (uint8_t *)malloc(3 * map.width);
+    if (!line)
+    {
         perror("No memory for wildmap dump");
         fclose(fp);
         return;
@@ -1239,9 +1389,12 @@ static void Picture_map(void)
     fprintf(fp, "P6\n");
     fprintf(fp, "%d %d\n", map.width, map.height);
     fprintf(fp, "%d\n", 255);
-    for (y = 0; y < map.height; y++) {
-        for (x = 0; x < map.width; x++) {
-            switch (map.data[x + map.linewidth * y]) {
+    for (y = 0; y < map.height; y++)
+    {
+        for (x = 0; x < map.width; x++)
+        {
+            switch (map.data[x + map.linewidth * y])
+            {
             case BLOCK_SPACE:
                 line[x * 3 + 0] = 0;
                 line[x * 3 + 1] = 0;
@@ -1331,29 +1484,25 @@ static int wildmain(int argc, char **argv)
     return 0;
 }
 
-
 #define SERVER
 #undef NELEM
 #include "serverconst.h"
 #include "object.h"
 #include "proto.h"
 
-
-
-
 int Wildmap(
-        int width,
-        int height,
-        char *name,
-        char *author,
-        char **data,
-        int *width_ptr,
-        int *height_ptr)
+    int width,
+    int height,
+    char *name,
+    char *author,
+    char **data,
+    int *width_ptr,
+    int *height_ptr)
 {
-#define NUM_ARG        7
-    char        arga[NUM_ARG][20];
-    char        *args[NUM_ARG + 1];
-    int                i, result;
+#define NUM_ARG 7
+    char arga[NUM_ARG][20];
+    char *args[NUM_ARG + 1];
+    int i, result;
 
     sprintf(arga[0], "%s", "xpilots.wildmap");
     sprintf(arga[1], "%s", "-mapWidth");
@@ -1361,9 +1510,10 @@ int Wildmap(
     sprintf(arga[3], "%s", "-mapHeight");
     sprintf(arga[4], "%d", height);
     sprintf(arga[5], "%s", "-numBases");
-    sprintf(arga[6], "%d", 10 + (int) rint(sqrt(width * height) / 10.0));
+    sprintf(arga[6], "%d", 10 + (int)rint(sqrt(width * height) / 10.0));
 
-    for (i = 0; i < NUM_ARG; i++) {
+    for (i = 0; i < NUM_ARG; i++)
+    {
         args[i] = arga[i];
     }
     args[NUM_ARG] = NULL;
@@ -1374,4 +1524,3 @@ int Wildmap(
 
     return result;
 }
-

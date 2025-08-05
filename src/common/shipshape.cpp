@@ -172,8 +172,8 @@ static int shape2wire(char *ship_shape_str, shipobj_t *w)
     struct grid_t
     {
         int todo, done;
-        unsigned char pt[32][32];
-        unsigned char chk[32 * 32][2];
+        uint8_t pt[32][32];
+        uint8_t chk[32 * 32][2];
     } grid;
 
     int i, j, x, y, dx, dy,

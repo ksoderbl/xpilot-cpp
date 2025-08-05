@@ -60,7 +60,7 @@ static char msg[MSG_LEN];
  * Two dimensional array giving for each point the distance
  * to the nearest wall.  Measured in blocks times 2.
  */
-static unsigned char **walldist;
+static uint8_t **walldist;
 
 /*
  * Allocate memory for the two dimensional "walldist" array.
@@ -68,18 +68,18 @@ static unsigned char **walldist;
 static void Walldist_alloc(void)
 {
     int x;
-    unsigned char *wall_line;
-    unsigned char **wall_ptr;
+    uint8_t *wall_line;
+    uint8_t **wall_ptr;
 
-    walldist = (unsigned char **)malloc(
-        World.x * sizeof(unsigned char *) + World.x * World.y);
+    walldist = (uint8_t **)malloc(
+        World.x * sizeof(uint8_t *) + World.x * World.y);
     if (!walldist)
     {
         xperror("No memory for walldist");
         exit(1);
     }
     wall_ptr = walldist;
-    wall_line = (unsigned char *)(wall_ptr + World.x);
+    wall_line = (uint8_t *)(wall_ptr + World.x);
     for (x = 0; x < World.x; x++)
     {
         *wall_ptr = wall_line;
@@ -98,7 +98,7 @@ static void Walldist_dump(void)
     char name[1024];
     FILE *fp;
     int x, y;
-    unsigned char *line;
+    uint8_t *line;
 
     if (!getenv("WALLDISTDUMP"))
     {
@@ -112,7 +112,7 @@ static void Walldist_dump(void)
         xperror("%s", name);
         return;
     }
-    line = (unsigned char *)malloc(3 * World.x);
+    line = (uint8_t *)malloc(3 * World.x);
     if (!line)
     {
         xperror("No memory for walldist dump");

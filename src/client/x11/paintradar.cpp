@@ -305,8 +305,8 @@ void Paint_world_radar(void)
     int start, end;
     int currColor, visibleColorChange;
     const int max = 256;
-    u_byte visible[256];
-    u_byte visibleColor[256];
+    uint8_t visible[256];
+    uint8_t visibleColor[256];
     XSegment segments[256];
     XPoint points[256];
 

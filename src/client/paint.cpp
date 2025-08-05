@@ -37,7 +37,7 @@ int active_view_width;  /* Width of active map area displayed. */
 int active_view_height; /* Height of active map area displayed. */
 int ext_view_x_offset;  /* Offset ext_view_width */
 int ext_view_y_offset;  /* Offset ext_view_height */
-u_byte debris_colors;   /* Number of debris intensities from server */
+uint8_t debris_colors;  /* Number of debris intensities from server */
 
 char modBankStr[NUM_MODBANKS][MAX_CHARS]; /* modifier banks */
 

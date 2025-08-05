@@ -101,7 +101,7 @@ extern bool talk_mapped;          /* Is talk window visible */
 // extern int        active_view_height;        /* Height of active map area displayed. */
 // extern int        ext_view_x_offset;        /* Offset of ext_view_width */
 // extern int        ext_view_y_offset;        /* Offset of ext_view_height */
-// extern u_byte        debris_colors;                /* Number of debris intensities */
+// extern uint8_t        debris_colors;                /* Number of debris intensities */
 extern DFLOAT charsPerTick;          /* Output speed of messages */
 extern bool markingLights;           /* Marking lights on ships */
 extern bool titleFlip;               /* Do special titlebar flipping? */
@@ -116,7 +116,7 @@ extern int(*radarDrawRectanglePtr) /* Function to draw player on radar */
     (Display *disp, Drawable d, GC gc,
      int x, int y, unsigned width, unsigned height);
 
-void Paint_item_symbol(u_byte type, Drawable d, GC mygc, int x, int y, int color);
-void Paint_item(u_byte type, Drawable d, GC mygc, int x, int y);
+void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
+void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);
 
 #endif

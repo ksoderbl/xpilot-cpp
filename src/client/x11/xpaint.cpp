@@ -132,9 +132,9 @@ int cacheShips = 0; /* cache some ship bitmaps every frame */
 
 static void Paint_clock(int redraw);
 
-void Game_over_action(u_byte stat)
+void Game_over_action(uint8_t stat)
 {
-    static u_byte old_stat = 0;
+    static uint8_t old_stat = 0;
 
     if (BIT(old_stat, GAME_OVER) && !BIT(stat, GAME_OVER) && !BIT(stat, PAUSE))
     {

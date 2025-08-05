@@ -26,8 +26,6 @@
 
 #include <cstdint>
 
-typedef uint8_t u_byte;
-
 /*
  * On some systems an enum is smaller than an int.
  * On others bool is already a builtin type.

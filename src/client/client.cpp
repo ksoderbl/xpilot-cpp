@@ -51,10 +51,10 @@ ipos_t realWorld;
 short heading;
 short nextCheckPoint;
 
-u_byte numItems[NUM_ITEMS];     /* Count of currently owned items */
-u_byte lastNumItems[NUM_ITEMS]; /* Last item count shown */
-int numItemsTime[NUM_ITEMS];    /* Number of frames to show this item count */
-DFLOAT showItemsTime;           /* How long to show changed item count for */
+uint8_t numItems[NUM_ITEMS];     /* Count of currently owned items */
+uint8_t lastNumItems[NUM_ITEMS]; /* Last item count shown */
+int numItemsTime[NUM_ITEMS];     /* Number of frames to show this item count */
+DFLOAT showItemsTime;            /* How long to show changed item count for */
 short autopilotLight;
 
 short lock_id;   /* Id of player locked onto */
@@ -86,8 +86,8 @@ long control_count;          /* Display control for how long? */
 int roundDelay;              /* != 0 means we're in a delay */
 int roundDelayMax;           /* (not yet) used for graph of time remaining in delay */
 
-u_byte spark_rand;     /* Sparkling effect */
-u_byte old_spark_rand; /* previous value of spark_rand */
+uint8_t spark_rand;     /* Sparkling effect */
+uint8_t old_spark_rand; /* previous value of spark_rand */
 
 long fuelSum;      /* Sum of fuel in all tanks */
 long fuelMax;      /* How much fuel can you take? */
@@ -138,7 +138,7 @@ int oldMaxFPS;
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
 
-u_byte lose_item;     /* index for dropping owned item */
+uint8_t lose_item;    /* index for dropping owned item */
 int lose_item_active; /* one of the lose keys is pressed */
 
 #ifdef SOUND
@@ -270,9 +270,9 @@ int Handle_end(long server_loops)
     return 0;
 }
 
-int Handle_self_items(u_byte *newNumItems)
+int Handle_self_items(uint8_t *newNumItems)
 {
-    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(u_byte));
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
     return 0;
 }
 
@@ -280,7 +280,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 float newPower, float newTurnspeed, float newTurnresistance,
                 int newLockId, int newLockDist, int newLockBearing,
                 int newNextCheckPoint, int newAutopilotLight,
-                u_byte *newNumItems, int newCurrentTank,
+                uint8_t *newNumItems, int newCurrentTank,
                 int newFuelSum, int newFuelMax, int newPacketSize)
 {
     pos.x = x;
@@ -296,7 +296,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     lock_dir = newLockBearing;
     nextCheckPoint = newNextCheckPoint;
     autopilotLight = newAutopilotLight;
-    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(u_byte));
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
     fuelCurrent = newCurrentTank;
     if (newFuelSum > fuelSum && selfVisible != 0)
     {
@@ -545,7 +545,7 @@ int Handle_item(int x, int y, int type)
     memcpy(ptr_, _p, _n * sizeof(*ptr_));                         \
     return 0;
 
-int Handle_fastshot(int type, u_byte *p, int n)
+int Handle_fastshot(int type, uint8_t *p, int n)
 {
 #define num_ (num_fastshot[type])
 #define max_ (max_fastshot[type])
@@ -556,7 +556,7 @@ int Handle_fastshot(int type, u_byte *p, int n)
 #undef ptr_
 }
 
-int Handle_debris(int type, u_byte *p, int n)
+int Handle_debris(int type, uint8_t *p, int n)
 {
 #define num_ (num_debris[type])
 #define max_ (max_debris[type])
@@ -1406,7 +1406,7 @@ static int Map_init(void)
     int i,
         max,
         type;
-    u_byte types[256];
+    uint8_t types[256];
 
     num_fuels = 0;
     num_bases = 0;

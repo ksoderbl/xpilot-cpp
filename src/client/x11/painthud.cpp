@@ -510,7 +510,7 @@ void Paint_HUD(void)
             int len, width;
 
             /* Paint item symbol */
-            Paint_item_symbol((u_byte)i, drawPixmap, gameGC,
+            Paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
                               horiz_pos - ITEM_SIZE,
                               vert_pos,
                               ITEM_HUD);

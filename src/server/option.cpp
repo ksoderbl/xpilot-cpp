@@ -107,12 +107,12 @@ static hash_node *Option_hash_array[HASH_SIZE];
 static int Option_hash_string(const char *name)
 {
     unsigned int hashVal = 0;
-    const unsigned char *string = (const unsigned char *)name;
+    const uint8_t *string = (const uint8_t *)name;
     int i;
 
     for (i = 0; string[i] != '\0'; i++)
     {
-        unsigned char c = string[i];
+        uint8_t c = string[i];
 
         if (isascii(c) && isalpha(c) && islower(c))
         {
@@ -658,7 +658,7 @@ static void Options_hash_performance(void)
     int bucket_use_count;
     int i;
     hash_node *np;
-    unsigned char histo[HASH_SIZE];
+    uint8_t histo[HASH_SIZE];
     char msg[MSG_LEN];
 
     if (getenv("XPILOTSHASHPERF") == NULL)

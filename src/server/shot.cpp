@@ -2039,15 +2039,15 @@ void Move_smart_shot(int ind)
 
     if (angle < 0)
     {
-        shot->missile_dir += (u_byte)(((-angle < shot->turnspeed)
-                                           ? -angle
-                                           : shot->turnspeed));
+        shot->missile_dir += (uint8_t)(((-angle < shot->turnspeed)
+                                            ? -angle
+                                            : shot->turnspeed));
     }
     else
     {
-        shot->missile_dir -= (u_byte)(((angle < shot->turnspeed)
-                                           ? angle
-                                           : shot->turnspeed));
+        shot->missile_dir -= (uint8_t)(((angle < shot->turnspeed)
+                                            ? angle
+                                            : shot->turnspeed));
     }
 
     shot->missile_dir = MOD2(shot->missile_dir, RES); /* NOTE!!!! */

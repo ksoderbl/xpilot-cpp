@@ -196,8 +196,8 @@ struct _cell_node
     int type;            /* one bit of OBJ_XXX */        \
     int count;           /* Misc timings */              \
     modifiers_t mods;    /* Modifiers to this object */  \
-    u_byte color;        /* Color of object */           \
-    u_byte missile_dir;  /* missile direction */         \
+    uint8_t color;       /* Color of object */           \
+    uint8_t missile_dir; /* missile direction */         \
     /* up to here all object types are the same as all player types. */
 
 #define OBJECT_EXTEND                              \
@@ -359,8 +359,8 @@ struct _wireobject
 
     DFLOAT turnspeed; /* how fast to turn */
 
-    u_byte size;     /* Size of object (wreckage) */
-    u_byte rotation; /* Rotation direction */
+    uint8_t size;     /* Size of object (wreckage) */
+    uint8_t rotation; /* Rotation direction */
 
     // #ifdef __cplusplus
     //                         _wireobject() {}
@@ -544,8 +544,8 @@ struct player
     } lock;
     int lockbank[LOCKBANK_MAX]; /* Saved player locks */
 
-    u_byte dir;                 /* Direction of acceleration */
-    u_byte unused1;             /* padding for alignment */
+    uint8_t dir;                /* Direction of acceleration */
+    uint8_t unused1;            /* padding for alignment */
     char mychar;                /* Special char for player */
     char prev_mychar;           /* Special char for player */
     char name[MAX_CHARS];       /* Nick-name of player */
