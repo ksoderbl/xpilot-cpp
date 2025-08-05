@@ -34,36 +34,29 @@
 #include "const.h"
 #include "xperror.h"
 
-DFLOAT                tbl_sin[TABLE_SIZE];
-DFLOAT                tbl_cos[TABLE_SIZE];
+DFLOAT tbl_sin[TABLE_SIZE];
+DFLOAT tbl_cos[TABLE_SIZE];
 
 int ON(char *optval)
 {
-    return (strncasecmp(optval, "true", 4) == 0
-            || strncasecmp(optval, "on", 2) == 0
-            || strncasecmp(optval, "yes", 3) == 0);
+    return (strncasecmp(optval, "true", 4) == 0 || strncasecmp(optval, "on", 2) == 0 || strncasecmp(optval, "yes", 3) == 0);
 }
-
 
 int OFF(char *optval)
 {
-    return (strncasecmp(optval, "false", 5) == 0
-            || strncasecmp(optval, "off", 3) == 0
-            || strncasecmp(optval, "no", 2) == 0);
+    return (strncasecmp(optval, "false", 5) == 0 || strncasecmp(optval, "off", 3) == 0 || strncasecmp(optval, "no", 2) == 0);
 }
-
 
 int mod(int x, int y)
 {
     if (x >= y || x < 0)
-        x = x - y*(x/y);
+        x = x - y * (x / y);
 
     if (x < 0)
         x += y;
 
     return x;
 }
-
 
 int f2i(DFLOAT f)
 {
@@ -84,24 +77,22 @@ DFLOAT findDir(DFLOAT x, DFLOAT y)
     return angle * RES;
 }
 
-
 double rfrac(void)
 {
     /*
      * Return a pseudo-random value in the range { 0.0 <= x < 1.0 }.
      * Use randomMT() which returns a 32 bit PRN and multiply by 1/(1<<32).
      */
-    return (double) randomMT() * 0.00000000023283064365386962890625;
+    return (double)(randomMT() * 0.00000000023283064365386962890625);
 }
-
 
 void Make_table(void)
 {
     int i;
 
-    for (i = 0; i < TABLE_SIZE; i++) {
+    for (i = 0; i < TABLE_SIZE; i++)
+    {
         tbl_sin[i] = sin(i * (2.0 * PI / TABLE_SIZE));
         tbl_cos[i] = cos(i * (2.0 * PI / TABLE_SIZE));
     }
 }
-
