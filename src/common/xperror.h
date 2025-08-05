@@ -42,6 +42,8 @@ extern void xperror(const char *fmt, ...);
 extern void xpfatal(const char *fmt, ...);
 extern void xpdumpcore(const char *fmt, ...);
 
+extern void warn(const char *fmt, ...);
+
 extern void init_error(const char *prog);
 
 #endif /* XPERROR_H */
