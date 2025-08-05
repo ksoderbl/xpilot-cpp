@@ -59,9 +59,6 @@ int wallRadarColor;               /* Color index for walls on radar. */
 int targetRadarColor;             /* Color index for targets on radar. */
 int decorRadarColor;              /* Color index for decorations on radar. */
 int radar_exposures;
-int(*radarDrawRectanglePtr) /* Function to draw player on radar */
-    (Display *disp, Drawable d, GC gc,
-     int x, int y, unsigned width, unsigned height);
 
 static int slidingradar_x; /* sliding radar offsets for windows */
 static int slidingradar_y;
@@ -199,7 +196,7 @@ static void Paint_objects_radar(void)
             y += RadarHeight;
         }
 
-        (*radarDrawRectanglePtr)(dpy, radarPixmap, radarGC, x, y, s, s);
+        XFillRectangle(dpy, radarPixmap, radarGC, x, y, s, s);
         if (BIT(Setup->mode, WRAP_PLAY))
         {
             xw = (x < 0) ? -256 : (x + s >= 256) ? 256
@@ -209,18 +206,18 @@ static void Paint_objects_radar(void)
                                           : 0;
             if (xw != 0)
             {
-                (*radarDrawRectanglePtr)(dpy, radarPixmap, radarGC,
-                                         x - xw, y, s, s);
+                XFillRectangle(dpy, radarPixmap, radarGC,
+                               x - xw, y, s, s);
             }
             if (yw != 0)
             {
-                (*radarDrawRectanglePtr)(dpy, radarPixmap, radarGC,
-                                         x, y - yw, s, s);
+                XFillRectangle(dpy, radarPixmap, radarGC,
+                               x, y - yw, s, s);
 
                 if (xw != 0)
                 {
-                    (*radarDrawRectanglePtr)(dpy, radarPixmap, radarGC,
-                                             x - xw, y - yw, s, s);
+                    XFillRectangle(dpy, radarPixmap, radarGC,
+                                   x - xw, y - yw, s, s);
                 }
             }
         }

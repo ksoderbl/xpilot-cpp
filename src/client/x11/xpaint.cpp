@@ -100,7 +100,6 @@ Window aboutWindow;    /* About window */
 Window talkWindow;     /* Talk window */
 
 Pixmap drawPixmap; /* Saved pixmap for the drawing */
-                   /* area (monochromes use this) */
 
 Window about_close_b; /* About window's close button */
 Window about_next_b;  /* About window's next button */
@@ -530,9 +529,8 @@ void Paint_score_entry(int entry_num,
     /*
      * Draw the line
      */
-    if ((other->mychar == 'D' || other->mychar == 'P' || other->mychar == 'W') && !mono)
+    if (other->mychar == 'D' || other->mychar == 'P' || other->mychar == 'W')
     {
-
         if (!blockBitmaps)
         {
             XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
@@ -644,13 +642,11 @@ void ShadowDrawString(Display *dpy, Window w, GC gc,
                       int x, int y, const char *str,
                       unsigned long fg, unsigned long bg)
 {
-    if (!mono)
-    {
-        XSetForeground(dpy, gc, bg);
-        XDrawString(dpy, w, gc, x + 1, y + 1, str, strlen(str));
-        x--;
-        y--;
-    }
+
+    XSetForeground(dpy, gc, bg);
+    XDrawString(dpy, w, gc, x + 1, y + 1, str, strlen(str));
+    x--;
+    y--;
     XSetForeground(dpy, gc, fg);
     XDrawString(dpy, w, gc, x, y, str, strlen(str));
 }

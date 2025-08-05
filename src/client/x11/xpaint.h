@@ -112,10 +112,6 @@ extern char *wallTextureFile;        /* Filename of wall texture */
 extern char *decorTextureFile;       /* Filename of decor texture */
 extern char *ballTextureFile;        /* Filename of ball texture */
 
-extern int(*radarDrawRectanglePtr) /* Function to draw player on radar */
-    (Display *disp, Drawable d, GC gc,
-     int x, int y, unsigned width, unsigned height);
-
 void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
 void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);
 

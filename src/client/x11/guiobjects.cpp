@@ -423,7 +423,7 @@ void Gui_paint_paused(int x, int y, int count)
                          WINSCALE(2 * half_pause_size + 1), WINSCALE(2 * half_pause_size + 1));
         if (count <= 0 || loops % 10 >= 5)
         {
-            SET_FG(colors[mono ? BLACK : WHITE].pixel);
+            SET_FG(colors[WHITE].pixel);
             rd.drawRectangle(dpy, drawPixmap, gameGC,
                              WINSCALE(x0 - 1),
                              WINSCALE(y0 - 1),

@@ -45,11 +45,6 @@
 #include "protoclient.h"
 #include "colors.h"
 
-/* Kludge for visuals under C++ */
-#if defined(__cplusplus)
-#define class c_class
-#endif
-
 /*
  * The number of X11 visuals.
  */
@@ -73,7 +68,6 @@ static const char *gray_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visual;
 int dispDepth;
-bool mono;
 bool colorSwitch;
 bool blockBitmaps; /* Whether to draw everything as bitmaps. */
 
@@ -181,22 +175,17 @@ static const char *Visual_class_name(int visual_class)
  */
 void List_visuals(void)
 {
-    int i,
-        num;
-    XVisualInfo *vinfo_ptr,
-        my_vinfo;
-    long mask;
+    int i, num = 0;
+    XVisualInfo *vinfo_ptr, my_vinfo;
+    long mask = 0;
 
-    num = 0;
-    mask = 0;
     my_vinfo.screen = DefaultScreen(dpy);
     mask |= VisualScreenMask;
     vinfo_ptr = XGetVisualInfo(dpy, mask, &my_vinfo, &num);
     printf("Listing all visuals:\n");
     for (i = 0; i < num; i++)
     {
-        printf("Visual class    %12s\n",
-               Visual_class_name(vinfo_ptr[i].class));
+        printf("Visual class    %12s\n", Visual_class_name(vinfo_ptr[i].c_class));
         printf("    id                  0x%02x\n", (unsigned)vinfo_ptr[i].visualid);
         printf("    screen          %8d\n", vinfo_ptr[i].screen);
         printf("    depth           %8d\n", vinfo_ptr[i].depth);
@@ -207,10 +196,6 @@ void List_visuals(void)
         printf("    bits_per_rgb    %8d\n", vinfo_ptr[i].bits_per_rgb);
     }
     XFree((void *)vinfo_ptr);
-
-#ifdef DEVELOPMENT
-    dbuff_list(dpy);
-#endif
 }
 
 /*
@@ -265,7 +250,7 @@ static void Choose_visual(void)
     if (visual_class < 0 && visual_id < 0)
     {
         visual = DefaultVisual(dpy, DefaultScreen(dpy));
-        if (visual->class == TrueColor || visual->class == DirectColor)
+        if (visual->c_class == TrueColor || visual->c_class == DirectColor)
         {
             visual_class = PseudoColor;
             strcpy(visualName, "PseudoColor");
@@ -283,7 +268,7 @@ static void Choose_visual(void)
         mask |= VisualScreenMask;
         if (visual_class >= 0)
         {
-            my_vinfo.class = visual_class;
+            my_vinfo.c_class = visual_class;
             mask |= VisualClassMask;
         }
         if (visual_id >= 0)
@@ -322,11 +307,11 @@ static void Choose_visual(void)
                 }
             }
             visual = best_vinfo->visual;
-            visual_class = best_vinfo->class;
+            visual_class = best_vinfo->c_class;
             dispDepth = best_vinfo->depth;
             XFree((void *)vinfo_ptr);
             printf("Using visual %s with depth %d and %d colors\n",
-                   Visual_class_name(visual->class), dispDepth,
+                   Visual_class_name(visual->c_class), dispDepth,
                    visual->map_entries);
             Get_colormap();
         }
@@ -350,18 +335,7 @@ static int Parse_colors(Colormap cmap)
     /*
      * Get the color definitions.
      */
-    if (mono == true)
-    {
-        colors[0].red = colors[0].green = colors[0].blue = 0;
-        colors[0].flags = DoRed | DoGreen | DoBlue;
-        colors[1].red = colors[1].green = colors[1].blue = 0xFFFF;
-        colors[1].flags = DoRed | DoGreen | DoBlue;
-        colors[2] = colors[1];
-        colors[3] = colors[1];
-        return 0;
-    }
-
-    if (visual->class == StaticGray || visual->class == GrayScale)
+    if (visual->c_class == StaticGray || visual->c_class == GrayScale)
     {
         def = &gray_defaults[0];
     }
@@ -473,26 +447,17 @@ int Colors_init(void)
     /*
      * Get misc. display info.
      */
-    if (visual->class == StaticGray ||
-        visual->class == StaticColor ||
-        visual->class == TrueColor)
+    if (visual->c_class == StaticGray ||
+        visual->c_class == StaticColor ||
+        visual->c_class == TrueColor)
     {
         colorSwitch = false;
     }
     if (visual->map_entries < 16)
     {
         colorSwitch = false;
-        if (visual->map_entries < 4)
-        {
-            mono = true;
-        }
     }
-    if (mono == true)
-    {
-        colorSwitch = false;
-        maxColors = 4;
-    }
-    else if (colorSwitch == true)
+    if (colorSwitch == true)
     {
         maxColors = (maxColors >= 16 && visual->map_entries >= 256) ? 16
                     : (maxColors >= 8 && visual->map_entries >= 64) ? 8
@@ -504,10 +469,9 @@ int Colors_init(void)
                     : (maxColors >= 8 && visual->map_entries >= 8) ? 8
                                                                    : 4;
     }
-    num_planes = (mono == true)      ? 1
-                 : (maxColors == 16) ? 4
-                 : (maxColors == 8)  ? 3
-                                     : 2;
+    num_planes = (maxColors == 16)  ? 4
+                 : (maxColors == 8) ? 3
+                                    : 2;
 
     if (Parse_colors(DefaultColormap(dpy, DefaultScreen(dpy))) == -1)
     {
@@ -553,7 +517,7 @@ int Colors_init(void)
         /* Can't setup double buffering */
         errno = 0;
         xperror("Can't setup colors with visual %s and %d colormap entries",
-                Visual_class_name(visual->class), visual->map_entries);
+                Visual_class_name(visual->c_class), visual->map_entries);
         return -1;
     }
 
@@ -626,7 +590,7 @@ static int Colors_init_block_bitmap_colors(void)
 {
     int r = -1;
 
-    switch (visual->class)
+    switch (visual->c_class)
     {
     case PseudoColor:
         r = Colors_init_color_cube();
@@ -654,7 +618,7 @@ static int Colors_init_block_bitmap_colors(void)
 
     default:
         printf("blockBitmaps not implemented for visual \"%s\"\n",
-               Visual_class_name(visual->class));
+               Visual_class_name(visual->c_class));
         blockBitmaps = false;
         break;
     }
@@ -880,12 +844,9 @@ static int Colors_init_true_color(void)
           visual->blue_mask) != 0))
     {
 
-        printf("Your visual \"%s\" has weird characteristics:\n",
-               Visual_class_name(visual->class));
-        printf("\tred mask 0x%06lx, green mask 0x%06lx, blue mask 0x%06lx,\n",
-               visual->red_mask, visual->green_mask, visual->blue_mask);
-        printf("\toverlap mask 0x%06lx\n",
-               visual->red_mask & visual->green_mask & visual->blue_mask);
+        printf("Your visual \"%s\" has weird characteristics:\n", Visual_class_name(visual->c_class));
+        printf("\tred mask 0x%06lx, green mask 0x%06lx, blue mask 0x%06lx,\n", visual->red_mask, visual->green_mask, visual->blue_mask);
+        printf("\toverlap mask 0x%06lx\n", visual->red_mask & visual->green_mask & visual->blue_mask);
         return -1;
     }
 

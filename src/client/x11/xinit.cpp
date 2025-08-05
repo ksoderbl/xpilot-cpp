@@ -400,18 +400,7 @@ int Init_top(void)
     if (shieldDrawMode == -1)
     {
         shieldDrawMode = 0;
-        /*
-         * Default is solid for NCD X11 servers.  My NCD mono 19 inch
-         * terminal, vendor release 2002 suffers from terrible slowness
-         * when drawing dashed arcs with thick lines.
-         */
-        if (strcmp(ServerVendor(dpy),
-                   "DECWINDOWS (Compatibility String) "
-                   "Network Computing Devices Inc.") == 0 &&
-            ProtocolVersion(dpy) == 11)
-            shieldDrawMode = 1;
     }
-
     if (hudColor >= maxColors || hudColor <= 0)
     {
         hudColor = BLUE;
@@ -446,7 +435,6 @@ int Init_top(void)
     }
 
     shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
-    radarDrawRectanglePtr = (mono ? XDrawRectangle : XFillRectangle);
 
     /*
      * Get toplevel geometry.
@@ -632,18 +620,9 @@ int Init_top(void)
         XSetPlaneMask(dpy, gameGC, dbuf_state->drawing_planes);
     }
 
-    if (mono)
-    {
-        buttonColor = BLACK;
-        windowColor = BLACK;
-        borderColor = WHITE;
-    }
-    else
-    {
-        windowColor = BLUE;
-        buttonColor = RED;
-        borderColor = WHITE;
-    }
+    windowColor = BLUE;
+    buttonColor = RED;
+    borderColor = WHITE;
 
     return 0;
 }
