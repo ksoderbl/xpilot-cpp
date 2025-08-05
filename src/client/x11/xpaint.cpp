@@ -333,16 +333,8 @@ void Paint_frame(void)
 
     if (!damaged)
     {
-
-        /*
-         * DBE's XdbeBackground switch option is
-         * probably faster than XFillRectangle.
-         */
-        if (dbuf_state->multibuffer_type != MULTIBUFFER_DBE)
-        {
-            SET_FG(colors[BLACK].pixel);
-            XFillRectangle(dpy, drawPixmap, gameGC, 0, 0, draw_width, draw_height);
-        }
+        SET_FG(colors[BLACK].pixel);
+        XFillRectangle(dpy, drawPixmap, gameGC, 0, 0, draw_width, draw_height);
     }
 
     if (talk_mapped == true)

@@ -75,7 +75,6 @@ Visual *visual;
 int dispDepth;
 bool mono;
 bool colorSwitch;
-bool multibuffer;
 bool blockBitmaps; /* Whether to draw everything as bitmaps. */
 
 /*
@@ -524,20 +523,6 @@ int Colors_init(void)
     /*
      * Initialize the double buffering routine.
      */
-    dbuf_state = NULL;
-
-    if (multibuffer)
-    {
-        dbuf_state = start_dbuff(dpy,
-                                 (colormap != 0)
-                                     ? colormap
-                                     : DefaultColormap(dpy,
-                                                       DefaultScreen(dpy)),
-                                 MULTIBUFFER,
-                                 num_planes,
-                                 colors);
-    }
-    if (dbuf_state == NULL)
     {
         dbuf_state = start_dbuff(dpy,
                                  (colormap != 0)
@@ -556,18 +541,6 @@ int Colors_init(void)
          */
         Get_colormap();
         Fill_colormap();
-
-        /*
-         * Try to initialize the double buffering again.
-         */
-
-        if (multibuffer)
-        {
-            dbuf_state = start_dbuff(dpy, colormap,
-                                     MULTIBUFFER,
-                                     num_planes,
-                                     colors);
-        }
 
         if (dbuf_state == NULL)
         {
@@ -596,17 +569,6 @@ int Colors_init(void)
     case PIXMAP_COPY:
         printf("Using pixmap copying\n");
         break;
-
-    case MULTIBUFFER:
-#ifdef DBE
-        printf("Using double-buffering\n");
-        break;
-#else
-#ifdef MBX
-        printf("Using multi-buffering\n");
-        break;
-#endif
-#endif
 
     default:
         printf("Unknown dbuf state %d\n", dbuf_state->type);

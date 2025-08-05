@@ -34,11 +34,6 @@
 #include "bit.h"
 #include "dbuff.h"
 
-#if defined(MBX) || defined(DBE)
-/* Needed for windows ... */
-#include "paint.h"
-#endif
-
 dbuff_state_t *dbuf_state; /* Holds current dbuff state */
 
 static void dbuff_release(dbuff_state_t *state)
@@ -57,12 +52,6 @@ static void dbuff_release(dbuff_state_t *state)
         {
             free(state->planes);
         }
-#ifdef MBX
-        if (state->type == MULTIBUFFER && state->colormap_index != 2)
-        {
-            XmbufDestroyBuffers(state->display, draw);
-        }
-#endif
 
         free(state);
         state = NULL;
@@ -116,11 +105,9 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     state->xcolormap = xcolormap;
 
     state->type = type;
-    state->multibuffer_type = MULTIBUFFER_NONE;
 
     switch (type)
     {
-
     case PIXMAP_COPY:
         state->colormap_index = 0;
         break;
@@ -137,36 +124,6 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
             dbuff_release(state);
             return NULL;
         }
-        break;
-
-    case MULTIBUFFER:
-#ifdef DBE
-        state->colormap_index = 2;
-        state->multibuffer_type = MULTIBUFFER_DBE;
-        if (!XdbeQueryExtension(display,
-                                &state->dbe.dbe_major,
-                                &state->dbe.dbe_minor))
-        {
-            dbuff_release(state);
-            fprintf(stderr, "XdbeQueryExtension failed\n");
-            return NULL;
-        }
-#elif defined(MBX)
-        state->colormap_index = 2;
-        state->multibuffer_type = MULTIBUFFER_MBX;
-        if (!XmbufQueryExtension(display,
-                                 &state->mbx.mbx_ev_base,
-                                 &state->mbx.mbx_err_base))
-        {
-            dbuff_release(state);
-            fprintf(stderr, "XmbufQueryExtension failed\n");
-            return NULL;
-        }
-#else
-        printf("Support for multibuffering was not configured.\n");
-        dbuff_release(state);
-        return NULL;
-#endif
         break;
 
     default:
@@ -237,56 +194,8 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     return state;
 }
 
-void dbuff_init_buffer(dbuff_state_t *state)
-{
-#ifdef MBX
-    if (state->type == MULTIBUFFER)
-    {
-        if (state->colormap_index == 2)
-        {
-            state->colormap_index = 0;
-            if (XmbufCreateBuffers(state->display, draw, 2,
-                                   MultibufferUpdateActionUndefined,
-                                   MultibufferUpdateHintFrequent,
-                                   state->mbx.mbx_draw) != 2)
-            {
-                perror("Couldn't create double buffering buffers");
-                exit(1);
-            }
-        }
-        drawPixmap = state->mbx.mbx_draw[state->colormap_index];
-    }
-#endif
-#ifdef DBE
-    if (state->type == MULTIBUFFER)
-    {
-        if (state->colormap_index == 2)
-        {
-            state->colormap_index = 0;
-            state->dbe.dbe_draw =
-                XdbeAllocateBackBufferName(state->display,
-                                           draw,
-                                           XdbeBackground);
-            if (state->dbe.dbe_draw == 0)
-            {
-                perror("Couldn't create double buffering back buffer");
-                exit(1);
-            }
-        }
-        drawPixmap = state->dbe.dbe_draw;
-    }
-#endif
-}
-
 void dbuff_switch(dbuff_state_t *state)
 {
-#ifdef MBX
-    if (state->type == MULTIBUFFER)
-    {
-        drawPixmap = state->mbx.mbx_draw[state->colormap_index];
-    }
-#endif
-
     state->colormap_index ^= 1;
 
     if (state->type == COLOR_SWITCH)
@@ -294,29 +203,6 @@ void dbuff_switch(dbuff_state_t *state)
         XStoreColors(state->display, state->xcolormap,
                      state->colormaps[state->colormap_index], state->colormap_size);
     }
-#ifdef DBE
-    else if (state->type == MULTIBUFFER)
-    {
-        XdbeSwapInfo swap;
-
-        swap.swap_window = draw;
-        swap.swap_action = XdbeBackground;
-        if (!XdbeSwapBuffers(state->display, &swap, 1))
-        {
-            perror("XdbeSwapBuffers failed");
-            exit(1);
-        }
-    }
-#endif
-#ifdef MBX
-    else if (state->type == MULTIBUFFER)
-    {
-        XmbufDisplayBuffers(state->display, 1,
-                            &state->mbx.mbx_draw[state->colormap_index],
-                            0, 200);
-    }
-#endif
-
     state->drawing_planes = state->drawing_plane_masks[state->colormap_index];
 }
 
@@ -330,43 +216,4 @@ void end_dbuff(dbuff_state_t *state)
                       state->drawing_plane_masks[1]));
     }
     dbuff_release(state);
-}
-
-#ifdef DBE
-static void dbuff_list_dbe(Display *display)
-{
-    XdbeScreenVisualInfo *info;
-    XdbeVisualInfo *visinfo;
-    int n = 0;
-    int i, j;
-
-    printf("\n");
-    info = XdbeGetVisualInfo(display, NULL, &n);
-    if (!info)
-    {
-        printf("Could not obtain double buffer extension info\n");
-        return;
-    }
-    for (i = 0; i < n; i++)
-    {
-        printf("Visuals supporting double buffering on screen %d:\n", i);
-        printf("%9s%9s%11s\n", "visual", "depth", "perflevel");
-        for (j = 0; j < info[i].count; j++)
-        {
-            visinfo = &info[i].visinfo[j];
-            printf("    0x%02x  %6d  %8d\n",
-                   (unsigned)visinfo->visual,
-                   visinfo->depth,
-                   visinfo->perflevel);
-        }
-    }
-    XdbeFreeVisualInfo(info);
-}
-#endif
-
-void dbuff_list(Display *display)
-{
-#ifdef DBE
-    dbuff_list_dbe(display);
-#endif
 }

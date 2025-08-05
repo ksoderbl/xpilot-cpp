@@ -747,12 +747,6 @@ int Init_playing_windows(void)
         drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
         break;
 
-    case MULTIBUFFER:
-        radarPixmap = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        radarPixmap2 = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        dbuff_init_buffer(dbuf_state);
-        break;
-
     case COLOR_SWITCH:
         radarPixmap2 = radarWindow;
         radarPixmap = radarWindow;

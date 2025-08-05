@@ -48,7 +48,6 @@ extern int dispDepth;
 extern bool mono;
 extern bool blockBitmaps;
 extern bool colorSwitch;
-extern bool multibuffer;
 extern char color_names[MAX_COLORS][MAX_COLOR_LEN];
 extern int top_width, top_height;
 // extern int                draw_width, draw_height;

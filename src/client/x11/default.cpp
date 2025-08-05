@@ -413,8 +413,7 @@ option options[] = {
      "No",
      KEY_DUMMY,
      "Whether to draw ships, shots and walls with textures.\n"
-     "Be warned that this needs a very fast graphics system.\n"
-     "You may also need to enable multibuffering or double-buffering.\n"},
+     "Be warned that this needs a very fast graphics system.\n"},
     {"markingLights",
      NULL,
      "No",
@@ -618,11 +617,6 @@ option options[] = {
      KEY_DUMMY,
      "Use color buffering or not.\n"
      "Usually color buffering is faster, especially on 8-bit PseudoColor displays.\n"},
-    {"multibuffer",
-     NULL,
-     "No",
-     KEY_DUMMY,
-     "Use the X windows multibuffer extension if present.\n"},
     {"maxColors",
      NULL,
      "8",
@@ -2189,9 +2183,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_resource(rDB, "visual", visualName, sizeof visualName);
     Get_bool_resource(rDB, "mono", &mono);
     Get_bool_resource(rDB, "colorSwitch", &colorSwitch);
-    Get_bool_resource(rDB, "multibuffer", &multibuffer);
 
-    /* Windows already derived maxColors in InitWinX */
     Get_int_resource(rDB, "maxColors", &maxColors);
 
     Get_string_resource(rDB, "black", color_names[0], sizeof(color_names[0]));
