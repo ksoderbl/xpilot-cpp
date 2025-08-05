@@ -136,8 +136,12 @@ bool auto_shield = 1; /* shield drops for fire */
 
 int maxFPS; /* Client's own FPS */
 int oldMaxFPS;
-double clientFPS = 1.0; /* FPS client is drawing at */
+double clientFPS = 1.0;    /* FPS client is drawing at */
+double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
 int clientLag = 0;
+bool newSecond = false; /* Second changed this frame */
+bool played_this_round = false;
+long twelveHz = 0; /* We attempt to increment this at 12 Hz */
 
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
@@ -271,7 +275,7 @@ static void update_timing(void)
     static int frame_counter = 0;
     static struct timeval old_tv = {0, 0};
     struct timeval now;
-    bool newSecond = false;
+    static double time_counter = 0.0;
 
     frame_counter++;
     gettimeofday(&now, NULL);
@@ -279,17 +283,32 @@ static void update_timing(void)
     {
         double usecs, fps;
 
-        /*currentTime = time(NULL);*/
+        // currentTime = time(NULL);
         usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
         fps = (1e6 * frame_counter) / usecs;
         old_tv = now;
         newSecond = true;
-        /*clientFPS = MAX(1.0, fps);*/
-        clientFPS = fps;
+        clientFPS = MAX(1.0, fps);
+        timePerFrame = 1.0 / clientFPS;
         frame_counter = 0;
+        if (!played_this_round && self && !strchr("PW", self->mychar))
+            played_this_round = true;
     }
     else
         newSecond = false;
+
+    /*
+     * Instead of using loops to determining if things are drawn this frame,
+     * twelveHz should be used. We don't want things to be drawn too fast
+     * at high fps.
+     */
+    time_counter += timePerFrame;
+    LIMIT(time_counter, 0.0, (2.0 / 12.0));
+    if (time_counter >= (1.0 / 12.0))
+    {
+        twelveHz++;
+        time_counter -= (1.0 / 12.0);
+    }
 }
 
 int Handle_end(long server_loops)

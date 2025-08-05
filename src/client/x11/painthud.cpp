@@ -901,10 +901,7 @@ void Paint_HUD_values(void)
     int w, x, y, len, w2, len2, wmax;
     static char buf[32], buf2[32];
 
-    // if (!hudColor)
-    //     return;
-    // SET_FG(colors[hudColor].pixel);
-    SET_FG(colors[4].pixel); // TODO
+    SET_FG(colors[BLUE].pixel);
 
     sprintf(buf, "CL.FPS : %.3f", clientFPS);
     sprintf(buf2, "CL.LAG : %d us", clientLag);
