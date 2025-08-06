@@ -43,16 +43,12 @@
 #include <cmath>
 #include <ctime>
 #include <cstdarg>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
 #include <sys/time.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#if !defined(select) && defined(__linux__)
-#define select(N, R, W, E, T) select((N), \
-                                     (fd_set *)(R), (fd_set *)(W), (fd_set *)(E), (T))
-#endif
 
 #include "recordfmt.h"
 #include "item.h"
