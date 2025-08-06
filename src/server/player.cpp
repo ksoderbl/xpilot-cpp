@@ -362,39 +362,11 @@ void Player_used_kill(int ind)
 void Player_set_mass(int ind)
 {
     player_t *pl = Players[ind];
-    DFLOAT sum_item_mass = 0;
-    DFLOAT item_mass;
-    int item;
-
-    for (item = 0; item < NUM_ITEMS; item++)
-    {
-
-        switch (item)
-        {
-
-        case ITEM_FUEL:
-        case ITEM_TANK:
-            item_mass = 0;
-            break;
-
-        case ITEM_ARMOR:
-            item_mass = pl->item[ITEM_ARMOR] * ARMOR_MASS;
-            break;
-
-        default:
-            item_mass = pl->item[item] * options.minItemMass;
-            break;
-        }
-
-        sum_item_mass += item_mass;
-    }
-
-    //  TODO: xpilot 4.5.5beta has option minItemMass,
+    //  BUGFIX: xpilot 4.5.5beta has option minItemMass,
     //  making the ship 3 units too heavy on blood's music.
     //  Fixed by removing minItemMass option.
-    // pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum);
-
-    pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum) + sum_item_mass;
+    pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum) + pl->item[ITEM_ARMOR] * ARMOR_MASS;
+    printf("Player %d mass is %f\n", ind, pl->mass);
 }
 
 /*

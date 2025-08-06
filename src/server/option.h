@@ -33,7 +33,6 @@ typedef struct options
     DFLOAT Gravity;        /* Power of gravity */
     DFLOAT ShipMass;       /* Default mass of ship */
     DFLOAT ballMass;       /* Default mass of balls */
-    DFLOAT minItemMass;    /* Minimum mass of each item */
     DFLOAT ShotsMass;      /* Default mass of shots */
     DFLOAT ShotsSpeed;     /* Default speed of shots */
     int ShotsLife;         /* Default number of ticks */

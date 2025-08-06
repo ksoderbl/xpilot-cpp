@@ -1284,6 +1284,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         Set_player_message(pl, msg);
         if (connp->version < 0x4401)
         {
+            printf("THIS NEVER HAPPENS: fdjskafjdfadkasj\n");
             sprintf(msg,
                     "Your client does not support the fast radar packet. %s",
                     sender);
@@ -1291,6 +1292,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         }
         if (connp->version < 0x4400 && options.maxAsteroidDensity > 0)
         {
+            printf("THIS NEVER HAPPENS: 2jclajvkjafkdjsakfj894\n");
             sprintf(msg,
                     "Your client will see the %d asteroids as balls. %s",
                     (int)World.asteroids.max,
@@ -1579,6 +1581,7 @@ static int Send_self_items(connection_t *connp, player_t *pl)
     /* older clients should have the items sent as part of the self packet. */
     if (connp->version < 0x4203)
     {
+        printf("THIS NEVER HAPPENS: fdjgoi3jjgkaij\n");
         return 1;
     }
     /* build mask with one bit for each item type which the player owns. */
@@ -1887,6 +1890,7 @@ int Send_score(connection_t *connp, int id, int score,
     }
     if (connp->version < 0x4500)
     {
+        printf("THIS NEVER HAPPENS: 2tkjgfkljadfjsjafj\n");
         /* older clients don't get alliance info or decimals of the score */
         return Packet_printf(&connp->c, "%c%hd%hd%hd%c", PKT_SCORE,
                              id, (int)(score + (score > 0 ? 0.5 : -0.5)),
@@ -1927,6 +1931,7 @@ int Send_team_score(connection_t *connp, int team, int score)
     }
     if (connp->version < 0x4500)
     {
+        printf("THIS NEVER HAPPENS: rtjgjkjfjui3j\n");
         /* older clients don't know about team scores */
         return 0;
     }
@@ -1941,6 +1946,7 @@ int Send_timing(connection_t *connp, int id, int check, int round)
 {
     if (connp->version < 0x3261)
     {
+        printf("THIS NEVER HAPPENS: jkljklasjfdkjasf\n");
         return 1;
     }
     if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
@@ -1989,6 +1995,7 @@ int Send_score_object(connection_t *connp, int score, int x, int y, const char *
     }
     if (connp->version < 0x4500)
     {
+        printf("THIS NEVER HAPPENS: vgklaj4u20\n");
         /* older clients don't get decimals of the score */
         return Packet_printf(&connp->c, "%c%hd%hu%hu%s", PKT_SCORE_OBJECT,
                              (int)(score + (score > 0 ? 0.5 : -0.5)),
@@ -2028,6 +2035,7 @@ int Send_shieldtime(connection_t *connp, int count, int max)
 {
     if (connp->version < 0x3200)
     {
+        printf("THIS NEVER HAPPENS: rvj2q+if8ufdasfdae\n");
         return 1;
     }
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_SHIELDTIME, count, max);
@@ -2037,6 +2045,7 @@ int Send_phasingtime(connection_t *connp, int count, int max)
 {
     if (connp->version < 0x3800)
     {
+        printf("THIS NEVER HAPPENS: 2rjfjwjaw\n");
         return 1;
     }
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_PHASINGTIME, count, max);
@@ -2046,6 +2055,7 @@ int Send_rounddelay(connection_t *connp, int count, int max)
 {
     if (connp->version < 0x3800)
     {
+        printf("THIS NEVER HAPPENS: cajf2ju2u9r30u2i90r3\n");
         return 1;
     }
     return (Packet_printf(&connp->w, "%c%hd%hd", PKT_ROUNDDELAY, count, max));
@@ -2086,6 +2096,7 @@ int Send_wreckage(connection_t *connp, int x, int y, uint8_t wrtype, uint8_t siz
 {
     if (connp->version < 0x3800)
     {
+        printf("THIS NEVER HAPPENS: 3kljto3iwjo3iju493\n");
         return 1;
     }
 
@@ -2109,6 +2120,7 @@ int Send_asteroid(connection_t *connp, int x, int y, uint8_t type, uint8_t size,
 
     if (connp->version < 0x4400)
     {
+        printf("THIS NEVER HAPPENS: 2kjrk32jkr43j\n");
         return Send_ecm(connp, x, y, 2 * (int)ASTEROID_RADIUS(size));
     }
 
@@ -2177,6 +2189,7 @@ int Send_wormhole(connection_t *connp, int x, int y)
 {
     if (connp->version < 0x4501)
     {
+        printf("THIS NEVER HAPPENS: my3jklqj34j3\n");
         const int wormStep = 5;
         int wormAngle = (frame_loops & 7) * (RES / 8);
 
@@ -2202,6 +2215,7 @@ int Send_item(connection_t *connp, int x, int y, int type)
     {
         if (connp->version < 0x3200)
         {
+            printf("THIS NEVER HAPPENS: bvkjoij23oij32\n");
             return 1;
         }
     }
@@ -2229,6 +2243,7 @@ int Send_ship(connection_t *connp, int x, int y, int id, int dir,
 {
     if (connp->version < 0x4300)
     {
+        printf("THIS NEVER HAPPENS: vm3joij42oi3j\n");
         /* cloaking bit was also true if phased and that was used
          * to determine how to draw the ship.
          */
@@ -2271,6 +2286,7 @@ int Send_radar(connection_t *connp, int x, int y, int size)
     /* Except the original patch from kth.se was 4.1.0 "experimental 1" */
     if (connp->version < 0x4210 && connp->version != 0x4101)
     {
+        printf("THIS NEVER HAPPENS: jtj4kj3kl4j3k4j\n");
         size &= ~0x80;
     }
     return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_RADAR, x, y, size);
@@ -2349,6 +2365,7 @@ int Send_loseitem(int lose_item_index, connection_t *connp)
     { /* this should never hit since */
         /* only a 3.4+ client would send */
         /* the loseitem key */
+        printf("THIS NEVER HAPPENS: 3mklj3kl54j\n");
         return 1;
     }
     return Packet_printf(&connp->w, "%c%c", PKT_LOSEITEM, lose_item_index);
@@ -2437,6 +2454,7 @@ static int Receive_keyboard(connection_t *connp)
 
     if (connp->version < 0x3800)
     {
+        printf("THIS NEVER HAPPENS: 2nkj23kj4j2k342k\n");
         /* older servers have a keyboard_size of 8 bytes instead of 9. */
         size--;
     }
