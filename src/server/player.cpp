@@ -389,6 +389,11 @@ void Player_set_mass(int ind)
         sum_item_mass += item_mass;
     }
 
+    //  TODO: xpilot 4.5.5beta has option minItemMass,
+    //  making the ship 3 units too heavy on blood's music.
+    //  Fixed by removing minItemMass option.
+    // pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum);
+
     pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum) + sum_item_mass;
 }
 

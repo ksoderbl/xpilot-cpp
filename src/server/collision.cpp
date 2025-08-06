@@ -1326,6 +1326,10 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
                                PLAYER_EAT_SHOT_SOUND);
             if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
             {
+                // BUGFIX: xpilot 4.5.5beta uses a drainfactor > 1
+                // here, which causes the "no fuel bug", meaning that
+                // a fast shot hitting a shielded ship may drain all fuel,
+                // causing the ship to float, dead in space.
                 drainfactor = 1;
                 drain = (long)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
                 Add_fuel(&(pl->fuel), drain);
