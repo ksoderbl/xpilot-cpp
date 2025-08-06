@@ -366,7 +366,7 @@ void Player_set_mass(int ind)
     //  making the ship 3 units too heavy on blood's music.
     //  Fixed by removing minItemMass option.
     pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum) + pl->item[ITEM_ARMOR] * ARMOR_MASS;
-    printf("Player %d mass is %f\n", ind, pl->mass);
+    // printf("Player %d mass is %f\n", ind, pl->mass);
 }
 
 /*

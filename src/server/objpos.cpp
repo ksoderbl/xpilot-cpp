@@ -33,6 +33,7 @@
 #include "object.h"
 #include "objpos.h"
 
+// TODO: Remove pixel and block positions, store only subpixel position (e.g. clicks)
 void Object_position_set_clicks(object_t *obj, int cx, int cy)
 {
     struct _objposition *pos = (struct _objposition *)&obj->pos;
@@ -73,12 +74,30 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
 {
     struct _objposition *pos = (struct _objposition *)&pl->pos;
 
-#if 0
-    if (cx < 0 || cx >= PIXEL_TO_CLICK(World.width) || 
-        cy < 0 || cy >= PIXEL_TO_CLICK(World.height)) {
-        printf("BUG!  Illegal player position %d,%d\n", cx, cy);
-        *(double *)(-1) = 4321.0;
-        abort();
+#if 1
+    if (cx < 0)
+    {
+        printf("BUG!  Illegal player position (cx < 0): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
+    }
+    if (cx >= PIXEL_TO_CLICK(World.width))
+    {
+        printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
+    }
+    if (cy < 0)
+    {
+        printf("BUG!  Illegal player position (cy < 0): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
+    }
+    if (cy >= PIXEL_TO_CLICK(World.height))
+    {
+        printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
     }
 #endif
     pos->cx = cx;
