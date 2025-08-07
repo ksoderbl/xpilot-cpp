@@ -128,7 +128,6 @@ static void WriteHeader(void)
     }
     hdr.gameFontName = std::string(gameFontName);
     hdr.msgFontName = std::string(messageFontName);
-
     hdr.view_width = draw_width;
     hdr.view_height = draw_height;
 

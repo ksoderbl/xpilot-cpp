@@ -2986,44 +2986,27 @@ static void RWriteGC(struct xprc *rc, struct rGC *gcp, FILE *fp)
 
 static void WriteHeader(struct xprc *rc, FILE *fp)
 {
-    int i;
-
-    rewind(fp);
-
-    /* First write out magic 4 letter word */
-    RWriteByte('X', fp);
-    RWriteByte('P', fp);
-    RWriteByte('R', fp);
-    RWriteByte('C', fp);
-
-    /* Write which version of the XPilot Record Protocol this is. */
-    RWriteByte(RC_MAJORVERSION, fp);
-    RWriteByte('.', fp);
-    RWriteByte(RC_MINORVERSION, fp);
-    RWriteByte('\n', fp);
-
-    /* Write player's nick, login, host, server, FPS and the date. */
-    RWriteString(rc->nickname, fp);
-    RWriteString(rc->realname, fp);
-    RWriteString(rc->hostname, fp);
-    RWriteString(rc->servername, fp);
-    RWriteByte(rc->fps, fp);
-    RWriteString(rc->recorddate, fp);
-
-    /* Write info about graphics setup. */
-    RWriteByte(rc->maxColors, fp);
-    for (i = 0; i < rc->maxColors; i++)
+    struct XPRHeader hdr{};
+    hdr.nickname = std::string(rc->nickname);
+    hdr.realname = std::string(rc->realname);
+    hdr.hostname = std::string(rc->hostname);
+    hdr.servername = std::string(rc->servername);
+    hdr.fps = rc->fps;
+    hdr.recorddate = std::string(rc->recorddate);
+    for (int i = 0; i < rc->maxColors; i++)
     {
-        RWriteULong(rc->colors[i].pixel, fp);
-        RWriteUShort(rc->colors[i].red, fp);
-        RWriteUShort(rc->colors[i].green, fp);
-        RWriteUShort(rc->colors[i].blue, fp);
+        XPRColor color;
+        color.pixel = rc->colors[i].pixel;
+        color.red = rc->colors[i].red;
+        color.green = rc->colors[i].green;
+        color.blue = rc->colors[i].blue;
+        hdr.colors.push_back(color);
     }
-    RWriteString(rc->gameFontName, fp);
-    RWriteString(rc->msgFontName, fp);
-
-    RWriteUShort(rc->view_width, fp);
-    RWriteUShort(rc->view_height, fp);
+    hdr.gameFontName = std::string(rc->gameFontName);
+    hdr.msgFontName = std::string(rc->msgFontName);
+    hdr.view_width = rc->view_width;
+    hdr.view_height = rc->view_height;
+    RWriteHeader(hdr, fp);
 }
 
 static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
