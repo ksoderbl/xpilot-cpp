@@ -108,9 +108,6 @@ extern bool titleFlip;               /* Do special titlebar flipping? */
 extern int shieldDrawMode;           /* How to draw players shield */
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 extern char *texturePath;            /* Path list of texture directories */
-extern char *wallTextureFile;        /* Filename of wall texture */
-extern char *decorTextureFile;       /* Filename of decor texture */
-extern char *ballTextureFile;        /* Filename of ball texture */
 
 void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
 void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);

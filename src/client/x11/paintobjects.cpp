@@ -78,7 +78,6 @@ static int asteroidRawShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS][2] = {
 position_t *asteroidShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS];
 
 bool markingLights;
-char *ballTextureFile; /* Filename of ball texture */
 
 extern XGCValues gcv;
 extern setup_t *Setup;

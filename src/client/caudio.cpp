@@ -178,10 +178,4 @@ int Handle_audio(int type, int volume)
     return 0;
 }
 
-#else
-
-#include "version.h"
-
-char caudio_version[] = VERSION;
-
 #endif /* SOUND */

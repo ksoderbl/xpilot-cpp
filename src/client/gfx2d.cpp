@@ -39,10 +39,6 @@
 #include "const.h"
 #include "portability.h"
 
-#ifndef PATH_MAX
-#define PATH_MAX 1023
-#endif
-
 extern char *texturePath; /* Path list of texture directories */
 
 /*

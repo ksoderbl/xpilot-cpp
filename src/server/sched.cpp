@@ -44,8 +44,6 @@
 
 #include "portability.h"
 
-char sched_version[] = VERSION;
-
 int sched_running = false;
 
 volatile long timer_ticks; /* SIGALRMs that have occurred */

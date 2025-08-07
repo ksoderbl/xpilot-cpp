@@ -49,8 +49,6 @@
 #include "xpaint.h"
 #include "about.h"
 
-char join_version[] = VERSION;
-
 #ifndef SCORE_UPDATE_DELAY
 #define SCORE_UPDATE_DELAY 4
 #endif

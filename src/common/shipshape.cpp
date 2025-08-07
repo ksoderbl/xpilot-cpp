@@ -35,8 +35,6 @@
 #include "draw.h"
 #include "xperror.h"
 
-char shipshape_version[] = VERSION;
-
 static int debugShapeParsing = 0;
 static int verboseShapeParsing;
 static int shapeLimits;

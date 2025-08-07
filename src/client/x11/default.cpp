@@ -69,10 +69,6 @@
 #define DISPLAY_DEF ":0.0"
 #define KEYBOARD_ENV "KEYBOARD"
 
-#ifndef PATH_MAX
-#define PATH_MAX 1023
-#endif
-
 /*
  * Default fonts
  */
@@ -395,13 +391,7 @@ option options[] = {
      "No",
      KEY_DUMMY,
      "Draws the walls filled with a texture pattern.\n"
-     "See also the wallTextureFile option.\n"
      "Be warned that this needs a very fast graphics system.\n"},
-    {"wallTextureFile",
-     NULL,
-     "",
-     KEY_DUMMY,
-     "Specify a XPM format pixmap file to load the wall texture from.\n"},
     {"texturePath",
      NULL,
      conf_texturedir_string,
@@ -781,21 +771,11 @@ option options[] = {
      KEY_DUMMY,
      "Draws the map decoration filled with a texture pattern.\n"
      "See also the decorTextureFile and texturedWalls options.\n"},
-    {"decorTextureFile",
-     NULL,
-     "",
-     KEY_DUMMY,
-     "Specify a XPM format pixmap file to load the decor texture from.\n"},
     {"texturedBalls",
      NULL,
      "No",
      KEY_DUMMY,
      "Draw the balls with a texture specified by the ballTextureFile option.\n"},
-    {"ballTextureFile",
-     NULL,
-     "",
-     KEY_DUMMY,
-     "Specify a XPM format pixmap file to load the ball texture from.\n"},
     {"targetRadarColor",
      NULL,
      "4",
@@ -2261,12 +2241,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Record_init(resValue);
     Get_resource(rDB, "texturePath", resValue, sizeof resValue);
     texturePath = xp_strdup(resValue);
-    Get_resource(rDB, "wallTextureFile", resValue, sizeof resValue);
-    wallTextureFile = xp_strdup(resValue);
-    Get_resource(rDB, "decorTextureFile", resValue, sizeof resValue);
-    decorTextureFile = xp_strdup(resValue);
-    Get_resource(rDB, "ballTextureFile", resValue, sizeof resValue);
-    ballTextureFile = xp_strdup(resValue);
 
     Get_int_resource(rDB, "maxFPS", &maxFPS);
     oldMaxFPS = maxFPS;
@@ -2431,9 +2405,6 @@ void defaultCleanup(void)
 {
     XFREE(keyDefs);
     XFREE(texturePath);
-    XFREE(wallTextureFile);
-    XFREE(decorTextureFile);
-    XFREE(ballTextureFile);
     XFREE(shipShape);
 #ifdef SOUND
     audioCleanup();

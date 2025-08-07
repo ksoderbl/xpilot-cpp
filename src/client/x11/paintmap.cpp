@@ -51,10 +51,8 @@
 #include "protoclient.h"
 #include "guimap.h"
 
-int wallColor;          /* Color index for wall drawing */
-int decorColor;         /* Color index for decoration drawing */
-char *wallTextureFile;  /* Filename of wall texture */
-char *decorTextureFile; /* Filename of decor texture */
+int wallColor;  /* Color index for wall drawing */
+int decorColor; /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 

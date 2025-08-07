@@ -56,10 +56,6 @@
 #include "portability.h"
 #include "colors.h"
 
-#ifndef PATH_MAX
-#define PATH_MAX 1023
-#endif
-
 extern const char *Get_keyResourceString(keys_t key);
 extern void Get_xpilotrc_file(char *, unsigned);
 
