@@ -77,16 +77,15 @@ short phasingtime;
 short phasingtimemax;
 
 int RadarHeight = 0;
-int RadarWidth = 256;        /* must always be 256! */
-int map_point_distance;      /* spacing of navigation points */
-int map_point_size;          /* size of navigation points */
-int spark_size;              /* size of debris and spark */
-int shot_size;               /* size of shot */
-int teamshot_size;           /* size of team shot */
-bool showNastyShots = false; /* show original flavor shots or the new "nasty shots" */
-long control_count;          /* Display control for how long? */
-int roundDelay;              /* != 0 means we're in a delay */
-int roundDelayMax;           /* (not yet) used for graph of time remaining in delay */
+int RadarWidth = 256;   /* must always be 256! */
+int map_point_distance; /* spacing of navigation points */
+int map_point_size;     /* size of navigation points */
+int spark_size;         /* size of debris and spark */
+int shot_size;          /* size of shot */
+int teamshot_size;      /* size of team shot */
+long control_count;     /* Display control for how long? */
+int roundDelay;         /* != 0 means we're in a delay */
+int roundDelayMax;      /* (not yet) used for graph of time remaining in delay */
 
 uint8_t spark_rand;     /* Sparkling effect */
 uint8_t old_spark_rand; /* previous value of spark_rand */

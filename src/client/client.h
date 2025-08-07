@@ -68,7 +68,6 @@ typedef struct
     bool showMessages;
     bool showMineName;
     bool showMyShipShape;
-    bool showNastyShots;
     bool showShipName;
     bool showShipShapes;
     bool showShipShapesHack;
@@ -231,7 +230,6 @@ extern int map_point_size;     /* size of navigation points */
 extern int spark_size;         /* size of sparks and debris */
 extern int shot_size;          /* size of shot */
 extern int teamshot_size;      /* size of team shot */
-extern bool showNastyShots;    /* show original flavor shots or the new "nasty shots" */
 extern long control_count;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
 extern uint8_t old_spark_rand; /* previous value of spark_rand */

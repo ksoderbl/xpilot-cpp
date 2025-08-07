@@ -522,12 +522,6 @@ option options[] = {
      KEY_DUMMY,
      "The size of team shots in pixels.\n"
      "Note that team shots are drawn in blue.\n"},
-    {"showNastyShots",
-     NULL,
-     "No",
-     KEY_DUMMY,
-     "Use the new Nasty Looking Shots or the original rectangle shots,\n"
-     "You will probably want to increase your shotSize if you use this.\n"},
     {"backgroundPointDist",
      NULL,
      "8",
@@ -2128,7 +2122,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     LIMIT(shot_size, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
     Get_int_resource(rDB, "teamShotSize", &teamshot_size);
     LIMIT(teamshot_size, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
-    Get_bool_resource(rDB, "showNastyShots", &showNastyShots);
     /*
      * This is a special value; default or not defined means choose depending
      * on the display, otherwise its a boolean value.

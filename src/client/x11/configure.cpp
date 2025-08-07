@@ -92,7 +92,6 @@ static int Config_create_autoShield(int widget_desc, int *height);
 static int Config_create_sparkProb(int widget_desc, int *height);
 static int Config_create_shotSize(int widget_desc, int *height);
 static int Config_create_teamShotSize(int widget_desc, int *height);
-static int Config_create_showNastyShots(int widget_desc, int *height);
 static int Config_create_hudColor(int widget_desc, int *height);
 static int Config_create_hudLockColor(int widget_desc, int *height);
 static int Config_create_wallColor(int widget_desc, int *height);
@@ -218,7 +217,6 @@ static int (*config_creator[])(int widget_desc, int *height) = {
     Config_create_markingLights,
     Config_create_toggleShield,
     Config_create_autoShield,
-    Config_create_showNastyShots,
     Config_create_shotSize,
     Config_create_teamShotSize,
     Config_create_hudColor,
@@ -854,13 +852,6 @@ static int Config_create_teamShotSize(int widget_desc, int *height)
                              "teamShotSize", &teamshot_size,
                              MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE,
                              NULL, NULL);
-}
-
-static int Config_create_showNastyShots(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "nastyShots",
-                              (showNastyShots) ? true : false,
-                              Config_update_bool, &showNastyShots);
 }
 
 static int Config_create_hudColor(int widget_desc, int *height)
@@ -1532,7 +1523,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_float(fp, "sparkProb", spark_prob);
     Config_save_int(fp, "shotSize", shot_size);
     Config_save_int(fp, "teamShotSize", teamshot_size);
-    Config_save_bool(fp, "showNastyShots", showNastyShots);
     Config_save_int(fp, "hudColor", hudColor);
     Config_save_int(fp, "hudLockColor", hudLockColor);
     Config_save_int(fp, "wallColor", wallColor);

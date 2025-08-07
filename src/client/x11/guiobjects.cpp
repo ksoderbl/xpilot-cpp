@@ -313,18 +313,10 @@ void Gui_paint_fastshot(int color, int x, int y)
     if (!blockBitmaps)
     {
         int z = shot_size / 2;
-
-        if (showNastyShots)
-        {
-            Gui_paint_nastyshot(color, x, y, z);
-        }
-        else
-        {
-            Rectangle_add(color,
-                          x - z,
-                          y - z,
-                          shot_size, shot_size);
-        }
+        Rectangle_add(color,
+                      x - z,
+                      y - z,
+                      shot_size, shot_size);
     }
     else
     {
