@@ -146,7 +146,9 @@ static void setup_timer(void)
     /*
      * Install a real-time timer.
      */
-    if (timer_freq <= 0 || timer_freq > 100)
+    // Maximum timer_freq (i.e. FPS) used to be 100.
+    // The limit was removed for testing purposes.
+    if (timer_freq <= 0)
     {
         xperror("illegal timer frequency: %ld", timer_freq);
         exit(1);
