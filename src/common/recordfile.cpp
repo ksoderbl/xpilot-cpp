@@ -25,6 +25,8 @@
 #include "recordfmt.h"
 
 #include <iomanip> // for std::hex, std::setw, std::setfill
+#include <iostream>
+#include <stdexcept>
 
 void RWriteByte(uint8_t i, FILE *fp)
 {
