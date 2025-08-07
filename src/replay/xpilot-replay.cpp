@@ -50,6 +50,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include "recordfile.h"
 #include "recordfmt.h"
 #include "item.h"
 #include "buttons.h"
@@ -390,10 +391,13 @@ static struct button_init
 
 #define NUM_BUTTONS (sizeof(buttonInit) / sizeof(struct button_init))
 
-static enum playStates {
+typedef enum playStates
+{
     STATE_PLAYING,
     STATE_PAUSED
-} playState = STATE_PLAYING;
+} playStates_t;
+
+static playStates_t playState = STATE_PLAYING;
 
 static int currentSpeed = 0, frameStep = 0;
 
@@ -2752,58 +2756,58 @@ static void SaveFramesPPM(struct xprc *rc)
     }
 }
 
-static void RWriteByte(unsigned char i, FILE *fp)
-{
-    putc(i, fp);
-}
+// static void RWriteByte(unsigned char i, FILE *fp)
+// {
+//     putc(i, fp);
+// }
 
-static void RWriteShort(short i, FILE *fp)
-{
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-}
+// static void RWriteShort(short i, FILE *fp)
+// {
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+// }
 
-static void RWriteUShort(unsigned short i, FILE *fp)
-{
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-}
+// static void RWriteUShort(unsigned short i, FILE *fp)
+// {
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+// }
 
-static void RWriteLong(long i, FILE *fp)
-{
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-}
+// static void RWriteLong(long i, FILE *fp)
+// {
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+// }
 
-static void RWriteULong(unsigned long i, FILE *fp)
-{
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-    i >>= 8;
-    putc(i, fp);
-}
+// static void RWriteULong(unsigned long i, FILE *fp)
+// {
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+//     i >>= 8;
+//     putc(i, fp);
+// }
 
-static void RWriteString(char *str, FILE *fp)
-{
-    int len = strlen(str);
-    int i;
+// static void RWriteString(char *str, FILE *fp)
+// {
+//     int len = strlen(str);
+//     int i;
 
-    RWriteUShort(len, fp);
-    for (i = 0; i < len; i++)
-    {
-        putc(str[i], fp);
-    }
-}
+//     RWriteUShort(len, fp);
+//     for (i = 0; i < len; i++)
+//     {
+//         putc(str[i], fp);
+//     }
+// }
 
 static int pixel2index(struct xprc *rc, unsigned long pixel)
 {

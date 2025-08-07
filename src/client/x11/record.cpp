@@ -34,6 +34,8 @@
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 
+#include "recordfile.h"
+
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"
@@ -88,63 +90,6 @@ static void Dummy_paintItemSymbol(unsigned char type, Drawable drawable,
 extern char hostname[];
 
 /*
- * Miscellaneous recording functions.
- * These are only called when (recording == True).
- */
-static void RWriteByte(unsigned char i)
-{
-    putc(i, recordFP);
-}
-
-static void RWriteShort(short i)
-{
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-}
-
-static void RWriteUShort(unsigned short i)
-{
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-}
-
-static void RWriteLong(long i)
-{
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-}
-
-static void RWriteULong(unsigned long i)
-{
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-    i >>= 8;
-    putc(i, recordFP);
-}
-
-static void RWriteString(char *str)
-{
-    int len = strlen(str);
-    int i;
-
-    RWriteUShort(len);
-    for (i = 0; i < len; i++)
-    {
-        putc(str[i], recordFP);
-    }
-}
-
-/*
  * Output the XPilot Recording Header at the beginning
  * of the recording file.
  */
@@ -170,33 +115,33 @@ static void RWriteHeader(void)
     putc('\n', recordFP);
 
     /* Write player's nick, login, host, server, FPS and the date. */
-    RWriteString(name);
-    RWriteString(realname);
-    RWriteString(hostname);
-    RWriteString(servername);
-    RWriteByte(FPS);
+    RWriteString(name, recordFP);
+    RWriteString(realname, recordFP);
+    RWriteString(hostname, recordFP);
+    RWriteString(servername, recordFP);
+    RWriteByte(FPS, recordFP);
     time(&t);
     strlcpy(buf, ctime(&t), sizeof(buf));
     if ((ptr = strchr(buf, '\n')) != NULL)
     {
         *ptr = '\0';
     }
-    RWriteString(buf);
+    RWriteString(buf, recordFP);
 
     /* Write info about graphics setup. */
     putc(maxColors, recordFP);
     for (i = 0; i < maxColors; i++)
     {
-        RWriteULong(colors[i].pixel);
-        RWriteUShort(colors[i].red);
-        RWriteUShort(colors[i].green);
-        RWriteUShort(colors[i].blue);
+        RWriteULong(colors[i].pixel, recordFP);
+        RWriteUShort(colors[i].red, recordFP);
+        RWriteUShort(colors[i].green, recordFP);
+        RWriteUShort(colors[i].blue, recordFP);
     }
-    RWriteString(gameFontName);
-    RWriteString(messageFontName);
+    RWriteString(gameFontName, recordFP);
+    RWriteString(messageFontName, recordFP);
 
-    RWriteUShort(draw_width);
-    RWriteUShort(draw_height);
+    RWriteUShort(draw_width, recordFP);
+    RWriteUShort(draw_height, recordFP);
 
     record_dashes = dashes;
     record_num_dashes = NUM_DASHES;
@@ -494,41 +439,41 @@ static void RWriteGC(GC gc, unsigned long req_mask)
             gc_mask |= RC_GC_TI;
     }
 
-    RWriteByte(gc_mask);
+    RWriteByte(gc_mask, recordFP);
     if (gc_mask & RC_GC_B2)
     {
-        RWriteByte(gc_mask >> 8);
+        RWriteByte(gc_mask >> 8, recordFP);
     }
 
     if (write_mask & GCForeground)
-        RWriteByte(RGetPixelIndex(values.foreground));
+        RWriteByte(RGetPixelIndex(values.foreground), recordFP);
     if (write_mask & GCBackground)
-        RWriteByte(RGetPixelIndex(values.background));
+        RWriteByte(RGetPixelIndex(values.background), recordFP);
     if (write_mask & GCLineWidth)
-        RWriteByte(values.line_width);
+        RWriteByte(values.line_width, recordFP);
     if (write_mask & GCLineStyle)
-        RWriteByte(values.line_style);
+        RWriteByte(values.line_style, recordFP);
     if (write_mask & GCDashOffset)
-        RWriteByte(values.dash_offset);
+        RWriteByte(values.dash_offset, recordFP);
     if (write_mask & GCFunction)
-        RWriteByte(values.function);
+        RWriteByte(values.function, recordFP);
     if (record_dash_dirty)
     {
         int i;
-        RWriteByte(record_num_dashes);
+        RWriteByte(record_num_dashes, recordFP);
         for (i = 0; i < record_num_dashes; i++)
         {
-            RWriteByte(record_dashes[i]);
+            RWriteByte(record_dashes[i], recordFP);
         }
     }
     if (write_mask & RTILEGC)
     {
         if (write_mask & GCFillStyle)
-            RWriteByte(values.fill_style);
+            RWriteByte(values.fill_style, recordFP);
         if (write_mask & GCTileStipXOrigin)
-            RWriteLong(values.ts_x_origin);
+            RWriteLong(values.ts_x_origin, recordFP);
         if (write_mask & GCTileStipYOrigin)
-            RWriteLong(values.ts_y_origin);
+            RWriteLong(values.ts_y_origin, recordFP);
         // if (write_mask & GCTile)
         // {
         //     RWriteTile(values.tile);
@@ -548,8 +493,8 @@ static void RNewFrame(void)
     recording = True;
 
     putc(RC_NEWFRAME, recordFP);
-    RWriteUShort(draw_width);
-    RWriteUShort(draw_height);
+    RWriteUShort(draw_width, recordFP);
+    RWriteUShort(draw_height, recordFP);
 }
 
 static void REndFrame(void)
@@ -560,7 +505,7 @@ static void REndFrame(void)
 
         XGetGCValues(dpy, gameGC, GCForeground, &values);
 
-        RWriteByte(RC_DAMAGED);
+        RWriteByte(RC_DAMAGED, recordFP);
         if ((damaged & 1) != 0)
         {
             XSetForeground(dpy, gameGC, colors[BLUE].pixel);
@@ -570,7 +515,7 @@ static void REndFrame(void)
             XSetForeground(dpy, gameGC, colors[BLACK].pixel);
         }
         RWriteGC(gameGC, GCForeground | RTILEGC);
-        RWriteByte(damaged);
+        RWriteByte(damaged, recordFP);
 
         XSetForeground(dpy, gameGC, values.foreground);
     }
@@ -594,12 +539,12 @@ static int RDrawArc(Display *display, Drawable drawable, GC gc,
     {
         putc(RC_DRAWARC, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
-        RWriteShort(x);
-        RWriteShort(y);
-        RWriteByte(width);
-        RWriteByte(height);
-        RWriteShort(angle1);
-        RWriteShort(angle2);
+        RWriteShort(x, recordFP);
+        RWriteShort(y, recordFP);
+        RWriteByte(width, recordFP);
+        RWriteByte(height, recordFP);
+        RWriteShort(angle1, recordFP);
+        RWriteShort(angle2, recordFP);
     }
     return 0;
 }
@@ -615,13 +560,13 @@ static int RDrawLines(Display *display, Drawable drawable, GC gc,
 
         putc(RC_DRAWLINES, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
-        RWriteUShort(npoints);
+        RWriteUShort(npoints, recordFP);
         for (i = 0; i < npoints; i++, xp++)
         {
-            RWriteShort(xp->x);
-            RWriteShort(xp->y);
+            RWriteShort(xp->x, recordFP);
+            RWriteShort(xp->y, recordFP);
         }
-        RWriteByte(mode);
+        RWriteByte(mode, recordFP);
     }
     return 0;
 }
@@ -635,10 +580,10 @@ static int RDrawLine(Display *display, Drawable drawable, GC gc,
     {
         putc(RC_DRAWLINE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
-        RWriteShort(x1);
-        RWriteShort(y1);
-        RWriteShort(x2);
-        RWriteShort(y2);
+        RWriteShort(x1, recordFP);
+        RWriteShort(y1, recordFP);
+        RWriteShort(x2, recordFP);
+        RWriteShort(y2, recordFP);
     }
     return 0;
 }
@@ -652,10 +597,10 @@ static int RDrawRectangle(Display *display, Drawable drawable, GC gc,
     {
         putc(RC_DRAWRECTANGLE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
-        RWriteShort(x);
-        RWriteShort(y);
-        RWriteByte(width);
-        RWriteByte(height);
+        RWriteShort(x, recordFP);
+        RWriteShort(y, recordFP);
+        RWriteByte(width, recordFP);
+        RWriteByte(height, recordFP);
     }
     return 0;
 }
@@ -672,11 +617,11 @@ static int RDrawString(Display *display, Drawable drawable, GC gc,
 
         putc(RC_DRAWSTRING, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
-        RWriteShort(x);
-        RWriteShort(y);
+        RWriteShort(x, recordFP);
+        RWriteShort(y, recordFP);
         XGetGCValues(display, gc, GCFont, &values);
-        RWriteByte((values.font == messageFont->fid) ? 1 : 0);
-        RWriteUShort(length);
+        RWriteByte((values.font == messageFont->fid) ? 1 : 0, recordFP);
+        RWriteUShort(length, recordFP);
         for (i = 0; i < length; i++)
             putc(string[i], recordFP);
     }
@@ -693,12 +638,12 @@ static int RFillArc(Display *display, Drawable drawable, GC gc,
     {
         putc(RC_FILLARC, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
-        RWriteShort(x);
-        RWriteShort(y);
-        RWriteByte(width);
-        RWriteByte(height);
-        RWriteShort(angle1);
-        RWriteShort(angle2);
+        RWriteShort(x, recordFP);
+        RWriteShort(y, recordFP);
+        RWriteByte(width, recordFP);
+        RWriteByte(height, recordFP);
+        RWriteShort(angle1, recordFP);
+        RWriteShort(angle2, recordFP);
     }
     return 0;
 }
@@ -715,14 +660,14 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
 
         putc(RC_FILLPOLYGON, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
-        RWriteUShort(npoints);
+        RWriteUShort(npoints, recordFP);
         for (i = 0; i < npoints; i++, xp++)
         {
-            RWriteShort(xp->x);
-            RWriteShort(xp->y);
+            RWriteShort(xp->x, recordFP);
+            RWriteShort(xp->y, recordFP);
         }
-        RWriteByte(shape);
-        RWriteByte(mode);
+        RWriteByte(shape, recordFP);
+        RWriteByte(mode, recordFP);
     }
     return 0;
 }
@@ -735,8 +680,8 @@ static void RPaintItemSymbol(unsigned char type, Drawable drawable, GC mygc,
         putc(RC_PAINTITEMSYMBOL, recordFP);
         RWriteGC(gameGC, GCForeground | GCBackground);
         putc(type, recordFP);
-        RWriteShort(x);
-        RWriteShort(y);
+        RWriteShort(x, recordFP);
+        RWriteShort(y, recordFP);
     }
 }
 
@@ -749,10 +694,10 @@ static int RFillRectangle(Display *display, Drawable drawable, GC gc,
     {
         putc(RC_FILLRECTANGLE, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
-        RWriteShort(x);
-        RWriteShort(y);
-        RWriteByte(width);
-        RWriteByte(height);
+        RWriteShort(x, recordFP);
+        RWriteShort(y, recordFP);
+        RWriteByte(width, recordFP);
+        RWriteByte(height, recordFP);
     }
     return 0;
 }
@@ -767,13 +712,13 @@ static int RFillRectangles(Display *display, Drawable drawable, GC gc,
 
         putc(RC_FILLRECTANGLES, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
-        RWriteUShort(nrectangles);
+        RWriteUShort(nrectangles, recordFP);
         for (i = 0; i < nrectangles; i++)
         {
-            RWriteShort(rectangles[i].x);
-            RWriteShort(rectangles[i].y);
-            RWriteByte(rectangles[i].width);
-            RWriteByte(rectangles[i].height);
+            RWriteShort(rectangles[i].x, recordFP);
+            RWriteShort(rectangles[i].y, recordFP);
+            RWriteByte(rectangles[i].width, recordFP);
+            RWriteByte(rectangles[i].height, recordFP);
         }
     }
     return 0;
@@ -789,15 +734,15 @@ static int RDrawArcs(Display *display, Drawable drawable, GC gc,
 
         putc(RC_DRAWARCS, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
-        RWriteUShort(narcs);
+        RWriteUShort(narcs, recordFP);
         for (i = 0; i < narcs; i++)
         {
-            RWriteShort(arcs[i].x);
-            RWriteShort(arcs[i].y);
-            RWriteByte(arcs[i].width);
-            RWriteByte(arcs[i].height);
-            RWriteShort(arcs[i].angle1);
-            RWriteShort(arcs[i].angle2);
+            RWriteShort(arcs[i].x, recordFP);
+            RWriteShort(arcs[i].y, recordFP);
+            RWriteByte(arcs[i].width, recordFP);
+            RWriteByte(arcs[i].height, recordFP);
+            RWriteShort(arcs[i].angle1, recordFP);
+            RWriteShort(arcs[i].angle2, recordFP);
         }
     }
     return 0;
@@ -813,13 +758,13 @@ static int RDrawSegments(Display *display, Drawable drawable, GC gc,
 
         putc(RC_DRAWSEGMENTS, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
-        RWriteUShort(nsegments);
+        RWriteUShort(nsegments, recordFP);
         for (i = 0; i < nsegments; i++)
         {
-            RWriteShort(segments[i].x1);
-            RWriteShort(segments[i].y1);
-            RWriteShort(segments[i].x2);
-            RWriteShort(segments[i].y2);
+            RWriteShort(segments[i].x1, recordFP);
+            RWriteShort(segments[i].y1, recordFP);
+            RWriteShort(segments[i].x2, recordFP);
+            RWriteShort(segments[i].y2, recordFP);
         }
     }
     return 0;

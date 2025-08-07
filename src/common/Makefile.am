@@ -1,6 +1,8 @@
 AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\"
 noinst_LIBRARIES = libxpcommon.a
 libxpcommon_a_SOURCES = \
+    recordfile.cpp \
+    recordfile.h \
     astershape.h \
     audio.h \
     bit.h \
