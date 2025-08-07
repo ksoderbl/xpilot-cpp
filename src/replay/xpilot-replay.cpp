@@ -2756,47 +2756,6 @@ static void SaveFramesPPM(struct xprc *rc)
     }
 }
 
-// static void RWriteByte(unsigned char i, FILE *fp)
-// {
-//     putc(i, fp);
-// }
-
-// static void RWriteShort(short i, FILE *fp)
-// {
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-// }
-
-// static void RWriteUShort(unsigned short i, FILE *fp)
-// {
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-// }
-
-// static void RWriteLong(long i, FILE *fp)
-// {
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-// }
-
-// static void RWriteULong(unsigned long i, FILE *fp)
-// {
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-//     i >>= 8;
-//     putc(i, fp);
-// }
-
 // static void RWriteString(char *str, FILE *fp)
 // {
 //     int len = strlen(str);
@@ -3032,16 +2991,16 @@ static void WriteHeader(struct xprc *rc, FILE *fp)
     rewind(fp);
 
     /* First write out magic 4 letter word */
-    putc('X', fp);
-    putc('P', fp);
-    putc('R', fp);
-    putc('C', fp);
+    RWriteByte('X', fp);
+    RWriteByte('P', fp);
+    RWriteByte('R', fp);
+    RWriteByte('C', fp);
 
     /* Write which version of the XPilot Record Protocol this is. */
-    putc(RC_MAJORVERSION, fp);
-    putc('.', fp);
-    putc(RC_MINORVERSION, fp);
-    putc('\n', fp);
+    RWriteByte(RC_MAJORVERSION, fp);
+    RWriteByte('.', fp);
+    RWriteByte(RC_MINORVERSION, fp);
+    RWriteByte('\n', fp);
 
     /* Write player's nick, login, host, server, FPS and the date. */
     RWriteString(rc->nickname, fp);
@@ -3052,7 +3011,7 @@ static void WriteHeader(struct xprc *rc, FILE *fp)
     RWriteString(rc->recorddate, fp);
 
     /* Write info about graphics setup. */
-    putc(rc->maxColors, fp);
+    RWriteByte(rc->maxColors, fp);
     for (i = 0; i < rc->maxColors; i++)
     {
         RWriteULong(rc->colors[i].pixel, fp);
@@ -3073,7 +3032,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
     struct shape *sp;
     int i;
 
-    putc(RC_NEWFRAME, fp);
+    RWriteByte(RC_NEWFRAME, fp);
     RWriteUShort(f->width, fp);
     RWriteUShort(f->height, fp);
 
@@ -3084,7 +3043,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
         {
 
         case RC_DRAWARC:
-            putc(RC_DRAWARC, fp);
+            RWriteByte(RC_DRAWARC, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteShort(sp->shape.arc.x, fp);
             RWriteShort(sp->shape.arc.y, fp);
@@ -3095,7 +3054,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DRAWLINES:
-            putc(RC_DRAWLINES, fp);
+            RWriteByte(RC_DRAWLINES, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.lines.npoints, fp);
             for (i = 0; i < sp->shape.lines.npoints; i++)
@@ -3107,7 +3066,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DRAWLINE:
-            putc(RC_DRAWLINE, fp);
+            RWriteByte(RC_DRAWLINE, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteShort(sp->shape.line.x1, fp);
             RWriteShort(sp->shape.line.y1, fp);
@@ -3116,7 +3075,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DRAWRECTANGLE:
-            putc(RC_DRAWRECTANGLE, fp);
+            RWriteByte(RC_DRAWRECTANGLE, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteShort(sp->shape.rectangle.x, fp);
             RWriteShort(sp->shape.rectangle.y, fp);
@@ -3125,7 +3084,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DRAWSTRING:
-            putc(RC_DRAWSTRING, fp);
+            RWriteByte(RC_DRAWSTRING, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteShort(sp->shape.string.x, fp);
             RWriteShort(sp->shape.string.y, fp);
@@ -3133,12 +3092,12 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             RWriteUShort(sp->shape.string.length, fp);
             for (i = 0; i < sp->shape.string.length; i++)
             {
-                putc(sp->shape.string.string[i], fp);
+                RWriteByte(sp->shape.string.string[i], fp);
             }
             break;
 
         case RC_FILLARC:
-            putc(RC_FILLARC, fp);
+            RWriteByte(RC_FILLARC, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteShort(sp->shape.arc.x, fp);
             RWriteShort(sp->shape.arc.y, fp);
@@ -3149,7 +3108,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_FILLPOLYGON:
-            putc(RC_FILLPOLYGON, fp);
+            RWriteByte(RC_FILLPOLYGON, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.polygon.npoints, fp);
             for (i = 0; i < sp->shape.polygon.npoints; i++)
@@ -3162,7 +3121,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_FILLRECTANGLE:
-            putc(RC_FILLRECTANGLE, fp);
+            RWriteByte(RC_FILLRECTANGLE, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteShort(sp->shape.rectangle.x, fp);
             RWriteShort(sp->shape.rectangle.y, fp);
@@ -3171,15 +3130,15 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_PAINTITEMSYMBOL:
-            putc(RC_PAINTITEMSYMBOL, fp);
+            RWriteByte(RC_PAINTITEMSYMBOL, fp);
             RWriteGC(rc, sp->gc, fp);
-            putc(sp->shape.symbol.type, fp);
+            RWriteByte(sp->shape.symbol.type, fp);
             RWriteShort(sp->shape.symbol.x, fp);
             RWriteShort(sp->shape.symbol.y, fp);
             break;
 
         case RC_FILLRECTANGLES:
-            putc(RC_FILLRECTANGLES, fp);
+            RWriteByte(RC_FILLRECTANGLES, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.rectangles.nrectangles, fp);
             for (i = 0; i < sp->shape.rectangles.nrectangles; i++)
@@ -3192,7 +3151,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DRAWARCS:
-            putc(RC_DRAWARCS, fp);
+            RWriteByte(RC_DRAWARCS, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.arcs.narcs, fp);
             for (i = 0; i < sp->shape.arcs.narcs; i++)
@@ -3207,7 +3166,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DRAWSEGMENTS:
-            putc(RC_DRAWSEGMENTS, fp);
+            RWriteByte(RC_DRAWSEGMENTS, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteUShort(sp->shape.segments.nsegments, fp);
             for (i = 0; i < sp->shape.segments.nsegments; i++)
@@ -3220,14 +3179,14 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             break;
 
         case RC_DAMAGED:
-            putc(RC_DAMAGED, fp);
+            RWriteByte(RC_DAMAGED, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteByte(sp->shape.damage.damaged, fp);
             break;
         }
     }
 
-    putc(RC_ENDFRAME, fp);
+    RWriteByte(RC_ENDFRAME, fp);
 }
 
 static void SaveFramesXPR(struct xprc *rc)

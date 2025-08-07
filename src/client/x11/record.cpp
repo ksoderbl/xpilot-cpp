@@ -103,16 +103,16 @@ static void RWriteHeader(void)
     rewind(recordFP);
 
     /* First write out magic 4 letter word */
-    putc('X', recordFP);
-    putc('P', recordFP);
-    putc('R', recordFP);
-    putc('C', recordFP);
+    RWriteByte('X', recordFP);
+    RWriteByte('P', recordFP);
+    RWriteByte('R', recordFP);
+    RWriteByte('C', recordFP);
 
     /* Write which version of the XPilot Record Protocol this is. */
-    putc(RC_MAJORVERSION, recordFP);
-    putc('.', recordFP);
-    putc(RC_MINORVERSION, recordFP);
-    putc('\n', recordFP);
+    RWriteByte(RC_MAJORVERSION, recordFP);
+    RWriteByte('.', recordFP);
+    RWriteByte(RC_MINORVERSION, recordFP);
+    RWriteByte('\n', recordFP);
 
     /* Write player's nick, login, host, server, FPS and the date. */
     RWriteString(name, recordFP);
@@ -129,7 +129,7 @@ static void RWriteHeader(void)
     RWriteString(buf, recordFP);
 
     /* Write info about graphics setup. */
-    putc(maxColors, recordFP);
+    RWriteByte(maxColors, recordFP);
     for (i = 0; i < maxColors; i++)
     {
         RWriteULong(colors[i].pixel, recordFP);
@@ -394,14 +394,14 @@ static void RWriteGC(GC gc, unsigned long req_mask)
 
         if (!write_mask && !record_dash_dirty)
         {
-            putc(RC_NOGC, recordFP);
+            RWriteByte(RC_NOGC, recordFP);
             return;
         }
 
         prev_mask |= write_mask;
     }
 
-    putc(RC_GC, recordFP);
+    RWriteByte(RC_GC, recordFP);
 
     gc_mask = 0;
     if (write_mask & GCForeground)
@@ -492,7 +492,7 @@ static void RNewFrame(void)
 
     recording = True;
 
-    putc(RC_NEWFRAME, recordFP);
+    RWriteByte(RC_NEWFRAME, recordFP);
     RWriteUShort(draw_width, recordFP);
     RWriteUShort(draw_height, recordFP);
 }
@@ -520,7 +520,7 @@ static void REndFrame(void)
         XSetForeground(dpy, gameGC, values.foreground);
     }
 
-    putc(RC_ENDFRAME, recordFP);
+    RWriteByte(RC_ENDFRAME, recordFP);
 
     fflush(recordFP);
 
@@ -537,7 +537,7 @@ static int RDrawArc(Display *display, Drawable drawable, GC gc,
     XDrawArc(display, drawable, gc, x, y, width, height, angle1, angle2);
     if (drawable == drawPixmap)
     {
-        putc(RC_DRAWARC, recordFP);
+        RWriteByte(RC_DRAWARC, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteShort(x, recordFP);
         RWriteShort(y, recordFP);
@@ -558,7 +558,7 @@ static int RDrawLines(Display *display, Drawable drawable, GC gc,
         int i;
         XPoint *xp = points;
 
-        putc(RC_DRAWLINES, recordFP);
+        RWriteByte(RC_DRAWLINES, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteUShort(npoints, recordFP);
         for (i = 0; i < npoints; i++, xp++)
@@ -578,7 +578,7 @@ static int RDrawLine(Display *display, Drawable drawable, GC gc,
     XDrawLine(display, drawable, gc, x1, y1, x2, y2);
     if (drawable == drawPixmap)
     {
-        putc(RC_DRAWLINE, recordFP);
+        RWriteByte(RC_DRAWLINE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteShort(x1, recordFP);
         RWriteShort(y1, recordFP);
@@ -595,7 +595,7 @@ static int RDrawRectangle(Display *display, Drawable drawable, GC gc,
     XDrawRectangle(display, drawable, gc, x, y, width, height);
     if (drawable == drawPixmap)
     {
-        putc(RC_DRAWRECTANGLE, recordFP);
+        RWriteByte(RC_DRAWRECTANGLE, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteShort(x, recordFP);
         RWriteShort(y, recordFP);
@@ -615,7 +615,7 @@ static int RDrawString(Display *display, Drawable drawable, GC gc,
         int i;
         XGCValues values;
 
-        putc(RC_DRAWSTRING, recordFP);
+        RWriteByte(RC_DRAWSTRING, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteShort(x, recordFP);
         RWriteShort(y, recordFP);
@@ -623,7 +623,7 @@ static int RDrawString(Display *display, Drawable drawable, GC gc,
         RWriteByte((values.font == messageFont->fid) ? 1 : 0, recordFP);
         RWriteUShort(length, recordFP);
         for (i = 0; i < length; i++)
-            putc(string[i], recordFP);
+            RWriteByte(string[i], recordFP);
     }
     return 0;
 }
@@ -636,7 +636,7 @@ static int RFillArc(Display *display, Drawable drawable, GC gc,
     XFillArc(display, drawable, gc, x, y, width, height, angle1, angle2);
     if (drawable == drawPixmap)
     {
-        putc(RC_FILLARC, recordFP);
+        RWriteByte(RC_FILLARC, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteShort(x, recordFP);
         RWriteShort(y, recordFP);
@@ -658,7 +658,7 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
         int i;
         XPoint *xp = points;
 
-        putc(RC_FILLPOLYGON, recordFP);
+        RWriteByte(RC_FILLPOLYGON, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteUShort(npoints, recordFP);
         for (i = 0; i < npoints; i++, xp++)
@@ -677,9 +677,9 @@ static void RPaintItemSymbol(unsigned char type, Drawable drawable, GC mygc,
 {
     if (drawable == drawPixmap)
     {
-        putc(RC_PAINTITEMSYMBOL, recordFP);
+        RWriteByte(RC_PAINTITEMSYMBOL, recordFP);
         RWriteGC(gameGC, GCForeground | GCBackground);
-        putc(type, recordFP);
+        RWriteByte(type, recordFP);
         RWriteShort(x, recordFP);
         RWriteShort(y, recordFP);
     }
@@ -692,7 +692,7 @@ static int RFillRectangle(Display *display, Drawable drawable, GC gc,
     XFillRectangle(display, drawable, gc, x, y, width, height);
     if (drawable == drawPixmap)
     {
-        putc(RC_FILLRECTANGLE, recordFP);
+        RWriteByte(RC_FILLRECTANGLE, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteShort(x, recordFP);
         RWriteShort(y, recordFP);
@@ -710,7 +710,7 @@ static int RFillRectangles(Display *display, Drawable drawable, GC gc,
     {
         int i;
 
-        putc(RC_FILLRECTANGLES, recordFP);
+        RWriteByte(RC_FILLRECTANGLES, recordFP);
         RWriteGC(gc, GCForeground | RTILEGC);
         RWriteUShort(nrectangles, recordFP);
         for (i = 0; i < nrectangles; i++)
@@ -732,7 +732,7 @@ static int RDrawArcs(Display *display, Drawable drawable, GC gc,
     {
         int i;
 
-        putc(RC_DRAWARCS, recordFP);
+        RWriteByte(RC_DRAWARCS, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteUShort(narcs, recordFP);
         for (i = 0; i < narcs; i++)
@@ -756,7 +756,7 @@ static int RDrawSegments(Display *display, Drawable drawable, GC gc,
     {
         int i;
 
-        putc(RC_DRAWSEGMENTS, recordFP);
+        RWriteByte(RC_DRAWSEGMENTS, recordFP);
         RWriteGC(gc, RSTROKEGC | RTILEGC);
         RWriteUShort(nsegments, recordFP);
         for (i = 0; i < nsegments; i++)
