@@ -28,6 +28,34 @@
 #include <cstdint>
 #include <cstring>
 
+#include <iostream>
+#include <string>
+#include <vector>
+
+// Same info as in XColor
+struct XPRColor
+{
+    uint32_t pixel;
+    uint16_t red, green, blue;
+    uint8_t flags; /* do_red, do_green, do_blue */
+    uint8_t pad;
+};
+
+struct XPRHeader
+{
+    std::string nickname;   /* XPilot nick name of player */
+    std::string realname;   /* login name of player */
+    std::string hostname;   /* hostname of player */
+    std::string servername; /* hostname of server */
+    uint8_t fps;            /* frames per second of game */
+    std::string recorddate; /* date of game played */
+    std::vector<XPRColor> colors;
+    std::string gameFontName;
+    std::string msgFontName;
+    uint16_t view_width;
+    uint16_t view_height;
+};
+
 class RecordFile
 {
 };
@@ -37,6 +65,10 @@ void RWriteShort(int16_t i, FILE *fp);
 void RWriteUShort(uint16_t i, FILE *fp);
 void RWriteLong(int32_t i, FILE *fp);
 void RWriteULong(uint32_t i, FILE *fp);
+// Remove support for char *, rename RWriteStdString to RWriteString.
 void RWriteString(char *str, FILE *fp);
+void RWriteStdString(std::string &str, FILE *fp);
+
+void RWriteHeader(struct XPRHeader &hdr, FILE *fp);
 
 #endif

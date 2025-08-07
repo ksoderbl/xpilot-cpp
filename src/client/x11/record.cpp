@@ -93,59 +93,46 @@ extern char hostname[];
  * Output the XPilot Recording Header at the beginning
  * of the recording file.
  */
-static void RWriteHeader(void)
+static void WriteHeader(void)
 {
+    struct XPRHeader hdr{};
+
+    hdr.nickname = std::string(name);
+    hdr.realname = std::string(realname);
+    hdr.hostname = std::string(hostname);
+    hdr.servername = std::string(servername);
+    hdr.fps = FPS;
+
     time_t t;
     char buf[256];
     char *ptr;
     int i;
 
-    rewind(recordFP);
-
-    /* First write out magic 4 letter word */
-    RWriteByte('X', recordFP);
-    RWriteByte('P', recordFP);
-    RWriteByte('R', recordFP);
-    RWriteByte('C', recordFP);
-
-    /* Write which version of the XPilot Record Protocol this is. */
-    RWriteByte(RC_MAJORVERSION, recordFP);
-    RWriteByte('.', recordFP);
-    RWriteByte(RC_MINORVERSION, recordFP);
-    RWriteByte('\n', recordFP);
-
-    /* Write player's nick, login, host, server, FPS and the date. */
-    RWriteString(name, recordFP);
-    RWriteString(realname, recordFP);
-    RWriteString(hostname, recordFP);
-    RWriteString(servername, recordFP);
-    RWriteByte(FPS, recordFP);
     time(&t);
     strlcpy(buf, ctime(&t), sizeof(buf));
     if ((ptr = strchr(buf, '\n')) != NULL)
     {
         *ptr = '\0';
     }
-    RWriteString(buf, recordFP);
+    hdr.recorddate = std::string(buf);
 
     /* Write info about graphics setup. */
-    RWriteByte(maxColors, recordFP);
     for (i = 0; i < maxColors; i++)
     {
-        RWriteULong(colors[i].pixel, recordFP);
-        RWriteUShort(colors[i].red, recordFP);
-        RWriteUShort(colors[i].green, recordFP);
-        RWriteUShort(colors[i].blue, recordFP);
+        XPRColor color;
+        color.pixel = colors[i].pixel;
+        color.red = colors[i].red;
+        color.green = colors[i].green;
+        color.blue = colors[i].blue;
+        hdr.colors.push_back(color);
     }
-    RWriteString(gameFontName, recordFP);
-    RWriteString(messageFontName, recordFP);
+    hdr.gameFontName = std::string(gameFontName);
+    hdr.msgFontName = std::string(messageFontName);
 
-    RWriteUShort(draw_width, recordFP);
-    RWriteUShort(draw_height, recordFP);
+    hdr.view_width = draw_width;
+    hdr.view_height = draw_height;
 
-    record_dashes = dashes;
-    record_num_dashes = NUM_DASHES;
-    record_dash_dirty = True;
+    RWriteHeader(hdr, recordFP);
 }
 
 static int RGetPixelIndex(unsigned long pixel)
@@ -487,7 +474,10 @@ static void RNewFrame(void)
 
     if (!before++)
     {
-        RWriteHeader();
+        WriteHeader();
+        record_dashes = dashes;
+        record_num_dashes = NUM_DASHES;
+        record_dash_dirty = True;
     }
 
     recording = True;
