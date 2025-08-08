@@ -139,6 +139,8 @@ extern DFLOAT tbl_cos[];
 #define TARGET_REPAIR_PER_FRAME (TARGET_DAMAGE / (FPS * 600))
 #define TARGET_UPDATE_DELAY (TARGET_DAMAGE / (TARGET_REPAIR_PER_FRAME * BLOCK_SZ))
 
+#define SELF_DESTRUCT_DELAY 150.0
+
 /*
  * Size (pixels) of radius for legal HIT!
  * Was 14 until 4.2. Increased due to `analytical collision detection'

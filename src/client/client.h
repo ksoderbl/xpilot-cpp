@@ -109,7 +109,7 @@ typedef struct
 #define MIN_SCALEFACTOR 0.1
 #define MAX_SCALEFACTOR 20.0
 
-#define CONTROL_DELAY 100
+#define CONTROL_TIME 8.0
 
 #define FIND_NAME_WIDTH(other)                                             \
     if ((other)->name_width == 0)                                          \
@@ -233,6 +233,8 @@ extern int spark_size;         /* size of sparks and debris */
 extern int shot_size;          /* size of shot */
 extern int teamshot_size;      /* size of team shot */
 extern long control_count;     /* Display control for how long? */
+
+extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
 extern uint8_t old_spark_rand; /* previous value of spark_rand */
 

@@ -88,6 +88,7 @@ long control_count;     /* Display control for how long? */
 int roundDelay;         /* != 0 means we're in a delay */
 int roundDelayMax;      /* (not yet) used for graph of time remaining in delay */
 
+double controlTime;     /* Display control for how long? */
 uint8_t spark_rand;     /* Sparkling effect */
 uint8_t old_spark_rand; /* previous value of spark_rand */
 
@@ -2142,7 +2143,7 @@ int Client_setup(void)
         SWAP(turnspeed, turnspeed_s);
         SWAP(turnresistance, turnresistance_s);
 #undef SWAP
-        control_count = CONTROL_DELAY;
+        controlTime = CONTROL_TIME;
         Add_message("Old server can't handle turnResistance=0.0; "
                     "swapping to alternate settings [*Client message*]");
     }

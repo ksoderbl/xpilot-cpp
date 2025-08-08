@@ -60,10 +60,36 @@ extern score_object_t score_objects[MAX_SCORE_OBJECTS];
 extern int score_object;
 extern XGCValues gcv;
 
-int hudColor;              /* Color index for HUD drawing */
-int hudLockColor;          /* Color index for lock on HUD drawing */
-int oldMessagesColor;      /* Color index for old messages */
+int hudColor = BLUE;             /* Color index for HUD drawing */
+int hudHLineColor = BLUE;        /* Color index for horiz. HUD line drawing */
+int hudVLineColor = BLUE;        /* Color index for vert. HUD line drawing */
+int hudItemsColor = BLUE;        /* Color index for HUD items drawing */
+int hudRadarEnemyColor = BLUE;   /* Color index for enemy hudradar dots */
+int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
+int hudLockColor = BLUE;         /* Color index for lock on HUD drawing */
+int fuelGaugeColor = BLUE;       /* Color index for fuel gauge drawing */
+int dirPtrColor = BLUE;          /* Color index for dirptr drawing */
+int messagesColor = BLUE;        /* Color index for messages */
+int oldMessagesColor = BLUE;     /* Color index for old messages */
+int msgScanBallColor = BLUE;     /* Color index for ball msg */
+int msgScanSafeColor = BLUE;     /* Color index for safe msg */
+int msgScanCoverColor = BLUE;    /* Color index for cover msg */
+int msgScanPopColor = BLUE;      /* Color index for pop msg */
+int fuelMeterColor = BLUE;       /* Color index for fuel meter */
+int powerMeterColor = BLUE;      /* Color index for power meter */
+int turnSpeedMeterColor = BLUE;  /* Color index for turnspeed meter */
+int packetSizeMeterColor = BLUE; /* Color index for packet size meter */
+int packetLossMeterColor = BLUE; /* Color index for packet loss meter */
+int packetDropMeterColor = BLUE; /* Color index for packet drop meter */
+int packetLagMeterColor = BLUE;  /* Color index for packet lag meter */
+int temporaryMeterColor = BLUE;  /* Color index for temporary meter drawing */
+int meterBorderColor = BLUE;     /* Color index for meter border drawing */
+int scoreObjectColor = BLUE;     /* Color index for map score objects */
+
 DFLOAT charsPerTick = 0.0; /* Output speed of messages */
+
+static int meterWidth = 60;
+static int meterHeight = 10;
 
 /*
  * Draw a meter of some kind on screen.
@@ -71,59 +97,65 @@ DFLOAT charsPerTick = 0.0; /* Output speed of messages */
  * the meter is drawn relative to the right side of the screen,
  * otherwise from the normal left side.
  */
-static void Paint_meter(int xoff, int y, const char *title, int val, int max)
+static void Paint_meter(int xoff, int y, const char *title, int val, int max,
+                        int meter_color)
 {
-#define METER_WIDTH 200
-#define METER_HEIGHT 8
-
-    const int mw1_4 = METER_WIDTH / 4,
-              mw2_4 = METER_WIDTH / 2,
-              mw3_4 = 3 * METER_WIDTH / 4,
-              mw4_4 = METER_WIDTH,
+    const int mw1_4 = meterWidth / 4,
+              mw2_4 = meterWidth / 2,
+              mw3_4 = 3 * meterWidth / 4,
+              mw4_4 = meterWidth,
               BORDER = 5;
     int x, xstr;
 
     if (xoff >= 0)
     {
         x = xoff;
-        xstr = WINSCALE(x + METER_WIDTH) + BORDER;
+        xstr = WINSCALE(x + (int)meterWidth) + BORDER;
     }
     else
     {
-        x = ext_view_width - (METER_WIDTH - xoff);
-        xstr = WINSCALE(x) - (BORDER + XTextWidth(gameFont, title, strlen(title)));
+        x = ext_view_width - ((int)meterWidth - xoff);
+        xstr = WINSCALE(x) - (BORDER + XTextWidth(gameFont, title, (int)strlen(title)));
     }
-    if (!texturedObjects)
+
+    Rectangle_add(meter_color,
+                  x + 2, y + 2,
+                  (int)(((meterWidth - 3) * val) / (max ? max : 1)), meterHeight - 3);
+
+    /* meterBorderColor = 0 obviously means no meter borders are drawn */
+    if (meterBorderColor)
     {
-        Rectangle_add(RED,
-                      x + 2, y + 2,
-                      (int)(((METER_WIDTH - 3) * val) / (max ? max : 1)), METER_HEIGHT - 3);
-        SET_FG(colors[WHITE].pixel);
+        int color = meterBorderColor;
+
+        SET_FG(colors[color].pixel);
         rd.drawRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(x), WINSCALE(y),
-                         WINSCALE(METER_WIDTH), WINSCALE(METER_HEIGHT));
+                         WINSCALE(meterWidth), WINSCALE(meterHeight));
 
         /* Paint scale levels(?) */
-        Segment_add(WHITE, x, y - 4, x, y + METER_HEIGHT + 4);
-        Segment_add(WHITE, x + mw4_4, y - 4, x + mw4_4, y + METER_HEIGHT + 4);
-        Segment_add(WHITE, x + mw2_4, y - 3, x + mw2_4, y + METER_HEIGHT + 3);
-        Segment_add(WHITE, x + mw1_4, y - 1, x + mw1_4, y + METER_HEIGHT + 1);
-        Segment_add(WHITE, x + mw3_4, y - 1, x + mw3_4, y + METER_HEIGHT + 1);
+        Segment_add(color, x, y - 4, x, y + meterHeight + 4);
+        Segment_add(color, x + mw4_4, y - 4, x + mw4_4, y + meterHeight + 4);
+        Segment_add(color, x + mw2_4, y - 3, x + mw2_4, y + meterHeight + 3);
+        Segment_add(color, x + mw1_4, y - 1, x + mw1_4, y + meterHeight + 1);
+        Segment_add(color, x + mw3_4, y - 1, x + mw3_4, y + meterHeight + 1);
     }
-    else
-    {
-        int width = WINSCALE((int)(((METER_WIDTH - 3) * val) / (max ? max : 1)));
 
-        PaintMeter(drawPixmap, BM_METER,
-                   WINSCALE(x), WINSCALE(y),
-                   WINSCALE(METER_WIDTH), WINSCALE(11),
-                   width);
-        SET_FG(colors[WHITE].pixel);
-    }
+    if (!meterBorderColor)
+        SET_FG(colors[meter_color].pixel);
 
     rd.drawString(dpy, drawPixmap, gameGC,
-                  (xstr), WINSCALE(y) + (gameFont->ascent + METER_HEIGHT) / 2,
-                  title, strlen(title));
+                  xstr, WINSCALE(y) + (gameFont->ascent + meterHeight) / 2,
+                  title, (int)strlen(title));
+
+    /* texturedObjects - TODO */
+    /*int width = WINSCALE((int)(((meterWidth-3)*val)/(max?max:1)));*/
+
+    /*printf("TODO: implement paint meter\n");*/
+    /*PaintMeter(drawPixmap, BM_METER,
+      WINSCALE(x), WINSCALE(y),
+      WINSCALE(meterWidth), WINSCALE(11),
+      width);*/
+    /*SET_FG(colors[color].pixel);*/
 }
 
 static int wrap(int *xp, int *yp)
@@ -133,17 +165,13 @@ static int wrap(int *xp, int *yp)
     if (x < world.x || x > world.x + ext_view_width)
     {
         if (x < realWorld.x || x > realWorld.x + ext_view_width)
-        {
             return 0;
-        }
         *xp += world.x - realWorld.x;
     }
     if (y < world.y || y > world.y + ext_view_height)
     {
         if (y < realWorld.y || y > realWorld.y + ext_view_height)
-        {
             return 0;
-        }
         *yp += world.y - realWorld.y;
     }
     return 1;
@@ -185,50 +213,91 @@ void Paint_score_objects(void)
 
 void Paint_meters(void)
 {
-    if (instruments.fuelMeter)
-        Paint_meter(-10, 20, "Fuel", (int)fuelSum, (int)fuelMax);
-    if (instruments.powerMeter || control_count)
-        Paint_meter(-10, 40, "Power", (int)displayedPower, (int)MAX_PLAYER_POWER);
-    if (instruments.turnSpeedMeter || control_count)
-        Paint_meter(-10, 60, "Turnspeed",
-                    (int)displayedTurnspeed, (int)MAX_PLAYER_TURNSPEED);
-    if (control_count > 0)
-        control_count--;
-    if (instruments.packetSizeMeter)
-        Paint_meter(-10, 80, "Packet",
-                    (packet_size >= 4096) ? 4096 : packet_size, 4096);
-    if (instruments.packetLossMeter)
-        Paint_meter(-10, 100, "Loss", packet_loss, FPS);
-    if (instruments.packetDropMeter)
-        Paint_meter(-10, 120, "Drop", packet_drop, FPS);
-    if (instruments.packetLagMeter)
-        Paint_meter(-10, 140, "Lag", MIN(packet_lag, 1 * FPS), 1 * FPS);
+    int y = 20, color;
 
-    if (thrusttime >= 0 && thrusttimemax > 0)
-        Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3,
-                    "Thrust Left",
-                    (thrusttime >= thrusttimemax ? thrusttimemax : thrusttime),
-                    thrusttimemax);
+    if (fuelMeterColor)
+        Paint_meter(-10, y += 20, "Fuel",
+                    (int)fuelSum, (int)fuelMax, fuelMeterColor);
 
-    if (shieldtime >= 0 && shieldtimemax > 0)
-        Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 20,
-                    "Shields Left",
-                    (shieldtime >= shieldtimemax ? shieldtimemax : shieldtime),
-                    shieldtimemax);
+    if (powerMeterColor)
+        color = powerMeterColor;
+    else if (controlTime > 0.0)
+        color = temporaryMeterColor;
+    else
+        color = 0;
 
-    if (phasingtime >= 0 && phasingtimemax > 0)
-        Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 40,
-                    "Phasing left",
-                    (phasingtime >= phasingtimemax ? phasingtimemax : phasingtime),
-                    phasingtimemax);
+    if (color)
+        Paint_meter(-10, y += 20, "Power",
+                    (int)displayedPower, (int)MAX_PLAYER_POWER, color);
 
-    if (destruct > 0)
-        Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 60,
-                    "Self destructing", destruct, 150);
+    if (turnSpeedMeterColor)
+        color = turnSpeedMeterColor;
+    else if (controlTime > 0.0)
+        color = temporaryMeterColor;
+    else
+        color = 0;
 
-    if (shutdown_count >= 0)
-        Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 80,
-                    "SHUTDOWN", shutdown_count, shutdown_delay);
+    if (color)
+        Paint_meter(-10, y += 20, "Turnspeed",
+                    (int)displayedTurnspeed, (int)MAX_PLAYER_TURNSPEED, color);
+
+    if (controlTime > 0.0)
+    {
+        controlTime -= timePerFrame;
+        if (controlTime <= 0.0)
+            controlTime = 0.0;
+    }
+
+    if (packetSizeMeterColor)
+        Paint_meter(-10, y += 20, "Packet",
+                    (packet_size >= 4096) ? 4096 : packet_size, 4096,
+                    packetSizeMeterColor);
+    if (packetLossMeterColor)
+        Paint_meter(-10, y += 20, "Loss", packet_loss, FPS,
+                    packetLossMeterColor);
+    if (packetDropMeterColor)
+        Paint_meter(-10, y += 20, "Drop", packet_drop, FPS,
+                    packetDropMeterColor);
+    if (packetLagMeterColor)
+        Paint_meter(-10, y += 20, "Lag", MIN(packet_lag, 1 * FPS), 1 * FPS,
+                    packetLagMeterColor);
+
+    if (temporaryMeterColor)
+    {
+        if (thrusttime >= 0 && thrusttimemax > 0)
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3,
+                        "Thrust Left",
+                        (thrusttime >= thrusttimemax
+                             ? thrusttimemax
+                             : thrusttime),
+                        thrusttimemax, temporaryMeterColor);
+
+        if (shieldtime >= 0 && shieldtimemax > 0)
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 20,
+                        "Shields Left",
+                        (shieldtime >= shieldtimemax
+                             ? shieldtimemax
+                             : shieldtime),
+                        shieldtimemax, temporaryMeterColor);
+
+        if (phasingtime >= 0 && phasingtimemax > 0)
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 40,
+                        "Phasing left",
+                        (phasingtime >= phasingtimemax
+                             ? phasingtimemax
+                             : phasingtime),
+                        phasingtimemax, temporaryMeterColor);
+
+        if (destruct > 0)
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 60,
+                        "Self destructing", destruct, (int)SELF_DESTRUCT_DELAY,
+                        temporaryMeterColor);
+
+        if (shutdown_count >= 0)
+            Paint_meter((ext_view_width - 300) / 2 - 32, 2 * ext_view_height / 3 + 80,
+                        "SHUTDOWN", shutdown_count, shutdown_delay,
+                        temporaryMeterColor);
+    }
 }
 
 static void Paint_lock(int hud_pos_x, int hud_pos_y)
