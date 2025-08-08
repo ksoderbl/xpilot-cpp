@@ -106,11 +106,11 @@
 #define COMPRESSED_MAPS
 
 #ifdef DEBUG
-#define D(x)                    \
-        {                       \
-                {x};            \
-                fflush(stdout); \
-        }
+#define D(x)            \
+    {                   \
+        {x};            \
+        fflush(stdout); \
+    }
 #else
 #define D(x)
 #endif
