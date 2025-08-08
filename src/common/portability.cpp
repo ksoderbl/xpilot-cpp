@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -33,13 +33,12 @@
 #include <unistd.h>
 #include <pwd.h>
 
-
 #ifdef PLOCKSERVER
-# if defined(__linux__)
-#  include <sys/mman.h>
-# else
-#  include <sys/lock.h>
-# endif
+#if defined(__linux__)
+#include <sys/mman.h>
+#else
+#include <sys/lock.h>
+#endif
 #endif
 
 #include "strlcpy.h"
@@ -47,12 +46,10 @@
 #include "xpconfig.h"
 #include "portability.h"
 
-
 int Get_process_id(void)
 {
     return getpid();
 }
-
 
 void Get_login_name(char *buf, int size)
 {

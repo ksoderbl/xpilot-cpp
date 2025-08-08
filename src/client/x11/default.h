@@ -18,23 +18,24 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef _DEFAULT_H_
 #define _DEFAULT_H_
 
-typedef struct {
-    const char                *name;                /* option name */
-    const char                *noArg;                /* value for non-argument options */
-    const char                *fallback;        /* default value */
-    keys_t                key;                /* key if not KEY_DUMMY */
-    const char                *help;                /* user help (multiline) */
-    unsigned                hash;                /* option name hashed. */
+typedef struct
+{
+    const char *name;     /* option name */
+    const char *noArg;    /* value for non-argument options */
+    const char *fallback; /* default value */
+    keys_t key;           /* key if not KEY_DUMMY */
+    const char *help;     /* user help (multiline) */
+    unsigned hash;        /* option name hashed. */
 } option;
 
-extern option        options[];
-extern int                optionsCount;        /* NELEM(options) */
+extern option options[];
+extern int optionsCount; /* NELEM(options) */
 
 #endif

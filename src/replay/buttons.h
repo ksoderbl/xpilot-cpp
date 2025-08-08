@@ -18,24 +18,25 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-union button_image {
-    const char                *string;
-    Pixmap                icon;
+union button_image
+{
+    const char *string;
+    Pixmap icon;
 };
 
 typedef struct button *Button;
 
-#define BUTTON_PRESSED        1        /* Button is currently pressed in */
-#define BUTTON_RELEASE        2        /* Button pops out when mouse button released */
-#define BUTTON_DISABLED        4        /* Button is disabled */
-#define BUTTON_TEXT        8        /* Button has text on, rather than bitmap */
+#define BUTTON_PRESSED 1  /* Button is currently pressed in */
+#define BUTTON_RELEASE 2  /* Button pops out when mouse button released */
+#define BUTTON_DISABLED 4 /* Button is disabled */
+#define BUTTON_TEXT 8     /* Button has text on, rather than bitmap */
 
 /*
  * If a button is marked as BUTTON_RELEASE then callback action is taken when

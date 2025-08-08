@@ -18,19 +18,17 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 
-
 /* prototypes to shut up strict compiler. */
 int strcasecmp(const char *str1, const char *str2);
 int strncasecmp(const char *str1, const char *str2, size_t n);
-
 
 /*
  * By Ian Malcom Brown.
@@ -40,10 +38,10 @@ int strncasecmp(const char *str1, const char *str2, size_t n);
  */
 int strcasecmp(const char *str1, const char *str2)
 {
-    int        c1, c2;
+    int c1, c2;
 
-
-    do {
+    do
+    {
         c1 = *str1++;
         c2 = *str2++;
         c1 = tolower(c1);
@@ -58,10 +56,12 @@ int strcasecmp(const char *str1, const char *str2)
  */
 int strncasecmp(const char *str1, const char *str2, size_t n)
 {
-    int        c1, c2;
+    int c1, c2;
 
-    do {
-        if (n-- <= 0) {
+    do
+    {
+        if (n-- <= 0)
+        {
             return 0;
         }
         c1 = *str1++;

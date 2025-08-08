@@ -32,7 +32,7 @@
 ** warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
 ** the GNU Library General Public License for more details.  You should have
 ** received a copy of the GNU Library General Public License along with this
-** library; if not, write to the Free Software Foundation, Inc., 59 Temple
+** library; if not, see Foundation, Inc., 59 Temple
 ** Place, Suite 330, Boston, MA 02111-1307, USA.
 **
 ** The code as Shawn received it included the following notice:
@@ -52,12 +52,10 @@
 ** $Id: randommt.c,v 5.1 2001/06/02 21:02:19 bertg Exp $
 */
 
-
 /* Our exported interface: */
 void seedMT(unsigned int seed);
 unsigned int reloadMT(void);
 unsigned int randomMT(void);
-
 
 /*
 ** uint32 must be an unsigned integer type capable of holding at least 32
@@ -67,18 +65,17 @@ unsigned int randomMT(void);
 
 typedef unsigned int uint32;
 
-#define N              (624)                        /* length of state vector */
-#define M              (397)                        /* a period parameter */
-#define K              (0x9908B0DFU)                /* a magic constant */
-#define hiBit(u)       ((u) & 0x80000000U)        /* mask all but highest   bit of u */
-#define loBit(u)       ((u) & 0x00000001U)        /* mask all but lowest    bit of u */
-#define loBits(u)      ((u) & 0x7FFFFFFFU)        /* mask     the highest   bit of u */
-#define mixBits(u, v)  (hiBit(u)|loBits(v))        /* move hi bit of u to hi bit of v */
+#define N (624)                              /* length of state vector */
+#define M (397)                              /* a period parameter */
+#define K (0x9908B0DFU)                      /* a magic constant */
+#define hiBit(u) ((u) & 0x80000000U)         /* mask all but highest   bit of u */
+#define loBit(u) ((u) & 0x00000001U)         /* mask all but lowest    bit of u */
+#define loBits(u) ((u) & 0x7FFFFFFFU)        /* mask     the highest   bit of u */
+#define mixBits(u, v) (hiBit(u) | loBits(v)) /* move hi bit of u to hi bit of v */
 
-static uint32 state[N + 1];        /* state vector + 1 extra to not violate ANSI C */
-static uint32 *next;                /* next random value is computed from here */
-static int left = -1;                /* can *next++ this many times before reloading */
-
+static uint32 state[N + 1]; /* state vector + 1 extra to not violate ANSI C */
+static uint32 *next;        /* next random value is computed from here */
+static int left = -1;       /* can *next++ this many times before reloading */
 
 void seedMT(unsigned int seed)
 {
@@ -131,9 +128,9 @@ void seedMT(unsigned int seed)
     uint32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
     int j;
 
-    for (left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU) ;
+    for (left = 0, *s++ = x, j = N; --j; *s++ = (x *= 69069U) & 0xFFFFFFFFU)
+        ;
 }
-
 
 unsigned int reloadMT(void)
 {
@@ -158,7 +155,6 @@ unsigned int reloadMT(void)
     return (s1 ^ (s1 >> 18));
 }
 
-
 unsigned int randomMT(void)
 {
     uint32 y;
@@ -172,7 +168,6 @@ unsigned int randomMT(void)
     y ^= (y << 15) & 0xEFC60000U;
     return (y ^ (y >> 18));
 }
-
 
 #ifdef MT_MAIN
 

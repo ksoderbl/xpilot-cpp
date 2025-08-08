@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef GUIOBJECTS_H
@@ -38,7 +38,6 @@ void Gui_paint_asteroid(int x, int y, int type, int rot, int size);
 
 void Gui_paint_fastshot(int color, int x, int y);
 void Gui_paint_teamshot(int color, int x, int y);
-
 
 void Gui_paint_missiles_begin(void);
 void Gui_paint_missiles_end(void);

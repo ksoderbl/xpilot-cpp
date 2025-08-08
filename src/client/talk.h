@@ -18,20 +18,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef TALK_H
 #define TALK_H
 
-#define TALK_FAST_NR_OF_MSGS                20               /* talk macros */
-#define TALK_FAST_MSG_SIZE                400
-#define TALK_FAST_MSG_FNLEN                100
-#define TALK_FAST_START_DELIMITER        '['
-#define TALK_FAST_END_DELIMITER                ']'
-#define TALK_FAST_MIDDLE_DELIMITER        '|'
-#define TALK_FAST_SPECIAL_TALK_CHAR        '#'
+#define TALK_FAST_NR_OF_MSGS 20 /* talk macros */
+#define TALK_FAST_MSG_SIZE 400
+#define TALK_FAST_MSG_FNLEN 100
+#define TALK_FAST_START_DELIMITER '['
+#define TALK_FAST_END_DELIMITER ']'
+#define TALK_FAST_MIDDLE_DELIMITER '|'
+#define TALK_FAST_SPECIAL_TALK_CHAR '#'
 
 /*
 #define TEAM_PLAY               (1<<8)

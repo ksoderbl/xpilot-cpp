@@ -17,12 +17,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef        PROTOCLIENT_H
-#define        PROTOCLIENT_H
+#ifndef PROTOCLIENT_H
+#define PROTOCLIENT_H
 
 #ifndef TYPES_H
 #include "types.h"
@@ -36,7 +36,7 @@ extern void Parse_options(int *argcp, char **argvp, char *realName, int *port,
                           bool *join, bool *noLocalMotd,
                           char *nickName, char *dispName, char *hostName,
                           char *shut_msg);
-extern void defaultCleanup(void);                                /* memory cleanup */
+extern void defaultCleanup(void); /* memory cleanup */
 
 extern void Get_xpilotrc_file(char *, unsigned);
 
@@ -50,14 +50,13 @@ extern int Join(char *server_addr, char *server_name, int port,
 /*
  * paintdata.c
  */
-extern void paintdataCleanup(void);                /* memory cleanup */
+extern void paintdataCleanup(void); /* memory cleanup */
 
 /*
  * paintobjects.c
  */
 extern int Init_wreckage(void);
 extern int Init_asteroids(void);
-
 
 /*
  * query.c
@@ -66,8 +65,8 @@ extern int Init_asteroids(void);
 extern int Query_all(sock_t *sockfd, int port, char *msg, int msglen);
 #endif
 
-#ifdef        LIMIT_ACCESS
-extern bool                Is_allowed(char *);
+#ifdef LIMIT_ACCESS
+extern bool Is_allowed(char *);
 #endif
 
 /*
@@ -107,7 +106,4 @@ void Widget_cleanup(void);
  * xinit.c
  */
 
-
-#endif        /* PROTOCLIENT_H */
-
-
+#endif /* PROTOCLIENT_H */

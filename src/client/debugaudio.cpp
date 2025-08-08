@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 /*
  * Debug audio driver.
@@ -35,7 +35,6 @@
 
 #include "audio.h"
 
-
 int audioDeviceInit(char *display)
 {
     printf("debug audio: init\n");
@@ -46,11 +45,10 @@ int audioDeviceInit(char *display)
 void audioDevicePlay(char *filename, int type, int volume, void **private_data)
 {
     printf("debug audio: play file %s, type %d, vol %d, priv %p\n",
-            filename, type, volume, private_data);
+           filename, type, volume, private_data);
 }
 
 void audioDeviceEvents(void)
 {
     /* printf("debug audio: events\n"); */
 }
-

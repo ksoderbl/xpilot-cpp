@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2002 by
  *
@@ -18,16 +18,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef        VERSION_H
-#define        VERSION_H
+#ifndef VERSION_H
+#define VERSION_H
 
-#define VERSION                        "4.5.5"
-#define TITLE                        "XPilotCPP 4.5.5"
-#define AUTHORS                        "Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska"
-#define COPYRIGHT                "Copyright © 1991-2002 by Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska"
+#define VERSION "4.5.5"
+#define TITLE "XPilotCPP 4.5.5"
+#define AUTHORS "Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska"
+#define COPYRIGHT "Copyright © 1991-2002 by Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska"
 
 #endif /* VERSION_H */

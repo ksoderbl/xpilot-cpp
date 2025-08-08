@@ -18,16 +18,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef        CONFIGURE_H
-#define        CONFIGURE_H
+#ifndef CONFIGURE_H
+#define CONFIGURE_H
 
-#define CONFIG_NONE    0
+#define CONFIG_NONE 0
 #define CONFIG_DEFAULT 1
-#define CONFIG_COLORS  2
+#define CONFIG_COLORS 2
 
 int Config(bool);
 void Config_redraw(void);

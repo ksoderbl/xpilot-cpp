@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -27,12 +27,12 @@
 #ifndef PORTABILITY_H_INCLUDED
 #define PORTABILITY_H_INCLUDED
 
-#define PATHNAME_SEP    '/'
+#define PATHNAME_SEP '/'
 
 /*
  * Prototypes for OS function wrappers in portability.c.
  */
-extern int Get_process_id(void);        /* getpid */
+extern int Get_process_id(void); /* getpid */
 extern void Get_login_name(char *buf, int size);
 
 #endif /* PORTABILITY_H_INCLUDED */

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef ASTERSHAPE_H
@@ -29,13 +29,13 @@
 #define NUM_ASTEROID_SHAPES 2
 #define NUM_ASTEROID_POINTS 12
 
-#define ASTEROID_SHAPE_0                                   \
-      {-10, 0}, {-7, 6}, {-2, 8}, {0, 10}, {5, 8}, {9, 4}, \
-          {10, 0}, {7, -5}, {6, -9}, {0, -10}, {-5, -7}, {-7, -5}
+#define ASTEROID_SHAPE_0                                 \
+    {-10, 0}, {-7, 6}, {-2, 8}, {0, 10}, {5, 8}, {9, 4}, \
+        {10, 0}, {7, -5}, {6, -9}, {0, -10}, {-5, -7}, {-7, -5}
 
-#define ASTEROID_SHAPE_1                                   \
-      {-10, 0}, {-8, 7}, {-4, 9}, {0, 10}, {5, 7}, {6, 3}, \
-          {10, 0}, {9, -4}, {7, -7}, {0, -10}, {-6, -9}, {-9, -7}
+#define ASTEROID_SHAPE_1                                 \
+    {-10, 0}, {-8, 7}, {-4, 9}, {0, 10}, {5, 7}, {6, 3}, \
+        {10, 0}, {9, -4}, {7, -7}, {0, -10}, {-6, -9}, {-9, -7}
 
 extern position_t *asteroidShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS];
 

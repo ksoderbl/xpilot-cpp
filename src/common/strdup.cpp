@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #include <cstdlib>
@@ -29,12 +29,13 @@
 
 char *xp_strdup(const char *old_string)
 {
-    char        *new_string;
-    size_t        string_length;
+    char *new_string;
+    size_t string_length;
 
     string_length = strlen(old_string);
     new_string = (char *)malloc(string_length + 1);
-    if (new_string) {
+    if (new_string)
+    {
         memcpy(new_string, old_string, string_length + 1);
     }
 
@@ -43,13 +44,13 @@ char *xp_strdup(const char *old_string)
 
 char *xp_safe_strdup(const char *old_string)
 {
-    char        *new_string;
+    char *new_string;
 
     new_string = xp_strdup(old_string);
-    if (new_string == NULL) {
+    if (new_string == NULL)
+    {
         xpfatal("Not enough memory.");
     }
 
     return new_string;
 }
-

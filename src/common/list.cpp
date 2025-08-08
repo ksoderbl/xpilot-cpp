@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -31,30 +31,33 @@
 #include "list.h"
 
 /* store a list node. */
-struct ListNode {
-    struct ListNode        *next;
-    struct ListNode        *prev;
-    void                *data;
+struct ListNode
+{
+    struct ListNode *next;
+    struct ListNode *prev;
+    void *data;
 };
 typedef struct ListNode list_node_t;
 
 /* store the list header. */
-struct List {
-    list_node_t                tail;
-    int                        size;
+struct List
+{
+    list_node_t tail;
+    int size;
 };
 /* typedef struct List *list_t; */
 /* typedef struct ListNode *list_iter_t; */
 
-static int                lists_allocated;
-static int                nodes_allocated;
+static int lists_allocated;
+static int nodes_allocated;
 
 /* create a new list. */
 list_t List_new(void)
 {
-    list_t                list = (list_t) malloc(sizeof(*list));
+    list_t list = (list_t)malloc(sizeof(*list));
 
-    if (list) {
+    if (list)
+    {
         lists_allocated++;
 
         list->tail.next = &list->tail;
@@ -69,7 +72,8 @@ list_t List_new(void)
 /* delete a list. */
 void List_delete(list_t list)
 {
-    if (list) {
+    if (list)
+    {
         List_clear(list);
         list->tail.next = list->tail.prev = NULL;
         free(list);
@@ -91,13 +95,13 @@ list_iter_t List_end(list_t list)
 }
 
 /* return a pointer to the last list element. */
-void* List_back(list_t list)
+void *List_back(list_t list)
 {
     return list->tail.prev->data;
 }
 
 /* return a pointer to the first list element. */
-void* List_front(list_t list)
+void *List_front(list_t list)
 {
     return list->tail.next->data;
 }
@@ -105,7 +109,8 @@ void* List_front(list_t list)
 /* erase all elements from the list. */
 void List_clear(list_t list)
 {
-    while (!List_empty(list)) {
+    while (!List_empty(list))
+    {
         List_pop_front(list);
     }
 }
@@ -121,7 +126,8 @@ list_iter_t List_erase(list_t list, list_iter_t pos)
 {
     list_iter_t next, prev;
 
-    if (pos == &list->tail) {
+    if (pos == &list->tail)
+    {
         return List_end(list);
     }
 
@@ -144,7 +150,8 @@ list_iter_t List_erase(list_t list, list_iter_t pos)
 /* erase a range of list elements excluding last. */
 list_iter_t List_erase_range(list_t list, list_iter_t first, list_iter_t last)
 {
-    while (first != last) {
+    while (first != last)
+    {
         first = List_erase(list, first);
     }
     return first;
@@ -154,9 +161,10 @@ list_iter_t List_erase_range(list_t list, list_iter_t first, list_iter_t last)
  * and return new position or NULL on failure. */
 list_iter_t List_insert(list_t list, list_iter_t pos, void *data)
 {
-    list_iter_t                node = (list_iter_t) malloc(sizeof(*node));
+    list_iter_t node = (list_iter_t)malloc(sizeof(*node));
 
-    if (node) {
+    if (node)
+    {
         node->next = pos;
         node->prev = pos->prev;
         node->data = data;
@@ -171,7 +179,7 @@ list_iter_t List_insert(list_t list, list_iter_t pos, void *data)
 }
 
 /* remove the first element from the list and return a pointer to it. */
-void* List_pop_front(list_t list)
+void *List_pop_front(list_t list)
 {
     void *data = list->tail.next->data;
     List_erase(list, list->tail.next);
@@ -179,7 +187,7 @@ void* List_pop_front(list_t list)
 }
 
 /* remove the last element from the list and return a pointer to it. */
-void* List_pop_back(list_t list)
+void *List_pop_back(list_t list)
 {
     void *data = list->tail.prev->data;
     List_erase(list, list->tail.prev);
@@ -216,9 +224,10 @@ list_iter_t List_find(list_t list, void *data)
  */
 list_iter_t List_find_range(list_iter_t first, list_iter_t last, void *data)
 {
-    list_iter_t                pos = first;
+    list_iter_t pos = first;
 
-    while (pos != last && pos->data != data) {
+    while (pos != last && pos->data != data)
+    {
         pos = pos->next;
     }
 
@@ -232,13 +241,15 @@ list_iter_t List_find_range(list_iter_t first, list_iter_t last, void *data)
  */
 int List_remove(list_t list, void *data)
 {
-    list_iter_t                pos = List_begin(list);
-    list_iter_t                end = List_end(list);
-    int                        count = 0;
+    list_iter_t pos = List_begin(list);
+    list_iter_t end = List_end(list);
+    int count = 0;
 
-    while (pos != end) {
+    while (pos != end)
+    {
         pos = List_find_range(pos, end, data);
-        if (pos != end) {
+        if (pos != end)
+        {
             pos = List_erase(list, pos);
             count++;
         }
@@ -268,9 +279,7 @@ list_iter_t List_iter_backward(list_iter_t *pos)
 }
 
 /* return data at list position. */
-void* List_iter_data(list_iter_t pos)
+void *List_iter_data(list_iter_t pos)
 {
     return pos->data;
 }
-
-

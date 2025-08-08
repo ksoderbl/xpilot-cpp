@@ -17,37 +17,37 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef SCORE_H
 #define SCORE_H
 
-#define ED_SHOT                        (-0.2*FUEL_SCALE_FACT)
-#define ED_SMART_SHOT                (-30*FUEL_SCALE_FACT)
-#define ED_MINE                        (-60*FUEL_SCALE_FACT)
-#define ED_ECM                        (-60*FUEL_SCALE_FACT)
-#define ED_TRANSPORTER                (-60*FUEL_SCALE_FACT)
-#define ED_HYPERJUMP                (-60*FUEL_SCALE_FACT)
-#define ED_SHIELD                (-0.20*FUEL_SCALE_FACT)
-#define ED_PHASING_DEVICE        (-0.40*FUEL_SCALE_FACT)
-#define ED_CLOAKING_DEVICE        (-0.07*FUEL_SCALE_FACT)
-#define ED_DEFLECTOR                (-0.15*FUEL_SCALE_FACT)
-#define ED_SHOT_HIT                (-25.0*FUEL_SCALE_FACT)
-#define ED_SMART_SHOT_HIT        (-120.0*FUEL_SCALE_FACT)
-#define ED_PL_CRASH                (-100.0*FUEL_SCALE_FACT)
-#define ED_BALL_HIT                (-50.0*FUEL_SCALE_FACT)
-#define ED_LASER                (-10.0*FUEL_SCALE_FACT)
+#define ED_SHOT (-0.2 * FUEL_SCALE_FACT)
+#define ED_SMART_SHOT (-30 * FUEL_SCALE_FACT)
+#define ED_MINE (-60 * FUEL_SCALE_FACT)
+#define ED_ECM (-60 * FUEL_SCALE_FACT)
+#define ED_TRANSPORTER (-60 * FUEL_SCALE_FACT)
+#define ED_HYPERJUMP (-60 * FUEL_SCALE_FACT)
+#define ED_SHIELD (-0.20 * FUEL_SCALE_FACT)
+#define ED_PHASING_DEVICE (-0.40 * FUEL_SCALE_FACT)
+#define ED_CLOAKING_DEVICE (-0.07 * FUEL_SCALE_FACT)
+#define ED_DEFLECTOR (-0.15 * FUEL_SCALE_FACT)
+#define ED_SHOT_HIT (-25.0 * FUEL_SCALE_FACT)
+#define ED_SMART_SHOT_HIT (-120.0 * FUEL_SCALE_FACT)
+#define ED_PL_CRASH (-100.0 * FUEL_SCALE_FACT)
+#define ED_BALL_HIT (-50.0 * FUEL_SCALE_FACT)
+#define ED_LASER (-10.0 * FUEL_SCALE_FACT)
 /* was 90 -> 2 -> 40 -> 20 -> 10 */
-#define ED_LASER_HIT                (-100.0*FUEL_SCALE_FACT)
+#define ED_LASER_HIT (-100.0 * FUEL_SCALE_FACT)
 /* was 120 -> 80 -> 40 -> 50 -> 60 -> 100 */
 
-#define CANNON_SCORE                    -1436
-#define WALL_SCORE                    2000
+#define CANNON_SCORE -1436
+#define WALL_SCORE 2000
 
-#define RATE_SIZE                    20
-#define RATE_RANGE                    1024
+#define RATE_SIZE 20
+#define RATE_RANGE 1024
 
 /* score.c */
 

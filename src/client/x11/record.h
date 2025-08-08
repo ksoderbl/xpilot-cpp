@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 #ifndef RECORD_H
@@ -28,13 +28,14 @@
  * Structure to call all user-interface drawing routines
  * which are modified versions when recording is active.
  */
-struct recordable_drawing {
+struct recordable_drawing
+{
     void (*newFrame)(void);
     void (*endFrame)(void);
     int (*drawArc)(Display *display, Drawable drawable, GC gc,
-                    int x, int y,
-                    unsigned width, unsigned height,
-                    int angle1, int angle2);
+                   int x, int y,
+                   unsigned width, unsigned height,
+                   int angle1, int angle2);
     int (*drawLines)(Display *display, Drawable drawable, GC gc,
                      XPoint *points, int npoints, int mode);
     int (*drawLine)(Display *display, Drawable drawable, GC gc,
@@ -47,31 +48,30 @@ struct recordable_drawing {
                       int x, int y,
                       const char *string, int length);
     int (*fillArc)(Display *display, Drawable drawable, GC gc,
-                    int x, int y,
-                    unsigned height, unsigned width,
-                    int angle1, int angle2);
+                   int x, int y,
+                   unsigned height, unsigned width,
+                   int angle1, int angle2);
     int (*fillPolygon)(Display *display, Drawable drawable, GC gc,
-                        XPoint *points, int npoints,
-                        int shape, int mode);
+                       XPoint *points, int npoints,
+                       int shape, int mode);
     void (*paintItemSymbol)(unsigned char type, Drawable drawable, GC mygc,
                             int x, int y, int color);
     int (*fillRectangle)(Display *display, Drawable drawable, GC gc,
-                          int x, int y,
-                          unsigned width, unsigned height);
+                         int x, int y,
+                         unsigned width, unsigned height);
     int (*fillRectangles)(Display *display, Drawable drawable, GC gc,
-                           XRectangle *rectangles, int nrectangles);
+                          XRectangle *rectangles, int nrectangles);
     int (*drawArcs)(Display *display, Drawable drawable, GC gc,
-                     XArc *arcs, int narcs);
+                    XArc *arcs, int narcs);
     int (*drawSegments)(Display *display, Drawable drawable, GC gc,
-                         XSegment *segments, int nsegments);
+                        XSegment *segments, int nsegments);
     int (*setDashes)(Display *display, GC gc,
                      int dash_offset, const char *dash_list, int n);
 };
 
-extern struct recordable_drawing        rd;        /* external Drawing interface */
+extern struct recordable_drawing rd; /* external Drawing interface */
 
-extern int                recording;        /* Are we recording or not. */
-
+extern int recording; /* Are we recording or not. */
 
 long Record_size(void);
 void Record_toggle(void);
