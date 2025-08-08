@@ -1930,7 +1930,7 @@ static void Paint_HUD_items(int hud_pos_x, int hud_pos_y)
 
             Image_paint(IMG_HUD_ITEMS,
                         horiz_pos - ITEM_SIZE,
-                        vert_pos, (uint8_t)i,
+                        vert_pos, (u_byte)i,
                         hudItemsColorRGBA);
 
             if (i == lose_item)

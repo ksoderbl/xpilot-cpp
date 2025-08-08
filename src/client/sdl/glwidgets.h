@@ -36,31 +36,32 @@
  */
 /* if this structure is changed, make sure that the generic functions below still work! */
 typedef struct glwidget_struct GLWidget;
-struct glwidget_struct {
-    int                 WIDGET;
-    void                *wid_info;
+struct glwidget_struct
+{
+    int WIDGET;
+    void *wid_info;
 
-    SDL_Rect            bounds; /* atm this really is 'inner bounds' which
-                                         * the children aren't allowed to exceed
-                             */
-    void                (*Draw)( GLWidget *widget );
-    
-    void                (*Close)( GLWidget *widget );
-    void                (*SetBounds)( GLWidget *widget, SDL_Rect *b );
-    
-    void                (*button)( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data );
-    void                *buttondata;
-    void                (*motion)( Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data );
-    void                *motiondata;
-    void                (*hover)( int over, Uint16 x , Uint16 y , void *data );
-    void                *hoverdata;
+    SDL_Rect bounds; /* atm this really is 'inner bounds' which
+                      * the children aren't allowed to exceed
+                      */
+    void (*Draw)(GLWidget *widget);
 
-    GLWidget            **list;
-    GLWidget            *children;
-    GLWidget            *next;   /* use to build widget lists */
+    void (*Close)(GLWidget *widget);
+    void (*SetBounds)(GLWidget *widget, SDL_Rect *b);
+
+    void (*button)(Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data);
+    void *buttondata;
+    void (*motion)(Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data);
+    void *motiondata;
+    void (*hover)(int over, Uint16 x, Uint16 y, void *data);
+    void *hoverdata;
+
+    GLWidget **list;
+    GLWidget *children;
+    GLWidget *next; /* use to build widget lists */
 };
 
-GLWidget *Init_EmptyBaseGLWidget( void );
+GLWidget *Init_EmptyBaseGLWidget(void);
 /*GLWidget *Init_BaseGLWidget( int WIDGET, void *wid_info, SDL_Rect bounds,
                                         void (*Draw)( GLWidget *widget ), void (*Close)( GLWidget *widget ),
                             void (*SetBounds)( GLWidget *widget, SDL_Rect *b ),
@@ -74,23 +75,23 @@ extern GLWidget *MainWidget;
 
 /* Two Methods Needed for widget management */
 /* new types need to implement theese methods */
-    
+
 /* should free any resources committed by the init_foo function */
-void Close_Widget ( GLWidget **widget );
+void Close_Widget(GLWidget **widget);
 /*void Close_WidgetTree ( GLWidget **widget );*/
 /* to reshape the widget, and automagically reshape and place sub-widgets */
-void SetBounds_GLWidget(GLWidget *wid, SDL_Rect *b );
+void SetBounds_GLWidget(GLWidget *wid, SDL_Rect *b);
 /* Initializes the appropriate config widget (if implemented), returns NULL otherwise */
-GLWidget *Init_OptionWidget( xp_option_t *opt, Uint32 *fgcolor, Uint32 *bgcolor );
+GLWidget *Init_OptionWidget(xp_option_t *opt, Uint32 *fgcolor, Uint32 *bgcolor);
 
-bool AppendGLWidgetList( GLWidget **list, GLWidget *widget );
-void PrependGLWidgetList( GLWidget **list, GLWidget *widget );
-bool DelGLWidgetListItem( GLWidget **list, GLWidget *widget );
+bool AppendGLWidgetList(GLWidget **list, GLWidget *widget);
+void PrependGLWidgetList(GLWidget **list, GLWidget *widget);
+bool DelGLWidgetListItem(GLWidget **list, GLWidget *widget);
 
-void DrawGLWidgets( GLWidget *list );
-GLWidget *FindGLWidget( GLWidget *list, Uint16 x,Uint16 y );
-void DrawGLWidgetsi( GLWidget *list, int x, int y, int w, int h);
-GLWidget *FindGLWidgeti( GLWidget *widget, Uint16 x, Uint16 y );
+void DrawGLWidgets(GLWidget *list);
+GLWidget *FindGLWidget(GLWidget *list, Uint16 x, Uint16 y);
+void DrawGLWidgetsi(GLWidget *list, int x, int y, int w, int h);
+GLWidget *FindGLWidgeti(GLWidget *widget, Uint16 x, Uint16 y);
 
 extern GLWidget *clicktarget[NUM_MOUSE_BUTTONS];
 extern GLWidget *hovertarget;
@@ -115,17 +116,24 @@ void load_textscrap(char *text);
  * decided whether automatic reset is better)
  */
 #define ARROWWIDGET 0
-typedef enum {RIGHTARROW,UPARROW,LEFTARROW,DOWNARROW} ArrowWidget_dir_t;
-typedef struct {
-    ArrowWidget_dir_t        direction;
-    bool                        press;/*this is set/unset automagically (set:call action each draw)*/
-    bool                        tap;/*action needs to clear this (action called once)*/
-    bool                        locked;/*Won't call action for any reason*/
-    void                        (*action)(void *data);
-    void                        *actiondata;
+typedef enum
+{
+    RIGHTARROW,
+    UPARROW,
+    LEFTARROW,
+    DOWNARROW
+} ArrowWidget_dir_t;
+typedef struct
+{
+    ArrowWidget_dir_t direction;
+    bool press;  /*this is set/unset automagically (set:call action each draw)*/
+    bool tap;    /*action needs to clear this (action called once)*/
+    bool locked; /*Won't call action for any reason*/
+    void (*action)(void *data);
+    void *actiondata;
 } ArrowWidget;
-GLWidget *Init_ArrowWidget( ArrowWidget_dir_t direction, int width, int height,
-                                        void (*action)( void *data ), void *actiondata );
+GLWidget *Init_ArrowWidget(ArrowWidget_dir_t direction, int width, int height,
+                           void (*action)(void *data), void *actiondata);
 /*********************/
 /* End:  ArrowWidget */
 /*********************/
@@ -134,16 +142,17 @@ GLWidget *Init_ArrowWidget( ArrowWidget_dir_t direction, int width, int height,
 /* Begin: ButtonWidget  */
 /***********************/
 #define BUTTONWIDGET 1
-typedef struct {
-    Uint32          *normal_color;
-    Uint32          *pressed_color;
-    bool            pressed;
-    Uint8          depress_time;
-    int          press_time;
-    void            (*action)(void *data);
-    void            *actiondata;
+typedef struct
+{
+    Uint32 *normal_color;
+    Uint32 *pressed_color;
+    bool pressed;
+    Uint8 depress_time;
+    int press_time;
+    void (*action)(void *data);
+    void *actiondata;
 } ButtonWidget;
-GLWidget *Init_ButtonWidget( Uint32 *normal_color, Uint32 *pressed_color, Uint8 depress_time, void (*action)(void *data), void *actiondata);
+GLWidget *Init_ButtonWidget(Uint32 *normal_color, Uint32 *pressed_color, Uint8 depress_time, void (*action)(void *data), void *actiondata);
 /*********************/
 /* End: ButtonWidget  */
 /*********************/
@@ -152,15 +161,16 @@ GLWidget *Init_ButtonWidget( Uint32 *normal_color, Uint32 *pressed_color, Uint8 
 /* Begin: SlideWidget  */
 /***********************/
 #define SLIDEWIDGET 2
-typedef struct {
-    bool    sliding;/*Don't slide*/
-    bool    locked;/*Don't slide*/
-    void    (*release)( void *releasedata );
-    void    *releasedata;
+typedef struct
+{
+    bool sliding; /*Don't slide*/
+    bool locked;  /*Don't slide*/
+    void (*release)(void *releasedata);
+    void *releasedata;
 } SlideWidget;
-GLWidget *Init_SlideWidget( bool locked,
-                 void (*motion)( Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data ), void *motiondata,
-             void (*release)( void *releasedata),void *releasedata );
+GLWidget *Init_SlideWidget(bool locked,
+                           void (*motion)(Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data), void *motiondata,
+                           void (*release)(void *releasedata), void *releasedata);
 /*********************/
 /* End: SlideWidget  */
 /*********************/
@@ -168,22 +178,27 @@ GLWidget *Init_SlideWidget( bool locked,
 /***************************/
 /* Begin: ScrollbarWidget  */
 /***************************/
-typedef enum {SB_VERTICAL, SB_HORISONTAL} ScrollWidget_dir_t;
+typedef enum
+{
+    SB_VERTICAL,
+    SB_HORISONTAL
+} ScrollWidget_dir_t;
 /* note 0.0 <= pos && pos + size <= 1.0 */
 #define SCROLLBARWIDGET 3
-typedef struct {
-    GLWidget                    *slide;
-    GLfloat                     pos;
-    GLfloat                     size;
-    Sint16                      oldmoves;
-    ScrollWidget_dir_t        dir;
-    void                (        *poschange)( GLfloat pos , void *poschangedata );
-    void                        *poschangedata;
+typedef struct
+{
+    GLWidget *slide;
+    GLfloat pos;
+    GLfloat size;
+    Sint16 oldmoves;
+    ScrollWidget_dir_t dir;
+    void (*poschange)(GLfloat pos, void *poschangedata);
+    void *poschangedata;
 } ScrollbarWidget;
-GLWidget *Init_ScrollbarWidget( bool locked, GLfloat pos, GLfloat size,ScrollWidget_dir_t dir,
-                                                void (*poschange)( GLfloat pos , void *data), void *data );
+GLWidget *Init_ScrollbarWidget(bool locked, GLfloat pos, GLfloat size, ScrollWidget_dir_t dir,
+                               void (*poschange)(GLfloat pos, void *data), void *data);
 
-void ScrollbarWidget_SetSlideSize( GLWidget *widget, GLfloat size );
+void ScrollbarWidget_SetSlideSize(GLWidget *widget, GLfloat size);
 /*************************/
 /* End:  ScrollbarWidget */
 /*************************/
@@ -192,16 +207,17 @@ void ScrollbarWidget_SetSlideSize( GLWidget *widget, GLfloat size );
 /* Begin: LabelWidget */
 /**********************/
 #define LABELWIDGET 4
-typedef struct {
-    string_tex_t    tex;
-    Uint32                 *fgcolor;
-    Uint32                 *bgcolor;
-    int             align;  /* horizontal alignemnt */
-    int             valign; /* vertical alignment   */
+typedef struct
+{
+    string_tex_t tex;
+    Uint32 *fgcolor;
+    Uint32 *bgcolor;
+    int align;  /* horizontal alignemnt */
+    int valign; /* vertical alignment   */
 } LabelWidget;
-GLWidget *Init_LabelWidget( const char *text , Uint32 *fgcolor, Uint32 *bgcolor, int align, int valign );
+GLWidget *Init_LabelWidget(const char *text, Uint32 *fgcolor, Uint32 *bgcolor, int align, int valign);
 
-bool LabelWidget_SetColor( GLWidget *widget , Uint32 *fgcolor, Uint32 *bgcolor );
+bool LabelWidget_SetColor(GLWidget *widget, Uint32 *fgcolor, Uint32 *bgcolor);
 
 /********************/
 /* End: LabelWidget */
@@ -211,16 +227,17 @@ bool LabelWidget_SetColor( GLWidget *widget , Uint32 *fgcolor, Uint32 *bgcolor )
 /* Begin: LabeledRadiobuttonWidget */
 /***********************************/
 #define LABELEDRADIOBUTTONWIDGET 5
-typedef struct {
-    bool                state;
-    string_tex_t    *ontex;
-    string_tex_t    *offtex;
-    void                (*action)( bool state, void *actiondata );
-    void                *actiondata;
+typedef struct
+{
+    bool state;
+    string_tex_t *ontex;
+    string_tex_t *offtex;
+    void (*action)(bool state, void *actiondata);
+    void *actiondata;
 } LabeledRadiobuttonWidget;
 /* TODO : add some abstraction layer to init function */
-GLWidget *Init_LabeledRadiobuttonWidget( string_tex_t *ontex, string_tex_t *offtex,
-                                                            void (*action)(bool state, void *actiondata),
+GLWidget *Init_LabeledRadiobuttonWidget(string_tex_t *ontex, string_tex_t *offtex,
+                                        void (*action)(bool state, void *actiondata),
                                         void *actiondata, bool start_state);
 /*********************************/
 /* End: LabeledRadiobuttonWidget */
@@ -230,18 +247,19 @@ GLWidget *Init_LabeledRadiobuttonWidget( string_tex_t *ontex, string_tex_t *offt
 /* Begin: BoolChooserWidget */
 /****************************/
 #define BOOLCHOOSERWIDGET 6
-typedef struct {
-    bool                *value;
-    GLWidget            *buttonwidget;
-    GLWidget            *name;
-    Uint32                 *fgcolor;
-    Uint32                 *bgcolor;
-    void                (*callback)(void *tmp, const char *value);
-    void                *data;
+typedef struct
+{
+    bool *value;
+    GLWidget *buttonwidget;
+    GLWidget *name;
+    Uint32 *fgcolor;
+    Uint32 *bgcolor;
+    void (*callback)(void *tmp, const char *value);
+    void *data;
 } BoolChooserWidget;
 
-GLWidget *Init_BoolChooserWidget( const char *name, bool *value, Uint32 *fgcolor, Uint32 *bgcolor,
-                                                 void (*callback)(void *tmp, const char *value), void *data );
+GLWidget *Init_BoolChooserWidget(const char *name, bool *value, Uint32 *fgcolor, Uint32 *bgcolor,
+                                 void (*callback)(void *tmp, const char *value), void *data);
 /**************************/
 /* End: BoolChooserWidget */
 /**************************/
@@ -250,25 +268,26 @@ GLWidget *Init_BoolChooserWidget( const char *name, bool *value, Uint32 *fgcolor
 /* Begin: IntChooserWidget */
 /***************************/
 #define INTCHOOSERWIDGET 7
-typedef struct {
-    GLWidget            *name;
-    int                 *value;
-    int                 minval;
-    int                 maxval;
-    int                 valuespace;
-    string_tex_t    valuetex;
-    GLWidget            *leftarrow;
-    GLWidget            *rightarrow;
-    int                 direction;
-    int                 duration;
-    Uint32                 *fgcolor;
-    Uint32                 *bgcolor;
-    void                (*callback)(void *tmp, const char *value);
-    void                *data;
+typedef struct
+{
+    GLWidget *name;
+    int *value;
+    int minval;
+    int maxval;
+    int valuespace;
+    string_tex_t valuetex;
+    GLWidget *leftarrow;
+    GLWidget *rightarrow;
+    int direction;
+    int duration;
+    Uint32 *fgcolor;
+    Uint32 *bgcolor;
+    void (*callback)(void *tmp, const char *value);
+    void *data;
 } IntChooserWidget;
 
-GLWidget *Init_IntChooserWidget( const char *name, int *value, int minval, int maxval, Uint32 *fgcolor,
-                                                Uint32 *bgcolor, void (*callback)(void *tmp, const char *value), void *data );
+GLWidget *Init_IntChooserWidget(const char *name, int *value, int minval, int maxval, Uint32 *fgcolor,
+                                Uint32 *bgcolor, void (*callback)(void *tmp, const char *value), void *data);
 /*************************/
 /* End: IntChooserWidget */
 /*************************/
@@ -277,25 +296,26 @@ GLWidget *Init_IntChooserWidget( const char *name, int *value, int minval, int m
 /* Begin: DoubleChooserWidget */
 /******************************/
 #define DOUBLECHOOSERWIDGET 8
-typedef struct {
-    GLWidget            *name;
-    double              *value;
-    double                 minval;
-    double                 maxval;
-    int                 valuespace;
-    string_tex_t    valuetex;
-    GLWidget            *leftarrow;
-    GLWidget            *rightarrow;
-    int                 direction;
-    Uint32                 *fgcolor;
-    Uint32                 *bgcolor;
-    void                (*callback)(void *tmp, const char *value);
-    void                *data;
+typedef struct
+{
+    GLWidget *name;
+    double *value;
+    double minval;
+    double maxval;
+    int valuespace;
+    string_tex_t valuetex;
+    GLWidget *leftarrow;
+    GLWidget *rightarrow;
+    int direction;
+    Uint32 *fgcolor;
+    Uint32 *bgcolor;
+    void (*callback)(void *tmp, const char *value);
+    void *data;
 } DoubleChooserWidget;
 
-GLWidget *Init_DoubleChooserWidget( const char *name, double *value, double minval, double maxval,
-                                                    Uint32 *fgcolor, Uint32 *bgcolor,
-                                                    void (*callback)(void *tmp, const char *value), void *data );
+GLWidget *Init_DoubleChooserWidget(const char *name, double *value, double minval, double maxval,
+                                   Uint32 *fgcolor, Uint32 *bgcolor,
+                                   void (*callback)(void *tmp, const char *value), void *data);
 /****************************/
 /* End: DoubleChooserWidget */
 /****************************/
@@ -304,20 +324,21 @@ GLWidget *Init_DoubleChooserWidget( const char *name, double *value, double minv
 /* Begin: ColorChooserWidget */
 /*****************************/
 #define COLORCHOOSERWIDGET 9
-typedef struct {
-    GLWidget            *mod;
-    GLWidget            *name;
-    Uint32              *value;
-    GLWidget            *button;
-    Uint32                 *fgcolor;
-    Uint32                 *bgcolor;
-    bool                expanded;
-    void                (*callback)(void *tmp, const char *value);
-    void                *data;
+typedef struct
+{
+    GLWidget *mod;
+    GLWidget *name;
+    Uint32 *value;
+    GLWidget *button;
+    Uint32 *fgcolor;
+    Uint32 *bgcolor;
+    bool expanded;
+    void (*callback)(void *tmp, const char *value);
+    void *data;
 } ColorChooserWidget;
 
-GLWidget *Init_ColorChooserWidget( const char *name, Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
-                                                    void (*callback)(void *tmp, const char *value), void *data );
+GLWidget *Init_ColorChooserWidget(const char *name, Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
+                                  void (*callback)(void *tmp, const char *value), void *data);
 /***************************/
 /* End: ColorChooserWidget */
 /***************************/
@@ -326,24 +347,25 @@ GLWidget *Init_ColorChooserWidget( const char *name, Uint32 *value, Uint32 *fgco
 /* Begin: ColorModWidget */
 /*************************/
 #define COLORMODWIDGET 10
-typedef struct {
-    Uint32              *value;
-    int              red;
-    int              green;
-    int              blue;
-    int              alpha;
-    GLWidget            *redpick;
-    GLWidget            *greenpick;
-    GLWidget            *bluepick;
-    GLWidget            *alphapick;
-    Uint32                 *fgcolor;
-    Uint32                 *bgcolor;
-    void                (*callback)(void *tmp, const char *value);
-    void                *data;
+typedef struct
+{
+    Uint32 *value;
+    int red;
+    int green;
+    int blue;
+    int alpha;
+    GLWidget *redpick;
+    GLWidget *greenpick;
+    GLWidget *bluepick;
+    GLWidget *alphapick;
+    Uint32 *fgcolor;
+    Uint32 *bgcolor;
+    void (*callback)(void *tmp, const char *value);
+    void *data;
 } ColorModWidget;
 
-GLWidget *Init_ColorModWidget( Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
-                                                    void (*callback)(void *tmp, const char *value), void *data );
+GLWidget *Init_ColorModWidget(Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
+                              void (*callback)(void *tmp, const char *value), void *data);
 /***********************/
 /* End: ColorModWidget */
 /***********************/
@@ -351,41 +373,54 @@ GLWidget *Init_ColorModWidget( Uint32 *value, Uint32 *fgcolor, Uint32 *bgcolor,
 /**********************/
 /* Begin: ListWidget  */
 /**********************/
-typedef enum {HORISONTAL, VERTICAL} ListWidget_direction;
-typedef enum {LW_DOWN, LW_VCENTER, LW_UP} ListWidget_ver_dir_t;
-typedef enum {LW_RIGHT, LW_HCENTER, LW_LEFT} ListWidget_hor_dir_t;
+typedef enum
+{
+    HORISONTAL,
+    VERTICAL
+} ListWidget_direction;
+typedef enum
+{
+    LW_DOWN,
+    LW_VCENTER,
+    LW_UP
+} ListWidget_ver_dir_t;
+typedef enum
+{
+    LW_RIGHT,
+    LW_HCENTER,
+    LW_LEFT
+} ListWidget_hor_dir_t;
 #define LISTWIDGET 11
-typedef struct {
-     int num_elements;
-     Uint32 *bg1;
-     Uint32 *bg2;
-     Uint32 *highlight_color;/*not used (yet) */
-     bool   reverse_scroll;
-     ListWidget_direction   direction;
-     ListWidget_ver_dir_t   v_dir;
-     ListWidget_hor_dir_t   h_dir;    
+typedef struct
+{
+    int num_elements;
+    Uint32 *bg1;
+    Uint32 *bg2;
+    Uint32 *highlight_color; /*not used (yet) */
+    bool reverse_scroll;
+    ListWidget_direction direction;
+    ListWidget_ver_dir_t v_dir;
+    ListWidget_hor_dir_t h_dir;
 } ListWidget;
 
-GLWidget *Init_ListWidget( Uint16 x, Uint16 y, Uint32 *bg1, Uint32 *bg2, Uint32 *highlight_color
-                                        ,ListWidget_ver_dir_t v_dir, ListWidget_hor_dir_t h_dir
-                            ,ListWidget_direction direction, bool reverse_scroll );
+GLWidget *Init_ListWidget(Uint16 x, Uint16 y, Uint32 *bg1, Uint32 *bg2, Uint32 *highlight_color, ListWidget_ver_dir_t v_dir, ListWidget_hor_dir_t h_dir, ListWidget_direction direction, bool reverse_scroll);
 
 /*TODO: allow lists in prepen,append (needs to check against loops) */
 
 /* Adds a new item last in the list */
-bool ListWidget_Append( GLWidget *list, GLWidget *item );
+bool ListWidget_Append(GLWidget *list, GLWidget *item);
 /* Adds a new item first in the list */
-bool ListWidget_Prepend( GLWidget *list, GLWidget *item );
+bool ListWidget_Prepend(GLWidget *list, GLWidget *item);
 /* Adds a new item just before target in the list */
-bool ListWidget_Insert( GLWidget *list, GLWidget *target, GLWidget *item );
+bool ListWidget_Insert(GLWidget *list, GLWidget *target, GLWidget *item);
 /* Removes an item from the list */
-bool ListWidget_Remove( GLWidget *list, GLWidget *item );
+bool ListWidget_Remove(GLWidget *list, GLWidget *item);
 
-bool ListWidget_SetScrollorder( GLWidget *list, bool order );
+bool ListWidget_SetScrollorder(GLWidget *list, bool order);
 
-int ListWidget_NELEM( GLWidget *list );
+int ListWidget_NELEM(GLWidget *list);
 /* first item is indexed [0], last is [ListWidget_NELEM - 1]*/
-GLWidget *ListWidget_GetItemByIndex( GLWidget *list, int i );
+GLWidget *ListWidget_GetItemByIndex(GLWidget *list, int i);
 
 /*******************/
 /* End: ListWidget */
@@ -395,14 +430,15 @@ GLWidget *ListWidget_GetItemByIndex( GLWidget *list, int i );
 /* Begin: ScrollPaneWidget  */
 /****************************/
 #define SCROLLPANEWIDGET 12
-typedef struct {
-    GLWidget        *vert_scroller;
-    GLWidget        *hori_scroller;
-    GLWidget        *masque;
-    GLWidget        *content;
+typedef struct
+{
+    GLWidget *vert_scroller;
+    GLWidget *hori_scroller;
+    GLWidget *masque;
+    GLWidget *content;
 } ScrollPaneWidget;
 
-GLWidget *Init_ScrollPaneWidget( GLWidget *content );
+GLWidget *Init_ScrollPaneWidget(GLWidget *content);
 
 /**************************/
 /* End: ScrollPaneWidget  */
@@ -413,7 +449,7 @@ GLWidget *Init_ScrollPaneWidget( GLWidget *content );
 /**********************/
 #define RADARWIDGET 13
 
-extern GLWidget *Init_RadarWidget( void );
+extern GLWidget *Init_RadarWidget(void);
 /********************/
 /* End: RadarWidget */
 /********************/
@@ -423,7 +459,7 @@ extern GLWidget *Init_RadarWidget( void );
 /**************************/
 #define SCORELISTWIDGET 14
 
-extern GLWidget *Init_ScorelistWidget( void );
+extern GLWidget *Init_ScorelistWidget(void);
 /************************/
 /* End: ScorelistWidget */
 /************************/
@@ -432,20 +468,21 @@ extern GLWidget *Init_ScorelistWidget( void );
 /* Begin: MainWidget  */
 /**********************/
 #define MAINWIDGET 15
-typedef struct {
-    bool        showconf;
-    GLWidget        *confmenu;
-    GLWidget        *radar;
-    GLWidget        *scorelist;
-    GLWidget        *chat_msgs;
-    GLWidget        *game_msgs;
-    GLWidget        *alert_msgs;
-    int                    BORDER;
-    font_data        *font;
+typedef struct
+{
+    bool showconf;
+    GLWidget *confmenu;
+    GLWidget *radar;
+    GLWidget *scorelist;
+    GLWidget *chat_msgs;
+    GLWidget *game_msgs;
+    GLWidget *alert_msgs;
+    int BORDER;
+    font_data *font;
 } WrapperWidget;
 
-GLWidget *Init_MainWidget( font_data *font );
-void MainWidget_ShowMenu( GLWidget *widget, bool show );
+GLWidget *Init_MainWidget(font_data *font);
+void MainWidget_ShowMenu(GLWidget *widget, bool show);
 /*******************/
 /* End: MainWidget */
 /*******************/
@@ -454,21 +491,22 @@ void MainWidget_ShowMenu( GLWidget *widget, bool show );
 /* Begin: ConfMenuWidget  */
 /**************************/
 #define CONFMENUWIDGET 16
-typedef struct {
-    bool        showconf;
-    bool        paused;
-    int             team;
-    GLWidget        *scrollpane;
-    GLWidget        *main_list;
-    GLWidget        *button_list;
-    GLWidget        *join_list;
-    GLWidget        *qlb;
-    GLWidget        *clb;
-    GLWidget        *slb;
-    GLWidget        *jlb;
+typedef struct
+{
+    bool showconf;
+    bool paused;
+    int team;
+    GLWidget *scrollpane;
+    GLWidget *main_list;
+    GLWidget *button_list;
+    GLWidget *join_list;
+    GLWidget *qlb;
+    GLWidget *clb;
+    GLWidget *slb;
+    GLWidget *jlb;
 } ConfMenuWidget;
 
-GLWidget *Init_ConfMenuWidget( Uint16 x, Uint16 y );
+GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y);
 /***********************/
 /* End: ConfMenuWidget */
 /***********************/
@@ -477,7 +515,8 @@ GLWidget *Init_ConfMenuWidget( Uint16 x, Uint16 y );
 /* Begin: ImageButtonWidget  */
 /*****************************/
 #define IMAGEBUTTONWIDGET 17
-typedef struct {
+typedef struct
+{
     Uint32 fg;
     Uint32 bg;
     Uint8 state;
@@ -492,7 +531,7 @@ typedef struct {
 GLWidget *Init_ImageButtonWidget(const char *text,
                                  const char *upImage,
                                  const char *downImage,
-                                 Uint32 bg, 
+                                 Uint32 bg,
                                  Uint32 fg,
                                  void (*onClick)(GLWidget *widget));
 /**************************/
@@ -503,18 +542,19 @@ GLWidget *Init_ImageButtonWidget(const char *text,
 /* Begin: LabelButtonWidget  */
 /*****************************/
 #define LABELBUTTONWIDGET 18
-typedef struct {
+typedef struct
+{
     GLWidget *button;
     GLWidget *label;
 } LabelButtonWidget;
 
-GLWidget *Init_LabelButtonWidget(   const char *text,
-                                    Uint32 *text_color,
-                                                    Uint32 *bg_color,
-                                                    Uint32 *active_color,
-                                                    Uint8 depress_time,
-                                                    void (*action)(void *data),
-                                    void *actiondata);
+GLWidget *Init_LabelButtonWidget(const char *text,
+                                 Uint32 *text_color,
+                                 Uint32 *bg_color,
+                                 Uint32 *active_color,
+                                 Uint8 depress_time,
+                                 void (*action)(void *data),
+                                 void *actiondata);
 /**************************/
 /* End: LabelButtonWidget */
 /**************************/

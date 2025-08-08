@@ -33,29 +33,33 @@
 
 #define NUMCHARS 256
 
-typedef struct {
+typedef struct
+{
     GLfloat MinX;
     GLfloat MinY;
     GLfloat MaxX;
     GLfloat MaxY;
-} texcoord_t;    
+} texcoord_t;
 
-typedef struct {
+typedef struct
+{
     GLuint textures[NUMCHARS]; /* texture indexes for the characters */
-    GLuint W[NUMCHARS]; /* holds paint width fr each character */
-    GLuint list_base; /* start of the texture list for this font */
-    GLuint h; /* char height */
-    GLuint linespacing; /* proper line spacing according to FT */
+    GLuint W[NUMCHARS];        /* holds paint width fr each character */
+    GLuint list_base;          /* start of the texture list for this font */
+    GLuint h;                  /* char height */
+    GLuint linespacing;        /* proper line spacing according to FT */
     TTF_Font *ttffont;
 } font_data;
 
-typedef struct {
+typedef struct
+{
     GLuint texture;
     texcoord_t texcoords;
     int width;
 } tex_t;
 
-typedef struct {
+typedef struct
+{
     arraylist_t *tex_list;
     char *text;
     int width;
@@ -65,20 +69,21 @@ typedef struct {
 
 extern int renderstyle;
 extern enum rendertype {
-        RENDER_LATIN1,
-        RENDER_UTF8,
-        RENDER_UNICODE
+    RENDER_LATIN1,
+    RENDER_UTF8,
+    RENDER_UNICODE
 } rendertype;
 
-typedef struct {
-            float width;
-        float height;
+typedef struct
+{
+    float width;
+    float height;
 } fontbounds;
 
 /* The init function will create a font of
  * of the height h from the file fname.
  */
-int fontinit(font_data *ft_font, const char * fname, unsigned int size);
+int fontinit(font_data *ft_font, const char *fname, unsigned int size);
 
 /* Free all the resources assosiated with the font.*/
 void fontclean(font_data *ft_font);
@@ -92,31 +97,21 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord);
 fontbounds nprintsize(font_data *ft_font, int length, const char *fmt, ...);
 fontbounds printsize(font_data *ft_font, const char *fmt, ...);
 
-/* 
+/*
  * NOTE: passing color 0x00000000 causes the painting to *not* set color,
  * it does *not* mean the text will be drawn with color 0x00000000, you
  * should check for that before calling this function.
  */
 void HUDnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, int length, const char *fmt, ...);
-void mapnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, int length, const char *fmt,...);
+void mapnprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, int length, const char *fmt, ...);
 void HUDprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *fmt, ...);
-void mapprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *fmt,...);
+void mapprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *fmt, ...);
 
 bool draw_text(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *text, bool savetex, string_tex_t *string_tex, bool onHUD);
-bool draw_text_fraq(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *text
-                            , float xstart
-                            , float xstop
-                            , float ystart
-                            , float ystop
-                    , bool savetex, string_tex_t *string_tex, bool onHUD);
+bool draw_text_fraq(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *text, float xstart, float xstop, float ystart, float ystop, bool savetex, string_tex_t *string_tex, bool onHUD);
 bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex);
 void disp_text(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int x, int y, bool onHUD);
-void disp_text_fraq(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int x, int y
-                            , float xstart
-                            , float xstop
-                            , float ystart
-                            , float ystop
-                    , bool onHUD);
+void disp_text_fraq(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int x, int y, float xstart, float xstop, float ystart, float ystop, bool onHUD);
 void free_string_texture(string_tex_t *string_tex);
 
 extern font_data gamefont;
@@ -139,6 +134,6 @@ name_tex_t *others_name_texs;*/
 
 #define MAX_METERS 12
 extern string_tex_t meter_texs[];
-#define MAX_HUD_TEXS 10 
+#define MAX_HUD_TEXS 10
 extern string_tex_t HUD_texs[];
 #endif

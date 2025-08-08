@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström
+ * Copyright (C) 2003-2004 Juha Lindstr�m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,30 +21,29 @@
 #ifndef XPCLIENT_SDL_H
 #define XPCLIENT_SDL_H
 
-// #include "xpclient.h"
+#include "xpclient.h"
 #ifdef _WINDOWS
 #include <windows.h>
 #endif
 
 /* determine if we use usual style including */
-// #ifndef MACOSX_FRAMEWORKS
-// #define USUAL_SDL_INCLUDE_CONVENTION 1
-// #endif
+#ifndef MACOSX_FRAMEWORKS
+#define USUAL_SDL_INCLUDE_CONVENTION 1
+#endif
 
-// #ifdef USUAL_SDL_INCLUDE_CONVENTION
+#ifdef USUAL_SDL_INCLUDE_CONVENTION
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <SDL2/SDL.h>
-// #include "SDL.h"
-// #include "SDL_events.h"
-// #include "SDL_video.h"
-// #include "SDL_version.h"
-// #include "SDL_syswm.h"
-// #ifdef HAVE_SDL_IMAGE
-// #include "SDL_image.h"
-// #endif
-// #include "SDL_ttf.h"
-// #endif
+#include "SDL.h"
+#include "SDL_events.h"
+#include "SDL_video.h"
+#include "SDL_version.h"
+#include "SDL_syswm.h"
+#ifdef HAVE_SDL_IMAGE
+#include "SDL_image.h"
+#endif
+#include "SDL_ttf.h"
+#endif
 
 #ifdef MACOSX_FRAMEWORKS
 #include <OpenGL/gl.h>

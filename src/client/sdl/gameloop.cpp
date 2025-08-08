@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha Lindstrï¿½m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,14 @@ void Game_loop(void)
     struct timeval tv;
     SDL_Event evt;
 
-    if ((netfd = Net_fd()) == -1) {
+    if ((netfd = Net_fd()) == -1)
+    {
         error("Bad net fd");
         return;
     }
 
-    while (1) {
+    while (1)
+    {
         FD_ZERO(&rfds);
         FD_SET(netfd, &rfds);
         tv.tv_sec = 0;
@@ -47,20 +49,22 @@ void Game_loop(void)
             Client_check_pointer_move_interval();
 
         n = select(netfd + 1, &rfds, NULL, NULL, &tv);
-        if (n == -1) {
+        if (n == -1)
+        {
             if (errno == EINTR)
                 continue;
             error("Select failed");
             return;
         }
-        if (n > 0) {
-            if (Net_input() == -1) {
+        if (n > 0)
+        {
+            if (Net_input() == -1)
+            {
                 warn("Bad net input.  Have a nice day!");
                 return;
             }
         }
-        while (SDL_PollEvent(&evt)) 
+        while (SDL_PollEvent(&evt))
             Process_event(&evt);
     }
 }
-

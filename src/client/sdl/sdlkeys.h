@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha Lindstrï¿½m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 
 #define NUM_MOUSE_BUTTONS 5
 
-SDLKey Get_key_by_name(const char* name);
+SDLKey Get_key_by_name(const char *name);
 char *Get_name_by_key(SDLKey key);
 
 #endif

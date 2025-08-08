@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha Lindstrï¿½m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ static void sigcatch(int signum)
     Main_shutdown();
     error("got signal %d\n", signum);
     exit(1);
-
 }
 
 const char *Program_name(void)
@@ -70,31 +69,40 @@ int main(int argc, char *argv[])
     /* CLIENTRANK */
     Init_saved_scores();
 
-    if (sock_startup()) {
+    if (sock_startup())
+    {
         error("failed to initialize networking");
         exit(1);
     }
 
-    if (xpArgs.text || xpArgs.auto_connect || argv[1]) {
+    if (xpArgs.text || xpArgs.auto_connect || argv[1])
+    {
         if (!Contact_servers(argc - 1, &argv[1],
                              xpArgs.auto_connect, xpArgs.list_servers,
                              auto_shutdown, xpArgs.shutdown_reason,
                              0, NULL, NULL, NULL, NULL,
                              &connectParam))
             return 0;
-        if (Init_window()) {
+        if (Init_window())
+        {
             error("Could not initialize SDL, check your settings.");
             exit(1);
         }
-    } else {
-        if (Init_window()) {
+    }
+    else
+    {
+        if (Init_window())
+        {
             error("Could not initialize SDL, check your settings.");
             exit(1);
         }
-        while (1) {
+        while (1)
+        {
             result = Meta_window(&connectParam);
-            if (result < 0) return 0;
-            if (result == 0) break;
+            if (result < 0)
+                return 0;
+            if (result == 0)
+                break;
         }
     }
 
@@ -102,42 +110,48 @@ int main(int argc, char *argv[])
      * cleanup to the OS because afaik Client_cleanup will clean
      * stuff initialized in Client_setup. */
 
-    if (Client_init(connectParam.server_name, connectParam.server_version)) {
-        error("failed to initialize client"); 
+    if (Client_init(connectParam.server_name, connectParam.server_version))
+    {
+        error("failed to initialize client");
         exit(1);
     }
 
-    
-    if (Net_init(connectParam.server_addr, connectParam.login_port)) {
-        error("failed to initialize networking"); 
+    if (Net_init(connectParam.server_addr, connectParam.login_port))
+    {
+        error("failed to initialize networking");
         exit(1);
     }
-    if (Net_verify(connectParam.user_name, 
-                   connectParam.nick_name, 
-                   connectParam.disp_name)) {
-        error("failed to verify networking"); 
+    if (Net_verify(connectParam.user_name,
+                   connectParam.nick_name,
+                   connectParam.disp_name))
+    {
+        error("failed to verify networking");
         exit(1);
     }
-    if (Net_setup()) {
-        error("failed to setup networking"); 
+    if (Net_setup())
+    {
+        error("failed to setup networking");
         exit(1);
     }
-    if (Client_setup()) {
-        error("failed to setup client"); 
+    if (Client_setup())
+    {
+        error("failed to setup client");
         exit(1);
     }
 
     signal(SIGINT, sigcatch);
     signal(SIGTERM, sigcatch);
 
-    if (Net_start()) {
+    if (Net_start())
+    {
         Main_shutdown();
-        error("failed to start networking"); 
+        error("failed to start networking");
         exit(1);
     }
-    if (Client_start()) {
+    if (Client_start())
+    {
         Main_shutdown();
-        error("failed to start client"); 
+        error("failed to start client");
         exit(1);
     }
     Game_loop();

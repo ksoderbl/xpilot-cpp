@@ -1,21 +1,21 @@
 /*
         SDL_console: An easy to use drop-down console based on the SDL library
         Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004 Clemens Wacha
-        
+
         This library is free software; you can redistribute it and/or
         modify it under the terms of the GNU Library General Public
         License as published by the Free Software Foundation; either
         version 2 of the License, or (at your option) any later version.
-        
+
         This library is distributed in the hope that it will be useful,
         but WHITOUT ANY WARRANTY; without even the implied warranty of
         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
         Library General Public License for more details.
-        
+
         You should have received a copy of the GNU Library Generla Public
         License along with this library; if not, write to the Free
         Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-        
+
         Clemens Wacha
         reflex-2000@gmx.net
 */
@@ -23,7 +23,7 @@
 /*  SDL_console.c
  *  Written By: Garrett Banuk <mongoose@mongeese.org>
  *  Code Cleanup and heavily extended by: Clemens Wacha <reflex-2000@gmx.net>
- *  Modified for XPilotNG/SDL: Juha Lindström <juhal@users.sourceforge.net>
+ *  Modified for XPilotNG/SDL: Juha Lindstrï¿½m <juhal@users.sourceforge.net>
  */
 
 #include "xpclient_sdl.h"
@@ -32,8 +32,8 @@
 #include "DT_drawtext.h"
 
 #ifdef _WINDOWS
-# define __FUNCTION__ ""
-# define vsnprintf _vsnprintf
+#define __FUNCTION__ ""
+#define vsnprintf _vsnprintf
 #endif
 #define PRINT_ERROR(X) fprintf(stderr, "ERROR in %s:%s(): %s\n", __FILE__, __FUNCTION__, X)
 
@@ -42,20 +42,23 @@
 static ConsoleInformation *Topmost;
 
 /*  Takes keys from the keyboard and inputs them to the console
-    If the event was not handled (i.e. WM events or unknown ctrl-shift 
+    If the event was not handled (i.e. WM events or unknown ctrl-shift
     sequences) the function returns the event for further processing. */
-SDL_Event *CON_Events(SDL_Event * event)
+SDL_Event *CON_Events(SDL_Event *event)
 {
     if (Topmost == NULL)
         return event;
     if (!CON_isVisible(Topmost))
         return event;
 
-    if (event->type == SDL_KEYDOWN) {
-        if (event->key.keysym.mod & KMOD_CTRL) {
+    if (event->type == SDL_KEYDOWN)
+    {
+        if (event->key.keysym.mod & KMOD_CTRL)
+        {
             /* CTRL pressed */
             /* kps - please modify this to work like in talk.c */
-            switch (event->key.keysym.sym) {
+            switch (event->key.keysym.sym)
+            {
             case SDLK_a:
                 Cursor_Home(Topmost);
                 break;
@@ -88,27 +91,37 @@ SDL_Event *CON_Events(SDL_Event * event)
             /* the console does not handle ALT combinations! */
             return event;
 #endif
-        } else {
+        }
+        else
+        {
             /* first of all, check if the console hide key was pressed */
-            if ((int)event->key.keysym.sym == Topmost->HideKey) {
+            if ((int)event->key.keysym.sym == Topmost->HideKey)
+            {
                 /*was: CON_Hide(Topmost);*/
                 Talk_set_state(false);
                 return NULL;
             }
-            switch (event->key.keysym.sym) {
+            switch (event->key.keysym.sym)
+            {
             case SDLK_HOME:
-                if (event->key.keysym.mod & KMOD_SHIFT) {
+                if (event->key.keysym.mod & KMOD_SHIFT)
+                {
                     Topmost->ConsoleScrollBack = Topmost->LineBuffer - 1;
                     CON_UpdateConsole(Topmost);
-                } else {
+                }
+                else
+                {
                     Cursor_Home(Topmost);
                 }
                 break;
             case SDLK_END:
-                if (event->key.keysym.mod & KMOD_SHIFT) {
+                if (event->key.keysym.mod & KMOD_SHIFT)
+                {
                     Topmost->ConsoleScrollBack = 0;
                     CON_UpdateConsole(Topmost);
-                } else {
+                }
+                else
+                {
                     Cursor_End(Topmost);
                 }
                 break;
@@ -150,7 +163,8 @@ SDL_Event *CON_Events(SDL_Event * event)
                 CON_TabCompletion(Topmost);
                 break;
             case SDLK_RETURN:
-                if (strlen(Topmost->Command) > 0) {
+                if (strlen(Topmost->Command) > 0)
+                {
                     CON_NewLineCommand(Topmost);
 
                     /* copy the input into the past commands strings */
@@ -168,7 +182,7 @@ SDL_Event *CON_Events(SDL_Event * event)
                 }
                 else
                     /* deactivate Console if return is pressed on empty line */
-                    
+
                     /* was: CON_Hide(Topmost); */
                     Talk_set_state(false);
                 break;
@@ -177,12 +191,13 @@ SDL_Event *CON_Events(SDL_Event * event)
 
                 /*was: CON_Hide(Topmost);*/
                 Talk_set_state(false);
-                
+
                 return NULL;
             default:
                 if (Topmost->InsMode)
                     Cursor_Add(Topmost, event);
-                else {
+                else
+                {
                     Cursor_Add(Topmost, event);
                     Cursor_Del(Topmost);
                 }
@@ -194,7 +209,7 @@ SDL_Event *CON_Events(SDL_Event * event)
 }
 
 /* Updates the console, draws the background and the history lines. Does not draw the Commandline */
-void CON_UpdateConsole(ConsoleInformation * console)
+void CON_UpdateConsole(ConsoleInformation *console)
 {
     int loop;
     int loop2;
@@ -211,13 +226,13 @@ void CON_UpdateConsole(ConsoleInformation * console)
 
     Screenlines = console->ConsoleSurface->h / console->FontHeight;
 
-
     SDL_FillRect(console->ConsoleSurface, NULL,
                  SDL_MapRGBA(console->ConsoleSurface->format, 0, 20, 0,
                              SDL_ALPHA_OPAQUE));
 
     /* draw the background image if there is one */
-    if (console->BackgroundImage) {
+    if (console->BackgroundImage)
+    {
         DestRect.x = console->BackX;
         DestRect.y = console->BackY;
         DestRect.w = console->BackgroundImage->w;
@@ -231,42 +246,45 @@ void CON_UpdateConsole(ConsoleInformation * console)
        loop2: draws the scroll indicators to the line above the Commandline
      */
     for (loop = 0;
-         loop < Screenlines - 1
-         && loop < console->LineBuffer - console->ConsoleScrollBack;
-         loop++) {
+         loop < Screenlines - 1 && loop < console->LineBuffer - console->ConsoleScrollBack;
+         loop++)
+    {
         if (console->ConsoleScrollBack != 0 && loop == 0)
             for (loop2 = 0; loop2 < (console->VChars / 5) + 1; loop2++)
                 DT_DrawText(CON_SCROLL_INDICATOR, console->ConsoleSurface,
                             console->FontNumber,
                             CON_CHAR_BORDER +
-                            (loop2 * 5 * console->FontWidth),
+                                (loop2 * 5 * console->FontWidth),
                             (Screenlines - loop -
-                             2) * console->FontHeight);
+                             2) *
+                                console->FontHeight);
         else
-            DT_DrawText(console->
-                        ConsoleLines[console->ConsoleScrollBack + loop],
+            DT_DrawText(console->ConsoleLines[console->ConsoleScrollBack + loop],
                         console->ConsoleSurface, console->FontNumber,
                         CON_CHAR_BORDER,
                         (Screenlines - loop - 2) * console->FontHeight);
     }
 }
 
-void CON_UpdateOffset(ConsoleInformation * console)
+void CON_UpdateOffset(ConsoleInformation *console)
 {
     if (!console)
         return;
 
-    switch (console->Visible) {
+    switch (console->Visible)
+    {
     case CON_CLOSING:
         console->RaiseOffset -= CON_OPENCLOSE_SPEED;
-        if (console->RaiseOffset <= 0) {
+        if (console->RaiseOffset <= 0)
+        {
             console->RaiseOffset = 0;
             console->Visible = CON_CLOSED;
         }
         break;
     case CON_OPENING:
         console->RaiseOffset += CON_OPENCLOSE_SPEED;
-        if (console->RaiseOffset >= console->ConsoleSurface->h) {
+        if (console->RaiseOffset >= console->ConsoleSurface->h)
+        {
             console->RaiseOffset = console->ConsoleSurface->h;
             console->Visible = CON_OPEN;
         }
@@ -278,7 +296,7 @@ void CON_UpdateOffset(ConsoleInformation * console)
 }
 
 /* Draws the console buffer to the screen if the console is "visible" */
-void CON_DrawConsole(ConsoleInformation * console)
+void CON_DrawConsole(ConsoleInformation *console)
 {
     SDL_Rect DestRect;
     SDL_Rect SrcRect;
@@ -312,26 +330,23 @@ void CON_DrawConsole(ConsoleInformation * console)
                              255, 255, 255, console->ConsoleAlpha));
     SDL_BlitSurface(console->ConsoleSurface, &SrcRect,
                     console->OutputScreen, &DestRect);
-
 }
-
 
 /* Initializes the console */
 ConsoleInformation *CON_Init(const char *FontName,
-                             SDL_Surface * DisplayScreen, int lines,
+                             SDL_Surface *DisplayScreen, int lines,
                              SDL_Rect rect)
 {
     int loop;
     SDL_Surface *Temp;
     ConsoleInformation *newinfo;
 
-
     /* Create a new console struct and init it. */
     if ((newinfo =
-         (ConsoleInformation *) malloc(sizeof(ConsoleInformation))) ==
-        NULL) {
-        PRINT_ERROR
-            ("Could not allocate the space for a new console info struct.\n");
+             (ConsoleInformation *)malloc(sizeof(ConsoleInformation))) ==
+        NULL)
+    {
+        PRINT_ERROR("Could not allocate the space for a new console info struct.\n");
         return NULL;
     }
     newinfo->Visible = CON_CLOSED;
@@ -356,7 +371,8 @@ ConsoleInformation *CON_Init(const char *FontName,
     CON_SetTabCompletion(newinfo, Default_TabFunction);
 
     /* Load the consoles font */
-    if (-1 == (newinfo->FontNumber = DT_LoadFont(FontName, TRANS_FONT))) {
+    if (-1 == (newinfo->FontNumber = DT_LoadFont(FontName, TRANS_FONT)))
+    {
         PRINT_ERROR("Could not load the font ");
         fprintf(stderr, "\"%s\" for the console!\n", FontName);
         return NULL;
@@ -366,8 +382,7 @@ ConsoleInformation *CON_Init(const char *FontName,
     newinfo->FontWidth = DT_FontWidth(newinfo->FontNumber);
 
     /* make sure that the size of the console is valid */
-    if (rect.w > newinfo->OutputScreen->w
-        || rect.w < newinfo->FontWidth * 32)
+    if (rect.w > newinfo->OutputScreen->w || rect.w < newinfo->FontWidth * 32)
         rect.w = newinfo->OutputScreen->w;
     if (rect.h > newinfo->OutputScreen->h || rect.h < newinfo->FontHeight)
         rect.h = newinfo->OutputScreen->h;
@@ -382,17 +397,17 @@ ConsoleInformation *CON_Init(const char *FontName,
 
     /* load the console surface */
     Temp = SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, rect.h,
-                                newinfo->OutputScreen->format->
-                                BitsPerPixel,
+                                newinfo->OutputScreen->format->BitsPerPixel,
                                 newinfo->OutputScreen->format->Rmask,
                                 newinfo->OutputScreen->format->Gmask,
                                 newinfo->OutputScreen->format->Bmask,
                                 newinfo->OutputScreen->format->Amask);
-    if (Temp == NULL) {
+    if (Temp == NULL)
+    {
         PRINT_ERROR("Couldn't create the ConsoleSurface\n");
         return NULL;
     }
-    newinfo->ConsoleSurface = Temp;        /* SDL_DisplayFormat(Temp); */
+    newinfo->ConsoleSurface = Temp; /* SDL_DisplayFormat(Temp); */
     /* SDL_FreeSurface(Temp); */
     SDL_FillRect(newinfo->ConsoleSurface, NULL,
                  SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 20, 0,
@@ -400,17 +415,17 @@ ConsoleInformation *CON_Init(const char *FontName,
 
     /* Load the dirty rectangle for user input */
     Temp = SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, newinfo->FontHeight,
-                                newinfo->OutputScreen->format->
-                                BitsPerPixel,
+                                newinfo->OutputScreen->format->BitsPerPixel,
                                 newinfo->OutputScreen->format->Rmask,
                                 newinfo->OutputScreen->format->Gmask,
                                 newinfo->OutputScreen->format->Bmask,
                                 newinfo->OutputScreen->format->Amask);
-    if (Temp == NULL) {
+    if (Temp == NULL)
+    {
         PRINT_ERROR("Couldn't create the InputBackground\n");
         return NULL;
     }
-    newinfo->InputBackground = Temp;        /* SDL_DisplayFormat(Temp); */
+    newinfo->InputBackground = Temp; /* SDL_DisplayFormat(Temp); */
     /* SDL_FreeSurface(Temp); */
     SDL_FillRect(newinfo->InputBackground, NULL,
                  SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 20, 0,
@@ -432,20 +447,20 @@ ConsoleInformation *CON_Init(const char *FontName,
     newinfo->LineBuffer = lines;
 
     newinfo->ConsoleLines =
-        (char **) malloc(sizeof(char *) * newinfo->LineBuffer);
+        (char **)malloc(sizeof(char *) * newinfo->LineBuffer);
     newinfo->CommandLines =
-        (char **) malloc(sizeof(char *) * newinfo->LineBuffer);
-    for (loop = 0; loop <= newinfo->LineBuffer - 1; loop++) {
+        (char **)malloc(sizeof(char *) * newinfo->LineBuffer);
+    for (loop = 0; loop <= newinfo->LineBuffer - 1; loop++)
+    {
         newinfo->ConsoleLines[loop] =
-            (char *) calloc(CON_CHARS_PER_LINE + 1, sizeof(char));
+            (char *)calloc(CON_CHARS_PER_LINE + 1, sizeof(char));
         newinfo->CommandLines[loop] =
-            (char *) calloc(CON_CHARS_PER_LINE + 1, sizeof(char));
+            (char *)calloc(CON_CHARS_PER_LINE + 1, sizeof(char));
     }
     memset(newinfo->Command, 0, CON_CHARS_PER_LINE + 1);
     memset(newinfo->LCommand, 0, CON_CHARS_PER_LINE + 1);
     memset(newinfo->RCommand, 0, CON_CHARS_PER_LINE + 1);
     memset(newinfo->VCommand, 0, CON_CHARS_PER_LINE + 1);
-
 
     /*CON_Out(newinfo, "Console initialised."); */
     CON_NewLineConsole(newinfo);
@@ -454,9 +469,10 @@ ConsoleInformation *CON_Init(const char *FontName,
 }
 
 /* Makes the console visible */
-void CON_Show(ConsoleInformation * console)
+void CON_Show(ConsoleInformation *console)
 {
-    if (console) {
+    if (console)
+    {
         console->Visible = CON_OPENING;
         CON_UpdateConsole(console);
 
@@ -466,39 +482,40 @@ void CON_Show(ConsoleInformation * console)
 }
 
 /* Hides the console (make it invisible) */
-void CON_Hide(ConsoleInformation * console)
+void CON_Hide(ConsoleInformation *console)
 {
-    if (console) {
+    if (console)
+    {
         console->Visible = CON_CLOSING;
         SDL_EnableUNICODE(console->WasUnicode);
     }
 }
 
 /* tells wether the console is visible or not */
-int CON_isVisible(ConsoleInformation * console)
+int CON_isVisible(ConsoleInformation *console)
 {
     if (!console)
         return CON_CLOSED;
-    return ((console->Visible == CON_OPEN)
-            || (console->Visible == CON_OPENING));
+    return ((console->Visible == CON_OPEN) || (console->Visible == CON_OPENING));
 }
 
 /* Frees all the memory loaded by the console */
-void CON_Destroy(ConsoleInformation * console)
+void CON_Destroy(ConsoleInformation *console)
 {
     DT_DestroyDrawText();
     CON_Free(console);
 }
 
 /* Frees all the memory loaded by the console */
-void CON_Free(ConsoleInformation * console)
+void CON_Free(ConsoleInformation *console)
 {
     int i;
 
     if (!console)
         return;
 
-    for (i = 0; i <= console->LineBuffer - 1; i++) {
+    for (i = 0; i <= console->LineBuffer - 1; i++)
+    {
         free(console->ConsoleLines[i]);
         free(console->CommandLines[i]);
     }
@@ -510,9 +527,8 @@ void CON_Free(ConsoleInformation * console)
     free(console);
 }
 
-
 /* Increments the console lines */
-void CON_NewLineConsole(ConsoleInformation * console)
+void CON_NewLineConsole(ConsoleInformation *console)
 {
     int loop;
     char *temp;
@@ -538,12 +554,10 @@ void CON_NewLineConsole(ConsoleInformation * console)
     /* boundaries */
     if (console->ConsoleScrollBack > console->LineBuffer - 1)
         console->ConsoleScrollBack = console->LineBuffer - 1;
-
 }
 
-
 /* Increments the command lines */
-void CON_NewLineCommand(ConsoleInformation * console)
+void CON_NewLineCommand(ConsoleInformation *console)
 {
     int loop;
     char *temp;
@@ -552,7 +566,6 @@ void CON_NewLineCommand(ConsoleInformation * console)
         return;
 
     temp = console->CommandLines[console->LineBuffer - 1];
-
 
     for (loop = console->LineBuffer - 1; loop > 0; loop--)
         console->CommandLines[loop] = console->CommandLines[loop - 1];
@@ -572,14 +585,14 @@ void DrawCommandLine()
     int x;
     int commandbuffer;
     BitFont *CurrentFont;
-    static Uint32 NextBlinkTime = 0;        /* time the consoles cursor blinks again */
-    static int LastCursorPos = 0;        /* Last Cursor Position */
-    static int Blink = 0;        /* Is the cursor currently blinking */
+    static Uint32 NextBlinkTime = 0; /* time the consoles cursor blinks again */
+    static int LastCursorPos = 0;    /* Last Cursor Position */
+    static int Blink = 0;            /* Is the cursor currently blinking */
 
     if (!Topmost)
         return;
 
-    commandbuffer = Topmost->VChars - strlen(Topmost->Prompt) - 1;        /*  -1 to make cursor visible */
+    commandbuffer = Topmost->VChars - strlen(Topmost->Prompt) - 1; /*  -1 to make cursor visible */
 
     CurrentFont = DT_FontPointer(Topmost->FontNumber);
 
@@ -596,7 +609,6 @@ void DrawCommandLine()
     strncat(Topmost->VCommand, &Topmost->Command[Topmost->Offset],
             strlen(&Topmost->Command[Topmost->Offset]));
 
-
     /* first of all restore InputBackground */
     rect.x = 0;
     rect.y = Topmost->ConsoleSurface->h - Topmost->FontHeight;
@@ -612,23 +624,25 @@ void DrawCommandLine()
 
     /* at last add the cursor
        check if the blink period is over */
-    if (SDL_GetTicks() > NextBlinkTime) {
+    if (SDL_GetTicks() > NextBlinkTime)
+    {
         NextBlinkTime = SDL_GetTicks() + CON_BLINK_RATE;
         Blink = 1 - Blink;
     }
 
     /* check if cursor has moved - if yes display cursor anyway */
-    if (Topmost->CursorPos != LastCursorPos) {
+    if (Topmost->CursorPos != LastCursorPos)
+    {
         LastCursorPos = Topmost->CursorPos;
         NextBlinkTime = SDL_GetTicks() + CON_BLINK_RATE;
         Blink = 1;
     }
 
-    if (Blink) {
+    if (Blink)
+    {
         x = CON_CHAR_BORDER + Topmost->FontWidth * (Topmost->CursorPos -
                                                     Topmost->Offset +
-                                                    strlen(Topmost->
-                                                           Prompt));
+                                                    strlen(Topmost->Prompt));
         if (Topmost->InsMode)
             DT_DrawText(CON_INS_CURSOR, Topmost->ConsoleSurface,
                         Topmost->FontNumber, x,
@@ -638,11 +652,10 @@ void DrawCommandLine()
                         Topmost->FontNumber, x,
                         Topmost->ConsoleSurface->h - Topmost->FontHeight);
     }
-
 }
 
 /* Outputs text to the console (in game), up to CON_CHARS_PER_LINE chars can be entered */
-void CON_Out(ConsoleInformation * console, const char *str, ...)
+void CON_Out(ConsoleInformation *console, const char *str, ...)
 {
     va_list marker;
 
@@ -662,8 +675,10 @@ void CON_Out(ConsoleInformation * console, const char *str, ...)
        the only problem is that temp is maybe longer than the console
        width so we have to cut it into several pieces */
 
-    if (console->ConsoleLines) {
-        while ((int)strlen(ptemp) > console->VChars) {
+    if (console->ConsoleLines)
+    {
+        while ((int)strlen(ptemp) > console->VChars)
+        {
             CON_NewLineConsole(console);
             strncpy(console->ConsoleLines[0], ptemp, console->VChars);
             console->ConsoleLines[0][console->VChars] = '\0';
@@ -679,9 +694,8 @@ void CON_Out(ConsoleInformation * console, const char *str, ...)
     /* printf("%s\n", temp); */
 }
 
-
 /* Sets the alpha level of the console, 0 turns off alpha blending */
-void CON_Alpha(ConsoleInformation * console, unsigned char alpha)
+void CON_Alpha(ConsoleInformation *console, unsigned char alpha)
 {
     if (!console)
         return;
@@ -690,9 +704,8 @@ void CON_Alpha(ConsoleInformation * console, unsigned char alpha)
     console->ConsoleAlpha = alpha;
 }
 
-
 /* Adds  background image to the console, x and y based on consoles x and y */
-int CON_Background(ConsoleInformation * console, const char *image, int x,
+int CON_Background(ConsoleInformation *console, const char *image, int x,
                    int y)
 {
     SDL_Surface *temp;
@@ -702,7 +715,8 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
         return 1;
 
     /* Free the background from the console */
-    if (image == NULL) {
+    if (image == NULL)
+    {
         if (console->BackgroundImage == NULL)
             SDL_FreeSurface(console->BackgroundImage);
         console->BackgroundImage = NULL;
@@ -718,7 +732,8 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
 #else
     temp = SDL_LoadBMP(image);
 #endif
-    if (!temp) {
+    if (!temp)
+    {
         CON_Out(console, "Cannot load background %s.", image);
         return 1;
     }
@@ -750,7 +765,7 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
 }
 
 /* takes a new x and y of the top left of the console window */
-void CON_Position(ConsoleInformation * console, int x, int y)
+void CON_Position(ConsoleInformation *console, int x, int y)
 {
     if (!console)
         return;
@@ -768,7 +783,7 @@ void CON_Position(ConsoleInformation * console, int x, int y)
 
 /* resizes the console, has to reset alot of stuff
  * returns 1 on error */
-int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
+int CON_Resize(ConsoleInformation *console, SDL_Rect rect)
 {
     SDL_Surface *Temp;
     SDL_Rect backgroundsrc, backgrounddest;
@@ -777,8 +792,7 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
         return 1;
 
     /* make sure that the size of the console is valid */
-    if (rect.w > console->OutputScreen->w
-        || rect.w < console->FontWidth * 32)
+    if (rect.w > console->OutputScreen->w || rect.w < console->FontWidth * 32)
         rect.w = console->OutputScreen->w;
     if (rect.h > console->OutputScreen->h || rect.h < console->FontHeight)
         rect.h = console->OutputScreen->h;
@@ -797,7 +811,8 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
         SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, rect.h,
                              console->OutputScreen->format->BitsPerPixel,
                              0, 0, 0, 0);
-    if (Temp == NULL) {
+    if (Temp == NULL)
+    {
         PRINT_ERROR("Couldn't create the console->ConsoleSurface\n");
         return 1;
     }
@@ -810,7 +825,8 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
         SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, console->FontHeight,
                              console->OutputScreen->format->BitsPerPixel,
                              0, 0, 0, 0);
-    if (Temp == NULL) {
+    if (Temp == NULL)
+    {
         PRINT_ERROR("Couldn't create the input background\n");
         return 1;
     }
@@ -821,7 +837,8 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
     console->ConsoleScrollBack = 0;
 
     /* Reload the background image (for the input text area) in the console */
-    if (console->BackgroundImage) {
+    if (console->BackgroundImage)
+    {
         backgroundsrc.x = 0;
         backgroundsrc.y =
             console->ConsoleSurface->h - console->FontHeight -
@@ -854,8 +871,8 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
 }
 
 /* Transfers the console to another screen surface, and adjusts size */
-int CON_Transfer(ConsoleInformation * console,
-                 SDL_Surface * new_outputscreen, SDL_Rect rect)
+int CON_Transfer(ConsoleInformation *console,
+                 SDL_Surface *new_outputscreen, SDL_Rect rect)
 {
     if (!console)
         return 1;
@@ -866,7 +883,7 @@ int CON_Transfer(ConsoleInformation * console,
 }
 
 /* Sets the topmost console for input */
-void CON_Topmost(ConsoleInformation * console)
+void CON_Topmost(ConsoleInformation *console)
 {
     SDL_Rect rect;
 
@@ -874,7 +891,8 @@ void CON_Topmost(ConsoleInformation * console)
         return;
 
     /* Make sure the blinking cursor is gone */
-    if (Topmost) {
+    if (Topmost)
+    {
         rect.x = 0;
         rect.y = Topmost->ConsoleSurface->h - Topmost->FontHeight;
         rect.w = Topmost->InputBackground->w;
@@ -889,7 +907,7 @@ void CON_Topmost(ConsoleInformation * console)
 }
 
 /* Sets the Prompt for console */
-void CON_SetPrompt(ConsoleInformation * console, const char *newprompt)
+void CON_SetPrompt(ConsoleInformation *console, const char *newprompt)
 {
     if (!console)
         return;
@@ -903,28 +921,29 @@ void CON_SetPrompt(ConsoleInformation * console, const char *newprompt)
 }
 
 /* Sets the key that deactivates (hides) the console. */
-void CON_SetHideKey(ConsoleInformation * console, int key)
+void CON_SetHideKey(ConsoleInformation *console, int key)
 {
     if (console)
         console->HideKey = key;
 }
 
 /* Executes the command entered */
-void CON_Execute(ConsoleInformation * console, char *command)
+void CON_Execute(ConsoleInformation *console, char *command)
 {
     if (console)
         console->CmdFunction(console, command);
 }
 
-void CON_SetExecuteFunction(ConsoleInformation * console,
-                            void (*CmdFunction) (ConsoleInformation *
-                                                 console2, char *command))
+void CON_SetExecuteFunction(ConsoleInformation *console,
+                            void (*CmdFunction)(ConsoleInformation *
+                                                    console2,
+                                                char *command))
 {
     if (console)
         console->CmdFunction = CmdFunction;
 }
 
-void Default_CmdFunction(ConsoleInformation * console, char *command)
+void Default_CmdFunction(ConsoleInformation *console, char *command)
 {
     CON_Out(console, "     No CommandFunction registered");
     CON_Out(console, "     use 'CON_SetExecuteFunction' to register one");
@@ -932,14 +951,14 @@ void Default_CmdFunction(ConsoleInformation * console, char *command)
     CON_Out(console, "Unknown Command \"%s\"", command);
 }
 
-void CON_SetTabCompletion(ConsoleInformation * console,
-                          char *(*TabFunction) (char *command))
+void CON_SetTabCompletion(ConsoleInformation *console,
+                          char *(*TabFunction)(char *command))
 {
     if (console)
         console->TabFunction = TabFunction;
 }
 
-void CON_TabCompletion(ConsoleInformation * console)
+void CON_TabCompletion(ConsoleInformation *console)
 {
     int i, j;
     char *command;
@@ -951,7 +970,7 @@ void CON_TabCompletion(ConsoleInformation * console)
     command = console->TabFunction(command);
 
     if (!command)
-        return;                        /* no tab completion took place so return silently */
+        return; /* no tab completion took place so return silently */
 
     /*      command now contains the tabcompleted string. check for correct size
        since the string has to fit into the commandline it can have a maximum length of
@@ -965,7 +984,8 @@ void CON_TabCompletion(ConsoleInformation * console)
     memset(console->LCommand, 0, CON_CHARS_PER_LINE + 1);
     console->CursorPos = 0;
 
-    for (i = 0; i < j; i++) {
+    for (i = 0; i < j; i++)
+    {
         console->CursorPos++;
         console->LCommand[i] = command[i];
     }
@@ -985,11 +1005,12 @@ char *Default_TabFunction(char *command)
     return NULL;
 }
 
-void Cursor_Left(ConsoleInformation * console)
+void Cursor_Left(ConsoleInformation *console)
 {
     char temp[CON_CHARS_PER_LINE + 1];
 
-    if (Topmost->CursorPos > 0) {
+    if (Topmost->CursorPos > 0)
+    {
         Topmost->CursorPos--;
         strcpy(temp, Topmost->RCommand);
         strcpy(Topmost->RCommand,
@@ -1000,11 +1021,12 @@ void Cursor_Left(ConsoleInformation * console)
     }
 }
 
-void Cursor_Right(ConsoleInformation * console)
+void Cursor_Right(ConsoleInformation *console)
 {
     char temp[CON_CHARS_PER_LINE + 1];
 
-    if (Topmost->CursorPos < (int)strlen(Topmost->Command)) {
+    if (Topmost->CursorPos < (int)strlen(Topmost->Command))
+    {
         Topmost->CursorPos++;
         strncat(Topmost->LCommand, Topmost->RCommand, 1);
         strcpy(temp, Topmost->RCommand);
@@ -1013,7 +1035,7 @@ void Cursor_Right(ConsoleInformation * console)
     }
 }
 
-void Cursor_Home(ConsoleInformation * console)
+void Cursor_Home(ConsoleInformation *console)
 {
     char temp[CON_CHARS_PER_LINE + 1];
 
@@ -1024,7 +1046,7 @@ void Cursor_Home(ConsoleInformation * console)
     memset(Topmost->LCommand, 0, CON_CHARS_PER_LINE + 1);
 }
 
-void Cursor_End(ConsoleInformation * console)
+void Cursor_End(ConsoleInformation *console)
 {
     Topmost->CursorPos = strlen(Topmost->Command);
     strncat(Topmost->LCommand, Topmost->RCommand,
@@ -1032,20 +1054,22 @@ void Cursor_End(ConsoleInformation * console)
     memset(Topmost->RCommand, 0, CON_CHARS_PER_LINE + 1);
 }
 
-void Cursor_Del(ConsoleInformation * console)
+void Cursor_Del(ConsoleInformation *console)
 {
     char temp[CON_CHARS_PER_LINE + 1];
 
-    if (strlen(Topmost->RCommand) > 0) {
+    if (strlen(Topmost->RCommand) > 0)
+    {
         strcpy(temp, Topmost->RCommand);
         strcpy(Topmost->RCommand, &temp[1]);
         Assemble_Command(console);
     }
 }
 
-void Cursor_BSpace(ConsoleInformation * console)
+void Cursor_BSpace(ConsoleInformation *console)
 {
-    if (Topmost->CursorPos > 0) {
+    if (Topmost->CursorPos > 0)
+    {
         Topmost->CursorPos--;
         Topmost->Offset--;
         if (Topmost->Offset < 0)
@@ -1055,16 +1079,16 @@ void Cursor_BSpace(ConsoleInformation * console)
     }
 }
 
-void Cursor_Add(ConsoleInformation * console, SDL_Event * event)
+void Cursor_Add(ConsoleInformation *console, SDL_Event *event)
 {
     int len = 0;
 
     /* Again: the commandline has to hold the command and the cursor (+1) */
-    if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE
-        && event->key.keysym.unicode) {
+    if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE && event->key.keysym.unicode)
+    {
         Topmost->CursorPos++;
         len = strlen(Topmost->LCommand);
-        Topmost->LCommand[len] = (char) event->key.keysym.unicode;
+        Topmost->LCommand[len] = (char)event->key.keysym.unicode;
         Topmost->LCommand[len + sizeof(char)] = '\0';
         Assemble_Command(console);
     }
@@ -1074,22 +1098,24 @@ void Add_String_to_Console(char *text)
 {
 
     int len = 0, textlen, i;
-    
+
     textlen = (int)strlen(text);
-    
-    for ( i = 0 ; i < textlen; ++i) {
-            /* Again: the commandline has to hold the command and the cursor (+1) */
-            if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE) {
+
+    for (i = 0; i < textlen; ++i)
+    {
+        /* Again: the commandline has to hold the command and the cursor (+1) */
+        if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE)
+        {
             Topmost->CursorPos++;
             len = strlen(Topmost->LCommand);
             Topmost->LCommand[len] = text[i];
             Topmost->LCommand[len + sizeof(char)] = '\0';
             Assemble_Command(Topmost);
-            }
+        }
     }
 }
 
-void Clear_Command(ConsoleInformation * console)
+void Clear_Command(ConsoleInformation *console)
 {
     Topmost->CursorPos = 0;
     memset(Topmost->VCommand, 0, CON_CHARS_PER_LINE + 1);
@@ -1098,7 +1124,7 @@ void Clear_Command(ConsoleInformation * console)
     memset(Topmost->RCommand, 0, CON_CHARS_PER_LINE + 1);
 }
 
-void Assemble_Command(ConsoleInformation * console)
+void Assemble_Command(ConsoleInformation *console)
 {
     int len = 0;
 
@@ -1109,7 +1135,7 @@ void Assemble_Command(ConsoleInformation * console)
     Topmost->Command[CON_CHARS_PER_LINE] = '\0';
 }
 
-void Clear_History(ConsoleInformation * console)
+void Clear_History(ConsoleInformation *console)
 {
     int loop;
 
@@ -1117,9 +1143,10 @@ void Clear_History(ConsoleInformation * console)
         memset(console->ConsoleLines[loop], 0, CON_CHARS_PER_LINE + 1);
 }
 
-void Command_Up(ConsoleInformation * console)
+void Command_Up(ConsoleInformation *console)
 {
-    if (console->CommandScrollBack < console->TotalCommands - 1) {
+    if (console->CommandScrollBack < console->TotalCommands - 1)
+    {
         /* move back a line in the command strings and copy the command to the current input string */
         console->CommandScrollBack++;
         /* I want to know if my string handling REALLY works :-) */
@@ -1136,9 +1163,10 @@ void Command_Up(ConsoleInformation * console)
     }
 }
 
-void Command_Down(ConsoleInformation * console)
+void Command_Down(ConsoleInformation *console)
 {
-    if (console->CommandScrollBack > -1) {
+    if (console->CommandScrollBack > -1)
+    {
         /* move forward a line in the command strings and copy the command to the current input string */
         console->CommandScrollBack--;
         /* I want to know if my string handling REALLY works :-) */

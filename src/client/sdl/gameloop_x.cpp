@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha Lindstrï¿½m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,14 +28,14 @@ static int Poll_input(void)
 {
     SDL_Event evt;
     while (SDL_PollEvent(&evt))
-        if (Process_event(&evt) == 0) 
+        if (Process_event(&evt) == 0)
             return 1;
     return 0;
 }
 
 /*
  * This is a Game_loop that uses X specific hacks to improve
- * responsiveness. Basically it uses the same mechanism as the 
+ * responsiveness. Basically it uses the same mechanism as the
  * X client to listen to network and user input.
  */
 void Game_loop(void)
@@ -46,12 +46,14 @@ void Game_loop(void)
     SDL_SysWMinfo info;
 
     SDL_VERSION(&info.version);
-    if (!SDL_GetWMInfo(&info)) {
+    if (!SDL_GetWMInfo(&info))
+    {
         error("SDL_GetWMInfo not supported");
         return;
     }
 
-    if ((result = Net_input()) == -1) {
+    if ((result = Net_input()) == -1)
+    {
         error("Bad server input");
         return;
     }
@@ -61,11 +63,13 @@ void Game_loop(void)
     if (Net_flush() == -1)
         return;
 
-    if ((clientfd = ConnectionNumber(info.info.x11.display)) == -1) {
+    if ((clientfd = ConnectionNumber(info.info.x11.display)) == -1)
+    {
         error("Bad client filedescriptor");
         return;
     }
-    if ((netfd = Net_fd()) == -1) {
+    if ((netfd = Net_fd()) == -1)
+    {
         error("Bad socket filedescriptor");
         return;
     }
@@ -74,12 +78,14 @@ void Game_loop(void)
     FD_SET(clientfd, &rfds);
     FD_SET(netfd, &rfds);
     max = (clientfd > netfd) ? clientfd : netfd;
-    for (tfds = rfds; ; rfds = tfds) {
+    for (tfds = rfds;; rfds = tfds)
+    {
 
         tv.tv_sec = 1;
         tv.tv_usec = 0;
 
-        if (maxMouseTurnsPS > 0) {
+        if (maxMouseTurnsPS > 0)
+        {
             int t = Client_check_pointer_move_interval();
 
             assert(t > 0);
@@ -87,40 +93,49 @@ void Game_loop(void)
             tv.tv_usec = t % 1000000;
         }
 
-        if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1) {
+        if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1)
+        {
             if (errno == EINTR)
                 continue;
             error("Select failed");
             return;
         }
-        
-        if (n == 0) {
+
+        if (n == 0)
+        {
             if (maxMouseTurnsPS > 0 &&
                 cumulativeMouseMovement != 0)
                 continue;
 
-            if (result <= 1) {
+            if (result <= 1)
+            {
                 warn("No response from server");
                 continue;
             }
         }
-        if (FD_ISSET(clientfd, &rfds)) {
+        if (FD_ISSET(clientfd, &rfds))
+        {
             if (Poll_input())
                 return;
-            if (Net_flush() == -1) {
+            if (Net_flush() == -1)
+            {
                 error("Bad net flush after input");
                 return;
             }
         }
-        if (FD_ISSET(netfd, &rfds) || result > 1) {
-            if ((result = Net_input()) == -1) {
+        if (FD_ISSET(netfd, &rfds) || result > 1)
+        {
+            if ((result = Net_input()) == -1)
+            {
                 warn("Bad net input.  Have a nice day!");
                 return;
             }
-            if (result > 0) {
+            if (result > 0)
+            {
                 if (Poll_input())
                     return;
-                if (Net_flush() == -1) {
+                if (Net_flush() == -1)
+                {
                     error("Bad net flush");
                     return;
                 }

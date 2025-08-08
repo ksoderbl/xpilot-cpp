@@ -1,9 +1,9 @@
-/* 
+/*
 
  SDL_gfxPrimitives: graphics primitives for SDL
 
  LGPL (c) A. Schiffler
- 
+
 */
 
 #ifndef _SDL_gfxPrimitives_h
@@ -12,20 +12,21 @@
 #include "xpclient_sdl.h"
 
 #ifndef M_PI
-# define M_PI        3.141592654
+#define M_PI 3.141592654
 #endif
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* ----- Versioning */
+    /* ----- Versioning */
 
-#define SDL_GFXPRIMITIVES_MAJOR        1
-#define SDL_GFXPRIMITIVES_MINOR        5
+#define SDL_GFXPRIMITIVES_MAJOR 1
+#define SDL_GFXPRIMITIVES_MINOR 5
 
-/* ----- W32 DLL interface */
+    /* ----- W32 DLL interface */
 
 #ifdef WIN32
 #ifdef BUILD_DLL
@@ -37,143 +38,142 @@ extern "C" {
 #define DLLINTERFACE
 #endif
 
-/* ----- Prototypes */
+    /* ----- Prototypes */
 
-/* Note: all ___Color routines expect the color to be in format 0xRRGGBBAA */
+    /* Note: all ___Color routines expect the color to be in format 0xRRGGBBAA */
 
-/* Pixel */
+    /* Pixel */
 
-    DLLINTERFACE int pixelColor(SDL_Surface * dst, Sint16 x, Sint16 y, Uint32 color);
-    DLLINTERFACE int pixelRGBA(SDL_Surface * dst, Sint16 x, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int pixelColor(SDL_Surface *dst, Sint16 x, Sint16 y, Uint32 color);
+    DLLINTERFACE int pixelRGBA(SDL_Surface *dst, Sint16 x, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Horizontal line */
+    /* Horizontal line */
 
-    DLLINTERFACE int hlineColor(SDL_Surface * dst, Sint16 x1, Sint16 x2, Sint16 y, Uint32 color);
-    DLLINTERFACE int hlineRGBA(SDL_Surface * dst, Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int hlineColor(SDL_Surface *dst, Sint16 x1, Sint16 x2, Sint16 y, Uint32 color);
+    DLLINTERFACE int hlineRGBA(SDL_Surface *dst, Sint16 x1, Sint16 x2, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Vertical line */
+    /* Vertical line */
 
-    DLLINTERFACE int vlineColor(SDL_Surface * dst, Sint16 x, Sint16 y_1, Sint16 y2, Uint32 color);
-    DLLINTERFACE int vlineRGBA(SDL_Surface * dst, Sint16 x, Sint16 y_1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int vlineColor(SDL_Surface *dst, Sint16 x, Sint16 y_1, Sint16 y2, Uint32 color);
+    DLLINTERFACE int vlineRGBA(SDL_Surface *dst, Sint16 x, Sint16 y_1, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Rectangle */
+    /* Rectangle */
 
-    DLLINTERFACE int rectangleColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
-    DLLINTERFACE int rectangleRGBA(SDL_Surface * dst, Sint16 x1, Sint16 y_1,
+    DLLINTERFACE int rectangleColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
+    DLLINTERFACE int rectangleRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1,
                                    Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Filled rectangle (Box) */
+    /* Filled rectangle (Box) */
 
-    DLLINTERFACE int boxColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
-    DLLINTERFACE int boxRGBA(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2,
+    DLLINTERFACE int boxColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
+    DLLINTERFACE int boxRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2,
                              Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Line */
+    /* Line */
 
-    DLLINTERFACE int lineColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
-    DLLINTERFACE int lineRGBA(SDL_Surface * dst, Sint16 x1, Sint16 y_1,
+    DLLINTERFACE int lineColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
+    DLLINTERFACE int lineRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1,
                               Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* AA Line */
-    DLLINTERFACE int aalineColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
-    DLLINTERFACE int aalineRGBA(SDL_Surface * dst, Sint16 x1, Sint16 y_1,
+    /* AA Line */
+    DLLINTERFACE int aalineColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Uint32 color);
+    DLLINTERFACE int aalineRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1,
                                 Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Circle */
+    /* Circle */
 
-    DLLINTERFACE int circleColor(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 r, Uint32 color);
-    DLLINTERFACE int circleRGBA(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int circleColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 r, Uint32 color);
+    DLLINTERFACE int circleRGBA(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* AA Circle */
+    /* AA Circle */
 
-    DLLINTERFACE int aacircleColor(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 r, Uint32 color);
-    DLLINTERFACE int aacircleRGBA(SDL_Surface * dst, Sint16 x, Sint16 y,
+    DLLINTERFACE int aacircleColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 r, Uint32 color);
+    DLLINTERFACE int aacircleRGBA(SDL_Surface *dst, Sint16 x, Sint16 y,
                                   Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Filled Circle */
+    /* Filled Circle */
 
-    DLLINTERFACE int filledCircleColor(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 r, Uint32 color);
-    DLLINTERFACE int filledCircleRGBA(SDL_Surface * dst, Sint16 x, Sint16 y,
+    DLLINTERFACE int filledCircleColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 r, Uint32 color);
+    DLLINTERFACE int filledCircleRGBA(SDL_Surface *dst, Sint16 x, Sint16 y,
                                       Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Ellipse */
+    /* Ellipse */
 
-    DLLINTERFACE int ellipseColor(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 rx, Sint16 ry, Uint32 color);
-    DLLINTERFACE int ellipseRGBA(SDL_Surface * dst, Sint16 x, Sint16 y,
+    DLLINTERFACE int ellipseColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 rx, Sint16 ry, Uint32 color);
+    DLLINTERFACE int ellipseRGBA(SDL_Surface *dst, Sint16 x, Sint16 y,
                                  Sint16 rx, Sint16 ry, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* AA Ellipse */
+    /* AA Ellipse */
 
-    DLLINTERFACE int aaellipseColor(SDL_Surface * dst, Sint16 xc, Sint16 yc, Sint16 rx, Sint16 ry, Uint32 color);
-    DLLINTERFACE int aaellipseRGBA(SDL_Surface * dst, Sint16 x, Sint16 y,
+    DLLINTERFACE int aaellipseColor(SDL_Surface *dst, Sint16 xc, Sint16 yc, Sint16 rx, Sint16 ry, Uint32 color);
+    DLLINTERFACE int aaellipseRGBA(SDL_Surface *dst, Sint16 x, Sint16 y,
                                    Sint16 rx, Sint16 ry, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Filled Ellipse */
+    /* Filled Ellipse */
 
-    DLLINTERFACE int filledEllipseColor(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 rx, Sint16 ry, Uint32 color);
-    DLLINTERFACE int filledEllipseRGBA(SDL_Surface * dst, Sint16 x, Sint16 y,
+    DLLINTERFACE int filledEllipseColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 rx, Sint16 ry, Uint32 color);
+    DLLINTERFACE int filledEllipseRGBA(SDL_Surface *dst, Sint16 x, Sint16 y,
                                        Sint16 rx, Sint16 ry, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-/* Filled Pie */
+    /* Filled Pie */
 
-    DLLINTERFACE int filledpieColor(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 rad,
+    DLLINTERFACE int filledpieColor(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 rad,
                                     Sint16 start, Sint16 end, Uint32 color);
-    DLLINTERFACE int filledpieRGBA(SDL_Surface * dst, Sint16 x, Sint16 y, Sint16 rad,
+    DLLINTERFACE int filledpieRGBA(SDL_Surface *dst, Sint16 x, Sint16 y, Sint16 rad,
                                    Sint16 start, Sint16 end, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Trigon */
+    /* Trigon */
 
-    DLLINTERFACE int trigonColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3, Uint32 color);
-    DLLINTERFACE int trigonRGBA(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3,
-                                 Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int trigonColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3, Uint32 color);
+    DLLINTERFACE int trigonRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3,
+                                Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* AA-Trigon */
+    /* AA-Trigon */
 
-    DLLINTERFACE int aatrigonColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3, Uint32 color);
-    DLLINTERFACE int aatrigonRGBA(SDL_Surface * dst,  Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3,
-                                   Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int aatrigonColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3, Uint32 color);
+    DLLINTERFACE int aatrigonRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3,
+                                  Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Filled Trigon */
+    /* Filled Trigon */
 
-    DLLINTERFACE int filledTrigonColor(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3, int color);
-    DLLINTERFACE int filledTrigonRGBA(SDL_Surface * dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3,
-                                       Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int filledTrigonColor(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3, int color);
+    DLLINTERFACE int filledTrigonRGBA(SDL_Surface *dst, Sint16 x1, Sint16 y_1, Sint16 x2, Sint16 y2, Sint16 x3, Sint16 y3,
+                                      Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Polygon */
+    /* Polygon */
 
-    DLLINTERFACE int polygonColor(SDL_Surface * dst, Sint16 * vx, Sint16 * vy, int n, Uint32 color);
-    DLLINTERFACE int polygonRGBA(SDL_Surface * dst, Sint16 * vx, Sint16 * vy,
+    DLLINTERFACE int polygonColor(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, Uint32 color);
+    DLLINTERFACE int polygonRGBA(SDL_Surface *dst, Sint16 *vx, Sint16 *vy,
                                  int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* AA-Polygon */
+    /* AA-Polygon */
 
-    DLLINTERFACE int aapolygonColor(SDL_Surface * dst, Sint16 * vx, Sint16 * vy, int n, Uint32 color);
-    DLLINTERFACE int aapolygonRGBA(SDL_Surface * dst, Sint16 * vx, Sint16 * vy,
+    DLLINTERFACE int aapolygonColor(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, Uint32 color);
+    DLLINTERFACE int aapolygonRGBA(SDL_Surface *dst, Sint16 *vx, Sint16 *vy,
                                    int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Filled Polygon */
+    /* Filled Polygon */
 
-    DLLINTERFACE int filledPolygonColor(SDL_Surface * dst, Sint16 * vx, Sint16 * vy, int n, int color);
-    DLLINTERFACE int filledPolygonRGBA(SDL_Surface * dst, Sint16 * vx,
-                                       Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int filledPolygonColor(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, int color);
+    DLLINTERFACE int filledPolygonRGBA(SDL_Surface *dst, Sint16 *vx,
+                                       Sint16 *vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
-/* Bezier */
-/* s = number of steps */
+    /* Bezier */
+    /* s = number of steps */
 
-    DLLINTERFACE int bezierColor(SDL_Surface * dst, Sint16 * vx, Sint16 * vy, int n, int s, Uint32 color);
-    DLLINTERFACE int bezierRGBA(SDL_Surface * dst, Sint16 * vx, Sint16 * vy,
-                                 int n, int s, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int bezierColor(SDL_Surface *dst, Sint16 *vx, Sint16 *vy, int n, int s, Uint32 color);
+    DLLINTERFACE int bezierRGBA(SDL_Surface *dst, Sint16 *vx, Sint16 *vy,
+                                int n, int s, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
+    /* 8x8 Characters/Strings */
 
-/* 8x8 Characters/Strings */
-
-    DLLINTERFACE int characterColor(SDL_Surface * dst, Sint16 x, Sint16 y, char c, Uint32 color);
-    DLLINTERFACE int characterRGBA(SDL_Surface * dst, Sint16 x, Sint16 y, char c, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-    DLLINTERFACE int stringColor(SDL_Surface * dst, Sint16 x, Sint16 y, char *c, Uint32 color);
-    DLLINTERFACE int stringRGBA(SDL_Surface * dst, Sint16 x, Sint16 y, char *c, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color);
+    DLLINTERFACE int characterRGBA(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+    DLLINTERFACE int stringColor(SDL_Surface *dst, Sint16 x, Sint16 y, char *c, Uint32 color);
+    DLLINTERFACE int stringRGBA(SDL_Surface *dst, Sint16 x, Sint16 y, char *c, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 };
 #endif
 
-#endif                                /* _SDL_gfxPrimitives_h */
+#endif /* _SDL_gfxPrimitives_h */

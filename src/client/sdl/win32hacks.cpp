@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha Lindstrï¿½m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,18 +30,18 @@ HWND notifyWnd;
 int ThreadedDraw;
 BOOL drawPending;
 int RadarDivisor;
-struct {
+struct
+{
         HANDLE eventNotDrawing;
 } dinfo;
-
 
 /* SDL client does not use MFC crap */
 void _Trace(char *fmt, ...)
 {
         va_list ap;
         va_start(ap, fmt);
-    vprintf(fmt, ap);
-    va_end(ap);
+        vprintf(fmt, ap);
+        va_end(ap);
 }
 
 void Progress(char *fmt, ...) {}
