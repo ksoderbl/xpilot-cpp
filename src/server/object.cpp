@@ -116,12 +116,29 @@ void Object_free_ptr(object_t *obj)
 
 static anyobject_t *objArray;
 
+#define SHOWTYPESIZE(T) warn("sizeof(" #T ") = %d", sizeof(T))
+
 void Alloc_shots(int number)
 {
     xpinfo("Alloc_shots: number = %d", number);
 
     anyobject_t *x;
     int i;
+
+#if 1
+    SHOWTYPESIZE(object_t);
+    SHOWTYPESIZE(ballobject_t);
+    SHOWTYPESIZE(mineobject_t);
+    SHOWTYPESIZE(missileobject_t);
+    SHOWTYPESIZE(smartobject_t);
+    SHOWTYPESIZE(torpobject_t);
+    // SHOWTYPESIZE(heatobject_t);
+    SHOWTYPESIZE(wireobject_t);
+    // SHOWTYPESIZE(pulseobject_t);
+    // SHOWTYPESIZE(itemobject_t);
+    SHOWTYPESIZE(anyobject_t);
+    SHOWTYPESIZE(player_t);
+#endif
 
     xpinfo("Alloc_shots: sizeof(anyobject_t) = %d", sizeof(anyobject_t));
     xpinfo("Alloc_shots: total allocation = %d bytes", number * sizeof(anyobject_t));
