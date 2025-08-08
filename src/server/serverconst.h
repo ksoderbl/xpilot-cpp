@@ -135,7 +135,8 @@
 #define NUM_IDS 256
 #define MAX_PSEUDO_PLAYERS 16
 
-#define MAX_TOTAL_SHOTS 16384 /* must be <= 65536 */
+// MAX_TOTAL_SHOTS was increased from 16384 to 65536.
+#define MAX_TOTAL_SHOTS 65536 /* must be <= 65536? */
 #define MAX_TOTAL_PULSES (5 * 64)
 #define MAX_TOTAL_ECMS 64
 #define MAX_TOTAL_TRANSPORTERS (2 * 64)
