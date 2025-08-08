@@ -1055,38 +1055,22 @@ static int Map_cleanup(void)
 {
     if (num_bases > 0)
     {
-        if (bases != NULL)
-        {
-            free(bases);
-            bases = NULL;
-        }
+        XFREE(bases);
         num_bases = 0;
     }
     if (num_fuels > 0)
     {
-        if (fuels != NULL)
-        {
-            free(fuels);
-            fuels = NULL;
-        }
+        XFREE(fuels);
         num_fuels = 0;
     }
     if (num_targets > 0)
     {
-        if (targets != NULL)
-        {
-            free(targets);
-            targets = NULL;
-        }
+        XFREE(targets);
         num_targets = 0;
     }
     if (num_cannons > 0)
     {
-        if (cannons != NULL)
-        {
-            free(cannons);
-            cannons = NULL;
-        }
+        XFREE(cannons);
         num_cannons = 0;
     }
     return 0;
@@ -1109,7 +1093,7 @@ other_t *Other_by_id(int id)
     return NULL;
 }
 
-shipobj_t *Ship_by_id(int id)
+shipshape_t *Ship_by_id(int id)
 {
     other_t *other;
 
@@ -2217,116 +2201,97 @@ static void clientCleanup(void)
     if (max_refuel > 0 && refuel_ptr)
     {
         max_refuel = 0;
-        free(refuel_ptr);
-        refuel_ptr = 0;
+        XFREE(refuel_ptr);
     }
     if (max_connector > 0 && connector_ptr)
     {
         max_connector = 0;
-        free(connector_ptr);
-        connector_ptr = 0;
+        XFREE(connector_ptr);
     }
     if (max_laser > 0 && laser_ptr)
     {
         max_laser = 0;
-        free(laser_ptr);
-        laser_ptr = 0;
+        XFREE(laser_ptr);
     }
     if (max_missile > 0 && missile_ptr)
     {
         max_missile = 0;
-        free(missile_ptr);
-        missile_ptr = 0;
+        XFREE(missile_ptr);
     }
     if (max_ball > 0 && ball_ptr)
     {
         max_ball = 0;
-        free(ball_ptr);
-        ball_ptr = 0;
+        XFREE(ball_ptr);
     }
     if (max_ship > 0 && ship_ptr)
     {
         max_ship = 0;
-        free(ship_ptr);
-        ship_ptr = 0;
+        XFREE(ship_ptr);
     }
     if (max_mine > 0 && mine_ptr)
     {
         max_mine = 0;
-        free(mine_ptr);
-        mine_ptr = 0;
+        XFREE(mine_ptr);
     }
     if (max_ecm > 0 && ecm_ptr)
     {
         max_ecm = 0;
-        free(ecm_ptr);
-        ecm_ptr = 0;
+        XFREE(ecm_ptr);
     }
     if (max_trans > 0 && trans_ptr)
     {
         max_trans = 0;
-        free(trans_ptr);
-        trans_ptr = 0;
+        XFREE(trans_ptr);
     }
     if (max_paused > 0 && paused_ptr)
     {
         max_paused = 0;
-        free(paused_ptr);
-        paused_ptr = 0;
+        XFREE(paused_ptr);
     }
     if (max_radar > 0 && radar_ptr)
     {
         max_radar = 0;
-        free(radar_ptr);
-        radar_ptr = 0;
+        XFREE(radar_ptr);
     }
     if (max_vcannon > 0 && vcannon_ptr)
     {
         max_vcannon = 0;
-        free(vcannon_ptr);
-        vcannon_ptr = 0;
+        XFREE(vcannon_ptr);
     }
     if (max_vfuel > 0 && vfuel_ptr)
     {
         max_vfuel = 0;
-        free(vfuel_ptr);
-        vfuel_ptr = 0;
+        XFREE(vfuel_ptr);
     }
     if (max_vbase > 0 && vbase_ptr)
     {
         max_vbase = 0;
-        free(vbase_ptr);
-        vbase_ptr = 0;
+        XFREE(vbase_ptr);
     }
     if (max_vdecor > 0 && vdecor_ptr)
     {
         max_vdecor = 0;
-        free(vdecor_ptr);
-        vdecor_ptr = 0;
+        XFREE(vdecor_ptr);
     }
     if (max_itemtype > 0 && itemtype_ptr)
     {
         max_itemtype = 0;
-        free(itemtype_ptr);
-        itemtype_ptr = 0;
+        XFREE(itemtype_ptr);
     }
     if (max_wreckage > 0 && wreckage_ptr)
     {
         max_wreckage = 0;
-        free(wreckage_ptr);
-        wreckage_ptr = 0;
+        XFREE(wreckage_ptr);
     }
     if (max_asteroids > 0 && asteroid_ptr)
     {
         max_asteroids = 0;
-        free(asteroid_ptr);
-        asteroid_ptr = 0;
+        XFREE(asteroid_ptr);
     }
     if (max_wormholes > 0 && wormhole_ptr)
     {
         max_wormholes = 0;
-        free(wormhole_ptr);
-        wormhole_ptr = 0;
+        XFREE(wormhole_ptr);
     }
 }
 

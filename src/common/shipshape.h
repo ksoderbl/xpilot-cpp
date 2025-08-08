@@ -63,15 +63,15 @@ typedef struct
     char *name;
     char *author;
 #endif
-} shipobj_t;
+} shipshape_t;
 
-extern shipobj_t *Default_ship(void);
-extern void Free_ship_shape(shipobj_t *w);
-extern shipobj_t *Parse_shape_str(char *str);
-extern shipobj_t *Convert_shape_str(char *str);
-extern void Calculate_shield_radius(shipobj_t *w);
+extern shipshape_t *Default_ship(void);
+extern void Free_ship_shape(shipshape_t *w);
+extern shipshape_t *Parse_shape_str(char *str);
+extern shipshape_t *Convert_shape_str(char *str);
+extern void Calculate_shield_radius(shipshape_t *w);
 extern int Validate_shape_str(char *str);
-extern void Convert_ship_2_string(shipobj_t *w, char *buf, char *ext, unsigned shape_version);
+extern void Convert_ship_2_string(shipshape_t *w, char *buf, char *ext, unsigned shape_version);
 void Rotate_point(position_t pt[RES]);
 
 #endif

@@ -140,7 +140,7 @@ typedef struct
     short war_id;
     short name_width; /* In pixels */
     short name_len;   /* In bytes */
-    shipobj_t *ship;
+    shipshape_t *ship;
     char name[MAX_CHARS];
     char real[MAX_CHARS];
     char host[MAX_CHARS];
@@ -478,7 +478,7 @@ int Handle_base(int id, int ind);
 int Check_pos_by_index(int ind, int *xp, int *yp);
 int Check_index_by_pos(int x, int y);
 other_t *Other_by_id(int id);
-shipobj_t *Ship_by_id(int id);
+shipshape_t *Ship_by_id(int id);
 int Handle_leave(int id);
 int Handle_player(int id, int team, int mychar, char *player_name,
                   char *real_name, char *host_name, char *shape);

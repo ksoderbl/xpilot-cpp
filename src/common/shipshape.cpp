@@ -54,7 +54,7 @@ void Rotate_point(position_t pt[RES])
     }
 }
 
-static void Rotate_ship(shipobj_t *w)
+static void Rotate_ship(shipshape_t *w)
 {
     int i;
 
@@ -99,9 +99,9 @@ static void Rotate_ship(shipobj_t *w)
  * This function should always succeed,
  * therefore no malloc()ed memory is used.
  */
-shipobj_t *Default_ship(void)
+shipshape_t *Default_ship(void)
 {
-    static shipobj_t sh;
+    static shipshape_t sh;
     static position_t pts[6][RES];
 
     if (!sh.num_points)
@@ -148,7 +148,7 @@ shipobj_t *Default_ship(void)
     return &sh;
 }
 
-static int shape2wire(char *ship_shape_str, shipobj_t *w)
+static int shape2wire(char *ship_shape_str, shipshape_t *w)
 {
 /*
  * Macros to simplify limit-checking for ship points.
@@ -1290,9 +1290,9 @@ static int shape2wire(char *ship_shape_str, shipobj_t *w)
     return 0;
 }
 
-static shipobj_t *do_parse_shape(char *str)
+static shipshape_t *do_parse_shape(char *str)
 {
-    shipobj_t *w;
+    shipshape_t *w;
 
     if (!str || !*str)
     {
@@ -1302,7 +1302,7 @@ static shipobj_t *do_parse_shape(char *str)
         }
         return Default_ship();
     }
-    if (!(w = (shipobj_t *)malloc(sizeof(*w))))
+    if (!(w = (shipshape_t *)malloc(sizeof(*w))))
     {
         xperror("No mem for ship shape");
         return Default_ship();
@@ -1324,7 +1324,7 @@ static shipobj_t *do_parse_shape(char *str)
     return (w);
 }
 
-void Free_ship_shape(shipobj_t *w)
+void Free_ship_shape(shipshape_t *w)
 {
     if (w != NULL && w != Default_ship())
     {
@@ -1354,14 +1354,14 @@ void Free_ship_shape(shipobj_t *w)
     }
 }
 
-shipobj_t *Parse_shape_str(char *str)
+shipshape_t *Parse_shape_str(char *str)
 {
     verboseShapeParsing = debugShapeParsing;
     shapeLimits = 1;
     return do_parse_shape(str);
 }
 
-shipobj_t *Convert_shape_str(char *str)
+shipshape_t *Convert_shape_str(char *str)
 {
     verboseShapeParsing = debugShapeParsing;
     shapeLimits = debugShapeParsing;
@@ -1370,7 +1370,7 @@ shipobj_t *Convert_shape_str(char *str)
 
 int Validate_shape_str(char *str)
 {
-    shipobj_t *w;
+    shipshape_t *w;
 
     verboseShapeParsing = 1;
     shapeLimits = 1;
@@ -1379,7 +1379,7 @@ int Validate_shape_str(char *str)
     return (w && w != Default_ship());
 }
 
-void Convert_ship_2_string(shipobj_t *w, char *buf, char *ext, unsigned shape_version)
+void Convert_ship_2_string(shipshape_t *w, char *buf, char *ext, unsigned shape_version)
 {
     char tmp[MSG_LEN];
     int i,
@@ -1689,7 +1689,7 @@ static int Get_shape_keyword(char *keyw)
     return (i);
 }
 
-void Calculate_shield_radius(shipobj_t *w)
+void Calculate_shield_radius(shipshape_t *w)
 {
     int i;
     int radius2, max_radius = 0;

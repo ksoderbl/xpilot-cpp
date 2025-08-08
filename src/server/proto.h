@@ -224,7 +224,7 @@ void Player_remove_tank(int ind, int which_tank);
 void Player_hit_armor(int ind);
 void Player_used_kill(int ind);
 void Player_set_mass(int ind);
-int Init_player(int ind, shipobj_t *ship);
+int Init_player(int ind, shipshape_t *ship);
 void Alloc_players(int number);
 void Free_players(void);
 void Update_score_table(void);

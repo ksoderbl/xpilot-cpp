@@ -110,7 +110,7 @@ typedef struct
     char *real;                  /* real login name of player */
     char *nick;                  /* nickname of player */
     char *dpy;                   /* display of player */
-    shipobj_t *ship;             /* ship shape of player */
+    shipshape_t *ship;           /* ship shape of player */
     char *addr;                  /* address of players host */
     char *host;                  /* hostname of players host */
 } connection_t;

@@ -472,7 +472,7 @@ struct player
     int score;               /* Current score of player */
     int prev_score;          /* Last score that has been updated */
     int prev_life;           /* Last life that has been updated */
-    shipobj_t *ship;         /* wire model of ship shape */
+    shipshape_t *ship;       /* wire model of ship shape */
     DFLOAT power;            /* Force of thrust */
     DFLOAT power_s;          /* Saved power fiks */
     DFLOAT turnspeed_s;      /* Saved turnspeed */
