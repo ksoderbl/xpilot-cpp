@@ -233,536 +233,6 @@ static checkpoint_t checks[MAX_CHECKPOINT];
 score_object_t score_objects[MAX_SCORE_OBJECTS];
 int score_object = 0;
 
-int Handle_start(long server_loops)
-{
-    int i;
-
-    start_loops = server_loops;
-
-    num_refuel = 0;
-    num_connector = 0;
-    num_missile = 0;
-    num_ball = 0;
-    num_ship = 0;
-    num_mine = 0;
-    num_itemtype = 0;
-    num_ecm = 0;
-    num_trans = 0;
-    num_paused = 0;
-    num_radar = 0;
-    num_vcannon = 0;
-    num_vfuel = 0;
-    num_vbase = 0;
-    num_vdecor = 0;
-    for (i = 0; i < DEBRIS_TYPES; i++)
-    {
-        num_debris[i] = 0;
-    }
-
-    damaged = 0;
-    destruct = 0;
-    shutdown_delay = 0;
-    shutdown_count = -1;
-    eyesId = (self != NULL) ? self->id : 0;
-    thrusttime = -1;
-    shieldtime = -1;
-    phasingtime = -1;
-    return 0;
-}
-
-static void update_timing(void)
-{
-    static int frame_counter = 0;
-    static struct timeval old_tv = {0, 0};
-    struct timeval now;
-    static double time_counter = 0.0;
-
-    frame_counter++;
-    gettimeofday(&now, NULL);
-    if (now.tv_sec != old_tv.tv_sec)
-    {
-        double usecs, fps;
-
-        // currentTime = time(NULL);
-        usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
-        fps = (1e6 * frame_counter) / usecs;
-        old_tv = now;
-        newSecond = true;
-        clientFPS = MAX(1.0, fps);
-        timePerFrame = 1.0 / clientFPS;
-        frame_counter = 0;
-        if (!played_this_round && self && !strchr("PW", self->mychar))
-            played_this_round = true;
-    }
-    else
-        newSecond = false;
-
-    /*
-     * Instead of using loops to determining if things are drawn this frame,
-     * twelveHz should be used. We don't want things to be drawn too fast
-     * at high fps.
-     */
-    time_counter += timePerFrame;
-    LIMIT(time_counter, 0.0, (2.0 / 12.0));
-    if (time_counter >= (1.0 / 12.0))
-    {
-        twelveHz++;
-        time_counter -= (1.0 / 12.0);
-    }
-}
-
-int Handle_end(long server_loops)
-{
-    end_loops = server_loops;
-    snooping = self && (eyesId != self->id);
-    update_timing();
-    Paint_frame();
-    return 0;
-}
-
-int Handle_self_items(uint8_t *newNumItems)
-{
-    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
-    return 0;
-}
-
-int Handle_self(int x, int y, int vx, int vy, int newHeading,
-                float newPower, float newTurnspeed, float newTurnresistance,
-                int newLockId, int newLockDist, int newLockBearing,
-                int newNextCheckPoint, int newAutopilotLight,
-                uint8_t *newNumItems, int newCurrentTank,
-                int newFuelSum, int newFuelMax, int newPacketSize)
-{
-    selfPos.x = x;
-    selfPos.y = y;
-    selfVel.x = vx;
-    selfVel.y = vy;
-    heading = newHeading;
-    displayedPower = newPower;
-    displayedTurnspeed = newTurnspeed;
-    displayedTurnresistance = newTurnresistance;
-    lock_id = newLockId;
-    lock_dist = newLockDist;
-    lock_dir = newLockBearing;
-    nextCheckPoint = newNextCheckPoint;
-    autopilotLight = newAutopilotLight;
-    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
-    fuelCurrent = newCurrentTank;
-    if (newFuelSum > fuelSum && selfVisible != 0)
-    {
-        fuelCount = FUEL_NOTIFY;
-    }
-    fuelSum = newFuelSum;
-    fuelMax = newFuelMax;
-    selfVisible = 0;
-    if (newPacketSize + 16 < packet_size)
-    {
-        packet_size -= 16;
-    }
-    else
-    {
-        packet_size = newPacketSize;
-    }
-
-    world.x = selfPos.x - (ext_view_width / 2);
-    world.y = selfPos.y - (ext_view_height / 2);
-    realWorld = world;
-    if (BIT(Setup->mode, WRAP_PLAY))
-    {
-        if (world.x < 0 && world.x + ext_view_width < Setup->width)
-        {
-            world.x += Setup->width;
-        }
-        else if (world.x > 0 && world.x + ext_view_width >= Setup->width)
-        {
-            realWorld.x -= Setup->width;
-        }
-        if (world.y < 0 && world.y + ext_view_height < Setup->height)
-        {
-            world.y += Setup->height;
-        }
-        else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
-        {
-            realWorld.y -= Setup->height;
-        }
-    }
-    return 0;
-}
-
-int Handle_eyes(int id)
-{
-    eyesId = id;
-    return 0;
-}
-
-int Handle_damaged(int dam)
-{
-    damaged = dam;
-    return 0;
-}
-
-int Handle_modifiers(char *m)
-{
-    strlcpy(mods, m, MAX_CHARS);
-    return 0;
-}
-
-int Handle_destruct(int count)
-{
-    destruct = count;
-    return 0;
-}
-
-int Handle_shutdown(int count, int delay)
-{
-    shutdown_count = count;
-    shutdown_delay = delay;
-    return 0;
-}
-
-int Handle_thrusttime(int count, int max)
-{
-    thrusttime = count;
-    thrusttimemax = max;
-    return 0;
-}
-
-int Handle_shieldtime(int count, int max)
-{
-    shieldtime = count;
-    shieldtimemax = max;
-    return 0;
-}
-
-int Handle_phasingtime(int count, int max)
-{
-    phasingtime = count;
-    phasingtimemax = max;
-    return 0;
-}
-
-int Handle_rounddelay(int count, int max)
-{
-    roundDelay = count;
-    roundDelayMax = max;
-    return (0);
-}
-
-int Handle_refuel(int x0, int y0, int x1, int y1)
-{
-    refuel_t t;
-
-    t.x0 = x0;
-    t.x1 = x1;
-    t.y0 = y0;
-    t.y1 = y1;
-    STORE(refuel_t, refuel_ptr, num_refuel, max_refuel, t);
-    return 0;
-}
-
-int Handle_connector(int x0, int y0, int x1, int y1, int tractor)
-{
-    connector_t t;
-
-    t.x0 = x0;
-    t.x1 = x1;
-    t.y0 = y0;
-    t.y1 = y1;
-    t.tractor = tractor;
-    STORE(connector_t, connector_ptr, num_connector, max_connector, t);
-    return 0;
-}
-
-int Handle_laser(int color, int x, int y, int len, int dir)
-{
-    laser_t t;
-
-    t.color = color;
-    t.x = x;
-    t.y = y;
-    t.len = len;
-    t.dir = dir;
-    STORE(laser_t, laser_ptr, num_laser, max_laser, t);
-    return 0;
-}
-
-int Handle_missile(int x, int y, int len, int dir)
-{
-    missile_t t;
-
-    t.x = x;
-    t.y = y;
-    t.dir = dir;
-    t.len = len;
-    STORE(missile_t, missile_ptr, num_missile, max_missile, t);
-    return 0;
-}
-
-int Handle_ball(int x, int y, int id)
-{
-    ball_t t;
-
-    t.x = x;
-    t.y = y;
-    t.id = id;
-    STORE(ball_t, ball_ptr, num_ball, max_ball, t);
-    return 0;
-}
-
-int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield,
-                int phased, int deflector)
-{
-    ship_t t;
-
-    t.x = x;
-    t.y = y;
-    t.id = id;
-    t.dir = dir;
-    t.shield = shield;
-    t.cloak = cloak;
-    t.eshield = eshield;
-    t.phased = phased;
-    t.deflector = deflector;
-    STORE(ship_t, ship_ptr, num_ship, max_ship, t);
-
-    /* if we see a ship in the center of the display, we may be watching
-     * it, especially if it's us!  consider any ship there to be our eyes
-     * until we see a ship that really is us.
-     * BG: XXX there was a bug here.  self was dereferenced at "self->id"
-     * while self could be NULL here.
-     */
-    if (!selfVisible && ((x == selfPos.x && y == selfPos.y) || (self && id == self->id)))
-    {
-        int radarx, radary;
-        eyesId = id;
-        selfVisible = (self && (id == self->id));
-        radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
-        radary = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
-        return Handle_radar(radarx, radary, 3);
-    }
-
-    return 0;
-}
-
-int Handle_mine(int x, int y, int teammine, int id)
-{
-    mine_t t;
-
-    t.x = x;
-    t.y = y;
-    t.teammine = teammine;
-    t.id = id;
-    STORE(mine_t, mine_ptr, num_mine, max_mine, t);
-    return 0;
-}
-
-int Handle_item(int x, int y, int type)
-{
-    itemtype_t t;
-
-    t.x = x;
-    t.y = y;
-    t.type = type;
-    STORE(itemtype_t, itemtype_ptr, num_itemtype, max_itemtype, t);
-    return 0;
-}
-
-#define STORE_DEBRIS(typ_e, _p, _n)                               \
-    if (_n > max_)                                                \
-    {                                                             \
-        if (max_ == 0)                                            \
-        {                                                         \
-            ptr_ = (debris_t *)malloc(n * sizeof(*ptr_));         \
-        }                                                         \
-        else                                                      \
-        {                                                         \
-            ptr_ = (debris_t *)realloc(ptr_, _n * sizeof(*ptr_)); \
-        }                                                         \
-        if (ptr_ == NULL)                                         \
-        {                                                         \
-            xperror("No memory for debris");                      \
-            num_ = max_ = 0;                                      \
-            return -1;                                            \
-        }                                                         \
-        max_ = _n;                                                \
-    }                                                             \
-    else if (_n <= 0)                                             \
-    {                                                             \
-        printf("debris %d < 0\n", _n);                            \
-        return 0;                                                 \
-    }                                                             \
-    num_ = _n;                                                    \
-    memcpy(ptr_, _p, _n * sizeof(*ptr_));                         \
-    return 0;
-
-int Handle_fastshot(int type, uint8_t *p, int n)
-{
-#define num_ (num_fastshot[type])
-#define max_ (max_fastshot[type])
-#define ptr_ (fastshot_ptr[type])
-    STORE_DEBRIS(type, p, n);
-#undef num_
-#undef max_
-#undef ptr_
-}
-
-int Handle_debris(int type, uint8_t *p, int n)
-{
-#define num_ (num_debris[type])
-#define max_ (max_debris[type])
-#define ptr_ (debris_ptr[type])
-    STORE_DEBRIS(type, p, n);
-#undef num_
-#undef max_
-#undef ptr_
-}
-
-int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
-{
-    wreckage_t t;
-
-    t.x = x;
-    t.y = y;
-    t.wrecktype = wrecktype;
-    t.size = size;
-    t.rotation = rotation;
-    STORE(wreckage_t, wreckage_ptr, num_wreckage, max_wreckage, t);
-    return 0;
-}
-
-int Handle_asteroid(int x, int y, int type, int size, int rotation)
-{
-    asteroid_t t;
-
-    t.x = x;
-    t.y = y;
-    t.type = type;
-    t.size = size;
-    t.rotation = rotation;
-    STORE(asteroid_t, asteroid_ptr, num_asteroids, max_asteroids, t);
-    return 0;
-}
-
-int Handle_wormhole(int x, int y)
-{
-    wormhole_t t;
-
-    t.x = x - BLOCK_SZ / 2;
-    t.y = y - BLOCK_SZ / 2;
-    STORE(wormhole_t, wormhole_ptr, num_wormholes, max_wormholes, t);
-    return 0;
-}
-
-int Handle_ecm(int x, int y, int size)
-{
-    ecm_t t;
-
-    t.x = x;
-    t.y = y;
-    t.size = size;
-    STORE(ecm_t, ecm_ptr, num_ecm, max_ecm, t);
-    return 0;
-}
-
-int Handle_trans(int x1, int y1, int x2, int y2)
-{
-    trans_t t;
-
-    t.x1 = x1;
-    t.y1 = y1;
-    t.x2 = x2;
-    t.y2 = y2;
-    STORE(trans_t, trans_ptr, num_trans, max_trans, t);
-    return 0;
-}
-
-int Handle_paused(int x, int y, int count)
-{
-    paused_t t;
-
-    t.x = x;
-    t.y = y;
-    t.count = count;
-    STORE(paused_t, paused_ptr, num_paused, max_paused, t);
-    return 0;
-}
-
-int Handle_radar(int x, int y, int size)
-{
-    radar_t t;
-
-    t.x = x;
-    t.y = y;
-    t.size = size;
-    STORE(radar_t, radar_ptr, num_radar, max_radar, t);
-    return 0;
-}
-
-int Handle_message(char *msg)
-{
-    Add_message(msg);
-    return 0;
-}
-
-// int Handle_time_left(long sec)
-// {
-//     if (sec >= 0 && sec < 10 && (time_left > sec || sec == 0))
-//     {
-//         XBell(dpy, 0);
-//         XFlush(dpy);
-//     }
-//     time_left = (sec >= 0) ? sec : 0;
-//     return 0;
-// }
-
-int Handle_vcannon(int x, int y, int type)
-{
-    vcannon_t t;
-
-    t.x = x;
-    t.y = y;
-    t.type = type;
-    STORE(vcannon_t, vcannon_ptr, num_vcannon, max_vcannon, t);
-    return 0;
-}
-
-int Handle_vfuel(int x, int y, long fuel)
-{
-    vfuel_t t;
-
-    t.x = x;
-    t.y = y;
-    t.fuel = fuel;
-    STORE(vfuel_t, vfuel_ptr, num_vfuel, max_vfuel, t);
-    return 0;
-}
-
-int Handle_vbase(int x, int y, int xi, int yi, int type)
-{
-    vbase_t t;
-
-    t.x = x;
-    t.y = y;
-    t.xi = xi;
-    t.yi = yi;
-    t.type = type;
-    STORE(vbase_t, vbase_ptr, num_vbase, max_vbase, t);
-    return 0;
-}
-
-int Handle_vdecor(int x, int y, int xi, int yi, int type)
-{
-    vdecor_t t;
-
-    t.x = x;
-    t.y = y;
-    t.xi = xi;
-    t.yi = yi;
-    t.type = type;
-    STORE(vdecor_t, vdecor_ptr, num_vdecor, max_vdecor, t);
-    return 0;
-}
-
 static fuelstation_t *Fuelstation_by_pos(int x, int y)
 {
     int i, lo, hi, pos;
@@ -1896,6 +1366,536 @@ int Handle_score_object(int score, int x, int y, char *msg)
     /* Update global index variable */
     score_object = (score_object + 1) % MAX_SCORE_OBJECTS;
 
+    return 0;
+}
+
+int Handle_start(long server_loops)
+{
+    int i;
+
+    start_loops = server_loops;
+
+    num_refuel = 0;
+    num_connector = 0;
+    num_missile = 0;
+    num_ball = 0;
+    num_ship = 0;
+    num_mine = 0;
+    num_itemtype = 0;
+    num_ecm = 0;
+    num_trans = 0;
+    num_paused = 0;
+    num_radar = 0;
+    num_vcannon = 0;
+    num_vfuel = 0;
+    num_vbase = 0;
+    num_vdecor = 0;
+    for (i = 0; i < DEBRIS_TYPES; i++)
+    {
+        num_debris[i] = 0;
+    }
+
+    damaged = 0;
+    destruct = 0;
+    shutdown_delay = 0;
+    shutdown_count = -1;
+    eyesId = (self != NULL) ? self->id : 0;
+    thrusttime = -1;
+    shieldtime = -1;
+    phasingtime = -1;
+    return 0;
+}
+
+static void update_timing(void)
+{
+    static int frame_counter = 0;
+    static struct timeval old_tv = {0, 0};
+    struct timeval now;
+    static double time_counter = 0.0;
+
+    frame_counter++;
+    gettimeofday(&now, NULL);
+    if (now.tv_sec != old_tv.tv_sec)
+    {
+        double usecs, fps;
+
+        // currentTime = time(NULL);
+        usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
+        fps = (1e6 * frame_counter) / usecs;
+        old_tv = now;
+        newSecond = true;
+        clientFPS = MAX(1.0, fps);
+        timePerFrame = 1.0 / clientFPS;
+        frame_counter = 0;
+        if (!played_this_round && self && !strchr("PW", self->mychar))
+            played_this_round = true;
+    }
+    else
+        newSecond = false;
+
+    /*
+     * Instead of using loops to determining if things are drawn this frame,
+     * twelveHz should be used. We don't want things to be drawn too fast
+     * at high fps.
+     */
+    time_counter += timePerFrame;
+    LIMIT(time_counter, 0.0, (2.0 / 12.0));
+    if (time_counter >= (1.0 / 12.0))
+    {
+        twelveHz++;
+        time_counter -= (1.0 / 12.0);
+    }
+}
+
+int Handle_end(long server_loops)
+{
+    end_loops = server_loops;
+    snooping = self && (eyesId != self->id);
+    update_timing();
+    Paint_frame();
+    return 0;
+}
+
+int Handle_self_items(uint8_t *newNumItems)
+{
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
+    return 0;
+}
+
+int Handle_self(int x, int y, int vx, int vy, int newHeading,
+                float newPower, float newTurnspeed, float newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                uint8_t *newNumItems, int newCurrentTank,
+                int newFuelSum, int newFuelMax, int newPacketSize)
+{
+    selfPos.x = x;
+    selfPos.y = y;
+    selfVel.x = vx;
+    selfVel.y = vy;
+    heading = newHeading;
+    displayedPower = newPower;
+    displayedTurnspeed = newTurnspeed;
+    displayedTurnresistance = newTurnresistance;
+    lock_id = newLockId;
+    lock_dist = newLockDist;
+    lock_dir = newLockBearing;
+    nextCheckPoint = newNextCheckPoint;
+    autopilotLight = newAutopilotLight;
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
+    fuelCurrent = newCurrentTank;
+    if (newFuelSum > fuelSum && selfVisible != 0)
+    {
+        fuelCount = FUEL_NOTIFY;
+    }
+    fuelSum = newFuelSum;
+    fuelMax = newFuelMax;
+    selfVisible = 0;
+    if (newPacketSize + 16 < packet_size)
+    {
+        packet_size -= 16;
+    }
+    else
+    {
+        packet_size = newPacketSize;
+    }
+
+    world.x = selfPos.x - (ext_view_width / 2);
+    world.y = selfPos.y - (ext_view_height / 2);
+    realWorld = world;
+    if (BIT(Setup->mode, WRAP_PLAY))
+    {
+        if (world.x < 0 && world.x + ext_view_width < Setup->width)
+        {
+            world.x += Setup->width;
+        }
+        else if (world.x > 0 && world.x + ext_view_width >= Setup->width)
+        {
+            realWorld.x -= Setup->width;
+        }
+        if (world.y < 0 && world.y + ext_view_height < Setup->height)
+        {
+            world.y += Setup->height;
+        }
+        else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
+        {
+            realWorld.y -= Setup->height;
+        }
+    }
+    return 0;
+}
+
+int Handle_eyes(int id)
+{
+    eyesId = id;
+    return 0;
+}
+
+int Handle_damaged(int dam)
+{
+    damaged = dam;
+    return 0;
+}
+
+int Handle_modifiers(char *m)
+{
+    strlcpy(mods, m, MAX_CHARS);
+    return 0;
+}
+
+int Handle_destruct(int count)
+{
+    destruct = count;
+    return 0;
+}
+
+int Handle_shutdown(int count, int delay)
+{
+    shutdown_count = count;
+    shutdown_delay = delay;
+    return 0;
+}
+
+int Handle_thrusttime(int count, int max)
+{
+    thrusttime = count;
+    thrusttimemax = max;
+    return 0;
+}
+
+int Handle_shieldtime(int count, int max)
+{
+    shieldtime = count;
+    shieldtimemax = max;
+    return 0;
+}
+
+int Handle_phasingtime(int count, int max)
+{
+    phasingtime = count;
+    phasingtimemax = max;
+    return 0;
+}
+
+int Handle_rounddelay(int count, int max)
+{
+    roundDelay = count;
+    roundDelayMax = max;
+    return (0);
+}
+
+int Handle_refuel(int x0, int y0, int x1, int y1)
+{
+    refuel_t t;
+
+    t.x0 = x0;
+    t.x1 = x1;
+    t.y0 = y0;
+    t.y1 = y1;
+    STORE(refuel_t, refuel_ptr, num_refuel, max_refuel, t);
+    return 0;
+}
+
+int Handle_connector(int x0, int y0, int x1, int y1, int tractor)
+{
+    connector_t t;
+
+    t.x0 = x0;
+    t.x1 = x1;
+    t.y0 = y0;
+    t.y1 = y1;
+    t.tractor = tractor;
+    STORE(connector_t, connector_ptr, num_connector, max_connector, t);
+    return 0;
+}
+
+int Handle_laser(int color, int x, int y, int len, int dir)
+{
+    laser_t t;
+
+    t.color = color;
+    t.x = x;
+    t.y = y;
+    t.len = len;
+    t.dir = dir;
+    STORE(laser_t, laser_ptr, num_laser, max_laser, t);
+    return 0;
+}
+
+int Handle_missile(int x, int y, int len, int dir)
+{
+    missile_t t;
+
+    t.x = x;
+    t.y = y;
+    t.dir = dir;
+    t.len = len;
+    STORE(missile_t, missile_ptr, num_missile, max_missile, t);
+    return 0;
+}
+
+int Handle_ball(int x, int y, int id)
+{
+    ball_t t;
+
+    t.x = x;
+    t.y = y;
+    t.id = id;
+    STORE(ball_t, ball_ptr, num_ball, max_ball, t);
+    return 0;
+}
+
+int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield,
+                int phased, int deflector)
+{
+    ship_t t;
+
+    t.x = x;
+    t.y = y;
+    t.id = id;
+    t.dir = dir;
+    t.shield = shield;
+    t.cloak = cloak;
+    t.eshield = eshield;
+    t.phased = phased;
+    t.deflector = deflector;
+    STORE(ship_t, ship_ptr, num_ship, max_ship, t);
+
+    /* if we see a ship in the center of the display, we may be watching
+     * it, especially if it's us!  consider any ship there to be our eyes
+     * until we see a ship that really is us.
+     * BG: XXX there was a bug here.  self was dereferenced at "self->id"
+     * while self could be NULL here.
+     */
+    if (!selfVisible && ((x == selfPos.x && y == selfPos.y) || (self && id == self->id)))
+    {
+        int radarx, radary;
+        eyesId = id;
+        selfVisible = (self && (id == self->id));
+        radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
+        radary = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
+        return Handle_radar(radarx, radary, 3);
+    }
+
+    return 0;
+}
+
+int Handle_mine(int x, int y, int teammine, int id)
+{
+    mine_t t;
+
+    t.x = x;
+    t.y = y;
+    t.teammine = teammine;
+    t.id = id;
+    STORE(mine_t, mine_ptr, num_mine, max_mine, t);
+    return 0;
+}
+
+int Handle_item(int x, int y, int type)
+{
+    itemtype_t t;
+
+    t.x = x;
+    t.y = y;
+    t.type = type;
+    STORE(itemtype_t, itemtype_ptr, num_itemtype, max_itemtype, t);
+    return 0;
+}
+
+#define STORE_DEBRIS(typ_e, _p, _n)                               \
+    if (_n > max_)                                                \
+    {                                                             \
+        if (max_ == 0)                                            \
+        {                                                         \
+            ptr_ = (debris_t *)malloc(n * sizeof(*ptr_));         \
+        }                                                         \
+        else                                                      \
+        {                                                         \
+            ptr_ = (debris_t *)realloc(ptr_, _n * sizeof(*ptr_)); \
+        }                                                         \
+        if (ptr_ == NULL)                                         \
+        {                                                         \
+            xperror("No memory for debris");                      \
+            num_ = max_ = 0;                                      \
+            return -1;                                            \
+        }                                                         \
+        max_ = _n;                                                \
+    }                                                             \
+    else if (_n <= 0)                                             \
+    {                                                             \
+        printf("debris %d < 0\n", _n);                            \
+        return 0;                                                 \
+    }                                                             \
+    num_ = _n;                                                    \
+    memcpy(ptr_, _p, _n * sizeof(*ptr_));                         \
+    return 0;
+
+int Handle_fastshot(int type, uint8_t *p, int n)
+{
+#define num_ (num_fastshot[type])
+#define max_ (max_fastshot[type])
+#define ptr_ (fastshot_ptr[type])
+    STORE_DEBRIS(type, p, n);
+#undef num_
+#undef max_
+#undef ptr_
+}
+
+int Handle_debris(int type, uint8_t *p, int n)
+{
+#define num_ (num_debris[type])
+#define max_ (max_debris[type])
+#define ptr_ (debris_ptr[type])
+    STORE_DEBRIS(type, p, n);
+#undef num_
+#undef max_
+#undef ptr_
+}
+
+int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
+{
+    wreckage_t t;
+
+    t.x = x;
+    t.y = y;
+    t.wrecktype = wrecktype;
+    t.size = size;
+    t.rotation = rotation;
+    STORE(wreckage_t, wreckage_ptr, num_wreckage, max_wreckage, t);
+    return 0;
+}
+
+int Handle_asteroid(int x, int y, int type, int size, int rotation)
+{
+    asteroid_t t;
+
+    t.x = x;
+    t.y = y;
+    t.type = type;
+    t.size = size;
+    t.rotation = rotation;
+    STORE(asteroid_t, asteroid_ptr, num_asteroids, max_asteroids, t);
+    return 0;
+}
+
+int Handle_wormhole(int x, int y)
+{
+    wormhole_t t;
+
+    t.x = x - BLOCK_SZ / 2;
+    t.y = y - BLOCK_SZ / 2;
+    STORE(wormhole_t, wormhole_ptr, num_wormholes, max_wormholes, t);
+    return 0;
+}
+
+int Handle_ecm(int x, int y, int size)
+{
+    ecm_t t;
+
+    t.x = x;
+    t.y = y;
+    t.size = size;
+    STORE(ecm_t, ecm_ptr, num_ecm, max_ecm, t);
+    return 0;
+}
+
+int Handle_trans(int x1, int y1, int x2, int y2)
+{
+    trans_t t;
+
+    t.x1 = x1;
+    t.y1 = y1;
+    t.x2 = x2;
+    t.y2 = y2;
+    STORE(trans_t, trans_ptr, num_trans, max_trans, t);
+    return 0;
+}
+
+int Handle_paused(int x, int y, int count)
+{
+    paused_t t;
+
+    t.x = x;
+    t.y = y;
+    t.count = count;
+    STORE(paused_t, paused_ptr, num_paused, max_paused, t);
+    return 0;
+}
+
+int Handle_radar(int x, int y, int size)
+{
+    radar_t t;
+
+    t.x = x;
+    t.y = y;
+    t.size = size;
+    STORE(radar_t, radar_ptr, num_radar, max_radar, t);
+    return 0;
+}
+
+int Handle_message(char *msg)
+{
+    Add_message(msg);
+    return 0;
+}
+
+// int Handle_time_left(long sec)
+// {
+//     if (sec >= 0 && sec < 10 && (time_left > sec || sec == 0))
+//     {
+//         XBell(dpy, 0);
+//         XFlush(dpy);
+//     }
+//     time_left = (sec >= 0) ? sec : 0;
+//     return 0;
+// }
+
+int Handle_vcannon(int x, int y, int type)
+{
+    vcannon_t t;
+
+    t.x = x;
+    t.y = y;
+    t.type = type;
+    STORE(vcannon_t, vcannon_ptr, num_vcannon, max_vcannon, t);
+    return 0;
+}
+
+int Handle_vfuel(int x, int y, long fuel)
+{
+    vfuel_t t;
+
+    t.x = x;
+    t.y = y;
+    t.fuel = fuel;
+    STORE(vfuel_t, vfuel_ptr, num_vfuel, max_vfuel, t);
+    return 0;
+}
+
+int Handle_vbase(int x, int y, int xi, int yi, int type)
+{
+    vbase_t t;
+
+    t.x = x;
+    t.y = y;
+    t.xi = xi;
+    t.yi = yi;
+    t.type = type;
+    STORE(vbase_t, vbase_ptr, num_vbase, max_vbase, t);
+    return 0;
+}
+
+int Handle_vdecor(int x, int y, int xi, int yi, int type)
+{
+    vdecor_t t;
+
+    t.x = x;
+    t.y = y;
+    t.xi = xi;
+    t.yi = yi;
+    t.type = type;
+    STORE(vdecor_t, vdecor_ptr, num_vdecor, max_vdecor, t);
     return 0;
 }
 
