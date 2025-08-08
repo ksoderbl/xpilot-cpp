@@ -28,6 +28,8 @@
 #include <cerrno>
 #include <climits>
 
+#include "draw.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"

@@ -33,6 +33,8 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
+#include "draw.h"
+
 #include "paint.h"
 
 #include "xpconfig.h"

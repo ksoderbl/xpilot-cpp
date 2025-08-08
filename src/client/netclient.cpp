@@ -36,8 +36,9 @@
 #include <sys/param.h>
 #include <sys/time.h>
 
-#include "item.h"
 #include "commonmacros.h"
+#include "draw.h"
+#include "item.h"
 #include "strlcpy.h"
 
 #include "xpconfig.h"
@@ -2801,7 +2802,7 @@ int Send_shape(char *str)
     char buf[MSG_LEN], ext[MSG_LEN];
 
     w = Convert_shape_str(str);
-    Convert_ship_2_string(w, buf, ext);
+    Convert_ship_2_string(w, buf, ext, 0x3200);
     Free_ship_shape(w);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
     {

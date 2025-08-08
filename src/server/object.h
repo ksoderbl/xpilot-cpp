@@ -24,33 +24,13 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#ifndef SERVERCONST_H
-/* need MAX_TANKS */
-#include "serverconst.h"
-#endif
-#ifndef KEYS_H
-/* need NUM_KEYS */
-#include "keys.h"
-#endif
-#ifndef BIT_H
-/* need BITV_DECL */
 #include "bit.h"
-#endif
-#ifndef DRAW_H
-/* need shipobj */
-#include "draw.h"
-#endif
-#ifndef ITEM_H
-/* need NUM_ITEMS */
-#include "item.h"
-#endif
-#ifndef CLICK_H
-/* need CLICK */
-#include "click.h"
-#endif
-#ifndef CONNECTION_H
 #include "connection.h"
-#endif
+#include "item.h"
+#include "keys.h"
+#include "shipshape.h"
+
+#include "serverconst.h"
 
 /*
  * Different types of objects, including player.

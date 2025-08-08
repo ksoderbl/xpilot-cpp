@@ -1,5 +1,4 @@
-/* $Id: shipshape.c,v 5.4 2001/05/25 02:47:49 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,12 +21,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cerrno>
-#include <cctype>
-#include <cmath>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <ctype.h>
+#include <math.h>
+
+#include "shipshape.h"
 
 #include "version.h"
 #include "xpconfig.h"
@@ -170,8 +171,8 @@ static int shape2wire(char *ship_shape_str, shipobj_t *w)
     struct grid_t
     {
         int todo, done;
-        uint8_t pt[32][32];
-        uint8_t chk[32 * 32][2];
+        unsigned char pt[32][32];
+        unsigned char chk[32 * 32][2];
     } grid;
 
     int i, j, x, y, dx, dy,
@@ -1378,7 +1379,7 @@ int Validate_shape_str(char *str)
     return (w && w != Default_ship());
 }
 
-void Convert_ship_2_string(shipobj_t *w, char *buf, char *ext)
+void Convert_ship_2_string(shipobj_t *w, char *buf, char *ext, unsigned shape_version)
 {
     char tmp[MSG_LEN];
     int i,
@@ -1390,192 +1391,229 @@ void Convert_ship_2_string(shipobj_t *w, char *buf, char *ext)
 
     ext[extlen = 0] = '\0';
 
-    strcpy(buf, "(SH:");
-    buflen = strlen(&buf[0]);
-    for (i = 0; i < w->num_points && i < MAX_SHIP_PTS; i++)
+    if (shape_version >= 0x3200)
     {
-        sprintf(&buf[buflen], " %d,%d",
-                (int)w->pts[i][0].x, (int)w->pts[i][0].y);
+        strcpy(buf, "(SH:");
+        buflen = strlen(&buf[0]);
+        for (i = 0; i < w->num_points && i < MAX_SHIP_PTS; i++)
+        {
+            sprintf(&buf[buflen], " %d,%d",
+                    (int)w->pts[i][0].x, (int)w->pts[i][0].y);
+            buflen += strlen(&buf[buflen]);
+        }
+        sprintf(&buf[buflen], ")(EN: %d,%d)(MG: %d,%d)",
+                (int)w->engine[0].x, (int)w->engine[0].y,
+                (int)w->m_gun[0].x, (int)w->m_gun[0].y);
         buflen += strlen(&buf[buflen]);
-    }
-    sprintf(&buf[buflen], ")(EN: %d,%d)(MG: %d,%d)",
-            (int)w->engine[0].x, (int)w->engine[0].y,
-            (int)w->m_gun[0].x, (int)w->m_gun[0].y);
-    buflen += strlen(&buf[buflen]);
 
-    /*
-     * If the calculations are correct then only from here on
-     * there is danger for overflowing the MSG_LEN size
-     * of the buffer.  Therefore first copy a new pair of
-     * parentheses into a temporary buffer and when the closing
-     * parenthesis is reached then determine if there is enough
-     * room in the main buffer or else copy it into the extended
-     * buffer.  This scheme allows cooperation with versions which
-     * didn't had the extended buffer yet for which the extended
-     * buffer will simply be discarded.
-     */
-    if (w->num_l_gun > 0)
-    {
-        strcpy(&tmp[0], "(LG:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_l_gun && i < MAX_GUN_PTS; i++)
+        /*
+         * If the calculations are correct then only from here on
+         * there is danger for overflowing the MSG_LEN size
+         * of the buffer.  Therefore first copy a new pair of
+         * parentheses into a temporary buffer and when the closing
+         * parenthesis is reached then determine if there is enough
+         * room in the main buffer or else copy it into the extended
+         * buffer.  This scheme allows cooperation with versions which
+         * didn't had the extended buffer yet for which the extended
+         * buffer will simply be discarded.
+         */
+        if (w->num_l_gun > 0)
         {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->l_gun[i][0].x, (int)w->l_gun[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
+            strcpy(&tmp[0], "(LG:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_l_gun && i < MAX_GUN_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->l_gun[i][0].x, (int)w->l_gun[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
         }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
+        if (w->num_r_gun > 0)
         {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
+            strcpy(&tmp[0], "(RG:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_r_gun && i < MAX_GUN_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->r_gun[i][0].x, (int)w->r_gun[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
         }
-        else if (extlen + tmplen < MSG_LEN)
+        if (w->num_l_rgun > 0)
         {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
+            strcpy(&tmp[0], "(LR:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_l_rgun && i < MAX_GUN_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->l_rgun[i][0].x, (int)w->l_rgun[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
+        }
+        if (w->num_r_rgun > 0)
+        {
+            strcpy(&tmp[0], "(RR:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_r_rgun && i < MAX_GUN_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->r_rgun[i][0].x, (int)w->r_rgun[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
+        }
+        if (w->num_l_light > 0)
+        {
+            strcpy(&tmp[0], "(LL:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_l_light && i < MAX_LIGHT_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->l_light[i][0].x, (int)w->l_light[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
+        }
+        if (w->num_r_light > 0)
+        {
+            strcpy(&tmp[0], "(RL:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_r_light && i < MAX_LIGHT_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->r_light[i][0].x, (int)w->r_light[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
+        }
+        if (w->num_m_rack > 0)
+        {
+            strcpy(&tmp[0], "(MR:");
+            tmplen = strlen(&tmp[0]);
+            for (i = 0; i < w->num_m_rack && i < MAX_RACK_PTS; i++)
+            {
+                sprintf(&tmp[tmplen], " %d,%d",
+                        (int)w->m_rack[i][0].x, (int)w->m_rack[i][0].y);
+                tmplen += strlen(&tmp[tmplen]);
+            }
+            strcpy(&tmp[tmplen], ")");
+            tmplen++;
+            if (buflen + tmplen < MSG_LEN)
+            {
+                strcpy(&buf[buflen], tmp);
+                buflen += tmplen;
+            }
+            else if (extlen + tmplen < MSG_LEN)
+            {
+                strcpy(&ext[extlen], tmp);
+                extlen += tmplen;
+            }
         }
     }
-    if (w->num_r_gun > 0)
+    else
     {
-        strcpy(&tmp[0], "(RG:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_r_gun && i < MAX_GUN_PTS; i++)
-        {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->r_gun[i][0].x, (int)w->r_gun[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
+        /* 3.1 version had 16 points maximum.  just ignore the excess. */
+        int num_points = MIN(w->num_points, 16);
+#if 0
+        if (num_points < w->num_points) {
+            printf("Truncating ship to 16 points for old 3.1 server\n");
         }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
+#endif
+        if (shape_version != 0x3100)
         {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
+            errno = 0;
+            xperror("Unknown ship shape version: %x", shape_version);
         }
-        else if (extlen + tmplen < MSG_LEN)
-        {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
-        }
-    }
-    if (w->num_l_rgun > 0)
-    {
-        strcpy(&tmp[0], "(LR:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_l_rgun && i < MAX_GUN_PTS; i++)
-        {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->l_rgun[i][0].x, (int)w->l_rgun[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
-        }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
-        {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
-        }
-        else if (extlen + tmplen < MSG_LEN)
-        {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
-        }
-    }
-    if (w->num_r_rgun > 0)
-    {
-        strcpy(&tmp[0], "(RR:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_r_rgun && i < MAX_GUN_PTS; i++)
-        {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->r_rgun[i][0].x, (int)w->r_rgun[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
-        }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
-        {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
-        }
-        else if (extlen + tmplen < MSG_LEN)
-        {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
-        }
-    }
-    if (w->num_l_light > 0)
-    {
-        strcpy(&tmp[0], "(LL:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_l_light && i < MAX_LIGHT_PTS; i++)
-        {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->l_light[i][0].x, (int)w->l_light[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
-        }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
-        {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
-        }
-        else if (extlen + tmplen < MSG_LEN)
-        {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
-        }
-    }
-    if (w->num_r_light > 0)
-    {
-        strcpy(&tmp[0], "(RL:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_r_light && i < MAX_LIGHT_PTS; i++)
-        {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->r_light[i][0].x, (int)w->r_light[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
-        }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
-        {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
-        }
-        else if (extlen + tmplen < MSG_LEN)
-        {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
-        }
-    }
-    if (w->num_m_rack > 0)
-    {
-        strcpy(&tmp[0], "(MR:");
-        tmplen = strlen(&tmp[0]);
-        for (i = 0; i < w->num_m_rack && i < MAX_RACK_PTS; i++)
-        {
-            sprintf(&tmp[tmplen], " %d,%d",
-                    (int)w->m_rack[i][0].x, (int)w->m_rack[i][0].y);
-            tmplen += strlen(&tmp[tmplen]);
-        }
-        strcpy(&tmp[tmplen], ")");
-        tmplen++;
-        if (buflen + tmplen < MSG_LEN)
-        {
-            strcpy(&buf[buflen], tmp);
-            buflen += tmplen;
-        }
-        else if (extlen + tmplen < MSG_LEN)
-        {
-            strcpy(&ext[extlen], tmp);
-            extlen += tmplen;
-        }
-    }
 
+        for (i = 1, ll = rl = 0; i < num_points; i++)
+        {
+            if (w->pts[i][0].y > w->pts[ll][0].y || (w->pts[i][0].y == w->pts[ll][0].y && w->pts[i][0].x < w->pts[ll][0].x))
+            {
+                ll = i;
+            }
+            if (w->pts[i][0].y < w->pts[rl][0].y || (w->pts[i][0].y == w->pts[rl][0].y && w->pts[i][0].x < w->pts[rl][0].x))
+            {
+                rl = i;
+            }
+        }
+        sprintf(buf, "(%d,%d,%d)", num_points, ll, rl);
+        buflen = strlen(buf);
+        for (i = 0; i < num_points; i++)
+        {
+            sprintf(&buf[buflen], "(%d,%d)",
+                    (int)w->pts[i][0].x, (int)w->pts[i][0].y);
+            buflen += strlen(&buf[buflen]);
+        }
+    }
     if (buflen >= MSG_LEN || extlen >= MSG_LEN)
     {
         errno = 0;

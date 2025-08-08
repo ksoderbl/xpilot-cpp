@@ -27,6 +27,7 @@ libxpcommon_a_SOURCES = \
     rules.h \
     setup.h \
     shipshape.cpp \
+    shipshape.h \
     socklib.cpp \
     socklib.h \
     strcasecmp.cpp \

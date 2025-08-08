@@ -34,6 +34,7 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
+#include "draw.h"
 #include "strdup.h"
 #include "strlcpy.h"
 

@@ -1,5 +1,4 @@
-/* $Id: connection.h,v 5.1 2001/11/28 14:21:20 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -30,15 +29,8 @@
  * connection of a player.  It is mainly used by netserver.c.
  */
 
-#ifndef NET_H
-/* need sockbuf_t. */
 #include "net.h"
-#endif
-
-#ifndef DRAW_H
-/* need shipobj. */
-#include "draw.h"
-#endif
+#include "shipshape.h"
 
 /*
  * Different states a connection can be in.

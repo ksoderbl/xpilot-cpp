@@ -31,6 +31,7 @@
 
 #include <unistd.h>
 
+#include "draw.h"
 #include "strlcpy.h"
 
 #define SERVER

@@ -105,6 +105,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+#include "draw.h"
 #include "strdup.h"
 #include "strlcpy.h"
 
@@ -1850,7 +1851,7 @@ int Send_player(connection_t *connp, int id)
                 connp->state, connp->id);
         return 0;
     }
-    Convert_ship_2_string(pl->ship, buf, ext);
+    Convert_ship_2_string(pl->ship, buf, ext, 0x3200);
     n = Packet_printf(&connp->c,
                       "%c%hd"
                       "%c%c"

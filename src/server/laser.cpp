@@ -28,6 +28,8 @@
 #include <cmath>
 #include <climits>
 
+#include "click.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"

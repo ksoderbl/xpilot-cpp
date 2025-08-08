@@ -32,6 +32,7 @@
 #include <X11/Xos.h>
 
 #include "commonmacros.h"
+#include "xpmath.h"
 
 #include "paint.h"
 #include "paintdata.h"

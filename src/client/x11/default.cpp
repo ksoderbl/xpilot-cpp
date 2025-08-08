@@ -37,6 +37,7 @@
 #include <sys/param.h>
 
 #include "commonmacros.h"
+#include "draw.h"
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"

@@ -34,6 +34,7 @@
 #include "const.h"
 #include "rules.h"
 #include "setup.h"
+#include "shipshape.h"
 #include "strlcpy.h"
 #include "types.h"
 #include "xpmath.h"
@@ -2360,12 +2361,10 @@ void Init_scale_array(void)
     int i, start, end, n;
     double scaleMultFactor;
 
-    if (scaleFactor == 0.0)
-        scaleFactor = 1.0;
-    if (scaleFactor < 0.1)
-        scaleFactor = 0.1;
-    if (scaleFactor > 10.0)
-        scaleFactor = 10.0;
+    if (scaleFactor < MIN_SCALEFACTOR)
+        scaleFactor = MIN_SCALEFACTOR;
+    if (scaleFactor > MAX_SCALEFACTOR)
+        scaleFactor = MAX_SCALEFACTOR;
     scaleMultFactor = 1.0 / scaleFactor;
 
     scaleArray[0] = 0;

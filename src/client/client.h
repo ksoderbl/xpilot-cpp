@@ -24,8 +24,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "draw.h"
 #include "item.h"
+#include "shipshape.h"
 #include "types.h"
 
 typedef struct
@@ -106,8 +106,10 @@ typedef struct
 #define MIN_SHOW_ITEMS_TIME 0.0
 #define MAX_SHOW_ITEMS_TIME 10.0
 
-#define MIN_SCALEFACTOR 0.2
-#define MAX_SCALEFACTOR 8.0
+#define MIN_SCALEFACTOR 0.1
+#define MAX_SCALEFACTOR 20.0
+
+#define CONTROL_DELAY 100
 
 #define FIND_NAME_WIDTH(other)                                        \
     if ((other)->name_width == 0)                                     \

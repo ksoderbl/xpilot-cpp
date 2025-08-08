@@ -1477,6 +1477,7 @@ void Update_objects(void)
     /*
      * Now update labels if need be.
      */
+#define UPDATE_SCORE_DELAY (FPS)
     if (updateScores && frame_loops % UPDATE_SCORE_DELAY == 0)
         Update_score_table();
 }

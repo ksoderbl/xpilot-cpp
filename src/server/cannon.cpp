@@ -28,6 +28,7 @@
 #include <cmath>
 #include <climits>
 
+#include "draw.h"
 #include "randommt.h"
 
 #define SERVER
