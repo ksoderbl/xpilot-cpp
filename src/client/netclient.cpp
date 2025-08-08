@@ -1801,37 +1801,7 @@ int Receive_self(void)
         return n;
     }
 
-    if (version >= 0x4203)
-    {
-        memset(num_items, 0, sizeof num_items);
-    }
-    else
-    {
-        n = Packet_scanf(&rbuf,
-                         "%c%c%c%c%c"
-                         "%c%c%c%c%c"
-                         "%c%c%c%c",
-                         &(num_items[ITEM_CLOAK]),
-                         &(num_items[ITEM_SENSOR]),
-                         &(num_items[ITEM_MINE]),
-                         &(num_items[ITEM_MISSILE]),
-                         &(num_items[ITEM_ECM]),
-
-                         &(num_items[ITEM_TRANSPORTER]),
-                         &(num_items[ITEM_WIDEANGLE]),
-                         &(num_items[ITEM_REARSHOT]),
-                         &(num_items[ITEM_AFTERBURNER]),
-                         &(num_items[ITEM_TANK]),
-
-                         &(num_items[ITEM_LASER]),
-                         &(num_items[ITEM_EMERGENCY_THRUST]),
-                         &(num_items[ITEM_TRACTOR_BEAM]),
-                         &(num_items[ITEM_AUTOPILOT]));
-        if (n <= 0)
-        {
-            return n;
-        }
-    }
+    memset(num_items, 0, sizeof num_items);
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
@@ -1842,68 +1812,6 @@ int Receive_self(void)
     if (n <= 0)
     {
         return n;
-    }
-
-    if (version < 0x4203)
-    {
-        if (version >= 0x3720)
-        {
-            n = Packet_scanf(&rbuf, "%c%c%c%c",
-                             &(num_items[ITEM_EMERGENCY_SHIELD]),
-                             &(num_items[ITEM_DEFLECTOR]),
-                             &(num_items[ITEM_HYPERJUMP]),
-                             &(num_items[ITEM_PHASING]));
-            if (n <= 0)
-            {
-                return n;
-            }
-            if (version >= 0x4100)
-            {
-                n = Packet_scanf(&rbuf, "%c", &(num_items[ITEM_MIRROR]));
-                if (n <= 0)
-                {
-                    return n;
-                }
-                if (version >= 0x4201)
-                {
-                    n = Packet_scanf(&rbuf, "%c", &(num_items[ITEM_ARMOR]));
-                    if (n <= 0)
-                    {
-                        return n;
-                    }
-                }
-                else
-                {
-                    num_items[ITEM_ARMOR] = 0;
-                }
-            }
-            else
-            {
-                num_items[ITEM_MIRROR] = 0;
-                num_items[ITEM_ARMOR] = 0;
-            }
-        }
-        else
-        {
-            if (version >= 0x3200)
-            {
-                n = Packet_scanf(&rbuf, "%c",
-                                 &(num_items[ITEM_EMERGENCY_SHIELD]));
-                if (n <= 0)
-                {
-                    return n;
-                }
-            }
-            else
-            {
-                num_items[ITEM_EMERGENCY_SHIELD] = 0;
-            }
-            num_items[ITEM_DEFLECTOR] = 0;
-            num_items[ITEM_HYPERJUMP] = 0;
-            num_items[ITEM_PHASING] = 0;
-            num_items[ITEM_MIRROR] = 0;
-            num_items[ITEM_ARMOR] = 0;
-        }
     }
 
     if (debris_colors > num_spark_colors)
@@ -2248,11 +2156,6 @@ int Receive_wreckage(void) /* since 3.8.0 */
     {
         return n;
     }
-    if (version < 0x4202)
-    {
-        /* always color red. */
-        wrecktype &= 0x7F;
-    }
     if ((n = Handle_wreckage(x, y, wrecktype, size, rot)) == -1)
     {
         return -1;
@@ -2506,13 +2409,11 @@ int Receive_player(void)
     name[MAX_NAME_LEN - 1] = '\0';
     real[MAX_NAME_LEN - 1] = '\0';
     host[MAX_HOST_LEN - 1] = '\0';
-    if (version > 0x3200)
+
+    if ((n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)])) <= 0)
     {
-        if ((n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)])) <= 0)
-        {
-            cbuf.ptr = cbuf_ptr;
-            return n;
-        }
+        cbuf.ptr = cbuf_ptr;
+        return n;
     }
     if ((n = Handle_player(id, myteam, mychar, name, real, host, shape)) == -1)
     {
@@ -2529,21 +2430,12 @@ int Receive_score_object(void)
     char msg[MAX_CHARS];
     uint8_t ch;
 
-    if (version < 0x4500)
-    {
-        short rcv_score;
-        n = Packet_scanf(&cbuf, "%c%hd%hu%hu%s",
-                         &ch, &rcv_score, &x, &y, msg);
-        score = rcv_score;
-    }
-    else
-    {
-        /* newer servers send scores with two decimals */
-        int rcv_score;
-        n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
-                         &ch, &rcv_score, &x, &y, msg);
-        score = rcv_score / 100;
-    }
+    /* newer servers send scores with two decimals */
+    int rcv_score;
+    n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
+                     &ch, &rcv_score, &x, &y, msg);
+    score = rcv_score / 100;
+
     if (n <= 0)
         return n;
     if ((n = Handle_score_object(score, x, y, msg)) == -1)
@@ -2561,22 +2453,12 @@ int Receive_score(void)
     int score = 0;
     uint8_t ch, mychar, alliance = ' ';
 
-    if (version < 0x4500)
-    {
-        short rcv_score;
-        n = Packet_scanf(&cbuf, "%c%hd%hd%hd%c", &ch,
-                         &id, &rcv_score, &life, &mychar);
-        score = rcv_score;
-        alliance = ' ';
-    }
-    else
-    {
-        /* newer servers send scores with two decimals */
-        int rcv_score;
-        n = Packet_scanf(&cbuf, "%c%hd%d%hd%c%c", &ch,
-                         &id, &rcv_score, &life, &mychar, &alliance);
-        score = rcv_score / 100;
-    }
+    /* newer servers send scores with two decimals */
+    int rcv_score;
+    n = Packet_scanf(&cbuf, "%c%hd%d%hd%c%c", &ch,
+                     &id, &rcv_score, &life, &mychar, &alliance);
+    score = rcv_score / 100;
+
     if (n <= 0)
     {
         return n;
@@ -2893,11 +2775,6 @@ int Send_keyboard(uint8_t *keyboard_vector)
 {
     int size = KEYBOARD_SIZE;
 
-    if (version < 0x3800)
-    {
-        /* older servers have a keyboard_size of 8 bytes instead of 9. */
-        size--;
-    }
     if (wbuf.size - wbuf.len < size + 1 + 4)
     {
         /* Not enough write buffer space for keyboard state */
@@ -2924,19 +2801,17 @@ int Send_shape(char *str)
     char buf[MSG_LEN], ext[MSG_LEN];
 
     w = Convert_shape_str(str);
-    Convert_ship_2_string(w, buf, ext, (version < 0x3200) ? 0x3100 : 0x3200);
+    Convert_ship_2_string(w, buf, ext);
     Free_ship_shape(w);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
     {
         return -1;
     }
-    if (version > 0x3200)
+    if (Packet_printf(&wbuf, "%S", ext) <= 0)
     {
-        if (Packet_printf(&wbuf, "%S", ext) <= 0)
-        {
-            return -1;
-        }
+        return -1;
     }
+
     return 0;
 }
 
@@ -3143,14 +3018,11 @@ int Send_modifier_bank(int bank)
 
 int Send_pointer_move(int movement)
 {
-    if (version > 0x3201)
+    if (Packet_printf(&wbuf, "%c%hd", PKT_POINTER_MOVE, movement) == -1)
     {
-        if (Packet_printf(&wbuf, "%c%hd", PKT_POINTER_MOVE,
-                          movement) == -1)
-        {
-            return -1;
-        }
+        return -1;
     }
+
     return 0;
 }
 
@@ -3160,10 +3032,6 @@ int Send_audio_request(bool on)
     printf("Send_audio_request %d\n", on);
 #endif
 
-    if (version < 0x3250)
-    {
-        return 0;
-    }
 #ifndef SOUND
     on = false;
 #endif
@@ -3176,10 +3044,6 @@ int Send_audio_request(bool on)
 
 int Send_fps_request(int fps)
 {
-    if (version < 0x3280)
-    {
-        return 0;
-    }
     if (Packet_printf(&wbuf, "%c%c", PKT_ASYNC_FPS, fps) == -1)
     {
         return -1;
