@@ -1850,8 +1850,7 @@ int Send_player(connection_t *connp, int id)
                 connp->state, connp->id);
         return 0;
     }
-    Convert_ship_2_string(pl->ship, buf, ext,
-                          (connp->version < 0x3200) ? 0x3100 : 0x3200);
+    Convert_ship_2_string(pl->ship, buf, ext);
     n = Packet_printf(&connp->c,
                       "%c%hd"
                       "%c%c"
