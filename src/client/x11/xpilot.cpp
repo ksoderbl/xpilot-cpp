@@ -138,23 +138,23 @@ int main(int argc, char *argv[])
     cp = getenv("XPILOTUSER");
     if (cp)
     {
-        strlcpy(conpar->real_name, cp, sizeof(conpar->real_name));
+        strlcpy(conpar->user_name, cp, sizeof(conpar->user_name));
     }
     else
     {
-        Get_login_name(conpar->real_name, sizeof(conpar->real_name) - 1);
+        Get_login_name(conpar->user_name, sizeof(conpar->user_name) - 1);
     }
-    if (Check_real_name(conpar->real_name) == NAME_ERROR)
+    if (Check_user_name(conpar->user_name) == NAME_ERROR)
     {
-        xpprintf("fixing name from \"%s\" ", conpar->real_name);
-        Fix_real_name(conpar->real_name);
-        xpprintf("to \"%s\"\n", conpar->real_name);
+        xpprintf("fixing name from \"%s\" ", conpar->user_name);
+        Fix_user_name(conpar->user_name);
+        xpprintf("to \"%s\"\n", conpar->user_name);
     }
 
     /*
      * --- Check commandline arguments and resource files ---
      */
-    Parse_options(&argc, argv, conpar->real_name,
+    Parse_options(&argc, argv, conpar->user_name,
                   &conpar->contact_port, &conpar->team,
                   &text, &list_servers,
                   &auto_connect, &noLocalMotd,
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
     if (result == 1)
     {
         return Join(conpar->server_addr, conpar->server_name, conpar->login_port,
-                    conpar->real_name, conpar->nick_name, conpar->team,
+                    conpar->user_name, conpar->nick_name, conpar->team,
                     conpar->disp_name, conpar->server_version);
     }
     return 1;

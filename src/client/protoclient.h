@@ -44,7 +44,7 @@ extern void Get_xpilotrc_file(char *, unsigned);
  * join.c
  */
 extern int Join(char *server_addr, char *server_name, int port,
-                char *real, char *nick, int my_team,
+                char *user_name, char *nick_name, int my_team,
                 char *display, unsigned version);
 
 /*

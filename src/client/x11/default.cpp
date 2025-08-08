@@ -2046,7 +2046,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     {
         strlcpy(realName, resValue, MAX_NAME_LEN);
     }
-    Fix_real_name(realName);
+    Fix_user_name(realName);
 
     Get_resource(rDB, "host", resValue, MAX_HOST_LEN);
     if (resValue[0])

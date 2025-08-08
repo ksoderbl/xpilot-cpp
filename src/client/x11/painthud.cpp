@@ -260,7 +260,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(hud_pos_x) - target->name_width / 2,
                   WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET - BORDER) - gameFont->descent,
-                  target->name, target->name_len);
+                  target->nick_name, target->name_len);
 
     /* Only show the mini-ship for the locked player if it will be big enough
      * to even tell what the heck it is!  I choose the arbitrary size of

@@ -1003,7 +1003,7 @@ static int Handle_listening(connection_t *connp)
         Destroy_connection(connp, "verify incomplete");
         return -1;
     }
-    Fix_real_name(real);
+    Fix_user_name(real);
     Fix_nick_name(nick);
     if (strcmp(real, connp->real))
     {

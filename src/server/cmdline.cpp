@@ -58,9 +58,9 @@ extern char conf_logfile_string[]; /* Default name of log file */
 void tuner_none(void) {}
 void tuner_dummy(void) {}
 
-static void Tune_robot_real_name(void) { Fix_real_name(options.robotRealName); }
+static void Tune_robot_user_name(void) { Fix_user_name(options.robotRealName); }
 static void Tune_robot_host_name(void) { Fix_host_name(options.robotHostName); }
-static void Tune_tank_real_name(void) { Fix_real_name(options.tankRealName); }
+static void Tune_tank_user_name(void) { Fix_user_name(options.tankRealName); }
 static void Tune_tank_host_name(void) { Fix_host_name(options.tankHostName); }
 
 static option_desc opts[] = {
@@ -249,7 +249,7 @@ static option_desc opts[] = {
      "robot",
      &options.robotRealName,
      valString,
-     Tune_robot_real_name,
+     Tune_robot_user_name,
      "What is the robots' apparent real name?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"robotHostName",
@@ -265,7 +265,7 @@ static option_desc opts[] = {
      "tank",
      &options.tankRealName,
      valString,
-     Tune_tank_real_name,
+     Tune_tank_user_name,
      "What is the tanks' apparent real name?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"tankHostName",

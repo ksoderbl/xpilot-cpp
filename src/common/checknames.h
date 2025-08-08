@@ -28,8 +28,8 @@
 #define NAME_OK 1
 #define NAME_ERROR 0
 
-int Check_real_name(char *name);
-void Fix_real_name(char *name);
+int Check_user_name(char *name);
+void Fix_user_name(char *name);
 int Check_nick_name(char *name);
 void Fix_nick_name(char *name);
 int Check_host_name(char *name);

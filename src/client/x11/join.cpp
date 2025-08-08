@@ -243,8 +243,8 @@ static void sigcatch(int signum)
     exit(1);
 }
 
-int Join(char *server_addr, char *server_name, int port, char *real,
-         char *nick, int my_team, char *display, unsigned version)
+int Join(char *server_addr, char *server_name, int port, char *user_name,
+         char *nick_name, int my_team, char *display, unsigned version)
 {
     signal(SIGINT, sigcatch);
     signal(SIGTERM, sigcatch);
@@ -260,7 +260,7 @@ int Join(char *server_addr, char *server_name, int port, char *real,
         Client_cleanup();
         return -1;
     }
-    if (Net_verify(real, nick, display, my_team) == -1)
+    if (Net_verify(user_name, nick_name, display, my_team) == -1)
     {
         Net_cleanup();
         Client_cleanup();

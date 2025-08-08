@@ -2254,7 +2254,7 @@ int Welcome_screen(Connect_param_t *conpar)
         result = Join(conpar->server_addr,
                       conpar->server_name,
                       conpar->login_port,
-                      conpar->real_name,
+                      conpar->user_name,
                       conpar->nick_name,
                       conpar->team,
                       conpar->disp_name,

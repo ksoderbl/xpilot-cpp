@@ -111,12 +111,12 @@ typedef struct
 
 #define CONTROL_DELAY 100
 
-#define FIND_NAME_WIDTH(other)                                        \
-    if ((other)->name_width == 0)                                     \
-    {                                                                 \
-        (other)->name_len = strlen((other)->name);                    \
-        (other)->name_width = 2 + XTextWidth(gameFont, (other)->name, \
-                                             (other)->name_len);      \
+#define FIND_NAME_WIDTH(other)                                             \
+    if ((other)->name_width == 0)                                          \
+    {                                                                      \
+        (other)->name_len = strlen((other)->nick_name);                    \
+        (other)->name_width = 2 + XTextWidth(gameFont, (other)->nick_name, \
+                                             (other)->name_len);           \
     }
 
 /* macros begin */
@@ -141,9 +141,9 @@ typedef struct
     short name_width; /* In pixels */
     short name_len;   /* In bytes */
     shipshape_t *ship;
-    char name[MAX_CHARS];
-    char real[MAX_CHARS];
-    char host[MAX_CHARS];
+    char nick_name[MAX_CHARS];
+    char user_name[MAX_CHARS];
+    char host_name[MAX_CHARS];
 } other_t;
 
 typedef struct
@@ -481,7 +481,7 @@ other_t *Other_by_id(int id);
 shipshape_t *Ship_by_id(int id);
 int Handle_leave(int id);
 int Handle_player(int id, int team, int mychar, char *player_name,
-                  char *real_name, char *host_name, char *shape);
+                  char *user_name, char *host_name, char *shape);
 int Handle_score(int id, int score, int life, int mychar, int alliance);
 int Handle_score_object(int score, int x, int y, char *msg);
 int Handle_timing(int id, int check, int round);

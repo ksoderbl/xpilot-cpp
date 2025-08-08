@@ -267,7 +267,7 @@ static void Paint_mines(void)
                         }
                         else if ((other = Other_by_id(mine_ptr[i].id)) != NULL)
                         {
-                            name = other->name;
+                            name = other->nick_name;
                         }
                         else
                         {

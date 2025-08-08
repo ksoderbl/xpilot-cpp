@@ -450,7 +450,7 @@ int Net_setup(void)
  * this info from the ENTER_GAME_pack.
  */
 #define MAX_VERIFY_RETRIES 5
-int Net_verify(char *real, char *nick, char *disp, int my_team)
+int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
 {
     int n,
         type,
@@ -466,12 +466,11 @@ int Net_verify(char *real, char *nick, char *disp, int my_team)
         {
             if (retries++ >= MAX_VERIFY_RETRIES)
             {
-                errno = 0;
-                xperror("Can't connect to server after %d retries", retries);
+                warn("Can't connect to server after %d retries", retries);
                 return -1;
             }
             Sockbuf_clear(&wbuf);
-            n = Packet_printf(&wbuf, "%c%s%s%s", PKT_VERIFY, real, nick, disp);
+            n = Packet_printf(&wbuf, "%c%s%s%s", PKT_VERIFY, user_name, nick_name, disp);
             if (n <= 0 || Sockbuf_flush(&wbuf) <= 0)
             {
                 xperror("Can't send verify packet");
@@ -504,14 +503,12 @@ int Net_verify(char *real, char *nick, char *disp, int my_team)
         {
             if (rbuf.ptr[0] == PKT_QUIT)
             {
-                errno = 0;
-                xperror("Server closed connection");
+                warn("Server closed connection");
                 return -1;
             }
             else
             {
-                errno = 0;
-                xperror("Bad packet type when verifying (%d)", rbuf.ptr[0]);
+                warn("Bad packet type when verifying (%d)", rbuf.ptr[0]);
                 return -1;
             }
         }
@@ -529,20 +526,17 @@ int Net_verify(char *real, char *nick, char *disp, int my_team)
         }
         if (Receive_reply(&type, &result) <= 0)
         {
-            errno = 0;
-            xperror("Can't receive verify reply packet");
+            warn("Can't receive verify reply packet");
             return -1;
         }
         if (type != PKT_VERIFY)
         {
-            errno = 0;
-            xperror("Verify wrong reply type (%d)", type);
+            warn("Verify wrong reply type (%d)", type);
             return -1;
         }
         if (result != PKT_SUCCESS)
         {
-            errno = 0;
-            xperror("Verification failed (%d)", result);
+            warn("Verification failed (%d)", result);
             return -1;
         }
         if (Receive_magic() <= 0)
@@ -2391,9 +2385,9 @@ int Receive_player(void)
     int n;
     short id;
     uint8_t ch, myteam, mychar;
-    char name[MAX_CHARS],
-        real[MAX_CHARS],
-        host[MAX_CHARS],
+    char nick_name[MAX_CHARS],
+        user_name[MAX_CHARS],
+        host_name[MAX_CHARS],
         shape[2 * MSG_LEN],
         *cbuf_ptr = cbuf.ptr;
 
@@ -2402,21 +2396,21 @@ int Receive_player(void)
                           "%s%s%s"
                           "%S",
                           &ch, &id, &myteam, &mychar,
-                          name, real, host,
+                          nick_name, user_name, host_name,
                           shape)) <= 0)
     {
         return n;
     }
-    name[MAX_NAME_LEN - 1] = '\0';
-    real[MAX_NAME_LEN - 1] = '\0';
-    host[MAX_HOST_LEN - 1] = '\0';
+    nick_name[MAX_NAME_LEN - 1] = '\0';
+    user_name[MAX_NAME_LEN - 1] = '\0';
+    host_name[MAX_HOST_LEN - 1] = '\0';
 
     if ((n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)])) <= 0)
     {
         cbuf.ptr = cbuf_ptr;
         return n;
     }
-    if ((n = Handle_player(id, myteam, mychar, name, real, host, shape)) == -1)
+    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name, shape)) == -1)
     {
         return -1;
     }

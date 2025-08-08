@@ -35,7 +35,7 @@
 #include "pack.h"
 #include "checknames.h"
 
-int Check_real_name(char *name)
+int Check_user_name(char *name)
 {
     uint8_t *str;
 
@@ -56,7 +56,7 @@ int Check_real_name(char *name)
     return NAME_OK;
 }
 
-void Fix_real_name(char *name)
+void Fix_user_name(char *name)
 {
     uint8_t *str;
 

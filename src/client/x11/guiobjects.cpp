@@ -555,7 +555,7 @@ static void Gui_paint_ship_name(int x, int y, other_t *other)
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(X(x)) - other->name_width / 2,
                   WINSCALE(Y(y) + 16) + gameFont->ascent,
-                  other->name, other->name_len);
+                  other->nick_name, other->name_len);
 }
 
 static int Gui_is_my_tank(other_t *other)
@@ -567,12 +567,12 @@ static int Gui_is_my_tank(other_t *other)
         return 0;
     }
 
-    if (strlcpy(tank_name, self->name, MAX_NAME_LEN) < MAX_NAME_LEN)
+    if (strlcpy(tank_name, self->nick_name, MAX_NAME_LEN) < MAX_NAME_LEN)
     {
         strlcat(tank_name, "'s tank", MAX_NAME_LEN);
     }
 
-    if (strcmp(tank_name, other->name))
+    if (strcmp(tank_name, other->nick_name))
     {
         return 0;
     }

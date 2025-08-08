@@ -70,7 +70,7 @@ static char msg[MSG_LEN];
 extern int login_in_progress;
 extern char ShutdownReason[];
 
-static bool Owner(char request, char *real_name, char *host_addr,
+static bool Owner(char request, char *user_name, char *host_addr,
                   int host_port, int pass);
 static int Enter_player(char *real, char *nick, char *disp, int team,
                         char *addr, char *host, unsigned version, int port,
@@ -249,7 +249,7 @@ static int Reply(char *host_addr, int port)
     return result;
 }
 
-static int Check_names(char *nick_name, char *real_name, char *host_name)
+static int Check_names(char *nick_name, char *user_name, char *host_name)
 {
     char *ptr;
     int i;
@@ -257,7 +257,7 @@ static int Check_names(char *nick_name, char *real_name, char *host_name)
     /*
      * Bad input parameters?
      */
-    if (real_name[0] == 0 || host_name[0] == 0 || nick_name[0] < 'A' || nick_name[0] > 'Z')
+    if (user_name[0] == 0 || host_name[0] == 0 || nick_name[0] < 'A' || nick_name[0] > 'Z')
     {
         return E_INVAL;
     }
@@ -319,7 +319,7 @@ void Contact(int fd, void *arg)
         my_magic;
     unsigned short port;
     char ch,
-        real_name[MAX_CHARS],
+        user_name[MAX_CHARS],
         disp_name[MAX_CHARS],
         nick_name[MAX_CHARS],
         host_name[MAX_CHARS],
@@ -362,12 +362,12 @@ void Contact(int fd, void *arg)
     /*
      * Read core of packet.
      */
-    if (Packet_scanf(&ibuf, "%s%hu%c", real_name, &port, &ch) <= 0)
+    if (Packet_scanf(&ibuf, "%s%hu%c", user_name, &port, &ch) <= 0)
     {
         D(printf("Incomplete packet from %s", host_addr);)
         return;
     }
-    Fix_real_name(real_name);
+    Fix_user_name(user_name);
     reply_to = (ch & 0xFF); /* no sign extension. */
 
     /* ignore port for termified clients. */
@@ -383,7 +383,7 @@ void Contact(int fd, void *arg)
     if (version < MIN_CLIENT_VERSION || (version > MAX_CLIENT_VERSION && reply_to != CONTACT_pack))
     {
         D(xperror("Incompatible version with %s@%s (%04x,%04x)",
-                  real_name, host_addr, MY_VERSION, version);)
+                  user_name, host_addr, MY_VERSION, version);)
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", MAGIC, reply_to, E_VERSION);
         Reply(host_addr, port);
@@ -411,7 +411,7 @@ void Contact(int fd, void *arg)
         {
             return;
         }
-        if (!Owner(reply_to, real_name, host_addr, port, key == credentials))
+        if (!Owner(reply_to, user_name, host_addr, port, key == credentials))
         {
             Sockbuf_clear(&ibuf);
             Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, E_NOT_OWNER);
@@ -441,7 +441,7 @@ void Contact(int fd, void *arg)
         if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
                          &team) <= 0)
         {
-            D(printf("Incomplete enter queue from %s@%s", real_name, host_addr);)
+            D(printf("Incomplete enter queue from %s@%s", user_name, host_addr);)
             return;
         }
         Fix_nick_name(nick_name);
@@ -452,7 +452,7 @@ void Contact(int fd, void *arg)
             team = TEAM_NOT_SET;
         }
 
-        status = Queue_player(real_name, nick_name,
+        status = Queue_player(user_name, nick_name,
                               disp_name, team,
                               host_addr, host_name,
                               version, port,
@@ -474,7 +474,7 @@ void Contact(int fd, void *arg)
         if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
                          &team) <= 0)
         {
-            D(printf("Incomplete login from %s@%s", real_name, host_addr);)
+            D(printf("Incomplete login from %s@%s", user_name, host_addr);)
             return;
         }
         Fix_nick_name(nick_name);
@@ -485,7 +485,7 @@ void Contact(int fd, void *arg)
             team = TEAM_NOT_SET;
         }
 
-        status = Enter_player(real_name, nick_name,
+        status = Enter_player(user_name, nick_name,
                               disp_name, team,
                               host_addr, host_name,
                               version, port,
@@ -503,7 +503,7 @@ void Contact(int fd, void *arg)
 
 #ifndef SILENT
         xpprintf("%s %s@%s asked for info about current game.\n",
-                 showtime(), real_name, host_addr);
+                 showtime(), user_name, host_addr);
 #endif
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, SUCCESS);
@@ -526,7 +526,7 @@ void Contact(int fd, void *arg)
         else
         {
             sprintf(msg, "%s [%s SPEAKING FROM ABOVE]",
-                    str, real_name);
+                    str, user_name);
             Set_message(msg);
         }
         Sockbuf_clear(&ibuf);
@@ -572,7 +572,7 @@ void Contact(int fd, void *arg)
         {
             sprintf(msg, "|*******| %s (%s) |*******| \"%s\"",
                     (delay > 0) ? "SHUTTING DOWN" : "SHUTDOWN STOPPED",
-                    real_name, ShutdownReason);
+                    user_name, ShutdownReason);
             if (delay > 0)
             {
                 ShutdownServer = delay * FPS; /* delay is in seconds */
@@ -671,7 +671,7 @@ void Contact(int fd, void *arg)
 
                     Get_option_value(opt, value, sizeof(value));
                     sprintf(msg, " < Option %s set to %s by %s FROM ABOVE. >",
-                            opt, value, real_name);
+                            opt, value, user_name);
                     Set_message(msg);
                 }
             }
@@ -706,7 +706,7 @@ void Contact(int fd, void *arg)
 
 #ifndef SILENT
         xpprintf("%s %s@%s asked for an option list.\n",
-                 showtime(), real_name, host_addr);
+                 showtime(), user_name, host_addr);
 #endif
         i = 0;
         do
@@ -783,7 +783,7 @@ void Contact(int fd, void *arg)
          * Incorrect packet type.
          */
         D(printf("Unknown packet type (%d) from %s@%s.\n",
-                 reply_to, real_name, host_addr);)
+                 reply_to, user_name, host_addr);)
 
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, E_VERSION);
@@ -919,7 +919,7 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
 struct queued_player
 {
     struct queued_player *next;
-    char real_name[MAX_CHARS];
+    char user_name[MAX_CHARS];
     char nick_name[MAX_CHARS];
     char disp_name[MAX_CHARS];
     char host_name[MAX_CHARS];
@@ -986,7 +986,7 @@ void Queue_loop(void)
         }
         if (qp->last_ack_sent + 2 < main_loops)
         {
-            login_port = Check_connection(qp->real_name, qp->nick_name,
+            login_port = Check_connection(qp->user_name, qp->nick_name,
                                           qp->disp_name, qp->host_addr);
             if (login_port == -1)
             {
@@ -1057,7 +1057,7 @@ void Queue_loop(void)
                 }
 
                 /* now get him a decent login port. */
-                qp->login_port = Setup_connection(qp->real_name, qp->nick_name,
+                qp->login_port = Setup_connection(qp->user_name, qp->nick_name,
                                                   qp->disp_name, qp->team,
                                                   qp->host_addr, qp->host_name,
                                                   qp->version);
@@ -1129,7 +1129,7 @@ static int Queue_player(char *real, char *nick, char *disp, int team,
         if (!strcmp(nick, qp->nick_name))
         {
             /* same screen? */
-            if (!strcmp(addr, qp->host_addr) && !strcmp(real, qp->real_name) && !strcmp(disp, qp->disp_name))
+            if (!strcmp(addr, qp->host_addr) && !strcmp(real, qp->user_name) && !strcmp(disp, qp->disp_name))
             {
                 qp->last_ack_recv = main_loops;
                 qp->port = port;
@@ -1175,7 +1175,7 @@ static int Queue_player(char *real, char *nick, char *disp, int team,
         return E_SOCKET;
     }
     ++*qpos;
-    strlcpy(qp->real_name, real, MAX_CHARS);
+    strlcpy(qp->user_name, real, MAX_CHARS);
     strlcpy(qp->nick_name, nick, MAX_CHARS);
     strlcpy(qp->disp_name, disp, MAX_CHARS);
     strlcpy(qp->host_name, host, MAX_CHARS);
@@ -1291,12 +1291,12 @@ int Queue_show_list(char *msg)
 /*
  * Returns true if <name> has owner status of this server.
  */
-static bool Owner(char request, char *real_name, char *host_addr,
+static bool Owner(char request, char *user_name, char *host_addr,
                   int host_port, int pass)
 {
     if (pass || request == CREDENTIALS_pack)
     {
-        if (!strcmp(real_name, Server.owner))
+        if (!strcmp(user_name, Server.owner))
         {
             if (!strcmp(host_addr, "127.0.0.1"))
             {
@@ -1304,13 +1304,13 @@ static bool Owner(char request, char *real_name, char *host_addr,
             }
         }
     }
-    else if (request == MESSAGE_pack && !strcmp(real_name, "kenrsc") && Meta_from(host_addr, host_port))
+    else if (request == MESSAGE_pack && !strcmp(user_name, "kenrsc") && Meta_from(host_addr, host_port))
     {
         return true;
     }
 #ifndef SILENT
     fprintf(stderr, "Permission denied for %s@%s, command 0x%02x, pass %d.\n",
-            real_name, host_addr, request, pass);
+            user_name, host_addr, request, pass);
 #endif
     return false;
 }

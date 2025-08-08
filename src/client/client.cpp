@@ -754,9 +754,12 @@ void Map_blue(int startx, int starty, int width, int height)
         type,
         newtype;
     unsigned char blue[256];
-    // const long outline_mask = SHOW_OUTLINE_WORLD | SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS;
-    bool fixThis = true; // TODO: BIT(instruments, outline_mask);
+    bool outline = false;
 
+    if (instruments.outlineWorld ||
+        instruments.filledWorld ||
+        instruments.texturedWalls)
+        outline = true;
     /*
      * Optimize the map for blue.
      */
@@ -844,11 +847,11 @@ void Map_blue(int startx, int starty, int width, int height)
                            !(blue[Setup->map_data[x * Setup->y + Setup->y - 1]] & BLUE_UP))
                         : !(blue[Setup->map_data[x * Setup->y + (y - 1)]] & BLUE_UP))
                     newtype |= BLUE_DOWN;
-                if (!fixThis || ((x == Setup->x - 1)
+                if (!outline || ((x == Setup->x - 1)
                                      ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
                                      : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
                     newtype |= BLUE_RIGHT;
-                if (!fixThis || ((y == Setup->y - 1)
+                if (!outline || ((y == Setup->y - 1)
                                      ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
                                      : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
                     newtype |= BLUE_UP;
@@ -861,7 +864,7 @@ void Map_blue(int startx, int starty, int width, int height)
                            !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
                         : !(blue[Setup->map_data[(x - 1) * Setup->y + y]] & BLUE_RIGHT))
                     newtype |= BLUE_LEFT;
-                if (!fixThis || ((y == Setup->y - 1)
+                if (!outline || ((y == Setup->y - 1)
                                      ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
                                      : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
                     newtype |= BLUE_UP;
@@ -869,11 +872,11 @@ void Map_blue(int startx, int starty, int width, int height)
 
             case SETUP_REC_RU:
                 newtype = BLUE_BIT | BLUE_CLOSED;
-                if (!fixThis || ((x == Setup->x - 1)
+                if (!outline || ((x == Setup->x - 1)
                                      ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
                                      : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
                     newtype |= BLUE_RIGHT;
-                if (!fixThis || ((y == Setup->y - 1)
+                if (!outline || ((y == Setup->y - 1)
                                      ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
                                      : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
                     newtype |= BLUE_UP;
@@ -895,7 +898,7 @@ void Map_blue(int startx, int starty, int width, int height)
 
             case SETUP_REC_RD:
                 newtype = BLUE_BIT | BLUE_BELOW | BLUE_OPEN;
-                if (!fixThis || ((x == Setup->x - 1)
+                if (!outline || ((x == Setup->x - 1)
                                      ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
                                      : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
                     newtype |= BLUE_RIGHT;
@@ -1125,7 +1128,7 @@ int Handle_leave(int id)
          */
         if (other->mychar != 'T' && other->mychar != 'R')
         {
-            sprintf(msg, "%s left this world.", other->name);
+            sprintf(msg, "%s left this world.", other->nick_name);
             Add_message(msg);
         }
         num_others--;
@@ -1148,8 +1151,8 @@ int Handle_leave(int id)
     return 0;
 }
 
-int Handle_player(int id, int player_team, int mychar, char *player_name,
-                  char *real_name, char *host_name, char *shape)
+int Handle_player(int id, int player_team, int mychar, char *nick_name,
+                  char *user_name, char *host_name, char *shape)
 {
     other_t *other;
 
@@ -1184,7 +1187,7 @@ int Handle_player(int id, int player_team, int mychar, char *player_name,
         }
         other = &Others[num_others++];
     }
-    if (self == NULL && strcmp(name, player_name) == 0)
+    if (self == NULL && strcmp(name, nick_name) == 0)
     {
         if (other != &Others[0])
         {
@@ -1207,9 +1210,9 @@ int Handle_player(int id, int player_team, int mychar, char *player_name,
     other->mychar = mychar;
     other->war_id = -1;
     other->name_width = 0;
-    strlcpy(other->name, player_name, sizeof(other->name));
-    strlcpy(other->real, real_name, sizeof(other->real));
-    strlcpy(other->host, host_name, sizeof(other->host));
+    strlcpy(other->nick_name, nick_name, sizeof(other->nick_name));
+    strlcpy(other->user_name, user_name, sizeof(other->user_name));
+    strlcpy(other->host_name, host_name, sizeof(other->host_name));
     scoresChanged = 1;
     other->ship = Convert_shape_str(shape);
     Calculate_shield_radius(other->ship);
@@ -1244,7 +1247,7 @@ int Handle_war(int robot_id, int killer_id)
         return 0;
     }
     robot->war_id = killer_id;
-    sprintf(msg, "%s declares war on %s.", robot->name, killer->name);
+    sprintf(msg, "%s declares war on %s.", robot->nick_name, killer->nick_name);
     Add_message(msg);
     scoresChanged = 1;
 
@@ -1267,7 +1270,7 @@ int Handle_seek(int programmer_id, int robot_id, int sought_id)
     }
     robot->war_id = sought_id;
     sprintf(msg, "%s has programmed %s to seek %s.",
-            programmer->name, robot->name, sought->name);
+            programmer->nick_name, robot->nick_name, sought->nick_name);
     Add_message(msg);
     scoresChanged = 1;
 
@@ -2058,9 +2061,9 @@ void Client_score_table(void)
             tmp.war_id = -1;
             tmp.name_width = 0;
             tmp.ship = NULL;
-            sprintf(tmp.name, "Team %d", tmp.team);
-            strcpy(tmp.real, tmp.name);
-            strcpy(tmp.host, "");
+            sprintf(tmp.nick_name, "Team %d", tmp.team);
+            strcpy(tmp.user_name, tmp.nick_name);
+            strcpy(tmp.nick_name, "");
             if (BIT(Setup->mode, LIMITED_LIVES) && team_order[i]->life == 0)
             {
                 tmp.mychar = 'D';

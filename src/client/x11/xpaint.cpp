@@ -468,7 +468,7 @@ void Paint_score_entry(int entry_num,
      */
     if (showRealName)
     {
-        sprintf(label, "%s=%s@%s", other->name, other->real, other->host);
+        sprintf(label, "%s=%s@%s", other->nick_name, other->user_name, other->host_name);
     }
     else
     {
@@ -510,12 +510,12 @@ void Paint_score_entry(int entry_num,
         sprintf(label, "%c %s%s%s%s  %s",
                 other->mychar, raceStr, teamStr,
                 scoreStr, lifeStr,
-                other->name);
+                other->nick_name);
         if (war)
         {
-            if (strlen(label) + strlen(war->name) + 5 < sizeof(label))
+            if (strlen(label) + strlen(war->nick_name) + 5 < sizeof(label))
             {
-                sprintf(label + strlen(label), " (%s)", war->name);
+                sprintf(label + strlen(label), " (%s)", war->nick_name);
             }
         }
     }
