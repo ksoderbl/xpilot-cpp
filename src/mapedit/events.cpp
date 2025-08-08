@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
+ *      William Docter
  */
 
-#include                 "main.h"
+#include "main.h"
 
 /***************************************************************************/
 /* MainEventLoop                                                           */
@@ -33,64 +33,71 @@
 /***************************************************************************/
 void MainEventLoop(void)
 {
-   XEvent                report;
+   XEvent report;
 
-   while (1) {
-      XNextEvent( display, &report);
+   while (1)
+   {
+      XNextEvent(display, &report);
 
-      if ( (report.type == Expose) && (report.xexpose.window == mapwin) &&
-           (report.xexpose.count == 0) ) {
-         T_ClearArea(mapwin,0,0,TOOLSWIDTH,mapwin_height);
+      if ((report.type == Expose) && (report.xexpose.window == mapwin) &&
+          (report.xexpose.count == 0))
+      {
+         T_ClearArea(mapwin, 0, 0, TOOLSWIDTH, mapwin_height);
       }
 
       T_FormEventCheck(&report);
 
-      switch (report.type) {
+      switch (report.type)
+      {
 
-         case ConfigureNotify:
-            if (report.xconfigure.window == mapwin) {
-               mapwin_width = report.xconfigure.width;
-               mapwin_height = report.xconfigure.height;
-               T_FormScrollArea(mapwin,(char *)"draw_map_icon",T_SCROLL_UNBOUND,
-               TOOLSWIDTH,0,mapwin_width-TOOLSWIDTH,mapwin_height,DrawMapIcon);
-               break;
-            }
-
-         case Expose:
-            if (report.xexpose.window == mapwin) {
-               if ( report.xexpose.count == 0)
-               DrawTools();
-               DrawMap(report.xexpose.x,report.xexpose.y,report.xexpose.width,
-                    report.xexpose.height);
-               DrawSelectArea();
-               break;
-            } else if ( (report.xexpose.window == helpwin) &&
-                 (report.xexpose.count == 0) ) {
-               DrawHelpWin();
-               break;
-            }
-      
-         case KeyPress:
-            MapwinKeyPress(&report);
+      case ConfigureNotify:
+         if (report.xconfigure.window == mapwin)
+         {
+            mapwin_width = report.xconfigure.width;
+            mapwin_height = report.xconfigure.height;
+            T_FormScrollArea(mapwin, (char *)"draw_map_icon", T_SCROLL_UNBOUND,
+                             TOOLSWIDTH, 0, mapwin_width - TOOLSWIDTH, mapwin_height, DrawMapIcon);
             break;
+         }
 
-         case ClientMessage:
-            if (report.xclient.message_type == ProtocolAtom
-               && report.xclient.format == 32
-               && report.xclient.data.l[0] == KillAtom) {
-                    if (report.xclient.window == mapwin) {
-                                XDestroyWindow(display, mapwin);
-                                XSync(display, True);
-                                XCloseDisplay(display);
-                                       exit(0);
-                    }
-                    else {
-                                XUnmapWindow(display, report.xclient.window);
-                        }
-           }
+      case Expose:
+         if (report.xexpose.window == mapwin)
+         {
+            if (report.xexpose.count == 0)
+               DrawTools();
+            DrawMap(report.xexpose.x, report.xexpose.y, report.xexpose.width,
+                    report.xexpose.height);
+            DrawSelectArea();
+            break;
+         }
+         else if ((report.xexpose.window == helpwin) &&
+                  (report.xexpose.count == 0))
+         {
+            DrawHelpWin();
+            break;
+         }
+
+      case KeyPress:
+         MapwinKeyPress(&report);
+         break;
+
+      case ClientMessage:
+         if (report.xclient.message_type == ProtocolAtom && report.xclient.format == 32 && report.xclient.data.l[0] == KillAtom)
+         {
+            if (report.xclient.window == mapwin)
+            {
+               XDestroyWindow(display, mapwin);
+               XSync(display, True);
+               XCloseDisplay(display);
+               exit(0);
+            }
+            else
+            {
+               XUnmapWindow(display, report.xclient.window);
+            }
+         }
       } /* end switch */
    }
-
 }
 
 /***************************************************************************/
@@ -102,14 +109,15 @@ void MainEventLoop(void)
 /***************************************************************************/
 void MapwinKeyPress(XEvent *report)
 {
-   int                   x,y;
-   char                  buffer[1],icon;
-   int                   bufsize=1;
-   KeySym                keysym;
-   XComposeStatus        compose;
+   int x, y;
+   char buffer[1], icon;
+   int bufsize = 1;
+   KeySym keysym;
+   XComposeStatus compose;
    // int                   count;
 
-   if ( (report->xkey.x < TOOLSWIDTH) || (report->xkey.window != mapwin) ) {
+   if ((report->xkey.x < TOOLSWIDTH) || (report->xkey.window != mapwin))
+   {
       return;
    }
    x = report->xkey.x - TOOLSWIDTH;
@@ -121,9 +129,12 @@ void MapwinKeyPress(XEvent *report)
    // count =
    XLookupString(&report->xkey, buffer, bufsize, &keysym, &compose);
    icon = buffer[0];
-   if ((icon >= 'a') && (icon <= 'z')) {
-      ChangeMapData(x,y,toupper(icon),1);
-   } else if  ((icon >= '0') && (icon <= '9')) {
-      ChangeMapData(x,y,icon,1);
+   if ((icon >= 'a') && (icon <= 'z'))
+   {
+      ChangeMapData(x, y, toupper(icon), 1);
+   }
+   else if ((icon >= '0') && (icon <= '9'))
+   {
+      ChangeMapData(x, y, icon, 1);
    }
 }

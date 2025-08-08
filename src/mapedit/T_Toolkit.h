@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,50 +19,53 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
+ *      William Docter
  */
 
-#include                 <X11/Xlib.h>
-#include                 <X11/Xutil.h>
-#include                 <X11/Xos.h>
-#include                 <X11/Xatom.h>
-#include                 <X11/keysym.h>
-#include                 <stdio.h>
-#include                 <stdlib.h>
-#include                 <string.h>
- 
-#include                 "T_Form.h"
-#include                 "T_Popup.h"
-#include                 "T_Handler.h"
-#include                 "T_proto.h"
+#ifndef T_TOOLKIT_H
+#define T_TOOLKIT_H
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <X11/Xatom.h>
+#include <X11/keysym.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "T_Form.h"
+#include "T_Popup.h"
+#include "T_Handler.h"
+#include "T_proto.h"
 
 /* Constants for T_DrawButton */
-#define                  RAISED          0
-#define                  LOWERED         1
+#define RAISED 0
+#define LOWERED 1
 
 /* Constants for T_DrawString */
-#define                  CURSOR_CHAR     "^"
-#define                  JUSTIFY_LEFT    0
-#define                  JUSTIFY_RIGHT   1
-#define                  JUSTIFY_CENTER  2
-#define                  CROP_RIGHT      0
-#define                  CROP_LEFT       1
+#define CURSOR_CHAR "^"
+#define JUSTIFY_LEFT 0
+#define JUSTIFY_RIGHT 1
+#define JUSTIFY_CENTER 2
+#define CROP_RIGHT 0
+#define CROP_LEFT 1
 #ifdef MONO
-#define                  BKGR            T_Fore_GC
+#define BKGR T_Fore_GC
 #else
-#define                  BKGR            T_Back_GC
+#define BKGR T_Back_GC
 #endif
 
-typedef char             max_str_t[255];
+typedef char max_str_t[255];
 
-extern int               screennum, root_width, root_height;
-extern Display           *display;
-extern GC                T_Back_GC, T_Fore_GC, T_Hlgt_GC, T_Shdw_GC;
-extern XFontStruct       *T_Font;
-extern const char        *T_Background,*T_Foreground,*T_Shadow,*T_Highlight;
-extern Atom              ProtocolAtom;
-extern Atom              KillAtom;
+extern int screennum, root_width, root_height;
+extern Display *display;
+extern GC T_Back_GC, T_Fore_GC, T_Hlgt_GC, T_Shdw_GC;
+extern XFontStruct *T_Font;
+extern const char *T_Background, *T_Foreground, *T_Shadow, *T_Highlight;
+extern Atom ProtocolAtom;
+extern Atom KillAtom;
 
-
+#endif

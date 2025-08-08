@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,12 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
- *
- * $Id: T_Handler.c,v 5.0 2001/04/07 20:01:00 dik Exp $
+ *      William Docter
  */
 
-#include                 "T_Toolkit.h"
+#include "T_Toolkit.h"
 
 /***************************************************************************/
 /* ValidateFloatHandler                                                    */
@@ -35,31 +33,32 @@
 /***************************************************************************/
 int ValidateFloatHandler(HandlerInfo info)
 {
-   char                  *returnval, *charvar;
-   char                  *string,*start;
- 
-   charvar = info.field->charvar;
-   returnval = (char *) malloc(strlen((char *) charvar)+1);
-   returnval[0] = '\0';
-   string = (char *) malloc(strlen((char *) charvar)+1);
-   start = (char *) string;
-   strcpy(string,(char *) charvar);
+    char *returnval, *charvar;
+    char *string, *start;
 
-   if ( (string[0] == '-') || ( (string[0] >= '0') && (string[0] <= '9') ) ||
-        (string[0] == '.') ) 
-   sprintf(returnval,"%s%c",returnval,string[0]);
-   string++;
- 
-   while (string[0] != '\0') {
-      if ( ( (string[0] >= '0') && (string[0] <= '9') ) || (string[0] == '.') )
-      sprintf(returnval,"%s%c",returnval,string[0]);
-      string++;
-   }
+    charvar = info.field->charvar;
+    returnval = (char *)malloc(strlen((char *)charvar) + 1);
+    returnval[0] = '\0';
+    string = (char *)malloc(strlen((char *)charvar) + 1);
+    start = (char *)string;
+    strcpy(string, (char *)charvar);
 
-   strcpy((char *) charvar,returnval);
-   free(returnval);
-   free(start);
-   return 0;
+    if ((string[0] == '-') || ((string[0] >= '0') && (string[0] <= '9')) ||
+        (string[0] == '.'))
+        sprintf(returnval, "%s%c", returnval, string[0]);
+    string++;
+
+    while (string[0] != '\0')
+    {
+        if (((string[0] >= '0') && (string[0] <= '9')) || (string[0] == '.'))
+            sprintf(returnval, "%s%c", returnval, string[0]);
+        string++;
+    }
+
+    strcpy((char *)charvar, returnval);
+    free(returnval);
+    free(start);
+    return 0;
 }
 
 /***************************************************************************/
@@ -69,26 +68,27 @@ int ValidateFloatHandler(HandlerInfo info)
 /***************************************************************************/
 int ValidatePositiveFloatHandler(HandlerInfo info)
 {
-   char                  *returnval, *charvar;
-   char                  *string,*start;
- 
-   charvar = info.field->charvar;
-   returnval = (char *) malloc(strlen((char *) charvar)+1);
-   returnval[0] = '\0';
-   string = (char *) malloc(strlen((char *) charvar)+1);
-   start = (char *) string;
-   strcpy(string,(char *) charvar);
+    char *returnval, *charvar;
+    char *string, *start;
 
-   while (string[0] != '\0') {
-      if ( ( (string[0] >= '0') && (string[0] <= '9') ) || (string[0] == '.') )
-      sprintf(returnval,"%s%c",returnval,string[0]);
-      string++;
-   }
+    charvar = info.field->charvar;
+    returnval = (char *)malloc(strlen((char *)charvar) + 1);
+    returnval[0] = '\0';
+    string = (char *)malloc(strlen((char *)charvar) + 1);
+    start = (char *)string;
+    strcpy(string, (char *)charvar);
 
-   strcpy((char *) charvar,returnval);
-   free(returnval);
-   free(start);
-   return 0;
+    while (string[0] != '\0')
+    {
+        if (((string[0] >= '0') && (string[0] <= '9')) || (string[0] == '.'))
+            sprintf(returnval, "%s%c", returnval, string[0]);
+        string++;
+    }
+
+    strcpy((char *)charvar, returnval);
+    free(returnval);
+    free(start);
+    return 0;
 }
 
 /***************************************************************************/
@@ -98,30 +98,31 @@ int ValidatePositiveFloatHandler(HandlerInfo info)
 /***************************************************************************/
 int ValidateIntHandler(HandlerInfo info)
 {
-   char                  *returnval, *charvar;
-   char                  *string,*start;
- 
-   charvar = info.field->charvar;
-   returnval = (char *) malloc(strlen((char *) charvar)+1);
-   returnval[0] = '\0';
-   string = (char *) malloc(strlen((char *) charvar)+1);
-   start = (char *) string;
-   strcpy(string,(char *) charvar);
- 
-   if ( (string[0] == '-') || ( (string[0] >= '0') && (string[0] <= '9') ) )
-   sprintf(returnval,"%s%c",returnval,string[0]);
-   string++;
- 
-   while (string[0] != '\0') {
-      if ( (string[0] >= '0') && (string[0] <= '9') )
-      sprintf(returnval,"%s%c",returnval,string[0]);
-      string++;
-   }
- 
-   strcpy((char *) charvar,returnval);
-   free(returnval);
-   free(start);
-   return 0;
+    char *returnval, *charvar;
+    char *string, *start;
+
+    charvar = info.field->charvar;
+    returnval = (char *)malloc(strlen((char *)charvar) + 1);
+    returnval[0] = '\0';
+    string = (char *)malloc(strlen((char *)charvar) + 1);
+    start = (char *)string;
+    strcpy(string, (char *)charvar);
+
+    if ((string[0] == '-') || ((string[0] >= '0') && (string[0] <= '9')))
+        sprintf(returnval, "%s%c", returnval, string[0]);
+    string++;
+
+    while (string[0] != '\0')
+    {
+        if ((string[0] >= '0') && (string[0] <= '9'))
+            sprintf(returnval, "%s%c", returnval, string[0]);
+        string++;
+    }
+
+    strcpy((char *)charvar, returnval);
+    free(returnval);
+    free(start);
+    return 0;
 }
 
 /***************************************************************************/
@@ -131,26 +132,27 @@ int ValidateIntHandler(HandlerInfo info)
 /***************************************************************************/
 int ValidatePositiveIntHandler(HandlerInfo info)
 {
-   char                  *returnval, *charvar;
-   char                  *string,*start;
- 
-   charvar = info.field->charvar;
-   returnval = (char *) malloc(strlen((char *) charvar)+1);
-   returnval[0] = '\0';
-   string = (char *) malloc(strlen((char *) charvar)+1);
-   start = (char *) string;
-   strcpy(string,(char *) charvar);
- 
-   while (string[0] != '\0') {
-      if ( (string[0] >= '0') && (string[0] <= '9') )
-      sprintf(returnval,"%s%c",returnval,string[0]);
-      string++;
-   }
- 
-   strcpy((char *) charvar,returnval);
-   free(returnval);
-   free(start);
-   return 0;
+    char *returnval, *charvar;
+    char *string, *start;
+
+    charvar = info.field->charvar;
+    returnval = (char *)malloc(strlen((char *)charvar) + 1);
+    returnval[0] = '\0';
+    string = (char *)malloc(strlen((char *)charvar) + 1);
+    start = (char *)string;
+    strcpy(string, (char *)charvar);
+
+    while (string[0] != '\0')
+    {
+        if ((string[0] >= '0') && (string[0] <= '9'))
+            sprintf(returnval, "%s%c", returnval, string[0]);
+        string++;
+    }
+
+    strcpy((char *)charvar, returnval);
+    free(returnval);
+    free(start);
+    return 0;
 }
 
 /***************************************************************************/
@@ -160,8 +162,8 @@ int ValidatePositiveIntHandler(HandlerInfo info)
 /***************************************************************************/
 int PopupCloseHandler(HandlerInfo info)
 {
-   T_PopupClose(info.form->window);
-   return 0;
+    T_PopupClose(info.form->window);
+    return 0;
 }
 
 /***************************************************************************/
@@ -171,6 +173,6 @@ int PopupCloseHandler(HandlerInfo info)
 /***************************************************************************/
 int FormCloseHandler(HandlerInfo info)
 {
-   XUnmapWindow(display, info.form->window);
-   return 0;
+    XUnmapWindow(display, info.form->window);
+    return 0;
 }

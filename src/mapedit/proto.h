@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
+ *      William Docter
  */
 
 /*
@@ -29,99 +29,99 @@
  */
 
 /* prototypes for main.c */
-void            SetDefaults(int argc, char *argv[]);
-void            ParseArgs(int argc, char *argv[]);
-void            ResetMap(void);
-void            SizeMapwin(void);
-void            SizeSmallMap(void);
-void            SizeMapIcons(int zoom);
-void            Setup_default_server_options();
+void SetDefaults(int argc, char *argv[]);
+void ParseArgs(int argc, char *argv[]);
+void ResetMap(void);
+void SizeMapwin(void);
+void SizeSmallMap(void);
+void SizeMapIcons(int zoom);
+void Setup_default_server_options();
 
 /* prototypes for expose.c */
-void            DrawTools(void);
-void            DrawMap(int x, int y, int width, int height);
-void            DrawMapSection(int x, int y, int width, int height, 
-                int xpos, int ypos);
-void            DrawMapPic(Window win, int x, int y, int picnum, int zoom);
-void            DrawSmallMap(void);
-void            UpdateSmallMap(int x,int y);
-void            DrawViewBox(void);
-void            DrawViewSeg(int x1, int y1, int x2, int y2);
+void DrawTools(void);
+void DrawMap(int x, int y, int width, int height);
+void DrawMapSection(int x, int y, int width, int height,
+                    int xpos, int ypos);
+void DrawMapPic(Window win, int x, int y, int picnum, int zoom);
+void DrawSmallMap(void);
+void UpdateSmallMap(int x, int y);
+void DrawViewBox(void);
+void DrawViewSeg(int x1, int y1, int x2, int y2);
 
 /* prototypes for events.c */
-void            MainEventLoop(void);
-void            MapwinKeyPress(XEvent *report);
+void MainEventLoop(void);
+void MapwinKeyPress(XEvent *report);
 
 /* prototypes for tools.c */
-int             DrawMapIcon(HandlerInfo info);
-void            SelectArea(int x, int y, int count);
-void            ChangeMapData(int x, int y,char icon, int save);
-int             MoveMapView(HandlerInfo info);
-int             ZoomOut(HandlerInfo info);
-int             ZoomIn(HandlerInfo info);
-void            SizeSelectBounds(int oldvx, int oldvy);
-int             ExitApplication(HandlerInfo info);
-int             SaveUndoIcon(int x, int y, char icon);
-int             Undo(HandlerInfo info);
-void            ClearUndo(void);
-int             NewMap(HandlerInfo info);
-int             ResizeWidth(HandlerInfo info);
-int             ResizeHeight(HandlerInfo info);
-int             OpenPreferencesPopup(HandlerInfo info);
-int             OpenMapInfoPopup(HandlerInfo info);
-int             OpenRobotsPopup(HandlerInfo info);
-int             OpenVisibilityPopup(HandlerInfo info);
-int             OpenCannonsPopup(HandlerInfo info);
-int             OpenRoundsPopup(HandlerInfo info);
-int             OpenInitItemsPopup(HandlerInfo info);
-int             OpenMaxItemsPopup(HandlerInfo info);
-int             OpenProbsPopup(HandlerInfo info);
-int             OpenScoringPopup(HandlerInfo info);
-int             ValidateCoordHandler(HandlerInfo info);
-int             ShowHoles(HandlerInfo info);
-char            MapData(int x, int y);
-int             ChangedPrompt(int (*handlen)(HandlerInfo));
-void            ClearSelectArea(void);
-void            DrawSelectArea(void);
-int             FillMapArea(HandlerInfo info);
-int             CopyMapArea(HandlerInfo info);
-int             CutMapArea(HandlerInfo info);
-int             PasteMapArea(HandlerInfo info);
-int             NegativeMapArea(HandlerInfo info);
+int DrawMapIcon(HandlerInfo info);
+void SelectArea(int x, int y, int count);
+void ChangeMapData(int x, int y, char icon, int save);
+int MoveMapView(HandlerInfo info);
+int ZoomOut(HandlerInfo info);
+int ZoomIn(HandlerInfo info);
+void SizeSelectBounds(int oldvx, int oldvy);
+int ExitApplication(HandlerInfo info);
+int SaveUndoIcon(int x, int y, char icon);
+int Undo(HandlerInfo info);
+void ClearUndo(void);
+int NewMap(HandlerInfo info);
+int ResizeWidth(HandlerInfo info);
+int ResizeHeight(HandlerInfo info);
+int OpenPreferencesPopup(HandlerInfo info);
+int OpenMapInfoPopup(HandlerInfo info);
+int OpenRobotsPopup(HandlerInfo info);
+int OpenVisibilityPopup(HandlerInfo info);
+int OpenCannonsPopup(HandlerInfo info);
+int OpenRoundsPopup(HandlerInfo info);
+int OpenInitItemsPopup(HandlerInfo info);
+int OpenMaxItemsPopup(HandlerInfo info);
+int OpenProbsPopup(HandlerInfo info);
+int OpenScoringPopup(HandlerInfo info);
+int ValidateCoordHandler(HandlerInfo info);
+int ShowHoles(HandlerInfo info);
+char MapData(int x, int y);
+int ChangedPrompt(int (*handlen)(HandlerInfo));
+void ClearSelectArea(void);
+void DrawSelectArea(void);
+int FillMapArea(HandlerInfo info);
+int CopyMapArea(HandlerInfo info);
+int CutMapArea(HandlerInfo info);
+int PasteMapArea(HandlerInfo info);
+int NegativeMapArea(HandlerInfo info);
 
 /* prototypes for file.c */
-int             SavePrompt(HandlerInfo info);
-int             SaveOk(HandlerInfo info);
-int             SaveMap(const char *file);
-int             LoadPrompt(HandlerInfo info);
-int             LoadOk(HandlerInfo info);
-int             LoadMap(const char *file);
-int             LoadXbmFile(const char *file);
-int             LoadOldMap(const char *file);
-void            toeol(FILE *ifile);
-char            skipspace(FILE *ifile);
-char            *getMultilineValue(const char *delimiter, FILE *ifile);
-int             ParseLine(FILE *ifile);
-int             AddOption(const char *name, const char *value);
-int             YesNo(const char *val);
-char            *StrToNum(const char *string, int len, int type);
-int             LoadMapData(const char *value);
-char            *getMultilineValue();
+int SavePrompt(HandlerInfo info);
+int SaveOk(HandlerInfo info);
+int SaveMap(const char *file);
+int LoadPrompt(HandlerInfo info);
+int LoadOk(HandlerInfo info);
+int LoadMap(const char *file);
+int LoadXbmFile(const char *file);
+int LoadOldMap(const char *file);
+void toeol(FILE *ifile);
+char skipspace(FILE *ifile);
+char *getMultilineValue(const char *delimiter, FILE *ifile);
+int ParseLine(FILE *ifile);
+int AddOption(const char *name, const char *value);
+int YesNo(const char *val);
+char *StrToNum(const char *string, int len, int type);
+int LoadMapData(const char *value);
+char *getMultilineValue();
 
 /* prototypes for round.c */
-int             RoundMapArea(HandlerInfo info);
+int RoundMapArea(HandlerInfo info);
 
 /* prototypes for help.c */
-int             OpenHelpPopup(HandlerInfo info);
-void            BuildHelpForm(Window win, int helppage);
-void            DrawHelpWin(void);
-int             NextHelp(HandlerInfo info);
-int             PrevHelp(HandlerInfo info);
+int OpenHelpPopup(HandlerInfo info);
+void BuildHelpForm(Window win, int helppage);
+void DrawHelpWin(void);
+int NextHelp(HandlerInfo info);
+int PrevHelp(HandlerInfo info);
 
 /* prototypes for grow.c */
-int             GrowMapArea(HandlerInfo info);
+int GrowMapArea(HandlerInfo info);
 
 /* prototypes for forms.c */
-void            BuildMapwinForm(void);
-void            BuildPrefsForm(void);
-void            BuildPrefsSheet(int num);
+void BuildMapwinForm(void);
+void BuildPrefsForm(void);
+void BuildPrefsSheet(int num);

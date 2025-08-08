@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
+ *      William Docter
  */
 
-#include                 "T_Toolkit.h"
+#include "T_Toolkit.h"
 
-T_Popup_t                *T_Popup=NULL;
+T_Popup_t *T_Popup = NULL;
 
 /***************************************************************************/
 /* T_PopupCreate                                                           */
@@ -40,28 +40,29 @@ T_Popup_t                *T_Popup=NULL;
 /***************************************************************************/
 Window T_PopupCreate(int x, int y, int width, int height, const char *title)
 {
-   T_Popup_t      **popup;
+    T_Popup_t **popup;
 
-   popup = &T_Popup;
-   while ( (*popup) != NULL ) {
-      popup = (T_Popup_t **) &((*popup)->next);
-   }
-   
-   /* add a popup window to stack */
-   (*popup) = (T_Popup_t *) malloc(sizeof(T_Popup_t));
-   (*popup)->next = NULL;
-   if (x < 0 ) x = (root_width-width)/2;
-   if (y < 0 ) y = (root_height-height)/2;
+    popup = &T_Popup;
+    while ((*popup) != NULL)
+    {
+        popup = (T_Popup_t **)&((*popup)->next);
+    }
+
+    /* add a popup window to stack */
+    (*popup) = (T_Popup_t *)malloc(sizeof(T_Popup_t));
+    (*popup)->next = NULL;
+    if (x < 0)
+        x = (root_width - width) / 2;
+    if (y < 0)
+        y = (root_height - height) / 2;
 #ifdef MONO
-   (*popup)->window = T_MakeWindow(x,y,width,height,T_Foreground,T_Background);
+    (*popup)->window = T_MakeWindow(x, y, width, height, T_Foreground, T_Background);
 #else
-   (*popup)->window = T_MakeWindow(x,y,width,height,T_Background,T_Foreground);
+    (*popup)->window = T_MakeWindow(x, y, width, height, T_Background, T_Foreground);
 #endif
-   XSelectInput(display,(*popup)->window, ExposureMask | ButtonPressMask |
-        KeyPressMask | ButtonReleaseMask | PointerMotionMask |
-        StructureNotifyMask );
-   T_SetWindowName((*popup)->window,title,title);
-   return (*popup)->window;
+    XSelectInput(display, (*popup)->window, ExposureMask | ButtonPressMask | KeyPressMask | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask);
+    T_SetWindowName((*popup)->window, title, title);
+    return (*popup)->window;
 }
 
 /***************************************************************************/
@@ -75,43 +76,47 @@ Window T_PopupCreate(int x, int y, int width, int height, const char *title)
 /* Purpose :                                                               */
 /***************************************************************************/
 Window T_PopupAlert(int type, const char *message, const char *btn1, const char *btn2,
-     int (*handler1)(HandlerInfo), int (*handler2)(HandlerInfo))
+                    int (*handler1)(HandlerInfo), int (*handler2)(HandlerInfo))
 {
-   int                   x,y,width,height;
-   Window                win;
+    int x, y, width, height;
+    Window win;
 
-   width = XTextWidth(T_Font,message,strlen(message))+40;
-   height = POPUPBTNHEIGHT*3+30;
-   win = T_PopupCreate(-1,-1,width,height,"Alert");
+    width = XTextWidth(T_Font, message, strlen(message)) + 40;
+    height = POPUPBTNHEIGHT * 3 + 30;
+    win = T_PopupCreate(-1, -1, width, height, "Alert");
 
-   x = (width - POPUPBTNWIDTH)/2;
-   if (type == 1) {
-      T_FormButton(win,"popup_btn",x,POPUPBTNHEIGHT*2+20,
-           POPUPBTNWIDTH, POPUPBTNHEIGHT,"Ok",PopupCloseHandler);
-   } else if (type == 2) {
-      // if ( btn1 == NULL ) {
-      //    btn1 = (char *) malloc(3);
-      //    strcpy(btn1,"Ok");
-      // }
-      // if ( btn2 == NULL ) {
-      //    btn2 = (char *) malloc(7);
-      //    strcpy(btn2,"Cancel");
-      // }
-      if ( handler2 == NULL ) {
-         handler2 = PopupCloseHandler;
-      }
-      x = width/2 - POPUPBTNWIDTH-5;
-      y = height - POPUPBTNHEIGHT-5;
-      T_FormButton(win,"popup_btn1",x,y,POPUPBTNWIDTH,
-           POPUPBTNHEIGHT,btn1,handler1);
-      T_FormButton(win,"popup_btn2",x+10+POPUPBTNWIDTH,
-           y,POPUPBTNWIDTH, POPUPBTNHEIGHT,btn2,handler2);
-   }
-   T_FormText(win,"popup_alert",10,10,width-20,POPUPBTNHEIGHT,message,
-        JUSTIFY_CENTER);
+    x = (width - POPUPBTNWIDTH) / 2;
+    if (type == 1)
+    {
+        T_FormButton(win, "popup_btn", x, POPUPBTNHEIGHT * 2 + 20,
+                     POPUPBTNWIDTH, POPUPBTNHEIGHT, "Ok", PopupCloseHandler);
+    }
+    else if (type == 2)
+    {
+        // if ( btn1 == NULL ) {
+        //    btn1 = (char *) malloc(3);
+        //    strcpy(btn1,"Ok");
+        // }
+        // if ( btn2 == NULL ) {
+        //    btn2 = (char *) malloc(7);
+        //    strcpy(btn2,"Cancel");
+        // }
+        if (handler2 == NULL)
+        {
+            handler2 = PopupCloseHandler;
+        }
+        x = width / 2 - POPUPBTNWIDTH - 5;
+        y = height - POPUPBTNHEIGHT - 5;
+        T_FormButton(win, "popup_btn1", x, y, POPUPBTNWIDTH,
+                     POPUPBTNHEIGHT, btn1, handler1);
+        T_FormButton(win, "popup_btn2", x + 10 + POPUPBTNWIDTH,
+                     y, POPUPBTNWIDTH, POPUPBTNHEIGHT, btn2, handler2);
+    }
+    T_FormText(win, "popup_alert", 10, 10, width - 20, POPUPBTNHEIGHT, message,
+               JUSTIFY_CENTER);
 
-   XMapWindow(display, win);
-   return win;
+    XMapWindow(display, win);
+    return win;
 }
 
 /***************************************************************************/
@@ -131,38 +136,39 @@ Window T_PopupAlert(int type, const char *message, const char *btn1, const char 
 /* Purpose :                                                               */
 /***************************************************************************/
 Window T_PopupPrompt(int x, int y, int width, int height, const char *title,
-     const char *message, const char *btn1, const char *btn2, char *charvar, int length,
-     int (*handler)(HandlerInfo))
+                     const char *message, const char *btn1, const char *btn2, char *charvar, int length,
+                     int (*handler)(HandlerInfo))
 {
-   int                   x2,y2,x3,y3;
-   Window                win;
-   XEvent                report;
- 
-   win = T_PopupCreate(x,y,width,height,title);
- 
-   x2 = width/2 - POPUPBTNWIDTH-5;
-   y2 = height - POPUPBTNHEIGHT-5;
-   T_FormButton(win,"popup_btn1",x2,y2,POPUPBTNWIDTH, POPUPBTNHEIGHT,
-        btn1,handler);
-   T_FormButton(win,"popup_btn2",x2+10+POPUPBTNWIDTH, y2,POPUPBTNWIDTH,
-        POPUPBTNHEIGHT,btn2,PopupCloseHandler);
-   x2 = 5;
-   y2 = height - POPUPBTNHEIGHT*2-10;
-   y3 = -(y2+POPUPBTNHEIGHT)/2;
-   x3 = width/2 - XTextWidth(T_Font,message,strlen(message))/2;
-   if ( x2<0 ) x2 = 0;
-   T_FormStringEntry(win,"popup_prompt",x2,y2,width-10, POPUPBTNHEIGHT,x3,
-        y3, message,charvar,length,handler);
-  
-   XMapWindow(display, win);
-   report.type = ButtonPress;
-   report.xbutton.window = win;
-   report.xbutton.button = Button1;
-   report.xbutton.x = x2+1;
-   report.xbutton.y = y2+1;
-   T_FormButtonPress(&report);
-  
-   return win;
+    int x2, y2, x3, y3;
+    Window win;
+    XEvent report;
+
+    win = T_PopupCreate(x, y, width, height, title);
+
+    x2 = width / 2 - POPUPBTNWIDTH - 5;
+    y2 = height - POPUPBTNHEIGHT - 5;
+    T_FormButton(win, "popup_btn1", x2, y2, POPUPBTNWIDTH, POPUPBTNHEIGHT,
+                 btn1, handler);
+    T_FormButton(win, "popup_btn2", x2 + 10 + POPUPBTNWIDTH, y2, POPUPBTNWIDTH,
+                 POPUPBTNHEIGHT, btn2, PopupCloseHandler);
+    x2 = 5;
+    y2 = height - POPUPBTNHEIGHT * 2 - 10;
+    y3 = -(y2 + POPUPBTNHEIGHT) / 2;
+    x3 = width / 2 - XTextWidth(T_Font, message, strlen(message)) / 2;
+    if (x2 < 0)
+        x2 = 0;
+    T_FormStringEntry(win, "popup_prompt", x2, y2, width - 10, POPUPBTNHEIGHT, x3,
+                      y3, message, charvar, length, handler);
+
+    XMapWindow(display, win);
+    report.type = ButtonPress;
+    report.xbutton.window = win;
+    report.xbutton.button = Button1;
+    report.xbutton.x = x2 + 1;
+    report.xbutton.y = y2 + 1;
+    T_FormButtonPress(&report);
+
+    return win;
 }
 
 /***************************************************************************/
@@ -173,16 +179,17 @@ Window T_PopupPrompt(int x, int y, int width, int height, const char *title,
 /***************************************************************************/
 int T_IsPopupOpen(Window win)
 {
-   T_Popup_t      *popup;
-   
-   popup = T_Popup;
-   while ( popup != NULL ) {
-      if (popup->window == win )
-      return 1;
-      else
-      popup = (T_Popup_t *) popup->next;
-   }
-   return 0;
+    T_Popup_t *popup;
+
+    popup = T_Popup;
+    while (popup != NULL)
+    {
+        if (popup->window == win)
+            return 1;
+        else
+            popup = (T_Popup_t *)popup->next;
+    }
+    return 0;
 }
 
 /***************************************************************************/
@@ -193,21 +200,21 @@ int T_IsPopupOpen(Window win)
 /***************************************************************************/
 void T_PopupClose(Window win)
 {
-   T_Popup_t      **popup;
-   T_Popup_t       *last;
-   
-   popup = &T_Popup;
-   while ( ((*popup) != NULL) && ((*popup)->window != win) ) {
-      popup = (T_Popup_t **) &((*popup)->next);
-   }
- 
-   if ( (*popup) == NULL) return;
+    T_Popup_t **popup;
+    T_Popup_t *last;
 
-   /* erase this popup */
-   T_FormCloseWindow(win);
-   last = (*popup);
-   (*popup) = (T_Popup_t *) (*popup)->next;
-   free(last);
+    popup = &T_Popup;
+    while (((*popup) != NULL) && ((*popup)->window != win))
+    {
+        popup = (T_Popup_t **)&((*popup)->next);
+    }
 
+    if ((*popup) == NULL)
+        return;
+
+    /* erase this popup */
+    T_FormCloseWindow(win);
+    last = (*popup);
+    (*popup) = (T_Popup_t *)(*popup)->next;
+    free(last);
 }
-

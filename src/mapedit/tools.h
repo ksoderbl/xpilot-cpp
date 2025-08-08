@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,19 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
- *
- * $Id: tools.h,v 5.0 2001/04/07 20:01:00 dik Exp $
+ *      William Docter
  */
 
-typedef struct undo_t {
-   int                   x,y;
-   char                  icon;
-   struct undo_t         *next;
+typedef struct undo_t
+{
+    int x, y;
+    char icon;
+    struct undo_t *next;
 } undo_t;
 
-extern undo_t            *undolist;
-extern Window            changedwin;
-extern int               selectfrom_x,selectfrom_y,selectto_x,selectto_y;
-extern int               prefx, prefy;
+extern undo_t *undolist;
+extern Window changedwin;
+extern int selectfrom_x, selectfrom_y, selectto_x, selectto_y;
+extern int prefx, prefy;

@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,33 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
+ *      William Docter
  *
  * $Id: file.h,v 5.0 2001/04/07 20:01:00 dik Exp $
  */
 
 /* stuff from xpilots 3.0 source */
-enum valType { valInt, valReal, valBool, valIPos, valString };
- 
-typedef struct {
-   char                  *name;
-   char                  *commandLineOption;
-   char                  *helpLine;
-   char                  *defaultValue;
+enum valType
+{
+   valInt,
+   valReal,
+   valBool,
+   valIPos,
+   valString
+};
+
+typedef struct
+{
+   char *name;
+   char *commandLineOption;
+   char *helpLine;
+   char *defaultValue;
    void *variable;
    enum valType type;
 } optionDesc;
 
-extern                   Window            filepromptwin;
-extern char              *StrToFloat();
-extern char              oldmap[90];
+extern Window filepromptwin;
+extern char *StrToFloat();
+extern char oldmap[90];

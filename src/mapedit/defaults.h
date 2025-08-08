@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,9 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
- *
- * $Id: defaults.h,v 5.3 2001/05/20 19:16:39 millerjl Exp $
+ *      William Docter
  */
 
 /* defaults
@@ -33,32 +31,30 @@
  * created July 10, 1993
  */
 
-#define MAX_MAP_SIZE          900
-#define DEFAULT_WIDTH         200
-#define DEFAULT_HEIGHT        200
-#define DEFAULT_MAP_ZOOM      20
+#define MAX_MAP_SIZE 900
+#define DEFAULT_WIDTH 200
+#define DEFAULT_HEIGHT 200
+#define DEFAULT_MAP_ZOOM 20
 
-#define DRAW_ICON_BTN         Button1
-#define LINE_ICON_BTN         Button1
-#define SELECT_BTN            Button2
+#define DRAW_ICON_BTN Button1
+#define LINE_ICON_BTN Button1
+#define SELECT_BTN Button2
 
-#define PREF_X                -1
-#define PREF_Y                -1
-#define PREF_WIDTH            800 /*1024*/
-#define PREF_HEIGHT           350
-#define PREFSEL_WIDTH         200
-#define PREFSEL_HEIGHT        250
-#define PREF_BTN_WIDTH        60
-#define PREF_BTN_HEIGHT       18
+#define PREF_X -1
+#define PREF_Y -1
+#define PREF_WIDTH 800 /*1024*/
+#define PREF_HEIGHT 350
+#define PREFSEL_WIDTH 200
+#define PREFSEL_HEIGHT 250
+#define PREF_BTN_WIDTH 60
+#define PREF_BTN_HEIGHT 18
 
-#define HELP_X                -1
-#define HELP_Y                -1
-#define HELP_WIDTH            500
-#define HELP_HEIGHT           625
-#define HELP_BTN_WIDTH        50
-#define HELP_BTN_HEIGHT       27
- 
-#define TOOLSWIDTH            200
-#define TOOLSHEIGHT           720
+#define HELP_X -1
+#define HELP_Y -1
+#define HELP_WIDTH 500
+#define HELP_HEIGHT 625
+#define HELP_BTN_WIDTH 50
+#define HELP_BTN_HEIGHT 27
 
-
+#define TOOLSWIDTH 200
+#define TOOLSHEIGHT 720

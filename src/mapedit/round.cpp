@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +19,20 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
- *
- * $Id: round.c,v 5.0 2001/04/07 20:01:00 dik Exp $
+ *      William Docter
  */
 
-#include                 <X11/Xlib.h>
-#include                 <X11/Xutil.h>
-#include                 <X11/Xos.h>
-#include                 <X11/Xatom.h>
-#include                 <X11/keysym.h>
-#include                 <stdio.h>
-#include                 <ctype.h>
- 
-#include                 "main.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <X11/Xatom.h>
+#include <X11/keysym.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#include "main.h"
 
 /*
  * Completely rewritten/redesigned by Bert Gijsbers.
@@ -46,46 +44,55 @@
  */
 int RoundMapArea(HandlerInfo info)
 {
-    int                     x,
-                            y,
-                            xmax, ymax,
-                            mapcursorx, mapcursory,
-                            type,
-                            mask,
-                            change = 0;
-    unsigned char           up_filled[256],
-                            left_filled[256],
-                            down_filled[256],
-                            right_filled[256],
-                            lu_filled[256],
-                            ld_filled[256],
-                            rd_filled[256],
-                            ru_filled[256];
- 
+    int x,
+        y,
+        xmax, ymax,
+        mapcursorx, mapcursory,
+        type,
+        mask,
+        change = 0;
+    unsigned char up_filled[256],
+        left_filled[256],
+        down_filled[256],
+        right_filled[256],
+        lu_filled[256],
+        ld_filled[256],
+        rd_filled[256],
+        ru_filled[256];
+
     DrawSelectArea();
     ClearUndo();
-    if ( selectfrom_x < 0 ) {   /* no area selected, do entire screen */
-       mapcursorx = map.view_x;
-       mapcursory = map.view_y;
-       xmax = map.view_x + (mapwin_width-TOOLSWIDTH)/map.view_zoom;
-       ymax = map.view_y + mapwin_height/map.view_zoom;
-    } else {
-       if (selectfrom_x < selectto_x) {
-          mapcursorx = selectfrom_x+map.view_x;
-          xmax = selectto_x+1+map.view_x;
-       } else {
-          mapcursorx = selectto_x+map.view_x;
-          xmax = selectfrom_x+1+map.view_x;
-       }
-       if (selectfrom_y < selectto_y) {
-          mapcursory = selectfrom_y+map.view_y;
-          ymax = selectto_y+1+map.view_y;
-       } else {
-          mapcursory = selectto_y+map.view_y;
-          ymax = selectfrom_y+1+map.view_y;
-       }
+    if (selectfrom_x < 0)
+    { /* no area selected, do entire screen */
+        mapcursorx = map.view_x;
+        mapcursory = map.view_y;
+        xmax = map.view_x + (mapwin_width - TOOLSWIDTH) / map.view_zoom;
+        ymax = map.view_y + mapwin_height / map.view_zoom;
     }
- 
+    else
+    {
+        if (selectfrom_x < selectto_x)
+        {
+            mapcursorx = selectfrom_x + map.view_x;
+            xmax = selectto_x + 1 + map.view_x;
+        }
+        else
+        {
+            mapcursorx = selectto_x + map.view_x;
+            xmax = selectfrom_x + 1 + map.view_x;
+        }
+        if (selectfrom_y < selectto_y)
+        {
+            mapcursory = selectfrom_y + map.view_y;
+            ymax = selectto_y + 1 + map.view_y;
+        }
+        else
+        {
+            mapcursory = selectto_y + map.view_y;
+            ymax = selectfrom_y + 1 + map.view_y;
+        }
+    }
+
     memset(up_filled, 0, sizeof up_filled);
     memset(left_filled, 0, sizeof left_filled);
     memset(down_filled, 0, sizeof down_filled);
@@ -94,82 +101,86 @@ int RoundMapArea(HandlerInfo info)
     memset(ld_filled, 0, sizeof ld_filled);
     memset(rd_filled, 0, sizeof rd_filled);
     memset(ru_filled, 0, sizeof ru_filled);
- 
+
     up_filled[MAP_FILLED] = 1;
     up_filled[MAP_FUEL] = 1;
     up_filled[MAP_REC_RD] = 1;
     up_filled[MAP_REC_LD] = 1;
- 
+
     left_filled[MAP_FILLED] = 1;
     left_filled[MAP_FUEL] = 1;
     left_filled[MAP_REC_RU] = 1;
     left_filled[MAP_REC_RD] = 1;
- 
+
     down_filled[MAP_FILLED] = 1;
     down_filled[MAP_FUEL] = 1;
     down_filled[MAP_REC_RU] = 1;
     down_filled[MAP_REC_LU] = 1;
- 
+
     right_filled[MAP_FILLED] = 1;
     right_filled[MAP_FUEL] = 1;
     right_filled[MAP_REC_LD] = 1;
     right_filled[MAP_REC_LU] = 1;
- 
+
     lu_filled[MAP_FILLED] = 1;
     lu_filled[MAP_FUEL] = 1;
     lu_filled[MAP_REC_LD] = 1;
     lu_filled[MAP_REC_RD] = 1;
     lu_filled[MAP_REC_RU] = 1;
- 
+
     ld_filled[MAP_FILLED] = 1;
     ld_filled[MAP_FUEL] = 1;
     ld_filled[MAP_REC_LU] = 1;
     ld_filled[MAP_REC_RU] = 1;
     ld_filled[MAP_REC_RD] = 1;
- 
+
     rd_filled[MAP_FILLED] = 1;
     rd_filled[MAP_FUEL] = 1;
     rd_filled[MAP_REC_RU] = 1;
     rd_filled[MAP_REC_LU] = 1;
     rd_filled[MAP_REC_LD] = 1;
- 
+
     ru_filled[MAP_FILLED] = 1;
     ru_filled[MAP_FUEL] = 1;
     ru_filled[MAP_REC_RD] = 1;
     ru_filled[MAP_REC_LD] = 1;
     ru_filled[MAP_REC_LU] = 1;
- 
-#define UP_FILLED       (up_filled[MapData(x,y-1) & 0xFF] == 1)
-#define LEFT_FILLED     (left_filled[MapData(x-1,y) & 0xFF] == 1)
-#define DOWN_FILLED     (down_filled[MapData(x,y+1) & 0xFF] == 1)
-#define RIGHT_FILLED    (right_filled[MapData(x+1,y) & 0xFF] == 1)
-#define LU_FILLED       (lu_filled[MapData(x-1,y-1) & 0xFF] == 1)
-#define LD_FILLED       (ld_filled[MapData(x-1,y+1) & 0xFF] == 1)
-#define RD_FILLED       (rd_filled[MapData(x+1,y+1) & 0xFF] == 1)
-#define RU_FILLED       (ru_filled[MapData(x+1,y-1) & 0xFF] == 1)
- 
-#define UP_BIT          (1 << 0)
-#define LEFT_BIT        (1 << 1)
-#define DOWN_BIT        (1 << 2)
-#define RIGHT_BIT       (1 << 3)
-#define LU_BIT          (1 << 4)
-#define LD_BIT          (1 << 5)
-#define RD_BIT          (1 << 6)
-#define RU_BIT          (1 << 7)
- 
+
+#define UP_FILLED (up_filled[MapData(x, y - 1) & 0xFF] == 1)
+#define LEFT_FILLED (left_filled[MapData(x - 1, y) & 0xFF] == 1)
+#define DOWN_FILLED (down_filled[MapData(x, y + 1) & 0xFF] == 1)
+#define RIGHT_FILLED (right_filled[MapData(x + 1, y) & 0xFF] == 1)
+#define LU_FILLED (lu_filled[MapData(x - 1, y - 1) & 0xFF] == 1)
+#define LD_FILLED (ld_filled[MapData(x - 1, y + 1) & 0xFF] == 1)
+#define RD_FILLED (rd_filled[MapData(x + 1, y + 1) & 0xFF] == 1)
+#define RU_FILLED (ru_filled[MapData(x + 1, y - 1) & 0xFF] == 1)
+
+#define UP_BIT (1 << 0)
+#define LEFT_BIT (1 << 1)
+#define DOWN_BIT (1 << 2)
+#define RIGHT_BIT (1 << 3)
+#define LU_BIT (1 << 4)
+#define LD_BIT (1 << 5)
+#define RD_BIT (1 << 6)
+#define RU_BIT (1 << 7)
+
     /*
      * see if we can convert spaces into (half) blocks if
      * the space is surrounded by (half) blocks.
      */
-    for (y = mapcursory; y < ymax; y++) {
-        for (x = mapcursorx; x < xmax; x++) {
-            type = MapData(x,y);
-            if (type == MAP_SPACE) {
+    for (y = mapcursory; y < ymax; y++)
+    {
+        for (x = mapcursorx; x < xmax; x++)
+        {
+            type = MapData(x, y);
+            if (type == MAP_SPACE)
+            {
                 mask = (UP_FILLED << 0) |
-                    (LEFT_FILLED << 1) |
-                    (DOWN_FILLED << 2) |
-                    (RIGHT_FILLED << 3);
-                switch (mask) {
+                       (LEFT_FILLED << 1) |
+                       (DOWN_FILLED << 2) |
+                       (RIGHT_FILLED << 3);
+                switch (mask)
+                {
                 case UP_BIT | LEFT_BIT | DOWN_BIT | RIGHT_BIT:
                 case UP_BIT | LEFT_BIT | DOWN_BIT:
                 case UP_BIT | LEFT_BIT | RIGHT_BIT:
@@ -192,33 +203,39 @@ int RoundMapArea(HandlerInfo info)
                     type = MAP_REC_LD;
                     break;
                 }
-                if (type != MapData(x,y) ) {
-                   ChangeMapData(x,y,type,1);
-                   change = 1;
-                   x++;
+                if (type != MapData(x, y))
+                {
+                    ChangeMapData(x, y, type, 1);
+                    change = 1;
+                    x++;
                 }
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * now also check if we can convert half diagonal
          * blocks into filled blocks if they're surrounded by (half) blocks.
          */
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                switch (type) {
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                switch (type)
+                {
                 case MAP_REC_RD:
                 case MAP_REC_RU:
                 case MAP_REC_LD:
                 case MAP_REC_LU:
                     mask = (UP_FILLED << 0) |
-                        (LEFT_FILLED << 1) |
-                        (DOWN_FILLED << 2) |
-                        (RIGHT_FILLED << 3);
-                    switch (mask) {
+                           (LEFT_FILLED << 1) |
+                           (DOWN_FILLED << 2) |
+                           (RIGHT_FILLED << 3);
+                    switch (mask)
+                    {
                     case UP_BIT | LEFT_BIT | DOWN_BIT | RIGHT_BIT:
                     case UP_BIT | LEFT_BIT | DOWN_BIT:
                     case UP_BIT | LEFT_BIT | RIGHT_BIT:
@@ -241,158 +258,191 @@ int RoundMapArea(HandlerInfo info)
                         type = MAP_REC_LD;
                         break;
                     }
-                    if (type != MapData(x,y) ) {
-                       ChangeMapData(x,y,type,1);
-                       change = 1;
-                       x++;
+                    if (type != MapData(x, y))
+                    {
+                        ChangeMapData(x, y, type, 1);
+                        change = 1;
+                        x++;
                     }
                 }
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * now also check if we can convert half diagonal blocks into
          * filled blocks if their diagonal is next to a (half) block.
          */
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                switch (type) {
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                switch (type)
+                {
                 case MAP_REC_LU:
-                    if (RIGHT_FILLED == 1 || DOWN_FILLED == 1) {
+                    if (RIGHT_FILLED == 1 || DOWN_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_LD:
-                    if (RIGHT_FILLED == 1 || UP_FILLED == 1) {
+                    if (RIGHT_FILLED == 1 || UP_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_RU:
-                    if (LEFT_FILLED == 1 || DOWN_FILLED == 1) {
+                    if (LEFT_FILLED == 1 || DOWN_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_RD:
-                    if (LEFT_FILLED == 1 || UP_FILLED == 1) {
+                    if (LEFT_FILLED == 1 || UP_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 default:
                     continue;
                 }
-                if (type != MapData(x,y) ) {
-                    ChangeMapData(x,y,type,1);
+                if (type != MapData(x, y))
+                {
+                    ChangeMapData(x, y, type, 1);
                     change = 1;
                     x++;
                 }
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * now also check if we can convert half diagonal blocks into
          * filled blocks if one of their backs is next to a space.
          */
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                switch (type) {
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                switch (type)
+                {
                 case MAP_REC_RD:
-                    if (RIGHT_FILLED == 0 || DOWN_FILLED == 0) {
+                    if (RIGHT_FILLED == 0 || DOWN_FILLED == 0)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_RU:
-                    if (RIGHT_FILLED == 0 || UP_FILLED == 0) {
+                    if (RIGHT_FILLED == 0 || UP_FILLED == 0)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_LD:
-                    if (LEFT_FILLED == 0 || DOWN_FILLED == 0) {
+                    if (LEFT_FILLED == 0 || DOWN_FILLED == 0)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_LU:
-                    if (LEFT_FILLED == 0 || UP_FILLED == 0) {
+                    if (LEFT_FILLED == 0 || UP_FILLED == 0)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 default:
                     continue;
                 }
-                if (type != MapData(x,y) ) {
-                    ChangeMapData(x,y,type,1);
+                if (type != MapData(x, y))
+                {
+                    ChangeMapData(x, y, type, 1);
                     change = 1;
                     x++;
                 }
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * check if we can convert half diagonal blocks into filled
          * blocks if their diagonal is next to a (half) filled block.
          */
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                switch (type) {
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                switch (type)
+                {
                 case MAP_REC_RD:
-                    if (LEFT_FILLED == 1 || UP_FILLED == 1) {
+                    if (LEFT_FILLED == 1 || UP_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_RU:
-                    if (LEFT_FILLED == 1 || DOWN_FILLED == 1) {
+                    if (LEFT_FILLED == 1 || DOWN_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_LD:
-                    if (RIGHT_FILLED == 1 || UP_FILLED == 1) {
+                    if (RIGHT_FILLED == 1 || UP_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 case MAP_REC_LU:
-                    if (RIGHT_FILLED == 1 || DOWN_FILLED == 1) {
+                    if (RIGHT_FILLED == 1 || DOWN_FILLED == 1)
+                    {
                         type = MAP_FILLED;
                     }
                     break;
                 default:
                     continue;
                 }
-                if (type != MapData(x,y) ) {
-                    ChangeMapData(x,y,type,1);
+                if (type != MapData(x, y))
+                {
+                    ChangeMapData(x, y, type, 1);
                     change = 1;
                     x++;
                 }
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * now also check if we can convert filled blocks
          * into half blocks if they're surrounded by spaces on two sides.
          */
- 
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                if (type == MAP_FILLED) {
+
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                if (type == MAP_FILLED)
+                {
                     mask = (LU_FILLED << 4) |
-                        (LD_FILLED << 5) |
-                        (RD_FILLED << 6) |
-                        (RU_FILLED << 7) |
-                        (UP_FILLED << 0) |
-                        (LEFT_FILLED << 1) |
-                        (DOWN_FILLED << 2) |
-                        (RIGHT_FILLED << 3);
-                    switch (mask) {
+                           (LD_FILLED << 5) |
+                           (RD_FILLED << 6) |
+                           (RU_FILLED << 7) |
+                           (UP_FILLED << 0) |
+                           (LEFT_FILLED << 1) |
+                           (DOWN_FILLED << 2) |
+                           (RIGHT_FILLED << 3);
+                    switch (mask)
+                    {
                     case RIGHT_BIT | DOWN_BIT | RD_BIT:
                     case RIGHT_BIT | DOWN_BIT:
                         type = MAP_REC_RD;
@@ -410,8 +460,9 @@ int RoundMapArea(HandlerInfo info)
                         type = MAP_REC_LU;
                         break;
                     }
-                    if (type != MapData(x,y) ) {
-                        ChangeMapData(x,y,type,1);
+                    if (type != MapData(x, y))
+                    {
+                        ChangeMapData(x, y, type, 1);
                         change = 1;
                         x++;
                     }
@@ -419,27 +470,32 @@ int RoundMapArea(HandlerInfo info)
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * now also check if we can convert filled blocks
          * into half blocks if they're surrounded by spaces on two sides
          * but with a possible half block on the far side.
          */
- 
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                if (type == MAP_FILLED) {
+
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                if (type == MAP_FILLED)
+                {
                     mask = (LU_FILLED << 4) |
-                        (LD_FILLED << 5) |
-                        (RD_FILLED << 6) |
-                        (RU_FILLED << 7) |
-                        (UP_FILLED << 0) |
-                        (LEFT_FILLED << 1) |
-                        (DOWN_FILLED << 2) |
-                        (RIGHT_FILLED << 3);
-                    switch (mask) {
+                           (LD_FILLED << 5) |
+                           (RD_FILLED << 6) |
+                           (RU_FILLED << 7) |
+                           (UP_FILLED << 0) |
+                           (LEFT_FILLED << 1) |
+                           (DOWN_FILLED << 2) |
+                           (RIGHT_FILLED << 3);
+                    switch (mask)
+                    {
                     case LD_BIT | RU_BIT | RIGHT_BIT | DOWN_BIT | RD_BIT:
                     case LD_BIT | RU_BIT | RIGHT_BIT | DOWN_BIT:
                     case LD_BIT | RIGHT_BIT | DOWN_BIT | RD_BIT:
@@ -473,8 +529,9 @@ int RoundMapArea(HandlerInfo info)
                         type = MAP_REC_LU;
                         break;
                     }
-                    if (type != MapData(x,y) ) {
-                        ChangeMapData(x,y,type,1);
+                    if (type != MapData(x, y))
+                    {
+                        ChangeMapData(x, y, type, 1);
                         change = 1;
                         x++;
                     }
@@ -482,22 +539,27 @@ int RoundMapArea(HandlerInfo info)
             }
         }
     }
- 
-    if (change == 0) {
+
+    if (change == 0)
+    {
         /*
          * now also check if we can remove filled blocks
          * if they're surrounded by spaces on three or four sides.
          */
- 
-        for (y = mapcursory; y < ymax; y++) {
-            for (x = mapcursorx; x < xmax; x++) {
-                type = MapData(x,y);
-                if (type == MAP_FILLED) {
+
+        for (y = mapcursory; y < ymax; y++)
+        {
+            for (x = mapcursorx; x < xmax; x++)
+            {
+                type = MapData(x, y);
+                if (type == MAP_FILLED)
+                {
                     mask = (UP_FILLED << 0) |
-                        (LEFT_FILLED << 1) |
-                        (DOWN_FILLED << 2) |
-                        (RIGHT_FILLED << 3);
-                    switch (mask) {
+                           (LEFT_FILLED << 1) |
+                           (DOWN_FILLED << 2) |
+                           (RIGHT_FILLED << 3);
+                    switch (mask)
+                    {
                     case UP_BIT:
                     case LEFT_BIT:
                     case DOWN_BIT:
@@ -506,20 +568,22 @@ int RoundMapArea(HandlerInfo info)
                         type = MAP_SPACE;
                         break;
                     }
-                    if (type != MapData(x,y) ) {
-                        ChangeMapData(x,y,type,1);
-                       change = 1;
+                    if (type != MapData(x, y))
+                    {
+                        ChangeMapData(x, y, type, 1);
+                        change = 1;
                         x++;
                     }
                 }
             }
         }
     }
-    
-   if (change) {
-      map.changed = 1;
-   }
 
-   DrawSelectArea();
-   return 0;
+    if (change)
+    {
+        map.changed = 1;
+    }
+
+    DrawSelectArea();
+    return 0;
 }

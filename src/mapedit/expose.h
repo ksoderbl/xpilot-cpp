@@ -1,7 +1,7 @@
 /*
  * XMapEdit, the XPilot Map Editor.  Copyright (C) 1993 by
  *
- *      Aaron Averill           <averila@oes.orst.edu>
+ *      Aaron Averill
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,29 +19,28 @@
  *
  * Modifications to XMapEdit
  * 1996:
- *      Robert Templeman        <mbcaprt@mphhpd.ph.man.ac.uk>
+ *      Robert Templeman
  * 1997:
- *      William Docter          <wad2@lehigh.edu>
- *
- * $Id: expose.h,v 5.2 2002/02/26 00:41:18 millerjl Exp $
+ *      William Docter
  */
 
-typedef struct {
-   int                   color;
-   int                   num_points;
-   float                 x[5],y[5];
+typedef struct
+{
+   int color;
+   int num_points;
+   float x[5], y[5];
 } segment_t;
 
-typedef struct {
-   float                 x,y,width,height;
-   int                   start,end;
+typedef struct
+{
+   float x, y, width, height;
+   int start, end;
 } arc_t;
 
-extern segment_t         mapicon_seg[35];
-extern segment_t         mapicondet_seg[4];
-extern int               mapicon_ptr[91];
-extern char              iconmenu[36];
+extern segment_t mapicon_seg[35];
+extern segment_t mapicondet_seg[4];
+extern int mapicon_ptr[91];
+extern char iconmenu[36];
 
-
-extern int               smlmap_x, smlmap_y, smlmap_width, smlmap_height;
-extern float             smlmap_xscale, smlmap_yscale;
+extern int smlmap_x, smlmap_y, smlmap_width, smlmap_height;
+extern float smlmap_xscale, smlmap_yscale;
