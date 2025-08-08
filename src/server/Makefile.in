@@ -295,7 +295,6 @@ xpilot_cpp_server_SOURCES = \
     cannon.cpp \
     cannon.h \
     cell.cpp \
-    click.h \
     cmdline.cpp \
     collision.cpp \
     command.cpp \
