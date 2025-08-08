@@ -752,7 +752,7 @@ static int Config_create_texturedWalls(int widget_desc, int *height)
 static int Config_create_texturedObjects(int widget_desc, int *height)
 {
     return Config_create_bool(widget_desc, height, "texturedObjects",
-                              (blockBitmaps) ? true : false,
+                              (texturedObjects) ? true : false,
                               Config_update_texturedObjects,
                               NULL);
 }
@@ -1216,16 +1216,16 @@ static int Config_update_maxFPS(int widget_desc, void *data, int *val)
 
 static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
 {
-    if ((*val != false) != blockBitmaps)
+    if ((*val != false) != texturedObjects)
     {
-        if (blockBitmaps == false)
+        if (texturedObjects == false)
         {
-            /* see if we can use blockBitmaps at all. */
-            blockBitmaps = true;
+            /* see if we can use texturedObjects at all. */
+            texturedObjects = true;
             if (Colors_init_block_bitmaps() == -1)
             {
-                /* no we can't have blockBitmaps. */
-                blockBitmaps = false;
+                /* no we can't have texturedObjects. */
+                texturedObjects = false;
                 /* and redraw our widget as false. */
                 *val = false;
                 return 1;
@@ -1234,7 +1234,7 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
         else
         {
             Colors_free_block_bitmaps();
-            blockBitmaps = false;
+            texturedObjects = false;
         }
     }
     return 0;
@@ -1515,7 +1515,7 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_bool(fp, "outlineWorld", instruments.outlineWorld);
     Config_save_bool(fp, "filledWorld", instruments.filledWorld);
     Config_save_bool(fp, "texturedWalls", instruments.texturedWalls);
-    Config_save_bool(fp, "texturedObjects", blockBitmaps);
+    Config_save_bool(fp, "texturedObjects", texturedObjects);
     Config_save_bool(fp, "clock", instruments.clock);
     Config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
     Config_save_int(fp, "backgroundPointDist", map_point_distance);

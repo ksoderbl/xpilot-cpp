@@ -68,7 +68,7 @@ int blockBitmapShips = 1;
 
 void Gui_paint_ball(int x, int y)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         static Pixmap ballTile = None;
 
@@ -152,7 +152,7 @@ static void Gui_paint_mine_name(int x, int y, char *name)
 
 void Gui_paint_mine(int x, int y, int teammine, char *name)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         static DFLOAT lastScaleFactor;
         static XPoint mine_points[21];
@@ -310,7 +310,7 @@ static void Gui_paint_nastyshot(int color, int x, int y, int size)
 
 void Gui_paint_fastshot(int color, int x, int y)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         int z = shot_size / 2;
         Rectangle_add(color,
@@ -328,7 +328,7 @@ void Gui_paint_fastshot(int color, int x, int y)
 
 void Gui_paint_teamshot(int color, int x, int y)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         Gui_paint_nastyshot(color, x, y, shot_size / 2);
     }
@@ -395,7 +395,7 @@ void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
 
 void Gui_paint_paused(int x, int y, int count)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
 
         int x0, y0;
@@ -445,7 +445,7 @@ void Gui_paint_ecm(int x, int y, int size)
 
 void Gui_paint_refuel(int x0, int y0, int x1, int y1)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(X(x0)), WINSCALE(Y(y0)),
@@ -810,7 +810,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
 
     if (cloak == 0 && phased == 0)
     {
-        if (!blockBitmaps || !blockBitmapShips)
+        if (!texturedObjects || !blockBitmapShips)
         {
             Gui_paint_ship_uncloaked(id, points, ship_color, cnt);
         }

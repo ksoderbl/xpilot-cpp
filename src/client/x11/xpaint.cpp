@@ -242,7 +242,7 @@ void Paint_frame(void)
         XSetFunction(dpy, gameGC, GXcopy);
         SET_FG(colors[BLACK].pixel);
     }
-    if (cacheShips && blockBitmaps)
+    if (cacheShips && texturedObjects)
     {
         Cache_ships(drawWindow);
     }
@@ -352,7 +352,7 @@ void Paint_frame(void)
 
 static void Paint_score_background(int thisLine)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         XClearWindow(dpy, playersWindow);
     }
@@ -525,7 +525,7 @@ void Paint_score_entry(int entry_num,
      */
     if (other->mychar == 'D' || other->mychar == 'P' || other->mychar == 'W')
     {
-        if (!blockBitmaps)
+        if (!texturedObjects)
         {
             XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
         }
@@ -533,7 +533,7 @@ void Paint_score_entry(int entry_num,
         {
             /*
             ** hm, this grey color is pretty, but am i guaranteed that there is
-            ** 16 standard colors just because blockBitmaps = true?
+            ** 16 standard colors just because texturedObjects = true?
             */
             XSetForeground(dpy, scoreListGC, colors[12].pixel);
         }

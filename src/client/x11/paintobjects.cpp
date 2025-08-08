@@ -111,7 +111,7 @@ static int wrap(int *xp, int *yp)
          bitmap based on the color. Unix ignores this parameter*/
 void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         gcv.stipple = itemBitmaps[type];
         gcv.fill_style = FillStippled;

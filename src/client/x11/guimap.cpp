@@ -59,7 +59,7 @@ extern setup_t *Setup;
 
 void Gui_paint_walls(int x, int y, int type, int xi, int yi)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         if (type & BLUE_LEFT)
         {
@@ -162,7 +162,7 @@ void Gui_paint_walls(int x, int y, int type, int xi, int yi)
 
 void Gui_paint_cannon(int x, int y, int type)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         XPoint points[5];
 
@@ -245,7 +245,7 @@ void Gui_paint_fuel(int x, int y, int fuel)
 {
     int fuel_images = Block_bitmap_images(BM_FUEL);
 
-    if (!blockBitmaps || !fuel_images)
+    if (!texturedObjects || !fuel_images)
     {
 #define FUEL_BORDER 2
         int size;
@@ -311,7 +311,7 @@ void Gui_paint_fuel(int x, int y, int fuel)
 
 void Gui_paint_base(int x, int y, int xi, int yi, int type)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         const int BORDER = 4; /* in pixels */
         int id, team, size;
@@ -706,7 +706,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
 void Gui_paint_setup_check(int x, int y, int xi, int yi)
 {
     XPoint points[5];
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         SET_FG(colors[BLUE].pixel);
         points[0].x = WINSCALE(X(x + (BLOCK_SZ / 2)));
@@ -805,7 +805,7 @@ void Gui_paint_setup_cwise_grav(int x, int y)
 void Gui_paint_setup_pos_grav(int x, int y)
 {
     static const int INSIDE_BL = BLOCK_SZ - 2;
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
 
         Arc_add(RED,
@@ -833,7 +833,7 @@ void Gui_paint_setup_neg_grav(int x, int y)
 {
     static const int INSIDE_BL = BLOCK_SZ - 2;
 
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
 
         Arc_add(RED,
@@ -930,7 +930,7 @@ void Gui_paint_setup_left_grav(int x, int y)
 
 void Gui_paint_setup_worm(int x, int y, int wormDrawCount)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         static const int INSIDE_BL = BLOCK_SZ - 2;
         static int wormOffset[8][3] = {
@@ -989,7 +989,7 @@ void Gui_paint_setup_item_concentrator(int x, int y)
     unsigned rdir, tdir;
     int i, cx, cy;
     XPoint pts[4];
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         SET_FG(colors[RED].pixel);
         if (concentratorloop != loops)
@@ -1057,7 +1057,7 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
     unsigned rdir, tdir;
     int i, cx, cy;
     XPoint pts[5];
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         SET_FG(colors[RED].pixel);
         if (concentratorloop != loops)
@@ -1164,7 +1164,7 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
 
 void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
 {
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         char s[2];
         int color;

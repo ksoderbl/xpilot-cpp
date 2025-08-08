@@ -70,7 +70,7 @@ static const char *gray_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visual;
 int dispDepth;
-bool blockBitmaps; /* Whether to draw everything as bitmaps. */
+bool texturedObjects; /* Whether to draw everything as bitmaps. */
 
 /*
  * Dimensions of color cubes in decreasing
@@ -601,9 +601,9 @@ static int Colors_init_block_bitmap_colors(void)
         /*FALLTHROUGH*/
 
     default:
-        printf("blockBitmaps not implemented for visual \"%s\"\n",
+        printf("texturedObjects not implemented for visual \"%s\"\n",
                Visual_class_name(visual->c_class));
-        blockBitmaps = false;
+        texturedObjects = false;
         break;
     }
 
@@ -620,14 +620,14 @@ static int Colors_init_block_bitmap_colors(void)
  */
 int Colors_init_block_bitmaps(void)
 {
-    if (blockBitmaps)
+    if (texturedObjects)
     {
         if (Colors_init_block_bitmap_colors() == -1)
         {
-            blockBitmaps = false;
+            texturedObjects = false;
         }
     }
-    if (blockBitmaps)
+    if (texturedObjects)
     {
         if (Block_bitmaps_create() == -1)
         {
@@ -635,11 +635,11 @@ int Colors_init_block_bitmaps(void)
             ** not sure if this is possible after
             ** blockbitmap colors have been created.
             */
-            blockBitmaps = false;
+            texturedObjects = false;
         }
     }
 
-    return (blockBitmaps == true) ? 0 : -1;
+    return (texturedObjects == true) ? 0 : -1;
 }
 
 /*
@@ -914,10 +914,10 @@ void Colors_free_block_bitmaps(void)
     Colors_free_color_cube();
     Colors_free_true_color();
 
-    if (blockBitmaps)
+    if (texturedObjects)
     {
 
-        blockBitmaps = false;
+        texturedObjects = false;
     }
 }
 

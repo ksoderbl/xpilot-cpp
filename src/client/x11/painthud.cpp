@@ -93,7 +93,7 @@ static void Paint_meter(int xoff, int y, const char *title, int val, int max)
         x = ext_view_width - (METER_WIDTH - xoff);
         xstr = WINSCALE(x) - (BORDER + XTextWidth(gameFont, title, strlen(title)));
     }
-    if (!blockBitmaps)
+    if (!texturedObjects)
     {
         Rectangle_add(RED,
                       x + 2, y + 2,

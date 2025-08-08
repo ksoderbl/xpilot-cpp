@@ -2203,7 +2203,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bool_resource(rDB, "filledDecor", &instruments.filledDecor);
     Get_bool_resource(rDB, "texturedDecor", &instruments.texturedDecor);
 
-    Get_bool_resource(rDB, "texturedObjects", &blockBitmaps);
+    Get_bool_resource(rDB, "texturedObjects", &texturedObjects);
     Get_bool_resource(rDB, "pointerControl", &initialPointerControl);
     Get_float_resource(rDB, "showItemsTime", &showItemsTime);
     LIMIT(showItemsTime, MIN_SHOW_ITEMS_TIME, MAX_SHOW_ITEMS_TIME);
