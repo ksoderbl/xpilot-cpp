@@ -1275,9 +1275,11 @@ void Delete_shot(int ind)
             addBall = 1;
             if (BIT(ball->status, NOEXPLOSION))
                 break;
-            sound_play_sensors(ball->pos.x, ball->pos.y, EXPLODE_BALL_SOUND);
+            sound_play_sensors(ball->pos.cx, ball->pos.cy, EXPLODE_BALL_SOUND);
+            int bcx = FLOAT_TO_CLICK(ball->prevpos.x);
+            int bcy = FLOAT_TO_CLICK(ball->prevpos.y);
             Make_debris(
-                /* pos.x, pos.y   */ ball->prevpos.x, ball->prevpos.y,
+                /* pos.cx, pos.cy */ bcx, bcy,
                 /* vel.x, vel.y   */ ball->vel.x, ball->vel.y,
                 /* owner id       */ ball->id,
                 /* owner team     */ ball->team,
@@ -1402,7 +1404,7 @@ void Delete_shot(int ind)
         }
 
         Make_debris(
-            /* pos.x, pos.y   */ shot->prevpos.x, shot->prevpos.y,
+            /* pos.cx, pos.cy */ FLOAT_TO_CLICK(shot->prevpos.x), FLOAT_TO_CLICK(shot->prevpos.y),
             /* vel.x, vel.y   */ shot->vel.x, shot->vel.y,
             /* owner id       */ shot->id,
             /* owner team     */ shot->team,

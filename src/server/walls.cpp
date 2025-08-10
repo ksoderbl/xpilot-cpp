@@ -1833,10 +1833,10 @@ static void Cannon_dies(move_state_t *ms)
     Cannon_init(ms->cannon);
     sound_play_sensors(cx, cy, CANNON_EXPLOSION_SOUND);
     Make_debris(
-        /* pos.x, pos.y   */ x, y,
+        /* pos.cx, pos.cy */ cx, cy,
         /* vel.x, vel.y   */ 0.0, 0.0,
         /* owner id       */ NO_ID,
-        /* owner team          */ cannon->team,
+        /* owner team     */ cannon->team,
         /* kind           */ OBJ_DEBRIS,
         /* mass           */ 4.5,
         /* status         */ GRAVITY,
@@ -1979,15 +1979,21 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
      */
     x = targ->pos.x;
     y = targ->pos.y;
-    int cx = targ->clk_pos.cx;
-    int cy = targ->clk_pos.cy;
     World.block[x][y] = SPACE;
 
+    int cx = targ->clk_pos.cx;
+    int cy = targ->clk_pos.cy;
+
+    int tcx = (x + 0.5f) * BLOCK_CLICKS;
+    int tcy = (y + 0.5f) * BLOCK_CLICKS;
+
+    // TODO: check that cx == tcx and cy == tcy
+
     Make_debris(
-        /* pos.x, pos.y   */ (x + 0.5f) * BLOCK_SZ, (y + 0.5f) * BLOCK_SZ,
+        /* pos.cx, pos.cy */ tcx, tcy,
         /* vel.x, vel.y   */ 0.0, 0.0,
         /* owner id       */ NO_ID,
-        /* owner team          */ targ->team,
+        /* owner team     */ targ->team,
         /* kind           */ OBJ_DEBRIS,
         /* mass           */ 4.5,
         /* status         */ GRAVITY,
@@ -2850,10 +2856,10 @@ void Move_player(int ind)
                 {
                     int intensity = (int)(cost * wallBounceExplosionMult);
                     Make_debris(
-                        /* pos.x, pos.y   */ pl->pos.x, pl->pos.y,
+                        /* pos.cx, pos.cy */ pl->pos.cx, pl->pos.cy,
                         /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
                         /* owner id       */ pl->id,
-                        /* owner team          */ pl->team,
+                        /* owner team     */ pl->team,
                         /* kind           */ OBJ_SPARK,
                         /* mass           */ 3.5,
                         /* status         */ GRAVITY | OWNERIMMUNE | FROMBOUNCE,

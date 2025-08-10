@@ -155,7 +155,7 @@ void do_lose_item(int ind);
 void Move_smart_shot(int ind);
 void Move_mine(int ind);
 void Make_debris(
-    /* pos.x, pos.y   */ DFLOAT x, DFLOAT y,
+    /* pos.cx, pos.cy */ int cx, int cy,
     /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,

@@ -132,7 +132,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
 /* Create debris particles */
 void Make_debris(
-    /* pos.x, pos.y   */ DFLOAT x, DFLOAT y,
+    /* pos.cx, pos.cy */ int cx, int cy,
     /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,
@@ -152,16 +152,16 @@ void Make_debris(
 
     if (BIT(World.rules->mode, WRAP_PLAY))
     {
-        if (x < 0)
-            x += World.width;
-        else if (x >= World.width)
-            x -= World.width;
-        if (y < 0)
-            y += World.height;
-        else if (y >= World.height)
-            y -= World.height;
+        if (cx < 0)
+            cx += World.cwidth;
+        else if (cx >= World.cwidth)
+            cx -= World.cwidth;
+        if (cy < 0)
+            cy += World.cheight;
+        else if (cy >= World.cheight)
+            cy -= World.cheight;
     }
-    if (x < 0 || x >= World.width || y < 0 || y >= World.height)
+    if (cx < 0 || cx >= World.cwidth || cy < 0 || cy >= World.cheight)
     {
         return;
     }
@@ -215,7 +215,7 @@ void Make_debris(
         debris->color = color;
         debris->id = id;
         debris->team = team;
-        Object_position_init_pixels(debris, x, y);
+        Object_position_init_clicks(debris, cx, cy);
         dir = MOD2(min_dir + (int)(rfrac() * (max_dir - min_dir)), RES);
         dirplus = MOD2(dir + 1, RES);
         diroff = rfrac();

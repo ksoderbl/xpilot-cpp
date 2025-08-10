@@ -133,7 +133,7 @@ void Break_asteroid(int ind)
                       0, RES - 1,
                       5, 10,
                       3, 10);
-        Make_debris(asteroid->pos.x, asteroid->pos.y,
+        Make_debris(asteroid->pos.cx, asteroid->pos.cy,
                     asteroid->vel.x, asteroid->vel.y,
                     -1,
                     TEAM_NOT_SET,
@@ -185,7 +185,7 @@ void Break_asteroid(int ind)
                       0, RES - 1,
                       5, 10,
                       3, 10);
-        Make_debris(asteroid->pos.x, asteroid->pos.y,
+        Make_debris(asteroid->pos.cx, asteroid->pos.cy,
                     velx3, vely3,
                     -1,
                     TEAM_NOT_SET,

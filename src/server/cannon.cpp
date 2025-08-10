@@ -599,7 +599,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         if ((rfrac() * (c->item[ITEM_EMERGENCY_THRUST] + 1)) >= 1)
         {
             Make_debris(
-                /* pos */ cpx, cpy,
+                /* pos */ c->clk_pos.cx, c->clk_pos.cy,
                 /* vel */ 0, 0,
                 /* id */ NO_ID,
                 /* team */ c->team,
@@ -618,7 +618,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         else
         {
             Make_debris(
-                /* pos */ cpx, cpy,
+                /* pos */ c->clk_pos.cx, c->clk_pos.cy,
                 /* vel */ 0, 0,
                 /* id */ NO_ID,
                 /* team */ c->team,

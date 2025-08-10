@@ -73,11 +73,14 @@ void Thrust(int ind)
                      ? AFTER_BURN_SPARKS(tot_sparks - 1, afterburners) + 1
                      : 0;
 
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
+
     Make_debris(
-        /* pos.x, pos.y   */ x, y,
+        /* pos.cx, pos.cy */ cx, cy,
         /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
         /* owner id       */ pl->id,
-        /* owner team          */ pl->team,
+        /* owner team     */ pl->team,
         /* kind           */ OBJ_SPARK,
         /* mass           */ THRUST_MASS,
         /* status         */ GRAVITY | OWNERIMMUNE,
@@ -89,10 +92,10 @@ void Thrust(int ind)
         /* min,max life   */ 3, max_life);
 
     Make_debris(
-        /* pos.x, pos.y   */ x, y,
+        /* pos.cx, pos.cy */ cx, cy,
         /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
         /* owner id       */ pl->id,
-        /* owner team          */ pl->team,
+        /* owner team     */ pl->team,
         /* kind           */ OBJ_SPARK,
         /* mass           */ THRUST_MASS * ALT_SPARK_MASS_FACT,
         /* status         */ GRAVITY | OWNERIMMUNE,
@@ -111,12 +114,15 @@ void Turn_thrust(int ind, int num_sparks)
     int y = pl->pos.y + pl->ship->pts[0][pl->dir].y;
     int dir = pl->dir + ((pl->turnacc > 0.0) ? (RES / 4) : (3 * (RES / 4)));
 
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
+
     if (options.turnThrust && (!BIT(pl->used, HAS_CLOAKING_DEVICE) || options.cloakedExhaust))
         Make_debris(
-            /* pos.x, pos.y   */ x, y,
+            /* pos.cx, pos.cy */ cx, cy,
             /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
             /* owner id       */ pl->id,
-            /* owner team          */ pl->team,
+            /* owner team     */ pl->team,
             /* kind           */ OBJ_SPARK,
             /* mass           */ THRUST_MASS,
             /* status         */ GRAVITY | OWNERIMMUNE,
@@ -675,7 +681,7 @@ void Explode_fighter(int ind)
     max_debris >>= 1;
 
     Make_debris(
-        /* pos.x, pos.y   */ pl->pos.x, pl->pos.y,
+        /* pos.cx, posc.y */ pl->pos.cx, pl->pos.cy,
         /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
         /* owner id       */ pl->id,
         /* owner team     */ pl->team,
