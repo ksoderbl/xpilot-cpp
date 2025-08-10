@@ -33,7 +33,10 @@
  * However, a resolution of a pixel is a bit rough and ugly.
  * Therefore a fixed point sub-pixel resolution is used called clicks.
  */
-#define CLICK_SHIFT 6
+
+// TODO: WAS 6, TESTING WITH 8
+#define CLICK_SHIFT 8
+
 #define CLICK (1 << CLICK_SHIFT)
 #define PIXEL_CLICKS CLICK
 #define BLOCK_CLICKS (BLOCK_SZ << CLICK_SHIFT)
