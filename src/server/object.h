@@ -25,6 +25,7 @@
 #define OBJECT_H
 
 #include "bit.h"
+#include "click.h"
 #include "connection.h"
 #include "item.h"
 #include "keys.h"
@@ -167,7 +168,7 @@ struct _cell_node
     short id;            /* For shots => id of player */ \
     unsigned short team; /* Team of player or cannon */  \
     objposition_t pos;   /* World coordinates */         \
-    ipos_t prevpos;      /* previous position */         \
+    clpos_t prevpos;     /* previous position */         \
     vector_t vel;        /* speed in x,y */              \
     vector_t acc;        /* acceleration in x,y */       \
     DFLOAT mass;         /* mass in unigrams */          \

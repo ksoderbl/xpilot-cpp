@@ -103,7 +103,6 @@ void Cannon_throw_items(int ind)
             LIMIT(amount, 0, c->item[i]);
             if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (obj = Object_allocate()) != NULL)
             {
-
                 obj->type = OBJ_ITEM;
                 obj->info = i;
                 obj->color = RED;

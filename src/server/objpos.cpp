@@ -56,11 +56,6 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
     pos->by = pos->y / BLOCK_SZ;
 }
 
-void Object_position_set_pixels(object_t *obj, DFLOAT x, DFLOAT y)
-{
-    Object_position_set_clicks(obj, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
-}
-
 void Object_position_init_pixels(object_t *obj, DFLOAT x, DFLOAT y)
 {
     Object_position_set_clicks(obj, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
@@ -75,7 +70,7 @@ void Object_position_init_clicks(object_t *obj, int cx, int cy)
 
 void Player_position_restore(player_t *pl)
 {
-    Player_position_set_pixels(pl, pl->prevpos.x, pl->prevpos.y);
+    Player_position_set_clicks(pl, pl->prevpos.cx, pl->prevpos.cy);
 }
 
 void Player_position_set_clicks(player_t *pl, int cx, int cy)
@@ -114,11 +109,6 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
     pos->cy = cy;
     pos->y = CLICK_TO_PIXEL(cy);
     pos->by = pos->y / BLOCK_SZ;
-}
-
-void Player_position_set_pixels(player_t *pl, DFLOAT x, DFLOAT y)
-{
-    Player_position_set_clicks(pl, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
 }
 
 void Player_position_init_pixels(player_t *pl, DFLOAT x, DFLOAT y)

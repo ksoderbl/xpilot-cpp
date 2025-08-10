@@ -166,9 +166,7 @@ void Place_item(int item, int ind)
     if (NumObjs >= MAX_TOTAL_SHOTS)
     {
         if (pl && !BIT(pl->status, KILLED))
-        {
             pl->item[item]--;
-        }
         return;
     }
 
@@ -178,60 +176,42 @@ void Place_item(int item, int ind)
         {
             num_lose = pl->item[item] - World.items[item].initial;
             if (num_lose <= 0)
-            {
                 return;
-            }
             pl->item[item] -= num_lose;
             num_per_pack = (int)(num_lose * options.dropItemOnKillProb);
             if (num_per_pack < World.items[item].min_per_pack)
-            {
                 return;
-            }
         }
         else
         {
             num_lose = pl->item[item];
             if (num_lose <= 0)
-            {
                 return;
-            }
             if (World.items[item].min_per_pack == World.items[item].max_per_pack)
-            {
                 num_per_pack = World.items[item].max_per_pack;
-            }
             else
-            {
                 num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
-            }
             if (num_per_pack > num_lose)
-            {
                 num_per_pack = num_lose;
-            }
             else
-            {
                 num_lose = num_per_pack;
-            }
             pl->item[item] -= num_lose;
         }
     }
     else
     {
         if (World.items[item].min_per_pack == World.items[item].max_per_pack)
-        {
             num_per_pack = World.items[item].max_per_pack;
-        }
         else
-        {
             num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
-        }
     }
 
     if (pl)
     {
         grav = GRAVITY;
         rand = 0;
-        px = pl->prevpos.x;
-        py = pl->prevpos.y;
+        px = CLICK_TO_PIXEL(pl->prevpos.cx);
+        py = CLICK_TO_PIXEL(pl->prevpos.cy);
         if (!BIT(pl->status, KILLED))
         {
             /*
@@ -266,29 +246,17 @@ void Place_item(int item, int ind)
     else
     {
         if (rfrac() < options.movingItemProb)
-        {
             grav = GRAVITY;
-        }
         else
-        {
             grav = 0;
-        }
         if (rfrac() < options.randomItemProb)
-        {
             rand = RANDOM_ITEM;
-        }
         else
-        {
             rand = 0;
-        }
         if (World.NumItemConcentrators > 0 && rfrac() < options.itemConcentratorProb)
-        {
             con = &World.itemConcentrators[(int)(rfrac() * World.NumItemConcentrators)];
-        }
         else
-        {
             con = NULL;
-        }
         /*
          * This will take very long (or forever) with maps
          * that hardly have any (or none) spaces.
@@ -297,9 +265,7 @@ void Place_item(int item, int ind)
         for (place_count = 0;; place_count++)
         {
             if (place_count >= 8)
-            {
                 return;
-            }
             if (con)
             {
                 dir = (int)(rfrac() * RES);

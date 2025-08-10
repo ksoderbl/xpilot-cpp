@@ -133,14 +133,23 @@ static int in_range_acd(
 }
 #else
 static int in_range_acd(
-    int p1x, int p1y, int p2x, int p2y,
-    int q1x, int q1y, int q2x, int q2y,
+    int p1cx, int p1cy, int p2cx, int p2cy,
+    int q1cx, int q1cy, int q2cx, int q2cy,
     int r)
 {
     long fac1, fac2;
     double tmin, fminx, fminy;
     long top, bot;
     bool mpx, mpy, mqx, mqy;
+
+    int p1x = CLICK_TO_PIXEL(p1cx);
+    int p1y = CLICK_TO_PIXEL(p1cy);
+    int p2x = CLICK_TO_PIXEL(p2cx);
+    int p2y = CLICK_TO_PIXEL(p2cy);
+    int q1x = CLICK_TO_PIXEL(q1cx);
+    int q1y = CLICK_TO_PIXEL(q1cy);
+    int q2x = CLICK_TO_PIXEL(q2cx);
+    int q2y = CLICK_TO_PIXEL(q2cy);
 
     /*
      * Get the wrapped coordinates straight
@@ -290,11 +299,11 @@ static void PlayerCollision(void)
                 }
                 if (BIT(Players[j]->used, HAS_PHASING_DEVICE))
                     continue;
-                if (!in_range_acd(pl->prevpos.x, pl->prevpos.y,
-                                  pl->pos.x, pl->pos.y,
-                                  Players[j]->prevpos.x,
-                                  Players[j]->prevpos.y,
-                                  Players[j]->pos.x, Players[j]->pos.y,
+                if (!in_range_acd(pl->prevpos.cx, pl->prevpos.cy,
+                                  pl->pos.cx, pl->pos.cy,
+                                  Players[j]->prevpos.cx,
+                                  Players[j]->prevpos.cy,
+                                  Players[j]->pos.cx, Players[j]->pos.cy,
                                   2 * SHIP_SZ - 6))
                 {
                     continue;
@@ -645,15 +654,13 @@ static void PlayerObjectCollision(int ind)
     {
         obj = obj_list[j];
         if (obj->life <= 0)
-        {
             continue;
-        }
 
         range = SHIP_SZ + obj->pl_range;
-        if (!in_range_acd(pl->prevpos.x, pl->prevpos.y,
-                          pl->pos.x, pl->pos.y,
-                          obj->prevpos.x, obj->prevpos.y,
-                          obj->pos.x, obj->pos.y,
+        if (!in_range_acd(pl->prevpos.cx, pl->prevpos.cy,
+                          pl->pos.cx, pl->pos.cy,
+                          obj->prevpos.cx, obj->prevpos.cy,
+                          obj->pos.cx, obj->pos.cy,
                           range))
         {
             continue;
@@ -730,15 +737,13 @@ static void PlayerObjectCollision(int ind)
          */
         radius = SHIP_SZ + obj->pl_radius;
         if (radius >= range)
-        {
             hit = 1;
-        }
         else
         {
-            hit = in_range_acd(pl->prevpos.x, pl->prevpos.y,
-                               pl->pos.x, pl->pos.y,
-                               obj->prevpos.x, obj->prevpos.y,
-                               obj->pos.x, obj->pos.y,
+            hit = in_range_acd(pl->prevpos.cx, pl->prevpos.cy,
+                               pl->pos.cx, pl->pos.cy,
+                               obj->prevpos.cx, obj->prevpos.cy,
+                               obj->pos.cx, obj->pos.cy,
                                range);
         }
 
@@ -1548,10 +1553,10 @@ static void AsteroidCollision(void)
                 continue;
 
             radius = ast->pl_radius + obj->pl_radius;
-            if (!in_range_acd(ast->prevpos.x, ast->prevpos.y,
-                              ast->pos.x, ast->pos.y,
-                              obj->prevpos.x, obj->prevpos.y,
-                              obj->pos.x, obj->pos.y,
+            if (!in_range_acd(ast->prevpos.cx, ast->prevpos.cy,
+                              ast->pos.cx, ast->pos.cy,
+                              obj->prevpos.cx, obj->prevpos.cy,
+                              obj->pos.cx, obj->pos.cy,
                               radius))
             {
                 continue;
@@ -1713,10 +1718,10 @@ static void BallCollision(void)
                 continue;
             }
 
-            if (!in_range_acd(ball->prevpos.x, ball->prevpos.y,
-                              ball->pos.x, ball->pos.y,
-                              obj->prevpos.x, obj->prevpos.y,
-                              obj->pos.x, obj->pos.y,
+            if (!in_range_acd(ball->prevpos.cx, ball->prevpos.cy,
+                              ball->pos.cx, ball->pos.cy,
+                              obj->prevpos.cx, obj->prevpos.cy,
+                              obj->pos.cx, obj->pos.cy,
                               ball->pl_radius + obj->pl_radius))
             {
                 continue;
@@ -1822,10 +1827,10 @@ static void MineCollision(void)
             if (obj->life <= 0)
                 continue;
 
-            if (!in_range_acd(mine->prevpos.x, mine->prevpos.y,
-                              mine->pos.x, mine->pos.y,
-                              obj->prevpos.x, obj->prevpos.y,
-                              obj->pos.x, obj->pos.y,
+            if (!in_range_acd(mine->prevpos.cx, mine->prevpos.cy,
+                              mine->pos.cx, mine->pos.cy,
+                              obj->prevpos.cx, obj->prevpos.cy,
+                              obj->pos.cx, obj->pos.cy,
                               options.mineShotDetonateDistance + obj->pl_radius))
             {
                 continue;

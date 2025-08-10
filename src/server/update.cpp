@@ -1324,7 +1324,7 @@ void Update_objects(void)
                         }
                         else
                         {
-                            Object_position_set_pixels(b, ballpos.x, ballpos.y);
+                            Object_position_set_clicks(b, FLOAT_TO_CLICK(ballpos.x), FLOAT_TO_CLICK(ballpos.y));
                             Object_position_remember(b);
                             b->vel.x *= WORM_BRAKE_FACTOR;
                             b->vel.y *= WORM_BRAKE_FACTOR;
