@@ -230,8 +230,7 @@ static void Laser_pulse_hits_player(
         return;
     }
 
-    sound_play_sensors(vicpl->pos.x, vicpl->pos.y,
-                       PLAYER_EAT_LASER_SOUND);
+    sound_play_sensors(vicpl->pos.cx, vicpl->pos.cy, PLAYER_EAT_LASER_SOUND);
     if (BIT(vicpl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         return;
     if (!BIT(obj->type, KILLING_SHOTS))
@@ -309,8 +308,7 @@ static void Laser_pulse_hits_player(
                         "%s got roasted alive by cannonfire.",
                         vicpl->name);
             }
-            sound_play_sensors(vicpl->pos.x, vicpl->pos.y,
-                               PLAYER_ROASTED_SOUND);
+            sound_play_sensors(vicpl->pos.cx, vicpl->pos.cy, PLAYER_ROASTED_SOUND);
             Set_message(msg);
             if (pl && pl->id != vicpl->id)
             {

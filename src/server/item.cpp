@@ -583,6 +583,8 @@ void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
            percent, force, dist;
     long cost;
     int theta;
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
 
     dist = Wrap_length(x - victim->pos.x, y - victim->pos.y);
     if (dist > maxdist)
@@ -591,7 +593,7 @@ void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
     cost = (long)TRACTOR_COST(percent);
     force = TRACTOR_FORCE(pressor, percent, maxforce);
 
-    sound_play_sensors(x, y,
+    sound_play_sensors(cx, cy,
                        (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
 
     if (pl)
@@ -705,7 +707,7 @@ void Do_transporter(int ind)
     /* no victims in range */
     if (target == -1)
     {
-        sound_play_sensors(pl->pos.x, pl->pos.y, TRANSPORTER_FAIL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, TRANSPORTER_FAIL_SOUND);
         Add_fuel(&(pl->fuel), ED_TRANSPORTER);
         pl->item[ITEM_TRANSPORTER]--;
         return;
@@ -725,6 +727,8 @@ void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
     int i;
     int item = ITEM_FUEL;
     long amount;
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
 
     /* choose item type to steal */
     for (i = 0; i < 50; i++)
@@ -737,7 +741,7 @@ void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
     if (i == 50)
     {
         /* you can't pluck from a bald chicken.. */
-        sound_play_sensors(x, y, TRANSPORTER_FAIL_SOUND);
+        sound_play_sensors(cx, cy, TRANSPORTER_FAIL_SOUND);
         if (!pl)
         {
             *amountp = 0;
@@ -747,7 +751,7 @@ void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
     }
     else
     {
-        sound_play_sensors(x, y, TRANSPORTER_SUCCESS_SOUND);
+        sound_play_sensors(cx, cy, TRANSPORTER_SUCCESS_SOUND);
         if (NumTransporters < MAX_TOTAL_TRANSPORTERS)
         {
             Transporters[NumTransporters] = (trans_t *)malloc(sizeof(trans_t));
@@ -1036,6 +1040,8 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
     DFLOAT range, perim, damage;
     player_t *pl = (ind == -1 ? NULL : Players[ind]), *p;
     ecm_t *ecm;
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
 
     if (NumEcms >= MAX_TOTAL_ECMS)
     {
@@ -1057,7 +1063,7 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
         pl->ecmcount++;
         pl->item[ITEM_ECM]--;
         Add_fuel(&(pl->fuel), ED_ECM);
-        sound_play_sensors(x, y, ECM_SOUND);
+        sound_play_sensors(cx, cy, ECM_SOUND);
     }
 
     for (i = 0; i < NumObjs; i++)

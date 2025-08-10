@@ -64,7 +64,7 @@ void Thrust(int ind)
     DFLOAT y = pl->pos.y + pl->ship->engine[pl->dir].y;
     int afterburners, alt_sparks;
 
-    sound_play_sensors(pl->pos.x, pl->pos.y, THRUST_SOUND);
+    sound_play_sensors(pl->pos.cx, pl->pos.cy, THRUST_SOUND);
 
     afterburners = (BIT(pl->used, HAS_EMERGENCY_THRUST)
                         ? MAX_AFTERBURNER
@@ -485,7 +485,7 @@ void Tank_handle_detach(player_t *pl)
         Player_join_alliance(GetInd[dummy->id], GetInd[pl->id]);
     }
 
-    sound_play_sensors(pl->pos.x, pl->pos.y, TANK_DETACH_SOUND);
+    sound_play_sensors(pl->pos.cx, pl->pos.cy, TANK_DETACH_SOUND);
 
     /* The tank uses shield and thrust */
     dummy->status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
@@ -666,7 +666,7 @@ void Explode_fighter(int ind)
     player_t *pl = Players[ind];
     int min_debris, max_debris;
 
-    sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_EXPLOSION_SOUND);
+    sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_EXPLOSION_SOUND);
 
     min_debris = (int)(1 + (pl->fuel.sum / (8.0 * FUEL_SCALE_FACT)));
     max_debris = (int)(min_debris + (pl->mass * 2.0));

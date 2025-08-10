@@ -236,7 +236,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
         }
         else
         {
-            sound_play_sensors(pl->pos.x, pl->pos.y,
+            sound_play_sensors(pl->pos.cx, pl->pos.cy,
                                BIT(status, GRAVITY) ? DROP_MOVING_MINE_SOUND : DROP_MINE_SOUND);
         }
     }
@@ -623,7 +623,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
             if (pl->fuel.sum < -ED_SHOT)
                 return;
             Add_fuel(&(pl->fuel), (long)(ED_SHOT));
-            sound_play_sensors(pl->pos.x, pl->pos.y, FIRE_SHOT_SOUND);
+            sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_SHOT_SOUND);
             pl->shots++;
         }
         if (!options.ShotsGravity)
@@ -733,7 +733,7 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
 #endif /* HEAT_LOCK */
             if (pl)
             {
-                sound_play_sensors(pl->pos.x, pl->pos.y, FIRE_HEAT_SHOT_SOUND);
+                sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_HEAT_SHOT_SOUND);
             }
             max_speed = SMART_SHOT_MAX_SPEED * HEAT_SPEED_FACT;
             turnspeed = SMART_TURNSPEED * HEAT_SPEED_FACT;
@@ -783,11 +783,11 @@ void Fire_general_shot(int ind, unsigned short team, bool cannon,
             }
             else if (type == OBJ_SMART_SHOT)
             {
-                sound_play_sensors(pl->pos.x, pl->pos.y, FIRE_SMART_SHOT_SOUND);
+                sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_SMART_SHOT_SOUND);
             }
             else if (type == OBJ_TORPEDO)
             {
-                sound_play_sensors(pl->pos.x, pl->pos.y, FIRE_TORPEDO_SOUND);
+                sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_TORPEDO_SOUND);
             }
         }
         break;
@@ -1315,17 +1315,15 @@ void Delete_shot(int ind)
         }
 
         if (BIT(shot->mods.nuclear, NUCLEAR))
-        {
+
             sound_play_all(NUKE_EXPLOSION_SOUND);
-        }
+
         else if (BIT(shot->type, OBJ_MINE))
-        {
-            sound_play_sensors(shot->pos.x, shot->pos.y, MINE_EXPLOSION_SOUND);
-        }
+
+            sound_play_sensors(shot->pos.cx, shot->pos.cy, MINE_EXPLOSION_SOUND);
         else
-        {
-            sound_play_sensors(shot->pos.x, shot->pos.y, OBJECT_EXPLOSION_SOUND);
-        }
+
+            sound_play_sensors(shot->pos.cx, shot->pos.cy, OBJECT_EXPLOSION_SOUND);
 
         if (BIT(shot->mods.warhead, CLUSTER))
         {
@@ -1558,11 +1556,13 @@ void Fire_general_laser(int ind, unsigned short team, DFLOAT x, DFLOAT y,
     player_t *pl = ((ind == -1) ? NULL : Players[ind]);
     pulse_t *pulse;
     int life;
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
 
     if (pl)
     {
         Add_fuel(&(pl->fuel), (long)ED_LASER);
-        sound_play_sensors(x, y, FIRE_LASER_SOUND);
+        sound_play_sensors(cx, cy, FIRE_LASER_SOUND);
         life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
     }
     else

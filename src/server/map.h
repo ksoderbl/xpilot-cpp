@@ -24,6 +24,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "click.h"
 #include "types.h"
 #include "rules.h"
 #include "item.h"
@@ -98,6 +99,7 @@ typedef struct
 {
     ipos_t blk_pos;
     position_t pix_pos;
+    clpos_t clk_pos;
     long fuel;
     unsigned conn_mask;
     long last_change;
@@ -107,12 +109,14 @@ typedef struct
 typedef struct
 {
     ipos_t pos;
+    clpos_t clk_pos;
     DFLOAT force;
 } grav_t;
 
 typedef struct
 {
     ipos_t pos;
+    clpos_t clk_pos;
     int dir;
     unsigned short team;
 } base_t;
@@ -127,6 +131,7 @@ typedef struct
 {
     ipos_t blk_pos;
     position_t pix_pos;
+    clpos_t clk_pos;
     int dir;
     int dead_time;
     unsigned conn_mask;
@@ -173,6 +178,7 @@ typedef enum
 typedef struct
 {
     ipos_t pos;
+    clpos_t clk_pos;
     int lastdest,   /* last destination wormhole */
         countdown;  /* if >0 warp to lastdest else random */
     bool temporary; /* wormhole was left by hyperjump */
@@ -184,6 +190,7 @@ typedef struct
 typedef struct
 {
     ipos_t pos;
+    clpos_t clk_pos;
     bool have;           /* true if this treasure has ball in it */
     unsigned short team; /* team of this treasure */
     int destroyed;       /* how often this treasure destroyed */
@@ -193,6 +200,7 @@ typedef struct
 typedef struct
 {
     ipos_t pos;
+    clpos_t clk_pos;
     unsigned short team;
     int dead_time;
     int damage;

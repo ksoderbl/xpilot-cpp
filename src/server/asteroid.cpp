@@ -235,7 +235,7 @@ void Break_asteroid(int ind)
         }
     }
 
-    sound_play_sensors(asteroid->pos.x, asteroid->pos.y, ASTEROID_BREAK_SOUND);
+    sound_play_sensors(asteroid->pos.cx, asteroid->pos.cy, ASTEROID_BREAK_SOUND);
 
     World.asteroids.num -= 1 << (asteroid->size - 1);
 

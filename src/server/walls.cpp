@@ -383,7 +383,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
     {
         if (ms->mip->edge_bounce)
         {
-            ms->todo.x = -ms->todo.x;
+            ms->todo.cx = -ms->todo.cx;
             ms->vel.x = -ms->vel.x;
             if (!ms->mip->pl)
             {
@@ -392,7 +392,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
         }
         else
         {
-            ms->todo.x = 0;
+            ms->todo.cx = 0;
             ms->vel.x = 0;
             if (!ms->mip->pl)
             {
@@ -404,7 +404,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
     {
         if (ms->mip->edge_bounce)
         {
-            ms->todo.x = -ms->todo.x;
+            ms->todo.cx = -ms->todo.cx;
             ms->vel.x = -ms->vel.x;
             if (!ms->mip->pl)
             {
@@ -413,7 +413,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
         }
         else
         {
-            ms->todo.x = 0;
+            ms->todo.cx = 0;
             ms->vel.x = 0;
             if (!ms->mip->pl)
             {
@@ -425,7 +425,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
     {
         if (ms->mip->edge_bounce)
         {
-            ms->todo.y = -ms->todo.y;
+            ms->todo.cy = -ms->todo.cy;
             ms->vel.y = -ms->vel.y;
             if (!ms->mip->pl)
             {
@@ -434,7 +434,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
         }
         else
         {
-            ms->todo.y = 0;
+            ms->todo.cy = 0;
             ms->vel.y = 0;
             if (!ms->mip->pl)
             {
@@ -446,7 +446,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
     {
         if (ms->mip->edge_bounce)
         {
-            ms->todo.y = -ms->todo.y;
+            ms->todo.cy = -ms->todo.cy;
             ms->vel.y = -ms->vel.y;
             if (!ms->mip->pl)
             {
@@ -455,7 +455,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
         }
         else
         {
-            ms->todo.y = 0;
+            ms->todo.cy = 0;
             ms->vel.y = 0;
             if (!ms->mip->pl)
             {
@@ -475,7 +475,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
     }
     if (bounce == BounceHorLo)
     {
-        ms->todo.x = -ms->todo.x;
+        ms->todo.cx = -ms->todo.cx;
         ms->vel.x = -ms->vel.x;
         if (!ms->mip->pl)
         {
@@ -484,7 +484,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
     }
     else if (bounce == BounceHorHi)
     {
-        ms->todo.x = -ms->todo.x;
+        ms->todo.cx = -ms->todo.cx;
         ms->vel.x = -ms->vel.x;
         if (!ms->mip->pl)
         {
@@ -493,7 +493,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
     }
     else if (bounce == BounceVerLo)
     {
-        ms->todo.y = -ms->todo.y;
+        ms->todo.cy = -ms->todo.cy;
         ms->vel.y = -ms->vel.y;
         if (!ms->mip->pl)
         {
@@ -502,7 +502,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
     }
     else if (bounce == BounceVerHi)
     {
-        ms->todo.y = -ms->todo.y;
+        ms->todo.cy = -ms->todo.cy;
         ms->vel.y = -ms->vel.y;
         if (!ms->mip->pl)
         {
@@ -515,8 +515,8 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         vector_t v = ms->vel;
         if (bounce == BounceLeftDown)
         {
-            ms->todo.x = -t.y;
-            ms->todo.y = -t.x;
+            ms->todo.cx = -t.cy;
+            ms->todo.cy = -t.cx;
             ms->vel.x = -v.y;
             ms->vel.y = -v.x;
             if (!ms->mip->pl)
@@ -526,8 +526,8 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         }
         else if (bounce == BounceLeftUp)
         {
-            ms->todo.x = t.y;
-            ms->todo.y = t.x;
+            ms->todo.cx = t.cy;
+            ms->todo.cy = t.cx;
             ms->vel.x = v.y;
             ms->vel.y = v.x;
             if (!ms->mip->pl)
@@ -537,8 +537,8 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         }
         else if (bounce == BounceRightDown)
         {
-            ms->todo.x = t.y;
-            ms->todo.y = t.x;
+            ms->todo.cx = t.cy;
+            ms->todo.cy = t.cx;
             ms->vel.x = v.y;
             ms->vel.y = v.x;
             if (!ms->mip->pl)
@@ -548,8 +548,8 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         }
         else if (bounce == BounceRightUp)
         {
-            ms->todo.x = -t.y;
-            ms->todo.y = -t.x;
+            ms->todo.cx = -t.cy;
+            ms->todo.cy = -t.cx;
             ms->vel.x = -v.y;
             ms->vel.y = -v.x;
             if (!ms->mip->pl)
@@ -604,11 +604,11 @@ void Move_segment(move_state_t *ms)
      */
     ms->crash = NotACrash;
     ms->bounce = NotABounce;
-    ms->done.x = 0;
-    ms->done.y = 0;
+    ms->done.cx = 0;
+    ms->done.cy = 0;
 
     enter = ms->pos;
-    if (enter.x < 0 || enter.x >= mp.click_width || enter.y < 0 || enter.y >= mp.click_height)
+    if (enter.cx < 0 || enter.cx >= mp.click_width || enter.cy < 0 || enter.cy >= mp.click_height)
     {
 
         if (!mi->edge_wrap)
@@ -616,37 +616,37 @@ void Move_segment(move_state_t *ms)
             ms->crash = CrashUniverse;
             return;
         }
-        if (enter.x < 0)
+        if (enter.cx < 0)
         {
-            enter.x += mp.click_width;
-            if (enter.x < 0)
+            enter.cx += mp.click_width;
+            if (enter.cx < 0)
             {
                 ms->crash = CrashUniverse;
                 return;
             }
         }
-        else if (enter.x >= mp.click_width)
+        else if (enter.cx >= mp.click_width)
         {
-            enter.x -= mp.click_width;
-            if (enter.x >= mp.click_width)
+            enter.cx -= mp.click_width;
+            if (enter.cx >= mp.click_width)
             {
                 ms->crash = CrashUniverse;
                 return;
             }
         }
-        if (enter.y < 0)
+        if (enter.cy < 0)
         {
-            enter.y += mp.click_height;
-            if (enter.y < 0)
+            enter.cy += mp.click_height;
+            if (enter.cy < 0)
             {
                 ms->crash = CrashUniverse;
                 return;
             }
         }
-        else if (enter.y >= mp.click_height)
+        else if (enter.cy >= mp.click_height)
         {
-            enter.y -= mp.click_height;
-            if (enter.y >= mp.click_height)
+            enter.cy -= mp.click_height;
+            if (enter.cy >= mp.click_height)
             {
                 ms->crash = CrashUniverse;
                 return;
@@ -657,41 +657,41 @@ void Move_segment(move_state_t *ms)
 
     sign.x = (ms->vel.x < 0) ? -1 : 1;
     sign.y = (ms->vel.y < 0) ? -1 : 1;
-    block.x = enter.x / BLOCK_CLICKS;
-    block.y = enter.y / BLOCK_CLICKS;
+    block.x = enter.cx / BLOCK_CLICKS;
+    block.y = enter.cy / BLOCK_CLICKS;
     if (walldist[block.x][block.y] > 2)
     {
         int maxcl = ((walldist[block.x][block.y] - 2) * BLOCK_CLICKS) >> 1;
-        if (maxcl >= sign.x * ms->todo.x && maxcl >= sign.y * ms->todo.y)
+        if (maxcl >= sign.x * ms->todo.cx && maxcl >= sign.y * ms->todo.cy)
         {
             /* entire movement is possible. */
-            ms->done.x = ms->todo.x;
-            ms->done.y = ms->todo.y;
+            ms->done.cx = ms->todo.cx;
+            ms->done.cy = ms->todo.cy;
         }
-        else if (sign.x * ms->todo.x > sign.y * ms->todo.y)
+        else if (sign.x * ms->todo.cx > sign.y * ms->todo.cy)
         {
             /* horizontal movement. */
-            ms->done.x = sign.x * maxcl;
-            ms->done.y = ms->todo.y * maxcl / (sign.x * ms->todo.x);
+            ms->done.cx = sign.x * maxcl;
+            ms->done.cy = ms->todo.cy * maxcl / (sign.x * ms->todo.cx);
         }
         else
         {
             /* vertical movement. */
-            ms->done.x = ms->todo.x * maxcl / (sign.y * ms->todo.y);
-            ms->done.y = sign.y * maxcl;
+            ms->done.cx = ms->todo.cx * maxcl / (sign.y * ms->todo.cy);
+            ms->done.cy = sign.y * maxcl;
         }
-        ms->todo.x -= ms->done.x;
-        ms->todo.y -= ms->done.y;
+        ms->todo.cx -= ms->done.cx;
+        ms->todo.cy -= ms->done.cy;
         return;
     }
 
-    offset.x = enter.x - block.x * BLOCK_CLICKS;
-    offset.y = enter.y - block.y * BLOCK_CLICKS;
+    offset.cx = enter.cx - block.x * BLOCK_CLICKS;
+    offset.cy = enter.cy - block.y * BLOCK_CLICKS;
     inside = 1;
-    if (offset.x == 0)
+    if (offset.cx == 0)
     {
         inside = 0;
-        if (sign.x == -1 && (offset.x = BLOCK_CLICKS, --block.x < 0))
+        if (sign.x == -1 && (offset.cx = BLOCK_CLICKS, --block.x < 0))
         {
             if (mi->edge_wrap)
             {
@@ -704,15 +704,15 @@ void Move_segment(move_state_t *ms)
             }
         }
     }
-    else if (enter.x == mp.click_width - 1 && !mi->edge_wrap && ms->vel.x > 0)
+    else if (enter.cx == mp.click_width - 1 && !mi->edge_wrap && ms->vel.x > 0)
     {
         Bounce_edge(ms, BounceHorHi);
         return;
     }
-    if (offset.y == 0)
+    if (offset.cy == 0)
     {
         inside = 0;
-        if (sign.y == -1 && (offset.y = BLOCK_CLICKS, --block.y < 0))
+        if (sign.y == -1 && (offset.cy = BLOCK_CLICKS, --block.y < 0))
         {
             if (mi->edge_wrap)
             {
@@ -725,7 +725,7 @@ void Move_segment(move_state_t *ms)
             }
         }
     }
-    else if (enter.y == mp.click_height - 1 && !mi->edge_wrap && ms->vel.y > 0)
+    else if (enter.cy == mp.click_height - 1 && !mi->edge_wrap && ms->vel.y > 0)
     {
         Bounce_edge(ms, BounceVerHi);
         return;
@@ -734,80 +734,80 @@ void Move_segment(move_state_t *ms)
     need_adjust = 0;
     if (sign.x == -1)
     {
-        if (offset.x + ms->todo.x < 0)
+        if (offset.cx + ms->todo.cx < 0)
         {
-            leave.x = enter.x - offset.x;
+            leave.cx = enter.cx - offset.cx;
             need_adjust = 1;
         }
         else
         {
-            leave.x = enter.x + ms->todo.x;
+            leave.cx = enter.cx + ms->todo.cx;
         }
     }
     else
     {
-        if (offset.x + ms->todo.x > BLOCK_CLICKS)
+        if (offset.cx + ms->todo.cx > BLOCK_CLICKS)
         {
-            leave.x = enter.x + BLOCK_CLICKS - offset.x;
+            leave.cx = enter.cx + BLOCK_CLICKS - offset.cx;
             need_adjust = 1;
         }
         else
         {
-            leave.x = enter.x + ms->todo.x;
+            leave.cx = enter.cx + ms->todo.cx;
         }
-        if (leave.x == mp.click_width && !mi->edge_wrap)
+        if (leave.cx == mp.click_width && !mi->edge_wrap)
         {
-            leave.x--;
+            leave.cx--;
             need_adjust = 1;
         }
     }
     if (sign.y == -1)
     {
-        if (offset.y + ms->todo.y < 0)
+        if (offset.cy + ms->todo.cy < 0)
         {
-            leave.y = enter.y - offset.y;
+            leave.cy = enter.cy - offset.cy;
             need_adjust = 1;
         }
         else
         {
-            leave.y = enter.y + ms->todo.y;
+            leave.cy = enter.cy + ms->todo.cy;
         }
     }
     else
     {
-        if (offset.y + ms->todo.y > BLOCK_CLICKS)
+        if (offset.cy + ms->todo.cy > BLOCK_CLICKS)
         {
-            leave.y = enter.y + BLOCK_CLICKS - offset.y;
+            leave.cy = enter.cy + BLOCK_CLICKS - offset.cy;
             need_adjust = 1;
         }
         else
         {
-            leave.y = enter.y + ms->todo.y;
+            leave.cy = enter.cy + ms->todo.cy;
         }
-        if (leave.y == mp.click_height && !mi->edge_wrap)
+        if (leave.cy == mp.click_height && !mi->edge_wrap)
         {
-            leave.y--;
+            leave.cy--;
             need_adjust = 1;
         }
     }
-    if (need_adjust && ms->todo.y && ms->todo.x)
+    if (need_adjust && ms->todo.cy && ms->todo.cx)
     {
-        double wx = (double)(leave.x - enter.x) / ms->todo.x;
-        double wy = (double)(leave.y - enter.y) / ms->todo.y;
+        double wx = (double)(leave.cx - enter.cx) / ms->todo.cx;
+        double wy = (double)(leave.cy - enter.cy) / ms->todo.cy;
         if (wx > wy)
         {
-            double x = ms->todo.x * wy;
-            leave.x = enter.x + DOUBLE_TO_INT(x);
+            double x = ms->todo.cx * wy;
+            leave.cx = enter.cx + DOUBLE_TO_INT(x);
         }
         else if (wx < wy)
         {
-            double y = ms->todo.y * wx;
-            leave.y = enter.y + DOUBLE_TO_INT(y);
+            double y = ms->todo.cy * wx;
+            leave.cy = enter.cy + DOUBLE_TO_INT(y);
         }
     }
 
-    delta.x = leave.x - enter.x;
-    delta.y = leave.y - enter.y;
+    delta.cx = leave.cx - enter.cx;
+    delta.cy = leave.cy - enter.cy;
 
     block_type = World.block[block.x][block.y];
 
@@ -876,8 +876,8 @@ void Move_segment(move_state_t *ms)
                 int last = World.wormHoles[hole].lastdest;
                 if (last >= 0 && (World.wormHoles[hole].countdown > 0 || !options.wormTime) && last < World.NumWormholes && World.wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.x += (World.wormHoles[last].pos.x - World.wormHoles[hole].pos.x) * BLOCK_CLICKS;
-                    ms->done.y += (World.wormHoles[last].pos.y - World.wormHoles[hole].pos.y) * BLOCK_CLICKS;
+                    ms->done.cx += (World.wormHoles[last].pos.x - World.wormHoles[hole].pos.x) * BLOCK_CLICKS;
+                    ms->done.cy += (World.wormHoles[last].pos.y - World.wormHoles[hole].pos.y) * BLOCK_CLICKS;
                     break;
                 }
             }
@@ -923,10 +923,10 @@ void Move_segment(move_state_t *ms)
                 clpos_t mirx, miry, start, end, todo, done, diff, a, b;
                 double d, w;
 
-                mirx.x = 0;
-                mirx.y = 0;
-                miry.x = 0;
-                miry.y = 0;
+                mirx.cx = 0;
+                mirx.cy = 0;
+                miry.cx = 0;
+                miry.cy = 0;
                 switch (World.cannon[i].dir)
                 {
                 case DIR_UP:
@@ -940,45 +940,45 @@ void Move_segment(move_state_t *ms)
                     mx.y = 0;
                     my.x = 0;
                     my.y = -1;
-                    miry.y = BLOCK_CLICKS;
+                    miry.cy = BLOCK_CLICKS;
                     break;
                 case DIR_RIGHT:
                     mx.x = 0;
                     mx.y = 1;
                     my.x = -1;
                     my.y = 0;
-                    miry.x = BLOCK_CLICKS;
+                    miry.cx = BLOCK_CLICKS;
                     break;
                 case DIR_LEFT:
                     mx.x = 0;
                     mx.y = -1;
                     my.x = 1;
                     my.y = 0;
-                    mirx.y = BLOCK_CLICKS;
+                    mirx.cy = BLOCK_CLICKS;
                     break;
                 }
-                start.x = mirx.x + mx.x * offset.x + miry.x + my.x * offset.y;
-                start.y = mirx.y + mx.y * offset.x + miry.y + my.y * offset.y;
-                diff.x = mx.x * delta.x + my.x * delta.y;
-                diff.y = mx.y * delta.x + my.y * delta.y;
+                start.cx = mirx.cx + mx.x * offset.cx + miry.cx + my.x * offset.cy;
+                start.cy = mirx.cy + mx.y * offset.cx + miry.cy + my.y * offset.cy;
+                diff.cx = mx.x * delta.cx + my.x * delta.cy;
+                diff.cy = mx.y * delta.cx + my.y * delta.cy;
                 dir.x = mx.x * sign.x + my.x * sign.y;
                 dir.y = mx.y * sign.x + my.y * sign.y;
-                todo.x = mx.x * ms->todo.x + my.x * ms->todo.y;
-                todo.y = mx.y * ms->todo.x + my.y * ms->todo.y;
+                todo.cx = mx.x * ms->todo.cx + my.x * ms->todo.cy;
+                todo.cy = mx.y * ms->todo.cx + my.y * ms->todo.cy;
 
-                end.x = start.x + diff.x;
-                end.y = start.y + diff.y;
+                end.cx = start.cx + diff.cx;
+                end.cy = start.cy + diff.cy;
 
-                if (start.x <= BLOCK_CLICKS / 2)
+                if (start.cx <= BLOCK_CLICKS / 2)
                 {
-                    if (3 * start.y <= 2 * start.x)
+                    if (3 * start.cy <= 2 * start.cx)
                     {
                         ms->crash = CrashCannon;
                         return;
                     }
-                    if (end.x <= BLOCK_CLICKS / 2)
+                    if (end.cx <= BLOCK_CLICKS / 2)
                     {
-                        if (3 * end.y > 2 * end.x)
+                        if (3 * end.cy > 2 * end.cx)
                         {
                             break;
                         }
@@ -986,14 +986,14 @@ void Move_segment(move_state_t *ms)
                 }
                 else
                 {
-                    if (3 * start.y <= 2 * (BLOCK_CLICKS - start.x))
+                    if (3 * start.cy <= 2 * (BLOCK_CLICKS - start.cx))
                     {
                         ms->crash = CrashCannon;
                         return;
                     }
-                    if (end.x > BLOCK_CLICKS / 2)
+                    if (end.cx > BLOCK_CLICKS / 2)
                     {
-                        if (3 * end.y > 2 * (BLOCK_CLICKS - end.x))
+                        if (3 * end.cy > 2 * (BLOCK_CLICKS - end.cx))
                         {
                             break;
                         }
@@ -1003,21 +1003,21 @@ void Move_segment(move_state_t *ms)
                 done = diff;
 
                 /* is direction x-major? */
-                if (dir.x * diff.x >= dir.y * diff.y)
+                if (dir.x * diff.cx >= dir.y * diff.cy)
                 {
                     /* x-major */
-                    w = (double)todo.y / todo.x;
-                    if (3 * todo.y != 2 * todo.x)
+                    w = (double)todo.cy / todo.cx;
+                    if (3 * todo.cy != 2 * todo.cx)
                     {
-                        d = (3 * start.y - 2 * start.x) / (2 - 3 * w);
-                        a.x = DOUBLE_TO_INT(d);
-                        a.y = (int)(a.x * w);
-                        if (dir.x * a.x < dir.x * done.x && dir.x * a.x >= 0)
+                        d = (3 * start.cy - 2 * start.cx) / (2 - 3 * w);
+                        a.cx = DOUBLE_TO_INT(d);
+                        a.cy = (int)(a.cx * w);
+                        if (dir.x * a.cx < dir.x * done.cx && dir.x * a.cx >= 0)
                         {
-                            if (start.y + a.y <= BLOCK_CLICKS / 3)
+                            if (start.cy + a.cy <= BLOCK_CLICKS / 3)
                             {
                                 done = a;
-                                if (!(done.x | done.y))
+                                if (!(done.cx | done.cy))
                                 {
                                     ms->crash = CrashCannon;
                                     return;
@@ -1025,18 +1025,18 @@ void Move_segment(move_state_t *ms)
                             }
                         }
                     }
-                    if (-3 * todo.y != 2 * todo.x)
+                    if (-3 * todo.cy != 2 * todo.cx)
                     {
-                        d = (2 * BLOCK_CLICKS - 2 * start.x - 3 * start.y) /
+                        d = (2 * BLOCK_CLICKS - 2 * start.cx - 3 * start.cy) /
                             (2 + 3 * w);
-                        b.x = DOUBLE_TO_INT(d);
-                        b.y = (int)(b.x * w);
-                        if (dir.x * b.x < dir.x * done.x && dir.x * b.x >= 0)
+                        b.cx = DOUBLE_TO_INT(d);
+                        b.cy = (int)(b.cx * w);
+                        if (dir.x * b.cx < dir.x * done.cx && dir.x * b.cx >= 0)
                         {
-                            if (start.y + b.y <= BLOCK_CLICKS / 3)
+                            if (start.cy + b.cy <= BLOCK_CLICKS / 3)
                             {
                                 done = b;
-                                if (!(done.x | done.y))
+                                if (!(done.cx | done.cy))
                                 {
                                     ms->crash = CrashCannon;
                                     return;
@@ -1048,32 +1048,32 @@ void Move_segment(move_state_t *ms)
                 else
                 {
                     /* y-major */
-                    w = (double)todo.x / todo.y;
-                    d = (2 * start.x - 3 * start.y) / (3 - 2 * w);
-                    a.y = DOUBLE_TO_INT(d);
-                    a.x = (int)(a.y * w);
-                    if (dir.y * a.y < dir.y * done.y && dir.y * a.y >= 0)
+                    w = (double)todo.cx / todo.cy;
+                    d = (2 * start.cx - 3 * start.cy) / (3 - 2 * w);
+                    a.cy = DOUBLE_TO_INT(d);
+                    a.cx = (int)(a.cy * w);
+                    if (dir.y * a.cy < dir.y * done.cy && dir.y * a.cy >= 0)
                     {
-                        if (start.y + a.y <= BLOCK_CLICKS / 3)
+                        if (start.cy + a.cy <= BLOCK_CLICKS / 3)
                         {
                             done = a;
-                            if (!(done.x | done.y))
+                            if (!(done.cx | done.cy))
                             {
                                 ms->crash = CrashCannon;
                                 return;
                             }
                         }
                     }
-                    d = (2 * BLOCK_CLICKS - 2 * start.x - 3 * start.y) /
+                    d = (2 * BLOCK_CLICKS - 2 * start.cx - 3 * start.cy) /
                         (3 + 2 * w);
-                    b.y = DOUBLE_TO_INT(d);
-                    b.x = (int)(b.y * w);
-                    if (dir.y * b.y < dir.y * done.y && dir.y * b.y >= 0)
+                    b.cy = DOUBLE_TO_INT(d);
+                    b.cx = (int)(b.cy * w);
+                    if (dir.y * b.cy < dir.y * done.cy && dir.y * b.cy >= 0)
                     {
-                        if (start.y + b.y <= BLOCK_CLICKS / 3)
+                        if (start.cy + b.cy <= BLOCK_CLICKS / 3)
                         {
                             done = b;
-                            if (!(done.x | done.y))
+                            if (!(done.cx | done.cy))
                             {
                                 ms->crash = CrashCannon;
                                 return;
@@ -1082,8 +1082,8 @@ void Move_segment(move_state_t *ms)
                     }
                 }
 
-                delta.x = mx.x * done.x + mx.y * done.y;
-                delta.y = my.x * done.x + my.y * done.y;
+                delta.cx = mx.x * done.cx + mx.y * done.cy;
+                delta.cy = my.x * done.cx + my.y * done.cy;
             }
             break;
 
@@ -1099,11 +1099,11 @@ void Move_segment(move_state_t *ms)
                      * are not hitting the treasure.
                      */
                     const DFLOAT r = 0.5f * BLOCK_CLICKS;
-                    off2.x = offset.x + delta.x;
-                    off2.y = offset.y + delta.y;
-                    mid.x = (offset.x + off2.x) / 2;
-                    mid.y = (offset.y + off2.y) / 2;
-                    if (offset.y > r && off2.y > r && sqr(mid.x - r) + sqr(mid.y - r) > sqr(r) && sqr(off2.x - r) + sqr(off2.y - r) > sqr(r) && sqr(offset.x - r) + sqr(offset.y - r) > sqr(r))
+                    off2.cx = offset.cx + delta.cx;
+                    off2.cy = offset.cy + delta.cy;
+                    mid.cx = (offset.cx + off2.cx) / 2;
+                    mid.cy = (offset.cy + off2.cy) / 2;
+                    if (offset.cy > r && off2.cy > r && sqr(mid.cx - r) + sqr(mid.cy - r) > sqr(r) && sqr(off2.cx - r) + sqr(off2.cy - r) > sqr(r) && sqr(offset.cx - r) + sqr(offset.cy - r) > sqr(r))
                     {
                         break;
                     }
@@ -1255,28 +1255,28 @@ void Move_segment(move_state_t *ms)
                 ms->crash = CrashWall;
                 return;
             }
-            if (offset.x == 0)
+            if (offset.cx == 0)
             {
                 if (ms->vel.x > 0)
                 {
                     wall_bounce |= BounceHorLo;
                 }
             }
-            else if (offset.x == BLOCK_CLICKS)
+            else if (offset.cx == BLOCK_CLICKS)
             {
                 if (ms->vel.x < 0)
                 {
                     wall_bounce |= BounceHorHi;
                 }
             }
-            if (offset.y == 0)
+            if (offset.cy == 0)
             {
                 if (ms->vel.y > 0)
                 {
                     wall_bounce |= BounceVerLo;
                 }
             }
-            else if (offset.y == BLOCK_CLICKS)
+            else if (offset.cy == BLOCK_CLICKS)
             {
                 if (ms->vel.y < 0)
                 {
@@ -1287,17 +1287,17 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (!(ms->todo.x | ms->todo.y))
+            if (!(ms->todo.cx | ms->todo.cy))
             {
                 /* no bouncing possible and no movement.  OK. */
                 break;
             }
-            if (!ms->todo.x && (offset.x == 0 || offset.x == BLOCK_CLICKS))
+            if (!ms->todo.cx && (offset.cx == 0 || offset.cx == BLOCK_CLICKS))
             {
                 /* tricky */
                 break;
             }
-            if (!ms->todo.y && (offset.y == 0 || offset.y == BLOCK_CLICKS))
+            if (!ms->todo.cy && (offset.cy == 0 || offset.cy == BLOCK_CLICKS))
             {
                 /* tricky */
                 break;
@@ -1308,24 +1308,24 @@ void Move_segment(move_state_t *ms)
 
         case REC_LD:
             /* test for bounces first. */
-            if (offset.x == 0)
+            if (offset.cx == 0)
             {
                 if (ms->vel.x > 0)
                 {
                     wall_bounce |= BounceHorLo;
                 }
-                if (offset.y == BLOCK_CLICKS && ms->vel.x + ms->vel.y < 0)
+                if (offset.cy == BLOCK_CLICKS && ms->vel.x + ms->vel.y < 0)
                 {
                     wall_bounce |= BounceLeftDown;
                 }
             }
-            if (offset.y == 0)
+            if (offset.cy == 0)
             {
                 if (ms->vel.y > 0)
                 {
                     wall_bounce |= BounceVerLo;
                 }
-                if (offset.x == BLOCK_CLICKS && ms->vel.x + ms->vel.y < 0)
+                if (offset.cx == BLOCK_CLICKS && ms->vel.x + ms->vel.y < 0)
                 {
                     wall_bounce |= BounceLeftDown;
                 }
@@ -1334,12 +1334,12 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (offset.x + offset.y < BLOCK_CLICKS)
+            if (offset.cx + offset.cy < BLOCK_CLICKS)
             {
                 ms->crash = CrashWall;
                 return;
             }
-            if (offset.x + delta.x + offset.y + delta.y >= BLOCK_CLICKS)
+            if (offset.cx + delta.cx + offset.cy + delta.cy >= BLOCK_CLICKS)
             {
                 /* movement is entirely within the space part of the block. */
                 break;
@@ -1348,19 +1348,19 @@ void Move_segment(move_state_t *ms)
              * Find out where we bounce exactly
              * and how far we can move before bouncing.
              */
-            if (sign.x * ms->todo.x >= sign.y * ms->todo.y)
+            if (sign.x * ms->todo.cx >= sign.y * ms->todo.cy)
             {
-                double w = (double)ms->todo.y / ms->todo.x;
-                delta.x = (int)((BLOCK_CLICKS - offset.x - offset.y) / (1 + w));
-                delta.y = (int)(delta.x * w);
-                if (offset.x + delta.x + offset.y + delta.y < BLOCK_CLICKS)
+                double w = (double)ms->todo.cy / ms->todo.cx;
+                delta.cx = (int)((BLOCK_CLICKS - offset.cx - offset.cy) / (1 + w));
+                delta.cy = (int)(delta.cx * w);
+                if (offset.cx + delta.cx + offset.cy + delta.cy < BLOCK_CLICKS)
                 {
-                    delta.x++;
-                    delta.y = (int)(delta.x * w);
+                    delta.cx++;
+                    delta.cy = (int)(delta.cx * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.x)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cx)
                 {
                     wall_bounce |= BounceLeftDown;
                     break;
@@ -1368,17 +1368,17 @@ void Move_segment(move_state_t *ms)
             }
             else
             {
-                double w = (double)ms->todo.x / ms->todo.y;
-                delta.y = (int)((BLOCK_CLICKS - offset.x - offset.y) / (1 + w));
-                delta.x = (int)(delta.y * w);
-                if (offset.x + delta.x + offset.y + delta.y < BLOCK_CLICKS)
+                double w = (double)ms->todo.cx / ms->todo.cy;
+                delta.cy = (int)((BLOCK_CLICKS - offset.cx - offset.cy) / (1 + w));
+                delta.cx = (int)(delta.cy * w);
+                if (offset.cx + delta.cx + offset.cy + delta.cy < BLOCK_CLICKS)
                 {
-                    delta.y++;
-                    delta.x = (int)(delta.y * w);
+                    delta.cy++;
+                    delta.cx = (int)(delta.cy * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.y)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cy)
                 {
                     wall_bounce |= BounceLeftDown;
                     break;
@@ -1387,24 +1387,24 @@ void Move_segment(move_state_t *ms)
             break;
 
         case REC_LU:
-            if (offset.x == 0)
+            if (offset.cx == 0)
             {
                 if (ms->vel.x > 0)
                 {
                     wall_bounce |= BounceHorLo;
                 }
-                if (offset.y == 0 && ms->vel.x < ms->vel.y)
+                if (offset.cy == 0 && ms->vel.x < ms->vel.y)
                 {
                     wall_bounce |= BounceLeftUp;
                 }
             }
-            if (offset.y == BLOCK_CLICKS)
+            if (offset.cy == BLOCK_CLICKS)
             {
                 if (ms->vel.y < 0)
                 {
                     wall_bounce |= BounceVerHi;
                 }
-                if (offset.x == BLOCK_CLICKS && ms->vel.x < ms->vel.y)
+                if (offset.cx == BLOCK_CLICKS && ms->vel.x < ms->vel.y)
                 {
                     wall_bounce |= BounceLeftUp;
                 }
@@ -1413,28 +1413,28 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (offset.x < offset.y)
+            if (offset.cx < offset.cy)
             {
                 ms->crash = CrashWall;
                 return;
             }
-            if (offset.x + delta.x >= offset.y + delta.y)
+            if (offset.cx + delta.cx >= offset.cy + delta.cy)
             {
                 break;
             }
-            if (sign.x * ms->todo.x >= sign.y * ms->todo.y)
+            if (sign.x * ms->todo.cx >= sign.y * ms->todo.cy)
             {
-                double w = (double)ms->todo.y / ms->todo.x;
-                delta.x = (int)((offset.y - offset.x) / (1 - w));
-                delta.y = (int)(delta.x * w);
-                if (offset.x + delta.x < offset.y + delta.y)
+                double w = (double)ms->todo.cy / ms->todo.cx;
+                delta.cx = (int)((offset.cy - offset.cx) / (1 - w));
+                delta.cy = (int)(delta.cx * w);
+                if (offset.cx + delta.cx < offset.cy + delta.cy)
                 {
-                    delta.x++;
-                    delta.y = (int)(delta.x * w);
+                    delta.cx++;
+                    delta.cy = (int)(delta.cx * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.x)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cx)
                 {
                     wall_bounce |= BounceLeftUp;
                     break;
@@ -1442,17 +1442,17 @@ void Move_segment(move_state_t *ms)
             }
             else
             {
-                double w = (double)ms->todo.x / ms->todo.y;
-                delta.y = (int)((offset.x - offset.y) / (1 - w));
-                delta.x = (int)(delta.y * w);
-                if (offset.x + delta.x < offset.y + delta.y)
+                double w = (double)ms->todo.cx / ms->todo.cy;
+                delta.cy = (int)((offset.cx - offset.cy) / (1 - w));
+                delta.cx = (int)(delta.cy * w);
+                if (offset.cx + delta.cx < offset.cy + delta.cy)
                 {
-                    delta.y--;
-                    delta.x = (int)(delta.y * w);
+                    delta.cy--;
+                    delta.cx = (int)(delta.cy * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.y)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cy)
                 {
                     wall_bounce |= BounceLeftUp;
                     break;
@@ -1461,24 +1461,24 @@ void Move_segment(move_state_t *ms)
             break;
 
         case REC_RD:
-            if (offset.x == BLOCK_CLICKS)
+            if (offset.cx == BLOCK_CLICKS)
             {
                 if (ms->vel.x < 0)
                 {
                     wall_bounce |= BounceHorHi;
                 }
-                if (offset.y == BLOCK_CLICKS && ms->vel.x > ms->vel.y)
+                if (offset.cy == BLOCK_CLICKS && ms->vel.x > ms->vel.y)
                 {
                     wall_bounce |= BounceRightDown;
                 }
             }
-            if (offset.y == 0)
+            if (offset.cy == 0)
             {
                 if (ms->vel.y > 0)
                 {
                     wall_bounce |= BounceVerLo;
                 }
-                if (offset.x == 0 && ms->vel.x > ms->vel.y)
+                if (offset.cx == 0 && ms->vel.x > ms->vel.y)
                 {
                     wall_bounce |= BounceRightDown;
                 }
@@ -1487,28 +1487,28 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (offset.x > offset.y)
+            if (offset.cx > offset.cy)
             {
                 ms->crash = CrashWall;
                 return;
             }
-            if (offset.x + delta.x <= offset.y + delta.y)
+            if (offset.cx + delta.cx <= offset.cy + delta.cy)
             {
                 break;
             }
-            if (sign.x * ms->todo.x >= sign.y * ms->todo.y)
+            if (sign.x * ms->todo.cx >= sign.y * ms->todo.cy)
             {
-                double w = (double)ms->todo.y / ms->todo.x;
-                delta.x = (int)((offset.y - offset.x) / (1 - w));
-                delta.y = (int)(delta.x * w);
-                if (offset.x + delta.x > offset.y + delta.y)
+                double w = (double)ms->todo.cy / ms->todo.cx;
+                delta.cx = (int)((offset.cy - offset.cx) / (1 - w));
+                delta.cy = (int)(delta.cx * w);
+                if (offset.cx + delta.cx > offset.cy + delta.cy)
                 {
-                    delta.x--;
-                    delta.y = (int)(delta.x * w);
+                    delta.cx--;
+                    delta.cy = (int)(delta.cx * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.x)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cx)
                 {
                     wall_bounce |= BounceRightDown;
                     break;
@@ -1516,17 +1516,17 @@ void Move_segment(move_state_t *ms)
             }
             else
             {
-                double w = (double)ms->todo.x / ms->todo.y;
-                delta.y = (int)((offset.x - offset.y) / (1 - w));
-                delta.x = (int)(delta.y * w);
-                if (offset.x + delta.x > offset.y + delta.y)
+                double w = (double)ms->todo.cx / ms->todo.cy;
+                delta.cy = (int)((offset.cx - offset.cy) / (1 - w));
+                delta.cx = (int)(delta.cy * w);
+                if (offset.cx + delta.cx > offset.cy + delta.cy)
                 {
-                    delta.y++;
-                    delta.x = (int)(delta.y * w);
+                    delta.cy++;
+                    delta.cx = (int)(delta.cy * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.y)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cy)
                 {
                     wall_bounce |= BounceRightDown;
                     break;
@@ -1535,24 +1535,24 @@ void Move_segment(move_state_t *ms)
             break;
 
         case REC_RU:
-            if (offset.x == BLOCK_CLICKS)
+            if (offset.cx == BLOCK_CLICKS)
             {
                 if (ms->vel.x < 0)
                 {
                     wall_bounce |= BounceHorHi;
                 }
-                if (offset.y == 0 && ms->vel.x + ms->vel.y > 0)
+                if (offset.cy == 0 && ms->vel.x + ms->vel.y > 0)
                 {
                     wall_bounce |= BounceRightUp;
                 }
             }
-            if (offset.y == BLOCK_CLICKS)
+            if (offset.cy == BLOCK_CLICKS)
             {
                 if (ms->vel.y < 0)
                 {
                     wall_bounce |= BounceVerHi;
                 }
-                if (offset.x == 0 && ms->vel.x + ms->vel.y > 0)
+                if (offset.cx == 0 && ms->vel.x + ms->vel.y > 0)
                 {
                     wall_bounce |= BounceRightUp;
                 }
@@ -1561,28 +1561,28 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (offset.x + offset.y > BLOCK_CLICKS)
+            if (offset.cx + offset.cy > BLOCK_CLICKS)
             {
                 ms->crash = CrashWall;
                 return;
             }
-            if (offset.x + delta.x + offset.y + delta.y <= BLOCK_CLICKS)
+            if (offset.cx + delta.cx + offset.cy + delta.cy <= BLOCK_CLICKS)
             {
                 break;
             }
-            if (sign.x * ms->todo.x >= sign.y * ms->todo.y)
+            if (sign.x * ms->todo.cx >= sign.y * ms->todo.cy)
             {
-                double w = (double)ms->todo.y / ms->todo.x;
-                delta.x = (int)((BLOCK_CLICKS - offset.x - offset.y) / (1 + w));
-                delta.y = (int)(delta.x * w);
-                if (offset.x + delta.x + offset.y + delta.y > BLOCK_CLICKS)
+                double w = (double)ms->todo.cy / ms->todo.cx;
+                delta.cx = (int)((BLOCK_CLICKS - offset.cx - offset.cy) / (1 + w));
+                delta.cy = (int)(delta.cx * w);
+                if (offset.cx + delta.cx + offset.cy + delta.cy > BLOCK_CLICKS)
                 {
-                    delta.x--;
-                    delta.y = (int)(delta.x * w);
+                    delta.cx--;
+                    delta.cy = (int)(delta.cx * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.x)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cx)
                 {
                     wall_bounce |= BounceRightUp;
                     break;
@@ -1590,17 +1590,17 @@ void Move_segment(move_state_t *ms)
             }
             else
             {
-                double w = (double)ms->todo.x / ms->todo.y;
-                delta.y = (int)((BLOCK_CLICKS - offset.x - offset.y) / (1 + w));
-                delta.x = (int)(delta.y * w);
-                if (offset.x + delta.x + offset.y + delta.y > BLOCK_CLICKS)
+                double w = (double)ms->todo.cx / ms->todo.cy;
+                delta.cy = (int)((BLOCK_CLICKS - offset.cx - offset.cy) / (1 + w));
+                delta.cx = (int)(delta.cy * w);
+                if (offset.cx + delta.cx + offset.cy + delta.cy > BLOCK_CLICKS)
                 {
-                    delta.y--;
-                    delta.x = (int)(delta.y * w);
+                    delta.cy--;
+                    delta.cx = (int)(delta.cy * w);
                 }
-                leave.x = enter.x + delta.x;
-                leave.y = enter.y + delta.y;
-                if (!delta.y)
+                leave.cx = enter.cx + delta.cx;
+                leave.cy = enter.cy + delta.cy;
+                if (!delta.cy)
                 {
                     wall_bounce |= BounceRightUp;
                     break;
@@ -1741,29 +1741,29 @@ void Move_segment(move_state_t *ms)
                     switch (block_type)
                     {
                     case REC_LD:
-                        if ((offset.x == 0) ? (offset.y == BLOCK_CLICKS)
-                                            : (offset.x == BLOCK_CLICKS && offset.y == 0) && ms->vel.x + ms->vel.y >= 0)
+                        if ((offset.cx == 0) ? (offset.cy == BLOCK_CLICKS)
+                                             : (offset.cx == BLOCK_CLICKS && offset.cy == 0) && ms->vel.x + ms->vel.y >= 0)
                         {
                             wall_bounce = 0;
                         }
                         break;
                     case REC_LU:
-                        if ((offset.x == 0) ? (offset.y == 0)
-                                            : (offset.x == BLOCK_CLICKS && offset.y == BLOCK_CLICKS) && ms->vel.x >= ms->vel.y)
+                        if ((offset.cx == 0) ? (offset.cy == 0)
+                                             : (offset.cx == BLOCK_CLICKS && offset.cy == BLOCK_CLICKS) && ms->vel.x >= ms->vel.y)
                         {
                             wall_bounce = 0;
                         }
                         break;
                     case REC_RD:
-                        if ((offset.x == 0) ? (offset.y == 0)
-                                            : (offset.x == BLOCK_CLICKS && offset.y == BLOCK_CLICKS) && ms->vel.x <= ms->vel.y)
+                        if ((offset.cx == 0) ? (offset.cy == 0)
+                                             : (offset.cx == BLOCK_CLICKS && offset.cy == BLOCK_CLICKS) && ms->vel.x <= ms->vel.y)
                         {
                             wall_bounce = 0;
                         }
                         break;
                     case REC_RU:
-                        if ((offset.x == 0) ? (offset.y == BLOCK_CLICKS)
-                                            : (offset.x == BLOCK_CLICKS && offset.y == 0) && ms->vel.x + ms->vel.y <= 0)
+                        if ((offset.cx == 0) ? (offset.cy == BLOCK_CLICKS)
+                                             : (offset.cx == BLOCK_CLICKS && offset.cy == 0) && ms->vel.x + ms->vel.y <= 0)
                         {
                             wall_bounce = 0;
                         }
@@ -1809,10 +1809,10 @@ void Move_segment(move_state_t *ms)
     }
     else
     {
-        ms->done.x += delta.x;
-        ms->done.y += delta.y;
-        ms->todo.x -= delta.x;
-        ms->todo.y -= delta.y;
+        ms->done.cx += delta.cx;
+        ms->done.cy += delta.cy;
+        ms->todo.cx -= delta.cx;
+        ms->todo.cy -= delta.cy;
     }
 }
 
@@ -1821,6 +1821,8 @@ static void Cannon_dies(move_state_t *ms)
     cannon_t *cannon = World.cannon + ms->cannon;
     int x = (int)cannon->pix_pos.x;
     int y = (int)cannon->pix_pos.y;
+    int cx = cannon->clk_pos.cx;
+    int cy = cannon->clk_pos.cy;
     int killer = -1;
     player_t *pl = NULL;
 
@@ -1829,7 +1831,7 @@ static void Cannon_dies(move_state_t *ms)
     World.block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
     Cannon_throw_items(ms->cannon);
     Cannon_init(ms->cannon);
-    sound_play_sensors(x, y, CANNON_EXPLOSION_SOUND);
+    sound_play_sensors(cx, cy, CANNON_EXPLOSION_SOUND);
     Make_debris(
         /* pos.x, pos.y   */ x, y,
         /* vel.x, vel.y   */ 0.0, 0.0,
@@ -1977,6 +1979,8 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
      */
     x = targ->pos.x;
     y = targ->pos.y;
+    int cx = targ->clk_pos.cx;
+    int cy = targ->clk_pos.cy;
     World.block[x][y] = SPACE;
 
     Make_debris(
@@ -2037,7 +2041,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         return;
     }
 
-    sound_play_sensors(x, y, DESTROY_TARGET_SOUND);
+    sound_play_sensors(cx, cy, DESTROY_TARGET_SOUND);
 
     if (targets_remaining > 0)
     {
@@ -2222,18 +2226,18 @@ void Move_object(object_t *obj)
         mi.phased = 0;
     }
 
-    ms.pos.x = obj->pos.cx;
-    ms.pos.y = obj->pos.cy;
+    ms.pos.cx = obj->pos.cx;
+    ms.pos.cy = obj->pos.cy;
     ms.vel = obj->vel;
-    ms.todo.x = FLOAT_TO_CLICK(ms.vel.x);
-    ms.todo.y = FLOAT_TO_CLICK(ms.vel.y);
+    ms.todo.cx = FLOAT_TO_CLICK(ms.vel.x);
+    ms.todo.cy = FLOAT_TO_CLICK(ms.vel.y);
     ms.dir = obj->missile_dir;
     ms.mip = &mi;
 
     for (;;)
     {
         Move_segment(&ms);
-        if (!(ms.done.x | ms.done.y))
+        if (!(ms.done.cx | ms.done.cy))
         {
             pos_update |= (ms.crash | ms.bounce);
             if (ms.crash)
@@ -2267,8 +2271,8 @@ void Move_object(object_t *obj)
                 }
                 ms.vel.x *= options.objectWallBrakeFactor;
                 ms.vel.y *= options.objectWallBrakeFactor;
-                ms.todo.x = (int)(ms.todo.x * options.objectWallBrakeFactor);
-                ms.todo.y = (int)(ms.todo.y * options.objectWallBrakeFactor);
+                ms.todo.cx = (int)(ms.todo.cx * options.objectWallBrakeFactor);
+                ms.todo.cy = (int)(ms.todo.cy * options.objectWallBrakeFactor);
             }
             if (++nothing_done >= 5)
             {
@@ -2278,35 +2282,27 @@ void Move_object(object_t *obj)
         }
         else
         {
-            ms.pos.x += ms.done.x;
-            ms.pos.y += ms.done.y;
+            ms.pos.cx += ms.done.cx;
+            ms.pos.cy += ms.done.cy;
             nothing_done = 0;
         }
-        if (!(ms.todo.x | ms.todo.y))
+        if (!(ms.todo.cx | ms.todo.cy))
         {
             break;
         }
     }
     if (mi.edge_wrap)
     {
-        if (ms.pos.x < 0)
-        {
-            ms.pos.x += mp.click_width;
-        }
-        if (ms.pos.x >= mp.click_width)
-        {
-            ms.pos.x -= mp.click_width;
-        }
-        if (ms.pos.y < 0)
-        {
-            ms.pos.y += mp.click_height;
-        }
-        if (ms.pos.y >= mp.click_height)
-        {
-            ms.pos.y -= mp.click_height;
-        }
+        if (ms.pos.cx < 0)
+            ms.pos.cx += mp.click_width;
+        if (ms.pos.cx >= mp.click_width)
+            ms.pos.cx -= mp.click_width;
+        if (ms.pos.cy < 0)
+            ms.pos.cy += mp.click_height;
+        if (ms.pos.cy >= mp.click_height)
+            ms.pos.cy -= mp.click_height;
     }
-    Object_position_set_clicks(obj, ms.pos.x, ms.pos.y);
+    Object_position_set_clicks(obj, ms.pos.cx, ms.pos.cy);
     obj->vel = ms.vel;
     obj->missile_dir = ms.dir;
     if (ms.crash)
@@ -2346,38 +2342,38 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
     case CrashWall:
         howfmt = "%s crashed%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashWallSpeed:
         howfmt = "%s smashed%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashWallNoFuel:
         howfmt = "%s smacked%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashWallAngle:
         howfmt = "%s was trashed%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashTarget:
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         Object_hits_target(ms, -1);
         break;
 
     case CrashTreasure:
         howfmt = "%s smashed%s against a treasure";
         hudmsg = "[Treasure]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashCannon:
@@ -2385,7 +2381,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         {
             howfmt = "%s smashed%s against a cannon";
             hudmsg = "[Cannon]";
-            sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_CANNON_SOUND);
+            sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_CANNON_SOUND);
         }
         if (!BIT(World.cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
         {
@@ -2396,13 +2392,13 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
     case CrashUniverse:
         howfmt = "%s left the known universe%s";
         hudmsg = "[Universe]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashUnknown:
         howfmt = "%s slammed%s into a programming error";
         hudmsg = "[Bug]";
-        sound_play_sensors(pl->pos.x, pl->pos.y, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
         break;
     }
 
@@ -2540,14 +2536,14 @@ void Move_player(int ind)
     {
         if (!BIT(pl->status, KILLED | PAUSE))
         {
-            pos.x = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
-            pos.y = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
-            pos.x = WRAP_XCLICK(pos.x);
-            pos.y = WRAP_YCLICK(pos.y);
-            if (pos.x != pl->pos.cx || pos.y != pl->pos.cy)
+            pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
+            pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
+            pos.cx = WRAP_XCLICK(pos.cx);
+            pos.cy = WRAP_YCLICK(pos.cy);
+            if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
             {
                 Player_position_remember(pl);
-                Player_position_set_clicks(pl, pos.x, pos.y);
+                Player_position_set_clicks(pl, pos.cx, pos.cy);
             }
         }
         pl->velocity = VECTOR_LENGTH(pl->vel);
@@ -2586,11 +2582,11 @@ void Move_player(int ind)
         int max = ((dist - 3) * BLOCK_SZ) >> 1;
         if (max >= pl->velocity)
         {
-            pos.x = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
-            pos.y = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
-            pos.x = WRAP_XCLICK(pos.x);
-            pos.y = WRAP_YCLICK(pos.y);
-            Player_position_set_clicks(pl, pos.x, pos.y);
+            pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
+            pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
+            pos.cx = WRAP_XCLICK(pos.cx);
+            pos.cy = WRAP_YCLICK(pos.cy);
+            Player_position_set_clicks(pl, pos.cx, pos.cy);
             pl->velocity = VECTOR_LENGTH(pl->vel);
             return;
         }
@@ -2608,14 +2604,14 @@ void Move_player(int ind)
     mi.phased = BIT(pl->used, HAS_PHASING_DEVICE);
 
     vel = pl->vel;
-    todo.x = FLOAT_TO_CLICK(vel.x);
-    todo.y = FLOAT_TO_CLICK(vel.y);
+    todo.cx = FLOAT_TO_CLICK(vel.x);
+    todo.cy = FLOAT_TO_CLICK(vel.y);
     for (i = 0; i < pl->ship->num_points; i++)
     {
         DFLOAT x = pl->ship->pts[i][pl->dir].x;
         DFLOAT y = pl->ship->pts[i][pl->dir].y;
-        ms[i].pos.x = pl->pos.cx + FLOAT_TO_CLICK(x);
-        ms[i].pos.y = pl->pos.cy + FLOAT_TO_CLICK(y);
+        ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
+        ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
         ms[i].vel = vel;
         ms[i].todo = todo;
         ms[i].dir = pl->dir;
@@ -2625,69 +2621,60 @@ void Move_player(int ind)
 
     for (;; moves_made++)
     {
-
-        pos.x = ms[0].pos.x - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].x);
-        pos.y = ms[0].pos.y - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].y);
-        pos.x = WRAP_XCLICK(pos.x);
-        pos.y = WRAP_YCLICK(pos.y);
-        block.x = pos.x / BLOCK_CLICKS;
-        block.y = pos.y / BLOCK_CLICKS;
+        pos.cx = ms[0].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].x);
+        pos.cy = ms[0].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].y);
+        pos.cx = WRAP_XCLICK(pos.cx);
+        pos.cy = WRAP_YCLICK(pos.cy);
+        block.x = pos.cx / BLOCK_CLICKS;
+        block.y = pos.cy / BLOCK_CLICKS;
 
         if (walldist[block.x][block.y] > 3)
         {
             int maxcl = ((walldist[block.x][block.y] - 3) * BLOCK_CLICKS) >> 1;
             todo = ms[0].todo;
-            sign.x = (todo.x < 0) ? -1 : 1;
-            sign.y = (todo.y < 0) ? -1 : 1;
-            if (maxcl >= sign.x * todo.x && maxcl >= sign.y * todo.y)
+            sign.x = (todo.cx < 0) ? -1 : 1;
+            sign.y = (todo.cy < 0) ? -1 : 1;
+            if (maxcl >= sign.x * todo.cx && maxcl >= sign.y * todo.cy)
             {
                 /* entire movement is possible. */
-                done.x = todo.x;
-                done.y = todo.y;
+                done.cx = todo.cx;
+                done.cy = todo.cy;
             }
-            else if (sign.x * todo.x > sign.y * todo.y)
+            else if (sign.x * todo.cx > sign.y * todo.cy)
             {
                 /* horizontal movement. */
-                done.x = sign.x * maxcl;
-                done.y = todo.y * maxcl / (sign.x * todo.x);
+                done.cx = sign.x * maxcl;
+                done.cy = todo.cy * maxcl / (sign.x * todo.cx);
             }
             else
             {
                 /* vertical movement. */
-                done.x = todo.x * maxcl / (sign.y * todo.y);
-                done.y = sign.y * maxcl;
+                done.cx = todo.cx * maxcl / (sign.y * todo.cy);
+                done.cy = sign.y * maxcl;
             }
-            todo.x -= done.x;
-            todo.y -= done.y;
+            todo.cx -= done.cx;
+            todo.cy -= done.cy;
             for (i = 0; i < pl->ship->num_points; i++)
             {
-                ms[i].pos.x += done.x;
-                ms[i].pos.y += done.y;
+                ms[i].pos.cx += done.cx;
+                ms[i].pos.cy += done.cy;
                 ms[i].todo = todo;
                 ms[i].crash = NotACrash;
                 ms[i].bounce = NotABounce;
                 if (mi.edge_wrap)
                 {
-                    if (ms[i].pos.x < 0)
-                    {
-                        ms[i].pos.x += mp.click_width;
-                    }
-                    else if (ms[i].pos.x >= mp.click_width)
-                    {
-                        ms[i].pos.x -= mp.click_width;
-                    }
-                    if (ms[i].pos.y < 0)
-                    {
-                        ms[i].pos.y += mp.click_height;
-                    }
-                    else if (ms[i].pos.y >= mp.click_height)
-                    {
-                        ms[i].pos.y -= mp.click_height;
-                    }
+                    if (ms[i].pos.cx < 0)
+                        ms[i].pos.cx += mp.click_width;
+                    else if (ms[i].pos.cx >= mp.click_width)
+                        ms[i].pos.cx -= mp.click_width;
+                    if (ms[i].pos.cy < 0)
+                        ms[i].pos.cy += mp.click_height;
+                    else if (ms[i].pos.cy >= mp.click_height)
+                        ms[i].pos.cy -= mp.click_height;
                 }
             }
             nothing_done = 0;
-            if (!(todo.x | todo.y))
+            if (!(todo.cx | todo.cy))
             {
                 break;
             }
@@ -2765,8 +2752,8 @@ void Move_player(int ind)
 
                 ms[worst].vel.x *= options.playerWallBrakeFactor;
                 ms[worst].vel.y *= options.playerWallBrakeFactor;
-                ms[worst].todo.x = (int)(ms[worst].todo.x * options.playerWallBrakeFactor);
-                ms[worst].todo.y = (int)(ms[worst].todo.y * options.playerWallBrakeFactor);
+                ms[worst].todo.cx = (int)(ms[worst].todo.cx * options.playerWallBrakeFactor);
+                ms[worst].todo.cy = (int)(ms[worst].todo.cy * options.playerWallBrakeFactor);
 
                 /* only use armor if neccessary */
                 if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
@@ -2885,8 +2872,7 @@ void Move_player(int ind)
                         /* min,max dir    */ wall_dir - (RES / 4), wall_dir + (RES / 4),
                         /* min,max speed  */ 20, 20 + (intensity >> 2),
                         /* min,max life   */ 10, 10 + (intensity >> 1));
-                    sound_play_sensors(pl->pos.x, pl->pos.y,
-                                       PLAYER_BOUNCED_SOUND);
+                    sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_BOUNCED_SOUND);
                     if (ms[worst].target >= 0)
                     {
                         cost <<= FUEL_SCALE_BITS;
@@ -2900,8 +2886,8 @@ void Move_player(int ind)
         {
             for (i = 0; i < pl->ship->num_points; i++)
             {
-                r[i].x = (vel.x) ? (DFLOAT)ms[i].todo.x / vel.x : 0;
-                r[i].y = (vel.y) ? (DFLOAT)ms[i].todo.y / vel.y : 0;
+                r[i].x = (vel.x) ? (DFLOAT)ms[i].todo.cx / vel.x : 0;
+                r[i].y = (vel.y) ? (DFLOAT)ms[i].todo.cy / vel.y : 0;
                 r[i].x = ABS(r[i].x);
                 r[i].y = ABS(r[i].y);
             }
@@ -2915,7 +2901,7 @@ void Move_player(int ind)
             }
         }
 
-        if (!(ms[worst].done.x | ms[worst].done.y))
+        if (!(ms[worst].done.cx | ms[worst].done.cy))
         {
             if (++nothing_done >= 5)
             {
@@ -2926,10 +2912,10 @@ void Move_player(int ind)
         else
         {
             nothing_done = 0;
-            ms[worst].pos.x += ms[worst].done.x;
-            ms[worst].pos.y += ms[worst].done.y;
+            ms[worst].pos.cx += ms[worst].done.cx;
+            ms[worst].pos.cy += ms[worst].done.cy;
         }
-        if (!(ms[worst].todo.x | ms[worst].todo.y))
+        if (!(ms[worst].todo.cx | ms[worst].todo.cy))
         {
             break;
         }
@@ -2939,8 +2925,8 @@ void Move_player(int ind)
         {
             if (i != worst)
             {
-                ms[i].pos.x += ms[worst].done.x;
-                ms[i].pos.y += ms[worst].done.y;
+                ms[i].pos.cx += ms[worst].done.cx;
+                ms[i].pos.cy += ms[worst].done.cy;
                 ms[i].vel = vel;
                 ms[i].todo = ms[worst].todo;
                 ms[i].dir = ms[worst].dir;
@@ -2948,11 +2934,11 @@ void Move_player(int ind)
         }
     }
 
-    pos.x = ms[worst].pos.x - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
-    pos.y = ms[worst].pos.y - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
-    pos.x = WRAP_XCLICK(pos.x);
-    pos.y = WRAP_YCLICK(pos.y);
-    Player_position_set_clicks(pl, pos.x, pos.y);
+    pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
+    pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
+    pos.cx = WRAP_XCLICK(pos.cx);
+    pos.cy = WRAP_YCLICK(pos.cy);
+    Player_position_set_clicks(pl, pos.cx, pos.cy);
     pl->vel = ms[worst].vel;
     pl->velocity = VECTOR_LENGTH(pl->vel);
 
@@ -3028,68 +3014,68 @@ void Turn_player(int ind)
                                                        : 0;
 #endif
 
-    pos.x = pl->pos.cx;
-    pos.y = pl->pos.cy;
+    pos.cx = pl->pos.cx;
+    pos.cy = pl->pos.cy;
     for (; pl->dir != new_dir; turns_done++)
     {
         dir = MOD2(pl->dir + sign, RES);
         if (!mi.edge_wrap)
         {
-            if (pos.x <= 22 * CLICK)
+            if (pos.cx <= 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.x + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) < 0)
+                    if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) < 0)
                     {
-                        pos.x = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
+                        pos.cx = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
                     }
                 }
             }
-            if (pos.x >= mp.click_width - 22 * CLICK)
+            if (pos.cx >= mp.click_width - 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.x + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) >= mp.click_width)
+                    if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) >= mp.click_width)
                     {
-                        pos.x = mp.click_width - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
+                        pos.cx = mp.click_width - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
                     }
                 }
             }
-            if (pos.y <= 22 * CLICK)
+            if (pos.cy <= 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.y + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) < 0)
+                    if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) < 0)
                     {
-                        pos.y = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
+                        pos.cy = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
                     }
                 }
             }
-            if (pos.y >= mp.click_height - 22 * CLICK)
+            if (pos.cy >= mp.click_height - 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.y + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) >= mp.click_height)
+                    if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) >= mp.click_height)
                     {
-                        pos.y = mp.click_height - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
+                        pos.cy = mp.click_height - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
                     }
                 }
             }
-            if (pos.x != pl->pos.cx || pos.y != pl->pos.cy)
+            if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
             {
-                Player_position_set_clicks(pl, pos.x, pos.y);
+                Player_position_set_clicks(pl, pos.cx, pos.cy);
             }
         }
 
         for (i = 0; i < pl->ship->num_points; i++)
         {
             ms[i].mip = &mi;
-            ms[i].pos.x = pos.x + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
-            ms[i].pos.y = pos.y + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].y);
-            ms[i].todo.x = pos.x + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) - ms[i].pos.x;
-            ms[i].todo.y = pos.y + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) - ms[i].pos.y;
-            ms[i].vel.x = ms[i].todo.x + salt.x;
-            ms[i].vel.y = ms[i].todo.y + salt.y;
+            ms[i].pos.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
+            ms[i].pos.cy = pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].y);
+            ms[i].todo.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) - ms[i].pos.cx;
+            ms[i].todo.cy = pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) - ms[i].pos.cy;
+            ms[i].vel.x = ms[i].todo.cx + salt.x;
+            ms[i].vel.y = ms[i].todo.cy + salt.y;
             ms[i].target = -1;
 
             do
@@ -3119,13 +3105,13 @@ void Turn_player(int ind)
                         break;
                     }
                 }
-                else if (ms[i].done.x | ms[i].done.y)
+                else if (ms[i].done.cx | ms[i].done.cy)
                 {
-                    ms[i].pos.x += ms[i].done.x;
-                    ms[i].pos.y += ms[i].done.y;
+                    ms[i].pos.cx += ms[i].done.cx;
+                    ms[i].pos.cy += ms[i].done.cy;
                     nothing_done = 0;
                 }
-            } while (ms[i].todo.x | ms[i].todo.y);
+            } while (ms[i].todo.cx | ms[i].todo.cy);
             if (blocked)
             {
                 break;

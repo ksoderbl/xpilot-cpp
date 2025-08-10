@@ -127,7 +127,7 @@ void Phasing(int ind, int on)
             pl->ball = NULL;
         CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
         CLR_BIT(pl->status, GRAVITY);
-        sound_play_sensors(pl->pos.x, pl->pos.y, PHASING_ON_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PHASING_ON_SOUND);
     }
     else
     {
@@ -138,7 +138,7 @@ void Phasing(int ind, int on)
                 CLR_BIT(pl->have, HAS_PHASING_DEVICE);
         }
         SET_BIT(pl->status, GRAVITY);
-        sound_play_sensors(pl->pos.x, pl->pos.y, PHASING_OFF_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, PHASING_OFF_SOUND);
     }
 }
 
@@ -254,7 +254,7 @@ void Emergency_thrust(int ind, int on)
         if (!BIT(pl->used, HAS_EMERGENCY_THRUST))
         {
             SET_BIT(pl->used, HAS_EMERGENCY_THRUST);
-            sound_play_sensors(pl->pos.x, pl->pos.y, EMERGENCY_THRUST_ON_SOUND);
+            sound_play_sensors(pl->pos.cx, pl->pos.cy, EMERGENCY_THRUST_ON_SOUND);
         }
     }
     else
@@ -262,7 +262,7 @@ void Emergency_thrust(int ind, int on)
         if (BIT(pl->used, HAS_EMERGENCY_THRUST))
         {
             CLR_BIT(pl->used, HAS_EMERGENCY_THRUST);
-            sound_play_sensors(pl->pos.x, pl->pos.y, EMERGENCY_THRUST_OFF_SOUND);
+            sound_play_sensors(pl->pos.cx, pl->pos.cy, EMERGENCY_THRUST_OFF_SOUND);
         }
         if (pl->emergency_thrust_left <= 0)
         {
@@ -296,7 +296,7 @@ void Emergency_shield(int ind, int on)
                 if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
                 {
                     SET_BIT(pl->used, HAS_EMERGENCY_SHIELD);
-                    sound_play_sensors(pl->pos.x, pl->pos.y,
+                    sound_play_sensors(pl->pos.cx, pl->pos.cy,
                                        EMERGENCY_SHIELD_ON_SOUND);
                 }
             }
@@ -317,7 +317,7 @@ void Emergency_shield(int ind, int on)
         if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         {
             CLR_BIT(pl->used, HAS_EMERGENCY_SHIELD);
-            sound_play_sensors(pl->pos.x, pl->pos.y,
+            sound_play_sensors(pl->pos.cx, pl->pos.cy,
                                EMERGENCY_SHIELD_OFF_SOUND);
         }
     }
@@ -342,7 +342,7 @@ void Autopilot(int ind, int on)
         pl->power = (MIN_PLAYER_POWER + MAX_PLAYER_POWER) / 2.0;
         pl->turnspeed = (MIN_PLAYER_TURNSPEED + MAX_PLAYER_TURNSPEED) / 2.0;
         pl->turnresistance = 0.2;
-        sound_play_sensors(pl->pos.x, pl->pos.y, AUTOPILOT_ON_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, AUTOPILOT_ON_SOUND);
     }
     else
     {
@@ -351,7 +351,7 @@ void Autopilot(int ind, int on)
         pl->turnspeed = pl->auto_turnspeed_s;
         pl->turnresistance = pl->auto_turnresistance_s;
         CLR_BIT(pl->used, HAS_AUTOPILOT);
-        sound_play_sensors(pl->pos.x, pl->pos.y, AUTOPILOT_OFF_SOUND);
+        sound_play_sensors(pl->pos.cx, pl->pos.cy, AUTOPILOT_OFF_SOUND);
     }
 }
 
@@ -750,8 +750,7 @@ void Update_objects(void)
             if (--cannon->emergency_shield_left <= 0)
             {
                 CLR_BIT(cannon->used, HAS_EMERGENCY_SHIELD);
-                sound_play_sensors(cannon->pix_pos.x, cannon->pix_pos.y,
-                                   EMERGENCY_SHIELD_OFF_SOUND);
+                sound_play_sensors(cannon->clk_pos.cx, cannon->clk_pos.cy, EMERGENCY_SHIELD_OFF_SOUND);
             }
         }
         if (cannon->phasing_left > 0)
@@ -759,8 +758,7 @@ void Update_objects(void)
             if (--cannon->phasing_left <= 0)
             {
                 CLR_BIT(cannon->used, HAS_PHASING_DEVICE);
-                sound_play_sensors(cannon->pix_pos.x, cannon->pix_pos.y,
-                                   PHASING_OFF_SOUND);
+                sound_play_sensors(cannon->clk_pos.cx, cannon->clk_pos.cy, PHASING_OFF_SOUND);
             }
         }
     }
@@ -1261,7 +1259,7 @@ void Update_objects(void)
 #endif /* RANDOM_REAR_WORM */
                 }
 
-                sound_play_sensors(pl->pos.x, pl->pos.y, WORM_HOLE_SOUND);
+                sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
 
                 w.x = (World.wormHoles[j].pos.x + 0.5) * BLOCK_SZ;
                 w.y = (World.wormHoles[j].pos.y + 0.5) * BLOCK_SZ;
@@ -1293,7 +1291,7 @@ void Update_objects(void)
                                        (int)(w.y / BLOCK_SZ));
                 }
                 j = -2;
-                sound_play_sensors(pl->pos.x, pl->pos.y, HYPERJUMP_SOUND);
+                sound_play_sensors(pl->pos.cx, pl->pos.cy, HYPERJUMP_SOUND);
             }
 
             /*
@@ -1354,7 +1352,7 @@ void Update_objects(void)
             CLR_BIT(pl->status, WARPING);
             SET_BIT(pl->status, WARPED);
 
-            sound_play_sensors(pl->pos.x, pl->pos.y, WORM_HOLE_SOUND);
+            sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
         }
 
         if (!BIT(pl->status, PAUSE))

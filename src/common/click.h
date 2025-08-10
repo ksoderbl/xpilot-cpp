@@ -69,12 +69,12 @@ typedef int click_t;
 
 typedef struct
 {
-    click_t x, y;
+    click_t cx, cy;
 } clpos_t;
 
 typedef struct
 {
-    click_t x, y;
+    click_t cx, cy;
 } clvec_t;
 
 #endif

@@ -2027,8 +2027,7 @@ void Detach_ball(int ind, int obj)
             CLR_BIT(Players[ind]->have, HAS_BALL);
         else
         {
-            sound_play_sensors(Players[ind]->pos.x, Players[ind]->pos.y,
-                               DROP_BALL_SOUND);
+            sound_play_sensors(Players[ind]->pos.cx, Players[ind]->pos.cy, DROP_BALL_SOUND);
         }
     }
 }

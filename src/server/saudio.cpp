@@ -22,8 +22,10 @@
  */
 /* This piece of code was provided by Greg Renda (greg@ncd.com). */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+
+#include "click.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -51,7 +53,7 @@ typedef struct _AudioQRec
     struct _AudioQRec *next;
 } AudioQRec, *AudioQPtr;
 
-static void queue_audio(player_t *ppl, int index, int volume)
+static void queue_audio(player_t *pl, int index, int volume)
 {
     AudioQPtr a, p, prev;
 
@@ -85,16 +87,11 @@ static void queue_audio(player_t *ppl, int index, int volume)
         pl->audio = (void *)a;
 }
 
-int sound_player_init(player_t *ppl)
+int sound_player_init(player_t *pl)
 {
-    SDBG(printf("sound_player_init %p\n", pl);)
+    SDBG(printf("sound_player_init %p\n", pl));
 
     pl->audio = NULL;
-
-    if (pl->version < 0x3250)
-    {
-        SET_BIT(pl->status, WANT_AUDIO);
-    }
 
     return 0;
 }
@@ -105,7 +102,7 @@ int sound_player_init(player_t *ppl)
  */
 void sound_player_onoff(player_t *pl, bool on)
 {
-    SDBG(printf("sound_player_onoff %p, %d\n", pl, on);)
+    SDBG(printf("sound_player_onoff %p, %d\n", pl, on));
 
     if (on)
     {
@@ -124,9 +121,9 @@ void sound_player_onoff(player_t *pl, bool on)
 /*
  * Play a sound for a player.
  */
-void sound_play_player(player_t *ppl, int index)
+void sound_play_player(player_t *pl, int index)
 {
-    SDBG(printf("sound_play_player %p, %d\n", pl, index);)
+    SDBG(printf("sound_play_player %p, %d\n", pl, index));
 
     if (BIT(pl->status, WANT_AUDIO))
     {
@@ -141,7 +138,7 @@ void sound_play_all(int index)
 {
     int i;
 
-    SDBG(printf("sound_play_all %d\n", index);)
+    SDBG(printf("sound_play_all %d\n", index));
 
     for (i = 0; i < NumPlayers; i++)
     {
@@ -158,7 +155,7 @@ void sound_play_all(int index)
  * is what the player can see on the screen. A volume is assigned to the
  * sound depending on the location within the sound range.
  */
-void sound_play_sensors(DFLOAT x, DFLOAT y, int index)
+void sound_play_sensors(int cx, int cy, int index)
 {
     int i,
         volume;
@@ -166,9 +163,9 @@ void sound_play_sensors(DFLOAT x, DFLOAT y, int index)
         dy,
         range,
         factor;
-    player_t *ppl;
+    player_t *pl;
 
-    SDBG(printf("sound_play_sensors %g, %g, %d\n", x, y, index);)
+    SDBG(printf("sound_play_sensors %g, %g, %d\n", x, y, index));
 
     for (i = 0; i < NumPlayers; i++)
     {
@@ -177,8 +174,10 @@ void sound_play_sensors(DFLOAT x, DFLOAT y, int index)
         if (!BIT(pl->status, WANT_AUDIO))
             continue;
 
-        dx = ABS(pl->pos.x - x);
-        dy = ABS(pl->pos.y - y);
+        int dcx = ABS(pl->pos.cx - cx);
+        int dcy = ABS(pl->pos.cy - cy);
+        dx = CLICK_TO_FLOAT(dcx);
+        dy = CLICK_TO_FLOAT(dcy);
         range = sound_range(pl);
 
         if (dx >= 0 && dx <= range && dy >= 0 && dy <= range)
@@ -194,12 +193,12 @@ void sound_play_sensors(DFLOAT x, DFLOAT y, int index)
     }
 }
 
-void sound_play_queued(player_t *ppl)
+void sound_play_queued(player_t *pl)
 {
     AudioQPtr p,
         n;
 
-    SDBG(printf("sound_play_sensors %p\n", pl);)
+    SDBG(printf("sound_play_sensors %p\n", pl));
 
     p = (AudioQPtr)pl->audio;
     pl->audio = NULL;
@@ -213,12 +212,12 @@ void sound_play_queued(player_t *ppl)
     }
 }
 
-void sound_close(player_t *ppl)
+void sound_close(player_t *pl)
 {
     AudioQPtr p,
         n;
 
-    SDBG(printf("sound_close %p\n", pl);)
+    SDBG(printf("sound_close %p\n", pl));
 
     p = (AudioQPtr)pl->audio;
     pl->audio = NULL;
