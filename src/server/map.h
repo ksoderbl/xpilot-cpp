@@ -108,14 +108,14 @@ typedef struct
 
 typedef struct
 {
-    ipos_t pos;
+    ipos_t blk_pos;
     clpos_t clk_pos;
     DFLOAT force;
 } grav_t;
 
 typedef struct
 {
-    ipos_t pos;
+    ipos_t blk_pos;
     clpos_t clk_pos;
     int dir;
     unsigned short team;
@@ -177,7 +177,7 @@ typedef enum
 
 typedef struct
 {
-    ipos_t pos;
+    ipos_t blk_pos;
     clpos_t clk_pos;
     int lastdest,   /* last destination wormhole */
         countdown;  /* if >0 warp to lastdest else random */
@@ -189,7 +189,7 @@ typedef struct
 
 typedef struct
 {
-    ipos_t pos;
+    ipos_t blk_pos;
     clpos_t clk_pos;
     bool have;           /* true if this treasure has ball in it */
     unsigned short team; /* team of this treasure */
@@ -199,7 +199,7 @@ typedef struct
 
 typedef struct
 {
-    ipos_t pos;
+    ipos_t blk_pos;
     clpos_t clk_pos;
     unsigned short team;
     int dead_time;
@@ -222,7 +222,8 @@ typedef struct
 
 typedef struct
 {
-    ipos_t pos;
+    ipos_t blk_pos;
+    clpos_t clk_pos;
 } item_concentrator_t, asteroid_concentrator_t;
 
 typedef struct

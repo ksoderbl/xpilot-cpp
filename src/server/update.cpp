@@ -85,8 +85,8 @@ static void Transport_to_home(int ind)
     }
     else
     {
-        bx = (World.base[pl->home_base].pos.x + 0.5) * BLOCK_SZ;
-        by = (World.base[pl->home_base].pos.y + 0.5) * BLOCK_SZ;
+        bx = (World.base[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
+        by = (World.base[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pos.x);
     dy = WRAP_DY(by - pl->pos.y);
@@ -772,7 +772,7 @@ void Update_objects(void)
         {
             if (!--World.targets[i].dead_time)
             {
-                World.block[World.targets[i].pos.x][World.targets[i].pos.y] = TARGET;
+                World.block[World.targets[i].blk_pos.x][World.targets[i].blk_pos.y] = TARGET;
                 World.targets[i].conn_mask = 0;
                 World.targets[i].update_mask = (unsigned)-1;
                 World.targets[i].last_change = frame_loops;
@@ -785,8 +785,8 @@ void Update_objects(void)
                     {
                         if (World.targets[j].team == team)
                         {
-                            World.block[World.targets[j].pos.x]
-                                       [World.targets[j].pos.y] = TARGET;
+                            World.block[World.targets[j].blk_pos.x]
+                                       [World.targets[j].blk_pos.y] = TARGET;
                             World.targets[j].conn_mask = 0;
                             World.targets[j].update_mask = (unsigned)-1;
                             World.targets[j].last_change = frame_loops;
@@ -1103,8 +1103,8 @@ void Update_objects(void)
         if (BIT(pl->used, HAS_REPAIR))
         {
             target_t *targ = &World.targets[pl->repair_target];
-            DFLOAT x = (targ->pos.x + 0.5) * BLOCK_SZ;
-            DFLOAT y = (targ->pos.y + 0.5) * BLOCK_SZ;
+            DFLOAT x = (targ->blk_pos.x + 0.5) * BLOCK_SZ;
+            DFLOAT y = (targ->blk_pos.y + 0.5) * BLOCK_SZ;
             if (Wrap_length(pl->pos.x - x, pl->pos.y - y) > 90.0 || targ->damage >= TARGET_DAMAGE || targ->dead_time > 0 || BIT(pl->used, HAS_PHASING_DEVICE))
             {
                 CLR_BIT(pl->used, HAS_REPAIR);
@@ -1215,11 +1215,11 @@ void Update_objects(void)
                         if (j == pl->wormHoleHit || World.wormHoles[j].type == WORM_IN || World.wormHoles[j].temporary)
                             continue;
 
-                        wx = (World.wormHoles[j].pos.x -
-                              World.wormHoles[pl->wormHoleHit].pos.x) *
+                        wx = (World.wormHoles[j].blk_pos.x -
+                              World.wormHoles[pl->wormHoleHit].blk_pos.x) *
                              BLOCK_SZ;
-                        wy = (World.wormHoles[j].pos.y -
-                              World.wormHoles[pl->wormHoleHit].pos.y) *
+                        wy = (World.wormHoles[j].blk_pos.y -
+                              World.wormHoles[pl->wormHoleHit].blk_pos.y) *
                              BLOCK_SZ;
                         wx = WRAP_DX(wx);
                         wy = WRAP_DX(wy);
@@ -1261,8 +1261,8 @@ void Update_objects(void)
 
                 sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
 
-                w.x = (World.wormHoles[j].pos.x + 0.5) * BLOCK_SZ;
-                w.y = (World.wormHoles[j].pos.y + 0.5) * BLOCK_SZ;
+                w.x = (World.wormHoles[j].blk_pos.x + 0.5) * BLOCK_SZ;
+                w.y = (World.wormHoles[j].blk_pos.y + 0.5) * BLOCK_SZ;
             }
             else
             { /* wormHoleHit == -1 */

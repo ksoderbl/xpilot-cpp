@@ -213,8 +213,8 @@ void Place_general_mine(int ind, unsigned short team, long status,
             {
                 if (i != ind && !Team_immune(Players[i]->id, pl->id) && !IS_TANK_IND(i))
                 {
-                    int dx = (int)(x / BLOCK_SZ - World.base[Players[i]->home_base].pos.x);
-                    int dy = (int)(y / BLOCK_SZ - World.base[Players[i]->home_base].pos.y);
+                    int dx = (int)(x / BLOCK_SZ - World.base[Players[i]->home_base].blk_pos.x);
+                    int dy = (int)(y / BLOCK_SZ - World.base[Players[i]->home_base].blk_pos.y);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -357,8 +357,8 @@ void Make_treasure_ball(int treasure)
 {
     ballobject_t *ball;
     treasure_t *t = &(World.treasures[treasure]);
-    DFLOAT x = (t->pos.x + 0.5) * BLOCK_SZ,
-           y = (t->pos.y * BLOCK_SZ) + 10;
+    DFLOAT x = (t->blk_pos.x + 0.5) * BLOCK_SZ,
+           y = (t->blk_pos.y * BLOCK_SZ) + 10;
 
     if (t->empty)
         return;

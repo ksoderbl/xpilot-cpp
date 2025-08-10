@@ -394,8 +394,8 @@ static void Place_asteroid(void)
         {
             dir = (int)(rfrac() * RES);
             dist = (int)(rfrac() * ((options.asteroidConcentratorRadius * BLOCK_SZ) + 1));
-            px = (int)((con->pos.x + 0.5) * BLOCK_SZ + dist * tcos(dir));
-            py = (int)((con->pos.y + 0.5) * BLOCK_SZ + dist * tsin(dir));
+            px = (int)((con->blk_pos.x + 0.5) * BLOCK_SZ + dist * tcos(dir));
+            py = (int)((con->blk_pos.y + 0.5) * BLOCK_SZ + dist * tsin(dir));
 
             if (BIT(World.rules->mode, WRAP_PLAY))
             {

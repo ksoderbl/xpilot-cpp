@@ -696,8 +696,9 @@ bool Grok_map(void)
                 case '^':
                     line[y] = TREASURE;
                     itemID[y] = World.NumTreasures;
-                    World.treasures[World.NumTreasures].pos.x = x;
-                    World.treasures[World.NumTreasures].pos.y = y;
+                    World.treasures[World.NumTreasures].blk_pos.x = x;
+                    World.treasures[World.NumTreasures].blk_pos.y = y;
+                    // TODO clk_pos
                     World.treasures[World.NumTreasures].have = false;
                     World.treasures[World.NumTreasures].destroyed = 0;
                     World.treasures[World.NumTreasures].empty = (c == '^');
@@ -711,8 +712,9 @@ bool Grok_map(void)
                 case '!':
                     line[y] = TARGET;
                     itemID[y] = World.NumTargets;
-                    World.targets[World.NumTargets].pos.x = x;
-                    World.targets[World.NumTargets].pos.y = y;
+                    World.targets[World.NumTargets].blk_pos.x = x;
+                    World.targets[World.NumTargets].blk_pos.y = y;
+                    // TODO clk_pos
                     /*
                      * Determining which team it belongs to is done later,
                      * in Find_closest_team().
@@ -728,15 +730,17 @@ bool Grok_map(void)
                 case '%':
                     line[y] = ITEM_CONCENTRATOR;
                     itemID[y] = World.NumItemConcentrators;
-                    World.itemConcentrators[World.NumItemConcentrators].pos.x = x;
-                    World.itemConcentrators[World.NumItemConcentrators].pos.y = y;
+                    World.itemConcentrators[World.NumItemConcentrators].blk_pos.x = x;
+                    World.itemConcentrators[World.NumItemConcentrators].blk_pos.y = y;
+                    // TODO clk_pos
                     World.NumItemConcentrators++;
                     break;
                 case '&':
                     line[y] = ASTEROID_CONCENTRATOR;
                     itemID[y] = World.NumAsteroidConcs;
-                    World.asteroidConcs[World.NumAsteroidConcs].pos.x = x;
-                    World.asteroidConcs[World.NumAsteroidConcs].pos.y = y;
+                    World.asteroidConcs[World.NumAsteroidConcs].blk_pos.x = x;
+                    World.asteroidConcs[World.NumAsteroidConcs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.NumAsteroidConcs++;
                     break;
                 case '$':
@@ -755,8 +759,9 @@ bool Grok_map(void)
                 case '9':
                     line[y] = BASE;
                     itemID[y] = World.NumBases;
-                    World.base[World.NumBases].pos.x = x;
-                    World.base[World.NumBases].pos.y = y;
+                    World.base[World.NumBases].blk_pos.x = x;
+                    World.base[World.NumBases].blk_pos.y = y;
+                    // TODO clk_pos
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
@@ -788,64 +793,72 @@ bool Grok_map(void)
                 case '+':
                     line[y] = POS_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case '-':
                     line[y] = NEG_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case '>':
                     line[y] = CWISE_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case '<':
                     line[y] = ACWISE_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case 'i':
                     line[y] = UP_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case 'm':
                     line[y] = DOWN_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case 'k':
                     line[y] = RIGHT_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
                 case 'j':
                     line[y] = LEFT_GRAV;
                     itemID[y] = World.NumGravs;
-                    World.grav[World.NumGravs].pos.x = x;
-                    World.grav[World.NumGravs].pos.y = y;
+                    World.grav[World.NumGravs].blk_pos.x = x;
+                    World.grav[World.NumGravs].blk_pos.y = y;
+                    // TODO clk_pos
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -853,8 +866,9 @@ bool Grok_map(void)
                 case '@':
                 case '(':
                 case ')':
-                    World.wormHoles[World.NumWormholes].pos.x = x;
-                    World.wormHoles[World.NumWormholes].pos.y = y;
+                    World.wormHoles[World.NumWormholes].blk_pos.x = x;
+                    World.wormHoles[World.NumWormholes].blk_pos.y = y;
+                    // TODO clk_pos
                     World.wormHoles[World.NumWormholes].countdown = 0;
                     World.wormHoles[World.NumWormholes].lastdest = -1;
                     World.wormHoles[World.NumWormholes].temporary = 0;
@@ -958,11 +972,11 @@ bool Grok_map(void)
             for (i = 0; i < World.NumWormholes; i++)
             {
                 World.block
-                    [World.wormHoles[i].pos.x]
-                    [World.wormHoles[i].pos.y] = SPACE;
+                    [World.wormHoles[i].blk_pos.x]
+                    [World.wormHoles[i].blk_pos.y] = SPACE;
                 World.itemID
-                    [World.wormHoles[i].pos.x]
-                    [World.wormHoles[i].pos.y] = (unsigned short)-1;
+                    [World.wormHoles[i].blk_pos.x]
+                    [World.wormHoles[i].blk_pos.y] = (unsigned short)-1;
             }
             World.NumWormholes = 0;
         }
@@ -993,8 +1007,8 @@ bool Grok_map(void)
             unsigned short team = TEAM_NOT_SET;
             for (i = 0; i < World.NumTreasures; i++)
             {
-                team = Find_closest_team(World.treasures[i].pos.x,
-                                         World.treasures[i].pos.y);
+                team = Find_closest_team(World.treasures[i].blk_pos.x,
+                                         World.treasures[i].blk_pos.y);
                 World.treasures[i].team = team;
                 if (team == TEAM_NOT_SET)
                 {
@@ -1015,8 +1029,7 @@ bool Grok_map(void)
             }
             for (i = 0; i < World.NumTargets; i++)
             {
-                team = Find_closest_team(World.targets[i].pos.x,
-                                         World.targets[i].pos.y);
+                team = Find_closest_team(World.targets[i].blk_pos.x, World.targets[i].blk_pos.y);
                 if (team == TEAM_NOT_SET)
                 {
                     xperror("Couldn't find a matching team for the target.");
@@ -1027,8 +1040,7 @@ bool Grok_map(void)
             {
                 for (i = 0; i < World.NumCannons; i++)
                 {
-                    team = Find_closest_team(World.cannon[i].blk_pos.x,
-                                             World.cannon[i].blk_pos.y);
+                    team = Find_closest_team(World.cannon[i].blk_pos.x, World.cannon[i].blk_pos.y);
                     if (team == TEAM_NOT_SET)
                     {
                         xperror("Couldn't find a matching team for the cannon.");
@@ -1112,8 +1124,8 @@ void Find_base_direction(void)
 
     for (i = 0; i < World.NumBases; i++)
     {
-        int x = World.base[i].pos.x,
-            y = World.base[i].pos.y,
+        int x = World.base[i].blk_pos.x,
+            y = World.base[i].blk_pos.y,
             dir,
             att;
         double dx = World.gravity[x][y].x,
@@ -1223,8 +1235,8 @@ unsigned short Find_closest_team(int posx, int posy)
         if (World.base[i].team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length((posx - World.base[i].pos.x) * BLOCK_SZ,
-                        (posy - World.base[i].pos.y) * BLOCK_SZ);
+        l = Wrap_length((posx - World.base[i].blk_pos.x) * BLOCK_SZ,
+                        (posy - World.base[i].blk_pos.y) * BLOCK_SZ);
 
         if (l < closest)
         {
@@ -1267,8 +1279,8 @@ static void Find_base_order(void)
     cy = World.check[0].y * BLOCK_SZ;
     for (i = 0; i < n; i++)
     {
-        dist = Wrap_length(World.base[i].pos.x * BLOCK_SZ - cx,
-                           World.base[i].pos.y * BLOCK_SZ - cy);
+        dist = Wrap_length(World.base[i].blk_pos.x * BLOCK_SZ - cx,
+                           World.base[i].blk_pos.y * BLOCK_SZ - cy);
         for (j = 0; j < i; j++)
         {
             if (World.baseorder[j].dist > dist)
@@ -1402,26 +1414,18 @@ static void Compute_local_gravity(void)
     }
     for (g = 0; g < World.NumGravs; g++)
     {
-        gx = World.grav[g].pos.x;
-        gy = World.grav[g].pos.y;
+        gx = World.grav[g].blk_pos.x;
+        gy = World.grav[g].blk_pos.y;
         force = World.grav[g].force;
 
         if ((first_xi = gx - GRAV_RANGE) < min_xi)
-        {
             first_xi = min_xi;
-        }
         if ((last_xi = gx + GRAV_RANGE) > max_xi)
-        {
             last_xi = max_xi;
-        }
         if ((first_yi = gy - GRAV_RANGE) < min_yi)
-        {
             first_yi = min_yi;
-        }
         if ((last_yi = gy + GRAV_RANGE) > max_yi)
-        {
             last_yi = max_yi;
-        }
         gtype = World.block[gx][gy];
         mod_xi = (first_xi < 0) ? (first_xi + World.x) : first_xi;
         dx = gx - first_xi;
@@ -1528,10 +1532,10 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     }
     World.wormHoles = wwhtemp;
 
-    inhole.pos.x = xin;
-    inhole.pos.y = yin;
-    outhole.pos.x = xout;
-    outhole.pos.y = yout;
+    inhole.blk_pos.x = xin;
+    inhole.blk_pos.y = yin;
+    outhole.blk_pos.x = xout;
+    outhole.blk_pos.y = yout;
     inhole.countdown = outhole.countdown = options.wormTime;
     inhole.lastdest = World.NumWormholes + 1;
     inhole.temporary = outhole.temporary = 1;
@@ -1554,8 +1558,8 @@ void remove_temp_wormhole(int ind)
     wormhole_t hole;
 
     hole = World.wormHoles[ind];
-    World.block[hole.pos.x][hole.pos.y] = hole.lastblock;
-    World.itemID[hole.pos.x][hole.pos.y] = hole.lastID;
+    World.block[hole.blk_pos.x][hole.blk_pos.y] = hole.lastblock;
+    World.itemID[hole.blk_pos.x][hole.blk_pos.y] = hole.lastID;
     World.NumWormholes--;
     if (ind != World.NumWormholes)
     {

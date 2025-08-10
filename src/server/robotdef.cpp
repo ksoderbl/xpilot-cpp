@@ -1796,8 +1796,8 @@ static bool Ball_handler(int ind)
     {
         if ((BIT(pl->have, HAS_BALL) || pl->ball) && World.treasures[i].team == pl->team)
         {
-            dist = (int)Wrap_length((World.treasures[i].pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
-                                    (World.treasures[i].pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
+            dist = (int)Wrap_length((World.treasures[i].blk_pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
+                                    (World.treasures[i].blk_pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
             if (dist < closest_t_dist)
             {
                 closest_t = i;
@@ -1806,8 +1806,8 @@ static bool Ball_handler(int ind)
         }
         else if (World.treasures[i].team != pl->team && World.teams[World.treasures[i].team].NumMembers > 0 && !BIT(pl->have, HAS_BALL) && !pl->ball && World.treasures[i].have)
         {
-            dist = (int)Wrap_length((World.treasures[i].pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
-                                    (World.treasures[i].pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
+            dist = (int)Wrap_length((World.treasures[i].blk_pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
+                                    (World.treasures[i].blk_pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
             if (dist < closest_nt_dist)
             {
                 closest_nt = i;
@@ -1844,10 +1844,10 @@ static bool Ball_handler(int ind)
                 dist_np = dist;
         }
         bdir = (int)findDir(ball->vel.x, ball->vel.y);
-        tdir = (int)Wrap_findDir((World.treasures[closest_t].pos.x + 0.5) * BLOCK_SZ - ball->pos.x,
-                                 (World.treasures[closest_t].pos.y + 0.5) * BLOCK_SZ - ball->pos.y);
-        xdist = (World.treasures[closest_t].pos.x) - OBJ_X_IN_BLOCKS(ball);
-        ydist = (World.treasures[closest_t].pos.y) - OBJ_Y_IN_BLOCKS(ball);
+        tdir = (int)Wrap_findDir((World.treasures[closest_t].blk_pos.x + 0.5) * BLOCK_SZ - ball->pos.x,
+                                 (World.treasures[closest_t].blk_pos.y + 0.5) * BLOCK_SZ - ball->pos.y);
+        xdist = (World.treasures[closest_t].blk_pos.x) - OBJ_X_IN_BLOCKS(ball);
+        ydist = (World.treasures[closest_t].blk_pos.y) - OBJ_Y_IN_BLOCKS(ball);
         for (dist = 0;
              clear_path && dist < (closest_t_dist - BLOCK_SZ);
              dist += BLOCK_SZ / 2)
@@ -1888,8 +1888,8 @@ static bool Ball_handler(int ind)
         {
             SET_BIT(my_data->longterm_mode, FETCH_TREASURE);
             return (Check_robot_target(ind,
-                                       ((int)(World.treasures[closest_t].pos.x + 0.5) * BLOCK_SZ),
-                                       ((int)(World.treasures[closest_t].pos.y + 0.5) * BLOCK_SZ),
+                                       ((int)(World.treasures[closest_t].blk_pos.x + 0.5) * BLOCK_SZ),
+                                       ((int)(World.treasures[closest_t].blk_pos.y + 0.5) * BLOCK_SZ),
                                        RM_NAVIGATE));
         }
     }
@@ -1922,8 +1922,8 @@ static bool Ball_handler(int ind)
         {
             SET_BIT(my_data->longterm_mode, FETCH_TREASURE);
             return (Check_robot_target(ind,
-                                       ((int)(World.treasures[closest_nt].pos.x + 0.5) * BLOCK_SZ),
-                                       ((int)(World.treasures[closest_nt].pos.y + 0.5) * BLOCK_SZ),
+                                       ((int)(World.treasures[closest_nt].blk_pos.x + 0.5) * BLOCK_SZ),
+                                       ((int)(World.treasures[closest_nt].blk_pos.y + 0.5) * BLOCK_SZ),
                                        RM_NAVIGATE));
         }
         else if (closest_ball_dist < (my_data->robot_count / 10) * BLOCK_SZ && closest_ball_dist > options.ballConnectorLength)
@@ -1987,9 +1987,9 @@ static int Robot_default_play_check_map(int ind)
         if (World.targets[j].dead_time > 0 || pl->team == World.targets[j].team || World.teams[World.targets[j].team].NumMembers == 0)
             continue;
 
-        if ((dx = World.targets[j].pos.x * BLOCK_SZ + BLOCK_SZ / 2 - pl->pos.x,
+        if ((dx = World.targets[j].blk_pos.x * BLOCK_SZ + BLOCK_SZ / 2 - pl->pos.x,
              dx = WRAP_DX(dx), ABS(dx)) < target_dist &&
-            (dy = World.targets[j].pos.y * BLOCK_SZ + BLOCK_SZ / 2 - pl->pos.y,
+            (dy = World.targets[j].blk_pos.y * BLOCK_SZ + BLOCK_SZ / 2 - pl->pos.y,
              dy = WRAP_DY(dy), ABS(dy)) < target_dist &&
             (distance = (int)LENGTH(dx, dy)) < target_dist)
         {
@@ -2015,8 +2015,8 @@ static int Robot_default_play_check_map(int ind)
     }
     if (target_i >= 0)
     {
-        dx = ((World.targets[target_i].pos.x + 0.5) * BLOCK_SZ);
-        dy = ((World.targets[target_i].pos.y + 0.5) * BLOCK_SZ);
+        dx = ((World.targets[target_i].blk_pos.x + 0.5) * BLOCK_SZ);
+        dy = ((World.targets[target_i].blk_pos.y + 0.5) * BLOCK_SZ);
 
         SET_BIT(my_data->longterm_mode, TARGET_KILL);
         if (Check_robot_target(ind, dx, dy, RM_CANNON_KILL))
@@ -2467,8 +2467,8 @@ static void Robot_default_play(int ind)
         {
             if (World.targets[j].team == pl->team && World.targets[j].damage < TARGET_DAMAGE && World.targets[j].dead_time >= 0)
             {
-                int dx = (World.targets[j].pos.x * BLOCK_SZ + BLOCK_SZ / 2) - pl->pos.x;
-                int dy = (World.targets[j].pos.y * BLOCK_SZ + BLOCK_SZ / 2) - pl->pos.y;
+                int dx = (World.targets[j].blk_pos.x * BLOCK_SZ + BLOCK_SZ / 2) - pl->pos.x;
+                int dy = (World.targets[j].blk_pos.y * BLOCK_SZ + BLOCK_SZ / 2) - pl->pos.y;
                 /* dx = WRAP_DX(dx);
                    dy = WRAP_DY(dy); */
                 if (sqr(dx) + sqr(dy) <= sqr(90))
@@ -2503,8 +2503,8 @@ static void Robot_default_play(int ind)
     /* KK: unfortunately, this introduced a new bug. robots with large
         shipshapes don't take off from their bases. here's an attempt to
         fix it */
-    if (QUICK_LENGTH(pl->pos.x - (World.base[pl->home_base].pos.x * BLOCK_SZ),
-                     pl->pos.y - (World.base[pl->home_base].pos.y * BLOCK_SZ)) < BLOCK_SZ)
+    if (QUICK_LENGTH(pl->pos.x - (World.base[pl->home_base].blk_pos.x * BLOCK_SZ),
+                     pl->pos.y - (World.base[pl->home_base].blk_pos.y * BLOCK_SZ)) < BLOCK_SZ)
     {
         SET_BIT(pl->status, THRUSTING);
     }

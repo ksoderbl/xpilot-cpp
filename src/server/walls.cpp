@@ -876,8 +876,8 @@ void Move_segment(move_state_t *ms)
                 int last = World.wormHoles[hole].lastdest;
                 if (last >= 0 && (World.wormHoles[hole].countdown > 0 || !options.wormTime) && last < World.NumWormholes && World.wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.cx += (World.wormHoles[last].pos.x - World.wormHoles[hole].pos.x) * BLOCK_CLICKS;
-                    ms->done.cy += (World.wormHoles[last].pos.y - World.wormHoles[hole].pos.y) * BLOCK_CLICKS;
+                    ms->done.cx += (World.wormHoles[last].blk_pos.x - World.wormHoles[hole].blk_pos.x) * BLOCK_CLICKS;
+                    ms->done.cy += (World.wormHoles[last].blk_pos.y - World.wormHoles[hole].blk_pos.y) * BLOCK_CLICKS;
                     break;
                 }
             }
@@ -1110,7 +1110,7 @@ void Move_segment(move_state_t *ms)
 
                     for (i = 0;; i++)
                     {
-                        if (World.treasures[i].pos.x == block.x && World.treasures[i].pos.y == block.y)
+                        if (World.treasures[i].blk_pos.x == block.x && World.treasures[i].blk_pos.y == block.y)
                         {
                             break;
                         }
@@ -1977,8 +1977,8 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
      * Destroy target.
      * Turn it into a space to simplify other calculations.
      */
-    x = targ->pos.x;
-    y = targ->pos.y;
+    x = targ->blk_pos.x;
+    y = targ->blk_pos.y;
     World.block[x][y] = SPACE;
 
     int cx = targ->clk_pos.cx;

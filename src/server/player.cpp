@@ -192,8 +192,8 @@ void Go_home(int ind)
     }
     else
     {
-        x = World.base[pl->home_base].pos.x;
-        y = World.base[pl->home_base].pos.y;
+        x = World.base[pl->home_base].blk_pos.x;
+        y = World.base[pl->home_base].blk_pos.y;
         dir = World.base[pl->home_base].dir;
         vx = vy = velo = 0;
     }
@@ -766,7 +766,7 @@ void Reset_all_players(void)
             {
                 if (World.targets[i].damage != TARGET_DAMAGE || World.targets[i].dead_time != 0)
                 {
-                    World.block[World.targets[i].pos.x][World.targets[i].pos.y] = TARGET;
+                    World.block[World.targets[i].blk_pos.x][World.targets[i].blk_pos.y] = TARGET;
                     World.targets[i].dead_time = 0;
                     World.targets[i].damage = TARGET_DAMAGE;
                     World.targets[i].conn_mask = 0;

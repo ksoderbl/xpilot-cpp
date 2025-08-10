@@ -92,8 +92,8 @@ static void Repair(int ind)
     {
         if (targ->team == pl->team && targ->dead_time <= 0)
         {
-            x = targ->pos.x * BLOCK_SZ + BLOCK_SZ / 2;
-            y = targ->pos.y * BLOCK_SZ + BLOCK_SZ / 2;
+            x = targ->blk_pos.x * BLOCK_SZ + BLOCK_SZ / 2;
+            y = targ->blk_pos.y * BLOCK_SZ + BLOCK_SZ / 2;
             l = Wrap_length(pl->pos.x - x, pl->pos.y - y);
             if (BIT(pl->used, HAS_REPAIR) == 0 || l < dist)
             {
@@ -578,7 +578,7 @@ int Handle_keyboard(int ind)
                     msg[0] = '\0';
                     for (i = 0; i < World.NumBases; i++)
                     {
-                        if (World.base[i].pos.x == xi && World.base[i].pos.y == yi)
+                        if (World.base[i].blk_pos.x == xi && World.base[i].blk_pos.y == yi)
                         {
 
                             if (i == pl->home_base)
@@ -859,8 +859,8 @@ int Handle_keyboard(int ind)
                 {
                     xi = OBJ_X_IN_BLOCKS(pl);
                     yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = World.base[pl->home_base].pos.x;
-                    k = World.base[pl->home_base].pos.y;
+                    j = World.base[pl->home_base].blk_pos.x;
+                    k = World.base[pl->home_base].blk_pos.y;
                     if (j == xi && k == yi)
                     {
                         minv = 3.0f;

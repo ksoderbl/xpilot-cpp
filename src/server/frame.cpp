@@ -555,7 +555,7 @@ static void Frame_map(connection_t *connp, int ind)
             i = 0;
         }
         targ = &World.targets[i];
-        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && block_inview(&bv, targ->pos.x, targ->pos.y)))
+        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && block_inview(&bv, targ->blk_pos.x, targ->blk_pos.y)))
         {
             Send_target(connp, i, targ->dead_time, targ->damage);
             pl->last_target_update = i;
@@ -634,15 +634,15 @@ static void Frame_map(connection_t *connp, int ind)
             i = 0;
         }
         worm = &World.wormHoles[i];
-        if (options.wormholeVisible && worm->temporary && (worm->type == WORM_IN || worm->type == WORM_NORMAL) && block_inview(&bv, worm->pos.x, worm->pos.y))
+        if (options.wormholeVisible && worm->temporary && (worm->type == WORM_IN || worm->type == WORM_NORMAL) && block_inview(&bv, worm->blk_pos.x, worm->blk_pos.y))
         {
             /* This is really a stupid bug: he first converts
                the perfect blocksizes to pixels which the
                client is perfectly capable of doing itself.
                Then he sends the pixels in signed shorts.
                This will fail on big maps. */
-            int x = (worm->pos.x * BLOCK_SZ) + BLOCK_SZ / 2,
-                y = (worm->pos.y * BLOCK_SZ) + BLOCK_SZ / 2;
+            int x = (worm->blk_pos.x * BLOCK_SZ) + BLOCK_SZ / 2,
+                y = (worm->blk_pos.y * BLOCK_SZ) + BLOCK_SZ / 2;
             Send_wormhole(connp, x, y);
             pl->last_wormhole_update = i;
             bytes_left -= max_packet * wormhole_packet_size;
@@ -1133,8 +1133,8 @@ static void Frame_ships(connection_t *connp, int ind)
         }
         if (BIT(pl_i->used, HAS_REPAIR))
         {
-            DFLOAT x = (DFLOAT)(World.targets[pl_i->repair_target].pos.x + 0.5) * BLOCK_SZ;
-            DFLOAT y = (DFLOAT)(World.targets[pl_i->repair_target].pos.y + 0.5) * BLOCK_SZ;
+            DFLOAT x = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
+            DFLOAT y = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
             if (inview(x, y))
             {
                 /* same packet as refuel */
