@@ -27,11 +27,17 @@
 
 void Object_position_set_clicks(object_t *obj, int cx, int cy);
 void Object_position_set_pixels(object_t *obj, DFLOAT x, DFLOAT y);
+
+void Object_position_init_clicks(object_t *obj, int cx, int cy);
 void Object_position_init_pixels(object_t *obj, DFLOAT x, DFLOAT y);
+
 void Player_position_restore(player_t *pl);
+
 void Player_position_set_clicks(player_t *pl, int cx, int cy);
 void Player_position_set_pixels(player_t *pl, DFLOAT x, DFLOAT y);
+
 void Player_position_init_pixels(player_t *pl, DFLOAT x, DFLOAT y);
+
 void Player_position_limit(player_t *pl);
 void Player_position_debug(player_t *pl, const char *msg);
 

@@ -121,7 +121,7 @@ void Break_asteroid(int ind)
     if (asteroid->size == 1)
     {
         mass = asteroid->mass / 2;
-        Make_wreckage(asteroid->pos.x, asteroid->pos.y,
+        Make_wreckage(asteroid->pos.cx, asteroid->pos.cy,
                       asteroid->vel.x, asteroid->vel.y,
                       -1,
                       TEAM_NOT_SET,
@@ -173,7 +173,7 @@ void Break_asteroid(int ind)
         vely3 = asteroid->vel.y;
         Make_asteroid(x1, y1, asteroid->size - 1, dir1, speed1);
         Make_asteroid(x2, y2, asteroid->size - 1, dir2, speed2);
-        Make_wreckage(asteroid->pos.x, asteroid->pos.y,
+        Make_wreckage(asteroid->pos.cx, asteroid->pos.cy,
                       velx3, vely3,
                       -1,
                       TEAM_NOT_SET,

@@ -522,10 +522,10 @@ void Tank_handle_detach(player_t *pl)
 }
 
 void Make_wreckage(
-    /* pos.x, pos.y     */ DFLOAT x, DFLOAT y,
+    /* pos.cx, pos.cy   */ int cx, int cy,
     /* vel.x, vel.y     */ DFLOAT velx, DFLOAT vely,
     /* owner id         */ int id,
-    /* owner team        */ unsigned short team,
+    /* owner team       */ unsigned short team,
     /* min,max mass     */ DFLOAT min_mass, DFLOAT max_mass,
     /* total mass       */ DFLOAT total_mass,
     /* status           */ long status,
@@ -546,16 +546,16 @@ void Make_wreckage(
     }
     if (BIT(World.rules->mode, WRAP_PLAY))
     {
-        if (x < 0)
-            x += World.width;
-        else if (x >= World.width)
-            x -= World.width;
-        if (y < 0)
-            y += World.height;
-        else if (y >= World.height)
-            y -= World.height;
+        if (cx < 0)
+            cx += World.cwidth;
+        else if (cx >= World.cwidth)
+            cx -= World.cwidth;
+        if (cy < 0)
+            cy += World.cheight;
+        else if (cy >= World.cheight)
+            cy -= World.cheight;
     }
-    if (x < 0 || x >= World.width || y < 0 || y >= World.height)
+    if (cx < 0 || cx >= World.cwidth || cy < 0 || cy >= World.cheight)
     {
         return;
     }
@@ -614,7 +614,7 @@ void Make_wreckage(
         wreckage->type = OBJ_WRECKAGE;
 
         /* Position */
-        Object_position_init_pixels(OBJ_PTR(wreckage), x, y);
+        Object_position_init_clicks(OBJ_PTR(wreckage), cx, cy);
 
         /* Direction */
         dir = MOD2(min_dir + (int)(rfrac() * MOD2(max_dir - min_dir, RES)), RES);
@@ -678,7 +678,7 @@ void Explode_fighter(int ind)
         /* pos.x, pos.y   */ pl->pos.x, pl->pos.y,
         /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
         /* owner id       */ pl->id,
-        /* owner team          */ pl->team,
+        /* owner team     */ pl->team,
         /* kind           */ OBJ_DEBRIS,
         /* mass           */ 3.5,
         /* status         */ GRAVITY,
@@ -695,7 +695,7 @@ void Explode_fighter(int ind)
         /* pos.x, pos.y     */ pl->pos.x, pl->pos.y,
         /* vel.x, vel.y     */ pl->vel.x, pl->vel.y,
         /* owner id         */ pl->id,
-        /* owner team            */ pl->team,
+        /* owner team       */ pl->team,
         /* min,max mass     */ MAX(pl->mass / 8.0, 0.33), pl->mass,
         /* total mass       */ 2.0 * pl->mass,
         /* status           */ GRAVITY,

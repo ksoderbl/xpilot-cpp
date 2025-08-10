@@ -169,7 +169,7 @@ void Make_debris(
     /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
     /* min,max life   */ int min_life, int max_life);
 void Make_wreckage(
-    /* pos.x, pos.y   */ DFLOAT x, DFLOAT y,
+    /* pos.cx, pos.cy */ int cx, int cy,
     /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,

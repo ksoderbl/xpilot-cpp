@@ -1847,7 +1847,7 @@ static void Cannon_dies(move_state_t *ms)
         /* min,max speed  */ 20, 50,
         /* min,max life   */ 8, 68);
     Make_wreckage(
-        /* pos.x, pos.y   */ x, y,
+        /* pos.cx, pos.cy */ cx, cy,
         /* vel.x, vel.y   */ 0.0, 0.0,
         /* owner id       */ NO_ID,
         /* owner team          */ cannon->team,

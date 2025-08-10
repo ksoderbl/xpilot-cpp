@@ -67,6 +67,12 @@ void Object_position_init_pixels(object_t *obj, DFLOAT x, DFLOAT y)
     Object_position_remember(obj);
 }
 
+void Object_position_init_clicks(object_t *obj, int cx, int cy)
+{
+    Object_position_set_clicks(obj, cx, cy);
+    Object_position_remember(obj);
+}
+
 void Player_position_restore(player_t *pl)
 {
     Player_position_set_pixels(pl, pl->prevpos.x, pl->prevpos.y);
