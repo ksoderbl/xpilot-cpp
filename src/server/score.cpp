@@ -27,6 +27,8 @@
 #include <cmath>
 #include <climits>
 
+#include "click.h"
+
 #define SERVER
 #include "version.h"
 #include "xpconfig.h"
@@ -36,9 +38,11 @@
 #include "score.h"
 #include "netserver.h"
 
-void SCORE(int ind, int points, int x, int y, const char *msg)
+void SCORE(int ind, int points, int cx, int cy, const char *msg)
 {
     player *pl = Players[ind];
+    int x = CLICK_TO_BLOCK(cx);
+    int y = CLICK_TO_BLOCK(cy);
 
     pl->score += (points);
 
@@ -76,21 +80,17 @@ int Rate(int winner, int loser)
 void Score_players(int winner, int winner_score, char *winner_msg,
                    int loser, int loser_score, char *loser_msg)
 {
+    player_t *wpl = Players[winner];
+    player_t *lpl = Players[loser];
     if (TEAM(winner, loser) ||
-        (Players[winner]->alliance != ALLIANCE_NOT_SET && Players[winner]->alliance == Players[loser]->alliance) ||
-        (IS_TANK_IND(loser) && GetInd[Players[loser]->lock.pl_id] == winner))
+        (wpl->alliance != ALLIANCE_NOT_SET && wpl->alliance == lpl->alliance) ||
+        (IS_TANK_IND(loser) && GetInd[lpl->lock.pl_id] == winner))
     {
         if (winner_score > 0)
             winner_score = -winner_score;
         if (loser_score > 0)
             loser_score = -loser_score;
     }
-    SCORE(winner, winner_score,
-          OBJ_X_IN_BLOCKS(Players[loser]),
-          OBJ_Y_IN_BLOCKS(Players[loser]),
-          winner_msg);
-    SCORE(loser, loser_score,
-          OBJ_X_IN_BLOCKS(Players[loser]),
-          OBJ_Y_IN_BLOCKS(Players[loser]),
-          loser_msg);
+    SCORE(winner, winner_score, lpl->pos.cx, lpl->pos.cy, winner_msg);
+    SCORE(loser, loser_score, lpl->pos.cx, lpl->pos.cy, loser_msg);
 }

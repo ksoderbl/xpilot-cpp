@@ -1155,7 +1155,7 @@ void Move_segment(move_state_t *ms)
                         SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
 
                         SCORE(GetInd[pl->id], 5,
-                              tt->pos.x, tt->pos.y, "Treasure: ");
+                              tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
                                 pl->name, pl->team);
                         Set_message(msg);
@@ -1879,8 +1879,8 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(killer, options.cannonPoints, cannon->blk_pos.x,
-                      cannon->blk_pos.y, "");
+                SCORE(killer, options.cannonPoints, cannon->clk_pos.cx,
+                      cannon->clk_pos.cy, "");
             }
         }
     }
@@ -2050,7 +2050,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         if (sc > 0)
         {
             SCORE(killer, sc,
-                  targ->pos.x, targ->pos.y, "Target: ");
+                  targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         /*
          * If players can't collide with their own targets, we
@@ -2090,13 +2090,13 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(Players[j]->status, KILLED);
-            SCORE(j, -sc, targ->pos.x, targ->pos.y,
+            SCORE(j, -sc, targ->clk_pos.cx, targ->clk_pos.cy,
                   "Target: ");
         }
         else if (Players[j]->team == Players[killer]->team &&
                  (Players[j]->team != TEAM_NOT_SET || j == killer))
         {
-            SCORE(j, por, targ->pos.x, targ->pos.y,
+            SCORE(j, por, targ->clk_pos.cx, targ->clk_pos.cy,
                   "Target: ");
         }
     }
@@ -2445,10 +2445,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         if (num_pushers == 0)
         {
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(ind, -sc,
-                  OBJ_X_IN_BLOCKS(pl),
-                  OBJ_Y_IN_BLOCKS(pl),
-                  hudmsg);
+            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -2477,20 +2474,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
-                SCORE(GetInd[pusher->id], sc,
-                      OBJ_X_IN_BLOCKS(pl),
-                      OBJ_Y_IN_BLOCKS(pl),
-                      pl->name);
+                SCORE(GetInd[pusher->id], sc, pl->pos.cx, pl->pos.cy, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
             sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
-            SCORE(ind, -sc,
-                  OBJ_X_IN_BLOCKS(pl),
-                  OBJ_Y_IN_BLOCKS(pl),
-                  "[Shove]");
+            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
 
             strcpy(msg_ptr, ".");
             Set_message(msg);

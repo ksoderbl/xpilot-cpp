@@ -906,9 +906,7 @@ static void Give_best_player_bonus(DFLOAT average_score,
                 bp->name,
                 bp->kills, bp->deaths);
         points = best_ratio * Rate(bp->score, average_score);
-        SCORE(best_players[0], points,
-              OBJ_X_IN_BLOCKS(bp),
-              OBJ_Y_IN_BLOCKS(bp),
+        SCORE(best_players[0], points, bp->pos.cx, bp->pos.cy,
               "[Deadliest]");
     }
     else
@@ -934,9 +932,7 @@ static void Give_best_player_bonus(DFLOAT average_score,
             }
             strcat(msg, bp->name);
             points = (int)(best_ratio * score);
-            SCORE(best_players[i], points,
-                  OBJ_X_IN_BLOCKS(bp),
-                  OBJ_Y_IN_BLOCKS(bp),
+            SCORE(best_players[i], points, bp->pos.cx, bp->pos.cy,
                   "[Deadly]");
         }
         if (strlen(msg) + 64 >= sizeof(msg))
@@ -956,12 +952,11 @@ static void Give_individual_bonus(int ind, DFLOAT average_score)
 {
     DFLOAT ratio;
     DFLOAT points;
+    player_t *pl = Players[ind];
 
-    ratio = (DFLOAT)Players[ind]->kills / (Players[ind]->deaths + 1);
-    points = ratio * Rate(Players[ind]->score, average_score);
-    SCORE(ind, points,
-          OBJ_X_IN_BLOCKS(Players[ind]),
-          OBJ_Y_IN_BLOCKS(Players[ind]),
+    ratio = (DFLOAT)pl->kills / (pl->deaths + 1);
+    points = ratio * Rate(pl->score, average_score);
+    SCORE(ind, points, pl->pos.cx, pl->pos.cy,
           "[Winner]");
 }
 
@@ -1269,9 +1264,7 @@ void Race_game_over(void)
                         (num_best_players == 1) ? "had" : "shares",
                         (DFLOAT)bestlap / FPS);
                 Set_message(msg);
-                SCORE(i, 5 + num_active_players,
-                      OBJ_X_IN_BLOCKS(pl),
-                      OBJ_Y_IN_BLOCKS(pl),
+                SCORE(i, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
                       (num_best_players == 1) ? "[Fastest lap]" : "[Joint fastest lap]");
             }
         }
@@ -1441,10 +1434,7 @@ void Compute_game_status(void)
                         Set_message(msg);
                         sprintf(msg, "[Position %d%s]", position,
                                 (num_finished_players == 1) ? "" : " (jointly)");
-                        SCORE(i, pts,
-                              OBJ_X_IN_BLOCKS(pl),
-                              OBJ_Y_IN_BLOCKS(pl),
-                              msg);
+                        SCORE(i, pts, pl->pos.cx, pl->pos.cy, msg);
                     }
                     else
                     {

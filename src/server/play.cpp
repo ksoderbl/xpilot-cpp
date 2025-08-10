@@ -86,7 +86,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     if (!somebody_flag)
     {
         SCORE(ind, Rate(pl->score, CANNON_SCORE) / 2,
-              tt->pos.x, tt->pos.y, "Treasure:");
+              tt->clk_pos.cx, tt->clk_pos.cy, "Treasure:");
         return 0;
     }
 
@@ -105,16 +105,14 @@ int Punish_team(int ind, int t_destroyed, int t_target)
         }
         if (Players[i]->team == td->team)
         {
-            SCORE(i, -sc, tt->pos.x, tt->pos.y,
-                  "Treasure: ");
+            SCORE(i, -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(Players[i]->status, KILLED);
         }
         else if (Players[i]->team == tt->team &&
                  (Players[i]->team != TEAM_NOT_SET || i == ind))
         {
-            SCORE(i, (i == ind ? 3 * por : 2 * por), tt->pos.x, tt->pos.y,
-                  "Treasure: ");
+            SCORE(i, (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
         }
     }
 

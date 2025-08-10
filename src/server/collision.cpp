@@ -272,10 +272,7 @@ static void PlayerCollision(void)
             sprintf(msg, "%s left the known universe.", pl->name);
             Set_message(msg);
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(i, -sc,
-                  OBJ_X_IN_BLOCKS(pl),
-                  OBJ_Y_IN_BLOCKS(pl),
-                  pl->name);
+            SCORE(i, -sc, pl->pos.cx, pl->pos.cy, pl->name);
             continue;
         }
 
@@ -858,10 +855,7 @@ static void Player_collides_with_ball(int ind, object_t *obj, int radius)
     {
         sprintf(msg, "%s was killed by a ball.", pl->name);
         sc = (int)floor(Rate(0, pl->score) * options.ballKillScoreMult * options.unownedKillScoreMult);
-        SCORE(ind, -sc,
-              OBJ_X_IN_BLOCKS(pl),
-              OBJ_Y_IN_BLOCKS(pl),
-              "Ball");
+        SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "Ball");
     }
     else
     {
@@ -874,10 +868,7 @@ static void Player_collides_with_ball(int ind, object_t *obj, int radius)
         {
             strcat(msg, "  How strange!");
             sc = (int)floor(Rate(0, pl->score) * options.ballKillScoreMult * options.selfKillScoreMult);
-            SCORE(ind, -sc,
-                  OBJ_X_IN_BLOCKS(pl),
-                  OBJ_Y_IN_BLOCKS(pl),
-                  Players[killer]->name);
+            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, Players[killer]->name);
         }
         else
         {
@@ -1185,9 +1176,7 @@ static void Player_collides_with_debris(int ind, object_t *obj)
         if (killer == -1 || killer == ind)
         {
             sc = (int)floor(Rate(0, pl->score) * options.explosionKillScoreMult * options.selfKillScoreMult);
-            SCORE(ind, -sc,
-                  OBJ_X_IN_BLOCKS(pl),
-                  OBJ_Y_IN_BLOCKS(pl),
+            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy,
                   (killer == -1) ? "[Explosion]" : pl->name);
         }
         else
@@ -1218,8 +1207,7 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
         ast->life = 0;
     if (ast->life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
     {
-        SCORE(ind, options.asteroidPoints, OBJ_X_IN_BLOCKS(ast),
-              OBJ_Y_IN_BLOCKS(ast), "");
+        SCORE(ind, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
     }
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
@@ -1240,18 +1228,12 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
         }
         Set_message(msg);
         sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
-        SCORE(ind, -sc,
-              OBJ_X_IN_BLOCKS(pl),
-              OBJ_Y_IN_BLOCKS(pl),
-              "[Asteroid]");
+        SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "[Asteroid]");
         if (IS_TANK_PTR(pl) && options.asteroidPoints > 0)
         {
             int owner = GetInd[pl->lock.pl_id];
             if (Players[owner]->score <= options.asteroidMaxScore)
-            {
-                SCORE(owner, options.asteroidPoints, OBJ_X_IN_BLOCKS(ast),
-                      OBJ_Y_IN_BLOCKS(ast), "");
-            }
+                SCORE(owner, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
         }
         return;
     }
@@ -1421,16 +1403,11 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
             sc *= factor;
             if (BIT(obj->status, FROMCANNON))
             {
-                SCORE(ind, -sc,
-                      OBJ_X_IN_BLOCKS(pl),
-                      OBJ_Y_IN_BLOCKS(pl),
-                      "Cannon");
+                SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "Cannon");
             }
             else if (obj->id == NO_ID || killer == ind)
             {
-                SCORE(ind, -sc,
-                      OBJ_X_IN_BLOCKS(pl),
-                      OBJ_Y_IN_BLOCKS(pl),
+                SCORE(ind, -sc, pl->pos.cx, pl->pos.cy,
                       (obj->id == NO_ID ? "" : pl->name));
             }
             else
@@ -1652,10 +1629,7 @@ static void AsteroidCollision(void)
                         int ind = GetInd[owner_id];
                         if (Players[ind]->score <= options.asteroidMaxScore)
                         {
-                            SCORE(ind, options.asteroidPoints,
-                                  OBJ_X_IN_BLOCKS(ast),
-                                  OBJ_Y_IN_BLOCKS(ast),
-                                  "");
+                            SCORE(ind, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
                         }
                     }
 

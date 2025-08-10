@@ -281,10 +281,7 @@ static void Laser_pulse_hits_player(
                 if (vicpl->id == pl->id)
                 {
                     sc = Rate(0, pl->score) * options.laserKillScoreMult * options.selfKillScoreMult;
-                    SCORE(victim->ind, -sc,
-                          OBJ_X_IN_BLOCKS(vicpl),
-                          OBJ_Y_IN_BLOCKS(vicpl),
-                          vicpl->name);
+                    SCORE(victim->ind, -sc, vicpl->pos.cx, vicpl->pos.cy, vicpl->name);
                     strcat(msg, " How strange!");
                 }
                 else
@@ -300,10 +297,7 @@ static void Laser_pulse_hits_player(
             else
             {
                 sc = Rate(CANNON_SCORE, vicpl->score) / 4;
-                SCORE(victim->ind, -sc,
-                      OBJ_X_IN_BLOCKS(vicpl),
-                      OBJ_Y_IN_BLOCKS(vicpl),
-                      "Cannon");
+                SCORE(victim->ind, -sc, vicpl->pos.cx, vicpl->pos.cy, "Cannon");
                 sprintf(msg,
                         "%s got roasted alive by cannonfire.",
                         vicpl->name);
@@ -663,11 +657,7 @@ void Laser_pulse_collision(void)
                         if (ast->life < 0)
                             ast->life = 0;
                         if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && Players[ind]->score <= options.asteroidMaxScore)
-                        {
-                            SCORE(ind, options.asteroidPoints,
-                                  OBJ_X_IN_BLOCKS(ast), OBJ_Y_IN_BLOCKS(ast),
-                                  "");
-                        }
+                            SCORE(ind, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
                         break;
                     }
                 }
