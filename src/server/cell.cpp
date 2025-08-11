@@ -261,8 +261,8 @@ void Cell_remove_object(object_t *obj)
 }
 
 void Cell_get_objects(
-    int x,
-    int y,
+    int cx,
+    int cy,
     int range,
     int max_obj_count,
     object_t ***obj_list,
@@ -275,6 +275,8 @@ void Cell_get_objects(
     object_t *obj;
     cell_node *cell_node_ptr, *next;
     float dist;
+    int bx = CLICK_TO_BLOCK(cx);
+    int by = CLICK_TO_BLOCK(cy);
 
     wrap = (BIT(World.rules->mode, WRAP_PLAY) != 0);
     dist = (float)(range * SQRT2);
@@ -282,56 +284,38 @@ void Cell_get_objects(
     for (i = 0; i < cell_dist_size && count < max_obj_count; i++)
     {
         if (dist < cell_dist[i].dist)
-        {
             break;
-        }
         else
         {
-            xw = x + cell_dist[i].x;
-            yw = y + cell_dist[i].y;
+            xw = bx + cell_dist[i].x;
+            yw = by + cell_dist[i].y;
             if (xw < 0)
             {
                 if (wrap)
-                {
                     xw += World.x;
-                }
                 else
-                {
                     continue;
-                }
             }
             else if (xw >= World.x)
             {
                 if (wrap)
-                {
                     xw -= World.x;
-                }
                 else
-                {
                     continue;
-                }
             }
             if (yw < 0)
             {
                 if (wrap)
-                {
                     yw += World.y;
-                }
                 else
-                {
                     continue;
-                }
             }
             else if (yw >= World.y)
             {
                 if (wrap)
-                {
                     yw -= World.y;
-                }
                 else
-                {
                     continue;
-                }
             }
             cell_node_ptr = &Cells[xw][yw];
             next = cell_node_ptr->next;
@@ -347,7 +331,5 @@ void Cell_get_objects(
     ObjectList[count] = NULL;
     *obj_list = &ObjectList[0];
     if (count_ptr != NULL)
-    {
         *count_ptr = count;
-    }
 }

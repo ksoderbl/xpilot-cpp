@@ -208,7 +208,7 @@ static int Cannon_in_danger(int ind)
     if (options.cannonSmartness == 0)
         return false;
 
-    Cell_get_objects(c->blk_pos.x, c->blk_pos.y, range, max_objs,
+    Cell_get_objects(c->clk_pos.cx, c->clk_pos.cy, range, max_objs,
                      &obj_list, &obj_count);
 
     for (i = 0; (i < obj_count) && !danger; i++)

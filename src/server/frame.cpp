@@ -762,7 +762,7 @@ static void Frame_shots(connection_t *connp, int ind)
 
     hori_blocks = (view_width + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
     vert_blocks = (view_height + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
-    Cell_get_objects(OBJ_X_IN_BLOCKS(pl), OBJ_Y_IN_BLOCKS(pl),
+    Cell_get_objects(pl->pos.cx, pl->pos.cy,
                      MAX(hori_blocks, vert_blocks), num_object_shuffle,
                      &obj_list,
                      &obj_count);

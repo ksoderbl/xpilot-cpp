@@ -598,7 +598,7 @@ void Do_deflector(int ind)
     }
     Add_fuel(&(pl->fuel), (long)ED_DEFLECTOR);
 
-    Cell_get_objects(OBJ_X_IN_BLOCKS(pl), OBJ_Y_IN_BLOCKS(pl),
+    Cell_get_objects(pl->pos.cx, pl->pos.cy,
                      (int)(range / BLOCK_SZ + 1), 200,
                      &obj_list, &obj_count);
 

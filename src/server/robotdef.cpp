@@ -2109,19 +2109,13 @@ static void Robot_default_play_check_objects(int ind,
 
     killing_shots = KILLING_SHOTS;
     if (options.treasureCollisionMayKill)
-    {
         killing_shots |= OBJ_BALL;
-    }
     if (options.wreckageCollisionMayKill)
-    {
         killing_shots |= OBJ_WRECKAGE;
-    }
     if (options.asteroidCollisionMayKill)
-    {
         killing_shots |= OBJ_ASTEROID;
-    }
 
-    Cell_get_objects(OBJ_X_IN_BLOCKS(pl), OBJ_Y_IN_BLOCKS(pl),
+    Cell_get_objects(pl->pos.cx, pl->pos.cy,
                      (int)(Visibility_distance / BLOCK_SZ), max_objs,
                      &obj_list, &obj_count);
 
@@ -2132,9 +2126,7 @@ static void Robot_default_play_check_objects(int ind,
 
         /* Get rid of the most common object types first for speed. */
         if (BIT(shot->type, OBJ_DEBRIS | OBJ_SPARK))
-        {
             continue;
-        }
 
         dx = WRAP_DX(shot->pos.x - pl->pos.x);
         dy = WRAP_DY(shot->pos.y - pl->pos.y);
@@ -2142,15 +2134,11 @@ static void Robot_default_play_check_objects(int ind,
         if (BIT(shot->type, OBJ_BALL) && !WITHIN(my_data->last_thrown_ball,
                                                  my_data->robot_count,
                                                  3 * FPS))
-        {
             SET_BIT(pl->used, HAS_CONNECTOR);
-        }
 
         /* Ignore shots if shields already up - nothing else to do anyway */
         if (BIT(shot->type, OBJ_SHOT | OBJ_CANNON_SHOT) && BIT(pl->used, HAS_SHIELD))
-        {
             continue;
-        }
 
         /*-BA This code shouldn't be executed for `friendly` shots
          *-BA Moved down 2 paragraphs

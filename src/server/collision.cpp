@@ -646,7 +646,7 @@ static void PlayerObjectCollision(int ind)
     if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
         return;
 
-    Cell_get_objects(OBJ_X_IN_BLOCKS(pl), OBJ_Y_IN_BLOCKS(pl),
+    Cell_get_objects(pl->pos.cx, pl->pos.cy,
                      4, 500,
                      &obj_list, &obj_count);
 
@@ -1519,16 +1519,14 @@ static void AsteroidCollision(void)
         assert(BIT(ast->type, OBJ_ASTEROID));
 
         if (ast->life <= 0)
-        {
             continue;
-        }
 
         assert(OBJ_X_IN_BLOCKS(ast) >= 0);
         assert(OBJ_X_IN_BLOCKS(ast) < World.x);
         assert(OBJ_Y_IN_BLOCKS(ast) >= 0);
         assert(OBJ_Y_IN_BLOCKS(ast) < World.y);
 
-        Cell_get_objects(OBJ_X_IN_BLOCKS(ast), OBJ_Y_IN_BLOCKS(ast),
+        Cell_get_objects(ast->pos.cx, ast->pos.cy,
                          ast->pl_radius / BLOCK_SZ + 1, 300,
                          &obj_list, &obj_count);
 
@@ -1698,7 +1696,7 @@ static void BallCollision(void)
         if (!options.ballCollisions)
             continue;
 
-        Cell_get_objects(OBJ_X_IN_BLOCKS(ball), OBJ_Y_IN_BLOCKS(ball),
+        Cell_get_objects(ball->pos.cx, ball->pos.cy,
                          4, 300,
                          &obj_list, &obj_count);
 
@@ -1813,7 +1811,7 @@ static void MineCollision(void)
             continue;
         }
 
-        Cell_get_objects(OBJ_X_IN_BLOCKS(mine), OBJ_Y_IN_BLOCKS(mine),
+        Cell_get_objects(mine->pos.cx, mine->pos.cy,
                          4, 300,
                          &obj_list, &obj_count);
 
