@@ -34,11 +34,12 @@
 #include "score.h"
 #include "bit.h"
 #include "saudio.h"
-#include "objpos.h"
+#include "object.h"
 #include "cannon.h"
 #include "asteroid.h"
 #include "netserver.h"
 #include "xpmath.h"
+#include "walls.h"
 
 #define update_object_speed(o_)                                                   \
     if (BIT((o_)->status, GRAVITY))                                               \

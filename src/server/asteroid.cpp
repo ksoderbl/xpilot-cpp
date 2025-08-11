@@ -22,25 +22,41 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+// #include <iostream>
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
 #include <cmath>
 #include <climits>
 
-#include "draw.h"
-
 #define SERVER
+
+#include "bit.h"
+#include "click.h"
+#include "draw.h"
+#include "keys.h"
 #include "xpconfig.h"
-#include "serverconst.h"
-#include "list.h"
-#include "global.h"
+#include "xpmath.h"
+
+#include "asteroid.h"
+#include "map.h"
+#include "object.h"
 #include "proto.h"
 #include "saudio.h"
-#include "bit.h"
-#include "objpos.h"
-#include "asteroid.h"
-#include "xpmath.h"
+#include "walls.h"
+
+// #define SERVER
+// #include "xpconfig.h"
+// #include "serverconst.h"
+// #include "list.h"
+// #include "global.h"
+// #include "proto.h"
+// #include "saudio.h"
+// #include "bit.h"
+// #include "objpos.h"
+// #include "asteroid.h"
+// #include "xpmath.h"
 
 /* list containing pointers to all asteroids */
 static list_t Asteroid_list = NULL;
@@ -220,13 +236,9 @@ void Break_asteroid(int ind)
             if (rfrac() < options.randomItemProb)
                 status |= RANDOM_ITEM;
             if (World.items[item].min_per_pack == World.items[item].max_per_pack)
-            {
                 num_per_pack = World.items[item].max_per_pack;
-            }
             else
-            {
                 num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
-            }
 
             Make_item(asteroid->pos.cx, asteroid->pos.cy,
                       vx, vy,
@@ -475,6 +487,7 @@ void Asteroid_update(void)
          * the rest are left until the next frame then
          * */
         num = World.asteroids.num;
+        printf("Asteroid_update, number of asteroids: %d\n", num);
         if (num > World.asteroids.max)
         {
             for (iter = List_begin(list);

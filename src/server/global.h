@@ -47,24 +47,24 @@ typedef struct
  * Global data.
  */
 #define FPS options.framesPerSecond
-#define NumObjs (ObjCount + 0)
+// #define NumObjs (ObjCount + 0)
 
-extern player_t **Players;
-extern object_t *Obj[];
-extern pulse_t *Pulses[];
-extern ecm_t *Ecms[];
-extern trans_t *Transporters[];
+// extern player_t **Players;
+// extern object_t *Obj[];
+// extern pulse_t *Pulses[];
+// extern ecm_t *Ecms[];
+// extern trans_t *Transporters[];
 extern long frame_loops;
-extern int NumPlayers;
-extern int NumPseudoPlayers;
-extern int ObjCount;
-extern int NumPulses;
-extern int NumEcms;
-extern int NumTransporters;
-extern int NumAlliances;
-extern int NumRobots;
+// extern int NumPlayers;
+// extern int NumPseudoPlayers;
+// extern int ObjCount;
+// extern int NumPulses;
+// extern int NumEcms;
+// extern int NumTransporters;
+// extern int NumAlliances;
+// extern int NumRobots;
 extern int login_in_progress;
-extern World_map World;
+// extern World_map World;
 extern server_t Server;
 extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
 extern int GetInd[];
@@ -79,6 +79,6 @@ extern int round_delay_send;
 extern int roundtime;
 extern int roundsPlayed;
 extern long KILLING_SHOTS;
-extern unsigned SPACE_BLOCKS;
+// extern unsigned SPACE_BLOCKS;
 
 #endif /* GLOBAL_H */

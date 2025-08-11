@@ -114,6 +114,8 @@ struct move_parameters
     unsigned long obj_treasure_mask; /* objects treasure crash? */
 };
 
+extern unsigned SPACE_BLOCKS;
+
 void Move_segment(move_state_t *ms);
 
 #endif

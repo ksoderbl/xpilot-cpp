@@ -24,6 +24,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#define SERVER
+
 #include "bit.h"
 #include "click.h"
 #include "connection.h"
@@ -449,7 +451,6 @@ struct robot_data;
 typedef struct player player_t;
 struct player
 {
-
     OBJECT_BASE
 
     /* up to here the player type should be the same as an object. */
@@ -587,5 +588,37 @@ struct player
     //                 player() {}
     // #endif
 };
+
+#define NumObjs (ObjCount + 0)
+
+extern player_t **Players;
+extern object_t *Obj[];
+extern pulse_t *Pulses[];
+extern ecm_t *Ecms[];
+extern trans_t *Transporters[];
+
+extern int NumPlayers;
+extern int NumPseudoPlayers;
+extern int ObjCount;
+extern int NumPulses;
+extern int NumEcms;
+extern int NumTransporters;
+extern int NumAlliances;
+extern int NumRobots;
+
+void Object_position_set_clicks(object_t *obj, int cx, int cy);
+void Object_position_init_clicks(object_t *obj, int cx, int cy);
+
+void Player_position_set_clicks(player_t *pl, int cx, int cy);
+void Player_position_init_clicks(player_t *pl, int cx, int cy);
+
+void Player_position_restore(player_t *pl);
+void Player_position_limit(player_t *pl);
+void Player_position_debug(player_t *pl, const char *msg);
+
+#define Object_position_remember(o_)  \
+    ((o_)->prevpos.cx = (o_)->pos.cx, \
+     (o_)->prevpos.cy = (o_)->pos.cy)
+#define Player_position_remember(p_) Object_position_remember(p_)
 
 #endif

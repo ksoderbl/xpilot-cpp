@@ -277,4 +277,6 @@ typedef struct
     asteroid_concentrator_t *asteroidConcs;
 } World_map;
 
+extern World_map World;
+
 #endif

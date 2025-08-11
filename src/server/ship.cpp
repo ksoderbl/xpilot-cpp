@@ -38,7 +38,7 @@
 #include "proto.h"
 #include "saudio.h"
 #include "xperror.h"
-#include "objpos.h"
+#include "object.h"
 #include "netserver.h"
 #include "proto.h"
 #include "xpmath.h"

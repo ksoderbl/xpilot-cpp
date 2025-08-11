@@ -41,7 +41,7 @@
 #include "xperror.h"
 #include "walls.h"
 #include "click.h"
-#include "objpos.h"
+#include "object.h"
 #include "xpmath.h"
 
 #define WALLDIST_MASK \

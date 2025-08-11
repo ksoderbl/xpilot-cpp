@@ -44,7 +44,7 @@
 #include "pack.h"
 #include "xperror.h"
 #include "portability.h"
-#include "objpos.h"
+#include "object.h"
 #include "asteroid.h"
 #include "xpmath.h"
 

@@ -37,7 +37,7 @@
 #include "global.h"
 #include "proto.h"
 #include "bit.h"
-#include "objpos.h"
+#include "object.h"
 #include "cannon.h"
 #include "saudio.h"
 #include "xpmath.h"

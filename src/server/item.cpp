@@ -30,6 +30,9 @@
 
 #include "draw.h"
 
+#include "object.h"
+#include "walls.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -39,7 +42,6 @@
 #include "score.h"
 #include "netserver.h"
 #include "xperror.h"
-#include "objpos.h"
 #include "xpmath.h"
 
 #define CONFUSED_TIME 3

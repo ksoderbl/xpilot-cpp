@@ -38,7 +38,7 @@
 #include "score.h"
 #include "saudio.h"
 #include "cannon.h"
-#include "objpos.h"
+#include "object.h"
 #include "netserver.h"
 #include "xperror.h"
 #include "xpmath.h"

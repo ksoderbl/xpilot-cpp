@@ -38,7 +38,7 @@
 #include "netserver.h"
 #include "saudio.h"
 #include "xperror.h"
-#include "objpos.h"
+#include "object.h"
 #include "draw.h"
 #include "xpmath.h"
 

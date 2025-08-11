@@ -644,22 +644,14 @@ static void Robot_talks(enum robot_talk_t says_what,
     }
 
     if (next_msg == -1)
-    {
         next_msg = (int)(rfrac() * 997);
-    }
     if (++next_msg > 997)
-    {
         next_msg = 0;
-    }
     i = next_msg % n;
     if (two == 2)
-    {
         sprintf(msg, msgsp[i], other_name, robot_name);
-    }
     else
-    {
         sprintf(msg, msgsp[i], robot_name);
-    }
     Set_message(msg);
 }
 

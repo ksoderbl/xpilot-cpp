@@ -34,7 +34,7 @@
 #include "proto.h"
 #include "saudio.h"
 #include "score.h"
-#include "objpos.h"
+#include "object.h"
 #include "xpmath.h"
 
 int Punish_team(int ind, int t_destroyed, int t_target)

@@ -104,13 +104,12 @@ am_xpilot_cpp_server_OBJECTS = alliance.$(OBJEXT) asteroid.$(OBJEXT) \
 	event.$(OBJEXT) fileparser.$(OBJEXT) frame.$(OBJEXT) \
 	id.$(OBJEXT) item.$(OBJEXT) laser.$(OBJEXT) map.$(OBJEXT) \
 	metaserver.$(OBJEXT) netserver.$(OBJEXT) object.$(OBJEXT) \
-	objpos.$(OBJEXT) option.$(OBJEXT) parser.$(OBJEXT) \
-	play.$(OBJEXT) player.$(OBJEXT) robot.$(OBJEXT) \
-	robotdef.$(OBJEXT) rules.$(OBJEXT) saudio.$(OBJEXT) \
-	sched.$(OBJEXT) score.$(OBJEXT) server.$(OBJEXT) \
-	ship.$(OBJEXT) shot.$(OBJEXT) showtime.$(OBJEXT) \
-	stratbot.$(OBJEXT) tuner.$(OBJEXT) update.$(OBJEXT) \
-	walls.$(OBJEXT) wildmap.$(OBJEXT)
+	option.$(OBJEXT) parser.$(OBJEXT) play.$(OBJEXT) \
+	player.$(OBJEXT) robot.$(OBJEXT) robotdef.$(OBJEXT) \
+	rules.$(OBJEXT) saudio.$(OBJEXT) sched.$(OBJEXT) \
+	score.$(OBJEXT) server.$(OBJEXT) ship.$(OBJEXT) shot.$(OBJEXT) \
+	showtime.$(OBJEXT) stratbot.$(OBJEXT) tuner.$(OBJEXT) \
+	update.$(OBJEXT) walls.$(OBJEXT) wildmap.$(OBJEXT)
 xpilot_cpp_server_OBJECTS = $(am_xpilot_cpp_server_OBJECTS)
 xpilot_cpp_server_DEPENDENCIES = ../common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -136,9 +135,9 @@ am__depfiles_remade = ./$(DEPDIR)/alliance.Po ./$(DEPDIR)/asteroid.Po \
 	./$(DEPDIR)/frame.Po ./$(DEPDIR)/id.Po ./$(DEPDIR)/item.Po \
 	./$(DEPDIR)/laser.Po ./$(DEPDIR)/map.Po \
 	./$(DEPDIR)/metaserver.Po ./$(DEPDIR)/netserver.Po \
-	./$(DEPDIR)/object.Po ./$(DEPDIR)/objpos.Po \
-	./$(DEPDIR)/option.Po ./$(DEPDIR)/parser.Po \
-	./$(DEPDIR)/play.Po ./$(DEPDIR)/player.Po ./$(DEPDIR)/robot.Po \
+	./$(DEPDIR)/object.Po ./$(DEPDIR)/option.Po \
+	./$(DEPDIR)/parser.Po ./$(DEPDIR)/play.Po \
+	./$(DEPDIR)/player.Po ./$(DEPDIR)/robot.Po \
 	./$(DEPDIR)/robotdef.Po ./$(DEPDIR)/rules.Po \
 	./$(DEPDIR)/saudio.Po ./$(DEPDIR)/sched.Po \
 	./$(DEPDIR)/score.Po ./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po \
@@ -316,8 +315,6 @@ xpilot_cpp_server_SOURCES = \
     netserver.h \
     object.cpp \
     object.h \
-    objpos.cpp \
-    objpos.h \
     option.cpp \
     option.h \
     parser.cpp \
@@ -453,7 +450,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/metaserver.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netserver.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objpos.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/option.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/play.Po@am__quote@ # am--include-marker
@@ -638,7 +634,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/metaserver.Po
 	-rm -f ./$(DEPDIR)/netserver.Po
 	-rm -f ./$(DEPDIR)/object.Po
-	-rm -f ./$(DEPDIR)/objpos.Po
 	-rm -f ./$(DEPDIR)/option.Po
 	-rm -f ./$(DEPDIR)/parser.Po
 	-rm -f ./$(DEPDIR)/play.Po
@@ -721,7 +716,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/metaserver.Po
 	-rm -f ./$(DEPDIR)/netserver.Po
 	-rm -f ./$(DEPDIR)/object.Po
-	-rm -f ./$(DEPDIR)/objpos.Po
 	-rm -f ./$(DEPDIR)/option.Po
 	-rm -f ./$(DEPDIR)/parser.Po
 	-rm -f ./$(DEPDIR)/play.Po

@@ -30,8 +30,6 @@ xpilot_cpp_server_SOURCES = \
     netserver.h \
     object.cpp \
     object.h \
-    objpos.cpp \
-    objpos.h \
     option.cpp \
     option.h \
     parser.cpp \
