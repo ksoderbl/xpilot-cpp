@@ -62,8 +62,6 @@
 // #include "xpmath.h"
 
 /* list containing pointers to all asteroids */
-// static list_t Asteroid_list = NULL;
-
 std::vector<wireobject_t *> Asteroid_vector;
 
 /*
@@ -76,11 +74,6 @@ static void Make_asteroid(int cx, int cy,
 /*
 ** Return the asteroid list.
 */
-// list_t Asteroid_get_list(void)
-// {
-//     return Asteroid_list;
-// }
-
 std::vector<wireobject_t *> &Asteroid_get_list(void)
 {
     return Asteroid_vector;
@@ -88,25 +81,6 @@ std::vector<wireobject_t *> &Asteroid_get_list(void)
 
 static bool Asteroid_add_to_list(wireobject_t *ast)
 {
-    // list_iter_t list_pos;
-    // bool result = false;
-
-    // if (Asteroid_list == NULL)
-    // {
-    //     Asteroid_list = List_new();
-    // }
-
-    // if (Asteroid_list != NULL)
-    // {
-    //     list_pos = List_push_back(Asteroid_list, ast);
-    //     if (list_pos != NULL)
-    //     {
-    //         result = true;
-    //     }
-    // }
-
-    // return result;
-
     // TODO: handle errors/exceptions
     Asteroid_vector.push_back(ast);
     return true;
@@ -114,20 +88,6 @@ static bool Asteroid_add_to_list(wireobject_t *ast)
 
 static bool Asteroid_remove_from_list(wireobject_t *ast)
 {
-    // list_iter_t list_pos;
-    // bool result = false;
-
-    // if (Asteroid_list != NULL)
-    // {
-    //     list_pos = List_find(Asteroid_list, ast);
-    //     if (list_pos != List_end(Asteroid_list))
-    //     {
-    //         List_erase(Asteroid_list, list_pos);
-    //         result = true;
-    //     }
-    // }
-
-    // return result;
     bool result = false;
     const auto it = std::find(Asteroid_vector.begin(), Asteroid_vector.end(), ast);
     if (it == Asteroid_vector.end())
@@ -493,8 +453,6 @@ static void Asteroid_rotate(wireobject_t *wireobj)
 void Asteroid_update(void)
 {
     int num;
-    list_t list;
-    list_iter_t iter;
     wireobject_t *asteroid;
 
     {

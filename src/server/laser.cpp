@@ -393,18 +393,14 @@ static list_t Laser_pulse_get_object_list(
     object_t *ast;
 
     if (input_obj_list != NULL)
-    {
         List_clear(input_obj_list);
-    }
     output_obj_list = input_obj_list;
 
     std::vector<wireobject_t *> &asteroids = Asteroid_get_list();
     if (asteroids.size() > 0)
     {
         if (output_obj_list == NULL)
-        {
             output_obj_list = List_new();
-        }
         if (output_obj_list != NULL)
         {
             /* fill list with interesting objects
@@ -491,21 +487,13 @@ void Laser_pulse_collision(void)
         if (BIT(World.rules->mode, WRAP_PLAY))
         {
             if (pulse->pos.x < 0)
-            {
                 pulse->pos.x += World.width;
-            }
             else if (pulse->pos.x >= World.width)
-            {
                 pulse->pos.x -= World.width;
-            }
             if (pulse->pos.y < 0)
-            {
                 pulse->pos.y += World.height;
-            }
             else if (pulse->pos.y >= World.height)
-            {
                 pulse->pos.y -= World.height;
-            }
             x1 = pulse->pos.x;
             y1 = pulse->pos.y;
             x2 = x1 + tcos(pulse->dir) * pulse->len;
