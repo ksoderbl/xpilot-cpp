@@ -50,22 +50,22 @@
  * Two macros for edge wrap of x and y coordinates measured in clicks.
  * Note that the correction needed should never be bigger than the size of the map.
  */
-#define WRAP_XCLICK(x_)                        \
-    (BIT(World.rules->mode, WRAP_PLAY)         \
-         ? ((x_) < 0                           \
-                ? (x_) + mp.click_width        \
-                : ((x_) >= mp.click_width      \
-                       ? (x_) - mp.click_width \
-                       : (x_)))                \
+#define WRAP_XCLICK(x_)                           \
+    (BIT(World.rules->mode, WRAP_PLAY)            \
+         ? ((x_) < 0                              \
+                ? (x_) + World.click_width        \
+                : ((x_) >= World.click_width      \
+                       ? (x_) - World.click_width \
+                       : (x_)))                   \
          : (x_))
 
-#define WRAP_YCLICK(y_)                         \
-    (BIT(World.rules->mode, WRAP_PLAY)          \
-         ? ((y_) < 0                            \
-                ? (y_) + mp.click_height        \
-                : ((y_) >= mp.click_height      \
-                       ? (y_) - mp.click_height \
-                       : (y_)))                 \
+#define WRAP_YCLICK(y_)                            \
+    (BIT(World.rules->mode, WRAP_PLAY)             \
+         ? ((y_) < 0                               \
+                ? (y_) + World.click_height        \
+                : ((y_) >= World.click_height      \
+                       ? (y_) - World.click_height \
+                       : (y_)))                    \
          : (y_))
 
 typedef int click_t;

@@ -228,12 +228,12 @@ typedef struct
 
 typedef struct
 {
-    int x, y;            /* Size of world in blocks */
-    int diagonal;        /* Diagonal length in blocks */
-    int width, height;   /* Size of world in pixels (optimization) */
-    int hypotenuse;      /* Diagonal length in pixels (optimization) */
-    int cwidth, cheight; /* Size of world in clicks (optimization) */
-    double chypotenuse;  /* Diagonal length in clicks (optimization) */
+    int x, y;                      /* Size of world in blocks */
+    int diagonal;                  /* Diagonal length in blocks */
+    int width, height;             /* Size of world in pixels (optimization) */
+    int hypotenuse;                /* Diagonal length in pixels (optimization) */
+    int click_width, click_height; /* Size of world in clicks (optimization) */
+    double click_hypotenuse;       /* Diagonal length in clicks (optimization) */
 
     rules_t *rules;
     char name[MAX_CHARS];

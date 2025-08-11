@@ -90,9 +90,9 @@ static void Init_map(void)
     World.height = World.y * BLOCK_SZ;
     World.hypotenuse = (int)LENGTH(World.width, World.height);
 
-    World.cwidth = PIXEL_TO_CLICK(World.width);
-    World.cheight = PIXEL_TO_CLICK(World.height);
-    World.chypotenuse = LENGTH(World.cwidth, World.cheight);
+    World.click_width = PIXEL_TO_CLICK(World.width);
+    World.click_height = PIXEL_TO_CLICK(World.height);
+    World.click_hypotenuse = LENGTH(World.click_width, World.click_height);
 
     World.NumFuels = 0;
     World.NumBases = 0;
@@ -292,9 +292,9 @@ bool Grok_map(void)
     World.height = World.y * BLOCK_SZ;
     World.hypotenuse = (int)LENGTH(World.width, World.height);
 
-    World.cwidth = PIXEL_TO_CLICK(World.width);
-    World.cheight = PIXEL_TO_CLICK(World.height);
-    World.chypotenuse = LENGTH(World.cwidth, World.cheight);
+    World.click_width = PIXEL_TO_CLICK(World.width);
+    World.click_height = PIXEL_TO_CLICK(World.height);
+    World.click_hypotenuse = LENGTH(World.click_width, World.click_height);
 
     strlcpy(World.name, options.mapName, sizeof(World.name));
     strlcpy(World.author, options.mapAuthor, sizeof(World.author));
@@ -1116,9 +1116,9 @@ static void Generate_random_map(void)
     World.height = World.y * BLOCK_SZ;
     World.hypotenuse = (int)LENGTH(World.width, World.height);
 
-    World.cwidth = PIXEL_TO_CLICK(World.width);
-    World.cheight = PIXEL_TO_CLICK(World.height);
-    World.chypotenuse = LENGTH(World.cwidth, World.cheight);
+    World.click_width = PIXEL_TO_CLICK(World.width);
+    World.click_height = PIXEL_TO_CLICK(World.height);
+    World.click_hypotenuse = LENGTH(World.click_width, World.click_height);
 }
 
 /*
@@ -1307,6 +1307,7 @@ static void Find_base_order(void)
     }
 }
 
+// TODO: add click version
 DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy)
 {
     dx = WRAP_DX(dx);
@@ -1314,6 +1315,7 @@ DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy)
     return findDir(dx, dy);
 }
 
+// TODO: add click version
 DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy)
 {
     dx = WRAP_DX(dx);

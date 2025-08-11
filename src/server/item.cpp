@@ -465,11 +465,9 @@ void Detonate_items(int ind)
 
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MINE] < options.nukeMinMines)
-            {
                 CLR_BIT(mods.nuclear, NUCLEAR);
-            }
             Place_general_mine(owner_ind, pl->team, GRAVITY,
-                               pl->pos.x, pl->pos.y,
+                               pl->pos.cx, pl->pos.cy,
                                pl->vel.x + vel * tcos(dir),
                                pl->vel.y + vel * tsin(dir),
                                mods);
@@ -509,7 +507,7 @@ void Detonate_items(int ind)
             {
                 CLR_BIT(mods.nuclear, NUCLEAR);
             }
-            Fire_general_shot(owner_ind, 0, pl->team, pl->pos.x, pl->pos.y,
+            Fire_general_shot(owner_ind, 0, pl->team, pl->pos.cx, pl->pos.cy,
                               type, (int)(rfrac() * RES), mods, -1);
         }
     }
@@ -534,12 +532,12 @@ void Tractor_beam(int ind)
         CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
         return;
     }
-    General_tractor_beam(ind, pl->pos.x, pl->pos.y,
+    General_tractor_beam(ind, pl->pos.cx, pl->pos.cy,
                          pl->item[ITEM_TRACTOR_BEAM],
                          GetInd[pl->lock.pl_id], pl->tractor_is_pressor);
 }
 
-void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
+void General_tractor_beam(int ind, int cx, int cy,
                           int items, int target, bool pressor)
 {
     player_t *pl = (ind == -1 ? NULL : Players[ind]),
@@ -549,10 +547,9 @@ void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
            percent, force, dist;
     long cost;
     int theta;
-    int cx = FLOAT_TO_CLICK(x);
-    int cy = FLOAT_TO_CLICK(y);
 
-    dist = Wrap_length(x - victim->pos.x, y - victim->pos.y);
+    // TODO
+    dist = Wrap_length(CLICK_TO_PIXEL(cx - victim->pos.cx), CLICK_TO_PIXEL(cy - victim->pos.cy));
     if (dist > maxdist)
         return;
     percent = TRACTOR_PERCENT(dist, maxdist);
@@ -565,7 +562,8 @@ void General_tractor_beam(int ind, DFLOAT x, DFLOAT y,
     if (pl)
         Add_fuel(&(pl->fuel), cost);
 
-    theta = (int)Wrap_findDir(x - victim->pos.x, y - victim->pos.y);
+    // TODO
+    theta = (int)Wrap_findDir(CLICK_TO_PIXEL(cx - victim->pos.cx), CLICK_TO_PIXEL(cy - victim->pos.cy));
 
     if (pl)
     {
@@ -680,10 +678,10 @@ void Do_transporter(int ind)
     }
 
     /* victim found */
-    Do_general_transporter(ind, pl->pos.x, pl->pos.y, target, NULL, NULL);
+    Do_general_transporter(ind, pl->pos.cx, pl->pos.cy, target, NULL, NULL);
 }
 
-void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
+void Do_general_transporter(int ind, int cx, int cy, int target,
                             int *itemp, long *amountp)
 {
     player_t *pl = (ind == -1 ? NULL : Players[ind]),
@@ -693,8 +691,6 @@ void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
     int i;
     int item = ITEM_FUEL;
     long amount;
-    int cx = FLOAT_TO_CLICK(x);
-    int cy = FLOAT_TO_CLICK(y);
 
     /* choose item type to steal */
     for (i = 0; i < 50; i++)
@@ -723,8 +719,8 @@ void Do_general_transporter(int ind, DFLOAT x, DFLOAT y, int target,
             Transporters[NumTransporters] = (trans_t *)malloc(sizeof(trans_t));
             if (Transporters[NumTransporters] != NULL)
             {
-                Transporters[NumTransporters]->pos.x = x;
-                Transporters[NumTransporters]->pos.y = y;
+                Transporters[NumTransporters]->clk_pos.cx = cx;
+                Transporters[NumTransporters]->clk_pos.cy = cy;
                 Transporters[NumTransporters]->target = victim->id;
                 Transporters[NumTransporters]->id = (pl ? pl->id : NO_ID);
                 Transporters[NumTransporters]->count = 5;
@@ -995,7 +991,7 @@ void do_lose_item(int ind)
     Item_update_flags(pl);
 }
 
-void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
+void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
 {
     object_t *shot;
     mineobject_t *closest_mine = NULL;
@@ -1006,21 +1002,15 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
     DFLOAT range, perim, damage;
     player_t *pl = (ind == -1 ? NULL : Players[ind]), *p;
     ecm_t *ecm;
-    int cx = FLOAT_TO_CLICK(x);
-    int cy = FLOAT_TO_CLICK(y);
 
     if (NumEcms >= MAX_TOTAL_ECMS)
-    {
         return;
-    }
     Ecms[NumEcms] = (ecm_t *)malloc(sizeof(ecm_t));
     if (Ecms[NumEcms] == NULL)
-    {
         return;
-    }
     ecm = Ecms[NumEcms];
-    ecm->pos.x = x;
-    ecm->pos.y = y;
+    ecm->clk_pos.cx = cx;
+    ecm->clk_pos.cy = cy;
     ecm->id = (pl ? pl->id : NO_ID);
     ecm->size = (int)ECM_DISTANCE;
     NumEcms++;
@@ -1038,8 +1028,8 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
 
         if (!BIT(shot->type, OBJ_SMART_SHOT | OBJ_MINE))
             continue;
-        if ((range = Wrap_length(x - shot->pos.x,
-                                 y - shot->pos.y)) > ECM_DISTANCE)
+        if ((range = Wrap_length(CLICK_TO_FLOAT(cx - shot->pos.cx),
+                                 CLICK_TO_FLOAT(cy - shot->pos.cy))) > ECM_DISTANCE)
             continue;
 
         /*
@@ -1057,22 +1047,16 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
                 if (shot->type == OBJ_MINE)
                 {
                     if (BIT(shot->status, OWNERIMMUNE))
-                    {
                         continue;
-                    }
                 }
                 if (shot->type == OBJ_SMART_SHOT)
                 {
                     if (shot->info != owner)
-                    {
                         continue;
-                    }
                 }
             }
             else if ((pl && Team_immune(pl->id, owner)) || (BIT(World.rules->mode, TEAM_PLAY) && team == shot->team))
-            {
                 continue;
-            }
         }
 
         switch (shot->type)
@@ -1164,7 +1148,7 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
             cannon_t *c = World.cannon + i;
             if (BIT(World.rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
-            range = Wrap_length(x - c->pix_pos.x, y - c->pix_pos.y);
+            range = Wrap_length(CLICK_TO_FLOAT(cx - c->clk_pos.cx), CLICK_TO_FLOAT(cy - c->clk_pos.cy));
             if (range > ECM_DISTANCE)
                 continue;
             damage = (ECM_DISTANCE - range) / ECM_DISTANCE;
@@ -1197,8 +1181,8 @@ void Fire_general_ecm(int ind, unsigned short team, DFLOAT x, DFLOAT y)
 
         if (BIT(p->status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
         {
-            range = Wrap_length(x - p->pos.x,
-                                y - p->pos.y);
+            range = Wrap_length(CLICK_TO_FLOAT(cx - p->pos.cx),
+                                CLICK_TO_FLOAT(cy - p->pos.cy));
             if (range > ECM_DISTANCE)
                 continue;
 

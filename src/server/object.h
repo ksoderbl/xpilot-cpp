@@ -391,7 +391,8 @@ struct _visibility
 typedef struct
 {
     int size;
-    position_t pos;
+    // position_t pos;
+    clpos_t clk_pos;
     int id;
 } ecm_t;
 
@@ -401,6 +402,7 @@ typedef struct
 typedef struct
 {
     position_t pos;
+    // clpos_t clk_pos; // TODO
     int dir;
     int len;
     int life;
@@ -415,7 +417,8 @@ typedef struct
  */
 typedef struct
 {
-    position_t pos;
+    // position_t pos;
+    clpos_t clk_pos;
     int target;
     int id;
     int count;

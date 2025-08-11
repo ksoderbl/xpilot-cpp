@@ -962,7 +962,7 @@ static void Frame_ships(connection_t *connp, int ind)
              *pl_i;
     pulse_t *pulse;
     int i, j, k, color, dir;
-    DFLOAT x, y;
+    int cx, cy;
 
     for (j = 0; j < NumPulses; j++)
     {
@@ -971,31 +971,25 @@ static void Frame_ships(connection_t *connp, int ind)
         {
             continue;
         }
-        x = pulse->pos.x;
-        y = pulse->pos.y;
+        cx = FLOAT_TO_CLICK(pulse->pos.x);
+        cy = FLOAT_TO_CLICK(pulse->pos.y);
         if (BIT(World.rules->mode, WRAP_PLAY))
         {
-            if (x < 0)
-            {
-                x += World.width;
-            }
-            else if (x >= World.width)
-            {
-                x -= World.width;
-            }
-            if (y < 0)
-            {
-                y += World.height;
-            }
-            else if (y >= World.height)
-            {
-                y -= World.height;
-            }
+            if (cx < 0)
+                cx += World.click_width;
+            else if (cx >= World.click_width)
+                cx -= World.click_width;
+            if (cy < 0)
+                cy += World.click_height;
+            else if (cy >= World.click_height)
+                cy -= World.click_height;
         }
+
+        DFLOAT x = CLICK_TO_FLOAT(cx);
+        DFLOAT y = CLICK_TO_FLOAT(cy);
+
         if (inview(x, y))
-        {
             dir = pulse->dir;
-        }
         else
         {
             x += tcos(pulse->dir) * pulse->len;
@@ -1003,21 +997,13 @@ static void Frame_ships(connection_t *connp, int ind)
             if (BIT(World.rules->mode, WRAP_PLAY))
             {
                 if (x < 0)
-                {
                     x += World.width;
-                }
                 else if (x >= World.width)
-                {
                     x -= World.width;
-                }
                 if (y < 0)
-                {
                     y += World.height;
-                }
                 else if (y >= World.height)
-                {
                     y -= World.height;
-                }
             }
             if (inview(x, y))
             {
@@ -1045,16 +1031,16 @@ static void Frame_ships(connection_t *connp, int ind)
     for (i = 0; i < NumEcms; i++)
     {
         ecm_t *ecm = Ecms[i];
-        Send_ecm(connp, (int)ecm->pos.x, (int)ecm->pos.y, ecm->size);
+        Send_ecm(connp, CLICK_TO_PIXEL(ecm->clk_pos.cx), CLICK_TO_PIXEL(ecm->clk_pos.cy), ecm->size);
     }
     for (i = 0; i < NumTransporters; i++)
     {
         trans_t *trans = Transporters[i];
         player_t *victim = Players[GetInd[trans->target]],
                  *pl = (trans->id == NO_ID ? NULL : Players[GetInd[trans->id]]);
-        DFLOAT x = (pl ? pl->pos.x : trans->pos.x),
-               y = (pl ? pl->pos.y : trans->pos.y);
-        Send_trans(connp, victim->pos.x, victim->pos.y, (int)x, (int)y);
+        int cx = (pl ? pl->pos.cx : trans->clk_pos.cx);
+        int cy = (pl ? pl->pos.cy : trans->clk_pos.cy);
+        Send_trans(connp, victim->pos.x, victim->pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
     }
     for (i = 0; i < World.NumCannons; i++)
     {
@@ -1070,8 +1056,8 @@ static void Frame_ships(connection_t *connp, int ind)
                     Send_connector(connp,
                                    (int)(t->pos.x + t->ship->pts[j][t->dir].x),
                                    (int)(t->pos.y + t->ship->pts[j][t->dir].y),
-                                   (int)cannon->pix_pos.x,
-                                   (int)cannon->pix_pos.y, 1);
+                                   CLICK_TO_PIXEL(cannon->clk_pos.cx),
+                                   CLICK_TO_PIXEL(cannon->clk_pos.cy), 1);
                 }
             }
         }
@@ -1082,17 +1068,11 @@ static void Frame_ships(connection_t *connp, int ind)
         i = player_shuffle_ptr[k];
         pl_i = Players[i];
         if (!BIT(pl_i->status, PLAYING | PAUSE))
-        {
             continue;
-        }
         if (BIT(pl_i->status, GAME_OVER))
-        {
             continue;
-        }
         if (!inview(pl_i->pos.x, pl_i->pos.y))
-        {
             continue;
-        }
         if (BIT(pl_i->status, PAUSE))
         {
             Send_paused(connp,

@@ -735,7 +735,7 @@ void Update_objects(void)
                             Players[ind]->pos.y - cannon->pix_pos.y) < TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
                 BIT(Players[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
-                General_tractor_beam(-1, cannon->pix_pos.x, cannon->pix_pos.y,
+                General_tractor_beam(-1, cannon->clk_pos.cx, cannon->clk_pos.cy,
                                      cannon->item[ITEM_TRACTOR_BEAM], ind,
                                      cannon->tractor_is_pressor);
                 cannon->tractor_count--;
