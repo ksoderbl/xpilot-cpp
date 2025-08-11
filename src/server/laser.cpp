@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -33,7 +35,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "list.h"
 #include "global.h"
 #include "proto.h"
 #include "map.h"
@@ -380,48 +381,38 @@ static int Laser_pulse_check_player_hits(
     return hits;
 }
 
-static list_t Laser_pulse_get_object_list(
-    list_t input_obj_list,
+static void Laser_pulse_get_object_list(
+    std::vector<object_t *> &obj_list,
     pulse_t *pulse,
     DFLOAT midx,
     DFLOAT midy)
 {
-    list_t output_obj_list;
     DFLOAT dx, dy;
     int range;
     list_iter_t iter;
     object_t *ast;
 
-    if (input_obj_list != NULL)
-        List_clear(input_obj_list);
-    output_obj_list = input_obj_list;
+    obj_list.clear();
 
     std::vector<wireobject_t *> &asteroids = Asteroid_get_list();
     if (asteroids.size() > 0)
     {
-        if (output_obj_list == NULL)
-            output_obj_list = List_new();
-        if (output_obj_list != NULL)
+        /* fill list with interesting objects
+         * which are close to our pulse. */
+        for (wireobject_t *wireobject : asteroids)
         {
-            /* fill list with interesting objects
-             * which are close to our pulse. */
-            for (wireobject_t *wireobject : asteroids)
+            ast = OBJ_PTR(wireobject);
+            dx = midx - ast->pos.x;
+            dy = midy - ast->pos.y;
+            dx = WRAP_DX(dx);
+            dy = WRAP_DY(dy);
+            range = ast->pl_radius + pulse->len / 2;
+            if (sqr(dx) + sqr(dy) < sqr(range))
             {
-                ast = OBJ_PTR(wireobject);
-                dx = midx - ast->pos.x;
-                dy = midy - ast->pos.y;
-                dx = WRAP_DX(dx);
-                dy = WRAP_DY(dy);
-                range = ast->pl_radius + pulse->len / 2;
-                if (sqr(dx) + sqr(dy) < sqr(range))
-                {
-                    List_push_back(output_obj_list, ast);
-                }
+                obj_list.push_back(ast);
             }
         }
     }
-
-    return output_obj_list;
 }
 
 /*
@@ -441,8 +432,7 @@ void Laser_pulse_collision(void)
     /* player                        *pl; */
     pulse_t *pulse;
     object_t *obj = NULL, *ast = NULL;
-    list_t obj_list = NULL;
-    list_iter_t iter;
+    std::vector<object_t *> obj_list;
 
     /*
      * Allocate one object with which we will
@@ -562,10 +552,20 @@ void Laser_pulse_collision(void)
             Laser_pulse_find_victims(&vicbuf, pulse, midx, midy);
         }
 
-        obj_list = Laser_pulse_get_object_list(
+        Laser_pulse_get_object_list(
             obj_list,
             pulse,
             midx, midy);
+
+        if (obj_list.size() > 0)
+        {
+            printf("Laser_pulse_collision: pulse %d, obj_list.size() = %d\n", p, obj_list.size());
+            if (ind >= 0)
+            {
+                player_t *pl = Players[ind];
+                printf("Laser_pulse_collision: Player %d: %s\n", ind, pl->name);
+            }
+        }
 
         obj->type = OBJ_PULSE;
         obj->life = 1;
@@ -574,9 +574,7 @@ void Laser_pulse_collision(void)
         obj->count = 0;
         obj->status = 0;
         if (pulse->id == NO_ID)
-        {
             obj->status = FROMCANNON;
-        }
         int cx = FLOAT_TO_CLICK(x1);
         int cy = FLOAT_TO_CLICK(y1);
         Object_position_init_clicks(obj, cx, cy);
@@ -594,9 +592,7 @@ void Laser_pulse_collision(void)
                chance of it happening though. */
             Move_object(obj);
             if (obj->life == 0)
-            {
                 break;
-            }
             if (BIT(World.rules->mode, WRAP_PLAY))
             {
                 if (x < 0)
@@ -622,14 +618,11 @@ void Laser_pulse_collision(void)
             }
 
             /* check for collision with objects. */
-            if (obj_list != NULL)
+            if (obj_list.size() > 0)
             {
-                for (iter = List_begin(obj_list);
-                     iter != List_end(obj_list);
-                     LI_FORWARD(iter))
+                for (object_t *ast : obj_list)
                 {
                     DFLOAT adx, ady;
-                    ast = (object_t *)LI_DATA(iter);
                     adx = x - ast->pos.x;
                     ady = y - ast->pos.y;
                     adx = WRAP_DX(adx);
@@ -673,21 +666,12 @@ void Laser_pulse_collision(void)
         }
 
         if (i < max && refl == false)
-        {
             pulse->len = (pulse->len * i) / max;
-        }
     }
     if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
-    {
         free(vicbuf.vic_ptr);
-    }
 
     obj->type = OBJ_DEBRIS;
     obj->life = 0;
     Cell_add_object(obj);
-
-    if (obj_list != NULL)
-    {
-        List_delete(obj_list);
-    }
 }

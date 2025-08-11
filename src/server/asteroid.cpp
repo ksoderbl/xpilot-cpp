@@ -465,7 +465,7 @@ void Asteroid_update(void)
          * the rest are left until the next frame then
          * */
         num = World.asteroids.num;
-        printf("Asteroid_update, number of asteroids: %d\n", num);
+        // printf("Asteroid_update, number of asteroids: %d\n", num);
         if (num > World.asteroids.max)
         {
             for (wireobject_t *asteroid : Asteroid_vector)
