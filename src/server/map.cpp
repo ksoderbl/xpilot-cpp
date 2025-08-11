@@ -619,10 +619,10 @@ bool Grok_map(void)
                     World.cannon[World.NumCannons].dir = DIR_UP;
                     World.cannon[World.NumCannons].blk_pos.x = x;
                     World.cannon[World.NumCannons].blk_pos.y = y;
-                    World.cannon[World.NumCannons].pix_pos.x =
-                        (x + 0.5) * BLOCK_SZ;
-                    World.cannon[World.NumCannons].pix_pos.y =
-                        (y + 0.333) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.cannon[World.NumCannons].clk_pos.cy = (y + 0.333) * BLOCK_CLICKS;
                     World.cannon[World.NumCannons].dead_time = 0;
                     World.cannon[World.NumCannons].conn_mask = (unsigned)-1;
                     World.cannon[World.NumCannons].team = TEAM_NOT_SET;
@@ -635,10 +635,10 @@ bool Grok_map(void)
                     World.cannon[World.NumCannons].dir = DIR_LEFT;
                     World.cannon[World.NumCannons].blk_pos.x = x;
                     World.cannon[World.NumCannons].blk_pos.y = y;
-                    World.cannon[World.NumCannons].pix_pos.x =
-                        (x + 0.667) * BLOCK_SZ;
-                    World.cannon[World.NumCannons].pix_pos.y =
-                        (y + 0.5) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].clk_pos.cx = (x + 0.667) * BLOCK_CLICKS;
+                    World.cannon[World.NumCannons].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.cannon[World.NumCannons].dead_time = 0;
                     World.cannon[World.NumCannons].conn_mask = (unsigned)-1;
                     World.cannon[World.NumCannons].team = TEAM_NOT_SET;
@@ -651,10 +651,10 @@ bool Grok_map(void)
                     World.cannon[World.NumCannons].dir = DIR_RIGHT;
                     World.cannon[World.NumCannons].blk_pos.x = x;
                     World.cannon[World.NumCannons].blk_pos.y = y;
-                    World.cannon[World.NumCannons].pix_pos.x =
-                        (x + 0.333) * BLOCK_SZ;
-                    World.cannon[World.NumCannons].pix_pos.y =
-                        (y + 0.5) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].clk_pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                    World.cannon[World.NumCannons].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.cannon[World.NumCannons].dead_time = 0;
                     World.cannon[World.NumCannons].conn_mask = (unsigned)-1;
                     World.cannon[World.NumCannons].team = TEAM_NOT_SET;
@@ -667,10 +667,10 @@ bool Grok_map(void)
                     World.cannon[World.NumCannons].dir = DIR_DOWN;
                     World.cannon[World.NumCannons].blk_pos.x = x;
                     World.cannon[World.NumCannons].blk_pos.y = y;
-                    World.cannon[World.NumCannons].pix_pos.x =
-                        (x + 0.5) * BLOCK_SZ;
-                    World.cannon[World.NumCannons].pix_pos.y =
-                        (y + 0.667) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
+                    World.cannon[World.NumCannons].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.cannon[World.NumCannons].clk_pos.cy = (y + 0.667) * BLOCK_CLICKS;
                     World.cannon[World.NumCannons].dead_time = 0;
                     World.cannon[World.NumCannons].conn_mask = (unsigned)-1;
                     World.cannon[World.NumCannons].team = TEAM_NOT_SET;
@@ -683,8 +683,10 @@ bool Grok_map(void)
                     itemID[y] = World.NumFuels;
                     World.fuel[World.NumFuels].blk_pos.x = x;
                     World.fuel[World.NumFuels].blk_pos.y = y;
-                    World.fuel[World.NumFuels].pix_pos.x = (x + 0.5f) * BLOCK_SZ;
-                    World.fuel[World.NumFuels].pix_pos.y = (y + 0.5f) * BLOCK_SZ;
+                    World.fuel[World.NumFuels].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    World.fuel[World.NumFuels].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    World.fuel[World.NumFuels].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.fuel[World.NumFuels].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.fuel[World.NumFuels].fuel = START_STATION_FUEL;
                     World.fuel[World.NumFuels].conn_mask = (unsigned)-1;
                     World.fuel[World.NumFuels].last_change = frame_loops;
@@ -698,7 +700,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumTreasures;
                     World.treasures[World.NumTreasures].blk_pos.x = x;
                     World.treasures[World.NumTreasures].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.treasures[World.NumTreasures].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.treasures[World.NumTreasures].clk_pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
                     World.treasures[World.NumTreasures].have = false;
                     World.treasures[World.NumTreasures].destroyed = 0;
                     World.treasures[World.NumTreasures].empty = (c == '^');
@@ -714,7 +717,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumTargets;
                     World.targets[World.NumTargets].blk_pos.x = x;
                     World.targets[World.NumTargets].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.targets[World.NumTargets].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.targets[World.NumTargets].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     /*
                      * Determining which team it belongs to is done later,
                      * in Find_closest_team().
@@ -732,7 +736,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumItemConcentrators;
                     World.itemConcentrators[World.NumItemConcentrators].blk_pos.x = x;
                     World.itemConcentrators[World.NumItemConcentrators].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.itemConcentrators[World.NumItemConcentrators].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.itemConcentrators[World.NumItemConcentrators].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.NumItemConcentrators++;
                     break;
                 case '&':
@@ -740,7 +745,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumAsteroidConcs;
                     World.asteroidConcs[World.NumAsteroidConcs].blk_pos.x = x;
                     World.asteroidConcs[World.NumAsteroidConcs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.asteroidConcs[World.NumAsteroidConcs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.asteroidConcs[World.NumAsteroidConcs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.NumAsteroidConcs++;
                     break;
                 case '$':
@@ -761,7 +767,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumBases;
                     World.base[World.NumBases].blk_pos.x = x;
                     World.base[World.NumBases].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.base[World.NumBases].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.base[World.NumBases].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
@@ -795,7 +802,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -804,7 +812,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -813,7 +822,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -822,7 +832,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -831,7 +842,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -840,7 +852,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -849,7 +862,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -858,7 +872,8 @@ bool Grok_map(void)
                     itemID[y] = World.NumGravs;
                     World.grav[World.NumGravs].blk_pos.x = x;
                     World.grav[World.NumGravs].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.grav[World.NumGravs].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.grav[World.NumGravs].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.grav[World.NumGravs].force = -GRAVS_POWER;
                     World.NumGravs++;
                     break;
@@ -868,7 +883,8 @@ bool Grok_map(void)
                 case ')':
                     World.wormHoles[World.NumWormholes].blk_pos.x = x;
                     World.wormHoles[World.NumWormholes].blk_pos.y = y;
-                    // TODO clk_pos
+                    World.wormHoles[World.NumWormholes].clk_pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    World.wormHoles[World.NumWormholes].clk_pos.cy = (y + 0.5) * BLOCK_CLICKS;
                     World.wormHoles[World.NumWormholes].countdown = 0;
                     World.wormHoles[World.NumWormholes].lastdest = -1;
                     World.wormHoles[World.NumWormholes].temporary = 0;
@@ -1018,13 +1034,9 @@ bool Grok_map(void)
                 {
                     World.teams[team].NumTreasures++;
                     if (!World.treasures[i].empty)
-                    {
                         World.teams[team].TreasuresLeft++;
-                    }
                     else
-                    {
                         World.teams[team].NumEmptyTreasures++;
-                    }
                 }
             }
             for (i = 0; i < World.NumTargets; i++)

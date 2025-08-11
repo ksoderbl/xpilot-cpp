@@ -357,9 +357,8 @@ void Make_treasure_ball(int treasure)
 {
     ballobject_t *ball;
     treasure_t *t = &(World.treasures[treasure]);
-    DFLOAT x = (t->blk_pos.x + 0.5) * BLOCK_SZ,
-           y = (t->blk_pos.y * BLOCK_SZ) + 10;
-
+    // DFLOAT x = (t->blk_pos.x + 0.5) * BLOCK_SZ,
+    //        y = (t->blk_pos.y * BLOCK_SZ) + 10;
     if (t->empty)
         return;
     if (t->have)
@@ -383,7 +382,7 @@ void Make_treasure_ball(int treasure)
     ball->vel.y = 0; /* longer to the ground */
     ball->acc.x = 0;
     ball->acc.y = 0;
-    Object_position_init_pixels(OBJ_PTR(ball), x, y);
+    Object_position_init_clicks(OBJ_PTR(ball), t->clk_pos.cx, t->clk_pos.cy);
     ball->id = NO_ID;
     ball->owner = NO_ID;
     ball->team = t->team;
