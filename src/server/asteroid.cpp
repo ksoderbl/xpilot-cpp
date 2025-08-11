@@ -48,7 +48,7 @@ static list_t Asteroid_list = NULL;
 /*
 ** Prototypes.
 */
-static void Make_asteroid(DFLOAT x, DFLOAT y,
+static void Make_asteroid(int cx, int cy,
                           int size, int dir,
                           DFLOAT speed);
 
@@ -245,7 +245,7 @@ void Break_asteroid(int ind)
 /*
  * Creates an asteroid with the given characteristics.
  */
-static void Make_asteroid(DFLOAT x, DFLOAT y,
+static void Make_asteroid(int cx, int cy,
                           int size, int dir,
                           DFLOAT speed)
 {
@@ -255,57 +255,51 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
     int by;
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
-    {
         return;
-    }
 
     if (size < 1 || size > ASTEROID_MAX_SIZE)
-    {
         return;
-    }
 
     if (BIT(World.rules->mode, WRAP_PLAY))
     {
-        if (x < 0)
-            x += World.width;
-        else if (x >= World.width)
-            x -= World.width;
-        if (y < 0)
-            y += World.height;
-        else if (y >= World.height)
-            y -= World.height;
+        if (cx < 0)
+            cx += World.click_width;
+        else if (cx >= World.click_width)
+            cx -= World.click_width;
+        if (cy < 0)
+            cy += World.click_height;
+        else if (cy >= World.click_height)
+            cy -= World.click_height;
     }
-    if (x < 0 || x >= World.width || y < 0 || y >= World.height)
-    {
+    if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
         return;
-    }
 
-    bx = x / BLOCK_SZ;
-    by = y / BLOCK_SZ;
+    bx = CLICK_TO_BLOCK(cx);
+    by = CLICK_TO_BLOCK(cy);
     if (BIT(World.block[bx][by], FILLED_BIT | FUEL_BIT | TARGET_BIT | TREASURE_BIT))
     {
         return;
     }
     else if (BIT(World.block[bx][by], REC_LU | REC_RU | REC_LD | REC_RD))
     {
-        DFLOAT x_in_b = x - bx * BLOCK_SZ,
-               y_in_b = y - by * BLOCK_SZ;
+        DFLOAT cx_in_b = cx - bx * BLOCK_CLICKS,
+               cy_in_b = cy - by * BLOCK_CLICKS;
         switch (World.block[bx][by])
         {
         case REC_LU:
-            if (x_in_b < y_in_b)
+            if (cx_in_b < cy_in_b)
                 return;
             break;
         case REC_RU:
-            if (x_in_b + y_in_b > BLOCK_SZ)
+            if (cx_in_b + cy_in_b > BLOCK_CLICKS)
                 return;
             break;
         case REC_LD:
-            if (x_in_b + y_in_b < BLOCK_SZ)
+            if (cx_in_b + cy_in_b < BLOCK_CLICKS)
                 return;
             break;
         case REC_RD:
-            if (x_in_b > y_in_b)
+            if (cx_in_b > cy_in_b)
                 return;
             break;
         }
@@ -313,9 +307,7 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
 
     asteroid = WIRE_PTR(Object_allocate());
     if (asteroid == NULL)
-    {
         return;
-    }
 
     asteroid->color = WHITE;
     asteroid->id = NO_ID;
@@ -323,7 +315,7 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
     asteroid->type = OBJ_ASTEROID;
 
     /* Position */
-    Object_position_init_pixels(OBJ_PTR(asteroid), x, y);
+    Object_position_init_clicks(OBJ_PTR(asteroid), cx, cy);
 
     asteroid->vel.x = tcos(dir) * speed;
     asteroid->vel.y = tsin(dir) * speed;
@@ -359,7 +351,7 @@ static void Make_asteroid(DFLOAT x, DFLOAT y,
 static void Place_asteroid(void)
 {
     int place_count;
-    int px = 0, py = 0;
+    int cx, cy;
     int bx, by;
     int dir, dist;
     unsigned space;
@@ -372,13 +364,9 @@ static void Place_asteroid(void)
     /* would be dubious: space |= CANNON_BIT; */
 
     if (World.NumAsteroidConcs > 0 && rfrac() < options.asteroidConcentratorProb)
-    {
         con = &World.asteroidConcs[(int)(rfrac() * World.NumAsteroidConcs)];
-    }
     else
-    {
         con = NULL;
-    }
 
     /* we bail out after 8 unsuccessful attempts to avoid wasting
      * too much time on crowded maps */
@@ -386,44 +374,40 @@ static void Place_asteroid(void)
     for (place_count = 0; okay != true; place_count++)
     {
         if (place_count >= 10)
-        {
             return;
-        }
 
         if (con)
         {
             dir = (int)(rfrac() * RES);
             dist = (int)(rfrac() * ((options.asteroidConcentratorRadius * BLOCK_SZ) + 1));
-            px = (int)((con->blk_pos.x + 0.5) * BLOCK_SZ + dist * tcos(dir));
-            py = (int)((con->blk_pos.y + 0.5) * BLOCK_SZ + dist * tsin(dir));
+            cx = (int)(con->clk_pos.cx + dist * tcos(dir) * PIXEL_CLICKS);
+            cy = (int)(con->clk_pos.cy + dist * tsin(dir) * PIXEL_CLICKS);
 
             if (BIT(World.rules->mode, WRAP_PLAY))
             {
-                if (px < 0)
-                    px += World.width;
-                if (py < 0)
-                    py += World.height;
-                if (px > World.width)
-                    px -= World.width;
-                if (py > World.height)
-                    py -= World.height;
+                if (cx < 0)
+                    cx += World.click_width;
+                if (cx > World.click_width)
+                    cx -= World.click_width;
+                if (cy < 0)
+                    cy += World.click_height;
+                if (cy > World.click_height)
+                    cy -= World.click_height;
             }
-            if (px < 0 || px >= World.width || py < 0 || py >= World.height)
-            {
+            if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
                 continue;
-            }
         }
         else
         {
-            px = (int)(rfrac() * World.width);
-            py = (int)(rfrac() * World.height);
+            cx = (int)(rfrac() * World.click_width);
+            cy = (int)(rfrac() * World.click_height);
         }
-        bx = px / BLOCK_SZ;
-        by = py / BLOCK_SZ;
+        bx = CLICK_TO_BLOCK(cx);
+        by = CLICK_TO_BLOCK(cy);
 
         if (BIT(1U << World.block[bx][by], space))
         {
-            int i, dpx, dpy, ox, oy;
+            int i, dcx, dcy, ocx, ocy;
 
             okay = true;
 
@@ -431,10 +415,12 @@ static void Place_asteroid(void)
             {
                 if (IS_HUMAN_IND(i))
                 {
-                    ox = OBJ_X_IN_PIXELS(Players[i]);
-                    oy = OBJ_Y_IN_PIXELS(Players[i]);
-                    dpx = WRAP_DX(px - ox);
-                    dpy = WRAP_DY(py - oy);
+                    ocx = OBJ_X_IN_CLICKS(Players[i]);
+                    ocy = OBJ_Y_IN_CLICKS(Players[i]);
+                    dcx = WRAP_XCLICK(cx - ocx);
+                    dcy = WRAP_YCLICK(cy - ocy);
+                    int dpx = CLICK_TO_PIXEL(dcx);
+                    int dpy = CLICK_TO_PIXEL(dcy);
                     if (sqr(dpx) + sqr(dpy) < sqr(ASTEROID_MIN_DIST))
                     {
                         /* too close to player */
@@ -447,7 +433,7 @@ static void Place_asteroid(void)
     }
     if (okay == true)
     {
-        Make_asteroid(px, py,
+        Make_asteroid(cx, cy,
                       (int)(1 + rfrac() * ASTEROID_MAX_SIZE),
                       (int)(rfrac() * RES),
                       (DFLOAT)ASTEROID_START_SPEED);
@@ -500,14 +486,10 @@ void Asteroid_update(void)
                 {
                     asteroid->life = 0;
                     if (asteroid->size == 1)
-                    {
                         num--;
-                    }
                 }
                 if (num <= World.asteroids.max)
-                {
                     break;
-                }
             }
         }
 
@@ -518,9 +500,7 @@ void Asteroid_update(void)
         {
             asteroid = (wireobject_t *)LI_DATA(iter);
             if (asteroid->life > 0)
-            {
                 Asteroid_rotate(asteroid);
-            }
         }
 
         /* move asteroids */
@@ -530,9 +510,7 @@ void Asteroid_update(void)
         {
             asteroid = (wireobject_t *)LI_DATA(iter);
             if (asteroid->life > 0)
-            {
                 Asteroid_move(asteroid);
-            }
         }
     }
 
@@ -543,9 +521,7 @@ void Asteroid_update(void)
         if (World.asteroids.num + incr < World.asteroids.max)
         {
             if ((rfrac() * World.asteroids.chance) < 1.0f)
-            {
                 Place_asteroid();
-            }
         }
     }
 }
