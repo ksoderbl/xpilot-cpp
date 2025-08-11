@@ -82,7 +82,7 @@ void Find_base_direction(void);
 void Compute_gravity(void);
 DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy);
 DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy);
-unsigned short Find_closest_team(int posx, int posy);
+unsigned short Find_closest_team(int cx, int cy);
 
 int Wildmap(
     int width,

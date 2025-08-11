@@ -1023,8 +1023,7 @@ bool Grok_map(void)
             unsigned short team = TEAM_NOT_SET;
             for (i = 0; i < World.NumTreasures; i++)
             {
-                team = Find_closest_team(World.treasures[i].blk_pos.x,
-                                         World.treasures[i].blk_pos.y);
+                team = Find_closest_team(World.treasures[i].clk_pos.cx, World.treasures[i].clk_pos.cy);
                 World.treasures[i].team = team;
                 if (team == TEAM_NOT_SET)
                 {
@@ -1041,7 +1040,7 @@ bool Grok_map(void)
             }
             for (i = 0; i < World.NumTargets; i++)
             {
-                team = Find_closest_team(World.targets[i].blk_pos.x, World.targets[i].blk_pos.y);
+                team = Find_closest_team(World.targets[i].clk_pos.cx, World.targets[i].clk_pos.cy);
                 if (team == TEAM_NOT_SET)
                 {
                     xperror("Couldn't find a matching team for the target.");
@@ -1052,7 +1051,7 @@ bool Grok_map(void)
             {
                 for (i = 0; i < World.NumCannons; i++)
                 {
-                    team = Find_closest_team(World.cannon[i].blk_pos.x, World.cannon[i].blk_pos.y);
+                    team = Find_closest_team(World.cannon[i].clk_pos.cx, World.cannon[i].clk_pos.cy);
                     if (team == TEAM_NOT_SET)
                     {
                         xperror("Couldn't find a matching team for the cannon.");
@@ -1062,8 +1061,7 @@ bool Grok_map(void)
             }
             for (i = 0; i < World.NumFuels; i++)
             {
-                team = Find_closest_team(World.fuel[i].blk_pos.x,
-                                         World.fuel[i].blk_pos.y);
+                team = Find_closest_team(World.fuel[i].clk_pos.cx, World.fuel[i].clk_pos.cy);
                 if (team == TEAM_NOT_SET)
                 {
                     xperror("Couldn't find a matching team for fuelstation.");
@@ -1236,7 +1234,7 @@ void Find_base_direction(void)
 /*
  * Return the team that is closest to this position.
  */
-unsigned short Find_closest_team(int posx, int posy)
+unsigned short Find_closest_team(int cx, int cy)
 {
     unsigned short team = TEAM_NOT_SET;
     int i;
@@ -1247,8 +1245,8 @@ unsigned short Find_closest_team(int posx, int posy)
         if (World.base[i].team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length((posx - World.base[i].blk_pos.x) * BLOCK_SZ,
-                        (posy - World.base[i].blk_pos.y) * BLOCK_SZ);
+        l = Wrap_length(CLICK_TO_FLOAT(cx - World.base[i].clk_pos.cx),
+                        CLICK_TO_FLOAT(cy - World.base[i].clk_pos.cy));
 
         if (l < closest)
         {
