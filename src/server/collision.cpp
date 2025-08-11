@@ -33,7 +33,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "list.h"
 #include "global.h"
 #include "proto.h"
 #include "map.h"
@@ -1501,21 +1500,16 @@ static void AsteroidCollision(void)
     int j, radius, obj_count;
     object_t *ast;
     object_t *obj = NULL, **obj_list;
-    list_t list;
-    list_iter_t iter;
     DFLOAT damage = 0;
     bool sound = false;
 
-    list = Asteroid_get_list();
-    if (!list)
-    {
+    std::vector<wireobject_t *> &asteroids = Asteroid_get_list();
+    if (asteroids.size() == 0)
         return;
-    }
 
-    for (iter = List_begin(list); iter != List_end(list); LI_FORWARD(iter))
+    for (wireobject_t *wireobject : asteroids)
     {
-        ast = (object_t *)LI_DATA(iter);
-
+        ast = OBJ_PTR(wireobject);
         assert(BIT(ast->type, OBJ_ASTEROID));
 
         if (ast->life <= 0)
@@ -1631,9 +1625,7 @@ static void AsteroidCollision(void)
                                             : obj->id);
                         int ind = GetInd[owner_id];
                         if (Players[ind]->score <= options.asteroidMaxScore)
-                        {
                             SCORE(ind, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
-                        }
                     }
 
                     /* break; */

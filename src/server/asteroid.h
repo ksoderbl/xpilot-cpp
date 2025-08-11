@@ -26,6 +26,9 @@
 #ifndef ASTEROID_H
 #define ASTEROID_H
 
+#include <vector>
+
+#include "object.h"
 #include "option.h"
 
 /* maximum size of asteroid */
@@ -53,5 +56,12 @@
 #define ASTEROID_MIN_DIST (5 * BLOCK_SZ)
 /* radius of asteroid size n */
 #define ASTEROID_RADIUS(size) (0.8 * SHIP_SZ * (size))
+
+/*
+ * Prototypes for asteroid.c
+ */
+void Break_asteroid(int ind);
+void Asteroid_update(void);
+std::vector<wireobject_t *> &Asteroid_get_list(void);
 
 #endif

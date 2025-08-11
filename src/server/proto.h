@@ -193,13 +193,6 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout);
 void remove_temp_wormhole(int ind);
 
 /*
- * Prototypes for asteroid.c
- */
-void Break_asteroid(int ind);
-void Asteroid_update(void);
-list_t Asteroid_get_list(void);
-
-/*
  * Prototypes for cannon.c
  */
 void Cannon_init(int ind);

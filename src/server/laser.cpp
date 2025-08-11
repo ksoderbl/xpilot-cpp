@@ -387,7 +387,6 @@ static list_t Laser_pulse_get_object_list(
     DFLOAT midy)
 {
     list_t output_obj_list;
-    list_t ast_list;
     DFLOAT dx, dy;
     int range;
     list_iter_t iter;
@@ -399,8 +398,8 @@ static list_t Laser_pulse_get_object_list(
     }
     output_obj_list = input_obj_list;
 
-    ast_list = Asteroid_get_list();
-    if (ast_list != NULL)
+    std::vector<wireobject_t *> &asteroids = Asteroid_get_list();
+    if (asteroids.size() > 0)
     {
         if (output_obj_list == NULL)
         {
@@ -410,11 +409,9 @@ static list_t Laser_pulse_get_object_list(
         {
             /* fill list with interesting objects
              * which are close to our pulse. */
-            for (iter = List_begin(ast_list);
-                 iter != List_end(ast_list);
-                 LI_FORWARD(iter))
+            for (wireobject_t *wireobject : asteroids)
             {
-                ast = (object_t *)LI_DATA(iter);
+                ast = OBJ_PTR(wireobject);
                 dx = midx - ast->pos.x;
                 dy = midy - ast->pos.y;
                 dx = WRAP_DX(dx);
