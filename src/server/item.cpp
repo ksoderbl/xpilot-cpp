@@ -346,13 +346,16 @@ void Place_item(int item, int ind)
         }
     }
 
-    Make_item(px, py,
+    int cx = PIXEL_TO_CLICK(px);
+    int cy = PIXEL_TO_CLICK(py);
+
+    Make_item(cx, cy,
               vx, vy,
               item, num_per_pack,
               grav | rand);
 }
 
-void Make_item(int px, int py,
+void Make_item(int cx, int cy,
                int vx, int vy,
                int item, int num_per_pack,
                long status)
@@ -371,7 +374,7 @@ void Make_item(int px, int py,
     obj->status = status;
     obj->id = NO_ID;
     obj->team = TEAM_NOT_SET;
-    Object_position_init_pixels(obj, px, py);
+    Object_position_init_clicks(obj, cx, cy);
     obj->vel.x = vx;
     obj->vel.y = vy;
     obj->acc.x =

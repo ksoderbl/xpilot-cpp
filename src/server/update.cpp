@@ -1335,7 +1335,7 @@ void Update_objects(void)
             }
 
             pl->wormHoleDest = j;
-            Player_position_init_pixels(pl, w.x, w.y);
+            Player_position_init_clicks(pl, FLOAT_TO_CLICK(w.x), FLOAT_TO_CLICK(w.y));
             pl->vel.x *= WORM_BRAKE_FACTOR;
             pl->vel.y *= WORM_BRAKE_FACTOR;
             pl->forceVisible += 15;

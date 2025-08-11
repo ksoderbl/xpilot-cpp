@@ -563,9 +563,7 @@ void Laser_pulse_collision(void)
         /* max is the highest absolute delta length of either x or y. */
         max = (int)MAX(ABS(dx), ABS(dy));
         if (max == 0)
-        {
             continue;
-        }
 
         /* calculate the midpoint of the new laser pulse position. */
         midx = x1 + (dx * 0.5);
@@ -594,7 +592,9 @@ void Laser_pulse_collision(void)
         {
             obj->status = FROMCANNON;
         }
-        Object_position_init_pixels(obj, x1, y1);
+        int cx = FLOAT_TO_CLICK(x1);
+        int cy = FLOAT_TO_CLICK(y1);
+        Object_position_init_clicks(obj, cx, cy);
 
         refl = false;
 

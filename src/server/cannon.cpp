@@ -111,7 +111,7 @@ void Cannon_throw_items(int ind)
                 dir = MOD2(dir, RES);
                 obj->id = NO_ID;
                 obj->team = TEAM_NOT_SET;
-                Object_position_init_pixels(obj, c->pix_pos.x, c->pix_pos.y);
+                Object_position_init_clicks(obj, c->clk_pos.cx, c->clk_pos.cy);
                 velocity = rfrac() * 6;
                 obj->vel.x = tcos(dir) * velocity;
                 obj->vel.y = tsin(dir) * velocity;

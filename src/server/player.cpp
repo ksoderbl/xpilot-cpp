@@ -200,9 +200,9 @@ void Go_home(int ind)
 
     pl->dir = dir;
     pl->float_dir = dir;
-    Player_position_init_pixels(pl,
-                                (x + 0.5) * BLOCK_SZ + vx,
-                                (y + 0.5) * BLOCK_SZ + vy);
+    Player_position_init_clicks(pl,
+                                FLOAT_TO_CLICK((x + 0.5) * BLOCK_SZ + vx),
+                                FLOAT_TO_CLICK((y + 0.5) * BLOCK_SZ + vy));
     pl->vel.x = vx;
     pl->vel.y = vy;
     pl->velocity = velo;

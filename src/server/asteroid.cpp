@@ -228,7 +228,7 @@ void Break_asteroid(int ind)
                 num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
             }
 
-            Make_item(asteroid->pos.x, asteroid->pos.y,
+            Make_item(asteroid->pos.cx, asteroid->pos.cy,
                       vx, vy,
                       item, num_per_pack,
                       status);

@@ -432,7 +432,7 @@ void Tank_handle_detach(player_t *pl)
         Player_remove_tank(NumPlayers, dummy->fuel.num_tanks);
     }
     SET_BIT(dummy->type_ext, OBJ_EXT_TANK);
-    Player_position_init_pixels(dummy, pl->pos.x, pl->pos.y);
+    Player_position_init_clicks(dummy, pl->pos.cx, pl->pos.cy);
     dummy->vel = pl->vel;
     dummy->acc = pl->acc;
     dummy->dir = pl->dir;

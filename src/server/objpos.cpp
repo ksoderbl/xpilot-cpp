@@ -40,12 +40,30 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
 {
     struct _objposition *pos = (struct _objposition *)&obj->pos;
 
-#if 0
-    if (cx < 0 || cx >= PIXEL_TO_CLICK(World.width) || 
-        cy < 0 || cy >= PIXEL_TO_CLICK(World.height)) {
-        printf("BUG!  Illegal object position %d,%d\n", cx, cy);
-        *(double *)(-1) = 4321.0;
-        abort();
+#if 1
+    if (cx < 0)
+    {
+        printf("BUG!  Illegal object position (cx < 0): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
+    }
+    if (cx >= World.click_width)
+    {
+        printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
+    }
+    if (cy < 0)
+    {
+        printf("BUG!  Illegal object position (cy < 0): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
+    }
+    if (cy >= World.click_height)
+    {
+        printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
+        // *(double *)(-1) = 4321.0;
+        // abort();
     }
 #endif
     pos->cx = cx;
@@ -54,12 +72,6 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
     pos->cy = cy;
     pos->y = CLICK_TO_PIXEL(cy);
     pos->by = pos->y / BLOCK_SZ;
-}
-
-void Object_position_init_pixels(object_t *obj, DFLOAT x, DFLOAT y)
-{
-    Object_position_set_clicks(obj, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
-    Object_position_remember(obj);
 }
 
 void Object_position_init_clicks(object_t *obj, int cx, int cy)
@@ -84,7 +96,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= PIXEL_TO_CLICK(World.width))
+    if (cx >= World.click_width)
     {
         printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -96,7 +108,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= PIXEL_TO_CLICK(World.height))
+    if (cy >= World.click_height)
     {
         printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -111,9 +123,9 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
     pos->by = pos->y / BLOCK_SZ;
 }
 
-void Player_position_init_pixels(player_t *pl, DFLOAT x, DFLOAT y)
+void Player_position_init_clicks(player_t *pl, int cx, int cy)
 {
-    Player_position_set_clicks(pl, FLOAT_TO_CLICK(x), FLOAT_TO_CLICK(y));
+    Player_position_set_clicks(pl, cx, cy);
     Player_position_remember(pl);
 }
 

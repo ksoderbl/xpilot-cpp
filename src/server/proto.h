@@ -181,7 +181,7 @@ void Make_wreckage(
     /* min,max dir    */ int min_dir, int max_dir,
     /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
     /* min,max life   */ int min_life, int max_life);
-void Make_item(int px, int py,
+void Make_item(int cx, int cy,
                int vx, int vy,
                int item, int num_per_pack,
                long status);
