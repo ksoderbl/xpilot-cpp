@@ -147,14 +147,13 @@ struct _objposition
 {
     int cx, cy; /* object position in clicks. */
     int x, y;   /* object position in pixels. */
-    int bx, by; /* object position in blocks. */
 };
 #define OBJ_X_IN_CLICKS(obj) ((obj)->pos.cx)
 #define OBJ_Y_IN_CLICKS(obj) ((obj)->pos.cy)
 #define OBJ_X_IN_PIXELS(obj) ((obj)->pos.x)
 #define OBJ_Y_IN_PIXELS(obj) ((obj)->pos.y)
-#define OBJ_X_IN_BLOCKS(obj) ((obj)->pos.bx)
-#define OBJ_Y_IN_BLOCKS(obj) ((obj)->pos.by)
+#define OBJ_X_IN_BLOCKS(obj) CLICK_TO_BLOCK((obj)->pos.cx)
+#define OBJ_Y_IN_BLOCKS(obj) CLICK_TO_BLOCK((obj)->pos.cy)
 
 /*
  * Node within a Cell list.

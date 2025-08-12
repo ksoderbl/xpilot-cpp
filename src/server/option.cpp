@@ -824,6 +824,9 @@ void Convert_string_to_list(const char *value, list_t *list_ptr)
             str = (char *)xp_safe_malloc((end - start) + 1);
             memcpy(str, start, (end - start));
             str[(end - start)] = '\0';
+
+            printf("str = '%s'\n", str);
+
             if (NULL == List_push_back(*list_ptr, str))
             {
                 xpfatal("Not enough memory for list element");
@@ -983,7 +986,7 @@ static void Option_parse_node(hash_node *np)
     case valList:
     {
         list_t *list_ptr = (list_t *)desc->variable;
-
+        printf("case valList: value = '%s'\n", value);
         Convert_string_to_list(value, list_ptr);
         break;
     }

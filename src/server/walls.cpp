@@ -2198,17 +2198,17 @@ void Move_object(object_t *obj)
 
     Object_position_remember(obj);
 
-    dist = walldist[obj->pos.bx][obj->pos.by];
+    dist = walldist[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)];
     if (dist > 2)
     {
         int max = ((dist - 2) * BLOCK_SZ) >> 1;
         if (sqr(max) >= sqr(obj->vel.x) + sqr(obj->vel.y))
         {
-            DFLOAT x = obj->pos.cx + FLOAT_TO_CLICK(obj->vel.x);
-            DFLOAT y = obj->pos.cy + FLOAT_TO_CLICK(obj->vel.y);
-            x = WRAP_XCLICK(x);
-            y = WRAP_YCLICK(y);
-            Object_position_set_clicks(obj, (int)(x), (int)(y));
+            int cx = obj->pos.cx + FLOAT_TO_CLICK(obj->vel.x);
+            int cy = obj->pos.cy + FLOAT_TO_CLICK(obj->vel.y);
+            cx = WRAP_XCLICK(cx);
+            cy = WRAP_YCLICK(cy);
+            Object_position_set_clicks(obj, cx, cy);
             Cell_add_object(obj);
             return;
         }
@@ -2224,13 +2224,9 @@ void Move_object(object_t *obj)
     mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
     if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
-    {
         mi.phased = BIT(Players[GetInd[obj->id]]->used, HAS_PHASING_DEVICE);
-    }
     else
-    {
         mi.phased = 0;
-    }
 
     ms.pos.cx = obj->pos.cx;
     ms.pos.cy = obj->pos.cy;
@@ -2554,7 +2550,7 @@ void Move_player(int ind)
     }
     else
     {
-        switch (World.block[pl->pos.bx][pl->pos.by])
+        switch (World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)])
         {
         case FRICTION:
             fric = options.blockFriction;
@@ -2573,7 +2569,7 @@ void Move_player(int ind)
 
     Player_position_remember(pl);
 
-    dist = walldist[pl->pos.bx][pl->pos.by];
+    dist = walldist[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
     if (dist > 3)
     {
         int max = ((dist - 3) * BLOCK_SZ) >> 1;
@@ -2975,7 +2971,7 @@ void Turn_player(int ind)
         return;
     }
 
-    if (walldist[pl->pos.bx][pl->pos.by] > 2)
+    if (walldist[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)] > 2)
     {
         pl->dir = new_dir;
         return;

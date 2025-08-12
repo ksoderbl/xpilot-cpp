@@ -164,14 +164,10 @@ void Alloc_shots(int number)
 
 void Free_shots(void)
 {
-    if (objArray != NULL)
-    {
-        free(objArray);
-        objArray = NULL;
-    }
+    XFREE(objArray);
 }
 
-// TODO: Remove pixel and block positions, store only subpixel position (e.g. clicks)
+// TODO: Remove pixel positions, store only subpixel position (i.e. clicks)
 void Object_position_set_clicks(object_t *obj, int cx, int cy)
 {
     struct _objposition *pos = (struct _objposition *)&obj->pos;
@@ -204,10 +200,8 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
 #endif
     pos->cx = cx;
     pos->x = CLICK_TO_PIXEL(cx);
-    pos->bx = pos->x / BLOCK_SZ;
     pos->cy = cy;
     pos->y = CLICK_TO_PIXEL(cy);
-    pos->by = pos->y / BLOCK_SZ;
 }
 
 void Object_position_init_clicks(object_t *obj, int cx, int cy)
@@ -253,10 +247,8 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
 #endif
     pos->cx = cx;
     pos->x = CLICK_TO_PIXEL(cx);
-    pos->bx = pos->x / BLOCK_SZ;
     pos->cy = cy;
     pos->y = CLICK_TO_PIXEL(cy);
-    pos->by = pos->y / BLOCK_SZ;
 }
 
 void Player_position_init_clicks(player_t *pl, int cx, int cy)

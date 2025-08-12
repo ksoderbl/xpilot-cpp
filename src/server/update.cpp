@@ -41,16 +41,16 @@
 #include "xpmath.h"
 #include "walls.h"
 
-#define update_object_speed(o_)                                                   \
-    if (BIT((o_)->status, GRAVITY))                                               \
-    {                                                                             \
-        (o_)->vel.x += (o_)->acc.x + World.gravity[(o_)->pos.bx][(o_)->pos.by].x; \
-        (o_)->vel.y += (o_)->acc.y + World.gravity[(o_)->pos.bx][(o_)->pos.by].y; \
-    }                                                                             \
-    else                                                                          \
-    {                                                                             \
-        (o_)->vel.x += (o_)->acc.x;                                               \
-        (o_)->vel.y += (o_)->acc.y;                                               \
+#define update_object_speed(o_)                                                                 \
+    if (BIT((o_)->status, GRAVITY))                                                             \
+    {                                                                                           \
+        (o_)->vel.x += (o_)->acc.x + World.gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].x; \
+        (o_)->vel.y += (o_)->acc.y + World.gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].y; \
+    }                                                                                           \
+    else                                                                                        \
+    {                                                                                           \
+        (o_)->vel.x += (o_)->acc.x;                                                             \
+        (o_)->vel.y += (o_)->acc.y;                                                             \
     }
 
 int round_delay = 0;      /* delay until start of next round */

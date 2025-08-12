@@ -507,8 +507,8 @@ static void Frame_map(connection_t *connp, int ind)
     player_t *pl = Players[ind];
     int i,
         k,
-        x,
-        y,
+        bx,
+        by,
         conn_bit = (1 << connp->conn_index);
     block_visibility_t bv;
     const int fuel_packet_size = 5;
@@ -519,29 +519,22 @@ static void Frame_map(connection_t *connp, int ind)
     int max_packet;
     int packet_count;
 
-    x = pl->pos.bx;
-    y = pl->pos.by;
-    bv.world.x = x - (horizontal_blocks >> 1);
-    bv.world.y = y - (vertical_blocks >> 1);
+    bx = OBJ_X_IN_BLOCKS(pl);
+    by = OBJ_Y_IN_BLOCKS(pl);
+
+    bv.world.x = bx - (horizontal_blocks >> 1);
+    bv.world.y = by - (vertical_blocks >> 1);
     bv.realWorld = bv.world;
     if (BIT(World.rules->mode, WRAP_PLAY))
     {
         if (bv.world.x < 0 && bv.world.x + horizontal_blocks < World.x)
-        {
             bv.world.x += World.x;
-        }
         else if (bv.world.x > 0 && bv.world.x + horizontal_blocks > World.x)
-        {
             bv.realWorld.x -= World.x;
-        }
         if (bv.world.y < 0 && bv.world.y + vertical_blocks < World.y)
-        {
             bv.world.y += World.y;
-        }
         else if (bv.world.y > 0 && bv.world.y + vertical_blocks > World.y)
-        {
             bv.realWorld.y -= World.y;
-        }
     }
 
     packet_count = 0;
@@ -551,9 +544,7 @@ static void Frame_map(connection_t *connp, int ind)
     {
         target_t *targ;
         if (++i >= World.NumTargets)
-        {
             i = 0;
-        }
         targ = &World.targets[i];
         if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && block_inview(&bv, targ->blk_pos.x, targ->blk_pos.y)))
         {
@@ -573,9 +564,7 @@ static void Frame_map(connection_t *connp, int ind)
     for (k = 0; k < World.NumCannons; k++)
     {
         if (++i >= World.NumCannons)
-        {
             i = 0;
-        }
         if (block_inview(&bv,
                          World.cannon[i].blk_pos.x,
                          World.cannon[i].blk_pos.y))
@@ -599,9 +588,7 @@ static void Frame_map(connection_t *connp, int ind)
     for (k = 0; k < World.NumFuels; k++)
     {
         if (++i >= World.NumFuels)
-        {
             i = 0;
-        }
         if (BIT(World.fuel[i].conn_mask, conn_bit) == 0)
         {
             if (World.block[World.fuel[i].blk_pos.x]
@@ -630,9 +617,7 @@ static void Frame_map(connection_t *connp, int ind)
     {
         wormhole_t *worm;
         if (++i >= World.NumWormholes)
-        {
             i = 0;
-        }
         worm = &World.wormHoles[i];
         if (options.wormholeVisible && worm->temporary && (worm->type == WORM_IN || worm->type == WORM_NORMAL) && block_inview(&bv, worm->blk_pos.x, worm->blk_pos.y))
         {
@@ -663,28 +648,20 @@ static void Frame_shuffle_objects(void)
 
     if (max_object_shuffle < num_object_shuffle)
     {
-        if (object_shuffle_ptr != NULL)
-        {
-            free(object_shuffle_ptr);
-        }
+        XFREE(object_shuffle_ptr);
         max_object_shuffle = num_object_shuffle;
         memsize = max_object_shuffle * sizeof(shuffle_t);
         object_shuffle_ptr = (shuffle_t *)malloc(memsize);
         if (object_shuffle_ptr == NULL)
-        {
             max_object_shuffle = 0;
-        }
     }
 
     if (max_object_shuffle < num_object_shuffle)
-    {
         num_object_shuffle = max_object_shuffle;
-    }
 
     for (i = 0; i < num_object_shuffle; i++)
-    {
         object_shuffle_ptr[i] = i;
-    }
+
     /* permute. */
     for (i = num_object_shuffle - 1; i >= 0; --i)
     {
@@ -707,28 +684,20 @@ static void Frame_shuffle_players(void)
 
     if (max_player_shuffle < num_player_shuffle)
     {
-        if (player_shuffle_ptr != NULL)
-        {
-            free(player_shuffle_ptr);
-        }
+        XFREE(player_shuffle_ptr);
         max_player_shuffle = num_player_shuffle;
         memsize = max_player_shuffle * sizeof(shuffle_t);
         player_shuffle_ptr = (shuffle_t *)malloc(memsize);
         if (player_shuffle_ptr == NULL)
-        {
             max_player_shuffle = 0;
-        }
     }
 
     if (max_player_shuffle < num_player_shuffle)
-    {
         num_player_shuffle = max_player_shuffle;
-    }
 
     for (i = 0; i < num_player_shuffle; i++)
-    {
         player_shuffle_ptr[i] = i;
-    }
+
     /* permute. */
     for (i = 0; i < num_player_shuffle; i++)
     {

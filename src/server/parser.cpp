@@ -261,17 +261,11 @@ int Parser_list_option(int *index, char *buf)
     option_descs = Get_option_descs(&option_count);
 
     if (i < 0 || i >= option_count)
-    {
         return -1;
-    }
     if (option_descs[i].defaultValue == NULL)
-    {
         return 0;
-    }
     if ((option_descs[i].flags & OPT_VISIBLE) == 0)
-    {
         return 0;
-    }
     switch (option_descs[i].type)
     {
     case valInt:
@@ -307,6 +301,7 @@ int Parser_list_option(int *index, char *buf)
     {
         list_t list = *(list_t *)option_descs[i].variable;
         sprintf(buf, "%s:", option_descs[i].name);
+        printf("parser: name: %s\n", option_descs[i].name);
         if (list)
         {
             list_iter_t iter;
@@ -315,6 +310,7 @@ int Parser_list_option(int *index, char *buf)
                  LI_FORWARD(iter))
             {
                 char *str = (char *)LI_DATA(iter);
+                printf("parser: str : %s\n", str);
                 if (iter != List_begin(list))
                 {
                     strlcat(buf, ",", MSG_LEN);
