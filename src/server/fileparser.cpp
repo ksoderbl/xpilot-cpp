@@ -167,6 +167,8 @@ static char *getMultilineValue(char **map_ptr, char *delimiter)
     }
 static void parseLine(char **map_ptr, optOrigin opt_origin)
 {
+    printf("parseLine!\n");
+
     int ich;
     char *value,
         *head,
@@ -351,6 +353,7 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
 #endif
     else
     {
+        printf("parseLine! option: name %s, value %s\n", name, value);
         Option_set_value(name, value, override, opt_origin);
     }
 
@@ -776,6 +779,8 @@ bool parseMapFile(const char *filename)
 
 void expandKeyword(const char *keyword)
 {
+    printf("expandKeyword: '%s'", keyword);
+
     optOrigin expand_origin;
     char *p;
 
