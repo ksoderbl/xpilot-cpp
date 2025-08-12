@@ -967,22 +967,6 @@ static void Option_parse_node(hash_node *np)
         break;
     }
 
-    case valPerSec:
-    {
-        DFLOAT *ptr = (DFLOAT *)desc->variable;
-        DFLOAT seconds;
-
-        if (Convert_string_to_float(value, &seconds) != true)
-        {
-            xpwarn("%s value '%s' not a number.",
-                   np->name, value);
-            Convert_string_to_float(desc->defaultValue, &seconds);
-        }
-
-        *ptr = (DFLOAT)(seconds / FPS);
-        break;
-    }
-
     case valList:
     {
         list_t *list_ptr = (list_t *)desc->variable;
@@ -1075,7 +1059,7 @@ void Options_parse(void)
 
     /*
      * This must be done in order that FPS will return the eventual
-     * frames per second for computing valSec and valPerSec.
+     * frames per second for computing valSec.
      */
     Options_parse_FPS();
 

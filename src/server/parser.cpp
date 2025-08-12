@@ -86,7 +86,6 @@ static void Parse_help(char *progname)
                                                           : option_descs[j].type == valString ? "<string>"
                                                           : option_descs[j].type == valIPos   ? "<position>"
                                                           : option_descs[j].type == valSec    ? "<seconds>"
-                                                          : option_descs[j].type == valPerSec ? "<per-second>"
                                                           : option_descs[j].type == valList   ? "<list>"
                                                                                               : "");
         for (str = option_descs[j].helpLine; *str; str++)
@@ -279,10 +278,6 @@ int Parser_list_option(int *index, char *buf)
     case valReal:
         sprintf(buf, "%s:%g", option_descs[i].name,
                 *(DFLOAT *)option_descs[i].variable);
-        break;
-    case valPerSec:
-        sprintf(buf, "%s:%g", option_descs[i].name,
-                *(DFLOAT *)option_descs[i].variable * FPS);
         break;
     case valBool:
         sprintf(buf, "%s:%s", option_descs[i].name,
@@ -581,14 +576,6 @@ int Tune_option(char *name, char *val)
         *(int *)opt->variable = ival * FPS;
         (*opt->tuner)();
         return 1;
-    case valPerSec:
-        if (Convert_string_to_float(val, &fval) != true)
-        {
-            return 0;
-        }
-        *(DFLOAT *)opt->variable = fval / FPS;
-        (*opt->tuner)();
-        return 1;
     case valString:
     {
         char *s = xp_strdup(val);
@@ -644,9 +631,6 @@ int Get_option_value(const char *name, char *value, unsigned size)
         break;
     case valSec:
         sprintf(value, "%d", *((int *)opt->variable) / FPS);
-        break;
-    case valPerSec:
-        sprintf(value, "%g", *((DFLOAT *)opt->variable) * FPS);
         break;
     case valIPos:
         sprintf(value, "%d, %d",

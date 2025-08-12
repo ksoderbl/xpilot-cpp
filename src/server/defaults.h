@@ -1,5 +1,4 @@
-/* $Id: defaults.h,v 5.11 2003/09/16 21:00:54 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -34,7 +33,6 @@ enum valType
     valIPos,   /* variable is type ipos */
     valString, /* variable is type char* */
     valSec,    /* variable is type int (converted to frames) */
-    valPerSec, /* variable is type float (converted to per-frame) */
     valList    /* variable is a list of elements of type char* */
 };
 
