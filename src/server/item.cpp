@@ -80,7 +80,7 @@ static void Item_update_flags(player_t *pl)
     if (pl->item[ITEM_AUTOPILOT] <= 0)
     {
         if (BIT(pl->used, HAS_AUTOPILOT))
-            Autopilot(GetInd[pl->id], 0);
+            Autopilot(pl, false);
         CLR_BIT(pl->have, HAS_AUTOPILOT);
     }
     if (pl->item[ITEM_ARMOR] <= 0)
@@ -760,9 +760,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         what = "a cloaking device";
         victim->updateVisibility = 1;
         if (!victim->item[item])
-        {
-            Cloak(target, false);
-        }
+            Cloak(victim, false);
         break;
     case ITEM_WIDEANGLE:
         what = "a wideangle";
@@ -846,7 +844,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         if (!victim->item[item])
         {
             if (BIT(victim->used, HAS_AUTOPILOT))
-                Autopilot(target, 0);
+                Autopilot(victim, false);
             CLR_BIT(victim->have, HAS_AUTOPILOT);
         }
         break;
@@ -937,7 +935,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
     case ITEM_TANK:
         /* for tanks, amount is the amount of fuel in the stolen tank */
         if (pl->fuel.num_tanks < MAX_TANKS)
-            Player_add_tank(ind, amount);
+            Player_add_tank(pl, amount);
         break;
     case ITEM_FUEL:
         Add_fuel(&(pl->fuel), amount);

@@ -27,6 +27,8 @@
 #include <cstdio>
 #include <cerrno>
 
+#include "commonmacros.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -65,10 +67,7 @@ void Pick_startpos(int ind)
     if (prev_num_bases != World.NumBases)
     {
         prev_num_bases = World.NumBases;
-        if (free_bases != NULL)
-        {
-            free(free_bases);
-        }
+        XFREE(free_bases);
         free_bases = (char *)malloc(World.NumBases * sizeof(*free_bases));
         if (free_bases == NULL)
         {
@@ -119,13 +118,9 @@ void Pick_startpos(int ind)
             if (free_bases[i] != 0)
             {
                 if (seen < pick)
-                {
                     seen++;
-                }
                 else
-                {
                     break;
-                }
             }
         }
     }
@@ -151,13 +146,9 @@ void Pick_startpos(int ind)
                 }
             }
             if (BIT(pl->status, PLAYING) == 0)
-            {
                 pl->count = RECOVERY_DELAY;
-            }
             else if (BIT(pl->status, PAUSE | GAME_OVER))
-            {
                 Go_home(ind);
-            }
         }
     }
 }
@@ -169,7 +160,10 @@ void Go_home(int ind)
     printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
     if (ind != pl->ind)
     {
+        player_t *pl1 = Players[ind];
+        player_t *pl2 = Players[pl->ind];
         warn("******** ERROR!!!!");
+        warn("pl1: '%s', pl2: '%s'", pl1->name, pl2->name);
     }
 
     int i, x, y, dir, check;
@@ -239,9 +233,7 @@ void Go_home(int ind)
     }
 
     if (IS_ROBOT_PTR(pl))
-    {
         Robot_go_home(ind);
-    }
 }
 
 /*
@@ -289,9 +281,8 @@ void Compute_sensor_range(player_t *pl)
 /*
  * Give ship one more tank, if possible.
  */
-void Player_add_tank(int ind, long tank_fuel)
+void Player_add_tank(player_t *pl, long tank_fuel)
 {
-    player_t *pl = Players[ind];
     long tank_cap, add_fuel;
 
     if (pl->fuel.num_tanks < MAX_TANKS)
@@ -395,7 +386,7 @@ static void Player_init_fuel(int ind, long total_fuel)
 
     for (i = 1; i <= World.items[ITEM_TANK].initial; i++)
     {
-        Player_add_tank(ind, fuel);
+        Player_add_tank(pl, fuel);
         fuel -= pl->fuel.tank[i];
     }
 }
@@ -406,7 +397,6 @@ int Init_player(int ind, shipshape_t *ship)
     bool too_late = false;
     int i;
 
-    pl->ind = ind;
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
     pl->float_dir = pl->dir = DIR_UP;
@@ -419,18 +409,14 @@ int Init_player(int ind, shipshape_t *ship)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-        {
             pl->item[i] = World.items[i].initial;
-        }
     }
 
     pl->fuel.sum = World.items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
     Player_init_fuel(ind, pl->fuel.sum);
 
     if (options.allowShipShapes == true && ship)
-    {
         pl->ship = ship;
-    }
     else
     {
         /*
@@ -493,9 +479,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->used = DEF_USED;
 
     if (pl->item[ITEM_CLOAK] > 0)
-    {
         SET_BIT(pl->have, HAS_CLOAKING_DEVICE);
-    }
 
     CLEAR_MODS(pl->mods);
     for (i = 0; i < NUM_MODBANKS; i++)
@@ -557,6 +541,8 @@ int Init_player(int ind, shipshape_t *ship)
 
     pl->id = peek_ID();
     GetInd[pl->id] = ind;
+    pl->ind = ind;
+
     pl->connp = NULL;
     pl->audio = NULL;
 
@@ -2050,7 +2036,7 @@ void Player_death_reset(int ind)
     if (BIT(pl->used, HAS_AUTOPILOT) || BIT(pl->status, HOVERPAUSE))
     {
         CLR_BIT(pl->status, HOVERPAUSE);
-        Autopilot(ind, 0);
+        Autopilot(pl, false);
     }
 
     pl->vel.x = pl->vel.y = 0.0;
@@ -2062,9 +2048,7 @@ void Player_death_reset(int ind)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-        {
             pl->item[i] = World.items[i].initial;
-        }
     }
 
     pl->forceVisible = 0;

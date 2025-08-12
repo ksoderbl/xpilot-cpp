@@ -45,6 +45,7 @@
 #include "object.h"
 #include "asteroid.h"
 #include "xpmath.h"
+#include "walls.h"
 
 /*
  * Type to hold info about a player

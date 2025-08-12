@@ -199,8 +199,8 @@ void Handle_player_command(player_t *pl, char *cmd);
  */
 void Pick_startpos(int ind);
 void Go_home(int ind);
-void Compute_sensor_range(player *);
-void Player_add_tank(int ind, long tank_fuel);
+void Compute_sensor_range(player_t *pl);
+void Player_add_tank(player_t *pl, long tank_fuel);
 void Player_remove_tank(int ind, int which_tank);
 void Player_hit_armor(int ind);
 void Player_used_kill(int ind);
@@ -291,10 +291,9 @@ void Set_player_message(player_t *pl, const char *message);
 /*
  * Prototypes for update.c
  */
-void Update_radar_target(int);
 void Update_objects(void);
-void Autopilot(int ind, bool on);
-void Cloak(int ind, bool on);
+void Autopilot(player_t *pl, bool on);
+void Cloak(player_t *pl, bool on);
 void Deflector(player_t *pl, bool on);
 void Emergency_thrust(player_t *pl, bool on);
 void Emergency_shield(player_t *pl, bool on);

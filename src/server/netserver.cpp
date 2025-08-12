@@ -3494,9 +3494,7 @@ static int Receive_pointer_move(connection_t *connp)
     if ((n = Packet_scanf(&connp->r, "%c%hd", &ch, &movement)) <= 0)
     {
         if (n == -1)
-        {
             Destroy_connection(connp, "read error");
-        }
         return n;
     }
     pl = Players[GetInd[connp->id]];
@@ -3504,7 +3502,7 @@ static int Receive_pointer_move(connection_t *connp)
         return 1;
 
     if (BIT(pl->used, HAS_AUTOPILOT))
-        Autopilot(GetInd[connp->id], 0);
+        Autopilot(pl, false);
     turnspeed = movement * pl->turnspeed / MAX_PLAYER_TURNSPEED;
     if (turnspeed < 0)
     {
@@ -3512,9 +3510,8 @@ static int Receive_pointer_move(connection_t *connp)
         turnspeed = -turnspeed;
     }
     else
-    {
         turndir = 1.0;
-    }
+
     if (pl->turnresistance)
         LIMIT(turnspeed, MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED);
     /* Minimum amount of turning if you want to turn at all?

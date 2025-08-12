@@ -1065,13 +1065,9 @@ static void Player_collides_with_item(int ind, object_t *obj)
 
     case ITEM_TANK:
         if (pl->fuel.num_tanks < World.items[ITEM_TANK].limit)
-        {
-            Player_add_tank(ind, TANK_FUEL(pl->fuel.num_tanks + 1));
-        }
+            Player_add_tank(pl, TANK_FUEL(pl->fuel.num_tanks + 1));
         else
-        {
             Add_fuel(&(pl->fuel), TANK_FUEL(MAX_TANKS));
-        }
         sound_play_sensors(pl->pos.cx, pl->pos.cy, TANK_PICKUP_SOUND);
         break;
     case NUM_ITEMS:

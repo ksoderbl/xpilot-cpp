@@ -31,6 +31,7 @@
 #include "xperror.h"
 #include "xpmath.h"
 #include "sched.h"
+#include "walls.h"
 
 extern time_t gameOverTime;
 

@@ -144,10 +144,8 @@ void Phasing(player_t *pl, bool on)
 /*
  * Turn cloak on or off.
  */
-void Cloak(int ind, bool on)
+void Cloak(player_t *pl, bool on)
 {
-    player_t *pl = Players[ind];
-
     if (on)
     {
         if (!BIT(pl->used, HAS_CLOAKING_DEVICE) && pl->item[ITEM_CLOAK] > 0)
@@ -175,9 +173,7 @@ void Cloak(int ind, bool on)
             CLR_BIT(pl->used, HAS_CLOAKING_DEVICE);
         }
         if (!pl->item[ITEM_CLOAK])
-        {
             CLR_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        }
         if (!options.cloakedShield)
         {
             if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
@@ -186,13 +182,9 @@ void Cloak(int ind, bool on)
                 Emergency_shield(pl, true);
             }
             if (BIT(DEF_HAVE, HAS_SHIELD) && !BIT(pl->have, HAS_SHIELD))
-            {
                 SET_BIT(pl->have, HAS_SHIELD);
-            }
             if (BITV_ISSET(pl->last_keyv, KEY_SHIELD))
-            {
                 SET_BIT(pl->used, HAS_SHIELD);
-            }
         }
     }
 }
@@ -317,10 +309,8 @@ void Emergency_shield(player_t *pl, bool on)
  * automatic pilot mode any changes to the current power, turnacc, turnspeed
  * and turnresistance settings will be temporary.
  */
-void Autopilot(int ind, bool on)
+void Autopilot(player_t *pl, bool on)
 {
-    player_t *pl = Players[ind];
-
     CLR_BIT(pl->status, THRUSTING);
     if (on)
     {
