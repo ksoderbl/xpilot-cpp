@@ -2239,25 +2239,22 @@ int Send_trans(connection_t *connp, int x1, int y1, int x2, int y2)
 }
 
 int Send_ship(connection_t *connp, int x, int y, int id, int dir,
-              int shield, int cloak, int emergency_shield, int phased, int deflector)
+              bool shield, bool cloak, bool emergency_shield, bool phased, bool deflector)
 {
-    if (connp->version < 0x4300)
-    {
-        printf("THIS NEVER HAPPENS: vm3joij42oi3j\n");
-        /* cloaking bit was also true if phased and that was used
-         * to determine how to draw the ship.
-         */
-        cloak = (cloak || phased);
-    }
+    uint8_t flags =
+        (static_cast<uint8_t>(shield) << 0) |
+        (static_cast<uint8_t>(cloak) << 1) |
+        (static_cast<uint8_t>(emergency_shield) << 2) |
+        (static_cast<uint8_t>(phased) << 3) |
+        (static_cast<uint8_t>(deflector) << 4);
+
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd"
                          "%c"
                          "%c",
                          PKT_SHIP, x, y, id,
                          dir,
-                         (shield != 0) | ((cloak != 0) << 1) | ((emergency_shield != 0) << 2) | ((phased != 0) << 3) /* clients older than 3.8.0 will ignore this */
-                             | ((deflector != 0) << 4)                                                               /* clients older than 3.8.0 will ignore this */
-    );
+                         flags);
 }
 
 int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1)

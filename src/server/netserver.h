@@ -72,8 +72,8 @@ int Send_audio(connection_t *connp, int type, int vol);
 int Send_item(connection_t *connp, int x, int y, int type);
 int Send_paused(connection_t *connp, int x, int y, int count);
 int Send_ecm(connection_t *connp, int x, int y, int size);
-int Send_ship(connection_t *connp, int x, int y, int id, int dir, int shield, int cloak, int eshield,
-              int phased, int deflector);
+int Send_ship(connection_t *connp, int x, int y, int id, int dir, bool shield, bool cloak, bool eshield,
+              bool phased, bool deflector);
 int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1);
 int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor);
 int Send_laser(connection_t *connp, int color, int x, int y, int len, int dir);
