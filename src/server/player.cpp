@@ -509,8 +509,6 @@ int Init_player(int ind, shipshape_t *ship)
     pl->ball = NULL;
 
     pl->player_fps = FPS;
-    pl->player_round = 0;
-    pl->player_count = 0;
 
     pl->kills = 0;
     pl->deaths = 0;

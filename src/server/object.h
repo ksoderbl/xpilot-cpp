@@ -576,9 +576,7 @@ struct player
 
     void *audio; /* audio private data */
 
-    int player_fps;   /* FPS that this player can do */
-    int player_round; /* Divisor for player FPS calculation */
-    int player_count; /* Player's current frame count */
+    int player_fps; /* FPS that this player can do */
 
     int isowner;    /* If player started this server. */
     int isoperator; /* If player has operator privileges. */

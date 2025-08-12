@@ -1353,15 +1353,10 @@ void Frame_update(void)
         /*
          * Reduce frame rate to player's own rate.
          */
-        if (pl->player_count > 0)
-        {
-            pl->player_round++;
-            if (pl->player_round >= pl->player_count)
-            {
-                pl->player_round = 0;
-                continue;
-            }
-        }
+        // if (... TODO...)
+        // {
+        //     continue;
+        // }
 
         if (Send_start_of_frame(connp) == -1)
         {

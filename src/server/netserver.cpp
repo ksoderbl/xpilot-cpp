@@ -3549,15 +3549,14 @@ static int Receive_fps_request(connection_t *connp)
     if ((n = Packet_scanf(&connp->r, "%c%c", &ch, &fps)) <= 0)
     {
         if (n == -1)
-        {
             Destroy_connection(connp, "read error");
-        }
         return n;
     }
     if (connp->id != NO_ID)
     {
         pl = Players[GetInd[connp->id]];
         pl->player_fps = fps;
+        // TODO: Fix this stuff
         if (fps > FPS)
             pl->player_fps = FPS;
         if (fps < (FPS / 2))
@@ -3566,15 +3565,6 @@ static int Receive_fps_request(connection_t *connp)
             pl->player_fps = FPS;
         if ((fps == 20) && options.ignore20MaxFPS)
             pl->player_fps = FPS;
-        n = FPS - pl->player_fps;
-        if (n <= 0)
-        {
-            pl->player_count = 0;
-        }
-        else
-        {
-            pl->player_count = FPS / n;
-        }
     }
 
     return 1;
