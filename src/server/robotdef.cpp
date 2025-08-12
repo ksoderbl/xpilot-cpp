@@ -2077,9 +2077,7 @@ static void Robot_default_play(int ind)
         SET_BIT(pl->used, HAS_CLOAKING_DEVICE);
 
     if (BIT(pl->have, HAS_EMERGENCY_THRUST) && !BIT(pl->used, HAS_EMERGENCY_THRUST))
-    {
-        Emergency_thrust(ind, 1);
-    }
+        Emergency_thrust(pl, true);
 
     if (BIT(pl->have, HAS_DEFLECTOR) && !BIT(World.rules->mode, TIMING))
         Deflector(pl, true);

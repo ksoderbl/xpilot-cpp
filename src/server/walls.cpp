@@ -2945,9 +2945,8 @@ void Move_player(int ind)
     }
 }
 
-void Turn_player(int ind)
+void Turn_player(player_t *pl)
 {
-    player_t *pl = Players[ind];
     int i;
     move_info_t mi;
     move_state_t ms[RES];

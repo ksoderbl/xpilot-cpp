@@ -153,7 +153,7 @@ int Choose_random_item(void)
     return i;
 }
 
-void Place_item(int item, int ind)
+void Place_item(int item, player_t *pl)
 {
     int num_lose, num_per_pack,
         bx, by,
@@ -163,7 +163,6 @@ void Place_item(int item, int ind)
     int px, py;
     DFLOAT vx, vy;
     item_concentrator_t *con;
-    player_t *pl = (ind == -1 ? NULL : Players[ind]);
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
     {
@@ -391,10 +390,9 @@ void Make_item(int cx, int cy,
     Cell_add_object(obj);
 }
 
-void Throw_items(int ind)
+void Throw_items(player_t *pl)
 {
     int num_items_to_throw, remain, item;
-    player_t *pl = (ind == -1 ? NULL : Players[ind]);
 
     if (!options.dropItemOnKillProb || !pl)
         return;
@@ -410,7 +408,7 @@ void Throw_items(int ind)
                 {
                     break;
                 }
-                Place_item(item, ind);
+                Place_item(item, pl);
                 remain = pl->item[item] - World.items[item].initial;
             } while (remain > 0 && remain < num_items_to_throw);
         }
@@ -581,9 +579,8 @@ void General_tractor_beam(int ind, int cx, int cy,
     victim->vel.y -= tsin(theta) * (force / victim->mass);
 }
 
-void Do_deflector(int ind)
+void Do_deflector(player_t *pl)
 {
-    player_t *pl = Players[ind];
     DFLOAT range = (pl->item[ITEM_DEFLECTOR] * 0.5 + 1) * BLOCK_SZ;
     DFLOAT maxforce = pl->item[ITEM_DEFLECTOR] * 0.2;
     object_t *obj, **obj_list;
@@ -799,9 +796,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
     case ITEM_DEFLECTOR:
         what = "a deflector";
         if (!victim->item[item])
-        {
             Deflector(victim, false);
-        }
         break;
     case ITEM_HYPERJUMP:
         what = "a hyperjump";
@@ -811,7 +806,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         if (!victim->item[item])
         {
             if (BIT(victim->used, HAS_PHASING_DEVICE))
-                Phasing(target, 0);
+                Phasing(victim, false);
             CLR_BIT(victim->have, HAS_PHASING_DEVICE);
         }
         break;
@@ -823,7 +818,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         if (!victim->item[item])
         {
             if (BIT(victim->used, HAS_EMERGENCY_THRUST))
-                Emergency_thrust(target, 0);
+                Emergency_thrust(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_THRUST);
         }
         break;
@@ -960,14 +955,12 @@ void do_hyperjump(player_t *pl)
     pl->wormHoleHit = -1;
 }
 
-void do_lose_item(int ind)
+void do_lose_item(player_t *pl)
 {
-    int item;
-    player_t *pl = (ind == -1 ? NULL : Players[ind]);
-
     if (!pl)
         return;
-    item = pl->lose_item;
+
+    int item = pl->lose_item;
     if (item < 0 || item >= NUM_ITEMS)
     {
         xperror("BUG: do_lose_item %d", item);
@@ -984,7 +977,7 @@ void do_lose_item(int ind)
 
     if (options.loseItemDestroys == false && !BIT(pl->used, HAS_PHASING_DEVICE))
     {
-        Place_item(item, ind);
+        Place_item(item, pl);
     }
     else
     {

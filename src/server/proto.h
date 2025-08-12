@@ -55,16 +55,6 @@ int request_ID(void);
 void release_ID(int id);
 
 /*
- * Prototypes for walls.c
- */
-void Walls_init(void);
-void Treasure_init(void);
-void Move_init(void);
-void Move_object(object_t *obj);
-void Move_player(int ind);
-void Turn_player(int ind);
-
-/*
  * Prototypes for event.c
  */
 int Handle_keyboard(int);
@@ -104,17 +94,17 @@ void Free_options(void);
 /*
  * Prototypes for play.c
  */
-void Thrust(int ind);
+void Thrust(player_t *pl);
 void Recoil(object_t *ship, object_t *shot);
-void Record_shove(player_t *pl, player *pusher, long time);
+void Record_shove(player_t *pl, player_t *pusher, long time);
 void Delta_mv(object_t *ship, object_t *obj);
 void Delta_mv_elastic(object_t *obj1, object_t *obj2);
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
 void Item_damage(int ind, DFLOAT prob);
-void Tank_handle_detach(player *);
+void Tank_handle_detach(player_t *pl);
 void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
-void Place_item(int type, int ind);
+void Place_item(int type, player_t *pl);
 int Choose_random_item(void);
 void Tractor_beam(int ind);
 void General_tractor_beam(int ind, int cx, int cy,
@@ -142,15 +132,15 @@ void Fire_right_rshot(int ind, int type, int dir, int gun);
 void Make_treasure_ball(int treasure);
 int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
-void Fire_laser(int ind);
-void Fire_general_laser(int ind, unsigned short team, int cx, int cy, int dir,
+void Fire_laser(player_t *pl);
+void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy, int dir,
                         modifiers_t mods);
-void Do_deflector(int ind);
+void Do_deflector(player_t *pl);
 void Do_transporter(int ind);
 void Do_general_transporter(int ind, int cx, int cy, int target,
                             int *item, long *amount);
 void do_hyperjump(player_t *pl);
-void do_lose_item(int ind);
+void do_lose_item(player_t *pl);
 void Move_smart_shot(int ind);
 void Move_mine(int ind);
 void Make_debris(
@@ -184,9 +174,8 @@ void Make_item(int cx, int cy,
                int vx, int vy,
                int item, int num_per_pack,
                long status);
-void Explode(int ind);
-void Explode_fighter(int ind);
-void Throw_items(int ind);
+void Explode_fighter(player_t *pl);
+void Throw_items(player_t *pl);
 void Detonate_items(int ind);
 void add_temp_wormholes(int xin, int yin, int xout, int yout);
 void remove_temp_wormhole(int ind);
@@ -215,7 +204,7 @@ void Player_add_tank(int ind, long tank_fuel);
 void Player_remove_tank(int ind, int which_tank);
 void Player_hit_armor(int ind);
 void Player_used_kill(int ind);
-void Player_set_mass(int ind);
+void Player_set_mass(player_t *pl);
 int Init_player(int ind, shipshape_t *ship);
 void Alloc_players(int number);
 void Free_players(void);
@@ -304,12 +293,12 @@ void Set_player_message(player_t *pl, const char *message);
  */
 void Update_radar_target(int);
 void Update_objects(void);
-void Autopilot(int ind, int on);
-void Cloak(int ind, int on);
+void Autopilot(int ind, bool on);
+void Cloak(int ind, bool on);
 void Deflector(player_t *pl, bool on);
-void Emergency_thrust(int ind, int on);
+void Emergency_thrust(player_t *pl, bool on);
 void Emergency_shield(player_t *pl, bool on);
-void Phasing(int ind, int on);
+void Phasing(player_t *pl, bool on);
 
 /*
  * Prototypes for option.c

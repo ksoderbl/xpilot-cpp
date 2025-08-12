@@ -39,6 +39,7 @@
 #include "portability.h"
 #include "checknames.h"
 #include "tuner.h"
+#include "walls.h"
 
 options_t options;
 

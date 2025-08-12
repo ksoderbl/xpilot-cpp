@@ -560,7 +560,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             mods.laser = (int)(rfrac() * (MODS_LASER_MAX + 1));
         }
-        Fire_general_laser(-1, c->team, c->clk_pos.cx, c->clk_pos.cy, dir, mods);
+        Fire_general_laser(nullptr, c->team, c->clk_pos.cx, c->clk_pos.cy, dir, mods);
         IFSOUND(sound = FIRE_LASER_SOUND);
         break;
     case CW_ECM:

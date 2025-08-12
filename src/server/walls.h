@@ -116,6 +116,15 @@ struct move_parameters
 
 extern unsigned SPACE_BLOCKS;
 
+/*
+ * Prototypes for walls.cpp
+ */
+void Walls_init(void);
+void Treasure_init(void);
+void Move_init(void);
+void Move_object(object_t *obj);
+void Move_player(int ind);
+void Turn_player(player_t *pl);
 void Move_segment(move_state_t *ms);
 
 #endif

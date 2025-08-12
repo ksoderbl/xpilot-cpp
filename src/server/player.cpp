@@ -364,9 +364,8 @@ void Player_used_kill(int ind)
 /*
  * Calculate the mass of a player.
  */
-void Player_set_mass(int ind)
+void Player_set_mass(player_t *pl)
 {
-    player_t *pl = Players[ind];
     //  BUGFIX: xpilot 4.5.5beta has option minItemMass,
     //  making the ship 3 units too heavy on blood's music.
     //  Fixed by removing minItemMass option.
@@ -1993,18 +1992,19 @@ void Delete_player(int ind)
 void Detach_ball(int ind, int obj)
 {
     int i, cnt;
+    player_t *pl = Players[ind];
 
-    if (obj == -1 || BALL_PTR(Obj[obj]) == Players[ind]->ball)
+    if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
     {
-        Players[ind]->ball = NULL;
-        CLR_BIT(Players[ind]->used, HAS_CONNECTOR);
+        pl->ball = NULL;
+        CLR_BIT(pl->used, HAS_CONNECTOR);
     }
 
-    if (BIT(Players[ind]->have, HAS_BALL))
+    if (BIT(pl->have, HAS_BALL))
     {
         for (cnt = i = 0; i < NumObjs; i++)
         {
-            if (Obj[i]->type == OBJ_BALL && Obj[i]->id == Players[ind]->id)
+            if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
             {
                 if (obj == -1 || obj == i)
                 {
@@ -2018,17 +2018,19 @@ void Detach_ball(int ind, int obj)
             }
         }
         if (cnt == 0)
-            CLR_BIT(Players[ind]->have, HAS_BALL);
+            CLR_BIT(pl->have, HAS_BALL);
         else
         {
-            sound_play_sensors(Players[ind]->pos.cx, Players[ind]->pos.cy, DROP_BALL_SOUND);
+            sound_play_sensors(pl->pos.cx, pl->pos.cy, DROP_BALL_SOUND);
         }
     }
 }
 
 void Kill_player(int ind)
 {
-    Explode_fighter(ind);
+    player_t *pl = Players[ind];
+
+    Explode_fighter(pl);
     Player_death_reset(ind);
 }
 
@@ -2100,7 +2102,6 @@ void Player_death_reset(int ind)
 
     if (!BIT(pl->status, PAUSE))
     {
-
         pl->deaths++;
 
         if (BIT(World.rules->mode, LIMITED_LIVES))

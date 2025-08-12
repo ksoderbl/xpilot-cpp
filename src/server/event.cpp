@@ -240,7 +240,8 @@ void Pause_player(int ind, bool on)
     int i;
 
     if (on && !BIT(pl->status, PAUSE))
-    { /* Turn pause mode on */
+    {
+        /* Turn pause mode on */
         pl->count = 10 * FPS;
         pl->updateVisibility = 1;
         CLR_BIT(pl->status, SELF_DESTRUCT | PLAYING);
@@ -251,7 +252,8 @@ void Pause_player(int ind, bool on)
             Detach_ball(ind, -1);
     }
     else if (!on && BIT(pl->status, PAUSE))
-    { /* Turn pause mode off */
+    {
+        /* Turn pause mode off */
         if (pl->count <= 0)
         {
             bool toolate = false;
@@ -265,9 +267,7 @@ void Pause_player(int ind, bool on)
                     /* If a non-team member has lost a life,
                      * then it's too late to join. */
                     if (i == ind)
-                    {
                         continue;
-                    }
                     if (Players[i]->life < World.rules->lives && !TEAM(ind, i))
                     {
                         toolate = true;
@@ -287,9 +287,7 @@ void Pause_player(int ind, bool on)
                 Go_home(ind);
                 SET_BIT(pl->status, PLAYING);
                 if (BIT(World.rules->mode, LIMITED_LIVES))
-                {
                     pl->life = World.rules->lives;
-                }
             }
             if (BIT(World.rules->mode, TIMING))
             {
@@ -805,7 +803,7 @@ int Handle_keyboard(int ind)
 
             case KEY_EMERGENCY_THRUST:
                 if (BIT(pl->have, HAS_EMERGENCY_THRUST))
-                    Emergency_thrust(ind, !BIT(pl->used, HAS_EMERGENCY_THRUST));
+                    Emergency_thrust(pl, !BIT(pl->used, HAS_EMERGENCY_THRUST));
                 break;
 
             case KEY_EMERGENCY_SHIELD:
@@ -915,7 +913,7 @@ int Handle_keyboard(int ind)
                         SET_BIT(pl->status, HOVERPAUSE);
 
                         if (BIT(pl->used, HAS_EMERGENCY_THRUST))
-                            Emergency_thrust(ind, false);
+                            Emergency_thrust(pl, false);
 
                         if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
                             Emergency_shield(pl, false);
@@ -924,7 +922,7 @@ int Handle_keyboard(int ind)
                             Autopilot(ind, true);
 
                         if (BIT(pl->used, HAS_PHASING_DEVICE))
-                            Phasing(ind, false);
+                            Phasing(pl, false);
 
                         /*
                          * Don't allow firing while paused. Similar
@@ -1058,9 +1056,7 @@ int Handle_keyboard(int ind)
 
             case KEY_PHASING:
                 if (BIT(pl->have, HAS_PHASING_DEVICE))
-                {
-                    Phasing(ind, !BIT(pl->used, HAS_PHASING_DEVICE));
-                }
+                    Phasing(pl, !BIT(pl->used, HAS_PHASING_DEVICE));
                 break;
 
             case KEY_SELECT_ITEM:
@@ -1084,7 +1080,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_LOSE_ITEM:
-                do_lose_item(ind);
+                do_lose_item(pl);
                 break;
 
             default:

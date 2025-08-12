@@ -59,7 +59,7 @@ int roundtime = -1;       /* time left this round */
 
 static char msg[MSG_LEN];
 
-static void Transport_to_home(int ind)
+static void Transport_to_home(player_t *pl)
 {
     /*
      * Transport a corpse from the place where it died back to its homebase,
@@ -69,7 +69,6 @@ static void Transport_to_home(int ind)
      * acceleration G, during the second part we make this a negative one -G.
      * This results in a visually pleasing take off and landing.
      */
-    player_t *pl = Players[ind];
     DFLOAT bx, by, dx, dy, t, m;
     const int T = RECOVERY_DELAY;
 
@@ -108,9 +107,8 @@ static void Transport_to_home(int ind)
 /*
  * Turn phasing on or off.
  */
-void Phasing(int ind, int on)
+void Phasing(player_t *pl, bool on)
 {
-    player_t *pl = Players[ind];
     const int phasing_time = 4 * FPS;
 
     if (on)
@@ -146,7 +144,7 @@ void Phasing(int ind, int on)
 /*
  * Turn cloak on or off.
  */
-void Cloak(int ind, int on)
+void Cloak(int ind, bool on)
 {
     player_t *pl = Players[ind];
 
@@ -231,9 +229,8 @@ void Deflector(player_t *pl, bool on)
 /*
  * Turn emergency thrust on or off.
  */
-void Emergency_thrust(int ind, int on)
+void Emergency_thrust(player_t *pl, bool on)
 {
-    player_t *pl = Players[ind];
     const int emergency_thrust_time = 4 * FPS;
 
     if (on)
@@ -320,7 +317,7 @@ void Emergency_shield(player_t *pl, bool on)
  * automatic pilot mode any changes to the current power, turnacc, turnspeed
  * and turnresistance settings will be temporary.
  */
-void Autopilot(int ind, int on)
+void Autopilot(int ind, bool on)
 {
     player_t *pl = Players[ind];
 
@@ -543,8 +540,6 @@ static void do_Autopilot(player_t *pl)
  */
 void Update_objects(void)
 {
-    int i, j;
-    player_t *pl;
     object_t *obj;
 
     /*
@@ -559,9 +554,9 @@ void Update_objects(void)
      */
     if (options.fireRepeatRate > 0)
     {
-        for (i = 0; i < NumPlayers; i++)
+        for (int i = 0; i < NumPlayers; i++)
         {
-            pl = Players[i];
+            player_t *pl = Players[i];
             if (BIT(pl->used, HAS_SHOT))
                 Fire_normal_shots(i);
         }
@@ -570,12 +565,9 @@ void Update_objects(void)
     /*
      * Special items.
      */
-    for (i = 0; i < NUM_ITEMS; i++)
+    for (int i = 0; i < NUM_ITEMS; i++)
         if (World.items[i].num < World.items[i].max && World.items[i].chance > 0 && (rfrac() * World.items[i].chance) < 1.0f)
-        {
-
-            Place_item(i, -1);
-        }
+            Place_item(i, nullptr);
 
     /*
      * Let the fuel stations regenerate some fuel.
@@ -584,24 +576,19 @@ void Update_objects(void)
     {
         int fuel = (int)(NumPlayers * STATION_REGENERATION);
         int frames_per_update = MAX_STATION_FUEL / (fuel * BLOCK_SZ);
-        for (i = 0; i < World.NumFuels; i++)
+        for (int i = 0; i < World.NumFuels; i++)
         {
             if (World.fuel[i].fuel == MAX_STATION_FUEL)
-            {
                 continue;
-            }
             if ((World.fuel[i].fuel += fuel) >= MAX_STATION_FUEL)
-            {
                 World.fuel[i].fuel = MAX_STATION_FUEL;
-            }
             else if (World.fuel[i].last_change + frames_per_update > frame_loops)
-            {
                 /*
                  * We don't send fuelstation info to the clients every frame
                  * if it wouldn't change their display.
                  */
                 continue;
-            }
+
             World.fuel[i].conn_mask = 0;
             World.fuel[i].last_change = frame_loops;
         }
@@ -610,7 +597,7 @@ void Update_objects(void)
     /*
      * Update shots.
      */
-    for (i = 0; i < NumObjs; i++)
+    for (int i = 0; i < NumObjs; i++)
     {
         obj = Obj[i];
 
@@ -649,7 +636,7 @@ void Update_objects(void)
     /*
      * Update ECM blasts
      */
-    for (i = 0; i < NumEcms; i++)
+    for (int i = 0; i < NumEcms; i++)
     {
         if ((Ecms[i]->size >>= 1) == 0)
         {
@@ -665,7 +652,7 @@ void Update_objects(void)
     /*
      * Update transporters
      */
-    for (i = 0; i < NumTransporters; i++)
+    for (int i = 0; i < NumTransporters; i++)
     {
         if (--Transporters[i]->count <= 0)
         {
@@ -679,7 +666,7 @@ void Update_objects(void)
     /*
      * Updating cannons, maybe a little bit of fireworks too?
      */
-    for (i = 0; i < World.NumCannons; i++)
+    for (int i = 0; i < World.NumCannons; i++)
     {
         cannon_t *cannon = World.cannon + i;
         if (cannon->dead_time > 0)
@@ -756,7 +743,7 @@ void Update_objects(void)
     /*
      * Update targets
      */
-    for (i = 0; i < World.NumTargets; i++)
+    for (int i = 0; i < World.NumTargets; i++)
     {
         if (World.targets[i].dead_time > 0)
         {
@@ -771,7 +758,7 @@ void Update_objects(void)
                 {
                     unsigned short team = World.targets[i].team;
 
-                    for (j = 0; j < World.NumTargets; j++)
+                    for (int j = 0; j < World.NumTargets; j++)
                     {
                         if (World.targets[j].team == team)
                         {
@@ -814,9 +801,9 @@ void Update_objects(void)
      * Player loop. Computes miscellaneous updates.
      *
      */
-    for (i = 0; i < NumPlayers; i++)
+    for (int ind = 0; ind < NumPlayers; ind++)
     {
-        pl = Players[i];
+        player_t *pl = Players[ind];
 
         /* Limits. */
         LIMIT(pl->power, MIN_PLAYER_POWER, MAX_PLAYER_POWER);
@@ -832,8 +819,8 @@ void Update_objects(void)
             pl->count--;
             if (!BIT(pl->status, PLAYING))
             {
-                Transport_to_home(i);
-                Move_player(i);
+                Transport_to_home(pl);
+                Move_player(ind);
                 continue;
             }
         }
@@ -845,15 +832,15 @@ void Update_objects(void)
             if (!BIT(pl->status, PLAYING))
             {
                 SET_BIT(pl->status, PLAYING);
-                Go_home(i);
+                Go_home(ind);
             }
             if (BIT(pl->status, SELF_DESTRUCT))
             {
                 SET_BIT(pl->status, KILLED);
                 sprintf(msg, "%s has committed suicide.", pl->name);
                 Set_message(msg);
-                Throw_items(i);
-                Kill_player(i);
+                Throw_items(pl);
+                Kill_player(ind);
                 updateScores = true;
             }
         }
@@ -892,9 +879,9 @@ void Update_objects(void)
             if (--pl->phasing_left <= 0)
             {
                 if (pl->item[ITEM_PHASING])
-                    Phasing(i, 1);
+                    Phasing(pl, true);
                 else
-                    Phasing(i, 0);
+                    Phasing(pl, false);
             }
         }
 
@@ -903,9 +890,9 @@ void Update_objects(void)
             if (pl->fuel.sum > 0 && BIT(pl->status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_THRUST])
-                    Emergency_thrust(i, true);
+                    Emergency_thrust(pl, true);
                 else
-                    Emergency_thrust(i, false);
+                    Emergency_thrust(pl, false);
             }
         }
 
@@ -925,11 +912,11 @@ void Update_objects(void)
             if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, HAS_PHASING_DEVICE))
                 CLR_BIT(pl->used, HAS_LASER);
             else
-                Fire_laser(i);
+                Fire_laser(pl);
         }
 
         if (BIT(pl->used, HAS_DEFLECTOR))
-            Do_deflector(i);
+            Do_deflector(pl);
 
         /*
          * Only do autopilot code if switched on and player is not
@@ -966,7 +953,7 @@ void Update_objects(void)
         if (!pl->turnresistance)
             pl->turnvel = 0;
 
-        Turn_player(i);
+        Turn_player(pl);
 
         /*
          * Compute energy drainage
@@ -982,12 +969,12 @@ void Update_objects(void)
 
 #define UPDATE_RATE 100
 
-        for (j = 0; j < NumPlayers; j++)
+        for (int j = 0; j < NumPlayers; j++)
         {
             if (pl->forceVisible)
-                Players[j]->visibility[i].canSee = 1;
+                Players[j]->visibility[ind].canSee = 1;
 
-            if (i == j || !BIT(Players[j]->used, HAS_CLOAKING_DEVICE))
+            if (ind == j || !BIT(Players[j]->used, HAS_CLOAKING_DEVICE))
                 pl->visibility[j].canSee = 1;
             else if (pl->updateVisibility || Players[j]->updateVisibility || (int)(rfrac() * UPDATE_RATE) < ABS(frame_loops - pl->visibility[j].lastChange))
             {
@@ -1116,14 +1103,14 @@ void Update_objects(void)
             pl->acc.x = pl->acc.y = 0.0;
         }
 
-        Player_set_mass(i);
+        Player_set_mass(pl);
 
         if (BIT(pl->status, WARPING))
         {
             position_t w;
             int wx, wy, proximity,
                 nearestFront, nearestRear,
-                proxFront, proxRear;
+                proxFront, proxRear, j;
 
             if (pl->wormHoleHit >= World.NumWormholes)
             {
@@ -1135,7 +1122,6 @@ void Update_objects(void)
 
             if (pl->wormHoleHit != -1)
             {
-
                 if (World.wormHoles[pl->wormHoleHit].countdown > 0)
                 {
                     j = World.wormHoles[pl->wormHoleHit].lastdest;
@@ -1299,13 +1285,13 @@ void Update_objects(void)
         if (!BIT(pl->status, PAUSE))
         {
             update_object_speed(pl); /* New position */
-            Move_player(i);
+            Move_player(ind);
         }
 
         if ((!BIT(pl->used, HAS_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, HAS_PHASING_DEVICE))
         {
             if (BIT(pl->status, THRUSTING))
-                Thrust(i);
+                Thrust(pl);
         }
 
         Compute_sensor_range(pl);
@@ -1313,21 +1299,17 @@ void Update_objects(void)
         pl->used &= pl->have;
     }
 
-    for (i = World.NumWormholes - 1; i >= 0; i--)
+    for (int i = World.NumWormholes - 1; i >= 0; i--)
     {
         if (World.wormHoles[i].countdown > 0)
-        {
             World.wormHoles[i].countdown--;
-        }
         if (World.wormHoles[i].temporary && World.wormHoles[i].countdown <= 0)
-        {
             remove_temp_wormhole(i);
-        }
     }
 
-    for (i = 0; i < NumPlayers; i++)
+    for (int ind = 0; ind < NumPlayers; ind++)
     {
-        player_t *pl = Players[i];
+        player_t *pl = Players[ind];
 
         pl->updateVisibility = 0;
 
@@ -1340,7 +1322,7 @@ void Update_objects(void)
         }
 
         if (BIT(pl->used, HAS_TRACTOR_BEAM))
-            Tractor_beam(i);
+            Tractor_beam(ind);
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
@@ -1358,47 +1340,45 @@ void Update_objects(void)
     /*
      * Update tanks, Kill players that ought to be killed.
      */
-    for (i = NumPlayers - 1; i >= 0; i--)
+    for (int ind = NumPlayers - 1; ind >= 0; ind--)
     {
-        player_t *pl = Players[i];
+        player_t *pl = Players[ind];
 
         if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             Update_tanks(&(pl->fuel));
         if (BIT(pl->status, KILLED))
         {
-            Throw_items(i);
+            Throw_items(pl);
 
-            Detonate_items(i);
+            Detonate_items(ind);
 
-            Kill_player(i);
+            Kill_player(ind);
 
             if (IS_HUMAN_PTR(pl))
             {
                 if (frame_loops - pl->frame_last_busy > 60 * FPS)
                 {
                     if ((NumPlayers - NumRobots - NumPseudoPlayers) > 1)
-                    {
-                        Pause_player(i, true);
-                    }
+                        Pause_player(ind, true);
                 }
             }
         }
 
-        if (options.maxPauseTime > 0 && IS_HUMAN_PTR(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
+        if (options.maxPauseTime > 0 &&
+            IS_HUMAN_PTR(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
             sprintf(msg,
                     "%s was auto-kicked for pausing too long [*Server notice*]",
                     pl->name);
             Set_message(msg);
-            Destroy_connection(Players[i]->connp,
-                               "auto-kicked: paused too long");
+            Destroy_connection(pl->connp, "auto-kicked: paused too long");
         }
     }
 
     /*
      * Kill shots that ought to be dead.
      */
-    for (i = NumObjs - 1; i >= 0; i--)
+    for (int i = NumObjs - 1; i >= 0; i--)
         if (--(Obj[i]->life) <= 0)
             Delete_shot(i);
 

@@ -47,9 +47,8 @@
  * Functions for ship movement.
  */
 
-void Thrust(int ind)
+void Thrust(player_t *pl)
 {
-    player_t *pl = Players[ind];
     const int min_dir = (int)(pl->dir + RES / 2 - RES * 0.2 - 1);
     const int max_dir = (int)(pl->dir + RES / 2 + RES * 0.2 + 1);
     const DFLOAT max_speed = 1 + (pl->power * 0.14);
@@ -517,9 +516,7 @@ void Make_wreckage(
     DFLOAT mass, sum_mass = 0.0;
 
     if (!options.useWreckage)
-    {
         return;
-    }
     if (BIT(World.rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
@@ -637,9 +634,8 @@ void Make_wreckage(
 }
 
 /* Explode a fighter */
-void Explode_fighter(int ind)
+void Explode_fighter(player_t *pl)
 {
-    player_t *pl = Players[ind];
     int min_debris, max_debris;
 
     sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_EXPLOSION_SOUND);
@@ -668,7 +664,7 @@ void Explode_fighter(int ind)
     if (!BIT(pl->status, KILLED))
         return;
     Make_wreckage(
-        /* pos.x, pos.y     */ pl->pos.x, pl->pos.y,
+        /* pos.cx, pos.cy   */ pl->pos.cx, pl->pos.cy,
         /* vel.x, vel.y     */ pl->vel.x, pl->vel.y,
         /* owner id         */ pl->id,
         /* owner team       */ pl->team,

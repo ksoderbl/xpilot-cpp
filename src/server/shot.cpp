@@ -1496,31 +1496,27 @@ void Delete_shot(int ind)
     }
 }
 
-void Fire_laser(int ind)
+void Fire_laser(player_t *pl)
 {
-    player_t *pl = Players[ind];
-    int cx, cy;
-
     if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
     {
         if (pl->fuel.sum <= -ED_LASER)
             CLR_BIT(pl->used, HAS_LASER);
         else
         {
-            cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x + pl->vel.x);
-            cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
+            int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x + pl->vel.x);
+            int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
             cx = WRAP_XCLICK(cx);
             cy = WRAP_YCLICK(cy);
             if (cx >= 0 && cx < World.click_width && cy >= 0 && cy < World.click_height)
-                Fire_general_laser(ind, pl->team, cx, cy, pl->dir, pl->mods);
+                Fire_general_laser(pl, pl->team, cx, cy, pl->dir, pl->mods);
         }
     }
 }
 
-void Fire_general_laser(int ind, unsigned short team, int cx, int cy,
+void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy,
                         int dir, modifiers_t mods)
 {
-    player_t *pl = ((ind == -1) ? NULL : Players[ind]);
     pulse_t *pulse;
     int life;
 
