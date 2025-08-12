@@ -229,9 +229,7 @@ void Main_loop(void)
     main_loops++;
 
     if ((main_loops & 0x3F) == 0)
-    {
         Meta_update(0);
-    }
 
     /*
      * Check for possible shutdown, the server will
@@ -241,20 +239,15 @@ void Main_loop(void)
     if (ShutdownServer >= 0)
     {
         if (ShutdownServer == 0)
-        {
             End_game();
-        }
         else
-        {
             ShutdownServer--;
-        }
     }
 
     Input();
 
     if (NumPlayers > NumRobots + NumPseudoPlayers || options.RawMode)
     {
-
         if (NoPlayersEnteredYet)
         {
             if (NumPlayers > NumRobots + NumPseudoPlayers)
@@ -270,26 +263,14 @@ void Main_loop(void)
 
         Update_objects();
 
-        /*
-         * The following macros decide the speed of the game and
-         * how often the server should draw a frame.  (Hmm...)
-         */
-
-#define UPDATES_PR_FRAME 1
-
-        if ((main_loops % UPDATES_PR_FRAME) == 0)
-        {
-            Frame_update();
-        }
+        Frame_update();
     }
 
     if (!options.NoQuit && NumPlayers == NumRobots + NumPseudoPlayers && !login_in_progress && !NumQueuedPlayers)
     {
 
         if (!NoPlayersEnteredYet)
-        {
             End_game();
-        }
         if (serverTime + 5 * 60 < time(NULL))
         {
             xperror("First player has yet to show his butt, I'm bored... Bye!");
