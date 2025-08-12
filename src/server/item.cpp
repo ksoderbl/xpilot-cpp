@@ -832,7 +832,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         if (!victim->item[item])
         {
             if (BIT(victim->used, HAS_EMERGENCY_SHIELD))
-                Emergency_shield(target, false);
+                Emergency_shield(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_SHIELD);
             if (!BIT(DEF_HAVE, HAS_SHIELD))
             {

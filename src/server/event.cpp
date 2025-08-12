@@ -810,7 +810,7 @@ int Handle_keyboard(int ind)
 
             case KEY_EMERGENCY_SHIELD:
                 if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
-                    Emergency_shield(ind, !BIT(pl->used, HAS_EMERGENCY_SHIELD));
+                    Emergency_shield(pl, !BIT(pl->used, HAS_EMERGENCY_SHIELD));
                 break;
 
             case KEY_DROP_MINE:
@@ -918,7 +918,7 @@ int Handle_keyboard(int ind)
                             Emergency_thrust(ind, false);
 
                         if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
-                            Emergency_shield(ind, false);
+                            Emergency_shield(pl, false);
 
                         if (!BIT(pl->used, HAS_AUTOPILOT))
                             Autopilot(ind, true);

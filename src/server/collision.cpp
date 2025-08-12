@@ -1044,9 +1044,7 @@ static void Player_collides_with_item(int ind, object_t *obj)
          * then we'll immediately turn on emergency shield.
          */
         if (!BIT(old_have, HAS_SHIELD | HAS_EMERGENCY_SHIELD) && pl->item[ITEM_EMERGENCY_SHIELD] == 1)
-        {
-            Emergency_shield(ind, true);
-        }
+            Emergency_shield(pl, true);
         break;
     case ITEM_TRACTOR_BEAM:
         pl->item[item_index] += obj->count;

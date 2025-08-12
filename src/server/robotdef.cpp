@@ -2062,9 +2062,7 @@ static void Robot_default_play(int ind)
 
     CLR_BIT(pl->used, HAS_SHOT | HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_LASER);
     if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, HAS_EMERGENCY_SHIELD))
-    {
-        Emergency_shield(ind, true);
-    }
+        Emergency_shield(pl, true);
     harvest_checked = false;
     evade_checked = false;
     navigate_checked = false;

@@ -157,13 +157,9 @@ void Cloak(int ind, int on)
             if (!options.cloakedShield)
             {
                 if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
-                {
-                    Emergency_shield(ind, false);
-                }
+                    Emergency_shield(pl, false);
                 if (BIT(pl->used, HAS_DEFLECTOR))
-                {
                     Deflector(pl, false);
-                }
                 CLR_BIT(pl->used, HAS_SHIELD);
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
@@ -189,7 +185,7 @@ void Cloak(int ind, int on)
             if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
             {
                 SET_BIT(pl->have, HAS_SHIELD);
-                Emergency_shield(ind, true);
+                Emergency_shield(pl, true);
             }
             if (BIT(DEF_HAVE, HAS_SHIELD) && !BIT(pl->have, HAS_SHIELD))
             {
@@ -272,9 +268,8 @@ void Emergency_thrust(int ind, int on)
 /*
  * Turn emergency shield on or off.
  */
-void Emergency_shield(int ind, int on)
+void Emergency_shield(player_t *pl, bool on)
 {
-    player_t *pl = Players[ind];
     const int emergency_shield_time = 4 * FPS; /* 8 -> 4 */
 
     if (on)
@@ -568,9 +563,7 @@ void Update_objects(void)
         {
             pl = Players[i];
             if (BIT(pl->used, HAS_SHOT))
-            {
                 Fire_normal_shots(i);
-            }
         }
     }
 
@@ -921,9 +914,9 @@ void Update_objects(void)
             if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_SHIELD])
-                    Emergency_shield(i, true);
+                    Emergency_shield(pl, true);
                 else
-                    Emergency_shield(i, false);
+                    Emergency_shield(pl, false);
             }
         }
 
