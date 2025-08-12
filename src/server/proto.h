@@ -105,7 +105,6 @@ void Free_options(void);
  * Prototypes for play.c
  */
 void Thrust(int ind);
-void Turn_thrust(int ind, int num_sparks);
 void Recoil(object_t *ship, object_t *shot);
 void Record_shove(player_t *pl, player *pusher, long time);
 void Delta_mv(object_t *ship, object_t *obj);

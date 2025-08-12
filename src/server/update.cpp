@@ -827,8 +827,6 @@ void Update_objects(void)
      */
     for (i = 0; i < NumPlayers; i++)
     {
-        long tf = 0;
-
         pl = Players[i];
 
         /* Limits. */
@@ -872,14 +870,10 @@ void Update_objects(void)
         }
 
         if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
-        {
             continue;
-        }
 
         if (round_delay > 0)
-        {
             continue;
-        }
 
         if (pl->stunned > 0)
         {
@@ -893,17 +887,13 @@ void Update_objects(void)
             if (--pl->shield_time == 0)
             {
                 if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
-                {
                     CLR_BIT(pl->used, HAS_SHIELD);
-                }
             }
             if (BIT(pl->used, HAS_SHIELD) == 0)
             {
                 /* BG 95/06/03: change test on "have" to "used". */
                 if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
-                {
                     CLR_BIT(pl->have, HAS_SHIELD);
-                }
                 pl->shield_time = 0;
             }
         }
@@ -913,13 +903,9 @@ void Update_objects(void)
             if (--pl->phasing_left <= 0)
             {
                 if (pl->item[ITEM_PHASING])
-                {
                     Phasing(i, 1);
-                }
                 else
-                {
                     Phasing(i, 0);
-                }
             }
         }
 
@@ -928,13 +914,9 @@ void Update_objects(void)
             if (pl->fuel.sum > 0 && BIT(pl->status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_THRUST])
-                {
                     Emergency_thrust(i, true);
-                }
                 else
-                {
                     Emergency_thrust(i, false);
-                }
             }
         }
 
@@ -943,41 +925,29 @@ void Update_objects(void)
             if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_SHIELD])
-                {
                     Emergency_shield(i, true);
-                }
                 else
-                {
                     Emergency_shield(i, false);
-                }
             }
         }
 
         if (BIT(pl->used, HAS_LASER))
         {
             if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, HAS_PHASING_DEVICE))
-            {
                 CLR_BIT(pl->used, HAS_LASER);
-            }
             else
-            {
                 Fire_laser(i);
-            }
         }
 
         if (BIT(pl->used, HAS_DEFLECTOR))
-        {
             Do_deflector(i);
-        }
 
         /*
          * Only do autopilot code if switched on and player is not
          * damaged (ie. can see).
          */
         if ((BIT(pl->used, HAS_AUTOPILOT)) || (BIT(pl->status, HOVERPAUSE) && !pl->damaged))
-        {
             do_Autopilot(pl);
-        }
 
         /*
          * Compute turn
@@ -993,23 +963,6 @@ void Update_objects(void)
             pl->turnvel *= pl->turnresistance;
         }
 
-        if (options.turnThrust)
-        {
-            tf = pl->oldturnvel - pl->turnvel;
-            tf = TURN_FUEL(tf);
-            if (pl->fuel.sum <= tf)
-            {
-                tf = 0;
-                pl->turnacc = 0.0;
-                pl->turnvel = pl->oldturnvel;
-            }
-            else
-            {
-                Add_fuel(&(pl->fuel), -tf);
-                pl->oldturnvel = pl->turnvel;
-            }
-        }
-
         pl->float_dir += pl->turnvel;
 
         while (pl->float_dir < 0)
@@ -1022,9 +975,7 @@ void Update_objects(void)
          * when playing with pointer control.
          */
         if (!pl->turnresistance)
-        {
             pl->turnvel = 0;
-        }
 
         Turn_player(i);
 
@@ -1366,8 +1317,6 @@ void Update_objects(void)
         {
             if (BIT(pl->status, THRUSTING))
                 Thrust(i);
-            if (tf && options.turnThrust)
-                Turn_thrust(i, TURN_SPARKS(tf));
         }
 
         Compute_sensor_range(pl);

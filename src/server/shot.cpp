@@ -361,9 +361,7 @@ void Make_treasure_ball(int treasure)
     }
 
     if ((ball = BALL_PTR(Object_allocate())) == NULL)
-    {
         return;
-    }
 
     ball->length = options.ballConnectorLength;
     ball->life = LONG_MAX;

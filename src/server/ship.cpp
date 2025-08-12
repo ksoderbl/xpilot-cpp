@@ -60,8 +60,8 @@ void Thrust(int ind)
                           : (keep_rand = randomMT())) &
                      0x03);
     int tot_sparks = (int)((pl->power * 0.15) + this_rand + 1);
-    DFLOAT x = pl->pos.x + pl->ship->engine[pl->dir].x;
-    DFLOAT y = pl->pos.y + pl->ship->engine[pl->dir].y;
+    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->engine[pl->dir].x);
+    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->engine[pl->dir].y);
     int afterburners, alt_sparks;
 
     sound_play_sensors(pl->pos.cx, pl->pos.cy, THRUST_SOUND);
@@ -72,9 +72,6 @@ void Thrust(int ind)
     alt_sparks = afterburners
                      ? AFTER_BURN_SPARKS(tot_sparks - 1, afterburners) + 1
                      : 0;
-
-    int cx = FLOAT_TO_CLICK(x);
-    int cy = FLOAT_TO_CLICK(y);
 
     Make_debris(
         /* pos.cx, pos.cy */ cx, cy,
@@ -105,33 +102,6 @@ void Thrust(int ind)
         /* min,max dir    */ min_dir, max_dir,
         /* min,max speed  */ 1.0, max_speed,
         /* min,max life   */ 3, max_life);
-}
-
-void Turn_thrust(int ind, int num_sparks)
-{
-    player_t *pl = Players[ind];
-    int x = pl->pos.x + pl->ship->pts[0][pl->dir].x;
-    int y = pl->pos.y + pl->ship->pts[0][pl->dir].y;
-    int dir = pl->dir + ((pl->turnacc > 0.0) ? (RES / 4) : (3 * (RES / 4)));
-
-    int cx = FLOAT_TO_CLICK(x);
-    int cy = FLOAT_TO_CLICK(y);
-
-    if (options.turnThrust && (!BIT(pl->used, HAS_CLOAKING_DEVICE) || options.cloakedExhaust))
-        Make_debris(
-            /* pos.cx, pos.cy */ cx, cy,
-            /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
-            /* owner id       */ pl->id,
-            /* owner team     */ pl->team,
-            /* kind           */ OBJ_SPARK,
-            /* mass           */ THRUST_MASS,
-            /* status         */ GRAVITY | OWNERIMMUNE,
-            /* color          */ RED,
-            /* radius         */ 1,
-            /* min,max debris */ num_sparks, num_sparks,
-            /* min,max dir    */ dir - (RES * 0.1) - 1, dir + (RES * 0.1) + 1,
-            /* min,max speed  */ 1, 3,
-            /* min,max life   */ 1, 2 * FPS);
 }
 
 /* Calculates the recoil if a ship fires a shot */

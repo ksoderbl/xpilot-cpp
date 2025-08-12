@@ -272,7 +272,6 @@ typedef struct options
     int tankScoreDecrement; /* Amount by which the tank's score */
                             /* is decreased from the player's */
 
-    bool turnThrust;   /* Does turning use fuel and shoot sparks? */
     bool selfImmunity; /* Are players immune to their own weapons? */
 
     char *defaultShipShape; /* What ship shape is used for players */
