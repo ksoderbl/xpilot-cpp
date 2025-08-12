@@ -1228,9 +1228,7 @@ void Delete_shot(int ind)
             for (i = 0; i < NumPlayers; i++)
             {
                 if (Players[i]->ball == ball)
-                {
                     Players[i]->ball = NULL;
-                }
             }
         }
         if (ball->owner == NO_ID)

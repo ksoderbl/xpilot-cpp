@@ -165,6 +165,13 @@ void Pick_startpos(int ind)
 void Go_home(int ind)
 {
     player_t *pl = Players[ind];
+
+    printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
+    if (ind != pl->ind)
+    {
+        warn("******** ERROR!!!!");
+    }
+
     int i, x, y, dir, check;
     DFLOAT vx, vy, velo;
 
@@ -221,9 +228,7 @@ void Go_home(int ind)
             SET_BIT(pl->have, HAS_SHIELD);
         }
         if (BIT(pl->have, HAS_DEFLECTOR))
-        {
-            Deflector(ind, true);
-        }
+            Deflector(pl, true);
     }
     CLR_BIT(pl->status, THRUSTING);
     pl->updateVisibility = 1;
@@ -402,6 +407,7 @@ int Init_player(int ind, shipshape_t *ship)
     bool too_late = false;
     int i;
 
+    pl->ind = ind;
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
     pl->float_dir = pl->dir = DIR_UP;

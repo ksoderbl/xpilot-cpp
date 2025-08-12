@@ -162,7 +162,7 @@ void Cloak(int ind, int on)
                 }
                 if (BIT(pl->used, HAS_DEFLECTOR))
                 {
-                    Deflector(ind, false);
+                    Deflector(pl, false);
                 }
                 CLR_BIT(pl->used, HAS_SHIELD);
                 CLR_BIT(pl->have, HAS_SHIELD);
@@ -206,10 +206,8 @@ void Cloak(int ind, int on)
 /*
  * Turn deflector on or off.
  */
-void Deflector(int ind, int on)
+void Deflector(player_t *pl, bool on)
 {
-    player_t *pl = Players[ind];
-
     if (on)
     {
         if (!BIT(pl->used, HAS_DEFLECTOR) && pl->item[ITEM_DEFLECTOR] > 0)
@@ -230,9 +228,7 @@ void Deflector(int ind, int on)
             sound_play_player(pl, DEFLECTOR_SOUND);
         }
         if (!pl->item[ITEM_DEFLECTOR])
-        {
             CLR_BIT(pl->have, HAS_DEFLECTOR);
-        }
     }
 }
 

@@ -1167,8 +1167,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     {
         if (strcasecmp(Players[i]->name, connp->nick) == 0)
         {
-            errno = 0;
-            xperror("Name already in use %s", connp->nick);
+            warn("Name already in use %s", connp->nick);
             strlcpy(errmsg, "Name already in use", errsize);
             return -1;
         }
@@ -1185,9 +1184,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     pl->isowner = (!strcmp(pl->realname, Server.owner) &&
                    !strcmp(connp->addr, "127.0.0.1"));
     if (connp->team != TEAM_NOT_SET)
-    {
         pl->team = connp->team;
-    }
     pl->version = connp->version;
 
     Pick_startpos(NumPlayers);

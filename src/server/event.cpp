@@ -1043,7 +1043,7 @@ int Handle_keyboard(int ind)
             case KEY_DEFLECTOR:
                 if (pl->item[ITEM_DEFLECTOR] > 0)
                 {
-                    Deflector(ind, !BIT(pl->used, HAS_DEFLECTOR));
+                    Deflector(pl, !BIT(pl->used, HAS_DEFLECTOR));
                 }
                 break;
 

@@ -2084,9 +2084,7 @@ static void Robot_default_play(int ind)
     }
 
     if (BIT(pl->have, HAS_DEFLECTOR) && !BIT(World.rules->mode, TIMING))
-    {
-        Deflector(ind, true);
-    }
+        Deflector(pl, true);
 
     if (pl->fuel.sum <= (BIT(World.rules->mode, TIMING) ? 0 : pl->fuel.l1))
     {

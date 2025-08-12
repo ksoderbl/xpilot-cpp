@@ -306,7 +306,7 @@ void Update_radar_target(int);
 void Update_objects(void);
 void Autopilot(int ind, int on);
 void Cloak(int ind, int on);
-void Deflector(int ind, int on);
+void Deflector(player_t *pl, bool on);
 void Emergency_thrust(int ind, int on);
 void Emergency_shield(int ind, int on);
 void Phasing(int ind, int on);

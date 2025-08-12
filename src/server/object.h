@@ -581,9 +581,7 @@ struct player
     int isowner;    /* If player started this server. */
     int isoperator; /* If player has operator privileges. */
 
-    // #ifdef __cplusplus
-    //                 player() {}
-    // #endif
+    int ind; /* Index in Players[] */
 };
 
 #define NumObjs (ObjCount + 0)

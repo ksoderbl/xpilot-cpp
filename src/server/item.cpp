@@ -593,9 +593,7 @@ void Do_deflector(int ind)
     if (pl->fuel.sum < -ED_DEFLECTOR)
     {
         if (BIT(pl->used, HAS_DEFLECTOR))
-        {
-            Deflector(ind, false);
-        }
+            Deflector(pl, false);
         return;
     }
     Add_fuel(&(pl->fuel), (long)ED_DEFLECTOR);
@@ -802,7 +800,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         what = "a deflector";
         if (!victim->item[item])
         {
-            Deflector(target, false);
+            Deflector(victim, false);
         }
         break;
     case ITEM_HYPERJUMP:
