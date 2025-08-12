@@ -105,6 +105,11 @@ static void catch_timer_ticks(int signum)
 static void catch_timer_counts(int signum)
 {
     static unsigned int timer_count = 0;
+    // static unsigned int my_count = 0;
+
+    // if ((my_count % 1000) == 0)
+    //     printf("catch_timer_counts: my_count = %d\n", my_count);
+    // my_count++;
 
     timer_count += FPS;
     if (timer_count >= (unsigned)options.timerResolution)
@@ -154,6 +159,9 @@ static void setup_timer(void)
         exit(1);
     }
 
+    // printf("1000000   / timer_freq = %ld\n", 1000000 / timer_freq);
+    // printf("1000000.0 / timer_freq = %f\n", 1000000.0 / timer_freq);
+
     itv.it_interval.tv_sec = 0;
     itv.it_interval.tv_usec = 1000000 / timer_freq;
     itv.it_value = itv.it_interval;
@@ -177,7 +185,10 @@ static void setup_timer(void)
  */
 void install_timer_tick(void (*func)(void), int freq)
 {
-    timer_handler = func;
+    if (func != nullptr)
+    {
+        timer_handler = func;
+    }
     timer_freq = freq;
     setup_timer();
 }

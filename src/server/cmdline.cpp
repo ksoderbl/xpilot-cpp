@@ -1226,7 +1226,7 @@ static option_desc opts[] = {
      "14",
      &options.framesPerSecond,
      valInt,
-     tuner_none,
+     tuner_fps,
      "The number of frames per second the server should strive for.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"allowSmartMissiles",

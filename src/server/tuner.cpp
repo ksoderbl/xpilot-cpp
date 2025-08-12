@@ -30,6 +30,7 @@
 #include "proto.h"
 #include "xperror.h"
 #include "xpmath.h"
+#include "sched.h"
 
 extern time_t gameOverTime;
 
@@ -340,4 +341,9 @@ void tuner_allowalliances(void)
 void tuner_announcealliances(void)
 {
     updateScores = true;
+}
+
+void tuner_fps(void)
+{
+    install_timer_tick(nullptr, FPS);
 }

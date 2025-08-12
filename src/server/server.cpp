@@ -207,14 +207,11 @@ int main(int argc, char **argv)
     xpprintf("%s Server runs at %d frames per second\n", showtime(), options.framesPerSecond);
 #endif
 
+    // printf("timerResolution: %d\n", options.timerResolution);
     if (options.timerResolution > 0)
-    {
         timer_tick_rate = options.timerResolution;
-    }
     else
-    {
         timer_tick_rate = FPS;
-    }
     install_timer_tick(Main_loop, timer_tick_rate);
 
     sched();
@@ -227,6 +224,11 @@ int main(int argc, char **argv)
 void Main_loop(void)
 {
     main_loops++;
+
+    // if ((main_loops % 1000) == 0)
+    // {
+    // printf("main_loops: %d\n", main_loops);
+    // }
 
     if ((main_loops & 0x3F) == 0)
         Meta_update(0);
