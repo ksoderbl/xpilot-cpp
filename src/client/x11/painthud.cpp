@@ -983,10 +983,10 @@ void Paint_HUD_values(void)
     wmax = MAX(w, w2);
 
     x = WINSCALE(ext_view_width) - 10 - wmax;
-    y = 200 + gameFont->ascent;
+    y = 240 + gameFont->ascent;
     rd.drawString(dpy, drawPixmap, gameGC, x, y, buf, len);
 
     x = WINSCALE(ext_view_width) - 10 - wmax;
-    y = 220 + gameFont->ascent;
+    y = 260 + gameFont->ascent;
     rd.drawString(dpy, drawPixmap, gameGC, x, y, buf2, len2);
 }
