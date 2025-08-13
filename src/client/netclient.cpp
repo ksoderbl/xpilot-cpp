@@ -164,9 +164,7 @@ static void Receive_init(void)
     receive_tbl[PKT_ASTEROID] = Receive_asteroid;
     receive_tbl[PKT_WORMHOLE] = Receive_wormhole;
     for (i = 0; i < DEBRIS_TYPES; i++)
-    {
         receive_tbl[PKT_DEBRIS + i] = Receive_debris;
-    }
 
     reliable_tbl[PKT_MOTD] = Receive_motd;
     reliable_tbl[PKT_MESSAGE] = Receive_message;
@@ -201,13 +199,11 @@ static int Uncompress_map(void)
     uint8_t *cmp, /* compressed map pointer */
         *ump,     /* uncompressed map pointer */
         *p;       /* temporary search pointer */
-    int i,
-        count;
+    int i, count;
 
     if (Setup->map_order != SETUP_MAP_ORDER_XY)
     {
-        errno = 0;
-        xperror("Unknown map ordering in setup (%d)", Setup->map_order);
+        warn("Unknown map ordering in setup (%d)", Setup->map_order);
         return -1;
     }
 
@@ -222,9 +218,7 @@ static int Uncompress_map(void)
         for (p = cmp; p > Setup->map_data; p--)
         {
             if ((p[-1] & SETUP_COMPRESSED) == 0)
-            {
                 break;
-            }
         }
         if (p == cmp)
         {
@@ -232,38 +226,33 @@ static int Uncompress_map(void)
             continue;
         }
         if ((cmp - p) % 2 == 0)
-        {
             *ump-- = *cmp--;
-        }
+
         while (p < cmp)
         {
             count = *cmp--;
             if (count < 2)
             {
-                errno = 0;
-                xperror("Map compress count error %d", count);
+                warn("Map compress count error %d", count);
                 return -1;
             }
             *cmp &= ~SETUP_COMPRESSED;
             for (i = 0; i < count; i++)
-            {
                 *ump-- = *cmp;
-            }
+
             cmp--;
             if (ump < cmp)
             {
-                errno = 0;
-                xperror("Map uncompression error (%d,%d)",
-                        cmp - Setup->map_data, ump - Setup->map_data);
+                warn("Map uncompression error (%d,%d)",
+                     cmp - Setup->map_data, ump - Setup->map_data);
                 return -1;
             }
         }
     }
     if (ump != cmp)
     {
-        errno = 0;
-        xperror("map uncompress error (%d,%d)",
-                cmp - Setup->map_data, ump - Setup->map_data);
+        warn("map uncompress error (%d,%d)",
+             cmp - Setup->map_data, ump - Setup->map_data);
         return -1;
     }
     Setup->map_order = SETUP_MAP_UNCOMPRESSED;
@@ -276,11 +265,7 @@ static int Uncompress_map(void)
  */
 int Net_setup(void)
 {
-    int n,
-        len,
-        size,
-        done = 0,
-        retries;
+    int n, len, size, done = 0, retries;
     long todo = sizeof(setup_t);
     char *ptr;
 
@@ -293,14 +278,12 @@ int Net_setup(void)
     while (todo > 0)
     {
         if (cbuf.ptr != cbuf.buf)
-        {
             Sockbuf_advance(&cbuf, cbuf.ptr - cbuf.buf);
-        }
+
         len = cbuf.len;
         if (len > todo)
-        {
             len = todo;
-        }
+
         if (len > 0)
         {
             if (done == 0)
@@ -318,8 +301,7 @@ int Net_setup(void)
                                  Setup->name, Setup->author);
                 if (n <= 0)
                 {
-                    errno = 0;
-                    xperror("Can't read setup info from reliable data buffer");
+                    warn("Can't read setup info from reliable data buffer");
                     return -1;
                 }
                 /*
@@ -327,17 +309,15 @@ int Net_setup(void)
                  */
                 if (Setup->map_data_len <= 0 || Setup->x <= 0 || Setup->y <= 0 || Setup->map_data_len > Setup->x * Setup->y)
                 {
-                    errno = 0;
-                    xperror("Got bad map specs from server (%d,%d,%d)",
-                            Setup->map_data_len, Setup->x, Setup->y);
+                    warn("Got bad map specs from server (%d,%d,%d)",
+                         Setup->map_data_len, Setup->x, Setup->y);
                     return -1;
                 }
                 Setup->width = Setup->x * BLOCK_SZ;
                 Setup->height = Setup->y * BLOCK_SZ;
                 if (Setup->map_order != SETUP_MAP_ORDER_XY && Setup->map_order != SETUP_MAP_UNCOMPRESSED)
                 {
-                    errno = 0;
-                    xperror("Unknown map order type (%d)", Setup->map_order);
+                    warn("Unknown map order type (%d)", Setup->map_order);
                     return -1;
                 }
                 size = sizeof(setup_t) + Setup->x * Setup->y;
@@ -361,44 +341,36 @@ int Net_setup(void)
         if (todo > 0)
         {
             if (rbuf.ptr != rbuf.buf)
-            {
                 Sockbuf_advance(&rbuf, rbuf.ptr - rbuf.buf);
-            }
+
             if (rbuf.len > 0)
             {
                 if (rbuf.ptr[0] != PKT_RELIABLE)
                 {
                     if (rbuf.ptr[0] == PKT_QUIT)
                     {
-                        errno = 0;
-                        xperror("Server closed connection");
+                        warn("Server closed connection");
                         return -1;
                     }
                     else
                     {
-                        errno = 0;
-                        xperror("Not a reliable packet (%d) in setup",
-                                rbuf.ptr[0]);
+                        warn("Not a reliable packet (%d) in setup",
+                             rbuf.ptr[0]);
                         return -1;
                     }
                 }
                 if (Receive_reliable() == -1)
-                {
                     return -1;
-                }
+
                 if (Sockbuf_flush(&wbuf) == -1)
-                {
                     return -1;
-                }
             }
             if (cbuf.ptr != cbuf.buf)
-            {
                 Sockbuf_advance(&cbuf, cbuf.ptr - cbuf.buf);
-            }
+
             if (cbuf.len > 0)
-            {
                 continue;
-            }
+
             for (retries = 0;; retries++)
             {
                 if (retries >= 10)
@@ -419,24 +391,18 @@ int Net_setup(void)
                         return -1;
                     }
                     if (rbuf.len > 0)
-                    {
                         break;
-                    }
                     sock_set_timeout(&rbuf.sock, 0, 0);
                 }
                 if (rbuf.len > 0)
-                {
                     break;
-                }
             }
         }
     }
     if (Setup->map_order != SETUP_MAP_UNCOMPRESSED)
     {
         if (Uncompress_map() == -1)
-        {
             return -1;
-        }
     }
 
     return 0;
@@ -452,10 +418,7 @@ int Net_setup(void)
 #define MAX_VERIFY_RETRIES 5
 int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
 {
-    int n,
-        type,
-        result,
-        retries;
+    int n, type, result, retries;
     time_t last;
 
     team = my_team;
@@ -479,16 +442,13 @@ int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
             time(&last);
 #ifndef SILENT
             if (retries > 1)
-            {
                 printf("Waiting for verify response\n");
-            }
 #endif
         }
         sock_set_timeout(&rbuf.sock, 1, 0);
         if (sock_readable(&rbuf.sock) == 0)
-        {
             continue;
-        }
+
         Sockbuf_clear(&rbuf);
         if (Sockbuf_read(&rbuf) == -1)
         {
@@ -496,9 +456,8 @@ int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
             return -1;
         }
         if (rbuf.len <= 0)
-        {
             continue;
-        }
+
         if (rbuf.ptr[0] != PKT_RELIABLE)
         {
             if (rbuf.ptr[0] == PKT_QUIT)
@@ -513,17 +472,14 @@ int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
             }
         }
         if (Receive_reliable() == -1)
-        {
             return -1;
-        }
+
         if (Sockbuf_flush(&wbuf) == -1)
-        {
             return -1;
-        }
+
         if (cbuf.len == 0)
-        {
             continue;
-        }
+
         if (Receive_reply(&type, &result) <= 0)
         {
             warn("Can't receive verify reply packet");
@@ -548,9 +504,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
     }
 #ifndef SILENT
     if (retries > 1)
-    {
         printf("Verified correctly\n");
-    }
 #endif
     return 0;
 }
@@ -614,13 +568,10 @@ int Net_init(char *server, int port)
         return -1;
     }
     if (sock_set_send_buffer_size(&sock, CLIENT_SEND_SIZE + 256) == -1)
-    {
         xperror("Can't set send buffer size to %d", CLIENT_SEND_SIZE + 256);
-    }
+
     if (sock_set_receive_buffer_size(&sock, CLIENT_RECV_SIZE + 256) == -1)
-    {
         xperror("Can't set receive buffer size to %d", CLIENT_RECV_SIZE + 256);
-    }
 
     size = receive_window_size * sizeof(frame_buf_t);
     if ((Frames = (frame_buf_t *)malloc(size)) == NULL)
@@ -695,24 +646,15 @@ void Net_cleanup(void)
         for (i = 0; i < receive_window_size; i++)
         {
             if (Frames[i].sbuf.buf != NULL)
-            {
                 Sockbuf_cleanup(&Frames[i].sbuf);
-            }
             else
-            {
                 break;
-            }
         }
-        free(Frames);
-        Frames = NULL;
+        XFREE(Frames);
     }
     Sockbuf_cleanup(&cbuf);
     Sockbuf_cleanup(&wbuf);
-    if (Setup != NULL)
-    {
-        free(Setup);
-        Setup = NULL;
-    }
+    XFREE(Setup);
     if (sock.fd > 2)
     {
         ch = PKT_QUIT;
@@ -752,18 +694,16 @@ int Net_flush(void)
         return 0;
     }
     if (last_keyboard_ack != last_keyboard_change)
-    {
         /*
          * Since 3.2.10: just call Key_update to add our keyboard vector.
          * Key_update will call Send_keyboard to flush our buffer.
          */
         return Key_update();
-    }
+
     Send_talk();
     if (Sockbuf_flush(&wbuf) == -1)
-    {
         return -1;
-    }
+
     Sockbuf_clear(&wbuf);
     last_send_anything = last_loops;
     return 1;
@@ -785,9 +725,7 @@ int Net_fd(void)
  */
 int Net_start(void)
 {
-    int retries,
-        type,
-        result;
+    int retries, type, result;
     time_t last;
 
     for (retries = 0;;)
@@ -796,8 +734,7 @@ int Net_start(void)
         {
             if (retries++ >= 10)
             {
-                errno = 0;
-                xperror("Can't start play after %d retries", retries);
+                warn("Can't start play after %d retries", retries);
                 return -1;
             }
             Sockbuf_clear(&wbuf);
@@ -818,9 +755,8 @@ int Net_start(void)
             time(&last);
         }
         if (cbuf.ptr > cbuf.buf)
-        {
             Sockbuf_advance(&cbuf, cbuf.ptr - cbuf.buf);
-        }
+
         sock_set_timeout(&rbuf.sock, 2, 0);
         while (cbuf.len <= 0 && sock_readable(&rbuf.sock) != 0)
         {
@@ -831,15 +767,12 @@ int Net_start(void)
                 return -1;
             }
             if (rbuf.len <= 0)
-            {
                 continue;
-            }
             if (rbuf.ptr[0] != PKT_RELIABLE)
             {
                 if (rbuf.ptr[0] == PKT_QUIT)
                 {
-                    errno = 0;
-                    xperror("Server closed connection");
+                    warn("Server closed connection");
                     return -1;
                 }
                 else if (rbuf.ptr[0] == PKT_START)
@@ -879,18 +812,12 @@ int Net_start(void)
                 }
             }
             if (Receive_reliable() == -1)
-            {
                 return -1;
-            }
             if (Sockbuf_flush(&wbuf) == -1)
-            {
                 return -1;
-            }
         }
         if (cbuf.ptr - cbuf.buf >= cbuf.len)
-        {
             continue;
-        }
         if (cbuf.ptr[0] != PKT_REPLY)
         {
             errno = 0;
@@ -944,15 +871,11 @@ void Net_init_measurement(void)
                 packetMeasurement = false;
             }
             else
-            {
                 memset(packet_measure, PACKET_DRAW, MAX_SUPPORTED_FPS);
-            }
         }
     }
     else if (packet_measure != NULL)
-    {
         XFREE(packet_measure);
-    }
 }
 
 void Net_init_lag_measurement(void)
@@ -975,11 +898,7 @@ void Net_init_lag_measurement(void)
  */
 static int Net_packet(void)
 {
-    int type,
-        prev_type = 0,
-        result,
-        replyto,
-        status;
+    int type, prev_type = 0, result, replyto, status;
 
     while (rbuf.buf + rbuf.len > rbuf.ptr)
     {
@@ -997,10 +916,7 @@ static int Net_packet(void)
             if (result == -1)
             {
                 if (type != PKT_QUIT)
-                {
-                    errno = 0;
-                    xperror("Processing packet type (%d, %d) failed", type, prev_type);
-                }
+                    warn("Processing packet type (%d, %d) failed", type, prev_type);
                 return -1;
             }
             /* Drop rest of incomplete packet */
@@ -1017,9 +933,7 @@ static int Net_packet(void)
             if ((result = Receive_reply(&replyto, &status)) <= 0)
             {
                 if (result == 0)
-                {
                     break;
-                }
                 return -1;
             }
             /* should do something more appropriate than this with the reply */
@@ -1037,13 +951,9 @@ static int Net_packet(void)
             {
                 printf("%3d", cbuf.buf[i] & 0xFF);
                 if (i % 20 == 0)
-                {
                     printf("\n");
-                }
                 else
-                {
                     printf(" ");
-                }
             }
             printf("\n");
             return -1;
@@ -1051,9 +961,7 @@ static int Net_packet(void)
         else if ((result = (*reliable_tbl[type])()) <= 0)
         {
             if (result == 0)
-            {
                 break;
-            }
             return -1;
         }
     }
@@ -1070,9 +978,7 @@ static void Net_keyboard_track()
     for (i = 0; i < KEYBOARD_STORE; i++)
     {
         if (keyboard_change[i] == last_keyboard_change)
-        {
             return;
-        }
     }
 
     /* look for a keyboard_change of -1 or an acknowledged change */
@@ -1102,9 +1008,7 @@ static void Net_keyboard_track()
     }
 
     if (ind == -1)
-    {
         return;
-    }
 
     keyboard_change[ind] = last_keyboard_change;
     keyboard_update[ind] = last_keyboard_update;
@@ -1126,16 +1030,14 @@ static void Net_measurement(long loop, int status)
     long delta;
 
     if (packet_measure == NULL)
-    {
         return;
-    }
+
     if ((delta = loop - packet_loop) < 0)
-    {
         /*
          * Duplicate or out of order.
          */
         return;
-    }
+
     if (delta >= FPS)
     {
         if (packet_loop == 0)
@@ -1162,9 +1064,7 @@ static void Net_measurement(long loop, int status)
         delta = loop - packet_loop;
     }
     if (packet_measure[(int)delta] != PACKET_DRAW)
-    {
         packet_measure[(int)delta] = status;
-    }
 }
 
 /* Do some lag measurement the results of which can
@@ -1206,9 +1106,7 @@ static void Net_lag_measurement(long key_ack)
     }
 
     if (num != 0)
-    {
         packet_lag = (int)(sum / num);
-    }
 }
 
 /*
@@ -1240,14 +1138,13 @@ static int Net_read(frame_buf_t *frame)
             return 0;
         }
         if (frame->sbuf.ptr[0] != PKT_START)
-        {
             /*
              * Don't know which type of packet this is
              * and if it contains a frame at all (not likely).
              * It could be a quit packet.
              */
             return 1;
-        }
+
         /* Peek at the frame loop number. */
         n = Packet_scanf(&frame->sbuf, "%c%ld", &ch, &loop);
         frame->sbuf.ptr = frame->sbuf.buf;
@@ -1286,9 +1183,7 @@ static int Net_read(frame_buf_t *frame)
  */
 int Net_input(void)
 {
-    int i,
-        j,
-        n;
+    int i, j, n;
     frame_buf_t *frame,
         *last_frame,
         *oldest_frame = &Frames[0],
@@ -1305,18 +1200,14 @@ int Net_input(void)
              * Already contains a frame.
              */
             if (frame->loops < oldest_frame->loops || oldest_frame->loops == 0)
-            {
                 oldest_frame = frame;
-            }
         }
         else if (frame->sbuf.len > 0 && frame->sbuf.ptr == frame->sbuf.buf)
-        {
             /*
              * Contains an unidentifiable packet.
              * No more input until this one is processed.
              */
             break;
-        }
         else
         {
             /*
@@ -1330,27 +1221,21 @@ int Net_input(void)
                      * No more new packets available.
                      */
                     if (i == 0)
-                    {
                         /*
                          * No frames to be processed.
                          */
                         return 0;
-                    }
                     break;
                 }
                 else
-                {
                     return n;
-                }
             }
             else if (n == 1)
-            {
                 /*
                  * Contains an unidentifiable packet.
                  * No more input until this one is processed.
                  */
                 break;
-            }
             else
             {
                 /*
@@ -1359,9 +1244,7 @@ int Net_input(void)
                 for (j = i - 1; j >= 0; j--)
                 {
                     if (frame->loops == Frames[j].loops)
-                    {
                         break;
-                    }
                 }
                 if (j >= 0)
                 {
@@ -1375,9 +1258,7 @@ int Net_input(void)
                     continue;
                 }
                 if (frame->loops < oldest_frame->loops)
-                {
                     oldest_frame = frame;
-                }
             }
         }
         if (i == receive_window_size - 1 && i > 0)
@@ -1416,26 +1297,20 @@ int Net_input(void)
         if (frame->loops == 0)
         {
             if (frame->sbuf.len > 0)
-            {
                 /*
                  * This is an unidentifiable packet.
                  * Process it last, because it arrived last.
                  */
                 continue;
-            }
             else
-            {
                 /*
                  * Empty.  The rest should be empty too,
                  * because we have taken care not to have gaps.
                  */
                 break;
-            }
         }
         else if (frame->loops < oldest_frame->loops || oldest_frame->loops == 0)
-        {
             oldest_frame = frame;
-        }
     }
 
     if (oldest_frame->sbuf.len <= 0)
@@ -1445,8 +1320,7 @@ int Net_input(void)
          */
         if (oldest_frame->loops > 0)
         {
-            errno = 0;
-            xperror("bug %s,%d", __FILE__, __LINE__);
+            warn("bug %s,%d", __FILE__, __LINE__);
             oldest_frame->loops = 0;
         }
         return 0;
@@ -1477,9 +1351,7 @@ int Net_input(void)
     rbuf = last_frame->sbuf;
 
     if (n == -1)
-    {
         return -1;
-    }
 
     /*
      * If the server hasn't yet acked our last keyboard change
@@ -1519,9 +1391,8 @@ int Receive_start(void)
     if ((n = Packet_scanf(&rbuf,
                           "%c%ld%ld",
                           &ch, &loops, &key_ack)) <= 0)
-    {
         return n;
-    }
+
     if (last_loops >= loops)
     {
         /*
@@ -1545,15 +1416,11 @@ int Receive_start(void)
             return 0;
         }
         else
-        {
             last_keyboard_ack = key_ack;
-        }
     }
     Net_lag_measurement(key_ack);
     if ((n = Handle_start(loops)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1570,14 +1437,10 @@ int Receive_end(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%ld", &ch, &loops)) <= 0)
-    {
         return n;
-    }
     Net_measurement(loops, PACKET_DRAW);
     if ((n = Handle_end(loops)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1592,13 +1455,9 @@ int Receive_message(void)
     char msg[MSG_LEN];
 
     if ((n = Packet_scanf(&cbuf, "%c%S", &ch, msg)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_message(msg)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1612,13 +1471,9 @@ int Receive_time_left(void)
     long sec;
 
     if ((n = Packet_scanf(&rbuf, "%c%ld", &ch, &sec)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_time_left(sec)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1627,18 +1482,13 @@ int Receive_time_left(void)
  */
 int Receive_eyes(void)
 {
-    int n,
-        id;
+    int n, id;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd", &ch, &id)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_eyes(id)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1648,8 +1498,7 @@ int Receive_eyes(void)
 int Receive_motd(void)
 {
     uint8_t ch;
-    long off,
-        size;
+    long off, size;
     short len;
     int n;
     char *cbuf_ptr = cbuf.ptr;
@@ -1657,9 +1506,7 @@ int Receive_motd(void)
     if ((n = Packet_scanf(&cbuf,
                           "%c%ld%hd%ld",
                           &ch, &off, &len, &size)) <= 0)
-    {
         return n;
-    }
     if (cbuf.ptr + len > &cbuf.buf[cbuf.len])
     {
         cbuf.ptr = cbuf_ptr;
@@ -1678,14 +1525,12 @@ int Net_ask_for_motd(long offset, long maxlen)
 {
     if (offset < 0 || maxlen <= 0)
     {
-        errno = 0;
-        xperror("Bad motd request (%ld, %ld)", offset, maxlen);
+        warn("Bad motd request (%ld, %ld)", offset, maxlen);
         return -1;
     }
     if (Packet_printf(&wbuf, "%c%ld%ld", PKT_MOTD, offset, maxlen) <= 0)
     {
-        errno = 0;
-        xperror("Can't ask motd");
+        warn("Can't ask motd");
         return -1;
     }
 
@@ -1705,11 +1550,8 @@ static void Check_view_dimensions(void)
     srv_height = height_wanted;
     LIMIT(srv_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
     LIMIT(srv_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    if (ext_view_width != srv_width ||
-        ext_view_height != srv_height)
-    {
+    if (ext_view_width != srv_width || ext_view_height != srv_height)
         Send_display();
-    }
 
     active_view_width = ext_view_width;
     active_view_height = ext_view_height;
@@ -1741,9 +1583,7 @@ int Receive_self_items(void)
 
     n = Packet_scanf(&rbuf, "%c%u", &ch, &mask);
     if (n <= 0)
-    {
         return n;
-    }
     memset(num_items, 0, sizeof num_items);
     for (i = 0; mask != 0; i++)
     {
@@ -1753,13 +1593,9 @@ int Receive_self_items(void)
             if (rbuf.ptr - rbuf.buf < rbuf.len)
             {
                 if (i < NUM_ITEMS)
-                {
                     num_items[i] = *rbuf.ptr++;
-                }
                 else
-                {
                     rbuf.ptr++;
-                }
             }
         }
     }
@@ -1792,9 +1628,7 @@ int Receive_self(void)
                      &power, &turnspeed, &turnresistance,
                      &lockId, &lockDist, &lockDir, &nextCheckPoint);
     if (n <= 0)
-    {
         return n;
-    }
 
     memset(num_items, 0, sizeof num_items);
     n = Packet_scanf(&rbuf,
@@ -1805,14 +1639,10 @@ int Receive_self(void)
                      &ext_view_width, &ext_view_height, &debris_colors,
                      &stat, &autopilotLight);
     if (n <= 0)
-    {
         return n;
-    }
 
     if (debris_colors > num_spark_colors)
-    {
         debris_colors = num_spark_colors;
-    }
 
     Check_view_dimensions();
 
@@ -1836,9 +1666,7 @@ int Receive_modifiers(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%s", &ch, mods)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_modifiers(mods)) == -1)
         return -1;
     return 1;
@@ -1852,13 +1680,9 @@ int Receive_refuel(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%hd",
                           &ch, &x0, &y0, &x1, &y1)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_refuel(x0, y0, x1, y1)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1873,9 +1697,7 @@ int Receive_connector(void)
     if (n <= 0)
         return n;
     if ((n = Handle_connector(x0, y0, x1, y1, tractor)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1887,13 +1709,9 @@ int Receive_laser(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%c%hd%hd%hd%c",
                           &ch, &color, &x, &y, &len, &dir)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_laser(color, x, y, len, dir)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1904,13 +1722,9 @@ int Receive_missile(void)
     uint8_t ch, dir, len;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c", &ch, &x, &y, &len, &dir)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_missile(x, y, len, dir)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1921,13 +1735,9 @@ int Receive_ball(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_ball(x, y, id)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1942,9 +1752,8 @@ int Receive_ship(void)
                           "%c%c",
                           &ch, &x, &y, &id,
                           &dir, &flags)) <= 0)
-    {
         return n;
-    }
+
     shield = ((flags & 1) != 0);
     cloak = ((flags & 2) != 0);
     eshield = ((flags & 4) != 0);
@@ -1952,9 +1761,7 @@ int Receive_ship(void)
     deflector = ((flags & 0x10) != 0);
 
     if ((n = Handle_ship(x, y, id, dir, shield, cloak, eshield, phased, deflector)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1966,13 +1773,9 @@ int Receive_mine(void)
 
     n = Packet_scanf(&rbuf, "%c%hd%hd%c%hd", &ch, &x, &y, &teammine, &id);
     if (n <= 0)
-    {
         return n;
-    }
     if ((n = Handle_mine(x, y, teammine, id)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -1983,15 +1786,11 @@ int Receive_item(void)
     uint8_t ch, type;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c", &ch, &x, &y, &type)) <= 0)
-    {
         return n;
-    }
     if (type < NUM_ITEMS)
     {
         if ((n = Handle_item(x, y, type)) == -1)
-        {
             return -1;
-        }
     }
     return 1;
 }
@@ -2003,13 +1802,9 @@ int Receive_destruct(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd", &ch, &count)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_destruct(count)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2020,13 +1815,9 @@ int Receive_shutdown(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &delay)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_shutdown(count, delay)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2037,13 +1828,9 @@ int Receive_thrusttime(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_thrusttime(count, max)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2054,13 +1841,9 @@ int Receive_shieldtime(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_shieldtime(count, max)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2071,13 +1854,9 @@ int Receive_phasingtime(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_phasingtime(count, max)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2088,13 +1867,9 @@ int Receive_rounddelay(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &count, &max)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_rounddelay(count, max)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2105,15 +1880,11 @@ int Receive_fastshot(void)
     rbuf.ptr++; /* skip PKT_FASTSHOT packet id */
 
     if (rbuf.ptr - rbuf.buf + 2 >= rbuf.len)
-    {
         return 0;
-    }
     type = (*rbuf.ptr++ & 0xFF);
     n = (*rbuf.ptr++ & 0xFF);
     if (rbuf.ptr - rbuf.buf + (n * 2) > rbuf.len)
-    {
         return 0;
-    }
     r = Handle_fastshot(type, (uint8_t *)rbuf.ptr, n);
     rbuf.ptr += n * 2;
 
@@ -2125,15 +1896,11 @@ int Receive_debris(void)
     int n, r, type;
 
     if (rbuf.ptr - rbuf.buf + 2 >= rbuf.len)
-    {
         return 0;
-    }
     type = (*rbuf.ptr++ & 0xFF);
     n = (*rbuf.ptr++ & 0xFF);
     if (rbuf.ptr - rbuf.buf + (n * 2) > rbuf.len)
-    {
         return 0;
-    }
     r = Handle_debris(type - PKT_DEBRIS, (uint8_t *)rbuf.ptr, n);
     rbuf.ptr += n * 2;
 
@@ -2148,13 +1915,9 @@ int Receive_wreckage(void) /* since 3.8.0 */
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c%c", &ch, &x, &y,
                           &wrecktype, &size, &rot)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_wreckage(x, y, wrecktype, size, rot)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2166,17 +1929,13 @@ int Receive_asteroid(void) /* since 4.4.0 */
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c", &ch, &x, &y,
                           &type_size, &rot)) <= 0)
-    {
         return n;
-    }
 
     type = ((type_size >> 4) & 0x0F);
     size = (type_size & 0x0F);
 
     if ((n = Handle_asteroid(x, y, type, size, rot)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2187,14 +1946,9 @@ int Receive_wormhole(void) /* since 4.5.0 */
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd", &ch, &x, &y)) <= 0)
-    {
         return n;
-    }
-
     if ((n = Handle_wormhole(x, y)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2205,13 +1959,9 @@ int Receive_ecm(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &size)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_ecm(x, y, size)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2223,13 +1973,9 @@ int Receive_trans(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%hd",
                           &ch, &x1, &y1, &x2, &y2)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_trans(x1, y1, x2, y2)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2240,13 +1986,9 @@ int Receive_paused(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &count)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_paused(x, y, count)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2257,17 +1999,13 @@ int Receive_radar(void)
     uint8_t ch, size;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c", &ch, &x, &y, &size)) <= 0)
-    {
         return n;
-    }
 
     x = (int)((double)(x * 256) / Setup->width + 0.5);
     y = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
 
     if ((n = Handle_radar(x, y, size)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2280,14 +2018,10 @@ int Receive_fastradar(void)
     rbuf.ptr++; /* skip PKT_FASTRADAR packet id */
 
     if (rbuf.ptr - rbuf.buf >= rbuf.len)
-    {
         return 0;
-    }
     n = (*rbuf.ptr++ & 0xFF);
     if (rbuf.ptr - rbuf.buf + (n * 3) > rbuf.len)
-    {
         return 0;
-    }
     ptr = (unsigned char *)rbuf.ptr;
     for (i = 0; i < n; i++)
     {
@@ -2296,15 +2030,11 @@ int Receive_fastradar(void)
         y |= (*ptr & 0xC0) << 2;
         size = (*ptr & 0x07);
         if (*ptr & 0x20)
-        {
             size |= 0x80;
-        }
         ptr++;
         r = Handle_radar(x, y, size);
         if (r == -1)
-        {
             break;
-        }
     }
     rbuf.ptr += n * 3;
 
@@ -2317,13 +2047,9 @@ int Receive_damaged(void)
     uint8_t ch, damaged;
 
     if ((n = Packet_scanf(&rbuf, "%c%c", &ch, &damaged)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_damaged(damaged)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2334,13 +2060,9 @@ int Receive_leave(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd", &ch, &id)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_leave(id)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2352,13 +2074,9 @@ int Receive_war(void)
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd",
                           &ch, &robot_id, &killer_id)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_war(robot_id, killer_id)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2370,13 +2088,9 @@ int Receive_seek(void)
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd%hd", &ch,
                           &programmer_id, &robot_id, &sought_id)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_seek(programmer_id, robot_id, sought_id)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2398,9 +2112,8 @@ int Receive_player(void)
                           &ch, &id, &myteam, &mychar,
                           nick_name, user_name, host_name,
                           shape)) <= 0)
-    {
         return n;
-    }
+
     nick_name[MAX_NAME_LEN - 1] = '\0';
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
@@ -2411,9 +2124,7 @@ int Receive_player(void)
         return n;
     }
     if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name, shape)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2434,9 +2145,7 @@ int Receive_score_object(void)
     if (n <= 0)
         return n;
     if ((n = Handle_score_object(score, x, y, msg)) == -1)
-    {
         return -1;
-    }
 
     return 1;
 }
@@ -2455,13 +2164,9 @@ int Receive_score(void)
     score = rcv_score / 100;
 
     if (n <= 0)
-    {
         return n;
-    }
     if ((n = Handle_score(id, score, life, mychar, alliance)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2473,32 +2178,24 @@ int Receive_team_score(void)
     int rcv_score;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%d", &ch, &team, &rcv_score)) <= 0)
-    {
         return n;
-    }
     return 1;
 }
 
 int Receive_timing(void)
 {
-    int n,
-        check,
-        round;
+    int n, check, round;
     short id;
     unsigned short timing;
     uint8_t ch;
 
     n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &timing);
     if (n <= 0)
-    {
         return n;
-    }
     check = timing % MAX_CHECKS;
     round = timing / MAX_CHECKS;
     if ((n = Handle_timing(id, check, round)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2509,17 +2206,11 @@ int Receive_fuel(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &fuel)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_fuel(num, fuel << FUEL_SCALE_BITS)) == -1)
-    {
         return -1;
-    }
     if (wbuf.len < MAX_MAP_ACK_LEN)
-    {
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_FUEL, last_loops, num);
-    }
     return 1;
 }
 
@@ -2530,41 +2221,27 @@ int Receive_cannon(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &dead_time)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_cannon(num, dead_time)) == -1)
-    {
         return -1;
-    }
     if (wbuf.len < MAX_MAP_ACK_LEN)
-    {
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_CANNON, last_loops, num);
-    }
     return 1;
 }
 
 int Receive_target(void)
 {
     int n;
-    unsigned short num,
-        dead_time,
-        damage;
+    unsigned short num, dead_time, damage;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
                           &num, &dead_time, &damage)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_target(num, dead_time, damage)) == -1)
-    {
         return -1;
-    }
     if (wbuf.len < MAX_MAP_ACK_LEN)
-    {
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_TARGET, last_loops, num);
-    }
     return 1;
 }
 
@@ -2576,13 +2253,9 @@ int Receive_base(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &num)) <= 0)
-    {
         return n;
-    }
     if ((n = Handle_base(id, num)) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2592,25 +2265,19 @@ int Receive_magic(void)
     uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%u", &ch, &magic)) <= 0)
-    {
         return n;
-    }
     return 1;
 }
 
 int Receive_string(void)
 {
     int n;
-    uint8_t ch,
-        type;
-    unsigned short arg1,
-        arg2;
+    uint8_t ch, type;
+    unsigned short arg1, arg2;
 
     if ((n = Packet_scanf(&cbuf, "%c%c%hu%hu",
                           &ch, &type, &arg1, &arg2)) <= 0)
-    {
         return n;
-    }
     /*
      * Not implemented yet.
      */
@@ -2625,9 +2292,7 @@ int Receive_loseitem(void)
     /* Handle_ func but that seems */
     /* unecessary here */
     if ((n = Packet_scanf(&rbuf, "%c%c", &pkt, &lose_item)) <= 0)
-    {
         return n;
-    }
     return 1;
 }
 
@@ -2639,9 +2304,7 @@ int Send_ack(long rel_loops)
                            reliable_offset, rel_loops)) <= 0)
     {
         if (n == 0)
-        {
             return 0;
-        }
         xperror("Can't ack reliable data");
         return -1;
     }
@@ -2653,38 +2316,30 @@ int Receive_reliable(void)
     int n;
     short len;
     uint8_t ch;
-    long rel,
-        rel_loops;
+    long rel, rel_loops;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%ld%ld",
                           &ch, &len, &rel, &rel_loops)) == -1)
-    {
         return -1;
-    }
     if (n == 0)
     {
-        errno = 0;
-        xperror("Incomplete reliable data packet");
+        warn("Incomplete reliable data packet");
         return 0;
     }
 #if DEBUG
     if (reliable_offset >= rel + len)
-    {
         printf("Reliable my=%ld pkt=%ld len=%d loops=%ld\n",
                reliable_offset, rel, len, rel_loops);
-    }
 #endif
     if (len <= 0)
     {
-        errno = 0;
-        xperror("Bad reliable data length (%d)", len);
+        warn("Bad reliable data length (%d)", len);
         return -1;
     }
     if (rbuf.ptr + len > rbuf.buf + rbuf.len)
     {
-        errno = 0;
-        xperror("Not all reliable data in packet (%d,%d,%d)",
-                rbuf.ptr - rbuf.buf, len, rbuf.len);
+        warn("Not all reliable data in packet (%d,%d,%d)",
+             rbuf.ptr - rbuf.buf, len, rbuf.len);
         rbuf.ptr += len;
         Sockbuf_advance(&rbuf, rbuf.ptr - rbuf.buf);
         return -1;
@@ -2699,9 +2354,7 @@ int Receive_reliable(void)
         rbuf.ptr += len;
         Sockbuf_advance(&rbuf, rbuf.ptr - rbuf.buf);
         if (Send_ack(rel_loops) == -1)
-        {
             return -1;
-        }
         return 1;
     }
     if (rel + len <= reliable_offset)
@@ -2713,9 +2366,7 @@ int Receive_reliable(void)
         rbuf.ptr += len;
         Sockbuf_advance(&rbuf, rbuf.ptr - rbuf.buf);
         if (Send_ack(rel_loops) == -1)
-        {
             return -1;
-        }
         return 1;
     }
     if (rel < reliable_offset)
@@ -2725,13 +2376,11 @@ int Receive_reliable(void)
         rel = reliable_offset;
     }
     if (cbuf.ptr > cbuf.buf)
-    {
         Sockbuf_advance(&cbuf, cbuf.ptr - cbuf.buf);
-    }
+
     if (Sockbuf_write(&cbuf, rbuf.ptr, len) != len)
     {
-        errno = 0;
-        xperror("Can't copy reliable data to buffer");
+        warn("Can't copy reliable data to buffer");
         rbuf.ptr += len;
         Sockbuf_advance(&rbuf, rbuf.ptr - rbuf.buf);
         return -1;
@@ -2740,9 +2389,7 @@ int Receive_reliable(void)
     rbuf.ptr += len;
     Sockbuf_advance(&rbuf, rbuf.ptr - rbuf.buf);
     if (Send_ack(rel_loops) == -1)
-    {
         return -1;
-    }
     return 1;
 }
 
@@ -2753,9 +2400,7 @@ int Receive_reply(int *replyto, int *result)
 
     n = Packet_scanf(&cbuf, "%c%c%c", &type, &ch1, &ch2);
     if (n <= 0)
-    {
         return n;
-    }
     if (n != 3 || type != PKT_REPLY)
     {
         xperror("Can't receive reply packet");
@@ -2771,10 +2416,9 @@ int Send_keyboard(uint8_t *keyboard_vector)
     int size = KEYBOARD_SIZE;
 
     if (wbuf.size - wbuf.len < size + 1 + 4)
-    {
         /* Not enough write buffer space for keyboard state */
         return 0;
-    }
+
     Packet_printf(&wbuf, "%c%ld", PKT_KEYBOARD, last_keyboard_change);
     memcpy(&wbuf.buf[wbuf.len], keyboard_vector, size);
     wbuf.len += size;
@@ -2799,13 +2443,9 @@ int Send_shape(char *str)
     Convert_ship_2_string(w, buf, ext, 0x3200);
     Free_ship_shape(w);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
-    {
         return -1;
-    }
     if (Packet_printf(&wbuf, "%S", ext) <= 0)
-    {
         return -1;
-    }
 
     return 0;
 }
@@ -2814,9 +2454,7 @@ int Send_power(DFLOAT power)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POWER,
                       (int)(power * 256.0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
@@ -2824,9 +2462,7 @@ int Send_power_s(DFLOAT power_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POWER_S,
                       (int)(power_s * 256.0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
@@ -2834,9 +2470,7 @@ int Send_turnspeed(DFLOAT turnspeed)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNSPEED,
                       (int)(turnspeed * 256.0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
@@ -2844,9 +2478,7 @@ int Send_turnspeed_s(DFLOAT turnspeed_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNSPEED_S,
                       (int)(turnspeed_s * 256.0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
@@ -2854,9 +2486,7 @@ int Send_turnresistance(DFLOAT turnresistance)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNRESISTANCE,
                       (int)(turnresistance * 256.0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
@@ -2864,9 +2494,7 @@ int Send_turnresistance_s(DFLOAT turnresistance_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNRESISTANCE_S,
                       (int)(turnresistance_s * 256.0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
@@ -2877,26 +2505,16 @@ int Receive_quit(void)
     char reason[MAX_CHARS];
 
     if (rbuf.ptr < rbuf.buf + rbuf.len)
-    {
         sbuf = &rbuf;
-    }
     else
-    {
         sbuf = &cbuf;
-    }
     if (Packet_scanf(sbuf, "%c", &pkt) != 1)
-    {
-        errno = 0;
-        xperror("Can't read quit packet");
-    }
+        warn("Can't read quit packet");
     else
     {
         if (Packet_scanf(sbuf, "%s", reason) <= 0)
-        {
             strlcpy(reason, "unknown reason", MAX_CHARS);
-        }
-        errno = 0;
-        xperror("Got quit packet: \"%s\"", reason);
+        warn("Got quit packet: \"%s\"", reason);
     }
     return -1;
 }
@@ -2907,14 +2525,10 @@ int Receive_audio(void)
     unsigned char pkt, type, vol;
 
     if ((n = Packet_scanf(&rbuf, "%c%c%c", &pkt, &type, &vol)) <= 0)
-    {
         return n;
-    }
 #ifdef SOUND
     if ((n = Handle_audio(type, vol)) == -1)
-    {
         return -1;
-    }
 #endif /* SOUND */
     return 1;
 }
@@ -2926,13 +2540,9 @@ int Receive_talk_ack(void)
     long talk_ack;
 
     if ((n = Packet_scanf(&cbuf, "%c%ld", &pkt, &talk_ack)) <= 0)
-    {
         return n;
-    }
     if (talk_ack >= talk_pending)
-    {
         talk_pending = 0;
-    }
     return 1;
 }
 
@@ -2947,18 +2557,12 @@ int Net_talk(char *str)
 int Send_talk(void)
 {
     if (talk_pending == 0)
-    {
         return 0;
-    }
     if (last_loops - talk_last_send < TALK_RETRY)
-    {
         return 0;
-    }
     if (Packet_printf(&wbuf, "%c%ld%s", PKT_TALK,
                       talk_pending, talk_str) == -1)
-    {
         return -1;
-    }
     talk_last_send = last_loops;
     return 0;
 }
@@ -2979,9 +2583,7 @@ int Send_display(void)
         debris_colors == num_spark_colors &&
         spark_rand == old_spark_rand &&
         last_loops != 0)
-    {
         return 0;
-    }
 
     if (simulating)
     {
@@ -2992,9 +2594,7 @@ int Send_display(void)
     else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
                            width_wanted, height_wanted,
                            num_spark_colors, spark_rand) == -1)
-    {
         return -1;
-    }
 
     old_spark_rand = spark_rand;
 
@@ -3014,9 +2614,7 @@ int Send_modifier_bank(int bank)
 int Send_pointer_move(int movement)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POINTER_MOVE, movement) == -1)
-    {
         return -1;
-    }
 
     return 0;
 }
@@ -3031,17 +2629,13 @@ int Send_audio_request(bool on)
     on = false;
 #endif
     if (Packet_printf(&wbuf, "%c%c", PKT_REQUEST_AUDIO, (on ? 1 : 0)) == -1)
-    {
         return -1;
-    }
     return 0;
 }
 
 int Send_fps_request(int fps)
 {
     if (Packet_printf(&wbuf, "%c%c", PKT_ASYNC_FPS, fps) == -1)
-    {
         return -1;
-    }
     return 0;
 }
