@@ -53,7 +53,6 @@
 #define MAX_LINE MSG_LEN /* should not be smaller than MSG_LEN */
 
 extern int dgram_one_socket; /* from datagram.c */
-extern char hostname[];      /* my local hostname */
 
 /*
  * just like fgets() but strips newlines like gets().
@@ -94,20 +93,19 @@ static void Clean_string(char *buf)
     }
 }
 
-static bool Get_contact_message(sockbuf_t *sbuf,
-                                const char *contact_server,
-                                Connect_param_t *conpar)
+static int Get_contact_message(sockbuf_t *sbuf,
+                               const char *contact_server,
+                               Connect_param_t *conpar)
 {
     int len;
     int server_version;
     unsigned magic;
-    unsigned char reply_to, status;
-    bool readable = false;
+    uint8_t reply_to, status;
+    int readable = 0;
 
     sock_set_timeout(&sbuf->sock, 2, 0);
-    while (readable == false && sock_readable(&sbuf->sock) > 0)
+    while (readable == 0 && sock_readable(&sbuf->sock) > 0)
     {
-
         Sockbuf_clear(sbuf);
         len = sock_receive_any(&sbuf->sock, sbuf->buf, sbuf->size);
         if (len <= 0)
@@ -116,7 +114,7 @@ static bool Get_contact_message(sockbuf_t *sbuf,
                 continue;
             xpprintf("Error from sock_receive_any, contact message failed.\n");
             /* exit(1);  no good since meta gui. */
-            return false;
+            return 0;
         }
         sbuf->len = len;
 
@@ -229,14 +227,11 @@ static void Command_help(void)
            "M    -   send a Message.               (only owner)\n"
            "L    -   Lock/unLock server access.    (only owner)\n"
            "D(*) -   shutDown/cancel shutDown.     (only owner)\n"
-           "R(#) -   set maximum number of Robots. (only owner)\n"
            "O    -   Modify a server option.       (only owner)\n"
            "V    -   View the server options.\n"
            "J(&) or just Return enters the game.\n"
            "(*) If you don't specify any delay, you will signal that\n"
            "    the server should stop an ongoing shutdown.\n"
-           "(#) Not specifying the maximum number of robots is\n"
-           "    the same as specifying 0 robots.\n"
            "(&) You may specify a team number after the J.\n");
 }
 
@@ -251,14 +246,10 @@ static bool Process_commands(sockbuf_t *ibuf,
                              int auto_shutdown, char *shutdown_reason,
                              Connect_param_t *conpar)
 {
-    int i, len, retries, delay, max_robots, success;
-    char c, status, reply_to;
-    char linebuf[MAX_LINE];
+    int i, len, retries, delay, success, cmd_credentials = 0, max_replies;
+    char c, status, reply_to, linebuf[MAX_LINE];
     unsigned short port, qpos;
-    int has_credentials = 0;
-    int cmd_credentials = 0;
-    int privileged_cmd;
-    int max_replies;
+    bool has_credentials = false, privileged_cmd;
     long key = 0;
     time_t qsent = 0;
     static char localhost[] = "127.0.0.1";
@@ -268,7 +259,6 @@ static bool Process_commands(sockbuf_t *ibuf,
 
     for (;;)
     {
-
         max_replies = 1;
 
         /*
@@ -319,7 +309,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             ibuf->sock.fd = SOCK_FD_INVALID;
         }
 
-        privileged_cmd = (strchr("DKLMOR", c) != NULL);
+        privileged_cmd = (strchr("DKLMO", c) != NULL);
         if (privileged_cmd)
         {
             if (!has_credentials)
@@ -386,22 +376,6 @@ static bool Process_commands(sockbuf_t *ibuf,
                 }
                 linebuf[MAX_NAME_LEN - 1] = '\0';
                 Packet_printf(ibuf, "%c%ld%s", KICK_PLAYER_pack, key, linebuf);
-                break;
-
-            case 'R':
-                printf("Enter maximum number of robots: ");
-                fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE, stdin))
-                {
-                    printf("Nothing changed.\n");
-                    continue;
-                }
-                if (sscanf(linebuf, "%d", &max_robots) <= 0 || max_robots < 0)
-                {
-                    printf("Invalid number of robots \"%s\".\n", linebuf);
-                    continue;
-                }
-                Packet_printf(ibuf, "%c%ld%d", MAX_ROBOT_pack, key, max_robots);
                 break;
 
             case 'M': /* Send a message to server. */
@@ -488,22 +462,12 @@ static bool Process_commands(sockbuf_t *ibuf,
                     printf("Team set to unspecified\n");
                 }
                 else if (linebuf[1] != '\0')
-                {
                     conpar->team = TEAM_NOT_SET;
-                }
-                if (conpar->server_version < 0x3430)
-                {
-                    Packet_printf(ibuf, "%c%s%s%s%d", ENTER_GAME_pack,
-                                  conpar->nick_name, conpar->disp_name,
-                                  hostname, conpar->team);
-                }
-                else
-                {
-                    Packet_printf(ibuf, "%c%s%s%s%d", ENTER_QUEUE_pack,
-                                  conpar->nick_name, conpar->disp_name,
-                                  hostname, conpar->team);
-                    time(&qsent);
-                }
+
+                Packet_printf(ibuf, "%c%s%s%s%d", ENTER_QUEUE_pack,
+                              conpar->nick_name, conpar->disp_name,
+                              conpar->host_name, conpar->team);
+                time(&qsent);
                 break;
 
             case 'S': /* Report status. */
@@ -675,7 +639,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                                       conpar->user_name, sock_get_port(&ibuf->sock));
                         Packet_printf(ibuf, "%c%s%s%s%d", ENTER_QUEUE_pack,
                                       conpar->nick_name, conpar->disp_name,
-                                      hostname, conpar->team);
+                                      conpar->host_name, conpar->team);
                         if (sock_write(&ibuf->sock, ibuf->buf, ibuf->len) != ibuf->len)
                         {
                             xperror("Couldn't send request to server.");
@@ -692,7 +656,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                         warn("Incomplete credentials reply from server");
                     else
                     {
-                        has_credentials++;
+                        has_credentials = true;
                         cmd_credentials = c;
                         continue;
                     }
@@ -822,13 +786,14 @@ int Contact_servers(int count, char **servers,
                     unsigned *server_versions,
                     Connect_param_t *conpar)
 {
-    int connected = false;
+    bool connected = false;
     const int max_retries = 2;
-    int i;
+    int i, ret;
     int status;
     sock_t sock;
     int retries;
     int contacted;
+    bool compat_mode = false;
     sockbuf_t sbuf; /* contact buffer */
 
     if ((status = create_dgram_socket(&sock, 0)) == SOCK_IS_ERROR)
@@ -846,11 +811,12 @@ int Contact_servers(int count, char **servers,
     {
         retries = 0;
         contacted = 0;
+        compat_mode = false;
         do
         {
             Sockbuf_clear(&sbuf);
-            Packet_printf(&sbuf, "%u%s%hu%c", MAGIC,
-                          conpar->user_name, sock_get_port(&sbuf.sock), CONTACT_pack);
+            Packet_printf(&sbuf, "%u%s%hu%c", MAGIC, conpar->user_name,
+                          sock_get_port(&sbuf.sock), CONTACT_pack);
             if (Query_all(&sbuf.sock, conpar->contact_port, sbuf.buf, sbuf.len) == -1)
             {
                 xperror("Couldn't send contact requests");
@@ -884,15 +850,11 @@ int Contact_servers(int count, char **servers,
                                     MAX_HOST_LEN);
                         }
                         if (server_versions)
-                        {
                             server_versions[count] = conpar->server_version;
-                        }
                         count++;
                     }
                     if (num_found)
-                    {
                         *num_found = count;
-                    }
                 }
                 else
                 {
@@ -901,10 +863,8 @@ int Contact_servers(int count, char **servers,
                                                   auto_shutdown,
                                                   shutdown_reason,
                                                   conpar);
-                    if (connected != 0)
-                    {
+                    if (connected)
                         break;
-                    }
                 }
             }
         } while (!contacted && retries++ < max_retries);
@@ -917,16 +877,19 @@ int Contact_servers(int count, char **servers,
             contacted = 0;
             do
             {
+                printf("Contacting server %s.\n", servers[i]);
                 Sockbuf_clear(&sbuf);
-                Packet_printf(&sbuf, "%u%s%hu%c", MAGIC,
-                              conpar->user_name, sock_get_port(&sbuf.sock), CONTACT_pack);
+                Packet_printf(&sbuf, "%u%s%hu%c",
+                              compat_mode ? COMPATIBILITY_MAGIC : MAGIC,
+                              conpar->user_name, sock_get_port(&sbuf.sock),
+                              CONTACT_pack);
                 if (sock_send_dest(&sbuf.sock, servers[i],
                                    conpar->contact_port,
                                    sbuf.buf, sbuf.len) == -1)
                 {
                     if (sbuf.sock.error.call == SOCK_CALL_GETHOSTBYNAME)
                     {
-                        printf("Can't find %s\n", servers[i]);
+                        printf("Can't find the server '%s'.\n", servers[i]);
                         break;
                     }
                     xperror("Can't contact %s on port %d",
@@ -936,16 +899,24 @@ int Contact_servers(int count, char **servers,
                 {
                     printf("Retrying %s...\n", servers[i]);
                 }
-                if (Get_contact_message(&sbuf, servers[i], conpar))
+                ret = Get_contact_message(&sbuf, servers[i], conpar);
+                if (ret == 2 && !compat_mode)
+                {
+                    printf("Trying compatibility version %04x\n",
+                           MAGIC2VERSION(COMPATIBILITY_MAGIC));
+                    compat_mode = true;
+                    retries--; /* a bit ugly, cancels the loop ++ */
+                    continue;
+                }
+                if (ret == 1)
                 {
                     contacted++;
                     connected = Connect_to_server(auto_connect, list_servers,
-                                                  auto_shutdown, shutdown_reason,
+                                                  auto_shutdown,
+                                                  shutdown_reason,
                                                   conpar);
-                    if (connected != 0)
-                    {
+                    if (connected)
                         break;
-                    }
                 }
             } while (!contacted && retries++ < max_retries);
         }
@@ -953,5 +924,5 @@ int Contact_servers(int count, char **servers,
     Sockbuf_cleanup(&sbuf);
     close_dgram_socket(&sock);
 
-    return connected ? true : false;
+    return connected;
 }

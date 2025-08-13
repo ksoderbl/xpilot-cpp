@@ -33,6 +33,7 @@ typedef struct Connect_param
         login_port;
     char nick_name[MAX_NAME_LEN],
         user_name[MAX_NAME_LEN],
+        host_name[SOCK_HOSTNAME_LENGTH],
         server_addr[MAX_HOST_LEN],
         server_name[MAX_HOST_LEN],
         disp_name[MAX_DISP_LEN];
