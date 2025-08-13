@@ -472,7 +472,7 @@ void Fire_main_shot(int ind, int type, int dir)
     int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x);
     int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
 
-    Fire_general_shot(ind, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
 void Fire_shot(int ind, int type, int dir)
@@ -482,7 +482,7 @@ void Fire_shot(int ind, int type, int dir)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    Fire_general_shot(ind, pl->team, 0, pl->pos.cx, pl->pos.cy,
+    Fire_general_shot(pl, pl->team, 0, pl->pos.cx, pl->pos.cy,
                       type, dir, pl->mods, -1);
 }
 
@@ -496,7 +496,7 @@ void Fire_left_shot(int ind, int type, int dir, int gun)
     int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].x);
     int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].y);
 
-    Fire_general_shot(ind, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
 void Fire_right_shot(int ind, int type, int dir, int gun)
@@ -509,7 +509,7 @@ void Fire_right_shot(int ind, int type, int dir, int gun)
     int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].x);
     int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].y);
 
-    Fire_general_shot(ind, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
 void Fire_left_rshot(int ind, int type, int dir, int gun)
@@ -522,7 +522,7 @@ void Fire_left_rshot(int ind, int type, int dir, int gun)
     int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].x);
     int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(ind, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
 void Fire_right_rshot(int ind, int type, int dir, int gun)
@@ -535,16 +535,15 @@ void Fire_right_rshot(int ind, int type, int dir, int gun)
     int cx = pl->pos.x + pl->ship->r_rgun[gun][pl->dir].x;
     int cy = pl->pos.y + pl->ship->r_rgun[gun][pl->dir].y;
 
-    Fire_general_shot(ind, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
-void Fire_general_shot(int ind, unsigned short team, bool cannon,
+void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
                        int cx, int cy,
                        int type, int dir,
                        modifiers_t mods, int target)
 {
     char msg[MSG_LEN];
-    player_t *pl = (ind == -1 ? NULL : Players[ind]);
     int used,
         life = options.ShotsLife,
         fuse = 0,
@@ -1483,7 +1482,7 @@ void Delete_shot(int ind)
         }
         else if (addHeat)
         {
-            Fire_general_shot(-1, TEAM_NOT_SET, 0,
+            Fire_general_shot(nullptr, TEAM_NOT_SET, 0,
                               shot->pos.cx, shot->pos.cy,
                               OBJ_HEAT_SHOT, (int)(rfrac() * RES),
                               mods, -1);

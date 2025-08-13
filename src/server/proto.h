@@ -119,7 +119,7 @@ void Fire_ecm(int ind);
 void Fire_general_ecm(int ind, unsigned short team, int cx, int cy);
 void Move_ball(int ind);
 void Fire_shot(int ind, int type, int dir);
-void Fire_general_shot(int ind, unsigned short team, bool cannon,
+void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
                        int cx, int cy, int type, int dir,
                        modifiers_t mods, int target);
 void Fire_normal_shots(int ind);

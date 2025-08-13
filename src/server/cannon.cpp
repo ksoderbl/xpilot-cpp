@@ -530,7 +530,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         default:
             if (options.allowSmartMissiles)
             {
-                Fire_general_shot(-1, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_SMART_SHOT,
+                Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_SMART_SHOT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_SMART_SHOT_SOUND);
                 break;
@@ -539,14 +539,14 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         case 1:
             if (options.allowHeatSeekers && BIT(Players[target]->status, THRUSTING))
             {
-                Fire_general_shot(-1, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_HEAT_SHOT,
+                Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_HEAT_SHOT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_HEAT_SHOT_SOUND);
                 break;
             }
             /* FALLTHROUGH */
         case 0:
-            Fire_general_shot(-1, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_TORPEDO,
+            Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_TORPEDO,
                               dir, mods, -1);
             IFSOUND(sound = FIRE_TORPEDO_SOUND);
             break;
@@ -643,7 +643,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int a_dir = dir + (4 - options.cannonSmartness) * (-c->item[ITEM_WIDEANGLE] + i);
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(-1, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_CANNON_SHOT,
+            Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_CANNON_SHOT,
                               a_dir, mods, -1);
         }
         /* I'm not sure cannons should use rearshots.
@@ -653,7 +653,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int a_dir = (int)(dir + (RES / 2) + (4 - options.cannonSmartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(-1, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_CANNON_SHOT,
+            Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_CANNON_SHOT,
                               a_dir, mods, -1);
         }
     }

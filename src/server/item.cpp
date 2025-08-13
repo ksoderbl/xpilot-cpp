@@ -434,13 +434,10 @@ void Detonate_items(int ind)
 
     /* ZE: Detonated items on tanks should belong to the tank's owner. */
     if (IS_TANK_PTR(pl))
-    {
         owner_ind = GetInd[pl->lock.pl_id];
-    }
     else
-    {
         owner_ind = ind;
-    }
+    player_t *owner = Players[owner_ind];
 
     /*
      * These are always immune to detonation.
@@ -507,10 +504,8 @@ void Detonate_items(int ind)
 
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
-            {
                 CLR_BIT(mods.nuclear, NUCLEAR);
-            }
-            Fire_general_shot(owner_ind, 0, pl->team, pl->pos.cx, pl->pos.cy,
+            Fire_general_shot(owner, 0, pl->team, pl->pos.cx, pl->pos.cy,
                               type, (int)(rfrac() * RES), mods, -1);
         }
     }
