@@ -462,10 +462,8 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit)
     return msg;
 }
 
-void Fire_main_shot(int ind, int type, int dir)
+void Fire_main_shot(player_t *pl, int type, int dir)
 {
-    player_t *pl = Players[ind];
-
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
@@ -475,10 +473,8 @@ void Fire_main_shot(int ind, int type, int dir)
     Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
-void Fire_shot(int ind, int type, int dir)
+void Fire_shot(player_t *pl, int type, int dir)
 {
-    player_t *pl = Players[ind];
-
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
@@ -486,10 +482,8 @@ void Fire_shot(int ind, int type, int dir)
                       type, dir, pl->mods, -1);
 }
 
-void Fire_left_shot(int ind, int type, int dir, int gun)
+void Fire_left_shot(player_t *pl, int type, int dir, int gun)
 {
-    player_t *pl = Players[ind];
-
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
@@ -499,10 +493,8 @@ void Fire_left_shot(int ind, int type, int dir, int gun)
     Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
-void Fire_right_shot(int ind, int type, int dir, int gun)
+void Fire_right_shot(player_t *pl, int type, int dir, int gun)
 {
-    player_t *pl = Players[ind];
-
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
@@ -512,10 +504,8 @@ void Fire_right_shot(int ind, int type, int dir, int gun)
     Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
-void Fire_left_rshot(int ind, int type, int dir, int gun)
+void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
 {
-    player_t *pl = Players[ind];
-
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
@@ -525,10 +515,8 @@ void Fire_left_rshot(int ind, int type, int dir, int gun)
     Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
 
-void Fire_right_rshot(int ind, int type, int dir, int gun)
+void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
 {
-    player_t *pl = Players[ind];
-
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
@@ -613,13 +601,9 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         if ((type == OBJ_HEAT_SHOT) ? !options.allowHeatSeekers : !options.allowSmartMissiles)
         {
             if (options.allowTorpedoes)
-            {
                 type = OBJ_TORPEDO;
-            }
             else
-            {
                 return;
-            }
         }
         /* FALLTHROUGH */
     case OBJ_TORPEDO:
@@ -633,9 +617,8 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
             return;
 
         if (options.nukeMinSmarts <= 0)
-        {
             CLR_BIT(mods.nuclear, NUCLEAR);
-        }
+
         if (BIT(mods.nuclear, NUCLEAR))
         {
             if (pl)
@@ -654,9 +637,8 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
                 }
             }
             else
-            {
                 used = options.nukeMinSmarts;
-            }
+
             mass = MISSILE_MASS * used * NUKE_MASS_MULT;
             pl_range = (type == OBJ_TORPEDO) ? (int)NUKE_RANGE : MISSILE_RANGE;
         }
@@ -677,13 +659,9 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         }
 
         if (pl && BIT(pl->status, KILLED))
-        {
             life = (int)(rfrac() * FPS);
-        }
         else if (!cannon)
-        {
             life = (options.missileLife ? options.missileLife : MISSILE_LIFETIME);
-        }
 
         switch (type)
         {
@@ -718,9 +696,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
 
         case OBJ_SMART_SHOT:
             if (pl == NULL)
-            {
                 lock = target;
-            }
             else
             {
                 if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd[pl->lock.pl_id]].canSee)
@@ -1124,65 +1100,46 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
     }
 }
 
-void Fire_normal_shots(int ind)
+void Fire_normal_shots(player_t *pl)
 {
-    player_t *pl = Players[ind];
     int i, shot_angle;
 
     if (frame_loops < pl->shot_time + options.fireRepeatRate)
-    {
         return;
-    }
     pl->shot_time = frame_loops;
 
     shot_angle = MODS_SPREAD_MAX - pl->mods.spread;
 
-    Fire_main_shot(ind, OBJ_SHOT, pl->dir);
+    Fire_main_shot(pl, OBJ_SHOT, pl->dir);
     for (i = 0; i < pl->item[ITEM_WIDEANGLE]; i++)
     {
         if (pl->ship->num_l_gun > 0)
-        {
-            Fire_left_shot(ind, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
-        }
+            Fire_left_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
         else
-        {
-            Fire_main_shot(ind, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
-        }
+            Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
         if (pl->ship->num_r_gun > 0)
-        {
-            Fire_right_shot(ind, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
-        }
+            Fire_right_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
         else
-        {
-            Fire_main_shot(ind, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
-        }
+            Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
     }
     for (i = 0; i < pl->item[ITEM_REARSHOT]; i++)
     {
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) < 0)
         {
             if (pl->ship->num_l_rgun > 0)
-            {
-                Fire_left_rshot(ind, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
-            }
+                Fire_left_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
             else
-            {
-                Fire_shot(ind, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
-            }
+                Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) > 0)
         {
             if (pl->ship->num_r_rgun > 0)
-            {
-                Fire_right_rshot(ind, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
-            }
+                Fire_right_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
             else
-            {
-                Fire_shot(ind, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
-            }
+                Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) == 0)
-            Fire_shot(ind, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
     }
 }
 

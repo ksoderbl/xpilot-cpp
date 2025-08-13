@@ -631,23 +631,23 @@ int Handle_keyboard(int ind)
                 if (!BIT(pl->used, HAS_SHIELD | HAS_SHOT) && BIT(pl->have, HAS_SHOT))
                 {
                     SET_BIT(pl->used, HAS_SHOT);
-                    Fire_normal_shots(ind);
+                    Fire_normal_shots(pl);
                 }
                 break;
 
             case KEY_FIRE_MISSILE:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(ind, OBJ_SMART_SHOT, pl->dir);
+                    Fire_shot(pl, OBJ_SMART_SHOT, pl->dir);
                 break;
 
             case KEY_FIRE_HEAT:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(ind, OBJ_HEAT_SHOT, pl->dir);
+                    Fire_shot(pl, OBJ_HEAT_SHOT, pl->dir);
                 break;
 
             case KEY_FIRE_TORPEDO:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(ind, OBJ_TORPEDO, pl->dir);
+                    Fire_shot(pl, OBJ_TORPEDO, pl->dir);
                 break;
 
             case KEY_FIRE_LASER:

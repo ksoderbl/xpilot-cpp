@@ -118,17 +118,16 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(int ind);
 void Fire_general_ecm(int ind, unsigned short team, int cx, int cy);
 void Move_ball(int ind);
-void Fire_shot(int ind, int type, int dir);
 void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
                        int cx, int cy, int type, int dir,
                        modifiers_t mods, int target);
-void Fire_normal_shots(int ind);
-void Fire_main_shot(int ind, int type, int dir);
-void Fire_shot(int ind, int type, int dir);
-void Fire_left_shot(int ind, int type, int dir, int gun);
-void Fire_right_shot(int ind, int type, int dir, int gun);
-void Fire_left_rshot(int ind, int type, int dir, int gun);
-void Fire_right_rshot(int ind, int type, int dir, int gun);
+void Fire_normal_shots(player_t *pl);
+void Fire_main_shot(player_t *pl, int type, int dir);
+void Fire_shot(player_t *pl, int type, int dir);
+void Fire_left_shot(player_t *pl, int type, int dir, int gun);
+void Fire_right_shot(player_t *pl, int type, int dir, int gun);
+void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
+void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
 void Make_treasure_ball(int treasure);
 int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);

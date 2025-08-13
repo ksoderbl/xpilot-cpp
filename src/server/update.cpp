@@ -548,7 +548,7 @@ void Update_objects(void)
         {
             player_t *pl = Players[i];
             if (BIT(pl->used, HAS_SHOT))
-                Fire_normal_shots(i);
+                Fire_normal_shots(pl);
         }
     }
 
