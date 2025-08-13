@@ -69,9 +69,7 @@ static char *my_getline(char *buf, int len, FILE *stream)
         {
             *nl = '\0'; /* strip newline */
             if (nl > buf && nl[-1] == '\r')
-            {
                 nl[-1] = '\0';
-            }
         }
     }
     return buf;
@@ -91,9 +89,7 @@ static void Clean_string(char *buf)
         if (!isascii(c) || iscntrl(c))
         {
             if (!strchr("\r\n", c))
-            {
                 *str = ' ';
-            }
         }
     }
 }
@@ -103,7 +99,7 @@ static bool Get_contact_message(sockbuf_t *sbuf,
                                 Connect_param_t *conpar)
 {
     int len;
-    int version, allow;
+    int server_version;
     unsigned magic;
     unsigned char reply_to, status;
     bool readable = false;
@@ -117,9 +113,7 @@ static bool Get_contact_message(sockbuf_t *sbuf,
         if (len <= 0)
         {
             if (len == 0)
-            {
                 continue;
-            }
             xpprintf("Error from sock_receive_any, contact message failed.\n");
             /* exit(1);  no good since meta gui. */
             return false;
@@ -138,47 +132,40 @@ static bool Get_contact_message(sockbuf_t *sbuf,
          * Doing a reverse lookup may result in a long and annoying delay.
          */
         if (!strcmp(conpar->server_addr, contact_server))
-        {
             strlcpy(conpar->server_name, conpar->server_addr,
                     sizeof(conpar->server_name));
-        }
         else
-        {
             strlcpy(conpar->server_name, sock_get_last_name(&sbuf->sock),
                     sizeof(conpar->server_name));
-        }
 
         if (Packet_scanf(sbuf, "%u%c%c", &magic, &reply_to, &status) <= 0)
-        {
-            errno = 0;
-            xperror("Incomplete contact reply message (%d)", len);
-        }
+            warn("Incomplete contact reply message (%d)", len);
         else if ((magic & 0xFFFF) != (MAGIC & 0xFFFF))
-        {
-            errno = 0;
-            xperror("Bad magic on contact message (0x%x).", magic);
-        }
+            warn("Bad magic on contact message (0x%x).", magic);
         else
         {
-            allow = version = MAGIC2VERSION(magic);
-            LIMIT(allow, MIN_SERVER_VERSION, MAX_SERVER_VERSION);
-            if (version != allow)
+            server_version = MAGIC2VERSION(magic);
+            if (!((server_version >= MIN_SERVER_VERSION &&
+                   server_version <= MAX_SERVER_VERSION) ||
+                  (server_version >= MIN_OLD_SERVER_VERSION &&
+                   server_version <= MAX_OLD_SERVER_VERSION)))
             {
-                printf("Incompatible version with server %s.\n", conpar->server_name);
-                printf("We run version %04x, while server is running %04x.\n",
-                       MY_VERSION, MAGIC2VERSION(magic));
-                if ((MY_VERSION >> 4) < (MAGIC2VERSION(magic) >> 4))
-                {
-                    printf("Time for us to upgrade?\n");
-                }
+                warn("Incompatible version with server %s.",
+                     conpar->server_name);
+                warn("We run version %04x, while server is running %04x.",
+                     MY_VERSION, server_version);
+                if ((MY_VERSION >> 4) < (server_version >> 4))
+                    warn("Time for us to upgrade?");
+                readable = 2;
             }
             else
             {
                 /*
                  * Found one which we can talk to.
                  */
-                conpar->server_version = version;
-                readable = true;
+                xpinfo("Using protocol version 0x%04x.", server_version);
+                conpar->server_version = server_version;
+                readable = 1;
             }
         }
     }
@@ -205,15 +192,13 @@ static int Get_reply_message(sockbuf_t *ibuf,
         ibuf->len = len;
         if (Packet_scanf(ibuf, "%u", &magic) <= 0)
         {
-            errno = 0;
-            xperror("Incomplete reply packet (%d)", len);
+            warn("Incomplete reply packet (%d)", len);
             return 0;
         }
 
         if ((magic & 0xFFFF) != (MAGIC & 0xFFFF))
         {
-            errno = 0;
-            xperror("Wrong MAGIC in reply pack (0x%x).", magic);
+            warn("Wrong MAGIC in reply pack (0x%x).", magic);
             return 0;
         }
 
@@ -279,9 +264,7 @@ static bool Process_commands(sockbuf_t *ibuf,
     static char localhost[] = "127.0.0.1";
 
     if (auto_connect && !list_servers && !auto_shutdown)
-    {
         xpprintf("*** Connected to %s\n", conpar->server_name);
-    }
 
     for (;;)
     {
@@ -300,7 +283,7 @@ static bool Process_commands(sockbuf_t *ibuf,
         {
             printf("*** Server on %s. Enter command> ", conpar->server_name);
 
-            my_getline(linebuf, MAX_LINE - 1, stdin);
+            my_getline(linebuf, MAX_LINE, stdin);
             if (feof(stdin))
             {
                 puts("");
@@ -382,9 +365,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                       conpar->user_name, sock_get_port(&ibuf->sock));
 
         if (privileged_cmd && !has_credentials)
-        {
             Packet_printf(ibuf, "%c%ld", CREDENTIALS_pack, 0L);
-        }
         else
         {
 
@@ -398,7 +379,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'K':
                 printf("Enter name of victim: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE - 1, stdin))
+                if (!my_getline(linebuf, MAX_LINE, stdin))
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -410,7 +391,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'R':
                 printf("Enter maximum number of robots: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE - 1, stdin))
+                if (!my_getline(linebuf, MAX_LINE, stdin))
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -426,7 +407,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'M': /* Send a message to server. */
                 printf("Enter message: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE - 1, stdin) || !linebuf[0])
+                if (!my_getline(linebuf, MAX_LINE, stdin) || !linebuf[0])
                 {
                     printf("No message sent.\n");
                     continue;
@@ -443,19 +424,17 @@ static bool Process_commands(sockbuf_t *ibuf,
                 if (!auto_shutdown)
                 {
                     printf("Enter delay in seconds or return for cancel: ");
-                    my_getline(linebuf, MAX_LINE - 1, stdin);
+                    my_getline(linebuf, MAX_LINE, stdin);
                     /*
                      * No argument = cancel shutdown = arg_int=0
                      */
                     if (sscanf(linebuf, "%d", &delay) <= 0)
-                    {
                         delay = 0;
-                    }
                     else if (delay <= 0)
                         delay = 1;
 
                     printf("Enter reason: ");
-                    my_getline(linebuf, MAX_LINE - 1, stdin);
+                    my_getline(linebuf, MAX_LINE, stdin);
                 }
                 else
                 {
@@ -469,7 +448,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'O': /* Tune an option. */
                 printf("Enter option: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE - 1, stdin) || (len = strlen(linebuf)) == 0)
+                if (!my_getline(linebuf, MAX_LINE, stdin) || (len = strlen(linebuf)) == 0)
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -478,7 +457,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                 fflush(stdout);
                 strcat(linebuf, ":");
                 len++;
-                if (!my_getline(&linebuf[len], MAX_LINE - 1 - len, stdin) || linebuf[len] == '\0')
+                if (!my_getline(&linebuf[len], MAX_LINE - len, stdin) || linebuf[len] == '\0')
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -546,17 +525,13 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'T': /* Set team. */
                 printf("Enter team: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE - 1, stdin) || (len = strlen(linebuf)) == 0)
-                {
+                if (!my_getline(linebuf, MAX_LINE, stdin) || (len = strlen(linebuf)) == 0)
                     printf("Nothing changed.\n");
-                }
                 else
                 {
                     int newteam;
                     if (sscanf(linebuf, " %d", &newteam) != 1)
-                    {
                         printf("Invalid team specification: %s.\n", linebuf);
-                    }
                     else if (newteam >= 0 && newteam <= 9)
                     {
                         conpar->team = newteam;
@@ -593,9 +568,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             {
                 sock_set_timeout(&ibuf->sock, 1, 0);
                 if (sock_readable(&ibuf->sock))
-                {
                     break;
-                }
             }
             if (sock_write(&ibuf->sock, ibuf->buf, ibuf->len) != ibuf->len)
             {
@@ -613,14 +586,12 @@ static bool Process_commands(sockbuf_t *ibuf,
             Sockbuf_clear(ibuf);
             if (Get_reply_message(ibuf, conpar) <= 0)
             {
-                errno = 0;
-                xperror("No answer from server");
+                warn("No answer from server");
                 return false;
             }
             if (Packet_scanf(ibuf, "%c%c", &reply_to, &status) <= 0)
             {
-                errno = 0;
-                xperror("Incomplete reply from server");
+                warn("Incomplete reply from server");
                 return false;
             }
 
@@ -642,9 +613,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 
                 case OPTION_LIST_pack:
                     while (Packet_scanf(ibuf, "%S", linebuf) > 0)
-                    {
                         printf("%s\n", linebuf);
-                    }
                     break;
 
                 case REPORT_STATUS_pack:
@@ -658,39 +627,28 @@ static bool Process_commands(sockbuf_t *ibuf,
                         if (*ibuf->ptr != '\0')
                         {
                             if (ibuf->len < ibuf->size)
-                            {
                                 ibuf->buf[ibuf->len] = '\0';
-                            }
                             else
-                            {
                                 ibuf->buf[ibuf->size - 1] = '\0';
-                            }
                             Clean_string(ibuf->ptr);
                             printf("%s", ibuf->ptr);
                             if (ibuf->ptr[strlen(ibuf->ptr) - 1] != '\n')
-                            {
                                 printf("\n");
-                            }
                         }
                     }
                     break;
 
                 case SHUTDOWN_pack:
                     if (delay == 0)
-                    {
                         puts("*** Shutdown stopped.");
-                    }
                     else
-                    {
                         puts("*** Shutdown initiated.");
-                    }
                     break;
 
                 case ENTER_GAME_pack:
                     if (Packet_scanf(ibuf, "%hu", &port) <= 0)
                     {
-                        errno = 0;
-                        xperror("Incomplete login reply from server");
+                        warn("Incomplete login reply from server");
                         conpar->login_port = -1;
                     }
                     else
@@ -702,14 +660,9 @@ static bool Process_commands(sockbuf_t *ibuf,
 
                 case ENTER_QUEUE_pack:
                     if (Packet_scanf(ibuf, "%hu", &qpos) <= 0)
-                    {
-                        errno = 0;
-                        xperror("Incomplete queue reply from server");
-                    }
+                        warn("Incomplete queue reply from server");
                     else
-                    {
                         printf("... queued at position %2d\n", qpos);
-                    }
                     /*
                      * Acknowledge each 10 seconds that we are still
                      * interested to be on the waiting queue.
@@ -736,10 +689,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 
                 case CREDENTIALS_pack:
                     if (Packet_scanf(ibuf, "%ld", &key) <= 0)
-                    {
-                        errno = 0;
-                        xperror("Incomplete credentials reply from server");
-                    }
+                        warn("Incomplete credentials reply from server");
                     else
                     {
                         has_credentials++;
@@ -755,44 +705,44 @@ static bool Process_commands(sockbuf_t *ibuf,
                 break;
 
             case E_NOT_OWNER:
-                xperror("Permission denied, not owner");
+                warn("Permission denied, not owner");
                 break;
             case E_GAME_FULL:
-                xperror("Sorry, game full");
+                warn("Sorry, game full");
                 break;
             case E_TEAM_FULL:
-                xperror("Sorry, team %d is full", conpar->team);
+                warn("Sorry, team %d is full", conpar->team);
                 break;
             case E_TEAM_NOT_SET:
-                xperror("Sorry, team play selected "
-                        "and you haven't specified your team");
+                warn("Sorry, team play selected "
+                     "and you haven't specified your team");
                 break;
             case E_GAME_LOCKED:
-                xperror("Sorry, game locked");
+                warn("Sorry, game locked");
                 break;
             case E_NOT_FOUND:
-                xperror("That player is not logged on this server");
+                warn("That player is not logged on this server");
                 break;
             case E_IN_USE:
-                xperror("Your nick is already used");
+                warn("Your nick is already used");
                 break;
             case E_SOCKET:
-                xperror("Server can't setup socket");
+                warn("Server can't setup socket");
                 break;
             case E_INVAL:
-                xperror("Invalid input parameters says the server");
+                warn("Invalid input parameters says the server");
                 break;
             case E_VERSION:
-                xperror("We have an incompatible version says the server");
+                warn("We have an incompatible version says the server");
                 break;
             case E_NOENT:
-                xperror("No such variable, says the server");
+                warn("No such variable, says the server");
                 break;
             case E_UNDEFINED:
-                xperror("Requested operation is undefined, says the server");
+                warn("Requested operation is undefined, says the server");
                 break;
             default:
-                xperror("Server answers with unknown error status '%02x'", status);
+                warn("Server answers with unknown error status '%02x'", status);
                 break;
             }
 
@@ -814,9 +764,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             if (reply_to == ENTER_GAME_pack)
             {
                 if (status == SUCCESS && conpar->login_port > 0)
-                {
                     return true;
-                }
                 else
                 {
                     if (auto_connect)

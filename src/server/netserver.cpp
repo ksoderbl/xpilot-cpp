@@ -141,8 +141,9 @@
 #define MAX_MOTD_LOOPS (10 * FPS)
 
 static connection_t *Conn = NULL;
-static int max_connections = 0;
 static setup_t *Setup = NULL;
+static setup_t *Oldsetup = NULL;
+static int max_connections = 0;
 static int (*playing_receive[256])(connection_t *connp),
     (*login_receive[256])(connection_t *connp),
     (*drain_receive[256])(connection_t *connp);

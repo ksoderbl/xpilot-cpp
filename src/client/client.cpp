@@ -47,6 +47,7 @@
 #include "protoclient.h"
 #include "talk.h"
 
+int oldServer = true;
 ipos_t selfPos;
 ipos_t selfVel;
 ipos_t world;
@@ -178,6 +179,8 @@ trans_t *trans_ptr;
 int num_trans, max_trans;
 paused_t *paused_ptr;
 int num_paused, max_paused;
+appearing_t *appearing_ptr;
+int num_appearing, max_appearing;
 radar_t *radar_ptr;
 int num_radar, max_radar;
 vcannon_t *vcannon_ptr;
@@ -211,17 +214,21 @@ static other_t *Others = 0;
 static int num_others = 0,
            max_others = 0;
 
-static fuelstation_t *fuels = 0;
-static int num_fuels = 0;
+fuelstation_t *fuels = NULL;
+int num_fuels = 0;
+homebase_t *bases = NULL;
+int num_bases = 0;
+xp_polygon_t *polygons = NULL;
+int num_polygons = 0;
+edge_style_t *edge_styles = NULL;
+int num_edge_styles = 0;
+polygon_style_t *polygon_styles = NULL;
+int num_polygon_styles = 0;
 
-static homebase_t *bases = 0;
-static int num_bases = 0;
-
-static cannontime_t *cannons = 0;
-static int num_cannons = 0;
-
-static target_t *targets = 0;
-static int num_targets = 0;
+cannontime_t *cannons = NULL;
+int num_cannons = 0;
+target_t *targets = NULL;
+int num_targets = 0;
 
 #define MAX_CHECKPOINT 26
 
@@ -1767,6 +1774,17 @@ int Handle_asteroid(int x, int y, int type, int size, int rotation)
     return 0;
 }
 
+int Handle_polystyle(int polyind, int newstyle)
+{
+    xp_polygon_t *poly;
+
+    poly = &polygons[polyind];
+    poly->style = newstyle;
+    /*warn("polygon %d style set to %d", polyind, newstyle);*/
+
+    return 0;
+}
+
 int Handle_wormhole(int x, int y)
 {
     wormhole_t t;
@@ -1808,6 +1826,18 @@ int Handle_paused(int x, int y, int count)
     t.y = y;
     t.count = count;
     STORE(paused_t, paused_ptr, num_paused, max_paused, t);
+    return 0;
+}
+
+int Handle_appearing(int x, int y, int id, int count)
+{
+    appearing_t t;
+
+    t.x = x;
+    t.y = y;
+    t.id = id;
+    t.count = count;
+    STORE(appearing_t, appearing_ptr, num_appearing, max_appearing, t);
     return 0;
 }
 

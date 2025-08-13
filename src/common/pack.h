@@ -1,11 +1,12 @@
-/* $Id: pack.h,v 5.4 2002/01/18 22:34:26 kimiko Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
  *      Bert Gijsbers
  *      Dick Balaska
+ *
+ * Copyright (C) 2000-2004 Uoti Urpala
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,11 +56,11 @@
  * 3.0.3: implemented a version awareness system, so that
  * newer clients can join older servers and so that
  * newer servers can support older clients.
- * The client maintains a `version' variable indicating
+ * The client maintains a 'version' variable indicating
  * the version of the server it has joined and the server
- * maintains for each connection a `connection_t->version'
- * and a `player->version' variable.
- * 3.0.4: the so-called `pizza-mode' introduced a new packet type.
+ * maintains for each connection a 'connection_t->version'
+ * and a 'player->version' variable.
+ * 3.0.4: the so-called 'pizza-mode' introduced a new packet type.
  * The score packet now also includes pl->mychar.
  * 3.0.4.1: new laser weapon introduces another packet change.
  * Because there is an unofficial (and forbidden) 3.0.4 version floating
@@ -99,8 +100,24 @@
  * 4.4.0.1: fast radar packet
  * 4.5.0.0: new team score packet; score packet made larger to send decimals
  * 4.5.0.1: temporary wormholes
+
+ * Polygon branch
+ * 4.F.0.9: 4.3.0.0 + xp2 map format
+ * 4.F.1.0: Send_player(): Additional %c (1 when sending player's own info).
+ * 4.F.1.1: support for everything in 4.5.0.1
+ * 4.F.1.2: Show ships about to appear on bases, new team change packet.
+ * 4.F.1.3: cumulative turning
+ * 4.F.1.4: balls use polygon styles
+ * 4.F.1.5: Possibility to change polygon styles.
  */
 #define MAGIC 0x4501F4ED
+// #define MAGIC 0x4F15F4ED
+// TODO
+// #ifdef SERVER
+// #define MAGIC (is_polygon_map ? 0x4F15F4ED : 0x4501F4ED)
+// #else
+// #define MAGIC (instruments.blockProtocol ? 0x4501F4ED : 0x4F15F4ED)
+// #endif
 
 #define MAGIC2VERSION(M) (((M) >> 16) & 0xFFFF)
 #define VERSION2MAGIC(V) ((((V) & 0xFFFF) << 16) | (MAGIC & 0xFFFF))
@@ -109,14 +126,26 @@
 /*
  * Which client versions can join this server.
  */
-#define MIN_CLIENT_VERSION 0x3103
+#ifdef SERVER
+#define MIN_CLIENT_VERSION 0x4203
 #define MAX_CLIENT_VERSION MY_VERSION
+#endif
 
 /*
  * Which server versions can this client join.
  */
-#define MIN_SERVER_VERSION 0x3103
+#define MIN_SERVER_VERSION 0x4F09
 #define MAX_SERVER_VERSION MY_VERSION
+
+/*
+ * We want to keep support for servers using the old map format in the client,
+ * but make incompatible changes while developing the new format. Therefore
+ * there is a separate "old" range of allowed servers.
+ */
+#define MIN_OLD_SERVER_VERSION 0x4203
+#define MAX_OLD_SERVER_VERSION 0x4501
+/* Which old-style (non-polygon) protocol version we support. */
+#define COMPATIBILITY_MAGIC 0x4501F4ED
 
 #define MAX_STR_LEN 4096
 #define MAX_DISP_LEN 80

@@ -139,6 +139,7 @@ static void Receive_init(void)
     receive_tbl[PKT_ECM] = Receive_ecm;
     receive_tbl[PKT_TRANS] = Receive_trans;
     receive_tbl[PKT_PAUSED] = Receive_paused;
+    receive_tbl[PKT_APPEARING] = Receive_appearing;
     receive_tbl[PKT_ITEM] = Receive_item;
     receive_tbl[PKT_MINE] = Receive_mine;
     receive_tbl[PKT_BALL] = Receive_ball;
@@ -163,6 +164,7 @@ static void Receive_init(void)
     receive_tbl[PKT_WRECKAGE] = Receive_wreckage;
     receive_tbl[PKT_ASTEROID] = Receive_asteroid;
     receive_tbl[PKT_WORMHOLE] = Receive_wormhole;
+    receive_tbl[PKT_POLYSTYLE] = Receive_polystyle;
     for (i = 0; i < DEBRIS_TYPES; i++)
         receive_tbl[PKT_DEBRIS + i] = Receive_debris;
 
@@ -288,17 +290,38 @@ int Net_setup(void)
         {
             if (done == 0)
             {
-                n = Packet_scanf(&cbuf,
-                                 "%ld"
-                                 "%ld%hd"
-                                 "%hd%hd"
-                                 "%hd%hd"
-                                 "%s%s",
-                                 &Setup->map_data_len,
-                                 &Setup->mode, &Setup->lives,
-                                 &Setup->x, &Setup->y,
-                                 &Setup->frames_per_second, &Setup->map_order,
-                                 Setup->name, Setup->author);
+                if (oldServer)
+                {
+
+                    n = Packet_scanf(&cbuf,
+                                     "%ld"
+                                     "%ld%hd"
+                                     "%hd%hd"
+                                     "%hd%hd"
+                                     "%s%s",
+                                     &Setup->map_data_len,
+                                     &Setup->mode, &Setup->lives,
+                                     &Setup->x, &Setup->y,
+                                     &Setup->frames_per_second, &Setup->map_order,
+                                     Setup->name, Setup->author);
+                    Setup->width = Setup->x * BLOCK_SZ;
+                    Setup->height = Setup->y * BLOCK_SZ;
+                }
+                else
+                {
+                    n = Packet_scanf(&cbuf,
+                                     "%ld"
+                                     "%ld%hd"
+                                     "%hd%hd"
+                                     "%hd%s"
+                                     "%s%S",
+                                     &Setup->map_data_len,
+                                     &Setup->mode, &Setup->lives,
+                                     &Setup->width, &Setup->height,
+                                     &Setup->frames_per_second,
+                                     Setup->name, Setup->author,
+                                     Setup->data_url);
+                }
                 if (n <= 0)
                 {
                     warn("Can't read setup info from reliable data buffer");
@@ -375,10 +398,9 @@ int Net_setup(void)
             {
                 if (retries >= 10)
                 {
-                    errno = 0;
-                    xperror("Can't read setup after %d retries "
-                            "(todo=%d, left=%d)",
-                            retries, todo, cbuf.len - (cbuf.ptr - cbuf.buf));
+                    warn("Can't read setup after %d retries "
+                         "(todo=%d, left=%d)",
+                         retries, todo, cbuf.len - (cbuf.ptr - cbuf.buf));
                     return -1;
                 }
                 sock_set_timeout(&rbuf.sock, 2, 0);
@@ -820,27 +842,23 @@ int Net_start(void)
             continue;
         if (cbuf.ptr[0] != PKT_REPLY)
         {
-            errno = 0;
-            xperror("Not a reply packet after play (%d,%d,%d)",
-                    cbuf.ptr[0], cbuf.ptr - cbuf.buf, cbuf.len);
+            warn("Not a reply packet after play (%d,%d,%d)",
+                 cbuf.ptr[0], cbuf.ptr - cbuf.buf, cbuf.len);
             return -1;
         }
         if (Receive_reply(&type, &result) <= 0)
         {
-            errno = 0;
-            xperror("Can't receive reply packet after play");
+            warn("Can't receive reply packet after play");
             return -1;
         }
         if (type != PKT_PLAY)
         {
-            errno = 0;
-            xperror("Can't receive reply packet after play");
+            warn("Can't receive reply packet after play");
             return -1;
         }
         if (result != PKT_SUCCESS)
         {
-            errno = 0;
-            xperror("Start play not allowed (%d)", result);
+            warn("Start play not allowed (%d)", result);
             return -1;
         }
         break;
@@ -906,8 +924,7 @@ static int Net_packet(void)
 
         if (receive_tbl[type] == NULL)
         {
-            errno = 0;
-            xperror("Received unknown packet type (%d, %d), dropping frame.", type, prev_type);
+            warn("Received unknown packet type (%d, %d), dropping frame.", type, prev_type);
             Sockbuf_clear(&rbuf);
             break;
         }
@@ -1992,6 +2009,19 @@ int Receive_paused(void)
     return 1;
 }
 
+int Receive_appearing(void)
+{
+    int n;
+    short x, y, id, count;
+    uint8_t ch;
+    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%hd", &ch, &x, &y, &id,
+                          &count)) <= 0)
+        return n;
+    if ((n = Handle_appearing(x, y, id, count)) == -1)
+        return -1;
+    return 1;
+}
+
 int Receive_radar(void)
 {
     int n;
@@ -2245,6 +2275,21 @@ int Receive_target(void)
     return 1;
 }
 
+int Receive_polystyle(void) /* since ng 4.7.0 */
+{
+    int n;
+    unsigned short num, newstyle;
+    uint8_t ch;
+
+    if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &newstyle)) <= 0)
+        return n;
+    if ((n = Handle_polystyle(num, newstyle)) == -1)
+        return -1;
+    if (wbuf.len < MAX_MAP_ACK_LEN)
+        Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_POLYSTYLE, last_loops, num);
+    return 1;
+}
+
 int Receive_base(void)
 {
     int n;
@@ -2450,7 +2495,7 @@ int Send_shape(char *str)
     return 0;
 }
 
-int Send_power(DFLOAT power)
+int Send_power(double power)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POWER,
                       (int)(power * 256.0)) == -1)
@@ -2458,7 +2503,7 @@ int Send_power(DFLOAT power)
     return 0;
 }
 
-int Send_power_s(DFLOAT power_s)
+int Send_power_s(double power_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POWER_S,
                       (int)(power_s * 256.0)) == -1)
@@ -2466,7 +2511,7 @@ int Send_power_s(DFLOAT power_s)
     return 0;
 }
 
-int Send_turnspeed(DFLOAT turnspeed)
+int Send_turnspeed(double turnspeed)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNSPEED,
                       (int)(turnspeed * 256.0)) == -1)
@@ -2474,7 +2519,7 @@ int Send_turnspeed(DFLOAT turnspeed)
     return 0;
 }
 
-int Send_turnspeed_s(DFLOAT turnspeed_s)
+int Send_turnspeed_s(double turnspeed_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNSPEED_S,
                       (int)(turnspeed_s * 256.0)) == -1)
@@ -2482,7 +2527,7 @@ int Send_turnspeed_s(DFLOAT turnspeed_s)
     return 0;
 }
 
-int Send_turnresistance(DFLOAT turnresistance)
+int Send_turnresistance(double turnresistance)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNRESISTANCE,
                       (int)(turnresistance * 256.0)) == -1)
@@ -2490,7 +2535,7 @@ int Send_turnresistance(DFLOAT turnresistance)
     return 0;
 }
 
-int Send_turnresistance_s(DFLOAT turnresistance_s)
+int Send_turnresistance_s(double turnresistance_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNRESISTANCE_S,
                       (int)(turnresistance_s * 256.0)) == -1)

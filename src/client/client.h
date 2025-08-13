@@ -193,6 +193,7 @@ typedef struct
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
 
+extern int oldServer; /* Compatibility mode for old block-based servers */
 extern ipos_t selfPos;
 extern ipos_t selfVel;
 extern ipos_t world;
@@ -305,6 +306,32 @@ extern char audioServer[MAX_CHARS]; /* audio server */
 extern int maxVolume;               /* maximum volume (in percent) */
 #endif                              /* SOUND */
 
+typedef struct
+{
+    int width;           /* Line width, -1 means no line */
+    unsigned long color; /* Line color */
+    int rgb;             /* RGB values corresponding to color */
+    int style;           /* 0=LineSolid, 1=LineOnOffDash, 2=LineDoubleDash */
+} edge_style_t;
+
+typedef struct
+{
+    unsigned long color; /* The color if drawn in filled mode */
+    int rgb;             /* RGB values corresponding to color */
+    int texture;         /* The texture if drawn in texture mode */
+    int flags;           /* Flags about this style (see draw.h) */
+    int def_edge_style;  /* The default style for edges */
+} polygon_style_t;
+
+typedef struct
+{
+    ipos_t *points;   /* points[0] is absolute, rest are relative */
+    int num_points;   /* number of points */
+    irec_t bounds;    /* bounding box for the polygon */
+    int *edge_styles; /* optional array of indexes to edge_styles */
+    int style;        /* index to polygon_styles array */
+} xp_polygon_t;
+
 /*
  * Local types and data for painting.
  */
@@ -371,7 +398,19 @@ typedef struct
 
 typedef struct
 {
+    short x, y, id, count;
+} appearing_t;
+
+typedef enum
+{
+    normal,
+    friendly
+} radar_type_t;
+
+typedef struct
+{
     short x, y, size;
+    radar_type_t type;
 } radar_t;
 
 typedef struct
@@ -416,6 +455,19 @@ typedef struct
 {
     short x, y;
 } wormhole_t;
+
+extern fuelstation_t *fuels;
+extern int num_fuels;
+extern homebase_t *bases;
+extern int num_bases;
+// extern checkpoint_t *checks;
+// extern int num_checks;
+extern xp_polygon_t *polygons;
+extern int num_polygons, max_polygons;
+extern edge_style_t *edge_styles;
+extern int num_edge_styles, max_edge_styles;
+extern polygon_style_t *polygon_styles;
+extern int num_polygon_styles, max_polygon_styles;
 
 extern refuel_t *refuel_ptr;
 extern int num_refuel, max_refuel;
@@ -489,6 +541,49 @@ int Handle_score_object(int score, int x, int y, char *msg);
 int Handle_timing(int id, int check, int round);
 int Handle_war(int robot_id, int killer_id);
 int Handle_seek(int programmer_id, int robot_id, int sought_id);
+int Handle_start(long server_loops);
+int Handle_end(long server_loops);
+int Handle_self(int x, int y, int vx, int vy, int dir,
+                float power, float turnspeed, float turnresistance,
+                int lock_id, int lock_dist, int lock_dir,
+                int nextCheckPoint, int autopilotLight,
+                uint8_t *newNumItems,
+                int currentTank, int fuel_sum, int fuel_max, int packet_size);
+int Handle_self_items(uint8_t *newNumItems);
+int Handle_modifiers(char *m);
+int Handle_damaged(int damaged);
+int Handle_destruct(int count);
+int Handle_shutdown(int count, int delay);
+int Handle_thrusttime(int count, int max);
+int Handle_shieldtime(int count, int max);
+int Handle_phasingtime(int count, int max);
+int Handle_rounddelay(int count, int max);
+int Handle_refuel(int x0, int y0, int x1, int y1);
+int Handle_connector(int x0, int y0, int x1, int y1, int tractor);
+int Handle_laser(int color, int x, int y, int len, int dir);
+int Handle_missile(int x, int y, int dir, int len);
+int Handle_ball(int x, int y, int id);
+int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
+int Handle_mine(int x, int y, int teammine, int id);
+int Handle_item(int x, int y, int type);
+int Handle_fastshot(int type, uint8_t *p, int n);
+int Handle_debris(int type, uint8_t *p, int n);
+int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation);
+int Handle_asteroid(int x, int y, int type, int size, int rotation);
+int Handle_wormhole(int x, int y);
+int Handle_polystyle(int polyind, int newstyle);
+int Handle_ecm(int x, int y, int size);
+int Handle_trans(int x1, int y1, int x2, int y2);
+int Handle_paused(int x, int y, int count);
+int Handle_appearing(int x, int y, int id, int count);
+int Handle_radar(int x, int y, int size);
+int Handle_vcannon(int x, int y, int type);
+int Handle_vfuel(int x, int y, long fuel);
+int Handle_vbase(int x, int y, int xi, int yi, int type);
+int Handle_vdecor(int x, int y, int xi, int yi, int type);
+int Handle_message(char *msg);
+int Handle_eyes(int id);
+int Handle_time_left(long sec);
 void Map_dots(void);
 void Map_restore(int startx, int starty, int width, int height);
 void Map_blue(int startx, int starty, int width, int height);
