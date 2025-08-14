@@ -148,15 +148,19 @@ typedef struct
 
 typedef struct
 {
-    int pos;   /* Block index */
-    long fuel; /* Amount of fuel available */
+    int pos;       /* Block index */
+    long fuel;     /* Amount of fuel available */
+    irec_t bounds; /* Location on map */
 } fuelstation_t;
 
 typedef struct
 {
-    int pos;  /* Block index */
-    short id, /* Id of owner or -1 */
-        team; /* Team this base belongs to */
+    int pos;         /* Block index */
+    short id;        /* Id of owner or -1 */
+    uint16_t team;   /* Team this base belongs to */
+    irec_t bounds;   /* Location on map */
+    int type;        /* orientation */
+    long appeartime; /* For base warning */
 } homebase_t;
 
 typedef struct
@@ -175,136 +179,9 @@ typedef struct
 
 typedef struct
 {
-    int pos; /* Block index */
+    int pos;       /* Block index */
+    irec_t bounds; /* Location on map */
 } checkpoint_t;
-
-#define SCORE_OBJECT_COUNT 100
-typedef struct
-{
-    int score,
-        x,
-        y,
-        count,
-        hud_msg_len,
-        hud_msg_width,
-        msg_width,
-        msg_len;
-    char msg[10],
-        hud_msg[MAX_CHARS + 10];
-} score_object_t;
-
-extern int oldServer; /* Compatibility mode for old block-based servers */
-extern ipos_t selfPos;
-extern ipos_t selfVel;
-extern ipos_t world;
-extern ipos_t realWorld;
-extern short heading;
-extern short nextCheckPoint;
-extern uint8_t numItems[NUM_ITEMS];
-extern uint8_t lastNumItems[NUM_ITEMS];
-extern int numItemsTime[NUM_ITEMS];
-extern DFLOAT showItemsTime;
-extern short autopilotLight;
-
-extern short lock_id;   /* Id of player locked onto */
-extern short lock_dir;  /* Direction of lock */
-extern short lock_dist; /* Distance to player locked onto */
-
-extern other_t *self;     /* Player info */
-extern short selfVisible; /* Are we alive and playing? */
-extern short damaged;     /* Damaged by ECM */
-extern short destruct;    /* If self destructing */
-extern short shutdown_delay;
-extern short shutdown_count;
-extern short thrusttime;
-extern short thrusttimemax;
-extern short shieldtime;
-extern short shieldtimemax;
-extern short phasingtime;
-extern short phasingtimemax;
-
-extern int roundDelay;
-extern int roundDelayMax;
-
-extern int RadarWidth;
-extern int RadarHeight;
-extern int map_point_distance; /* spacing of navigation points */
-extern int map_point_size;     /* size of navigation points */
-extern int spark_size;         /* size of sparks and debris */
-extern int shot_size;          /* size of shot */
-extern int teamshot_size;      /* size of team shot */
-extern long control_count;     /* Display control for how long? */
-
-extern double controlTime;     /* Display control for how long? */
-extern uint8_t spark_rand;     /* Sparkling effect */
-extern uint8_t old_spark_rand; /* previous value of spark_rand */
-
-extern long fuelSum;      /* Sum of fuel in all tanks */
-extern long fuelMax;      /* How much fuel can you take? */
-extern short fuelCurrent; /* Number of currently used tank */
-extern short numTanks;    /* Number of tanks */
-extern long fuelCount;    /* Display fuel for how long? */
-extern int fuelLevel1;    /* Fuel critical level */
-extern int fuelLevel2;    /* Fuel warning level */
-extern int fuelLevel3;    /* Fuel notify level */
-
-extern char *shipShape;                /* Shape of player's ship */
-extern DFLOAT power;                   /* Force of thrust */
-extern DFLOAT power_s;                 /* Saved power fiks */
-extern DFLOAT turnspeed;               /* How fast player acc-turns */
-extern DFLOAT turnspeed_s;             /* Saved turnspeed */
-extern DFLOAT turnresistance;          /* How much is lost in % */
-extern DFLOAT turnresistance_s;        /* Saved (see above) */
-extern DFLOAT displayedPower;          /* What the server is sending us */
-extern DFLOAT displayedTurnspeed;      /* What the server is sending us */
-extern DFLOAT displayedTurnresistance; /* What the server is sending us */
-extern DFLOAT spark_prob;              /* Sparkling effect configurable */
-extern int charsPerSecond;             /* Message output speed (config) */
-
-extern DFLOAT hud_move_fact;      /* scale the hud-movement (speed) */
-extern DFLOAT ptr_move_fact;      /* scale the speed pointer length */
-extern char mods[MAX_CHARS];      /* Current modifiers in effect */
-extern instruments_t instruments; /* Instruments on screen */
-extern int packet_size;           /* Current frame update packet size */
-extern int packet_loss;           /* lost packets per second */
-extern int packet_drop;           /* dropped packets per second */
-extern int packet_lag;            /* approximate lag in frames */
-extern char *packet_measure;      /* packet measurement in a second */
-extern long packet_loop;          /* start of measurement */
-
-extern bool showRealName;          /* Show realname instead of nickname */
-extern char name[MAX_CHARS];       /* Nick-name of player */
-extern char realname[MAX_CHARS];   /* Real name of player */
-extern char servername[MAX_CHARS]; /* Name of server connecting to */
-extern unsigned version;           /* Version of the server */
-extern int scoresChanged;
-extern bool toggle_shield;         /* Are shields toggled by a press? */
-extern int shields;                /* When shields are considered up */
-extern bool auto_shield;           /* drops shield for fire */
-extern bool initialPointerControl; /* Start by using mouse for control? */
-extern bool pointerControl;        /* current state of mouse ship flying */
-
-extern int maxFPS; /* Client's own FPS */
-extern int oldMaxFPS;
-
-extern double clientFPS;    /* FPS client is drawing at */
-extern double timePerFrame; /* Time a frame is shown, unit s */
-extern int clientLag;       /* Time to draw a frame, unit us */
-extern bool newSecond;      /* Second changed this frame */
-extern bool played_this_round;
-extern long twelveHz; /* Attempt to increment this at 12Hz */
-
-extern int clientPortStart; /* First UDP port for clients */
-extern int clientPortEnd;   /* Last one (these are for firewalls) */
-
-extern uint8_t lose_item;    /* flag and index to drop item */
-extern int lose_item_active; /* one of the lose keys is pressed */
-
-#ifdef SOUND
-extern char sounds[MAX_CHARS];      /* audio mappings */
-extern char audioServer[MAX_CHARS]; /* audio server */
-extern int maxVolume;               /* maximum volume (in percent) */
-#endif                              /* SOUND */
 
 typedef struct
 {
@@ -456,12 +333,140 @@ typedef struct
     short x, y;
 } wormhole_t;
 
+#define SCORE_OBJECT_COUNT 100
+typedef struct
+{
+    int score,
+        x,
+        y,
+        count,
+        hud_msg_len,
+        hud_msg_width,
+        msg_width,
+        msg_len;
+    char msg[10],
+        hud_msg[MAX_CHARS + 10];
+} score_object_t;
+
+extern int oldServer; /* Compatibility mode for old block-based servers */
+extern ipos_t selfPos;
+extern ipos_t selfVel;
+extern ipos_t world;
+extern ipos_t realWorld;
+extern short heading;
+extern short nextCheckPoint;
+extern uint8_t numItems[NUM_ITEMS];
+extern uint8_t lastNumItems[NUM_ITEMS];
+extern int numItemsTime[NUM_ITEMS];
+extern DFLOAT showItemsTime;
+extern short autopilotLight;
+
+extern short lock_id;   /* Id of player locked onto */
+extern short lock_dir;  /* Direction of lock */
+extern short lock_dist; /* Distance to player locked onto */
+
+extern other_t *self;     /* Player info */
+extern short selfVisible; /* Are we alive and playing? */
+extern short damaged;     /* Damaged by ECM */
+extern short destruct;    /* If self destructing */
+extern short shutdown_delay;
+extern short shutdown_count;
+extern short thrusttime;
+extern short thrusttimemax;
+extern short shieldtime;
+extern short shieldtimemax;
+extern short phasingtime;
+extern short phasingtimemax;
+
+extern int roundDelay;
+extern int roundDelayMax;
+
+extern int RadarWidth;
+extern int RadarHeight;
+extern int map_point_distance; /* spacing of navigation points */
+extern int map_point_size;     /* size of navigation points */
+extern int spark_size;         /* size of sparks and debris */
+extern int shot_size;          /* size of shot */
+extern int teamshot_size;      /* size of team shot */
+extern long control_count;     /* Display control for how long? */
+
+extern double controlTime;     /* Display control for how long? */
+extern uint8_t spark_rand;     /* Sparkling effect */
+extern uint8_t old_spark_rand; /* previous value of spark_rand */
+
+extern long fuelSum;      /* Sum of fuel in all tanks */
+extern long fuelMax;      /* How much fuel can you take? */
+extern short fuelCurrent; /* Number of currently used tank */
+extern short numTanks;    /* Number of tanks */
+extern long fuelCount;    /* Display fuel for how long? */
+extern int fuelLevel1;    /* Fuel critical level */
+extern int fuelLevel2;    /* Fuel warning level */
+extern int fuelLevel3;    /* Fuel notify level */
+
+extern char *shipShape;                /* Shape of player's ship */
+extern DFLOAT power;                   /* Force of thrust */
+extern DFLOAT power_s;                 /* Saved power fiks */
+extern DFLOAT turnspeed;               /* How fast player acc-turns */
+extern DFLOAT turnspeed_s;             /* Saved turnspeed */
+extern DFLOAT turnresistance;          /* How much is lost in % */
+extern DFLOAT turnresistance_s;        /* Saved (see above) */
+extern DFLOAT displayedPower;          /* What the server is sending us */
+extern DFLOAT displayedTurnspeed;      /* What the server is sending us */
+extern DFLOAT displayedTurnresistance; /* What the server is sending us */
+extern DFLOAT spark_prob;              /* Sparkling effect configurable */
+extern int charsPerSecond;             /* Message output speed (config) */
+
+extern DFLOAT hud_move_fact;      /* scale the hud-movement (speed) */
+extern DFLOAT ptr_move_fact;      /* scale the speed pointer length */
+extern char mods[MAX_CHARS];      /* Current modifiers in effect */
+extern instruments_t instruments; /* Instruments on screen */
+extern int packet_size;           /* Current frame update packet size */
+extern int packet_loss;           /* lost packets per second */
+extern int packet_drop;           /* dropped packets per second */
+extern int packet_lag;            /* approximate lag in frames */
+extern char *packet_measure;      /* packet measurement in a second */
+extern long packet_loop;          /* start of measurement */
+
+extern bool showRealName;          /* Show realname instead of nickname */
+extern char name[MAX_CHARS];       /* Nick-name of player */
+extern char realname[MAX_CHARS];   /* Real name of player */
+extern char servername[MAX_CHARS]; /* Name of server connecting to */
+extern unsigned version;           /* Version of the server */
+extern int scoresChanged;
+extern bool toggle_shield;         /* Are shields toggled by a press? */
+extern int shields;                /* When shields are considered up */
+extern bool auto_shield;           /* drops shield for fire */
+extern bool initialPointerControl; /* Start by using mouse for control? */
+extern bool pointerControl;        /* current state of mouse ship flying */
+
+extern int maxFPS; /* Client's own FPS */
+extern int oldMaxFPS;
+
+extern double clientFPS;    /* FPS client is drawing at */
+extern double timePerFrame; /* Time a frame is shown, unit s */
+extern int clientLag;       /* Time to draw a frame, unit us */
+extern bool newSecond;      /* Second changed this frame */
+extern bool played_this_round;
+extern long twelveHz; /* Attempt to increment this at 12Hz */
+
+extern int clientPortStart; /* First UDP port for clients */
+extern int clientPortEnd;   /* Last one (these are for firewalls) */
+
+extern uint8_t lose_item;    /* flag and index to drop item */
+extern int lose_item_active; /* one of the lose keys is pressed */
+
+#ifdef SOUND
+extern char sounds[MAX_CHARS];      /* audio mappings */
+extern char audioServer[MAX_CHARS]; /* audio server */
+extern int maxVolume;               /* maximum volume (in percent) */
+#endif                              /* SOUND */
+
 extern fuelstation_t *fuels;
 extern int num_fuels;
 extern homebase_t *bases;
 extern int num_bases;
-// extern checkpoint_t *checks;
-// extern int num_checks;
+extern checkpoint_t *checks;
+extern int num_checks;
 extern xp_polygon_t *polygons;
 extern int num_polygons, max_polygons;
 extern edge_style_t *edge_styles;
@@ -519,6 +524,12 @@ extern long time_left;
 
 extern int eyesId;     /* Player we get frame updates for */
 extern short snooping; /* are we snooping on someone else? */
+
+/*
+ * somewhere
+ */
+const char *Program_name(void);
+int Bitmap_add(const char *filename, int count, bool scalable);
 
 int Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, int *damage);
@@ -617,5 +628,12 @@ extern int Alloc_msgs(void);
 extern int Startup_server_motd(void);
 
 void Platform_specific_cleanup(void);
+
+extern void Colors_init_style_colors(void);
+
+/*
+ * mapdata.cpp
+ */
+extern int Mapdata_setup(const char *);
 
 #endif

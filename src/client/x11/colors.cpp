@@ -70,7 +70,12 @@ static const char *gray_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visual;
 int dispDepth;
-bool texturedObjects; /* Whether to draw everything as bitmaps. */
+bool fullColor;       /* Whether to try using colors as close to
+                       * the specified ones as possible, or just
+                       * use a few standard colors for everything. */
+bool texturedObjects; /* Whether to draw bitmaps for some objects.
+                       * Previously this variable determined
+                       * fullColor too. */
 
 /*
  * Dimensions of color cubes in decreasing
@@ -94,6 +99,12 @@ static struct rgb_cube_size
     {4, 5, 3}, /* 60 */
     {4, 4, 3}, /* 48 */
 };
+
+/* This assumes that the RGB values are encoded in 24 bits
+ * so that bits 0-7 encode the blue value, bits 8-15 encode
+ * the green value and bits 16-24 encode the red value.
+ */
+#define RGB2COLOR(c) RGB(((c) >> 16) & 255, ((c) >> 8) & 255, ((c) & 255))
 
 unsigned long (*RGB)(uint8_t r, uint8_t g, uint8_t b);
 static unsigned long RGB_PC(uint8_t r, uint8_t g, uint8_t b);
@@ -527,7 +538,7 @@ int Colors_init(void)
 
     Colors_init_radar_hack();
 
-    Colors_init_block_bitmaps();
+    Colors_init_bitmaps();
 
     return 0;
 }
@@ -570,7 +581,7 @@ static void Colors_init_radar_hack(void)
  * on error return -1,
  * on success return 0.
  */
-static int Colors_init_block_bitmap_colors(void)
+static int Colors_init_bitmap_colors(void)
 {
     int r = -1;
 
@@ -611,6 +622,19 @@ static int Colors_init_block_bitmap_colors(void)
 }
 
 /*
+ * Converts the RGB colors used by polygon and edge styles
+ * to device colors.
+ */
+void Colors_init_style_colors(void)
+{
+    int i;
+    for (i = 0; i < num_polygon_styles; i++)
+        polygon_styles[i].color = (fullColor && RGB) ? RGB2COLOR(polygon_styles[i].rgb) : (unsigned long)wallColor;
+    for (i = 0; i < num_edge_styles; i++)
+        edge_styles[i].color = (fullColor && RGB) ? RGB2COLOR(edge_styles[i].rgb) : (unsigned long)wallColor;
+}
+
+/*
  * See if we can use block bitmaps.
  * If we can then setup the colors
  * and allocate the bitmaps.
@@ -618,28 +642,24 @@ static int Colors_init_block_bitmap_colors(void)
  * on error return -1,
  * on success return 0.
  */
-int Colors_init_block_bitmaps(void)
+int Colors_init_bitmaps(void)
 {
-    if (texturedObjects)
+    /* kps hack */
+    // if (dbuf_state == NULL)
+    //     return 0;
+
+    if (fullColor)
     {
-        if (Colors_init_block_bitmap_colors() == -1)
+        if (Colors_init_bitmap_colors() == -1)
         {
-            texturedObjects = false;
-        }
-    }
-    if (texturedObjects)
-    {
-        if (Block_bitmaps_create() == -1)
-        {
-            /*
-            ** not sure if this is possible after
-            ** blockbitmap colors have been created.
-            */
+            fullColor = false;
             texturedObjects = false;
         }
     }
 
-    return (texturedObjects == true) ? 0 : -1;
+    Colors_init_style_colors();
+
+    return (fullColor) ? 0 : -1;
 }
 
 /*

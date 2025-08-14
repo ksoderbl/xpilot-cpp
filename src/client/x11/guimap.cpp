@@ -57,6 +57,11 @@ extern int decorColor; /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
+static int baseNameColor;         /* Color index for base name drawing */
+static int backgroundPointColor;  /* background point drawing */
+static int fuelColor = RED;       /* fuel station drawing */
+static int visibilityBorderColor; /* visibility border drawing */
+
 void Gui_paint_walls(int x, int y, int type, int xi, int yi)
 {
     if (!texturedObjects)
@@ -119,27 +124,23 @@ void Gui_paint_walls(int x, int y, int type, int xi, int yi)
 
         if (type & BLUE_LEFT)
         {
-            PaintBitmap(drawPixmap, BM_WALL_LEFT, WINSCALE(X(x - 1)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_WALL_LEFT, WINSCALE(X(x - 1)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
         }
         if (type & BLUE_DOWN)
         {
-            PaintBitmap(drawPixmap, BM_WALL_BOTTOM, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ - 1)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_WALL_BOTTOM, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ - 1)), 0);
         }
         if (type & BLUE_RIGHT)
         {
-            PaintBitmap(drawPixmap, BM_WALL_RIGHT, WINSCALE(X(x + 1)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_WALL_RIGHT, WINSCALE(X(x + 1)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
         }
         if (type & BLUE_UP)
         {
-            PaintBitmap(drawPixmap, BM_WALL_TOP, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ + 1)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_WALL_TOP, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ + 1)), 0);
         }
         if ((type & BLUE_FUEL) == BLUE_FUEL)
         {
@@ -147,15 +148,13 @@ void Gui_paint_walls(int x, int y, int type, int xi, int yi)
 
         else if (type & BLUE_OPEN)
         {
-            PaintBitmap(drawPixmap, BM_WALL_UR, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_WALL_UR, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
         }
         else if (type & BLUE_CLOSED)
         {
-            PaintBitmap(drawPixmap, BM_WALL_UL, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_WALL_UL, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
         }
     }
 }
@@ -214,24 +213,20 @@ void Gui_paint_cannon(int x, int y, int type)
         switch (type)
         {
         case SETUP_CANNON_UP:
-            PaintBitmap(drawPixmap, BM_CANNON_DOWN, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_CANNON_DOWN, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         case SETUP_CANNON_DOWN:
-            PaintBitmap(drawPixmap, BM_CANNON_UP, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ - 1)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_CANNON_UP, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ - 1)), 0);
             break;
         case SETUP_CANNON_LEFT:
-            PaintBitmap(drawPixmap, BM_CANNON_RIGHT, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_CANNON_RIGHT, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         case SETUP_CANNON_RIGHT:
-            PaintBitmap(drawPixmap, BM_CANNON_LEFT, WINSCALE(X(x - 1)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_CANNON_LEFT, WINSCALE(X(x - 1)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         default:
             errno = 0;
@@ -241,11 +236,13 @@ void Gui_paint_cannon(int x, int y, int type)
     }
 }
 
-void Gui_paint_fuel(int x, int y, int fuel)
+void Gui_paint_fuel(int x, int y, double fuel)
 {
-    int fuel_images = Block_bitmap_images(BM_FUEL);
+    /* fuel box drawing can be disabled */
+    if (fuelColor == BLACK)
+        return;
 
-    if (!texturedObjects || !fuel_images)
+    if (!texturedObjects)
     {
 #define FUEL_BORDER 2
         int size;
@@ -253,31 +250,28 @@ void Gui_paint_fuel(int x, int y, int fuel)
         static char s[2] = "F";
         static int text_width = 0;
         static int text_is_bigger;
+        static double lastScaleFactor;
 
-        static DFLOAT lastScaleFactor;
-
+        // if (!text_width || lastScaleFactor != clData.scaleFactor)
         if (!text_width || lastScaleFactor != scaleFactor)
         {
             lastScaleFactor = scaleFactor;
             text_width = XTextWidth(gameFont, s, 1);
-            text_is_bigger = text_width + 4 > WINSCALE(BLOCK_SZ) + 1 ||
-                             (gameFont->ascent + gameFont->descent) > WINSCALE(BLOCK_SZ) + 2;
+            text_is_bigger = (text_width + 4 > WINSCALE(BLOCK_SZ) + 1) || (gameFont->ascent + gameFont->descent) > WINSCALE(BLOCK_SZ) + 2;
         }
-        SET_FG(colors[RED].pixel);
-        size = (BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL;
-        {
-            rd.fillRectangle(dpy, drawPixmap, gameGC,
-                             WINSCALE(X(x + FUEL_BORDER)),
-                             WINSCALE(Y(y + FUEL_BORDER + size)),
-                             WINSCALE(BLOCK_SZ - 2 * FUEL_BORDER + 1),
-                             WINSCALE(size + 1));
-        }
+        SET_FG(colors[fuelColor].pixel);
+        size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
+        rd.fillRectangle(dpy, drawPixmap, gameGC,
+                         SCALEX(x + FUEL_BORDER),
+                         SCALEY(y + FUEL_BORDER + size),
+                         (unsigned)WINSCALE(BLOCK_SZ - 2 * FUEL_BORDER + 1),
+                         (unsigned)WINSCALE(size + 1));
 
         /* Draw F in fuel cells */
         XSetFunction(dpy, gameGC, GXxor);
-        SET_FG(colors[BLACK].pixel ^ colors[RED].pixel);
-        x = WINSCALE(X(x + BLOCK_SZ / 2)) - text_width / 2,
-        y = WINSCALE(Y(y + BLOCK_SZ / 2)) + gameFont->ascent / 2,
+        SET_FG(colors[BLACK].pixel ^ colors[fuelColor].pixel);
+        x = SCALEX(x + BLOCK_SZ / 2) - text_width / 2,
+        y = SCALEY(y + BLOCK_SZ / 2) + gameFont->ascent / 2,
         rd.drawString(dpy, drawPixmap, gameGC, x, y, s, 1);
         XSetFunction(dpy, gameGC, GXcopy);
     }
@@ -285,30 +279,47 @@ void Gui_paint_fuel(int x, int y, int fuel)
     {
 #define BITMAP_FUEL_BORDER 3
 
-        int size;
-        /* x + x * y will give a pseudo random number,
-        so different fuelcells will not be displayed with the same image-frame.*/
-        int image = ((loops + x + x * y) % (fuel_images * 2));
+        int fuel_images = ABS(pixmaps[BM_FUEL].count);
+        int size, image;
+        irec_t area;
+        bbox_t *box;
+        xp_bitmap_t *bit;
 
-        /* the animation is played from image 0-15 then back again from image 15-0 */
+        /* x + x * y will give a pseudo random number,
+         * so different fuelcells will not be displayed with the same
+         * image-frame.
+         * The ABS is needed to ensure image is not negative even with
+         * large scale factors. */
+
+        image = ABS((loopsSlow + x + x * y) % (fuel_images * 2));
+
+        /* the animation is played from image 0-15 then back again
+         * from image 15-0 */
 
         if (image >= fuel_images)
             image = (2 * fuel_images - 1) - image;
 
-        size = (BLOCK_SZ - 2 * BITMAP_FUEL_BORDER) * fuel / MAX_STATION_FUEL;
+        size = (int)((BLOCK_SZ - 2 * BITMAP_FUEL_BORDER) * fuel / MAX_STATION_FUEL);
 
-        PaintBitmap(drawPixmap, BM_FUELCELL, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 0);
+        Bitmap_paint(drawPixmap, BM_FUELCELL,
+                     SCALEX(x), SCALEY(y + BLOCK_SZ), 0);
 
-        PaintFuelSlice(drawPixmap, BM_FUEL,
-                       WINSCALE(X(x + BITMAP_FUEL_BORDER)),
-                       WINSCALE(Y(y + size + BITMAP_FUEL_BORDER)),
-                       WINSCALE(BLOCK_SZ - 2 * BITMAP_FUEL_BORDER),
-                       WINSCALE(BLOCK_SZ - 2 * BITMAP_FUEL_BORDER),
-                       image, WINSCALE(size));
+        bit = Bitmap_get(drawPixmap, BM_FUEL, image);
+        if (bit != NULL)
+        {
+            box = &bit->bbox;
+            area.x = 0;
+            area.y = 0;
+            area.w = WINSCALE(BLOCK_SZ - 2 * BITMAP_FUEL_BORDER);
+            area.h = WINSCALE(size);
+
+            Bitmap_paint_area(drawPixmap, bit,
+                              SCALEX(x + BITMAP_FUEL_BORDER),
+                              SCALEY(y + size + BITMAP_FUEL_BORDER),
+                              &area);
+        }
     }
 }
-
 void Gui_paint_base(int x, int y, int xi, int yi, int type)
 {
     if (!texturedObjects)
@@ -428,24 +439,20 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
         switch (type)
         {
         case SETUP_BASE_UP:
-            PaintBitmap(drawPixmap, BM_BASE_DOWN, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_BASE_DOWN, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         case SETUP_BASE_DOWN:
-            PaintBitmap(drawPixmap, BM_BASE_UP, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ - 1)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_BASE_UP, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ - 1)), 0);
             break;
         case SETUP_BASE_LEFT:
-            PaintBitmap(drawPixmap, BM_BASE_RIGHT, WINSCALE(X(x)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_BASE_RIGHT, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         case SETUP_BASE_RIGHT:
-            PaintBitmap(drawPixmap, BM_BASE_LEFT, WINSCALE(X(x - 1)),
-                        WINSCALE(Y(y + BLOCK_SZ)), WINSCALE(BLOCK_SZ),
-                        WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_BASE_LEFT, WINSCALE(X(x - 1)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         default:
             errno = 0;
@@ -732,13 +739,13 @@ void Gui_paint_setup_check(int x, int y, int xi, int yi)
     {
         if (Check_index_by_pos(xi, yi) == nextCheckPoint)
         {
-            PaintBitmap(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                        WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 1);
+            Bitmap_paint(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                         1);
         }
         else
         {
-            PaintBitmap(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                        WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 0);
+            Bitmap_paint(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                         0);
         }
     }
 }
@@ -824,8 +831,8 @@ void Gui_paint_setup_pos_grav(int x, int y)
     }
     else
     {
-        PaintBitmap(drawPixmap, BM_PLUSGRAVITY, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 0);
+        Bitmap_paint(drawPixmap, BM_PLUSGRAVITY, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                     0);
     }
 }
 
@@ -847,8 +854,8 @@ void Gui_paint_setup_neg_grav(int x, int y)
     }
     else
     {
-        PaintBitmap(drawPixmap, BM_MINUSGRAVITY, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 0);
+        Bitmap_paint(drawPixmap, BM_MINUSGRAVITY, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                     0);
     }
 }
 
@@ -959,8 +966,8 @@ void Gui_paint_setup_worm(int x, int y, int wormDrawCount)
     }
     else
     {
-        PaintBitmap(drawPixmap, BM_WORMHOLE, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), wormDrawCount);
+        Bitmap_paint(drawPixmap, BM_WORMHOLE, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                     wormDrawCount);
     }
 }
 
@@ -1027,8 +1034,8 @@ void Gui_paint_setup_item_concentrator(int x, int y)
     }
     else
     {
-        PaintBitmap(drawPixmap, BM_CONCENTRATOR, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), (loops + (x + x * y)) % 32);
+        Bitmap_paint(drawPixmap, BM_CONCENTRATOR, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                     (loops + (x + x * y)) % 32);
     }
 }
 
@@ -1097,8 +1104,8 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
     }
     else
     {
-        PaintBitmap(drawPixmap, BM_ASTEROIDCONC, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), (loops + (x + x * y)) % 32);
+        Bitmap_paint(drawPixmap, BM_ASTEROIDCONC, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                     (loops + (x + x * y)) % 32);
     }
 }
 
@@ -1206,8 +1213,8 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
 
         type = own ? BM_HOLDER_FRIEND : BM_HOLDER_ENEMY;
 
-        PaintBitmap(drawPixmap, type, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                    WINSCALE(BLOCK_SZ), WINSCALE(BLOCK_SZ), 0);
+        Bitmap_paint(drawPixmap, type, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
+                     0);
 
         if (BIT(Setup->mode, TEAM_PLAY))
         {

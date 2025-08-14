@@ -86,13 +86,21 @@ extern uint8_t debris_colors;  /* Number of debris intensities */
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
 extern int maxKeyDefs;
+
 extern long loops;
+extern long loopsSlow;
+extern double timePerFrame;
 
 extern DFLOAT scaleFactor; /* scale the draw (main playfield) window */
 extern DFLOAT scaleFactor_s;
 extern short scaleArray[SCALE_ARRAY_SIZE];
 extern void Init_scale_array(void);
 #define WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
+
+#define SCALEX(co) ((int)(WINSCALE(co) - WINSCALE(world.x)))
+#define SCALEY(co) ((int)(WINSCALE(world.y + ext_view_height) - WINSCALE(co)))
+// #define X(co) ((int)((co) - world.x))
+// #define Y(co) ((int)(world.y + ext_view_height - (co)))
 
 // void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
 // void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);

@@ -63,9 +63,7 @@ void Paint_vcannon(void)
     if (num_vcannon > 0)
     {
         for (i = 0; i < num_vcannon; i++)
-        {
             Gui_paint_cannon(vcannon_ptr[i].x, vcannon_ptr[i].y, vcannon_ptr[i].type);
-        }
         RELEASE(vcannon_ptr, num_vcannon, max_vcannon);
     }
 }
@@ -76,9 +74,7 @@ void Paint_vfuel(void)
     if (num_vfuel > 0)
     {
         for (i = 0; i < num_vfuel; i++)
-        {
-            Gui_paint_fuel(vfuel_ptr[i].x, vfuel_ptr[i].y, vfuel_ptr[i].fuel);
-        }
+            Gui_paint_fuel(vfuel_ptr[i].x, vfuel_ptr[i].y, (double)vfuel_ptr[i].fuel);
         RELEASE(vfuel_ptr, num_vfuel, max_vfuel);
     }
 }
@@ -89,9 +85,7 @@ void Paint_vbase(void)
     if (num_vbase > 0)
     {
         for (i = 0; i < num_vbase; i++)
-        {
             Gui_paint_base(vbase_ptr[i].x, vbase_ptr[i].y, vbase_ptr[i].xi, vbase_ptr[i].yi, vbase_ptr[i].type);
-        }
         RELEASE(vbase_ptr, num_vbase, max_vbase);
     }
 }

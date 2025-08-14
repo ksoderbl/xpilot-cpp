@@ -138,8 +138,8 @@ bool auto_shield = 1; /* shield drops for fire */
 
 int maxFPS; /* Client's own FPS */
 int oldMaxFPS;
-double clientFPS = 1.0;    /* FPS client is drawing at */
-double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
+double clientFPS = 1.0; /* FPS client is drawing at */
+// double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
 int clientLag = 0;
 bool newSecond = false; /* Second changed this frame */
 bool played_this_round = false;
@@ -156,6 +156,39 @@ char sounds[MAX_CHARS];      /* audio mappings */
 char audioServer[MAX_CHARS]; /* audio server */
 int maxVolume;               /* maximum volume (in percent) */
 #endif                       /* SOUND */
+
+int eyesId;     /* Player we get frame updates for */
+short snooping; /* are we snooping on someone else? */
+
+fuelstation_t *fuels = NULL;
+int num_fuels = 0;
+homebase_t *bases = NULL;
+int num_bases = 0;
+checkpoint_t *checks = NULL;
+int num_checks = 0;
+xp_polygon_t *polygons = NULL;
+int num_polygons = 0;
+edge_style_t *edge_styles = NULL;
+int num_edge_styles = 0;
+polygon_style_t *polygon_styles = NULL;
+int num_polygon_styles = 0;
+
+cannontime_t *cannons = NULL;
+int num_cannons = 0;
+target_t *targets = NULL;
+int num_targets = 0;
+
+#define MAX_CHECKPOINT 26
+
+char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
+
+int scoresChanged = 0;
+
+other_t *Others = 0;
+int num_others = 0, max_others = 0;
+
+score_object_t score_objects[MAX_SCORE_OBJECTS];
+int score_object = 0;
 
 refuel_t *refuel_ptr;
 int num_refuel, max_refuel;
@@ -207,40 +240,6 @@ int num_wormholes, max_wormholes;
 long time_left = -1;
 long start_loops, end_loops;
 
-int eyesId;     /* Player we get frame updates for */
-short snooping; /* are we snooping on someone else? */
-
-static other_t *Others = 0;
-static int num_others = 0,
-           max_others = 0;
-
-fuelstation_t *fuels = NULL;
-int num_fuels = 0;
-homebase_t *bases = NULL;
-int num_bases = 0;
-xp_polygon_t *polygons = NULL;
-int num_polygons = 0;
-edge_style_t *edge_styles = NULL;
-int num_edge_styles = 0;
-polygon_style_t *polygon_styles = NULL;
-int num_polygon_styles = 0;
-
-cannontime_t *cannons = NULL;
-int num_cannons = 0;
-target_t *targets = NULL;
-int num_targets = 0;
-
-#define MAX_CHECKPOINT 26
-
-char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
-
-int scoresChanged = 0;
-
-static checkpoint_t checks[MAX_CHECKPOINT];
-
-score_object_t score_objects[MAX_SCORE_OBJECTS];
-int score_object = 0;
-
 static fuelstation_t *Fuelstation_by_pos(int x, int y)
 {
     int i, lo, hi, pos;
@@ -264,8 +263,7 @@ static fuelstation_t *Fuelstation_by_pos(int x, int y)
     {
         return &fuels[lo];
     }
-    errno = 0;
-    xperror("No fuelstation at (%d,%d)", x, y);
+    warn("No fuelstation at (%d,%d)", x, y);
     return NULL;
 }
 
@@ -274,18 +272,14 @@ int Fuel_by_pos(int x, int y)
     fuelstation_t *fuelp;
 
     if ((fuelp = Fuelstation_by_pos(x, y)) == NULL)
-    {
         return 0;
-    }
     return fuelp->fuel;
 }
 
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage)
 {
     if (ind < 0 || ind >= num_targets)
-    {
         return -1;
-    }
     *xp = targets[ind].pos / Setup->y;
     *yp = targets[ind].pos % Setup->y;
     *dead_time = targets[ind].dead_time;
@@ -304,21 +298,16 @@ int Target_alive(int x, int y, int *damage)
     {
         i = (lo + hi) >> 1;
         if (pos > targets[i].pos)
-        {
             lo = i + 1;
-        }
         else
-        {
             hi = i;
-        }
     }
     if (lo == hi && pos == targets[lo].pos)
     {
         *damage = targets[lo].damage;
         return targets[lo].dead_time;
     }
-    errno = 0;
-    xperror("No targets at (%d,%d)", x, y);
+    warn("No targets at (%d,%d)", x, y);
     return -1;
 }
 
@@ -326,8 +315,7 @@ int Handle_fuel(int ind, int fuel)
 {
     if (ind < 0 || ind >= num_fuels)
     {
-        errno = 0;
-        xperror("Bad fuelstation index (%d)", ind);
+        warn("Bad fuelstation index (%d)", ind);
         return -1;
     }
     fuels[ind].fuel = fuel;
@@ -345,20 +333,15 @@ static cannontime_t *Cannon_by_pos(int x, int y)
     {
         i = (lo + hi) >> 1;
         if (pos > cannons[i].pos)
-        {
             lo = i + 1;
-        }
         else
-        {
             hi = i;
-        }
     }
     if (lo == hi && pos == cannons[lo].pos)
     {
         return &cannons[lo];
     }
-    errno = 0;
-    xperror("No cannon at (%d,%d)", x, y);
+    warn("No cannon at (%d,%d)", x, y);
     return NULL;
 }
 
@@ -367,9 +350,7 @@ int Cannon_dead_time_by_pos(int x, int y, int *dot)
     cannontime_t *cannonp;
 
     if ((cannonp = Cannon_by_pos(x, y)) == NULL)
-    {
         return -1;
-    }
     *dot = cannonp->dot;
     return cannonp->dead_time;
 }
@@ -378,8 +359,7 @@ int Handle_cannon(int ind, int dead_time)
 {
     if (ind < 0 || ind >= num_cannons)
     {
-        errno = 0;
-        xperror("Bad cannon index (%d)", ind);
+        warn("Bad cannon index (%d)", ind);
         return 0;
     }
     cannons[ind].dead_time = dead_time;
@@ -390,14 +370,11 @@ int Handle_target(int num, int dead_time, int damage)
 {
     if (num < 0 || num >= num_targets)
     {
-        errno = 0;
-        xperror("Bad target index (%d)", num);
+        warn("Bad target index (%d)", num);
         return 0;
     }
     if (dead_time == 0 && (damage < 1 || damage > TARGET_DAMAGE))
-    {
         printf("BUG target %d, dead %d, damage %d\n", num, dead_time, damage);
-    }
     if (targets[num].dead_time > 0 && dead_time == 0)
     {
         int pos = targets[num].pos;
@@ -426,20 +403,13 @@ static homebase_t *Homebase_by_pos(int x, int y)
     {
         i = (lo + hi) >> 1;
         if (pos > bases[i].pos)
-        {
             lo = i + 1;
-        }
         else
-        {
             hi = i;
-        }
     }
     if (lo == hi && pos == bases[lo].pos)
-    {
         return &bases[lo];
-    }
-    errno = 0;
-    xperror("No homebase at (%d,%d)", x, y);
+    warn("No homebase at (%d,%d)", x, y);
     return NULL;
 }
 
@@ -448,9 +418,7 @@ int Base_info_by_pos(int x, int y, int *idp, int *teamp)
     homebase_t *basep;
 
     if ((basep = Homebase_by_pos(x, y)) == NULL)
-    {
         return -1;
-    }
     *idp = basep->id;
     *teamp = basep->team;
     return 0;
@@ -462,16 +430,13 @@ int Handle_base(int id, int ind)
 
     if (ind < 0 || ind >= num_bases)
     {
-        errno = 0;
-        xperror("Bad homebase index (%d)", ind);
+        warn("Bad homebase index (%d)", ind);
         return -1;
     }
     for (i = 0; i < num_bases; i++)
     {
         if (bases[i].id == id)
-        {
             bases[i].id = -1;
-        }
     }
     bases[ind].id = id;
 
@@ -482,8 +447,7 @@ int Check_pos_by_index(int ind, int *xp, int *yp)
 {
     if (ind < 0 || ind >= MAX_CHECKPOINT)
     {
-        errno = 0;
-        xperror("Bad checkpoint index (%d)", ind);
+        warn("Bad checkpoint index (%d)", ind);
         *xp = 0;
         *yp = 0;
         return -1;
@@ -501,12 +465,9 @@ int Check_index_by_pos(int x, int y)
     for (i = 0; i < MAX_CHECKPOINT; i++)
     {
         if (pos == checks[i].pos)
-        {
             return i;
-        }
     }
-    errno = 0;
-    xperror("Can't find checkpoint (%d,%d)", x, y);
+    warn("Can't find checkpoint (%d,%d)", x, y);
     return 0;
 }
 
@@ -516,29 +477,17 @@ int Check_index_by_pos(int x, int y)
 static void Map_make_dot(unsigned char *data)
 {
     if (*data == SETUP_SPACE)
-    {
         *data = SETUP_SPACE_DOT;
-    }
     else if (*data == SETUP_DECOR_FILLED)
-    {
         *data = SETUP_DECOR_DOT_FILLED;
-    }
     else if (*data == SETUP_DECOR_RU)
-    {
         *data = SETUP_DECOR_DOT_RU;
-    }
     else if (*data == SETUP_DECOR_RD)
-    {
         *data = SETUP_DECOR_DOT_RD;
-    }
     else if (*data == SETUP_DECOR_LU)
-    {
         *data = SETUP_DECOR_DOT_LU;
-    }
     else if (*data == SETUP_DECOR_LD)
-    {
         *data = SETUP_DECOR_DOT_LD;
-    }
 }
 
 /*
@@ -572,29 +521,17 @@ void Map_dots(void)
         if (dot[Setup->map_data[i]])
         {
             if (Setup->map_data[i] == SETUP_SPACE_DOT)
-            {
                 Setup->map_data[i] = SETUP_SPACE;
-            }
             else if (Setup->map_data[i] == SETUP_DECOR_DOT_FILLED)
-            {
                 Setup->map_data[i] = SETUP_DECOR_FILLED;
-            }
             else if (Setup->map_data[i] == SETUP_DECOR_DOT_RU)
-            {
                 Setup->map_data[i] = SETUP_DECOR_RU;
-            }
             else if (Setup->map_data[i] == SETUP_DECOR_DOT_RD)
-            {
                 Setup->map_data[i] = SETUP_DECOR_RD;
-            }
             else if (Setup->map_data[i] == SETUP_DECOR_DOT_LU)
-            {
                 Setup->map_data[i] = SETUP_DECOR_LU;
-            }
             else if (Setup->map_data[i] == SETUP_DECOR_DOT_LD)
-            {
                 Setup->map_data[i] = SETUP_DECOR_LD;
-            }
         }
     }
 
@@ -622,16 +559,12 @@ void Map_dots(void)
             for (x = 0; x < Setup->x; x++)
             {
                 if (dot[Setup->map_data[x * Setup->y]])
-                {
                     Map_make_dot(&Setup->map_data[x * Setup->y]);
-                }
             }
             for (y = 0; y < Setup->y; y++)
             {
                 if (dot[Setup->map_data[y]])
-                {
                     Map_make_dot(&Setup->map_data[y]);
-                }
             }
             start = map_point_distance;
         }
@@ -646,9 +579,7 @@ void Map_dots(void)
                 for (y = start; y < Setup->y; y += map_point_distance)
                 {
                     if (dot[Setup->map_data[x * Setup->y + y]])
-                    {
                         Map_make_dot(&Setup->map_data[x * Setup->y + y]);
-                    }
                 }
             }
         }
@@ -657,17 +588,11 @@ void Map_dots(void)
             x = cannons[i].pos / Setup->y;
             y = cannons[i].pos % Setup->y;
             if ((x == 0 || y == 0) && BIT(Setup->mode, WRAP_PLAY))
-            {
                 cannons[i].dot = 1;
-            }
             else if (map_point_distance > 0 && x % map_point_distance == 0 && y % map_point_distance == 0)
-            {
                 cannons[i].dot = 1;
-            }
             else
-            {
                 cannons[i].dot = 0;
-            }
         }
     }
 }
@@ -690,25 +615,17 @@ void Map_restore(int startx, int starty, int width, int height)
     for (i = 0; i < width; i++, x++)
     {
         if (x < 0)
-        {
             x += Setup->x;
-        }
         else if (x >= Setup->x)
-        {
             x -= Setup->x;
-        }
 
         y = starty;
         for (j = 0; j < height; j++, y++)
         {
             if (y < 0)
-            {
                 y += Setup->y;
-            }
             else if (y >= Setup->y)
-            {
                 y -= Setup->y;
-            }
 
             map_index = x * Setup->y + y;
 
@@ -716,40 +633,26 @@ void Map_restore(int startx, int starty, int width, int height)
             if ((type & BLUE_BIT) == 0)
             {
                 if (type == SETUP_FILLED_NO_DRAW)
-                {
                     Setup->map_data[map_index] = SETUP_FILLED;
-                }
             }
             else if ((type & BLUE_FUEL) == BLUE_FUEL)
-            {
                 Setup->map_data[map_index] = SETUP_FUEL;
-            }
             else if (type & BLUE_OPEN)
             {
                 if (type & BLUE_BELOW)
-                {
                     Setup->map_data[map_index] = SETUP_REC_RD;
-                }
                 else
-                {
                     Setup->map_data[map_index] = SETUP_REC_LU;
-                }
             }
             else if (type & BLUE_CLOSED)
             {
                 if (type & BLUE_BELOW)
-                {
                     Setup->map_data[map_index] = SETUP_REC_LD;
-                }
                 else
-                {
                     Setup->map_data[map_index] = SETUP_REC_RU;
-                }
             }
             else
-            {
                 Setup->map_data[map_index] = SETUP_FILLED;
-            }
         }
     }
 }
@@ -811,25 +714,17 @@ void Map_blue(int startx, int starty, int width, int height)
     for (i = 0; i < width; i++, x++)
     {
         if (x < 0)
-        {
             x += Setup->x;
-        }
         else if (x >= Setup->x)
-        {
             x -= Setup->x;
-        }
 
         y = starty;
         for (j = 0; j < height; j++, y++)
         {
             if (y < 0)
-            {
                 y += Setup->y;
-            }
             else if (y >= Setup->y)
-            {
                 y -= Setup->y;
-            }
 
             map_index = x * Setup->y + y;
 
@@ -842,9 +737,7 @@ void Map_blue(int startx, int starty, int width, int height)
             case SETUP_FUEL:
                 newtype = BLUE_BIT;
                 if (type == SETUP_FUEL)
-                {
                     newtype |= BLUE_FUEL;
-                }
                 if ((x == 0)
                         ? (!BIT(Setup->mode, WRAP_PLAY) ||
                            !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
@@ -923,15 +816,286 @@ void Map_blue(int startx, int starty, int width, int height)
             if (newtype != 0)
             {
                 if (newtype == BLUE_BIT)
-                {
                     newtype = SETUP_FILLED_NO_DRAW;
-                }
                 Setup->map_data[map_index] = newtype;
             }
         }
     }
 }
 
+/* Get signed short and advance ptr */
+static int get_short(char **ptr)
+{
+    *ptr += 2;
+    return ((signed char)*(*ptr - 2) << 8) + (uint8_t)(*(*ptr - 1));
+}
+
+/* Unsigned version */
+static unsigned int get_ushort(char **ptr)
+{
+    *ptr += 2;
+    return ((uint8_t)*(*ptr - 2) << 8) + (uint8_t)*(*ptr - 1);
+}
+
+static int get_32bit(char **ptr)
+{
+    int res;
+
+    res = get_ushort(ptr) << 16;
+    return res + get_ushort(ptr);
+}
+
+static void parse_styles(char **callptr)
+{
+    int i, num_bmaps;
+    char *ptr;
+
+    ptr = *callptr;
+    num_polygon_styles = *ptr++ & 0xff;
+    num_edge_styles = *ptr++ & 0xff;
+    num_bmaps = *ptr++ & 0xff;
+
+    polygon_styles = XMALLOC(polygon_style_t, MAX(1, num_polygon_styles));
+    if (polygon_styles == NULL)
+    {
+        xperror("no memory for polygon styles");
+        exit(1);
+    }
+
+    edge_styles = XMALLOC(edge_style_t, MAX(1, num_edge_styles));
+    if (edge_styles == NULL)
+    {
+        xperror("no memory for edge styles");
+        exit(1);
+    }
+
+    for (i = 0; i < num_polygon_styles; i++)
+    {
+        polygon_styles[i].rgb = get_32bit(&ptr);
+        polygon_styles[i].texture = *ptr++ & 0xff;
+        polygon_styles[i].def_edge_style = *ptr++ & 0xff;
+        polygon_styles[i].flags = *ptr++ & 0xff;
+    }
+
+    if (num_polygon_styles == 0)
+    {
+        /* default polygon style */
+        polygon_styles[0].flags = 0;
+        polygon_styles[0].def_edge_style = 0;
+        num_polygon_styles = 1;
+    }
+
+    for (i = 0; i < num_edge_styles; i++)
+    {
+        edge_styles[i].width = *ptr++; /* -1 means hidden */
+        edge_styles[i].rgb = get_32bit(&ptr);
+        /* kps - what the **** is this ? */
+        /* baron - it's line style from XSetLineAttributes */
+        /* 0 = LineSolid, 1 = LineOnOffDash, 2 = LineDoubleDash */
+        edge_styles[i].style =
+            (*ptr == 1) ? 1 : (*ptr == 2) ? 2
+                                          : 0;
+        ptr++;
+    }
+
+    for (i = 0; i < num_bmaps; i++)
+    {
+        char fname[30];
+        int flags;
+
+        strlcpy(fname, ptr, 30);
+        ptr += strlen(fname) + 1;
+        flags = *ptr++ & 0xff;
+        Bitmap_add(fname, 1, flags);
+    }
+    *callptr = ptr;
+}
+
+static int init_polymap(void)
+{
+    int i, j, startx, starty, ecount, edgechange, current_estyle;
+    int dx, dy, cx, cy, pc;
+    int *styles;
+    xp_polygon_t *poly;
+    ipos_t *points, min, max;
+    char *ptr, *edgeptr;
+
+    oldServer = 0;
+    ptr = (char *)Setup->map_data;
+
+    parse_styles(&ptr);
+
+    num_polygons = get_ushort(&ptr);
+    polygons = XMALLOC(xp_polygon_t, num_polygons);
+    if (polygons == NULL)
+    {
+        xperror("no memory for polygons");
+        exit(1);
+    }
+
+    for (i = 0; i < num_polygons; i++)
+    {
+        poly = &polygons[i];
+        poly->style = *ptr++ & 0xff;
+        current_estyle = polygon_styles[poly->style].def_edge_style;
+        dx = 0;
+        dy = 0;
+        ecount = get_ushort(&ptr);
+        edgeptr = ptr;
+        if (ecount)
+            edgechange = get_ushort(&edgeptr);
+        else
+            edgechange = INT_MAX;
+        ptr += ecount * 2;
+        pc = get_ushort(&ptr);
+        if ((points = XMALLOC(ipos_t, pc)) == NULL)
+        {
+            xperror("no memory for points");
+            exit(1);
+        }
+        if (ecount)
+        {
+            if ((styles = XMALLOC(int, pc)) == NULL)
+            {
+                xperror("no memory for special edges");
+                exit(1);
+            }
+        }
+        else
+            styles = NULL;
+        startx = get_ushort(&ptr);
+        starty = get_ushort(&ptr);
+        points[0].x = cx = min.x = max.x = startx;
+        points[0].y = cy = min.y = max.y = starty;
+
+        if (!edgechange)
+        {
+            current_estyle = get_ushort(&edgeptr);
+            ecount--;
+            if (ecount)
+                edgechange = get_ushort(&edgeptr);
+        }
+        if (styles)
+            styles[0] = current_estyle;
+
+        for (j = 1; j < pc; j++)
+        {
+            dx = get_short(&ptr);
+            dy = get_short(&ptr);
+            cx += dx;
+            cy += dy;
+            if (min.x > cx)
+                min.x = cx;
+            if (min.y > cy)
+                min.y = cy;
+            if (max.x < cx)
+                max.x = cx;
+            if (max.y < cy)
+                max.y = cy;
+            points[j].x = dx;
+            points[j].y = dy;
+
+            if (edgechange == j)
+            {
+                current_estyle = get_ushort(&edgeptr);
+                ecount--;
+                if (ecount)
+                    edgechange = get_ushort(&edgeptr);
+            }
+            if (styles)
+                styles[j] = current_estyle;
+        }
+        poly->points = points;
+        poly->edge_styles = styles;
+        poly->num_points = pc;
+        poly->bounds.x = min.x;
+        poly->bounds.y = min.y;
+        poly->bounds.w = max.x - min.x;
+        poly->bounds.h = max.y - min.y;
+    }
+    num_bases = *ptr++ & 0xff;
+    bases = XMALLOC(homebase_t, num_bases);
+    if (bases == NULL)
+    {
+        xperror("No memory for Map bases (%d)", num_bases);
+        exit(1);
+    }
+    for (i = 0; i < num_bases; i++)
+    {
+        /* base.pos is not used */
+        bases[i].id = -1;
+        bases[i].team = *ptr++ & 0xff;
+        cx = get_ushort(&ptr);
+        cy = get_ushort(&ptr);
+        bases[i].bounds.x = cx - BLOCK_SZ / 2;
+        bases[i].bounds.y = cy - BLOCK_SZ / 2;
+        bases[i].bounds.w = BLOCK_SZ;
+        bases[i].bounds.h = BLOCK_SZ;
+        if (*ptr < 16)
+            bases[i].type = SETUP_BASE_RIGHT;
+        else if (*ptr < 48)
+            bases[i].type = SETUP_BASE_UP;
+        else if (*ptr < 80)
+            bases[i].type = SETUP_BASE_LEFT;
+        else if (*ptr < 112)
+            bases[i].type = SETUP_BASE_DOWN;
+        else
+            bases[i].type = SETUP_BASE_RIGHT;
+        bases[i].appeartime = 0;
+        ptr++;
+    }
+    num_fuels = get_ushort(&ptr);
+    if (num_fuels != 0)
+    {
+        fuels = XMALLOC(fuelstation_t, num_fuels);
+        if (fuels == NULL)
+        {
+            xperror("No memory for Map fuels (%d)", num_fuels);
+            exit(1);
+        }
+    }
+    for (i = 0; i < num_fuels; i++)
+    {
+        cx = get_ushort(&ptr);
+        cy = get_ushort(&ptr);
+        fuels[i].fuel = MAX_STATION_FUEL;
+        fuels[i].bounds.x = cx - BLOCK_SZ / 2;
+        fuels[i].bounds.y = cy - BLOCK_SZ / 2;
+        fuels[i].bounds.w = BLOCK_SZ;
+        fuels[i].bounds.h = BLOCK_SZ;
+    }
+    num_checks = *ptr++ & 0xff;
+    if (num_checks != 0)
+    {
+        checks = XMALLOC(checkpoint_t, num_checks);
+        if (checks == NULL)
+        {
+            xperror("No memory for checkpoints (%d)", num_checks);
+            exit(1);
+        }
+    }
+    for (i = 0; i < num_checks; i++)
+    {
+        cx = get_ushort(&ptr);
+        cy = get_ushort(&ptr);
+        checks[i].bounds.x = cx - BLOCK_SZ / 2;
+        checks[i].bounds.y = cy - BLOCK_SZ / 2;
+        checks[i].bounds.w = BLOCK_SZ;
+        checks[i].bounds.h = BLOCK_SZ;
+    }
+
+    /*
+     * kps - hack.
+     * Player can disable downloading of textures by having texturedWalls off.
+     */
+    if (instruments.texturedWalls && Setup->data_url[0])
+        Mapdata_setup(Setup->data_url);
+    Colors_init_style_colors();
+
+    return 0;
+}
+
+// static int init_blockmap(void)
 static int Map_init(void)
 {
     int i,
@@ -954,13 +1118,9 @@ static int Map_init(void)
     types[SETUP_CANNON_DOWN] = 2;
     types[SETUP_CANNON_LEFT] = 2;
     for (i = SETUP_TARGET; i < SETUP_TARGET + 10; i++)
-    {
         types[i] = 3;
-    }
     for (i = SETUP_BASE_LOWEST; i <= SETUP_BASE_HIGHEST; i++)
-    {
         types[i] = 4;
-    }
     max = Setup->x * Setup->y;
     for (i = 0; i < max; i++)
     {
@@ -982,7 +1142,7 @@ static int Map_init(void)
     }
     if (num_bases != 0)
     {
-        bases = (homebase_t *)malloc(num_bases * sizeof(homebase_t));
+        bases = XMALLOC(homebase_t, num_bases);
         if (bases == NULL)
         {
             xperror("No memory for Map bases (%d)", num_bases);
@@ -992,7 +1152,7 @@ static int Map_init(void)
     }
     if (num_fuels != 0)
     {
-        fuels = (fuelstation_t *)malloc(num_fuels * sizeof(fuelstation_t));
+        fuels = XMALLOC(fuelstation_t, num_fuels);
         if (fuels == NULL)
         {
             xperror("No memory for Map fuels (%d)", num_fuels);
@@ -1002,7 +1162,7 @@ static int Map_init(void)
     }
     if (num_targets != 0)
     {
-        targets = (target_t *)malloc(num_targets * sizeof(target_t));
+        targets = XMALLOC(target_t, num_targets);
         if (targets == NULL)
         {
             xperror("No memory for Map targets (%d)", num_targets);
@@ -1012,7 +1172,7 @@ static int Map_init(void)
     }
     if (num_cannons != 0)
     {
-        cannons = (cannontime_t *)malloc(num_cannons * sizeof(cannontime_t));
+        cannons = XMALLOC(cannontime_t, num_cannons);
         if (cannons == NULL)
         {
             xperror("No memory for Map cannons (%d)", num_cannons);
@@ -1096,9 +1256,7 @@ other_t *Other_by_id(int id)
         for (i = 0; i < num_others; i++)
         {
             if (Others[i].id == id)
-            {
                 return &Others[i];
-            }
         }
     }
     return NULL;
@@ -1109,9 +1267,7 @@ shipshape_t *Ship_by_id(int id)
     other_t *other;
 
     if ((other = Other_by_id(id)) == NULL)
-    {
         return Parse_shape_str(NULL);
-    }
     return other->ship;
 }
 
@@ -1125,8 +1281,7 @@ int Handle_leave(int id)
     {
         if (other == self)
         {
-            errno = 0;
-            xperror("Self left?!");
+            warn("Self left?!");
             self = NULL;
         }
         Free_ship_shape(other->ship);
@@ -1170,14 +1325,10 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
         {
             max_others += 5;
             if (num_others == 0)
-            {
                 Others = (other_t *)malloc(max_others * sizeof(other_t));
-            }
             else
-            {
                 Others = (other_t *)realloc(Others,
                                             max_others * sizeof(other_t));
-            }
             if (Others == NULL)
             {
                 xperror("Not enough memory for player info");
@@ -1236,8 +1387,7 @@ int Handle_war(int robot_id, int killer_id)
 
     if ((robot = Other_by_id(robot_id)) == NULL)
     {
-        errno = 0;
-        xperror("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
+        warn("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     if (killer_id == -1)
@@ -1250,8 +1400,7 @@ int Handle_war(int robot_id, int killer_id)
     }
     if ((killer = Other_by_id(killer_id)) == NULL)
     {
-        errno = 0;
-        xperror("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
+        warn("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
         return 0;
     }
     robot->war_id = killer_id;
@@ -2149,17 +2298,11 @@ int Client_setup(void)
     RadarHeight = (RadarWidth * Setup->y) / Setup->x;
 
     if (Init_playing_windows() == -1)
-    {
         return -1;
-    }
     if (Alloc_msgs() == -1)
-    {
         return -1;
-    }
     if (Alloc_history() == -1)
-    {
         return -1;
-    }
 
     /* Old servers can't deal with 0.0 turnresistance, so swap to
      * the alternate bank, and hope there's something better there. */

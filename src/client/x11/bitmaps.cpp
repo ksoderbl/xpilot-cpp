@@ -27,294 +27,362 @@
 
 #include <X11/Xlib.h>
 
+#include "commonmacros.h"
+
 #include "paint.h"
-
-#include "bitmaps.h"
+#include "paintdata.h"
 #include "gfx2d.h"
+#include "xpmemory.h"
+#include "strdup.h"
 
-#include "version.h"
 #include "xperror.h"
 #include "const.h"
-#include "xpaint.h"
 #include "portability.h"
 
-int scaled_bitmaps = 0;
-extern xp_picture_t radar_colors;
+#include "bitmaps.h"
+#include "xpaint.h"
+#include "xinit.h"
 
-void Block_bitmap_create(Display *dpy, Drawable d, xp_pixmap_t *xp_pixmap, int number,
-                         int width, int height);
-static void Block_bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image);
-static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image);
-
-/*
-    i got a terrible feeling that the right thing is to add all of
-    these to options in default.c?
-    (2 options for all? (one for filename, one for on/off), and those who can be
-    rotated might need a value that specifies the resolution.
-    (the 3 ships alone really chews memory : 128*32*32*4*3 bytes of space (~3072K))
-
-    This means a number of options explosion, but is there any alternative?
-*/
-
-xp_pixmap_t xp_pixmaps[] = {
-    {"holder1.ppm", 1, 35, 35},
-    {"holder2.ppm", 1, 35, 35},
-    {"ball.ppm", 1, 21, 21},
-    {"ship_red.ppm", 128, 32, 32},
-    {"ship_blue.ppm", 128, 32, 32},
-    {"ship_red2.ppm", 128, 32, 32},
-    {"bullet.ppm", -8, 8, 8},
-    {"bullet_blue.ppm", -8, 8, 8},
-    {"base_down.ppm", 1, 35, 35},
-    {"base_left.ppm", 1, 35, 35},
-    {"base_up.ppm", 1, 35, 35},
-    {"base_right.ppm", 1, 35, 35},
-    {"fuelcell.ppm", 1, 35, 35},
-    {"fuel2.ppm", -16, 29, 29},
-    {"allitems.ppm", -30, 16, 16},
-    {"cannon_down.ppm", 1, 35, 35},
-    {"cannon_left.ppm", 1, 35, 35},
-    {"cannon_up.ppm", 1, 35, 35},
-    {"cannon_right.ppm", 1, 35, 35},
-    {"sparks.ppm", -8, 2, 2},
-    {"paused.ppm", -2, 35, 35},
-    {"wall_top.ppm", 1, 35, 35},
-    {"wall_left.ppm", 1, 35, 35},
-    {"wall_bottom.ppm", 1, 35, 35},
-    {"wall_right.ppm", 1, 35, 35},
-    {"wall_ul.ppm", 1, 35, 35},
-    {"wall_ur.ppm", 1, 35, 35},
-    {"wall_dl.ppm", 1, 35, 35},
-    {"wall_dr.ppm", 1, 35, 35},
-    {"wall_fi.ppm", 1, 35, 35},
-    {"wall_url.ppm", 1, 35, 35},
-    {"wall_ull.ppm", 1, 35, 35},
-    {"clouds.ppm", 1, 256, BG_IMAGE_HEIGHT},
-    {"logo.ppm", 1, 256, LOGO_HEIGHT},
-    {"refuel.ppm", -4, 8, 8},
-    {"wormhole.ppm", 8, 35, 35},
-    {"mine_team.ppm", 1, 21, 15},
-    {"mine_other.ppm", 1, 21, 15},
-    {"concentrator.ppm", 32, 35, 35},
-    {"plus.ppm", 1, 35, 35},
-    {"minus.ppm", 1, 35, 35},
-    {"checkpoint.ppm", -2, 35, 35},
-    {"meter.ppm", -2, 200, 11},
-    {"asteroidconcentrator.ppm", 32, 35, 35},
-};
-
-/*
-    XXX
-*/
-int Block_bitmap_images(int type)
-{
-    return xp_pixmaps[type].picture.images;
-}
-
-/* Purpose: initialize the block bitmaps, currently i call it after
-   item bitmaps has been created.
-   i hacked the rotations member, it's really #images, but it can also
-   be negative.
-   if rotations > 0 then rotate it (resolution = #images)
-   else it's a handdrawn animation (#images = -rotations) or similar images
-   collected in same ppm for convenience for editing purposes (items).
-
-   return 0 on success.
-   return -1 on error.
-*/
-int Block_bitmaps_create(void)
-{
-    int i, j, images;
-    static int block_bitmaps_loaded = 0;
-
-    if (block_bitmaps_loaded)
-    {
-        return (block_bitmaps_loaded == 2) ? 0 : -1;
+/* this gets rid of missing initializer warnings */
+#define XP_PIXMAP_INITIALIZER(f, c)                         \
+    {                                                       \
+        f, c, 0, 0, 0, false, NULL, { 0, 0, 0, NULL, NULL } \
     }
 
-    block_bitmaps_loaded = 1;
+xp_pixmap_t object_pixmaps[] = {
+    XP_PIXMAP_INITIALIZER("holder1.ppm", 1),
+    XP_PIXMAP_INITIALIZER("holder2.ppm", 1),
+    XP_PIXMAP_INITIALIZER("ball.ppm", 1),
+    XP_PIXMAP_INITIALIZER("ship_red.ppm", 128),
+    XP_PIXMAP_INITIALIZER("ship_blue.ppm", 128),
+    XP_PIXMAP_INITIALIZER("ship_red2.ppm", 128),
+    XP_PIXMAP_INITIALIZER("bullet.ppm", -16),
+    XP_PIXMAP_INITIALIZER("bullet_blue.ppm", -16),
+    XP_PIXMAP_INITIALIZER("base_down.ppm", 1),
+    XP_PIXMAP_INITIALIZER("base_left.ppm", 1),
+    XP_PIXMAP_INITIALIZER("base_up.ppm", 1),
+    XP_PIXMAP_INITIALIZER("base_right.ppm", 1),
+    XP_PIXMAP_INITIALIZER("fuelcell.ppm", 1),
+    XP_PIXMAP_INITIALIZER("fuel2.ppm", -16),
+    XP_PIXMAP_INITIALIZER("allitems.ppm", -30),
+    XP_PIXMAP_INITIALIZER("cannon_down.ppm", 1),
+    XP_PIXMAP_INITIALIZER("cannon_left.ppm", 1),
+    XP_PIXMAP_INITIALIZER("cannon_up.ppm", 1),
+    XP_PIXMAP_INITIALIZER("cannon_right.ppm", 1),
+    XP_PIXMAP_INITIALIZER("sparks.ppm", -8),
+    XP_PIXMAP_INITIALIZER("paused.ppm", -2),
+    XP_PIXMAP_INITIALIZER("wall_top.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_left.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_bottom.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_right.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_ul.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_ur.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_dl.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_dr.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_fi.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_url.ppm", 1),
+    XP_PIXMAP_INITIALIZER("wall_ull.ppm", 1),
+    XP_PIXMAP_INITIALIZER("clouds.ppm", 1),
+    XP_PIXMAP_INITIALIZER("logo.ppm", 1),
+    XP_PIXMAP_INITIALIZER("refuel.ppm", -4),
+    XP_PIXMAP_INITIALIZER("wormhole.ppm", 8),
+    XP_PIXMAP_INITIALIZER("mine_team.ppm", 1),
+    XP_PIXMAP_INITIALIZER("mine_other.ppm", 1),
+    XP_PIXMAP_INITIALIZER("concentrator.ppm", 32),
+    XP_PIXMAP_INITIALIZER("plus.ppm", 1),
+    XP_PIXMAP_INITIALIZER("minus.ppm", 1),
+    XP_PIXMAP_INITIALIZER("checkpoint.ppm", -2),
+    XP_PIXMAP_INITIALIZER("meter.ppm", -2),
+    XP_PIXMAP_INITIALIZER("asteroidconcentrator.ppm", 32),
+    XP_PIXMAP_INITIALIZER("ball_gray16.ppm", -16)};
 
-    for (i = 0; i < NUM_BITMAPS; i++)
-    {
-        images = (xp_pixmaps[i].rotations > 0) ? xp_pixmaps[i].rotations : -xp_pixmaps[i].rotations;
+xp_pixmap_t *pixmaps = 0;
+int num_pixmaps = 0, max_pixmaps = 0;
 
-        xp_pixmaps[i].bitmaps = (xp_bitmap_t *)malloc(images * sizeof(xp_bitmap_t));
-        if (!xp_pixmaps[i].bitmaps)
-        {
-            xperror("Not enough memory.");
-            break;
-        }
-        for (j = 0; j < images; j++)
-        {
-            xp_pixmaps[i].bitmaps[j].scale_height = -1;
-            xp_pixmaps[i].bitmaps[j].scale_width = -1;
-            xp_pixmaps[i].bitmaps[j].bitmap = None;
-            xp_pixmaps[i].bitmaps[j].mask = None;
-        }
-
-        if (Picture_init(&xp_pixmaps[i].picture,
-                         xp_pixmaps[i].height,
-                         xp_pixmaps[i].width,
-                         images) == -1)
-        {
-            break;
-        }
-        if (Picture_load(&xp_pixmaps[i].picture,
-                         xp_pixmaps[i].filename) == -1)
-        {
-            break;
-        }
-
-        if (xp_pixmaps[i].rotations > 1)
-        {
-            Picture_rotate(&xp_pixmaps[i].picture);
-        }
-        Picture_get_bounding_box(&xp_pixmaps[i].picture);
-    }
-
-    if (i == NUM_BITMAPS)
-    {
-        block_bitmaps_loaded = 2;
-    }
-
-    return (block_bitmaps_loaded == 2) ? 0 : -1;
-}
-
-/*
-    Purpose: Draw a bitmap/pixmap, name should be changed(Block_bitmap_paint??)
-    unix implementation probably need extra parameters?
-    I rather only change name and parameters once,
-    as i call it all over the place in guimap.c and guiobjects.c.
-    There is a scale check, if the bitmap is not correct size then it'll
-    scale before drawing.
-*/
-
-void PaintBitmap(Drawable d, int type, int x, int y, int width, int height,
-                 int number)
-{
-    if (!xp_pixmaps[type].bitmaps)
-        return;
-    if (xp_pixmaps[type].bitmaps[number].scale_height != height)
-    {
-        Block_bitmap_create(dpy, d, &xp_pixmaps[type], number, width, height);
-        scaled_bitmaps++;
-    }
-    Block_bitmap_paint(d, type, x, y, width, height, number);
-}
+static int Bitmap_init(int img);
+static void Bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image);
+static void Bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image);
+static int Bitmap_create_begin(Drawable d, xp_pixmap_t *pm, int bmp);
+static int Bitmap_create_end(Drawable d);
+static void Bitmap_set_pixel(xp_pixmap_t *, int, int, int, RGB_COLOR);
 
 /*
-    Purpose: Works almost like PaintBitmap,
-    except that it paint a slice of a fuel image
-    (size is height of the slice that should be draw)
-*/
-void PaintFuelSlice(Drawable d, int type,
-                    int x, int y,
-                    int width, int height,
-                    int image, int size)
-{
-    if (xp_pixmaps[type].bitmaps[image].scale_height != height)
-    {
-        Block_bitmap_create(dpy, d, &xp_pixmaps[type], image, width, height);
-        scaled_bitmaps++;
-    }
-    Block_bitmap_paint_fuel_slice(d, type, x, y, width, height, image, size);
-}
-
-/*
-    Purpose: Paint a meter, size, is how much of the meter that is used,
-    first image is the empty meter, second is the filled meter
+ * Adds the standard images into global pixmaps array.
  */
-
-void PaintMeter(Drawable d, int type, int x, int y, int width, int height, int size)
-{
-    if (xp_pixmaps[type].bitmaps[0].scale_height != height)
-    {
-        Block_bitmap_create(dpy, d, &xp_pixmaps[type], 0, width, height);
-        scaled_bitmaps++;
-    }
-    if (xp_pixmaps[type].bitmaps[1].scale_height != height)
-    {
-        Block_bitmap_create(dpy, d, &xp_pixmaps[type], 1, width, height);
-        scaled_bitmaps++;
-    }
-    Block_bitmap_paint_meter(d, type, x, y, width, height, size);
-}
-
-/*
-   Purpose: to even out the scaling process,
-   just the ships is forced created with this function,
-   To reduce lag incidents due to massive scaling,
-   in the beginning of a game
-*/
-
-int rotation_types[] = {BM_SHIP_SELF, BM_SHIP_FRIEND, BM_SHIP_ENEMY};
-
-void Cache_ships(Drawable d)
+int Bitmaps_init(void)
 {
     int i;
-    static int type = 0;
-    static int number = 0;
-    return;
-    if (scaled_bitmaps < 3)
-    {
-        for (i = 0; i < 3 - scaled_bitmaps; i++)
-        {
-            number++;
-            if (number == xp_pixmaps[rotation_types[type]].picture.images)
-            {
-                type++;
-                number = 0;
-                if (type == 3)
-                {
-                    type = 0;
-                }
-            }
+    xp_pixmap_t pixmap;
 
-            if (xp_pixmaps[rotation_types[type]].bitmaps[number].scale_height != WINSCALE(32))
-            {
-                Block_bitmap_create(dpy, d,
-                                    &xp_pixmaps[rotation_types[type]],
-                                    number, WINSCALE(32), WINSCALE(32));
-            }
-        }
+    for (i = 0; i < NUM_OBJECT_BITMAPS; i++)
+    {
+        pixmap = object_pixmaps[i];
+        pixmap.scalable = (i == BM_LOGO || i == BM_SCORE_BG) ? false : true;
+        pixmap.state = BMS_UNINITIALIZED;
+        STORE(xp_pixmap_t, pixmaps, num_pixmaps, max_pixmaps, pixmap);
     }
-    scaled_bitmaps = 0;
+
+    return 0;
 }
 
-/* Purpose: Take a device independent picture and create a
-    device/os dependent image.
-    This is only used in the scalefactor 1.0 special case.
+void Bitmaps_cleanup(void)
+{
+    if (pixmaps)
+        free(pixmaps);
+    pixmaps = 0;
+}
 
-    Actually this function could be killed, but it's very fast
-    and it uses the intended original image.
-*/
+/**
+ * Adds a new bitmap needed by the current map into global pixmaps.
+ * Returns the index of the newly added bitmap in the array.
+ */
+int Bitmap_add(const char *filename, int count, bool scalable)
+{
+    xp_pixmap_t pixmap;
 
-static void Block_bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image)
+    pixmap.filename = xp_strdup(filename);
+    pixmap.count = count;
+    pixmap.scalable = scalable;
+    pixmap.state = BMS_UNINITIALIZED;
+    STORE(xp_pixmap_t, pixmaps, num_pixmaps, max_pixmaps, pixmap);
+    return num_pixmaps - 1;
+}
+
+/**
+ * Creates the Pixmaps needed for the given image.
+ */
+int Bitmap_create(Drawable d, int img)
+{
+    int j;
+    xp_pixmap_t *pix = &pixmaps[img];
+
+    if (pix->state == BMS_UNINITIALIZED)
+        Bitmap_init(img);
+    if (pix->state != BMS_INITIALIZED)
+        return -1;
+
+    for (j = 0; j < ABS(pix->count); j++)
+    {
+        if (pix->scalable)
+        {
+            pix->width = WINSCALE(pix->picture.width);
+            pix->height = WINSCALE(pix->picture.height);
+        }
+
+        if (Bitmap_create_begin(d, pix, j) == -1)
+        {
+            pix->state = BMS_ERROR;
+            return -1;
+        }
+
+        if (pix->height == pix->picture.height &&
+            pix->width == pix->picture.width)
+        {
+            Bitmap_picture_copy(pix, j);
+        }
+        else
+            Bitmap_picture_scale(pix, j);
+
+        if (Bitmap_create_end(d) == -1)
+        {
+            pix->state = BMS_ERROR;
+            return -1;
+        }
+    }
+
+    pix->state = BMS_READY;
+
+    return 0;
+}
+
+/**
+ * Causes all scalable bitmaps to be rescaled (recreated actually)
+ * next time needed.
+ */
+void Bitmap_update_scale(void)
+{
+    /* This should do the trick.
+     * All "good" scalable bitmaps are marked as initialized
+     * causing the next Bitmap_get to recreate the bitmap using
+     * the current scale factor. Bitmap_create should take care of
+     * releasing the device pixmaps no longer needed. */
+
+    int i;
+    for (i = 0; i < num_pixmaps; i++)
+        if (pixmaps[i].state == BMS_READY && pixmaps[i].scalable)
+            pixmaps[i].state = BMS_INITIALIZED;
+}
+
+/**
+ * Gets a pointer to the bitmap specified with img and bmp.
+ * Ensures that the bitmap returned has been initialized and created
+ * properly. Returns NULL if the specified bitmap is not in appropriate
+ * state.
+ */
+xp_bitmap_t *Bitmap_get(Drawable d, int img, int bmp)
+{
+    if (!fullColor || img < 0 || img >= num_pixmaps)
+        return NULL;
+
+    if (pixmaps[img].state != BMS_READY)
+    {
+        if (Bitmap_create(d, img) == -1)
+            return NULL;
+    }
+
+    return &pixmaps[img].bitmaps[bmp];
+}
+
+static void Bitmap_blend_with_color(int img, int bmp, int rgb)
+{
+    int x, y, r, g, b, r2, g2, b2;
+    bool scaled;
+    RGB_COLOR color;
+    double x_scaled = 0.0, y_scaled = 0.0, dx_scaled = 0.0, dy_scaled = 0.0;
+    xp_pixmap_t *pix = &pixmaps[img];
+
+    pix->bitmaps[bmp].rgb = rgb;
+    scaled = pix->height != pix->picture.height ||
+             pix->width != pix->picture.width;
+
+    if (scaled)
+    {
+        dx_scaled = ((double)pix->picture.width) / pix->width;
+        dy_scaled = ((double)pix->picture.height) / pix->height;
+        y_scaled = 0;
+    }
+
+    r2 = (rgb >> 16) & 0xff;
+    g2 = (rgb >> 8) & 0xff;
+    b2 = rgb & 0xff;
+
+    for (y = 0; y < (int)pix->height; y++)
+    {
+        if (scaled)
+            x_scaled = 0;
+        for (x = 0; x < (int)pix->width; x++)
+        {
+            color = scaled ? Picture_get_pixel_area(&(pix->picture), bmp,
+                                                    x_scaled, y_scaled,
+                                                    dx_scaled, dy_scaled)
+                           : Picture_get_pixel(&(pix->picture), bmp, x, y);
+            r = RED_VALUE(color) * r2 / 0xff;
+            g = GREEN_VALUE(color) * g2 / 0xff;
+            b = BLUE_VALUE(color) * b2 / 0xff;
+            Bitmap_set_pixel(pix, bmp, x, y, RGB24(r, g, b));
+            if (scaled)
+                x_scaled += dx_scaled;
+        }
+        if (scaled)
+            y_scaled += dy_scaled;
+    }
+}
+
+/**
+ * Gets a pointer to the bitmap of img blended with color rgb.
+ * Ensures that the bitmap returned has been initialized and created
+ * properly. Returns NULL if the specified bitmap is not in appropriate
+ * state or cannot be created.
+ */
+xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb)
+{
+    int i;
+
+    if (!fullColor || img < 0 || img >= num_pixmaps)
+        return NULL;
+
+    if (pixmaps[img].state != BMS_READY)
+    {
+        if (Bitmap_create(d, img) == -1)
+            return NULL;
+    }
+
+    for (i = 0; i < ABS(pixmaps[img].count); i++)
+    {
+        if (pixmaps[img].bitmaps[i].rgb == rgb)
+            return &pixmaps[img].bitmaps[i];
+        if (pixmaps[img].bitmaps[i].rgb == -1)
+        {
+            Bitmap_blend_with_color(img, i, rgb);
+            return &pixmaps[img].bitmaps[i];
+        }
+    }
+
+    /* fall back on the first bitmap */
+    return &pixmaps[img].bitmaps[0];
+}
+
+/**
+ * Loads and initializes the given image.
+ */
+static int Bitmap_init(int img)
+{
+    int j, count;
+
+    count = ABS(pixmaps[img].count);
+
+    if (!(pixmaps[img].bitmaps = XMALLOC(xp_bitmap_t, count)))
+    {
+        xperror("not enough memory for bitmaps");
+        pixmaps[img].state = BMS_ERROR;
+        return -1;
+    }
+
+    for (j = 0; j < count; j++)
+    {
+        pixmaps[img].bitmaps[j].bitmap =
+            pixmaps[img].bitmaps[j].mask = None;
+        pixmaps[img].bitmaps[j].rgb = -1;
+    }
+
+    if (Picture_init(&pixmaps[img].picture, pixmaps[img].filename, pixmaps[img].count) == -1)
+    {
+        pixmaps[img].state = BMS_ERROR;
+        return -1;
+    }
+
+    pixmaps[img].width = pixmaps[img].picture.width;
+    pixmaps[img].height = pixmaps[img].picture.height;
+    pixmaps[img].state = BMS_INITIALIZED;
+
+    return 0;
+}
+
+/*
+ * Purpose: Take a device independent picture and create a
+ * device/os dependent image.
+ * This is only used in the scalefactor 1.0 special case.
+ *
+ * Actually this function could be killed, but it's very fast
+ * and it uses the intended original image.
+ */
+static void Bitmap_picture_copy(xp_pixmap_t *xp_pixmap, int image)
 {
     int x, y;
     RGB_COLOR color;
 
-    for (y = 0; y < xp_pixmap->height; y++)
-        for (x = 0; x < xp_pixmap->width; x++)
+    for (y = 0; y < (int)xp_pixmap->height; y++)
+    {
+        for (x = 0; x < (int)xp_pixmap->width; x++)
         {
-            color = Picture_get_pixel(&(xp_pixmap->picture),
-                                      image, x, y);
-            Block_bitmap_set_pixel(xp_pixmap, image, x, y, color);
+            color = Picture_get_pixel(&(xp_pixmap->picture), image, x, y);
+            Bitmap_set_pixel(xp_pixmap, image, x, y, color);
         }
+    }
 
     /* copy bounding box from original picture. */
     xp_pixmap->bitmaps[image].bbox = xp_pixmap->picture.bbox[image];
 }
 
-/*  Purpose: Take a device independent picture and create a
-    scaled device/os dependent image.
-    This is for some of us the general case.
-    The trick is for each pixel in the target image
-    to find the area it responds to in the original image, and then
-    find an average of the colors in this area.
-*/
-
-static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
+/*
+ * Purpose: Take a device independent picture and create a
+ * scaled device/os dependent image.
+ * This is for some of us the general case.
+ * The trick is for each pixel in the target image
+ * to find the area it responds to in the original image, and then
+ * find an average of the colors in this area.
+ */
+static void Bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
 {
     int x, y;
     RGB_COLOR color;
@@ -323,24 +391,25 @@ static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
     double orig_height, orig_width;
     int height, width;
 
-    orig_height = xp_pixmap->height;
-    orig_width = xp_pixmap->width;
-    height = xp_pixmap->bitmaps[image].scale_height;
-    width = xp_pixmap->bitmaps[image].scale_width;
+    orig_height = xp_pixmap->picture.height;
+    orig_width = xp_pixmap->picture.width;
+    height = xp_pixmap->height;
+    width = xp_pixmap->width;
 
     dx_scaled = orig_width / width;
     dy_scaled = orig_height / height;
     y_scaled = 0;
+
     for (y = 0; y < height; y++)
     {
-
         x_scaled = 0;
         for (x = 0; x < width; x++)
         {
-            color = Picture_get_pixel_area(&(xp_pixmap->picture), image,
-                                           x_scaled, y_scaled,
-                                           dx_scaled, dy_scaled);
-            Block_bitmap_set_pixel(xp_pixmap, image, x, y, color);
+            color =
+                Picture_get_pixel_area(&(xp_pixmap->picture), image,
+                                       x_scaled, y_scaled, dx_scaled, dy_scaled);
+
+            Bitmap_set_pixel(xp_pixmap, image, x, y, color);
             x_scaled += dx_scaled;
         }
         y_scaled += dy_scaled;
@@ -353,96 +422,97 @@ static void Block_bitmap_picture_scale(xp_pixmap_t *xp_pixmap, int image)
 
         dst->xmin = (int)((width * src->xmin) / orig_width);
         dst->ymin = (int)((height * src->ymin) / orig_height);
-        dst->xmax = (int)(((width * src->xmax) + (orig_width - 1)) / orig_width);
-        dst->ymax = (int)(((height * src->ymax) + (orig_height - 1)) / orig_height);
+        dst->xmax = (int)(((width * src->xmax) + (orig_width - 1)) /
+                          orig_width);
+        dst->ymax = (int)(((height * src->ymax) + (orig_height - 1)) /
+                          orig_height);
     }
 }
 
-/* XXX todo: make static */
+/*
+ * Purpose: Paint a the bitmap specified with img and bmp
+ * so that only the pixels inside the bounding box are
+ * painted.
+ */
+void Bitmap_paint(Drawable d, int img, int x, int y, int bmp)
+{
+    xp_bitmap_t *bit;
+    bbox_t *box;
+    irec_t area;
+
+    if ((bit = Bitmap_get(d, img, bmp)) == NULL)
+        return;
+    box = &bit->bbox;
+
+    area.x = box->xmin;
+    area.y = box->ymin;
+    area.w = box->xmax + 1 - box->xmin;
+    area.h = box->ymax + 1 - box->ymin;
+
+    Bitmap_paint_area(d, bit, x + area.x, y + area.y, &area);
+}
 
 /*
-    Purpose: create a device/OS dependent bitmap.
-    The windows version need to create and lock a device context.
-    I got no clue what the unix version needs before and after drawing the
-    picture to the pixmap.
-    (the windows version just need the Drawable as parameter, the unix version
-    might need more)
-
-  */
-
-void Block_bitmap_create(Display *dpy, Drawable d,
-                         xp_pixmap_t *xp_pixmap,
-                         int image, int width, int height)
+ * Paints the given image blending it with the given RGB color if
+ * possible.
+ */
+void Bitmap_paint_blended(Drawable d, int img, int x, int y, int rgb)
 {
-    Block_bitmap_create_begin(d, xp_pixmap, image, width, height);
+    xp_bitmap_t *bit;
+    bbox_t *box;
+    irec_t area;
 
-    xp_pixmap->bitmaps[image].scale_width = width;
-    xp_pixmap->bitmaps[image].scale_height = height;
+    if ((bit = Bitmap_get_blended(d, img, rgb)) == NULL)
+        return;
+    box = &bit->bbox;
 
-    if (height == xp_pixmap->height && width == xp_pixmap->width)
-    {
-        /* exactly same size as original */
-        Block_bitmap_picture_copy(xp_pixmap, image);
-    }
-    else
-    {
-        Block_bitmap_picture_scale(xp_pixmap, image);
-    }
-    Block_bitmap_create_end(d);
+    area.x = box->xmin;
+    area.y = box->ymin;
+    area.w = box->xmax + 1 - box->xmin;
+    area.h = box->ymax + 1 - box->ymin;
+
+    Bitmap_paint_area(d, bit, x + area.x, y + area.y, &area);
 }
 
 /*
  * Maybe move this part to a sperate file.
  */
 
-#include "paintdata.h"
-
-extern int dispDepth;
-extern unsigned long (*RGB)(unsigned char r, unsigned char g, unsigned char b);
-
+extern unsigned long (*RGB)(int r, int g, int b);
 static GC maskGC;
 
-/*
-    Purpose: to allocate and prepare a pixmap for drawing.
-    this might be inlined in block_bitmap_create instead?
-  */
-
-void Block_bitmap_create_begin(Drawable d,
-                               xp_pixmap_t *xp_pixmap, int image,
-                               int width, int height)
+/**
+ * Allocates and prepares a pixmap for drawing in a platform
+ * dependent (UNIX) way.
+ */
+static int Bitmap_create_begin(Drawable d, xp_pixmap_t *pm, int bmp)
 {
     Drawable pixmap;
 
-    if (xp_pixmap->bitmaps[image].bitmap)
+    if (pm->bitmaps[bmp].bitmap)
     {
-        XFreePixmap(dpy, xp_pixmap->bitmaps[image].bitmap);
-        xp_pixmap->bitmaps[image].bitmap = None;
+        XFreePixmap(dpy, pm->bitmaps[bmp].bitmap);
+        pm->bitmaps[bmp].bitmap = None;
     }
-    if (xp_pixmap->bitmaps[image].mask)
+    if (pm->bitmaps[bmp].mask)
     {
-        XFreePixmap(dpy, xp_pixmap->bitmaps[image].mask);
-        xp_pixmap->bitmaps[image].mask = None;
+        XFreePixmap(dpy, pm->bitmaps[bmp].mask);
+        pm->bitmaps[bmp].mask = None;
     }
 
-    pixmap = XCreatePixmap(dpy, d,
-                           width, height,
-                           dispDepth);
-    if (!pixmap)
+    if (!(pixmap = XCreatePixmap(dpy, d, pm->width, pm->height, dispDepth)))
     {
         xperror("Could not create pixmap");
-        exit(1);
+        return -1;
     }
-    xp_pixmap->bitmaps[image].bitmap = pixmap;
+    pm->bitmaps[bmp].bitmap = pixmap;
 
-    pixmap = XCreatePixmap(dpy, d,
-                           width, height,
-                           1);
-    if (!pixmap)
+    if (!(pixmap = XCreatePixmap(dpy, d, pm->width, pm->height, 1)))
     {
         xperror("Could not create mask pixmap");
-        exit(1);
+        return -1;
     }
-    xp_pixmap->bitmaps[image].mask = pixmap;
+    pm->bitmaps[bmp].mask = pixmap;
 
     if (!maskGC)
     {
@@ -455,113 +525,53 @@ void Block_bitmap_create_begin(Drawable d,
         xgc.join_style = JoinMiter;
         xgc.graphics_exposures = False;
         values =
-            GCLineWidth | GCLineStyle | GCCapStyle | GCJoinStyle | GCGraphicsExposures;
+            GCLineWidth | GCLineStyle | GCCapStyle | GCJoinStyle |
+            GCGraphicsExposures;
         maskGC = XCreateGC(dpy, pixmap, values, &xgc);
     }
+
+    return 0;
 }
 
-/*
-    Purpose: to deallocate resources needed during creation of a bitmap.
-*/
-void Block_bitmap_create_end(Drawable d)
+/**
+ * Deallocates resources needed when creating and drawing a pixmap.
+ */
+static int Bitmap_create_end(Drawable d)
 {
+    UNUSED_PARAM(d);
+    return 0;
 }
 
 /*
-    Purpose: set 1 pixel in the device/OS dependent bitmap.
-*/
-
-void Block_bitmap_set_pixel(xp_pixmap_t *xp_pixmap,
-                            int image, int x, int y,
-                            RGB_COLOR color)
+ * Purpose: set 1 pixel in the device/OS dependent bitmap.
+ */
+static void Bitmap_set_pixel(xp_pixmap_t *xp_pixmap,
+                             int bmp, int x, int y, RGB_COLOR color)
 {
     unsigned long pixel;
-    unsigned char r, g, b;
+    int r, g, b;
 
     r = RED_VALUE(color);
     g = GREEN_VALUE(color);
     b = BLUE_VALUE(color);
     pixel = (RGB)(r, g, b);
     SET_FG(pixel);
-    XDrawPoint(dpy, xp_pixmap->bitmaps[image].bitmap, gameGC,
-               x, y);
+    XDrawPoint(dpy, xp_pixmap->bitmaps[bmp].bitmap, gameGC, x, y);
 
     pixel = (color) ? 1 : 0;
     XSetForeground(dpy, maskGC, pixel);
-    XDrawPoint(dpy, xp_pixmap->bitmaps[image].mask, maskGC,
-               x, y);
+    XDrawPoint(dpy, xp_pixmap->bitmaps[bmp].mask, maskGC, x, y);
 }
 
-/*
-    New fuelCell animation, Not pretty but it works :)
-    Will require a new unix drawbitmap operation, as it works
-    by drawing less than the height in the image specify.
-*/
-void Block_bitmap_paint_fuel_slice(Drawable d, int type,
-                                   int x, int y,
-                                   int width, int height,
-                                   int image, int size)
+/**
+ * Purpose: Paint an area r of xp_bitmap bit in a device dependent manner.
+ */
+void Bitmap_paint_area(Drawable d, xp_bitmap_t *bit, int x, int y,
+                       irec_t *r)
 {
-    xp_pixmap_t *pix = &xp_pixmaps[type];
-    xp_bitmap_t *bit = &pix->bitmaps[image];
-    bbox_t *box = &bit->bbox;
-
-    /*
-    assert(width >= box->xmax);
-    assert(height >= box->ymax);
-    */
-    XCopyArea(dpy, xp_pixmaps[type].bitmaps[image].bitmap,
-              d, gameGC,
-              0 + box->xmin, 0 + box->ymin,
-              box->xmax + 1 - box->xmin,
-              size * (box->ymax + 1 - box->ymin) / bit->scale_width,
-              x + box->xmin, y + box->ymin);
-}
-
-/*
-    Purpose: Paint a meter in a device/OS dependent fashion.
-     I'm not certain this is correct implemented, it is _not_ tested.
-     Note, there is no bounding box, for clearity. (image has to be fullsize)
-*/
-
-void Block_bitmap_paint_meter(Drawable d, int type,
-                              int x, int y,
-                              int width, int height,
-                              int size)
-{
-
-    /*First draw the part of the meter that should be filled */
-    XCopyArea(dpy, xp_pixmaps[type].bitmaps[1].bitmap, /* 1 = filled image */
-              d, gameGC,
-              0, 0,
-              size, xp_pixmaps[type].height,
-              x, y);
-    /*Then draw the part of the meter that should be empty */
-
-    XCopyArea(dpy, xp_pixmaps[type].bitmaps[0].bitmap, /* 0 = empty image */
-              d, gameGC,
-              size, 0,
-              xp_pixmaps[type].width - size, xp_pixmaps[type].height,
-              x + size, y);
-}
-
-/*
-    Purpose: Paint a bitmap in a device/OS dependent fashion.
-*/
-
-void Block_bitmap_paint(Drawable d, int type, int x, int y, int width,
-                        int height, int number)
-{
-    xp_pixmap_t *pix = &xp_pixmaps[type];
-    xp_bitmap_t *bit = &pix->bitmaps[number];
-    bbox_t *box = &bit->bbox;
-
-    XSetClipOrigin(dpy, gameGC, x, y);
+    XSetClipOrigin(dpy, gameGC, x - r->x, y - r->y);
     XSetClipMask(dpy, gameGC, bit->mask);
-    XCopyArea(dpy, bit->bitmap,
-              d, gameGC,
-              0 + box->xmin, 0 + box->ymin,
-              box->xmax + 1 - box->xmin, box->ymax + 1 - box->ymin,
-              x + box->xmin, y + box->ymin);
+    XCopyArea(dpy, bit->bitmap, d, gameGC, r->x, r->y,
+              (unsigned)r->w, (unsigned)r->h, x, y);
     XSetClipMask(dpy, gameGC, None);
 }

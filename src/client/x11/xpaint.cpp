@@ -116,7 +116,7 @@ bool gotFocus;
 bool titleFlip = true;   /* Do special title bar flipping? */
 int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
-char *texturePath = NULL; /* Path list of texture directories */
+// char *texturePath = NULL; /* Path list of texture directories */
 
 keydefs_t *keyDefs = NULL;
 
@@ -242,10 +242,6 @@ void Paint_frame(void)
         XSetFunction(dpy, gameGC, GXcopy);
         SET_FG(colors[BLACK].pixel);
     }
-    if (cacheShips && texturedObjects)
-    {
-        Cache_ships(drawWindow);
-    }
     prev_prev_damaged = prev_damaged;
     prev_damaged = damaged;
 
@@ -360,10 +356,10 @@ static void Paint_score_background(int thisLine)
     {
         XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
 
-        PaintBitmap(playersWindow, BM_SCORE_BG,
-                    0, 0,
-                    players_width, BG_IMAGE_HEIGHT,
-                    0);
+        Bitmap_paint(playersWindow, BM_SCORE_BG,
+                     0, 0,
+                     //  players_width, BG_IMAGE_HEIGHT,
+                     0);
 
         if (players_height > BG_IMAGE_HEIGHT + LOGO_HEIGHT)
         {
@@ -372,10 +368,10 @@ static void Paint_score_background(int thisLine)
                            players_width,
                            players_height - (BG_IMAGE_HEIGHT + LOGO_HEIGHT));
         }
-        PaintBitmap(playersWindow, BM_LOGO,
-                    0, players_height - LOGO_HEIGHT,
-                    players_width, LOGO_HEIGHT,
-                    0);
+        Bitmap_paint(playersWindow, BM_LOGO,
+                     0, players_height - LOGO_HEIGHT,
+                     //  players_width, LOGO_HEIGHT,
+                     0);
 
         XFlush(dpy);
     }

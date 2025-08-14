@@ -1222,7 +1222,7 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
         {
             /* see if we can use texturedObjects at all. */
             texturedObjects = true;
-            if (Colors_init_block_bitmaps() == -1)
+            if (Colors_init_bitmaps() == -1)
             {
                 /* no we can't have texturedObjects. */
                 texturedObjects = false;

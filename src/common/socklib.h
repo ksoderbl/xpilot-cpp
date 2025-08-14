@@ -86,6 +86,7 @@ typedef struct sock_s
 int sock_init(sock_t *sock);
 int sock_close(sock_t *sock);
 int sock_set_non_blocking(sock_t *sock, int flag);
+int sock_open_tcp(sock_t *sock);
 int sock_open_tcp_connected_non_blocking(sock_t *sock, char *host, int port);
 int sock_open_udp(sock_t *sock, char *dotaddr, int port);
 int sock_connect(sock_t *sock, char *host, int port);

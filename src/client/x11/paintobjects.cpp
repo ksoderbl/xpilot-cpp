@@ -127,7 +127,7 @@ void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int colo
     }
     else
     {
-        PaintBitmap(d, BM_ALL_ITEMS, x, y, ITEM_SIZE, ITEM_SIZE, type);
+        Bitmap_paint(d, BM_ALL_ITEMS, x, y, type);
     }
 }
 
@@ -202,22 +202,16 @@ static void Paint_balls(void)
                 Gui_paint_ball(x, y);
 
                 if (id == -1)
-                {
                     continue;
-                }
 
                 for (j = 0; j < num_ship && ship_ptr[j].id != id; j++)
                 {
                     if (ship_ptr[j].id == id)
-                    {
                         break;
-                    }
                 }
 
                 if (j >= num_ship)
-                {
                     continue;
-                }
 
                 xs = ship_ptr[j].x;
                 ys = ship_ptr[j].y;

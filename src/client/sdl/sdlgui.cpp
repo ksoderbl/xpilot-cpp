@@ -159,13 +159,13 @@ int GL_Y(int y)
 }
 
 /* remove this later maybe? to tedious for me to edit them all away now */
-void Segment_add(Uint32 color, int x_1, int y_1, int x_2, int y_2)
+void Segment_add(Uint32 color, int x1, int y1, int x_2, int y_2)
 {
     if (smoothLines)
         glEnable(GL_LINE_SMOOTH);
     set_alphacolor(color);
     glBegin(GL_LINE_LOOP);
-    glVertex2i(x_1, y_1);
+    glVertex2i(x1, y1);
     glVertex2i(x_2, y_2);
     glEnd();
     if (smoothLines)
@@ -996,7 +996,7 @@ void Gui_paint_ball(int x, int y, int style)
     }
 }
 
-void Gui_paint_ball_connector(int x_1, int y_1, int x_2, int y_2)
+void Gui_paint_ball_connector(int x1, int y1, int x_2, int y_2)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -1004,7 +1004,7 @@ void Gui_paint_ball_connector(int x_1, int y_1, int x_2, int y_2)
     if (smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
-    glVertex2i(x_1, y_1);
+    glVertex2i(x1, y1);
     glVertex2i(x_2, y_2);
     glEnd();
     if (smoothLines)
@@ -1165,11 +1165,11 @@ void Gui_paint_lasers_end(void)
         glDisable(GL_LINE_SMOOTH);
 }
 
-void Gui_paint_laser(int color, int x_1, int y_1, int len, int dir)
+void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
 {
     int x_2, y_2, rgba;
-    x_2 = (int)(x_1 + len * tcos(dir));
-    y_2 = (int)(y_1 + len * tsin(dir));
+    x_2 = (int)(x1 + len * tcos(dir));
+    y_2 = (int)(y1 + len * tsin(dir));
 
     rgba =
         (color == RED) ? redRGBA : (color == BLUE) ? blueRGBA
@@ -1178,14 +1178,14 @@ void Gui_paint_laser(int color, int x_1, int y_1, int len, int dir)
     set_alphacolor(rgba - 128);
     glLineWidth(5);
     glBegin(GL_LINES);
-    glVertex2i(x_1, y_1);
+    glVertex2i(x1, y1);
     glVertex2i(x_2, y_2);
     glEnd();
 
     set_alphacolor(rgba);
     glLineWidth(1);
     glBegin(GL_LINES);
-    glVertex2i(x_1, y_1);
+    glVertex2i(x1, y1);
     glVertex2i(x_2, y_2);
     glEnd();
 }
@@ -1235,7 +1235,7 @@ void Gui_paint_ecm(int x, int y, int size)
 {
 }
 
-void Gui_paint_refuel(int x_0, int y_0, int x_1, int y_1)
+void Gui_paint_refuel(int x0, int y0, int x1, int y1)
 {
     int stipple = 4;
 
@@ -1247,15 +1247,15 @@ void Gui_paint_refuel(int x_0, int y_0, int x_1, int y_1)
     if (smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
-    glVertex2i(x_0, y_0);
-    glVertex2i(x_1, y_1);
+    glVertex2i(x0, y0);
+    glVertex2i(x1, y1);
     glEnd();
     if (smoothLines)
         glDisable(GL_LINE_SMOOTH);
     glDisable(GL_LINE_STIPPLE);
 }
 
-void Gui_paint_connector(int x_0, int y_0, int x_1, int y_1, int tractor)
+void Gui_paint_connector(int x0, int y0, int x1, int y1, int tractor)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -1265,8 +1265,8 @@ void Gui_paint_connector(int x_0, int y_0, int x_1, int y_1, int tractor)
     if (smoothLines)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
-    glVertex2i(x_0, y_0);
-    glVertex2i(x_1, y_1);
+    glVertex2i(x0, y0);
+    glVertex2i(x1, y1);
     glEnd();
     if (smoothLines)
         glDisable(GL_LINE_SMOOTH);
@@ -1274,7 +1274,7 @@ void Gui_paint_connector(int x_0, int y_0, int x_1, int y_1, int tractor)
     /*glDisable(GL_BLEND);*/
 }
 
-void Gui_paint_transporter(int x_0, int y_0, int x_1, int y_1)
+void Gui_paint_transporter(int x0, int y0, int x1, int y1)
 {
 }
 

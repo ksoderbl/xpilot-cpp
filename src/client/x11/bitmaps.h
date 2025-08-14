@@ -22,10 +22,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BLOCKBITMAPS_H
-#define BLOCKBITMAPS_H
+#ifndef BITMAPS_H
+#define BITMAPS_H
 
 #include "gfx2d.h"
+#include "types.h"
 
 #define BM_HOLDER_FRIEND 0
 #define BM_HOLDER_ENEMY 1
@@ -73,8 +74,15 @@
 #define BM_CHECKPOINT 41
 #define BM_METER 42
 #define BM_ASTEROIDCONC 43
+#define BM_BALL_GRAY 44
 
-#define NUM_BITMAPS 44
+#define NUM_OBJECT_BITMAPS 45
+#define NUM_BITMAPS 45
+
+#define BMS_UNINITIALIZED 0
+#define BMS_INITIALIZED 1
+#define BMS_READY 2
+#define BMS_ERROR -1
 
 #define BG_IMAGE_HEIGHT 442
 #define LOGO_HEIGHT 223
@@ -84,59 +92,43 @@
 typedef struct
 {
     Pixmap bitmap;
-    int scale_width, scale_height;
-
     Pixmap mask;
     bbox_t bbox;
+    int rgb; /* the color this image is blended with */
 } xp_bitmap_t;
 
-/* XXX need comment about purpose of this structure. */
+/* xp_pixmap_t holds all data related to one "logical" image.
+ * One logical image can consists of several rectangular pixel
+ * arrays (physical images). All physical images share the same
+ * overall dimensions.
+ *
+ * Note: if the count is negative it means that the other images
+ * are rotated copies of the original image.
+ */
 typedef struct
 {
-    const char *filename;
-    int rotations;
-
-    int width, height;
-    xp_bitmap_t *bitmaps;
-    xp_picture_t picture;
+    const char *filename;   /* the file containing the image */
+    int count;              /* amount of images (see above) */
+    int state;              /* the state of the image (BMS_*) */
+    unsigned width, height; /* the (scaled) dimensions */
+    bool scalable;          /* should this image be scaled */
+    xp_bitmap_t *bitmaps;   /* platform dependent image data */
+    xp_picture_t picture;   /* the image data in RGB format */
 } xp_pixmap_t;
 
+extern xp_pixmap_t *pixmaps;
+extern int num_pixmaps, max_pixmaps;
 extern xp_pixmap_t xp_pixmaps[];
 
-void PaintBitmap(Drawable d, int type, int x, int y, int width, int height,
-                 int number);
-void PaintFuelSlice(Drawable d, int type, int x, int y, int width, int height,
-                    int image, int size);
-void PaintMeter(Drawable d, int type, int x, int y, int width, int height,
-                int size);
+int Bitmaps_init(void);
+void Bitmaps_cleanup(void);
+int Bitmap_create(Drawable d, int img);
+void Bitmap_update_scale(void);
 
-int Block_bitmap_images(int type);
-int Block_bitmaps_create(void);
-
-void Block_bitmap_create_begin(Drawable d,
-                               xp_pixmap_t *xp_pixmap, int image,
-                               int width, int height);
-
-void Block_bitmap_create_end(Drawable d);
-
-void Block_bitmap_set_pixel(xp_pixmap_t *xp_pixmap, int image, int x, int y,
-                            RGB_COLOR color);
-void Block_bitmap_paint(Drawable d, int type, int x, int y,
-                        int width, int height,
-                        int number);
-
-void Cache_ships(Drawable d);
-
-void Block_bitmap_create(Display *dpy, Drawable d,
-                         xp_pixmap_t *xp_pixmap, int number,
-                         int width, int height);
-
-void Block_bitmap_paint_fuel_slice(Drawable d, int type, int x, int y,
-                                   int width, int height,
-                                   int image, int size);
-
-void Block_bitmap_paint_meter(Drawable d, int type, int x, int y,
-                              int width, int height,
-                              int size);
+xp_bitmap_t *Bitmap_get(Drawable d, int img, int bmp);
+void Bitmap_paint(Drawable d, int img, int x, int y, int bmp);
+void Bitmap_paint_area(Drawable d, xp_bitmap_t *bit, int x, int y, irec_t *r);
+xp_bitmap_t *Bitmap_get_blended(Drawable d, int img, int rgb);
+void Bitmap_paint_blended(Drawable d, int img, int x, int y, int rgb);
 
 #endif

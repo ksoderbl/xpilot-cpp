@@ -1,5 +1,4 @@
-/* $Id: guimap.h,v 5.1 2001/10/11 20:27:35 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -26,7 +25,7 @@
 #define GUIMAP_H
 
 void Gui_paint_cannon(int x, int y, int type);
-void Gui_paint_fuel(int x, int y, int fuel);
+void Gui_paint_fuel(int x, int y, double fuel);
 void Gui_paint_base(int x, int y, int xi, int yi, int type);
 void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool more_y);
 
