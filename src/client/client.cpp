@@ -1629,20 +1629,14 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
     fuelCurrent = newCurrentTank;
     if (newFuelSum > fuelSum && selfVisible != 0)
-    {
         fuelCount = FUEL_NOTIFY;
-    }
     fuelSum = newFuelSum;
     fuelMax = newFuelMax;
     selfVisible = 0;
     if (newPacketSize + 16 < packet_size)
-    {
         packet_size -= 16;
-    }
     else
-    {
         packet_size = newPacketSize;
-    }
 
     world.x = selfPos.x - (ext_view_width / 2);
     world.y = selfPos.y - (ext_view_height / 2);
@@ -1650,21 +1644,13 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     if (BIT(Setup->mode, WRAP_PLAY))
     {
         if (world.x < 0 && world.x + ext_view_width < Setup->width)
-        {
             world.x += Setup->width;
-        }
         else if (world.x > 0 && world.x + ext_view_width >= Setup->width)
-        {
             realWorld.x -= Setup->width;
-        }
         if (world.y < 0 && world.y + ext_view_height < Setup->height)
-        {
             world.y += Setup->height;
-        }
         else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
-        {
             realWorld.y -= Setup->height;
-        }
     }
     return 0;
 }

@@ -2481,7 +2481,15 @@ static option_desc opts[] = {
      "After being paused this long, the player will be kicked off.\n"
      "Setting this option to 0 disables the feature.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
-
+    {"mainLoopTime",
+     "mainLoopTime",
+     "0",
+     &mainLoopTime,
+     valInt,
+     tuner_none,
+     "Duration of last Main_loop() function call (in microseconds).\n"
+     "This option is read only.\n",
+     OPT_COMMAND | OPT_VISIBLE},
 };
 
 static bool options_inited = false;

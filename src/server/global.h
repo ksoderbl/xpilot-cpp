@@ -71,6 +71,7 @@ extern int GetInd[];
 extern int ShutdownServer;
 extern int ShutdownDelay;
 extern long main_loops;
+extern int mainLoopTime;
 extern char *serverAddr;
 extern bool updateScores;
 extern int game_lock;

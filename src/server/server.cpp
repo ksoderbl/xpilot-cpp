@@ -83,6 +83,7 @@ int ShutdownDelay = 1000;
 char ShutdownReason[MAX_CHARS];
 
 long main_loops = 0; /* needed in events.c */
+int mainLoopTime = 0;
 
 #ifdef LOG
 static bool Log = true;
@@ -182,17 +183,13 @@ int main(int argc, char **argv)
     Meta_init();
 
     if (Setup_net_server() == -1)
-    {
         End_game();
-    }
+
     if (options.NoQuit)
-    {
         signal(SIGHUP, SIG_IGN);
-    }
     else
-    {
         signal(SIGHUP, Handle_signal);
-    }
+
     signal(SIGTERM, Handle_signal);
     signal(SIGINT, Handle_signal);
     signal(SIGPIPE, SIG_IGN);
@@ -224,6 +221,10 @@ int main(int argc, char **argv)
 
 void Main_loop(void)
 {
+    struct timeval tv1, tv2;
+
+    gettimeofday(&tv1, NULL);
+
     main_loops++;
 
     // if ((main_loops % 1000) == 0)
@@ -283,6 +284,19 @@ void Main_loop(void)
     }
 
     Queue_loop();
+
+    {
+        int s, us;
+
+        gettimeofday(&tv2, NULL);
+
+        s = tv2.tv_sec - tv1.tv_sec;
+        us = tv2.tv_usec - tv1.tv_usec;
+
+        us += s * 1000000;
+
+        mainLoopTime = us;
+    }
 }
 
 /*
