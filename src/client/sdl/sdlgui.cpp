@@ -340,7 +340,7 @@ int Gui_init(void)
 
     if (asteroid_init() == -1)
     {
-        error("failed to initialize asteroids");
+        xperror("failed to initialize asteroids");
         return -1;
     }
 
@@ -351,14 +351,14 @@ int Gui_init(void)
     polyEdgeListBase = glGenLists(num_polygons);
     if ((!polyListBase) || (!polyEdgeListBase))
     {
-        error("failed to generate display lists");
+        xperror("failed to generate display lists");
         return -1;
     }
 
     tess = gluNewTess();
     if (tess == NULL)
     {
-        error("failed to create tessellation object");
+        xperror("failed to create tessellation object");
         return -1;
     }
 
@@ -410,7 +410,7 @@ void Gui_paint_cannon(int x, int y, int type)
         break;
     default:
         errno = 0;
-        error("Bad cannon dir.");
+        xperror("Bad cannon dir.");
         return;
     }
 }
@@ -476,7 +476,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         break;
     default:
         errno = 0;
-        error("Bad base dir.");
+        xperror("Bad base dir.");
         return;
     }
 
@@ -546,7 +546,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         break;
     default:
         errno = 0;
-        error("Bad base dir.");
+        xperror("Bad base dir.");
     }
 }
 
@@ -1930,7 +1930,7 @@ static void Paint_HUD_items(int hud_pos_x, int hud_pos_y)
 
             Image_paint(IMG_HUD_ITEMS,
                         horiz_pos - ITEM_SIZE,
-                        vert_pos, (u_byte)i,
+                        vert_pos, (uint8_t)i,
                         hudItemsColorRGBA);
 
             if (i == lose_item)
@@ -2266,7 +2266,7 @@ void Add_alert_message(const char *message, double timeout)
     }
     else
     {
-        error("Add_alert_message: Failed to create LabelWidget");
+        xperror("Add_alert_message: Failed to create LabelWidget");
         return;
     }
 
@@ -2383,7 +2383,7 @@ void Paint_messages(void)
             {
                 if (!(wi = (LabelWidget *)tmp->wid_info))
                 {
-                    error("Paint_messages: ListWidget lacks a wid_info ptr!");
+                    xperror("Paint_messages: ListWidget lacks a wid_info ptr!");
                     continue;
                 }
                 if (strlen(msg->txt))

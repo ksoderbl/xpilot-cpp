@@ -99,7 +99,7 @@ extern "C"
                 SDL_Surface *BackgroundImage;                                               /*! Background image for the console */
                 SDL_Surface *InputBackground;                                               /*! Dirty rectangle that holds the part of the background image that is behind the commandline */
                 int DispX, DispY;                                                           /*! The top left x and y coords of the console on the display screen */
-                uint8_t ConsoleAlpha;                                                       /*! The consoles alpha level */
+                uint8_t ConsoleAlpha;                                                 /*! The consoles alpha level */
                 int CommandScrollBack;                                                      /*! How much the users scrolled back in the command lines */
                 void (*CmdFunction)(struct console_information_td *console, char *command); /*! The Function that is executed if you press 'Return' in the console */
                 char *(*TabFunction)(char *command);                                        /*! The Function that is executed if you press 'Tab' in the console */

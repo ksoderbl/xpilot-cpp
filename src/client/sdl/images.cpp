@@ -65,8 +65,8 @@ static int Image_init(image_t *img)
     img->data = XCALLOC(unsigned int, img->data_width * img->data_height);
     if (img->data == NULL)
     {
-        error("Failed to allocate memory for: %s size %dx%d",
-              img->filename, img->data_width, img->data_height);
+        xperror("Failed to allocate memory for: %s size %dx%d",
+                img->filename, img->data_width, img->data_height);
         img->state = IMG_STATE_ERROR;
         return -1;
     }

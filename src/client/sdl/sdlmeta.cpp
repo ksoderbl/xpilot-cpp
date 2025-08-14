@@ -125,7 +125,7 @@ static void Scroll_PlayerListWidget(GLfloat pos, void *data)
     widget = (GLWidget *)data;
     if (widget->WIDGET != PLAYERLISTWIDGET)
     {
-        error("expected PLAYERLISTWIDGET got [%d]", widget->WIDGET);
+        xperror("expected PLAYERLISTWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -154,7 +154,7 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
 
     if (widget->WIDGET != PLAYERLISTWIDGET)
     {
-        error("expected PLAYERLISTWIDGET got [%d]", widget->WIDGET);
+        xperror("expected PLAYERLISTWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -200,7 +200,7 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
         }
         else
         {
-            error("failed to create a scroll bar for player list");
+            xperror("failed to create a scroll bar for player list");
             return;
         }
     }
@@ -234,7 +234,7 @@ static void Close_PlayerListWidget(GLWidget *widget)
 
     if (widget->WIDGET != PLAYERLISTWIDGET)
     {
-        error("expected PLAYERLISTWIDGET got [%d]", widget->WIDGET);
+        xperror("expected PLAYERLISTWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -269,25 +269,25 @@ static GLWidget *Init_PlayerListWidget(server_info_t *sip)
 
     if (!(players_str = strdup(sip->playlist)))
     {
-        error("out of memory");
+        xperror("out of memory");
         return NULL;
     }
     if (!(players = create_player_list(players_str)))
     {
-        error("failed to create players list");
+        xperror("failed to create players list");
         free(players_str);
         return NULL;
     }
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         free(players_str);
         List_delete(players);
         return NULL;
     }
     if (!(info = (PlayerListWidget *)malloc(sizeof(PlayerListWidget))))
     {
-        error("out of memory");
+        xperror("out of memory");
         free(players_str);
         List_delete(players);
         free(tmp);
@@ -299,7 +299,7 @@ static GLWidget *Init_PlayerListWidget(server_info_t *sip)
                                &(info->header_bg),
                                CENTER, CENTER)))
     {
-        error("failed to create header for player list");
+        xperror("failed to create header for player list");
         free(players_str);
         List_delete(players);
         free(tmp);
@@ -431,12 +431,12 @@ static GLWidget *Init_StatusWidget(server_info_t *sip)
 
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         return NULL;
     }
     if (!(info = (StatusWidget *)malloc(sizeof(StatusWidget))))
     {
-        error("out of memory");
+        xperror("out of memory");
         free(tmp);
         return NULL;
     }
@@ -477,7 +477,7 @@ static void SelectRow_MetaWidget(GLWidget *widget, MetaRowWidget *row)
 
     if (widget->WIDGET != METAWIDGET)
     {
-        error("expected METAWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METAWIDGET got [%d]", widget->WIDGET);
         return;
     }
     meta = (MetaWidget *)widget->wid_info;
@@ -498,7 +498,7 @@ static void SelectRow_MetaWidget(GLWidget *widget, MetaRowWidget *row)
     }
     else
     {
-        error("failed to create a status widget");
+        xperror("failed to create a status widget");
     }
     if (meta->players != NULL)
     {
@@ -517,7 +517,7 @@ static void SelectRow_MetaWidget(GLWidget *widget, MetaRowWidget *row)
     }
     else
     {
-        error("failed to create a player list widget");
+        xperror("failed to create a player list widget");
     }
     row->is_selected = true;
     table = (MetaTableWidget *)meta->table->wid_info;
@@ -532,7 +532,7 @@ static server_info_t *GetSelectedServer_MetaWidget(GLWidget *widget)
 
     if (widget->WIDGET != METAWIDGET)
     {
-        error("expected METAWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METAWIDGET got [%d]", widget->WIDGET);
         return NULL;
     }
     meta = (MetaWidget *)widget->wid_info;
@@ -546,7 +546,7 @@ static void Paint_MetaRowWidget(GLWidget *widget)
 
     if (widget->WIDGET != METAROWWIDGET)
     {
-        error("expected METAROWWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METAROWWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -618,7 +618,7 @@ static void Button_MetaRowWidget(Uint8 button, Uint8 state, Uint16 x,
     widget = (GLWidget *)data;
     if (widget->WIDGET != METAROWWIDGET)
     {
-        error("expected METAROWWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METAROWWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -675,12 +675,12 @@ static GLWidget *Init_MetaRowWidget(server_info_t *sip,
 
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         return NULL;
     }
     if (!(row = (MetaRowWidget *)malloc(sizeof(MetaRowWidget))))
     {
-        error("out of memory");
+        xperror("out of memory");
         free(tmp);
         return NULL;
     }
@@ -719,12 +719,12 @@ static GLWidget *Init_MetaHeaderWidget(void)
 
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         return NULL;
     }
     if (!(info = (MetaHeaderWidget *)malloc(sizeof(MetaHeaderWidget))))
     {
-        error("out of memory");
+        xperror("out of memory");
         free(tmp);
         return NULL;
     }
@@ -758,7 +758,7 @@ static void Scroll_MetaTableWidget(GLfloat pos, void *data)
     widget = (GLWidget *)data;
     if (widget->WIDGET != METATABLEWIDGET)
     {
-        error("expected METATABLEWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METATABLEWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -787,7 +787,7 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
 
     if (widget->WIDGET != METATABLEWIDGET)
     {
-        error("expected METATABLEWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METATABLEWIDGET got [%d]", widget->WIDGET);
         return;
     }
 
@@ -833,7 +833,7 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
         }
         else
         {
-            error("failed to create a scroll bar for meta table");
+            xperror("failed to create a scroll bar for meta table");
             return;
         }
     }
@@ -857,12 +857,12 @@ static GLWidget *Init_MetaTableWidget(GLWidget *meta, list_t servers)
 
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         return NULL;
     }
     if (!(info = (MetaTableWidget *)malloc(sizeof(MetaTableWidget))))
     {
-        error("out of memory");
+        xperror("out of memory");
         free(tmp);
         return NULL;
     }
@@ -896,7 +896,7 @@ static GLWidget *Init_MetaTableWidget(GLWidget *meta, list_t servers)
     }
     else
     {
-        error("failed to create a header row for meta table");
+        xperror("failed to create a header row for meta table");
     }
 
     return tmp;
@@ -909,7 +909,7 @@ static void Paint_MetaWidget(GLWidget *widget)
 
     if (widget->WIDGET != METAWIDGET)
     {
-        error("expected METAWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METAWIDGET got [%d]", widget->WIDGET);
         return;
     }
     info = (MetaWidget *)widget->wid_info;
@@ -941,7 +941,7 @@ static void Close_MetaWidget(GLWidget *widget)
 
     if (widget->WIDGET != METAWIDGET)
     {
-        error("expected METAWIDGET got [%d]", widget->WIDGET);
+        xperror("expected METAWIDGET got [%d]", widget->WIDGET);
         return;
     }
     info = (MetaWidget *)widget->wid_info;
@@ -984,12 +984,12 @@ static GLWidget *Init_MetaWidget(list_t servers)
 
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         return NULL;
     }
     if (!(info = (MetaWidget *)malloc(sizeof(MetaWidget))))
     {
-        error("out of memory");
+        xperror("out of memory");
         free(tmp);
         return NULL;
     }
@@ -1103,7 +1103,7 @@ int Meta_window(Connect_param_t *conpar)
         Delete_server_list();
         if ((num_serv = Get_meta_data(err)) <= 0)
         {
-            error("Couldn't get meta list.");
+            xperror("Couldn't get meta list.");
             return -1;
         }
         else
@@ -1113,13 +1113,13 @@ int Meta_window(Connect_param_t *conpar)
     if (Welcome_sort_server_list() == -1)
     {
         Delete_server_list();
-        error("out of memory");
+        xperror("out of memory");
         return -1;
     }
 
     if (!(root = Init_EmptyBaseGLWidget()))
     {
-        error("Widget init failed");
+        xperror("Widget init failed");
         return -1;
     }
     root->bounds.x = root->bounds.y = 0;
