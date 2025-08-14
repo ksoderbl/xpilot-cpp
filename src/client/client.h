@@ -226,14 +226,14 @@ typedef struct
 
 typedef struct
 {
-    unsigned char color, dir;
+    uint8_t color, dir;
     short x, y, len;
 } laser_t;
 
 typedef struct
 {
     short x, y, dir;
-    unsigned char len;
+    uint8_t len;
 } missile_t;
 
 typedef struct

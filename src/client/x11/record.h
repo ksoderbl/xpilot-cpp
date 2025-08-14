@@ -54,7 +54,7 @@ struct recordable_drawing
     int (*fillPolygon)(Display *display, Drawable drawable, GC gc,
                        XPoint *points, int npoints,
                        int shape, int mode);
-    void (*paintItemSymbol)(unsigned char type, Drawable drawable, GC mygc,
+    void (*paintItemSymbol)(uint8_t type, Drawable drawable, GC mygc,
                             int x, int y, int color);
     int (*fillRectangle)(Display *display, Drawable drawable, GC gc,
                          int x, int y,

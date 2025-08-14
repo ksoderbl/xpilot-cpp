@@ -1554,38 +1554,6 @@ int Net_ask_for_motd(long offset, long maxlen)
     return 0;
 }
 
-static void Check_view_dimensions(void)
-{
-    int width_wanted = draw_width;
-    int height_wanted = draw_height;
-    int srv_width, srv_height;
-
-    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
-    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
-
-    srv_width = width_wanted;
-    srv_height = height_wanted;
-    LIMIT(srv_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    LIMIT(srv_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    if (ext_view_width != srv_width || ext_view_height != srv_height)
-        Send_display();
-
-    active_view_width = ext_view_width;
-    active_view_height = ext_view_height;
-    ext_view_x_offset = 0;
-    ext_view_y_offset = 0;
-    if (width_wanted > ext_view_width)
-    {
-        ext_view_width = width_wanted;
-        ext_view_x_offset = (width_wanted - active_view_width) / 2;
-    }
-    if (height_wanted > ext_view_height)
-    {
-        ext_view_height = height_wanted;
-        ext_view_y_offset = (height_wanted - active_view_height) / 2;
-    }
-}
-
 /*
  * Receive the packet with counts for all the items.
  * New since pack version 4203.
@@ -2043,7 +2011,7 @@ int Receive_fastradar(void)
 {
     int n, i, r = 1;
     int x, y, size;
-    unsigned char *ptr;
+    uint8_t *ptr;
 
     rbuf.ptr++; /* skip PKT_FASTRADAR packet id */
 
@@ -2052,7 +2020,7 @@ int Receive_fastradar(void)
     n = (*rbuf.ptr++ & 0xFF);
     if (rbuf.ptr - rbuf.buf + (n * 3) > rbuf.len)
         return 0;
-    ptr = (unsigned char *)rbuf.ptr;
+    ptr = (uint8_t *)rbuf.ptr;
     for (i = 0; i < n; i++)
     {
         x = *ptr++;
@@ -2545,7 +2513,7 @@ int Send_turnresistance_s(double turnresistance_s)
 
 int Receive_quit(void)
 {
-    unsigned char pkt;
+    uint8_t pkt;
     sockbuf_t *sbuf;
     char reason[MAX_CHARS];
 
@@ -2567,7 +2535,7 @@ int Receive_quit(void)
 int Receive_audio(void)
 {
     int n;
-    unsigned char pkt, type, vol;
+    uint8_t pkt, type, vol;
 
     if ((n = Packet_scanf(&rbuf, "%c%c%c", &pkt, &type, &vol)) <= 0)
         return n;
@@ -2581,7 +2549,7 @@ int Receive_audio(void)
 int Receive_talk_ack(void)
 {
     int n;
-    unsigned char pkt;
+    uint8_t pkt;
     long talk_ack;
 
     if ((n = Packet_scanf(&cbuf, "%c%ld", &pkt, &talk_ack)) <= 0)

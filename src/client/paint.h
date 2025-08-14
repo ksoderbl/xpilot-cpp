@@ -126,9 +126,6 @@ void Paint_recording(void);
 void Paint_frame(void);
 void Game_over_action(uint8_t stat);
 
-/*
- * Prototype from blockbitmaps.c
- */
-int Block_bitmaps_create(void);
+int Check_view_dimensions(void);
 
 #endif

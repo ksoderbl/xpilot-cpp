@@ -99,7 +99,7 @@ extern "C"
                 SDL_Surface *BackgroundImage;                                               /*! Background image for the console */
                 SDL_Surface *InputBackground;                                               /*! Dirty rectangle that holds the part of the background image that is behind the commandline */
                 int DispX, DispY;                                                           /*! The top left x and y coords of the console on the display screen */
-                unsigned char ConsoleAlpha;                                                 /*! The consoles alpha level */
+                uint8_t ConsoleAlpha;                                                       /*! The consoles alpha level */
                 int CommandScrollBack;                                                      /*! How much the users scrolled back in the command lines */
                 void (*CmdFunction)(struct console_information_td *console, char *command); /*! The Function that is executed if you press 'Return' in the console */
                 char *(*TabFunction)(char *command);                                        /*! The Function that is executed if you press 'Tab' in the console */
@@ -138,7 +138,7 @@ extern "C"
         extern DECLSPEC void SDLCALL CON_Out(ConsoleInformation *console, const char *str, ...);
         /*! Sets the alpha level of the console to the specified value (0 - transparent,
                 255 - opaque). Use this function also for OpenGL. */
-        extern DECLSPEC void SDLCALL CON_Alpha(ConsoleInformation *console, unsigned char alpha);
+        extern DECLSPEC void SDLCALL CON_Alpha(ConsoleInformation *console, uint8_t alpha);
         /*! Internal: Sets the alpha channel of an SDL_Surface to the specified value.
                 Preconditions: the surface in question is RGBA. 0 <= a <= 255, where 0 is transparent and 255 opaque */
         extern DECLSPEC void SDLCALL CON_AlphaGL(SDL_Surface *s, int alpha);

@@ -85,7 +85,7 @@ static int record_dash_dirty = 0;    /* Has dashes list changed? */
 static void Dummy_newFrame(void) {}
 static void Dummy_endFrame(void) {}
 
-static void Dummy_paintItemSymbol(unsigned char type, Drawable drawable,
+static void Dummy_paintItemSymbol(uint8_t type, Drawable drawable,
                                   GC mygc, int x, int y, int color) {}
 
 extern char hostname[];
@@ -163,7 +163,7 @@ static int RGetPixelIndex(unsigned long pixel)
 //     {
 //         struct tile_list *next;
 //         Pixmap tile;
-//         unsigned char tile_id;
+//         uint8_t tile_id;
 //     } tile_list_t;
 //     static tile_list_t *list = NULL;
 //     tile_list_t *lptr;
@@ -662,7 +662,7 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
     return 0;
 }
 
-static void RPaintItemSymbol(unsigned char type, Drawable drawable, GC mygc,
+static void RPaintItemSymbol(uint8_t type, Drawable drawable, GC mygc,
                              int x, int y, int color)
 {
     if (drawable == drawPixmap)

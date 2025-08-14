@@ -474,7 +474,7 @@ int Check_index_by_pos(int x, int y)
 /*
  * Convert a `space' map block into a dot.
  */
-static void Map_make_dot(unsigned char *data)
+static void Map_make_dot(uint8_t *data)
 {
     if (*data == SETUP_SPACE)
         *data = SETUP_SPACE_DOT;
@@ -500,7 +500,7 @@ void Map_dots(void)
         x,
         y,
         start;
-    unsigned char dot[256];
+    uint8_t dot[256];
 
     /*
      * Lookup table to recognize dots.
@@ -664,7 +664,7 @@ void Map_blue(int startx, int starty, int width, int height)
         map_index,
         type,
         newtype;
-    unsigned char blue[256];
+    uint8_t blue[256];
     bool outline = false;
 
     if (instruments.outlineWorld ||

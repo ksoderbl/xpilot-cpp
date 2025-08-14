@@ -1029,9 +1029,9 @@ int Talk_paste(char *data, int data_len, bool overwrite)
     }
     for (i = 0; i < accept_len; i++)
     {
-        if (((unsigned char)paste_buf[i] < 33
-             /* && (unsigned char)paste_buf[i] != '\0' */) ||
-            ((unsigned char)paste_buf[i] > 126 && (unsigned char)paste_buf[i] < 161))
+        if (((uint8_t)paste_buf[i] < 33
+             /* && (uint8_t)paste_buf[i] != '\0' */) ||
+            ((uint8_t)paste_buf[i] > 126 && (uint8_t)paste_buf[i] < 161))
         {
             paste_buf[i] = ' ';
         }

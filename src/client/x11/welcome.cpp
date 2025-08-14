@@ -108,7 +108,7 @@ struct ServerInfo
         queue,
         pingtime;
     struct timeval start;
-    unsigned char serial;
+    uint8_t serial;
 };
 typedef struct ServerInfo server_info_t;
 
@@ -939,7 +939,7 @@ static void Ping_servers(void)
     char *reply_ip;
     int reply_port;
     unsigned reply_magic;
-    unsigned char reply_serial, reply_status;
+    uint8_t reply_serial, reply_status;
     int outstanding;
     char buf[MSG_LEN];
 

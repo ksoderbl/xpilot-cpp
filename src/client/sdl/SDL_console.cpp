@@ -695,7 +695,7 @@ void CON_Out(ConsoleInformation *console, const char *str, ...)
 }
 
 /* Sets the alpha level of the console, 0 turns off alpha blending */
-void CON_Alpha(ConsoleInformation *console, unsigned char alpha)
+void CON_Alpha(ConsoleInformation *console, uint8_t alpha)
 {
     if (!console)
         return;

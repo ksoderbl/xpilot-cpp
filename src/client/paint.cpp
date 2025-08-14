@@ -56,7 +56,7 @@ DFLOAT scaleFactor;
 DFLOAT scaleFactor_s;
 short scaleArray[SCALE_ARRAY_SIZE];
 
-void Check_view_dimensions(void)
+int Check_view_dimensions(void)
 {
     int width_wanted = draw_width;
     int height_wanted = draw_height;
@@ -86,4 +86,6 @@ void Check_view_dimensions(void)
         ext_view_height = height_wanted;
         ext_view_y_offset = (height_wanted - active_view_height) / 2;
     }
+
+    return 0;
 }

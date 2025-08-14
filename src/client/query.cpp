@@ -136,7 +136,7 @@ static int Query_subnet(sock_t *sock,
 static int Query_fudged(sock_t *sock, int port, char *msg, int msglen)
 {
     int i, count = 0;
-    unsigned char *p;
+    uint8_t *p;
     struct sockaddr_in addr, subnet;
     struct hostent *h;
     unsigned long addrmask, netmask;
@@ -160,7 +160,7 @@ static int Query_fudged(sock_t *sock, int port, char *msg, int msglen)
         memset(&addr, 0, sizeof(addr));
         addr.sin_family = AF_INET;
         addr.sin_port = (unsigned short)htons((unsigned short)port);
-        p = (unsigned char *)h->h_addr_list[i];
+        p = (uint8_t *)h->h_addr_list[i];
         addrmask = p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3];
         addr.sin_addr.s_addr = htonl(addrmask);
         subnet = addr;

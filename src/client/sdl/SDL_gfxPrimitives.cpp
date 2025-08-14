@@ -3808,9 +3808,9 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
     SDL_Rect drect;
     int result;
     int ix, iy, k;
-    unsigned char *charpos;
-    unsigned char bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
-    unsigned char *bitpos;
+    uint8_t *charpos;
+    uint8_t bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
+    uint8_t *bitpos;
     Uint8 *curpos;
     int forced_redraw;
 
@@ -3865,15 +3865,15 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
     /*
      * Create new 8x8 bitmap surface if not already present
      */
-    if (gfxPrimitivesFont[(unsigned char)c] == NULL)
+    if (gfxPrimitivesFont[(uint8_t)c] == NULL)
     {
-        gfxPrimitivesFont[(unsigned char)c] =
+        gfxPrimitivesFont[(uint8_t)c] =
             SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_HWSURFACE | SDL_SRCALPHA, 8, 8,
                                  32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
         /*
          * Check pointer
          */
-        if (gfxPrimitivesFont[(unsigned char)c] == NULL)
+        if (gfxPrimitivesFont[(uint8_t)c] == NULL)
         {
             return (-1);
         }
@@ -3890,18 +3890,18 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
     /*
      * Check if color has changed
      */
-    if ((gfxPrimitivesFontColor[(unsigned char)c] != color) || (forced_redraw))
+    if ((gfxPrimitivesFontColor[(uint8_t)c] != color) || (forced_redraw))
     {
         /*
          * Redraw character
          */
-        SDL_SetAlpha(gfxPrimitivesFont[(unsigned char)c], SDL_SRCALPHA, 255);
-        gfxPrimitivesFontColor[(unsigned char)c] = color;
+        SDL_SetAlpha(gfxPrimitivesFont[(uint8_t)c], SDL_SRCALPHA, 255);
+        gfxPrimitivesFontColor[(uint8_t)c] = color;
 
         /*
          * Variable setup
          */
-        k = (unsigned char)c;
+        k = (uint8_t)c;
         k *= 8;
         charpos = gfxPrimitivesFontdata;
         charpos += k;
@@ -3909,7 +3909,7 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
         /*
          * Clear bitmap
          */
-        curpos = (Uint8 *)gfxPrimitivesFont[(unsigned char)c]->pixels;
+        curpos = (Uint8 *)gfxPrimitivesFont[(uint8_t)c]->pixels;
         memset(curpos, 0, 8 * 8 * 4);
 
         /*
@@ -3935,7 +3935,7 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
     /*
      * Draw bitmap onto destination surface
      */
-    result = SDL_BlitSurface(gfxPrimitivesFont[(unsigned char)c], &srect, dst, &drect);
+    result = SDL_BlitSurface(gfxPrimitivesFont[(uint8_t)c], &srect, dst, &drect);
 
     return (result);
 }

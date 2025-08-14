@@ -154,7 +154,7 @@ void Paint_world(void)
         fill_bottom_left = -1,
         fill_bottom_right = -1;
     static int wormDrawCount;
-    unsigned char *mapptr, *mapbase;
+    uint8_t *mapptr, *mapbase;
     static int wallTileReady = 0;
     static Pixmap wallTile = None;
     int wallTileDoit = false;

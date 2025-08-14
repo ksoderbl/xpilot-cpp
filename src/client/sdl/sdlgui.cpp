@@ -554,7 +554,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type,
                      bool last, bool more_y)
 {
     int mask;
-    static unsigned char decor[256];
+    static uint8_t decor[256];
     static int decorReady = 0;
 
     if (!decorReady)

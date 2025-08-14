@@ -92,8 +92,8 @@ Rpos_Update(rpos_t *rp, int loops)
 static int Random_map(void)
 {
         int i;
-        unsigned char *data;
-        unsigned char typemap[] = {
+        uint8_t *data;
+        uint8_t typemap[] = {
             SETUP_SPACE,
             SETUP_SPACE,
             SETUP_SPACE,

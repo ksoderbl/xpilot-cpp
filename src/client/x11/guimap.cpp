@@ -537,7 +537,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
     static int decorTileReady = 0;
     static Pixmap decorTile = None;
     int decorTileDoit = false;
-    static unsigned char decor[256];
+    static uint8_t decor[256];
     static int decorReady = 0;
 
     SET_FG(colors[decorColor].pixel);

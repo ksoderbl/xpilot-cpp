@@ -4,7 +4,7 @@
 
 #define GFX_FONTDATAMAX (8 * 256)
 
-static unsigned char gfxPrimitivesFontdata[GFX_FONTDATAMAX] = {
+static uint8_t gfxPrimitivesFontdata[GFX_FONTDATAMAX] = {
 
     /*
      * 0 0x00 '^@'
