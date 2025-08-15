@@ -66,6 +66,9 @@ extern XGCValues gcv;
 
 int blockBitmapShips = 1;
 
+int ballColor = 4;
+int connectorColor = 4;
+
 void Gui_paint_ball(int x, int y)
 {
     if (!texturedObjects)
@@ -99,14 +102,11 @@ void Gui_paint_ball(int x, int y)
                        0, 64 * 360);
         }
         else
-        {
-            Arc_add(WHITE, x - BALL_RADIUS, y - BALL_RADIUS,
+            Arc_add(ballColor, x - BALL_RADIUS, y - BALL_RADIUS,
                     2 * BALL_RADIUS, 2 * BALL_RADIUS, 0, 64 * 360);
-        }
+
         if (ballTile != None)
-        {
             XSetFillStyle(dpy, gameGC, FillSolid);
-        }
     }
     else
     {
@@ -117,13 +117,13 @@ void Gui_paint_ball(int x, int y)
     }
 }
 
-void Gui_paint_ball_connecter(int x1, int y1, int x2, int y2)
+void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
 {
     x2 = X(x2);
     y2 = Y(y2);
     x1 = X(x1);
     y1 = Y(y1);
-    Segment_add(WHITE, x1, y1, x2, y2);
+    Segment_add(connectorColor, x1, y1, x2, y2);
 }
 
 /* used by Paint_mine */
@@ -205,9 +205,7 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
                      mine_points, 21, CoordModePrevious);
 
         if (name)
-        {
             Gui_paint_mine_name(x, y, name);
-        }
     }
     else
     {
@@ -472,20 +470,14 @@ void Gui_paint_refuel(int x0, int y0, int x1, int y1)
 void Gui_paint_connector(int x0, int y0, int x1, int y1, int tractor)
 {
     if (tractor)
-    {
         rd.setDashes(dpy, gameGC, 0, cdashes, NUM_CDASHES);
-    }
     else
-    {
         rd.setDashes(dpy, gameGC, 0, dashes, NUM_DASHES);
-    }
     rd.drawLine(dpy, drawPixmap, gameGC,
                 WINSCALE(X(x0)), WINSCALE(Y(y0)),
                 WINSCALE(X(x1)), WINSCALE(Y(y1)));
     if (tractor)
-    {
         rd.setDashes(dpy, gameGC, 0, dashes, NUM_DASHES);
-    }
 }
 
 void Gui_paint_transporter(int x0, int y0, int x1, int y1)
@@ -499,7 +491,7 @@ void Gui_paint_all_connectors_begin()
 {
     unsigned long mask;
 
-    SET_FG(colors[WHITE].pixel);
+    SET_FG(colors[connectorColor].pixel);
     if (gcv.line_style != LineOnOffDash)
     {
         gcv.line_style = LineOnOffDash;
@@ -546,8 +538,9 @@ static void Gui_paint_rounddelay(int x, int y)
 /*  Here starts the paint functions for ships  (MM) */
 static void Gui_paint_ship_name(int x, int y, other_t *other)
 {
+    int shipNameColor = BLUE;
     FIND_NAME_WIDTH(other);
-    SET_FG(colors[WHITE].pixel);
+    SET_FG(colors[shipNameColor].pixel);
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(X(x)) - other->name_width / 2,
                   WINSCALE(Y(y) + 16) + gameFont->ascent,
@@ -559,19 +552,13 @@ static int Gui_is_my_tank(other_t *other)
     char tank_name[MAX_NAME_LEN];
 
     if (self == NULL || other == NULL || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
-    {
         return 0;
-    }
 
     if (strlcpy(tank_name, self->nick_name, MAX_NAME_LEN) < MAX_NAME_LEN)
-    {
         strlcat(tank_name, "'s tank", MAX_NAME_LEN);
-    }
 
     if (strcmp(tank_name, other->nick_name))
-    {
         return 0;
-    }
 
     return 1;
 }
@@ -582,24 +569,16 @@ static int Gui_calculate_ship_color(int id, other_t *other)
 
 #ifndef NO_BLUE_TEAM
     if (BIT(Setup->mode, TEAM_PLAY) && self != NULL && self->id != id && other != NULL && self->team == other->team)
-    {
         ship_color = BLUE;
-    }
 
     if (self != NULL && self->id != id && other != NULL && self->alliance != ' ' && self->alliance == other->alliance)
-    {
         ship_color = BLUE;
-    }
 
     if (Gui_is_my_tank(other))
-    {
         ship_color = BLUE;
-    }
 #endif
     if (roundDelay > 0 && ship_color == WHITE)
-    {
         ship_color = RED;
-    }
     return ship_color;
 }
 
@@ -790,10 +769,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
      * his/her ship.
      */
     if (instruments.showShipName && self != NULL && self->id != id && other != NULL)
-    {
-
         Gui_paint_ship_name(x, y, other);
-    }
 
     if (roundDelay > 0 && roundDelay % FPS < FPS / 2)
     {
@@ -806,9 +782,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     if (cloak == 0 && phased == 0)
     {
         if (!texturedObjects || !blockBitmapShips)
-        {
             Gui_paint_ship_uncloaked(id, points, ship_color, cnt);
-        }
         else
         {
             if (ship_color == BLUE)
@@ -823,17 +797,11 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     }
 
     if (phased)
-    {
         Gui_paint_ship_phased(ship_color, points, cnt);
-    }
     else if (cloak)
-    {
         Gui_paint_ship_cloaked(ship_color, points, cnt);
-    }
     if (markingLights)
-    {
         Gui_paint_marking_lights(id, x, y, ship, dir);
-    }
     if (shield || deflector)
     {
         Set_drawstyle_dashed(ship_color, cloak);

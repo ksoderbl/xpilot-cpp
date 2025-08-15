@@ -266,9 +266,7 @@ static void Init_spark_colors(void)
             if (sscanf(buf, "%u", &col) == 1)
             {
                 if (col < (unsigned)maxColors)
-                {
                     spark_color[num_spark_colors++] = col;
-                }
             }
         }
     }
@@ -278,25 +276,19 @@ static void Init_spark_colors(void)
         {
             /* 3 colors ranging from 5 up to 7 */
             for (i = 5; i < maxColors; i++)
-            {
                 spark_color[num_spark_colors++] = i;
-            }
         }
         else
         {
             /* 7 colors ranging from 5 till 11 */
             for (i = 5; i < 12; i++)
-            {
                 spark_color[num_spark_colors++] = i;
-            }
         }
         /* default spark colors always include RED. */
         spark_color[num_spark_colors++] = RED;
     }
     for (i = num_spark_colors; i < MAX_COLORS; i++)
-    {
         spark_color[i] = spark_color[num_spark_colors - 1];
-    }
 }
 
 /*
@@ -395,46 +387,27 @@ int Init_top(void)
     }
 
     if (Colors_init() == -1)
-    {
         return -1;
-    }
 
     if (shieldDrawMode == -1)
-    {
         shieldDrawMode = 0;
-    }
-    if (hudColor >= maxColors || hudColor <= 0)
-    {
+    if (hudColor >= maxColors || hudColor < 0)
         hudColor = BLUE;
-    }
-    if (hudLockColor >= maxColors || hudLockColor <= 0)
-    {
+    if (hudLockColor >= maxColors || hudLockColor < 0)
         hudLockColor = hudColor;
-    }
-    if (wallColor >= maxColors || wallColor <= 0)
-    {
+    if (wallColor >= maxColors || wallColor < 0)
         wallColor = BLUE;
-    }
+
     if (wallRadarColor >= maxColors)
-    {
         wallRadarColor = BLUE;
-    }
     if (targetRadarColor >= maxColors)
-    {
         targetRadarColor = BLUE;
-    }
     if (oldMessagesColor >= maxColors || oldMessagesColor < 0)
-    {
-        oldMessagesColor = WHITE;
-    }
-    if (decorColor >= maxColors || decorColor <= 0)
-    {
+        oldMessagesColor = BLUE;
+    if (decorColor >= maxColors || decorColor < 0)
         decorColor = RED;
-    }
     if (decorRadarColor >= maxColors)
-    {
         decorRadarColor = BLUE;
-    }
 
     shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
 
@@ -475,13 +448,9 @@ int Init_top(void)
     if ((mask & XValue) != 0)
     {
         if ((mask & XNegative) != 0)
-        {
             top_x = DisplayWidth(dpy, DefaultScreen(dpy)) - top_width + x;
-        }
         else
-        {
             top_x = x;
-        }
         top_flags |= USPosition;
     }
     else
@@ -492,13 +461,9 @@ int Init_top(void)
     if ((mask & YValue) != 0)
     {
         if ((mask & YNegative) != 0)
-        {
             top_y = DisplayHeight(dpy, DefaultScreen(dpy)) - top_height + y;
-        }
         else
-        {
             top_y = y;
-        }
         top_flags |= USPosition;
     }
     else
@@ -637,9 +602,7 @@ int Init_playing_windows(void)
     if (!topWindow)
     {
         if (Init_top())
-        {
             return -1;
-        }
     }
 
     Scale_dashes();
@@ -702,13 +665,9 @@ int Init_playing_windows(void)
     XSelectInput(dpy, playersWindow, ExposureMask);
 
     if (!selectionAndHistory)
-    {
         XSelectInput(dpy, drawWindow, 0);
-    }
     else
-    {
         XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
-    }
 
     /*
      * Initialize misc. pixmaps if we're not color switching.
@@ -725,9 +684,7 @@ int Init_playing_windows(void)
 
     XAutoRepeatOff(dpy); /* We don't want any autofire, yet! */
     if (kdpy)
-    {
         XAutoRepeatOff(kdpy);
-    }
 
     /*
      * Define a blank cursor for use with pointer control
@@ -807,10 +764,8 @@ void Resize(Window w, int width, int height)
     LIMIT(width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
     LIMIT(height, MIN_TOP_HEIGHT, MAX_TOP_HEIGHT);
     if (width == top_width && height == top_height)
-    {
         // Same size as before, don't need to do anything.
         return;
-    }
 
     top_width = width;
     top_height = height;
@@ -818,9 +773,8 @@ void Resize(Window w, int width, int height)
     std::cout << "Resize: topWindow size: " << top_width << "x" << top_height << std::endl;
 
     if (!drawWindow)
-    {
         return;
-    }
+
     // Draw window does not include the top left radar or the scorelist/config area.
     draw_width = top_width - 258;
     draw_height = top_height;

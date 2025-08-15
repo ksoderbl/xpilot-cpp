@@ -38,26 +38,16 @@
 #define NUM_CDASHES 2
 #define DASHES_LENGTH 12
 
-#define HUD_SIZE 90   /* Size/2 of HUD lines */
-#define HUD_OFFSET 20 /* Hud line offset */
+#define MIN_HUD_SIZE 90 /* Size/2 of HUD lines */
+#define HUD_OFFSET 20   /* Hud line offset */
 #define FUEL_GAUGE_OFFSET 6
-#define HUD_FUEL_GAUGE_SIZE (2 * (HUD_SIZE - HUD_OFFSET - FUEL_GAUGE_OFFSET))
+#define HUD_FUEL_GAUGE_SIZE (2 * (MIN_HUD_SIZE - HUD_OFFSET - FUEL_GAUGE_OFFSET))
 #define FUEL_NOTIFY (3 * FPS)
 
 #define WARNING_DISTANCE (VISIBILITY_DISTANCE * 0.8)
 
 #define SCALE_ARRAY_SIZE 32768
 /* constants end */
-
-// /* typedefs begin */
-// typedef struct
-// {
-//     char txt[MSG_LEN];
-//     short len;
-//     short pixelLen;
-//     int life;
-// } message_t;
-// /* typedefs end */
 
 /* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
 #define TALK_MSG_SCREENPOS(_total, _pos) (_pos)

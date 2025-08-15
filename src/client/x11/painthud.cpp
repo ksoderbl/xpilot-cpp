@@ -60,12 +60,12 @@ extern score_object_t score_objects[MAX_SCORE_OBJECTS];
 extern int score_object;
 extern XGCValues gcv;
 
-int hudColor = BLUE;             /* Color index for HUD drawing */
-int hudHLineColor = BLUE;        /* Color index for horiz. HUD line drawing */
-int hudVLineColor = BLUE;        /* Color index for vert. HUD line drawing */
-int hudItemsColor = BLUE;        /* Color index for HUD items drawing */
-int hudRadarEnemyColor = BLUE;   /* Color index for enemy hudradar dots */
-int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
+int hudColor = BLUE;      /* Color index for HUD drawing */
+int hudHLineColor = BLUE; /* Color index for horiz. HUD line drawing */
+int hudVLineColor = BLUE; /* Color index for vert. HUD line drawing */
+int hudItemsColor = BLUE; /* Color index for HUD items drawing */
+// int hudRadarEnemyColor = 3;      /* Color index for enemy hudradar dots */
+// int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
 int hudLockColor = BLUE;         /* Color index for lock on HUD drawing */
 int fuelGaugeColor = BLUE;       /* Color index for fuel gauge drawing */
 int dirPtrColor = BLUE;          /* Color index for dirptr drawing */
@@ -87,6 +87,12 @@ int meterBorderColor = BLUE;     /* Color index for meter border drawing */
 int scoreObjectColor = BLUE;     /* Color index for map score objects */
 
 DFLOAT charsPerTick = 0.0; /* Output speed of messages */
+
+int hudSize = 3 * MIN_HUD_SIZE;
+int hudRadarEnemyColor = 3;
+int hudRadarOtherColor = 2;
+double hudRadarScale = 3.0;
+double hudRadarLimit = 0.05;
 
 static int meterWidth = 60;
 static int meterHeight = 10;
@@ -314,21 +320,17 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     XPoint points[64];
 
     if (mapdiag == 0)
-    {
         mapdiag = (int)LENGTH(Setup->x * BLOCK_SZ, Setup->y * BLOCK_SZ);
-    }
 
     /*
      * Display direction arrow and miscellaneous target information.
      */
     if ((target = Other_by_id(lock_id)) == NULL)
-    {
         return;
-    }
     FIND_NAME_WIDTH(target);
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(hud_pos_x) - target->name_width / 2,
-                  WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET - BORDER) - gameFont->descent,
+                  WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent,
                   target->nick_name, target->name_len);
 
     /* Only show the mini-ship for the locked player if it will be big enough
@@ -350,52 +352,43 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     }
 
     if (BIT(Setup->mode, LIMITED_LIVES))
-    { /* lives left is a better info than distance in team games MM */
+        /* lives left is a better info than distance in team games MM */
         sprintf(str, "%03d", target->life);
-    }
     else
-    {
         sprintf(str, "%03d", lock_dist / BLOCK_SZ);
-    }
 
     if (BIT(Setup->mode, LIMITED_LIVES) || lock_dist != 0)
     {
-
         if (BIT(Setup->mode, LIMITED_LIVES) && target->life == 0)
             SET_FG(colors[RED].pixel);
         else
             SET_FG(colors[hudColor].pixel);
 
         rd.drawString(dpy, drawPixmap, gameGC,
-                      WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET + BORDER),
-                      WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET - BORDER) - gameFont->descent,
+                      WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + BORDER),
+                      WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent,
                       str, 3);
     }
     SET_FG(colors[hudColor].pixel);
 
     if (lock_dist != 0)
     {
-
         if (lock_dist > WARNING_DISTANCE || warningCount++ % 2 == 0)
         {
             int size = MIN(mapdiag / lock_dist, 10);
 
             if (size == 0)
-            {
                 size = 1;
-            }
             if (self != NULL && ((self->team == target->team && BIT(Setup->mode, TEAM_PLAY)) || (self->alliance != ' ' && self->alliance == target->alliance)))
-            {
                 Arc_add(hudColor,
-                        (int)(hud_pos_x + HUD_SIZE * 0.6 * tcos(lock_dir) - size * 0.5),
-                        (int)(hud_pos_y - HUD_SIZE * 0.6 * tsin(lock_dir) - size * 0.5),
+                        (int)(hud_pos_x + hudSize * 0.6 * tcos(lock_dir) - size * 0.5),
+                        (int)(hud_pos_y - hudSize * 0.6 * tsin(lock_dir) - size * 0.5),
                         size, size, 0, 64 * 360);
-            }
             else
             {
                 SET_FG(colors[hudLockColor].pixel);
-                x = (int)(hud_pos_x + HUD_SIZE * 0.6 * tcos(lock_dir) - size * 0.5),
-                y = (int)(hud_pos_y - HUD_SIZE * 0.6 * tsin(lock_dir) - size * 0.5),
+                x = (int)(hud_pos_x + hudSize * 0.6 * tcos(lock_dir) - size * 0.5),
+                y = (int)(hud_pos_y - hudSize * 0.6 * tsin(lock_dir) - size * 0.5),
                 rd.fillArc(dpy, drawPixmap, gameGC,
                            WINSCALE(x), WINSCALE(y),
                            WINSCALE(size), WINSCALE(size), 0, 64 * 360);
@@ -416,13 +409,11 @@ void Paint_hudradar(void)
 
     for (i = 0; i < num_radar; i++)
     {
-
         int sz = radar_ptr[i].size;
 
         /* skip non-enemy objects */
         if ((sz & 0x80) == 0)
         {
-
             int x = radar_ptr[i].x * hrscale -
                     (world.x + ext_view_width / 2) * xf;
 
@@ -460,10 +451,68 @@ void Paint_hudradar(void)
 
             sz = (sz > 0) ? sz * hrscale : hrscale;
 
-            Arc_add(hudColor,
+            Arc_add(hudRadarEnemyColor,
                     x + ext_view_width / 2 - sz / 2,
                     -y + ext_view_height / 2 - sz / 2,
                     sz, sz, 0, 64 * 360);
+        }
+    }
+}
+
+/* from xpilot ng version 4.7.1, slightly modified */
+static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
+                           int sz)
+{
+    int i, x, y, size;
+    int hrw = (int)(hrscale * 256);
+    int hrh = (int)(hrscale * RadarHeight);
+    double xf = (double)hrw / (double)Setup->width;
+    double yf = (double)hrh / (double)Setup->height;
+    bool enemy;
+
+    for (i = 0; i < num_radar; i++)
+    {
+        x = (int)(radar_ptr[i].x * hrscale - (world.x + ext_view_width / 2) * xf);
+        y = (int)(radar_ptr[i].y * hrscale - (world.y + ext_view_height / 2) * yf);
+        size = radar_ptr[i].size;
+
+        if ((size & 0x80) == 0)
+            enemy = true;
+        else
+        {
+            /* non-enemy */
+            enemy = false;
+            size &= ~0x80;
+        }
+
+        if (sz < 0)
+            sz = size * hudRadarScale;
+
+        if (x < -hrw / 2)
+            x += hrw;
+        else if (x > hrw / 2)
+            x -= hrw;
+
+        if (y < -hrh / 2)
+            y += hrh;
+        else if (y > hrh / 2)
+            y -= hrh;
+
+        if (!((x <= xlimit) && (x >= -xlimit) && (y <= ylimit) && (y >= -ylimit)))
+        {
+            x = x + ext_view_width / 2 - sz / 2;
+            y = -y + ext_view_height / 2 - sz / 2;
+
+            if (enemy)
+            {
+                if (hudRadarEnemyColor >= 1)
+                    Arc_add(hudRadarEnemyColor, x, y, sz, sz, 0, 64 * 360);
+            }
+            else
+            {
+                if (hudRadarOtherColor >= 1)
+                    Arc_add(hudRadarOtherColor, x, y, sz, sz, 0, 64 * 360);
+            }
         }
     }
 }
@@ -498,10 +547,25 @@ void Paint_HUD(void)
     if (instruments.showHUDRadar)
         Paint_hudradar();
 
-    if (!instruments.showHUD)
+    /* from xpilot ng 4.7.1 */
+    if (hudRadarEnemyColor || hudRadarOtherColor)
     {
-        return;
+        double hudRadarMapScale = (double)Setup->width / (double)256;
+        Paint_hudradar(
+            hudRadarScale,
+            hudRadarLimit * (active_view_width / 2) * hudRadarScale / hudRadarMapScale,
+            hudRadarLimit * (active_view_width / 2) * hudRadarScale / hudRadarMapScale,
+            -1 /*hudRadarDotSize*/);
+
+        /* paint hud radar dots where ships are outside active view */
+        Paint_hudradar(hudRadarMapScale,
+                       (double)active_view_width / 2,
+                       (double)active_view_height / 2,
+                       SHIP_SZ);
     }
+
+    if (!instruments.showHUD)
+        return;
 
     /*
      * Display the HUD
@@ -518,20 +582,20 @@ void Paint_HUD(void)
     if (instruments.horizontalHUDLine)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x - HUD_SIZE), WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET),
-                    WINSCALE(hud_pos_x + HUD_SIZE), WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET));
+                    WINSCALE(hud_pos_x - hudSize), WINSCALE(hud_pos_y - hudSize + HUD_OFFSET),
+                    WINSCALE(hud_pos_x + hudSize), WINSCALE(hud_pos_y - hudSize + HUD_OFFSET));
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x - HUD_SIZE), WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET),
-                    WINSCALE(hud_pos_x + HUD_SIZE), WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET));
+                    WINSCALE(hud_pos_x - hudSize), WINSCALE(hud_pos_y + hudSize - HUD_OFFSET),
+                    WINSCALE(hud_pos_x + hudSize), WINSCALE(hud_pos_y + hudSize - HUD_OFFSET));
     }
     if (instruments.verticalHUDLine)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x - HUD_SIZE + HUD_OFFSET), WINSCALE(hud_pos_y - HUD_SIZE),
-                    WINSCALE(hud_pos_x - HUD_SIZE + HUD_OFFSET), WINSCALE(hud_pos_y + HUD_SIZE));
+                    WINSCALE(hud_pos_x - hudSize + HUD_OFFSET), WINSCALE(hud_pos_y - hudSize),
+                    WINSCALE(hud_pos_x - hudSize + HUD_OFFSET), WINSCALE(hud_pos_y + hudSize));
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET), WINSCALE(hud_pos_y - HUD_SIZE),
-                    WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET), WINSCALE(hud_pos_y + HUD_SIZE));
+                    WINSCALE(hud_pos_x + hudSize - HUD_OFFSET), WINSCALE(hud_pos_y - hudSize),
+                    WINSCALE(hud_pos_x + hudSize - HUD_OFFSET), WINSCALE(hud_pos_y + hudSize));
     }
     gcv.line_style = LineSolid;
     XChangeGC(dpy, gameGC, GCLineStyle, &gcv);
@@ -540,8 +604,8 @@ void Paint_HUD(void)
     if (vertSpacing < 0)
         vertSpacing = MAX(ITEM_SIZE, gameFont->ascent + gameFont->descent) + 1;
     /* find the scaled location, then work in pixels */
-    vert_pos = WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET + BORDER);
-    horiz_pos = WINSCALE(hud_pos_x - HUD_SIZE + HUD_OFFSET - BORDER);
+    vert_pos = WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + BORDER);
+    horiz_pos = WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER);
     rect_width = 0;
     rect_height = 0;
     rect_x = horiz_pos;
@@ -610,12 +674,12 @@ void Paint_HUD(void)
             maxWidth = MAX(maxWidth, width + BORDER + ITEM_SIZE);
             vert_pos += vertSpacing;
 
-            if (vert_pos + vertSpacing > WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET - BORDER))
+            if (vert_pos + vertSpacing > WINSCALE(hud_pos_y + hudSize - HUD_OFFSET - BORDER))
             {
                 rect_width += maxWidth + 2 * BORDER;
                 rect_height = MAX(rect_height, vert_pos - rect_y);
                 horiz_pos -= maxWidth + 2 * BORDER;
-                vert_pos = WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET + BORDER);
+                vert_pos = WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + BORDER);
                 maxWidth = -1;
             }
         }
@@ -639,8 +703,8 @@ void Paint_HUD(void)
         did_fuel = 1;
         sprintf(str, "%04d", (int)fuelSum);
         rd.drawString(dpy, drawPixmap, gameGC,
-                      WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET + BORDER),
-                      WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET + BORDER) + gameFont->ascent,
+                      WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + BORDER),
+                      WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->ascent,
                       str, strlen(str));
         if (numItems[ITEM_TANK])
         {
@@ -649,8 +713,8 @@ void Paint_HUD(void)
             else
                 sprintf(str, "T%d", fuelCurrent);
             rd.drawString(dpy, drawPixmap, gameGC,
-                          WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET + BORDER),
-                          WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET + BORDER) + gameFont->descent + 2 * gameFont->ascent,
+                          WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + BORDER),
+                          WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->descent + 2 * gameFont->ascent,
                           str, strlen(str));
         }
     }
@@ -665,12 +729,12 @@ void Paint_HUD(void)
         if (sobj->hud_msg_len > 0)
         {
             if (j == 0 &&
-                sobj->hud_msg_width > WINSCALE(2 * HUD_SIZE - HUD_OFFSET * 2) &&
+                sobj->hud_msg_width > WINSCALE(2 * hudSize - HUD_OFFSET * 2) &&
                 (did_fuel || instruments.verticalHUDLine))
                 ++j;
             rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(hud_pos_x) - sobj->hud_msg_width / 2,
-                          WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET + BORDER) + gameFont->ascent + j * (gameFont->ascent + gameFont->descent),
+                          WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->ascent + j * (gameFont->ascent + gameFont->descent),
                           sobj->hud_msg, sobj->hud_msg_len);
             j++;
         }
@@ -681,16 +745,16 @@ void Paint_HUD(void)
         sprintf(str, "%3d:%02d", (int)(time_left / 60), (int)(time_left % 60));
         size = XTextWidth(gameFont, str, strlen(str));
         rd.drawString(dpy, drawPixmap, gameGC,
-                      WINSCALE(hud_pos_x - HUD_SIZE + HUD_OFFSET - BORDER) - size,
-                      WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET - BORDER) - gameFont->descent,
+                      WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER) - size,
+                      WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent,
                       str, strlen(str));
     }
 
     /* Update the modifiers */
     modlen = strlen(mods);
     rd.drawString(dpy, drawPixmap, gameGC,
-                  WINSCALE(hud_pos_x - HUD_SIZE + HUD_OFFSET - BORDER) - XTextWidth(gameFont, mods, modlen),
-                  WINSCALE(hud_pos_y + HUD_SIZE - HUD_OFFSET + BORDER) + gameFont->ascent,
+                  WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER) - XTextWidth(gameFont, mods, modlen),
+                  WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->ascent,
                   mods, strlen(mods));
 
     if (autopilotLight)
@@ -698,7 +762,7 @@ void Paint_HUD(void)
         int text_width = XTextWidth(gameFont, autopilot, sizeof(autopilot) - 1);
         rd.drawString(dpy, drawPixmap, gameGC,
                       WINSCALE(hud_pos_x) - text_width / 2,
-                      WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET - BORDER) - gameFont->descent * 2 - gameFont->ascent,
+                      WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent * 2 - gameFont->ascent,
                       autopilot, sizeof(autopilot) - 1);
     }
 
@@ -712,15 +776,15 @@ void Paint_HUD(void)
         return;
 
     rd.drawRectangle(dpy, drawPixmap, gameGC,
-                     WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
-                     WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
+                     WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
+                     WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
                      WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)) + 3,
                      WINSCALE(HUD_FUEL_GAUGE_SIZE) + 3);
 
     size = (HUD_FUEL_GAUGE_SIZE * fuelSum) / fuelMax;
     rd.fillRectangle(dpy, drawPixmap, gameGC,
-                     WINSCALE(hud_pos_x + HUD_SIZE - HUD_OFFSET + FUEL_GAUGE_OFFSET) + 1,
-                     WINSCALE(hud_pos_y - HUD_SIZE + HUD_OFFSET + FUEL_GAUGE_OFFSET + HUD_FUEL_GAUGE_SIZE - size) + 1,
+                     WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) + 1,
+                     WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET + HUD_FUEL_GAUGE_SIZE - size) + 1,
                      WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)),
                      WINSCALE(size));
 }

@@ -123,39 +123,27 @@ void Gui_paint_walls(int x, int y, int type, int xi, int yi)
     {
 
         if (type & BLUE_LEFT)
-        {
             Bitmap_paint(drawPixmap, BM_WALL_LEFT, WINSCALE(X(x - 1)),
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
-        }
         if (type & BLUE_DOWN)
-        {
             Bitmap_paint(drawPixmap, BM_WALL_BOTTOM, WINSCALE(X(x)),
                          WINSCALE(Y(y + BLOCK_SZ - 1)), 0);
-        }
         if (type & BLUE_RIGHT)
-        {
             Bitmap_paint(drawPixmap, BM_WALL_RIGHT, WINSCALE(X(x + 1)),
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
-        }
         if (type & BLUE_UP)
-        {
             Bitmap_paint(drawPixmap, BM_WALL_TOP, WINSCALE(X(x)),
                          WINSCALE(Y(y + BLOCK_SZ + 1)), 0);
-        }
         if ((type & BLUE_FUEL) == BLUE_FUEL)
         {
         }
 
         else if (type & BLUE_OPEN)
-        {
             Bitmap_paint(drawPixmap, BM_WALL_UR, WINSCALE(X(x)),
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
-        }
         else if (type & BLUE_CLOSED)
-        {
             Bitmap_paint(drawPixmap, BM_WALL_UL, WINSCALE(X(x)),
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
-        }
     }
 }
 
@@ -201,8 +189,7 @@ void Gui_paint_cannon(int x, int y, int type)
             points[2].y = WINSCALE(Y(y + BLOCK_SZ / 2));
             break;
         default:
-            errno = 0;
-            xperror("Unknown cannon type %d", type);
+            warn("Unknown cannon type %d", type);
             return;
         }
         points[3] = points[0];
@@ -328,34 +315,34 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
         int id, team, size;
         other_t *other;
         char s[3];
+        int baseColor = BLUE;
 
-        SET_FG(colors[WHITE].pixel);
+        SET_FG(colors[baseColor].pixel);
 
         switch (type)
         {
         case SETUP_BASE_UP:
-            Segment_add(WHITE,
+            Segment_add(baseColor,
                         X(x), Y(y - 1),
                         X(x + BLOCK_SZ), Y(y - 1));
             break;
         case SETUP_BASE_DOWN:
-            Segment_add(WHITE,
+            Segment_add(baseColor,
                         X(x), Y(y + BLOCK_SZ + 1),
                         X(x + BLOCK_SZ), Y(y + BLOCK_SZ + 1));
             break;
         case SETUP_BASE_LEFT:
-            Segment_add(WHITE,
+            Segment_add(baseColor,
                         X(x + BLOCK_SZ + 1), Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ + 1), Y(y));
             break;
         case SETUP_BASE_RIGHT:
-            Segment_add(WHITE,
+            Segment_add(baseColor,
                         X(x - 1), Y(y + BLOCK_SZ),
                         X(x - 1), Y(y));
             break;
         default:
-            errno = 0;
-            xperror("Bad base dir.");
+            warn("Bad base dir.");
             return;
         }
         /* only draw base teams if ship naming is on, SKS 25/05/94 */
@@ -385,9 +372,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
                 s[2] = '\0';
             }
             else
-            {
                 s[1] = '\0';
-            }
             size = XTextWidth(gameFont, s, other ? 2 : 1);
         }
         else

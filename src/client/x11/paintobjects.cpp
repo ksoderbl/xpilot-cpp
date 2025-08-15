@@ -89,17 +89,13 @@ static int wrap(int *xp, int *yp)
     if (x < world.x || x > world.x + ext_view_width)
     {
         if (x < realWorld.x || x > realWorld.x + ext_view_width)
-        {
             return 0;
-        }
         *xp += world.x - realWorld.x;
     }
     if (y < world.y || y > world.y + ext_view_height)
     {
         if (y < realWorld.y || y > realWorld.y + ext_view_height)
-        {
             return 0;
-        }
         *yp += world.y - realWorld.y;
     }
     return 1;
@@ -168,17 +164,14 @@ static void Paint_items(void)
 
     if (num_itemtype > 0)
     {
-
         SET_FG(colors[RED].pixel);
         for (i = 0; i < num_itemtype; i++)
         {
             x = itemtype_ptr[i].x;
             y = itemtype_ptr[i].y;
             if (wrap(&x, &y))
-            {
                 Paint_item((uint8_t)itemtype_ptr[i].type, drawPixmap, gameGC,
                            WINSCALE(X(x)), WINSCALE(Y(y)));
-            }
         }
         RELEASE(itemtype_ptr, num_itemtype, max_itemtype);
     }
@@ -190,7 +183,6 @@ static void Paint_balls(void)
 
     if (num_ball > 0)
     {
-
         for (i = 0; i < num_ball; i++)
         {
             x = ball_ptr[i].x;
@@ -217,9 +209,7 @@ static void Paint_balls(void)
                 ys = ship_ptr[j].y;
 
                 if (wrap(&xs, &ys))
-                {
-                    Gui_paint_ball_connecter(x, y, xs, ys);
-                }
+                    Gui_paint_ball_connector(x, y, xs, ys);
             }
         }
         RELEASE(ball_ptr, num_ball, max_ball);
@@ -233,7 +223,6 @@ static void Paint_mines(void)
 
     if (num_mine > 0)
     {
-
         for (i = 0; i < num_mine; i++)
         {
             x = mine_ptr[i].x;
@@ -241,7 +230,6 @@ static void Paint_mines(void)
 
             if (wrap(&x, &y))
             {
-
                 /*
                  * Determine if the name of the player who is safe
                  * from the mine should be drawn.
@@ -260,9 +248,7 @@ static void Paint_mines(void)
                             name = expired_name;
                         }
                         else if ((other = Other_by_id(mine_ptr[i].id)) != NULL)
-                        {
                             name = other->nick_name;
-                        }
                         else
                         {
                             static char unknown_name[] = "Not of this world!";
@@ -300,9 +286,7 @@ static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
             color = COLOR(i);
             color = DEBRIS_COLOR(color);
             for (j = 0; j < num_debris[i]; j++)
-            {
                 Gui_paint_spark(color, x + debris_ptr[i][j].x, y - debris_ptr[i][j].y);
-            }
             RELEASE(debris_ptr[i], num_debris[i], max_debris[i]);
         }
     }
@@ -316,7 +300,6 @@ static void Paint_wreckages(void)
 
     if (num_wreckage > 0)
     {
-
         for (i = 0; i < num_wreckage; i++)
         {
             x = wreckage_ptr[i].x;
@@ -371,9 +354,7 @@ static void Paint_wormholes(void)
             x = wormhole_ptr[i].x;
             y = wormhole_ptr[i].y;
             if (wrap(&x, &y))
-            {
                 Gui_paint_setup_worm(x, y, loops & 7);
-            }
         }
         RELEASE(wormhole_ptr, num_wormholes, max_wormholes);
     }
@@ -395,14 +376,10 @@ static void Paint_missiles(void)
             dir = missile_ptr[i].dir;
             len = MISSILE_LEN;
             if (missile_ptr[i].len > 0)
-            {
                 len = missile_ptr[i].len;
-            }
 
             if (wrap(&x, &y))
-            {
                 Gui_paint_missile(x, y, len, dir);
-            }
         }
         Gui_paint_missiles_end();
         RELEASE(missile_ptr, num_missile, max_missile);
@@ -415,7 +392,6 @@ static void Paint_lasers(void)
 
     if (num_laser > 0)
     {
-
         Gui_paint_lasers_begin();
 
         for (i = 0; i < num_laser; i++)
@@ -427,9 +403,7 @@ static void Paint_lasers(void)
             color = laser_ptr[i].color;
 
             if (wrap(&x1, &y1))
-            {
                 Gui_paint_laser(color, x1, y1, len, dir);
-            }
         }
         Gui_paint_lasers_end();
 
@@ -443,18 +417,13 @@ static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
 
     if (num_fastshot[i] > 0)
     {
-
         x = BASE_X(i);
         y = BASE_Y(i);
         color = COLOR(i);
         if (color != WHITE && color != BLUE)
-        {
             color = WHITE;
-        }
         for (j = 0; j < num_fastshot[i]; j++)
-        {
             Gui_paint_fastshot(color, x + fastshot_ptr[i][j].x, y - fastshot_ptr[i][j].y);
-        }
         RELEASE(fastshot_ptr[i], num_fastshot[i], max_fastshot[i]);
     }
 }
@@ -468,14 +437,11 @@ static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
      */
     if (num_fastshot[t_] > 0)
     {
-
         x = BASE_X(i);
         y = BASE_Y(i);
         color = COLOR(i);
         for (j = 0; j < num_fastshot[t_]; j++)
-        {
             Gui_paint_teamshot(color, x + fastshot_ptr[t_][j].x, y - fastshot_ptr[t_][j].y);
-        }
         RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
     }
 }
@@ -517,15 +483,12 @@ static void Paint_paused(void)
 
     if (num_paused > 0)
     {
-
         for (i = 0; i < num_paused; i++)
         {
             x = paused_ptr[i].x;
             y = paused_ptr[i].y;
             if (wrap(&x, &y))
-            {
                 Gui_paint_paused(x, y, paused_ptr[i].count);
-            }
         }
         RELEASE(paused_ptr, num_paused, max_paused);
     }
@@ -537,7 +500,6 @@ static void Paint_ecm(void)
 
     if (num_ecm > 0)
     {
-
         for (i = 0; i < num_ecm; i++)
         {
             if ((size = ecm_ptr[i].size) > 0)
@@ -545,9 +507,7 @@ static void Paint_ecm(void)
                 x = ecm_ptr[i].x;
                 y = ecm_ptr[i].y;
                 if (wrap(&x, &y))
-                {
                     Gui_paint_ecm(x, y, size);
-                }
             }
         }
         RELEASE(ecm_ptr, num_ecm, max_ecm);
@@ -560,23 +520,18 @@ static void Paint_all_ships(void)
 
     if (num_ship > 0)
     {
-
         for (i = 0; i < num_ship; i++)
         {
             x = ship_ptr[i].x;
             y = ship_ptr[i].y;
             if (!wrap(&x, &y))
-            {
                 continue;
-            }
 
             /*
              * ship in the center? (svenska-hack)
              */
             if (abs(X(x) - ext_view_width / 2) <= 1 && abs(Y(y) - ext_view_height / 2) <= 1 && Other_by_id(ship_ptr[i].id) != NULL)
-            {
                 eyesId = ship_ptr[i].id;
-            }
 
             Gui_paint_ship(x, y,
                            ship_ptr[i].dir, ship_ptr[i].id,
@@ -594,7 +549,6 @@ static void Paint_refuel(void)
 
     if (num_refuel > 0)
     {
-
         for (i = 0; i < num_refuel; i++)
         {
             x0 = refuel_ptr[i].x0;
@@ -602,9 +556,7 @@ static void Paint_refuel(void)
             x1 = refuel_ptr[i].x1;
             y1 = refuel_ptr[i].y1;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
-            {
                 Gui_paint_refuel(x0, y0, x1, y1);
-            }
         }
         RELEASE(refuel_ptr, num_refuel, max_refuel);
     }
@@ -616,7 +568,6 @@ static void Paint_connectors(void)
 
     if (num_connector > 0)
     {
-
         for (i = 0; i < num_connector; i++)
         {
             x0 = connector_ptr[i].x0;
@@ -624,9 +575,7 @@ static void Paint_connectors(void)
             x1 = connector_ptr[i].x1;
             y1 = connector_ptr[i].y1;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
-            {
                 Gui_paint_connector(x0, y0, x1, y1, connector_ptr[i].tractor);
-            }
         }
         RELEASE(connector_ptr, num_connector, max_connector);
     }
@@ -638,7 +587,6 @@ static void Paint_transporters(void)
 
     if (num_trans > 0)
     {
-
         for (i = 0; i < num_trans; i++)
         {
             x0 = trans_ptr[i].x1;
@@ -646,9 +594,7 @@ static void Paint_transporters(void)
             x1 = trans_ptr[i].x2;
             y1 = trans_ptr[i].y2;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
-            {
                 Gui_paint_transporter(x0, y0, x1, y1);
-            }
         }
         RELEASE(trans_ptr, num_trans, max_trans);
     }
@@ -661,10 +607,12 @@ static void Paint_all_connectors(void)
         num_connector > 0 ||
         num_trans > 0)
     {
-
         Gui_paint_all_connectors_begin();
+        SET_FG(colors[3].pixel);
         Paint_refuel();
+        SET_FG(colors[4].pixel);
         Paint_connectors();
+        SET_FG(colors[11].pixel);
         Paint_transporters();
     }
 }
