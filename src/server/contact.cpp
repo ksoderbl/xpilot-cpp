@@ -205,21 +205,21 @@ static int Kick_paused_players(int team)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Players[i]->connp != NULL && BIT(Players[i]->status, PAUSE) && (team == TEAM_NOT_SET || Players[i]->team == team))
+        if (Players[i]->conn != NULL && BIT(Players[i]->status, PAUSE) && (team == TEAM_NOT_SET || Players[i]->team == team))
         {
             if (team == TEAM_NOT_SET)
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because the game is full.",
                         Players[i]->name);
-                Destroy_connection(Players[i]->connp, "no pause with full game");
+                Destroy_connection(Players[i]->conn, "no pause with full game");
             }
             else
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because team %d is full.",
                         Players[i]->name, team);
-                Destroy_connection(Players[i]->connp, "no pause with full team");
+                Destroy_connection(Players[i]->conn, "no pause with full team");
             }
             Set_message(msg);
             num_unpaused++;
@@ -626,13 +626,13 @@ void Contact(int fd, void *arg)
                         "\"%s\" upset the gods and was kicked out of the game.",
                         Players[found]->name);
                 Set_message(msg);
-                if (Players[found]->connp == NULL)
+                if (Players[found]->conn == NULL)
                 {
                     Delete_player(found);
                 }
                 else
                 {
-                    Destroy_connection(Players[found]->connp, "kicked out");
+                    Destroy_connection(Players[found]->conn, "kicked out");
                 }
                 updateScores = true;
             }

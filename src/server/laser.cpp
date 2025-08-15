@@ -283,7 +283,7 @@ static void Laser_pulse_hits_player(
                 if (vicpl->id == pl->id)
                 {
                     sc = Rate(0, pl->score) * options.laserKillScoreMult * options.selfKillScoreMult;
-                    SCORE(victim->ind, -sc, vicpl->pos.cx, vicpl->pos.cy, vicpl->name);
+                    SCORE(vicpl, -sc, vicpl->pos.cx, vicpl->pos.cy, vicpl->name);
                     strcat(msg, " How strange!");
                 }
                 else
@@ -299,7 +299,7 @@ static void Laser_pulse_hits_player(
             else
             {
                 sc = Rate(CANNON_SCORE, vicpl->score) / 4;
-                SCORE(victim->ind, -sc, vicpl->pos.cx, vicpl->pos.cy, "Cannon");
+                SCORE(vicpl, -sc, vicpl->pos.cx, vicpl->pos.cy, "Cannon");
                 sprintf(msg,
                         "%s got roasted alive by cannonfire.",
                         vicpl->name);
@@ -430,7 +430,7 @@ void Laser_pulse_collision(void)
     DFLOAT x, y, x1, x2, y1, y2;
     DFLOAT dx, dy;
     DFLOAT midx, midy;
-    /* player                        *pl; */
+    player *pl;
     pulse_t *pulse;
     object_t *obj = NULL, *ast = NULL;
     std::vector<object_t *> obj_list;
@@ -465,12 +465,12 @@ void Laser_pulse_collision(void)
         if (pulse->id != NO_ID)
         {
             ind = GetInd[pulse->id];
-            /* pl = Players[ind]; */
+            pl = Players[ind];
         }
         else
         {
             ind = -1;
-            /* pl = NULL; */
+            pl = nullptr;
         }
 
         pulse->pos.x += tcos(pulse->dir) * PULSE_SPEED;
@@ -635,8 +635,8 @@ void Laser_pulse_collision(void)
                                                        WIRE_PTR(ast)->size);
                         if (ast->life < 0)
                             ast->life = 0;
-                        if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && Players[ind]->score <= options.asteroidMaxScore)
-                            SCORE(ind, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
+                        if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
+                            SCORE(pl, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
                         break;
                     }
                 }

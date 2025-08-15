@@ -771,10 +771,10 @@ static void Robot_create(void)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Players[i]->connp != NULL)
+        if (Players[i]->conn != NULL)
         {
-            Send_player(Players[i]->connp, robot->id);
-            Send_base(Players[i]->connp, robot->id, robot->home_base);
+            Send_player(Players[i]->conn, robot->id);
+            Send_base(Players[i]->conn, robot->id, robot->home_base);
         }
     }
 
@@ -923,9 +923,7 @@ void Robot_war(int ind, int killer)
     int i;
 
     if (killer == ind)
-    {
         return;
-    }
 
     if (IS_ROBOT_PTR(kp))
     {
@@ -934,17 +932,14 @@ void Robot_war(int ind, int killer)
         if (Robot_war_on_player(killer) == pl->id)
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->connp != NULL)
-                {
-                    Send_war(Players[i]->connp, kp->id, NO_ID);
-                }
+                if (Players[i]->conn != NULL)
+                    Send_war(Players[i]->conn, kp->id, NO_ID);
             }
         Robot_set_war(killer, -1);
     }
 
-    if (IS_ROBOT_PTR(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !TEAM(ind, killer) && !ALLIANCE(ind, killer))
+    if (IS_ROBOT_PTR(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !Players_are_teammates(pl, kp) && !Players_are_allies(pl, kp))
     {
-
         Robot_talks(ROBOT_TALK_WAR, pl->name, kp->name);
 
         /*
@@ -957,10 +952,8 @@ void Robot_war(int ind, int killer)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->connp != NULL)
-                {
-                    Send_war(Players[i]->connp, pl->id, kp->id);
-                }
+                if (Players[i]->conn != NULL)
+                    Send_war(Players[i]->conn, pl->id, kp->id);
             }
             sound_play_all(DECLARE_WAR_SOUND);
             Robot_set_war(ind, kp->id);

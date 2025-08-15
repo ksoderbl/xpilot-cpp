@@ -321,13 +321,13 @@ void End_game(void)
     while (NumPlayers > 0)
     { /* Kick out all remaining players */
         pl = Players[NumPlayers - 1];
-        if (pl->connp == NULL)
+        if (pl->conn == NULL)
         {
             Delete_player(NumPlayers - 1);
         }
         else
         {
-            Destroy_connection(pl->connp, msg);
+            Destroy_connection(pl->conn, msg);
         }
     }
 
@@ -819,8 +819,8 @@ void Server_log_admin_message(int ind, const char *str)
                 showtime(),
                 pl->name,
                 pl->realname, pl->hostname,
-                Get_player_addr(pl->connp),
-                Get_player_dpy(pl->connp),
+                Get_player_addr(pl->conn),
+                Get_player_dpy(pl->conn),
                 str);
         fclose(fp);
         sprintf(msg, "%s [%s]:[%s]", str, pl->name, "GOD");

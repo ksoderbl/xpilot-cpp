@@ -102,13 +102,8 @@
 /*
  * Used where we wish to know if a player is simply on the same team.
  */
-/* #define TEAM(i, j)                                                        \
-        (BIT(Players[i]->status|Players[j]->status, PAUSE)                \
-        || (BIT(World.rules->mode, TEAM_PLAY)                                \
-           && (Players[i]->team == Players[j]->team)                        \
-           && (Players[i]->team != TEAM_NOT_SET))) */
-#define TEAM(i, j) \
-        (BIT(World.rules->mode, TEAM_PLAY) && (Players[i]->team == Players[j]->team) && (Players[i]->team != TEAM_NOT_SET))
+#define Players_are_teammates(pl_i, pl_j) \
+        (BIT(World.rules->mode, TEAM_PLAY) && (pl_i->team == pl_j->team) && (pl_i->team != TEAM_NOT_SET))
 
 /*
  * Used where we wish to know if a player is on the same team
@@ -119,8 +114,8 @@
 /*
  * Used where we wish to know if two players are members of the same alliance.
  */
-#define ALLIANCE(i, j) \
-        ((Players[i]->alliance != ALLIANCE_NOT_SET) && (Players[j]->alliance == Players[i]->alliance))
+#define Players_are_allies(pl_i, pl_j) \
+        ((pl_i->alliance != ALLIANCE_NOT_SET) && (pl_j->alliance == pl_i->alliance))
 
 /*
  * Used where we wish to know if a player (i) owns a tank (j).

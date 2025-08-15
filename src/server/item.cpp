@@ -1142,9 +1142,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                 continue;
             damage = (ECM_DISTANCE - range) / ECM_DISTANCE;
             if (c->item[ITEM_LASER])
-            {
                 c->item[ITEM_LASER] -= (int)(damage * c->item[ITEM_LASER] + 0.5);
-            }
             c->damaged += (int)(24 * range * pow(0.75, c->item[ITEM_SENSOR]));
         }
     }
@@ -1162,7 +1160,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
         if (BIT(World.rules->mode, TEAM_PLAY) && p->team == team)
             continue;
 
-        if (pl && ALLIANCE(ind, i))
+        if (pl && Players_are_allies(pl, p))
             continue;
 
         if (BIT(p->used, HAS_PHASING_DEVICE))
@@ -1246,9 +1244,9 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                     Robot_program(i, pl->lock.pl_id);
                     for (j = 0; j < NumPlayers; j++)
                     {
-                        if (Players[j]->connp != NULL)
+                        if (Players[j]->conn != NULL)
                         {
-                            Send_seek(Players[j]->connp, pl->id,
+                            Send_seek(Players[j]->conn, pl->id,
                                       p->id, pl->lock.pl_id);
                         }
                     }

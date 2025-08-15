@@ -91,12 +91,12 @@ static void Send_info_about_player(player *pl)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Players[i]->connp != NULL)
+        if (Players[i]->conn != NULL)
         {
-            Send_player(Players[i]->connp, pl->id);
-            Send_score(Players[i]->connp, pl->id, pl->score, pl->life,
+            Send_player(Players[i]->conn, pl->id);
+            Send_score(Players[i]->conn, pl->id, pl->score, pl->life,
                        pl->mychar, pl->alliance);
-            Send_base(Players[i]->connp, pl->id, pl->home_base);
+            Send_base(Players[i]->conn, pl->id, pl->home_base);
         }
     }
 }
@@ -407,7 +407,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!TEAM(ind, i) && !BIT(Players[i]->status, PAUSE))
+            if (!Players_are_teammates(pl, Players[i]) && !BIT(Players[i]->status, PAUSE))
             {
                 /* put team swapping player waiting mode. */
                 if (pl->mychar == ' ')
@@ -581,13 +581,13 @@ static int Cmd_kick(char *arg, player_t *pl, int oper, char *msg)
     {
         sprintf(msg, "%s kicked %s out! [*Server notice*]",
                 pl->name, Players[i]->name);
-        if (Players[i]->connp == NULL)
+        if (Players[i]->conn == NULL)
         {
             Delete_player(i);
         }
         else
         {
-            Destroy_connection(Players[i]->connp, "kicked out");
+            Destroy_connection(Players[i]->conn, "kicked out");
         }
         Set_message(msg);
         strcpy(msg, "");
@@ -835,7 +835,7 @@ static int Cmd_pause(char *arg, player_t *pl, int oper, char *msg)
     i = Get_player_index_by_name(arg);
     if (i >= 0)
     {
-        if (Players[i]->connp != NULL)
+        if (Players[i]->conn != NULL)
         {
             if (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             {

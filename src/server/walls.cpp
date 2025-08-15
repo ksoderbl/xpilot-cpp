@@ -1154,8 +1154,7 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
 
-                        SCORE(GetInd[pl->id], 5,
-                              tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+                        SCORE(pl, 5, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
                                 pl->name, pl->team);
                         Set_message(msg);
@@ -1879,7 +1878,7 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(killer, options.cannonPoints, cannon->clk_pos.cx,
+                SCORE(Players[killer], options.cannonPoints, cannon->clk_pos.cx,
                       cannon->clk_pos.cy, "");
             }
         }
@@ -2036,16 +2035,12 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             {
                 targets_total++;
                 if (World.targets[j].dead_time == 0)
-                {
                     targets_remaining++;
-                }
             }
         }
     }
     if (!somebody_flag)
-    {
         return;
-    }
 
     sound_play_sensors(cx, cy, DESTROY_TARGET_SOUND);
 
@@ -2055,7 +2050,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            SCORE(killer, sc,
+            SCORE(Players[killer], sc,
                   targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         /*
@@ -2096,13 +2091,13 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(Players[j]->status, KILLED);
-            SCORE(j, -sc, targ->clk_pos.cx, targ->clk_pos.cy,
+            SCORE(Players[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy,
                   "Target: ");
         }
         else if (Players[j]->team == Players[killer]->team &&
                  (Players[j]->team != TEAM_NOT_SET || j == killer))
         {
-            SCORE(j, por, targ->clk_pos.cx, targ->clk_pos.cy,
+            SCORE(Players[j], por, targ->clk_pos.cx, targ->clk_pos.cy,
                   "Target: ");
         }
     }
@@ -2421,13 +2416,9 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         {
             shove_t *shove = &pl->shove_record[i];
             if (shove->pusher_id == NO_ID)
-            {
                 continue;
-            }
             if (shove->time < frame_loops - 20)
-            {
                 continue;
-            }
             for (j = 0; j < num_pushers; j++)
             {
                 if (shove->pusher_id == pushers[j]->id)
@@ -2447,7 +2438,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         if (num_pushers == 0)
         {
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
+            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -2476,14 +2467,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
-                SCORE(GetInd[pusher->id], sc, pl->pos.cx, pl->pos.cy, pl->name);
+                SCORE(pusher, sc, pl->pos.cx, pl->pos.cy, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
             sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
-            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
+            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
 
             strcpy(msg_ptr, ".");
             Set_message(msg);

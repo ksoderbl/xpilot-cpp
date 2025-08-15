@@ -148,10 +148,8 @@ static bool Player_lock_allowed(int ind, int lock)
     }
 
     /* we can always lock on players from our own team. */
-    if (TEAM(ind, lock))
-    {
+    if (Players_are_teammates(pl, Players[lock]))
         return true;
-    }
 
     /* if lockOtherTeam is true then we can always lock on other teams. */
     if (options.lockOtherTeam)
@@ -192,9 +190,7 @@ int Player_lock_closest(int ind, int next)
     DFLOAT dist, best, l;
 
     if (!next)
-    {
         CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
-    }
 
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
@@ -211,12 +207,16 @@ int Player_lock_closest(int ind, int next)
     best = FLT_MAX;
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i == lock || (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) || !Player_lock_allowed(ind, i) || OWNS_TANK(ind, i) || TEAM(ind, i) || ALLIANCE(ind, i))
-        {
+        player_t *pl_i = Players[i];
+        if (i == lock ||
+            (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
+            !Player_lock_allowed(ind, i) ||
+            OWNS_TANK(ind, i) ||
+            Players_are_teammates(pl, pl_i) ||
+            Players_are_allies(pl, pl_i))
             continue;
-        }
-        l = Wrap_length(Players[i]->pos.x - pl->pos.x,
-                        Players[i]->pos.y - pl->pos.y);
+        l = Wrap_length(pl_i->pos.x - pl->pos.x,
+                        pl_i->pos.y - pl->pos.y);
         if (l >= dist && l < best)
         {
             best = l;
@@ -268,7 +268,7 @@ void Pause_player(int ind, bool on)
                      * then it's too late to join. */
                     if (i == ind)
                         continue;
-                    if (Players[i]->life < World.rules->lives && !TEAM(ind, i))
+                    if (Players[i]->life < World.rules->lives && !Players_are_teammates(pl, Players[i]))
                     {
                         toolate = true;
                         break;
@@ -605,9 +605,9 @@ int Handle_keyboard(int ind)
                     }
                     for (i = 0; i < NumPlayers; i++)
                     {
-                        if (Players[i]->connp != NULL)
+                        if (Players[i]->conn != NULL)
                         {
-                            Send_base(Players[i]->connp,
+                            Send_base(Players[i]->conn,
                                       pl->id,
                                       pl->home_base);
                         }

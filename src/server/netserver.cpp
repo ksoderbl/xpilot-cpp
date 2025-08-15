@@ -690,7 +690,7 @@ void Destroy_connection(connection_t *connp, const char *reason)
     {
         id = connp->id;
         connp->id = NO_ID;
-        Players[GetInd[id]]->connp = NULL;
+        Players[GetInd[id]]->conn = NULL;
         Delete_player(GetInd[id]);
     }
     if (connp->real != NULL)
@@ -1197,7 +1197,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     NumPlayers++;
     request_ID();
     connp->id = pl->id;
-    pl->connp = connp;
+    pl->conn = connp;
     memset(pl->last_keyv, 0, sizeof(pl->last_keyv));
     memset(pl->prev_keyv, 0, sizeof(pl->prev_keyv));
 
@@ -1218,21 +1218,21 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     /*
      * Tell him about himself first.
      */
-    Send_player(pl->connp, pl->id);
-    Send_score(pl->connp, pl->id, pl->score,
+    Send_player(pl->conn, pl->id);
+    Send_score(pl->conn, pl->id, pl->score,
                pl->life, pl->mychar, pl->alliance);
-    Send_base(pl->connp, pl->id, pl->home_base);
+    Send_base(pl->conn, pl->id, pl->home_base);
     /*
      * And tell him about all the others.
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        Send_player(pl->connp, Players[i]->id);
-        Send_score(pl->connp, Players[i]->id, Players[i]->score,
+        Send_player(pl->conn, Players[i]->id);
+        Send_score(pl->conn, Players[i]->id, Players[i]->score,
                    Players[i]->life, Players[i]->mychar, Players[i]->alliance);
         if (!IS_TANK_IND(i))
         {
-            Send_base(pl->connp, Players[i]->id, Players[i]->home_base);
+            Send_base(pl->conn, Players[i]->id, Players[i]->home_base);
         }
     }
     /*
@@ -1240,12 +1240,12 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Players[i]->connp != NULL)
+        if (Players[i]->conn != NULL)
         {
-            Send_player(Players[i]->connp, pl->id);
-            Send_score(Players[i]->connp, pl->id, pl->score,
+            Send_player(Players[i]->conn, pl->id);
+            Send_score(Players[i]->conn, pl->id, pl->score,
                        pl->life, pl->mychar, pl->alliance);
-            Send_base(Players[i]->connp, pl->id, pl->home_base);
+            Send_base(Players[i]->conn, pl->id, pl->home_base);
         }
         /*
          * And tell him about the relationships others have with eachother.
@@ -1254,7 +1254,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         {
             if ((war_on_id = Robot_war_on_player(i)) != NO_ID)
             {
-                Send_war(pl->connp, Players[i]->id, war_on_id);
+                Send_war(pl->conn, Players[i]->id, war_on_id);
             }
         }
     }

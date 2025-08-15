@@ -1361,7 +1361,7 @@ void Update_objects(void)
                     "%s was auto-kicked for pausing too long [*Server notice*]",
                     pl->name);
             Set_message(msg);
-            Destroy_connection(pl->connp, "auto-kicked: paused too long");
+            Destroy_connection(pl->conn, "auto-kicked: paused too long");
         }
     }
 

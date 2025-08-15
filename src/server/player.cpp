@@ -138,9 +138,9 @@ void Pick_startpos(int ind)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->connp != NULL)
+                if (Players[i]->conn != NULL)
                 {
-                    Send_base(Players[i]->connp,
+                    Send_base(Players[i]->conn,
                               pl->id,
                               pl->home_base);
                 }
@@ -512,7 +512,7 @@ int Init_player(int ind, shipshape_t *ship)
         {
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (Players[i]->life < World.rules->lives && !TEAM(ind, i))
+            if (Players[i]->life < World.rules->lives && !Players_are_teammates(pl, Players[i]))
             {
                 too_late = true;
                 break;
@@ -543,7 +543,7 @@ int Init_player(int ind, shipshape_t *ship)
     GetInd[pl->id] = ind;
     pl->ind = ind;
 
-    pl->connp = NULL;
+    pl->conn = NULL;
     pl->audio = NULL;
 
     pl->lose_item = 0;
@@ -630,9 +630,9 @@ void Update_score_table(void)
             pl->prev_alliance = pl->alliance;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->connp != NULL)
+                if (Players[i]->conn != NULL)
                 {
-                    Send_score(Players[i]->connp, pl->id,
+                    Send_score(Players[i]->conn, pl->id,
                                pl->score, pl->life,
                                pl->mychar, pl->alliance);
                 }
@@ -651,9 +651,9 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    if (Players[i]->connp != NULL)
+                    if (Players[i]->conn != NULL)
                     {
-                        Send_timing(Players[i]->connp, pl->id, check, pl->round);
+                        Send_timing(Players[i]->conn, pl->id, check, pl->round);
                     }
                 }
             }
@@ -895,7 +895,7 @@ static void Give_best_player_bonus(DFLOAT average_score,
                 bp->name,
                 bp->kills, bp->deaths);
         points = best_ratio * Rate(bp->score, average_score);
-        SCORE(best_players[0], points, bp->pos.cx, bp->pos.cy,
+        SCORE(bp, points, bp->pos.cx, bp->pos.cy,
               "[Deadliest]");
     }
     else
@@ -921,7 +921,7 @@ static void Give_best_player_bonus(DFLOAT average_score,
             }
             strcat(msg, bp->name);
             points = (int)(best_ratio * score);
-            SCORE(best_players[i], points, bp->pos.cx, bp->pos.cy,
+            SCORE(bp, points, bp->pos.cx, bp->pos.cy,
                   "[Deadly]");
         }
         if (strlen(msg) + 64 >= sizeof(msg))
@@ -945,7 +945,7 @@ static void Give_individual_bonus(int ind, DFLOAT average_score)
 
     ratio = (DFLOAT)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(pl->score, average_score);
-    SCORE(ind, points, pl->pos.cx, pl->pos.cy,
+    SCORE(pl, points, pl->pos.cx, pl->pos.cy,
           "[Winner]");
 }
 
@@ -1190,9 +1190,9 @@ void Race_game_over(void)
                 pl->home_base = World.baseorder[i].base_idx;
                 for (j = 0; j < NumPlayers; j++)
                 {
-                    if (Players[j]->connp != NULL)
+                    if (Players[j]->conn != NULL)
                     {
-                        Send_base(Players[j]->connp,
+                        Send_base(Players[j]->conn,
                                   pl->id,
                                   pl->home_base);
                     }
@@ -1253,7 +1253,7 @@ void Race_game_over(void)
                         (num_best_players == 1) ? "had" : "shares",
                         (DFLOAT)bestlap / FPS);
                 Set_message(msg);
-                SCORE(i, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
+                SCORE(pl, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
                       (num_best_players == 1) ? "[Fastest lap]" : "[Joint fastest lap]");
             }
         }
@@ -1423,7 +1423,7 @@ void Compute_game_status(void)
                         Set_message(msg);
                         sprintf(msg, "[Position %d%s]", position,
                                 (num_finished_players == 1) ? "" : " (jointly)");
-                        SCORE(i, pts, pl->pos.cx, pl->pos.cy, msg);
+                        SCORE(pl, pts, pl->pos.cx, pl->pos.cy, msg);
                     }
                     else
                     {
@@ -1959,9 +1959,9 @@ void Delete_player(int ind)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Players[i]->connp != NULL)
+        if (Players[i]->conn != NULL)
         {
-            Send_leave(Players[i]->connp, id);
+            Send_leave(Players[i]->conn, id);
         }
         else if (IS_TANK_IND(i))
         {
@@ -2122,37 +2122,27 @@ void Player_death_reset(int ind)
 /* determines if two players are immune to eachother */
 int Team_immune(int id1, int id2)
 {
-    int ind1, ind2;
+    player_t *pl1, *pl2;
 
     if (id1 == id2)
-    {
         /* owned stuff is never team immune */
         return 0;
-    }
     if (!options.teamImmunity)
-    {
         return 0;
-    }
     if (id1 == NO_ID || id2 == NO_ID)
-    {
         /* can't find owner for cannon stuff */
         return 0;
-    }
 
-    ind1 = GetInd[id1];
-    ind2 = GetInd[id2];
+    pl1 = Players[GetInd[id1]];
+    pl2 = Players[GetInd[id2]];
 
-    if (TEAM(ind1, ind2))
-    {
+    if (Players_are_teammates(pl1, pl2))
         /* players are teammates */
         return 1;
-    }
 
-    if (ALLIANCE(ind1, ind2))
-    {
+    if (Players_are_allies(pl1, pl2))
         /* players are allies */
         return 1;
-    }
 
     return 0;
 }

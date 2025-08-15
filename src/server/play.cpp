@@ -85,7 +85,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     if (!somebody_flag)
     {
-        SCORE(ind, Rate(pl->score, CANNON_SCORE) / 2,
+        SCORE(pl, Rate(pl->score, CANNON_SCORE) / 2,
               tt->clk_pos.cx, tt->clk_pos.cy, "Treasure:");
         return 0;
     }
@@ -99,21 +99,19 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
-        {
+        if (IS_TANK_IND(i) ||
+            (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
+            (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
             continue;
-        }
         if (Players[i]->team == td->team)
         {
-            SCORE(i, -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+            SCORE(Players[i], -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(Players[i]->status, KILLED);
         }
         else if (Players[i]->team == tt->team &&
                  (Players[i]->team != TEAM_NOT_SET || i == ind))
-        {
-            SCORE(i, (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
-        }
+            SCORE(Players[i], (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
     }
 
     if (options.treasureKillTeam)
