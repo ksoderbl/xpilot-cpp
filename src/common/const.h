@@ -168,4 +168,12 @@ extern DFLOAT tbl_cos[];
 #undef rand
 #define rand() please dont use rand.
 
+/*
+ * Polygon style flags
+ */
+#define STYLE_FILLED (1U << 0)
+#define STYLE_TEXTURED (1U << 1)
+#define STYLE_INVISIBLE (1U << 2)
+#define STYLE_INVISIBLE_RADAR (1U << 3)
+
 #endif
