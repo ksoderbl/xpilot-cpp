@@ -71,11 +71,11 @@ typedef struct
  * Structure with player position info measured in blocks instead of pixels.
  * Used for map state info updating.
  */
-typedef struct
-{
-    ipos_t world;
-    ipos_t realWorld;
-} block_visibility_t;
+// typedef struct
+// {
+//     ipos_t world;
+//     ipos_t realWorld;
+// } block_visibility_t;
 
 typedef struct
 {
@@ -125,25 +125,27 @@ static debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 static unsigned fastshot_num[DEBRIS_TYPES * 2],
     fastshot_max[DEBRIS_TYPES * 2];
 
-#define inview(x_, y_)                                                  \
-    ((((x_) > pv.world.x && (x_) < pv.world.x + view_width) ||          \
-      ((x_) > pv.realWorld.x && (x_) < pv.realWorld.x + view_width)) && \
-     (((y_) > pv.world.y && (y_) < pv.world.y + view_height) ||         \
-      ((y_) > pv.realWorld.y && (y_) < pv.realWorld.y + view_height)))
+// #define inview(x_, y_)                                                  \
+//     ((((x_) > pv.world.x && (x_) < pv.world.x + view_width) ||          \
+//       ((x_) > pv.realWorld.x && (x_) < pv.realWorld.x + view_width)) && \
+//      (((y_) > pv.world.y && (y_) < pv.world.y + view_height) ||         \
+//       ((y_) > pv.realWorld.y && (y_) < pv.realWorld.y + view_height)))
 
-#define click_inview(x_, y_)                                                    \
-    ((((x_) > cv.world.cx && (x_) < cv.world.cx + view_click_width) ||          \
-      ((x_) > cv.realWorld.cx && (x_) < cv.realWorld.cx + view_click_width)) && \
-     (((y_) > cv.world.cy && (y_) < cv.world.cy + view_click_height) ||         \
-      ((y_) > cv.realWorld.cy && (y_) < cv.realWorld.cy + view_click_height)))
-
-static int block_inview(block_visibility_t *bv, int x, int y)
+static bool click_inview(click_visibility_t &cv, int cx, int cy)
 {
-    return ((x > bv->world.x && x < bv->world.x + horizontal_blocks) ||
-            (x > bv->realWorld.x && x < bv->realWorld.x + horizontal_blocks)) &&
-           ((y > bv->world.y && y < bv->world.y + vertical_blocks) ||
-            (y > bv->realWorld.y && y < bv->realWorld.y + vertical_blocks));
+    return (((cx > cv.world.cx && cx < cv.world.cx + view_click_width) ||
+             (cx > cv.realWorld.cx && cx < cv.realWorld.cx + view_click_width)) &&
+            ((cy > cv.world.cy && cy < cv.world.cy + view_click_height) ||
+             (cy > cv.realWorld.cy && cy < cv.realWorld.cy + view_click_height)));
 }
+
+// static int block_inview(block_visibility_t *bv, int x, int y)
+// {
+//     return ((x > bv->world.x && x < bv->world.x + horizontal_blocks) ||
+//             (x > bv->realWorld.x && x < bv->realWorld.x + horizontal_blocks)) &&
+//            ((y > bv->world.y && y < bv->world.y + vertical_blocks) ||
+//             (y > bv->realWorld.y && y < bv->realWorld.y + vertical_blocks));
+// }
 
 static void fastshot_store(int xf, int yf, int color, int offset)
 {
@@ -436,7 +438,7 @@ static int Frame_status(connection_t *conn, int ind)
                 Players_are_allies(pl, Players[lock_ind]))
 #endif
             && BIT(Players[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING &&
-            (options.playersOnRadar || click_inview(Players[lock_ind]->pos.cx, Players[lock_ind]->pos.cy)) &&
+            (options.playersOnRadar || click_inview(cv, Players[lock_ind]->pos.cx, Players[lock_ind]->pos.cy)) &&
             pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
@@ -539,8 +541,10 @@ static int Frame_status(connection_t *conn, int ind)
 
 static void Frame_map(connection_t *conn, player_t *pl)
 {
-    int i, k, bx, by, conn_bit = (1 << conn->conn_index);
-    block_visibility_t bv;
+    int i, k;
+    // int bx, by;
+    int conn_bit = (1 << conn->conn_index);
+    // block_visibility_t bv;
     const int fuel_packet_size = 5;
     const int cannon_packet_size = 5;
     const int target_packet_size = 7;
@@ -549,23 +553,23 @@ static void Frame_map(connection_t *conn, player_t *pl)
     int max_packet;
     int packet_count;
 
-    bx = OBJ_X_IN_BLOCKS(pl);
-    by = OBJ_Y_IN_BLOCKS(pl);
+    // bx = OBJ_X_IN_BLOCKS(pl);
+    // by = OBJ_Y_IN_BLOCKS(pl);
 
-    bv.world.x = bx - (horizontal_blocks >> 1);
-    bv.world.y = by - (vertical_blocks >> 1);
-    bv.realWorld = bv.world;
-    if (BIT(World.rules->mode, WRAP_PLAY))
-    {
-        if (bv.world.x < 0 && bv.world.x + horizontal_blocks < World.x)
-            bv.world.x += World.x;
-        else if (bv.world.x > 0 && bv.world.x + horizontal_blocks > World.x)
-            bv.realWorld.x -= World.x;
-        if (bv.world.y < 0 && bv.world.y + vertical_blocks < World.y)
-            bv.world.y += World.y;
-        else if (bv.world.y > 0 && bv.world.y + vertical_blocks > World.y)
-            bv.realWorld.y -= World.y;
-    }
+    // bv.world.x = bx - (horizontal_blocks >> 1);
+    // bv.world.y = by - (vertical_blocks >> 1);
+    // bv.realWorld = bv.world;
+    // if (BIT(World.rules->mode, WRAP_PLAY))
+    // {
+    //     if (bv.world.x < 0 && bv.world.x + horizontal_blocks < World.x)
+    //         bv.world.x += World.x;
+    //     else if (bv.world.x > 0 && bv.world.x + horizontal_blocks > World.x)
+    //         bv.realWorld.x -= World.x;
+    //     if (bv.world.y < 0 && bv.world.y + vertical_blocks < World.y)
+    //         bv.world.y += World.y;
+    //     else if (bv.world.y > 0 && bv.world.y + vertical_blocks > World.y)
+    //         bv.realWorld.y -= World.y;
+    // }
 
     packet_count = 0;
     max_packet = MAX(5, bytes_left / target_packet_size);
@@ -576,7 +580,8 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (++i >= World.NumTargets)
             i = 0;
         targ = &World.targets[i];
-        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && block_inview(&bv, targ->blk_pos.x, targ->blk_pos.y)))
+        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 &&
+                                                 click_inview(cv, targ->clk_pos.cx, targ->clk_pos.cy)))
         {
             Send_target(conn, i, targ->dead_time, targ->damage);
             pl->last_target_update = i;
@@ -593,9 +598,9 @@ static void Frame_map(connection_t *conn, player_t *pl)
     {
         if (++i >= World.NumCannons)
             i = 0;
-        if (block_inview(&bv,
-                         World.cannon[i].blk_pos.x,
-                         World.cannon[i].blk_pos.y))
+        if (click_inview(cv,
+                         World.cannon[i].clk_pos.cx,
+                         World.cannon[i].clk_pos.cy))
         {
             if (BIT(World.cannon[i].conn_mask, conn_bit) == 0)
             {
@@ -620,9 +625,9 @@ static void Frame_map(connection_t *conn, player_t *pl)
             if (World.block[World.fuel[i].blk_pos.x]
                            [World.fuel[i].blk_pos.y] == FUEL)
             {
-                if (block_inview(&bv,
-                                 World.fuel[i].blk_pos.x,
-                                 World.fuel[i].blk_pos.y))
+                if (click_inview(cv,
+                                 World.fuel[i].clk_pos.cx,
+                                 World.fuel[i].clk_pos.cy))
                 {
                     Send_fuel(conn, i, (int)World.fuel[i].fuel);
                     pl->last_fuel_update = i;
@@ -645,16 +650,14 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (++i >= World.NumWormholes)
             i = 0;
         worm = &World.wormHoles[i];
-        if (options.wormholeVisible && worm->temporary && (worm->type == WORM_IN || worm->type == WORM_NORMAL) && block_inview(&bv, worm->blk_pos.x, worm->blk_pos.y))
+        if (options.wormholeVisible &&
+            worm->temporary &&
+            (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
+            click_inview(cv, worm->clk_pos.cx, worm->clk_pos.cy))
         {
-            /* This is really a stupid bug: he first converts
-               the perfect blocksizes to pixels which the
-               client is perfectly capable of doing itself.
-               Then he sends the pixels in signed shorts.
-               This will fail on big maps. */
-            int x = (worm->blk_pos.x * BLOCK_SZ) + BLOCK_SZ / 2,
-                y = (worm->blk_pos.y * BLOCK_SZ) + BLOCK_SZ / 2;
-            Send_wormhole(conn, x, y);
+            int cx = worm->clk_pos.cx;
+            int cy = worm->clk_pos.cy;
+            Send_wormhole(conn, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
             pl->last_wormhole_update = i;
             bytes_left -= max_packet * wormhole_packet_size;
             if (++packet_count >= max_packet)
@@ -767,11 +770,9 @@ static void Frame_shots(connection_t *conn, int ind)
         shot = obj_list[i];
         x = shot->pos.x;
         y = shot->pos.y;
-        // if (!click_inview(cx, cy))
-        //     continue;
         cx = shot->pos.cx;
         cy = shot->pos.cy;
-        if (!click_inview(cx, cy))
+        if (!click_inview(cv, cx, cy))
             continue;
 
         if ((color = shot->color) == BLACK)
@@ -960,7 +961,7 @@ static void Frame_ships(connection_t *conn, int ind)
         DFLOAT x = CLICK_TO_FLOAT(cx);
         DFLOAT y = CLICK_TO_FLOAT(cy);
 
-        if (click_inview(cx, cy))
+        if (click_inview(cv, cx, cy))
             dir = pulse->dir;
         else
         {
@@ -979,7 +980,7 @@ static void Frame_ships(connection_t *conn, int ind)
             }
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
-            if (click_inview(cx, cy))
+            if (click_inview(cv, cx, cy))
                 dir = MOD2(pulse->dir + RES / 2, RES);
             else
                 continue;
@@ -1012,7 +1013,7 @@ static void Frame_ships(connection_t *conn, int ind)
         if (cannon->tractor_count > 0)
         {
             player_t *t = Players[GetInd[cannon->tractor_target]];
-            if (click_inview(t->pos.cx, t->pos.cy))
+            if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
                 for (j = 0; j < 3; j++)
@@ -1035,7 +1036,7 @@ static void Frame_ships(connection_t *conn, int ind)
             continue;
         if (BIT(pl_i->status, GAME_OVER))
             continue;
-        if (!click_inview(pl_i->pos.cx, pl_i->pos.cy))
+        if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
             continue;
         if (BIT(pl_i->status, PAUSE))
         {
@@ -1065,7 +1066,7 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_REFUEL))
         {
-            if (click_inview(World.fuel[pl_i->fs].clk_pos.cx,
+            if (click_inview(cv, World.fuel[pl_i->fs].clk_pos.cx,
                              World.fuel[pl_i->fs].clk_pos.cy))
                 Send_refuel(conn,
                             (int)World.fuel[pl_i->fs].pix_pos.x,
@@ -1079,14 +1080,14 @@ static void Frame_ships(connection_t *conn, int ind)
             DFLOAT y = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
-            if (click_inview(cx, cy))
+            if (click_inview(cv, cx, cy))
                 /* same packet as refuel */
                 Send_refuel(conn, pl_i->pos.x, pl_i->pos.y, (int)x, (int)y);
         }
         if (BIT(pl_i->used, HAS_TRACTOR_BEAM))
         {
             player_t *t = Players[GetInd[pl_i->lock.pl_id]];
-            if (click_inview(t->pos.cx, t->pos.cy))
+            if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
 
@@ -1099,7 +1100,7 @@ static void Frame_ships(connection_t *conn, int ind)
             }
         }
 
-        if (pl_i->ball != NULL && click_inview(pl_i->ball->pos.cx, pl_i->ball->pos.cy))
+        if (pl_i->ball != NULL && click_inview(cv, pl_i->ball->pos.cx, pl_i->ball->pos.cy))
             Send_connector(conn,
                            pl_i->ball->pos.x,
                            pl_i->ball->pos.y,
