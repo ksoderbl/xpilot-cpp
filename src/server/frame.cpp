@@ -409,7 +409,7 @@ static int Frame_status(connection_t *conn, int ind)
 
         if ((!BIT(World.rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
-            && (pl->visibility[lock_ind].canSee || OWNS_TANK(ind, lock_ind) || Players_are_teammates(pl, Players[lock_ind]) || Players_are_allies(pl, Players[lock_ind]))
+            && (pl->visibility[lock_ind].canSee || Player_owns_tank(pl, Players[lock_ind]) || Players_are_teammates(pl, Players[lock_ind]) || Players_are_allies(pl, Players[lock_ind]))
 #endif
             && BIT(Players[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING && (options.playersOnRadar || inview(Players[lock_ind]->pos.x, Players[lock_ind]->pos.y)) && pl->lock.distance != 0)
         {
@@ -1160,7 +1160,7 @@ static void Frame_radar(connection_t *conn, int ind)
              */
             if (Players[i]->conn == conn ||
                 BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-                (!Players_are_teammates(pl, Players[i]) && !Players_are_allies(pl, Players[i]) && !OWNS_TANK(ind, i) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
+                (!Players_are_teammates(pl, Players[i]) && !Players_are_allies(pl, Players[i]) && !Player_owns_tank(pl, Players[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
             x = Players[i]->pos.x;
             y = Players[i]->pos.y;
@@ -1170,7 +1170,7 @@ static void Frame_radar(connection_t *conn, int ind)
             if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
                 continue;
             size = 3;
-            if (Players_are_teammates(pl, Players[i]) || Players_are_allies(pl, Players[i]) || OWNS_TANK(ind, i))
+            if (Players_are_teammates(pl, Players[i]) || Players_are_allies(pl, Players[i]) || Player_owns_tank(pl, Players[i]))
                 size |= 0x80;
             Frame_radar_buffer_add((int)x, (int)y, size);
         }
@@ -1380,6 +1380,6 @@ void Set_player_message(player_t *pl, const char *message)
         msg = message;
     if (pl->conn != NULL)
         Send_message(pl->conn, msg);
-    else if (IS_ROBOT_PTR(pl))
+    else if (Player_is_robot(pl))
         Robot_message(GetInd[pl->id], msg);
 }

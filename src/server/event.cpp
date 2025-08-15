@@ -211,7 +211,7 @@ int Player_lock_closest(int ind, int next)
         if (i == lock ||
             (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
             !Player_lock_allowed(ind, i) ||
-            OWNS_TANK(ind, i) ||
+            Player_owns_tank(pl, pl_i) ||
             Players_are_teammates(pl, pl_i) ||
             Players_are_allies(pl, pl_i))
             continue;
@@ -592,7 +592,7 @@ int Handle_keyboard(int ind)
                         }
                     }
                     for (i = 0; i < NumPlayers; i++)
-                        if (i != ind && !IS_TANK_IND(i) && pl->home_base == Players[i]->home_base)
+                        if (i != ind && !Player_is_tank(Players[i]) && pl->home_base == Players[i]->home_base)
                         {
                             Pick_startpos(i);
                             sprintf(msg, "%s has taken over %s's home base.",
@@ -606,11 +606,9 @@ int Handle_keyboard(int ind)
                     for (i = 0; i < NumPlayers; i++)
                     {
                         if (Players[i]->conn != NULL)
-                        {
                             Send_base(Players[i]->conn,
                                       pl->id,
                                       pl->home_base);
-                        }
                     }
                 }
                 break;

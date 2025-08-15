@@ -139,7 +139,7 @@ static void Laser_pulse_find_victims(
             continue;
         }
         if (options.selfImmunity &&
-            IS_TANK_PTR(vic) &&
+            Player_is_tank(vic) &&
             vic->lock.pl_id == pulse->id)
         {
             continue;

@@ -57,18 +57,14 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
-            {
+            if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
                 continue;
-            }
             if (Players[i]->team == td->team)
             {
                 lose_score += Players[i]->score;
                 lose_team_members++;
                 if (BIT(Players[i]->status, GAME_OVER) == 0)
-                {
                     somebody_flag = 1;
-                }
             }
             else if (Players[i]->team == tt->team)
             {
@@ -99,7 +95,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_TANK_IND(i) ||
+        if (Player_is_tank(Players[i]) ||
             (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
             (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
             continue;

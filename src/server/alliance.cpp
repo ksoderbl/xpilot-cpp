@@ -68,11 +68,9 @@ int Invite_player(int ind, int ally_ind)
         /* we can never form an alliance with ourselves */
         return 0;
     }
-    if (IS_TANK_IND(ally_ind))
-    {
+    if (Player_is_tank(ally))
         /* tanks can't handle invitations */
         return 0;
-    }
     if (Players_are_allies(pl, ally))
         /* we're already in the same alliance */
         return 0;
@@ -94,11 +92,11 @@ int Invite_player(int ind, int ally_ind)
     }
     /* set & send invitation */
     pl->invite = ally->id;
-    if (IS_ROBOT_PTR(ally))
+    if (Player_is_robot(ally))
     {
         Robot_invite(ally_ind, ind);
     }
-    else if (IS_HUMAN_PTR(ally))
+    else if (Player_is_human(ally))
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s seeks an alliance with you >", pl->name);
@@ -119,7 +117,7 @@ int Cancel_invitation(int ind)
     }
     ally = Players[GetInd[pl->invite]];
     pl->invite = NO_ID;
-    if (IS_HUMAN_PTR(ally))
+    if (Player_is_human(ally))
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s has cancelled the invitation for an alliance >",
@@ -141,7 +139,7 @@ int Refuse_alliance(int ind, int ally_ind)
         return 0;
     }
     ally->invite = NO_ID;
-    if (IS_HUMAN_PTR(ally))
+    if (Player_is_human(ally))
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s has declined your invitation for an alliance >",
@@ -165,7 +163,7 @@ int Refuse_all_alliances(int ind)
             j++;
         }
     }
-    if (IS_HUMAN_PTR(pl))
+    if (Player_is_human(pl))
     {
         char msg[MSG_LEN];
         if (j == 0)
@@ -238,7 +236,7 @@ int Accept_all_alliances(int ind)
             j++;
         }
     }
-    if (IS_HUMAN_PTR(pl))
+    if (Player_is_human(pl))
     {
         char msg[MSG_LEN];
         if (j == 0)
@@ -383,7 +381,7 @@ void Player_join_alliance(int ind, int ally_ind)
     alliance_t *alliance = Find_alliance(ally->alliance);
     char msg[MSG_LEN];
 
-    if (!IS_TANK_IND(ind))
+    if (!Player_is_tank(pl))
     {
         /* announce first to avoid sending the player two messages */
         if (options.announceAlliances)
@@ -396,7 +394,7 @@ void Player_join_alliance(int ind, int ally_ind)
         {
             sprintf(msg, " < %s has joined your alliance >", pl->name);
             Set_alliance_message(alliance, msg);
-            if (IS_HUMAN_PTR(pl))
+            if (Player_is_human(pl))
             {
                 sprintf(msg, " < You have joined %s's alliance >", ally->name);
                 Set_player_message(pl, msg);
@@ -440,7 +438,7 @@ int Leave_alliance(int ind)
     alliance = Find_alliance(pl->alliance);
     Alliance_remove_player(alliance, pl);
     /* announcement */
-    if (!IS_TANK_IND(ind))
+    if (!Player_is_tank(pl))
     {
         if (options.announceAlliances)
         {
@@ -452,16 +450,12 @@ int Leave_alliance(int ind)
         {
             sprintf(msg, " < %s has left your alliance >", pl->name);
             Set_alliance_message(alliance, msg);
-            if (IS_HUMAN_PTR(pl))
-            {
+            if (Player_is_human(pl))
                 Set_player_message(pl, " < You have left the alliance >");
-            }
         }
     }
     if (alliance->NumMembers <= 1)
-    {
         Dissolve_alliance(alliance->id);
-    }
     return 1;
 }
 

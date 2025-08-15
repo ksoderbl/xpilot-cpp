@@ -116,7 +116,7 @@ void tuner_playershielding(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!IS_TANK_PTR(Players[i]))
+            if (!Player_is_tank(Players[i]))
             {
                 if (!BIT(Players[i]->used, HAS_SHOT))
                     SET_BIT(Players[i]->used, HAS_SHIELD);

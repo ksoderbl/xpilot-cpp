@@ -2007,18 +2007,16 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            if (IS_TANK_IND(j) || (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) || (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
-            {
+            if (Player_is_tank(Players[j]) ||
+                (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
+                (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
                 continue;
-            }
             if (Players[j]->team == targ->team)
             {
                 lose_score += Players[j]->score;
                 lose_team_members++;
                 if (BIT(Players[j]->status, GAME_OVER) == 0)
-                {
                     somebody_flag = 1;
-                }
             }
             else if (Players[j]->team == Players[killer]->team)
             {
@@ -2083,23 +2081,20 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        if (IS_TANK_IND(j) || (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) || (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
-        {
+        if (Player_is_tank(Players[j]) ||
+            (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
+            (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
             continue;
-        }
+
         if (Players[j]->team == targ->team)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(Players[j]->status, KILLED);
-            SCORE(Players[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy,
-                  "Target: ");
+            SCORE(Players[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         else if (Players[j]->team == Players[killer]->team &&
                  (Players[j]->team != TEAM_NOT_SET || j == killer))
-        {
-            SCORE(Players[j], por, targ->clk_pos.cx, targ->clk_pos.cy,
-                  "Target: ");
-        }
+            SCORE(Players[j], por, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
     }
 }
 
@@ -2485,7 +2480,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->status, KILLED) && pl->score < 0 && IS_ROBOT_PTR(pl))
+    if (BIT(pl->status, KILLED) && pl->score < 0 && Player_is_robot(pl))
     {
         pl->home_base = 0;
         Pick_startpos(ind);

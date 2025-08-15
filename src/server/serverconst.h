@@ -118,10 +118,10 @@
         ((pl_i->alliance != ALLIANCE_NOT_SET) && (pl_j->alliance == pl_i->alliance))
 
 /*
- * Used where we wish to know if a player (i) owns a tank (j).
+ * Used where we wish to know if a player (pl_i) owns a tank (pl_).
  */
-#define OWNS_TANK(i, j) \
-        (IS_TANK_IND(j) && (Players[j]->lock.pl_id != -1) && (GetInd[Players[j]->lock.pl_id] == (i)))
+#define Player_owns_tank(pl_i, pl_j) \
+        (Player_is_tank(pl_j) && (pl_j->lock.pl_id != -1) && (pl_j->lock.pl_id == pl_i->id))
 
 #define RECOVERY_DELAY (FPS * 3)
 #define ROBOT_CREATE_DELAY (FPS * 2)

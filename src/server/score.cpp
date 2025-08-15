@@ -84,7 +84,7 @@ void Score_players(int winner, int winner_score, char *winner_msg,
     player_t *lpl = Players[loser];
     if (Players_are_teammates(wpl, lpl) ||
         (wpl->alliance != ALLIANCE_NOT_SET && wpl->alliance == lpl->alliance) ||
-        (IS_TANK_IND(loser) && GetInd[lpl->lock.pl_id] == winner))
+        (Player_is_tank(lpl) && GetInd[lpl->lock.pl_id] == winner))
     {
         if (winner_score > 0)
             winner_score = -winner_score;

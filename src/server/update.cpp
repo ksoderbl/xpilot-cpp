@@ -1344,7 +1344,7 @@ void Update_objects(void)
 
             Kill_player(ind);
 
-            if (IS_HUMAN_PTR(pl))
+            if (Player_is_human(pl))
             {
                 if (frame_loops - pl->frame_last_busy > 60 * FPS)
                 {
@@ -1355,7 +1355,7 @@ void Update_objects(void)
         }
 
         if (options.maxPauseTime > 0 &&
-            IS_HUMAN_PTR(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
+            Player_is_human(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
             sprintf(msg,
                     "%s was auto-kicked for pausing too long [*Server notice*]",

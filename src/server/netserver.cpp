@@ -1230,10 +1230,8 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         Send_player(pl->conn, Players[i]->id);
         Send_score(pl->conn, Players[i]->id, Players[i]->score,
                    Players[i]->life, Players[i]->mychar, Players[i]->alliance);
-        if (!IS_TANK_IND(i))
-        {
+        if (!Player_is_tank(Players[i]))
             Send_base(pl->conn, Players[i]->id, Players[i]->home_base);
-        }
     }
     /*
      * And tell all the others about him.

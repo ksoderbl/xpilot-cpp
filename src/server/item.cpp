@@ -433,7 +433,7 @@ void Detonate_items(int ind)
         return;
 
     /* ZE: Detonated items on tanks should belong to the tank's owner. */
-    if (IS_TANK_PTR(pl))
+    if (Player_is_tank(pl))
         owner_ind = GetInd[pl->lock.pl_id];
     else
         owner_ind = ind;
@@ -653,7 +653,7 @@ void Do_transporter(int ind)
     for (i = 0; i < NumPlayers; i++)
     {
         p = Players[i];
-        if (p == pl || BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING || Team_immune(pl->id, p->id) || IS_TANK_PTR(p) || BIT(p->used, HAS_PHASING_DEVICE))
+        if (p == pl || BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING || Team_immune(pl->id, p->id) || Player_is_tank(p) || BIT(p->used, HAS_PHASING_DEVICE))
             continue;
         dist = Wrap_length(pl->pos.x - p->pos.x, pl->pos.y - p->pos.y);
         if (dist < closest)
@@ -1224,7 +1224,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                 p->item[ITEM_LASER] -= (int)(range * p->item[ITEM_LASER] + 0.5);
             }
 
-            if (!IS_ROBOT_PTR(p) || !options.ecmsReprogramRobots || !pl)
+            if (!Player_is_robot(p) || !options.ecmsReprogramRobots || !pl)
             {
                 /* player is blinded by light flashes. */
                 long duration = (int)(damage * pow(0.75, p->item[ITEM_SENSOR]));

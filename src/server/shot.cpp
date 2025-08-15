@@ -204,7 +204,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (i != ind && !Team_immune(Players[i]->id, pl->id) && !IS_TANK_IND(i))
+                if (i != ind && !Team_immune(Players[i]->id, pl->id) && !Player_is_tank(Players[i]))
                 {
                     int dx = CLICK_TO_PIXEL(cx - World.base[Players[i]->home_base].clk_pos.cx);
                     int dy = CLICK_TO_PIXEL(cy - World.base[Players[i]->home_base].clk_pos.cy);

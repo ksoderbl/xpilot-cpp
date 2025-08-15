@@ -304,9 +304,7 @@ static void PlayerCollision(void)
                                   Players[j]->prevpos.cy,
                                   Players[j]->pos.cx, Players[j]->pos.cy,
                                   2 * SHIP_SZ - 6))
-                {
                     continue;
-                }
 
                 /*
                  * Here we can add code to do more accurate player against
@@ -325,9 +323,7 @@ static void PlayerCollision(void)
                  */
 
                 if (Team_immune(pl->id, Players[j]->id) || PSEUDO_TEAM(i, j))
-                {
                     continue;
-                }
                 sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_PLAYER_SOUND);
                 if (BIT(World.rules->mode, BOUNCE_WITH_PLAYER))
                 {
@@ -350,27 +346,19 @@ static void PlayerCollision(void)
                               2 * SHIP_SZ);
                 }
                 if (!BIT(World.rules->mode, CRASH_WITH_PLAYER))
-                {
                     continue;
-                }
 
                 if (pl->fuel.sum <= 0 || (!BIT(pl->used, HAS_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
-                {
                     SET_BIT(pl->status, KILLED);
-                }
+
                 if (Players[j]->fuel.sum <= 0 || (!BIT(Players[j]->used, HAS_SHIELD) && !BIT(Players[j]->have, HAS_ARMOR)))
-                {
                     SET_BIT(Players[j]->status, KILLED);
-                }
 
                 if (!BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
-                {
                     Player_hit_armor(i);
-                }
+
                 if (!BIT(Players[j]->used, HAS_SHIELD) && BIT(Players[j]->have, HAS_ARMOR))
-                {
                     Player_hit_armor(j);
-                }
 
                 if (BIT(Players[j]->status, KILLED))
                 {
@@ -379,14 +367,14 @@ static void PlayerCollision(void)
                         sprintf(msg, "%s and %s crashed.",
                                 pl->name, Players[j]->name);
                         Set_message(msg);
-                        if (!IS_TANK_IND(i) && !IS_TANK_IND(j))
+                        if (!Player_is_tank(Players[i]) && !Player_is_tank(Players[j]))
                         {
                             sc = (int)floor(Rate(Players[j]->score, pl->score) * options.crashScoreMult);
                             sc2 = (int)floor(Rate(pl->score, Players[j]->score) * options.crashScoreMult);
                             Score_players(i, -sc, Players[j]->name,
                                           j, -sc2, pl->name);
                         }
-                        else if (IS_TANK_IND(i))
+                        else if (Player_is_tank(Players[i]))
                         {
                             int i_tank_owner = GetInd[Players[i]->lock.pl_id];
                             sc = (int)floor(Rate(Players[i_tank_owner]->score,
@@ -395,7 +383,7 @@ static void PlayerCollision(void)
                             Score_players(i_tank_owner, sc, Players[j]->name,
                                           j, -sc, pl->name);
                         }
-                        else if (IS_TANK_IND(j))
+                        else if (Player_is_tank(Players[j]))
                         {
                             int j_tank_owner = GetInd[Players[j]->lock.pl_id];
                             sc = (int)floor(Rate(Players[j_tank_owner]->score,
@@ -408,13 +396,11 @@ static void PlayerCollision(void)
                     else
                     {
                         int i_tank_owner = i;
-                        if (IS_TANK_IND(i))
+                        if (Player_is_tank(Players[i]))
                         {
                             i_tank_owner = GetInd[Players[i]->lock.pl_id];
                             if (i_tank_owner == j)
-                            {
                                 i_tank_owner = i;
-                            }
                         }
                         sprintf(msg, "%s ran over %s.",
                                 pl->name, Players[j]->name);
@@ -423,16 +409,12 @@ static void PlayerCollision(void)
                                            Players[j]->pos.cy,
                                            PLAYER_RAN_OVER_PLAYER_SOUND);
                         pl->kills++;
-                        if (IS_TANK_IND(i))
-                        {
+                        if (Player_is_tank(Players[i]))
                             sc = (int)floor(Rate(Players[i_tank_owner]->score,
                                                  Players[j]->score) *
                                             options.tankKillScoreMult);
-                        }
                         else
-                        {
                             sc = (int)floor(Rate(pl->score, Players[j]->score) * options.runoverKillScoreMult);
-                        }
                         Score_players(i_tank_owner, sc, Players[j]->name,
                                       j, -sc, pl->name);
                     }
@@ -442,13 +424,11 @@ static void PlayerCollision(void)
                     if (BIT(pl->status, KILLED))
                     {
                         int j_tank_owner = j;
-                        if (IS_TANK_IND(j))
+                        if (Player_is_tank(Players[j]))
                         {
                             j_tank_owner = GetInd[Players[j]->lock.pl_id];
                             if (j_tank_owner == i)
-                            {
                                 j_tank_owner = j;
-                            }
                         }
                         sprintf(msg, "%s ran over %s.",
                                 Players[j]->name, pl->name);
@@ -456,14 +436,10 @@ static void PlayerCollision(void)
                         sound_play_sensors(pl->pos.cx, pl->pos.cy,
                                            PLAYER_RAN_OVER_PLAYER_SOUND);
                         Players[j]->kills++;
-                        if (IS_TANK_IND(j))
-                        {
+                        if (Player_is_tank(Players[j]))
                             sc = (int)floor(Rate(Players[j_tank_owner]->score, pl->score) * options.tankKillScoreMult);
-                        }
                         else
-                        {
                             sc = (int)floor(Rate(Players[j]->score, pl->score) * options.runoverKillScoreMult);
-                        }
                         Score_players(j_tank_owner, sc, pl->name,
                                       i, -sc, Players[j]->name);
                     }
@@ -479,7 +455,7 @@ static void PlayerCollision(void)
 
                 if (BIT(pl->status, KILLED))
                 {
-                    if (IS_ROBOT_PTR(pl) && Robot_war_on_player(i) == Players[j]->id)
+                    if (Player_is_robot(pl) && Robot_war_on_player(i) == Players[j]->id)
                     {
                         Robot_reset_war(i);
                     }
@@ -568,7 +544,7 @@ static void PlayerCollision(void)
             {
                 pl->time++;
             }
-            if (BIT(pl->status, PLAYING | KILLED) == PLAYING && Wrap_length(pl->pos.x - World.check[pl->check].x * BLOCK_SZ, pl->pos.y - World.check[pl->check].y * BLOCK_SZ) < options.checkpointRadius * BLOCK_SZ && !IS_TANK_PTR(pl) && !options.ballrace)
+            if (BIT(pl->status, PLAYING | KILLED) == PLAYING && Wrap_length(pl->pos.x - World.check[pl->check].x * BLOCK_SZ, pl->pos.y - World.check[pl->check].y * BLOCK_SZ) < options.checkpointRadius * BLOCK_SZ && !Player_is_tank(pl) && !options.ballrace)
             {
                 Player_pass_checkpoint(i);
             }
@@ -679,7 +655,7 @@ static void PlayerObjectCollision(int ind)
                 }
             }
             else if (options.selfImmunity &&
-                     IS_TANK_PTR(pl) &&
+                     Player_is_tank(pl) &&
                      (pl->lock.pl_id == obj->id))
             {
                 continue;
@@ -1227,7 +1203,7 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
         Set_message(msg);
         sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
         SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, "[Asteroid]");
-        if (IS_TANK_PTR(pl) && options.asteroidPoints > 0)
+        if (Player_is_tank(pl) && options.asteroidPoints > 0)
         {
             int owner = GetInd[pl->lock.pl_id];
             if (Players[owner]->score <= options.asteroidMaxScore)
