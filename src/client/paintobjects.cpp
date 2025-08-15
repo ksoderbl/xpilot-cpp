@@ -30,10 +30,11 @@
 #include <sys/types.h>
 
 #include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/Xos.h>
+// #include <X11/Xlib.h>
+// #include <X11/Xos.h>
 
 #include "commonmacros.h"
+#include "draw.h"
 
 #include "client.h"
 #include "paint.h"
@@ -44,17 +45,15 @@
 #include "xperror.h"
 #include "bit.h"
 #include "types.h"
-#include "keys.h"
+// #include "keys.h"
 #include "rules.h"
 #include "setup.h"
 #include "paintdata.h"
-#include "record.h"
-#include "xinit.h"
+// #include "record.h"
 #include "protoclient.h"
 #include "portability.h"
 #include "guiobjects.h"
 #include "guimap.h"
-#include "bitmaps.h" /* can go away if Paint_item_symbol is moved to gui_objects.c */
 #include "wreckshape.h"
 #include "astershape.h"
 
@@ -79,7 +78,7 @@ position_t *asteroidShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS];
 
 bool markingLights;
 
-extern XGCValues gcv;
+// extern XGCValues gcv;
 extern setup_t *Setup;
 
 static int wrap(int *xp, int *yp)
@@ -101,77 +100,18 @@ static int wrap(int *xp, int *yp)
     return 1;
 }
 
-/* might want to move this one to gui_objects.c */
-
-/*db960828 added color parameter cause Windows needs to blt a different
-         bitmap based on the color. Unix ignores this parameter*/
-void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color)
-{
-    if (!texturedObjects)
-    {
-        gcv.stipple = itemBitmaps[type];
-        gcv.fill_style = FillStippled;
-        gcv.ts_x_origin = x;
-        gcv.ts_y_origin = y;
-        XChangeGC(dpy, mygc,
-                  GCStipple | GCFillStyle | GCTileStipXOrigin | GCTileStipYOrigin,
-                  &gcv);
-        rd.paintItemSymbol(type, d, mygc, x, y, color);
-        XFillRectangle(dpy, d, mygc, x, y, ITEM_SIZE, ITEM_SIZE);
-        gcv.fill_style = FillSolid;
-        XChangeGC(dpy, mygc, GCFillStyle, &gcv);
-    }
-    else
-    {
-        Bitmap_paint(d, BM_ALL_ITEMS, x, y, type);
-    }
-}
-
-void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y)
-{
-    const int SIZE = ITEM_TRIANGLE_SIZE;
-    XPoint points[5];
-
-#ifndef NO_ITEM_TRIANGLES
-    points[0].x = x - SIZE;
-    points[0].y = y - SIZE;
-    points[1].x = x;
-    points[1].y = y + SIZE;
-    points[2].x = x + SIZE;
-    points[2].y = y - SIZE;
-    points[3] = points[0];
-    SET_FG(colors[BLUE].pixel);
-    rd.drawLines(dpy, d, mygc, points, 4, CoordModeOrigin);
-#endif
-
-    SET_FG(colors[RED].pixel);
-#if 0
-    str[0] = itemtype_ptr[i].type + '0';
-    str[1] = '\0';
-    rd.drawString(dpy, d, mygc,
-                x - XTextWidth(gameFont, str, 1)/2,
-                y + SIZE - 1,
-                str, 1);
-#endif
-    Paint_item_symbol(type, d, mygc,
-                      x - ITEM_SIZE / 2,
-                      y - SIZE + 2, ITEM_PLAYFIELD);
-}
-
 static void Paint_items(void)
 {
     int i, x, y;
 
     if (num_itemtype > 0)
     {
-        SET_FG(colors[RED].pixel);
         for (i = 0; i < num_itemtype; i++)
         {
             x = itemtype_ptr[i].x;
             y = itemtype_ptr[i].y;
             if (wrap(&x, &y))
-                Paint_item((uint8_t)itemtype_ptr[i].type, drawPixmap, gameGC,
-                           WINSCALE(X(x)), WINSCALE(Y(y)));
+                Gui_paint_item_object(itemtype_ptr[i].type, x, y);
         }
         RELEASE(itemtype_ptr, num_itemtype, max_itemtype);
     }
@@ -608,11 +548,11 @@ static void Paint_all_connectors(void)
         num_trans > 0)
     {
         Gui_paint_all_connectors_begin();
-        SET_FG(colors[3].pixel);
+        // SET_FG(colors[3].pixel);
         Paint_refuel();
-        SET_FG(colors[4].pixel);
+        // SET_FG(colors[4].pixel);
         Paint_connectors();
-        SET_FG(colors[11].pixel);
+        // SET_FG(colors[11].pixel);
         Paint_transporters();
     }
 }

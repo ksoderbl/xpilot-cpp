@@ -109,7 +109,11 @@ extern int shieldDrawMode;           /* How to draw players shield */
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 extern char *texturePath;            /* Path list of texture directories */
 
-void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
-void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);
+// extern void Paint_item_symbol(int type, Drawable d, GC mygc,
+//                               int x, int y, int color);
+// extern void Paint_item(int type, Drawable d, GC mygc, int x, int y);
+extern void Gui_paint_item_symbol(int type, Drawable d, GC mygc,
+                                  int x, int y, int c);
+extern void Gui_paint_item(int type, Drawable d, GC mygc, int x, int y);
 
 #endif

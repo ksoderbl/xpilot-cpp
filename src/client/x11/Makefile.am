@@ -18,8 +18,6 @@ xpilot_cpp_client_x11_SOURCES = \
     paintdata.cpp \
     paintdata.h \
     painthud.cpp \
-    paintmap.cpp \
-    paintobjects.cpp \
     paintradar.cpp \
     record.cpp \
     record.h \

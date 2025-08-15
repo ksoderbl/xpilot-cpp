@@ -107,7 +107,8 @@ libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
 	datagram.$(OBJEXT) debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) \
 	messages.$(OBJEXT) netclient.$(OBJEXT) paint.$(OBJEXT) \
-	query.$(OBJEXT) talkmacros.$(OBJEXT) textinterface.$(OBJEXT)
+	paintmap.$(OBJEXT) paintobjects.$(OBJEXT) query.$(OBJEXT) \
+	talkmacros.$(OBJEXT) textinterface.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -128,6 +129,7 @@ am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
 	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
 	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/messages.Po \
 	./$(DEPDIR)/netclient.Po ./$(DEPDIR)/paint.Po \
+	./$(DEPDIR)/paintmap.Po ./$(DEPDIR)/paintobjects.Po \
 	./$(DEPDIR)/query.Po ./$(DEPDIR)/talkmacros.Po \
 	./$(DEPDIR)/textinterface.Po
 am__mv = mv -f
@@ -336,6 +338,8 @@ libxpclient_a_SOURCES = \
     netclient.h \
     paint.cpp \
     paint.h \
+    paintmap.cpp \
+    paintobjects.cpp \
     paintradar.h \
     protoclient.h \
     query.cpp \
@@ -400,6 +404,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netclient.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paint.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintmap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paintobjects.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talkmacros.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textinterface.Po@am__quote@ # am--include-marker
@@ -628,6 +634,8 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/messages.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
 	-rm -f ./$(DEPDIR)/paint.Po
+	-rm -f ./$(DEPDIR)/paintmap.Po
+	-rm -f ./$(DEPDIR)/paintobjects.Po
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po
@@ -684,6 +692,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/messages.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
 	-rm -f ./$(DEPDIR)/paint.Po
+	-rm -f ./$(DEPDIR)/paintmap.Po
+	-rm -f ./$(DEPDIR)/paintobjects.Po
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po

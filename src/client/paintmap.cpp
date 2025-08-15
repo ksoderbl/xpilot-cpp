@@ -28,9 +28,10 @@
 #include <sys/types.h>
 
 #include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/Xos.h>
+// #include <X11/Xlib.h>
+// #include <X11/Xos.h>
 
+#include "draw.h"
 #include "commonmacros.h"
 #include "xpmath.h"
 
@@ -42,13 +43,11 @@
 #include "xperror.h"
 #include "bit.h"
 #include "types.h"
-#include "keys.h"
+// #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "xpaint.h"
 #include "paintdata.h"
-#include "record.h"
-#include "xinit.h"
+// #include "record.h"
 #include "protoclient.h"
 #include "guimap.h"
 
@@ -155,10 +154,6 @@ void Paint_world(void)
         fill_bottom_right = -1;
     static int wormDrawCount;
     uint8_t *mapptr, *mapbase;
-    static int wallTileReady = 0;
-    static Pixmap wallTile = None;
-    int wallTileDoit = false;
-    XPoint points[5];
 
     //     if (instruments.texturedWalls) {
     //         if (!wallTileReady) {
@@ -189,21 +184,13 @@ void Paint_world(void)
         if (ye >= Setup->y)
             ye = Setup->y - 1;
         if (world.x <= 0)
-        {
             Gui_paint_border(0, 0, 0, Setup->height);
-        }
         if (world.x + ext_view_width >= Setup->width)
-        {
             Gui_paint_border(Setup->width, 0, Setup->width, Setup->height);
-        }
         if (world.y <= 0)
-        {
             Gui_paint_border(0, 0, Setup->width, 0);
-        }
         if (world.y + ext_view_height >= Setup->height)
-        {
             Gui_paint_border(0, Setup->height, Setup->width, Setup->height);
-        }
     }
 
     y = yb * BLOCK_SZ;
@@ -235,7 +222,6 @@ void Paint_world(void)
         for (rxb = xb; rxb <= xe; rxb++, xi++, x += BLOCK_SZ,
             mapptr += Setup->y)
         {
-
             if (xi == Setup->x)
             {
                 if (!BIT(Setup->mode, WRAP_PLAY))
@@ -248,10 +234,8 @@ void Paint_world(void)
 
             if (!(type & BLUE_BIT))
             {
-
                 switch (type)
                 {
-
                 case SETUP_FILLED_NO_DRAW:
                     // if (BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS) && fill_top_left == -1)
                     if ((instruments.filledWorld || instruments.texturedWalls) && fill_top_left == -1)
@@ -454,30 +438,11 @@ void Paint_world(void)
                     }
                     if (fill_top_right != -1)
                     {
-                        points[0].x = WINSCALE(X(fill_bottom_left));
-                        points[0].y = WINSCALE(Y(y));
-                        points[1].x = WINSCALE(X(fill_top_left));
-                        points[1].y = WINSCALE(Y(y + BLOCK_SZ));
-                        points[2].x = WINSCALE(X(fill_top_right));
-                        points[2].y = WINSCALE(Y(y + BLOCK_SZ));
-                        points[3].x = WINSCALE(X(fill_bottom_right));
-                        points[3].y = WINSCALE(Y(y));
-                        points[4] = points[0];
-                        if (wallTileDoit)
-                        {
-                            XSetFillStyle(dpy, gameGC, FillTiled);
-                        }
-                        else
-                        {
-                            SET_FG(colors[wallColor].pixel);
-                        }
-                        rd.fillPolygon(dpy, drawPixmap, gameGC,
-                                       points, 5,
-                                       Convex, CoordModeOrigin);
-                        if (wallTileDoit)
-                        {
-                            XSetFillStyle(dpy, gameGC, FillSolid);
-                        }
+                        Gui_paint_filled_slice(fill_bottom_left,
+                                               fill_top_left,
+                                               fill_top_right,
+                                               fill_bottom_right,
+                                               y);
                         fill_top_left =
                             fill_top_right =
                                 fill_bottom_left =
@@ -489,30 +454,9 @@ void Paint_world(void)
 
         if (fill_top_left != -1)
         {
-            points[0].x = WINSCALE(X(fill_bottom_left));
-            points[0].y = WINSCALE(Y(y));
-            points[1].x = WINSCALE(X(fill_top_left));
-            points[1].y = WINSCALE(Y(y + BLOCK_SZ));
-            points[2].x = WINSCALE(X(x));
-            points[2].y = WINSCALE(Y(y + BLOCK_SZ));
-            points[3].x = WINSCALE(X(x));
-            points[3].y = WINSCALE(Y(y));
-            points[4] = points[0];
-            if (wallTileDoit)
-            {
-                XSetFillStyle(dpy, gameGC, FillTiled);
-            }
-            else
-            {
-                SET_FG(colors[wallColor].pixel);
-            }
-            rd.fillPolygon(dpy, drawPixmap, gameGC,
-                           points, 5,
-                           Convex, CoordModeOrigin);
-            if (wallTileDoit)
-            {
-                XSetFillStyle(dpy, gameGC, FillSolid);
-            }
+            Gui_paint_filled_slice(fill_bottom_left,
+                                   fill_top_left,
+                                   x, x, y);
             fill_top_left =
                 fill_top_right =
                     fill_bottom_left =

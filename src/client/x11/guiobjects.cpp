@@ -39,6 +39,8 @@
 #include "netclient.h"
 #include "paint.h"
 
+#include "xpaint.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
@@ -68,6 +70,64 @@ int blockBitmapShips = 1;
 
 int ballColor = 4;
 int connectorColor = 4;
+
+void Gui_paint_item_symbol(int type, Drawable d, GC mygc, int x, int y, int color)
+{
+    if (!texturedObjects)
+    {
+        gcv.stipple = itemBitmaps[type];
+        gcv.fill_style = FillStippled;
+        gcv.ts_x_origin = x;
+        gcv.ts_y_origin = y;
+        XChangeGC(dpy, mygc,
+                  GCStipple | GCFillStyle | GCTileStipXOrigin | GCTileStipYOrigin,
+                  &gcv);
+        rd.paintItemSymbol(type, d, mygc, x, y, color);
+        XFillRectangle(dpy, d, mygc, x, y, ITEM_SIZE, ITEM_SIZE);
+        gcv.fill_style = FillSolid;
+        XChangeGC(dpy, mygc, GCFillStyle, &gcv);
+    }
+    else
+    {
+        Bitmap_paint(d, BM_ALL_ITEMS, x, y, type);
+    }
+}
+
+void Gui_paint_item(int type, Drawable d, GC mygc, int x, int y)
+{
+    const int SIZE = ITEM_TRIANGLE_SIZE;
+    XPoint points[5];
+
+#ifndef NO_ITEM_TRIANGLES
+    points[0].x = x - SIZE;
+    points[0].y = y - SIZE;
+    points[1].x = x;
+    points[1].y = y + SIZE;
+    points[2].x = x + SIZE;
+    points[2].y = y - SIZE;
+    points[3] = points[0];
+    SET_FG(colors[BLUE].pixel);
+    rd.drawLines(dpy, d, mygc, points, 4, CoordModeOrigin);
+#endif
+
+    SET_FG(colors[RED].pixel);
+#if 0
+    str[0] = itemtype_ptr[i].type + '0';
+    str[1] = '\0';
+    rd.drawString(dpy, d, mygc,
+                x - XTextWidth(gameFont, str, 1)/2,
+                y + SIZE - 1,
+                str, 1);
+#endif
+    Gui_paint_item_symbol(type, d, mygc,
+                          x - ITEM_SIZE / 2,
+                          y - SIZE + 2, ITEM_PLAYFIELD);
+}
+
+void Gui_paint_item_object(int type, int x, int y)
+{
+    Gui_paint_item(type, drawPixmap, gameGC, WINSCALE(X(x)), WINSCALE(Y(y)));
+}
 
 void Gui_paint_ball(int x, int y)
 {

@@ -40,6 +40,8 @@
 #include "paint.h"
 #include "paintdata.h"
 
+#include "xpaint.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
@@ -643,19 +645,17 @@ void Paint_HUD(void)
             int len, width;
 
             /* Paint item symbol */
-            Paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
-                              horiz_pos - ITEM_SIZE,
-                              vert_pos,
-                              ITEM_HUD);
+            Gui_paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
+                                  horiz_pos - ITEM_SIZE,
+                                  vert_pos,
+                                  ITEM_HUD);
 
             if (i == lose_item)
             {
                 if (lose_item_active != 0)
                 {
                     if (lose_item_active < 0)
-                    {
                         lose_item_active++;
-                    }
                     rd.drawRectangle(dpy, drawPixmap, gameGC,
                                      horiz_pos - ITEM_SIZE - 2,
                                      vert_pos - 2, ITEM_SIZE + 2, ITEM_SIZE + 2);

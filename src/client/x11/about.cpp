@@ -36,6 +36,8 @@
 #include "client.h"
 #include "paint.h"
 
+#include "xpaint.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "keys.h"
@@ -190,14 +192,10 @@ void Expose_about_window(void)
                                Item_get_text(i),
                                colors[WHITE].pixel, colors[BLACK].pixel);
             if (y - old_y < 2 * ITEM_TRIANGLE_SIZE)
-            {
                 y = old_y + 2 * ITEM_TRIANGLE_SIZE;
-            }
             box_end = y + BORDER / 2;
             if (i == last)
-            {
                 box_end += BORDER / 2;
-            }
 
             /* Paint the item on the left side */
             XSetForeground(dpy, textGC, colors[BLACK].pixel);
@@ -205,8 +203,8 @@ void Expose_about_window(void)
                            BORDER, box_start,
                            2 * ITEM_SIZE + 2 * BORDER, box_end - box_start);
             XSetForeground(dpy, textGC, colors[RED].pixel);
-            Paint_item((uint8_t)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
-                       old_y + ITEM_TRIANGLE_SIZE);
+            Gui_paint_item(i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
+                           old_y + ITEM_TRIANGLE_SIZE);
             XSetForeground(dpy, textGC, colors[WHITE].pixel);
 
             /*
