@@ -37,12 +37,12 @@
 DFLOAT tbl_sin[TABLE_SIZE];
 DFLOAT tbl_cos[TABLE_SIZE];
 
-int ON(char *optval)
+int ON(const char *optval)
 {
     return (strncasecmp(optval, "true", 4) == 0 || strncasecmp(optval, "on", 2) == 0 || strncasecmp(optval, "yes", 3) == 0);
 }
 
-int OFF(char *optval)
+int OFF(const char *optval)
 {
     return (strncasecmp(optval, "false", 5) == 0 || strncasecmp(optval, "off", 3) == 0 || strncasecmp(optval, "no", 2) == 0);
 }

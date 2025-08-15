@@ -32,6 +32,7 @@
 #include <X11/Xos.h>
 
 #include "client.h"
+#include "option.h"
 #include "paint.h"
 
 #include "gfx2d.h"
@@ -1362,34 +1363,34 @@ void Gui_paint_polygon(int i, int xoff, int yoff)
     XSetLineAttributes(dpy, gameGC, 0, LineSolid, CapButt, JoinMiter);
 }
 
-// xp_option_t guimap_options[] = {
-//     COLOR_INDEX_OPTION(
-//         "baseNameColor",
-//         2,
-//         &baseNameColor,
-//         "Which color number to use for drawing names of bases\n"
-//         "(unless drawn in one of the life colors).\n"),
+xp_option_t guimap_options[] = {
+    COLOR_INDEX_OPTION(
+        "baseNameColor",
+        2,
+        &baseNameColor,
+        "Which color number to use for drawing names of bases\n"
+        "(unless drawn in one of the life colors).\n"),
 
-//     COLOR_INDEX_OPTION(
-//         "backgroundPointColor",
-//         2,
-//         &backgroundPointColor,
-//         "Which color number to use for drawing background points.\n"),
+    COLOR_INDEX_OPTION(
+        "backgroundPointColor",
+        2,
+        &backgroundPointColor,
+        "Which color number to use for drawing background points.\n"),
 
-//     COLOR_INDEX_OPTION(
-//         "fuelColor",
-//         3,
-//         &fuelColor,
-//         "Which color number to use for drawing fuel stations.\n"),
+    COLOR_INDEX_OPTION(
+        "fuelColor",
+        3,
+        &fuelColor,
+        "Which color number to use for drawing fuel stations.\n"),
 
-//     COLOR_INDEX_OPTION(
-//         "visibilityBorderColor",
-//         2,
-//         &visibilityBorderColor,
-//         "Which color number to use for drawing the visibility border.\n"),
-// };
+    COLOR_INDEX_OPTION(
+        "visibilityBorderColor",
+        2,
+        &visibilityBorderColor,
+        "Which color number to use for drawing the visibility border.\n"),
+};
 
-// void Store_guimap_options(void)
-// {
-//     STORE_OPTIONS(guimap_options);
-// }
+void Store_guimap_options(void)
+{
+    STORE_OPTIONS(guimap_options);
+}

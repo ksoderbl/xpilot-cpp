@@ -21,6 +21,8 @@ libxpclient_a_SOURCES = \
     messages.cpp \
     netclient.cpp \
     netclient.h \
+    option.cpp \
+    option.h \
     paint.cpp \
     paint.h \
     paintmap.cpp \

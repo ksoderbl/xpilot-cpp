@@ -45,19 +45,19 @@
 #include "commonmacros.h"
 #include "option.h"
 
-int num_options = 0;
-int max_options = 0;
+int num_options2 = 0;
+int max_options2 = 0;
 
-xp_option_t *options = nullptr;
+xp_option_t *options2 = nullptr;
 
 xp_option_t *Find_option(const char *name)
 {
     int i;
 
-    for (i = 0; i < num_options; i++)
+    for (i = 0; i < num_options2; i++)
     {
-        if (!strcasecmp(name, options[i].name))
-            return &options[i];
+        if (!strcasecmp(name, options2[i].name))
+            return &options2[i];
     }
 
     return nullptr;
@@ -136,11 +136,12 @@ void Usage(void)
 {
     int i;
 
-    printf("Usage: %s [-options ...] [server]\n"
-           "Where options include:\n"
-           "\n",
-           Program_name());
-    for (i = 0; i < num_options; i++)
+    // TODO
+    // printf("Usage: %s [-options ...] [server]\n"
+    //        "Where options include:\n"
+    //        "\n",
+    //        Program_name());
+    for (i = 0; i < num_options2; i++)
     {
         xp_option_t *opt = Option_by_index(i);
 
@@ -174,7 +175,8 @@ void Usage(void)
 
 static void Version(void)
 {
-    printf("%s %s\n", Program_name(), VERSION);
+    // TODO printf("%s %s\n", Program_name(), VERSION);
+    printf("%s %s\n", "xpilot-cpp", VERSION);
     exit(0);
 }
 
@@ -335,9 +337,11 @@ bool Set_string_option(xp_option_t *opt, const char *value,
     return retval;
 }
 
-xp_keydefs_t *keydefs = nullptr;
-int num_keydefs = 0;
-int max_keydefs = 0;
+// xp_keydefs_t *keydefs = nullptr;
+// int num_keydefs = 0;
+// int max_keydefs = 0;
+
+// TODO
 
 /*
  * This function is used when platform specific code has an event where
@@ -348,156 +352,155 @@ int max_keydefs = 0;
  * should call some handler. The function should be called until it returns
  * KEY_DUMMY.
  */
-keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
-{
-    keys_t ret = KEY_DUMMY;
-    static int i = 0;
+// keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
+// {
+//     keys_t ret = KEY_DUMMY;
+//     static int i = 0;
 
-    if (reset)
-        i = 0;
+//     if (reset)
+//         i = 0;
 
-    /*
-     * Variable 'i' is already initialized.
-     * Use brute force linear search to find the key.
-     */
-    for (; i < num_keydefs; i++)
-    {
-        if (ks == keydefs[i].keysym)
-        {
-            ret = keydefs[i].key;
-            i++;
-            break;
-        }
-    }
+//     /*
+//      * Variable 'i' is already initialized.
+//      * Use brute force linear search to find the key.
+//      */
+//     for (; i < num_keydefs; i++)
+//     {
+//         if (ks == keydefs[i].keysym)
+//         {
+//             ret = keydefs[i].key;
+//             i++;
+//             break;
+//         }
+//     }
 
-    return ret;
-}
+//     return ret;
+// }
+// static int Store_keydef(int ks, keys_t key)
+// {
+//     int i;
+//     xp_keydefs_t keydef;
 
-static int Store_keydef(int ks, keys_t key)
-{
-    int i;
-    xp_keydefs_t keydef;
+//     /*
+//      * first check if pair (ks, key) already exists
+//      */
+//     for (i = 0; i < num_keydefs; i++)
+//     {
+//         xp_keydefs_t *kd = &keydefs[i];
 
-    /*
-     * first check if pair (ks, key) already exists
-     */
-    for (i = 0; i < num_keydefs; i++)
-    {
-        xp_keydefs_t *kd = &keydefs[i];
+//         if (kd->keysym == ks && kd->key == key)
+//         {
+//             /*xpwarn("Pair (%d, %d) exist from before", ks, (int) key);*/
+//             /*
+//              * already exists, no need to store
+//              */
+//             return 0;
+//         }
+//     }
 
-        if (kd->keysym == ks && kd->key == key)
-        {
-            /*xpwarn("Pair (%d, %d) exist from before", ks, (int) key);*/
-            /*
-             * already exists, no need to store
-             */
-            return 0;
-        }
-    }
+//     keydef.keysym = ks;
+//     keydef.key = key;
 
-    keydef.keysym = ks;
-    keydef.key = key;
+//     /*
+//      * find first KEY_DUMMY after lazy deletion
+//      */
+//     for (i = 0; i < num_keydefs; i++)
+//     {
+//         xp_keydefs_t *kd = &keydefs[i];
 
-    /*
-     * find first KEY_DUMMY after lazy deletion
-     */
-    for (i = 0; i < num_keydefs; i++)
-    {
-        xp_keydefs_t *kd = &keydefs[i];
+//         if (kd->key == KEY_DUMMY)
+//         {
+//             assert(kd->keysym == XP_KS_UNKNOWN);
+//             /*xpwarn("Store_keydef: Found dummy at index %d", i);*/
+//             *kd = keydef;
+//             return 0;
+//         }
+//     }
 
-        if (kd->key == KEY_DUMMY)
-        {
-            assert(kd->keysym == XP_KS_UNKNOWN);
-            /*xpwarn("Store_keydef: Found dummy at index %d", i);*/
-            *kd = keydef;
-            return 0;
-        }
-    }
+//     /*
+//      * no lazily deleted entry, ok, just store it then
+//      */
+//     STORE(xp_keydefs_t, keydefs, num_keydefs, max_keydefs, keydef);
+//     return 0;
+// }
 
-    /*
-     * no lazily deleted entry, ok, just store it then
-     */
-    STORE(xp_keydefs_t, keydefs, num_keydefs, max_keydefs, keydef);
-    return 0;
-}
+// static void Remove_key_from_keydefs(keys_t key)
+// {
+//     int i;
 
-static void Remove_key_from_keydefs(keys_t key)
-{
-    int i;
+//     assert(key != KEY_DUMMY);
+//     for (i = 0; i < num_keydefs; i++)
+//     {
+//         xp_keydefs_t *kd = &keydefs[i];
 
-    assert(key != KEY_DUMMY);
-    for (i = 0; i < num_keydefs; i++)
-    {
-        xp_keydefs_t *kd = &keydefs[i];
+//         /*
+//          * lazy deletion
+//          */
+//         if (kd->key == key)
+//         {
+//             /*xpwarn("Remove_key_from_keydefs: Removing key at index %d", i);*/
+//             kd->keysym = XP_KS_UNKNOWN;
+//             kd->key = KEY_DUMMY;
+//         }
+//     }
+// }
 
-        /*
-         * lazy deletion
-         */
-        if (kd->key == key)
-        {
-            /*xpwarn("Remove_key_from_keydefs: Removing key at index %d", i);*/
-            kd->keysym = XP_KS_UNKNOWN;
-            kd->key = KEY_DUMMY;
-        }
-    }
-}
+// static bool Set_key_option(xp_option_t *opt, const char *value,
+//                            xp_option_origin_t origin)
+// {
+//     /*bool retval = true;*/
+//     char *str, *valcpy;
 
-static bool Set_key_option(xp_option_t *opt, const char *value,
-                           xp_option_origin_t origin)
-{
-    /*bool retval = true;*/
-    char *str, *valcpy;
+//     assert(opt);
+//     assert(opt->name);
+//     assert(opt->type == xp_key_option);
+//     assert(opt->key != KEY_DUMMY);
+//     assert(value);
 
-    assert(opt);
-    assert(opt->name);
-    assert(opt->type == xp_key_option);
-    assert(opt->key != KEY_DUMMY);
-    assert(value);
+//     /*
+//      * xpwarn("Setting key option %s to \"%s\"", opt->name, value);
+//      */
 
-    /*
-     * xpwarn("Setting key option %s to \"%s\"", opt->name, value);
-     */
+//     /*
+//      * First remove the old setting.
+//      */
+//     XFREE(opt->key_string);
+//     Remove_key_from_keydefs(opt->key);
 
-    /*
-     * First remove the old setting.
-     */
-    XFREE(opt->key_string);
-    Remove_key_from_keydefs(opt->key);
+//     /*
+//      * Store the new setting.
+//      */
+//     opt->key_string = xp_safe_strdup(value);
+//     valcpy = xp_safe_strdup(value);
+//     for (str = strtok(valcpy, " \t\r\n");
+//          str != nullptr;
+//          str = strtok(nullptr, " \t\r\n"))
+//     {
+//         xp_keysym_t ks;
 
-    /*
-     * Store the new setting.
-     */
-    opt->key_string = xp_safe_strdup(value);
-    valcpy = xp_safe_strdup(value);
-    for (str = strtok(valcpy, " \t\r\n");
-         str != nullptr;
-         str = strtok(nullptr, " \t\r\n"))
-    {
-        xp_keysym_t ks;
+//         /*
+//          * You can write "none" for keys in xpilotrc to disable the key.
+//          */
+//         if (!strcasecmp(str, "none"))
+//             continue;
 
-        /*
-         * You can write "none" for keys in xpilotrc to disable the key.
-         */
-        if (!strcasecmp(str, "none"))
-            continue;
+//         ks = String_to_xp_keysym(str);
+//         if (ks == XP_KS_UNKNOWN)
+//         {
+//             xpwarn("Invalid keysym \"%s\" for key \"%s\".\n", str, opt->name);
+//             continue;
+//         }
 
-        ks = String_to_xp_keysym(str);
-        if (ks == XP_KS_UNKNOWN)
-        {
-            xpwarn("Invalid keysym \"%s\" for key \"%s\".\n", str, opt->name);
-            continue;
-        }
+//         Store_keydef(ks, opt->key);
+//     }
 
-        Store_keydef(ks, opt->key);
-    }
+//     /* in fact if we only get invalid keysyms we should return false */
+//     opt->origin = origin;
+//     XFREE(valcpy);
+//     return true;
+// }
 
-    /* in fact if we only get invalid keysyms we should return false */
-    opt->origin = origin;
-    XFREE(valcpy);
-    return true;
-}
-
-static bool is_legal_value(xp_option_type_t type, char *value)
+static bool is_legal_value(xp_option_type_t type, const char *value)
 {
     if (type == xp_noarg_option || type == xp_bool_option)
     {
@@ -561,8 +564,8 @@ bool Set_option(const char *name, const char *value, xp_option_origin_t origin)
         return Set_double_option(opt, atof(value), origin);
     case xp_string_option:
         return Set_string_option(opt, value, origin);
-    case xp_key_option:
-        return Set_key_option(opt, value, origin);
+    // case xp_key_option:
+    //     return Set_key_option(opt, value, origin);
     default:
         assert(0 && "TODO");
     }
@@ -700,7 +703,7 @@ void Get_command(const char *args)
 /*
  * NOTE: Store option assumes the passed pointers will remain valid.
  */
-void Store_option(xp_option_t *opt)
+int Store_option(xp_option_t *opt)
 {
     xp_option_t option;
 
@@ -729,7 +732,7 @@ void Store_option(xp_option_t *opt)
 
     memcpy(&option, opt, sizeof(xp_option_t));
 
-    STORE(xp_option_t, options, num_options, max_options, option);
+    STORE(xp_option_t, options2, num_options2, max_options2, option);
 
     opt = Find_option(opt->name);
     assert(opt);
@@ -754,15 +757,17 @@ void Store_option(xp_option_t *opt)
         assert(opt->str_ptr || (opt->str_setfunc && opt->str_getfunc));
         Set_string_option(opt, opt->str_defval, xp_option_origin_default);
         break;
-    case xp_key_option:
-        assert(opt->key_defval);
-        assert(opt->key != KEY_DUMMY);
-        Set_key_option(opt, opt->key_defval, xp_option_origin_default);
-        break;
+    // case xp_key_option:
+    //     assert(opt->key_defval);
+    //     assert(opt->key != KEY_DUMMY);
+    //     Set_key_option(opt, opt->key_defval, xp_option_origin_default);
+    //     break;
     default:
         xpwarn("Could not set default value for option %s", opt->name);
         break;
     }
+
+    return 0;
 }
 
 typedef struct xpilotrc_line
@@ -773,7 +778,7 @@ typedef struct xpilotrc_line
 
 static xpilotrc_line_t *xpilotrc_lines = nullptr;
 static int num_xpilotrc_lines = 0, max_xpilotrc_lines = 0;
-static int num_ok_options = 0;
+static int num_ok_options2 = 0;
 
 /*
  * Function to parse an xpilotrc line if it is of the right form, otherwise
@@ -844,7 +849,7 @@ static int Parse_xpilotrc_line(const char *line)
         xpwarn("Option %s must not be specified in xpilotrc.", name);
         xpwarn("It will be removed from xpilotrc if you save configuration.");
         XFREE(lcpy);
-        return;
+        return 0;
     }
 
     /* did we see this before ? */
@@ -892,9 +897,9 @@ static int Parse_xpilotrc_line(const char *line)
     t.comment = comment;
     STORE(xpilotrc_line_t,
           xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
-    num_ok_options++;
+    num_ok_options2++;
     XFREE(lcpy);
-    return;
+    return 0;
 
 line_is_comment:
     /*
@@ -907,6 +912,7 @@ line_is_comment:
     STORE(xpilotrc_line_t,
           xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
     XFREE(lcpy);
+    return 0;
 }
 
 static inline bool is_noarg_option(const char *name)
@@ -1031,7 +1037,7 @@ int Xpilotrc_write(const char *path)
     }
 
     /* make sure all options are in the xpilotrc */
-    for (i = 0; i < num_options; i++)
+    for (i = 0; i < num_options2; i++)
     {
         xp_option_t *opt = Option_by_index(i);
         xp_option_origin_t origin;
@@ -1197,53 +1203,55 @@ void Parse_options(int *argcp, char **argvp)
         argvp[i] = nullptr;
     *argcp = num_servers + 1;
 
-    if (xpArgs.help)
-        Usage();
+    // TOOD
+    // if (xpArgs.help)
+    //     Usage();
 
-    if (xpArgs.version)
-        Version();
+    // if (xpArgs.version)
+    //     Version();
 
 #ifdef SOUND
     audioInit(connectParam.disp_name);
 #endif /* SOUND */
 }
 
-const char *Get_keyHelpString(keys_t key)
-{
-    int i;
-    char *nl;
-    static char buf[MAX_CHARS];
+// TODO
+// const char *Get_keyHelpString(keys_t key)
+// {
+//     int i;
+//     char *nl;
+//     static char buf[MAX_CHARS];
 
-    for (i = 0; i < num_options; i++)
-    {
-        xp_option_t *opt = Option_by_index(i);
+//     for (i = 0; i < num_options; i++)
+//     {
+//         xp_option_t *opt = Option_by_index(i);
 
-        if (opt->key == key)
-        {
-            strlcpy(buf, opt->help, sizeof buf);
-            if ((nl = strchr(buf, '\n')) != nullptr)
-                *nl = '\0';
-            return buf;
-        }
-    }
+//         if (opt->key == key)
+//         {
+//             strlcpy(buf, opt->help, sizeof buf);
+//             if ((nl = strchr(buf, '\n')) != nullptr)
+//                 *nl = '\0';
+//             return buf;
+//         }
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
-const char *Get_keyResourceString(keys_t key)
-{
-    int i;
+// const char *Get_keyResourceString(keys_t key)
+// {
+//     int i;
 
-    for (i = 0; i < num_options; i++)
-    {
-        xp_option_t *opt = Option_by_index(i);
+//     for (i = 0; i < num_options; i++)
+//     {
+//         xp_option_t *opt = Option_by_index(i);
 
-        if (opt->key == key)
-            return opt->name;
-    }
+//         if (opt->key == key)
+//             return opt->name;
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
 void Xpilotrc_get_filename(char *path, size_t size)
 {
