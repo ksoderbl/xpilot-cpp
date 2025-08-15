@@ -79,6 +79,12 @@ typedef struct
 
 typedef struct
 {
+    clpos_t world;
+    clpos_t realWorld;
+} click_visibility_t;
+
+typedef struct
+{
     uint8_t x, y;
 } debris_t;
 
@@ -100,8 +106,11 @@ static radar_t *radar_ptr;
 static int num_radar, max_radar;
 
 static pixel_visibility_t pv;
+static click_visibility_t cv;
 static int view_width,
     view_height,
+    view_click_width,
+    view_click_height,
     horizontal_blocks,
     vertical_blocks,
     debris_x_areas,
@@ -116,12 +125,24 @@ static debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 static unsigned fastshot_num[DEBRIS_TYPES * 2],
     fastshot_max[DEBRIS_TYPES * 2];
 
-#define inview(x_, y_) \
-    ((((x_) > pv.world.x && (x_) < pv.world.x + view_width) || ((x_) > pv.realWorld.x && (x_) < pv.realWorld.x + view_width)) && (((y_) > pv.world.y && (y_) < pv.world.y + view_height) || ((y_) > pv.realWorld.y && (y_) < pv.realWorld.y + view_height)))
+#define inview(x_, y_)                                                  \
+    ((((x_) > pv.world.x && (x_) < pv.world.x + view_width) ||          \
+      ((x_) > pv.realWorld.x && (x_) < pv.realWorld.x + view_width)) && \
+     (((y_) > pv.world.y && (y_) < pv.world.y + view_height) ||         \
+      ((y_) > pv.realWorld.y && (y_) < pv.realWorld.y + view_height)))
+
+#define click_inview(x_, y_)                                                    \
+    ((((x_) > cv.world.cx && (x_) < cv.world.cx + view_click_width) ||          \
+      ((x_) > cv.realWorld.cx && (x_) < cv.realWorld.cx + view_click_width)) && \
+     (((y_) > cv.world.cy && (y_) < cv.world.cy + view_click_height) ||         \
+      ((y_) > cv.realWorld.cy && (y_) < cv.realWorld.cy + view_click_height)))
 
 static int block_inview(block_visibility_t *bv, int x, int y)
 {
-    return ((x > bv->world.x && x < bv->world.x + horizontal_blocks) || (x > bv->realWorld.x && x < bv->realWorld.x + horizontal_blocks)) && ((y > bv->world.y && y < bv->world.y + vertical_blocks) || (y > bv->realWorld.y && y < bv->realWorld.y + vertical_blocks));
+    return ((x > bv->world.x && x < bv->world.x + horizontal_blocks) ||
+            (x > bv->realWorld.x && x < bv->realWorld.x + horizontal_blocks)) &&
+           ((y > bv->world.y && y < bv->world.y + vertical_blocks) ||
+            (y > bv->realWorld.y && y < bv->realWorld.y + vertical_blocks));
 }
 
 static void fastshot_store(int xf, int yf, int color, int offset)
@@ -409,9 +430,14 @@ static int Frame_status(connection_t *conn, int ind)
 
         if ((!BIT(World.rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
-            && (pl->visibility[lock_ind].canSee || Player_owns_tank(pl, Players[lock_ind]) || Players_are_teammates(pl, Players[lock_ind]) || Players_are_allies(pl, Players[lock_ind]))
+            && (pl->visibility[lock_ind].canSee ||
+                Player_owns_tank(pl, Players[lock_ind]) ||
+                Players_are_teammates(pl, Players[lock_ind]) ||
+                Players_are_allies(pl, Players[lock_ind]))
 #endif
-            && BIT(Players[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING && (options.playersOnRadar || inview(Players[lock_ind]->pos.x, Players[lock_ind]->pos.y)) && pl->lock.distance != 0)
+            && BIT(Players[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING &&
+            (options.playersOnRadar || click_inview(Players[lock_ind]->pos.cx, Players[lock_ind]->pos.cy)) &&
+            pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
             lock_dir = (int)Wrap_findDir((int)(Players[lock_ind]->pos.x - pl->pos.x),
@@ -719,7 +745,7 @@ static void Frame_shuffle(void)
 static void Frame_shots(connection_t *conn, int ind)
 {
     player_t *pl = Players[ind];
-    int x, y;
+    int x, y, cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
     int obj_count;
@@ -741,8 +767,13 @@ static void Frame_shots(connection_t *conn, int ind)
         shot = obj_list[i];
         x = shot->pos.x;
         y = shot->pos.y;
-        if (!inview(x, y))
+        // if (!click_inview(cx, cy))
+        //     continue;
+        cx = shot->pos.cx;
+        cy = shot->pos.cy;
+        if (!click_inview(cx, cy))
             continue;
+
         if ((color = shot->color) == BLACK)
         {
             xpprintf("black %d,%d\n", shot->type, shot->id);
@@ -929,7 +960,7 @@ static void Frame_ships(connection_t *conn, int ind)
         DFLOAT x = CLICK_TO_FLOAT(cx);
         DFLOAT y = CLICK_TO_FLOAT(cy);
 
-        if (inview(x, y))
+        if (click_inview(cx, cy))
             dir = pulse->dir;
         else
         {
@@ -946,7 +977,9 @@ static void Frame_ships(connection_t *conn, int ind)
                 else if (y >= World.height)
                     y -= World.height;
             }
-            if (inview(x, y))
+            cx = FLOAT_TO_CLICK(x);
+            cy = FLOAT_TO_CLICK(y);
+            if (click_inview(cx, cy))
                 dir = MOD2(pulse->dir + RES / 2, RES);
             else
                 continue;
@@ -979,7 +1012,7 @@ static void Frame_ships(connection_t *conn, int ind)
         if (cannon->tractor_count > 0)
         {
             player_t *t = Players[GetInd[cannon->tractor_target]];
-            if (inview(t->pos.x, t->pos.y))
+            if (click_inview(t->pos.cx, t->pos.cy))
             {
                 int j;
                 for (j = 0; j < 3; j++)
@@ -1002,7 +1035,7 @@ static void Frame_ships(connection_t *conn, int ind)
             continue;
         if (BIT(pl_i->status, GAME_OVER))
             continue;
-        if (!inview(pl_i->pos.x, pl_i->pos.y))
+        if (!click_inview(pl_i->pos.cx, pl_i->pos.cy))
             continue;
         if (BIT(pl_i->status, PAUSE))
         {
@@ -1032,28 +1065,28 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_REFUEL))
         {
-            if (inview(World.fuel[pl_i->fs].pix_pos.x,
-                       World.fuel[pl_i->fs].pix_pos.y))
-            {
+            if (click_inview(World.fuel[pl_i->fs].clk_pos.cx,
+                             World.fuel[pl_i->fs].clk_pos.cy))
                 Send_refuel(conn,
                             (int)World.fuel[pl_i->fs].pix_pos.x,
                             (int)World.fuel[pl_i->fs].pix_pos.y,
                             pl_i->pos.x,
                             pl_i->pos.y);
-            }
         }
         if (BIT(pl_i->used, HAS_REPAIR))
         {
             DFLOAT x = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
             DFLOAT y = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
-            if (inview(x, y))
+            cx = FLOAT_TO_CLICK(x);
+            cy = FLOAT_TO_CLICK(y);
+            if (click_inview(cx, cy))
                 /* same packet as refuel */
                 Send_refuel(conn, pl_i->pos.x, pl_i->pos.y, (int)x, (int)y);
         }
         if (BIT(pl_i->used, HAS_TRACTOR_BEAM))
         {
             player_t *t = Players[GetInd[pl_i->lock.pl_id]];
-            if (inview(t->pos.x, t->pos.y))
+            if (click_inview(t->pos.cx, t->pos.cy))
             {
                 int j;
 
@@ -1066,7 +1099,7 @@ static void Frame_ships(connection_t *conn, int ind)
             }
         }
 
-        if (pl_i->ball != NULL && inview(pl_i->ball->pos.x, pl_i->ball->pos.y))
+        if (pl_i->ball != NULL && click_inview(pl_i->ball->pos.cx, pl_i->ball->pos.cy))
             Send_connector(conn,
                            pl_i->ball->pos.x,
                            pl_i->ball->pos.y,
@@ -1216,6 +1249,24 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
             pv.world.y += World.height;
         else if (pv.world.y > 0 && pv.world.y + view_height >= World.height)
             pv.realWorld.y -= World.height;
+    }
+
+    view_click_width = PIXEL_TO_CLICK(view_width);
+    view_click_height = PIXEL_TO_CLICK(view_height);
+
+    cv.world.cx = pl->pos.cx - view_click_width / 2; /* Scroll */
+    cv.world.cy = pl->pos.cy - view_click_height / 2;
+    cv.realWorld = cv.world;
+    if (BIT(World.rules->mode, WRAP_PLAY))
+    {
+        if (cv.world.cx < 0 && cv.world.cx + view_click_width < World.click_width)
+            cv.world.cx += World.click_width;
+        else if (cv.world.cx > 0 && cv.world.cx + view_click_width >= World.click_width)
+            cv.realWorld.cx -= World.click_width;
+        if (cv.world.cy < 0 && cv.world.cy + view_click_height < World.click_height)
+            cv.world.cy += World.click_height;
+        else if (cv.world.cy > 0 && cv.world.cy + view_click_height >= World.click_height)
+            cv.realWorld.cy -= World.click_height;
     }
 }
 
