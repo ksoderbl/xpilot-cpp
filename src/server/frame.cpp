@@ -1172,7 +1172,7 @@ static void Frame_radar(connection_t *conn, int ind)
             size = 3;
             if (Players_are_teammates(pl, Players[i]) || Players_are_allies(pl, Players[i]) || Player_owns_tank(pl, Players[i]))
                 size |= 0x80;
-            Frame_radar_buffer_add((int)x, (int)y, size);
+            Frame_radar_buffer_add(Players[i]->pos.cx, Players[i]->pos.cy, size);
         }
     }
 
