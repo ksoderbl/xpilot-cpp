@@ -25,6 +25,7 @@
 #define NETSERVER_H
 
 #include "connection.h"
+#include "player.h"
 
 int Get_motd(char *buf, int offset, int maxlen, int *size_ptr);
 int Setup_net_server(void);

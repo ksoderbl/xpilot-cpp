@@ -37,6 +37,7 @@
 #include "proto.h"
 #include "score.h"
 #include "netserver.h"
+#include "player.h"
 
 void SCORE(player_t *pl, int points, int cx, int cy, const char *msg)
 {

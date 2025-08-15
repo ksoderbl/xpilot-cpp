@@ -47,6 +47,7 @@
 #include "saudio.h"
 #include "xperror.h"
 #include "xpmath.h"
+#include "player.h"
 
 #define MAX_SHUFFLE_INDEX 65535
 

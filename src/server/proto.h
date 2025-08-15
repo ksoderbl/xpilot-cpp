@@ -25,6 +25,7 @@
 #define PROTO_H
 
 #include "object.h"
+#include "player.h"
 #include "list.h"
 
 /*

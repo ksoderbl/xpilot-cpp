@@ -37,6 +37,7 @@
 #include "bit.h"
 #include "netserver.h"
 #include "xperror.h"
+#include "player.h"
 
 /*
  * Alliance information.
