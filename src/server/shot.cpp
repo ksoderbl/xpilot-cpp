@@ -327,7 +327,7 @@ void Detonate_mines(int ind)
          */
         if (mine->id == pl->id)
         {
-            dist = Wrap_length(pl->pos.x - mine->pos.x, pl->pos.y - mine->pos.y);
+            dist = Wrap_length(pl->pos.cx - mine->pos.cx, pl->pos.cy - mine->pos.cy) / CLICK;
             if (dist < min_dist)
             {
                 min_dist = dist;
@@ -1464,46 +1464,6 @@ void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy,
 
 void Move_ball(int ind)
 {
-#ifdef ORIGINAL_BALL
-
-    /*
-     * This is the original ball code from XPilot versions 2.0 till 3.3.1.
-     * The `feature' which some people got dissatisfied with
-     * is that trying to connect to a fast moving ball may result
-     * in being launched with high speed into a wall.
-     * Some like that feature reasoning that making everything
-     * easy is boring.  Hence keeping the old code around.
-     * It can be enabled by adding -DORIGINAL_BALL to the compilation flags.
-     */
-
-    ballobject_t *ball = BALL_IND(ind);
-    player_t *pl = Players[GetInd[ball->id]];
-    vector F;
-    const double k = 10.0,
-                 a = 0.01,
-                 l = Wrap_length(pl->pos.x - ball->pos.x,
-                                 pl->pos.y - ball->pos.y),
-                 c = k * (1.0 - ballConnectorLength / l) - a * ABS(ball->length - l) * (ball->length - l);
-
-    if (l > ballConnectorLength * (1.00 + maxBallConnectorRatio) || l < ballConnectorLength * (1.00 - maxBallConnectorRatio))
-    {
-        Detach_ball(GetInd[ball->id], ind);
-        return;
-    }
-
-    F.x = WRAP_DX(pl->pos.x - ball->pos.x) * c;
-    F.y = WRAP_DY(pl->pos.y - ball->pos.y) * c;
-
-    pl->vel.x -= F.x / pl->mass;
-    pl->vel.y -= F.y / pl->mass;
-
-    ball->vel.x += F.x / ball->mass;
-    ball->vel.y += F.y / ball->mass;
-
-    ball->length = l;
-
-#else /* ORIGINAL_BALL */
-
     /*
      * The new ball movement code since XPilot version 3.4.0 as made
      * by Bretton Wade.  The code was submitted in context diff format
@@ -1605,8 +1565,6 @@ void Move_ball(int ind)
     accell = (force + ball_damping + pl_damping) / ball->mass;
     ball->vel.x += -D.x * accell;
     ball->vel.y += -D.y * accell;
-
-#endif /* ORIGINAL_BALL */
 }
 
 void Move_smart_shot(int ind)
@@ -1647,8 +1605,9 @@ void Move_smart_shot(int ind)
         {
             /* Get player and set min to distance */
             pl = Players[GetInd[shot->info]];
-            range = Wrap_length(pl->pos.x + pl->ship->engine[pl->dir].x - shot->pos.x,
-                                pl->pos.y + pl->ship->engine[pl->dir].y - shot->pos.y);
+            range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
+                                CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
+                    CLICK;
         }
         else
         {
@@ -1686,8 +1645,9 @@ void Move_smart_shot(int ind)
                     if (!BIT(p->status, THRUSTING))
                         continue;
 
-                    l = Wrap_length(p->pos.x + p->ship->engine[p->dir].x - shot->pos.x,
-                                    p->pos.y + p->ship->engine[p->dir].y - shot->pos.y);
+                    l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
+                                    CLICK_TO_FLOAT(p->pos.cy) + p->ship->engine[p->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
+                        CLICK;
                     /*
                      * After burners can be detected easier;
                      * so scale the length:
@@ -1763,7 +1723,7 @@ void Move_smart_shot(int ind)
     acc *= (1 + (shot->mods.power * MISSILE_POWER_SPEED_FACT));
     if ((shot_speed = VECTOR_LENGTH(shot->vel)) < 1)
         shot_speed = 1;
-    range = Wrap_length(pl->pos.x - shot->pos.x, pl->pos.y - shot->pos.y);
+    range = Wrap_length(pl->pos.cx - shot->pos.cx, pl->pos.cy - shot->pos.cy) / CLICK;
     x_dif += pl->vel.x * (range / shot_speed);
     y_dif += pl->vel.y * (range / shot_speed);
     theta = (int)Wrap_findDir(pl->pos.x + x_dif - shot->pos.x,

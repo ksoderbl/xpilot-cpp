@@ -1074,10 +1074,10 @@ static bool Check_robot_target(int ind,
                 double x1, y1, x3, y3, x4, y4, x5, y5;
                 double ship_dist, dir3, dir4, dir5;
 
-                x1 = pl->pos.x + pl->vel.x + pl->ship->m_gun[pl->dir].x;
-                y1 = pl->pos.y + pl->vel.y + pl->ship->m_gun[pl->dir].y;
-                x3 = ship->pos.x + ship->vel.x;
-                y3 = ship->pos.y + ship->vel.y;
+                x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + pl->ship->m_gun[pl->dir].x;
+                y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + pl->ship->m_gun[pl->dir].y;
+                x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
+                y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
 
                 ship_dist = Wrap_length(x3 - x1, y3 - y1);
 
@@ -1476,20 +1476,26 @@ static bool Ball_handler(int ind)
 
     for (i = 0; i < World.NumTreasures; i++)
     {
-        if ((BIT(pl->have, HAS_BALL) || pl->ball) && World.treasures[i].team == pl->team)
+        if ((BIT(pl->have, HAS_BALL) || pl->ball) &&
+            World.treasures[i].team == pl->team)
         {
-            dist = (int)Wrap_length((World.treasures[i].blk_pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
-                                    (World.treasures[i].blk_pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
+            dist = Wrap_length(World.treasures[i].clk_pos.cx - pl->pos.cx,
+                               World.treasures[i].clk_pos.cy - pl->pos.cy) /
+                   CLICK;
             if (dist < closest_t_dist)
             {
                 closest_t = i;
                 closest_t_dist = dist;
             }
         }
-        else if (World.treasures[i].team != pl->team && World.teams[World.treasures[i].team].NumMembers > 0 && !BIT(pl->have, HAS_BALL) && !pl->ball && World.treasures[i].have)
+        else if (World.treasures[i].team != pl->team &&
+                 World.teams[World.treasures[i].team].NumMembers > 0 &&
+                 !BIT(pl->have, HAS_BALL) && !pl->ball &&
+                 World.treasures[i].have)
         {
-            dist = (int)Wrap_length((World.treasures[i].blk_pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
-                                    (World.treasures[i].blk_pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
+            dist = Wrap_length(World.treasures[i].clk_pos.cx - pl->pos.cx,
+                               World.treasures[i].clk_pos.cy - pl->pos.cy) /
+                   CLICK;
             if (dist < closest_nt_dist)
             {
                 closest_nt = i;

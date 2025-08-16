@@ -72,6 +72,7 @@ bool Grok_map(void);
 void Find_base_direction(void);
 void Compute_gravity(void);
 double Wrap_findDir(double dx, double dy);
+double Wrap_cfindDir(double dcx, double dcy);
 double Wrap_length(double dx, double dy);
 unsigned short Find_closest_team(int cx, int cy);
 

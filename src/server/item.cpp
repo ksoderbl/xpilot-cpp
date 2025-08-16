@@ -647,7 +647,7 @@ void Do_transporter(player_t *pl)
             Player_is_tank(p) ||
             BIT(p->used, HAS_PHASING_DEVICE))
             continue;
-        dist = Wrap_length(pl->pos.x - p->pos.x, pl->pos.y - p->pos.y);
+        dist = Wrap_length(pl->pos.cx - p->pos.cx, pl->pos.cy - p->pos.cy) / CLICK;
         if (dist < closest)
         {
             closest = dist;

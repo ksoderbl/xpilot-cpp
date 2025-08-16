@@ -78,23 +78,41 @@
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
  */
-#define WRAP_DX(dx)                              \
-        (BIT(World.rules->mode, WRAP_PLAY)       \
-             ? ((dx) < -(World.width >> 1)       \
-                    ? (dx) + World.width         \
-                    : ((dx) > (World.width >> 1) \
-                           ? (dx) - World.width  \
-                           : (dx)))              \
+#define WRAP_DX(dx)                               \
+        (BIT(world->rules->mode, WRAP_PLAY)       \
+             ? ((dx) < -(world->width >> 1)       \
+                    ? (dx) + world->width         \
+                    : ((dx) > (world->width >> 1) \
+                           ? (dx) - world->width  \
+                           : (dx)))               \
              : (dx))
 
-#define WRAP_DY(dy)                               \
-        (BIT(World.rules->mode, WRAP_PLAY)        \
-             ? ((dy) < -(World.height >> 1)       \
-                    ? (dy) + World.height         \
-                    : ((dy) > (World.height >> 1) \
-                           ? (dy) - World.height  \
-                           : (dy)))               \
+#define WRAP_DY(dy)                                \
+        (BIT(world->rules->mode, WRAP_PLAY)        \
+             ? ((dy) < -(world->height >> 1)       \
+                    ? (dy) + world->height         \
+                    : ((dy) > (world->height >> 1) \
+                           ? (dy) - world->height  \
+                           : (dy)))                \
              : (dy))
+
+#define WRAP_DCX(dcx)                                    \
+        (BIT(world->rules->mode, WRAP_PLAY)              \
+             ? ((dcx) < -(world->click_width >> 1)       \
+                    ? (dcx) + world->click_width         \
+                    : ((dcx) > (world->click_width >> 1) \
+                           ? (dcx) - world->click_width  \
+                           : (dcx)))                     \
+             : (dcx))
+
+#define WRAP_DCY(dcy)                                     \
+        (BIT(world->rules->mode, WRAP_PLAY)               \
+             ? ((dcy) < -(world->click_height >> 1)       \
+                    ? (dcy) + world->click_height         \
+                    : ((dcy) > (world->click_height >> 1) \
+                           ? (dcy) - world->click_height  \
+                           : (dcy)))                      \
+             : (dcy))
 
 #define PSEUDO_TEAM(i, j) \
         (Players[(i)]->pseudo_team == Players[(j)]->pseudo_team)

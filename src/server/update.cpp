@@ -698,8 +698,10 @@ void Update_objects(void)
         if (cannon->tractor_count > 0)
         {
             int ind = GetInd[cannon->tractor_target];
-            if (Wrap_length(Players[ind]->pos.x - cannon->pix_pos.x,
-                            Players[ind]->pos.y - cannon->pix_pos.y) < TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
+            if (Wrap_length(Players[ind]->pos.cx - cannon->clk_pos.cx,
+                            Players[ind]->pos.cy - cannon->clk_pos.cy) /
+                        CLICK <
+                    TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
                 BIT(Players[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
                 General_tractor_beam(-1, cannon->clk_pos.cx, cannon->clk_pos.cy,
@@ -976,8 +978,10 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_REFUEL))
         {
-            if ((Wrap_length(pl->pos.x - World.fuel[pl->fs].pix_pos.x,
-                             pl->pos.y - World.fuel[pl->fs].pix_pos.y) > 90.0) ||
+            if ((Wrap_length(pl->pos.cx - World.fuel[pl->fs].clk_pos.cx,
+                             pl->pos.cy - World.fuel[pl->fs].clk_pos.cy) /
+                     CLICK >
+                 90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
                 (World.block[World.fuel[pl->fs].blk_pos.x][World.fuel[pl->fs].blk_pos.y] != FUEL) ||
                 BIT(pl->used, HAS_PHASING_DEVICE) ||
@@ -1021,12 +1025,11 @@ void Update_objects(void)
         if (BIT(pl->used, HAS_REPAIR))
         {
             target_t *targ = &World.targets[pl->repair_target];
-            double x = (targ->blk_pos.x + 0.5) * BLOCK_SZ;
-            double y = (targ->blk_pos.y + 0.5) * BLOCK_SZ;
-            if (Wrap_length(pl->pos.x - x, pl->pos.y - y) > 90.0 || targ->damage >= TARGET_DAMAGE || targ->dead_time > 0 || BIT(pl->used, HAS_PHASING_DEVICE))
-            {
+            if (Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK > 90.0 ||
+                targ->damage >= TARGET_DAMAGE ||
+                targ->dead_time > 0 ||
+                BIT(pl->used, HAS_PHASING_DEVICE))
                 CLR_BIT(pl->used, HAS_REPAIR);
-            }
             else
             {
                 int i = pl->fuel.num_tanks;
@@ -1317,8 +1320,9 @@ void Update_objects(void)
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             pl->lock.distance =
-                Wrap_length(pl->pos.x - Players[GetInd[pl->lock.pl_id]]->pos.x,
-                            pl->pos.y - Players[GetInd[pl->lock.pl_id]]->pos.y);
+                Wrap_length(pl->pos.cx - Players[GetInd[pl->lock.pl_id]]->pos.cx,
+                            pl->pos.cy - Players[GetInd[pl->lock.pl_id]]->pos.cy) /
+                CLICK;
         }
     }
 

@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "click.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -64,8 +66,9 @@ static void Refuel(int ind)
         if (World.block[World.fuel[i].blk_pos.x]
                        [World.fuel[i].blk_pos.y] == FUEL)
         {
-            l = Wrap_length(pl->pos.x - World.fuel[i].pix_pos.x,
-                            pl->pos.y - World.fuel[i].pix_pos.y);
+            l = Wrap_length(pl->pos.cx - World.fuel[i].clk_pos.cx,
+                            pl->pos.cy - World.fuel[i].clk_pos.cy) /
+                CLICK;
             if (BIT(pl->used, HAS_REFUEL) == 0 || l < dist)
             {
                 SET_BIT(pl->used, HAS_REFUEL);
@@ -81,7 +84,6 @@ static void Repair(int ind)
     player_t *pl = Players[ind];
     int i;
     double l, dist = 1e9;
-    double x, y;
     target_t *targ = World.targets;
 
     if (!BIT(pl->have, HAS_REPAIR))
@@ -92,9 +94,7 @@ static void Repair(int ind)
     {
         if (targ->team == pl->team && targ->dead_time <= 0)
         {
-            x = targ->blk_pos.x * BLOCK_SZ + BLOCK_SZ / 2;
-            y = targ->blk_pos.y * BLOCK_SZ + BLOCK_SZ / 2;
-            l = Wrap_length(pl->pos.x - x, pl->pos.y - y);
+            l = Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK;
             if (BIT(pl->used, HAS_REPAIR) == 0 || l < dist)
             {
                 SET_BIT(pl->used, HAS_REPAIR);
@@ -195,8 +195,9 @@ int Player_lock_closest(int ind, int next)
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         lock = GetInd[pl->lock.pl_id];
-        dist = Wrap_length(Players[lock]->pos.x - pl->pos.x,
-                           Players[lock]->pos.y - pl->pos.y);
+        dist = Wrap_length(Players[lock]->pos.cx - pl->pos.cx,
+                           Players[lock]->pos.cy - pl->pos.cy) /
+               CLICK;
     }
     else
     {
@@ -215,8 +216,9 @@ int Player_lock_closest(int ind, int next)
             Players_are_teammates(pl, pl_i) ||
             Players_are_allies(pl, pl_i))
             continue;
-        l = Wrap_length(pl_i->pos.x - pl->pos.x,
-                        pl_i->pos.y - pl->pos.y);
+        l = Wrap_length(pl_i->pos.cx - pl->pos.cx,
+                        pl_i->pos.cy - pl->pos.cy) /
+            CLICK;
         if (l >= dist && l < best)
         {
             best = l;

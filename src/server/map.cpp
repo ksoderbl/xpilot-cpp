@@ -1247,8 +1247,9 @@ unsigned short Find_closest_team(int cx, int cy)
         if (World.base[i].team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length(CLICK_TO_FLOAT(cx - World.base[i].clk_pos.cx),
-                        CLICK_TO_FLOAT(cy - World.base[i].clk_pos.cy));
+        l = Wrap_length(cx - World.base[i].clk_pos.cx,
+                        cy - World.base[i].clk_pos.cy) /
+            CLICK;
 
         if (l < closest)
         {
@@ -1267,7 +1268,8 @@ unsigned short Find_closest_team(int cx, int cy)
 static void Find_base_order(void)
 {
     int i, j, k, n;
-    double cx, cy, dist;
+    int ccx, ccy;
+    double dist;
 
     if (!BIT(World.rules->mode, TIMING))
     {
@@ -1287,29 +1289,26 @@ static void Find_base_order(void)
         exit(-1);
     }
 
-    cx = World.check[0].x * BLOCK_SZ;
-    cy = World.check[0].y * BLOCK_SZ;
+    ccx = World.check[0].x * BLOCK_CLICKS;
+    ccy = World.check[0].y * BLOCK_CLICKS;
     for (i = 0; i < n; i++)
     {
-        dist = Wrap_length(World.base[i].blk_pos.x * BLOCK_SZ - cx,
-                           World.base[i].blk_pos.y * BLOCK_SZ - cy);
+        dist = Wrap_length(World.base[i].clk_pos.cx - ccx,
+                           World.base[i].clk_pos.cy - ccy) /
+               CLICK;
         for (j = 0; j < i; j++)
         {
             if (World.baseorder[j].dist > dist)
-            {
                 break;
-            }
         }
         for (k = i - 1; k >= j; k--)
-        {
             World.baseorder[k + 1] = World.baseorder[k];
-        }
+
         World.baseorder[j].base_idx = i;
         World.baseorder[j].dist = dist;
     }
 }
 
-// TODO: add click version
 double Wrap_findDir(double dx, double dy)
 {
     dx = WRAP_DX(dx);
@@ -1317,12 +1316,19 @@ double Wrap_findDir(double dx, double dy)
     return findDir(dx, dy);
 }
 
-// TODO: add click version
-double Wrap_length(double dx, double dy)
+double Wrap_cfindDir(double dcx, double dcy)
 {
-    dx = WRAP_DX(dx);
-    dy = WRAP_DY(dy);
-    return LENGTH(dx, dy);
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return findDir(dcx, dcy);
+}
+
+// Returns length in clicks
+double Wrap_length(double dcx, double dcy)
+{
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return LENGTH(dcx, dcy);
 }
 
 static void Compute_global_gravity(void)

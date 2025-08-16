@@ -478,8 +478,9 @@ static void PlayerCollision(void)
                 pl->ball = NULL;
             else
             {
-                double distance = Wrap_length(pl->pos.x - ball->pos.x,
-                                              pl->pos.y - ball->pos.y);
+                double distance = Wrap_length(pl->pos.cx - ball->pos.cx,
+                                              pl->pos.cy - ball->pos.cy) /
+                                  CLICK;
                 if (distance >= options.ballConnectorLength)
                 {
                     ball->id = pl->id;
@@ -511,8 +512,9 @@ static void PlayerCollision(void)
             {
                 if (BIT(Obj[j]->type, OBJ_BALL) && Obj[j]->id == NO_ID)
                 {
-                    dist = Wrap_length(pl->pos.x - Obj[j]->pos.x,
-                                       pl->pos.y - Obj[j]->pos.y);
+                    dist = Wrap_length(pl->pos.cx - Obj[j]->pos.cx,
+                                       pl->pos.cy - Obj[j]->pos.cy) /
+                           CLICK;
                     if (dist < mindist)
                     {
                         ballobject_t *ball = BALL_PTR(Obj[j]);
@@ -541,13 +543,13 @@ static void PlayerCollision(void)
         if (BIT(World.rules->mode, TIMING) && BIT(pl->status, PAUSE | GAME_OVER) == 0)
         {
             if (pl->round != 0)
-            {
                 pl->time++;
-            }
-            if (BIT(pl->status, PLAYING | KILLED) == PLAYING && Wrap_length(pl->pos.x - World.check[pl->check].x * BLOCK_SZ, pl->pos.y - World.check[pl->check].y * BLOCK_SZ) < options.checkpointRadius * BLOCK_SZ && !Player_is_tank(pl) && !options.ballrace)
-            {
+
+            if (BIT(pl->status, PLAYING | KILLED) == PLAYING &&
+                Wrap_length(pl->pos.cx - World.check[pl->check].x * BLOCK_CLICKS, pl->pos.cy - World.check[pl->check].y * BLOCK_CLICKS) < options.checkpointRadius * BLOCK_CLICKS &&
+                !Player_is_tank(pl) &&
+                !options.ballrace)
                 Player_pass_checkpoint(i);
-            }
         }
     }
 }
@@ -1625,10 +1627,8 @@ static void BallCollision(void)
             (ball->id != NO_ID && BIT(Players[GetInd[ball->id]]->used, HAS_PHASING_DEVICE)) ||
             /* phased ball */
             World.treasures[ball->treasure].have)
-        {
             /* safe in a treasure */
             continue;
-        }
 
         /* Ball - checkpoint */
         if (BIT(World.rules->mode, TIMING) && options.ballrace && ball->owner != NO_ID)
@@ -1638,11 +1638,9 @@ static void BallCollision(void)
 
             if (!options.ballrace_connect || ball->id == owner->id)
             {
-                if (Wrap_length(ball->pos.x - World.check[owner->check].x * BLOCK_SZ,
-                                ball->pos.y - World.check[owner->check].y * BLOCK_SZ) < options.checkpointRadius * BLOCK_SZ)
-                {
+                if (Wrap_length(ball->pos.cx - World.check[owner->check].x * BLOCK_CLICKS,
+                                ball->pos.cy - World.check[owner->check].y * BLOCK_CLICKS) < options.checkpointRadius * BLOCK_CLICKS)
                     Player_pass_checkpoint(owner_ind);
-                }
             }
         }
 
@@ -1666,9 +1664,7 @@ static void BallCollision(void)
 
             /* have we already done this ball pair? */
             if (obj->type == OBJ_BALL && obj <= OBJ_PTR(ball))
-            {
                 continue;
-            }
 
             if (!in_range_acd(ball->prevpos.cx, ball->prevpos.cy,
                               ball->pos.cx, ball->pos.cy,

@@ -889,8 +889,10 @@ static void Frame_shots(connection_t *conn, int ind)
             mineobject_t *mine = MINE_PTR(shot);
 
             /* calculate whether ownership of mine can be determined */
-            if (options.identifyMines && (Wrap_length(pl->pos.x - mine->pos.x,
-                                                      pl->pos.y - mine->pos.y) < (SHIP_SZ + MINE_SENSE_BASE_RANGE + pl->item[ITEM_SENSOR] * MINE_SENSE_RANGE_FACTOR)))
+            if (options.identifyMines && (Wrap_length(pl->pos.cx - mine->pos.cx,
+                                                      pl->pos.cy - mine->pos.cy) /
+                                              CLICK <
+                                          (SHIP_SZ + MINE_SENSE_BASE_RANGE + pl->item[ITEM_SENSOR] * MINE_SENSE_RANGE_FACTOR)))
             {
                 id = mine->id;
                 if (id == NO_ID)
@@ -1114,7 +1116,6 @@ static void Frame_radar(connection_t *conn, int ind)
     int i, k, mask, shownuke, size;
     player_t *pl = Players[ind];
     object_t *shot;
-    double x, y;
     int cx, cy;
 
     Frame_radar_buffer_reset();
@@ -1168,10 +1169,10 @@ static void Frame_radar(connection_t *conn, int ind)
                     continue;
             }
 
-            x = shot->pos.x;
-            y = shot->pos.y;
-            if (Wrap_length(pl->pos.x - x,
-                            pl->pos.y - y) <= pl->sensor_range)
+            if (Wrap_length(pl->pos.cx - shot->pos.cx,
+                            pl->pos.cy - shot->pos.cy) /
+                    CLICK <=
+                pl->sensor_range)
                 Frame_radar_buffer_add(shot->pos.cx, shot->pos.cy, size);
         }
     }
@@ -1196,10 +1197,10 @@ static void Frame_radar(connection_t *conn, int ind)
                 BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
                 (!Players_are_teammates(pl, Players[i]) && !Players_are_allies(pl, Players[i]) && !Player_owns_tank(pl, Players[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
-            x = Players[i]->pos.x;
-            y = Players[i]->pos.y;
-            if (BIT(World.rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.x - x,
-                                                                          pl->pos.y - y) > pl->sensor_range)
+            if (BIT(World.rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - Players[i]->pos.cx,
+                                                                          pl->pos.cy - Players[i]->pos.cy) /
+                                                                      CLICK >
+                                                                  pl->sensor_range)
                 continue;
             if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
                 continue;
