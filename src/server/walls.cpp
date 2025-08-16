@@ -55,7 +55,7 @@ unsigned SPACE_BLOCKS = (SPACE_BIT | BASE_BIT | WORMHOLE_BIT |
                          FRICTION_BIT | ASTEROID_CONCENTRATOR_BIT);
 
 static struct move_parameters mp;
-static DFLOAT wallBounceExplosionMult;
+static double wallBounceExplosionMult;
 static char msg[MSG_LEN];
 
 /*
@@ -1098,7 +1098,7 @@ void Move_segment(move_state_t *ms)
                      * If this is the case then we test if 3 samples
                      * are not hitting the treasure.
                      */
-                    const DFLOAT r = 0.5f * BLOCK_CLICKS;
+                    const double r = 0.5f * BLOCK_CLICKS;
                     off2.cx = offset.cx + delta.cx;
                     off2.cy = offset.cy + delta.cy;
                     mid.cx = (offset.cx + off2.cx) / 2;
@@ -2508,8 +2508,8 @@ void Move_player(int ind)
     ivec_t sign;  /* sign (-1 or 1) of direction */
     ipos_t block; /* block index */
     bool pos_update = false;
-    DFLOAT fric;
-    DFLOAT oldvx, oldvy;
+    double fric;
+    double oldvx, oldvy;
 
     if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
     {
@@ -2587,8 +2587,8 @@ void Move_player(int ind)
     todo.cy = FLOAT_TO_CLICK(vel.y);
     for (i = 0; i < pl->ship->num_points; i++)
     {
-        DFLOAT x = pl->ship->pts[i][pl->dir].x;
-        DFLOAT y = pl->ship->pts[i][pl->dir].y;
+        double x = pl->ship->pts[i][pl->dir].x;
+        double y = pl->ship->pts[i][pl->dir].y;
         ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
         ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
         ms[i].vel = vel;
@@ -2705,15 +2705,15 @@ void Move_player(int ind)
             pl->last_wall_touch = frame_loops;
             if (ms[worst].bounce != BounceEdge)
             {
-                DFLOAT speed = VECTOR_LENGTH(ms[worst].vel);
+                double speed = VECTOR_LENGTH(ms[worst].vel);
                 int v = (int)speed >> 2;
                 int m = (int)(pl->mass - pl->emptymass * 0.75f);
-                DFLOAT b = 1 - 0.5f * options.playerWallBrakeFactor;
+                double b = 1 - 0.5f * options.playerWallBrakeFactor;
                 long cost = (long)(b * m * v);
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
-                DFLOAT max_speed = BIT(pl->used, HAS_SHIELD)
+                double max_speed = BIT(pl->used, HAS_SHIELD)
                                        ? options.maxShieldedWallBounceSpeed
                                        : options.maxUnshieldedWallBounceSpeed;
                 int max_angle = BIT(pl->used, HAS_SHIELD)
@@ -2865,8 +2865,8 @@ void Move_player(int ind)
         {
             for (i = 0; i < pl->ship->num_points; i++)
             {
-                r[i].x = (vel.x) ? (DFLOAT)ms[i].todo.cx / vel.x : 0;
-                r[i].y = (vel.y) ? (DFLOAT)ms[i].todo.cy / vel.y : 0;
+                r[i].x = (vel.x) ? (double)ms[i].todo.cx / vel.x : 0;
+                r[i].y = (vel.y) ? (double)ms[i].todo.cy / vel.y : 0;
                 r[i].x = ABS(r[i].x);
                 r[i].y = ABS(r[i].y);
             }
@@ -3104,7 +3104,7 @@ void Turn_player(player_t *pl)
 
     if (blocked)
     {
-        pl->float_dir = (DFLOAT)pl->dir;
+        pl->float_dir = (double)pl->dir;
         pl->last_wall_touch = frame_loops;
     }
 

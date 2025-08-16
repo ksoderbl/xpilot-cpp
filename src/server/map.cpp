@@ -47,7 +47,7 @@
 /*
  * Globals.
  */
-World_map World;
+world_t World, *world = &World;
 
 static void Init_map(void);
 static void Alloc_map(void);
@@ -1240,7 +1240,7 @@ unsigned short Find_closest_team(int cx, int cy)
 {
     unsigned short team = TEAM_NOT_SET;
     int i;
-    DFLOAT closest = FLT_MAX, l;
+    double closest = FLT_MAX, l;
 
     for (i = 0; i < World.NumBases; i++)
     {
@@ -1267,7 +1267,7 @@ unsigned short Find_closest_team(int cx, int cy)
 static void Find_base_order(void)
 {
     int i, j, k, n;
-    DFLOAT cx, cy, dist;
+    double cx, cy, dist;
 
     if (!BIT(World.rules->mode, TIMING))
     {
@@ -1310,7 +1310,7 @@ static void Find_base_order(void)
 }
 
 // TODO: add click version
-DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy)
+double Wrap_findDir(double dx, double dy)
 {
     dx = WRAP_DX(dx);
     dy = WRAP_DY(dy);
@@ -1318,7 +1318,7 @@ DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy)
 }
 
 // TODO: add click version
-DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy)
+double Wrap_length(double dx, double dy)
 {
     dx = WRAP_DX(dx);
     dy = WRAP_DY(dy);
@@ -1328,7 +1328,7 @@ DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy)
 static void Compute_global_gravity(void)
 {
     int xi, yi, dx, dy;
-    DFLOAT xforce, yforce, strength;
+    double xforce, yforce, strength;
     double theta;
     vector_t *grav;
 
@@ -1410,7 +1410,7 @@ static void Compute_local_gravity(void)
     int xi, yi, g, gx, gy, ax, ay, dx, dy, gtype;
     int first_xi, last_xi, first_yi, last_yi, mod_xi, mod_yi;
     int min_xi, max_xi, min_yi, max_yi;
-    DFLOAT force, fx, fy;
+    double force, fx, fy;
     vector_t *v, *grav, *tab, grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1];
 
     Compute_grav_tab(grav_tab);

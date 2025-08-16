@@ -820,7 +820,7 @@ void Robot_delete(int ind, int kicked)
 {
     long i,
         low_i = -1;
-    DFLOAT low_score = (DFLOAT)LONG_MAX;
+    double low_score = (double)LONG_MAX;
     char msg[MSG_LEN];
 
     if (ind == -1)

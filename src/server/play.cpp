@@ -127,17 +127,17 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 /* Create debris particles */
 void Make_debris(
     /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
+    /* vel.x, vel.y   */ double velx, double vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,
     /* type           */ int type,
-    /* mass           */ DFLOAT mass,
+    /* mass           */ double mass,
     /* status         */ long status,
     /* color          */ int color,
     /* radius         */ int radius,
     /* min,max debris */ int min_debris, int max_debris,
     /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
+    /* min,max speed  */ double min_speed, double max_speed,
     /* min,max life   */ int min_life, int max_life)
 {
     object_t *debris;
@@ -198,7 +198,7 @@ void Make_debris(
     }
     for (i = 0; i < num_debris; i++)
     {
-        DFLOAT speed, dx, dy, diroff;
+        double speed, dx, dy, diroff;
         int dir, dirplus;
 
         if ((debris = Object_allocate()) == NULL)

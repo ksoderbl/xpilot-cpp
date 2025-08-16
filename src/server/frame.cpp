@@ -958,8 +958,8 @@ static void Frame_ships(connection_t *conn, int ind)
                 cy -= World.click_height;
         }
 
-        DFLOAT x = CLICK_TO_FLOAT(cx);
-        DFLOAT y = CLICK_TO_FLOAT(cy);
+        double x = CLICK_TO_FLOAT(cx);
+        double y = CLICK_TO_FLOAT(cy);
 
         if (click_inview(cv, cx, cy))
             dir = pulse->dir;
@@ -1076,8 +1076,8 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_REPAIR))
         {
-            DFLOAT x = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
-            DFLOAT y = (DFLOAT)(World.targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
+            double x = (double)(World.targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
+            double y = (double)(World.targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
             if (click_inview(cv, cx, cy))
@@ -1114,7 +1114,7 @@ static void Frame_radar(connection_t *conn, int ind)
     int i, k, mask, shownuke, size;
     player_t *pl = Players[ind];
     object_t *shot;
-    DFLOAT x, y;
+    double x, y;
     int cx, cy;
 
     Frame_radar_buffer_reset();

@@ -71,8 +71,8 @@ void Free_map(void);
 bool Grok_map(void);
 void Find_base_direction(void);
 void Compute_gravity(void);
-DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy);
-DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy);
+double Wrap_findDir(double dx, double dy);
+double Wrap_length(double dx, double dy);
 unsigned short Find_closest_team(int cx, int cy);
 
 int Wildmap(
@@ -101,7 +101,7 @@ void Record_shove(player_t *pl, player_t *pusher, long time);
 void Delta_mv(object_t *ship, object_t *obj);
 void Delta_mv_elastic(object_t *obj1, object_t *obj2);
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
-void Item_damage(int ind, DFLOAT prob);
+void Item_damage(int ind, double prob);
 void Tank_handle_detach(player_t *pl);
 void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
@@ -113,7 +113,7 @@ void General_tractor_beam(int ind, int cx, int cy,
 void Place_mine(int ind);
 void Place_moving_mine(int ind);
 void Place_general_mine(int ind, unsigned short team, long status, int cx, int cy,
-                        DFLOAT vx, DFLOAT vy, modifiers_t mods);
+                        double vx, double vy, modifiers_t mods);
 void Detonate_mines(int ind);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(int ind);
@@ -145,30 +145,30 @@ void Move_smart_shot(int ind);
 void Move_mine(int ind);
 void Make_debris(
     /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
+    /* vel.x, vel.y   */ double velx, double vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,
     /* type           */ int type,
-    /* mass           */ DFLOAT mass,
+    /* mass           */ double mass,
     /* status         */ long status,
     /* color          */ int color,
     /* radius         */ int radius,
     /* min,max debris */ int min_debris, int max_debris,
     /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
+    /* min,max speed  */ double min_speed, double max_speed,
     /* min,max life   */ int min_life, int max_life);
 void Make_wreckage(
     /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
+    /* vel.x, vel.y   */ double velx, double vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,
-    /* min,max mass   */ DFLOAT min_mass, DFLOAT max_mass,
-    /* total mass     */ DFLOAT total_mass,
+    /* min,max mass   */ double min_mass, double max_mass,
+    /* total mass     */ double total_mass,
     /* status         */ long status,
     /* color          */ int color,
     /* max wreckage   */ int max_wreckage,
     /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
+    /* min,max speed  */ double min_speed, double max_speed,
     /* min,max life   */ int min_life, int max_life);
 void Make_item(int cx, int cy,
                int vx, int vy,
@@ -305,7 +305,7 @@ void Phasing(player_t *pl, bool on);
 void Options_parse(void);
 void Options_free(void);
 bool Convert_string_to_int(const char *value_str, int *int_ptr);
-bool Convert_string_to_float(const char *value_str, DFLOAT *float_ptr);
+bool Convert_string_to_float(const char *value_str, double *float_ptr);
 bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
 void Convert_list_to_string(list_t list, char **string);
 void Convert_string_to_list(const char *value, list_t *list_ptr);

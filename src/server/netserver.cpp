@@ -678,7 +678,7 @@ void Destroy_connection(connection_t *connp, const char *reason)
     xpprintf("%s Goodbye %s=%s@%s|%s (\"%s\")\n",
              showtime(),
              connp->nick ? connp->nick : "",
-             connp->real ? connp->real : "",
+             connp->user ? connp->user : "",
              connp->host ? connp->host : "",
              connp->dpy ? connp->dpy : "",
              reason);
@@ -693,9 +693,9 @@ void Destroy_connection(connection_t *connp, const char *reason)
         Players[GetInd[id]]->conn = NULL;
         Delete_player(GetInd[id]);
     }
-    if (connp->real != NULL)
+    if (connp->user != NULL)
     {
-        free(connp->real);
+        free(connp->user);
     }
     if (connp->nick != NULL)
     {
@@ -741,7 +741,7 @@ int Check_connection(char *real, char *nick, char *dpy, char *addr)
         {
             if (strcasecmp(connp->nick, nick) == 0)
             {
-                if (!strcmp(real, connp->real) && !strcmp(dpy, connp->dpy) && !strcmp(addr, connp->addr))
+                if (!strcmp(real, connp->user) && !strcmp(dpy, connp->dpy) && !strcmp(addr, connp->addr))
                 {
                     return connp->my_port;
                 }
@@ -781,7 +781,7 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
         }
         if (strcasecmp(connp->nick, nick) == 0)
         {
-            if (connp->state == CONN_LISTENING && strcmp(real, connp->real) == 0 && strcmp(dpy, connp->dpy) == 0 && version == connp->version)
+            if (connp->state == CONN_LISTENING && strcmp(real, connp->user) == 0 && strcmp(dpy, connp->dpy) == 0 && version == connp->version)
             {
                 /*
                  * May happen for multi-homed hosts
@@ -877,7 +877,7 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
                  SOCKBUF_WRITE | SOCKBUF_READ | SOCKBUF_LOCK);
 
     connp->my_port = my_port;
-    connp->real = xp_strdup(real);
+    connp->user = xp_strdup(real);
     connp->nick = xp_strdup(nick);
     connp->dpy = xp_strdup(dpy);
     connp->addr = xp_strdup(addr);
@@ -907,7 +907,7 @@ int Setup_connection(char *real, char *nick, char *dpy, int team,
     connp->debris_colors = 0;
     connp->spark_rand = DEF_SPARK_RAND;
     Conn_set_state(connp, CONN_LISTENING, CONN_FREE);
-    if (connp->w.buf == NULL || connp->r.buf == NULL || connp->c.buf == NULL || connp->real == NULL || connp->nick == NULL || connp->dpy == NULL || connp->addr == NULL || connp->host == NULL)
+    if (connp->w.buf == NULL || connp->r.buf == NULL || connp->c.buf == NULL || connp->user == NULL || connp->nick == NULL || connp->dpy == NULL || connp->addr == NULL || connp->host == NULL)
     {
         xperror("Not enough memory for connection");
         /* socket is not yet connected, but it doesn't matter much. */
@@ -979,7 +979,7 @@ static int Handle_listening(connection_t *connp)
     }
 #ifndef SILENT
     xpprintf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
-             connp->real, connp->host, connp->dpy, connp->addr, connp->his_port);
+             connp->user, connp->host, connp->dpy, connp->addr, connp->his_port);
     if (connp->version != MY_VERSION)
     {
         xpprintf(" (version %04x)\n", connp->version);
@@ -1006,11 +1006,11 @@ static int Handle_listening(connection_t *connp)
     }
     Fix_user_name(real);
     Fix_nick_name(nick);
-    if (strcmp(real, connp->real))
+    if (strcmp(real, connp->user))
     {
 #ifndef SILENT
         xpprintf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
-                 showtime(), real, nick, connp->real, connp->nick);
+                 showtime(), real, nick, connp->user, connp->nick);
 #endif
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
         Send_reliable(connp);
@@ -1180,7 +1180,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     }
     pl = Players[NumPlayers];
     strlcpy(pl->name, connp->nick, MAX_CHARS);
-    strlcpy(pl->realname, connp->real, MAX_CHARS);
+    strlcpy(pl->realname, connp->user, MAX_CHARS);
     strlcpy(pl->hostname, connp->host, MAX_CHARS);
     pl->isowner = (!strcmp(pl->realname, Server.owner) &&
                    !strcmp(connp->addr, "127.0.0.1"));
@@ -2548,7 +2548,7 @@ static int Receive_power(connection_t *connp)
     uint8_t ch;
     short tmp;
     int n;
-    DFLOAT power;
+    double power;
     int autopilot;
 
     if ((n = Packet_scanf(&connp->r, "%c%hd", &ch, &tmp)) <= 0)
@@ -2559,7 +2559,7 @@ static int Receive_power(connection_t *connp)
         }
         return n;
     }
-    power = (DFLOAT)tmp / 256.0F;
+    power = (double)tmp / 256.0F;
     pl = Players[GetInd[connp->id]];
     autopilot = BIT(pl->used, HAS_AUTOPILOT);
     /* old client are going to send autopilot-mangled data, ignore it */
@@ -3488,7 +3488,7 @@ static int Receive_pointer_move(connection_t *connp)
     uint8_t ch;
     short movement;
     int n;
-    DFLOAT turnspeed, turndir;
+    double turnspeed, turndir;
 
     if ((n = Packet_scanf(&connp->r, "%c%hd", &ch, &movement)) <= 0)
     {

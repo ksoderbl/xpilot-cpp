@@ -513,7 +513,7 @@ void Server_info(char *str, unsigned max_size)
 {
     int i, j, k;
     player_t *pl, **order, *best = NULL;
-    DFLOAT ratio, best_ratio = -1e7;
+    double ratio, best_ratio = -1e7;
     char name[MAX_CHARS * 2 + 4];
     char lblstr[MAX_CHARS];
     char msg[MSG_LEN];
@@ -564,11 +564,11 @@ void Server_info(char *str, unsigned max_size)
         pl = Players[i];
         if (BIT(World.rules->mode, LIMITED_LIVES))
         {
-            ratio = (DFLOAT)pl->score;
+            ratio = (double)pl->score;
         }
         else
         {
-            ratio = (DFLOAT)pl->score / (pl->life + 1);
+            ratio = (double)pl->score / (pl->life + 1);
         }
         if ((best == NULL || ratio > best_ratio) && !BIT(pl->status, PAUSE))
         {

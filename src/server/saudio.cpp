@@ -159,7 +159,7 @@ void sound_play_sensors(int cx, int cy, int index)
 {
     int i,
         volume;
-    DFLOAT dx,
+    double dx,
         dy,
         range,
         factor;

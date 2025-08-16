@@ -90,7 +90,7 @@ void Cannon_throw_items(int ind)
     cannon_t *c = World.cannon + ind;
     int i, dir;
     object_t *obj;
-    DFLOAT velocity;
+    double velocity;
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
@@ -403,7 +403,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
         case 3:
             if (tdist < range)
             {
-                DFLOAT time = tdist / speed;
+                double time = tdist / speed;
                 int npx = (int)(pl->pos.x + pl->vel.x * time + pl->acc.x * time * time);
                 int npy = (int)(pl->pos.y + pl->vel.y * time + pl->acc.y * time * time);
                 int tdir;

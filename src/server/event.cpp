@@ -39,7 +39,7 @@
 
 #define SWAP(_a, _b)      \
     {                     \
-        DFLOAT _tmp = _a; \
+        double _tmp = _a; \
         _a = _b;          \
         _b = _tmp;        \
     }
@@ -53,7 +53,7 @@ static void Refuel(int ind)
 {
     player_t *pl = Players[ind];
     int i;
-    DFLOAT l, dist = 1e9;
+    double l, dist = 1e9;
 
     if (!BIT(pl->have, HAS_REFUEL))
         return;
@@ -80,8 +80,8 @@ static void Repair(int ind)
 {
     player_t *pl = Players[ind];
     int i;
-    DFLOAT l, dist = 1e9;
-    DFLOAT x, y;
+    double l, dist = 1e9;
+    double x, y;
     target_t *targ = World.targets;
 
     if (!BIT(pl->have, HAS_REPAIR))
@@ -187,7 +187,7 @@ int Player_lock_closest(int ind, int next)
 {
     player_t *pl = Players[ind];
     int lock, i, newpl;
-    DFLOAT dist, best, l;
+    double dist, best, l;
 
     if (!next)
         CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -306,7 +306,7 @@ int Handle_keyboard(int ind)
 {
     player_t *pl = Players[ind];
     int i, j, k, key, pressed, xi, yi;
-    DFLOAT minv;
+    double minv;
 
     for (key = 0; key < NUM_KEYS; key++)
     {

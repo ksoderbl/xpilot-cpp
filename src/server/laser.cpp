@@ -55,7 +55,7 @@ typedef struct victim
 {
     int ind;          /* player index */
     position_t pos;   /* current player position */
-    DFLOAT prev_dist; /* distance at previous sample */
+    double prev_dist; /* distance at previous sample */
 } victim_t;
 
 /*
@@ -115,12 +115,12 @@ static void Laser_pulse_destroy_all(void)
 static void Laser_pulse_find_victims(
     vicbuf_t *vicbuf,
     pulse_t *pulse,
-    DFLOAT midx,
-    DFLOAT midy)
+    double midx,
+    double midy)
 {
     int i;
     player_t *vic;
-    DFLOAT dist;
+    double dist;
 
     vicbuf->num_vic = 0;
     for (i = 0; i < NumPlayers; i++)
@@ -192,8 +192,8 @@ static void Laser_pulse_find_victims(
 static void Laser_pulse_hits_player(
     pulse_t *pulse,
     object_t *obj,
-    DFLOAT x,
-    DFLOAT y,
+    double x,
+    double y,
     victim_t *victim,
     bool *refl)
 {
@@ -328,15 +328,15 @@ static void Laser_pulse_hits_player(
 static int Laser_pulse_check_player_hits(
     pulse_t *pulse,
     object_t *obj,
-    DFLOAT x,
-    DFLOAT y,
+    double x,
+    double y,
     vicbuf_t *vicbuf,
     bool *refl)
 {
     int j;
     int hits = 0;
     /* int                        ind; */
-    DFLOAT dist;
+    double dist;
     /* player                *pl; */
     victim_t *victim;
 
@@ -385,10 +385,10 @@ static int Laser_pulse_check_player_hits(
 static void Laser_pulse_get_object_list(
     std::vector<object_t *> &obj_list,
     pulse_t *pulse,
-    DFLOAT midx,
-    DFLOAT midy)
+    double midx,
+    double midy)
 {
-    DFLOAT dx, dy;
+    double dx, dy;
     int range;
     list_iter_t iter;
     object_t *ast;
@@ -427,9 +427,9 @@ void Laser_pulse_collision(void)
     int max, hits;
     bool refl;
     vicbuf_t vicbuf;
-    DFLOAT x, y, x1, x2, y1, y2;
-    DFLOAT dx, dy;
-    DFLOAT midx, midy;
+    double x, y, x1, x2, y1, y2;
+    double dx, dy;
+    double midx, midy;
     player *pl;
     pulse_t *pulse;
     object_t *obj = NULL, *ast = NULL;
@@ -623,7 +623,7 @@ void Laser_pulse_collision(void)
             {
                 for (object_t *ast : obj_list)
                 {
-                    DFLOAT adx, ady;
+                    double adx, ady;
                     adx = x - ast->pos.x;
                     ady = y - ast->pos.y;
                     adx = WRAP_DX(adx);

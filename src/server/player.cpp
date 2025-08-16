@@ -163,7 +163,7 @@ void Go_home(int ind)
     }
 
     int i, x, y, dir, check;
-    DFLOAT vx, vy, velo;
+    double vx, vy, velo;
 
     if (Player_is_tank(pl))
     {
@@ -240,7 +240,7 @@ void Go_home(int ind)
 void Compute_sensor_range(player_t *pl)
 {
     static int init = 0;
-    static DFLOAT EnergyRangeFactor;
+    static double EnergyRangeFactor;
 
     if (!init)
     {
@@ -256,7 +256,7 @@ void Compute_sensor_range(player_t *pl)
         if (World.items[ITEM_FUEL].initial > 0.0)
         {
             EnergyRangeFactor = options.minVisibilityDistance /
-                                (World.items[ITEM_FUEL].initial * (1.0 + ((DFLOAT)World.items[ITEM_SENSOR].initial * 0.25)));
+                                (World.items[ITEM_FUEL].initial * (1.0 + ((double)World.items[ITEM_SENSOR].initial * 0.25)));
             EnergyRangeFactor /= FUEL_SCALE_FACT;
         }
         else
@@ -267,7 +267,7 @@ void Compute_sensor_range(player_t *pl)
     }
 
     pl->sensor_range = pl->fuel.sum * EnergyRangeFactor;
-    pl->sensor_range *= (1.0 + ((DFLOAT)pl->item[ITEM_SENSOR] * 0.25));
+    pl->sensor_range *= (1.0 + ((double)pl->item[ITEM_SENSOR] * 0.25));
     if (pl->sensor_range < options.minVisibilityDistance)
         pl->sensor_range = options.minVisibilityDistance;
     if (pl->sensor_range > options.maxVisibilityDistance)
@@ -832,13 +832,13 @@ void Check_team_members(int team)
     }
 }
 
-static void Compute_end_of_round_values(DFLOAT *average_score,
+static void Compute_end_of_round_values(double *average_score,
                                         int *num_best_players,
-                                        DFLOAT *best_ratio,
+                                        double *best_ratio,
                                         int best_players[])
 {
     int i;
-    DFLOAT ratio;
+    double ratio;
 
     /* Initialize everything */
     *average_score = 0;
@@ -852,7 +852,7 @@ static void Compute_end_of_round_values(DFLOAT *average_score,
         if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0))
             continue;
         *average_score += Players[i]->score;
-        ratio = (DFLOAT)Players[i]->kills / (Players[i]->deaths + 1);
+        ratio = (double)Players[i]->kills / (Players[i]->deaths + 1);
         if (ratio > *best_ratio)
         {
             *best_ratio = ratio;
@@ -865,13 +865,13 @@ static void Compute_end_of_round_values(DFLOAT *average_score,
     *average_score /= NumPlayers;
 }
 
-static void Give_best_player_bonus(DFLOAT average_score,
+static void Give_best_player_bonus(double average_score,
                                    int num_best_players,
-                                   DFLOAT best_ratio,
+                                   double best_ratio,
                                    int best_players[])
 {
     int i;
-    DFLOAT points;
+    double points;
     char msg[MSG_LEN];
 
     if (best_ratio == 0)
@@ -896,8 +896,8 @@ static void Give_best_player_bonus(DFLOAT average_score,
         for (i = 0; i < num_best_players; i++)
         {
             player *bp = Players[best_players[i]];
-            DFLOAT ratio = Rate(bp->score, average_score);
-            DFLOAT score = (ratio + num_best_players) / num_best_players;
+            double ratio = Rate(bp->score, average_score);
+            double score = (ratio + num_best_players) / num_best_players;
 
             if (msg[0])
             {
@@ -929,13 +929,13 @@ static void Give_best_player_bonus(DFLOAT average_score,
     Set_message(msg);
 }
 
-static void Give_individual_bonus(int ind, DFLOAT average_score)
+static void Give_individual_bonus(int ind, double average_score)
 {
-    DFLOAT ratio;
-    DFLOAT points;
+    double ratio;
+    double points;
     player_t *pl = Players[ind];
 
-    ratio = (DFLOAT)pl->kills / (pl->deaths + 1);
+    ratio = (double)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(pl->score, average_score);
     SCORE(pl, points, pl->pos.cx, pl->pos.cy,
           "[Winner]");
@@ -964,10 +964,10 @@ static void Count_rounds(void)
 void Team_game_over(int winning_team, const char *reason)
 {
     int i, j;
-    DFLOAT average_score;
+    double average_score;
     int num_best_players;
     int *best_players;
-    DFLOAT best_ratio;
+    double best_ratio;
     char msg[MSG_LEN];
 
     if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
@@ -1034,10 +1034,10 @@ void Team_game_over(int winning_team, const char *reason)
 void Individual_game_over(int winner)
 {
     int i, j;
-    DFLOAT average_score;
+    double average_score;
     int num_best_players;
     int *best_players;
-    DFLOAT best_ratio;
+    double best_ratio;
     char msg[MSG_LEN];
 
     if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
@@ -1237,7 +1237,7 @@ void Race_game_over(void)
                         "%s %s the best lap time of %.2fs",
                         pl->name,
                         (num_best_players == 1) ? "had" : "shares",
-                        (DFLOAT)bestlap / FPS);
+                        (double)bestlap / FPS);
                 Set_message(msg);
                 SCORE(pl, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
                       (num_best_players == 1) ? "[Fastest lap]" : "[Joint fastest lap]");
@@ -1319,7 +1319,7 @@ void Compute_game_status(void)
             num_waiting_players = 0,
             position = 1,
             total_pts;
-        DFLOAT pts;
+        double pts;
 
         /* First count the players */
         for (i = 0; i < NumPlayers; i++)
@@ -1534,11 +1534,11 @@ void Compute_game_status(void)
             char *bp;
             int teams_with_treasure = 0;
             int team_win[MAX_TEAMS];
-            DFLOAT team_score[MAX_TEAMS];
+            double team_score[MAX_TEAMS];
             int winners;
             int max_destroyed = 0;
             int max_left = 0;
-            DFLOAT max_score = 0;
+            double max_score = 0;
             team_t *team_ptr;
 
             /*
