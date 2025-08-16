@@ -81,7 +81,7 @@ static void Copy_static_radar(void)
     XSetForeground(dpy, radarGC, colors[WHITE].pixel);
 }
 
-static void Paint_checkpoint_radar(float xf, float yf)
+static void Paint_checkpoint_radar(double xf, double yf)
 {
     int x, y;
     XPoint points[5];
@@ -119,7 +119,7 @@ static void Paint_checkpoint_radar(float xf, float yf)
     }
 }
 
-static void Paint_self_radar(float xf, float yf)
+static void Paint_self_radar(double xf, double yf)
 {
     int x, y, x1, y1, xw, yw;
 
@@ -128,13 +128,9 @@ static void Paint_self_radar(float xf, float yf)
         x = (int)(selfPos.x * xf + 0.5) - slidingradar_x;
         y = RadarHeight - (int)(selfPos.y * yf + 0.5) - 1 - slidingradar_y;
         if (x <= 0)
-        {
             x += 256;
-        }
         if (y <= 0)
-        {
             y += RadarHeight;
-        }
 
         x1 = (int)(x + 8 * tcos(heading));
         y1 = (int)(y - 8 * tsin(heading));
@@ -145,19 +141,15 @@ static void Paint_self_radar(float xf, float yf)
             xw = x1 - (x1 + 256) % 256;
             yw = y1 - (y1 + RadarHeight) % RadarHeight;
             if (xw != 0)
-            {
                 XDrawLine(dpy, radarPixmap, radarGC,
                           x - xw, y, x1 - xw, y1);
-            }
             if (yw != 0)
             {
                 XDrawLine(dpy, radarPixmap, radarGC,
                           x, y - yw, x1, y1 - yw);
                 if (xw != 0)
-                {
                     XDrawLine(dpy, radarPixmap, radarGC,
                               x - xw, y - yw, x1 - xw, y1 - yw);
-                }
             }
         }
     }
@@ -231,8 +223,8 @@ static void Paint_objects_radar(void)
 
 void Paint_radar(void)
 {
-    const float xf = 256.0f / (float)Setup->width,
-                yf = (float)RadarHeight / (float)Setup->height;
+    const double xf = 256.0f / (double)Setup->width,
+                 yf = (double)RadarHeight / (double)Setup->height;
 
     if (radar_exposures == 0)
     {
@@ -297,7 +289,7 @@ void Paint_world_radar(void)
     int i, xi, yi, xm, ym, xp, yp = 0;
     int xmoff, xioff;
     int type, vis, damage;
-    float xs, ys;
+    double xs, ys;
     int npoint = 0, nsegment = 0;
     int start, end;
     int currColor, visibleColorChange;
@@ -397,8 +389,8 @@ void Paint_world_radar(void)
      */
     if (Setup->x >= 256)
     {
-        xs = (float)(256 - 1) / (Setup->x - 1);
-        ys = (float)(RadarHeight - 1) / (Setup->y - 1);
+        xs = (double)(256 - 1) / (Setup->x - 1);
+        ys = (double)(RadarHeight - 1) / (Setup->y - 1);
         currColor = -1;
         for (xi = 0; xi < Setup->x; xi++)
         {
@@ -502,8 +494,8 @@ void Paint_world_radar(void)
     }
     else
     {
-        xs = (float)(Setup->x - 1) / (256 - 1);
-        ys = (float)(Setup->y - 1) / (RadarHeight - 1);
+        xs = (double)(Setup->x - 1) / (256 - 1);
+        ys = (double)(Setup->y - 1) / (RadarHeight - 1);
         currColor = -1;
         for (xi = 0; xi < 256; xi++)
         {
@@ -642,7 +634,7 @@ void Paint_world_radar(void)
  */
 void Paint_radar_block(int xi, int yi, int color)
 {
-    float xs, ys;
+    double xs, ys;
     int xp, yp, xw, yw;
 
     if (radarPixmap2 == radarPixmap)
@@ -653,16 +645,16 @@ void Paint_radar_block(int xi, int yi, int color)
 
     if (Setup->x >= 256)
     {
-        xs = (float)(256 - 1) / (Setup->x - 1);
-        ys = (float)(RadarHeight - 1) / (Setup->y - 1);
+        xs = (double)(256 - 1) / (Setup->x - 1);
+        ys = (double)(RadarHeight - 1) / (Setup->y - 1);
         xp = (int)(xi * xs + 0.5);
         yp = RadarHeight - 1 - (int)(yi * ys + 0.5);
         XDrawPoint(dpy, radarPixmap2, radarGC, xp, yp);
     }
     else
     {
-        xs = (float)(Setup->x - 1) / (256 - 1);
-        ys = (float)(Setup->y - 1) / (RadarHeight - 1);
+        xs = (double)(Setup->x - 1) / (256 - 1);
+        ys = (double)(Setup->y - 1) / (RadarHeight - 1);
         /*
          * Calculate the min and max points on the radar that would show
          * block position `xi' and `yi'.  Note `xp' is the minimum x coord

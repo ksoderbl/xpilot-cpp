@@ -376,8 +376,8 @@ static void Option_change_node(
             option_desc *desc = node->value->desc;
             if ((desc->flags & opt_origin) == 0)
             {
-                xpwarn("Not allowed to change option '%s' from %s.",
-                       node->name, Origin_name(opt_origin));
+                warn("Not allowed to change option '%s' from %s.",
+                     node->name, Origin_name(opt_origin));
                 return;
             }
         }
@@ -541,10 +541,10 @@ static void Option_change_node(
     {
         const char *old_value_origin_name = Origin_name(node->value->origin);
         const char *new_value_origin_name = Origin_name(opt_origin);
-        xpwarn("Not modifying %s option '%s' from %s\n",
-               old_value_origin_name,
-               node->name,
-               new_value_origin_name);
+        warn("Not modifying %s option '%s' from %s\n",
+             old_value_origin_name,
+             node->name,
+             new_value_origin_name);
     }
 #endif
 }
@@ -886,8 +886,8 @@ static void Option_parse_node(hash_node *np)
 
         if (Convert_string_to_int(value, ptr) != true)
         {
-            xpwarn("%s value '%s' not an integral number.",
-                   np->name, value);
+            warn("%s value '%s' not an integral number.",
+                 np->name, value);
             Convert_string_to_int(desc->defaultValue, ptr);
         }
         break;
@@ -899,8 +899,8 @@ static void Option_parse_node(hash_node *np)
 
         if (Convert_string_to_float(value, ptr) != true)
         {
-            xpwarn("%s value '%s' not a number.",
-                   np->name, value);
+            warn("%s value '%s' not a number.",
+                 np->name, value);
             Convert_string_to_float(desc->defaultValue, ptr);
         }
         break;
@@ -912,8 +912,8 @@ static void Option_parse_node(hash_node *np)
 
         if (Convert_string_to_bool(value, ptr) != true)
         {
-            xpwarn("%s value '%s' not a boolean.",
-                   np->name, value);
+            warn("%s value '%s' not a boolean.",
+                 np->name, value);
             Convert_string_to_bool(desc->defaultValue, ptr);
         }
         break;
@@ -934,8 +934,8 @@ static void Option_parse_node(hash_node *np)
         if (Convert_string_to_int(value, &(ptr->x)) != true ||
             Convert_string_to_int(s + 1, &(ptr->y)) != true)
         {
-            xpwarn("%s value '%s' not a valid position.",
-                   np->name, value);
+            warn("%s value '%s' not a valid position.",
+                 np->name, value);
             value = desc->defaultValue;
             s = strchr(value, ',');
             Convert_string_to_int(value, &(ptr->x));
@@ -959,8 +959,8 @@ static void Option_parse_node(hash_node *np)
 
         if (Convert_string_to_float(value, &seconds) != true)
         {
-            xpwarn("%s value '%s' not a number.",
-                   np->name, value);
+            warn("%s value '%s' not a number.",
+                 np->name, value);
             Convert_string_to_float(desc->defaultValue, &seconds);
         }
         *ptr = (int)(seconds * FPS);
@@ -1022,8 +1022,8 @@ static void Options_parse_FPS(void)
 
         if (Convert_string_to_int(fpsstr, &frames) != true)
         {
-            xpwarn("Invalid framesPerSecond specification '%s' in %s.",
-                   fpsstr, Origin_name(value_origin));
+            warn("Invalid framesPerSecond specification '%s' in %s.",
+                 fpsstr, Origin_name(value_origin));
         }
         else
         {

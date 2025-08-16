@@ -581,7 +581,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int item = -1;
             long amount = 0;
-            Do_general_transporter(-1, c->clk_pos.cx, c->clk_pos.cy, target, &item, &amount);
+            Do_general_transporter(nullptr, c->clk_pos.cx, c->clk_pos.cy, target, &item, &amount);
             if (item != -1)
                 Cannon_add_item(ind, item, amount);
             IFSOUND(sound = -1);

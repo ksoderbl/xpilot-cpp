@@ -136,8 +136,8 @@ void Fire_laser(player_t *pl);
 void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy, int dir,
                         modifiers_t mods);
 void Do_deflector(player_t *pl);
-void Do_transporter(int ind);
-void Do_general_transporter(int ind, int cx, int cy, int target,
+void Do_transporter(player_t *pl);
+void Do_general_transporter(player_t *pl, int cx, int cy, int target,
                             int *item, long *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);

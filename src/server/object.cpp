@@ -75,7 +75,7 @@ object_t *Object_allocate(void)
     }
     else
     {
-        xpwarn("Object_allocate: MAX_TOTAL_SHOTS (ObjCount = %d) reached", ObjCount);
+        warn("Object_allocate: MAX_TOTAL_SHOTS (ObjCount = %d) reached", ObjCount);
     }
 
     return obj;
@@ -92,8 +92,8 @@ void Object_free_ind(int ind)
     }
     else
     {
-        xpwarn("Cannot free object %d, when count = %d, and total = %d !",
-               ind, ObjCount, MAX_TOTAL_SHOTS);
+        warn("Cannot free object %d, when count = %d, and total = %d !",
+             ind, ObjCount, MAX_TOTAL_SHOTS);
     }
 }
 
@@ -111,7 +111,7 @@ void Object_free_ptr(object_t *obj)
     }
     if (i < 0)
     {
-        xpwarn("Could NOT free object!");
+        warn("Could NOT free object!");
     }
 }
 

@@ -1021,7 +1021,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TRANSPORTER:
-                Do_transporter(ind);
+                Do_transporter(pl);
                 break;
 
             case KEY_DEFLECTOR:

@@ -787,8 +787,8 @@ void expandKeyword(const char *keyword)
     p = Option_get_value(keyword, &expand_origin);
     if (p == NULL)
     {
-        xpwarn("Can't expand `%s' because it has not been defined.\n",
-               keyword);
+        warn("Can't expand `%s' because it has not been defined.\n",
+             keyword);
     }
     else
     {

@@ -968,9 +968,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         object_t *shot;
 
         if ((shot = Object_allocate()) == NULL)
-        {
             break;
-        }
 
         shot->life = life / minis;
         shot->fuselife = shot->life - fuse;
@@ -1012,15 +1010,12 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         shotpos.cx = WRAP_XCLICK(shotpos.cx);
         shotpos.cy = WRAP_YCLICK(shotpos.cy);
         if (shotpos.cx < 0 || shotpos.cx >= World.click_width || shotpos.cy < 0 || shotpos.cy >= World.click_height)
-        {
             continue;
-        }
+
         Object_position_init_clicks(shot, shotpos.cx, shotpos.cy);
 
         if (type == OBJ_SHOT || !pl)
-        {
             angle = 0.0;
-        }
         else
         {
             /*
@@ -1028,9 +1023,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
              * (See Comment Point 3).
              */
             if (on_this_rack <= 1)
-            {
                 angle = 0.0;
-            }
             else
             {
                 angle = (DFLOAT)(on_this_rack - 1 - 2 * r);
@@ -1094,9 +1087,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
     if (pl)
     {
         for (i = 0; i < fired; i++)
-        {
             Recoil((object_t *)pl, mini_objs[i]);
-        }
     }
 }
 
@@ -1227,29 +1218,21 @@ void Delete_shot(int ind)
     case OBJ_SMART_SHOT:
     case OBJ_CANNON_SHOT:
         if (shot->mass == 0)
-        {
             break;
-        }
 
         status = GRAVITY;
         if (shot->type == OBJ_MINE)
-        {
             status |= COLLISIONSHOVE;
-        }
+
         if (BIT(shot->status, FROMCANNON))
-        {
             status |= FROMCANNON;
-        }
 
         if (BIT(shot->mods.nuclear, NUCLEAR))
-
             sound_play_all(NUKE_EXPLOSION_SOUND);
 
         else if (BIT(shot->type, OBJ_MINE))
-
             sound_play_sensors(shot->pos.cx, shot->pos.cy, MINE_EXPLOSION_SOUND);
         else
-
             sound_play_sensors(shot->pos.cx, shot->pos.cy, OBJECT_EXPLOSION_SOUND);
 
         if (BIT(shot->mods.warhead, CLUSTER))
@@ -1261,9 +1244,8 @@ void Delete_shot(int ind)
                 color = pl->color;
             }
             else
-            {
                 color = WHITE;
-            }
+
             mass = options.ShotsMass;
             mass *= 3;
             modv = 1 << shot->mods.velocity;
@@ -1287,13 +1269,9 @@ void Delete_shot(int ind)
             life_modv = modv;
             speed_modv = modv;
             if (shot->type == OBJ_MINE)
-            {
                 intensity = 512;
-            }
             else
-            {
                 intensity = 32;
-            }
             /*
              * Writing it like this:
              *   num_modv /= (shot->mods.mini + 1);
@@ -1306,27 +1284,19 @@ void Delete_shot(int ind)
         {
             DFLOAT nuke_factor;
             if (shot->type == OBJ_MINE)
-            {
                 nuke_factor = NUKE_MINE_EXPL_MULT * shot->mass / MINE_MASS;
-            }
             else
-            {
                 nuke_factor = NUKE_SMART_EXPL_MULT * shot->mass / MISSILE_MASS;
-            }
             nuke_factor = (nuke_factor * (shot->mods.mini + 1)) / SHOT_MULT(shot);
             intensity = (int)(intensity * nuke_factor);
         }
 
         if (BIT(shot->mods.warhead, IMPLOSION))
-        {
             /*intensity >>= 1;*/
             mass = -mass;
-        }
 
         if (BIT(shot->type, OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_SMART_SHOT))
-        {
             intensity /= (1 + shot->mods.power);
-        }
 
         Make_debris(
             /* pos.cx, pos.cy */ shot->prevpos.cx, shot->prevpos.cy,
@@ -1349,14 +1319,10 @@ void Delete_shot(int ind)
 
     case OBJ_SHOT:
         if (shot->id == NO_ID || BIT(shot->status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
-        {
             break;
-        }
         pl = Players[GetInd[shot->id]];
         if (--pl->shots <= 0)
-        {
             pl->shots = 0;
-        }
         break;
 
         /* Special items. */
@@ -1373,9 +1339,7 @@ void Delete_shot(int ind)
                 return;
             }
             if (shot->life == 0 && rfrac() < options.rogueHeatProb)
-            {
                 addHeat = 1;
-            }
             break;
 
         case ITEM_MINE:
@@ -1386,9 +1350,7 @@ void Delete_shot(int ind)
                 return;
             }
             if (shot->life == 0 && rfrac() < options.rogueMineProb)
-            {
                 addMine = 1;
-            }
             break;
         }
 
@@ -1415,21 +1377,17 @@ void Delete_shot(int ind)
     {
         CLEAR_MODS(mods);
         if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333f))
-        {
             SET_BIT(mods.warhead, CLUSTER);
-        }
+
         if (BIT(World.rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333f))
-        {
             SET_BIT(mods.warhead, IMPLOSION);
-        }
+
         if (BIT(World.rules->mode, ALLOW_MODIFIERS))
-        {
             mods.velocity = (int)(rfrac() * (MODS_VELOCITY_MAX + 1));
-        }
+
         if (BIT(World.rules->mode, ALLOW_MODIFIERS))
-        {
             mods.power = (int)(rfrac() * (MODS_POWER_MAX + 1));
-        }
+
         if (addMine)
         {
             long gravity_status = ((rfrac() < 0.5f) ? GRAVITY : 0);
@@ -1438,12 +1396,10 @@ void Delete_shot(int ind)
                                0.0, 0.0, mods);
         }
         else if (addHeat)
-        {
             Fire_general_shot(nullptr, TEAM_NOT_SET, 0,
                               shot->pos.cx, shot->pos.cy,
                               OBJ_HEAT_SHOT, (int)(rfrac() * RES),
                               mods, -1);
-        }
     }
     else if (addBall)
     {
@@ -1668,13 +1624,9 @@ void Move_smart_shot(int ind)
     {
         torpobject_t *torp = TORP_PTR(shot);
         if (BIT(torp->mods.nuclear, NUCLEAR))
-        {
             acc = (torp->info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
-        }
         else
-        {
             acc = (torp->info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
-        }
         acc *= (1 + (torp->mods.power * MISSILE_POWER_SPEED_FACT));
         if (torp->spread_left-- <= 0)
         {
@@ -1711,17 +1663,11 @@ void Move_smart_shot(int ind)
              * set number to moves to correct error value
              */
             if (range < HEAT_CLOSE_RANGE)
-            {
                 shot->count = HEAT_CLOSE_ERROR;
-            }
             else if (range < HEAT_MID_RANGE)
-            {
                 shot->count = HEAT_MID_ERROR;
-            }
             else
-            {
                 shot->count = HEAT_WIDE_ERROR;
-            }
         }
         else
         {
@@ -1951,17 +1897,13 @@ void Move_smart_shot(int ind)
     angle = angle - shot->missile_dir - RES / 2;
 
     if (angle < 0)
-    {
         shot->missile_dir += (uint8_t)(((-angle < shot->turnspeed)
                                             ? -angle
                                             : shot->turnspeed));
-    }
     else
-    {
         shot->missile_dir -= (uint8_t)(((angle < shot->turnspeed)
                                             ? angle
                                             : shot->turnspeed));
-    }
 
     shot->missile_dir = MOD2(shot->missile_dir, RES); /* NOTE!!!! */
 

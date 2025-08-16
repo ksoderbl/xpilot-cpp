@@ -639,9 +639,9 @@ void Do_deflector(player_t *pl)
     }
 }
 
-void Do_transporter(int ind)
+void Do_transporter(player_t *pl)
 {
-    player_t *pl = Players[ind], *p;
+    player_t *p;
     int i, target = -1;
     DFLOAT dist, closest = TRANSPORTER_DISTANCE;
 
@@ -653,7 +653,11 @@ void Do_transporter(int ind)
     for (i = 0; i < NumPlayers; i++)
     {
         p = Players[i];
-        if (p == pl || BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING || Team_immune(pl->id, p->id) || Player_is_tank(p) || BIT(p->used, HAS_PHASING_DEVICE))
+        if (p == pl ||
+            BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
+            Team_immune(pl->id, p->id) ||
+            Player_is_tank(p) ||
+            BIT(p->used, HAS_PHASING_DEVICE))
             continue;
         dist = Wrap_length(pl->pos.x - p->pos.x, pl->pos.y - p->pos.y);
         if (dist < closest)
@@ -673,14 +677,13 @@ void Do_transporter(int ind)
     }
 
     /* victim found */
-    Do_general_transporter(ind, pl->pos.cx, pl->pos.cy, target, NULL, NULL);
+    Do_general_transporter(pl, pl->pos.cx, pl->pos.cy, target, NULL, NULL);
 }
 
-void Do_general_transporter(int ind, int cx, int cy, int target,
+void Do_general_transporter(player_t *pl, int cx, int cy, int target,
                             int *itemp, long *amountp)
 {
-    player_t *pl = (ind == -1 ? NULL : Players[ind]),
-             *victim = Players[target];
+    player_t *victim = Players[target];
     char msg[MSG_LEN];
     const char *what = NULL;
     int i;

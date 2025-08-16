@@ -1056,28 +1056,18 @@ static bool Check_robot_target(int ind,
     if (new_mode == RM_ATTACK || (BIT(World.rules->mode, TIMING) && new_mode == RM_NAVIGATE))
     {
         if (pl->item[ITEM_ECM] > 0 && item_dist < ECM_DISTANCE / 4)
-        {
             Fire_ecm(ind);
-        }
         else if (pl->item[ITEM_TRANSPORTER] > 0 && item_dist < TRANSPORTER_DISTANCE && pl->fuel.sum > -ED_TRANSPORTER)
-        {
-            Do_transporter(ind);
-        }
+            Do_transporter(pl);
         else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER > pl->fuel.l3 && new_mode == RM_ATTACK)
         {
             if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Players[GetInd[my_data->robot_lock_id]]->status,
                                                              PLAYING | PAUSE | GAME_OVER) == PLAYING)
-            {
                 ship = Players[GetInd[my_data->robot_lock_id]];
-            }
             else if (BIT(pl->lock.tagged, LOCK_PLAYER))
-            {
                 ship = Players[GetInd[pl->lock.pl_id]];
-            }
             else
-            {
                 ship = NULL;
-            }
             if (ship && BIT(ship->status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
             {
 
@@ -1103,9 +1093,7 @@ static bool Check_robot_target(int ind,
                     if ((dir4 > dir5)
                             ? (pl->dir >= dir4 || pl->dir <= dir5)
                             : (pl->dir >= dir4 && pl->dir <= dir5))
-                    {
                         SET_BIT(pl->used, HAS_LASER);
-                    }
                 }
             }
         }
@@ -1143,9 +1131,7 @@ static bool Check_robot_target(int ind,
                         pl->tractor_is_pressor = true;
                     }
                     else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
-                    {
                         SET_BIT(pl->used, HAS_TRACTOR_BEAM);
-                    }
                 }
                 if (BIT(pl->used, HAS_TRACTOR_BEAM))
                     SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
