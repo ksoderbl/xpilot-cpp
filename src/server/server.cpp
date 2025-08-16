@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     Walls_init();
 
     /* Allocate memory for players, shots and messages */
-    Alloc_players(World.NumBases + MAX_PSEUDO_PLAYERS);
+    Alloc_players(world->NumBases + MAX_PSEUDO_PLAYERS);
     Alloc_shots(MAX_TOTAL_SHOTS);
     Alloc_cells();
 
@@ -380,7 +380,7 @@ int Pick_team(int pick_for_type)
 
     for (i = 0; i < MAX_TEAMS; i++)
     {
-        free_bases[i] = World.teams[i].NumBases - World.teams[i].NumMembers;
+        free_bases[i] = world->teams[i].NumBases - world->teams[i].NumMembers;
         playing[i] = 0;
         team_score[i] = 0;
         available_teams[i] = 0;
@@ -530,8 +530,8 @@ void Server_info(char *str, unsigned max_size)
                                                          : (game_lock && ShutdownServer != -1)    ? "locked and shutting down"
                                                                                                   : "ok",
             FPS,
-            World.x, World.y, World.name, World.author,
-            NumPlayers, World.NumBases);
+            world->x, world->y, world->name, world->author,
+            NumPlayers, world->NumBases);
 
     if (strlen(str) >= max_size)
     {
@@ -562,7 +562,7 @@ void Server_info(char *str, unsigned max_size)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (BIT(World.rules->mode, LIMITED_LIVES))
+        if (BIT(world->rules->mode, LIMITED_LIVES))
         {
             ratio = (double)pl->score;
         }
@@ -672,7 +672,7 @@ void Log_game(const char *heading)
             timenow,
             Server.owner,
             Server.host,
-            World.name,
+            world->name,
             heading);
 
     if ((fp = fopen(Conf_logfile(), "a")) == NULL)
@@ -699,7 +699,7 @@ void Game_Over(void)
      */
     options.gameDuration = -1.0;
 
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (BIT(world->rules->mode, TEAM_PLAY))
     {
         int teamscore[MAX_TEAMS];
         maxsc = -32767;

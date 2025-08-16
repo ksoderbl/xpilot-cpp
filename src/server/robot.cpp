@@ -746,11 +746,11 @@ static void Robot_create(void)
     robot->power = MAX_PLAYER_POWER;
     robot->power_s = MAX_PLAYER_POWER;
     robot->check = 0;
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (BIT(world->rules->mode, TEAM_PLAY))
     {
         robot->team = Pick_team(PickForRobot);
-        World.teams[robot->team].NumMembers++;
-        World.teams[robot->team].NumRobots++;
+        world->teams[robot->team].NumMembers++;
+        world->teams[robot->team].NumRobots++;
     }
     if (robot->mychar != 'W')
         robot->mychar = 'R';
@@ -800,7 +800,7 @@ static void Robot_create(void)
         }
         sprintf(msg, "Player entered. Delaying %d seconds until next %s.",
                 options.roundDelaySeconds,
-                (BIT(World.rules->mode, TIMING) ? "race" : "round"));
+                (BIT(world->rules->mode, TIMING) ? "race" : "round"));
         Set_message(msg);
     }
 
@@ -1000,7 +1000,7 @@ static bool Robot_check_leave(int ind)
     player_t *pl = Players[ind];
     char msg[MSG_LEN];
 
-    if (options.robotsLeave && pl->life > 0 && !BIT(World.rules->mode, LIMITED_LIVES) && (BIT(pl->status, PLAYING) || pl->count <= 0))
+    if (options.robotsLeave && pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->status, PLAYING) || pl->count <= 0))
     {
         msg[0] = '\0';
         if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
@@ -1073,7 +1073,7 @@ void Robot_update(void)
     num_playing_ships = num_any_ships - NumPseudoPlayers;
     if ((num_playing_ships < options.maxRobots ||
          NumRobots < options.minRobots) &&
-        num_playing_ships < World.NumBases && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(World.rules->mode, TEAM_PLAY) && options.restrictRobots && World.teams[options.robotTeam].NumMembers >= World.teams[options.robotTeam].NumBases))
+        num_playing_ships < world->NumBases && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
     {
 
         if (++new_robot_delay >= ROBOT_CREATE_DELAY)
@@ -1087,7 +1087,7 @@ void Robot_update(void)
         new_robot_delay = 0;
         if (NumRobots > 0)
         {
-            if ((num_playing_ships > World.NumBases) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
+            if ((num_playing_ships > world->NumBases) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
             {
                 Robot_delete(-1, false);
             }

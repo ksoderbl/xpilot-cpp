@@ -517,18 +517,18 @@ void Make_wreckage(
 
     if (!options.useWreckage)
         return;
-    if (BIT(World.rules->mode, WRAP_PLAY))
+    if (BIT(world->rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += World.click_width;
-        else if (cx >= World.click_width)
-            cx -= World.click_width;
+            cx += world->click_width;
+        else if (cx >= world->click_width)
+            cx -= world->click_width;
         if (cy < 0)
-            cy += World.click_height;
-        else if (cy >= World.click_height)
-            cy -= World.click_height;
+            cy += world->click_height;
+        else if (cy >= world->click_height)
+            cy -= world->click_height;
     }
-    if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
+    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
     {
         return;
     }
@@ -543,10 +543,10 @@ void Make_wreckage(
         }
     }
 
-    if (min_speed * max_life > World.hypotenuse)
-        min_speed = World.hypotenuse / max_life;
-    if (max_speed * min_life > World.hypotenuse)
-        max_speed = World.hypotenuse / min_life;
+    if (min_speed * max_life > world->hypotenuse)
+        min_speed = world->hypotenuse / max_life;
+    if (max_speed * min_life > world->hypotenuse)
+        max_speed = world->hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -605,9 +605,9 @@ void Make_wreckage(
 
         /* Lifespan  */
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > World.hypotenuse)
+        if (life * speed > world->hypotenuse)
         {
-            life = (long)(World.hypotenuse / speed);
+            life = (long)(world->hypotenuse / speed);
         }
         wreckage->life = life;
         wreckage->fuselife = wreckage->life;

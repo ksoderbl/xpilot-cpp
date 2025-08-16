@@ -61,13 +61,13 @@ static void Refuel(int ind)
         return;
 
     CLR_BIT(pl->used, HAS_REFUEL);
-    for (i = 0; i < World.NumFuels; i++)
+    for (i = 0; i < world->NumFuels; i++)
     {
-        if (World.block[World.fuel[i].blk_pos.x]
-                       [World.fuel[i].blk_pos.y] == FUEL)
+        if (world->block[world->fuel[i].blk_pos.x]
+                        [world->fuel[i].blk_pos.y] == FUEL)
         {
-            l = Wrap_length(pl->pos.cx - World.fuel[i].clk_pos.cx,
-                            pl->pos.cy - World.fuel[i].clk_pos.cy) /
+            l = Wrap_length(pl->pos.cx - world->fuel[i].clk_pos.cx,
+                            pl->pos.cy - world->fuel[i].clk_pos.cy) /
                 CLICK;
             if (BIT(pl->used, HAS_REFUEL) == 0 || l < dist)
             {
@@ -84,13 +84,13 @@ static void Repair(int ind)
     player_t *pl = Players[ind];
     int i;
     double l, dist = 1e9;
-    target_t *targ = World.targets;
+    target_t *targ = world->targets;
 
     if (!BIT(pl->have, HAS_REPAIR))
         return;
 
     CLR_BIT(pl->used, HAS_REPAIR);
-    for (i = 0; i < World.NumTargets; i++, targ++)
+    for (i = 0; i < world->NumTargets; i++, targ++)
     {
         if (targ->team == pl->team && targ->dead_time <= 0)
         {
@@ -142,7 +142,7 @@ static bool Player_lock_allowed(int ind, int lock)
     }
 
     /* if there is no team play then we can always lock on anyone. */
-    if (!BIT(World.rules->mode, TEAM_PLAY))
+    if (!BIT(world->rules->mode, TEAM_PLAY))
     {
         return true;
     }
@@ -262,7 +262,7 @@ void Pause_player(int ind, bool on)
 
             CLR_BIT(pl->status, PAUSE);
             updateScores = true;
-            if (BIT(World.rules->mode, LIMITED_LIVES))
+            if (BIT(world->rules->mode, LIMITED_LIVES))
             {
                 for (i = 0; i < NumPlayers; i++)
                 {
@@ -270,7 +270,7 @@ void Pause_player(int ind, bool on)
                      * then it's too late to join. */
                     if (i == ind)
                         continue;
-                    if (Players[i]->life < World.rules->lives && !Players_are_teammates(pl, Players[i]))
+                    if (Players[i]->life < world->rules->lives && !Players_are_teammates(pl, Players[i]))
                     {
                         toolate = true;
                         break;
@@ -288,10 +288,10 @@ void Pause_player(int ind, bool on)
                 pl->mychar = ' ';
                 Go_home(ind);
                 SET_BIT(pl->status, PLAYING);
-                if (BIT(World.rules->mode, LIMITED_LIVES))
-                    pl->life = World.rules->lives;
+                if (BIT(world->rules->mode, LIMITED_LIVES))
+                    pl->life = world->rules->lives;
             }
-            if (BIT(World.rules->mode, TIMING))
+            if (BIT(world->rules->mode, TIMING))
             {
                 pl->round = 0;
                 pl->check = 0;
@@ -573,19 +573,19 @@ int Handle_keyboard(int ind)
             case KEY_CHANGE_HOME:
                 xi = OBJ_X_IN_BLOCKS(pl);
                 yi = OBJ_Y_IN_BLOCKS(pl);
-                if (World.block[xi][yi] == BASE)
+                if (world->block[xi][yi] == BASE)
                 {
                     msg[0] = '\0';
-                    for (i = 0; i < World.NumBases; i++)
+                    for (i = 0; i < world->NumBases; i++)
                     {
-                        if (World.base[i].blk_pos.x == xi && World.base[i].blk_pos.y == yi)
+                        if (world->base[i].blk_pos.x == xi && world->base[i].blk_pos.y == yi)
                         {
 
                             if (i == pl->home_base)
                             {
                                 break;
                             }
-                            if (World.base[i].team != TEAM_NOT_SET && World.base[i].team != pl->team)
+                            if (world->base[i].team != TEAM_NOT_SET && world->base[i].team != pl->team)
                                 break;
                             pl->home_base = i;
                             sprintf(msg, "%s has changed home base.",
@@ -658,7 +658,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TOGGLE_NUCLEAR:
-                if (BIT(World.rules->mode, ALLOW_NUKES))
+                if (BIT(world->rules->mode, ALLOW_NUKES))
                 {
                     switch (pl->mods.nuclear)
                     {
@@ -676,21 +676,21 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TOGGLE_CLUSTER:
-                if (BIT(World.rules->mode, ALLOW_CLUSTERS))
+                if (BIT(world->rules->mode, ALLOW_CLUSTERS))
                 {
                     TOGGLE_BIT(pl->mods.warhead, CLUSTER);
                 }
                 break;
 
             case KEY_TOGGLE_IMPLOSION:
-                if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
                 {
                     TOGGLE_BIT(pl->mods.warhead, IMPLOSION);
                 }
                 break;
 
             case KEY_TOGGLE_VELOCITY:
-                if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
                 {
                     /* NB. These may be bit fields, dont modify this code */
                     if (pl->mods.velocity == MODS_VELOCITY_MAX)
@@ -701,7 +701,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TOGGLE_MINI:
-                if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
                 {
                     /* NB. These may be bit fields, dont modify this code */
                     if (pl->mods.mini == MODS_MINI_MAX)
@@ -712,7 +712,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TOGGLE_SPREAD:
-                if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
                 {
                     /* NB. These may be bit fields, dont modify this code */
                     if (pl->mods.spread == MODS_SPREAD_MAX)
@@ -723,7 +723,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TOGGLE_LASER:
-                if (BIT(World.rules->mode, ALLOW_LASER_MODIFIERS))
+                if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
                 {
                     /* NB. These may be bit fields, dont modify this code */
                     if (pl->mods.laser == MODS_LASER_MAX)
@@ -734,7 +734,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TOGGLE_POWER:
-                if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
                 {
                     /* NB. These may be bit fields, dont modify this code */
                     if (pl->mods.power == MODS_POWER_MAX)
@@ -849,8 +849,8 @@ int Handle_keyboard(int ind)
                 {
                     xi = OBJ_X_IN_BLOCKS(pl);
                     yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = World.base[pl->home_base].blk_pos.x;
-                    k = World.base[pl->home_base].blk_pos.y;
+                    j = world->base[pl->home_base].blk_pos.x;
+                    k = world->base[pl->home_base].blk_pos.y;
                     if (j == xi && k == yi)
                     {
                         minv = 3.0f;
@@ -867,7 +867,7 @@ int Handle_keyboard(int ind)
                         minv = 5.0f;
                         i = HOVERPAUSE;
                     }
-                    minv += VECTOR_LENGTH(World.gravity[xi][yi]);
+                    minv += VECTOR_LENGTH(world->gravity[xi][yi]);
                     if (pl->velocity > minv)
                         break;
                 }
@@ -1149,13 +1149,13 @@ int Handle_keyboard(int ind)
 
 void filter_mods(modifiers_t *mods)
 {
-    if (!BIT(World.rules->mode, ALLOW_NUKES))
+    if (!BIT(world->rules->mode, ALLOW_NUKES))
         mods->nuclear = 0;
 
-    if (!BIT(World.rules->mode, ALLOW_CLUSTERS))
+    if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
         CLR_BIT(mods->warhead, CLUSTER);
 
-    if (!BIT(World.rules->mode, ALLOW_MODIFIERS))
+    if (!BIT(world->rules->mode, ALLOW_MODIFIERS))
     {
         CLR_BIT(mods->warhead, IMPLOSION);
         mods->velocity = 0;
@@ -1164,6 +1164,6 @@ void filter_mods(modifiers_t *mods)
         mods->power = 0;
     }
 
-    if (!BIT(World.rules->mode, ALLOW_LASER_MODIFIERS))
+    if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
         mods->laser = 0;
 }

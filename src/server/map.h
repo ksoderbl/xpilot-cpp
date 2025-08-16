@@ -123,7 +123,7 @@ typedef struct
 
 typedef struct
 {
-    int base_idx; /* Index in World.base[] */
+    int base_idx; /* Index in world->base[] */
     double dist;  /* Distance to first checkpoint */
 } baseorder_t;
 

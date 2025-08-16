@@ -152,11 +152,11 @@ static void fastshot_store(int xf, int yf, int color, int offset)
     int i;
     if (xf < 0)
     {
-        xf += World.width;
+        xf += world->width;
     }
     if (yf < 0)
     {
-        yf += World.height;
+        yf += world->height;
     }
     if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
     {
@@ -201,11 +201,11 @@ static void debris_store(int xf, int yf, int color)
     int offset = 0;
     if (xf < 0)
     {
-        xf += World.width;
+        xf += world->width;
     }
     if (yf < 0)
     {
-        yf += World.height;
+        yf += world->height;
     }
     if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
     {
@@ -299,7 +299,7 @@ static void Frame_radar_buffer_send(connection_t *conn)
     int tmp;
     radar_t *p;
     const int radar_width = 256;
-    int radar_height = (radar_width * World.y) / World.x;
+    int radar_height = (radar_width * world->y) / world->x;
     int radar_x;
     int radar_y;
     int send_x;
@@ -329,10 +329,10 @@ static void Frame_radar_buffer_send(connection_t *conn)
         for (i = 0; i < num_radar; i++)
         {
             p = &radar_ptr[radar_shuffle[i]];
-            radar_x = (radar_width * p->x) / World.width;
-            radar_y = (radar_height * p->y) / World.height;
-            send_x = (World.width * radar_x) / radar_width;
-            send_y = (World.height * radar_y) / radar_height;
+            radar_x = (radar_width * p->x) / world->width;
+            radar_y = (radar_height * p->y) / world->height;
+            send_x = (world->width * radar_x) / radar_width;
+            send_y = (world->height * radar_y) / radar_height;
             Send_radar(conn, send_x, send_y, p->size);
         }
     }
@@ -347,8 +347,8 @@ static void Frame_radar_buffer_send(connection_t *conn)
         for (i = 0; i < num_radar; i++)
         {
             p = &radar_ptr[radar_shuffle[i]];
-            radar_x = (radar_width * p->x) / World.width;
-            radar_y = (radar_height * p->y) / World.height;
+            radar_x = (radar_width * p->x) / world->width;
+            radar_y = (radar_height * p->y) / world->height;
             if (radar_y >= 1024)
                 continue;
             buf[buf_index++] = (uint8_t)(radar_x);
@@ -430,7 +430,7 @@ static int Frame_status(connection_t *conn, int ind)
         lock_id = pl->lock.pl_id;
         lock_ind = GetInd[lock_id];
 
-        if ((!BIT(World.rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
+        if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
             && (pl->visibility[lock_ind].canSee ||
                 Player_owns_tank(pl, Players[lock_ind]) ||
@@ -559,27 +559,27 @@ static void Frame_map(connection_t *conn, player_t *pl)
     // bv.world.x = bx - (horizontal_blocks >> 1);
     // bv.world.y = by - (vertical_blocks >> 1);
     // bv.realWorld = bv.world;
-    // if (BIT(World.rules->mode, WRAP_PLAY))
+    // if (BIT(world->rules->mode, WRAP_PLAY))
     // {
-    //     if (bv.world.x < 0 && bv.world.x + horizontal_blocks < World.x)
-    //         bv.world.x += World.x;
-    //     else if (bv.world.x > 0 && bv.world.x + horizontal_blocks > World.x)
-    //         bv.realWorld.x -= World.x;
-    //     if (bv.world.y < 0 && bv.world.y + vertical_blocks < World.y)
-    //         bv.world.y += World.y;
-    //     else if (bv.world.y > 0 && bv.world.y + vertical_blocks > World.y)
-    //         bv.realWorld.y -= World.y;
+    //     if (bv.world.x < 0 && bv.world.x + horizontal_blocks < world->x)
+    //         bv.world.x += world->x;
+    //     else if (bv.world.x > 0 && bv.world.x + horizontal_blocks > world->x)
+    //         bv.realWorld.x -= world->x;
+    //     if (bv.world.y < 0 && bv.world.y + vertical_blocks < world->y)
+    //         bv.world.y += world->y;
+    //     else if (bv.world.y > 0 && bv.world.y + vertical_blocks > world->y)
+    //         bv.realWorld.y -= world->y;
     // }
 
     packet_count = 0;
     max_packet = MAX(5, bytes_left / target_packet_size);
     i = MAX(0, pl->last_target_update);
-    for (k = 0; k < World.NumTargets; k++)
+    for (k = 0; k < world->NumTargets; k++)
     {
         target_t *targ;
-        if (++i >= World.NumTargets)
+        if (++i >= world->NumTargets)
             i = 0;
-        targ = &World.targets[i];
+        targ = &world->targets[i];
         if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 &&
                                                  click_inview(cv, targ->clk_pos.cx, targ->clk_pos.cy)))
         {
@@ -594,17 +594,17 @@ static void Frame_map(connection_t *conn, player_t *pl)
     packet_count = 0;
     max_packet = MAX(5, bytes_left / cannon_packet_size);
     i = MAX(0, pl->last_cannon_update);
-    for (k = 0; k < World.NumCannons; k++)
+    for (k = 0; k < world->NumCannons; k++)
     {
-        if (++i >= World.NumCannons)
+        if (++i >= world->NumCannons)
             i = 0;
         if (click_inview(cv,
-                         World.cannon[i].clk_pos.cx,
-                         World.cannon[i].clk_pos.cy))
+                         world->cannon[i].clk_pos.cx,
+                         world->cannon[i].clk_pos.cy))
         {
-            if (BIT(World.cannon[i].conn_mask, conn_bit) == 0)
+            if (BIT(world->cannon[i].conn_mask, conn_bit) == 0)
             {
-                Send_cannon(conn, i, World.cannon[i].dead_time);
+                Send_cannon(conn, i, world->cannon[i].dead_time);
                 pl->last_cannon_update = i;
                 bytes_left -= max_packet * cannon_packet_size;
                 if (++packet_count >= max_packet)
@@ -616,20 +616,20 @@ static void Frame_map(connection_t *conn, player_t *pl)
     packet_count = 0;
     max_packet = MAX(5, bytes_left / fuel_packet_size);
     i = MAX(0, pl->last_fuel_update);
-    for (k = 0; k < World.NumFuels; k++)
+    for (k = 0; k < world->NumFuels; k++)
     {
-        if (++i >= World.NumFuels)
+        if (++i >= world->NumFuels)
             i = 0;
-        if (BIT(World.fuel[i].conn_mask, conn_bit) == 0)
+        if (BIT(world->fuel[i].conn_mask, conn_bit) == 0)
         {
-            if (World.block[World.fuel[i].blk_pos.x]
-                           [World.fuel[i].blk_pos.y] == FUEL)
+            if (world->block[world->fuel[i].blk_pos.x]
+                            [world->fuel[i].blk_pos.y] == FUEL)
             {
                 if (click_inview(cv,
-                                 World.fuel[i].clk_pos.cx,
-                                 World.fuel[i].clk_pos.cy))
+                                 world->fuel[i].clk_pos.cx,
+                                 world->fuel[i].clk_pos.cy))
                 {
-                    Send_fuel(conn, i, (int)World.fuel[i].fuel);
+                    Send_fuel(conn, i, (int)world->fuel[i].fuel);
                     pl->last_fuel_update = i;
                     bytes_left -= max_packet * fuel_packet_size;
                     if (++packet_count >= max_packet)
@@ -644,12 +644,12 @@ static void Frame_map(connection_t *conn, player_t *pl)
     packet_count = 0;
     max_packet = MAX(5, bytes_left / wormhole_packet_size);
     i = MAX(0, pl->last_wormhole_update);
-    for (k = 0; k < World.NumWormholes; k++)
+    for (k = 0; k < world->NumWormholes; k++)
     {
         wormhole_t *worm;
-        if (++i >= World.NumWormholes)
+        if (++i >= world->NumWormholes)
             i = 0;
-        worm = &World.wormHoles[i];
+        worm = &world->wormHoles[i];
         if (options.wormholeVisible &&
             worm->temporary &&
             (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
@@ -843,7 +843,7 @@ static void Frame_shots(connection_t *conn, int ind)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(Players[GetInd[shot->id]]->status, PAUSE)) || (shot->id == NO_ID && BIT(World.rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(Players[GetInd[shot->id]]->status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -948,16 +948,16 @@ static void Frame_ships(connection_t *conn, int ind)
             continue;
         cx = FLOAT_TO_CLICK(pulse->pos.x);
         cy = FLOAT_TO_CLICK(pulse->pos.y);
-        if (BIT(World.rules->mode, WRAP_PLAY))
+        if (BIT(world->rules->mode, WRAP_PLAY))
         {
             if (cx < 0)
-                cx += World.click_width;
-            else if (cx >= World.click_width)
-                cx -= World.click_width;
+                cx += world->click_width;
+            else if (cx >= world->click_width)
+                cx -= world->click_width;
             if (cy < 0)
-                cy += World.click_height;
-            else if (cy >= World.click_height)
-                cy -= World.click_height;
+                cy += world->click_height;
+            else if (cy >= world->click_height)
+                cy -= world->click_height;
         }
 
         double x = CLICK_TO_FLOAT(cx);
@@ -969,16 +969,16 @@ static void Frame_ships(connection_t *conn, int ind)
         {
             x += tcos(pulse->dir) * pulse->len;
             y += tsin(pulse->dir) * pulse->len;
-            if (BIT(World.rules->mode, WRAP_PLAY))
+            if (BIT(world->rules->mode, WRAP_PLAY))
             {
                 if (x < 0)
-                    x += World.width;
-                else if (x >= World.width)
-                    x -= World.width;
+                    x += world->width;
+                else if (x >= world->width)
+                    x -= world->width;
                 if (y < 0)
-                    y += World.height;
-                else if (y >= World.height)
-                    y -= World.height;
+                    y += world->height;
+                else if (y >= world->height)
+                    y -= world->height;
             }
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
@@ -1009,9 +1009,9 @@ static void Frame_ships(connection_t *conn, int ind)
         int cy = (pl ? pl->pos.cy : trans->clk_pos.cy);
         Send_trans(conn, victim->pos.x, victim->pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
     }
-    for (i = 0; i < World.NumCannons; i++)
+    for (i = 0; i < world->NumCannons; i++)
     {
-        cannon_t *cannon = World.cannon + i;
+        cannon_t *cannon = world->cannon + i;
         if (cannon->tractor_count > 0)
         {
             player_t *t = Players[GetInd[cannon->tractor_target]];
@@ -1068,18 +1068,18 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_REFUEL))
         {
-            if (click_inview(cv, World.fuel[pl_i->fs].clk_pos.cx,
-                             World.fuel[pl_i->fs].clk_pos.cy))
+            if (click_inview(cv, world->fuel[pl_i->fs].clk_pos.cx,
+                             world->fuel[pl_i->fs].clk_pos.cy))
                 Send_refuel(conn,
-                            (int)World.fuel[pl_i->fs].pix_pos.x,
-                            (int)World.fuel[pl_i->fs].pix_pos.y,
+                            (int)world->fuel[pl_i->fs].pix_pos.x,
+                            (int)world->fuel[pl_i->fs].pix_pos.y,
                             pl_i->pos.x,
                             pl_i->pos.y);
         }
         if (BIT(pl_i->used, HAS_REPAIR))
         {
-            double x = (double)(World.targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
-            double y = (double)(World.targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
+            double x = (double)(world->targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
+            double y = (double)(world->targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
             if (click_inview(cv, cx, cy))
@@ -1179,7 +1179,7 @@ static void Frame_radar(connection_t *conn, int ind)
 #endif
 
     if (options.playersOnRadar ||
-        BIT(World.rules->mode, TEAM_PLAY) ||
+        BIT(world->rules->mode, TEAM_PLAY) ||
         NumPseudoPlayers > 0 ||
         NumAlliances > 0)
     {
@@ -1197,10 +1197,10 @@ static void Frame_radar(connection_t *conn, int ind)
                 BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
                 (!Players_are_teammates(pl, Players[i]) && !Players_are_allies(pl, Players[i]) && !Player_owns_tank(pl, Players[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
-            if (BIT(World.rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - Players[i]->pos.cx,
-                                                                          pl->pos.cy - Players[i]->pos.cy) /
-                                                                      CLICK >
-                                                                  pl->sensor_range)
+            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - Players[i]->pos.cx,
+                                                                           pl->pos.cy - Players[i]->pos.cy) /
+                                                                       CLICK >
+                                                                   pl->sensor_range)
                 continue;
             if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
                 continue;
@@ -1241,16 +1241,16 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     pv.world.x = pl->pos.x - view_width / 2; /* Scroll */
     pv.world.y = pl->pos.y - view_height / 2;
     pv.realWorld = pv.world;
-    if (BIT(World.rules->mode, WRAP_PLAY))
+    if (BIT(world->rules->mode, WRAP_PLAY))
     {
-        if (pv.world.x < 0 && pv.world.x + view_width < World.width)
-            pv.world.x += World.width;
-        else if (pv.world.x > 0 && pv.world.x + view_width >= World.width)
-            pv.realWorld.x -= World.width;
-        if (pv.world.y < 0 && pv.world.y + view_height < World.height)
-            pv.world.y += World.height;
-        else if (pv.world.y > 0 && pv.world.y + view_height >= World.height)
-            pv.realWorld.y -= World.height;
+        if (pv.world.x < 0 && pv.world.x + view_width < world->width)
+            pv.world.x += world->width;
+        else if (pv.world.x > 0 && pv.world.x + view_width >= world->width)
+            pv.realWorld.x -= world->width;
+        if (pv.world.y < 0 && pv.world.y + view_height < world->height)
+            pv.world.y += world->height;
+        else if (pv.world.y > 0 && pv.world.y + view_height >= world->height)
+            pv.realWorld.y -= world->height;
     }
 
     view_click_width = PIXEL_TO_CLICK(view_width);
@@ -1259,16 +1259,16 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     cv.world.cx = pl->pos.cx - view_click_width / 2; /* Scroll */
     cv.world.cy = pl->pos.cy - view_click_height / 2;
     cv.realWorld = cv.world;
-    if (BIT(World.rules->mode, WRAP_PLAY))
+    if (BIT(world->rules->mode, WRAP_PLAY))
     {
-        if (cv.world.cx < 0 && cv.world.cx + view_click_width < World.click_width)
-            cv.world.cx += World.click_width;
-        else if (cv.world.cx > 0 && cv.world.cx + view_click_width >= World.click_width)
-            cv.realWorld.cx -= World.click_width;
-        if (cv.world.cy < 0 && cv.world.cy + view_click_height < World.click_height)
-            cv.world.cy += World.click_height;
-        else if (cv.world.cy > 0 && cv.world.cy + view_click_height >= World.click_height)
-            cv.realWorld.cy -= World.click_height;
+        if (cv.world.cx < 0 && cv.world.cx + view_click_width < world->click_width)
+            cv.world.cx += world->click_width;
+        else if (cv.world.cx > 0 && cv.world.cx + view_click_width >= world->click_width)
+            cv.realWorld.cx -= world->click_width;
+        if (cv.world.cy < 0 && cv.world.cy + view_click_height < world->click_height)
+            cv.world.cy += world->click_height;
+        else if (cv.world.cy > 0 && cv.world.cy + view_click_height >= world->click_height)
+            cv.realWorld.cy -= world->click_height;
     }
 }
 
@@ -1354,7 +1354,7 @@ void Frame_update(void)
         {
             if ((BIT(pl->status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
                 (BIT(pl->status, PAUSE) &&
-                 ((BIT(World.rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Players[GetInd[pl->lock.pl_id]]->team) ||
+                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Players[GetInd[pl->lock.pl_id]]->team) ||
                   pl->isowner ||
                   options.allowViewing)))
                 ind = GetInd[pl->lock.pl_id];

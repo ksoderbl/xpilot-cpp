@@ -259,7 +259,7 @@ static void Stratbot_invite(int ind, int inv_ind)
 static bool Really_empty_space(int ind, int x, int y)
 {
     player        *pl = Players[ind];
-    int                type = World.block[x][y];
+    int                type = world->block[x][y];
 
     if (EMPTY_SPACE(type))
         return true;
@@ -275,7 +275,7 @@ static bool Really_empty_space(int ind, int x, int y)
 
     case WORMHOLE:
         if (!wormholeVisible
-            || World.wormHoles[World.itemID[x][y]].type == WORM_OUT) {
+            || world->wormHoles[world->itemID[x][y]].type == WORM_OUT) {
             return true;
         } else {
             return false;
@@ -283,8 +283,8 @@ static bool Really_empty_space(int ind, int x, int y)
 
     case TARGET:
         if (!targetTeamCollision
-            && BIT(World.rules->mode, TEAM_PLAY)
-            && World.targets[World.itemID[x][y]].team == pl->team) {
+            && BIT(world->rules->mode, TEAM_PLAY)
+            && world->targets[world->itemID[x][y]].team == pl->team) {
             return true;
         } else {
             return false;
@@ -292,8 +292,8 @@ static bool Really_empty_space(int ind, int x, int y)
 
     case CANNON:
         if (teamImmunity
-            && BIT(World.rules->mode, TEAM_PLAY)
-            && World.cannon[World.itemID[x][y]].team == pl->team) {
+            && BIT(world->rules->mode, TEAM_PLAY)
+            && world->cannon[world->itemID[x][y]].team == pl->team) {
             return true;
         } else {
             return false;

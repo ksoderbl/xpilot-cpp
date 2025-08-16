@@ -40,8 +40,8 @@
 int Punish_team(int ind, int t_destroyed, int t_target)
 {
     static char msg[MSG_LEN];
-    treasure_t *td = &World.treasures[t_destroyed];
-    treasure_t *tt = &World.treasures[t_target];
+    treasure_t *td = &world->treasures[t_destroyed];
+    treasure_t *tt = &world->treasures[t_target];
     player *pl = Players[ind];
     int i;
     int win_score = 0, lose_score = 0;
@@ -53,7 +53,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     if (td->team == pl->team)
         return 0;
 
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (BIT(world->rules->mode, TEAM_PLAY))
     {
         for (i = 0; i < NumPlayers; i++)
         {
@@ -87,8 +87,8 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     }
 
     td->destroyed++;
-    World.teams[td->team].TreasuresLeft--;
-    World.teams[tt->team].TreasuresDestroyed++;
+    world->teams[td->team].TreasuresLeft--;
+    world->teams[tt->team].TreasuresDestroyed++;
 
     sc = 3 * Rate(win_score, lose_score);
     por = (sc * lose_team_members) / (2 * win_team_members + 1);
@@ -144,18 +144,18 @@ void Make_debris(
     int i, num_debris, life;
     modifiers_t mods;
 
-    if (BIT(World.rules->mode, WRAP_PLAY))
+    if (BIT(world->rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += World.click_width;
-        else if (cx >= World.click_width)
-            cx -= World.click_width;
+            cx += world->click_width;
+        else if (cx >= world->click_width)
+            cx -= world->click_width;
         if (cy < 0)
-            cy += World.click_height;
-        else if (cy >= World.click_height)
-            cy -= World.click_height;
+            cy += world->click_height;
+        else if (cy >= world->click_height)
+            cy -= world->click_height;
     }
-    if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
+    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
     {
         return;
     }
@@ -173,10 +173,10 @@ void Make_debris(
             max_life = options.ShotsLife;
         }
     }
-    if (min_speed * max_life > World.hypotenuse)
-        min_speed = World.hypotenuse / max_life;
-    if (max_speed * min_life > World.hypotenuse)
-        max_speed = World.hypotenuse / min_life;
+    if (min_speed * max_life > world->hypotenuse)
+        min_speed = world->hypotenuse / max_life;
+    if (max_speed * min_life > world->hypotenuse)
+        max_speed = world->hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -223,9 +223,9 @@ void Make_debris(
         debris->mass = mass;
         debris->type = type;
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > World.hypotenuse)
+        if (life * speed > world->hypotenuse)
         {
-            life = (long)(World.hypotenuse / speed);
+            life = (long)(world->hypotenuse / speed);
         }
         debris->life = life;
         debris->fuselife = life;

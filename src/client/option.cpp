@@ -242,8 +242,8 @@ bool Set_int_option(xp_option_t *opt, int value, xp_option_origin_t origin)
     {
         if (!(value >= opt->int_minval && value <= opt->int_maxval))
         {
-            xpwarn("Bad value %d for option \"%s\", using default...",
-                   value, opt->name);
+            warn("Bad value %d for option \"%s\", using default...",
+                 value, opt->name);
             value = opt->int_defval;
         }
     }
@@ -293,8 +293,8 @@ bool Set_double_option(xp_option_t *opt, double value,
     {
         if (!(value >= opt->dbl_minval && value <= opt->dbl_maxval))
         {
-            xpwarn("Bad value %.3f for option \"%s\", using default...",
-                   value, opt->name);
+            warn("Bad value %.3f for option \"%s\", using default...",
+                 value, opt->name);
             value = opt->dbl_defval;
         }
     }
@@ -390,7 +390,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
 
 //         if (kd->keysym == ks && kd->key == key)
 //         {
-//             /*xpwarn("Pair (%d, %d) exist from before", ks, (int) key);*/
+//             /*warn("Pair (%d, %d) exist from before", ks, (int) key);*/
 //             /*
 //              * already exists, no need to store
 //              */
@@ -411,7 +411,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
 //         if (kd->key == KEY_DUMMY)
 //         {
 //             assert(kd->keysym == XP_KS_UNKNOWN);
-//             /*xpwarn("Store_keydef: Found dummy at index %d", i);*/
+//             /*warn("Store_keydef: Found dummy at index %d", i);*/
 //             *kd = keydef;
 //             return 0;
 //         }
@@ -438,7 +438,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
 //          */
 //         if (kd->key == key)
 //         {
-//             /*xpwarn("Remove_key_from_keydefs: Removing key at index %d", i);*/
+//             /*warn("Remove_key_from_keydefs: Removing key at index %d", i);*/
 //             kd->keysym = XP_KS_UNKNOWN;
 //             kd->key = KEY_DUMMY;
 //         }
@@ -458,7 +458,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
 //     assert(value);
 
 //     /*
-//      * xpwarn("Setting key option %s to \"%s\"", opt->name, value);
+//      * warn("Setting key option %s to \"%s\"", opt->name, value);
 //      */
 
 //     /*
@@ -487,7 +487,7 @@ bool Set_string_option(xp_option_t *opt, const char *value,
 //         ks = String_to_xp_keysym(str);
 //         if (ks == XP_KS_UNKNOWN)
 //         {
-//             xpwarn("Invalid keysym \"%s\" for key \"%s\".\n", str, opt->name);
+//             warn("Invalid keysym \"%s\" for key \"%s\".\n", str, opt->name);
 //             continue;
 //         }
 
@@ -539,7 +539,7 @@ bool Set_option(const char *name, const char *value, xp_option_origin_t origin)
     if (!is_legal_value(opt->type, value))
     {
         if (origin != xp_option_origin_setcmd)
-            xpwarn("Bad value \"%s\" for option %s.", value, opt->name);
+            warn("Bad value \"%s\" for option %s.", value, opt->name);
         else
         {
             char msg[MSG_LEN];
@@ -717,7 +717,7 @@ int Store_option(xp_option_t *opt)
      */
     if (Find_option(opt->name) != nullptr)
     {
-        xpwarn("Trying to store duplicate option \"%s\"", opt->name);
+        warn("Trying to store duplicate option \"%s\"", opt->name);
         assert(0);
     }
 
@@ -763,7 +763,7 @@ int Store_option(xp_option_t *opt)
     //     Set_key_option(opt, opt->key_defval, xp_option_origin_default);
     //     break;
     default:
-        xpwarn("Could not set default value for option %s", opt->name);
+        warn("Could not set default value for option %s", opt->name);
         break;
     }
 
@@ -817,8 +817,8 @@ static int Parse_xpilotrc_line(const char *line)
     if (colon == nullptr)
     {
         /* no colon on line, not ok */
-        xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-        xpwarn("Line has no colon after option name, ignoring.");
+        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        warn("Line has no colon after option name, ignoring.");
         goto line_is_comment;
     }
 
@@ -835,7 +835,7 @@ static int Parse_xpilotrc_line(const char *line)
         l[i--] = '\0';
 
     name = l;
-    /*xpwarn("looking for option \"%s\": %s",
+    /*warn("looking for option \"%s\": %s",
       name, Find_option(name) ? "found" : "not found");*/
 
     opt = Find_option(name);
@@ -845,9 +845,9 @@ static int Parse_xpilotrc_line(const char *line)
     if (Option_get_flags(opt) & XP_OPTFLAG_NEVER_SAVE)
     {
         /* discard the line */
-        xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-        xpwarn("Option %s must not be specified in xpilotrc.", name);
-        xpwarn("It will be removed from xpilotrc if you save configuration.");
+        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        warn("Option %s must not be specified in xpilotrc.", name);
+        warn("It will be removed from xpilotrc if you save configuration.");
         XFREE(lcpy);
         return 0;
     }
@@ -860,9 +860,9 @@ static int Parse_xpilotrc_line(const char *line)
         if (x->opt == opt)
         {
             /* same option defined several times in xpilotrc */
-            xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-            xpwarn("Option %s previously given on line %d, ignoring new value.",
-                   name, i + 1);
+            warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+            warn("Option %s previously given on line %d, ignoring new value.",
+                 name, i + 1);
             goto line_is_comment;
         }
     }
@@ -879,19 +879,19 @@ static int Parse_xpilotrc_line(const char *line)
     semicolon = strchr(l, ';');
     if (semicolon)
     {
-        /*xpwarn("found comment \"%s\" on line \"%s\"\n", semicolon, line);*/
+        /*warn("found comment \"%s\" on line \"%s\"\n", semicolon, line);*/
         comment = xp_safe_strdup(semicolon);
         *semicolon = '\0';
     }
 
     if (!Set_option(name, value, xp_option_origin_xpilotrc))
     {
-        xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-        xpwarn("Failed to set option %s value \"%s\", ignoring.", name, value);
+        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        warn("Failed to set option %s value \"%s\", ignoring.", name, value);
         goto line_is_comment;
     }
 
-    /*xpwarn("option %s value is \"%s\"", name, value);*/
+    /*warn("option %s value is \"%s\"", name, value);*/
 
     t.opt = opt;
     t.comment = comment;
@@ -905,7 +905,7 @@ line_is_comment:
     /*
      * If we can't parse the line, then we just treat it as a comment.
      */
-    /*xpwarn("Comment: \"%s\"", line);*/
+    /*warn("Comment: \"%s\"", line);*/
     XFREE(comment);
     t.opt = nullptr;
     t.comment = xp_safe_strdup(line);
@@ -932,7 +932,7 @@ int Xpilotrc_read(const char *path)
     assert(path);
     if (strlen(path) == 0)
     {
-        xpwarn("Xpilotrc_read: Zero length filename.");
+        warn("Xpilotrc_read: Zero length filename.");
         return -1;
     }
 
@@ -958,9 +958,9 @@ int Xpilotrc_read(const char *path)
         Parse_xpilotrc_line(buf);
     }
 
-    /*xpwarn("Total number of nonempty lines in xpilotrc: %d",
+    /*warn("Total number of nonempty lines in xpilotrc: %d",
       num_xpilotrc_lines);
-      xpwarn("Number of options set: %d\n", num_ok_options);*/
+      warn("Number of options set: %d\n", num_ok_options);*/
 
     fclose(fp);
 
@@ -1012,7 +1012,7 @@ static void Xpilotrc_create_line(char *buf, size_t size,
 static void Xpilotrc_write_line(FILE *fp, const char *buf)
 {
     const char *endline = "\n";
-    /*xpwarn("writing line \"%s\"", buf);*/
+    /*warn("writing line \"%s\"", buf);*/
 
     fprintf(fp, "%s%s", buf, endline);
 }
@@ -1025,7 +1025,7 @@ int Xpilotrc_write(const char *path)
     assert(path);
     if (strlen(path) == 0)
     {
-        xpwarn("Xpilotrc_write: Zero length filename.");
+        warn("Xpilotrc_write: Zero length filename.");
         return -1;
     }
 
@@ -1180,8 +1180,8 @@ void Parse_options(int *argcp, char **argvp)
 
                 if (!ok)
                 {
-                    xpwarn("Unknown or incomplete option '%s'", argvp[arg_ind]);
-                    xpwarn("Type: %s -help to see a list of options", argvp[0]);
+                    warn("Unknown or incomplete option '%s'", argvp[arg_ind]);
+                    warn("Type: %s -help to see a list of options", argvp[0]);
                     exit(1);
                 }
             }

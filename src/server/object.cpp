@@ -179,7 +179,7 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= World.click_width)
+    if (cx >= world->click_width)
     {
         printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -191,7 +191,7 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= World.click_height)
+    if (cy >= world->click_height)
     {
         printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -226,7 +226,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= World.click_width)
+    if (cx >= world->click_width)
     {
         printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -238,7 +238,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= World.click_height)
+    if (cy >= world->click_height)
     {
         printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -262,8 +262,8 @@ void Player_position_limit(player_t *pl)
     int x = pl->pos.x, ox = x;
     int y = pl->pos.y, oy = y;
 
-    LIMIT(x, 0, World.width - 1);
-    LIMIT(y, 0, World.height - 1);
+    LIMIT(x, 0, world->width - 1);
+    LIMIT(y, 0, world->height - 1);
     if (x != ox || y != oy)
     {
         Player_position_set_clicks(pl, PIXEL_TO_CLICK(x), PIXEL_TO_CLICK(y));
