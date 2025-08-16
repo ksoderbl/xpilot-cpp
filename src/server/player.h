@@ -142,7 +142,7 @@ struct player
     char mychar;                /* Special char for player */
     char prev_mychar;           /* Special char for player */
     char name[MAX_CHARS];       /* Nick-name of player */
-    char realname[MAX_CHARS];   /* Real name of player */
+    char username[MAX_CHARS];   /* Real name of player */
     char hostname[MAX_CHARS];   /* Hostname of client player uses */
     unsigned short pseudo_team; /* Which team for detaching tanks */
     int alliance;               /* Member of which alliance? */

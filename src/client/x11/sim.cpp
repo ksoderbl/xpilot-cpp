@@ -51,13 +51,13 @@ int simulating;
 #include "protoclient.h"
 #include "portability.h"
 
-DFLOAT findDir(DFLOAT x, DFLOAT y);
+double findDir(double x, double y);
 
 typedef struct rpos_s
 {
-        DFLOAT x, y;
-        DFLOAT vx, vy;
-        DFLOAT ax, ay;
+        double x, y;
+        double vx, vy;
+        double ax, ay;
         int last_dir_change;
 } rpos_t;
 

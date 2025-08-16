@@ -81,8 +81,8 @@ extern long loops;
 extern long loopsSlow;
 extern double timePerFrame;
 
-extern DFLOAT scaleFactor; /* scale the draw (main playfield) window */
-extern DFLOAT scaleFactor_s;
+extern double scaleFactor; /* scale the draw (main playfield) window */
+extern double scaleFactor_s;
 extern short scaleArray[SCALE_ARRAY_SIZE];
 extern void Init_scale_array(void);
 #define WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])

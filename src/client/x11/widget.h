@@ -123,10 +123,10 @@ typedef struct widget_int
 
 typedef struct widget_float
 {
-    DFLOAT *val, /* Float pointer */
+    double *val, /* Float pointer */
         min,     /* Minimum value */
         max;     /* Maximum value */
-    int (*callback)(int, void *, DFLOAT *);
+    int (*callback)(int, void *, double *);
     void *user_data;
 } widget_float_t;
 
@@ -200,8 +200,8 @@ int Widget_create_int(int parent_desc,
                       void *user_data);
 int Widget_create_float(int parent_desc,
                         int x, int y, int width, int height,
-                        int border, DFLOAT *val, DFLOAT min, DFLOAT max,
-                        int (*callback)(int, void *, DFLOAT *),
+                        int border, double *val, double min, double max,
+                        int (*callback)(int, void *, double *),
                         void *user_data);
 int Widget_create_label(int parent_desc,
                         int x, int y,

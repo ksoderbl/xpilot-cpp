@@ -354,7 +354,7 @@ bool Key_press_fuel(keys_t key)
 
 bool Key_press_swap_settings(keys_t key)
 {
-    DFLOAT _tmp;
+    double _tmp;
 #define SWAP(a, b) (_tmp = (a), (a) = (b), (b) = _tmp)
 
     SWAP(power, power_s);
@@ -368,7 +368,7 @@ bool Key_press_swap_settings(keys_t key)
 
 bool Key_press_swap_scalefactor(keys_t key)
 {
-    DFLOAT tmp;
+    double tmp;
     tmp = scaleFactor;
     scaleFactor = scaleFactor_s;
     scaleFactor_s = tmp;

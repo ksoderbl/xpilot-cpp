@@ -52,8 +52,8 @@ long loopsSlow = 0; /* Proceeds slower than loops */
 double timePerFrame = 0.0;
 static double time_counter = 0.0;
 
-DFLOAT scaleFactor;
-DFLOAT scaleFactor_s;
+double scaleFactor;
+double scaleFactor_s;
 short scaleArray[SCALE_ARRAY_SIZE];
 
 int Check_view_dimensions(void)

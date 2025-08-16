@@ -1180,9 +1180,9 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     }
     pl = Players[NumPlayers];
     strlcpy(pl->name, connp->nick, MAX_CHARS);
-    strlcpy(pl->realname, connp->user, MAX_CHARS);
+    strlcpy(pl->username, connp->user, MAX_CHARS);
     strlcpy(pl->hostname, connp->host, MAX_CHARS);
-    pl->isowner = (!strcmp(pl->realname, Server.owner) &&
+    pl->isowner = (!strcmp(pl->username, Server.owner) &&
                    !strcmp(connp->addr, "127.0.0.1"));
     if (connp->team != TEAM_NOT_SET)
         pl->team = connp->team;
@@ -1265,12 +1265,12 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     else if (BIT(World.rules->mode, TEAM_PLAY))
     {
         sprintf(msg, "%s (%s, team %d) has entered \"%s\", made by %s.",
-                pl->name, pl->realname, pl->team, World.name, World.author);
+                pl->name, pl->username, pl->team, World.name, World.author);
     }
     else
     {
         sprintf(msg, "%s (%s) has entered \"%s\", made by %s.",
-                pl->name, pl->realname, World.name, World.author);
+                pl->name, pl->username, World.name, World.author);
     }
     Set_message(msg);
 
@@ -1855,7 +1855,7 @@ int Send_player(connection_t *connp, int id)
                       "%S",
                       PKT_PLAYER, pl->id,
                       pl->team, pl->mychar,
-                      pl->name, pl->realname, pl->hostname,
+                      pl->name, pl->username, pl->hostname,
                       buf);
     if (connp->version > 0x3200)
     {
@@ -3049,10 +3049,10 @@ static void Handle_talk(connection_t *connp, char *str)
         }
         if (sent == -1)
         {
-            /* now look for a partial match on both nick and realname. */
+            /* now look for a partial match on both nick and username. */
             for (sent = -1, i = 0; i < NumPlayers; i++)
             {
-                if (strncasecmp(Players[i]->name, str, len) == 0 || strncasecmp(Players[i]->realname, str, len) == 0)
+                if (strncasecmp(Players[i]->name, str, len) == 0 || strncasecmp(Players[i]->username, str, len) == 0)
                     sent = (sent == -1) ? i : -2;
             }
         }

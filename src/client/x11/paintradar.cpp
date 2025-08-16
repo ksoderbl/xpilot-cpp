@@ -46,8 +46,8 @@
 #include "paintdata.h"
 #include "xinit.h"
 
-extern DFLOAT tbl_sin[];
-extern DFLOAT tbl_cos[];
+extern double tbl_sin[];
+extern double tbl_cos[];
 extern setup_t *Setup;
 extern int RadarHeight;
 

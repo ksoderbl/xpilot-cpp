@@ -88,7 +88,7 @@ int temporaryMeterColor = BLUE;  /* Color index for temporary meter drawing */
 int meterBorderColor = BLUE;     /* Color index for meter border drawing */
 int scoreObjectColor = BLUE;     /* Color index for map score objects */
 
-DFLOAT charsPerTick = 0.0; /* Output speed of messages */
+double charsPerTick = 0.0; /* Output speed of messages */
 
 int hudSize = 3 * MIN_HUD_SIZE;
 int hudRadarEnemyColor = 3;

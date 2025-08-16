@@ -58,7 +58,7 @@ short nextCheckPoint;
 uint8_t numItems[NUM_ITEMS];     /* Count of currently owned items */
 uint8_t lastNumItems[NUM_ITEMS]; /* Last item count shown */
 int numItemsTime[NUM_ITEMS];     /* Number of frames to show this item count */
-DFLOAT showItemsTime;            /* How long to show changed item count for */
+double showItemsTime;            /* How long to show changed item count for */
 short autopilotLight;
 
 short lock_id;   /* Id of player locked onto */
@@ -103,20 +103,20 @@ int fuelLevel2;    /* Fuel warning level */
 int fuelLevel3;    /* Fuel notify level */
 
 char *shipShape;                /* Shape of player's ship */
-DFLOAT power;                   /* Force of thrust */
-DFLOAT power_s;                 /* Saved power fiks */
-DFLOAT turnspeed;               /* How fast player acc-turns */
-DFLOAT turnspeed_s;             /* Saved turnspeed */
-DFLOAT turnresistance;          /* How much is lost in % */
-DFLOAT turnresistance_s;        /* Saved (see above) */
-DFLOAT displayedPower;          /* What the server is sending us */
-DFLOAT displayedTurnspeed;      /* What the server is sending us */
-DFLOAT displayedTurnresistance; /* What the server is sending us */
-DFLOAT spark_prob;              /* Sparkling effect user configurable */
+double power;                   /* Force of thrust */
+double power_s;                 /* Saved power fiks */
+double turnspeed;               /* How fast player acc-turns */
+double turnspeed_s;             /* Saved turnspeed */
+double turnresistance;          /* How much is lost in % */
+double turnresistance_s;        /* Saved (see above) */
+double displayedPower;          /* What the server is sending us */
+double displayedTurnspeed;      /* What the server is sending us */
+double displayedTurnresistance; /* What the server is sending us */
+double spark_prob;              /* Sparkling effect user configurable */
 int charsPerSecond;             /* Message output speed (configurable) */
 
-DFLOAT hud_move_fact;      /* scale the hud-movement (speed) */
-DFLOAT ptr_move_fact;      /* scale the speed pointer length */
+double hud_move_fact;      /* scale the hud-movement (speed) */
+double ptr_move_fact;      /* scale the speed pointer length */
 instruments_t instruments; /* Instruments on screen */
 char mods[MAX_CHARS];      /* Current modifiers in effect */
 int packet_size;           /* Current frame update packet size */
@@ -2065,7 +2065,7 @@ void Client_score_table(void)
     other_t *other,
         **order;
     int i, j, k, best = -1;
-    DFLOAT ratio, best_ratio = -1e7;
+    double ratio, best_ratio = -1e7;
 
     if (scoresChanged == 0)
     {
@@ -2296,7 +2296,7 @@ int Client_setup(void)
      * which happens to have the turnresistance patch. */
     if (turnresistance == 0.0 && version < 0x4200 && version != 0x4101)
     {
-        DFLOAT tmp;
+        double tmp;
 #define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
         SWAP(power, power_s);
         SWAP(turnspeed, turnspeed_s);

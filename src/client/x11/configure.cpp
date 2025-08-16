@@ -128,21 +128,21 @@ static int Config_create_save(int widget_desc, int *height);
 static int Config_update_bool(int widget_desc, void *data, bool *val);
 static int Config_update_instruments(int widget_desc, void *data, bool *val);
 static int Config_update_dots(int widget_desc, void *data, int *val);
-static int Config_update_altPower(int widget_desc, void *data, DFLOAT *val);
+static int Config_update_altPower(int widget_desc, void *data, double *val);
 static int Config_update_altTurnResistance(int widget_desc, void *data,
-                                           DFLOAT *val);
-static int Config_update_altTurnSpeed(int widget_desc, void *data, DFLOAT *val);
-static int Config_update_power(int widget_desc, void *data, DFLOAT *val);
+                                           double *val);
+static int Config_update_altTurnSpeed(int widget_desc, void *data, double *val);
+static int Config_update_power(int widget_desc, void *data, double *val);
 static int Config_update_turnResistance(int widget_desc, void *data,
-                                        DFLOAT *val);
-static int Config_update_turnSpeed(int widget_desc, void *data, DFLOAT *val);
-static int Config_update_sparkProb(int widget_desc, void *data, DFLOAT *val);
+                                        double *val);
+static int Config_update_turnSpeed(int widget_desc, void *data, double *val);
+static int Config_update_sparkProb(int widget_desc, void *data, double *val);
 static int Config_update_charsPerSecond(int widget_desc, void *data, int *val);
 static int Config_update_toggleShield(int widget_desc, void *data, bool *val);
 static int Config_update_autoShield(int widget_desc, void *data, bool *val);
 static int Config_update_maxFPS(int widget_desc, void *data, int *val);
 static int Config_update_texturedObjects(int widget_desc, void *data, bool *val);
-static int Config_update_scaleFactor(int widget_desc, void *data, DFLOAT *val);
+static int Config_update_scaleFactor(int widget_desc, void *data, double *val);
 
 static int Config_close(int widget_desc, void *data, const char **strptr);
 static int Config_next(int widget_desc, void *data, const char **strptr);
@@ -527,8 +527,8 @@ static int Config_create_int(int widget_desc, int *height,
 }
 
 static int Config_create_float(int widget_desc, int *height,
-                               const char *str, DFLOAT *val, DFLOAT min, DFLOAT max,
-                               int (*callback)(int, void *, DFLOAT *),
+                               const char *str, double *val, double min, double max,
+                               int (*callback)(int, void *, double *),
                                void *data)
 {
     int offset,
@@ -1145,45 +1145,45 @@ static int Config_update_dots(int widget_desc, void *data, int *val)
     return 0;
 }
 
-static int Config_update_power(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_power(int widget_desc, void *data, double *val)
 {
     Send_power(*val);
     controlTime = CONTROL_TIME;
     return 0;
 }
 
-static int Config_update_turnSpeed(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_turnSpeed(int widget_desc, void *data, double *val)
 {
     Send_turnspeed(*val);
     controlTime = CONTROL_TIME;
     return 0;
 }
 
-static int Config_update_turnResistance(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_turnResistance(int widget_desc, void *data, double *val)
 {
     Send_turnresistance(*val);
     return 0;
 }
 
-static int Config_update_altPower(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_altPower(int widget_desc, void *data, double *val)
 {
     Send_power_s(*val);
     return 0;
 }
 
-static int Config_update_altTurnSpeed(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_altTurnSpeed(int widget_desc, void *data, double *val)
 {
     Send_turnspeed_s(*val);
     return 0;
 }
 
-static int Config_update_altTurnResistance(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_altTurnResistance(int widget_desc, void *data, double *val)
 {
     Send_turnresistance_s(*val);
     return 0;
 }
 
-static int Config_update_sparkProb(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_sparkProb(int widget_desc, void *data, double *val)
 {
     spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
     Send_display();
@@ -1192,7 +1192,7 @@ static int Config_update_sparkProb(int widget_desc, void *data, DFLOAT *val)
 
 static int Config_update_charsPerSecond(int widget_desc, void *data, int *val)
 {
-    charsPerTick = (DFLOAT)charsPerSecond / FPS;
+    charsPerTick = (double)charsPerSecond / FPS;
     return 0;
 }
 
@@ -1240,7 +1240,7 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
     return 0;
 }
 
-static int Config_update_scaleFactor(int widget_desc, void *data, DFLOAT *val)
+static int Config_update_scaleFactor(int widget_desc, void *data, double *val)
 {
     Init_scale_array();
     Resize(topWindow, top_width, top_height);
@@ -1354,7 +1354,7 @@ static void Config_save_resource(FILE *fp, const char *resource, char *value)
     fprintf(fp, "%s", buf);
 }
 
-static void Config_save_float(FILE *fp, const char *resource, DFLOAT value)
+static void Config_save_float(FILE *fp, const char *resource, double value)
 {
     char buf[40];
 
@@ -1488,9 +1488,9 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_float(fp, "altTurnResistance", turnresistance_s);
     Config_save_float(fp, "speedFactHUD", hud_move_fact);
     Config_save_float(fp, "speedFactPTR", ptr_move_fact);
-    Config_save_float(fp, "fuelNotify", (DFLOAT)fuelLevel3);
-    Config_save_float(fp, "fuelWarning", (DFLOAT)fuelLevel2);
-    Config_save_float(fp, "fuelCritical", (DFLOAT)fuelLevel1);
+    Config_save_float(fp, "fuelNotify", (double)fuelLevel3);
+    Config_save_float(fp, "fuelWarning", (double)fuelLevel2);
+    Config_save_float(fp, "fuelCritical", (double)fuelLevel1);
     Config_save_bool(fp, "showShipName", instruments.showShipName);
     Config_save_bool(fp, "showMineName", instruments.showMineName);
     Config_save_bool(fp, "showMessages", instruments.showMessages);

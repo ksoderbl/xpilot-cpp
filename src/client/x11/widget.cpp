@@ -927,7 +927,7 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
     int i,
         ival,
         sub_widget_desc;
-    DFLOAT fval,
+    double fval,
         delta,
         fmin,
         offset,
@@ -1761,8 +1761,8 @@ int Widget_create_int(int parent_desc,
 
 int Widget_create_float(int parent_desc,
                         int x, int y, int width, int height,
-                        int border, DFLOAT *val, DFLOAT min, DFLOAT max,
-                        int (*callback)(int, void *, DFLOAT *),
+                        int border, double *val, double min, double max,
+                        int (*callback)(int, void *, double *),
                         void *user_data)
 {
     int widget_desc;

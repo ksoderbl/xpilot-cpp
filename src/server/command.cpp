@@ -72,11 +72,11 @@ static int Get_player_index_by_name(char *name)
         }
     }
 
-    /* now look for a partial match on both nick and realname. */
+    /* now look for a partial match on both nick and username. */
     len = strlen(name);
     for (j = -1, i = 0; i < NumPlayers; i++)
     {
-        if (strncasecmp(Players[i]->name, name, len) == 0 || strncasecmp(Players[i]->realname, name, len) == 0)
+        if (strncasecmp(Players[i]->name, name, len) == 0 || strncasecmp(Players[i]->username, name, len) == 0)
         {
             j = (j == -1) ? i : -2;
         }

@@ -212,7 +212,7 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
 {
     if (!texturedObjects)
     {
-        static DFLOAT lastScaleFactor;
+        static double lastScaleFactor;
         static XPoint mine_points[21];
         static XPoint world_mine_points[21] = {
             {0, 0},

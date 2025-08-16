@@ -607,11 +607,11 @@ void Contact(int fd, void *arg)
             for (i = 0; i < NumPlayers; i++)
             {
                 /*
-                 * Kicking players by realname is not a good idea,
-                 * because several players may have the same realname.
+                 * Kicking players by username is not a good idea,
+                 * because several players may have the same username.
                  * E.g., system administrators joining as root...
                  */
-                if (strcasecmp(str, Players[i]->name) == 0 || strcasecmp(str, Players[i]->realname) == 0)
+                if (strcasecmp(str, Players[i]->name) == 0 || strcasecmp(str, Players[i]->username) == 0)
                 {
                     found = i;
                 }
