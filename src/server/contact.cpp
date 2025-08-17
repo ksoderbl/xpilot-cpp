@@ -97,22 +97,22 @@ bool Contact_init(void)
     if ((status = sock_open_udp(&contactSocket, serverAddr,
                                 options.contactPort)) == -1)
     {
-        xperror("Could not create Dgram contactSocket");
-        xperror("Perhaps %s is already running?", APPNAME);
+        error("Could not create Dgram contactSocket");
+        error("Perhaps %s is already running?", APPNAME);
         End_game();
         return false;
     }
     sock_set_timeout(&contactSocket, 0, 0);
     if (sock_set_non_blocking(&contactSocket, 1) == -1)
     {
-        xperror("Can't make contact socket non-blocking");
+        error("Can't make contact socket non-blocking");
         End_game();
         return false;
     }
     if (Sockbuf_init(&ibuf, &contactSocket, SERVER_SEND_SIZE,
                      SOCKBUF_READ | SOCKBUF_WRITE | SOCKBUF_DGRAM) == -1)
     {
-        xperror("No memory for contact buffer");
+        error("No memory for contact buffer");
         End_game();
         return false;
     }
@@ -382,8 +382,8 @@ void Contact(int fd, void *arg)
      */
     if (version < MIN_CLIENT_VERSION || (version > MAX_CLIENT_VERSION && reply_to != CONTACT_pack))
     {
-        D(xperror("Incompatible version with %s@%s (%04x,%04x)",
-                  user_name, host_addr, MY_VERSION, version);)
+        D(error("Incompatible version with %s@%s (%04x,%04x)",
+                user_name, host_addr, MY_VERSION, version);)
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", MAGIC, reply_to, E_VERSION);
         Reply(host_addr, port);

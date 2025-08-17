@@ -180,7 +180,7 @@ void tuner_teamcannons(void)
             team = Find_closest_team(world->cannon[i].clk_pos.cx, world->cannon[i].clk_pos.cy);
             if (team == TEAM_NOT_SET)
             {
-                xperror("Couldn't find a matching team for the cannon.");
+                error("Couldn't find a matching team for the cannon.");
             }
             world->cannon[i].team = team;
         }

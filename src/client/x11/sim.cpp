@@ -149,7 +149,7 @@ static int Fake_setup(void)
 
         if ((Setup = (setup_t *)malloc(sizeof(setup_t) + x * y)) == NULL)
         {
-                xperror("No memory for setup data");
+                error("No memory for setup data");
                 return -1;
         }
         Setup->mode = WRAP_PLAY;

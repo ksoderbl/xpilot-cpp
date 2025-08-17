@@ -277,9 +277,9 @@ int Key_init(void)
 {
     if (sizeof(keyv) != KEYBOARD_SIZE)
     {
-        xperror("%s, %d: keyv size %d, KEYBOARD_SIZE is %d",
-                __FILE__, __LINE__,
-                sizeof(keyv), KEYBOARD_SIZE);
+        error("%s, %d: keyv size %d, KEYBOARD_SIZE is %d",
+              __FILE__, __LINE__,
+              sizeof(keyv), KEYBOARD_SIZE);
         exit(1);
     }
     memset(keyv, 0, sizeof keyv);
@@ -446,7 +446,7 @@ bool Key_press_pointer_control(keys_t key)
 {
     if (version < 0x3202)
     {
-        xperror("Cannot use pointer control below version 3.2.3");
+        error("Cannot use pointer control below version 3.2.3");
     }
     else
     {
@@ -860,7 +860,7 @@ int x_event(int new_input)
         break;
     default:
         errno = 0;
-        xperror("Bad input queue type (%d)", new_input);
+        error("Bad input queue type (%d)", new_input);
         return -1;
     }
     n = XEventsQueued(dpy, queued);

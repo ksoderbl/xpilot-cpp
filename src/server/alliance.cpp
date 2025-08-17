@@ -340,7 +340,7 @@ static int Create_alliance(int ind1, int ind2)
 
     if (alliance == NULL)
     {
-        xperror("Not enough memory for new alliance.\n");
+        error("Not enough memory for new alliance.\n");
         return 0;
     }
 

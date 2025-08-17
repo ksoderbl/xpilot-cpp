@@ -185,7 +185,7 @@ static void fastshot_store(int xf, int yf, int color, int offset)
         }
         if ((fastshot_ptr[i]) == 0)
         {
-            xperror("No memory for debris");
+            error("No memory for debris");
             (fastshot_num[i]) = 0;
             return;
         }
@@ -234,7 +234,7 @@ static void debris_store(int xf, int yf, int color)
         }
         if ((debris_ptr[i]) == 0)
         {
-            xperror("No memory for debris");
+            error("No memory for debris");
             (debris_num[i]) = 0;
             return;
         }
@@ -927,7 +927,7 @@ static void Frame_shots(connection_t *conn, int ind)
         break;
 
         default:
-            xperror("Frame_shots: Shot type %d not defined.", shot->type);
+            error("Frame_shots: Shot type %d not defined.", shot->type);
             break;
         }
     }
@@ -1398,7 +1398,7 @@ void Set_message(const char *message)
     {
 #ifndef SILENT
         errno = 0;
-        xperror("Max message len exceed (%d,%s)", i, message);
+        error("Max message len exceed (%d,%s)", i, message);
 #endif
         strlcpy(tmp, message, MSG_LEN);
         msg = tmp;
@@ -1423,7 +1423,7 @@ void Set_player_message(player_t *pl, const char *message)
     {
 #ifndef SILENT
         errno = 0;
-        xperror("Max message len exceed (%d,%s)", i, message);
+        error("Max message len exceed (%d,%s)", i, message);
 #endif
         memcpy(tmp, message, MSG_LEN - 1);
         tmp[MSG_LEN - 1] = '\0';

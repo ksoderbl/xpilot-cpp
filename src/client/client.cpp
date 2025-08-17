@@ -858,14 +858,14 @@ static void parse_styles(char **callptr)
     polygon_styles = XMALLOC(polygon_style_t, MAX(1, num_polygon_styles));
     if (polygon_styles == NULL)
     {
-        xperror("no memory for polygon styles");
+        error("no memory for polygon styles");
         exit(1);
     }
 
     edge_styles = XMALLOC(edge_style_t, MAX(1, num_edge_styles));
     if (edge_styles == NULL)
     {
-        xperror("no memory for edge styles");
+        error("no memory for edge styles");
         exit(1);
     }
 
@@ -929,7 +929,7 @@ static int init_polymap(void)
     polygons = XMALLOC(xp_polygon_t, num_polygons);
     if (polygons == NULL)
     {
-        xperror("no memory for polygons");
+        error("no memory for polygons");
         exit(1);
     }
 
@@ -950,14 +950,14 @@ static int init_polymap(void)
         pc = get_ushort(&ptr);
         if ((points = XMALLOC(ipos_t, pc)) == NULL)
         {
-            xperror("no memory for points");
+            error("no memory for points");
             exit(1);
         }
         if (ecount)
         {
             if ((styles = XMALLOC(int, pc)) == NULL)
             {
-                xperror("no memory for special edges");
+                error("no memory for special edges");
                 exit(1);
             }
         }
@@ -1017,7 +1017,7 @@ static int init_polymap(void)
     bases = XMALLOC(homebase_t, num_bases);
     if (bases == NULL)
     {
-        xperror("No memory for Map bases (%d)", num_bases);
+        error("No memory for Map bases (%d)", num_bases);
         exit(1);
     }
     for (i = 0; i < num_bases; i++)
@@ -1050,7 +1050,7 @@ static int init_polymap(void)
         fuels = XMALLOC(fuelstation_t, num_fuels);
         if (fuels == NULL)
         {
-            xperror("No memory for Map fuels (%d)", num_fuels);
+            error("No memory for Map fuels (%d)", num_fuels);
             exit(1);
         }
     }
@@ -1070,7 +1070,7 @@ static int init_polymap(void)
         checks = XMALLOC(checkpoint_t, num_checks);
         if (checks == NULL)
         {
-            xperror("No memory for checkpoints (%d)", num_checks);
+            error("No memory for checkpoints (%d)", num_checks);
             exit(1);
         }
     }
@@ -1145,7 +1145,7 @@ static int Map_init(void)
         bases = XMALLOC(homebase_t, num_bases);
         if (bases == NULL)
         {
-            xperror("No memory for Map bases (%d)", num_bases);
+            error("No memory for Map bases (%d)", num_bases);
             return -1;
         }
         num_bases = 0;
@@ -1155,7 +1155,7 @@ static int Map_init(void)
         fuels = XMALLOC(fuelstation_t, num_fuels);
         if (fuels == NULL)
         {
-            xperror("No memory for Map fuels (%d)", num_fuels);
+            error("No memory for Map fuels (%d)", num_fuels);
             return -1;
         }
         num_fuels = 0;
@@ -1165,7 +1165,7 @@ static int Map_init(void)
         targets = XMALLOC(target_t, num_targets);
         if (targets == NULL)
         {
-            xperror("No memory for Map targets (%d)", num_targets);
+            error("No memory for Map targets (%d)", num_targets);
             return -1;
         }
         num_targets = 0;
@@ -1175,7 +1175,7 @@ static int Map_init(void)
         cannons = XMALLOC(cannontime_t, num_cannons);
         if (cannons == NULL)
         {
-            xperror("No memory for Map cannons (%d)", num_cannons);
+            error("No memory for Map cannons (%d)", num_cannons);
             return -1;
         }
         num_cannons = 0;
@@ -1331,7 +1331,7 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
                                             max_others * sizeof(other_t));
             if (Others == NULL)
             {
-                xperror("Not enough memory for player info");
+                error("Not enough memory for player info");
                 num_others = max_others = 0;
                 self = NULL;
                 return -1;
@@ -1421,8 +1421,8 @@ int Handle_seek(int programmer_id, int robot_id, int sought_id)
     if ((programmer = Other_by_id(programmer_id)) == NULL || (robot = Other_by_id(robot_id)) == NULL || (sought = Other_by_id(sought_id)) == NULL)
     {
         errno = 0;
-        xperror("Bad player seek (%d,%d,%d)",
-                programmer_id, robot_id, sought_id);
+        error("Bad player seek (%d,%d,%d)",
+              programmer_id, robot_id, sought_id);
         return 0;
     }
     robot->war_id = sought_id;
@@ -1441,8 +1441,8 @@ int Handle_score(int id, int score, int life, int mychar, int alliance)
     if ((other = Other_by_id(id)) == NULL)
     {
         errno = 0;
-        xperror("Can't update score for non-existing player %d,%d,%d",
-                id, score, life);
+        error("Can't update score for non-existing player %d,%d,%d",
+              id, score, life);
         return 0;
     }
     else if (other->score != score || other->life != life || other->mychar != mychar || other->alliance != alliance)
@@ -1464,7 +1464,7 @@ int Handle_timing(int id, int check, int round)
     if ((other = Other_by_id(id)) == NULL)
     {
         errno = 0;
-        xperror("Can't update timing for non-existing player %d,%d,%d", id, check, round);
+        error("Can't update timing for non-existing player %d,%d,%d", id, check, round);
         return 0;
     }
     else if (other->check != check || other->round != round)
@@ -1846,7 +1846,7 @@ int Handle_item(int x, int y, int type)
         }                                                         \
         if (ptr_ == NULL)                                         \
         {                                                         \
-            xperror("No memory for debris");                      \
+            error("No memory for debris");                        \
             num_ = max_ = 0;                                      \
             return -1;                                            \
         }                                                         \
@@ -2086,7 +2086,7 @@ void Client_score_table(void)
 
     if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == NULL)
     {
-        xperror("No memory for score");
+        error("No memory for score");
         return;
     }
     if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)

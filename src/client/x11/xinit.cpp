@@ -220,8 +220,8 @@ static XFontStruct *Set_font(Display *dpy, GC gc,
 
     if ((font = XLoadQueryFont(dpy, fontName)) == NULL)
     {
-        xperror("Couldn't find font '%s' for %s, using default font",
-                fontName, resName);
+        error("Couldn't find font '%s' for %s, using default font",
+              fontName, resName);
         font = XQueryFont(dpy, XGContextFromGC(gc));
     }
     else
@@ -382,7 +382,7 @@ int Init_top(void)
 
     if (topWindow)
     {
-        xperror("Init_top called twice");
+        error("Init_top called twice");
         exit(1);
     }
 

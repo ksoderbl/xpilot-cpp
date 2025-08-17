@@ -157,7 +157,7 @@ int main(int argc, char **argv)
         if (addr == NULL)
         {
             errno = 0;
-            xperror("Failed name lookup on: %s", options.serverHost);
+            error("Failed name lookup on: %s", options.serverHost);
             return 1;
         }
         serverAddr = xp_strdup(addr);
@@ -277,7 +277,7 @@ void Main_loop(void)
             End_game();
         if (serverTime + 5 * 60 < time(NULL))
         {
-            xperror("First player has yet to show his butt, I'm bored... Bye!");
+            error("First player has yet to show his butt, I'm bored... Bye!");
             Log_game("NOSHOW");
             End_game();
         }
@@ -310,7 +310,7 @@ void End_game(void)
     if (ShutdownServer == 0)
     {
         errno = 0;
-        xperror("Shutting down...");
+        error("Shutting down...");
         sprintf(msg, "shutting down: %s", ShutdownReason);
     }
     else
@@ -536,7 +536,7 @@ void Server_info(char *str, unsigned max_size)
     if (strlen(str) >= max_size)
     {
         errno = 0;
-        xperror("Server_info string overflow (%d)", max_size);
+        error("Server_info string overflow (%d)", max_size);
         str[max_size - 1] = '\0';
         return;
     }
@@ -556,7 +556,7 @@ void Server_info(char *str, unsigned max_size)
 
     if ((order = (player **)malloc(NumPlayers * sizeof(player *))) == NULL)
     {
-        xperror("No memory for order");
+        error("No memory for order");
         return;
     }
     for (i = 0; i < NumPlayers; i++)
@@ -632,20 +632,20 @@ static void Handle_signal(int sig_no)
             signal(SIGHUP, SIG_IGN);
             return;
         }
-        xperror("Caught SIGHUP, terminating.");
+        error("Caught SIGHUP, terminating.");
         End_game();
         break;
     case SIGINT:
-        xperror("Caught SIGINT, terminating.");
+        error("Caught SIGINT, terminating.");
         End_game();
         break;
     case SIGTERM:
-        xperror("Caught SIGTERM, terminating.");
+        error("Caught SIGTERM, terminating.");
         End_game();
         break;
 
     default:
-        xperror("Caught unkown signal: %d", sig_no);
+        error("Caught unkown signal: %d", sig_no);
         End_game();
         break;
     }
@@ -677,7 +677,7 @@ void Log_game(const char *heading)
 
     if ((fp = fopen(Conf_logfile(), "a")) == NULL)
     { /* Couldn't open file */
-        xperror("Couldn't open log file, contact %s", Conf_localguru());
+        error("Couldn't open log file, contact %s", Conf_localguru());
         return;
     }
 
@@ -876,7 +876,7 @@ int plock_server(bool on)
         static int num_plock_errors;
         if (++num_plock_errors <= 3)
         {
-            xperror("Can't plock(%d)", op);
+            error("Can't plock(%d)", op);
         }
         return -1;
     }

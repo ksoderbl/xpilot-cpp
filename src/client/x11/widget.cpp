@@ -245,7 +245,7 @@ static widget_t *Widget_new(int *descp)
     if (widgets == NULL)
     {
         num_widgets = max_widgets = 0;
-        xperror("No memory for widgets");
+        error("No memory for widgets");
         return NULL;
     }
     else if (num_widgets == 0)
@@ -307,19 +307,19 @@ static int Widget_add_child(int parent_desc, int child_desc)
     if ((parent = Widget_pointer(parent_desc)) == NULL || (child = Widget_pointer(child_desc)) == NULL)
     {
         errno = 0;
-        xperror("Can't add child widget to parent");
+        error("Can't add child widget to parent");
         return NO_WIDGET;
     }
     if (parent->type != WIDGET_FORM || parent->sub == NULL)
     {
         errno = 0;
-        xperror("Not a form widget");
+        error("Not a form widget");
         return NO_WIDGET;
     }
     if (child->parent_desc != NO_WIDGET)
     {
         errno = 0;
-        xperror("Widget parent non-zero");
+        error("Widget parent non-zero");
         child->parent_desc = NO_WIDGET;
     }
     form = (widget_form_t *)parent->sub;
@@ -346,7 +346,7 @@ static int Widget_add_child(int parent_desc, int child_desc)
     if (form->children == NULL)
     {
         form->num_children = 0;
-        xperror("No memory for form children");
+        error("No memory for form children");
         return NO_WIDGET;
     }
     else
@@ -635,7 +635,7 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
     if ((widget = Widget_pointer(widget_desc)) == NULL)
     {
         errno = 0;
-        xperror("Widget draw invalid");
+        error("Widget draw invalid");
         return;
     }
 
@@ -769,7 +769,7 @@ static void Widget_button_slider(XEvent *event, widget_t *widget, bool pressed)
     if (sliderw->pressed == false && pressed == false)
     {
         errno = 0;
-        xperror("Slider widget not pressed");
+        error("Slider widget not pressed");
         return;
     }
     sliderw->pressed = pressed;
@@ -883,7 +883,7 @@ static void Widget_button_motion(XEvent *event, int widget_desc)
     if ((widget = Widget_pointer(widget_desc)) == NULL)
     {
         errno = 0;
-        xperror("Widget button motion invalid");
+        error("Widget button motion invalid");
         return;
     }
 
@@ -936,7 +936,7 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
     if ((widget = Widget_pointer(widget_desc)) == NULL)
     {
         errno = 0;
-        xperror("Widget button invalid");
+        error("Widget button invalid");
         return;
     }
     switch (widget->type)
@@ -946,7 +946,7 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         if (boolw->pressed == false && pressed == false)
         {
             errno = 0;
-            xperror("Bool widget not pressed");
+            error("Bool widget not pressed");
             break;
         }
         boolw->pressed = pressed;
@@ -976,7 +976,7 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         if (menuw->pressed == false && pressed == false)
         {
             errno = 0;
-            xperror("Menu widget not pressed");
+            error("Menu widget not pressed");
             break;
         }
         menuw->pressed = pressed;
@@ -984,13 +984,13 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         if ((pulldown_widget = Widget_pointer(menuw->pulldown_desc)) == NULL)
         {
             errno = 0;
-            xperror("No pulldown widget");
+            error("No pulldown widget");
             break;
         }
         if (pulldown_widget->type != WIDGET_FORM)
         {
             errno = 0;
-            xperror("Pulldown not a form");
+            error("Pulldown not a form");
             break;
         }
         if (pressed == true)
@@ -1031,7 +1031,7 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         if (activw->pressed == false && pressed == false)
         {
             errno = 0;
-            xperror("Activate widget not pressed");
+            error("Activate widget not pressed");
             break;
         }
         activw->pressed = pressed;
@@ -1056,7 +1056,7 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         if (arroww->pressed == false && pressed == false)
         {
             errno = 0;
-            xperror("Arrow widget not pressed");
+            error("Arrow widget not pressed");
             break;
         }
         arroww->pressed = pressed;
@@ -1206,7 +1206,7 @@ static void Widget_inside(XEvent *event, int widget_desc, bool inside)
     if ((widget = Widget_pointer(widget_desc)) == NULL)
     {
         errno = 0;
-        xperror("Widget inside invalid");
+        error("Widget inside invalid");
         return;
     }
     switch (widget->type)
@@ -1393,14 +1393,14 @@ static int Widget_form_window(Window window, int parent_desc,
         if ((parent_widget = Widget_pointer(parent_desc)) == NULL)
         {
             errno = 0;
-            xperror("Widget_form_window: Invalid parent widget");
+            error("Widget_form_window: Invalid parent widget");
             XDestroyWindow(dpy, window);
             return NO_WIDGET;
         }
     }
     if ((formw = (widget_form_t *)malloc(sizeof(*formw))) == NULL)
     {
-        xperror("No memory for form widget");
+        error("No memory for form widget");
         XDestroyWindow(dpy, window);
         return NO_WIDGET;
     }
@@ -1436,7 +1436,7 @@ int Widget_create_form(int parent_desc, Window parent_window,
         if ((parent_widget = Widget_pointer(parent_desc)) == NULL)
         {
             errno = 0;
-            xperror("Widget_create_form: Invalid parent widget");
+            error("Widget_create_form: Invalid parent widget");
             return NO_WIDGET;
         }
         parent_window = parent_widget->window;
@@ -1464,12 +1464,12 @@ int Widget_create_activate(int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_activate: Invalid parent widget");
+        error("Widget_create_activate: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((activw = (widget_activate_t *)malloc(sizeof(*activw))) == NULL)
     {
-        xperror("No memory for activate widget");
+        error("No memory for activate widget");
         return NO_WIDGET;
     }
     activw->pressed = false;
@@ -1512,12 +1512,12 @@ int Widget_create_bool(int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_bool: Invalid parent widget");
+        error("Widget_create_bool: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((boolw = (widget_bool_t *)malloc(sizeof(*boolw))) == NULL)
     {
-        xperror("No memory for bool widget");
+        error("No memory for bool widget");
         return NO_WIDGET;
     }
     boolw->pressed = false;
@@ -1568,7 +1568,7 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
     if ((menu_widget = Widget_pointer(menu_desc)) == NULL || menu_widget->type != WIDGET_BUTTON_MENU)
     {
         errno = 0;
-        xperror("Widget_add_pulldown_entry: Invalid menu");
+        error("Widget_add_pulldown_entry: Invalid menu");
         return NO_WIDGET;
     }
     menuw = (widget_menu_t *)menu_widget->sub;
@@ -1607,7 +1607,7 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
         if ((pulldown_widget = Widget_pointer(pulldown_desc)) == NULL)
         {
             errno = 0;
-            xperror("Can't create pulldown");
+            error("Can't create pulldown");
             return NO_WIDGET;
         }
         menuw->pulldown_desc = pulldown_desc;
@@ -1615,14 +1615,14 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
     else if ((pulldown_widget = Widget_pointer(pulldown_desc)) == NULL)
     {
         errno = 0;
-        xperror("Not a pulldown");
+        error("Not a pulldown");
         return NO_WIDGET;
     }
     pullw = (widget_form_t *)pulldown_widget->sub;
 
     if ((entryw = (widget_entry_t *)malloc(sizeof(*entryw))) == NULL)
     {
-        xperror("No memory for entry widget");
+        error("No memory for entry widget");
         return NO_WIDGET;
     }
     entryw->inside = false;
@@ -1660,7 +1660,7 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
     if (Widget_add_child(pulldown_desc, entry_desc) == NO_WIDGET)
     {
         errno = 0;
-        xperror("Can't create pulldown entry");
+        error("Can't create pulldown entry");
         Widget_destroy(entry_desc);
         return NO_WIDGET;
     }
@@ -1680,12 +1680,12 @@ int Widget_create_menu(int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_menu: Invalid parent widget");
+        error("Widget_create_menu: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((menuw = (widget_menu_t *)malloc(sizeof(*menuw))) == NULL)
     {
-        xperror("No memory for menu widget");
+        error("No memory for menu widget");
         return NO_WIDGET;
     }
     menuw->pressed = false;
@@ -1726,12 +1726,12 @@ int Widget_create_int(int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_int: Invalid parent widget");
+        error("Widget_create_int: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((intw = (widget_int_t *)malloc(sizeof(*intw))) == NULL)
     {
-        xperror("No memory for int widget");
+        error("No memory for int widget");
         return NO_WIDGET;
     }
     intw->val = val;
@@ -1773,12 +1773,12 @@ int Widget_create_float(int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_float: Invalid parent widget");
+        error("Widget_create_float: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((floatw = (widget_float_t *)malloc(sizeof(*floatw))) == NULL)
     {
-        xperror("No memory for float widget");
+        error("No memory for float widget");
         return NO_WIDGET;
     }
     floatw->val = val;
@@ -1819,12 +1819,12 @@ int Widget_create_label(int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_label: Invalid parent widget");
+        error("Widget_create_label: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((labelw = (widget_label_t *)malloc(sizeof(*labelw))) == NULL)
     {
-        xperror("No memory for label widget");
+        error("No memory for label widget");
         return NO_WIDGET;
     }
     labelw->str = str;
@@ -1863,12 +1863,12 @@ static int Widget_create_arrow(widget_type_t type, int parent_desc,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_arrow: Invalid parent widget");
+        error("Widget_create_arrow: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((arroww = (widget_arrow_t *)malloc(sizeof(*arroww))) == NULL)
     {
-        xperror("No memory for arrow widget");
+        error("No memory for arrow widget");
         return NO_WIDGET;
     }
     arroww->pressed = false;
@@ -2052,7 +2052,7 @@ int Widget_map_sub(int widget_desc)
     else
     {
         errno = 0;
-        xperror("Widget_map_sub: Invalid widget");
+        error("Widget_map_sub: Invalid widget");
         return NO_WIDGET;
     }
     return widget_desc;
@@ -2069,7 +2069,7 @@ int Widget_map(int widget_desc)
     else
     {
         errno = 0;
-        xperror("Widget_map: Invalid widget %d", widget_desc);
+        error("Widget_map: Invalid widget %d", widget_desc);
         return NO_WIDGET;
     }
     return widget_desc;
@@ -2086,7 +2086,7 @@ int Widget_unmap(int widget_desc)
     else
     {
         errno = 0;
-        xperror("Widget_unmap: Invalid widget");
+        error("Widget_unmap: Invalid widget");
         return NO_WIDGET;
     }
     return widget_desc;
@@ -2103,7 +2103,7 @@ int Widget_raise(int widget_desc)
     else
     {
         errno = 0;
-        xperror("Widget_raise: Invalid widget");
+        error("Widget_raise: Invalid widget");
         return NO_WIDGET;
     }
     return widget_desc;
@@ -2139,12 +2139,12 @@ static int Widget_create_slider(int parent_desc, widget_type_t slider_type,
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_slider: Invalid parent widget");
+        error("Widget_create_slider: Invalid parent widget");
         return NO_WIDGET;
     }
     if ((sliderw = (widget_slider_t *)malloc(sizeof(*sliderw))) == NULL)
     {
-        xperror("No memory for slider widget");
+        error("No memory for slider widget");
         return NO_WIDGET;
     }
     sliderw->pressed = false;
@@ -2280,7 +2280,7 @@ static int Widget_viewer_calculate_text(int viewer_desc)
     viewerw->line = (viewer_line_t *)malloc(count * sizeof(viewer_line_t));
     if (!viewerw->line)
     {
-        xperror("No mem for viewer text");
+        error("No mem for viewer text");
         return -1;
     }
     viewerw->num_lines = count;
@@ -2402,14 +2402,14 @@ int Widget_create_viewer(const char *buf, int len,
     if (popup_desc == NO_WIDGET || (popup_widget = Widget_pointer(popup_desc)) == NULL || popup_widget->type != WIDGET_FORM)
     {
         errno = 0;
-        xperror("Widget_create_viewer: No popup");
+        error("Widget_create_viewer: No popup");
         return NO_WIDGET;
     }
     popup_widget->name = "popup_viewer";
 
     if ((viewerw = (widget_viewer_t *)malloc(sizeof(*viewerw))) == NULL)
     {
-        xperror("No mem for viewer");
+        error("No mem for viewer");
         Widget_destroy(popup_desc);
         return NO_WIDGET;
     }
@@ -2545,7 +2545,7 @@ int Widget_update_viewer(int popup_desc, const char *buf, int len)
     if (!popup || popup->type != WIDGET_FORM || !popup->name || strcmp(popup->name, "popup_viewer"))
     {
         errno = 0;
-        xperror("Widget_update_viewer: not a popup viewer");
+        error("Widget_update_viewer: not a popup viewer");
         return -1;
     }
     formw = (widget_form_t *)popup->sub;

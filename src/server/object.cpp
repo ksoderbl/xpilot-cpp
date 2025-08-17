@@ -148,7 +148,7 @@ void Alloc_shots(int number)
     x = XCALLOC(anyobject_t, number);
     if (!x)
     {
-        xperror("Not enough memory for shots.");
+        error("Not enough memory for shots.");
         exit(1);
     }
 

@@ -42,7 +42,7 @@
                        ? (P = (T *)malloc((M = 1) * sizeof(*P)))                \
                        : (P = (T *)realloc(P, (M += M) * sizeof(*P)))) == NULL) \
     {                                                                           \
-        xperror("No memory");                                                   \
+        error("No memory");                                                     \
         N = M = 0;                                                              \
         return -1;                                                              \
     }                                                                           \
@@ -75,7 +75,7 @@
         }                                         \
         if (P == NULL)                            \
         {                                         \
-            xperror("No memory");                 \
+            error("No memory");                   \
             N = M = 0;                            \
             return; /* ! */                       \
         }                                         \

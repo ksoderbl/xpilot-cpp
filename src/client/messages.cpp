@@ -74,14 +74,14 @@ int Alloc_msgs(void)
 
     if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)
     {
-        xperror("No memory for messages");
+        error("No memory for messages");
         return -1;
     }
 
     if (selectionAndHistory &&
         ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL))
     {
-        xperror("No memory for history messages");
+        error("No memory for history messages");
         free(x);
         return -1;
     }
@@ -144,7 +144,7 @@ int Alloc_history(void)
     /* maxLinesInHistory is a runtime constant */
     if ((hist_ptr = (char *)malloc(maxLinesInHistory * MAX_CHARS)) == NULL)
     {
-        xperror("No memory for history");
+        error("No memory for history");
         return -1;
     }
     HistoryBlock = hist_ptr;

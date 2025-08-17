@@ -460,7 +460,7 @@ void Parse_robot_file(void)
                         }
                         if (!robs)
                         {
-                            xperror("Not enough memory to parse robotsfile");
+                            error("Not enough memory to parse robotsfile");
                             fclose(fp);
                             break;
                         }

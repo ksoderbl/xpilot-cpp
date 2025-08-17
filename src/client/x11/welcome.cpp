@@ -204,7 +204,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar);
  */
 static void Not_enough_memory(void)
 {
-    xperror("Not enough memory.");
+    error("Not enough memory.");
 }
 
 /*
@@ -875,7 +875,7 @@ static void Meta_connect(int *connections_ptr, int *maxfd_ptr)
         {
             sprintf(buf, "Could not establish connection with %s",
                     metas[i].name);
-            xperror(buf);
+            error(buf);
             Welcome_create_label(1, buf);
         }
         else
@@ -1222,8 +1222,8 @@ static int Get_meta_data(void)
                 {
                     if (bytes_read == -1)
                     {
-                        xperror("Error while reading data from meta %d\n",
-                                i + 1);
+                        error("Error while reading data from meta %d\n",
+                              i + 1);
                     }
                     FD_CLR(metas[i].sock.fd, &rset_in);
                     close(metas[i].sock.fd);

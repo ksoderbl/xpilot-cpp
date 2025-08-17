@@ -71,7 +71,7 @@ void Pick_startpos(int ind)
         free_bases = (char *)malloc(world->NumBases * sizeof(*free_bases));
         if (free_bases == NULL)
         {
-            xperror("Can't allocate memory for free_bases");
+            error("Can't allocate memory for free_bases");
             End_game();
         }
     }
@@ -123,8 +123,8 @@ void Pick_startpos(int ind)
 
     if (i == world->NumBases)
     {
-        xperror("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
-                ind, world->NumBases, num_free, pick, seen);
+        error("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
+              ind, world->NumBases, num_free, pick, seen);
         End_game();
     }
     else
@@ -169,7 +169,7 @@ void Go_home(int ind)
     {
         /*NOTREACHED*/
         /* Tanks have no homebase. */
-        xperror("BUG: gohome tank");
+        error("BUG: gohome tank");
         return;
     }
 
@@ -581,7 +581,7 @@ void Alloc_players(int number)
 
     if (!Players || !playerArray || !visibilityArray)
     {
-        xperror("Not enough memory for Players.");
+        error("Not enough memory for Players.");
         exit(1);
     }
 
@@ -819,14 +819,14 @@ void Check_team_members(int team)
     }
     if (world->teams[team].NumMembers != members)
     {
-        xperror("Server has reset team %d members from %d to %d",
-                team, world->teams[team].NumMembers, members);
+        error("Server has reset team %d members from %d to %d",
+              team, world->teams[team].NumMembers, members);
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
             if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
-                xperror("Team %d currently has player %d: \"%s\"",
-                        team, i + 1, pl->name);
+                error("Team %d currently has player %d: \"%s\"",
+                      team, i + 1, pl->name);
         }
         world->teams[team].NumMembers = members;
     }
@@ -972,7 +972,7 @@ void Team_game_over(int winning_team, const char *reason)
 
     if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
     {
-        xperror("no mem");
+        error("no mem");
         End_game();
     }
 
@@ -1042,7 +1042,7 @@ void Individual_game_over(int winner)
 
     if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
     {
-        xperror("no mem");
+        error("no mem");
         End_game();
     }
 

@@ -187,7 +187,7 @@ static int RGetPixelIndex(unsigned long pixel)
 
 //     if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
 //     {
-//         xperror("Not enough memory");
+//         error("Not enough memory");
 //         RWriteByte(RC_TILE);
 //         RWriteByte(0);
 //         return;

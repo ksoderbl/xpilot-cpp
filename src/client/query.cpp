@@ -89,7 +89,7 @@ static int Query_subnet(sock_t *sock,
         if (nbits >= 8)
         {
             /* break; ? */
-            xperror("too many host bits in subnet mask");
+            error("too many host bits in subnet mask");
             return (-1);
         }
         hostmask |= bit;
@@ -104,7 +104,7 @@ static int Query_subnet(sock_t *sock,
     }
     if (nbits < 2)
     {
-        xperror("malformed subnet mask");
+        error("malformed subnet mask");
         return (-1);
     }
 
@@ -145,14 +145,14 @@ static int Query_fudged(sock_t *sock, int port, char *msg, int msglen)
     gethostname(hostname, sizeof(hostname));
     if ((h = gethostbyname(hostname)) == NULL)
     {
-        xperror("gethostbyname");
+        error("gethostbyname");
         return -1;
     }
     if (h->h_addrtype != AF_INET || h->h_length != 4)
     {
         errno = 0;
-        xperror("Dunno about addresses with address type %d and length %d\n",
-                h->h_addrtype, h->h_length);
+        error("Dunno about addresses with address type %d and length %d\n",
+              h->h_addrtype, h->h_length);
         return -1;
     }
     for (i = 0; h->h_addr_list[i]; i++)
@@ -217,7 +217,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
      */
     if (sock_set_broadcast(sock, 1) == -1)
     {
-        xperror("set broadcast");
+        error("set broadcast");
         return (-1);
     }
 
@@ -226,7 +226,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
      */
     if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
-        xperror("socket");
+        error("socket");
         return (-1);
     }
 
@@ -238,7 +238,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
     memset((void *)ifbuf, 0, sizeof(ifbuf));
     if (ioctl(fd, SIOCGIFCONF, (char *)&ifconf) == -1)
     {
-        xperror("ioctl SIOCGIFCONF");
+        error("ioctl SIOCGIFCONF");
         close(fd);
         return Query_fudged(sock, port, msg, msglen);
     }
@@ -280,7 +280,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         ifreq = *ifreqp;
         if (ioctl(fd, SIOCGIFFLAGS, (char *)&ifreq) == -1)
         {
-            xperror("ioctl SIOCGIFFLAGS");
+            error("ioctl SIOCGIFFLAGS");
             continue;
         }
         ifflags = ifreq.ifr_flags;
@@ -312,7 +312,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
             ifreq = *ifreqp;
             if (ioctl(fd, SIOCGIFDSTADDR, (char *)&ifreq) == -1)
             {
-                xperror("ioctl SIOCGIFDSTADDR");
+                error("ioctl SIOCGIFDSTADDR");
                 continue;
             }
             addr = *(struct sockaddr_in *)&ifreq.ifr_addr;
@@ -324,7 +324,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
             ifreq = *ifreqp;
             if (ioctl(fd, SIOCGIFBRDADDR, (char *)&ifreq) == -1)
             {
-                xperror("ioctl SIOCGIFBRDADDR");
+                error("ioctl SIOCGIFBRDADDR");
                 continue;
             }
             addr = *(struct sockaddr_in *)&ifreq.ifr_addr;
@@ -363,7 +363,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
             /*
              * Failure.
              */
-            xperror("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
+            error("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
 
             if ((ifflags & (IFF_LOOPBACK | IFF_POINTOPOINT | IFF_BROADCAST)) != IFF_BROADCAST)
             {
@@ -385,7 +385,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         ifreq = *ifreqp;
         if (ioctl(fd, SIOCGIFNETMASK, (char *)&ifreq) == -1)
         {
-            xperror("ioctl SIOCGIFNETMASK");
+            error("ioctl SIOCGIFNETMASK");
             continue;
         }
         mask = *(struct sockaddr_in *)&ifreq.ifr_addr;
@@ -426,7 +426,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         }
         else
         {
-            xperror("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
+            error("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
         }
     }
 

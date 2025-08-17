@@ -414,7 +414,7 @@ static void Fill_colormap(void)
                          0, pixels, max_fill) == False)
     {
         errno = 0;
-        xperror("Can't pre-alloc color cells");
+        error("Can't pre-alloc color cells");
         return;
     }
 
@@ -425,8 +425,8 @@ static void Fill_colormap(void)
         {
 #ifdef DEVELOPMENT
             errno = 0;
-            xperror("Can't pre-fill color map, got %d'th pixel %lu",
-                    i, pixels[i]);
+            error("Can't pre-fill color map, got %d'th pixel %lu",
+                  i, pixels[i]);
 #endif
             XFreeColors(dpy, colormap, pixels, max_fill, 0);
             return;
@@ -515,8 +515,8 @@ int Colors_init(void)
     {
         /* Can't setup double buffering */
         errno = 0;
-        xperror("Can't setup colors with visual %s and %d colormap entries",
-                Visual_class_name(visual->c_class), visual->map_entries);
+        error("Can't setup colors with visual %s and %d colormap entries",
+              Visual_class_name(visual->c_class), visual->map_entries);
         return -1;
     }
 
@@ -744,14 +744,14 @@ static int Colors_init_color_cube(void)
 
     if (color_cube != NULL)
     {
-        xperror("Already a cube!\n");
+        error("Already a cube!\n");
         exit(1);
     }
 
     color_cube = (struct Color_cube *)calloc(1, sizeof(struct Color_cube));
     if (!color_cube)
     {
-        xperror("Could not allocate memory for a color cube");
+        error("Could not allocate memory for a color cube");
         return -1;
     }
     for (i = 0; i < NELEM(rgb_cube_sizes); i++)
@@ -848,14 +848,14 @@ static int Colors_init_true_color(void)
 
     if (true_color)
     {
-        xperror("Already a True_color!");
+        error("Already a True_color!");
         exit(1);
     }
 
     true_color = (struct True_color *)calloc(1, sizeof(struct True_color));
     if (!true_color)
     {
-        xperror("Could not allocate memory for a true color structure");
+        error("Could not allocate memory for a true color structure");
         return -1;
     }
 

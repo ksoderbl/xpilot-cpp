@@ -159,7 +159,7 @@ static void Robot_default_create(int ind, char *str)
 
     if (!(my_data = (robot_default_data_t *)malloc(sizeof(*my_data))))
     {
-        xperror("no mem for default robot");
+        error("no mem for default robot");
         End_game();
     }
 
