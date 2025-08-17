@@ -6,6 +6,8 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2003-2004 Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -314,7 +316,7 @@ static void Create_config(void)
     full = true;
     for (i = 0; i < NELEM(config_creator); i++)
     {
-        if (full == true)
+        if (full)
         {
             full = false;
             num++;
@@ -337,9 +339,7 @@ static void Create_config(void)
                                        0, "PREV", Config_prev,
                                        (void *)(long)num);
             if (widget_desc == 0)
-            {
                 break;
-            }
             width = 2 * config_button_space + XTextWidth(buttonFont,
                                                          "NEXT", 4);
             offset = (config_width - width) / 2;
@@ -350,9 +350,7 @@ static void Create_config(void)
                                        0, "NEXT", Config_next,
                                        (void *)(long)num);
             if (widget_desc == 0)
-            {
                 break;
-            }
             width = 2 * config_button_space + XTextWidth(buttonFont,
                                                          "CLOSE", 5);
             offset = config_space;
@@ -363,9 +361,7 @@ static void Create_config(void)
                                        0, "CLOSE", Config_close,
                                        (void *)(long)num);
             if (widget_desc == 0)
-            {
                 break;
-            }
             height = config_space;
         }
         if ((config_widget_ids[i] =
@@ -374,9 +370,7 @@ static void Create_config(void)
             i--;
             full = true;
             if (height == config_space)
-            {
                 break;
-            }
             continue;
         }
     }
@@ -385,9 +379,7 @@ static void Create_config(void)
         for (; num >= 0; num--)
         {
             if (config_widget_desc[num] != 0)
-            {
                 Widget_destroy(config_widget_desc[num]);
-            }
         }
         config_created = false;
         config_mapped = false;
@@ -399,9 +391,7 @@ static void Create_config(void)
                                             config_max * sizeof(int));
         config_page = 0;
         for (i = 0; i < config_max; i++)
-        {
             Widget_map_sub(config_widget_desc[i]);
-        }
         config_created = true;
         config_mapped = false;
     }
@@ -452,26 +442,20 @@ static int Config_create_bool(int widget_desc, int *height,
         boolw;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
-    {
         return 0;
-    }
-    label_width = XTextWidth(textFont, str, strlen(str)) + 2 * config_text_space;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
     offset = config_width - (config_space + config_bool_width);
     if (config_space + label_width > offset)
     {
         if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
-        {
             return 0;
-        }
     }
 
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
                         label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
-    {
         *height += config_entry_height;
-    }
     boolw = Widget_create_bool(widget_desc,
                                offset, *height + (config_entry_height - config_bool_height) / 2,
                                config_bool_width,
@@ -491,25 +475,19 @@ static int Config_create_int(int widget_desc, int *height,
         intw;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
-    {
         return 0;
-    }
-    label_width = XTextWidth(textFont, str, strlen(str)) + 2 * config_text_space;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
     offset = config_width - (config_space + 2 * config_arrow_width + config_int_width);
     if (config_space + label_width > offset)
     {
         if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
-        {
             return 0;
-        }
     }
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
                         label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
-    {
         *height += config_entry_height;
-    }
     intw = Widget_create_int(widget_desc, offset, *height + (config_entry_height - config_text_height) / 2,
                              config_int_width, config_text_height,
                              0, val, min, max, callback, data);
@@ -526,6 +504,42 @@ static int Config_create_int(int widget_desc, int *height,
     return intw;
 }
 
+static int Config_create_color(int widget_desc, int *height, int color,
+                               const char *str, int *val, int min, int max,
+                               int (*callback)(int, void *, int *), void *data)
+{
+    int offset, label_width, colw;
+
+    if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
+        return 0;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
+    offset = config_width - (config_space + 2 * config_arrow_width + config_int_width);
+    if (config_space + label_width > offset)
+    {
+        if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
+            return 0;
+    }
+    Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
+                        label_width, config_text_height, true,
+                        0, str);
+    if (config_space + label_width > offset)
+        *height += config_entry_height;
+    colw = Widget_create_color(widget_desc, color, offset, *height + (config_entry_height - config_text_height) / 2,
+                               config_int_width, config_text_height,
+                               0, val, min, max, callback, data);
+    offset += config_int_width;
+    Widget_create_arrow_left(widget_desc, offset, *height + (config_entry_height - config_arrow_height) / 2,
+                             config_arrow_width, config_arrow_height,
+                             0, colw);
+    offset += config_arrow_width;
+    Widget_create_arrow_right(widget_desc, offset, *height + (config_entry_height - config_arrow_height) / 2,
+                              config_arrow_width, config_arrow_height,
+                              0, colw);
+    *height += config_entry_height + config_space;
+
+    return colw;
+}
+
 static int Config_create_double(int widget_desc, int *height,
                                 const char *str, double *val,
                                 double min, double max,
@@ -537,25 +551,19 @@ static int Config_create_double(int widget_desc, int *height,
         doublew;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
-    {
         return 0;
-    }
-    label_width = XTextWidth(textFont, str, strlen(str)) + 2 * config_text_space;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
     offset = config_width - (config_space + 2 * config_arrow_width + config_float_width);
     if (config_space + label_width > offset)
     {
         if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
-        {
             return 0;
-        }
     }
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
                         label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
-    {
         *height += config_entry_height;
-    }
     doublew = Widget_create_double(widget_desc, offset, *height + (config_entry_height - config_text_height) / 2,
                                    config_float_width, config_text_height,
                                    0, val, min, max, callback, data);
@@ -858,34 +866,34 @@ static int Config_create_teamShotSize(int widget_desc, int *height)
 
 static int Config_create_hudColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "hudColor", &hudColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Config_create_color(widget_desc, height, hudColor,
+                               "hudColor", &hudColor,
+                               0, maxColors - 1,
+                               NULL, NULL);
 }
 
 static int Config_create_hudLockColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "hudLockColor", &hudLockColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Config_create_color(widget_desc, height, hudLockColor,
+                               "hudLockColor", &hudLockColor,
+                               0, maxColors - 1,
+                               NULL, NULL);
 }
 
 static int Config_create_wallColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "wallColor", &wallColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Config_create_color(widget_desc, height, wallColor,
+                               "wallColor", &wallColor,
+                               0, maxColors - 1,
+                               NULL, NULL);
 }
 
 static int Config_create_decorColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "decorColor", &decorColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Config_create_color(widget_desc, height, decorColor,
+                               "decorColor", &decorColor,
+                               0, maxColors - 1,
+                               NULL, NULL);
 }
 
 static int Config_create_showDecor(int widget_desc, int *height)
@@ -1053,7 +1061,7 @@ static int Config_create_save(int widget_desc, int *height)
     int space,
         button_desc,
         width = 2 * config_button_space + XTextWidth(buttonFont, save_str,
-                                                     strlen(save_str));
+                                                     (int)strlen(save_str));
 
     space = config_height - (*height + 2 * config_entry_height + 2 * config_space);
     if (space < 0)
@@ -1139,9 +1147,7 @@ static int Config_update_bool(int widget_desc, void *data, bool *val)
 static int Config_update_dots(int widget_desc, void *data, int *val)
 {
     if (val == &map_point_size && map_point_size > 1)
-    {
         return 0;
-    }
     Map_dots();
     return 0;
 }
@@ -1252,14 +1258,10 @@ static int Config_update_scaleFactor(int widget_desc, void *data, double *val)
 static void Config_save_failed(const char *reason, const char **strptr)
 {
     if (config_save_confirm_desc != NO_WIDGET)
-    {
         Widget_destroy(config_save_confirm_desc);
-    }
     config_save_confirm_desc = Widget_create_confirm(reason, Config_save_confirm_callback);
     if (config_save_confirm_desc != NO_WIDGET)
-    {
         Widget_raise(config_save_confirm_desc);
-    }
     *strptr = "Saving failed...";
 }
 
@@ -1269,17 +1271,11 @@ static int Xpilotrc_add(char *line)
     char *str;
 
     if (strncmp(line, "XPilot", 6) != 0 && strncmp(line, "xpilot", 6) != 0)
-    {
         return 0;
-    }
     if (line[6] != '.' && line[6] != '*')
-    {
         return 0;
-    }
     if ((str = strchr(line + 7, ':')) == NULL)
-    {
         return 0;
-    }
     size = str - (line + 7);
     if (max_xpilotrc <= 0 || xpilotrc_ptr == NULL)
     {
@@ -1303,9 +1299,7 @@ static int Xpilotrc_add(char *line)
         }
     }
     if ((str = xp_strdup(line)) == NULL)
-    {
         return -1;
-    }
     xpilotrc_ptr[num_xpilotrc].line = str;
     xpilotrc_ptr[num_xpilotrc].size = size;
     num_xpilotrc++;
@@ -1317,9 +1311,7 @@ static void Xpilotrc_end(FILE *fp)
     int i;
 
     if (max_xpilotrc <= 0 || xpilotrc_ptr == NULL)
-    {
         return;
-    }
     for (i = 0; i < num_xpilotrc; i++)
     {
         fprintf(fp, "%s", xpilotrc_ptr[i].line);
@@ -1417,15 +1409,11 @@ static void Config_save_keys(FILE *fp)
 
         /* try and see if we have already saved this key. */
         if (Config_find_key(key, 0, i, &j))
-        {
             /* yes, saved this one before.  skip it now. */
             continue;
-        }
 
         if ((str = XKeysymToString(ks)) == NULL)
-        {
             continue;
-        }
 
         if ((res = Get_keyResourceString(key)) != NULL)
         {
@@ -1467,9 +1455,7 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     if ((fp = fopen(oldfile, "r")) != NULL)
     {
         while (fgets(buf, sizeof buf, fp))
-        {
             Xpilotrc_add(buf);
-        }
         fclose(fp);
     }
     sprintf(newfile, "%s.new", oldfile);
@@ -1589,18 +1575,14 @@ int Config(bool doit)
     if (config_created == false)
     {
         if (doit == false)
-        {
             return 0;
-        }
         Create_config();
         if (config_created == false)
-        {
             return false;
-        }
     }
     if (config_mapped == false)
     {
-        if (doit == true)
+        if (doit)
         {
             Widget_raise(config_widget_desc[config_page]);
             config_mapped = true;
@@ -1614,24 +1596,22 @@ int Config(bool doit)
             config_mapped = false;
         }
     }
-    return (config_mapped == true);
+    return (config_mapped);
 }
 
 void Config_destroy(void)
 {
     int i;
 
-    if (config_created == true)
+    if (config_created)
     {
-        if (config_mapped == true)
+        if (config_mapped)
         {
             Widget_unmap(config_widget_desc[config_page]);
             config_mapped = false;
         }
         for (i = 0; i < config_max; i++)
-        {
             Widget_destroy(config_widget_desc[i]);
-        }
         config_created = false;
         free(config_widget_desc);
         config_widget_desc = NULL;
@@ -1644,13 +1624,11 @@ void Config_resize(void)
 {
     bool mapped = config_mapped;
 
-    if (config_created == true)
+    if (config_created)
     {
         Config_destroy();
-        if (mapped == true)
-        {
+        if (mapped)
             Config(mapped);
-        }
     }
 }
 
@@ -1662,7 +1640,5 @@ void Config_redraw(void)
         return;
 
     for (i = 0; i < NELEM(config_creator); i++)
-    {
         Widget_draw(config_widget_ids[i]);
-    }
 }
