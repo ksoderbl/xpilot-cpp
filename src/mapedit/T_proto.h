@@ -96,9 +96,9 @@ int T_IsPopupOpen(Window win);
 void T_PopupClose(Window win);
 
 /* T_Handler.c prototypes */
-int ValidateFloatHandler(HandlerInfo info);
-int ValidatePositiveFloatHandler(HandlerInfo info);
-int ValidateIntHandler(HandlerInfo info);
-int ValidatePositiveIntHandler(HandlerInfo info);
-int PopupCloseHandler(HandlerInfo info);
-int FormCloseHandler(HandlerInfo info);
+int ValidateFloatHandler(HandlerInfo_t info);
+int ValidatePositiveFloatHandler(HandlerInfo_t info);
+int ValidateIntHandler(HandlerInfo_t info);
+int ValidatePositiveIntHandler(HandlerInfo_t info);
+int PopupCloseHandler(HandlerInfo_t info);
+int FormCloseHandler(HandlerInfo_t info);
