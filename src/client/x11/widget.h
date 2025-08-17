@@ -56,15 +56,25 @@ int Widget_create_int(int parent_desc,
                       int border, int *val, int min, int max,
                       int (*callback)(int, void *, int *),
                       void *user_data);
-int Widget_create_float(int parent_desc,
+int Widget_create_color(int parent_desc, int color,
                         int x, int y, int width, int height,
-                        int border, double *val, double min, double max,
-                        int (*callback)(int, void *, double *),
+                        int border, int *val, int min, int max,
+                        int (*callback)(int, void *, int *),
                         void *user_data);
+int Widget_create_double(int parent_desc,
+                         int x, int y, int width, int height,
+                         int border, double *val, double min, double max,
+                         int (*callback)(int, void *, double *),
+                         void *user_data);
 int Widget_create_label(int parent_desc,
                         int x, int y,
-                        int width, int height,
+                        int width, int height, bool centered,
                         int border, const char *str);
+int Widget_create_colored_label(int parent_desc,
+                                int x, int y,
+                                int width, int height, bool centered,
+                                int border, int bg, int bord,
+                                const char *str);
 int Widget_create_arrow_right(int parent_desc, int x, int y,
                               int width, int height,
                               int border,
@@ -83,7 +93,6 @@ int Widget_map(int widget_desc);
 int Widget_raise(int widget_desc);
 int Widget_get_dimensions(int widget_desc, int *width, int *height);
 int Widget_unmap(int widget_desc);
-int Widget_resize(int widget_desc, int width, int height);
 int Widget_create_viewer(const char *buf, int len,
                          int width, int height, int border,
                          const char *window_name, const char *icon_name,

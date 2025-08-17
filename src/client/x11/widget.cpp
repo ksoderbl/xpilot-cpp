@@ -6,6 +6,8 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2003 Darel Cullen
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -57,7 +59,8 @@ typedef enum widget_type
     WIDGET_BUTTON_ARROW_LEFT,
     WIDGET_BUTTON_ARROW_RIGHT,
     WIDGET_INPUT_INT,
-    WIDGET_INPUT_FLOAT,
+    WIDGET_INPUT_COLOR,
+    WIDGET_INPUT_DOUBLE,
     WIDGET_INPUT_STRING,
     WIDGET_VIEWER,
     WIDGET_SLIDER_HORI,
@@ -139,14 +142,23 @@ typedef struct widget_int
     void *user_data;
 } widget_int_t;
 
-typedef struct widget_float
+typedef struct widget_color
 {
-    double *val, /* Float pointer */
+    int *val; /* Color index pointer */
+    int min;  /* Minimum value */
+    int max;  /* Maximum value */
+    int (*callback)(int, void *, int *);
+    void *user_data;
+} widget_color_t;
+
+typedef struct widget_double
+{
+    double *val, /* Double pointer */
         min,     /* Minimum value */
         max;     /* Maximum value */
     int (*callback)(int, void *, double *);
     void *user_data;
-} widget_float_t;
+} widget_double_t;
 
 typedef struct widget_string
 {
@@ -187,6 +199,7 @@ typedef struct widget_slider
 } widget_slider_t;
 
 static void Widget_resize_viewer(XEvent *event, int ind);
+static int Widget_resize(int widget_desc, int width, int height);
 
 static widget_t *widgets;
 static int num_widgets, max_widgets;
@@ -355,13 +368,12 @@ static widget_t *Widget_new(int *descp)
     {
         num_widgets = 0;
         max_widgets = 10;
-        widgets = (widget_t *)malloc(max_widgets * sizeof(widget_t));
+        widgets = XMALLOC(widget_t, max_widgets);
     }
     else
     {
         max_widgets = 10 + (12 * max_widgets) / 8;
-        widgets = (widget_t *)realloc(widgets,
-                                      max_widgets * sizeof(widget_t));
+        widgets = XREALLOC(widget_t, widgets, max_widgets);
     }
     if (widgets == NULL)
     {
@@ -390,7 +402,7 @@ static widget_t *Widget_new(int *descp)
 static int Widget_create(widget_type_t type, const char *name, Window window,
                          int width, int height, void *sub)
 {
-    int desc = NO_WIDGET;
+    int desc;
     widget_t *widget;
 
     if ((widget = Widget_new(&desc)) != NULL)
@@ -449,13 +461,13 @@ static int Widget_add_child(int parent_desc, int child_desc)
     if (form->num_children == 0)
     {
         incr = 4;
-        form->children = (int *)malloc((form->num_children + incr) * sizeof(*form->children));
+        form->children = XMALLOC(int, (form->num_children + incr));
     }
     else
     {
         incr = 4 + form->num_children / 2;
-        form->children = (int *)realloc(form->children,
-                                        (form->num_children + incr) * sizeof(*form->children));
+        form->children = XREALLOC(int, form->children,
+                                  (form->num_children + incr));
     }
     if (form->children == NULL)
     {
@@ -474,15 +486,13 @@ static int Widget_add_child(int parent_desc, int child_desc)
     return child_desc;
 }
 
-int Widget_resize(int widget_desc, int width, int height)
+static int Widget_resize(int widget_desc, int width, int height)
 {
     widget_t *widget;
 
     if ((widget = Widget_pointer(widget_desc)) == NULL)
     {
-#ifndef SILENT
         printf("no widget pointer for resize (%d)\n", widget_desc);
-#endif
         return NO_WIDGET;
     }
     XResizeWindow(dpy, widget->window, width, height);
@@ -498,15 +508,14 @@ static void Widget_draw_button(widget_t *widget, bool inverse, const char *label
 
     if (inverse)
     {
-        fg = colors[RED].pixel;
+        fg = colors[buttonColor].pixel;
         bg = colors[BLACK].pixel;
     }
     else
     {
         fg = colors[BLACK].pixel;
-        bg = colors[RED].pixel;
+        bg = colors[buttonColor].pixel;
     }
-
     XSetForeground(dpy, buttonGC, bg);
     XFillRectangle(dpy, widget->window, buttonGC,
                    0, 0, widget->width, widget->height);
@@ -522,9 +531,8 @@ static void Widget_draw_button(widget_t *widget, bool inverse, const char *label
         fg = colors[WHITE].pixel;
         bg = colors[BLACK].pixel;
     }
-
     y = (widget->height - (buttonFont->ascent + buttonFont->descent)) / 2;
-    x = (widget->width - XTextWidth(buttonFont, label, strlen(label))) / 2;
+    x = (widget->width - XTextWidth(buttonFont, label, (int)strlen(label))) / 2;
     ShadowDrawString(dpy, widget->window, buttonGC,
                      x, buttonFont->ascent + y,
                      label, fg, bg);
@@ -534,7 +542,26 @@ static void Widget_draw_input(widget_t *widget, const char *str)
 {
     XClearWindow(dpy, widget->window);
     XDrawString(dpy, widget->window, textGC,
-                (widget->width - XTextWidth(textFont, str, strlen(str))) / 2,
+                (widget->width - XTextWidth(textFont, str, (int)strlen(str))) / 2,
+                textFont->ascent + (widget->height - (textFont->ascent + textFont->descent)) / 2,
+                str, strlen(str));
+}
+
+static void Widget_draw_color(widget_t *widget, const char *str, int color)
+{
+    /* Setup the background color */
+    XSetWindowBackground(dpy, widget->window, colors[color].pixel);
+
+    if (colors[color].pixel == colors[WHITE].pixel)
+        /* change the text color to black */
+        XSetForeground(dpy, textGC, colors[BLACK].pixel);
+    else
+        /* change the text color to white */
+        XSetForeground(dpy, textGC, colors[WHITE].pixel);
+
+    XClearWindow(dpy, widget->window);
+    XDrawString(dpy, widget->window, textGC,
+                (widget->width - XTextWidth(textFont, str, (int)strlen(str))) / 2,
                 textFont->ascent + (widget->height - (textFont->ascent + textFont->descent)) / 2,
                 str, strlen(str));
 }
@@ -565,11 +592,11 @@ static void Widget_draw_arrow(widget_t *widget)
     if (arroww->pressed && arroww->inside)
     {
         fg = BLACK;
-        bg = RED;
+        bg = buttonColor;
     }
     else
     {
-        fg = RED;
+        fg = buttonColor;
         bg = BLACK;
     }
     XSetForeground(dpy, buttonGC, colors[bg].pixel);
@@ -603,7 +630,7 @@ static void Widget_draw_slider(widget_t *widget)
     widget_t *viewer_widget = Widget_pointer(sliderw->viewer_desc);
     widget_viewer_t *viewerw = (widget_viewer_t *)viewer_widget->sub;
 
-    XSetForeground(dpy, buttonGC, colors[RED].pixel);
+    XSetForeground(dpy, buttonGC, colors[buttonColor].pixel);
     if (widget->type == WIDGET_SLIDER_HORI)
     {
         unit = widget->height;
@@ -617,9 +644,7 @@ static void Widget_draw_slider(widget_t *widget)
         XFillPolygon(dpy, widget->window, buttonGC, pts, 4,
                      Convex, CoordModeOrigin);
         for (i = 0; i < 4; i++)
-        {
             pts[i].x = widget->width - pts[i].x;
-        }
         XFillPolygon(dpy, widget->window, buttonGC, pts, 4,
                      Convex, CoordModeOrigin);
         block_offset = unit;
@@ -650,9 +675,7 @@ static void Widget_draw_slider(widget_t *widget)
         XFillPolygon(dpy, widget->window, buttonGC, pts, 4,
                      Convex, CoordModeOrigin);
         for (i = 0; i < 4; i++)
-        {
             pts[i].y = widget->height - pts[i].y;
-        }
         XFillPolygon(dpy, widget->window, buttonGC, pts, 4,
                      Convex, CoordModeOrigin);
         block_offset = unit;
@@ -686,11 +709,11 @@ static void Widget_viewer_draw_lines(widget_t *widget, int start, int end)
         XSetForeground(dpy, motdGC, colors[BLACK].pixel);
         XDrawString(dpy, widget->window, motdGC,
                     x + 1, y + 1,
-                    (char *)viewerw->line[i].txt, viewerw->line[i].len);
+                    viewerw->line[i].txt, viewerw->line[i].len);
         XSetForeground(dpy, motdGC, colors[WHITE].pixel);
         XDrawString(dpy, widget->window, motdGC,
                     x - 1, y - 1,
-                    (char *)viewerw->line[i].txt, viewerw->line[i].len);
+                    viewerw->line[i].txt, viewerw->line[i].len);
         y += text_height;
     }
     XSetForeground(dpy, motdGC, colors[WHITE].pixel);
@@ -714,6 +737,7 @@ static void Widget_draw_viewer(widget_t *widget, XExposeEvent *expose)
     }
     else
         y1 = MIN(y1, viewerw->visible_y + widget->height);
+
     start = (y0 - 20) / text_height;
     end = (y1 - 20) / text_height + 1;
     if (start < 0)
@@ -733,7 +757,8 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
     widget_entry_t *entryw;
     widget_activate_t *activw;
     widget_int_t *intw;
-    widget_float_t *floatw;
+    widget_color_t *colorw;
+    widget_double_t *doublew;
     char buf[16];
 
     if ((widget = Widget_pointer(widget_desc)) == NULL)
@@ -757,9 +782,9 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
         if (expose && expose->count > 0)
             break;
         labelw = (widget_label_t *)widget->sub;
-        ShadowDrawString(dpy, widget->window, textGC,
-                         labelw->x_offset, textFont->ascent + labelw->y_offset,
-                         labelw->str, colors[WHITE].pixel, colors[BLACK].pixel);
+        ShadowDrawString(dpy, widget->window, textGC, labelw->x_offset,
+                         textFont->ascent + labelw->y_offset, labelw->str,
+                         colors[WHITE].pixel, colors[BLACK].pixel);
         break;
 
     case WIDGET_BUTTON_BOOL:
@@ -802,16 +827,26 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
         Widget_draw_input(widget, buf);
         break;
 
-    case WIDGET_INPUT_FLOAT:
+    case WIDGET_INPUT_COLOR:
         if (expose && expose->count > 0)
             break;
-        floatw = (widget_float_t *)widget->sub;
-        if (floatw->max <= 1.0)
-            sprintf(buf, "%.2f", *floatw->val);
-        else if (floatw->max <= 10.0)
-            sprintf(buf, "%.1f", *floatw->val);
+        colorw = (widget_color_t *)widget->sub;
+
+        /* update the integer index value */
+        sprintf(buf, "%d", *colorw->val);
+        Widget_draw_color(widget, buf, *colorw->val);
+        break;
+
+    case WIDGET_INPUT_DOUBLE:
+        if (expose && expose->count > 0)
+            break;
+        doublew = (widget_double_t *)widget->sub;
+        if (*doublew->val < 10.0)
+            sprintf(buf, "%.2f", *doublew->val);
+        else if (*doublew->val < 100.0)
+            sprintf(buf, "%.1f", *doublew->val);
         else
-            sprintf(buf, "%d", (int)*floatw->val);
+            sprintf(buf, "%d", (int)*doublew->val);
         Widget_draw_input(widget, buf);
         break;
 
@@ -833,11 +868,9 @@ static void Widget_draw_expose(int widget_desc, XExposeEvent *expose)
         Widget_draw_viewer(widget, expose);
         break;
 
-#if 1 && !defined(SILENT)
     default:
         printf("Widget_draw: default %d\n", widget->type);
         break;
-#endif
     }
 }
 
@@ -886,10 +919,12 @@ static void Widget_button_slider(XEvent *event, widget_t *widget, bool pressed)
             block_new_start = block_start + block_size;
         else
             block_new_start = event->xbutton.y - block_size / 2;
+
         if (block_new_start < block_offset)
             block_new_start = block_offset;
         else if (block_new_start + block_size > block_offset + block_max_size)
             block_new_start = block_offset + block_max_size - block_size;
+
         if (block_new_start != block_start)
         {
             new_y = viewerw->real_height * (block_new_start - block_offset) / block_max_size;
@@ -913,10 +948,13 @@ static void Widget_button_slider(XEvent *event, widget_t *widget, bool pressed)
             block_new_start = block_start + block_size;
         else
             block_new_start = event->xbutton.x - block_size / 2;
+
         if (block_new_start < block_offset)
             block_new_start = block_offset;
+
         else if (block_new_start + block_size > block_offset + block_max_size)
             block_new_start = block_offset + block_max_size - block_size;
+
         if (block_new_start != block_start)
         {
             new_x = viewerw->real_width * (block_new_start - block_offset) / block_max_size;
@@ -971,11 +1009,9 @@ static void Widget_button_motion(XEvent *event, int widget_desc)
         Widget_button_slider(event, widget, true);
         break;
 
-#if 1 && !defined(SILENT)
     default:
         printf("Widget_button_motion: default %d\n", widget->type);
         break;
-#endif
     }
 }
 
@@ -990,15 +1026,17 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
     widget_form_t *pullw;
     widget_activate_t *activw;
     widget_int_t *intw;
-    widget_float_t *floatw;
+    widget_color_t *colorw;
+    widget_double_t *doublew;
     widget_arrow_t *arroww;
     widget_entry_t *entryw;
     int i,
         ival,
+        cval,
         sub_widget_desc;
-    double fval,
+    double dval,
         delta,
-        fmin,
+        dmin,
         offset,
         newoffset;
 
@@ -1019,8 +1057,10 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         boolw->pressed = pressed;
         if (boolw->inside == false)
             break;
+
         if (pressed == false)
             boolw->state = (boolw->state) ? false : true;
+
         Widget_draw(widget_desc);
         if (pressed == false)
         {
@@ -1142,56 +1182,86 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
                     }
                 }
                 break;
-            case WIDGET_INPUT_FLOAT:
-                floatw = (widget_float_t *)sub_widget->sub;
-                fval = *floatw->val;
-                LIMIT(fval, floatw->min, floatw->max);
-                delta = floatw->max - floatw->min;
-                if (fval >= 0)
+
+            case WIDGET_INPUT_COLOR:
+                colorw = (widget_color_t *)sub_widget->sub;
+
+                cval = *colorw->val;
+                LIMIT(cval, colorw->min, colorw->max);
+                if (widget->type == WIDGET_BUTTON_ARROW_RIGHT)
                 {
-                    if (floatw->min < 0)
-                        fmin = 0;
+                    if (cval == *colorw->val)
+                        cval++;
+                }
+                if (widget->type == WIDGET_BUTTON_ARROW_LEFT)
+                {
+                    if (cval == *colorw->val)
+                        cval--;
+                }
+                LIMIT(cval, colorw->min, colorw->max);
+                if (cval != *colorw->val)
+                {
+                    *colorw->val = cval;
+                    Widget_draw(sub_widget_desc);
+                    if (colorw->callback)
+                    {
+                        if ((*colorw->callback)(sub_widget_desc,
+                                                colorw->user_data,
+                                                colorw->val) == 1)
+                            Widget_draw(sub_widget_desc);
+                    }
+                }
+                break;
+
+            case WIDGET_INPUT_DOUBLE:
+                doublew = (widget_double_t *)sub_widget->sub;
+                dval = *doublew->val;
+                LIMIT(dval, doublew->min, doublew->max);
+                delta = doublew->max - doublew->min;
+                if (dval >= 0)
+                {
+                    if (doublew->min < 0)
+                        dmin = 0;
                     else
-                        fmin = floatw->min;
-                    offset = fval - fmin;
+                        dmin = doublew->min;
+                    offset = dval - dmin;
                 }
                 else
                 {
-                    if (floatw->max > 0)
-                        fmin = 0;
+                    if (doublew->max > 0)
+                        dmin = 0;
                     else
-                        fmin = floatw->max;
-                    offset = -fval + fmin;
+                        dmin = doublew->max;
+                    offset = -dval + dmin;
                 }
-                if ((widget->type == WIDGET_BUTTON_ARROW_RIGHT) == (fval >= 0))
+                if ((widget->type == WIDGET_BUTTON_ARROW_RIGHT) == (dval >= 0))
                 {
-                    newoffset = (float)(offset * 1.05);
+                    newoffset = offset * 1.05;
                     if (newoffset - offset < delta / 100.0)
                         newoffset = offset + delta / 100.0;
                 }
                 else
                 {
-                    newoffset = (float)(offset * 0.95);
+                    newoffset = offset * 0.95;
                     if (newoffset - offset > -delta / 100.0)
                         newoffset = offset - delta / 100.0;
                     if (newoffset < 0 && offset > 0)
                         newoffset = 0;
                 }
-                if (fval >= 0)
-                    fval = fmin + newoffset;
+                if (dval >= 0)
+                    dval = dmin + newoffset;
                 else
-                    fval = fmin - newoffset;
-
-                LIMIT(fval, floatw->min, floatw->max);
-                if (fval != *floatw->val)
+                    dval = dmin - newoffset;
+                LIMIT(dval, doublew->min, doublew->max);
+                if (dval != *doublew->val)
                 {
-                    *floatw->val = fval;
+                    *doublew->val = dval;
                     Widget_draw(sub_widget_desc);
-                    if (floatw->callback)
+                    if (doublew->callback)
                     {
-                        if ((*floatw->callback)(sub_widget_desc,
-                                                floatw->user_data,
-                                                floatw->val) == 1)
+                        if ((*doublew->callback)(sub_widget_desc,
+                                                 doublew->user_data,
+                                                 doublew->val) == 1)
                             Widget_draw(sub_widget_desc);
                     }
                 }
@@ -1206,11 +1276,9 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
     case WIDGET_SLIDER_VERT:
         Widget_button_slider(event, widget, pressed);
         break;
-#if 1 && !defined(SILENT)
     default:
         printf("Widget_button: default %d\n", widget->type);
         break;
-#endif
     }
 }
 
@@ -1247,24 +1315,18 @@ static void Widget_inside(XEvent *event, int widget_desc, bool inside)
         activw = (widget_activate_t *)widget->sub;
         activw->inside = inside;
         if (activw->pressed)
-        {
             Widget_draw(widget_desc);
-        }
         break;
     case WIDGET_BUTTON_ARROW_RIGHT:
     case WIDGET_BUTTON_ARROW_LEFT:
         arroww = (widget_arrow_t *)widget->sub;
         arroww->inside = inside;
         if (arroww->pressed)
-        {
             Widget_draw(widget_desc);
-        }
         break;
-#if 1 && !defined(SILENT)
     default:
         printf("Widget_inside: default %d\n", widget->type);
         break;
-#endif
     }
 }
 
@@ -1279,7 +1341,8 @@ int Widget_event(XEvent *event)
     widget_arrow_t *arroww;
     widget_slider_t *sliderw;
 
-    /* xpprintf("Widget_event type=%d w=%d\n", event->type, event->xany.window); */
+    /* xpprintf("Widget_event type=%d w=%d\n",
+       event->type, event->xany.window); */
 
     if (!widgets)
         return (0);
@@ -1292,9 +1355,7 @@ int Widget_event(XEvent *event)
             for (i = 1; i < num_widgets; i++)
             {
                 if ((widget = Widget_pointer(i)) == NULL)
-                {
                     continue;
-                }
                 switch (widget->type)
                 {
                 case WIDGET_BUTTON_BOOL:
@@ -1345,9 +1406,7 @@ int Widget_event(XEvent *event)
                 }
             }
             if (count > 0)
-            {
                 return 1;
-            }
         }
     }
     else
@@ -1355,9 +1414,7 @@ int Widget_event(XEvent *event)
         for (i = 1; i < num_widgets; i++)
         {
             if (widgets[i].type == WIDGET_DUMMY)
-            {
                 continue;
-            }
             if (widgets[i].window == event->xany.window)
             {
                 switch (event->type)
@@ -1367,9 +1424,7 @@ int Widget_event(XEvent *event)
                     break;
                 case ButtonPress:
                     if (event->xbutton.button == Button1)
-                    {
                         Widget_button(event, i, true);
-                    }
                     break;
                 case MotionNotify:
                     Widget_button_motion(event, i);
@@ -1384,10 +1439,12 @@ int Widget_event(XEvent *event)
                     if (widgets[i].name != NULL && strncmp(widgets[i].name, "popup", 5) == 0)
                     {
                         if (strcmp(widgets[i].name, "popup_viewer") == 0)
-                        {
                             Widget_resize_viewer(event, i);
-                        }
                     }
+                    break;
+                default:
+                    warn("Unknown event type (%d) in Widget_event()",
+                         event->type);
                     break;
                 }
                 return 1;
@@ -1413,7 +1470,7 @@ static int Widget_form_window(Window window, int parent_desc,
             return NO_WIDGET;
         }
     }
-    if ((formw = (widget_form_t *)malloc(sizeof(*formw))) == NULL)
+    if ((formw = XMALLOC(widget_form_t, 1)) == NULL)
     {
         error("No memory for form widget");
         XDestroyWindow(dpy, window);
@@ -1480,7 +1537,7 @@ int Widget_create_activate(int parent_desc,
         warn("Widget_create_activate: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((activw = (widget_activate_t *)malloc(sizeof(*activw))) == NULL)
+    if ((activw = XMALLOC(widget_activate_t, 1)) == NULL)
     {
         error("No memory for activate widget");
         return NO_WIDGET;
@@ -1500,9 +1557,8 @@ int Widget_create_activate(int parent_desc,
     widget_desc = Widget_create(WIDGET_BUTTON_ACTIVATE, "activate", window,
                                 width, height, activw);
     if (widget_desc == NO_WIDGET)
-    {
         return NO_WIDGET;
-    }
+
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
         Widget_destroy(widget_desc);
@@ -1527,7 +1583,7 @@ int Widget_create_bool(int parent_desc,
         warn("Widget_create_bool: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((boolw = (widget_bool_t *)malloc(sizeof(*boolw))) == NULL)
+    if ((boolw = XMALLOC(widget_bool_t, 1)) == NULL)
     {
         error("No memory for bool widget");
         return NO_WIDGET;
@@ -1547,9 +1603,8 @@ int Widget_create_bool(int parent_desc,
     widget_desc = Widget_create(WIDGET_BUTTON_BOOL, "bool", window,
                                 width, height, boolw);
     if (widget_desc == NO_WIDGET)
-    {
         return NO_WIDGET;
-    }
+
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
         Widget_destroy(widget_desc);
@@ -1629,7 +1684,7 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
     }
     pullw = (widget_form_t *)pulldown_widget->sub;
 
-    if ((entryw = (widget_entry_t *)malloc(sizeof(*entryw))) == NULL)
+    if ((entryw = XMALLOC(widget_entry_t, 1)) == NULL)
     {
         error("No memory for entry widget");
         return NO_WIDGET;
@@ -1640,9 +1695,10 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
     entryw->user_data = user_data;
 
     height = menu_widget->height;
-    width = XTextWidth(buttonFont, str, strlen(str)) + (height - (buttonFont->ascent + buttonFont->descent));
+    width = XTextWidth(buttonFont, str, (int)strlen(str)) + (height - (buttonFont->ascent + buttonFont->descent));
     if (width < pulldown_widget->width - 2)
         width = pulldown_widget->width - 2;
+
     pull_height = (pullw->num_children + 1) * (menu_widget->height + 1) + 1;
     pull_width = pulldown_widget->width;
     if (pull_width < width + 2)
@@ -1660,7 +1716,6 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
                                width, height, entryw);
     if (entry_desc == NO_WIDGET)
         return NO_WIDGET;
-
     if (Widget_add_child(pulldown_desc, entry_desc) == NO_WIDGET)
     {
         warn("Can't create pulldown entry");
@@ -1685,7 +1740,7 @@ int Widget_create_menu(int parent_desc,
         warn("Widget_create_menu: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((menuw = (widget_menu_t *)malloc(sizeof(*menuw))) == NULL)
+    if ((menuw = XMALLOC(widget_menu_t, 1)) == NULL)
     {
         error("No memory for menu widget");
         return NO_WIDGET;
@@ -1703,9 +1758,7 @@ int Widget_create_menu(int parent_desc,
     widget_desc = Widget_create(WIDGET_BUTTON_MENU, "menu", window,
                                 width, height, menuw);
     if (widget_desc == NO_WIDGET)
-    {
         return NO_WIDGET;
-    }
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
         Widget_destroy(widget_desc);
@@ -1730,7 +1783,7 @@ int Widget_create_int(int parent_desc,
         warn("Widget_create_int: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((intw = (widget_int_t *)malloc(sizeof(*intw))) == NULL)
+    if ((intw = XMALLOC(widget_int_t, 1)) == NULL)
     {
         error("No memory for int widget");
         return NO_WIDGET;
@@ -1749,6 +1802,55 @@ int Widget_create_int(int parent_desc,
     widget_desc = Widget_create(WIDGET_INPUT_INT, "input_int", window,
                                 width, height, intw);
     if (widget_desc == NO_WIDGET)
+    {
+        return NO_WIDGET;
+    }
+    if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
+    {
+        Widget_destroy(widget_desc);
+        return NO_WIDGET;
+    }
+    return widget_desc;
+}
+
+int Widget_create_color(int parent_desc, int color,
+                        int x, int y, int width, int height,
+                        int border, int *val, int min, int max,
+                        int (*callback)(int, void *, int *),
+                        void *user_data)
+{
+    int widget_desc;
+    Window window;
+    widget_t *parent_widget;
+    widget_color_t *colorw;
+
+    if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
+    {
+        warn("Widget_create_color: Invalid parent widget");
+        return NO_WIDGET;
+    }
+    if ((colorw = XMALLOC(widget_color_t, 1)) == NULL)
+    {
+        error("No memory for color widget");
+        return NO_WIDGET;
+    }
+    colorw->val = val;
+    colorw->min = min;
+    colorw->max = max;
+    colorw->callback = callback;
+    colorw->user_data = user_data;
+
+    window =
+        XCreateSimpleWindow(dpy, parent_widget->window,
+                            x, y, width, height,
+                            border, colors[color].pixel,
+                            colors[color].pixel);
+
+    XSelectInput(dpy, window, ExposureMask);
+
+    widget_desc = Widget_create(WIDGET_INPUT_COLOR, "input_color", window,
+                                width, height, colorw);
+    if (widget_desc == NO_WIDGET)
         return NO_WIDGET;
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
@@ -1758,40 +1860,40 @@ int Widget_create_int(int parent_desc,
     return widget_desc;
 }
 
-int Widget_create_float(int parent_desc,
-                        int x, int y, int width, int height,
-                        int border, double *val, double min, double max,
-                        int (*callback)(int, void *, double *),
-                        void *user_data)
+int Widget_create_double(int parent_desc,
+                         int x, int y, int width, int height,
+                         int border, double *val, double min, double max,
+                         int (*callback)(int, void *, double *),
+                         void *user_data)
 {
     int widget_desc;
     Window window;
     widget_t *parent_widget;
-    widget_float_t *floatw;
+    widget_double_t *doublew;
 
     if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
     {
-        warn("Widget_create_float: Invalid parent widget");
+        warn("Widget_create_double: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((floatw = (widget_float_t *)malloc(sizeof(*floatw))) == NULL)
+    if ((doublew = XMALLOC(widget_double_t, 1)) == NULL)
     {
-        error("No memory for float widget");
+        error("No memory for double widget");
         return NO_WIDGET;
     }
-    floatw->val = val;
-    floatw->min = min;
-    floatw->max = max;
-    floatw->callback = callback;
-    floatw->user_data = user_data;
+    doublew->val = val;
+    doublew->min = min;
+    doublew->max = max;
+    doublew->callback = callback;
+    doublew->user_data = user_data;
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
                             border, colors[borderColor].pixel,
                             colors[BLACK].pixel);
     XSelectInput(dpy, window, ExposureMask);
-    widget_desc = Widget_create(WIDGET_INPUT_FLOAT, "input_float", window,
-                                width, height, floatw);
+    widget_desc = Widget_create(WIDGET_INPUT_DOUBLE, "input_double", window,
+                                width, height, doublew);
     if (widget_desc == NO_WIDGET)
         return NO_WIDGET;
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
@@ -1804,7 +1906,7 @@ int Widget_create_float(int parent_desc,
 
 int Widget_create_label(int parent_desc,
                         int x, int y,
-                        int width, int height,
+                        int width, int height, bool centered,
                         int border, const char *str)
 {
     int widget_desc;
@@ -1817,14 +1919,18 @@ int Widget_create_label(int parent_desc,
         warn("Widget_create_label: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((labelw = (widget_label_t *)malloc(sizeof(*labelw))) == NULL)
+    if ((labelw = XMALLOC(widget_label_t, 1)) == NULL)
     {
         error("No memory for label widget");
         return NO_WIDGET;
     }
     labelw->str = str;
-    labelw->x_offset = (width - XTextWidth(textFont, str, strlen(str))) / 2;
+    if (centered)
+        labelw->x_offset = (width - XTextWidth(textFont, str, (int)strlen(str))) / 2;
+    else
+        labelw->x_offset = 5;
     labelw->y_offset = (height - (textFont->ascent + textFont->descent)) / 2;
+
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
                             x, y, width, height,
@@ -1834,9 +1940,53 @@ int Widget_create_label(int parent_desc,
     widget_desc = Widget_create(WIDGET_LABEL, "label", window,
                                 width, height, labelw);
     if (widget_desc == NO_WIDGET)
+        return NO_WIDGET;
+    if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
+        Widget_destroy(widget_desc);
         return NO_WIDGET;
     }
+    return widget_desc;
+}
+
+int Widget_create_colored_label(int parent_desc,
+                                int x, int y,
+                                int width, int height, bool centered,
+                                int border, int bg, int bord,
+                                const char *str)
+{
+    int widget_desc;
+    Window window;
+    widget_t *parent_widget;
+    widget_label_t *labelw;
+
+    if ((parent_widget = Widget_pointer(parent_desc)) == NULL || parent_widget->type != WIDGET_FORM)
+    {
+        warn("Widget_create_label: Invalid parent widget");
+        return NO_WIDGET;
+    }
+    if ((labelw = XMALLOC(widget_label_t, 1)) == NULL)
+    {
+        error("No memory for label widget");
+        return NO_WIDGET;
+    }
+    labelw->str = str;
+    if (centered)
+        labelw->x_offset = (width - XTextWidth(textFont, str, (int)strlen(str))) / 2;
+    else
+        labelw->x_offset = 5;
+    labelw->y_offset = (height - (textFont->ascent + textFont->descent)) / 2;
+
+    window =
+        XCreateSimpleWindow(dpy, parent_widget->window,
+                            x, y, width, height,
+                            border, colors[bord].pixel,
+                            colors[bg].pixel);
+    XSelectInput(dpy, window, ExposureMask);
+    widget_desc = Widget_create(WIDGET_LABEL, "label", window,
+                                width, height, labelw);
+    if (widget_desc == NO_WIDGET)
+        return NO_WIDGET;
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
         Widget_destroy(widget_desc);
@@ -1860,7 +2010,7 @@ static int Widget_create_arrow(widget_type_t type, int parent_desc,
         warn("Widget_create_arrow: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((arroww = (widget_arrow_t *)malloc(sizeof(*arroww))) == NULL)
+    if ((arroww = XMALLOC(widget_arrow_t, 1)) == NULL)
     {
         error("No memory for arrow widget");
         return NO_WIDGET;
@@ -1878,9 +2028,7 @@ static int Widget_create_arrow(widget_type_t type, int parent_desc,
     widget_desc = Widget_create(type, "arrow", window,
                                 width, height, arroww);
     if (widget_desc == NO_WIDGET)
-    {
         return NO_WIDGET;
-    }
     if (Widget_add_child(parent_desc, widget_desc) == NO_WIDGET)
     {
         Widget_destroy(widget_desc);
@@ -1945,9 +2093,7 @@ int Widget_create_popup(int width, int height, int border,
     popup_desc = Widget_form_window(window, NO_WIDGET,
                                     width, height);
     if ((widget = Widget_pointer(popup_desc)) == NULL)
-    {
         return NO_WIDGET;
-    }
     widget->name = "popup";
     XStoreName(dpy, widget->window, window_name);
     XSetIconName(dpy, widget->window, icon_name);
@@ -1962,9 +2108,9 @@ int Widget_create_confirm(const char *confirm_str,
     const int label_height = textFont->ascent + textFont->descent,
               button_height = 3 * (buttonFont->ascent + buttonFont->descent) / 2,
               label_width = 10 + XTextWidth(textFont, confirm_str,
-                                            strlen(confirm_str)),
+                                            (int)strlen(confirm_str)),
               button_width = 2 * button_height + XTextWidth(buttonFont, button_str,
-                                                            strlen(button_str)),
+                                                            (int)strlen(button_str)),
               label_space = 2 * label_height,
               button_space = button_height,
               popup_height = 2 * label_space + label_height + 2 * button_space + button_height,
@@ -1977,13 +2123,11 @@ int Widget_create_confirm(const char *confirm_str,
     popup_desc = Widget_create_popup(popup_width, popup_height, 1,
                                      "Confirm", "Confirm");
     if (popup_desc == NO_WIDGET)
-    {
         return NO_WIDGET;
-    }
     label_desc = Widget_create_label(popup_desc,
                                      (popup_width - label_width) / 2,
-                                     label_space,
-                                     label_width, label_height,
+                                     label_space, label_width,
+                                     label_height, true,
                                      0, confirm_str);
     if (label_desc == NO_WIDGET)
     {
@@ -2013,9 +2157,7 @@ int Widget_backing_store(int widget_desc, int mode)
     widget_t *widget;
 
     if ((widget = Widget_pointer(widget_desc)) == NULL)
-    {
         return NO_WIDGET;
-    }
     sattr.backing_store = mode;
     XChangeWindowAttributes(dpy, widget->window, CWBackingStore, &sattr);
     return widget_desc;
@@ -2027,9 +2169,7 @@ int Widget_set_background(int widget_desc, int bgcolor)
     widget_t *widget;
 
     if ((widget = Widget_pointer(widget_desc)) == NULL)
-    {
         return NO_WIDGET;
-    }
     sattr.background_pixel = colors[bgcolor].pixel;
     XChangeWindowAttributes(dpy, widget->window, CWBackPixel, &sattr);
     return widget_desc;
@@ -2121,7 +2261,7 @@ static int Widget_create_slider(int parent_desc, widget_type_t slider_type,
         warn("Widget_create_slider: Invalid parent widget");
         return NO_WIDGET;
     }
-    if ((sliderw = (widget_slider_t *)malloc(sizeof(*sliderw))) == NULL)
+    if ((sliderw = XMALLOC(widget_slider_t, 1)) == NULL)
     {
         error("No memory for slider widget");
         return NO_WIDGET;
@@ -2236,9 +2376,11 @@ static int Widget_viewer_calculate_text(int viewer_desc)
     }
     if (viewerw->len > 0 && viewerw->buf[viewerw->len - 1] != '\n')
         count++;
+
     if (!count)
         return 0;
-    viewerw->line = (viewer_line_t *)malloc(count * sizeof(viewer_line_t));
+
+    viewerw->line = XMALLOC(viewer_line_t, count);
     if (!viewerw->line)
     {
         error("No mem for viewer text");
@@ -2256,7 +2398,7 @@ static int Widget_viewer_calculate_text(int viewer_desc)
         }
         line[count].len = &viewerw->buf[i] - line[count].txt;
         line[count].txt_width = XTextWidth(viewerw->font,
-                                           (char *)line[count].txt,
+                                           line[count].txt,
                                            line[count].len);
         if (line[count].txt_width > viewerw->max_width)
             viewerw->max_width = line[count].txt_width;
@@ -2361,7 +2503,7 @@ int Widget_create_viewer(const char *buf, int len,
     }
     popup_widget->name = "popup_viewer";
 
-    if ((viewerw = (widget_viewer_t *)malloc(sizeof(*viewerw))) == NULL)
+    if ((viewerw = XMALLOC(widget_viewer_t, 1)) == NULL)
     {
         error("No mem for viewer");
         Widget_destroy(popup_desc);
@@ -2516,9 +2658,7 @@ int Widget_update_viewer(int popup_desc, const char *buf, int len)
     start = MAX(first_visible, start);
     end = MIN(last_visible + 1, end);
     if (start < end)
-    {
         Widget_viewer_draw_lines(viewer_widget, start, end);
-    }
     Widget_draw(formw->children[1]);
     Widget_draw(formw->children[2]);
     return 0;

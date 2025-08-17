@@ -466,7 +466,7 @@ static int Config_create_bool(int widget_desc, int *height,
     }
 
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
-                        label_width, config_text_height,
+                        label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
     {
@@ -504,7 +504,7 @@ static int Config_create_int(int widget_desc, int *height,
         }
     }
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
-                        label_width, config_text_height,
+                        label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
     {
@@ -526,14 +526,15 @@ static int Config_create_int(int widget_desc, int *height,
     return intw;
 }
 
-static int Config_create_float(int widget_desc, int *height,
-                               const char *str, double *val, double min, double max,
-                               int (*callback)(int, void *, double *),
-                               void *data)
+static int Config_create_double(int widget_desc, int *height,
+                                const char *str, double *val,
+                                double min, double max,
+                                int (*callback)(int, void *, double *),
+                                void *data)
 {
     int offset,
         label_width,
-        floatw;
+        doublew;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
     {
@@ -549,76 +550,76 @@ static int Config_create_float(int widget_desc, int *height,
         }
     }
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
-                        label_width, config_text_height,
+                        label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
     {
         *height += config_entry_height;
     }
-    floatw = Widget_create_float(widget_desc, offset, *height + (config_entry_height - config_text_height) / 2,
-                                 config_float_width, config_text_height,
-                                 0, val, min, max, callback, data);
+    doublew = Widget_create_double(widget_desc, offset, *height + (config_entry_height - config_text_height) / 2,
+                                   config_float_width, config_text_height,
+                                   0, val, min, max, callback, data);
     offset += config_float_width;
     Widget_create_arrow_left(widget_desc, offset, *height + (config_entry_height - config_arrow_height) / 2,
                              config_arrow_width, config_arrow_height,
-                             0, floatw);
+                             0, doublew);
     offset += config_arrow_width;
     Widget_create_arrow_right(widget_desc, offset, *height + (config_entry_height - config_arrow_height) / 2,
                               config_arrow_width, config_arrow_height,
-                              0, floatw);
+                              0, doublew);
     *height += config_entry_height + config_space;
 
-    return floatw;
+    return doublew;
 }
 
 static int Config_create_power(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "power", &power,
-                               MIN_PLAYER_POWER, MAX_PLAYER_POWER,
-                               Config_update_power, NULL);
+    return Config_create_double(widget_desc, height,
+                                "power", &power,
+                                MIN_PLAYER_POWER, MAX_PLAYER_POWER,
+                                Config_update_power, NULL);
 }
 
 static int Config_create_turnSpeed(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "turnSpeed", &turnspeed,
-                               MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
-                               Config_update_turnSpeed, NULL);
+    return Config_create_double(widget_desc, height,
+                                "turnSpeed", &turnspeed,
+                                MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
+                                Config_update_turnSpeed, NULL);
 }
 
 static int Config_create_turnResistance(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "turnResistance", &turnresistance,
-                               MIN_PLAYER_TURNRESISTANCE,
-                               MAX_PLAYER_TURNRESISTANCE,
-                               Config_update_turnResistance, NULL);
+    return Config_create_double(widget_desc, height,
+                                "turnResistance", &turnresistance,
+                                MIN_PLAYER_TURNRESISTANCE,
+                                MAX_PLAYER_TURNRESISTANCE,
+                                Config_update_turnResistance, NULL);
 }
 
 static int Config_create_altPower(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "altPower", &power_s,
-                               MIN_PLAYER_POWER, MAX_PLAYER_POWER,
-                               Config_update_altPower, NULL);
+    return Config_create_double(widget_desc, height,
+                                "altPower", &power_s,
+                                MIN_PLAYER_POWER, MAX_PLAYER_POWER,
+                                Config_update_altPower, NULL);
 }
 
 static int Config_create_altTurnSpeed(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "altTurnSpeed", &turnspeed_s,
-                               MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
-                               Config_update_altTurnSpeed, NULL);
+    return Config_create_double(widget_desc, height,
+                                "altTurnSpeed", &turnspeed_s,
+                                MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
+                                Config_update_altTurnSpeed, NULL);
 }
 
 static int Config_create_altTurnResistance(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "altTurnResistance", &turnresistance_s,
-                               MIN_PLAYER_TURNRESISTANCE,
-                               MAX_PLAYER_TURNRESISTANCE,
-                               Config_update_altTurnResistance, NULL);
+    return Config_create_double(widget_desc, height,
+                                "altTurnResistance", &turnresistance_s,
+                                MIN_PLAYER_TURNRESISTANCE,
+                                MAX_PLAYER_TURNRESISTANCE,
+                                Config_update_altTurnResistance, NULL);
 }
 
 static int Config_create_showMessages(int widget_desc, int *height)
@@ -684,16 +685,16 @@ static int Config_create_verticalHUDLine(int widget_desc, int *height)
 
 static int Config_create_speedFactHUD(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "speedFactHUD", &hud_move_fact, -10.0, 10.0,
-                               NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "speedFactHUD", &hud_move_fact, -10.0, 10.0,
+                                NULL, NULL);
 }
 
 static int Config_create_speedFactPTR(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "speedFactPTR", &ptr_move_fact, -10.0, 10.0,
-                               NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "speedFactPTR", &ptr_move_fact, -10.0, 10.0,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelNotify(int widget_desc, int *height)
@@ -786,11 +787,11 @@ static int Config_create_showItems(int widget_desc, int *height)
 
 static int Config_create_showItemsTime(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "showItemsTime", &showItemsTime,
-                               MIN_SHOW_ITEMS_TIME,
-                               MAX_SHOW_ITEMS_TIME,
-                               NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "showItemsTime", &showItemsTime,
+                                MIN_SHOW_ITEMS_TIME,
+                                MAX_SHOW_ITEMS_TIME,
+                                NULL, NULL);
 }
 
 static int Config_create_backgroundPointSize(int widget_desc, int *height)
@@ -811,10 +812,10 @@ static int Config_create_sparkSize(int widget_desc, int *height)
 
 static int Config_create_sparkProb(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "sparkProb", &spark_prob,
-                               0.0, 1.0,
-                               Config_update_sparkProb, NULL);
+    return Config_create_double(widget_desc, height,
+                                "sparkProb", &spark_prob,
+                                0.0, 1.0,
+                                Config_update_sparkProb, NULL);
 }
 
 static int Config_create_charsPerSecond(int widget_desc, int *height)
@@ -1025,18 +1026,18 @@ static int Config_create_clockAMPM(int widget_desc, int *height)
 
 static int Config_create_scaleFactor(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "scaleFactor", &scaleFactor,
-                               MIN_SCALEFACTOR, MAX_SCALEFACTOR,
-                               Config_update_scaleFactor, NULL);
+    return Config_create_double(widget_desc, height,
+                                "scaleFactor", &scaleFactor,
+                                MIN_SCALEFACTOR, MAX_SCALEFACTOR,
+                                Config_update_scaleFactor, NULL);
 }
 
 static int Config_create_altScaleFactor(int widget_desc, int *height)
 {
-    return Config_create_float(widget_desc, height,
-                               "altScaleFactor", &scaleFactor_s,
-                               MIN_SCALEFACTOR, MAX_SCALEFACTOR,
-                               NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "altScaleFactor", &scaleFactor_s,
+                                MIN_SCALEFACTOR, MAX_SCALEFACTOR,
+                                NULL, NULL);
 }
 
 static int Config_create_markingLights(int widget_desc, int *height)

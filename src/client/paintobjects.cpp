@@ -38,7 +38,7 @@
 
 #include "client.h"
 #include "paint.h"
-#include "paintdata.h"
+// #include "paintdata.h"
 
 #include "xpconfig.h"
 #include "const.h"
@@ -48,7 +48,7 @@
 // #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "paintdata.h"
+// #include "paintdata.h"
 // #include "record.h"
 #include "protoclient.h"
 #include "portability.h"
