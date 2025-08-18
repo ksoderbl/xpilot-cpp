@@ -98,4 +98,19 @@ const char *Get_player_dpy(connection_t *connp);
 int Send_shape(connection_t *connp, int shape);
 int Check_max_clients_per_IP(char *host_addr);
 
+#define FEATURE(connp, feature) ((connp)->features & (feature))
+#define F_POLY (1 << 0)
+#define F_FLOATSCORE (1 << 1)
+#define F_EXPLICITSELF (1 << 2)
+#define F_ASTEROID (1 << 3)
+#define F_TEMPWORM (1 << 4)
+#define F_FASTRADAR (1 << 5)
+#define F_SEPARATEPHASING (1 << 6)
+#define F_TEAMRADAR (1 << 7)
+#define F_SHOW_APPEARING (1 << 8)
+#define F_SENDTEAM F_SHOW_APPEARING
+#define F_CUMULATIVETURN (1 << 9)
+#define F_BALLSTYLE (1 << 10)
+#define F_POLYSTYLE (1 << 11)
+
 #endif

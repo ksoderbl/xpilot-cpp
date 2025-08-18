@@ -141,6 +141,11 @@
 #define Player_owns_tank(pl_i, pl_j) \
         (Player_is_tank(pl_j) && (pl_j->lock.pl_id != -1) && (pl_j->lock.pl_id == pl_i->id))
 
+/*
+ * Used when we want to pass an index which is not in use.
+ */
+#define NO_IND (-1)
+
 #define RECOVERY_DELAY (FPS * 3)
 #define ROBOT_CREATE_DELAY (FPS * 2)
 
@@ -265,5 +270,24 @@
 
 #define WORM_BRAKE_FACTOR 1
 #define WORMCOUNT 64
+
+// walls2 stuff
+
+/* Wall code only considers one way of wrapping around the map, and
+ * assumes that after moving the length of one line or one unit of object
+ * movement (max 32000 clicks) the shortest distance from the start to
+ * the end position is the path that was moved (there are some fudge
+ * factors in the length). For this to hold, the map must be somewhat
+ * larger than 2 * 32000 clicks = 1000 pixels. */
+// #define MIN_MAP_SIZE 1100
+/* map dimension limitation: (0x7FFF - 1280) */
+/* Where does 1280 come from? uau */
+// #define MAX_MAP_SIZE 31500
+
+#define POLYGON_MAX_OFFSET 30000
+// #define NO_GROUP (-1)
+
+/* Maximum frames per second the server code supports. */
+#define MAX_SERVER_FPS 255
 
 #endif

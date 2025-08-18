@@ -6,6 +6,11 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2000-2004 by
+ *
+ *      Uoti Urpala
+ *      Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,9 +30,10 @@
 #define MAP_H
 
 #include "click.h"
-#include "types.h"
-#include "rules.h"
+#include "const.h"
 #include "item.h"
+#include "rules.h"
+#include "types.h"
 
 #define SPACE 0
 #define BASE 1
@@ -278,5 +284,15 @@ typedef struct
 } world_t;
 
 extern world_t World, *world;
+extern bool is_polygon_map;
+
+static inline bool World_contains_clpos(clpos_t pos)
+{
+    if (pos.cx < 0 || pos.cx >= world->click_width)
+        return false;
+    if (pos.cy < 0 || pos.cy >= world->click_height)
+        return false;
+    return true;
+}
 
 #endif

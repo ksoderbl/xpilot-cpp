@@ -75,6 +75,8 @@
  */
 typedef struct
 {
+    // TODO: should ind == conn_index?
+    int ind;                     /* index of connection */
     int conn_index;              /* index of connection in Conn[] */
     int state;                   /* state of connection */
     int drain_state;             /* state after draining done */
@@ -113,6 +115,7 @@ typedef struct
     shipshape_t *ship;           /* ship shape of player */
     char *addr;                  /* address of players host */
     char *host;                  /* hostname of players host */
+    int features;                /* supported features */
 } connection_t;
 
 #endif

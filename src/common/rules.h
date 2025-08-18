@@ -1,5 +1,4 @@
-/* $Id: rules.h,v 5.3 2001/11/29 13:38:49 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

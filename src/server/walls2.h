@@ -1,14 +1,14 @@
 /*
- * XPilot NG, a multiplayer space war game.
- *
- * Copyright (C) 2000-2004 Uoti Urpala <uau@users.sourceforge.net>
+ * XPilot, a multiplayer gravity war game.
  *
  * Copyright (C) 1991-2001 by
  *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
+ *
+ * Copyright (C) 2000-2004 Uoti Urpala
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,16 +25,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WALLS_H
-#define WALLS_H
+#ifndef WALLS2_H
+#define WALLS2_H
 
-#ifndef CLICK_H
 #include "click.h"
-#endif
-
-#ifndef OBJECT_H
 #include "object.h"
-#endif
+#include "polygon.h"
 
 /*
  * Wall collision detection and bouncing.
@@ -109,92 +105,92 @@ struct move_parameters
     unsigned long obj_treasure_mask; /* objects treasure crash? */
 };
 
-/* kps change 100, 30 etc to something sane */
-struct polystyle
-{
-    char id[100];
-    int color;
-    int texture_id;
-    int defedge_id;
-    int flags;
-};
+// /* kps change 100, 30 etc to something sane */
+// struct polystyle
+// {
+//     char id[100];
+//     int color;
+//     int texture_id;
+//     int defedge_id;
+//     int flags;
+// };
 
-struct edgestyle
-{
-    char id[100];
-    int width;
-    int color;
-    int style;
-};
+// struct edgestyle
+// {
+//     char id[100];
+//     int width;
+//     int color;
+//     int style;
+// };
 
-struct bmpstyle
-{
-    char id[100];
-    char filename[32];
-    int flags;
-};
+// struct bmpstyle
+// {
+//     char id[100];
+//     char filename[32];
+//     int flags;
+// };
 
-typedef struct
-{
-    int style;
-    int current_style;
-    int destroyed_style;
-    int group;
-    int edges;
-    clpos_t pos;
-    int num_points;
-    int estyles_start;
-    int num_echanges;
-    int is_decor;
-    unsigned update_mask;
-    long last_change;
-} poly_t;
+// typedef struct
+// {
+//     int style;
+//     int current_style;
+//     int destroyed_style;
+//     int group;
+//     int edges;
+//     clpos_t pos;
+//     int num_points;
+//     int estyles_start;
+//     int num_echanges;
+//     int is_decor;
+//     unsigned update_mask;
+//     long last_change;
+// } poly_t;
 
 /*
  * Hitmasks are 32 bits.
  */
-#define ALL_BITS 0xffffffffU
-#define BALL_BIT (1U << 11)
-#define NONBALL_BIT (1U << 12)
-#define NOTEAM_BIT (1U << 10)
-#define HITMASK(team) ((team) == TEAM_NOT_SET ? NOTEAM_BIT : 1U << (team))
-typedef uint32_t hitmask_t;
+// #define ALL_BITS 0xffffffffU
+// #define BALL_BIT (1U << 11)
+// #define NONBALL_BIT (1U << 12)
+// #define NOTEAM_BIT (1U << 10)
+// #define HITMASK(team) ((team) == TEAM_NOT_SET ? NOTEAM_BIT : 1U << (team))
+// typedef uint32_t hitmask_t;
 
-typedef struct move
-{
-    clvec_t start;
-    clvec_t delta;
-    hitmask_t hitmask;
-    const object_t *obj;
-} move_t;
+// typedef struct move
+// {
+//     clvec_t start;
+//     clvec_t delta;
+//     hitmask_t hitmask;
+//     const object_t *obj;
+// } move_t;
 
-typedef struct group group_t;
+// typedef struct group group_t;
 
-struct group
-{
-    int type;
-    int team;
-    hitmask_t hitmask;
-    bool (*hitfunc)(group_t *groupptr, const move_t *move);
-    int mapobj_ind;
-};
+// struct group
+// {
+//     int type;
+//     int team;
+//     hitmask_t hitmask;
+//     bool (*hitfunc)(group_t *groupptr, const move_t *move);
+//     int mapobj_ind;
+// };
 
-extern struct polystyle pstyles[256];
-extern struct edgestyle estyles[256];
-extern struct bmpstyle bstyles[256];
-extern poly_t *pdata;
-extern int *estyleptr;
-extern int *edgeptr;
-extern group_t *groups;
-extern int num_groups, max_groups;
+// extern struct polystyle pstyles[256];
+// extern struct edgestyle estyles[256];
+// extern struct bmpstyle bstyles[256];
+// // extern poly_t *pdata;
+// extern int *estyleptr;
+// extern int *edgeptr;
+// extern group_t *groups;
+// extern int num_groups, max_groups;
 
-static inline group_t *groupptr_by_id(int group)
-{
-    if (group >= 0 && group < num_groups)
-        return &groups[group];
-    return NULL;
-}
+// static inline group_t *groupptr_by_id(int group)
+// {
+//     if (group >= 0 && group < num_groups)
+//         return &groups[group];
+//     return NULL;
+// }
 
-extern int num_polys, num_pstyles, num_estyles, num_bstyles;
+// extern int num_polys, num_pstyles, num_estyles, num_bstyles;
 
 #endif

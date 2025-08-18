@@ -48,6 +48,7 @@
  * Globals.
  */
 world_t World, *world = &World;
+bool is_polygon_map = false;
 
 static void Init_map(void);
 static void Alloc_map(void);

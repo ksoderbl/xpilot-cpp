@@ -1,14 +1,14 @@
 /*
- * XPilot NG, a multiplayer space war game.
- *
- * Copyright (C) 2000-2004 Uoti Urpala <uau@users.sourceforge.net>
+ * XPilot, a multiplayer gravity war game.
  *
  * Copyright (C) 1991-2001 by
  *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
+ *
+ * Copyright (C) 2000-2004 Uoti Urpala
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "xpserver.h"
+// #include "xpserver.h"
 
 struct move_parameters mp;
 static char msg[MSG_LEN];
@@ -114,14 +114,14 @@ shape_t ball_wire;
 struct bline *linet;
 #define S_LINES 100 /* stupid hack */
 
-struct group *groups = NULL;
-int num_groups = 0, max_groups = 0;
+// struct group *groups = NULL;
+// int num_groups = 0, max_groups = 0;
 
 struct blockinfo *blockline;
 unsigned short *llist;
 unsigned short *plist;
-int num_lines = 0;
-int num_polys = 0;
+// int num_lines = 0;
+// int num_polys = 0;
 int mapx, mapy;
 
 static inline bool can_hit(group_t *gp, const move_t *move)
@@ -366,7 +366,7 @@ void Player_crash(player_t *pl, int crashtype, int mapobj_ind, int pt)
             for (i = 0; i < num_pushers; i++)
             {
                 player_t *pusher = pushers[i];
-                const char *sep = (!i)                      ? " with help from "
+                const char *sep = (!i)                    ? " with help from "
                                   : (i < num_pushers - 1) ? ", "
                                                           : " and ";
                 size_t sep_len = strlen(sep);
@@ -3070,9 +3070,9 @@ void Turn_player(player_t *pl, bool push)
         if (group != NO_GROUP)
         {
             double /*fact, */ velon, velot;
-            double cl, sl;     /* cosine and sine of line angle            */
+            double cl, sl;   /* cosine and sine of line angle            */
             double cln, sln; /* cosine and sine of line normal           */
-            double pc, ps;     /* cosine and sine of the points            */
+            double pc, ps;   /* cosine and sine of the points            */
             double pdc, pds; /* cosine and sine of the points direction  */
             double x, y, l /*, v*/;
             double power = pl->power;
