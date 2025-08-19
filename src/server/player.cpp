@@ -779,26 +779,7 @@ void Reset_all_players(void)
         }
     }
 
-    if (round_delay_send > 0)
-    {
-        round_delay_send--;
-    }
-    if (options.roundDelaySeconds)
-    {
-        /* Hold your horses! The next round will start in a few moments. */
-        round_delay = options.roundDelaySeconds * FPS;
-        /* Send him an extra seconds worth to be sure he gets the 0. */
-        round_delay_send = round_delay + FPS;
-        roundtime = -1;
-        sprintf(msg, "Delaying %d seconds until start of next %s.",
-                options.roundDelaySeconds,
-                (BIT(world->rules->mode, TIMING) ? "race" : "round"));
-        Set_message(msg);
-    }
-    else
-    {
-        roundtime = options.maxRoundTime * FPS;
-    }
+    roundtime = options.maxRoundTime * FPS;
 
     Update_score_table();
 }
@@ -1263,30 +1244,8 @@ void Compute_game_status(void)
     player_t *pl;
     char msg[MSG_LEN];
 
-    if (round_delay_send > 0)
-    {
-        round_delay_send--;
-    }
-    if (round_delay > 0)
-    {
-        if (!--round_delay)
-        {
-            sprintf(msg, "%s starts now.",
-                    (BIT(world->rules->mode, TIMING) ? "Race" : "Round"));
-            Set_message(msg);
-            roundtime = options.maxRoundTime * FPS;
-            /* make sure players get the full 60 seconds of allowed idle time */
-            for (i = 0; i < NumPlayers; i++)
-            {
-                Players[i]->frame_last_busy = frame_loops;
-            }
-        }
-    }
-
     if (roundtime > 0)
-    {
         roundtime--;
-    }
 
     if (BIT(world->rules->mode, TIMING))
     {
@@ -1326,13 +1285,9 @@ void Compute_game_status(void)
         {
             pl = Players[i];
             if (BIT(pl->status, PAUSE) || Player_is_tank(pl))
-            {
                 continue;
-            }
             if (!BIT(pl->status, GAME_OVER))
-            {
                 num_alive_players++;
-            }
             else if (pl->mychar == 'W')
             {
                 num_waiting_players++;
@@ -1345,13 +1300,9 @@ void Compute_game_status(void)
                 position++;
             }
             else if (BIT(pl->status, FINISH))
-            {
                 num_finished_players++;
-            }
             else if (!BIT(pl->status, GAME_OVER))
-            {
                 alive = pl;
-            }
 
             /*
              * An active player is one who is:
@@ -1363,9 +1314,7 @@ void Compute_game_status(void)
             num_active_players++;
         }
         if (num_active_players == 0 && num_waiting_players == 0)
-        {
             return;
-        }
 
         /* Now if any players are unaccounted for */
         if (num_finished_players > 0)
@@ -1381,18 +1330,14 @@ void Compute_game_status(void)
 
             total_pts = 0;
             for (i = 0; i < num_finished_players; i++)
-            {
                 total_pts += (10 + 2 * num_active_players) >> (position - 1 + i);
-            }
             pts = total_pts / num_finished_players;
 
             for (i = 0; i < NumPlayers; i++)
             {
                 pl = Players[i];
                 if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
-                {
                     continue;
-                }
                 if (BIT(pl->status, FINISH))
                 {
                     CLR_BIT(pl->status, FINISH);
@@ -1441,31 +1386,22 @@ void Compute_game_status(void)
         if (BIT(world->rules->mode, LIMITED_LIVES))
         {
             if (num_alive_players > 1)
-            {
                 return;
-            }
             if (num_alive_players == 1)
             {
                 if (num_finished_players + num_race_over_players == 0)
-                {
                     return;
-                }
                 if (!alive || alive->round == 0)
-                {
                     return;
-                }
             }
         }
         else if (num_finished_players == 0)
-        {
             return;
-        }
 
         Race_game_over();
     }
     else if (BIT(world->rules->mode, TEAM_PLAY))
     {
-
         /* Do we have a winning team ? */
 
         enum TeamState
@@ -1479,9 +1415,7 @@ void Compute_game_status(void)
         int winning_team = -1;
 
         for (i = 0; i < MAX_TEAMS; i++)
-        {
             team_state[i] = TeamEmpty;
-        }
 
         for (i = 0; i < NumPlayers; i++)
         {
@@ -1518,10 +1452,8 @@ void Compute_game_status(void)
             else if (team_state[Players[i]->team] != TeamAlive)
             {
                 if (team_state[Players[i]->team] == TeamDead)
-                {
                     /* Oops!  Not all teammembers are dead yet. */
                     num_dead_teams--;
-                }
                 team_state[Players[i]->team] = TeamAlive;
                 ++num_alive_teams;
                 /* Remember a team which was alive. */
@@ -1559,28 +1491,20 @@ void Compute_game_status(void)
                 team_win[i] = 1;
                 team_ptr = &(world->teams[i]);
                 if (team_ptr->TreasuresDestroyed > max_destroyed)
-                {
                     max_destroyed = team_ptr->TreasuresDestroyed;
-                }
                 if ((team_ptr->TreasuresLeft > 0) ||
                     (team_ptr->NumTreasures == team_ptr->NumEmptyTreasures))
-                {
                     teams_with_treasure++;
-                }
             }
 
             /*
              * Game is not over if more than one team has treasure.
              */
             if ((teams_with_treasure > 1 || !max_destroyed) && (roundtime != 0 || options.maxRoundTime <= 0))
-            {
                 return;
-            }
 
             if (options.maxRoundTime > 0 && roundtime == 0)
-            {
                 Set_message("Timer expired. Round ends now.");
-            }
 
             /*
              * Find the winning team;
@@ -1651,9 +1575,7 @@ void Compute_game_status(void)
                     winners++;
                 }
                 else
-                {
                     team_win[i] = 0;
-                }
             }
             if (winners == 1)
             {

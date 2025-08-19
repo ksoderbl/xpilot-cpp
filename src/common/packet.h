@@ -1,5 +1,4 @@
-/* $Id: packet.h,v 5.4 2002/01/18 22:34:26 kimiko Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

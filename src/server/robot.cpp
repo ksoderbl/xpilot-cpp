@@ -780,26 +780,17 @@ static void Robot_create(void)
 
     Robot_talks(ROBOT_TALK_ENTER, robot->name, "");
 
-#ifndef SILENT
     if (options.logRobots)
         xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
                  showtime(), robot->name, NumPlayers, robot->username, robot->home_base);
-#endif
 
-    if (round_delay > 0 || NumPlayers == 1)
+    if (NumPlayers == 1)
     {
-        round_delay = options.roundDelaySeconds * FPS;
-        round_delay_send = round_delay + FPS; /* delay him an extra second */
-        if (options.maxRoundTime > 0 && options.roundDelaySeconds == 0)
-        {
+        if (options.maxRoundTime > 0)
             roundtime = options.maxRoundTime * FPS;
-        }
         else
-        {
             roundtime = -1;
-        }
-        sprintf(msg, "Player entered. Delaying %d seconds until next %s.",
-                options.roundDelaySeconds,
+        sprintf(msg, "Player entered. Delaying 0 seconds until next %s.",
                 (BIT(world->rules->mode, TIMING) ? "race" : "round"));
         Set_message(msg);
     }
@@ -1112,10 +1103,8 @@ void Robot_update(void)
         }
 
         if (!Player_is_robot(pl))
-        {
             /* Ignore non-robots. */
             continue;
-        }
 
         if (BIT(pl->status, PLAYING | GAME_OVER) != PLAYING)
         {
@@ -1123,9 +1112,7 @@ void Robot_update(void)
             if (!pl->count)
             {
                 if (Robot_check_leave(i))
-                {
                     i--;
-                }
             }
             continue;
         }
@@ -1133,11 +1120,6 @@ void Robot_update(void)
         if (Robot_check_leave(i))
         {
             i--;
-            continue;
-        }
-
-        if (round_delay > 0)
-        {
             continue;
         }
 

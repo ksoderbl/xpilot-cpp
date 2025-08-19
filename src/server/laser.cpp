@@ -538,11 +538,8 @@ void Laser_pulse_collision(void)
         midx = WRAP_XPIXEL(midx);
         midy = WRAP_YPIXEL(midy);
 
-        if (round_delay == 0)
-        {
-            /* assemble a shortlist of players which might get hit. */
-            Laser_pulse_find_victims(&vicbuf, pulse, midx, midy);
-        }
+        /* assemble a shortlist of players which might get hit. */
+        Laser_pulse_find_victims(&vicbuf, pulse, midx, midy);
 
         Laser_pulse_get_object_list(
             obj_list,
@@ -634,16 +631,8 @@ void Laser_pulse_collision(void)
             }
 
             if (obj->life == 0)
-            {
                 /* pulse hit asteroid */
                 continue;
-            }
-
-            if (round_delay > 0)
-            {
-                /* at round delay no hits are possible */
-                continue;
-            }
 
             hits = Laser_pulse_check_player_hits(
                 pulse, obj,
@@ -652,9 +641,7 @@ void Laser_pulse_collision(void)
                 &refl);
 
             if (hits > 0)
-            {
                 break;
-            }
         }
 
         if (i < max && refl == false)

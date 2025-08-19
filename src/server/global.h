@@ -75,8 +75,6 @@ extern int mainLoopTime;
 extern char *serverAddr;
 extern bool updateScores;
 extern int game_lock;
-extern int round_delay;
-extern int round_delay_send;
 extern int roundtime;
 extern int roundsPlayed;
 extern long KILLING_SHOTS;

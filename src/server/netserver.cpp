@@ -1182,9 +1182,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     Pick_startpos(NumPlayers);
     Go_home(NumPlayers);
     if (pl->team != TEAM_NOT_SET)
-    {
         world->teams[pl->team].NumMembers++;
-    }
     NumPlayers++;
     request_ID();
     connp->id = pl->id;
@@ -1201,10 +1199,8 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         return -1;
     }
 
-#ifndef SILENT
     xpprintf("%s %s (%d) starts at startpos %d.\n", showtime(),
              pl->name, NumPlayers, pl->home_base);
-#endif
 
     /*
      * Tell him about himself first.
@@ -1242,27 +1238,19 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         else if (IS_ROBOT_IND(i))
         {
             if ((war_on_id = Robot_war_on_player(i)) != NO_ID)
-            {
                 Send_war(pl->conn, Players[i]->id, war_on_id);
-            }
         }
     }
 
     if (NumPlayers == 1)
-    {
         sprintf(msg, "Welcome to \"%s\", made by %s.",
                 world->name, world->author);
-    }
     else if (BIT(world->rules->mode, TEAM_PLAY))
-    {
         sprintf(msg, "%s (%s, team %d) has entered \"%s\", made by %s.",
                 pl->name, pl->username, pl->team, world->name, world->author);
-    }
     else
-    {
         sprintf(msg, "%s (%s) has entered \"%s\", made by %s.",
                 pl->name, pl->username, world->name, world->author);
-    }
     Set_message(msg);
 
     if (connp->version < MY_VERSION)
@@ -1270,23 +1258,21 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         const char sender[] = "[*Server notice*]";
         sprintf(msg, "Server runs version %s. %s", VERSION, sender);
         Set_player_message(pl, msg);
-        if (connp->version < 0x4401)
-        {
-            printf("THIS NEVER HAPPENS: fdjskafjdfadkasj\n");
-            sprintf(msg,
-                    "Your client does not support the fast radar packet. %s",
-                    sender);
-            Set_player_message(pl, msg);
-        }
-        if (connp->version < 0x4400 && options.maxAsteroidDensity > 0)
-        {
-            printf("THIS NEVER HAPPENS: 2jclajvkjafkdjsakfj894\n");
-            sprintf(msg,
-                    "Your client will see the %d asteroids as balls. %s",
-                    (int)world->asteroids.max,
-                    sender);
-            Set_player_message(pl, msg);
-        }
+        // if (connp->version < 0x4401)
+        // {
+        //     sprintf(msg,
+        //             "Your client does not support the fast radar packet. %s",
+        //             sender);
+        //     Set_player_message(pl, msg);
+        // }
+        // if (connp->version < 0x4400 && options.maxAsteroidDensity > 0)
+        // {
+        //     sprintf(msg,
+        //             "Your client will see the %d asteroids as balls. %s",
+        //             (int)world->asteroids.max,
+        //             sender);
+        //     Set_player_message(pl, msg);
+        // }
     }
 
     conn_bit = (1 << connp->conn_index);
@@ -1296,13 +1282,9 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
          * The client assumes at startup that all cannons are active.
          */
         if (world->cannon[i].dead_time == 0)
-        {
             SET_BIT(world->cannon[i].conn_mask, conn_bit);
-        }
         else
-        {
             CLR_BIT(world->cannon[i].conn_mask, conn_bit);
-        }
     }
     for (i = 0; i < world->NumFuels; i++)
     {
@@ -1310,13 +1292,9 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
          * The client assumes at startup that all fuelstations are filled.
          */
         if (world->fuel[i].fuel == MAX_STATION_FUEL)
-        {
             SET_BIT(world->fuel[i].conn_mask, conn_bit);
-        }
         else
-        {
             CLR_BIT(world->fuel[i].conn_mask, conn_bit);
-        }
     }
     for (i = 0; i < world->NumTargets; i++)
     {
@@ -1341,36 +1319,25 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
 
     num_logins++;
 
-    if (options.resetOnHuman > 0 && (NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman && !round_delay)
+    if (options.resetOnHuman > 0 && (NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman)
     {
         if (BIT(world->rules->mode, TIMING))
-        {
             Race_game_over();
-        }
         else if (BIT(world->rules->mode, TEAM_PLAY))
-        {
             Team_game_over(-1, "");
-        }
         else if (BIT(world->rules->mode, LIMITED_LIVES))
-        {
             Individual_game_over(-1);
-        }
     }
 
-    /* if the next round is delayed, delay it again */
-    if (round_delay > 0 || NumPlayers == 1)
+    if (NumPlayers == 1)
     {
-        round_delay = options.roundDelaySeconds * FPS;
-        if (options.maxRoundTime > 0 && options.roundDelaySeconds == 0)
-        {
+        if (options.maxRoundTime > 0)
             roundtime = options.maxRoundTime * FPS;
-        }
         else
-        {
             roundtime = -1;
-        }
-        sprintf(msg, "Player entered. Delaying %d seconds until next %s.",
-                options.roundDelaySeconds, (BIT(world->rules->mode, TIMING) ? "race" : "round"));
+
+        sprintf(msg, "Player entered. Delaying 0 seconds until next %s.",
+                (BIT(world->rules->mode, TIMING) ? "race" : "round"));
         Set_message(msg);
     }
 
@@ -1978,11 +1945,6 @@ int Send_shieldtime(connection_t *connp, int count, int max)
 int Send_phasingtime(connection_t *connp, int count, int max)
 {
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_PHASINGTIME, count, max);
-}
-
-int Send_rounddelay(connection_t *connp, int count, int max)
-{
-    return (Packet_printf(&connp->w, "%c%hd%hd", PKT_ROUNDDELAY, count, max));
 }
 
 int Send_debris(connection_t *connp, int type, uint8_t *p, int n)

@@ -252,9 +252,8 @@ typedef struct options
     int maxOffensiveItems; /* how many offensive and defensive */
     int maxDefensiveItems; /* items can player carry */
 
-    int roundDelaySeconds; /* delay before start of each round */
-    int maxRoundTime;      /* max. duration of each round */
-    int roundsToPlay;      /* # of rounds to play. */
+    int maxRoundTime; /* max. duration of each round */
+    int roundsToPlay; /* # of rounds to play. */
 
     int maxVisibleObject; /* how many objects a player can see */
     bool pLockServer;     /* Is server swappable out of memory?  */
