@@ -23,8 +23,7 @@
 
 #include <cassert>
 
-// TODO
-// #include "keys.h"
+#include "keys.h"
 
 typedef enum
 {
@@ -136,11 +135,11 @@ struct xp_option
     /* key option stuff */
 
 #define XP_KEY_OPTION_DUMMY \
-    NULL, NULL, 0 // KEY_DUMMY // TODO
+    NULL, NULL, KEY_DUMMY
 
     const char *key_defval;
     char *key_string;
-    int key; // keys_t key; // TODO
+    keys_t key;
 
     /* ... */
 };
@@ -173,8 +172,8 @@ extern void Set_command(const char *command);
 extern void Get_command(const char *command);
 
 extern void Usage(void);
-// extern const char *Get_keyHelpString(keys_t key);
-// extern const char *Get_keyResourceString(keys_t key);
+extern const char *Get_keyHelpString(keys_t key);
+extern const char *Get_keyResourceString(keys_t key);
 extern const char *Option_value_to_string(xp_option_t *opt);
 
 int Store_option(xp_option_t *);
@@ -216,11 +215,11 @@ static inline xp_option_origin_t Option_get_origin(xp_option_t *opt)
     return opt->origin;
 }
 
-// static inline keys_t Option_get_key(xp_option_t *opt)
-// {
-//     assert(opt);
-//     return opt->key;
-// }
+static inline keys_t Option_get_key(xp_option_t *opt)
+{
+    assert(opt);
+    return opt->key;
+}
 
 static inline void *Option_get_private_data(xp_option_t *opt)
 {
@@ -357,20 +356,20 @@ static inline xp_option_t *Option_by_index(int ind)
         key,                                   \
     }
 
-// #define XP_KS_UNKNOWN (-1)
-// typedef int xp_keysym_t;
+#define XP_KS_UNKNOWN (-1)
+typedef int xp_keysym_t;
 /* no const because of mfc client */
-// extern xp_keysym_t String_to_xp_keysym(/*const*/ char *str);
-// extern keys_t Generic_lookup_key(xp_keysym_t ks, bool reset);
+extern xp_keysym_t String_to_xp_keysym(/*const*/ char *str);
+extern keys_t Generic_lookup_key(xp_keysym_t ks, bool reset);
 
-// typedef struct
-// {
-//     xp_keysym_t keysym;
-//     keys_t key;
-// } xp_keydefs_t;
+typedef struct
+{
+    xp_keysym_t keysym;
+    keys_t key;
+} xp_keydefs_t;
 
-// extern xp_keydefs_t *keydefs;
-// extern int num_keydefs;
-// extern int max_keydefs;
+extern xp_keydefs_t *keydefs;
+extern int num_keydefs;
+extern int max_keydefs;
 
 #endif /* OPTION_H */

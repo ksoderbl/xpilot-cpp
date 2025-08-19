@@ -57,17 +57,16 @@
 #include "bitmaps.h"
 
 extern setup_t *Setup;
-extern int RadarHeight;
 extern score_object_t score_objects[MAX_SCORE_OBJECTS];
 extern int score_object;
 extern XGCValues gcv;
 
-int hudColor = BLUE;      /* Color index for HUD drawing */
-int hudHLineColor = BLUE; /* Color index for horiz. HUD line drawing */
-int hudVLineColor = BLUE; /* Color index for vert. HUD line drawing */
-int hudItemsColor = BLUE; /* Color index for HUD items drawing */
-// int hudRadarEnemyColor = 3;      /* Color index for enemy hudradar dots */
-// int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
+int hudColor = BLUE;             /* Color index for HUD drawing */
+int hudHLineColor = BLUE;        /* Color index for horiz. HUD line drawing */
+int hudVLineColor = BLUE;        /* Color index for vert. HUD line drawing */
+int hudItemsColor = BLUE;        /* Color index for HUD items drawing */
+int hudRadarEnemyColor = 3;      /* Color index for enemy hudradar dots */
+int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
 int hudLockColor = BLUE;         /* Color index for lock on HUD drawing */
 int fuelGaugeColor = BLUE;       /* Color index for fuel gauge drawing */
 int dirPtrColor = BLUE;          /* Color index for dirptr drawing */
@@ -90,11 +89,9 @@ int scoreObjectColor = BLUE;     /* Color index for map score objects */
 
 double charsPerTick = 0.0; /* Output speed of messages */
 
-int hudSize = 3 * MIN_HUD_SIZE;
-int hudRadarEnemyColor = 3;
-int hudRadarOtherColor = 2;
-double hudRadarScale = 3.0;
-double hudRadarLimit = 0.05;
+// int hudSize = 3 * MIN_HUD_SIZE;
+// double hudRadarScale = 3.0;
+// double hudRadarLimit = 0.05;
 
 static int meterWidth = 60;
 static int meterHeight = 10;
@@ -698,7 +695,7 @@ void Paint_HUD(void)
     }
 
     /* Fuel notify, HUD meter on */
-    if (fuelCount || fuelSum < fuelLevel3)
+    if (hudColor && (fuelTime > 0.0 || fuelSum < fuelNotify))
     {
         did_fuel = 1;
         sprintf(str, "%04d", (int)fuelSum);
@@ -766,27 +763,32 @@ void Paint_HUD(void)
                       autopilot, sizeof(autopilot) - 1);
     }
 
-    if (fuelCount > 0)
+    if (fuelTime > 0.0)
     {
-        fuelCount--;
+        fuelTime -= timePerFrame;
+        if (fuelTime <= 0.0)
+            fuelTime = 0.0;
     }
 
-    /* Fuel gauge, must be last */
-    if (instruments.fuelGauge == 0 || !((fuelCount) || (fuelSum < fuelLevel3 && ((fuelSum < fuelLevel1 && (loops % 4) < 2) || (fuelSum < fuelLevel2 && fuelSum > fuelLevel1 && (loops % 8) < 4) || (fuelSum > fuelLevel2)))))
-        return;
+    /* draw fuel gauge */
+    if (fuelGaugeColor &&
+        ((fuelTime > 0.0) || (fuelSum < fuelNotify && ((fuelSum < fuelCritical && (loopsSlow % 4) < 2) || (fuelSum < fuelWarning && fuelSum > fuelCritical && (loopsSlow % 8) < 4) || (fuelSum > fuelWarning)))))
+    {
 
-    rd.drawRectangle(dpy, drawPixmap, gameGC,
-                     WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
-                     WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
-                     WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)) + 3,
-                     WINSCALE(HUD_FUEL_GAUGE_SIZE) + 3);
+        SET_FG(colors[fuelGaugeColor].pixel);
+        rd.drawRectangle(dpy, drawPixmap, gameGC,
+                         WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
+                         WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
+                         WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)) + 3,
+                         WINSCALE(HUD_FUEL_GAUGE_SIZE) + 3);
 
-    size = (HUD_FUEL_GAUGE_SIZE * fuelSum) / fuelMax;
-    rd.fillRectangle(dpy, drawPixmap, gameGC,
-                     WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) + 1,
-                     WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET + HUD_FUEL_GAUGE_SIZE - size) + 1,
-                     WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)),
-                     WINSCALE(size));
+        size = (int)((HUD_FUEL_GAUGE_SIZE * fuelSum) / fuelMax);
+        rd.fillRectangle(dpy, drawPixmap, gameGC,
+                         WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) + 1,
+                         WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET + HUD_FUEL_GAUGE_SIZE - size) + 1,
+                         WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)),
+                         WINSCALE(size));
+    }
 }
 
 void Paint_messages(void)
@@ -828,19 +830,24 @@ void Paint_messages(void)
             continue;
 
         /*
-         * while there is something emphasized, freeze the life time counter
-         * of a message if it is not drawn `flashed' (red) anymore
+         * While there is something emphasized, freeze the life time counter
+         * of a message if it is not drawn "flashed" (not in oldMessagesColor)
+         * anymore.
          */
-        if (msg->life > MSG_FLASH || !selectionAndHistory || (selection.draw.state != SEL_PENDING && selection.draw.state != SEL_EMPHASIZED))
+        if (msg->lifeTime > MSG_FLASH_TIME || (selection.draw.state != SEL_PENDING && selection.draw.state != SEL_EMPHASIZED))
         {
-            if (msg->life-- <= 0)
+            if ((msg->lifeTime -= timePerFrame) <= 0.0)
             {
                 msg->txt[0] = '\0';
                 msg->len = 0;
-                msg->life = 0;
+                msg->lifeTime = 0.0;
                 continue;
             }
         }
+
+        if (msg->lifeTime <= MSG_FLASH_TIME)
+            msg_color = oldMessagesColor;
+
         if (i < maxMessages)
         {
             x = BORDER;
@@ -857,16 +864,8 @@ void Paint_messages(void)
             y = bot_y;
             bot_y -= SPACING;
         }
-        len = (int)(charsPerTick * (MSG_DURATION - msg->life));
+        len = (int)(charsPerSecond * (MSG_LIFE_TIME - msg->lifeTime));
         len = MIN(msg->len, len);
-        if (msg->life > MSG_FLASH)
-        {
-            msg_color = RED;
-        }
-        else
-        {
-            msg_color = oldMessagesColor;
-        }
 
         /*
          * it's an emphasized talk message
@@ -994,15 +993,7 @@ void Paint_messages(void)
             rd.drawString(dpy, drawPixmap, messageGC, x, y, msg->txt, len);
         }
 
-        if (len < msg->len)
-        {
-            width = XTextWidth(messageFont, msg->txt, len);
-        }
-        else
-        {
-            // TODO: Always calculate it here, remove msg->pixelLen
-            width = msg->pixelLen;
-        }
+        width = XTextWidth(messageFont, msg->txt, (int)MIN(len, msg->len));
     }
 }
 

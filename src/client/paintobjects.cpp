@@ -78,9 +78,6 @@ position_t *asteroidShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS];
 
 bool markingLights;
 
-// extern XGCValues gcv;
-extern setup_t *Setup;
-
 static int wrap(int *xp, int *yp)
 {
     int x = *xp, y = *yp;

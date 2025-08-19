@@ -929,7 +929,7 @@ static void Colors_free_true_color(void)
 /*
  * Deallocate everything related to colors.
  */
-void Colors_free_block_bitmaps(void)
+void Colors_free_bitmaps(void)
 {
     Colors_free_color_cube();
     Colors_free_true_color();
@@ -946,7 +946,7 @@ void Colors_free_block_bitmaps(void)
  */
 void Colors_cleanup(void)
 {
-    Colors_free_block_bitmaps();
+    Colors_free_bitmaps();
 
     if (dbuf_state)
     {

@@ -1,5 +1,4 @@
-/* $Id: netclient.h,v 5.5 2002/01/18 22:34:25 kimiko Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -36,10 +35,10 @@
 
 typedef struct
 {
-        int view_width;
-        int view_height;
-        int spark_rand;
-        int num_spark_colors;
+    int view_width;
+    int view_height;
+    int spark_rand;
+    int num_spark_colors;
 } display_t;
 
 extern int simulating;
@@ -47,6 +46,20 @@ extern setup_t *Setup;
 extern int receive_window_size;
 extern long last_loops;
 extern display_t server_display; /* the servers idea about our display */
+
+typedef struct
+{
+    int movement;
+    double turnspeed;
+    int id;
+} pointer_move_t;
+
+#define MAX_POINTER_MOVES 128
+
+extern pointer_move_t pointer_moves[MAX_POINTER_MOVES];
+extern int pointer_move_next;
+extern long last_keyboard_ack;
+extern bool dirPrediction;
 
 int Net_setup(void);
 int Net_verify(char *user_name, char *nick_name, char *dpy, int my_team);

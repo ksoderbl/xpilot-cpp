@@ -44,6 +44,8 @@
 #include "messages.h"
 #include "paint.h"
 
+#include "default.h" // For keyDefs
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xpaint.h"
@@ -707,23 +709,23 @@ static int Config_create_speedFactPTR(int widget_desc, int *height)
 
 static int Config_create_fuelNotify(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "fuelNotify", &fuelLevel3, 0, 1000,
-                             NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "fuelNotify", &fuelNotify, 0, 1000,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelWarning(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "fuelWarning", &fuelLevel2, 0, 1000,
-                             NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "fuelWarning", &fuelWarning, 0, 1000,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelCritical(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "fuelCritical", &fuelLevel1, 0, 1000,
-                             NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "fuelCritical", &fuelCritical, 0, 1000,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelGauge(int widget_desc, int *height)
@@ -781,7 +783,7 @@ static int Config_create_slidingRadar(int widget_desc, int *height)
 static int Config_create_backgroundPointDist(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "backgroundPointDist", &map_point_distance, 0, 10,
+                             "backgroundPointDist", &backgroundPointDist, 0, 10,
                              Config_update_dots, NULL);
 }
 
@@ -805,7 +807,7 @@ static int Config_create_showItemsTime(int widget_desc, int *height)
 static int Config_create_backgroundPointSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "backgroundPointSize", &map_point_size,
+                             "backgroundPointSize", &backgroundPointSize,
                              MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE,
                              Config_update_dots, NULL);
 }
@@ -813,7 +815,7 @@ static int Config_create_backgroundPointSize(int widget_desc, int *height)
 static int Config_create_sparkSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "sparkSize", &spark_size,
+                             "sparkSize", &sparkSize,
                              MIN_SPARK_SIZE, MAX_SPARK_SIZE,
                              NULL, NULL);
 }
@@ -821,7 +823,7 @@ static int Config_create_sparkSize(int widget_desc, int *height)
 static int Config_create_sparkProb(int widget_desc, int *height)
 {
     return Config_create_double(widget_desc, height,
-                                "sparkProb", &spark_prob,
+                                "sparkProb", &sparkProb,
                                 0.0, 1.0,
                                 Config_update_sparkProb, NULL);
 }
@@ -851,7 +853,7 @@ static int Config_create_autoShield(int widget_desc, int *height)
 static int Config_create_shotSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "shotSize", &shot_size,
+                             "shotSize", &shotSize,
                              MIN_SHOT_SIZE, MAX_SHOT_SIZE,
                              NULL, NULL);
 }
@@ -859,7 +861,7 @@ static int Config_create_shotSize(int widget_desc, int *height)
 static int Config_create_teamShotSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "teamShotSize", &teamshot_size,
+                             "teamShotSize", &teamShotSize,
                              MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE,
                              NULL, NULL);
 }
@@ -1146,7 +1148,7 @@ static int Config_update_bool(int widget_desc, void *data, bool *val)
 
 static int Config_update_dots(int widget_desc, void *data, int *val)
 {
-    if (val == &map_point_size && map_point_size > 1)
+    if (val == &backgroundPointSize && backgroundPointSize > 1)
         return 0;
     Map_dots();
     return 0;
@@ -1192,7 +1194,7 @@ static int Config_update_altTurnResistance(int widget_desc, void *data, double *
 
 static int Config_update_sparkProb(int widget_desc, void *data, double *val)
 {
-    spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
+    spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
     Send_display();
     return 0;
 }
@@ -1240,7 +1242,7 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
         }
         else
         {
-            Colors_free_block_bitmaps();
+            Colors_free_bitmaps();
             texturedObjects = false;
         }
     }
@@ -1382,7 +1384,7 @@ static bool Config_find_key(keys_t key, int start, int end, int *key_index)
 
     for (i = start; i < end; i++)
     {
-        if (keyDefs[i].key == key)
+        if (keydefs[i].key == key)
         {
             *key_index = i;
             return true;
@@ -1475,9 +1477,9 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_float(fp, "altTurnResistance", turnresistance_s);
     Config_save_float(fp, "speedFactHUD", hud_move_fact);
     Config_save_float(fp, "speedFactPTR", ptr_move_fact);
-    Config_save_float(fp, "fuelNotify", (double)fuelLevel3);
-    Config_save_float(fp, "fuelWarning", (double)fuelLevel2);
-    Config_save_float(fp, "fuelCritical", (double)fuelLevel1);
+    Config_save_float(fp, "fuelNotify", fuelNotify);
+    Config_save_float(fp, "fuelWarning", fuelWarning);
+    Config_save_float(fp, "fuelCritical", fuelCritical);
     Config_save_bool(fp, "showShipName", instruments.showShipName);
     Config_save_bool(fp, "showMineName", instruments.showMineName);
     Config_save_bool(fp, "showMessages", instruments.showMessages);
@@ -1505,12 +1507,12 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_bool(fp, "texturedObjects", texturedObjects);
     Config_save_bool(fp, "clock", instruments.clock);
     Config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
-    Config_save_int(fp, "backgroundPointDist", map_point_distance);
-    Config_save_int(fp, "backgroundPointSize", map_point_size);
-    Config_save_int(fp, "sparkSize", spark_size);
-    Config_save_float(fp, "sparkProb", spark_prob);
-    Config_save_int(fp, "shotSize", shot_size);
-    Config_save_int(fp, "teamShotSize", teamshot_size);
+    Config_save_int(fp, "backgroundPointDist", backgroundPointDist);
+    Config_save_int(fp, "backgroundPointSize", backgroundPointSize);
+    Config_save_int(fp, "sparkSize", sparkSize);
+    Config_save_float(fp, "sparkProb", sparkProb);
+    Config_save_int(fp, "shotSize", shotSize);
+    Config_save_int(fp, "teamShotSize", teamShotSize);
     Config_save_int(fp, "hudColor", hudColor);
     Config_save_int(fp, "hudLockColor", hudLockColor);
     Config_save_int(fp, "wallColor", wallColor);

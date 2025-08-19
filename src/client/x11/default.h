@@ -1,5 +1,4 @@
-/* $Id: default.h,v 5.1 2001/05/08 11:35:29 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,8 +21,10 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DEFAULT_H_
-#define _DEFAULT_H_
+#ifndef DEFAULT_H
+#define DEFAULT_H
+
+#include <X11/X.h>
 
 typedef struct
 {
@@ -37,5 +38,14 @@ typedef struct
 
 extern option options[];
 extern int optionsCount; /* NELEM(options) */
+
+// TODO: REMOVE
+typedef struct
+{
+    KeySym keysym; /* Keysym-to-action array */
+    keys_t key;
+} keydefs_t;
+
+extern keydefs_t *keyDefs;
 
 #endif

@@ -83,6 +83,10 @@ display_t server_display;
 int receive_window_size;
 long last_loops;
 bool packetMeasurement;
+pointer_move_t pointer_moves[MAX_POINTER_MOVES];
+int pointer_move_next;
+long last_keyboard_ack;
+bool dirPrediction;
 
 /*
  * Local variables.
@@ -96,7 +100,6 @@ static int (*receive_tbl[256])(void),
 static int keyboard_delta;
 static unsigned magic;
 static long last_keyboard_change,
-    last_keyboard_ack,
     last_keyboard_update,
     last_send_anything,
     reliable_offset,
@@ -1598,9 +1601,10 @@ int Receive_self(void)
 {
     int n;
     short x, y, vx, vy, lockId, lockDist,
-        fuelSum, fuelMax;
-    uint8_t ch, heading, power, turnspeed, turnresistance,
-        nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
+        sFuelSum, sFuelMax, sViewWidth, sViewHeight;
+    uint8_t ch, sNumSparkColors, sHeading, sPower, sTurnSpeed,
+        sTurnResistance, sNextCheckPoint, lockDir, sAutopilotLight,
+        currentTank, sStat;
     uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf,
@@ -1609,37 +1613,51 @@ int Receive_self(void)
                      "%c%c%c"
                      "%hd%hd%c%c",
                      &ch,
-                     &x, &y, &vx, &vy, &heading,
-                     &power, &turnspeed, &turnresistance,
-                     &lockId, &lockDist, &lockDir, &nextCheckPoint);
+                     &x, &y, &vx, &vy, &sHeading,
+                     &sPower, &sTurnSpeed, &sTurnResistance,
+                     &lockId, &lockDist, &lockDir, &sNextCheckPoint);
     if (n <= 0)
         return n;
 
     memset(num_items, 0, sizeof num_items);
+
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
-                     &currentTank, &fuelSum, &fuelMax,
-                     &ext_view_width, &ext_view_height, &debris_colors,
-                     &stat, &autopilotLight);
+                     &currentTank, &sFuelMax, &sFuelMax,
+                     &sViewWidth, &sViewHeight, &sNumSparkColors,
+                     &sStat, &sAutopilotLight);
     if (n <= 0)
         return n;
 
-    if (debris_colors > num_spark_colors)
-        debris_colors = num_spark_colors;
+    /*
+     * These assignments are done here because the server_display
+     * structure members are not of the type that Packet_scanf()
+     * expects, which breaks things on big endian architectures.
+     */
+    server_display.view_width = sViewWidth;
+    server_display.view_height = sViewHeight;
+    LIMIT(server_display.view_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (sViewWidth != server_display.view_width)
+        warn("unsupported view width from server");
+    LIMIT(server_display.view_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (sViewHeight != server_display.view_height)
+        warn("unsupported view height from server");
+    server_display.num_spark_colors = sNumSparkColors;
 
-    Check_view_dimensions();
+    // Check_view_dimensions();
+    // Game_over_action(stat);
 
-    Game_over_action(stat);
-    Handle_self(x, y, vx, vy, heading,
-                (float)power,
-                (float)turnspeed,
-                (float)turnresistance / 255.0F,
+    Handle_self(x, y, vx, vy, sHeading,
+                (double)sPower,
+                (double)sTurnSpeed,
+                (double)sTurnResistance / 255.0,
                 lockId, lockDist, lockDir,
-                nextCheckPoint, autopilotLight,
+                sNextCheckPoint, sAutopilotLight,
                 num_items,
-                currentTank, fuelSum, fuelMax, rbuf.len);
+                currentTank, (double)sFuelSum, (double)sFuelMax, rbuf.len,
+                (int)sStat);
 
     return 1;
 }

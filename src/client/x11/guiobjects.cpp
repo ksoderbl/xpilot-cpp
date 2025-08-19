@@ -294,9 +294,9 @@ void Gui_paint_spark(int color, int x, int y)
     color = spark_color[color];
 
     Rectangle_add(color,
-                  x - spark_size / 2,
-                  y - spark_size / 2,
-                  spark_size, spark_size);
+                  x - sparkSize / 2,
+                  y - sparkSize / 2,
+                  sparkSize, sparkSize);
 }
 
 void Gui_paint_wreck(int x, int y, bool deadly, int wtype, int rot, int size)
@@ -366,15 +366,15 @@ void Gui_paint_fastshot(int color, int x, int y)
 {
     if (!texturedObjects)
     {
-        int z = shot_size / 2;
+        int z = shotSize / 2;
         Rectangle_add(color,
                       x - z,
                       y - z,
-                      shot_size, shot_size);
+                      shotSize, shotSize);
     }
     else
     {
-        int s_size = (shot_size > 8) ? 8 : shot_size;
+        int s_size = (shotSize > 8) ? 8 : shotSize;
         int z = s_size / 2;
         Bitmap_paint(drawPixmap, BM_BULLET, WINSCALE(x) - z, WINSCALE(y) - z, s_size - 1);
     }
@@ -384,11 +384,11 @@ void Gui_paint_teamshot(int color, int x, int y)
 {
     if (!texturedObjects)
     {
-        Gui_paint_nastyshot(color, x, y, shot_size / 2);
+        Gui_paint_nastyshot(color, x, y, shotSize / 2);
     }
     else
     {
-        int s_size = (teamshot_size > 8) ? 8 : shot_size;
+        int s_size = (teamShotSize > 8) ? 8 : shotSize;
         int z = s_size / 2;
         Bitmap_paint(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z, WINSCALE(y) - z, s_size - 1);
     }

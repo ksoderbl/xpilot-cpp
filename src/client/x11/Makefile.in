@@ -104,8 +104,8 @@ am_xpilot_cpp_client_x11_OBJECTS = about.$(OBJEXT) bitmaps.$(OBJEXT) \
 	join.$(OBJEXT) paintdata.$(OBJEXT) painthud.$(OBJEXT) \
 	paintradar.$(OBJEXT) record.$(OBJEXT) sim.$(OBJEXT) \
 	talk.$(OBJEXT) welcome.$(OBJEXT) widget.$(OBJEXT) \
-	xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) \
-	xpaint.$(OBJEXT) xpilot.$(OBJEXT)
+	xdefault.$(OBJEXT) xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) \
+	xinit.$(OBJEXT) xpaint.$(OBJEXT) xpilot.$(OBJEXT)
 xpilot_cpp_client_x11_OBJECTS = $(am_xpilot_cpp_client_x11_OBJECTS)
 xpilot_cpp_client_x11_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
@@ -133,9 +133,9 @@ am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/bitmaps.Po \
 	./$(DEPDIR)/painthud.Po ./$(DEPDIR)/paintradar.Po \
 	./$(DEPDIR)/record.Po ./$(DEPDIR)/sim.Po ./$(DEPDIR)/talk.Po \
 	./$(DEPDIR)/welcome.Po ./$(DEPDIR)/widget.Po \
-	./$(DEPDIR)/xevent.Po ./$(DEPDIR)/xeventhandlers.Po \
-	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpaint.Po \
-	./$(DEPDIR)/xpilot.Po
+	./$(DEPDIR)/xdefault.Po ./$(DEPDIR)/xevent.Po \
+	./$(DEPDIR)/xeventhandlers.Po ./$(DEPDIR)/xinit.Po \
+	./$(DEPDIR)/xpaint.Po ./$(DEPDIR)/xpilot.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -285,7 +285,6 @@ xpilot_cpp_client_x11_SOURCES = \
     colors.cpp \
     colors.h \
     configure.cpp \
-    configure.h \
     dbuff.cpp \
     dbuff.h \
     default.cpp \
@@ -305,6 +304,7 @@ xpilot_cpp_client_x11_SOURCES = \
     welcome.cpp \
     widget.cpp \
     widget.h \
+    xdefault.cpp \
     xevent.cpp \
     xevent.h \
     xeventhandlers.cpp \
@@ -419,6 +419,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talk.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/welcome.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xdefault.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xevent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xeventhandlers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinit.Po@am__quote@ # am--include-marker
@@ -588,6 +589,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/talk.Po
 	-rm -f ./$(DEPDIR)/welcome.Po
 	-rm -f ./$(DEPDIR)/widget.Po
+	-rm -f ./$(DEPDIR)/xdefault.Po
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po
@@ -655,6 +657,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/talk.Po
 	-rm -f ./$(DEPDIR)/welcome.Po
 	-rm -f ./$(DEPDIR)/widget.Po
+	-rm -f ./$(DEPDIR)/xdefault.Po
 	-rm -f ./$(DEPDIR)/xevent.Po
 	-rm -f ./$(DEPDIR)/xeventhandlers.Po
 	-rm -f ./$(DEPDIR)/xinit.Po

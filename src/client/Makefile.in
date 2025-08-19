@@ -105,10 +105,11 @@ am__v_AR_1 =
 libxpclient_a_AR = $(AR) $(ARFLAGS)
 libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
-	datagram.$(OBJEXT) debugaudio.$(OBJEXT) gfx2d.$(OBJEXT) \
-	messages.$(OBJEXT) netclient.$(OBJEXT) option.$(OBJEXT) \
-	paint.$(OBJEXT) paintmap.$(OBJEXT) paintobjects.$(OBJEXT) \
-	query.$(OBJEXT) talkmacros.$(OBJEXT) textinterface.$(OBJEXT)
+	datagram.$(OBJEXT) debugaudio.$(OBJEXT) default.$(OBJEXT) \
+	event.$(OBJEXT) gfx2d.$(OBJEXT) messages.$(OBJEXT) \
+	netclient.$(OBJEXT) option.$(OBJEXT) paint.$(OBJEXT) \
+	paintmap.$(OBJEXT) paintobjects.$(OBJEXT) query.$(OBJEXT) \
+	talkmacros.$(OBJEXT) textinterface.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -127,6 +128,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
 	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
+	./$(DEPDIR)/default.Po ./$(DEPDIR)/event.Po \
 	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/messages.Po \
 	./$(DEPDIR)/netclient.Po ./$(DEPDIR)/option.Po \
 	./$(DEPDIR)/paint.Po ./$(DEPDIR)/paintmap.Po \
@@ -323,10 +325,13 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
+    configure.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
     debugaudio.cpp \
+    default.cpp \
+    event.cpp \
     gfx2d.cpp \
     gfx2d.h \
     guimap.h \
@@ -402,6 +407,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datagram.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debugaudio.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/default.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx2d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netclient.Po@am__quote@ # am--include-marker
@@ -633,6 +640,8 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
+	-rm -f ./$(DEPDIR)/default.Po
+	-rm -f ./$(DEPDIR)/event.Po
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/messages.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
@@ -692,6 +701,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/client.Po
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
+	-rm -f ./$(DEPDIR)/default.Po
+	-rm -f ./$(DEPDIR)/event.Po
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/messages.Po
 	-rm -f ./$(DEPDIR)/netclient.Po

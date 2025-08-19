@@ -36,6 +36,7 @@
 
 #include "draw.h"
 
+#include "configure.h"
 #include "messages.h"
 #include "paint.h"
 
@@ -54,6 +55,8 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "colors.h"
+
+#include "xpaint.h"
 
 /*
  * Item structures.
@@ -91,8 +94,6 @@
 #define ABOUT_WINDOW_WIDTH 600
 #define ABOUT_WINDOW_HEIGHT 700
 
-extern int RadarHeight;
-
 /*
  * Globals.
  */
@@ -103,7 +104,7 @@ bool quitting = false;
 int top_width, top_height, top_x, top_y, top_posmask;
 // int                        draw_width, draw_height;
 int players_width, players_height;
-char *geometry;
+// char *geometry;
 bool autoServerMotdPopup;
 bool refreshMotd;
 Cursor pointerControlCursor;
@@ -111,6 +112,14 @@ char sparkColors[MSG_LEN];
 int spark_color[MAX_COLORS];
 // int                        num_spark_colors;
 bool ignoreWindowManager;
+
+XFontStruct *gameFont; /* The fonts used in the game */
+XFontStruct *messageFont;
+XFontStruct *scoreListFont;
+XFontStruct *buttonFont;
+XFontStruct *textFont;
+XFontStruct *talkFont;
+XFontStruct *motdFont;
 
 /*
  * NB!  Is dependent on the order of the items in item.h!
@@ -235,7 +244,7 @@ static XFontStruct *Set_font(Display *dpy, GC gc,
  * of "colors[]" indices stored by "spark_color[]".
  * Initialize "num_spark_colors".
  */
-static void Init_spark_colors(void)
+void Init_spark_colors(void)
 {
     char buf[MSG_LEN];
     char *src, *dst;
@@ -726,9 +735,9 @@ static int Config_callback(int widget_desc, void *data, const char **str)
 static int Score_callback(int widget_desc, void *data, const char **str)
 {
     Config(false);
-    if (showRealName != false)
+    if (showUserName != false)
     {
-        showRealName = false;
+        showUserName = false;
         scoresChanged = 1;
     }
     return 0;
@@ -737,9 +746,9 @@ static int Score_callback(int widget_desc, void *data, const char **str)
 static int Player_callback(int widget_desc, void *data, const char **str)
 {
     Config(false);
-    if (showRealName != true)
+    if (showUserName != true)
     {
-        showRealName = true;
+        showUserName = true;
         scoresChanged = 1;
     }
     return 0;

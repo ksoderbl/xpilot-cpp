@@ -41,6 +41,8 @@
 #include "paint.h"
 #include "paintdata.h"
 
+#include "default.h"
+
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
@@ -61,20 +63,20 @@
 /*
  * Globals.
  */
-XFontStruct *gameFont; /* The fonts used in the game */
-XFontStruct *messageFont;
-XFontStruct *scoreListFont;
-XFontStruct *buttonFont;
-XFontStruct *textFont;
-XFontStruct *talkFont;
-XFontStruct *motdFont;
-char gameFontName[FONT_LEN]; /* The fonts used in the game */
-char messageFontName[FONT_LEN];
-char scoreListFontName[FONT_LEN];
-char buttonFontName[FONT_LEN];
-char textFontName[FONT_LEN];
-char talkFontName[FONT_LEN];
-char motdFontName[FONT_LEN];
+// XFontStruct *gameFont; /* The fonts used in the game */
+// XFontStruct *messageFont;
+// XFontStruct *scoreListFont;
+// XFontStruct *buttonFont;
+// XFontStruct *textFont;
+// XFontStruct *talkFont;
+// XFontStruct *motdFont;
+// char gameFontName[FONT_LEN]; /* The fonts used in the game */
+// char messageFontName[FONT_LEN];
+// char scoreListFontName[FONT_LEN];
+// char buttonFontName[FONT_LEN];
+// char textFontName[FONT_LEN];
+// char talkFontName[FONT_LEN];
+// char motdFontName[FONT_LEN];
 
 Display *dpy;     /* Display of player (pointer) */
 Display *kdpy;    /* Keyboard display */
@@ -384,7 +386,7 @@ void Paint_score_start(void)
 
     thisLine = SCORE_BORDER + scoreListFont->ascent;
 
-    if (showRealName)
+    if (showUserName)
     {
         strlcpy(headingStr, "NICK=USER@HOST", sizeof(headingStr));
     }
@@ -462,7 +464,7 @@ void Paint_score_entry(int entry_num,
     /*
      * Setup the status line
      */
-    if (showRealName)
+    if (showUserName)
     {
         sprintf(label, "%s=%s@%s", other->nick_name, other->user_name, other->host_name);
     }

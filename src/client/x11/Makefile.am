@@ -7,7 +7,6 @@ xpilot_cpp_client_x11_SOURCES = \
     colors.cpp \
     colors.h \
     configure.cpp \
-    configure.h \
     dbuff.cpp \
     dbuff.h \
     default.cpp \
@@ -27,6 +26,7 @@ xpilot_cpp_client_x11_SOURCES = \
     welcome.cpp \
     widget.cpp \
     widget.h \
+    xdefault.cpp \
     xevent.cpp \
     xevent.h \
     xeventhandlers.cpp \

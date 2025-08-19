@@ -36,6 +36,8 @@
 #include "messages.h"
 #include "paint.h"
 
+#include "default.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "xinit.h"
@@ -244,7 +246,7 @@ void Pointer_control_set_state(bool on)
     XFlush(dpy);
 }
 
-static void Talk_set_state(bool onoff)
+void Talk_set_state(bool onoff)
 {
 
     if (onoff)
@@ -298,14 +300,14 @@ bool Key_check_talk_macro(keys_t key)
     if (key >= KEY_MSG_1 && key < KEY_MSG_1 + TALK_FAST_NR_OF_MSGS)
     {
         /* talk macros */
-        Talk_macro(talk_fast_msgs[key - KEY_MSG_1]);
+        Talk_macro((int)key - KEY_MSG_1);
     }
     return true;
 }
 
 bool Key_press_id_mode(keys_t key)
 {
-    showRealName = showRealName ? false : true;
+    showUserName = showUserName ? false : true;
     scoresChanged++;
     return false; /* server doesn't need to know */
 }
@@ -348,7 +350,7 @@ bool Key_press_shield(keys_t key)
 
 bool Key_press_fuel(keys_t key)
 {
-    fuelCount = FUEL_NOTIFY;
+    fuelTime = FUEL_NOTIFY_TIME;
     return false;
 }
 
@@ -623,7 +625,7 @@ bool Key_release(keys_t key)
 
     case KEY_REFUEL:
     case KEY_REPAIR:
-        fuelCount = FUEL_NOTIFY;
+        fuelTime = FUEL_NOTIFY_TIME;
         break;
 
     case KEY_SELECT_ITEM:

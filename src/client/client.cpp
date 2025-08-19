@@ -40,6 +40,7 @@
 #include "xpmath.h"
 
 #include "client.h"
+#include "connectparam.h"
 #include "messages.h"
 #include "netclient.h"
 #include "paint.h"
@@ -47,11 +48,38 @@
 #include "protoclient.h"
 #include "talk.h"
 
+client_data_t clData = {
+    0,
+};
+
+char *geometry;
+xp_args_t xpArgs;
+Connect_param_t connectParam;
+
+bool newbie;
+int baseWarningType; /* Which type of base warning you prefer */
+int maxCharsInNames;
+int hudRadarDotSize;  /* Size for hudradar dot drawing */
+double hudRadarScale; /* Scale for hudradar drawing */
+double hudRadarLimit; /* Hudradar dots are not drawn if closer to
+             your ship than this factor of visible
+             range */
+// int hudSize;          /* Size for HUD drawing, depends on hudScale */
+
+int hudSize = 3 * MIN_HUD_SIZE;
+
+bool is_server = false; /* used in common code */
+
+int scoresChanged = 0;
+unsigned RadarHeight = 0;
+unsigned RadarWidth = 256; /* radar width at the server */
+bool UpdateRadar = false;  /* radar update because of polystyle changes? */
+
+//////
+
 int oldServer = true;
 ipos_t selfPos;
 ipos_t selfVel;
-ipos_t world;
-ipos_t realWorld;
 short heading;
 short nextCheckPoint;
 
@@ -59,7 +87,11 @@ uint8_t numItems[NUM_ITEMS];     /* Count of currently owned items */
 uint8_t lastNumItems[NUM_ITEMS]; /* Last item count shown */
 int numItemsTime[NUM_ITEMS];     /* Number of frames to show this item count */
 double showItemsTime;            /* How long to show changed item count for */
+double scoreObjectTime;          /* How long to flash score objects */
+
 short autopilotLight;
+
+int showScoreDecimals;
 
 short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
@@ -78,29 +110,27 @@ short shieldtimemax;
 short phasingtime;
 short phasingtimemax;
 
-int RadarHeight = 0;
-int RadarWidth = 256;   /* must always be 256! */
-int map_point_distance; /* spacing of navigation points */
-int map_point_size;     /* size of navigation points */
-int spark_size;         /* size of debris and spark */
-int shot_size;          /* size of shot */
-int teamshot_size;      /* size of team shot */
-long control_count;     /* Display control for how long? */
-int roundDelay;         /* != 0 means we're in a delay */
-int roundDelayMax;      /* (not yet) used for graph of time remaining in delay */
+int backgroundPointDist; /* spacing of navigation points */
+int backgroundPointSize; /* size of navigation points */
+int sparkSize;           /* size of debris and spark */
+int shotSize;            /* size of shot */
+int teamShotSize;        /* size of team shot */
+long control_count;      /* Display control for how long? */
+int roundDelay;          /* != 0 means we're in a delay */
+int roundDelayMax;       /* (not yet) used for graph of time remaining in delay */
 
 double controlTime;     /* Display control for how long? */
 uint8_t spark_rand;     /* Sparkling effect */
 uint8_t old_spark_rand; /* previous value of spark_rand */
 
-long fuelSum;      /* Sum of fuel in all tanks */
-long fuelMax;      /* How much fuel can you take? */
-short fuelCurrent; /* Number of currently used tank */
-short numTanks;    /* Number of tanks */
-long fuelCount;    /* Display fuel for how long? */
-int fuelLevel1;    /* Fuel critical level */
-int fuelLevel2;    /* Fuel warning level */
-int fuelLevel3;    /* Fuel notify level */
+long fuelSum;        /* Sum of fuel in all tanks */
+long fuelMax;        /* How much fuel can you take? */
+short fuelCurrent;   /* Number of currently used tank */
+short numTanks;      /* Number of tanks */
+double fuelTime;     /* Display fuel for how long? */
+double fuelCritical; /* Fuel critical level */
+double fuelWarning;  /* Fuel warning level */
+double fuelNotify;   /* Fuel notify level */
 
 char *shipShape;                /* Shape of player's ship */
 double power;                   /* Force of thrust */
@@ -112,7 +142,7 @@ double turnresistance_s;        /* Saved (see above) */
 double displayedPower;          /* What the server is sending us */
 double displayedTurnspeed;      /* What the server is sending us */
 double displayedTurnresistance; /* What the server is sending us */
-double spark_prob;              /* Sparkling effect user configurable */
+double sparkProb;               /* Sparkling effect user configurable */
 int charsPerSecond;             /* Message output speed (configurable) */
 
 double hud_move_fact;      /* scale the hud-movement (speed) */
@@ -126,15 +156,14 @@ int packet_lag;            /* approximate lag in frames */
 char *packet_measure;      /* packet measurement in a second */
 long packet_loop;          /* start of measurement */
 
-bool showRealName = false;  /* Show realname instead of nick name */
+bool showUserName = false;  /* Show realname instead of nick name */
 char name[MAX_CHARS];       /* Nick-name of player */
 char realname[MAX_CHARS];   /* Real name of player */
 char servername[MAX_CHARS]; /* Name of server connecting to */
 unsigned version;           /* Version of the server */
 bool toggle_shield;         /* Are shields toggled by a press? */
-int shields = 1;            /* When shields are considered up */
-
-bool auto_shield = 1; /* shield drops for fire */
+bool shields = true;        /* When shields are considered up */
+bool auto_shield = true;    /* shield drops for fire */
 
 int maxFPS; /* Client's own FPS */
 int oldMaxFPS;
@@ -144,6 +173,10 @@ int clientLag = 0;
 bool newSecond = false; /* Second changed this frame */
 bool played_this_round = false;
 long twelveHz = 0; /* We attempt to increment this at 12 Hz */
+
+int maxMouseTurnsPS = 0;
+int mouseMovementInterval = 0;
+int cumulativeMouseMovement = 0;
 
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
@@ -179,10 +212,6 @@ target_t *targets = NULL;
 int num_targets = 0;
 
 #define MAX_CHECKPOINT 26
-
-char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
-
-int scoresChanged = 0;
 
 other_t *Others = 0;
 int num_others = 0, max_others = 0;
@@ -552,7 +581,7 @@ void Map_dots(void)
     /*
      * Optimize.
      */
-    if (map_point_size > 0)
+    if (backgroundPointSize > 0)
     {
         if (BIT(Setup->mode, WRAP_PLAY))
         {
@@ -566,17 +595,17 @@ void Map_dots(void)
                 if (dot[Setup->map_data[y]])
                     Map_make_dot(&Setup->map_data[y]);
             }
-            start = map_point_distance;
+            start = backgroundPointDist;
         }
         else
         {
             start = 0;
         }
-        if (map_point_distance > 0)
+        if (backgroundPointDist > 0)
         {
-            for (x = start; x < Setup->x; x += map_point_distance)
+            for (x = start; x < Setup->x; x += backgroundPointDist)
             {
-                for (y = start; y < Setup->y; y += map_point_distance)
+                for (y = start; y < Setup->y; y += backgroundPointDist)
                 {
                     if (dot[Setup->map_data[x * Setup->y + y]])
                         Map_make_dot(&Setup->map_data[x * Setup->y + y]);
@@ -589,7 +618,7 @@ void Map_dots(void)
             y = cannons[i].pos % Setup->y;
             if ((x == 0 || y == 0) && BIT(Setup->mode, WRAP_PLAY))
                 cannons[i].dot = 1;
-            else if (map_point_distance > 0 && x % map_point_distance == 0 && y % map_point_distance == 0)
+            else if (backgroundPointDist > 0 && x % backgroundPointDist == 0 && y % backgroundPointDist == 0)
                 cannons[i].dot = 1;
             else
                 cannons[i].dot = 0;
@@ -1300,7 +1329,7 @@ int Handle_leave(int id)
             *other = other[1];
             other++;
         }
-        scoresChanged = 1;
+        scoresChanged = true;
     }
     for (i = 0; i < num_others; i++)
     {
@@ -1308,7 +1337,7 @@ int Handle_leave(int id)
         if (other->war_id == id)
         {
             other->war_id = -1;
-            scoresChanged = 1;
+            scoresChanged = true;
         }
     }
     return 0;
@@ -1372,7 +1401,7 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
     strlcpy(other->nick_name, nick_name, sizeof(other->nick_name));
     strlcpy(other->user_name, user_name, sizeof(other->user_name));
     strlcpy(other->host_name, host_name, sizeof(other->host_name));
-    scoresChanged = 1;
+    scoresChanged = true;
     other->ship = Convert_shape_str(shape);
     Calculate_shield_radius(other->ship);
 
@@ -1406,7 +1435,7 @@ int Handle_war(int robot_id, int killer_id)
     robot->war_id = killer_id;
     sprintf(msg, "%s declares war on %s.", robot->nick_name, killer->nick_name);
     Add_message(msg);
-    scoresChanged = 1;
+    scoresChanged = true;
 
     return 0;
 }
@@ -1429,7 +1458,7 @@ int Handle_seek(int programmer_id, int robot_id, int sought_id)
     sprintf(msg, "%s has programmed %s to seek %s.",
             programmer->nick_name, robot->nick_name, sought->nick_name);
     Add_message(msg);
-    scoresChanged = 1;
+    scoresChanged = true;
 
     return 0;
 }
@@ -1451,7 +1480,7 @@ int Handle_score(int id, int score, int life, int mychar, int alliance)
         other->life = life;
         other->mychar = mychar;
         other->alliance = alliance;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
 
     return 0;
@@ -1473,7 +1502,7 @@ int Handle_timing(int id, int check, int round)
         other->round = round;
         other->timing = round * MAX_CHECKS + check;
         other->timing_loops = last_loops;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
 
     return 0;
@@ -1611,7 +1640,8 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 int newLockId, int newLockDist, int newLockBearing,
                 int newNextCheckPoint, int newAutopilotLight,
                 uint8_t *newNumItems, int newCurrentTank,
-                int newFuelSum, int newFuelMax, int newPacketSize)
+                int newFuelSum, int newFuelMax, int newPacketSize,
+                int status)
 {
     selfPos.x = x;
     selfPos.y = y;
@@ -1629,7 +1659,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
     fuelCurrent = newCurrentTank;
     if (newFuelSum > fuelSum && selfVisible != 0)
-        fuelCount = FUEL_NOTIFY;
+        fuelTime = FUEL_NOTIFY_TIME;
     fuelSum = newFuelSum;
     fuelMax = newFuelMax;
     selfVisible = 0;
@@ -2067,20 +2097,16 @@ void Client_score_table(void)
     int i, j, k, best = -1;
     double ratio, best_ratio = -1e7;
 
-    if (scoresChanged == 0)
-    {
+    if (!scoresChanged)
         return;
-    }
 
-    if (players_exposed == false)
-    {
+    if (!players_exposed)
         return;
-    }
 
     if (num_others < 1)
     {
         Paint_score_start();
-        scoresChanged = 0;
+        scoresChanged = false;
         return;
     }
 
@@ -2246,7 +2272,7 @@ void Client_score_table(void)
 
     free(order);
 
-    scoresChanged = 0;
+    scoresChanged = false;
 }
 
 int Client_init(char *server, unsigned server_version)
@@ -2551,4 +2577,50 @@ void Init_scale_array(void)
                 scaleArray[i], i);
         exit(1);
     }
+}
+
+/*
+ * Check if there is any pointer move we need to send to server.
+ * Returns how many microseconds to wait in select().
+ */
+int Client_check_pointer_move_interval(void)
+{
+    struct timeval now;
+    static int last_send_interval_num = -1;
+    int interval_num; /* 0 ... maxMouseTurnsPS - 1 */
+    int next_interval_start;
+
+    assert(maxMouseTurnsPS > 0);
+
+    /*
+     * Let's see if we've sent any pointer move this interval,
+     * if not and there is something to send, do that now.
+     */
+    gettimeofday(&now, NULL);
+    interval_num = ((int)now.tv_usec) / mouseMovementInterval;
+    if (interval_num != last_send_interval_num && cumulativeMouseMovement != 0)
+    {
+        Send_pointer_move(cumulativeMouseMovement);
+        cumulativeMouseMovement = 0;
+        last_send_interval_num = interval_num;
+    }
+
+    if (cumulativeMouseMovement != 0)
+    {
+        /* calculate how long to wait to next interval */
+        next_interval_start = (interval_num + 1) * mouseMovementInterval;
+        return next_interval_start - (int)now.tv_usec;
+    }
+
+    return 1000000;
+}
+
+/*
+ * Exit the entire client.
+ */
+void Client_exit(int status)
+{
+    Net_cleanup();
+    Client_cleanup();
+    exit(status);
 }

@@ -24,9 +24,12 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "connectparam.h"
 #include "item.h"
 #include "shipshape.h"
 #include "types.h"
+
+#include "option.h"
 
 typedef struct
 {
@@ -109,7 +112,16 @@ typedef struct
 #define MIN_SCALEFACTOR 0.1
 #define MAX_SCALEFACTOR 20.0
 
+#define FUEL_NOTIFY_TIME 3.0
 #define CONTROL_TIME 8.0
+
+#define MAX_MSGS 15       /* Max. messages displayed ever */
+#define MAX_HIST_MSGS 128 /* Max. messages in history */
+
+#define MSG_LIFE_TIME 120.0  /* Seconds */
+#define MSG_FLASH_TIME 105.0 /* Old messages have life time less \
+                than this */
+#define MAX_POINTER_BUTTONS 5
 
 #define FIND_NAME_WIDTH(other)                                             \
     if ((other)->name_width == 0)                                          \
@@ -348,6 +360,70 @@ typedef struct
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
 
+/*
+ * is a selection pending (in progress), done, drawn emphasized?
+ */
+#define SEL_NONE (1 << 0)
+#define SEL_PENDING (1 << 1)
+#define SEL_SELECTED (1 << 2)
+#define SEL_EMPHASIZED (1 << 3)
+
+/*
+ * a selection (text, string indices, state,...)
+ */
+typedef struct
+{
+    /* a selection in the talk window */
+    struct
+    {
+        bool state; /* current state of the selection */
+        size_t x1;  /* string indices */
+        size_t x2;
+        bool incl_nl; /* include a '\n'? */
+    } talk;
+    /* a selection in the draw window */
+    struct
+    {
+        bool state;
+        int x1; /* string indices (for TalkMsg[].txt) */
+        int x2; /* they are modified when the emphasized area */
+        int y1; /* is scrolled down by new messages coming in */
+        int y2;
+    } draw;
+    char *txt;       /* allocated when needed */
+    size_t txt_size; /* size of txt buffer */
+    size_t len;
+    /* when a message 'jumps' from talk window to the player messages: */
+    bool keep_emphasizing;
+} selection_t;
+
+/* typedefs begin */
+typedef enum
+{
+    BmsNone = 0,
+    BmsBall,
+    BmsSafe,
+    BmsCover,
+    BmsPop
+} msg_bms_t;
+
+typedef struct
+{
+    char txt[MSG_LEN];
+    size_t len;
+    /*short        pixelLen;*/
+    double lifeTime;
+    msg_bms_t bmsinfo;
+} message_t;
+/* typedefs end */
+
+extern client_data_t clData;
+
+extern bool newbie;
+extern char *geometry;
+extern xp_args_t xpArgs;
+extern Connect_param_t connectParam;
+
 extern int oldServer; /* Compatibility mode for old block-based servers */
 extern ipos_t selfPos;
 extern ipos_t selfVel;
@@ -360,6 +436,8 @@ extern uint8_t lastNumItems[NUM_ITEMS];
 extern int numItemsTime[NUM_ITEMS];
 extern double showItemsTime;
 extern short autopilotLight;
+extern int showScoreDecimals;
+extern double scoreObjectTime; /* How long to show score objects */
 
 extern short lock_id;   /* Id of player locked onto */
 extern short lock_dir;  /* Direction of lock */
@@ -381,27 +459,28 @@ extern short phasingtimemax;
 extern int roundDelay;
 extern int roundDelayMax;
 
-extern int RadarWidth;
-extern int RadarHeight;
-extern int map_point_distance; /* spacing of navigation points */
-extern int map_point_size;     /* size of navigation points */
-extern int spark_size;         /* size of sparks and debris */
-extern int shot_size;          /* size of shot */
-extern int teamshot_size;      /* size of team shot */
-extern long control_count;     /* Display control for how long? */
+extern bool UpdateRadar;
+extern unsigned RadarWidth;
+extern unsigned RadarHeight;
+extern int backgroundPointDist; /* spacing of navigation points */
+extern int backgroundPointSize; /* size of navigation points */
+extern int sparkSize;           /* size of sparks and debris */
+extern int shotSize;            /* size of shot */
+extern int teamShotSize;        /* size of team shot */
+extern long control_count;      /* Display control for how long? */
 
 extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
 extern uint8_t old_spark_rand; /* previous value of spark_rand */
 
-extern long fuelSum;      /* Sum of fuel in all tanks */
-extern long fuelMax;      /* How much fuel can you take? */
-extern short fuelCurrent; /* Number of currently used tank */
-extern short numTanks;    /* Number of tanks */
-extern long fuelCount;    /* Display fuel for how long? */
-extern int fuelLevel1;    /* Fuel critical level */
-extern int fuelLevel2;    /* Fuel warning level */
-extern int fuelLevel3;    /* Fuel notify level */
+extern long fuelSum;        /* Sum of fuel in all tanks */
+extern long fuelMax;        /* How much fuel can you take? */
+extern short fuelCurrent;   /* Number of currently used tank */
+extern short numTanks;      /* Number of tanks */
+extern double fuelTime;     /* Display fuel for how long? */
+extern double fuelCritical; /* Fuel critical level */
+extern double fuelWarning;  /* Fuel warning level */
+extern double fuelNotify;   /* Fuel notify level */
 
 extern char *shipShape;                /* Shape of player's ship */
 extern double power;                   /* Force of thrust */
@@ -413,7 +492,7 @@ extern double turnresistance_s;        /* Saved (see above) */
 extern double displayedPower;          /* What the server is sending us */
 extern double displayedTurnspeed;      /* What the server is sending us */
 extern double displayedTurnresistance; /* What the server is sending us */
-extern double spark_prob;              /* Sparkling effect configurable */
+extern double sparkProb;               /* Sparkling effect configurable */
 extern int charsPerSecond;             /* Message output speed (config) */
 
 extern double hud_move_fact;      /* scale the hud-movement (speed) */
@@ -427,14 +506,14 @@ extern int packet_lag;            /* approximate lag in frames */
 extern char *packet_measure;      /* packet measurement in a second */
 extern long packet_loop;          /* start of measurement */
 
-extern bool showRealName;          /* Show realname instead of nickname */
+extern bool showUserName;          /* Show realname instead of nickname */
 extern char name[MAX_CHARS];       /* Nick-name of player */
 extern char realname[MAX_CHARS];   /* Real name of player */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */
 extern unsigned version;           /* Version of the server */
 extern int scoresChanged;
 extern bool toggle_shield;         /* Are shields toggled by a press? */
-extern int shields;                /* When shields are considered up */
+extern bool shields;               /* When shields are considered up */
 extern bool auto_shield;           /* drops shield for fire */
 extern bool initialPointerControl; /* Start by using mouse for control? */
 extern bool pointerControl;        /* current state of mouse ship flying */
@@ -449,9 +528,14 @@ extern bool newSecond;      /* Second changed this frame */
 extern bool played_this_round;
 extern long twelveHz; /* Attempt to increment this at 12Hz */
 
+extern int maxMouseTurnsPS;
+extern int mouseMovementInterval;
+extern int cumulativeMouseMovement;
+
 extern int clientPortStart; /* First UDP port for clients */
 extern int clientPortEnd;   /* Last one (these are for firewalls) */
-
+extern int baseWarningType; /* Which type of base warning you prefer */
+extern int maxCharsInNames;
 extern uint8_t lose_item;    /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */
 
@@ -530,6 +614,52 @@ extern short snooping; /* are we snooping on someone else? */
  */
 const char *Program_name(void);
 int Bitmap_add(const char *filename, int count, bool scalable);
+void Pointer_control_newbie_message(void);
+
+/*
+ * Platform specific code needs to implement these.
+ */
+void Platform_specific_pointer_control_set_state(bool on);
+void Platform_specific_talk_set_state(bool on);
+void Record_toggle(void);
+void Toggle_fullscreen(void);
+void Toggle_radar_and_scorelist(void);
+
+/*
+ * event.c
+ */
+void Pointer_control_set_state(bool on);
+void Talk_set_state(bool on);
+
+void Pointer_button_pressed(int button);
+void Pointer_button_released(int button);
+void Keyboard_button_pressed(xp_keysym_t ks);
+void Keyboard_button_released(xp_keysym_t ks);
+
+int Key_init(void);
+int Key_update(void);
+void Key_clear_counts(void);
+bool Key_press(keys_t key);
+bool Key_release(keys_t key);
+void Set_auto_shield(bool on);
+void Set_toggle_shield(bool on);
+
+/*
+ * messages.c
+ */
+bool Bms_test_state(msg_bms_t bms);
+void Bms_set_state(msg_bms_t bms);
+int Alloc_msgs(void);
+void Free_msgs(void);
+int Alloc_history(void);
+void Free_selectionAndHistory(void);
+void Add_message(const char *message);
+void Add_newbie_message(const char *message);
+extern void Add_alert_message(const char *message, double timeout);
+extern void Clear_alert_messages(void);
+void Add_pending_messages(void);
+void Add_roundend_messages(other_t **order);
+void Print_messages_to_stdout(void);
 
 int Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, int *damage);
@@ -554,12 +684,13 @@ int Handle_war(int robot_id, int killer_id);
 int Handle_seek(int programmer_id, int robot_id, int sought_id);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
-int Handle_self(int x, int y, int vx, int vy, int dir,
-                float power, float turnspeed, float turnresistance,
-                int lock_id, int lock_dist, int lock_dir,
-                int nextCheckPoint, int autopilotLight,
-                uint8_t *newNumItems,
-                int currentTank, int fuel_sum, int fuel_max, int packet_size);
+int Handle_self(int x, int y, int vx, int vy, int newHeading,
+                float newPower, float newTurnspeed, float newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                uint8_t *newNumItems, int newCurrentTank,
+                int newFuelSum, int newFuelMax, int newPacketSize,
+                int status);
 int Handle_self_items(uint8_t *newNumItems);
 int Handle_modifiers(char *m);
 int Handle_damaged(int damaged);
@@ -610,9 +741,22 @@ void Reset_shields(void);
 void Set_toggle_shield(bool on);
 void Set_auto_shield(bool on);
 
-#ifdef XlibSpecificationRelease
-void Key_event(XEvent *event);
-#endif
+bool Using_score_decimals(void);
+int Client_init(char *server, unsigned server_version);
+int Client_setup(void);
+void Client_cleanup(void);
+int Client_start(void);
+int Client_fps_request(void);
+int Client_power(void);
+int Client_pointer_move(int movement);
+int Client_check_pointer_move_interval(void);
+void Client_exit(int status);
+
+int Init_playing_windows(void);
+void Raise_window(void);
+void Reset_shields(void);
+void Platform_specific_cleanup(void);
+
 int x_event(int);
 
 int Key_init(void);
@@ -632,8 +776,48 @@ void Platform_specific_cleanup(void);
 extern void Colors_init_style_colors(void);
 
 /*
+ * default.c
+ */
+extern void Store_default_options(void);
+extern void defaultCleanup(void); /* memory cleanup */
+
+extern bool Set_scaleFactor(xp_option_t *opt, double val);
+extern bool Set_altScaleFactor(xp_option_t *opt, double val);
+
+/*
  * mapdata.cpp
  */
 extern int Mapdata_setup(const char *);
+
+// TODO: Move this stuff to messages.h.
+
+#define MAX_MSGS 15       /* Max. messages displayed ever */
+#define MAX_HIST_MSGS 128 /* maximum */
+
+#define MSG_DURATION 1024
+#define MSG_FLASH 892
+
+extern message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
+extern message_t *TalkMsg_pending[], *GameMsg_pending[];
+extern char *HistoryMsg[MAX_HIST_MSGS];
+extern char *HistoryBlock;
+extern message_t *MsgBlock;
+extern message_t *MsgBlock_pending;
+
+extern selection_t selection;
+
+extern int maxLinesInHistory; /* number of lines to save in history */
+extern int maxMessages;
+extern int messagesToStdout;
+extern bool selectionAndHistory;
+
+void Add_message(const char *message);
+void Delete_pending_messages(void);
+void Add_pending_messages(void);
+int Alloc_msgs(void);
+void Free_msgs(void);
+int Alloc_history(void);
+void Free_selectionAndHistory(void);
+void Print_messages_to_stdout(void);
 
 #endif

@@ -1534,7 +1534,8 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
             c2.x = 0;
         }
         /* cut started at end of line; jump to next if possible */
-        if ((c1.x > TalkMsg[TALK_MSG_SCREENPOS(last_msg_index, c1.y)]->pixelLen || c1.x_off == 1) && c1.y < c2.y)
+        // if ((c1.x > TalkMsg[TALK_MSG_SCREENPOS(last_msg_index, c1.y)]->pixelLen || c1.x_off == 1) && c1.y < c2.y)
+        if ((c1.x > XTextWidth(messageFont, ptr->txt, (int)ptr->len) || c1.x_off == 1) && c1.y < c2.y)
         {
             c1.x = 0;
             c1.y += 1;

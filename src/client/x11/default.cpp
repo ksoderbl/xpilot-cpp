@@ -1479,95 +1479,95 @@ static unsigned String_hash(const char *s)
     return hash;
 }
 
-char *Get_keyHelpString(keys_t key)
-{
-    int i;
-    char *nl;
-    static char buf[MAX_CHARS];
+// char *Get_keyHelpString(keys_t key)
+// {
+//     int i;
+//     char *nl;
+//     static char buf[MAX_CHARS];
 
-    for (i = 0; i < NELEM(options); i++)
-    {
-        if (options[i].key == key)
-        {
-            strlcpy(buf, options[i].help, sizeof buf);
-            if ((nl = strchr(buf, '\n')) != NULL)
-            {
-                *nl = '\0';
-            }
-            return buf;
-        }
-    }
+//     for (i = 0; i < NELEM(options); i++)
+//     {
+//         if (options[i].key == key)
+//         {
+//             strlcpy(buf, options[i].help, sizeof buf);
+//             if ((nl = strchr(buf, '\n')) != NULL)
+//             {
+//                 *nl = '\0';
+//             }
+//             return buf;
+//         }
+//     }
 
-    return NULL;
-}
+//     return NULL;
+// }
 
-const char *Get_keyResourceString(keys_t key)
-{
-    int i;
+// const char *Get_keyResourceString(keys_t key)
+// {
+//     int i;
 
-    for (i = 0; i < NELEM(options); i++)
-    {
-        if (options[i].key == key)
-        {
-            return options[i].name;
-        }
-    }
+//     for (i = 0; i < NELEM(options); i++)
+//     {
+//         if (options[i].key == key)
+//         {
+//             return options[i].name;
+//         }
+//     }
 
-    return NULL;
-}
+//     return NULL;
+// }
 
-static void Usage(void)
-{
-    int i;
+// void Usage(void)
+// {
+//     int i;
 
-    printf(
-        "Usage: xpilot [-options ...] [server]\n"
-        "Where options include:\n"
-        "\n");
-    for (i = 0; i < NELEM(options); i++)
-    {
-        printf("    -%s %s\n", options[i].name,
-               (options[i].noArg == NULL) ? "<value>" : "");
-        if (options[i].help && options[i].help[0])
-        {
-            const char *str;
-            printf("        ");
-            for (str = options[i].help; *str; str++)
-            {
-                putchar(*str);
-                if (*str == '\n' && str[1])
-                {
-                    printf("        ");
-                }
-            }
-            if (str[-1] != '\n')
-            {
-                putchar('\n');
-            }
-        }
-        if (options[i].fallback && options[i].fallback[0])
-        {
-            printf("        The default %s: %s.\n",
-                   (options[i].key == KEY_DUMMY)
-                       ? "value is"
-                   : (strchr(options[i].fallback, ' ') == NULL)
-                       ? "key is"
-                       : "keys are",
-                   options[i].fallback);
-        }
-        printf("\n");
-    }
-    printf(
-        "Most of these options can also be set in the .xpilotrc file\n"
-        "in your home directory.\n"
-        "Each key option may have multiple keys bound to it and\n"
-        "one key may be used by multiple key options.\n"
-        "If no server is specified then xpilot will search\n"
-        "for servers on your local network.\n"
-        "For a listing of remote servers try: telnet meta.xpilot.org 4400 \n");
+//     printf(
+//         "Usage: xpilot [-options ...] [server]\n"
+//         "Where options include:\n"
+//         "\n");
+//     for (i = 0; i < NELEM(options); i++)
+//     {
+//         printf("    -%s %s\n", options[i].name,
+//                (options[i].noArg == NULL) ? "<value>" : "");
+//         if (options[i].help && options[i].help[0])
+//         {
+//             const char *str;
+//             printf("        ");
+//             for (str = options[i].help; *str; str++)
+//             {
+//                 putchar(*str);
+//                 if (*str == '\n' && str[1])
+//                 {
+//                     printf("        ");
+//                 }
+//             }
+//             if (str[-1] != '\n')
+//             {
+//                 putchar('\n');
+//             }
+//         }
+//         if (options[i].fallback && options[i].fallback[0])
+//         {
+//             printf("        The default %s: %s.\n",
+//                    (options[i].key == KEY_DUMMY)
+//                        ? "value is"
+//                    : (strchr(options[i].fallback, ' ') == NULL)
+//                        ? "key is"
+//                        : "keys are",
+//                    options[i].fallback);
+//         }
+//         printf("\n");
+//     }
+//     printf(
+//         "Most of these options can also be set in the .xpilotrc file\n"
+//         "in your home directory.\n"
+//         "Each key option may have multiple keys bound to it and\n"
+//         "one key may be used by multiple key options.\n"
+//         "If no server is specified then xpilot will search\n"
+//         "for servers on your local network.\n"
+//         "For a listing of remote servers try: telnet meta.xpilot.org 4400 \n");
 
-    exit(1);
-}
+//     exit(1);
+// }
 
 static int Find_resource(XrmDatabase db, const char *resource,
                          char *result, unsigned size, int *index)
@@ -2109,20 +2109,20 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_float_resource(rDB, "altTurnSpeed", &turnspeed_s);
     Get_float_resource(rDB, "altTurnResistance", &turnresistance_s);
 
-    Get_float_resource(rDB, "sparkProb", &spark_prob);
-    spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
+    Get_float_resource(rDB, "sparkProb", &sparkProb);
+    spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
     Get_int_resource(rDB, "charsPerSecond", &charsPerSecond);
     Get_bool_resource(rDB, "markingLights", &markingLights);
 
-    Get_int_resource(rDB, "backgroundPointDist", &map_point_distance);
-    Get_int_resource(rDB, "backgroundPointSize", &map_point_size);
-    LIMIT(map_point_size, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
-    Get_int_resource(rDB, "sparkSize", &spark_size);
-    LIMIT(spark_size, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
-    Get_int_resource(rDB, "shotSize", &shot_size);
-    LIMIT(shot_size, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
-    Get_int_resource(rDB, "teamShotSize", &teamshot_size);
-    LIMIT(teamshot_size, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
+    Get_int_resource(rDB, "backgroundPointDist", &backgroundPointDist);
+    Get_int_resource(rDB, "backgroundPointSize", &backgroundPointSize);
+    LIMIT(backgroundPointSize, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
+    Get_int_resource(rDB, "sparkSize", &sparkSize);
+    LIMIT(sparkSize, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
+    Get_int_resource(rDB, "shotSize", &shotSize);
+    LIMIT(shotSize, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
+    Get_int_resource(rDB, "teamShotSize", &teamShotSize);
+    LIMIT(teamShotSize, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
     /*
      * This is a special value; default or not defined means choose depending
      * on the display, otherwise its a boolean value.
@@ -2210,9 +2210,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_float_resource(rDB, "speedFactHUD", &hud_move_fact);
     Get_float_resource(rDB, "speedFactPTR", &ptr_move_fact);
-    Get_int_resource(rDB, "fuelNotify", &fuelLevel3);
-    Get_int_resource(rDB, "fuelWarning", &fuelLevel2);
-    Get_int_resource(rDB, "fuelCritical", &fuelLevel1);
+    Get_float_resource(rDB, "fuelNotify", &fuelNotify);
+    Get_float_resource(rDB, "fuelWarning", &fuelWarning);
+    Get_float_resource(rDB, "fuelCritical", &fuelCritical);
 
     Get_resource(rDB, "gameFont", gameFontName, sizeof gameFontName);
     Get_resource(rDB, "messageFont", messageFontName, sizeof messageFontName);

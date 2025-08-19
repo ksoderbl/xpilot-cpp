@@ -313,7 +313,7 @@ void Paint_world(void)
                 case SETUP_DECOR_DOT_RD:
                 case SETUP_DECOR_DOT_LU:
                 case SETUP_DECOR_DOT_LD:
-                    Gui_paint_decor_dot(x, y, map_point_size);
+                    Gui_paint_decor_dot(x, y, backgroundPointSize);
                     break;
 
                 case SETUP_BASE_UP:

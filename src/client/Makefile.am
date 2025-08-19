@@ -8,10 +8,13 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
+    configure.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
     debugaudio.cpp \
+    default.cpp \
+    event.cpp \
     gfx2d.cpp \
     gfx2d.h \
     guimap.h \

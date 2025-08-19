@@ -27,6 +27,12 @@
 #include "netclient.h"
 #include "paint.h"
 
+/*
+ * Globals.
+ */
+ipos_t world;
+ipos_t realWorld;
+
 // from xinit.cpp
 int draw_width, draw_height;
 

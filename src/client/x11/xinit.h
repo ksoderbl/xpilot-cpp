@@ -35,7 +35,7 @@
 #define DEF_TOP_WIDTH (1280 + 2)
 #define DEF_TOP_HEIGHT 1024
 
-#define MAX_POINTER_BUTTONS 5
+// #define MAX_POINTER_BUTTONS 5
 #define MAX_BUTTON_DEFS 3
 #define NUM_BUTTON_DEFS(i) numButtonDefs[i]
 
