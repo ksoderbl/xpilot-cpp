@@ -156,12 +156,7 @@ void Paint_frame(void)
     static int prev_damaged = 0;
     static int prev_prev_damaged = 0;
 
-    if (start_loops != end_loops)
-    {
-        errno = 0;
-        error("Start neq. End (%ld,%ld,%ld)", start_loops, end_loops, loops);
-    }
-    loops = end_loops;
+    Paint_frame_start();
 
     /*
      * Switch between two different window titles.
@@ -175,8 +170,7 @@ void Paint_frame(void)
         else
             XStoreName(dpy, topWindow, TITLE);
     }
-    /* This seems to have a bug (in Windows) 'cause last frame we ended
-       with an XSetForeground(white) confusing SET_FG */
+
     SET_FG(colors[BLACK].pixel);
 
     rd.newFrame();

@@ -128,4 +128,39 @@ void Game_over_action(uint8_t stat);
 
 int Check_view_dimensions(void);
 
+int Paint_init(void);
+void Paint_cleanup(void);
+void Paint_shots(void);
+void Paint_ships(void);
+void Paint_radar(void);
+void Paint_sliding_radar(void);
+void Paint_world_radar(void);
+void Radar_show_target(int x, int y);
+void Radar_hide_target(int x, int y);
+void Paint_vcannon(void);
+void Paint_vfuel(void);
+void Paint_vbase(void);
+void Paint_vdecor(void);
+void Paint_objects(void);
+void Paint_world(void);
+void Paint_score_table(void);
+void Paint_score_entry(int entry_num, other_t *other, bool is_team);
+void Paint_score_start(void);
+void Paint_score_objects(void);
+void Paint_meters(void);
+void Paint_HUD(void);
+int Get_message(int *pos, char *message, int req_length, int key);
+void Paint_messages(void);
+void Paint_recording(void);
+void Paint_HUD_values(void);
+void Paint_frame(void);
+void Paint_frame_start(void);
+int Team_color(int);
+int Life_color(other_t *other);
+int Life_color_by_life(int life);
+void Play_beep(void);
+int Check_view_dimensions(void);
+void Store_hud_options(void);
+void Store_paintradar_options(void);
+
 #endif

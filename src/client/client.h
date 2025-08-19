@@ -528,6 +528,9 @@ extern bool newSecond;      /* Second changed this frame */
 extern bool played_this_round;
 extern long twelveHz; /* Attempt to increment this at 12Hz */
 
+extern int recordFPS;      /* What FPS to record at */
+extern time_t currentTime; /* Current value of time() */
+
 extern int maxMouseTurnsPS;
 extern int mouseMovementInterval;
 extern int cumulativeMouseMovement;

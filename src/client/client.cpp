@@ -165,12 +165,15 @@ bool toggle_shield;         /* Are shields toggled by a press? */
 bool shields = true;        /* When shields are considered up */
 bool auto_shield = true;    /* shield drops for fire */
 
-int maxFPS; /* Client's own FPS */
-int oldMaxFPS;
+int maxFPS; /* Max FPS player wants from server */
+int oldMaxFPS = 0;
 double clientFPS = 1.0; /* FPS client is drawing at */
+int recordFPS = 0;      /* What FPS to record at */
+time_t currentTime = 0; /* Current value of time() */
+bool newSecond = false; /* Did time() increment this frame? */
+
 // double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
 int clientLag = 0;
-bool newSecond = false; /* Second changed this frame */
 bool played_this_round = false;
 long twelveHz = 0; /* We attempt to increment this at 12 Hz */
 
@@ -1635,6 +1638,23 @@ int Handle_self_items(uint8_t *newNumItems)
     return 0;
 }
 
+static void update_status(int status)
+{
+    static int old_status = 0;
+
+    if (BIT(old_status, OLD_GAME_OVER) && !BIT(status, OLD_GAME_OVER) && !BIT(status, OLD_PAUSE))
+        Raise_window();
+
+    /* Player appeared? */
+    if (BIT(old_status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) != OLD_PLAYING)
+    {
+        if (BIT(status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) == OLD_PLAYING)
+            Reset_shields();
+    }
+
+    old_status = status;
+}
+
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 float newPower, float newTurnspeed, float newTurnresistance,
                 int newLockId, int newLockDist, int newLockBearing,
@@ -1668,20 +1688,22 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     else
         packet_size = newPacketSize;
 
-    world.x = selfPos.x - (ext_view_width / 2);
-    world.y = selfPos.y - (ext_view_height / 2);
-    realWorld = world;
-    if (BIT(Setup->mode, WRAP_PLAY))
-    {
-        if (world.x < 0 && world.x + ext_view_width < Setup->width)
-            world.x += Setup->width;
-        else if (world.x > 0 && world.x + ext_view_width >= Setup->width)
-            realWorld.x -= Setup->width;
-        if (world.y < 0 && world.y + ext_view_height < Setup->height)
-            world.y += Setup->height;
-        else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
-            realWorld.y -= Setup->height;
-    }
+    // world.x = selfPos.x - (ext_view_width / 2);
+    // world.y = selfPos.y - (ext_view_height / 2);
+    // realWorld = world;
+    // if (BIT(Setup->mode, WRAP_PLAY))
+    // {
+    //     if (world.x < 0 && world.x + ext_view_width < Setup->width)
+    //         world.x += Setup->width;
+    //     else if (world.x > 0 && world.x + ext_view_width >= Setup->width)
+    //         realWorld.x -= Setup->width;
+    //     if (world.y < 0 && world.y + ext_view_height < Setup->height)
+    //         world.y += Setup->height;
+    //     else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
+    //         realWorld.y -= Setup->height;
+    // }
+
+    update_status(status);
     return 0;
 }
 
@@ -2361,18 +2383,16 @@ int Client_power(void)
         Send_turnspeed(turnspeed) == -1 ||
         Send_turnspeed_s(turnspeed_s) == -1 ||
         Send_turnresistance(turnresistance) == -1 ||
-        Send_turnresistance_s(turnresistance_s) == -1 ||
-        Send_display() == -1 ||
-        Startup_server_motd() == -1)
-    {
+        Send_turnresistance_s(turnresistance_s) == -1)
         return -1;
-    }
+
+    if (Check_view_dimensions() == -1)
+        return -1;
+
     for (i = 0; i < NUM_MODBANKS; i++)
     {
         if (Send_modifier_bank(i) == -1)
-        {
             return -1;
-        }
     }
 
     return 0;

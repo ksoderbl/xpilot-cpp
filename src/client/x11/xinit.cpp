@@ -760,12 +760,15 @@ static int Quit_callback(int widget_desc, void *data, const char **str)
     return 0;
 }
 
+void Raise_window(void)
+{
+    XMapRaised(dpy, topWindow);
+}
+
 void Resize(Window w, int width, int height)
 {
     if (w != topWindow)
-    {
         return;
-    }
 
     std::cout << "Resize: size: " << width << "x" << height << std::endl;
 
@@ -785,12 +788,17 @@ void Resize(Window w, int width, int height)
         return;
 
     // Draw window does not include the top left radar or the scorelist/config area.
-    draw_width = top_width - 258;
+    bool radar_score_mapped = true;
+    if (radar_score_mapped)
+        draw_width = top_width - 258;
+    else
+        draw_width = top_width;
+
     draw_height = top_height;
 
     std::cout << "Resize: drawWindow size: " << width << "x" << height << std::endl;
 
-    Send_display();
+    Check_view_dimensions();
     Net_flush();
     XResizeWindow(dpy, drawWindow, draw_width, draw_height);
     if (dbuf_state->type == PIXMAP_COPY)

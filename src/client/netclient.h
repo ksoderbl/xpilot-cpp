@@ -136,7 +136,7 @@ int Send_pointer_move(int movement);
 int Receive_audio(void);
 int Receive_talk_ack(void);
 int Send_talk(void);
-int Send_display(void);
+int Send_display(int width, int height, int sparks, int spark_colors);
 int Send_modifier_bank(int);
 int Net_talk(char *str);
 int Net_ask_for_motd(long offset, long maxlen);

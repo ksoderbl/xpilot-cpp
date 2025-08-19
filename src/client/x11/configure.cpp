@@ -1195,7 +1195,7 @@ static int Config_update_altTurnResistance(int widget_desc, void *data, double *
 static int Config_update_sparkProb(int widget_desc, void *data, double *val)
 {
     spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
-    Send_display();
+    Check_view_dimensions();
     return 0;
 }
 

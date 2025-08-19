@@ -49,6 +49,17 @@
                            ALLIANCES)
 
 /*
+ * Old player status bits, currently only used in network protocol.
+ * The bits that the client needs must fit into a byte,
+ * so the first 8 bitvalues are reserved for that purpose.
+ */
+#define OLD_PLAYING (1U << 0)   /* alive or killed */
+#define OLD_PAUSE (1U << 1)     /* paused */
+#define OLD_GAME_OVER (1U << 2) /* waiting or dead */
+
+// TODO: REMOVE these bits
+
+/*
  * Possible object and player status bits.
  * Needed here because client needs them too.
  * The bits that the client needs must fit into a byte,

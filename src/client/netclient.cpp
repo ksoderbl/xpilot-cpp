@@ -553,6 +553,11 @@ int Net_init(char *server, int port)
 
     signal(SIGPIPE, SIG_IGN);
 
+    server_display.view_width = 0;
+    server_display.view_height = 0;
+    server_display.spark_rand = 0;
+    server_display.num_spark_colors = 0;
+
     Receive_init();
     if (!clientPortStart || !clientPortEnd || (clientPortStart > clientPortEnd))
     {
@@ -2598,23 +2603,19 @@ int Send_talk(void)
     return 0;
 }
 
-int Send_display(void)
+int Send_display(int width, int height, int sparks, int spark_colors)
 {
-    int width_wanted = draw_width;
-    int height_wanted = draw_height;
+    int width_wanted = width;
+    int height_wanted = height;
 
-    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
-    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
-
-    LIMIT(width_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    LIMIT(height_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-
-    if (width_wanted == ext_view_width &&
-        height_wanted == ext_view_height &&
-        debris_colors == num_spark_colors &&
-        spark_rand == old_spark_rand &&
+    if (width_wanted == server_display.view_width &&
+        height_wanted == server_display.view_height &&
+        spark_colors == server_display.num_spark_colors &&
+        sparks == server_display.spark_rand &&
         last_loops != 0)
+    {
         return 0;
+    }
 
     if (simulating)
     {
@@ -2624,10 +2625,11 @@ int Send_display(void)
     }
     else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
                            width_wanted, height_wanted,
-                           num_spark_colors, spark_rand) == -1)
+                           spark_colors,
+                           sparks) == -1)
         return -1;
 
-    old_spark_rand = spark_rand;
+    server_display.spark_rand = sparks;
 
     return 0;
 }
