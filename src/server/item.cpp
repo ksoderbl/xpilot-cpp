@@ -1246,9 +1246,9 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                     Robot_program(i, pl->lock.pl_id);
                     for (j = 0; j < NumPlayers; j++)
                     {
-                        if (Players[j]->connp != NULL)
+                        if (Players[j]->conn != NULL)
                         {
-                            Send_seek(Players[j]->connp, pl->id,
+                            Send_seek(Players[j]->conn, pl->id,
                                       p->id, pl->lock.pl_id);
                         }
                     }

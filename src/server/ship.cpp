@@ -486,10 +486,10 @@ void Tank_handle_detach(player_t *pl)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Players[i]->connp != NULL)
+        if (Players[i]->conn != NULL)
         {
-            Send_player(Players[i]->connp, dummy->id);
-            Send_score(Players[i]->connp, dummy->id,
+            Send_player(Players[i]->conn, dummy->id);
+            Send_score(Players[i]->conn, dummy->id,
                        dummy->score, dummy->life,
                        dummy->mychar, dummy->alliance);
         }

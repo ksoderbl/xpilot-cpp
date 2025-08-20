@@ -176,8 +176,8 @@ struct player
 
     int ecmcount; /* number of active ecms */
 
-    connection_t *connp; /* connection pointer, NULL if robot */
-    unsigned version;    /* XPilot version number of client */
+    connection_t *conn; /* connection pointer, NULL if robot */
+    unsigned version;   /* XPilot version number of client */
 
     BITV_DECL(last_keyv, NUM_KEYS); /* Keyboard state */
     BITV_DECL(prev_keyv, NUM_KEYS); /* Keyboard state */

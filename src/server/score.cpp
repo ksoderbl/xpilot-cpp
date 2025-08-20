@@ -46,8 +46,8 @@ void SCORE(int ind, int points, int cx, int cy, const char *msg)
 
     pl->score += (points);
 
-    if (pl->connp != NULL)
-        Send_score_object(pl->connp, points, x, y, msg);
+    if (pl->conn != NULL)
+        Send_score_object(pl->conn, points, x, y, msg);
 
     updateScores = true;
 }

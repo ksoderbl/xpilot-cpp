@@ -560,9 +560,9 @@ int Handle_keyboard(int ind)
                     }
                     for (i = 0; i < NumPlayers; i++)
                     {
-                        if (Players[i]->connp != NULL)
+                        if (Players[i]->conn != NULL)
                         {
-                            Send_base(Players[i]->connp,
+                            Send_base(Players[i]->conn,
                                       pl->id,
                                       pl->home_base);
                         }
