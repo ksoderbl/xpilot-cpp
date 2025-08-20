@@ -323,7 +323,7 @@ static int Bitmap_init(int img)
 
     if (!(pixmaps[img].bitmaps = XMALLOC(xp_bitmap_t, count)))
     {
-        xperror("not enough memory for bitmaps");
+        error("not enough memory for bitmaps");
         pixmaps[img].state = BMS_ERROR;
         return -1;
     }
@@ -502,14 +502,14 @@ static int Bitmap_create_begin(Drawable d, xp_pixmap_t *pm, int bmp)
 
     if (!(pixmap = XCreatePixmap(dpy, d, pm->width, pm->height, dispDepth)))
     {
-        xperror("Could not create pixmap");
+        error("Could not create pixmap");
         return -1;
     }
     pm->bitmaps[bmp].bitmap = pixmap;
 
     if (!(pixmap = XCreatePixmap(dpy, d, pm->width, pm->height, 1)))
     {
-        xperror("Could not create mask pixmap");
+        error("Could not create mask pixmap");
         return -1;
     }
     pm->bitmaps[bmp].mask = pixmap;

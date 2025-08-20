@@ -99,7 +99,7 @@ int Mapdata_setup(const char *urlstr)
         char *home = getenv("HOME");
         if (home == NULL)
         {
-            xperror("couldn't access any dir in %s and HOME is unset", path);
+            error("couldn't access any dir in %s and HOME is unset", path);
             goto end;
         }
 
@@ -114,7 +114,7 @@ int Mapdata_setup(const char *urlstr)
         {
             if (mkdir(buf, S_IRWXU | S_IRWXG | S_IRWXO) == -1)
             {
-                xperror("failed to create directory %s", dir);
+                error("failed to create directory %s", dir);
                 goto end;
             }
         }
@@ -131,7 +131,7 @@ int Mapdata_setup(const char *urlstr)
 
     if (strrchr(path, '.') == NULL)
     {
-        xperror("no extension in file name %s.", name);
+        error("no extension in file name %s.", name);
         goto end;
     }
 
@@ -149,7 +149,7 @@ int Mapdata_setup(const char *urlstr)
         char *temp = XMALLOC(char, strlen(realTexturePath) + strlen(path) + 2);
         if (temp == NULL)
         {
-            xperror("not enough memory to new realTexturePath");
+            error("not enough memory to new realTexturePath");
             goto end;
         }
         sprintf(temp, "%s:%s", realTexturePath, path);
@@ -202,33 +202,33 @@ static int Mapdata_extract(const char *name)
     ptr = strrchr(dir, '.');
     if (ptr == NULL)
     {
-        xperror("file name has no extension %s", dir);
+        error("file name has no extension %s", dir);
         return 0;
     }
     *ptr = '\0';
 
     if (mkdir(dir, S_IRWXU | S_IRWXG | S_IRWXO) == -1)
     {
-        xperror("failed to create directory %s", dir);
+        error("failed to create directory %s", dir);
         return 0;
     }
 
     if ((in = gzopen(name, "rb")) == NULL)
     {
-        xperror("failed to open %s for reading", name);
+        error("failed to open %s for reading", name);
         return 0;
     }
 
     if (gzgets(in, buf, COPY_BUF_SIZE) == Z_NULL)
     {
-        xperror("failed to read header from %s", name);
+        error("failed to read header from %s", name);
         gzclose(in);
         return 0;
     }
 
     if (sscanf(buf, "XPD %d\n", &count) != 1)
     {
-        xperror("invalid header in %s", name);
+        error("invalid header in %s", name);
         gzclose(in);
         return 0;
     }
@@ -238,7 +238,7 @@ static int Mapdata_extract(const char *name)
 
         if (gzgets(in, buf, COPY_BUF_SIZE) == Z_NULL)
         {
-            xperror("failed to read file info from %s", name);
+            error("failed to read file info from %s", name);
             gzclose(in);
             return 0;
         }
@@ -247,7 +247,7 @@ static int Mapdata_extract(const char *name)
 
         if (sscanf(buf, "%s\n%ld\n", fname + strlen(dir) + 1, &size) != 2)
         {
-            xperror("failed to parse file info %s", buf);
+            error("failed to parse file info %s", buf);
             gzclose(in);
             return 0;
         }
@@ -255,7 +255,7 @@ static int Mapdata_extract(const char *name)
         /* security check */
         if (strchr(fname + strlen(dir) + 1, PATHNAME_SEP) != NULL)
         {
-            xperror("file name %s is illegal", fname);
+            error("file name %s is illegal", fname);
             gzclose(in);
             return 0;
         }
@@ -264,7 +264,7 @@ static int Mapdata_extract(const char *name)
 
         if ((out = fopen(fname, "wb")) == NULL)
         {
-            xperror("failed to open %s for writing", buf);
+            error("failed to open %s for writing", buf);
             gzclose(in);
             return 0;
         }
@@ -274,14 +274,14 @@ static int Mapdata_extract(const char *name)
             retval = gzread(in, buf, MIN(COPY_BUF_SIZE, (unsigned)size));
             if (retval == -1)
             {
-                xperror("error when reading %s", name);
+                error("error when reading %s", name);
                 gzclose(in);
                 fclose(out);
                 return 0;
             }
             if (retval == 0)
             {
-                xperror("unexpected end of file %s", name);
+                error("unexpected end of file %s", name);
                 gzclose(in);
                 fclose(out);
                 return 0;
@@ -291,7 +291,7 @@ static int Mapdata_extract(const char *name)
             wlen = fwrite(buf, 1, rlen, out);
             if (wlen != rlen)
             {
-                xperror("failed to write to %s", fname);
+                error("failed to write to %s", fname);
                 gzclose(in);
                 fclose(out);
                 return 0;
@@ -317,18 +317,18 @@ static int Mapdata_download(const URL *url, const char *filePath)
 
     if (strncmp("http", url->protocol, 4) != 0)
     {
-        xperror("unsupported protocol %s", url->protocol);
+        error("unsupported protocol %s", url->protocol);
         return false;
     }
 
     if (sock_open_tcp(&s) == SOCK_IS_ERROR)
     {
-        xperror("failed to create a socket");
+        error("failed to create a socket");
         return false;
     }
     if (sock_connect(&s, url->host, url->port) == SOCK_IS_ERROR)
     {
-        xperror("couldn't connect to download address");
+        error("couldn't connect to download address");
         sock_close(&s);
         return false;
     }
@@ -339,7 +339,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
                      "GET %s?%s HTTP/1.1\r\nHost: %s:%d\r\nConnection: close\r\n\r\n",
                      url->path, url->query, url->host, url->port) == -1)
         {
-            xperror("too long URL");
+            error("too long URL");
             sock_close(&s);
             return false;
         }
@@ -351,7 +351,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
                      url->path, url->host, url->port) == -1)
         {
 
-            xperror("too long URL");
+            error("too long URL");
             sock_close(&s);
             return false;
         }
@@ -359,7 +359,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
 
     if (sock_write(&s, buf, (int)strlen(buf)) == -1)
     {
-        xperror("socket write failed");
+        error("socket write failed");
         sock_close(&s);
         return false;
     }
@@ -374,7 +374,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
         {
             if ((i = sock_read(&s, buf + len, sizeof(buf) - len)) == -1)
             {
-                xperror("socket read failed");
+                error("socket read failed");
                 rv = false;
                 goto done;
             }
@@ -434,7 +434,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
                     header = 0;
                     if ((f = fopen(filePath, "wb")) == NULL)
                     {
-                        xperror("failed to open %s", filePath);
+                        error("failed to open %s", filePath);
                         rv = false;
                         goto done;
                     }
@@ -457,7 +457,7 @@ static int Mapdata_download(const URL *url, const char *filePath)
             n = len;
             if (fwrite(buf, 1, n, f) < n)
             {
-                xperror("file write failed");
+                error("file write failed");
                 rv = false;
                 break;
             }
@@ -467,7 +467,7 @@ done:
     printf("\n");
     if (f)
         if (fclose(f) != 0)
-            xperror("Error closing texture file %s", filePath);
+            error("Error closing texture file %s", filePath);
     sock_close(&s);
     return rv;
 }
@@ -485,7 +485,7 @@ static int Url_parse(const char *urlstr, URL *url)
     buf = strdup(urlstr);
     if (buf == NULL)
     {
-        xperror("no memory for URL");
+        error("no memory for URL");
         return false;
     }
 

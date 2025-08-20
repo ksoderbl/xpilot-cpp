@@ -51,14 +51,14 @@ int Console_init(void)
 
     if (sdl_window_init(&console_window, cr.x, cr.y, cr.w, cr.h))
     {
-        xperror("failed to init console window");
+        error("failed to init console window");
         return -1;
     }
 
     console = CON_Init(CONF_FONTDIR "ConsoleFont.bmp", console_window.surface, 100, cr);
     if (console == NULL)
     {
-        xperror("failed to init SDL_console");
+        error("failed to init SDL_console");
         sdl_window_destroy(&console_window);
         return -1;
     }

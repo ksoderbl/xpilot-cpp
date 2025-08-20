@@ -933,7 +933,7 @@ int Xpilotrc_read(const char *path)
     fp = fopen(path, "r");
     if (fp == nullptr)
     {
-        xperror("Xpilotrc_read: Failed to open file \"%s\"", path);
+        error("Xpilotrc_read: Failed to open file \"%s\"", path);
         return -2;
     }
 
@@ -1026,7 +1026,7 @@ int Xpilotrc_write(const char *path)
     fp = fopen(path, "w");
     if (fp == nullptr)
     {
-        xperror("Xpilotrc_write: Failed to open file \"%s\"", path);
+        error("Xpilotrc_write: Failed to open file \"%s\"", path);
         return -2;
     }
 

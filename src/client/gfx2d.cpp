@@ -57,7 +57,7 @@ int Picture_init(xp_picture_t *picture, const char *filename, int count)
     picture->data = XMALLOC(RGB_COLOR *, ABS(count));
     if (!picture->data)
     {
-        xperror("Not enough memory.");
+        error("Not enough memory.");
         return -1;
     }
 
@@ -71,7 +71,7 @@ int Picture_init(xp_picture_t *picture, const char *filename, int count)
     picture->bbox = XMALLOC(bbox_t, ABS(count));
     if (!picture->bbox)
     {
-        xperror("Not enough memory.");
+        error("Not enough memory.");
         return -1;
     }
     Picture_get_bounding_box(picture);
@@ -122,7 +122,7 @@ static int Picture_find_path(const char *filename, char *path,
         }
     }
 
-    /*xperror("Can't find PPM file \"%s\"", filename);*/
+    /*error("Can't find PPM file \"%s\"", filename);*/
     return (false);
 }
 
@@ -198,13 +198,13 @@ int Picture_load(xp_picture_t *picture, const char *filename)
 
     if (!Picture_find_path(filename, path, sizeof(path)))
     {
-        xperror("Cannot find picture file \"%s\"", filename);
+        error("Cannot find picture file \"%s\"", filename);
         return -1;
     }
 
     if ((f = fopen(path, "rb")) == NULL)
     {
-        xperror("Cannot open \"%s\"", path);
+        error("Cannot open \"%s\"", path);
         return -1;
     }
 
@@ -212,8 +212,8 @@ int Picture_load(xp_picture_t *picture, const char *filename)
     if ((c1 = Picture_getc(f)) != 'P' ||
         (c2 = Picture_getc(f)) != '6')
     {
-        xperror("\"%s\" does not contain a valid binary PPM file.\n",
-                path);
+        error("\"%s\" does not contain a valid binary PPM file.\n",
+              path);
         fclose(f);
         return -1;
     }
@@ -227,8 +227,8 @@ int Picture_load(xp_picture_t *picture, const char *filename)
 
     if (!isspace(c) || maxval != 255)
     {
-        xperror("\"%s\" does not contain a valid binary PPM file.\n",
-                path);
+        error("\"%s\" does not contain a valid binary PPM file.\n",
+              path);
         fclose(f);
         return -1;
     }
@@ -250,7 +250,7 @@ int Picture_load(xp_picture_t *picture, const char *filename)
         if (!(picture->data[p] =
                   XMALLOC(RGB_COLOR, picture->width * picture->height)))
         {
-            xperror("Not enough memory.");
+            error("Not enough memory.");
             return -1;
         }
     }
@@ -297,7 +297,7 @@ int Picture_rotate(xp_picture_t *picture)
         if (!(picture->data[image] =
                   XMALLOC(RGB_COLOR, picture->width * picture->height)))
         {
-            xperror("Not enough memory.");
+            error("Not enough memory.");
             return -1;
         }
         for (y = 0; y < size; y++)

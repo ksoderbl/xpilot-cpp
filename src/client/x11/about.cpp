@@ -297,7 +297,7 @@ void Expose_about_window(void)
         break;
 
     default:
-        xperror("Unkown page number %d\n", about_page);
+        error("Unkown page number %d\n", about_page);
         break;
     }
 }
@@ -488,7 +488,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
                 xpprintf("realloc: %d\n", bufsize);
                 if (!(buf = (char *)realloc(buf, bufsize)))
                 {
-                    xperror("No memory for key list");
+                    error("No memory for key list");
                     return 0;
                 }
             }
@@ -506,7 +506,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
         if (keys_viewer == NO_WIDGET)
         {
             errno = 0;
-            xperror("Can't create key viewer");
+            error("Can't create key viewer");
             return 0;
         }
 
@@ -570,7 +570,7 @@ int Handle_motd(long off, char *buf, int len, long filesize)
         i = MAX(motd_size, sizeof no_motd_msg) + 1;
         if (!(motd_buf = (char *)malloc(i)))
         {
-            xperror("No memory for MOTD");
+            error("No memory for MOTD");
             return -1;
         }
         memset(motd_buf, ' ', motd_size);
@@ -625,7 +625,7 @@ int Handle_motd(long off, char *buf, int len, long filesize)
         if (motd_viewer == NO_WIDGET)
         {
             errno = 0;
-            xperror("Can't create MOTD viewer");
+            error("Can't create MOTD viewer");
         }
     }
     else if (len > 0)

@@ -160,7 +160,7 @@ static int block_inview(block_visibility_t *bv, int x, int y)
         }                                                                                                               \
         if (ptr_ == 0)                                                                                                  \
         {                                                                                                               \
-            xperror("No memory for debris");                                                                            \
+            error("No memory for debris");                                                                              \
             num_ = 0;                                                                                                   \
             return;                                                                                                     \
         }                                                                                                               \
@@ -919,7 +919,7 @@ static void Frame_shots(connection_t *connp, int ind)
         break;
 
         default:
-            xperror("Frame_shots: Shot type %d not defined.", shot->type);
+            error("Frame_shots: Shot type %d not defined.", shot->type);
             break;
         }
     }
@@ -1437,7 +1437,7 @@ void Set_message(const char *message)
     {
 #ifndef SILENT
         errno = 0;
-        xperror("Max message len exceed (%d,%s)", i, message);
+        error("Max message len exceed (%d,%s)", i, message);
 #endif
         strlcpy(tmp, message, MSG_LEN);
         msg = tmp;
@@ -1466,7 +1466,7 @@ void Set_player_message(player_t *pl, const char *message)
     {
 #ifndef SILENT
         errno = 0;
-        xperror("Max message len exceed (%d,%s)", i, message);
+        error("Max message len exceed (%d,%s)", i, message);
 #endif
         memcpy(tmp, message, MSG_LEN - 1);
         tmp[MSG_LEN - 1] = '\0';

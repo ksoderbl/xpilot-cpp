@@ -126,7 +126,7 @@ typedef struct
 
 typedef struct
 {
-    DFLOAT ratio;
+    double ratio;
     short id;
     short team;
     short score;
@@ -358,7 +358,7 @@ extern short nextCheckPoint;
 extern uint8_t numItems[NUM_ITEMS];
 extern uint8_t lastNumItems[NUM_ITEMS];
 extern int numItemsTime[NUM_ITEMS];
-extern DFLOAT showItemsTime;
+extern double showItemsTime;
 extern short autopilotLight;
 
 extern short lock_id;   /* Id of player locked onto */
@@ -404,20 +404,20 @@ extern int fuelLevel2;    /* Fuel warning level */
 extern int fuelLevel3;    /* Fuel notify level */
 
 extern char *shipShape;                /* Shape of player's ship */
-extern DFLOAT power;                   /* Force of thrust */
-extern DFLOAT power_s;                 /* Saved power fiks */
-extern DFLOAT turnspeed;               /* How fast player acc-turns */
-extern DFLOAT turnspeed_s;             /* Saved turnspeed */
-extern DFLOAT turnresistance;          /* How much is lost in % */
-extern DFLOAT turnresistance_s;        /* Saved (see above) */
-extern DFLOAT displayedPower;          /* What the server is sending us */
-extern DFLOAT displayedTurnspeed;      /* What the server is sending us */
-extern DFLOAT displayedTurnresistance; /* What the server is sending us */
-extern DFLOAT spark_prob;              /* Sparkling effect configurable */
+extern double power;                   /* Force of thrust */
+extern double power_s;                 /* Saved power fiks */
+extern double turnspeed;               /* How fast player acc-turns */
+extern double turnspeed_s;             /* Saved turnspeed */
+extern double turnresistance;          /* How much is lost in % */
+extern double turnresistance_s;        /* Saved (see above) */
+extern double displayedPower;          /* What the server is sending us */
+extern double displayedTurnspeed;      /* What the server is sending us */
+extern double displayedTurnresistance; /* What the server is sending us */
+extern double spark_prob;              /* Sparkling effect configurable */
 extern int charsPerSecond;             /* Message output speed (config) */
 
-extern DFLOAT hud_move_fact;      /* scale the hud-movement (speed) */
-extern DFLOAT ptr_move_fact;      /* scale the speed pointer length */
+extern double hud_move_fact;      /* scale the hud-movement (speed) */
+extern double ptr_move_fact;      /* scale the speed pointer length */
 extern char mods[MAX_CHARS];      /* Current modifiers in effect */
 extern instruments_t instruments; /* Instruments on screen */
 extern int packet_size;           /* Current frame update packet size */

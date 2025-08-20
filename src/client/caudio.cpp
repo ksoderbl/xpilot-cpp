@@ -65,7 +65,7 @@ void audioInit(char *display)
     }
     if (!(fp = fopen(sounds, "r")))
     {
-        xperror("Could not open soundfile %s", sounds);
+        error("Could not open soundfile %s", sounds);
         return;
     }
 

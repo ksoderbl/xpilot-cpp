@@ -217,7 +217,7 @@ void Gui_paint_cannon(int x, int y, int type)
             break;
         default:
             errno = 0;
-            xperror("Bad base dir.");
+            error("Bad base dir.");
             return;
         }
     }
@@ -441,7 +441,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             break;
         default:
             errno = 0;
-            xperror("Bad base dir.");
+            error("Bad base dir.");
             return;
         }
         /* only draw base teams if ship naming is on, SKS 25/05/94 */

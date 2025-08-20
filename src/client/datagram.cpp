@@ -65,7 +65,7 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
             status = sock_open_udp(sock, dotaddr, port);
             if (status == SOCK_IS_ERROR)
             {
-                xperror("Cannot create datagram socket (%d)", sock->error.error);
+                error("Cannot create datagram socket (%d)", sock->error.error);
                 return -1;
             }
         }
@@ -83,8 +83,8 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
             }
             if (found_socket == 0)
             {
-                xperror("Could not find a usable port in port range [%d,%d]",
-                        clientPortStart, clientPortEnd);
+                error("Could not find a usable port in port range [%d,%d]",
+                      clientPortStart, clientPortEnd);
                 return -1;
             }
         }

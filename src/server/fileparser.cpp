@@ -216,8 +216,8 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
     /* *** I18nize? *** */
     if (!isascii(ich) || !isalpha(ich))
     {
-        xperror("%s line %d: Names must start with an alphabetic.\n",
-                FileName, LineNumber);
+        error("%s line %d: Names must start with an alphabetic.\n",
+              FileName, LineNumber);
         toeol(map_ptr);
         free(s);
         return;
@@ -230,8 +230,8 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
 
         if (ich == '\n' || ich == '#' || ich == '\0')
         {
-            xperror("%s line %d: No colon found on line.\n",
-                    FileName, LineNumber);
+            error("%s line %d: No colon found on line.\n",
+                  FileName, LineNumber);
             if (ich == '#')
                 toeol(map_ptr);
             else
@@ -317,8 +317,8 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
         ++value;
     if (!*value)
     {
-        xperror("%s line %d: no value specified.\n",
-                FileName, LineNumber);
+        error("%s line %d: no value specified.\n",
+              FileName, LineNumber);
         free(name);
         free(head);
         return;
@@ -339,7 +339,7 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
     {
         if (!multiline)
         { /* Must be multiline. */
-            xperror("regions must use `\\multiline:'.\n");
+            error("regions must use `\\multiline:'.\n");
             free(name);
             free(head);
             return;
@@ -390,7 +390,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
     map_buf = (char *)malloc(map_size + 1);
     if (!map_buf)
     {
-        xperror("Not enough memory to read the map!");
+        error("Not enough memory to read the map!");
         return false;
     }
 
@@ -399,7 +399,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
         n = read(fd, &map_buf[map_offset], map_size - map_offset);
         if (n < 0)
         {
-            xperror("Error reading map!");
+            error("Error reading map!");
             free(map_buf);
             return false;
         }
@@ -415,7 +415,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
             map_buf = (char *)realloc(map_buf, map_size + 1);
             if (!map_buf)
             {
-                xperror("Not enough memory to read the map!");
+                error("Not enough memory to read the map!");
                 return false;
             }
         }
@@ -427,8 +427,8 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
     if (isdigit(*map_buf))
     {
         errno = 0;
-        xperror("%s is in old (v1.x) format, please convert it with mapmapper",
-                FileName);
+        error("%s is in old (v1.x) format, please convert it with mapmapper",
+              FileName);
         free(map_buf);
         return false;
     }

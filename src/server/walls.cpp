@@ -77,7 +77,7 @@ static void Walldist_alloc(void)
         World.x * sizeof(uint8_t *) + World.x * World.y);
     if (!walldist)
     {
-        xperror("No memory for walldist");
+        error("No memory for walldist");
         exit(1);
     }
     wall_ptr = walldist;
@@ -111,13 +111,13 @@ static void Walldist_dump(void)
     fp = fopen(name, "w");
     if (!fp)
     {
-        xperror("%s", name);
+        error("%s", name);
         return;
     }
     line = (uint8_t *)malloc(3 * World.x);
     if (!line)
     {
-        xperror("No memory for walldist dump");
+        error("No memory for walldist dump");
         fclose(fp);
         return;
     }
@@ -184,7 +184,7 @@ static void Walldist_init(void)
     q = (Qelmt_t *)malloc(World.x * World.y * sizeof(Qelmt_t));
     if (!q)
     {
-        xperror("No memory for walldist init");
+        error("No memory for walldist init");
         exit(1);
     }
     for (x = 0; x < World.x; x++)
@@ -2333,7 +2333,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
     default:
     case NotACrash:
         errno = 0;
-        xperror("Player_crash not a crash %d", ms->crash);
+        error("Player_crash not a crash %d", ms->crash);
         break;
 
     case CrashWormHole:

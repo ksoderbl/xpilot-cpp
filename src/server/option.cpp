@@ -635,17 +635,17 @@ static void Options_hash_free(void)
     if (hash_nodes_allocated != hash_nodes_freed)
     {
         errno = 0;
-        xperror("hash nodes alloc = %d, hash nodes free = %d, delta = %d\n",
-                hash_nodes_allocated, hash_nodes_freed,
-                hash_nodes_allocated - hash_nodes_freed);
+        error("hash nodes alloc = %d, hash nodes free = %d, delta = %d\n",
+              hash_nodes_allocated, hash_nodes_freed,
+              hash_nodes_allocated - hash_nodes_freed);
     }
 
     if (hash_values_allocated != hash_values_freed)
     {
         errno = 0;
-        xperror("hash values alloc = %d, hash values free = %d, delta = %d\n",
-                hash_values_allocated, hash_values_freed,
-                hash_values_allocated - hash_values_freed);
+        error("hash values alloc = %d, hash values free = %d, delta = %d\n",
+              hash_values_allocated, hash_values_freed,
+              hash_values_allocated - hash_values_freed);
     }
 }
 
@@ -927,8 +927,8 @@ static void Option_parse_node(hash_node *np)
         s = strchr(value, ',');
         if (!s)
         {
-            xperror("Invalid coordinate pair for %s - %s\n",
-                    desc->name, value);
+            error("Invalid coordinate pair for %s - %s\n",
+                  desc->name, value);
             break;
         }
         if (Convert_string_to_int(value, &(ptr->x)) != true ||

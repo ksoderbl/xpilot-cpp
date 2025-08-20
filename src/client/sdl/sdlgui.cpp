@@ -340,7 +340,7 @@ int Gui_init(void)
 
     if (asteroid_init() == -1)
     {
-        xperror("failed to initialize asteroids");
+        error("failed to initialize asteroids");
         return -1;
     }
 
@@ -351,14 +351,14 @@ int Gui_init(void)
     polyEdgeListBase = glGenLists(num_polygons);
     if ((!polyListBase) || (!polyEdgeListBase))
     {
-        xperror("failed to generate display lists");
+        error("failed to generate display lists");
         return -1;
     }
 
     tess = gluNewTess();
     if (tess == NULL)
     {
-        xperror("failed to create tessellation object");
+        error("failed to create tessellation object");
         return -1;
     }
 
@@ -410,7 +410,7 @@ void Gui_paint_cannon(int x, int y, int type)
         break;
     default:
         errno = 0;
-        xperror("Bad cannon dir.");
+        error("Bad cannon dir.");
         return;
     }
 }
@@ -476,7 +476,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         break;
     default:
         errno = 0;
-        xperror("Bad base dir.");
+        error("Bad base dir.");
         return;
     }
 
@@ -546,7 +546,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         break;
     default:
         errno = 0;
-        xperror("Bad base dir.");
+        error("Bad base dir.");
     }
 }
 
@@ -2266,7 +2266,7 @@ void Add_alert_message(const char *message, double timeout)
     }
     else
     {
-        xperror("Add_alert_message: Failed to create LabelWidget");
+        error("Add_alert_message: Failed to create LabelWidget");
         return;
     }
 
@@ -2383,7 +2383,7 @@ void Paint_messages(void)
             {
                 if (!(wi = (LabelWidget *)tmp->wid_info))
                 {
-                    xperror("Paint_messages: ListWidget lacks a wid_info ptr!");
+                    error("Paint_messages: ListWidget lacks a wid_info ptr!");
                     continue;
                 }
                 if (strlen(msg->txt))

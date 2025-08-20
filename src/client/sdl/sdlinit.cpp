@@ -81,17 +81,17 @@ int Init_playing_windows(void)
     */
     if (!AppendGLWidgetList(&MainWidget, Init_MainWidget(&gamefont)))
     {
-        xperror("widget initialization failed");
+        error("widget initialization failed");
         return -1;
     }
     if (Console_init())
     {
-        xperror("console initialization failed");
+        error("console initialization failed");
         return -1;
     }
     if (Gui_init())
     {
-        xperror("gui initialization failed");
+        error("gui initialization failed");
         return -1;
     }
 
@@ -134,7 +134,7 @@ int Init_window(void)
 
     if (TTF_Init())
     {
-        xperror("SDL_ttf initialization failed: %s", SDL_GetError());
+        error("SDL_ttf initialization failed: %s", SDL_GetError());
         return -1;
     }
     warn("SDL_ttf initialized.\n");
@@ -143,7 +143,7 @@ int Init_window(void)
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
     {
-        xperror("failed to initialize SDL: %s", SDL_GetError());
+        error("failed to initialize SDL: %s", SDL_GetError());
         return -1;
     }
 
@@ -187,7 +187,7 @@ int Init_window(void)
                                            draw_depth,
                                            videoFlags)) == NULL)
     {
-        xperror("Could not find a valid GLX visual for your display");
+        error("Could not find a valid GLX visual for your display");
         return -1;
     }
 
@@ -214,23 +214,23 @@ int Init_window(void)
     /* this prevents a freetype crash if you pass non existant fonts */
     if (!file_exists(gamefontname))
     {
-        xperror("cannot find your game font '%s'.\n"
-                "Please check that it exists!",
-                gamefontname);
+        error("cannot find your game font '%s'.\n"
+              "Please check that it exists!",
+              gamefontname);
         xpprintf("Reverting to defaultfont '%s'\n", defaultfontname);
         gf_exists = false;
     }
     if (!file_exists(defaultfontname))
     {
-        xperror("cannot find the default font! '%s'", defaultfontname);
+        error("cannot find the default font! '%s'", defaultfontname);
         df_exists = false;
     }
 
     if (!gf_exists && !df_exists)
     {
-        xperror("Failed to find any font files!\n"
-                "Probably you forgot to run 'make install',use '-TTFont <font.ttf>' argument"
-                " until you do");
+        error("Failed to find any font files!\n"
+              "Probably you forgot to run 'make install',use '-TTFont <font.ttf>' argument"
+              " until you do");
         return -1;
     }
 
@@ -238,7 +238,7 @@ int Init_window(void)
     {
         if (fontinit(&gamefont, gamefontname, gameFontSize))
         {
-            xperror("Font initialization failed with %s", gamefontname);
+            error("Font initialization failed with %s", gamefontname);
         }
         else
             gf_init = true;
@@ -247,7 +247,7 @@ int Init_window(void)
     {
         if (fontinit(&gamefont, defaultfontname, gameFontSize))
         {
-            xperror("Default font initialization failed with %s", defaultfontname);
+            error("Default font initialization failed with %s", defaultfontname);
         }
         else
             gf_init = true;
@@ -255,7 +255,7 @@ int Init_window(void)
 
     if (!gf_init)
     {
-        xperror("Failed to initialize any game font! (quitting)");
+        error("Failed to initialize any game font! (quitting)");
         return -1;
     }
 
@@ -263,7 +263,7 @@ int Init_window(void)
     {
         if (fontinit(&mapfont, gamefontname, mapFontSize))
         {
-            xperror("Font initialization failed with %s", gamefontname);
+            error("Font initialization failed with %s", gamefontname);
         }
         else
             mf_init = true;
@@ -272,7 +272,7 @@ int Init_window(void)
     {
         if (fontinit(&mapfont, defaultfontname, mapFontSize))
         {
-            xperror("Default font initialization failed with %s", defaultfontname);
+            error("Default font initialization failed with %s", defaultfontname);
         }
         else
             mf_init = true;
@@ -280,14 +280,14 @@ int Init_window(void)
 
     if (!mf_init)
     {
-        xperror("Failed to initialize any map font! (quitting)");
+        error("Failed to initialize any map font! (quitting)");
         return -1;
     }
 
     /* Set up the clipboard */
     if (init_scrap() < 0)
     {
-        xperror("Couldn't init clipboard: %s\n");
+        error("Couldn't init clipboard: %s\n");
     }
 
     return 0;
