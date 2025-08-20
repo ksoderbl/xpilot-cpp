@@ -2494,7 +2494,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->status, KILLED) && pl->score < 0 && IS_ROBOT_PTR(pl))
+    if (BIT(pl->status, KILLED) && pl->score < 0 && Player_is_robot(pl))
     {
         pl->home_base = 0;
         Pick_startpos(ind);

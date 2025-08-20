@@ -479,7 +479,7 @@ static void PlayerCollision(void)
 
                 if (BIT(pl->status, KILLED))
                 {
-                    if (IS_ROBOT_PTR(pl) && Robot_war_on_player(i) == Players[j]->id)
+                    if (Player_is_robot(pl) && Robot_war_on_player(i) == Players[j]->id)
                     {
                         Robot_reset_war(i);
                     }

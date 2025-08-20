@@ -927,7 +927,7 @@ void Robot_war(int ind, int killer)
         return;
     }
 
-    if (IS_ROBOT_PTR(kp))
+    if (Player_is_robot(kp))
     {
         Robot_talks(ROBOT_TALK_KILL, kp->name, pl->name);
 
@@ -942,7 +942,7 @@ void Robot_war(int ind, int killer)
         Robot_set_war(killer, -1);
     }
 
-    if (IS_ROBOT_PTR(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !TEAM(ind, killer) && !ALLIANCE(ind, killer))
+    if (Player_is_robot(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !TEAM(ind, killer) && !ALLIANCE(ind, killer))
     {
 
         Robot_talks(ROBOT_TALK_WAR, pl->name, kp->name);
@@ -1118,7 +1118,7 @@ void Robot_update(void)
             continue;
         }
 
-        if (!IS_ROBOT_PTR(pl))
+        if (!Player_is_robot(pl))
         {
             /* Ignore non-robots. */
             continue;

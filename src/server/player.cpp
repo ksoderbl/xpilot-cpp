@@ -232,7 +232,7 @@ void Go_home(int ind)
         Players[i]->visibility[ind].lastChange = 0;
     }
 
-    if (IS_ROBOT_PTR(pl))
+    if (Player_is_robot(pl))
         Robot_go_home(ind);
 }
 
@@ -712,7 +712,7 @@ void Reset_all_players(void)
         }
         if (IS_TANK_PTR(pl))
             pl->mychar = 'T';
-        else if (IS_ROBOT_PTR(pl))
+        else if (Player_is_robot(pl))
             pl->mychar = 'R';
     }
     if (BIT(World.rules->mode, TEAM_PLAY))
@@ -1791,7 +1791,7 @@ void Delete_player(int ind)
     /* call before important player structures are destroyed */
     Leave_alliance(ind);
 
-    if (IS_ROBOT_PTR(pl))
+    if (Player_is_robot(pl))
     {
         Robot_destroy(ind);
     }
@@ -1894,11 +1894,11 @@ void Delete_player(int ind)
     if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl))
     {
         World.teams[pl->team].NumMembers--;
-        if (IS_ROBOT_PTR(pl))
+        if (Player_is_robot(pl))
             World.teams[pl->team].NumRobots--;
     }
 
-    if (IS_ROBOT_PTR(pl))
+    if (Player_is_robot(pl))
     {
         NumRobots--;
     }
@@ -2093,7 +2093,7 @@ void Player_death_reset(int ind)
             pl->life--;
             if (pl->life == -1)
             {
-                if (IS_ROBOT_PTR(pl))
+                if (Player_is_robot(pl))
                 {
                     if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
                     {

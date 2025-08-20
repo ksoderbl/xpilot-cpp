@@ -421,7 +421,7 @@ void T_FormKeyPress(XEvent *report)
 void CallFieldHandler(T_Form_t *form, T_Field_t *field, int x, int y,
                       unsigned int button, int count, int (*handler)(HandlerInfo))
 {
-    HandlerInfo info;
+    HandlerInfo_t info;
 
     if (handler == NULL)
         return;

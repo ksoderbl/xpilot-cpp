@@ -1226,7 +1226,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                 p->item[ITEM_LASER] -= (int)(range * p->item[ITEM_LASER] + 0.5);
             }
 
-            if (!IS_ROBOT_PTR(p) || !options.ecmsReprogramRobots || !pl)
+            if (!Player_is_robot(p) || !options.ecmsReprogramRobots || !pl)
             {
                 /* player is blinded by light flashes. */
                 long duration = (int)(damage * pow(0.75, p->item[ITEM_SENSOR]));

@@ -42,7 +42,7 @@
  * The idea is that the user can do several stages of smoothing
  * by pressing the Round button more than once.
  */
-int RoundMapArea(HandlerInfo info)
+int RoundMapArea(HandlerInfo_t info)
 {
     int x,
         y,

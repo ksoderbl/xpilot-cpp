@@ -1480,7 +1480,7 @@ void Set_player_message(player_t *pl, const char *message)
     {
         Send_message(pl->connp, msg);
     }
-    else if (IS_ROBOT_PTR(pl))
+    else if (Player_is_robot(pl))
     {
         Robot_message(GetInd[pl->id], msg);
     }

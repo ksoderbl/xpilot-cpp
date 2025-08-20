@@ -427,7 +427,7 @@ int Pick_team(int pick_for_type)
         {
             playing_teams++;
         }
-        if (IS_HUMAN_PTR(pl) || IS_ROBOT_PTR(pl))
+        if (IS_HUMAN_PTR(pl) || Player_is_robot(pl))
         {
             team_score[pl->team] += pl->score;
         }
@@ -592,7 +592,7 @@ void Server_info(char *str, unsigned max_size)
     {
         pl = order[i];
         strlcpy(name, pl->name, MAX_CHARS);
-        if (IS_ROBOT_PTR(pl))
+        if (Player_is_robot(pl))
         {
             if ((k = Robot_war_on_player(GetInd[pl->id])) != NO_ID)
             {

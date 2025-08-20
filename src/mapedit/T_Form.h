@@ -39,7 +39,7 @@
 #define T_HOLD_BUTTON 7
 
 struct HandlerInfo;
-typedef struct HandlerInfo HandlerInfo;
+typedef struct HandlerInfo HandlerInfo_t;
 typedef struct T_Field_t
 {
    char *name;

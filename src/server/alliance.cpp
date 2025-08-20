@@ -95,7 +95,7 @@ int Invite_player(int ind, int ally_ind)
     }
     /* set & send invitation */
     pl->invite = ally->id;
-    if (IS_ROBOT_PTR(ally))
+    if (Player_is_robot(ally))
     {
         Robot_invite(ally_ind, ind);
     }
@@ -350,7 +350,7 @@ static int Create_alliance(int ind1, int ind2)
     alliance->id = New_alliance_ID();
     if (alliance->id == ALLIANCE_NOT_SET)
     {
-        xpwarn("Maximum number of alliances reached.\n");
+        warn("Maximum number of alliances reached.\n");
         free(alliance);
         return 0;
     }
@@ -500,8 +500,8 @@ static void Dissolve_alliance(int id)
     /* check */
     if (alliance->NumMembers != 0)
     {
-        xpwarn("Dissolve_alliance after dissolve %d remain!",
-               alliance->NumMembers);
+        warn("Dissolve_alliance after dissolve %d remain!",
+             alliance->NumMembers);
     }
 
     /* find the index of the alliance to be removed */
