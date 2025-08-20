@@ -129,7 +129,7 @@ int Choose_random_item(void)
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
-        item_prob_sum += World.items[i].prob;
+        item_prob_sum += world->items[i].prob;
     }
 
     if (item_prob_sum > 0.0)
@@ -138,7 +138,7 @@ int Choose_random_item(void)
 
         for (i = 0; i < NUM_ITEMS; i++)
         {
-            sum -= World.items[i].prob;
+            sum -= world->items[i].prob;
             if (sum <= 0)
             {
                 break;
@@ -175,12 +175,12 @@ void Place_item(int item, player_t *pl)
     {
         if (BIT(pl->status, KILLED))
         {
-            num_lose = pl->item[item] - World.items[item].initial;
+            num_lose = pl->item[item] - world->items[item].initial;
             if (num_lose <= 0)
                 return;
             pl->item[item] -= num_lose;
             num_per_pack = (int)(num_lose * options.dropItemOnKillProb);
-            if (num_per_pack < World.items[item].min_per_pack)
+            if (num_per_pack < world->items[item].min_per_pack)
                 return;
         }
         else
@@ -188,10 +188,10 @@ void Place_item(int item, player_t *pl)
             num_lose = pl->item[item];
             if (num_lose <= 0)
                 return;
-            if (World.items[item].min_per_pack == World.items[item].max_per_pack)
-                num_per_pack = World.items[item].max_per_pack;
+            if (world->items[item].min_per_pack == world->items[item].max_per_pack)
+                num_per_pack = world->items[item].max_per_pack;
             else
-                num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
+                num_per_pack = world->items[item].min_per_pack + (int)(rfrac() * (1 + world->items[item].max_per_pack - world->items[item].min_per_pack));
             if (num_per_pack > num_lose)
                 num_per_pack = num_lose;
             else
@@ -201,10 +201,10 @@ void Place_item(int item, player_t *pl)
     }
     else
     {
-        if (World.items[item].min_per_pack == World.items[item].max_per_pack)
-            num_per_pack = World.items[item].max_per_pack;
+        if (world->items[item].min_per_pack == world->items[item].max_per_pack)
+            num_per_pack = world->items[item].max_per_pack;
         else
-            num_per_pack = World.items[item].min_per_pack + (int)(rfrac() * (1 + World.items[item].max_per_pack - World.items[item].min_per_pack));
+            num_per_pack = world->items[item].min_per_pack + (int)(rfrac() * (1 + world->items[item].max_per_pack - world->items[item].min_per_pack));
     }
 
     if (pl)
@@ -230,16 +230,16 @@ void Place_item(int item, player_t *pl)
                 py += (BLOCK_SZ + (int)(rfrac() * 8));
         }
         if (px < 0)
-            px += World.width;
-        else if (px >= World.width)
-            px -= World.width;
+            px += world->width;
+        else if (px >= world->width)
+            px -= world->width;
         if (py < 0)
-            py += World.height;
-        else if (py >= World.height)
-            py -= World.height;
+            py += world->height;
+        else if (py >= world->height)
+            py -= world->height;
         bx = px / BLOCK_SZ;
         by = py / BLOCK_SZ;
-        if (!BIT(1U << World.block[bx][by], SPACE_BLOCKS))
+        if (!BIT(1U << world->block[bx][by], SPACE_BLOCKS))
         {
             return;
         }
@@ -254,8 +254,8 @@ void Place_item(int item, player_t *pl)
             rand = RANDOM_ITEM;
         else
             rand = 0;
-        if (World.NumItemConcentrators > 0 && rfrac() < options.itemConcentratorProb)
-            con = &World.itemConcentrators[(int)(rfrac() * World.NumItemConcentrators)];
+        if (world->NumItemConcentrators > 0 && rfrac() < options.itemConcentratorProb)
+            con = &world->itemConcentrators[(int)(rfrac() * world->NumItemConcentrators)];
         else
             con = NULL;
         /*
@@ -273,18 +273,18 @@ void Place_item(int item, player_t *pl)
                 dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_SZ) + 1));
                 px = (int)((con->blk_pos.x + 0.5) * BLOCK_SZ + dist * tcos(dir));
                 py = (int)((con->blk_pos.y + 0.5) * BLOCK_SZ + dist * tsin(dir));
-                if (BIT(World.rules->mode, WRAP_PLAY))
+                if (BIT(world->rules->mode, WRAP_PLAY))
                 {
                     if (px < 0)
-                        px += World.width;
-                    if (px >= World.width)
-                        px -= World.width;
+                        px += world->width;
+                    if (px >= world->width)
+                        px -= world->width;
                     if (py < 0)
-                        py += World.height;
-                    if (py >= World.height)
-                        py -= World.height;
+                        py += world->height;
+                    if (py >= world->height)
+                        py -= world->height;
                 }
-                if (px < 0 || px >= World.width || py < 0 || py >= World.height)
+                if (px < 0 || px >= world->width || py < 0 || py >= world->height)
                 {
                     continue;
                 }
@@ -293,12 +293,12 @@ void Place_item(int item, player_t *pl)
             }
             else
             {
-                px = (int)(rfrac() * World.width);
-                py = (int)(rfrac() * World.height);
+                px = (int)(rfrac() * world->width);
+                py = (int)(rfrac() * world->height);
                 bx = px / BLOCK_SZ;
                 by = py / BLOCK_SZ;
             }
-            if (BIT(1U << World.block[bx][by], SPACE_BLOCKS | CANNON_BIT))
+            if (BIT(1U << world->block[bx][by], SPACE_BLOCKS | CANNON_BIT))
             {
                 break;
             }
@@ -340,8 +340,8 @@ void Place_item(int item, player_t *pl)
         }
         else
         {
-            vx -= options.Gravity * World.gravity[bx][by].x;
-            vy -= options.Gravity * World.gravity[bx][by].y;
+            vx -= options.Gravity * world->gravity[bx][by].x;
+            vy -= options.Gravity * world->gravity[bx][by].y;
             vx += (int)(rfrac() * 8) - 3;
             vy += (int)(rfrac() * 8) - 3;
         }
@@ -363,7 +363,7 @@ void Make_item(int cx, int cy,
 {
     object_t *obj;
 
-    if (World.items[item].num >= World.items[item].max)
+    if (world->items[item].num >= world->items[item].max)
         return;
 
     if ((obj = Object_allocate()) == NULL)
@@ -386,7 +386,7 @@ void Make_item(int cx, int cy,
     obj->pl_range = ITEM_SIZE / 2;
     obj->pl_radius = ITEM_SIZE / 2;
 
-    World.items[item].num++;
+    world->items[item].num++;
     Cell_add_object(obj);
 }
 
@@ -403,13 +403,13 @@ void Throw_items(player_t *pl)
         {
             do
             {
-                num_items_to_throw = pl->item[item] - World.items[item].initial;
+                num_items_to_throw = pl->item[item] - world->items[item].initial;
                 if (num_items_to_throw <= 0)
                 {
                     break;
                 }
                 Place_item(item, pl);
-                remain = pl->item[item] - World.items[item].initial;
+                remain = pl->item[item] - world->items[item].initial;
             } while (remain > 0 && remain < num_items_to_throw);
         }
     }
@@ -442,9 +442,9 @@ void Detonate_items(int ind)
     /*
      * These are always immune to detonation.
      */
-    if ((pl->item[ITEM_MINE] -= World.items[ITEM_MINE].initial) < 0)
+    if ((pl->item[ITEM_MINE] -= world->items[ITEM_MINE].initial) < 0)
         pl->item[ITEM_MINE] = 0;
-    if ((pl->item[ITEM_MISSILE] -= World.items[ITEM_MISSILE].initial) < 0)
+    if ((pl->item[ITEM_MISSILE] -= world->items[ITEM_MISSILE].initial) < 0)
         pl->item[ITEM_MISSILE] = 0;
 
     /*
@@ -939,7 +939,7 @@ void Do_general_transporter(int ind, int cx, int cy, int target,
         break;
     }
 
-    LIMIT(pl->item[item], 0, World.items[item].limit);
+    LIMIT(pl->item[item], 0, world->items[item].limit);
 }
 
 void do_hyperjump(player_t *pl)
@@ -986,7 +986,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
     mineobject_t *closest_mine = NULL;
     smartobject_t *smart;
     mineobject_t *mine;
-    DFLOAT closest_mine_range = World.hypotenuse;
+    DFLOAT closest_mine_range = world->hypotenuse;
     int i, j, owner;
     DFLOAT range, perim, damage;
     player_t *pl = (ind == -1 ? NULL : Players[ind]), *p;
@@ -1044,7 +1044,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                         continue;
                 }
             }
-            else if ((pl && Team_immune(pl->id, owner)) || (BIT(World.rules->mode, TEAM_PLAY) && team == shot->team))
+            else if ((pl && Team_immune(pl->id, owner)) || (BIT(world->rules->mode, TEAM_PLAY) && team == shot->team))
                 continue;
         }
 
@@ -1059,7 +1059,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
             SET_BIT(smart->status, CONFUSED);
             smart->ecm_range = range;
             smart->count = CONFUSED_TIME;
-            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(World.rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee)
+            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee)
                 smart->new_info = pl->lock.pl_id;
             else
                 smart->new_info = Players[(int)(rfrac() * NumPlayers)]->id;
@@ -1130,12 +1130,12 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
     }
 
     /* in non-team mode cannons are immune to cannon ECMs */
-    if (BIT(World.rules->mode, TEAM_PLAY) || ind != -1)
+    if (BIT(world->rules->mode, TEAM_PLAY) || ind != -1)
     {
-        for (i = 0; i < World.NumCannons; i++)
+        for (i = 0; i < world->NumCannons; i++)
         {
-            cannon_t *c = World.cannon + i;
-            if (BIT(World.rules->mode, TEAM_PLAY) && c->team == team)
+            cannon_t *c = world->cannon + i;
+            if (BIT(world->rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
             range = Wrap_length(CLICK_TO_FLOAT(cx - c->clk_pos.cx), CLICK_TO_FLOAT(cy - c->clk_pos.cy));
             if (range > ECM_DISTANCE)
@@ -1159,7 +1159,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
          * Team members are always immune from ECM effects from other
          * team members.  Its too nasty otherwise.
          */
-        if (BIT(World.rules->mode, TEAM_PLAY) && p->team == team)
+        if (BIT(world->rules->mode, TEAM_PLAY) && p->team == team)
             continue;
 
         if (pl && ALLIANCE(ind, i))
@@ -1236,7 +1236,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
             }
             else
             {
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(World.rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee && pl->lock.pl_id != p->id
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee && pl->lock.pl_id != p->id
                     /*&& !TEAM_IMMUNE(ind, GetInd[pl->lock.pl_id])*/)
                 {
 

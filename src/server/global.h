@@ -64,7 +64,7 @@ extern long frame_loops;
 // extern int NumAlliances;
 // extern int NumRobots;
 extern int login_in_progress;
-// extern World_map World;
+// extern world_t World;
 extern server_t Server;
 extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
 extern int GetInd[];

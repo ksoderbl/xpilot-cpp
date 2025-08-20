@@ -123,7 +123,7 @@ typedef struct
 
 typedef struct
 {
-    int base_idx; /* Index in World.base[] */
+    int base_idx; /* Index in world->base[] */
     DFLOAT dist;  /* Distance to first checkpoint */
 } baseorder_t;
 
@@ -275,8 +275,8 @@ typedef struct
     item_concentrator_t *itemConcentrators;
     int NumAsteroidConcs;
     asteroid_concentrator_t *asteroidConcs;
-} World_map;
+} world_t;
 
-extern World_map World;
+extern world_t World, *world;
 
 #endif

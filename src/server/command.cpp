@@ -344,7 +344,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     swap_allowed = false;
     team = pl->team;
 
-    if (!BIT(World.rules->mode, TEAM_PLAY))
+    if (!BIT(world->rules->mode, TEAM_PLAY))
     {
         sprintf(msg, "No team play going on.");
     }
@@ -371,7 +371,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
         {
             sprintf(msg, "You already are on team %d.", team);
         }
-        else if (World.teams[team].NumBases == 0)
+        else if (world->teams[team].NumBases == 0)
         {
             sprintf(msg, "There are no bases for team %d on this map.", team);
         }
@@ -379,7 +379,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
         {
             sprintf(msg, "You cannot join the robot team on this server.");
         }
-        else if (World.teams[team].NumBases <= World.teams[team].NumMembers)
+        else if (world->teams[team].NumBases <= world->teams[team].NumMembers)
         {
             sprintf(msg, "Team %d is full.", team);
         }
@@ -400,10 +400,10 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     {
         Detach_ball(GetInd[pl->id], -1);
     }
-    World.teams[pl->team].NumMembers--;
+    world->teams[pl->team].NumMembers--;
     pl->team = team;
-    World.teams[pl->team].NumMembers++;
-    if (BIT(World.rules->mode, LIMITED_LIVES))
+    world->teams[pl->team].NumMembers++;
+    if (BIT(world->rules->mode, LIMITED_LIVES))
     {
         for (i = 0; i < NumPlayers; i++)
         {
@@ -456,7 +456,7 @@ static int Cmd_ally(char *arg, player_t *pl, int oper, char *msg)
     };
     int i, cmd;
 
-    if (!BIT(World.rules->mode, ALLIANCES))
+    if (!BIT(world->rules->mode, ALLIANCES))
     {
         strlcpy(msg, "Alliances are not allowed.", MSG_LEN);
         result = CMD_RESULT_ERROR;

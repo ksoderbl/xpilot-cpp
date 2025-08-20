@@ -33,44 +33,44 @@
  * Two macros for edge wrap of x and y coordinates measured in pixels.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XPIXEL(x_)                         \
-        (BIT(World.rules->mode, WRAP_PLAY)      \
-             ? ((x_) < 0                        \
-                    ? (x_) + World.width        \
-                    : ((x_) >= World.width      \
-                           ? (x_) - World.width \
-                           : (x_)))             \
+#define WRAP_XPIXEL(x_)                          \
+        (BIT(world->rules->mode, WRAP_PLAY)      \
+             ? ((x_) < 0                         \
+                    ? (x_) + world->width        \
+                    : ((x_) >= world->width      \
+                           ? (x_) - world->width \
+                           : (x_)))              \
              : (x_))
 
-#define WRAP_YPIXEL(y_)                          \
-        (BIT(World.rules->mode, WRAP_PLAY)       \
-             ? ((y_) < 0                         \
-                    ? (y_) + World.height        \
-                    : ((y_) >= World.height      \
-                           ? (y_) - World.height \
-                           : (y_)))              \
+#define WRAP_YPIXEL(y_)                           \
+        (BIT(world->rules->mode, WRAP_PLAY)       \
+             ? ((y_) < 0                          \
+                    ? (y_) + world->height        \
+                    : ((y_) >= world->height      \
+                           ? (y_) - world->height \
+                           : (y_)))               \
              : (y_))
 
 /*
  * Two macros for edge wrap of x and y coordinates measured in map blocks.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XBLOCK(x_)                     \
-        (BIT(World.rules->mode, WRAP_PLAY)  \
-             ? ((x_) < 0                    \
-                    ? (x_) + World.x        \
-                    : ((x_) >= World.x      \
-                           ? (x_) - World.x \
-                           : (x_)))         \
+#define WRAP_XBLOCK(x_)                      \
+        (BIT(world->rules->mode, WRAP_PLAY)  \
+             ? ((x_) < 0                     \
+                    ? (x_) + world->x        \
+                    : ((x_) >= world->x      \
+                           ? (x_) - world->x \
+                           : (x_)))          \
              : (x_))
 
-#define WRAP_YBLOCK(y_)                     \
-        (BIT(World.rules->mode, WRAP_PLAY)  \
-             ? ((y_) < 0                    \
-                    ? (y_) + World.y        \
-                    : ((y_) >= World.y      \
-                           ? (y_) - World.y \
-                           : (y_)))         \
+#define WRAP_YBLOCK(y_)                      \
+        (BIT(world->rules->mode, WRAP_PLAY)  \
+             ? ((y_) < 0                     \
+                    ? (y_) + world->y        \
+                    : ((y_) >= world->y      \
+                           ? (y_) - world->y \
+                           : (y_)))          \
              : (y_))
 
 /*
@@ -78,22 +78,22 @@
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
  */
-#define WRAP_DX(dx)                              \
-        (BIT(World.rules->mode, WRAP_PLAY)       \
-             ? ((dx) < -(World.width >> 1)       \
-                    ? (dx) + World.width         \
-                    : ((dx) > (World.width >> 1) \
-                           ? (dx) - World.width  \
-                           : (dx)))              \
+#define WRAP_DX(dx)                               \
+        (BIT(world->rules->mode, WRAP_PLAY)       \
+             ? ((dx) < -(world->width >> 1)       \
+                    ? (dx) + world->width         \
+                    : ((dx) > (world->width >> 1) \
+                           ? (dx) - world->width  \
+                           : (dx)))               \
              : (dx))
 
-#define WRAP_DY(dy)                               \
-        (BIT(World.rules->mode, WRAP_PLAY)        \
-             ? ((dy) < -(World.height >> 1)       \
-                    ? (dy) + World.height         \
-                    : ((dy) > (World.height >> 1) \
-                           ? (dy) - World.height  \
-                           : (dy)))               \
+#define WRAP_DY(dy)                                \
+        (BIT(world->rules->mode, WRAP_PLAY)        \
+             ? ((dy) < -(world->height >> 1)       \
+                    ? (dy) + world->height         \
+                    : ((dy) > (world->height >> 1) \
+                           ? (dy) - world->height  \
+                           : (dy)))                \
              : (dy))
 
 #define PSEUDO_TEAM(i, j) \
@@ -104,11 +104,11 @@
  */
 /* #define TEAM(i, j)                                                        \
         (BIT(Players[i]->status|Players[j]->status, PAUSE)                \
-        || (BIT(World.rules->mode, TEAM_PLAY)                                \
+        || (BIT(world->rules->mode, TEAM_PLAY)                                \
            && (Players[i]->team == Players[j]->team)                        \
            && (Players[i]->team != TEAM_NOT_SET))) */
 #define TEAM(i, j) \
-        (BIT(World.rules->mode, TEAM_PLAY) && (Players[i]->team == Players[j]->team) && (Players[i]->team != TEAM_NOT_SET))
+        (BIT(world->rules->mode, TEAM_PLAY) && (Players[i]->team == Players[j]->team) && (Players[i]->team != TEAM_NOT_SET))
 
 /*
  * Used where we wish to know if a player is on the same team

@@ -125,18 +125,18 @@ void Place_general_mine(int ind, unsigned short team, long status,
 
     if (NumObjs + mods.mini >= MAX_TOTAL_SHOTS)
         return;
-    if (BIT(World.rules->mode, WRAP_PLAY))
+    if (BIT(world->rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += World.click_width;
-        else if (cx >= World.click_width)
-            cx -= World.click_width;
+            cx += world->click_width;
+        else if (cx >= world->click_width)
+            cx -= world->click_width;
         if (cy < 0)
-            cy += World.click_height;
-        else if (cy >= World.click_height)
-            cy -= World.click_height;
+            cy += world->click_height;
+        else if (cy >= world->click_height)
+            cy -= world->click_height;
     }
-    if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
+    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
         return;
 
     if (pl && BIT(pl->status, KILLED))
@@ -206,8 +206,8 @@ void Place_general_mine(int ind, unsigned short team, long status,
             {
                 if (i != ind && !Team_immune(Players[i]->id, pl->id) && !IS_TANK_IND(i))
                 {
-                    int dx = CLICK_TO_PIXEL(cx - World.base[Players[i]->home_base].clk_pos.cx);
-                    int dy = CLICK_TO_PIXEL(cy - World.base[Players[i]->home_base].clk_pos.cy);
+                    int dx = CLICK_TO_PIXEL(cx - world->base[Players[i]->home_base].clk_pos.cx);
+                    int dy = CLICK_TO_PIXEL(cy - world->base[Players[i]->home_base].clk_pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -310,7 +310,7 @@ void Detonate_mines(int ind)
     int i;
     int closest = -1;
     DFLOAT dist;
-    DFLOAT min_dist = World.hypotenuse + 1;
+    DFLOAT min_dist = world->hypotenuse + 1;
 
     if (BIT(pl->used, HAS_PHASING_DEVICE))
         return;
@@ -346,7 +346,7 @@ void Detonate_mines(int ind)
 void Make_treasure_ball(int treasure)
 {
     ballobject_t *ball;
-    treasure_t *t = &(World.treasures[treasure]);
+    treasure_t *t = &(world->treasures[treasure]);
     // DFLOAT x = (t->blk_pos.x + 0.5) * BLOCK_SZ,
     //        y = (t->blk_pos.y * BLOCK_SZ) + 10;
     if (t->empty)
@@ -675,7 +675,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
             }
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules->mode, LIMITED_VISIBILITY)))
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)))
                 {
                     lock = -1;
                 }
@@ -699,7 +699,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
                 lock = target;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd[pl->lock.pl_id]].canSee)
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd[pl->lock.pl_id]].canSee)
                     return;
                 lock = pl->lock.pl_id;
             }
@@ -1011,7 +1011,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         }
         shotpos.cx = WRAP_XCLICK(shotpos.cx);
         shotpos.cy = WRAP_YCLICK(shotpos.cy);
-        if (shotpos.cx < 0 || shotpos.cx >= World.click_width || shotpos.cy < 0 || shotpos.cy >= World.click_height)
+        if (shotpos.cx < 0 || shotpos.cx >= world->click_width || shotpos.cy < 0 || shotpos.cy >= world->click_height)
         {
             continue;
         }
@@ -1194,7 +1194,7 @@ void Delete_shot(int ind)
              * have been destroyed is by being knocked out of the goal.
              * Therefore we force the ball to be recreated.
              */
-            World.treasures[ball->treasure].have = false;
+            world->treasures[ball->treasure].have = false;
             SET_BIT(ball->status, RECREATE);
         }
         if (BIT(ball->status, RECREATE))
@@ -1392,7 +1392,7 @@ void Delete_shot(int ind)
             break;
         }
 
-        World.items[shot->info].num--;
+        world->items[shot->info].num--;
 
         break;
 
@@ -1414,19 +1414,19 @@ void Delete_shot(int ind)
     if (addMine | addHeat)
     {
         CLEAR_MODS(mods);
-        if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333f))
+        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333f))
         {
             SET_BIT(mods.warhead, CLUSTER);
         }
-        if (BIT(World.rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333f))
+        if (BIT(world->rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333f))
         {
             SET_BIT(mods.warhead, IMPLOSION);
         }
-        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
         {
             mods.velocity = (int)(rfrac() * (MODS_VELOCITY_MAX + 1));
         }
-        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
+        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
         {
             mods.power = (int)(rfrac() * (MODS_POWER_MAX + 1));
         }
@@ -1464,7 +1464,7 @@ void Fire_laser(player_t *pl)
             int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
             cx = WRAP_XCLICK(cx);
             cy = WRAP_YCLICK(cy);
-            if (cx >= 0 && cx < World.click_width && cy >= 0 && cy < World.click_height)
+            if (cx >= 0 && cx < world->click_width && cy >= 0 && cy < world->click_height)
                 Fire_general_laser(pl, pl->team, cx, cy, pl->dir, pl->mods);
         }
     }
@@ -1846,21 +1846,21 @@ void Move_smart_shot(int ind)
         {
             xi = (int)((x += vx) / BLOCK_SZ);
             yi = (int)((y += vy) / BLOCK_SZ);
-            if (BIT(World.rules->mode, WRAP_PLAY))
+            if (BIT(world->rules->mode, WRAP_PLAY))
             {
                 if (xi < 0)
-                    xi += World.x;
-                else if (xi >= World.x)
-                    xi -= World.x;
+                    xi += world->x;
+                else if (xi >= world->x)
+                    xi -= world->x;
                 if (yi < 0)
-                    yi += World.y;
-                else if (yi >= World.y)
-                    yi -= World.y;
+                    yi += world->y;
+                else if (yi >= world->y)
+                    yi -= world->y;
             }
-            if (xi < 0 || xi >= World.x || yi < 0 || yi >= World.y)
+            if (xi < 0 || xi >= world->x || yi < 0 || yi >= world->y)
                 break;
 
-            switch (World.block[xi][yi])
+            switch (world->block[xi][yi])
             {
             case TARGET:
             case TREASURE:
@@ -1893,8 +1893,8 @@ void Move_smart_shot(int ind)
                 xt = xi + sur[(i + j + si) & 7].dx;
                 yt = yi + sur[(i + j + si) & 7].dy;
 
-                if (xt >= 0 && xt < World.x && yt >= 0 && yt < World.y)
-                    switch (World.block[xt][yt])
+                if (xt >= 0 && xt < world->x && yt >= 0 && yt < world->y)
+                    switch (world->block[xt][yt])
                     {
                     case TARGET:
                     case TREASURE:

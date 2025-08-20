@@ -202,7 +202,7 @@ void Meta_update(int change)
         if (IS_HUMAN_IND(i) && !BIT(Players[i]->status, PAUSE))
         {
             num_active_players++;
-            if (BIT(World.rules->mode, TEAM_PLAY))
+            if (BIT(world->rules->mode, TEAM_PLAY))
             {
                 active_per_team[i]++;
             }
@@ -216,7 +216,7 @@ void Meta_update(int change)
 
     /* calculate number of available homebases per team. */
     freebases[0] = '\0';
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (BIT(world->rules->mode, TEAM_PLAY))
     {
         j = 0;
         for (i = 0; i < MAX_TEAMS; i++)
@@ -225,10 +225,10 @@ void Meta_update(int change)
             {
                 continue;
             }
-            if (World.teams[i].NumBases > 0)
+            if (world->teams[i].NumBases > 0)
             {
                 sprintf(&freebases[j], "%d=%d,", i,
-                        World.teams[i].NumBases - active_per_team[i]);
+                        world->teams[i].NumBases - active_per_team[i]);
                 j += strlen(&freebases[j]);
             }
         }
@@ -241,7 +241,7 @@ void Meta_update(int change)
     else
     {
         sprintf(freebases, "=%d",
-                World.NumBases - num_active_players - login_in_progress);
+                world->NumBases - num_active_players - login_in_progress);
     }
 
     sprintf(string,
@@ -262,10 +262,10 @@ void Meta_update(int change)
             "add queue %d\n"
             "add sound " SOUND_SUPPORT_STR "\n",
             Server.host, num_active_players,
-            META_VERSION, World.name, World.x, World.y, World.author,
-            World.NumBases, FPS, options.contactPort,
-            game_mode, World.NumTeamBases, freebases,
-            BIT(World.rules->mode, TIMING) ? 1 : 0,
+            META_VERSION, world->name, world->x, world->y, world->author,
+            world->NumBases, FPS, options.contactPort,
+            game_mode, world->NumTeamBases, freebases,
+            BIT(world->rules->mode, TIMING) ? 1 : 0,
             (long)(time(NULL) - serverTime),
             queue_length);
 
@@ -289,7 +289,7 @@ void Meta_update(int change)
                         Players[i]->hostname);
                 len += strlen(&string[len]);
 
-                if (BIT(World.rules->mode, TEAM_PLAY))
+                if (BIT(world->rules->mode, TEAM_PLAY))
                 {
                     sprintf(string + len, "{%d}", Players[i]->team);
                     len += strlen(&string[len]);

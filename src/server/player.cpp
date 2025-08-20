@@ -64,11 +64,11 @@ void Pick_startpos(int ind)
         return;
     }
 
-    if (prev_num_bases != World.NumBases)
+    if (prev_num_bases != world->NumBases)
     {
-        prev_num_bases = World.NumBases;
+        prev_num_bases = world->NumBases;
         XFREE(free_bases);
-        free_bases = (char *)malloc(World.NumBases * sizeof(*free_bases));
+        free_bases = (char *)malloc(world->NumBases * sizeof(*free_bases));
         if (free_bases == NULL)
         {
             error("Can't allocate memory for free_bases");
@@ -77,9 +77,9 @@ void Pick_startpos(int ind)
     }
 
     num_free = 0;
-    for (i = 0; i < World.NumBases; i++)
+    for (i = 0; i < world->NumBases; i++)
     {
-        if (World.base[i].team == pl->team)
+        if (world->base[i].team == pl->team)
         {
             num_free++;
             free_bases[i] = 1;
@@ -99,11 +99,11 @@ void Pick_startpos(int ind)
         }
     }
 
-    if (BIT(World.rules->mode, TIMING))
+    if (BIT(world->rules->mode, TIMING))
     { /* pick first free base */
-        for (i = 0; i < World.NumBases; i++)
+        for (i = 0; i < world->NumBases; i++)
         {
-            if (free_bases[World.baseorder[i].base_idx])
+            if (free_bases[world->baseorder[i].base_idx])
             {
                 break;
             }
@@ -113,7 +113,7 @@ void Pick_startpos(int ind)
     {
         pick = (int)(rfrac() * num_free);
         seen = 0;
-        for (i = 0; i < World.NumBases; i++)
+        for (i = 0; i < world->NumBases; i++)
         {
             if (free_bases[i] != 0)
             {
@@ -125,15 +125,15 @@ void Pick_startpos(int ind)
         }
     }
 
-    if (i == World.NumBases)
+    if (i == world->NumBases)
     {
         error("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
-              ind, World.NumBases, num_free, pick, seen);
+              ind, world->NumBases, num_free, pick, seen);
         End_game();
     }
     else
     {
-        pl->home_base = BIT(World.rules->mode, TIMING) ? World.baseorder[i].base_idx : i;
+        pl->home_base = BIT(world->rules->mode, TIMING) ? world->baseorder[i].base_idx : i;
         if (ind < NumPlayers)
         {
             for (i = 0; i < NumPlayers; i++)
@@ -177,14 +177,14 @@ void Go_home(int ind)
         return;
     }
 
-    if (BIT(World.rules->mode, TIMING) && pl->round && !BIT(pl->status, GAME_OVER))
+    if (BIT(world->rules->mode, TIMING) && pl->round && !BIT(pl->status, GAME_OVER))
     {
         if (pl->check)
             check = pl->check - 1;
         else
-            check = World.NumChecks - 1;
-        x = World.check[check].x;
-        y = World.check[check].y;
+            check = world->NumChecks - 1;
+        x = world->check[check].x;
+        y = world->check[check].y;
         vx = (rfrac() - 0.5) * 0.1;
         vy = (rfrac() - 0.5) * 0.1;
         velo = LENGTH(vx, vy);
@@ -193,9 +193,9 @@ void Go_home(int ind)
     }
     else
     {
-        x = World.base[pl->home_base].blk_pos.x;
-        y = World.base[pl->home_base].blk_pos.y;
-        dir = World.base[pl->home_base].dir;
+        x = world->base[pl->home_base].blk_pos.x;
+        y = world->base[pl->home_base].blk_pos.y;
+        dir = world->base[pl->home_base].dir;
         vx = vy = velo = 0;
     }
 
@@ -253,14 +253,14 @@ void Compute_sensor_range(player_t *pl)
         else
             options.minVisibilityDistance *= BLOCK_SZ;
         if (options.maxVisibilityDistance <= 0.0)
-            options.maxVisibilityDistance = World.hypotenuse;
+            options.maxVisibilityDistance = world->hypotenuse;
         else
             options.maxVisibilityDistance *= BLOCK_SZ;
 
-        if (World.items[ITEM_FUEL].initial > 0.0)
+        if (world->items[ITEM_FUEL].initial > 0.0)
         {
             EnergyRangeFactor = options.minVisibilityDistance /
-                                (World.items[ITEM_FUEL].initial * (1.0 + ((DFLOAT)World.items[ITEM_SENSOR].initial * 0.25)));
+                                (world->items[ITEM_FUEL].initial * (1.0 + ((DFLOAT)world->items[ITEM_SENSOR].initial * 0.25)));
             EnergyRangeFactor /= FUEL_SCALE_FACT;
         }
         else
@@ -384,7 +384,7 @@ static void Player_init_fuel(int ind, long total_fuel)
 
     fuel -= pl->fuel.sum;
 
-    for (i = 1; i <= World.items[ITEM_TANK].initial; i++)
+    for (i = 1; i <= world->items[ITEM_TANK].initial; i++)
     {
         Player_add_tank(pl, fuel);
         fuel -= pl->fuel.tank[i];
@@ -409,10 +409,10 @@ int Init_player(int ind, shipshape_t *ship)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = World.items[i].initial;
+            pl->item[i] = world->items[i].initial;
     }
 
-    pl->fuel.sum = World.items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
+    pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
     Player_init_fuel(ind, pl->fuel.sum);
 
     if (options.allowShipShapes == true && ship)
@@ -493,7 +493,7 @@ int Init_player(int ind, shipshape_t *ship)
     }
     pl->mychar = ' ';
     pl->prev_mychar = pl->mychar;
-    pl->life = World.rules->lives;
+    pl->life = world->rules->lives;
     pl->prev_life = pl->life;
     pl->ball = NULL;
 
@@ -506,13 +506,13 @@ int Init_player(int ind, shipshape_t *ship)
      * If limited lives and if nobody has lost a life yet, you may enter
      * now, otherwise you will have to wait 'til everyone gets GAME OVER.
      */
-    if (BIT(World.rules->mode, LIMITED_LIVES))
+    if (BIT(world->rules->mode, LIMITED_LIVES))
     {
         for (i = 0; i < NumPlayers; i++)
         {
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (Players[i]->life < World.rules->lives && !TEAM(ind, i))
+            if (Players[i]->life < world->rules->lives && !TEAM(ind, i))
             {
                 too_late = true;
                 break;
@@ -638,7 +638,7 @@ void Update_score_table(void)
                 }
             }
         }
-        if (BIT(World.rules->mode, TIMING))
+        if (BIT(world->rules->mode, TIMING))
         {
             if (pl->check != pl->prev_check || pl->round != pl->prev_round)
             {
@@ -647,7 +647,7 @@ void Update_score_table(void)
                 check = (pl->round == 0)
                             ? 0
                         : (pl->check == 0)
-                            ? (World.NumChecks - 1)
+                            ? (world->NumChecks - 1)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
@@ -704,8 +704,8 @@ void Reset_all_players(void)
         {
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
-            pl->life = World.rules->lives;
-            if (BIT(World.rules->mode, TIMING))
+            pl->life = world->rules->lives;
+            if (BIT(world->rules->mode, TIMING))
             {
                 pl->count = RECOVERY_DELAY;
             }
@@ -715,7 +715,7 @@ void Reset_all_players(void)
         else if (Player_is_robot(pl))
             pl->mychar = 'R';
     }
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (BIT(world->rules->mode, TEAM_PLAY))
     {
 
         /* Detach any balls and kill ball */
@@ -734,33 +734,33 @@ void Reset_all_players(void)
         }
 
         /* Reset the treasures */
-        for (i = 0; i < World.NumTreasures; i++)
+        for (i = 0; i < world->NumTreasures; i++)
         {
-            World.treasures[i].destroyed = 0;
-            World.treasures[i].have = false;
+            world->treasures[i].destroyed = 0;
+            world->treasures[i].have = false;
             Make_treasure_ball(i);
         }
 
         /* Reset the teams */
         for (i = 0; i < MAX_TEAMS; i++)
         {
-            World.teams[i].TreasuresDestroyed = 0;
-            World.teams[i].TreasuresLeft = World.teams[i].NumTreasures - World.teams[i].NumEmptyTreasures;
+            world->teams[i].TreasuresDestroyed = 0;
+            world->teams[i].TreasuresLeft = world->teams[i].NumTreasures - world->teams[i].NumEmptyTreasures;
         }
 
         if (options.endOfRoundReset)
         {
             /* Reset the targets */
-            for (i = 0; i < World.NumTargets; i++)
+            for (i = 0; i < world->NumTargets; i++)
             {
-                if (World.targets[i].damage != TARGET_DAMAGE || World.targets[i].dead_time != 0)
+                if (world->targets[i].damage != TARGET_DAMAGE || world->targets[i].dead_time != 0)
                 {
-                    World.block[World.targets[i].blk_pos.x][World.targets[i].blk_pos.y] = TARGET;
-                    World.targets[i].dead_time = 0;
-                    World.targets[i].damage = TARGET_DAMAGE;
-                    World.targets[i].conn_mask = 0;
-                    World.targets[i].update_mask = (unsigned)-1;
-                    World.targets[i].last_change = frame_loops;
+                    world->block[world->targets[i].blk_pos.x][world->targets[i].blk_pos.y] = TARGET;
+                    world->targets[i].dead_time = 0;
+                    world->targets[i].damage = TARGET_DAMAGE;
+                    world->targets[i].conn_mask = 0;
+                    world->targets[i].update_mask = (unsigned)-1;
+                    world->targets[i].last_change = frame_loops;
                 }
             }
         }
@@ -793,7 +793,7 @@ void Check_team_members(int team)
     player_t *pl;
     int members, i;
 
-    if (!BIT(World.rules->mode, TEAM_PLAY))
+    if (!BIT(world->rules->mode, TEAM_PLAY))
         return;
 
     for (members = i = 0; i < NumPlayers; i++)
@@ -802,10 +802,10 @@ void Check_team_members(int team)
         if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
             members++;
     }
-    if (World.teams[team].NumMembers != members)
+    if (world->teams[team].NumMembers != members)
     {
         error("Server has reset team %d members from %d to %d",
-              team, World.teams[team].NumMembers, members);
+              team, world->teams[team].NumMembers, members);
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
@@ -813,7 +813,7 @@ void Check_team_members(int team)
                 error("Team %d currently has player %d: \"%s\"",
                       team, i + 1, pl->name);
         }
-        World.teams[team].NumMembers = members;
+        world->teams[team].NumMembers = members;
     }
 }
 
@@ -1166,9 +1166,9 @@ void Race_game_over(void)
         for (i = 0; i < num_ordered_players; i++)
         {
             pl = Players[order[i]];
-            if (pl->home_base != World.baseorder[i].base_idx)
+            if (pl->home_base != world->baseorder[i].base_idx)
             {
-                pl->home_base = World.baseorder[i].base_idx;
+                pl->home_base = world->baseorder[i].base_idx;
                 for (j = 0; j < NumPlayers; j++)
                 {
                     if (Players[j]->connp != NULL)
@@ -1261,7 +1261,7 @@ void Compute_game_status(void)
     if (roundtime > 0)
         roundtime--;
 
-    if (BIT(World.rules->mode, TIMING))
+    if (BIT(world->rules->mode, TIMING))
     {
         /*
          * We need a completely separate scoring system for race mode.
@@ -1411,7 +1411,7 @@ void Compute_game_status(void)
          * In limited lives mode, wait for everyone to die, except
          * for the last player.
          */
-        if (BIT(World.rules->mode, LIMITED_LIVES))
+        if (BIT(world->rules->mode, LIMITED_LIVES))
         {
             if (num_alive_players > 1)
             {
@@ -1436,7 +1436,7 @@ void Compute_game_status(void)
 
         Race_game_over();
     }
-    else if (BIT(World.rules->mode, TEAM_PLAY))
+    else if (BIT(world->rules->mode, TEAM_PLAY))
     {
 
         /* Do we have a winning team ? */
@@ -1470,7 +1470,7 @@ void Compute_game_status(void)
             }
 #if 0
             /* not all teammode maps have treasures. */
-            else if (World.teams[Players[i]->team].NumTreasures == 0) {
+            else if (world->teams[Players[i]->team].NumTreasures == 0) {
                 /* Ignore players with no treasure troves */
                 continue;
             }
@@ -1534,7 +1534,7 @@ void Compute_game_status(void)
                     continue;
                 }
                 team_win[i] = 1;
-                team_ptr = &(World.teams[i]);
+                team_ptr = &(world->teams[i]);
                 if (team_ptr->TreasuresDestroyed > max_destroyed)
                 {
                     max_destroyed = team_ptr->TreasuresDestroyed;
@@ -1570,10 +1570,10 @@ void Compute_game_status(void)
             {
                 if (!team_win[i])
                     continue;
-                if (World.teams[i].TreasuresDestroyed == max_destroyed)
+                if (world->teams[i].TreasuresDestroyed == max_destroyed)
                 {
-                    if (World.teams[i].TreasuresLeft > max_left)
-                        max_left = World.teams[i].TreasuresLeft;
+                    if (world->teams[i].TreasuresLeft > max_left)
+                        max_left = world->teams[i].TreasuresLeft;
                     winning_team = i;
                     winners++;
                 }
@@ -1602,7 +1602,7 @@ void Compute_game_status(void)
             {
                 if (!team_win[i])
                     continue;
-                if (World.teams[i].TreasuresLeft == max_left)
+                if (world->teams[i].TreasuresLeft == max_left)
                 {
                     if (team_score[i] > max_score)
                         max_score = team_score[i];
@@ -1683,7 +1683,7 @@ void Compute_game_status(void)
             int i, treasures_destroyed;
 
             for (treasures_destroyed = i = 0; i < MAX_TEAMS; i++)
-                treasures_destroyed += (World.teams[i].NumTreasures - World.teams[i].NumEmptyTreasures - World.teams[i].TreasuresLeft);
+                treasures_destroyed += (world->teams[i].NumTreasures - world->teams[i].NumEmptyTreasures - world->teams[i].TreasuresLeft);
             if (treasures_destroyed)
                 Team_game_over(winning_team, " by staying in the game");
         }
@@ -1852,9 +1852,9 @@ void Delete_player(int ind)
 
     if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl))
     {
-        World.teams[pl->team].NumMembers--;
+        world->teams[pl->team].NumMembers--;
         if (Player_is_robot(pl))
-            World.teams[pl->team].NumRobots--;
+            world->teams[pl->team].NumRobots--;
     }
 
     if (Player_is_robot(pl))
@@ -2007,7 +2007,7 @@ void Player_death_reset(int ind)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = World.items[i].initial;
+            pl->item[i] = world->items[i].initial;
     }
 
     pl->forceVisible = 0;
@@ -2025,7 +2025,7 @@ void Player_death_reset(int ind)
     pl->lock.distance = 0;
 
     pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
-    minfuel = (World.items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
+    minfuel = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
     minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(ind, pl->fuel.sum);
@@ -2047,14 +2047,14 @@ void Player_death_reset(int ind)
     {
         pl->deaths++;
 
-        if (BIT(World.rules->mode, LIMITED_LIVES))
+        if (BIT(world->rules->mode, LIMITED_LIVES))
         {
             pl->life--;
             if (pl->life == -1)
             {
                 if (Player_is_robot(pl))
                 {
-                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
+                    if (!BIT(world->rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
                     {
                         Robot_delete(ind, false);
                         return;
