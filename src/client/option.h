@@ -176,7 +176,7 @@ extern const char *Get_keyHelpString(keys_t key);
 extern const char *Get_keyResourceString(keys_t key);
 extern const char *Option_value_to_string(xp_option_t *opt);
 
-int Store_option(xp_option_t *);
+void Store_option(xp_option_t *);
 
 #define STORE_OPTIONS(option_array)                  \
     {                                                \

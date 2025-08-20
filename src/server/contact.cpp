@@ -97,22 +97,22 @@ bool Contact_init(void)
     if ((status = sock_open_udp(&contactSocket, serverAddr,
                                 options.contactPort)) == -1)
     {
-        error("Could not create Dgram contactSocket");
-        error("Perhaps %s is already running?", APPNAME);
+        xperror("Could not create Dgram contactSocket");
+        xperror("Perhaps %s is already running?", APPNAME);
         End_game();
         return false;
     }
     sock_set_timeout(&contactSocket, 0, 0);
     if (sock_set_non_blocking(&contactSocket, 1) == -1)
     {
-        error("Can't make contact socket non-blocking");
+        xperror("Can't make contact socket non-blocking");
         End_game();
         return false;
     }
     if (Sockbuf_init(&ibuf, &contactSocket, SERVER_SEND_SIZE,
                      SOCKBUF_READ | SOCKBUF_WRITE | SOCKBUF_DGRAM) == -1)
     {
-        error("No memory for contact buffer");
+        xperror("No memory for contact buffer");
         End_game();
         return false;
     }
@@ -132,7 +132,7 @@ static int Kick_robot_players(int team)
         return 0;
     if (team == TEAM_NOT_SET)
     {
-        if (BIT(world->rules->mode, TEAM_PLAY) && options.reserveRobotTeam)
+        if (BIT(World.rules->mode, TEAM_PLAY) && options.reserveRobotTeam)
         {
             /* kick robot with lowest score from any team but robotTeam */
             int low_score = INT_MAX;
@@ -164,7 +164,7 @@ static int Kick_robot_players(int team)
     }
     else
     {
-        if (world->teams[team].NumRobots > 0)
+        if (World.teams[team].NumRobots > 0)
         {
             /* kick robot with lowest score from this team */
             int low_score = INT_MAX;
@@ -205,21 +205,21 @@ static int Kick_paused_players(int team)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Players[i]->conn != NULL && BIT(Players[i]->status, PAUSE) && (team == TEAM_NOT_SET || Players[i]->team == team))
+        if (Players[i]->connp != NULL && BIT(Players[i]->status, PAUSE) && (team == TEAM_NOT_SET || Players[i]->team == team))
         {
             if (team == TEAM_NOT_SET)
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because the game is full.",
                         Players[i]->name);
-                Destroy_connection(Players[i]->conn, "no pause with full game");
+                Destroy_connection(Players[i]->connp, "no pause with full game");
             }
             else
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because team %d is full.",
                         Players[i]->name, team);
-                Destroy_connection(Players[i]->conn, "no pause with full team");
+                Destroy_connection(Players[i]->connp, "no pause with full team");
             }
             Set_message(msg);
             num_unpaused++;
@@ -382,8 +382,8 @@ void Contact(int fd, void *arg)
      */
     if (version < MIN_CLIENT_VERSION || (version > MAX_CLIENT_VERSION && reply_to != CONTACT_pack))
     {
-        D(error("Incompatible version with %s@%s (%04x,%04x)",
-                user_name, host_addr, MY_VERSION, version);)
+        D(xperror("Incompatible version with %s@%s (%04x,%04x)",
+                  user_name, host_addr, MY_VERSION, version);)
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", MAGIC, reply_to, E_VERSION);
         Reply(host_addr, port);
@@ -607,11 +607,11 @@ void Contact(int fd, void *arg)
             for (i = 0; i < NumPlayers; i++)
             {
                 /*
-                 * Kicking players by username is not a good idea,
-                 * because several players may have the same username.
+                 * Kicking players by realname is not a good idea,
+                 * because several players may have the same realname.
                  * E.g., system administrators joining as root...
                  */
-                if (strcasecmp(str, Players[i]->name) == 0 || strcasecmp(str, Players[i]->username) == 0)
+                if (strcasecmp(str, Players[i]->name) == 0 || strcasecmp(str, Players[i]->realname) == 0)
                 {
                     found = i;
                 }
@@ -626,13 +626,13 @@ void Contact(int fd, void *arg)
                         "\"%s\" upset the gods and was kicked out of the game.",
                         Players[found]->name);
                 Set_message(msg);
-                if (Players[found]->conn == NULL)
+                if (Players[found]->connp == NULL)
                 {
                     Delete_player(found);
                 }
                 else
                 {
-                    Destroy_connection(Players[found]->conn, "kicked out");
+                    Destroy_connection(Players[found]->connp, "kicked out");
                 }
                 updateScores = true;
             }
@@ -819,7 +819,7 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
     /*
      * Is the game full?
      */
-    if (NumPlayers - NumPseudoPlayers + login_in_progress + NumQueuedPlayers >= world->NumBases)
+    if (NumPlayers - NumPseudoPlayers + login_in_progress + NumQueuedPlayers >= World.NumBases)
     {
 
         if (NumQueuedPlayers > 0)
@@ -833,7 +833,7 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
                 return E_GAME_FULL;
             }
         }
-        if (NumPlayers - NumPseudoPlayers + login_in_progress + NumQueuedPlayers >= world->NumBases)
+        if (NumPlayers - NumPseudoPlayers + login_in_progress + NumQueuedPlayers >= World.NumBases)
         {
 
             return E_GAME_FULL;
@@ -848,7 +848,7 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
     /*
      * Maybe don't have enough room for player on that team?
      */
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         if ((team < 0 || team >= MAX_TEAMS) || (team == options.robotTeam && options.reserveRobotTeam))
         {
@@ -866,7 +866,7 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
             team = Pick_team(PickForHuman);
             if (team == TEAM_NOT_SET || (team == options.robotTeam && options.reserveRobotTeam))
             {
-                if (NumRobots > world->teams[options.robotTeam].NumRobots)
+                if (NumRobots > World.teams[options.robotTeam].NumRobots)
                 {
                     if (!Kick_robot_players(TEAM_NOT_SET))
                     {
@@ -884,7 +884,7 @@ static int Enter_player(char *real, char *nick, char *disp, int team,
                 }
             }
         }
-        else if (world->teams[team].NumMembers >= world->teams[team].NumBases)
+        else if (World.teams[team].NumMembers >= World.teams[team].NumBases)
         {
             if (!Kick_robot_players(team))
             {
@@ -1022,19 +1022,19 @@ void Queue_loop(void)
         {
 
             /* is there a homebase available? */
-            if (NumPlayers - NumPseudoPlayers + login_in_progress < world->NumBases ||
-                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < world->NumBases) ||
-                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < world->NumBases))
+            if (NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases ||
+                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases) ||
+                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < World.NumBases))
             {
 
                 /* find a team for this fellow. */
-                if (BIT(world->rules->mode, TEAM_PLAY))
+                if (BIT(World.rules->mode, TEAM_PLAY))
                 {
 
                     /* see if he has a reasonable suggestion. */
                     if (qp->team >= 0 && qp->team < MAX_TEAMS)
                     {
-                        if ((world->teams[qp->team].NumMembers >= world->teams[qp->team].NumBases &&
+                        if ((World.teams[qp->team].NumMembers >= World.teams[qp->team].NumBases &&
                              !Kick_robot_players(qp->team) &&
                              !Kick_paused_players(qp->team)) ||
                             (qp->team == options.robotTeam && options.reserveRobotTeam))
@@ -1047,7 +1047,7 @@ void Queue_loop(void)
                         qp->team = Pick_team(PickForHuman);
                         if (qp->team == TEAM_NOT_SET || (qp->team == options.robotTeam && options.reserveRobotTeam))
                         {
-                            if (NumRobots > world->teams[options.robotTeam].NumRobots)
+                            if (NumRobots > World.teams[options.robotTeam].NumRobots)
                             {
                                 Kick_robot_players(TEAM_NOT_SET);
                                 qp->team = Pick_team(PickForHuman);

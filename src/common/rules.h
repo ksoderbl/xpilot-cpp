@@ -1,4 +1,5 @@
-/*
+/* $Id: rules.h,v 5.3 2001/11/29 13:38:49 bertg Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -47,17 +48,6 @@
  */
 #define CLIENT_RULES_MASK (WRAP_PLAY | TEAM_PLAY | TIMING | LIMITED_LIVES | \
                            ALLIANCES)
-
-/*
- * Old player status bits, currently only used in network protocol.
- * The bits that the client needs must fit into a byte,
- * so the first 8 bitvalues are reserved for that purpose.
- */
-#define OLD_PLAYING (1U << 0)   /* alive or killed */
-#define OLD_PAUSE (1U << 1)     /* paused */
-#define OLD_GAME_OVER (1U << 2) /* waiting or dead */
-
-// TODO: REMOVE these bits
 
 /*
  * Possible object and player status bits.

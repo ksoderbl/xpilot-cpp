@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     Walls_init();
 
     /* Allocate memory for players, shots and messages */
-    Alloc_players(world->NumBases + MAX_PSEUDO_PLAYERS);
+    Alloc_players(World.NumBases + MAX_PSEUDO_PLAYERS);
     Alloc_shots(MAX_TOTAL_SHOTS);
     Alloc_cells();
 
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
         if (addr == NULL)
         {
             errno = 0;
-            error("Failed name lookup on: %s", options.serverHost);
+            xperror("Failed name lookup on: %s", options.serverHost);
             return 1;
         }
         serverAddr = xp_strdup(addr);
@@ -277,7 +277,7 @@ void Main_loop(void)
             End_game();
         if (serverTime + 5 * 60 < time(NULL))
         {
-            error("First player has yet to show his butt, I'm bored... Bye!");
+            xperror("First player has yet to show his butt, I'm bored... Bye!");
             Log_game("NOSHOW");
             End_game();
         }
@@ -310,7 +310,7 @@ void End_game(void)
     if (ShutdownServer == 0)
     {
         errno = 0;
-        error("Shutting down...");
+        xperror("Shutting down...");
         sprintf(msg, "shutting down: %s", ShutdownReason);
     }
     else
@@ -321,13 +321,13 @@ void End_game(void)
     while (NumPlayers > 0)
     { /* Kick out all remaining players */
         pl = Players[NumPlayers - 1];
-        if (pl->conn == NULL)
+        if (pl->connp == NULL)
         {
             Delete_player(NumPlayers - 1);
         }
         else
         {
-            Destroy_connection(pl->conn, msg);
+            Destroy_connection(pl->connp, msg);
         }
     }
 
@@ -380,7 +380,7 @@ int Pick_team(int pick_for_type)
 
     for (i = 0; i < MAX_TEAMS; i++)
     {
-        free_bases[i] = world->teams[i].NumBases - world->teams[i].NumMembers;
+        free_bases[i] = World.teams[i].NumBases - World.teams[i].NumMembers;
         playing[i] = 0;
         team_score[i] = 0;
         available_teams[i] = 0;
@@ -415,7 +415,7 @@ int Pick_team(int pick_for_type)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (Player_is_tank(pl))
+        if (IS_TANK_PTR(pl))
         {
             continue;
         }
@@ -427,7 +427,7 @@ int Pick_team(int pick_for_type)
         {
             playing_teams++;
         }
-        if (Player_is_human(pl) || Player_is_robot(pl))
+        if (IS_HUMAN_PTR(pl) || IS_ROBOT_PTR(pl))
         {
             team_score[pl->team] += pl->score;
         }
@@ -513,7 +513,7 @@ void Server_info(char *str, unsigned max_size)
 {
     int i, j, k;
     player_t *pl, **order, *best = NULL;
-    double ratio, best_ratio = -1e7;
+    DFLOAT ratio, best_ratio = -1e7;
     char name[MAX_CHARS * 2 + 4];
     char lblstr[MAX_CHARS];
     char msg[MSG_LEN];
@@ -530,13 +530,13 @@ void Server_info(char *str, unsigned max_size)
                                                          : (game_lock && ShutdownServer != -1)    ? "locked and shutting down"
                                                                                                   : "ok",
             FPS,
-            world->x, world->y, world->name, world->author,
-            NumPlayers, world->NumBases);
+            World.x, World.y, World.name, World.author,
+            NumPlayers, World.NumBases);
 
     if (strlen(str) >= max_size)
     {
         errno = 0;
-        error("Server_info string overflow (%d)", max_size);
+        xperror("Server_info string overflow (%d)", max_size);
         str[max_size - 1] = '\0';
         return;
     }
@@ -556,19 +556,19 @@ void Server_info(char *str, unsigned max_size)
 
     if ((order = (player **)malloc(NumPlayers * sizeof(player *))) == NULL)
     {
-        error("No memory for order");
+        xperror("No memory for order");
         return;
     }
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (BIT(world->rules->mode, LIMITED_LIVES))
+        if (BIT(World.rules->mode, LIMITED_LIVES))
         {
-            ratio = (double)pl->score;
+            ratio = (DFLOAT)pl->score;
         }
         else
         {
-            ratio = (double)pl->score / (pl->life + 1);
+            ratio = (DFLOAT)pl->score / (pl->life + 1);
         }
         if ((best == NULL || ratio > best_ratio) && !BIT(pl->status, PAUSE))
         {
@@ -592,7 +592,7 @@ void Server_info(char *str, unsigned max_size)
     {
         pl = order[i];
         strlcpy(name, pl->name, MAX_CHARS);
-        if (Player_is_robot(pl))
+        if (IS_ROBOT_PTR(pl))
         {
             if ((k = Robot_war_on_player(GetInd[pl->id])) != NO_ID)
             {
@@ -608,8 +608,8 @@ void Server_info(char *str, unsigned max_size)
                 (pl->team == TEAM_NOT_SET) ? ' ' : (pl->team + '0'),
                 name, (int)pl->life, (int)pl->score);
         sprintf(msg, "%2d... %-36s%s@%s\n",
-                i + 1, lblstr, pl->username,
-                Player_is_human(pl)
+                i + 1, lblstr, pl->realname,
+                IS_HUMAN_PTR(pl)
                     ? pl->hostname
                     : "xpilot.org");
         if (strlen(msg) + strlen(str) >= max_size)
@@ -632,20 +632,20 @@ static void Handle_signal(int sig_no)
             signal(SIGHUP, SIG_IGN);
             return;
         }
-        error("Caught SIGHUP, terminating.");
+        xperror("Caught SIGHUP, terminating.");
         End_game();
         break;
     case SIGINT:
-        error("Caught SIGINT, terminating.");
+        xperror("Caught SIGINT, terminating.");
         End_game();
         break;
     case SIGTERM:
-        error("Caught SIGTERM, terminating.");
+        xperror("Caught SIGTERM, terminating.");
         End_game();
         break;
 
     default:
-        error("Caught unkown signal: %d", sig_no);
+        xperror("Caught unkown signal: %d", sig_no);
         End_game();
         break;
     }
@@ -672,12 +672,12 @@ void Log_game(const char *heading)
             timenow,
             Server.owner,
             Server.host,
-            world->name,
+            World.name,
             heading);
 
     if ((fp = fopen(Conf_logfile(), "a")) == NULL)
     { /* Couldn't open file */
-        error("Couldn't open log file, contact %s", Conf_localguru());
+        xperror("Couldn't open log file, contact %s", Conf_localguru());
         return;
     }
 
@@ -699,7 +699,7 @@ void Game_Over(void)
      */
     options.gameDuration = -1.0;
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         int teamscore[MAX_TEAMS];
         maxsc = -32767;
@@ -818,9 +818,9 @@ void Server_log_admin_message(int ind, const char *str)
                 "\t%s\n",
                 showtime(),
                 pl->name,
-                pl->username, pl->hostname,
-                Get_player_addr(pl->conn),
-                Get_player_dpy(pl->conn),
+                pl->realname, pl->hostname,
+                Get_player_addr(pl->connp),
+                Get_player_dpy(pl->connp),
                 str);
         fclose(fp);
         sprintf(msg, "%s [%s]:[%s]", str, pl->name, "GOD");
@@ -876,7 +876,7 @@ int plock_server(bool on)
         static int num_plock_errors;
         if (++num_plock_errors <= 3)
         {
-            error("Can't plock(%d)", op);
+            xperror("Can't plock(%d)", op);
         }
         return -1;
     }

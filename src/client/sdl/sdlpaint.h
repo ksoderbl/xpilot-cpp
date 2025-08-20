@@ -58,7 +58,7 @@ extern Uint32 scoreEnemyTeamColorRGBA;
 extern int GL_X(int x);
 extern int GL_Y(int y);
 extern void set_alphacolor(Uint32 color);
-extern void Segment_add(Uint32 color, int x1, int y1, int x2, int y2);
+extern void Segment_add(Uint32 color, int x1, int y1, int x_2, int y_2);
 extern void Circle(Uint32 color, int x, int y, int radius, int filled);
 
 extern irec_t *select_bounds;

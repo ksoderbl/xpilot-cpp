@@ -8,13 +8,10 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
-    configure.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
     debugaudio.cpp \
-    default.cpp \
-    event.cpp \
     gfx2d.cpp \
     gfx2d.h \
     guimap.h \
@@ -24,12 +21,8 @@ libxpclient_a_SOURCES = \
     messages.cpp \
     netclient.cpp \
     netclient.h \
-    option.cpp \
-    option.h \
     paint.cpp \
     paint.h \
-    paintmap.cpp \
-    paintobjects.cpp \
     paintradar.h \
     protoclient.h \
     query.cpp \

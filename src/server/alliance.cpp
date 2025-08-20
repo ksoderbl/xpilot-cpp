@@ -37,7 +37,6 @@
 #include "bit.h"
 #include "netserver.h"
 #include "xperror.h"
-#include "player.h"
 
 /*
  * Alliance information.
@@ -68,12 +67,16 @@ int Invite_player(int ind, int ally_ind)
         /* we can never form an alliance with ourselves */
         return 0;
     }
-    if (Player_is_tank(ally))
+    if (IS_TANK_IND(ally_ind))
+    {
         /* tanks can't handle invitations */
         return 0;
-    if (Players_are_allies(pl, ally))
+    }
+    if (ALLIANCE(ind, ally_ind))
+    {
         /* we're already in the same alliance */
         return 0;
+    }
     if (pl->invite == ally->id)
     {
         /* player has already been invited by us */
@@ -92,11 +95,11 @@ int Invite_player(int ind, int ally_ind)
     }
     /* set & send invitation */
     pl->invite = ally->id;
-    if (Player_is_robot(ally))
+    if (IS_ROBOT_PTR(ally))
     {
         Robot_invite(ally_ind, ind);
     }
-    else if (Player_is_human(ally))
+    else if (IS_HUMAN_PTR(ally))
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s seeks an alliance with you >", pl->name);
@@ -117,7 +120,7 @@ int Cancel_invitation(int ind)
     }
     ally = Players[GetInd[pl->invite]];
     pl->invite = NO_ID;
-    if (Player_is_human(ally))
+    if (IS_HUMAN_PTR(ally))
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s has cancelled the invitation for an alliance >",
@@ -139,7 +142,7 @@ int Refuse_alliance(int ind, int ally_ind)
         return 0;
     }
     ally->invite = NO_ID;
-    if (Player_is_human(ally))
+    if (IS_HUMAN_PTR(ally))
     {
         char msg[MSG_LEN];
         sprintf(msg, " < %s has declined your invitation for an alliance >",
@@ -163,7 +166,7 @@ int Refuse_all_alliances(int ind)
             j++;
         }
     }
-    if (Player_is_human(pl))
+    if (IS_HUMAN_PTR(pl))
     {
         char msg[MSG_LEN];
         if (j == 0)
@@ -236,7 +239,7 @@ int Accept_all_alliances(int ind)
             j++;
         }
     }
-    if (Player_is_human(pl))
+    if (IS_HUMAN_PTR(pl))
     {
         char msg[MSG_LEN];
         if (j == 0)
@@ -340,14 +343,14 @@ static int Create_alliance(int ind1, int ind2)
 
     if (alliance == NULL)
     {
-        error("Not enough memory for new alliance.\n");
+        xperror("Not enough memory for new alliance.\n");
         return 0;
     }
 
     alliance->id = New_alliance_ID();
     if (alliance->id == ALLIANCE_NOT_SET)
     {
-        warn("Maximum number of alliances reached.\n");
+        xpwarn("Maximum number of alliances reached.\n");
         free(alliance);
         return 0;
     }
@@ -381,7 +384,7 @@ void Player_join_alliance(int ind, int ally_ind)
     alliance_t *alliance = Find_alliance(ally->alliance);
     char msg[MSG_LEN];
 
-    if (!Player_is_tank(pl))
+    if (!IS_TANK_IND(ind))
     {
         /* announce first to avoid sending the player two messages */
         if (options.announceAlliances)
@@ -394,7 +397,7 @@ void Player_join_alliance(int ind, int ally_ind)
         {
             sprintf(msg, " < %s has joined your alliance >", pl->name);
             Set_alliance_message(alliance, msg);
-            if (Player_is_human(pl))
+            if (IS_HUMAN_PTR(pl))
             {
                 sprintf(msg, " < You have joined %s's alliance >", ally->name);
                 Set_player_message(pl, msg);
@@ -438,7 +441,7 @@ int Leave_alliance(int ind)
     alliance = Find_alliance(pl->alliance);
     Alliance_remove_player(alliance, pl);
     /* announcement */
-    if (!Player_is_tank(pl))
+    if (!IS_TANK_IND(ind))
     {
         if (options.announceAlliances)
         {
@@ -450,12 +453,16 @@ int Leave_alliance(int ind)
         {
             sprintf(msg, " < %s has left your alliance >", pl->name);
             Set_alliance_message(alliance, msg);
-            if (Player_is_human(pl))
+            if (IS_HUMAN_PTR(pl))
+            {
                 Set_player_message(pl, " < You have left the alliance >");
+            }
         }
     }
     if (alliance->NumMembers <= 1)
+    {
         Dissolve_alliance(alliance->id);
+    }
     return 1;
 }
 
@@ -493,8 +500,8 @@ static void Dissolve_alliance(int id)
     /* check */
     if (alliance->NumMembers != 0)
     {
-        warn("Dissolve_alliance after dissolve %d remain!",
-             alliance->NumMembers);
+        xpwarn("Dissolve_alliance after dissolve %d remain!",
+               alliance->NumMembers);
     }
 
     /* find the index of the alliance to be removed */

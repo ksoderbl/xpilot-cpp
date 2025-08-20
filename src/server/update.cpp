@@ -41,19 +41,21 @@
 #include "xpmath.h"
 #include "walls.h"
 
-#define update_object_speed(o_)                                                                  \
-    if (BIT((o_)->status, GRAVITY))                                                              \
-    {                                                                                            \
-        (o_)->vel.x += (o_)->acc.x + world->gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].x; \
-        (o_)->vel.y += (o_)->acc.y + world->gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].y; \
-    }                                                                                            \
-    else                                                                                         \
-    {                                                                                            \
-        (o_)->vel.x += (o_)->acc.x;                                                              \
-        (o_)->vel.y += (o_)->acc.y;                                                              \
+#define update_object_speed(o_)                                                                 \
+    if (BIT((o_)->status, GRAVITY))                                                             \
+    {                                                                                           \
+        (o_)->vel.x += (o_)->acc.x + World.gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].x; \
+        (o_)->vel.y += (o_)->acc.y + World.gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].y; \
+    }                                                                                           \
+    else                                                                                        \
+    {                                                                                           \
+        (o_)->vel.x += (o_)->acc.x;                                                             \
+        (o_)->vel.y += (o_)->acc.y;                                                             \
     }
 
-int roundtime = -1; /* time left this round */
+int round_delay = 0;      /* delay until start of next round */
+int round_delay_send = 0; /* number of frames to send round_delay */
+int roundtime = -1;       /* time left this round */
 
 static char msg[MSG_LEN];
 
@@ -67,24 +69,24 @@ static void Transport_to_home(player_t *pl)
      * acceleration G, during the second part we make this a negative one -G.
      * This results in a visually pleasing take off and landing.
      */
-    double bx, by, dx, dy, t, m;
+    DFLOAT bx, by, dx, dy, t, m;
     const int T = RECOVERY_DELAY;
 
-    if (BIT(world->rules->mode, TIMING) && pl->round)
+    if (BIT(World.rules->mode, TIMING) && pl->round)
     {
         int check;
 
         if (pl->check)
             check = pl->check - 1;
         else
-            check = world->NumChecks - 1;
-        bx = (world->check[check].x + 0.5) * BLOCK_SZ;
-        by = (world->check[check].y + 0.5) * BLOCK_SZ;
+            check = World.NumChecks - 1;
+        bx = (World.check[check].x + 0.5) * BLOCK_SZ;
+        by = (World.check[check].y + 0.5) * BLOCK_SZ;
     }
     else
     {
-        bx = (world->base[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
-        by = (world->base[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
+        bx = (World.base[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
+        by = (World.base[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pos.x);
     dy = WRAP_DY(by - pl->pos.y);
@@ -344,14 +346,14 @@ static void do_Autopilot(player_t *pl)
     int dir;
     int afterburners;
     int ix, iy;
-    double gx, gy;
-    double acc, vel;
-    double delta;
-    double turnspeed, power;
-    const double emergency_thrust_settings_delta = 150.0 / FPS;
-    const double auto_pilot_settings_delta = 15.0 / FPS;
-    const double auto_pilot_turn_factor = 2.5;
-    const double auto_pilot_dead_velocity = 0.5;
+    DFLOAT gx, gy;
+    DFLOAT acc, vel;
+    DFLOAT delta;
+    DFLOAT turnspeed, power;
+    const DFLOAT emergency_thrust_settings_delta = 150.0 / FPS;
+    const DFLOAT auto_pilot_settings_delta = 15.0 / FPS;
+    const DFLOAT auto_pilot_turn_factor = 2.5;
+    const DFLOAT auto_pilot_dead_velocity = 0.5;
 
     /*
      * If the last movement touched a wall then we shouldn't
@@ -385,8 +387,8 @@ static void do_Autopilot(player_t *pl)
 
     ix = OBJ_X_IN_BLOCKS(pl);
     iy = OBJ_Y_IN_BLOCKS(pl);
-    gx = world->gravity[ix][iy].x;
-    gy = world->gravity[ix][iy].y;
+    gx = World.gravity[ix][iy].x;
+    gy = World.gravity[ix][iy].y;
 
     /*
      * Due to rounding errors if the velocity is very small we were probably
@@ -438,7 +440,7 @@ static void do_Autopilot(player_t *pl)
      * Calculate turnspeed needed to change direction instantaneously by
      * above direction change.
      */
-    turnspeed = ((double)vad) / pl->turnresistance - pl->turnvel;
+    turnspeed = ((DFLOAT)vad) / pl->turnresistance - pl->turnvel;
     if (turnspeed < 0)
     {
         turnspeed = -turnspeed;
@@ -554,7 +556,7 @@ void Update_objects(void)
      * Special items.
      */
     for (int i = 0; i < NUM_ITEMS; i++)
-        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0f)
+        if (World.items[i].num < World.items[i].max && World.items[i].chance > 0 && (rfrac() * World.items[i].chance) < 1.0f)
             Place_item(i, nullptr);
 
     /*
@@ -564,21 +566,21 @@ void Update_objects(void)
     {
         int fuel = (int)(NumPlayers * STATION_REGENERATION);
         int frames_per_update = MAX_STATION_FUEL / (fuel * BLOCK_SZ);
-        for (int i = 0; i < world->NumFuels; i++)
+        for (int i = 0; i < World.NumFuels; i++)
         {
-            if (world->fuel[i].fuel == MAX_STATION_FUEL)
+            if (World.fuel[i].fuel == MAX_STATION_FUEL)
                 continue;
-            if ((world->fuel[i].fuel += fuel) >= MAX_STATION_FUEL)
-                world->fuel[i].fuel = MAX_STATION_FUEL;
-            else if (world->fuel[i].last_change + frames_per_update > frame_loops)
+            if ((World.fuel[i].fuel += fuel) >= MAX_STATION_FUEL)
+                World.fuel[i].fuel = MAX_STATION_FUEL;
+            else if (World.fuel[i].last_change + frames_per_update > frame_loops)
                 /*
                  * We don't send fuelstation info to the clients every frame
                  * if it wouldn't change their display.
                  */
                 continue;
 
-            world->fuel[i].conn_mask = 0;
-            world->fuel[i].last_change = frame_loops;
+            World.fuel[i].conn_mask = 0;
+            World.fuel[i].last_change = frame_loops;
         }
     }
 
@@ -654,14 +656,14 @@ void Update_objects(void)
     /*
      * Updating cannons, maybe a little bit of fireworks too?
      */
-    for (int i = 0; i < world->NumCannons; i++)
+    for (int i = 0; i < World.NumCannons; i++)
     {
-        cannon_t *cannon = world->cannon + i;
+        cannon_t *cannon = World.cannon + i;
         if (cannon->dead_time > 0)
         {
             if (!--cannon->dead_time)
             {
-                world->block[cannon->blk_pos.x][cannon->blk_pos.y] = CANNON;
+                World.block[cannon->blk_pos.x][cannon->blk_pos.y] = CANNON;
                 cannon->conn_mask = 0;
                 cannon->last_change = frame_loops;
             }
@@ -683,7 +685,7 @@ void Update_objects(void)
             {
                 int item = (int)(rfrac() * NUM_ITEMS);
                 /* this gives the cannon an item about once every minute */
-                if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * world->items[item].cannonprob))
+                if (World.items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * World.items[item].cannonprob))
                 {
                     Cannon_add_item(i, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
                 }
@@ -696,10 +698,8 @@ void Update_objects(void)
         if (cannon->tractor_count > 0)
         {
             int ind = GetInd[cannon->tractor_target];
-            if (Wrap_length(Players[ind]->pos.cx - cannon->clk_pos.cx,
-                            Players[ind]->pos.cy - cannon->clk_pos.cy) /
-                        CLICK <
-                    TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
+            if (Wrap_length(Players[ind]->pos.x - cannon->pix_pos.x,
+                            Players[ind]->pos.y - cannon->pix_pos.y) < TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
                 BIT(Players[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
                 General_tractor_beam(-1, cannon->clk_pos.cx, cannon->clk_pos.cy,
@@ -733,48 +733,48 @@ void Update_objects(void)
     /*
      * Update targets
      */
-    for (int i = 0; i < world->NumTargets; i++)
+    for (int i = 0; i < World.NumTargets; i++)
     {
-        if (world->targets[i].dead_time > 0)
+        if (World.targets[i].dead_time > 0)
         {
-            if (!--world->targets[i].dead_time)
+            if (!--World.targets[i].dead_time)
             {
-                world->block[world->targets[i].blk_pos.x][world->targets[i].blk_pos.y] = TARGET;
-                world->targets[i].conn_mask = 0;
-                world->targets[i].update_mask = (unsigned)-1;
-                world->targets[i].last_change = frame_loops;
+                World.block[World.targets[i].blk_pos.x][World.targets[i].blk_pos.y] = TARGET;
+                World.targets[i].conn_mask = 0;
+                World.targets[i].update_mask = (unsigned)-1;
+                World.targets[i].last_change = frame_loops;
 
                 if (options.targetSync)
                 {
-                    unsigned short team = world->targets[i].team;
+                    unsigned short team = World.targets[i].team;
 
-                    for (int j = 0; j < world->NumTargets; j++)
+                    for (int j = 0; j < World.NumTargets; j++)
                     {
-                        if (world->targets[j].team == team)
+                        if (World.targets[j].team == team)
                         {
-                            world->block[world->targets[j].blk_pos.x]
-                                        [world->targets[j].blk_pos.y] = TARGET;
-                            world->targets[j].conn_mask = 0;
-                            world->targets[j].update_mask = (unsigned)-1;
-                            world->targets[j].last_change = frame_loops;
-                            world->targets[j].dead_time = 0;
-                            world->targets[j].damage = TARGET_DAMAGE;
+                            World.block[World.targets[j].blk_pos.x]
+                                       [World.targets[j].blk_pos.y] = TARGET;
+                            World.targets[j].conn_mask = 0;
+                            World.targets[j].update_mask = (unsigned)-1;
+                            World.targets[j].last_change = frame_loops;
+                            World.targets[j].dead_time = 0;
+                            World.targets[j].damage = TARGET_DAMAGE;
                         }
                     }
                 }
             }
             continue;
         }
-        else if (world->targets[i].damage == TARGET_DAMAGE)
+        else if (World.targets[i].damage == TARGET_DAMAGE)
         {
             continue;
         }
-        world->targets[i].damage += TARGET_REPAIR_PER_FRAME;
-        if (world->targets[i].damage >= TARGET_DAMAGE)
+        World.targets[i].damage += TARGET_REPAIR_PER_FRAME;
+        if (World.targets[i].damage >= TARGET_DAMAGE)
         {
-            world->targets[i].damage = TARGET_DAMAGE;
+            World.targets[i].damage = TARGET_DAMAGE;
         }
-        else if (world->targets[i].last_change + TARGET_UPDATE_DELAY < frame_loops)
+        else if (World.targets[i].last_change + TARGET_UPDATE_DELAY < frame_loops)
         {
             /*
              * We don't send target info to the clients every frame
@@ -782,8 +782,8 @@ void Update_objects(void)
              */
             continue;
         }
-        world->targets[i].conn_mask = 0;
-        world->targets[i].last_change = frame_loops;
+        World.targets[i].conn_mask = 0;
+        World.targets[i].last_change = frame_loops;
     }
 
     /* * * * * *
@@ -836,6 +836,9 @@ void Update_objects(void)
         }
 
         if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
+            continue;
+
+        if (round_delay > 0)
             continue;
 
         if (pl->stunned > 0)
@@ -973,14 +976,12 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_REFUEL))
         {
-            if ((Wrap_length(pl->pos.cx - world->fuel[pl->fs].clk_pos.cx,
-                             pl->pos.cy - world->fuel[pl->fs].clk_pos.cy) /
-                     CLICK >
-                 90.0) ||
+            if ((Wrap_length(pl->pos.x - World.fuel[pl->fs].pix_pos.x,
+                             pl->pos.y - World.fuel[pl->fs].pix_pos.y) > 90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
-                (world->block[world->fuel[pl->fs].blk_pos.x][world->fuel[pl->fs].blk_pos.y] != FUEL) ||
+                (World.block[World.fuel[pl->fs].blk_pos.x][World.fuel[pl->fs].blk_pos.y] != FUEL) ||
                 BIT(pl->used, HAS_PHASING_DEVICE) ||
-                (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuel[pl->fs].team != pl->team))
+                (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && World.fuel[pl->fs].team != pl->team))
             {
                 CLR_BIT(pl->used, HAS_REFUEL);
             }
@@ -991,19 +992,19 @@ void Update_objects(void)
 
                 do
                 {
-                    if (world->fuel[pl->fs].fuel > REFUEL_RATE)
+                    if (World.fuel[pl->fs].fuel > REFUEL_RATE)
                     {
-                        world->fuel[pl->fs].fuel -= REFUEL_RATE;
-                        world->fuel[pl->fs].conn_mask = 0;
-                        world->fuel[pl->fs].last_change = frame_loops;
+                        World.fuel[pl->fs].fuel -= REFUEL_RATE;
+                        World.fuel[pl->fs].conn_mask = 0;
+                        World.fuel[pl->fs].last_change = frame_loops;
                         Add_fuel(&(pl->fuel), REFUEL_RATE);
                     }
                     else
                     {
-                        Add_fuel(&(pl->fuel), world->fuel[pl->fs].fuel);
-                        world->fuel[pl->fs].fuel = 0;
-                        world->fuel[pl->fs].conn_mask = 0;
-                        world->fuel[pl->fs].last_change = frame_loops;
+                        Add_fuel(&(pl->fuel), World.fuel[pl->fs].fuel);
+                        World.fuel[pl->fs].fuel = 0;
+                        World.fuel[pl->fs].conn_mask = 0;
+                        World.fuel[pl->fs].last_change = frame_loops;
                         CLR_BIT(pl->used, HAS_REFUEL);
                         break;
                     }
@@ -1019,12 +1020,13 @@ void Update_objects(void)
         /* target repair */
         if (BIT(pl->used, HAS_REPAIR))
         {
-            target_t *targ = &world->targets[pl->repair_target];
-            if (Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK > 90.0 ||
-                targ->damage >= TARGET_DAMAGE ||
-                targ->dead_time > 0 ||
-                BIT(pl->used, HAS_PHASING_DEVICE))
+            target_t *targ = &World.targets[pl->repair_target];
+            DFLOAT x = (targ->blk_pos.x + 0.5) * BLOCK_SZ;
+            DFLOAT y = (targ->blk_pos.y + 0.5) * BLOCK_SZ;
+            if (Wrap_length(pl->pos.x - x, pl->pos.y - y) > 90.0 || targ->damage >= TARGET_DAMAGE || targ->dead_time > 0 || BIT(pl->used, HAS_PHASING_DEVICE))
+            {
                 CLR_BIT(pl->used, HAS_REPAIR);
+            }
             else
             {
                 int i = pl->fuel.num_tanks;
@@ -1070,12 +1072,12 @@ void Update_objects(void)
          */
         if (BIT(pl->status, THRUSTING))
         {
-            double power = pl->power;
-            double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
+            DFLOAT power = pl->power;
+            DFLOAT f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
             int a = (BIT(pl->used, HAS_EMERGENCY_THRUST)
                          ? MAX_AFTERBURNER
                          : pl->item[ITEM_AFTERBURNER]);
-            double inert = pl->mass;
+            DFLOAT inert = pl->mass;
 
             if (a)
             {
@@ -1100,7 +1102,7 @@ void Update_objects(void)
                 nearestFront, nearestRear,
                 proxFront, proxRear, j;
 
-            if (pl->wormHoleHit >= world->NumWormholes)
+            if (pl->wormHoleHit >= World.NumWormholes)
             {
                 /* could happen if the player hit a temporary wormhole
                    that was removed while the player was warping */
@@ -1110,31 +1112,31 @@ void Update_objects(void)
 
             if (pl->wormHoleHit != -1)
             {
-                if (world->wormHoles[pl->wormHoleHit].countdown > 0)
+                if (World.wormHoles[pl->wormHoleHit].countdown > 0)
                 {
-                    j = world->wormHoles[pl->wormHoleHit].lastdest;
+                    j = World.wormHoles[pl->wormHoleHit].lastdest;
                 }
                 else if (rfrac() < 0.10f)
                 {
                     do
-                        j = (int)(rfrac() * world->NumWormholes);
-                    while (world->wormHoles[j].type == WORM_IN || pl->wormHoleHit == j || world->wormHoles[j].temporary);
+                        j = (int)(rfrac() * World.NumWormholes);
+                    while (World.wormHoles[j].type == WORM_IN || pl->wormHoleHit == j || World.wormHoles[j].temporary);
                 }
                 else
                 {
                     nearestFront = nearestRear = -1;
                     proxFront = proxRear = 10000000;
 
-                    for (j = 0; j < world->NumWormholes; j++)
+                    for (j = 0; j < World.NumWormholes; j++)
                     {
-                        if (j == pl->wormHoleHit || world->wormHoles[j].type == WORM_IN || world->wormHoles[j].temporary)
+                        if (j == pl->wormHoleHit || World.wormHoles[j].type == WORM_IN || World.wormHoles[j].temporary)
                             continue;
 
-                        wx = (world->wormHoles[j].blk_pos.x -
-                              world->wormHoles[pl->wormHoleHit].blk_pos.x) *
+                        wx = (World.wormHoles[j].blk_pos.x -
+                              World.wormHoles[pl->wormHoleHit].blk_pos.x) *
                              BLOCK_SZ;
-                        wy = (world->wormHoles[j].blk_pos.y -
-                              world->wormHoles[pl->wormHoleHit].blk_pos.y) *
+                        wy = (World.wormHoles[j].blk_pos.y -
+                              World.wormHoles[pl->wormHoleHit].blk_pos.y) *
                              BLOCK_SZ;
                         wx = WRAP_DX(wx);
                         wy = WRAP_DX(wy);
@@ -1168,26 +1170,26 @@ void Update_objects(void)
                     else
                     {
                         do
-                            j = (int)(rfrac() * world->NumWormholes);
-                        while (world->wormHoles[j].type == WORM_IN || j == pl->wormHoleHit);
+                            j = (int)(rfrac() * World.NumWormholes);
+                        while (World.wormHoles[j].type == WORM_IN || j == pl->wormHoleHit);
                     }
 #endif /* RANDOM_REAR_WORM */
                 }
 
                 sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
 
-                w.x = (world->wormHoles[j].blk_pos.x + 0.5) * BLOCK_SZ;
-                w.y = (world->wormHoles[j].blk_pos.y + 0.5) * BLOCK_SZ;
+                w.x = (World.wormHoles[j].blk_pos.x + 0.5) * BLOCK_SZ;
+                w.y = (World.wormHoles[j].blk_pos.y + 0.5) * BLOCK_SZ;
             }
             else
             { /* wormHoleHit == -1 */
                 int counter;
                 for (counter = 20; counter > 0; counter--)
                 {
-                    w.x = (int)(rfrac() * world->width);
-                    w.y = (int)(rfrac() * world->height);
-                    if (BIT(1U << world->block[(int)(w.x / BLOCK_SZ)]
-                                              [(int)(w.y / BLOCK_SZ)],
+                    w.x = (int)(rfrac() * World.width);
+                    w.y = (int)(rfrac() * World.height);
+                    if (BIT(1U << World.block[(int)(w.x / BLOCK_SZ)]
+                                             [(int)(w.y / BLOCK_SZ)],
                             SPACE_BLOCKS))
                     {
                         break;
@@ -1198,7 +1200,7 @@ void Update_objects(void)
                     w.x = OBJ_X_IN_PIXELS(pl);
                     w.y = OBJ_Y_IN_PIXELS(pl);
                 }
-                if (counter && options.wormTime && BIT(1U << world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << world->block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+                if (counter && options.wormTime && BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
                 {
                     add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
                                        OBJ_Y_IN_BLOCKS(pl),
@@ -1233,7 +1235,7 @@ void Update_objects(void)
                         ballpos.y = b->pos.y + (w.y - pl->pos.y);
                         ballpos.x = WRAP_XPIXEL(ballpos.x);
                         ballpos.y = WRAP_YPIXEL(ballpos.y);
-                        if (ballpos.x < 0 || ballpos.x >= world->width || ballpos.y < 0 || ballpos.y >= world->height)
+                        if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
                         {
                             b->life = 0;
                         }
@@ -1257,10 +1259,10 @@ void Update_objects(void)
 
             if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
             {
-                world->wormHoles[pl->wormHoleHit].lastdest = j;
-                if (!world->wormHoles[j].temporary)
+                World.wormHoles[pl->wormHoleHit].lastdest = j;
+                if (!World.wormHoles[j].temporary)
                 {
-                    world->wormHoles[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
+                    World.wormHoles[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
                 }
             }
 
@@ -1287,11 +1289,11 @@ void Update_objects(void)
         pl->used &= pl->have;
     }
 
-    for (int i = world->NumWormholes - 1; i >= 0; i--)
+    for (int i = World.NumWormholes - 1; i >= 0; i--)
     {
-        if (world->wormHoles[i].countdown > 0)
-            world->wormHoles[i].countdown--;
-        if (world->wormHoles[i].temporary && world->wormHoles[i].countdown <= 0)
+        if (World.wormHoles[i].countdown > 0)
+            World.wormHoles[i].countdown--;
+        if (World.wormHoles[i].temporary && World.wormHoles[i].countdown <= 0)
             remove_temp_wormhole(i);
     }
 
@@ -1315,9 +1317,8 @@ void Update_objects(void)
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             pl->lock.distance =
-                Wrap_length(pl->pos.cx - Players[GetInd[pl->lock.pl_id]]->pos.cx,
-                            pl->pos.cy - Players[GetInd[pl->lock.pl_id]]->pos.cy) /
-                CLICK;
+                Wrap_length(pl->pos.x - Players[GetInd[pl->lock.pl_id]]->pos.x,
+                            pl->pos.y - Players[GetInd[pl->lock.pl_id]]->pos.y);
         }
     }
 
@@ -1343,7 +1344,7 @@ void Update_objects(void)
 
             Kill_player(ind);
 
-            if (Player_is_human(pl))
+            if (IS_HUMAN_PTR(pl))
             {
                 if (frame_loops - pl->frame_last_busy > 60 * FPS)
                 {
@@ -1354,13 +1355,13 @@ void Update_objects(void)
         }
 
         if (options.maxPauseTime > 0 &&
-            Player_is_human(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
+            IS_HUMAN_PTR(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
             sprintf(msg,
                     "%s was auto-kicked for pausing too long [*Server notice*]",
                     pl->name);
             Set_message(msg);
-            Destroy_connection(pl->conn, "auto-kicked: paused too long");
+            Destroy_connection(pl->connp, "auto-kicked: paused too long");
         }
     }
 

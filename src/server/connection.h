@@ -75,8 +75,6 @@
  */
 typedef struct
 {
-    // TODO: should ind == conn_index?
-    int ind;                     /* index of connection */
     int conn_index;              /* index of connection in Conn[] */
     int state;                   /* state of connection */
     int drain_state;             /* state after draining done */
@@ -109,13 +107,12 @@ typedef struct
     int view_width, view_height; /* Viewable area dimensions */
     int debris_colors;           /* Max. debris intensities */
     int spark_rand;              /* Sparkling effect */
-    char *user;                  /* username of player */
+    char *real;                  /* real login name of player */
     char *nick;                  /* nickname of player */
     char *dpy;                   /* display of player */
     shipshape_t *ship;           /* ship shape of player */
     char *addr;                  /* address of players host */
     char *host;                  /* hostname of players host */
-    int features;                /* supported features */
 } connection_t;
 
 #endif

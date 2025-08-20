@@ -36,7 +36,6 @@
 
 #include "draw.h"
 
-#include "configure.h"
 #include "messages.h"
 #include "paint.h"
 
@@ -55,8 +54,6 @@
 #include "protoclient.h"
 #include "portability.h"
 #include "colors.h"
-
-#include "xpaint.h"
 
 /*
  * Item structures.
@@ -94,6 +91,8 @@
 #define ABOUT_WINDOW_WIDTH 600
 #define ABOUT_WINDOW_HEIGHT 700
 
+extern int RadarHeight;
+
 /*
  * Globals.
  */
@@ -102,25 +101,16 @@ Atom ProtocolAtom, KillAtom;
 int buttonColor, windowColor, borderColor;
 bool quitting = false;
 int top_width, top_height, top_x, top_y, top_posmask;
+// int                        draw_width, draw_height;
 int players_width, players_height;
+char *geometry;
 bool autoServerMotdPopup;
 bool refreshMotd;
-bool radar_score_mapped;
 Cursor pointerControlCursor;
 char sparkColors[MSG_LEN];
 int spark_color[MAX_COLORS];
+// int                        num_spark_colors;
 bool ignoreWindowManager;
-
-XFontStruct *gameFont; /* The fonts used in the game */
-XFontStruct *messageFont;
-XFontStruct *scoreListFont;
-XFontStruct *buttonFont;
-XFontStruct *textFont;
-XFontStruct *talkFont;
-XFontStruct *motdFont;
-
-/*static char myName[] = "xpilot";*/
-static char myClass[] = "XPilot";
 
 /*
  * NB!  Is dependent on the order of the items in item.h!
@@ -206,11 +196,10 @@ char cdashes[NUM_CDASHES];
 
 static int Quit_callback(int, void *, const char **);
 static int Config_callback(int, void *, const char **);
-static int Colors_callback(int, void *, const char **);
 static int Score_callback(int, void *, const char **);
 static int Player_callback(int, void *, const char **);
 
-int button_form;
+static int button_form;
 static int menu_button;
 
 const char *Item_get_text(int i)
@@ -231,14 +220,75 @@ static XFontStruct *Set_font(Display *dpy, GC gc,
 
     if ((font = XLoadQueryFont(dpy, fontName)) == NULL)
     {
-        error("Couldn't find font '%s' for %s, using default font",
-              fontName, resName);
+        xperror("Couldn't find font '%s' for %s, using default font",
+                fontName, resName);
         font = XQueryFont(dpy, XGContextFromGC(gc));
     }
     else
         XSetFont(dpy, gc, font->fid);
 
     return font;
+}
+
+/*
+ * Convert a string of color numbers into an array
+ * of "colors[]" indices stored by "spark_color[]".
+ * Initialize "num_spark_colors".
+ */
+static void Init_spark_colors(void)
+{
+    char buf[MSG_LEN];
+    char *src, *dst;
+    unsigned col;
+    int i;
+
+    num_spark_colors = 0;
+    /*
+     * The sparkColors specification may contain
+     * any possible separator.  Only look at numbers.
+     */
+
+    /* hack but protocol will allow max 9 (MM) */
+    for (src = sparkColors; *src && (num_spark_colors < 9); src++)
+    {
+        if (isascii(*src) && isdigit(*src))
+        {
+            dst = &buf[0];
+            do
+            {
+                *dst++ = *src++;
+            } while (*src &&
+                     isascii(*src) &&
+                     isdigit(*src) &&
+                     ((dst - buf) < (sizeof(buf) - 1)));
+            *dst = '\0';
+            src--;
+            if (sscanf(buf, "%u", &col) == 1)
+            {
+                if (col < (unsigned)maxColors)
+                    spark_color[num_spark_colors++] = col;
+            }
+        }
+    }
+    if (num_spark_colors == 0)
+    {
+        if (maxColors <= 8)
+        {
+            /* 3 colors ranging from 5 up to 7 */
+            for (i = 5; i < maxColors; i++)
+                spark_color[num_spark_colors++] = i;
+        }
+        else
+        {
+            /* 7 colors ranging from 5 till 11 */
+            for (i = 5; i < 12; i++)
+                spark_color[num_spark_colors++] = i;
+        }
+        /* default spark colors always include RED. */
+        spark_color[num_spark_colors++] = RED;
+    }
+    for (i = num_spark_colors; i < MAX_COLORS; i++)
+        spark_color[i] = spark_color[num_spark_colors - 1];
 }
 
 /*
@@ -332,44 +382,47 @@ int Init_top(void)
 
     if (topWindow)
     {
-        error("Init_top called twice");
+        xperror("Init_top called twice");
         exit(1);
     }
 
     if (Colors_init() == -1)
         return -1;
 
-    // if (shieldDrawMode == -1)
-    //     shieldDrawMode = 0;
-    // if (hudColor >= maxColors || hudColor < 0)
-    //     hudColor = BLUE;
-    // if (hudLockColor >= maxColors || hudLockColor < 0)
-    //     hudLockColor = hudColor;
-    // if (wallColor >= maxColors || wallColor < 0)
-    //     wallColor = BLUE;
+    if (shieldDrawMode == -1)
+        shieldDrawMode = 0;
+    if (hudColor >= maxColors || hudColor < 0)
+        hudColor = BLUE;
+    if (hudLockColor >= maxColors || hudLockColor < 0)
+        hudLockColor = hudColor;
+    if (wallColor >= maxColors || wallColor < 0)
+        wallColor = BLUE;
 
-    // if (wallRadarColor >= maxColors)
-    //     wallRadarColor = BLUE;
-    // if (targetRadarColor >= maxColors)
-    //     targetRadarColor = BLUE;
-    // if (oldMessagesColor >= maxColors || oldMessagesColor < 0)
-    //     oldMessagesColor = BLUE;
-    // if (decorColor >= maxColors || decorColor < 0)
-    //     decorColor = RED;
-    // if (decorRadarColor >= maxColors)
-    //     decorRadarColor = BLUE;
+    if (wallRadarColor >= maxColors)
+        wallRadarColor = BLUE;
+    if (targetRadarColor >= maxColors)
+        targetRadarColor = BLUE;
+    if (oldMessagesColor >= maxColors || oldMessagesColor < 0)
+        oldMessagesColor = BLUE;
+    if (decorColor >= maxColors || decorColor < 0)
+        decorColor = RED;
+    if (decorRadarColor >= maxColors)
+        decorRadarColor = BLUE;
 
-    // shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
+    shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
 
     /*
      * Get toplevel geometry.
      */
     top_flags = 0;
     if (geometry != NULL && geometry[0] != '\0')
+    {
         mask = XParseGeometry(geometry, &x, &y, &w, &h);
+    }
     else
+    {
         mask = 0;
-
+    }
     if ((mask & WidthValue) != 0)
     {
         top_width = w;
@@ -495,7 +548,7 @@ int Init_top(void)
     talkGC = XCreateGC(dpy, topWindow, values, &xgc);
     motdGC = XCreateGC(dpy, topWindow, values, &xgc);
     gameGC = XCreateGC(dpy, topWindow, values, &xgc);
-    XSetBackground(dpy, gameGC, colors[WHITE].pixel); // TODO BLACK
+    XSetBackground(dpy, gameGC, colors[BLACK].pixel);
 
     /*
      * Set fonts
@@ -529,9 +582,9 @@ int Init_top(void)
               BlackPixel(dpy, DefaultScreen(dpy)),
               GXcopy, AllPlanes);
 
-    // windowColor = BLUE;
-    // buttonColor = RED;
-    // borderColor = WHITE;
+    windowColor = BLUE;
+    buttonColor = RED;
+    borderColor = WHITE;
 
     return 0;
 }
@@ -558,7 +611,7 @@ int Init_playing_windows(void)
     draw_height = top_height;
     drawWindow = XCreateSimpleWindow(dpy, topWindow, 258, 0,
                                      draw_width, draw_height,
-                                     0, 0, colors[WHITE].pixel); // TODO: BLACK
+                                     0, 0, colors[BLACK].pixel);
     radarWindow = XCreateSimpleWindow(dpy, topWindow, 0, 0,
                                       256, RadarHeight, 0, 0,
                                       colors[BLACK].pixel);
@@ -590,8 +643,6 @@ int Init_playing_windows(void)
     Widget_add_pulldown_entry(menu_button,
                               "CONFIG", Config_callback, NULL);
     Widget_add_pulldown_entry(menu_button,
-                              "COLORS", Colors_callback, NULL);
-    Widget_add_pulldown_entry(menu_button,
                               "SCORE", Score_callback, NULL);
     Widget_add_pulldown_entry(menu_button,
                               "PLAYER", Player_callback, NULL);
@@ -612,7 +663,11 @@ int Init_playing_windows(void)
      */
     XSelectInput(dpy, radarWindow, ExposureMask);
     XSelectInput(dpy, playersWindow, ExposureMask);
-    XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
+
+    if (!selectionAndHistory)
+        XSelectInput(dpy, drawWindow, 0);
+    else
+        XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
 
     /*
      * Initialize misc. pixmaps if we're not color switching.
@@ -664,34 +719,28 @@ int Init_playing_windows(void)
 
 static int Config_callback(int widget_desc, void *data, const char **str)
 {
-    Config(true, CONFIG_DEFAULT);
-    return 0;
-}
-
-static int Colors_callback(int widget_desc, void *data, const char **str)
-{
-    Config(true, CONFIG_COLORS);
+    Config(true);
     return 0;
 }
 
 static int Score_callback(int widget_desc, void *data, const char **str)
 {
-    Config(false, CONFIG_NONE);
-    if (showUserName)
+    Config(false);
+    if (showRealName != false)
     {
-        showUserName = false;
-        scoresChanged = true;
+        showRealName = false;
+        scoresChanged = 1;
     }
     return 0;
 }
 
 static int Player_callback(int widget_desc, void *data, const char **str)
 {
-    Config(false, CONFIG_NONE);
-    if (showUserName != true)
+    Config(false);
+    if (showRealName != true)
     {
-        showUserName = true;
-        scoresChanged = true;
+        showRealName = true;
+        scoresChanged = 1;
     }
     return 0;
 }
@@ -702,24 +751,21 @@ static int Quit_callback(int widget_desc, void *data, const char **str)
     return 0;
 }
 
-void Raise_window(void)
-{
-    XMapRaised(dpy, topWindow);
-}
-
-void Resize(Window w, unsigned width, unsigned height)
+void Resize(Window w, int width, int height)
 {
     if (w != topWindow)
+    {
         return;
+    }
 
     std::cout << "Resize: size: " << width << "x" << height << std::endl;
 
     // Limits for resizing
     LIMIT(width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
     LIMIT(height, MIN_TOP_HEIGHT, MAX_TOP_HEIGHT);
-    // if (width == top_width && height == top_height)
-    //     // Same size as before, don't need to do anything.
-    //     return;
+    if (width == top_width && height == top_height)
+        // Same size as before, don't need to do anything.
+        return;
 
     top_width = width;
     top_height = height;
@@ -730,17 +776,12 @@ void Resize(Window w, unsigned width, unsigned height)
         return;
 
     // Draw window does not include the top left radar or the scorelist/config area.
-    bool radar_score_mapped = true;
-    if (radar_score_mapped)
-        draw_width = top_width - 258;
-    else
-        draw_width = top_width;
-
+    draw_width = top_width - 258;
     draw_height = top_height;
 
     std::cout << "Resize: drawWindow size: " << width << "x" << height << std::endl;
 
-    Check_view_dimensions();
+    Send_display();
     Net_flush();
     XResizeWindow(dpy, drawWindow, draw_width, draw_height);
     if (dbuf_state->type == PIXMAP_COPY)
@@ -757,19 +798,12 @@ void Resize(Window w, unsigned width, unsigned height)
 }
 
 /*
- * Close the display etc.
+ * Cleanup player structure, close the display etc.
  */
 void Platform_specific_cleanup(void)
 {
-    /* Here we restore the mouse to its former self */
-    /* the option may have been toggled in game to  */
-    /* off so we cant trust that                    */
-
     if (dpy != NULL)
     {
-        // if (pre_exists)
-        //     XChangePointerControl(dpy, True, True, pre_acc_num,
-        //                           pre_acc_denom, pre_threshold);
         XAutoRepeatOn(dpy);
         Colors_cleanup();
         XCloseDisplay(dpy);
@@ -781,34 +815,28 @@ void Platform_specific_cleanup(void)
             kdpy = NULL;
         }
     }
+    Free_msgs();
     Widget_cleanup();
 }
 
-int FatalError(Display *display)
+int FatalError(Display *dpy)
 {
-    Client_exit(0);
-    /* make complier not warn */
-    return 0;
+    Net_cleanup();
+    /*
+     * Quit(&client);
+     * It's already a fatal I/O error, nothing to cleanup.
+     */
+    exit(0);
+    return (0);
 }
 
-void Scale_dashes(void)
+void Scale_dashes()
 {
-    if (dpy == NULL)
-        return;
-
     dashes[0] = WINSCALE(8);
-    if (dashes[0] < 1)
-        dashes[0] = 1;
     dashes[1] = WINSCALE(4);
-    if (dashes[1] < 1)
-        dashes[1] = 1;
 
     cdashes[0] = WINSCALE(3);
-    if (cdashes[0] < 1)
-        cdashes[0] = 1;
     cdashes[1] = WINSCALE(9);
-    if (cdashes[1] < 1)
-        cdashes[1] = 1;
 
     XSetDashes(dpy, gameGC, 0, dashes, NUM_DASHES);
 }

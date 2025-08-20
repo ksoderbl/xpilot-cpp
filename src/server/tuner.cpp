@@ -77,7 +77,7 @@ void tuner_maxrobots(void)
 {
     if (options.maxRobots < 0)
     {
-        options.maxRobots = world->NumBases;
+        options.maxRobots = World.NumBases;
     }
 
     if (options.maxRobots < options.minRobots)
@@ -116,7 +116,7 @@ void tuner_playershielding(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Player_is_tank(Players[i]))
+            if (!IS_TANK_PTR(Players[i]))
             {
                 if (!BIT(Players[i]->used, HAS_SHOT))
                     SET_BIT(Players[i]->used, HAS_SHIELD);
@@ -155,7 +155,7 @@ void tuner_worldlives(void)
 
     Set_world_rules();
 
-    if (BIT(world->rules->mode, LIMITED_LIVES))
+    if (BIT(World.rules->mode, LIMITED_LIVES))
     {
         Reset_all_players();
         if (options.gameDuration == -1)
@@ -175,20 +175,20 @@ void tuner_teamcannons(void)
 
     if (options.teamCannons)
     {
-        for (i = 0; i < world->NumCannons; i++)
+        for (i = 0; i < World.NumCannons; i++)
         {
-            team = Find_closest_team(world->cannon[i].clk_pos.cx, world->cannon[i].clk_pos.cy);
+            team = Find_closest_team(World.cannon[i].clk_pos.cx, World.cannon[i].clk_pos.cy);
             if (team == TEAM_NOT_SET)
             {
-                error("Couldn't find a matching team for the cannon.");
+                xperror("Couldn't find a matching team for the cannon.");
             }
-            world->cannon[i].team = team;
+            World.cannon[i].team = team;
         }
     }
     else
     {
-        for (i = 0; i < world->NumCannons; i++)
-            world->cannon[i].team = TEAM_NOT_SET;
+        for (i = 0; i < World.NumCannons; i++)
+            World.cannon[i].team = TEAM_NOT_SET;
     }
 }
 
@@ -199,16 +199,16 @@ void tuner_cannonsuseitems(void)
 
     Move_init();
 
-    for (i = 0; i < world->NumCannons; i++)
+    for (i = 0; i < World.NumCannons; i++)
     {
-        c = world->cannon + i;
+        c = World.cannon + i;
         for (j = 0; j < NUM_ITEMS; j++)
         {
             c->item[j] = 0;
 
             if (options.cannonsUseItems)
                 Cannon_add_item(i, j,
-                                (int)(rfrac() * (world->items[j].initial + 1)));
+                                (int)(rfrac() * (World.items[j].initial + 1)));
         }
     }
 }
@@ -222,19 +222,19 @@ void tuner_wormtime(void)
 
     if (options.wormTime)
     {
-        for (i = 0; i < world->NumWormholes; i++)
+        for (i = 0; i < World.NumWormholes; i++)
         {
-            world->wormHoles[i].countdown = options.wormTime;
+            World.wormHoles[i].countdown = options.wormTime;
         }
     }
     else
     {
-        for (i = 0; i < world->NumWormholes; i++)
+        for (i = 0; i < World.NumWormholes; i++)
         {
-            if (world->wormHoles[i].temporary)
+            if (World.wormHoles[i].temporary)
                 remove_temp_wormhole(i);
             else
-                world->wormHoles[i].countdown = WORMCOUNT;
+                World.wormHoles[i].countdown = WORMCOUNT;
         }
     }
 }
@@ -319,7 +319,7 @@ void tuner_gameduration(void)
 
 void tuner_racelaps(void)
 {
-    if (BIT(world->rules->mode, TIMING))
+    if (BIT(World.rules->mode, TIMING))
     {
         Reset_all_players();
         if (options.gameDuration == -1)
@@ -329,11 +329,11 @@ void tuner_racelaps(void)
 
 void tuner_allowalliances(void)
 {
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
-        CLR_BIT(world->rules->mode, ALLIANCES);
+        CLR_BIT(World.rules->mode, ALLIANCES);
     }
-    if (!BIT(world->rules->mode, ALLIANCES) && NumAlliances > 0)
+    if (!BIT(World.rules->mode, ALLIANCES) && NumAlliances > 0)
     {
         Dissolve_all_alliances();
     }

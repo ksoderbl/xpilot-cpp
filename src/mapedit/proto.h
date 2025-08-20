@@ -53,48 +53,48 @@ void MainEventLoop(void);
 void MapwinKeyPress(XEvent *report);
 
 /* prototypes for tools.c */
-int DrawMapIcon(HandlerInfo_t info);
+int DrawMapIcon(HandlerInfo info);
 void SelectArea(int x, int y, int count);
 void ChangeMapData(int x, int y, char icon, int save);
-int MoveMapView(HandlerInfo_t info);
-int ZoomOut(HandlerInfo_t info);
-int ZoomIn(HandlerInfo_t info);
+int MoveMapView(HandlerInfo info);
+int ZoomOut(HandlerInfo info);
+int ZoomIn(HandlerInfo info);
 void SizeSelectBounds(int oldvx, int oldvy);
-int ExitApplication(HandlerInfo_t info);
+int ExitApplication(HandlerInfo info);
 int SaveUndoIcon(int x, int y, char icon);
-int Undo(HandlerInfo_t info);
+int Undo(HandlerInfo info);
 void ClearUndo(void);
-int NewMap(HandlerInfo_t info);
-int ResizeWidth(HandlerInfo_t info);
-int ResizeHeight(HandlerInfo_t info);
-int OpenPreferencesPopup(HandlerInfo_t info);
-int OpenMapInfoPopup(HandlerInfo_t info);
-int OpenRobotsPopup(HandlerInfo_t info);
-int OpenVisibilityPopup(HandlerInfo_t info);
-int OpenCannonsPopup(HandlerInfo_t info);
-int OpenRoundsPopup(HandlerInfo_t info);
-int OpenInitItemsPopup(HandlerInfo_t info);
-int OpenMaxItemsPopup(HandlerInfo_t info);
-int OpenProbsPopup(HandlerInfo_t info);
-int OpenScoringPopup(HandlerInfo_t info);
-int ValidateCoordHandler(HandlerInfo_t info);
-int ShowHoles(HandlerInfo_t info);
+int NewMap(HandlerInfo info);
+int ResizeWidth(HandlerInfo info);
+int ResizeHeight(HandlerInfo info);
+int OpenPreferencesPopup(HandlerInfo info);
+int OpenMapInfoPopup(HandlerInfo info);
+int OpenRobotsPopup(HandlerInfo info);
+int OpenVisibilityPopup(HandlerInfo info);
+int OpenCannonsPopup(HandlerInfo info);
+int OpenRoundsPopup(HandlerInfo info);
+int OpenInitItemsPopup(HandlerInfo info);
+int OpenMaxItemsPopup(HandlerInfo info);
+int OpenProbsPopup(HandlerInfo info);
+int OpenScoringPopup(HandlerInfo info);
+int ValidateCoordHandler(HandlerInfo info);
+int ShowHoles(HandlerInfo info);
 char MapData(int x, int y);
 int ChangedPrompt(int (*handlen)(HandlerInfo));
 void ClearSelectArea(void);
 void DrawSelectArea(void);
-int FillMapArea(HandlerInfo_t info);
-int CopyMapArea(HandlerInfo_t info);
-int CutMapArea(HandlerInfo_t info);
-int PasteMapArea(HandlerInfo_t info);
-int NegativeMapArea(HandlerInfo_t info);
+int FillMapArea(HandlerInfo info);
+int CopyMapArea(HandlerInfo info);
+int CutMapArea(HandlerInfo info);
+int PasteMapArea(HandlerInfo info);
+int NegativeMapArea(HandlerInfo info);
 
 /* prototypes for file.c */
-int SavePrompt(HandlerInfo_t info);
-int SaveOk(HandlerInfo_t info);
+int SavePrompt(HandlerInfo info);
+int SaveOk(HandlerInfo info);
 int SaveMap(const char *file);
-int LoadPrompt(HandlerInfo_t info);
-int LoadOk(HandlerInfo_t info);
+int LoadPrompt(HandlerInfo info);
+int LoadOk(HandlerInfo info);
 int LoadMap(const char *file);
 int LoadXbmFile(const char *file);
 int LoadOldMap(const char *file);
@@ -109,17 +109,17 @@ int LoadMapData(const char *value);
 char *getMultilineValue();
 
 /* prototypes for round.c */
-int RoundMapArea(HandlerInfo_t info);
+int RoundMapArea(HandlerInfo info);
 
 /* prototypes for help.c */
-int OpenHelpPopup(HandlerInfo_t info);
+int OpenHelpPopup(HandlerInfo info);
 void BuildHelpForm(Window win, int helppage);
 void DrawHelpWin(void);
-int NextHelp(HandlerInfo_t info);
-int PrevHelp(HandlerInfo_t info);
+int NextHelp(HandlerInfo info);
+int PrevHelp(HandlerInfo info);
 
 /* prototypes for grow.c */
-int GrowMapArea(HandlerInfo_t info);
+int GrowMapArea(HandlerInfo info);
 
 /* prototypes for forms.c */
 void BuildMapwinForm(void);

@@ -41,6 +41,24 @@ extern void defaultCleanup(void); /* memory cleanup */
 extern void Get_xpilotrc_file(char *, unsigned);
 
 /*
+ * join.c
+ */
+extern int Join(char *server_addr, char *server_name, int port,
+                char *user_name, char *nick_name, int my_team,
+                char *display, unsigned version);
+
+/*
+ * paintdata.c
+ */
+extern void paintdataCleanup(void); /* memory cleanup */
+
+/*
+ * paintobjects.c
+ */
+extern int Init_wreckage(void);
+extern int Init_asteroids(void);
+
+/*
  * query.c
  */
 #ifdef SOCKLIB_H

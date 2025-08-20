@@ -25,7 +25,7 @@
  *
  * init_error()                - Initialize the error routine, accepts program name
  *                          as input.
- * error()                - perror() with printf functionality.
+ * xperror()                - perror() with printf functionality.
  */
 
 /*
@@ -123,7 +123,7 @@ void warn(const char *fmt, ...)
     va_end(ap);
 }
 
-void error(const char *fmt, ...)
+void xperror(const char *fmt, ...)
 {
     va_list ap;
     int e = errno;
@@ -146,7 +146,7 @@ void error(const char *fmt, ...)
     va_end(ap);
 }
 
-void fatal(const char *fmt, ...)
+void xpfatal(const char *fmt, ...)
 {
     va_list ap;
 

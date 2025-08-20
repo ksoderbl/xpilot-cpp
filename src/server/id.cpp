@@ -56,7 +56,7 @@ static void init_ID(void)
     }
     if (put_ID - get_ID > NUM_IDS)
     {
-        error("ID queue corruption (%u,%u,%d)", get_ID, put_ID, NUM_IDS);
+        xperror("ID queue corruption (%u,%u,%d)", get_ID, put_ID, NUM_IDS);
         exit(1);
     }
 }
@@ -98,7 +98,7 @@ void release_ID(int id)
 
     if (put_ID - get_ID == NUM_IDS || id <= 0 || id > NUM_IDS || ID_inuse[id] != 1)
     {
-        error("Illegal ID (%u,%u,%d,%d)", get_ID, put_ID, id, ID_inuse[id % (NUM_IDS + 1)]);
+        xperror("Illegal ID (%u,%u,%d,%d)", get_ID, put_ID, id, ID_inuse[id % (NUM_IDS + 1)]);
         exit(1);
     }
     ID_queue[put_ID++ % NUM_IDS] = id;

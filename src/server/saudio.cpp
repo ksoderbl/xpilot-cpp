@@ -159,7 +159,7 @@ void sound_play_sensors(int cx, int cy, int index)
 {
     int i,
         volume;
-    double dx,
+    DFLOAT dx,
         dy,
         range,
         factor;
@@ -206,7 +206,7 @@ void sound_play_queued(player_t *pl)
     while (p)
     {
         n = p->next;
-        Send_audio(pl->conn, p->index, p->volume);
+        Send_audio(pl->connp, p->index, p->volume);
         free(p);
         p = n;
     }

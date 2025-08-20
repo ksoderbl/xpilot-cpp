@@ -34,18 +34,16 @@
 #include <cctype>
 #include <sys/types.h>
 
-#include "commonmacros.h"
-#include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
-#include "xperror.h"
-#include "xpmath.h"
 
+#include "xperror.h"
+#include "const.h"
+#include "xpmath.h"
 #include "version.h"
 #include "messages.h"
+#include "commonmacros.h"
 #include "option.h"
-
-#include "client.h" // For Add_message
 
 int num_options = 0;
 int max_options = 0;
@@ -138,11 +136,10 @@ void Usage(void)
 {
     int i;
 
-    // TODO
-    // printf("Usage: %s [-options ...] [server]\n"
-    //        "Where options include:\n"
-    //        "\n",
-    //        Program_name());
+    printf("Usage: %s [-options ...] [server]\n"
+           "Where options include:\n"
+           "\n",
+           Program_name());
     for (i = 0; i < num_options; i++)
     {
         xp_option_t *opt = Option_by_index(i);
@@ -177,8 +174,7 @@ void Usage(void)
 
 static void Version(void)
 {
-    // TODO printf("%s %s\n", Program_name(), VERSION);
-    printf("%s %s\n", "xpilot-cpp", VERSION);
+    printf("%s %s\n", Program_name(), VERSION);
     exit(0);
 }
 
@@ -244,8 +240,8 @@ bool Set_int_option(xp_option_t *opt, int value, xp_option_origin_t origin)
     {
         if (!(value >= opt->int_minval && value <= opt->int_maxval))
         {
-            warn("Bad value %d for option \"%s\", using default...",
-                 value, opt->name);
+            xpwarn("Bad value %d for option \"%s\", using default...",
+                   value, opt->name);
             value = opt->int_defval;
         }
     }
@@ -295,8 +291,8 @@ bool Set_double_option(xp_option_t *opt, double value,
     {
         if (!(value >= opt->dbl_minval && value <= opt->dbl_maxval))
         {
-            warn("Bad value %.3f for option \"%s\", using default...",
-                 value, opt->name);
+            xpwarn("Bad value %.3f for option \"%s\", using default...",
+                   value, opt->name);
             value = opt->dbl_defval;
         }
     }
@@ -343,8 +339,6 @@ xp_keydefs_t *keydefs = nullptr;
 int num_keydefs = 0;
 int max_keydefs = 0;
 
-// TODO
-
 /*
  * This function is used when platform specific code has an event where
  * the user has pressed or released the key defined by the keysym 'ks'.
@@ -378,6 +372,7 @@ keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
 
     return ret;
 }
+
 static int Store_keydef(int ks, keys_t key)
 {
     int i;
@@ -392,7 +387,7 @@ static int Store_keydef(int ks, keys_t key)
 
         if (kd->keysym == ks && kd->key == key)
         {
-            /*warn("Pair (%d, %d) exist from before", ks, (int) key);*/
+            /*xpwarn("Pair (%d, %d) exist from before", ks, (int) key);*/
             /*
              * already exists, no need to store
              */
@@ -413,7 +408,7 @@ static int Store_keydef(int ks, keys_t key)
         if (kd->key == KEY_DUMMY)
         {
             assert(kd->keysym == XP_KS_UNKNOWN);
-            /*warn("Store_keydef: Found dummy at index %d", i);*/
+            /*xpwarn("Store_keydef: Found dummy at index %d", i);*/
             *kd = keydef;
             return 0;
         }
@@ -440,7 +435,7 @@ static void Remove_key_from_keydefs(keys_t key)
          */
         if (kd->key == key)
         {
-            /*warn("Remove_key_from_keydefs: Removing key at index %d", i);*/
+            /*xpwarn("Remove_key_from_keydefs: Removing key at index %d", i);*/
             kd->keysym = XP_KS_UNKNOWN;
             kd->key = KEY_DUMMY;
         }
@@ -460,7 +455,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     assert(value);
 
     /*
-     * warn("Setting key option %s to \"%s\"", opt->name, value);
+     * xpwarn("Setting key option %s to \"%s\"", opt->name, value);
      */
 
     /*
@@ -489,7 +484,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
         ks = String_to_xp_keysym(str);
         if (ks == XP_KS_UNKNOWN)
         {
-            warn("Invalid keysym \"%s\" for key \"%s\".\n", str, opt->name);
+            xpwarn("Invalid keysym \"%s\" for key \"%s\".\n", str, opt->name);
             continue;
         }
 
@@ -502,7 +497,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     return true;
 }
 
-static bool is_legal_value(xp_option_type_t type, const char *value)
+static bool is_legal_value(xp_option_type_t type, char *value)
 {
     if (type == xp_noarg_option || type == xp_bool_option)
     {
@@ -541,7 +536,7 @@ bool Set_option(const char *name, const char *value, xp_option_origin_t origin)
     if (!is_legal_value(opt->type, value))
     {
         if (origin != xp_option_origin_setcmd)
-            warn("Bad value \"%s\" for option %s.", value, opt->name);
+            xpwarn("Bad value \"%s\" for option %s.", value, opt->name);
         else
         {
             char msg[MSG_LEN];
@@ -705,7 +700,7 @@ void Get_command(const char *args)
 /*
  * NOTE: Store option assumes the passed pointers will remain valid.
  */
-int Store_option(xp_option_t *opt)
+void Store_option(xp_option_t *opt)
 {
     xp_option_t option;
 
@@ -714,14 +709,12 @@ int Store_option(xp_option_t *opt)
     assert(opt->help);
     assert(strlen(opt->help) > 0);
 
-    printf("*** Store_option: option \"%s\"\n", opt->name);
-
     /*
      * Let's not allow several options with the same name
      */
     if (Find_option(opt->name) != nullptr)
     {
-        warn("Trying to store duplicate option \"%s\"", opt->name);
+        xpwarn("Trying to store duplicate option \"%s\"", opt->name);
         assert(0);
     }
 
@@ -761,17 +754,15 @@ int Store_option(xp_option_t *opt)
         assert(opt->str_ptr || (opt->str_setfunc && opt->str_getfunc));
         Set_string_option(opt, opt->str_defval, xp_option_origin_default);
         break;
-    // case xp_key_option:
-    //     assert(opt->key_defval);
-    //     assert(opt->key != KEY_DUMMY);
-    //     Set_key_option(opt, opt->key_defval, xp_option_origin_default);
-    //     break;
+    case xp_key_option:
+        assert(opt->key_defval);
+        assert(opt->key != KEY_DUMMY);
+        Set_key_option(opt, opt->key_defval, xp_option_origin_default);
+        break;
     default:
-        warn("Could not set default value for option %s", opt->name);
+        xpwarn("Could not set default value for option %s", opt->name);
         break;
     }
-
-    return 0;
 }
 
 typedef struct xpilotrc_line
@@ -821,8 +812,8 @@ static int Parse_xpilotrc_line(const char *line)
     if (colon == nullptr)
     {
         /* no colon on line, not ok */
-        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-        warn("Line has no colon after option name, ignoring.");
+        xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        xpwarn("Line has no colon after option name, ignoring.");
         goto line_is_comment;
     }
 
@@ -839,7 +830,7 @@ static int Parse_xpilotrc_line(const char *line)
         l[i--] = '\0';
 
     name = l;
-    /*warn("looking for option \"%s\": %s",
+    /*xpwarn("looking for option \"%s\": %s",
       name, Find_option(name) ? "found" : "not found");*/
 
     opt = Find_option(name);
@@ -849,11 +840,11 @@ static int Parse_xpilotrc_line(const char *line)
     if (Option_get_flags(opt) & XP_OPTFLAG_NEVER_SAVE)
     {
         /* discard the line */
-        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-        warn("Option %s must not be specified in xpilotrc.", name);
-        warn("It will be removed from xpilotrc if you save configuration.");
+        xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        xpwarn("Option %s must not be specified in xpilotrc.", name);
+        xpwarn("It will be removed from xpilotrc if you save configuration.");
         XFREE(lcpy);
-        return 0;
+        return;
     }
 
     /* did we see this before ? */
@@ -864,9 +855,9 @@ static int Parse_xpilotrc_line(const char *line)
         if (x->opt == opt)
         {
             /* same option defined several times in xpilotrc */
-            warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-            warn("Option %s previously given on line %d, ignoring new value.",
-                 name, i + 1);
+            xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+            xpwarn("Option %s previously given on line %d, ignoring new value.",
+                   name, i + 1);
             goto line_is_comment;
         }
     }
@@ -883,19 +874,19 @@ static int Parse_xpilotrc_line(const char *line)
     semicolon = strchr(l, ';');
     if (semicolon)
     {
-        /*warn("found comment \"%s\" on line \"%s\"\n", semicolon, line);*/
+        /*xpwarn("found comment \"%s\" on line \"%s\"\n", semicolon, line);*/
         comment = xp_safe_strdup(semicolon);
         *semicolon = '\0';
     }
 
     if (!Set_option(name, value, xp_option_origin_xpilotrc))
     {
-        warn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
-        warn("Failed to set option %s value \"%s\", ignoring.", name, value);
+        xpwarn("Xpilotrc line %d:", num_xpilotrc_lines + 1);
+        xpwarn("Failed to set option %s value \"%s\", ignoring.", name, value);
         goto line_is_comment;
     }
 
-    /*warn("option %s value is \"%s\"", name, value);*/
+    /*xpwarn("option %s value is \"%s\"", name, value);*/
 
     t.opt = opt;
     t.comment = comment;
@@ -903,20 +894,19 @@ static int Parse_xpilotrc_line(const char *line)
           xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
     num_ok_options++;
     XFREE(lcpy);
-    return 0;
+    return;
 
 line_is_comment:
     /*
      * If we can't parse the line, then we just treat it as a comment.
      */
-    /*warn("Comment: \"%s\"", line);*/
+    /*xpwarn("Comment: \"%s\"", line);*/
     XFREE(comment);
     t.opt = nullptr;
     t.comment = xp_safe_strdup(line);
     STORE(xpilotrc_line_t,
           xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
     XFREE(lcpy);
-    return 0;
 }
 
 static inline bool is_noarg_option(const char *name)
@@ -936,14 +926,14 @@ int Xpilotrc_read(const char *path)
     assert(path);
     if (strlen(path) == 0)
     {
-        warn("Xpilotrc_read: Zero length filename.");
+        xpwarn("Xpilotrc_read: Zero length filename.");
         return -1;
     }
 
     fp = fopen(path, "r");
     if (fp == nullptr)
     {
-        error("Xpilotrc_read: Failed to open file \"%s\"", path);
+        xperror("Xpilotrc_read: Failed to open file \"%s\"", path);
         return -2;
     }
 
@@ -962,9 +952,9 @@ int Xpilotrc_read(const char *path)
         Parse_xpilotrc_line(buf);
     }
 
-    /*warn("Total number of nonempty lines in xpilotrc: %d",
+    /*xpwarn("Total number of nonempty lines in xpilotrc: %d",
       num_xpilotrc_lines);
-      warn("Number of options set: %d\n", num_ok_options);*/
+      xpwarn("Number of options set: %d\n", num_ok_options);*/
 
     fclose(fp);
 
@@ -1016,7 +1006,7 @@ static void Xpilotrc_create_line(char *buf, size_t size,
 static void Xpilotrc_write_line(FILE *fp, const char *buf)
 {
     const char *endline = "\n";
-    /*warn("writing line \"%s\"", buf);*/
+    /*xpwarn("writing line \"%s\"", buf);*/
 
     fprintf(fp, "%s%s", buf, endline);
 }
@@ -1029,14 +1019,14 @@ int Xpilotrc_write(const char *path)
     assert(path);
     if (strlen(path) == 0)
     {
-        warn("Xpilotrc_write: Zero length filename.");
+        xpwarn("Xpilotrc_write: Zero length filename.");
         return -1;
     }
 
     fp = fopen(path, "w");
     if (fp == nullptr)
     {
-        error("Xpilotrc_write: Failed to open file \"%s\"", path);
+        xperror("Xpilotrc_write: Failed to open file \"%s\"", path);
         return -2;
     }
 
@@ -1184,8 +1174,8 @@ void Parse_options(int *argcp, char **argvp)
 
                 if (!ok)
                 {
-                    warn("Unknown or incomplete option '%s'", argvp[arg_ind]);
-                    warn("Type: %s -help to see a list of options", argvp[0]);
+                    xpwarn("Unknown or incomplete option '%s'", argvp[arg_ind]);
+                    xpwarn("Type: %s -help to see a list of options", argvp[0]);
                     exit(1);
                 }
             }
@@ -1207,19 +1197,17 @@ void Parse_options(int *argcp, char **argvp)
         argvp[i] = nullptr;
     *argcp = num_servers + 1;
 
-    // TOOD
-    // if (xpArgs.help)
-    //     Usage();
+    if (xpArgs.help)
+        Usage();
 
-    // if (xpArgs.version)
-    //     Version();
+    if (xpArgs.version)
+        Version();
 
 #ifdef SOUND
     audioInit(connectParam.disp_name);
 #endif /* SOUND */
 }
 
-// TODO
 const char *Get_keyHelpString(keys_t key)
 {
     int i;

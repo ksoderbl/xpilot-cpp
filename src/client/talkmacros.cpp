@@ -26,9 +26,7 @@
 #include <cstring>
 #include <cerrno>
 
-#include "commonmacros.h"
 #include "randommt.h"
-#include "strdup.h"
 
 #include "client.h"
 
@@ -43,8 +41,6 @@
 #include "talk.h"
 #include "rules.h" /* TEAM_PLAY, LIMITED_LIVES */
 
-char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
-
 /*
  * Abandon your hope, all you enter here
  */
@@ -54,6 +50,9 @@ static char final_str[MAX_CHARS];
 
 extern int eyesId;     /* Player we get frame updates for */
 extern short snooping; /* Are we snooping on someone else? */
+
+/* exported (to xevent.c) */
+int Talk_macro(char *str);
 
 #define MSG_PARSED_FIELD_LEN 20
 
@@ -151,7 +150,7 @@ static char *Talk_macro_get_field(char *buf, int wanted_field)
     len = end_ptr - start_ptr;
     if ((field_ptr = (char *)malloc(len + 1)) == NULL)
     {
-        error("Can't allocate memory for talk macro");
+        xperror("Can't allocate memory for talk macro");
         return NULL;
     }
     strncpy(field_ptr, start_ptr, len);
@@ -239,12 +238,12 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     /* parse field 1 */
                     if ((tmpptr = Talk_macro_get_field(inbuf, 1)) == NULL)
                     {
-                        error("Talk_macro_get_field (1) error!");
+                        xperror("Talk_macro_get_field (1) error!");
                         break;
                     }
                     if ((tmpptr1 = (char *)malloc(MSG_PARSED_FIELD_LEN)) == NULL)
                     {
-                        error("Can't allocate memory for talk macro.");
+                        xperror("Can't allocate memory for talk macro.");
                         free(tmpptr); /* successful malloc from before */
                         break;
                     }
@@ -254,12 +253,12 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     /* parse field 2 */
                     if ((tmpptr = Talk_macro_get_field(inbuf, 2)) == NULL)
                     {
-                        error("Talk_macro_get_field (2) error!");
+                        xperror("Talk_macro_get_field (2) error!");
                         break;
                     }
                     if ((tmpptr2 = (char *)malloc(MSG_PARSED_FIELD_LEN)) == NULL)
                     {
-                        error("Can't allocate memory for talk macro.");
+                        xperror("Can't allocate memory for talk macro.");
                         free(tmpptr); /* successful malloc from before */
                         break;
                     }
@@ -270,7 +269,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                         /* True */
                         if ((tmpptr3 = Talk_macro_get_field(inbuf, 3)) == NULL)
                         {
-                            error("Talk_macro_get_field (3) error!");
+                            xperror("Talk_macro_get_field (3) error!");
                             free(tmpptr1);
                             free(tmpptr2);
                             break;
@@ -282,7 +281,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                         /* False */
                         if ((tmpptr3 = Talk_macro_get_field(inbuf, 4)) == NULL)
                         {
-                            error("Talk_macro_get_field (4) error!");
+                            xperror("Talk_macro_get_field (4) error!");
                             free(tmpptr1);
                             free(tmpptr2);
                             break;
@@ -302,13 +301,13 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     }
                     if ((tmpptr = Talk_macro_get_field(inbuf, 1)) == NULL)
                     {
-                        error("Talk_macro_get_field error!");
+                        xperror("Talk_macro_get_field error!");
                         break;
                     }
                     inbuf = nextpos;
                     if ((filename = (char *)malloc(TALK_FAST_MSG_FNLEN)) == NULL)
                     {
-                        error("Can't allocate memory for talk macro.");
+                        xperror("Can't allocate memory for talk macro.");
                         break;
                     }
 
@@ -317,7 +316,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     free(tmpptr);
                     if ((fp = fopen(filename, "r")) == NULL)
                     {
-                        error("Couldn't open file %s", tmpptr);
+                        xperror("Couldn't open file %s", tmpptr);
                         free(filename);
                         break;
                     }
@@ -356,7 +355,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     if ((tmpptr = Talk_macro_get_field(inbuf,
                                                        randomMT() % n_fields + 1)) == NULL)
                     {
-                        error("Talk_macro_get_field error (random)");
+                        xperror("Talk_macro_get_field error (random)");
                         break;
                     }
                     inbuf = nextpos;
@@ -422,237 +421,17 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
     return pos;
 }
 
-// int Talk_macro(char *str)
-// {
-//     /* Comment: sizeof str === MAX_CHARS */
-//     if (str == NULL)
-//     {
-//         return 1;
-//     }
-
-//     if (Talk_macro_parse_mesg(final_str, str, 0L, MAX_CHARS) > 0)
-//     {
-//         Net_talk(final_str);
-//     }
-//     return 0;
-// }
-
-int Talk_macro(int i)
+int Talk_macro(char *str)
 {
-    char *str;
-
-    assert(i >= 0);
-    assert(i < TALK_FAST_NR_OF_MSGS);
-    str = talk_fast_msgs[i];
+    /* Comment: sizeof str === MAX_CHARS */
     if (str == NULL)
+    {
         return 1;
+    }
 
     if (Talk_macro_parse_mesg(final_str, str, 0L, MAX_CHARS) > 0)
+    {
         Net_talk(final_str);
-
+    }
     return 0;
-}
-
-static inline int index_by_option(xp_option_t *opt)
-{
-    return atoi(Option_get_name(opt) + strlen("msg")) - 1;
-}
-
-static bool Set_talk_macro(xp_option_t *opt, const char *value)
-{
-    int i = index_by_option(opt);
-
-    /*printf("Set_talk_macro: i = %d\n", i);*/
-    assert(i >= 0);
-    assert(i < TALK_FAST_NR_OF_MSGS);
-
-    XFREE(talk_fast_msgs[i]);
-    talk_fast_msgs[i] = xp_safe_strdup(value);
-
-    return true;
-}
-
-static const char *Get_talk_macro(xp_option_t *opt)
-{
-    int i = index_by_option(opt);
-
-    /*printf("Get_talk_macro: i = %d\n", i);*/
-    assert(i >= 0);
-    assert(i < TALK_FAST_NR_OF_MSGS);
-
-    return talk_fast_msgs[i];
-}
-
-xp_option_t talk_macro_options[] = {
-    /*
-     * Default warning macros for newbies.
-     */
-    XP_STRING_OPTION(
-        "msg1",
-        "#t:***    BALL! Our ball is gone! Save it!   ***",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 1.\n"),
-
-    XP_STRING_OPTION(
-        "msg2",
-        "#t:*** SAFE! Our ball is safe. ***",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 2.\n"),
-
-    XP_STRING_OPTION(
-        "msg3",
-        "#t:*** COVER! The enemy ball is approaching our base. ***",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 3.\n"),
-
-    XP_STRING_OPTION(
-        "msg4",
-        "#t:*** POP! The enemy ball is back at the enemy base. ***",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 4.\n"),
-
-    /*
-     * This macro swaps between teams 2 and 4, useful on Blood's Music
-     * maps.
-     */
-    XP_STRING_OPTION(
-        "msg5",
-        "#=[#t|2|/team 4|/team 2]",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 5.\n"),
-
-    XP_STRING_OPTION(
-        "msg6",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 6.\n"),
-
-    XP_STRING_OPTION(
-        "msg7",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 7.\n"),
-
-    XP_STRING_OPTION(
-        "msg8",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 8.\n"),
-
-    XP_STRING_OPTION(
-        "msg9",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 9.\n"),
-
-    XP_STRING_OPTION(
-        "msg10",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 10.\n"),
-
-    XP_STRING_OPTION(
-        "msg11",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 11.\n"),
-
-    XP_STRING_OPTION(
-        "msg12",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 12.\n"),
-
-    XP_STRING_OPTION(
-        "msg13",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 13.\n"),
-
-    XP_STRING_OPTION(
-        "msg14",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 14.\n"),
-
-    XP_STRING_OPTION(
-        "msg15",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 15.\n"),
-
-    XP_STRING_OPTION(
-        "msg16",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 16.\n"),
-
-    XP_STRING_OPTION(
-        "msg17",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 17.\n"),
-
-    XP_STRING_OPTION(
-        "msg18",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 18.\n"),
-
-    XP_STRING_OPTION(
-        "msg19",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 19.\n"),
-
-    XP_STRING_OPTION(
-        "msg20",
-        "",
-        NULL, 0,
-        Set_talk_macro, NULL, Get_talk_macro,
-        XP_OPTFLAG_DEFAULT,
-        "Talkmessage 20.\n"),
-};
-
-void Store_talk_macro_options(void)
-{
-    STORE_OPTIONS(talk_macro_options);
 }

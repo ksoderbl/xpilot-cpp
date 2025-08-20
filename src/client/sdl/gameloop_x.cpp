@@ -48,13 +48,13 @@ void Game_loop(void)
     SDL_VERSION(&info.version);
     if (!SDL_GetWMInfo(&info))
     {
-        error("SDL_GetWMInfo not supported");
+        xperror("SDL_GetWMInfo not supported");
         return;
     }
 
     if ((result = Net_input()) == -1)
     {
-        error("Bad server input");
+        xperror("Bad server input");
         return;
     }
     if (Poll_input())
@@ -65,12 +65,12 @@ void Game_loop(void)
 
     if ((clientfd = ConnectionNumber(info.info.x11.display)) == -1)
     {
-        error("Bad client filedescriptor");
+        xperror("Bad client filedescriptor");
         return;
     }
     if ((netfd = Net_fd()) == -1)
     {
-        error("Bad socket filedescriptor");
+        xperror("Bad socket filedescriptor");
         return;
     }
     Net_key_change();
@@ -97,7 +97,7 @@ void Game_loop(void)
         {
             if (errno == EINTR)
                 continue;
-            error("Select failed");
+            xperror("Select failed");
             return;
         }
 
@@ -119,7 +119,7 @@ void Game_loop(void)
                 return;
             if (Net_flush() == -1)
             {
-                error("Bad net flush after input");
+                xperror("Bad net flush after input");
                 return;
             }
         }
@@ -136,7 +136,7 @@ void Game_loop(void)
                     return;
                 if (Net_flush() == -1)
                 {
-                    error("Bad net flush");
+                    xperror("Bad net flush");
                     return;
                 }
                 if (Poll_input())

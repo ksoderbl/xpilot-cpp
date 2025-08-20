@@ -388,7 +388,6 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
 
     string_glyph = TTF_RenderText_Blended(ft_font->ttffont, text, *forecol);
 
-    // TOOD: Arraylist was removed, use e.g. std::vector
     string_tex->tex_list = Arraylist_alloc(sizeof(tex_t));
 
     string_tex->width = 0;

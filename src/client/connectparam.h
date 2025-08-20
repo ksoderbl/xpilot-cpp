@@ -25,7 +25,6 @@
 #define CONNECTPARAM_H
 
 #include "pack.h"
-#include "socklib.h"
 
 typedef struct Connect_param
 {

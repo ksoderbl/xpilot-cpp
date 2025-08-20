@@ -24,20 +24,11 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-// void List_visuals(void);
-// int Colors_init(void);
-// int Colors_init_bitmaps(void);
-// void Colors_free_bitmaps(void);
-// void Colors_cleanup(void);
-// void Colors_debug(void);
-
-extern void List_visuals(void);
-extern int Colors_init(void);
-extern int Colors_init_bitmaps(void);
-extern void Colors_free_bitmaps(void);
-extern void Colors_cleanup(void);
-extern void Colors_debug(void);
-extern void Init_spark_colors(void);
-extern void Store_color_options(void);
+void List_visuals(void);
+int Colors_init(void);
+int Colors_init_bitmaps(void);
+void Colors_free_block_bitmaps(void);
+void Colors_cleanup(void);
+void Colors_debug(void);
 
 #endif

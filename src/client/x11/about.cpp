@@ -36,8 +36,6 @@
 #include "client.h"
 #include "paint.h"
 
-#include "xpaint.h"
-
 #include "xpconfig.h"
 #include "const.h"
 #include "keys.h"
@@ -192,10 +190,14 @@ void Expose_about_window(void)
                                Item_get_text(i),
                                colors[WHITE].pixel, colors[BLACK].pixel);
             if (y - old_y < 2 * ITEM_TRIANGLE_SIZE)
+            {
                 y = old_y + 2 * ITEM_TRIANGLE_SIZE;
+            }
             box_end = y + BORDER / 2;
             if (i == last)
+            {
                 box_end += BORDER / 2;
+            }
 
             /* Paint the item on the left side */
             XSetForeground(dpy, textGC, colors[BLACK].pixel);
@@ -203,8 +205,8 @@ void Expose_about_window(void)
                            BORDER, box_start,
                            2 * ITEM_SIZE + 2 * BORDER, box_end - box_start);
             XSetForeground(dpy, textGC, colors[RED].pixel);
-            Gui_paint_item(i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
-                           old_y + ITEM_TRIANGLE_SIZE);
+            Paint_item((uint8_t)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
+                       old_y + ITEM_TRIANGLE_SIZE);
             XSetForeground(dpy, textGC, colors[WHITE].pixel);
 
             /*
@@ -295,7 +297,7 @@ void Expose_about_window(void)
         break;
 
     default:
-        error("Unkown page number %d\n", about_page);
+        xperror("Unkown page number %d\n", about_page);
         break;
     }
 }
@@ -461,22 +463,22 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
         unsigned bufsize = (maxKeyDefs * 64);
         char *buf = (char *)calloc(bufsize, 1),
              *end = buf,
+             *help,
              *str;
-        const char *help;
         int i,
             len,
             maxkeylen = 0;
 
         for (i = 0; i < maxKeyDefs; i++)
         {
-            if ((str = XKeysymToString((KeySym)keydefs[i].keysym)) != NULL && (len = strlen(str)) > maxkeylen)
+            if ((str = XKeysymToString(keyDefs[i].keysym)) != NULL && (len = strlen(str)) > maxkeylen)
             {
                 maxkeylen = len;
             }
         }
         for (i = 0; i < maxKeyDefs; i++)
         {
-            if (!(str = XKeysymToString((KeySym)keydefs[i].keysym)) || !(help = Get_keyHelpString(keydefs[i].key)))
+            if (!(str = XKeysymToString(keyDefs[i].keysym)) || !(help = Get_keyHelpString(keyDefs[i].key)))
             {
                 continue;
             }
@@ -486,7 +488,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
                 xpprintf("realloc: %d\n", bufsize);
                 if (!(buf = (char *)realloc(buf, bufsize)))
                 {
-                    error("No memory for key list");
+                    xperror("No memory for key list");
                     return 0;
                 }
             }
@@ -504,7 +506,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
         if (keys_viewer == NO_WIDGET)
         {
             errno = 0;
-            error("Can't create key viewer");
+            xperror("Can't create key viewer");
             return 0;
         }
 
@@ -568,7 +570,7 @@ int Handle_motd(long off, char *buf, int len, long filesize)
         i = MAX(motd_size, sizeof no_motd_msg) + 1;
         if (!(motd_buf = (char *)malloc(i)))
         {
-            error("No memory for MOTD");
+            xperror("No memory for MOTD");
             return -1;
         }
         memset(motd_buf, ' ', motd_size);
@@ -623,7 +625,7 @@ int Handle_motd(long off, char *buf, int len, long filesize)
         if (motd_viewer == NO_WIDGET)
         {
             errno = 0;
-            error("Can't create MOTD viewer");
+            xperror("Can't create MOTD viewer");
         }
     }
     else if (len > 0)

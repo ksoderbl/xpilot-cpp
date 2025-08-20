@@ -74,14 +74,14 @@ int Alloc_msgs(void)
 
     if ((x = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL)
     {
-        error("No memory for messages");
+        xperror("No memory for messages");
         return -1;
     }
 
     if (selectionAndHistory &&
         ((x2 = (message_t *)malloc(2 * MAX_MSGS * sizeof(message_t))) == NULL))
     {
-        error("No memory for history messages");
+        xperror("No memory for history messages");
         free(x);
         return -1;
     }
@@ -108,14 +108,14 @@ int Alloc_msgs(void)
         }
         x->txt[0] = '\0';
         x->len = 0;
-        x->lifeTime = 0.0;
+        x->life = 0;
         x++;
 
         if (selectionAndHistory)
         {
             x2->txt[0] = '\0';
             x2->len = 0;
-            x->lifeTime = 0.0;
+            x2->life = 0;
             x2++;
         }
     }
@@ -144,7 +144,7 @@ int Alloc_history(void)
     /* maxLinesInHistory is a runtime constant */
     if ((hist_ptr = (char *)malloc(maxLinesInHistory * MAX_CHARS)) == NULL)
     {
-        error("No memory for history");
+        xperror("No memory for history");
         return -1;
     }
     HistoryBlock = hist_ptr;
@@ -261,7 +261,7 @@ void Add_message(const char *message)
     }
     msg_set[0] = tmp;
 
-    msg_set[0]->lifeTime = MSG_LIFE_TIME;
+    msg_set[0]->life = MSG_DURATION;
     strlcpy(msg_set[0]->txt, message, MSG_LEN);
     msg_set[0]->len = len;
 
@@ -308,7 +308,28 @@ void Add_message(const char *message)
         }
     }
 
-    // msg_set[0]->pixelLen = 0; // TODO in painthud.cpp: XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
+#ifdef DEVELOPMENT
+    /* Anti-censor hack restores original 4 letter words.
+     * XPilot is not assumed to be a game for children
+     * who are still under parental guidance.
+     */
+    for (i = 0; i < len - 3; i++)
+    {
+        static char censor_text[] = "@&$*";
+        static char rough_text[][5] = {"fuck", "shit", "damn"};
+        static int rough_index = 0;
+        if (msg_set[0]->txt[i] == censor_text[0] && !strncmp(&msg_set[0]->txt[i], censor_text, 4))
+        {
+            if (++rough_index >= 3)
+            {
+                rough_index = 0;
+            }
+            memcpy(&msg_set[0]->txt[i], rough_text[rough_index], 4);
+        }
+    }
+#endif
+
+    msg_set[0]->pixelLen = 0; // TODO in painthud.cpp: XTextWidth(messageFont, msg_set[0]->txt, msg_set[0]->len);
 
     /* Print messages to standard output.
      */

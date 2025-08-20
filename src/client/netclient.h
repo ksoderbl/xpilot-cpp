@@ -1,4 +1,5 @@
-/*
+/* $Id: netclient.h,v 5.5 2002/01/18 22:34:25 kimiko Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -35,10 +36,10 @@
 
 typedef struct
 {
-    int view_width;
-    int view_height;
-    int spark_rand;
-    int num_spark_colors;
+        int view_width;
+        int view_height;
+        int spark_rand;
+        int num_spark_colors;
 } display_t;
 
 extern int simulating;
@@ -47,22 +48,8 @@ extern int receive_window_size;
 extern long last_loops;
 extern display_t server_display; /* the servers idea about our display */
 
-typedef struct
-{
-    int movement;
-    double turnspeed;
-    int id;
-} pointer_move_t;
-
-#define MAX_POINTER_MOVES 128
-
-extern pointer_move_t pointer_moves[MAX_POINTER_MOVES];
-extern int pointer_move_next;
-extern long last_keyboard_ack;
-extern bool dirPrediction;
-
 int Net_setup(void);
-int Net_verify(char *user_name, char *nick_name, char *dpy);
+int Net_verify(char *user_name, char *nick_name, char *dpy, int my_team);
 int Net_init(char *server, int port);
 void Net_cleanup(void);
 void Net_key_change(void);
@@ -136,7 +123,7 @@ int Send_pointer_move(int movement);
 int Receive_audio(void);
 int Receive_talk_ack(void);
 int Send_talk(void);
-int Send_display(int width, int height, int sparks, int spark_colors);
+int Send_display(void);
 int Send_modifier_bank(int);
 int Net_talk(char *str);
 int Net_ask_for_motd(long offset, long maxlen);

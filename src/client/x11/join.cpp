@@ -75,7 +75,7 @@ static void Input_loop(void)
 
     if ((result = Net_input()) == -1)
     {
-        error("Bad server input");
+        xperror("Bad server input");
         return;
     }
     if (Handle_input(2) == -1)
@@ -88,12 +88,12 @@ static void Input_loop(void)
     }
     if ((clientfd = ConnectionNumber(dpy)) == -1)
     {
-        error("Bad client filedescriptor");
+        xperror("Bad client filedescriptor");
         return;
     }
     if ((netfd = Net_fd()) == -1)
     {
-        error("Bad socket filedescriptor");
+        xperror("Bad socket filedescriptor");
         return;
     }
     Net_key_change();
@@ -128,7 +128,7 @@ static void Input_loop(void)
             {
                 continue;
             }
-            error("Select failed");
+            xperror("Select failed");
             return;
         }
         if (n == 0)
@@ -145,7 +145,7 @@ static void Input_loop(void)
             else if (result <= 1)
             {
                 errno = 0;
-                error("No response from server");
+                xperror("No response from server");
                 continue;
             }
         }
@@ -157,7 +157,7 @@ static void Input_loop(void)
             }
             if (Net_flush() == -1)
             {
-                error("Bad net flush after X input");
+                xperror("Bad net flush after X input");
                 return;
             }
         }
@@ -169,7 +169,7 @@ static void Input_loop(void)
             if ((result = Net_input()) == -1)
             {
                 errno = 0;
-                error("Bad net input.  Have a nice day!");
+                xperror("Bad net input.  Have a nice day!");
                 return;
             }
             if (result > 0)
@@ -194,7 +194,7 @@ static void Input_loop(void)
                 }
                 if (Net_flush() == -1)
                 {
-                    error("Bad net flush before sync");
+                    xperror("Bad net flush before sync");
                     return;
                 }
                 XSync(dpy, False);
@@ -239,28 +239,28 @@ static void sigcatch(int signum)
     signal(SIGINT, SIG_IGN);
     signal(SIGTERM, SIG_IGN);
     xpilotShutdown();
-    error("Got signal %d\n", signum);
+    xperror("Got signal %d\n", signum);
     exit(1);
 }
 
-int Join(Connect_param_t *conpar)
+int Join(char *server_addr, char *server_name, int port, char *user_name,
+         char *nick_name, int my_team, char *display, unsigned version)
 {
     signal(SIGINT, sigcatch);
     signal(SIGTERM, sigcatch);
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
 
-    if (Client_init(conpar->server_name, conpar->server_version) == -1)
+    if (Client_init(server_name, version) == -1)
+    {
         return -1;
-
-    if (Net_init(conpar->server_addr, conpar->login_port) == -1)
+    }
+    if (Net_init(server_addr, port) == -1)
     {
         Client_cleanup();
         return -1;
     }
-    if (Net_verify(conpar->user_name,
-                   conpar->nick_name,
-                   conpar->disp_name) == -1)
+    if (Net_verify(user_name, nick_name, display, my_team) == -1)
     {
         Net_cleanup();
         Client_cleanup();
@@ -280,14 +280,16 @@ int Join(Connect_param_t *conpar)
     }
     if (Net_start() == -1)
     {
-        warn("Network start failed");
+        errno = 0;
+        xperror("Network start failed");
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
     if (Client_start() == -1)
     {
-        warn("Window init failed");
+        errno = 0;
+        xperror("Window init failed");
         Net_cleanup();
         Client_cleanup();
         return -1;

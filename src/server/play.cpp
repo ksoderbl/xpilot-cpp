@@ -40,8 +40,8 @@
 int Punish_team(int ind, int t_destroyed, int t_target)
 {
     static char msg[MSG_LEN];
-    treasure_t *td = &world->treasures[t_destroyed];
-    treasure_t *tt = &world->treasures[t_target];
+    treasure_t *td = &World.treasures[t_destroyed];
+    treasure_t *tt = &World.treasures[t_target];
     player *pl = Players[ind];
     int i;
     int win_score = 0, lose_score = 0;
@@ -53,18 +53,22 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     if (td->team == pl->team)
         return 0;
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+            if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+            {
                 continue;
+            }
             if (Players[i]->team == td->team)
             {
                 lose_score += Players[i]->score;
                 lose_team_members++;
                 if (BIT(Players[i]->status, GAME_OVER) == 0)
+                {
                     somebody_flag = 1;
+                }
             }
             else if (Players[i]->team == tt->team)
             {
@@ -81,33 +85,35 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     if (!somebody_flag)
     {
-        SCORE(pl, Rate(pl->score, CANNON_SCORE) / 2,
+        SCORE(ind, Rate(pl->score, CANNON_SCORE) / 2,
               tt->clk_pos.cx, tt->clk_pos.cy, "Treasure:");
         return 0;
     }
 
     td->destroyed++;
-    world->teams[td->team].TreasuresLeft--;
-    world->teams[tt->team].TreasuresDestroyed++;
+    World.teams[td->team].TreasuresLeft--;
+    World.teams[tt->team].TreasuresDestroyed++;
 
     sc = 3 * Rate(win_score, lose_score);
     por = (sc * lose_team_members) / (2 * win_team_members + 1);
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Players[i]) ||
-            (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
-            (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+        if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+        {
             continue;
+        }
         if (Players[i]->team == td->team)
         {
-            SCORE(Players[i], -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+            SCORE(i, -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(Players[i]->status, KILLED);
         }
         else if (Players[i]->team == tt->team &&
                  (Players[i]->team != TEAM_NOT_SET || i == ind))
-            SCORE(Players[i], (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+        {
+            SCORE(i, (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+        }
     }
 
     if (options.treasureKillTeam)
@@ -127,35 +133,35 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 /* Create debris particles */
 void Make_debris(
     /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ double velx, double vely,
+    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,
     /* type           */ int type,
-    /* mass           */ double mass,
+    /* mass           */ DFLOAT mass,
     /* status         */ long status,
     /* color          */ int color,
     /* radius         */ int radius,
     /* min,max debris */ int min_debris, int max_debris,
     /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ double min_speed, double max_speed,
+    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
     /* min,max life   */ int min_life, int max_life)
 {
     object_t *debris;
     int i, num_debris, life;
     modifiers_t mods;
 
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += world->click_width;
-        else if (cx >= world->click_width)
-            cx -= world->click_width;
+            cx += World.click_width;
+        else if (cx >= World.click_width)
+            cx -= World.click_width;
         if (cy < 0)
-            cy += world->click_height;
-        else if (cy >= world->click_height)
-            cy -= world->click_height;
+            cy += World.click_height;
+        else if (cy >= World.click_height)
+            cy -= World.click_height;
     }
-    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
+    if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
     {
         return;
     }
@@ -173,10 +179,10 @@ void Make_debris(
             max_life = options.ShotsLife;
         }
     }
-    if (min_speed * max_life > world->hypotenuse)
-        min_speed = world->hypotenuse / max_life;
-    if (max_speed * min_life > world->hypotenuse)
-        max_speed = world->hypotenuse / min_life;
+    if (min_speed * max_life > World.hypotenuse)
+        min_speed = World.hypotenuse / max_life;
+    if (max_speed * min_life > World.hypotenuse)
+        max_speed = World.hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -198,7 +204,7 @@ void Make_debris(
     }
     for (i = 0; i < num_debris; i++)
     {
-        double speed, dx, dy, diroff;
+        DFLOAT speed, dx, dy, diroff;
         int dir, dirplus;
 
         if ((debris = Object_allocate()) == NULL)
@@ -223,9 +229,9 @@ void Make_debris(
         debris->mass = mass;
         debris->type = type;
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > world->hypotenuse)
+        if (life * speed > World.hypotenuse)
         {
-            life = (long)(world->hypotenuse / speed);
+            life = (long)(World.hypotenuse / speed);
         }
         debris->life = life;
         debris->fuselife = life;

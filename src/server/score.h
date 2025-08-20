@@ -51,7 +51,7 @@
 
 /* score.c */
 
-void SCORE(player_t *pl, int points, int cx, int cy, const char *msg);
+void SCORE(int ind, int points, int cx, int cy, const char *msg);
 int Rate(int winner, int loser);
 
 /*

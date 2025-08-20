@@ -64,7 +64,7 @@ char iconhelp[36] = {
 /*   name                                                                  */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenHelpPopup(HandlerInfo_t info)
+int OpenHelpPopup(HandlerInfo info)
 {
     helppage = 0;
     BuildHelpForm(helpwin, helppage);
@@ -152,7 +152,7 @@ void BuildHelpForm(Window win, int helppage)
     }
 }
 
-int NextHelp(HandlerInfo_t info)
+int NextHelp(HandlerInfo info)
 {
     XEvent report;
 
@@ -171,7 +171,7 @@ int NextHelp(HandlerInfo_t info)
     return 0;
 }
 
-int PrevHelp(HandlerInfo_t info)
+int PrevHelp(HandlerInfo info)
 {
     XEvent report;
 

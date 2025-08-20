@@ -72,11 +72,11 @@ static int Get_player_index_by_name(char *name)
         }
     }
 
-    /* now look for a partial match on both nick and username. */
+    /* now look for a partial match on both nick and realname. */
     len = strlen(name);
     for (j = -1, i = 0; i < NumPlayers; i++)
     {
-        if (strncasecmp(Players[i]->name, name, len) == 0 || strncasecmp(Players[i]->username, name, len) == 0)
+        if (strncasecmp(Players[i]->name, name, len) == 0 || strncasecmp(Players[i]->realname, name, len) == 0)
         {
             j = (j == -1) ? i : -2;
         }
@@ -91,12 +91,12 @@ static void Send_info_about_player(player *pl)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Players[i]->conn != NULL)
+        if (Players[i]->connp != NULL)
         {
-            Send_player(Players[i]->conn, pl->id);
-            Send_score(Players[i]->conn, pl->id, pl->score, pl->life,
+            Send_player(Players[i]->connp, pl->id);
+            Send_score(Players[i]->connp, pl->id, pl->score, pl->life,
                        pl->mychar, pl->alliance);
-            Send_base(Players[i]->conn, pl->id, pl->home_base);
+            Send_base(Players[i]->connp, pl->id, pl->home_base);
         }
     }
 }
@@ -344,7 +344,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     swap_allowed = false;
     team = pl->team;
 
-    if (!BIT(world->rules->mode, TEAM_PLAY))
+    if (!BIT(World.rules->mode, TEAM_PLAY))
     {
         sprintf(msg, "No team play going on.");
     }
@@ -371,7 +371,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
         {
             sprintf(msg, "You already are on team %d.", team);
         }
-        else if (world->teams[team].NumBases == 0)
+        else if (World.teams[team].NumBases == 0)
         {
             sprintf(msg, "There are no bases for team %d on this map.", team);
         }
@@ -379,7 +379,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
         {
             sprintf(msg, "You cannot join the robot team on this server.");
         }
-        else if (world->teams[team].NumBases <= world->teams[team].NumMembers)
+        else if (World.teams[team].NumBases <= World.teams[team].NumMembers)
         {
             sprintf(msg, "Team %d is full.", team);
         }
@@ -400,14 +400,14 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     {
         Detach_ball(GetInd[pl->id], -1);
     }
-    world->teams[pl->team].NumMembers--;
+    World.teams[pl->team].NumMembers--;
     pl->team = team;
-    world->teams[pl->team].NumMembers++;
-    if (BIT(world->rules->mode, LIMITED_LIVES))
+    World.teams[pl->team].NumMembers++;
+    if (BIT(World.rules->mode, LIMITED_LIVES))
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Players_are_teammates(pl, Players[i]) && !BIT(Players[i]->status, PAUSE))
+            if (!TEAM(ind, i) && !BIT(Players[i]->status, PAUSE))
             {
                 /* put team swapping player waiting mode. */
                 if (pl->mychar == ' ')
@@ -456,7 +456,7 @@ static int Cmd_ally(char *arg, player_t *pl, int oper, char *msg)
     };
     int i, cmd;
 
-    if (!BIT(world->rules->mode, ALLIANCES))
+    if (!BIT(World.rules->mode, ALLIANCES))
     {
         strlcpy(msg, "Alliances are not allowed.", MSG_LEN);
         result = CMD_RESULT_ERROR;
@@ -581,13 +581,13 @@ static int Cmd_kick(char *arg, player_t *pl, int oper, char *msg)
     {
         sprintf(msg, "%s kicked %s out! [*Server notice*]",
                 pl->name, Players[i]->name);
-        if (Players[i]->conn == NULL)
+        if (Players[i]->connp == NULL)
         {
             Delete_player(i);
         }
         else
         {
-            Destroy_connection(Players[i]->conn, "kicked out");
+            Destroy_connection(Players[i]->connp, "kicked out");
         }
         Set_message(msg);
         strcpy(msg, "");
@@ -835,7 +835,7 @@ static int Cmd_pause(char *arg, player_t *pl, int oper, char *msg)
     i = Get_player_index_by_name(arg);
     if (i >= 0)
     {
-        if (Players[i]->conn != NULL)
+        if (Players[i]->connp != NULL)
         {
             if (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             {

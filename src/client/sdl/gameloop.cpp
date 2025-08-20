@@ -31,7 +31,7 @@ void Game_loop(void)
 
     if ((netfd = Net_fd()) == -1)
     {
-        error("Bad net fd");
+        xperror("Bad net fd");
         return;
     }
 
@@ -53,7 +53,7 @@ void Game_loop(void)
         {
             if (errno == EINTR)
                 continue;
-            error("Select failed");
+            xperror("Select failed");
             return;
         }
         if (n > 0)

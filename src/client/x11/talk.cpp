@@ -960,7 +960,7 @@ int Talk_do_event(XEvent *event)
  *
  * Return the number of pasted characters.
  */
-int Talk_paste(char *data, size_t data_len, bool overwrite)
+int Talk_paste(char *data, int data_len, bool overwrite)
 {
 
     int str_len;                 /* current length */
@@ -1302,7 +1302,7 @@ void Talk_window_cut(XButtonEvent *xbutton)
         selection.txt = (char *)malloc(selection.txt_size);
         if (selection.txt == NULL)
         {
-            error("No memory for Selection");
+            xperror("No memory for Selection");
             return;
         }
 
@@ -1339,25 +1339,6 @@ void Talk_window_cut(XButtonEvent *xbutton)
         Talk_refresh();
 
     } /* ButtonRelease */
-}
-
-bool Talk_cut_area_hit(XButtonEvent *xbutton)
-{
-    const int BORDER = 10;
-    const int SPACING = messageFont->ascent + messageFont->descent + 1;
-    int y; /* of initial ButtonEvent */
-
-    y = xbutton->y - BORDER;
-
-    if (y < 0)
-        y = -1;
-    else
-        y /= SPACING;
-
-    if (y < maxMessages)
-        return true;
-
-    return false;
 }
 
 /*
@@ -1553,8 +1534,7 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
             c2.x = 0;
         }
         /* cut started at end of line; jump to next if possible */
-        // if ((c1.x > TalkMsg[TALK_MSG_SCREENPOS(last_msg_index, c1.y)]->pixelLen || c1.x_off == 1) && c1.y < c2.y)
-        if ((c1.x > XTextWidth(messageFont, ptr->txt, (int)ptr->len) || c1.x_off == 1) && c1.y < c2.y)
+        if ((c1.x > TalkMsg[TALK_MSG_SCREENPOS(last_msg_index, c1.y)]->pixelLen || c1.x_off == 1) && c1.y < c2.y)
         {
             c1.x = 0;
             c1.y += 1;
@@ -1672,7 +1652,7 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
         selection.txt = (char *)malloc(selection.txt_size);
         if (selection.txt == NULL)
         {
-            error("No memory for Selection");
+            xperror("No memory for Selection");
             return;
         }
         selection.draw.x1 = c1.str_index;

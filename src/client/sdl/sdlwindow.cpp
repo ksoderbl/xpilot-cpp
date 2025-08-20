@@ -58,7 +58,7 @@ int sdl_window_resize(sdl_window_t *win, int width, int height)
                              32, RMASK, GMASK, BMASK, AMASK);
     if (!surface)
     {
-        error("failed to create SDL surface: %s", SDL_GetError());
+        xperror("failed to create SDL surface: %s", SDL_GetError());
         return -1;
     }
 

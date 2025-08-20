@@ -35,9 +35,6 @@ xpilot_cpp_server_SOURCES = \
     parser.cpp \
     play.cpp \
     player.cpp \
-    player.h \
-    polygon.cpp \
-    polygon.h \
     proto.h \
     robot.cpp \
     robotdef.cpp \

@@ -1,4 +1,5 @@
-/*
+/* $Id: guiobjects.h,v 5.2 2001/06/02 21:00:45 bertg Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -24,7 +25,6 @@
 #ifndef GUIOBJECTS_H
 #define GUIOBJECTS_H
 
-void Gui_paint_item_object(int type, int x, int y);
 void Gui_paint_ball(int x, int y);
 void Gui_paint_ball_connector(int x1, int y1, int x2, int y2);
 
@@ -63,7 +63,5 @@ void Gui_paint_ships_begin(void);
 void Gui_paint_ships_end(void);
 
 void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased, int shield, int deflector, int eshield);
-
-void Store_guiobject_options(void);
 
 #endif

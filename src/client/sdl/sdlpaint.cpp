@@ -148,7 +148,7 @@ GLWidget *Init_ScorelistWidget(void)
     GLWidget *tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
-        error("Failed to malloc in Init_ScorelistWidget");
+        xperror("Failed to malloc in Init_ScorelistWidget");
         return NULL;
     }
 
@@ -161,13 +161,13 @@ GLWidget *Init_ScorelistWidget(void)
     scoreListFont = TTF_OpenFont(scoreListFontName, 11);
     if (scoreListFont == NULL)
     {
-        error("opening font %s failed", scoreListFontName);
+        xperror("opening font %s failed", scoreListFontName);
         free(tmp);
         return NULL;
     }
     if (sdl_window_init(&scoreListWin, tmp->bounds.x, tmp->bounds.y, tmp->bounds.w, tmp->bounds.h))
     {
-        error("failed to init scorelist window");
+        xperror("failed to init scorelist window");
         free(tmp);
         return NULL;
     }
@@ -378,7 +378,7 @@ void Paint_score_start(void)
     header = TTF_RenderText_Blended(scoreListFont, headingStr, fg);
     if (header == NULL)
     {
-        error("scorelist header rendering failed: %s", SDL_GetError());
+        xperror("scorelist header rendering failed: %s", SDL_GetError());
         return;
     }
     scoreEntryRect.x = scoreEntryRect.y = SCORE_BORDER;
@@ -524,7 +524,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
     line = TTF_RenderText_Blended(scoreListFont, label, fg);
     if (line == NULL)
     {
-        error("scorelist rendering failed: %s", SDL_GetError());
+        xperror("scorelist rendering failed: %s", SDL_GetError());
         return;
     }
     SDL_SetAlpha(line, 0, 0);

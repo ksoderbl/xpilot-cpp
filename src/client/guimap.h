@@ -49,10 +49,5 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own);
 void Gui_paint_setup_treasure(int x, int y, int treasure, bool own);
 
 void Gui_paint_walls(int x, int y, int type, int xi, int yi);
-void Gui_paint_filled_slice(int bl, int tl, int tr, int br, int y);
-
-void Gui_paint_polygon(int i, int xoff, int yoff);
-
-void Store_guimap_options(void);
 
 #endif

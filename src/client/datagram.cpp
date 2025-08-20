@@ -52,16 +52,20 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
     if (saved == 0)
     {
         if (clientPortStart && (!clientPortEnd || clientPortEnd > 65535))
+        {
             clientPortEnd = 65535;
+        }
         if (clientPortEnd && (!clientPortStart || clientPortStart < 1024))
+        {
             clientPortStart = 1024;
+        }
 
         if (port || !clientPortStart || (clientPortStart > clientPortEnd))
         {
             status = sock_open_udp(sock, dotaddr, port);
             if (status == SOCK_IS_ERROR)
             {
-                error("Cannot create datagram socket (%d)", sock->error.error);
+                xperror("Cannot create datagram socket (%d)", sock->error.error);
                 return -1;
             }
         }
@@ -79,8 +83,8 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
             }
             if (found_socket == 0)
             {
-                error("Could not find a usable port in port range [%d,%d]",
-                      clientPortStart, clientPortEnd);
+                xperror("Could not find a usable port in port range [%d,%d]",
+                        clientPortStart, clientPortEnd);
                 return -1;
             }
         }
@@ -88,7 +92,9 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
         if (status == SOCK_IS_OK)
         {
             if (dgram_one_socket)
+            {
                 save_sock = *sock;
+            }
         }
     }
     else
@@ -110,5 +116,7 @@ int create_dgram_socket(sock_t *sock, int port)
 void close_dgram_socket(sock_t *sock)
 {
     if (!dgram_one_socket)
+    {
         sock_close(sock);
+    }
 }

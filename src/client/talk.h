@@ -1,4 +1,5 @@
-/*
+/* $Id: talk.h,v 5.0 2001/04/07 20:00:58 dik Exp $
+ *
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -39,12 +40,6 @@
 */
 
 /* Talk Macros */
-// int Talk_macro(char *str);
-
-extern int Talk_macro(int ind);
-extern void Store_talk_macro_options(void);
-
-/* store message in history, when it is sent? */
-extern bool save_talk_str;
+int Talk_macro(char *str);
 
 #endif

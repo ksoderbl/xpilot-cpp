@@ -80,13 +80,9 @@ typedef struct
  */
 setup_t *Setup = NULL;
 display_t server_display;
-int receive_window_size = 3;
+int receive_window_size;
 long last_loops;
 bool packetMeasurement;
-pointer_move_t pointer_moves[MAX_POINTER_MOVES];
-int pointer_move_next;
-long last_keyboard_ack;
-bool dirPrediction;
 
 /*
  * Local variables.
@@ -99,9 +95,10 @@ static int (*receive_tbl[256])(void),
     (*reliable_tbl[256])(void);
 static int keyboard_delta;
 static unsigned magic;
-static time_t last_send_anything;
 static long last_keyboard_change,
+    last_keyboard_ack,
     last_keyboard_update,
+    last_send_anything,
     reliable_offset,
     talk_pending,
     talk_sequence_num,
@@ -175,7 +172,6 @@ static void Receive_init(void)
     reliable_tbl[PKT_MESSAGE] = Receive_message;
     reliable_tbl[PKT_TEAM_SCORE] = Receive_team_score;
     reliable_tbl[PKT_PLAYER] = Receive_player;
-    reliable_tbl[PKT_TEAM] = Receive_team;
     reliable_tbl[PKT_SCORE] = Receive_score;
     reliable_tbl[PKT_TIMING] = Receive_timing;
     reliable_tbl[PKT_LEAVE] = Receive_leave;
@@ -277,7 +273,7 @@ int Net_setup(void)
 
     if ((Setup = (setup_t *)malloc(sizeof(setup_t))) == NULL)
     {
-        error("No memory for setup data");
+        xperror("No memory for setup data");
         return -1;
     }
     ptr = (char *)Setup;
@@ -306,10 +302,8 @@ int Net_setup(void)
                                      &Setup->map_data_len,
                                      &Setup->mode, &Setup->lives,
                                      &Setup->x, &Setup->y,
-                                     &Setup->frames_per_second,
-                                     &Setup->map_order,
-                                     Setup->name,
-                                     Setup->author);
+                                     &Setup->frames_per_second, &Setup->map_order,
+                                     Setup->name, Setup->author);
                     Setup->width = Setup->x * BLOCK_SZ;
                     Setup->height = Setup->y * BLOCK_SZ;
                 }
@@ -352,7 +346,7 @@ int Net_setup(void)
                 size = sizeof(setup_t) + Setup->x * Setup->y;
                 if ((Setup = (setup_t *)realloc(ptr, size)) == NULL)
                 {
-                    error("No memory for setup and map");
+                    xperror("No memory for setup and map");
                     return -1;
                 }
                 ptr = (char *)Setup;
@@ -415,7 +409,7 @@ int Net_setup(void)
                     Sockbuf_clear(&rbuf);
                     if (Sockbuf_read(&rbuf) == -1)
                     {
-                        error("Can't read all setup data");
+                        xperror("Can't read all setup data");
                         return -1;
                     }
                     if (rbuf.len > 0)
@@ -444,13 +438,12 @@ int Net_setup(void)
  * this info from the ENTER_GAME_pack.
  */
 #define MAX_VERIFY_RETRIES 5
-int Net_verify(char *user_name, char *nick_name, char *disp)
+int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
 {
     int n, type, result, retries;
     time_t last;
 
-    // team = my_team;
-    printf("Net_verify: user %s, nick %s, disp %s\n", user_name, nick_name, disp);
+    team = my_team;
 
     for (retries = 0;;)
     {
@@ -465,7 +458,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
             n = Packet_printf(&wbuf, "%c%s%s%s", PKT_VERIFY, user_name, nick_name, disp);
             if (n <= 0 || Sockbuf_flush(&wbuf) <= 0)
             {
-                error("Can't send verify packet");
+                xperror("Can't send verify packet");
                 return -1;
             }
             time(&last);
@@ -481,7 +474,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
         Sockbuf_clear(&rbuf);
         if (Sockbuf_read(&rbuf) == -1)
         {
-            error("Can't read verify reply packet");
+            xperror("Can't read verify reply packet");
             return -1;
         }
         if (rbuf.len <= 0)
@@ -526,7 +519,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
         }
         if (Receive_magic() <= 0)
         {
-            error("Can't receive magic packet after verify");
+            xperror("Can't receive magic packet after verify");
             return -1;
         }
         break;
@@ -557,17 +550,12 @@ int Net_init(char *server, int port)
 
     signal(SIGPIPE, SIG_IGN);
 
-    server_display.view_width = 0;
-    server_display.view_height = 0;
-    server_display.spark_rand = 0;
-    server_display.num_spark_colors = 0;
-
     Receive_init();
     if (!clientPortStart || !clientPortEnd || (clientPortStart > clientPortEnd))
     {
         if (sock_open_udp(&sock, NULL, 0) == SOCK_IS_ERROR)
         {
-            error("Cannot create datagram socket (%d)", sock.error.error);
+            xperror("Cannot create datagram socket (%d)", sock.error.error);
             return -1;
         }
     }
@@ -584,33 +572,33 @@ int Net_init(char *server, int port)
         }
         if (found_socket == 0)
         {
-            error("Could not find a usable port in given port range");
+            xperror("Could not find a usable port in given port range");
             return -1;
         }
     }
 
     if (server && sock_connect(&sock, server, port) == -1)
     {
-        error("Can't connect to server %s on port %d", server, port);
+        xperror("Can't connect to server %s on port %d", server, port);
         sock_close(&sock);
         return -1;
     }
     wbuf.sock = sock;
     if (sock_set_non_blocking(&sock, 1) == -1)
     {
-        error("Can't make socket non-blocking");
+        xperror("Can't make socket non-blocking");
         return -1;
     }
     if (sock_set_send_buffer_size(&sock, CLIENT_SEND_SIZE + 256) == -1)
-        error("Can't set send buffer size to %d", CLIENT_SEND_SIZE + 256);
+        xperror("Can't set send buffer size to %d", CLIENT_SEND_SIZE + 256);
 
     if (sock_set_receive_buffer_size(&sock, CLIENT_RECV_SIZE + 256) == -1)
-        error("Can't set receive buffer size to %d", CLIENT_RECV_SIZE + 256);
+        xperror("Can't set receive buffer size to %d", CLIENT_RECV_SIZE + 256);
 
     size = receive_window_size * sizeof(frame_buf_t);
     if ((Frames = (frame_buf_t *)malloc(size)) == NULL)
     {
-        error("No memory (%u)", size);
+        xperror("No memory (%u)", size);
         return -1;
     }
     for (i = 0; i < receive_window_size; i++)
@@ -619,7 +607,7 @@ int Net_init(char *server, int port)
         if (Sockbuf_init(&Frames[i].sbuf, &sock, CLIENT_RECV_SIZE,
                          SOCKBUF_READ | SOCKBUF_DGRAM) == -1)
         {
-            error("No memory for read buffer (%u)", CLIENT_RECV_SIZE);
+            xperror("No memory for read buffer (%u)", CLIENT_RECV_SIZE);
             return -1;
         }
     }
@@ -628,7 +616,7 @@ int Net_init(char *server, int port)
     if (Sockbuf_init(&cbuf, NULL, CLIENT_RECV_SIZE,
                      SOCKBUF_WRITE | SOCKBUF_READ | SOCKBUF_LOCK) == -1)
     {
-        error("No memory for control buffer (%u)", CLIENT_RECV_SIZE);
+        xperror("No memory for control buffer (%u)", CLIENT_RECV_SIZE);
         return -1;
     }
 
@@ -636,7 +624,7 @@ int Net_init(char *server, int port)
     if (Sockbuf_init(&wbuf, &sock, CLIENT_SEND_SIZE,
                      SOCKBUF_WRITE | SOCKBUF_DGRAM) == -1)
     {
-        error("No memory for write buffer (%u)", CLIENT_SEND_SIZE);
+        xperror("No memory for write buffer (%u)", CLIENT_SEND_SIZE);
         return -1;
     }
 
@@ -783,7 +771,7 @@ int Net_start(void)
 #endif
                 || Client_fps_request() == -1 || Sockbuf_flush(&wbuf) == -1)
             {
-                error("Can't send start play packet");
+                xperror("Can't send start play packet");
                 return -1;
             }
             time(&last);
@@ -797,7 +785,7 @@ int Net_start(void)
             Sockbuf_clear(&rbuf);
             if (Sockbuf_read(&rbuf) == -1)
             {
-                error("Error reading play reply");
+                xperror("Error reading play reply");
                 return -1;
             }
             if (rbuf.len <= 0)
@@ -897,7 +885,7 @@ void Net_init_measurement(void)
              */
             if ((packet_measure = XMALLOC(char, MAX_SUPPORTED_FPS)) == NULL)
             {
-                error("No memory for packet measurement");
+                xperror("No memory for packet measurement");
                 packetMeasurement = false;
             }
             else
@@ -966,13 +954,15 @@ static int Net_packet(void)
                 return -1;
             }
             /* should do something more appropriate than this with the reply */
-            warn("Got reply packet (%d,%d)", replyto, status);
+            errno = 0;
+            xperror("Got reply packet (%d,%d)", replyto, status);
         }
         else if (reliable_tbl[type] == NULL)
         {
             int i;
-            warn("Received unknown reliable data packet type (%d,%d,%d)",
-                 type, cbuf.ptr - cbuf.buf, cbuf.len);
+            errno = 0;
+            xperror("Received unknown reliable data packet type (%d,%d,%d)",
+                    type, cbuf.ptr - cbuf.buf, cbuf.len);
             printf("\tdumping buffer for debugging:\n");
             for (i = 0; i < cbuf.len; i++)
             {
@@ -1156,7 +1146,7 @@ static int Net_read(frame_buf_t *frame)
         Sockbuf_clear(&frame->sbuf);
         if (Sockbuf_read(&frame->sbuf) == -1)
         {
-            error("Net input error");
+            xperror("Net input error");
             return -1;
         }
         if (frame->sbuf.len <= 0)
@@ -1211,7 +1201,6 @@ static int Net_read(frame_buf_t *frame)
 int Net_input(void)
 {
     int i, j, n;
-    int num_buffered_packets;
     frame_buf_t *frame,
         *last_frame,
         *oldest_frame = &Frames[0],
@@ -1231,13 +1220,11 @@ int Net_input(void)
                 oldest_frame = frame;
         }
         else if (frame->sbuf.len > 0 && frame->sbuf.ptr == frame->sbuf.buf)
-        {
             /*
              * Contains an unidentifiable packet.
              * No more input until this one is processed.
              */
             break;
-        }
         else
         {
             /*
@@ -1247,9 +1234,13 @@ int Net_input(void)
             {
                 if (n == 0)
                 {
-                    /* No more new packets available. */
+                    /*
+                     * No more new packets available.
+                     */
                     if (i == 0)
-                        /* No frames to be processed. */
+                        /*
+                         * No frames to be processed.
+                         */
                         return 0;
                     break;
                 }
@@ -1317,7 +1308,6 @@ int Net_input(void)
      * Find oldest packet.
      */
     last_frame = oldest_frame = &Frames[0];
-    num_buffered_packets = 1; /* Could be 0, but returns before using this */
     for (i = 1; i < receive_window_size; i++, last_frame++)
     {
         frame = &Frames[i];
@@ -1608,10 +1598,9 @@ int Receive_self(void)
 {
     int n;
     short x, y, vx, vy, lockId, lockDist,
-        sFuelSum, sFuelMax, sViewWidth, sViewHeight;
-    uint8_t ch, sNumSparkColors, sHeading, sPower, sTurnSpeed,
-        sTurnResistance, sNextCheckPoint, lockDir, sAutopilotLight,
-        currentTank, sStat;
+        fuelSum, fuelMax;
+    uint8_t ch, heading, power, turnspeed, turnresistance,
+        nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
     uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf,
@@ -1620,51 +1609,37 @@ int Receive_self(void)
                      "%c%c%c"
                      "%hd%hd%c%c",
                      &ch,
-                     &x, &y, &vx, &vy, &sHeading,
-                     &sPower, &sTurnSpeed, &sTurnResistance,
-                     &lockId, &lockDist, &lockDir, &sNextCheckPoint);
+                     &x, &y, &vx, &vy, &heading,
+                     &power, &turnspeed, &turnresistance,
+                     &lockId, &lockDist, &lockDir, &nextCheckPoint);
     if (n <= 0)
         return n;
 
     memset(num_items, 0, sizeof num_items);
-
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
-                     &currentTank, &sFuelMax, &sFuelMax,
-                     &sViewWidth, &sViewHeight, &sNumSparkColors,
-                     &sStat, &sAutopilotLight);
+                     &currentTank, &fuelSum, &fuelMax,
+                     &ext_view_width, &ext_view_height, &debris_colors,
+                     &stat, &autopilotLight);
     if (n <= 0)
         return n;
 
-    /*
-     * These assignments are done here because the server_display
-     * structure members are not of the type that Packet_scanf()
-     * expects, which breaks things on big endian architectures.
-     */
-    server_display.view_width = sViewWidth;
-    server_display.view_height = sViewHeight;
-    LIMIT(server_display.view_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    if (sViewWidth != server_display.view_width)
-        warn("unsupported view width from server");
-    LIMIT(server_display.view_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    if (sViewHeight != server_display.view_height)
-        warn("unsupported view height from server");
-    server_display.num_spark_colors = sNumSparkColors;
+    if (debris_colors > num_spark_colors)
+        debris_colors = num_spark_colors;
 
-    // Check_view_dimensions();
-    // Game_over_action(stat);
+    Check_view_dimensions();
 
-    Handle_self(x, y, vx, vy, sHeading,
-                (double)sPower,
-                (double)sTurnSpeed,
-                (double)sTurnResistance / 255.0,
+    Game_over_action(stat);
+    Handle_self(x, y, vx, vy, heading,
+                (float)power,
+                (float)turnspeed,
+                (float)turnresistance / 255.0F,
                 lockId, lockDist, lockDir,
-                sNextCheckPoint, sAutopilotLight,
+                nextCheckPoint, autopilotLight,
                 num_items,
-                currentTank, (double)sFuelSum, (double)sFuelMax, rbuf.len,
-                (int)sStat);
+                currentTank, fuelSum, fuelMax, rbuf.len);
 
     return 1;
 }
@@ -2098,7 +2073,8 @@ int Receive_war(void)
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd",
                           &ch, &robot_id, &killer_id)) <= 0)
         return n;
-    /* not interested */
+    if ((n = Handle_war(robot_id, killer_id)) == -1)
+        return -1;
     return 1;
 }
 
@@ -2111,7 +2087,8 @@ int Receive_seek(void)
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd%hd", &ch,
                           &programmer_id, &robot_id, &sought_id)) <= 0)
         return n;
-    /* not interested */
+    if ((n = Handle_seek(programmer_id, robot_id, sought_id)) == -1)
+        return -1;
     return 1;
 }
 
@@ -2119,7 +2096,7 @@ int Receive_player(void)
 {
     int n;
     short id;
-    uint8_t ch, myteam, mychar, myself = 0;
+    uint8_t ch, myteam, mychar;
     char nick_name[MAX_CHARS],
         user_name[MAX_CHARS],
         host_name[MAX_CHARS],
@@ -2134,35 +2111,17 @@ int Receive_player(void)
                           nick_name, user_name, host_name,
                           shape)) <= 0)
         return n;
+
     nick_name[MAX_NAME_LEN - 1] = '\0';
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
 
-    if (version < 0x4F10)
-        n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)]);
-    else
-        n = Packet_scanf(&cbuf, "%S%c", &shape[strlen(shape)], &myself);
-    if (n <= 0)
+    if ((n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)])) <= 0)
     {
         cbuf.ptr = cbuf_ptr;
         return n;
     }
-
-    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name,
-                           shape, myself)) == -1)
-        return -1;
-    return 1;
-}
-
-int Receive_team(void)
-{
-    int n;
-    short id;
-    uint8_t ch, pl_team;
-
-    if ((n = Packet_scanf(&cbuf, "%c%hd%c", &ch, &id, &pl_team)) <= 0)
-        return n;
-    if (Handle_team(id, pl_team) == -1)
+    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name, shape)) == -1)
         return -1;
     return 1;
 }
@@ -2171,25 +2130,16 @@ int Receive_score_object(void)
 {
     int n;
     unsigned short x, y;
-    double score = 0;
+    int score = 0;
     char msg[MAX_CHARS];
     uint8_t ch;
 
-    if (version < 0x4500 || (version >= 0x4F09 && version < 0x4F11))
-    {
-        short rcv_score;
-        n = Packet_scanf(&cbuf, "%c%hd%hu%hu%s",
-                         &ch, &rcv_score, &x, &y, msg);
-        score = rcv_score;
-    }
-    else
-    {
-        /* newer servers send scores with two decimals */
-        int rcv_score;
-        n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
-                         &ch, &rcv_score, &x, &y, msg);
-        score = (double)rcv_score / 100;
-    }
+    /* newer servers send scores with two decimals */
+    int rcv_score;
+    n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
+                     &ch, &rcv_score, &x, &y, msg);
+    score = rcv_score / 100;
+
     if (n <= 0)
         return n;
     if ((n = Handle_score_object(score, x, y, msg)) == -1)
@@ -2368,7 +2318,7 @@ int Send_ack(long rel_loops)
     {
         if (n == 0)
             return 0;
-        error("Can't ack reliable data");
+        xperror("Can't ack reliable data");
         return -1;
     }
     return 1;
@@ -2466,7 +2416,7 @@ int Receive_reply(int *replyto, int *result)
         return n;
     if (n != 3 || type != PKT_REPLY)
     {
-        error("Can't receive reply packet");
+        xperror("Can't receive reply packet");
         return -1;
     }
     *replyto = ch1;
@@ -2490,7 +2440,7 @@ int Send_keyboard(uint8_t *keyboard_vector)
     Send_talk();
     if (Sockbuf_flush(&wbuf) == -1)
     {
-        error("Can't send keyboard update");
+        xperror("Can't send keyboard update");
         return -1;
     }
 
@@ -2630,19 +2580,23 @@ int Send_talk(void)
     return 0;
 }
 
-int Send_display(int width, int height, int sparks, int spark_colors)
+int Send_display(void)
 {
-    int width_wanted = width;
-    int height_wanted = height;
+    int width_wanted = draw_width;
+    int height_wanted = draw_height;
 
-    if (width_wanted == server_display.view_width &&
-        height_wanted == server_display.view_height &&
-        spark_colors == server_display.num_spark_colors &&
-        sparks == server_display.spark_rand &&
+    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
+    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
+
+    LIMIT(width_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    LIMIT(height_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+
+    if (width_wanted == ext_view_width &&
+        height_wanted == ext_view_height &&
+        debris_colors == num_spark_colors &&
+        spark_rand == old_spark_rand &&
         last_loops != 0)
-    {
         return 0;
-    }
 
     if (simulating)
     {
@@ -2652,11 +2606,10 @@ int Send_display(int width, int height, int sparks, int spark_colors)
     }
     else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
                            width_wanted, height_wanted,
-                           spark_colors,
-                           sparks) == -1)
+                           num_spark_colors, spark_rand) == -1)
         return -1;
 
-    server_display.spark_rand = sparks;
+    old_spark_rand = spark_rand;
 
     return 0;
 }

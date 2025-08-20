@@ -25,7 +25,6 @@
 #define WALLS_H
 
 #include "click.h"
-#include "player.h"
 
 /*
  * Wall collision detection and bouncing.

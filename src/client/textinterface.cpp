@@ -182,8 +182,8 @@ static int Get_reply_message(sockbuf_t *ibuf,
         Sockbuf_clear(ibuf);
         if ((len = sock_read(&ibuf->sock, ibuf->buf, ibuf->size)) == -1)
         {
-            error("Can't read reply message from %s/%d",
-                  conpar->server_addr, conpar->server_port);
+            xperror("Can't read reply message from %s/%d",
+                    conpar->server_addr, conpar->server_port);
             exit(1);
         }
 
@@ -325,13 +325,13 @@ static bool Process_commands(sockbuf_t *ibuf,
             }
             if ((success = create_dgram_addr_socket(&ibuf->sock, localhost, 0)) == SOCK_IS_ERROR)
             {
-                error("Could not create localhost socket");
+                xperror("Could not create localhost socket");
                 exit(1);
             }
             if (sock_connect(&ibuf->sock, localhost, conpar->server_port) == SOCK_IS_ERROR)
             {
-                error("Can't connect to local server %s on port %d\n",
-                      localhost, conpar->server_port);
+                xperror("Can't connect to local server %s on port %d\n",
+                        localhost, conpar->server_port);
                 return false;
             }
         }
@@ -339,13 +339,13 @@ static bool Process_commands(sockbuf_t *ibuf,
         {
             if ((success = create_dgram_socket(&ibuf->sock, 0)) == SOCK_IS_ERROR)
             {
-                error("Could not create socket");
+                xperror("Could not create socket");
                 exit(1);
             }
             if (sock_connect(&ibuf->sock, conpar->server_addr, conpar->server_port) == SOCK_IS_ERROR && !dgram_one_socket)
             {
-                error("Can't connect to server %s on port %d\n",
-                      conpar->server_addr, conpar->server_port);
+                xperror("Can't connect to server %s on port %d\n",
+                        conpar->server_addr, conpar->server_port);
                 return false;
             }
         }
@@ -536,7 +536,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             }
             if (sock_write(&ibuf->sock, ibuf->buf, ibuf->len) != ibuf->len)
             {
-                error("Couldn't send request to server.");
+                xperror("Couldn't send request to server.");
                 exit(1);
             }
         }
@@ -642,7 +642,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                                       conpar->host_name, conpar->team);
                         if (sock_write(&ibuf->sock, ibuf->buf, ibuf->len) != ibuf->len)
                         {
-                            error("Couldn't send request to server.");
+                            xperror("Couldn't send request to server.");
                             exit(1);
                         }
                         time(&qsent);
@@ -761,7 +761,7 @@ int Connect_to_server(int auto_connect, int list_servers,
     if (Sockbuf_init(&ibuf, NULL, CLIENT_RECV_SIZE,
                      SOCKBUF_READ | SOCKBUF_WRITE | SOCKBUF_DGRAM) == -1)
     {
-        error("No memory for info buffer");
+        xperror("No memory for info buffer");
         exit(1);
     }
     result = Process_commands(&ibuf,
@@ -798,13 +798,13 @@ int Contact_servers(int count, char **servers,
 
     if ((status = create_dgram_socket(&sock, 0)) == SOCK_IS_ERROR)
     {
-        error("Could not create connection socket");
+        xperror("Could not create connection socket");
         exit(1);
     }
     if (Sockbuf_init(&sbuf, &sock, CLIENT_RECV_SIZE,
                      SOCKBUF_READ | SOCKBUF_WRITE | SOCKBUF_DGRAM) == -1)
     {
-        error("No memory for contact buffer");
+        xperror("No memory for contact buffer");
         exit(1);
     }
     if (!count)
@@ -819,7 +819,7 @@ int Contact_servers(int count, char **servers,
                           sock_get_port(&sbuf.sock), CONTACT_pack);
             if (Query_all(&sbuf.sock, conpar->contact_port, sbuf.buf, sbuf.len) == -1)
             {
-                error("Couldn't send contact requests");
+                xperror("Couldn't send contact requests");
                 exit(1);
             }
             if (retries == 0)
@@ -892,8 +892,8 @@ int Contact_servers(int count, char **servers,
                         printf("Can't find the server '%s'.\n", servers[i]);
                         break;
                     }
-                    error("Can't contact %s on port %d",
-                          servers[i], conpar->contact_port);
+                    xperror("Can't contact %s on port %d",
+                            servers[i], conpar->contact_port);
                 }
                 if (retries)
                 {

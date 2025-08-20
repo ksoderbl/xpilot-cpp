@@ -51,7 +51,7 @@ void Thrust(player_t *pl)
 {
     const int min_dir = (int)(pl->dir + RES / 2 - RES * 0.2 - 1);
     const int max_dir = (int)(pl->dir + RES / 2 + RES * 0.2 + 1);
-    const double max_speed = 1 + (pl->power * 0.14);
+    const DFLOAT max_speed = 1 + (pl->power * 0.14);
     const int max_life = 3 + (int)(pl->power * 0.35);
     static int keep_rand;
     int this_rand = (((keep_rand >>= 2)
@@ -142,7 +142,7 @@ void Record_shove(player_t *pl, player_t *pusher, long time)
  * collision. */
 void Delta_mv(object_t *ship, object_t *obj)
 {
-    double vx, vy, m;
+    DFLOAT vx, vy, m;
 
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
@@ -168,10 +168,10 @@ void Delta_mv(object_t *ship, object_t *obj)
  * objects stay alive after the collision. */
 void Delta_mv_elastic(object_t *obj1, object_t *obj2)
 {
-    double m1 = (double)obj1->mass,
-           m2 = (double)obj2->mass,
+    DFLOAT m1 = (DFLOAT)obj1->mass,
+           m2 = (DFLOAT)obj2->mass,
            ms = m1 + m2;
-    double v1x = obj1->vel.x,
+    DFLOAT v1x = obj1->vel.x,
            v1y = obj1->vel.y,
            v2x = obj2->vel.x,
            v2y = obj2->vel.y;
@@ -193,7 +193,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
 
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
 {
-    double xd, yd,
+    DFLOAT xd, yd,
         force, dm,
         dvx1, dvy1,
         dvx2, dvy2;
@@ -330,7 +330,7 @@ void Update_tanks(pl_fuel_t *ft)
         }
         if (!check)
         {
-            error("fuel problem");
+            xperror("fuel problem");
             fuel = ft->sum;
             ft->sum =
                 ft->max = 0;
@@ -416,7 +416,7 @@ void Tank_handle_detach(player_t *pl)
 
     strlcpy(dummy->name, pl->name, MAX_CHARS);
     strlcat(dummy->name, "'s tank", MAX_CHARS);
-    strlcpy(dummy->username, options.tankRealName, MAX_CHARS);
+    strlcpy(dummy->realname, options.tankRealName, MAX_CHARS);
     strlcpy(dummy->hostname, options.tankHostName, MAX_CHARS);
     dummy->home_base = pl->home_base;
     dummy->team = pl->team;
@@ -486,10 +486,10 @@ void Tank_handle_detach(player_t *pl)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Players[i]->conn != NULL)
+        if (Players[i]->connp != NULL)
         {
-            Send_player(Players[i]->conn, dummy->id);
-            Send_score(Players[i]->conn, dummy->id,
+            Send_player(Players[i]->connp, dummy->id);
+            Send_score(Players[i]->connp, dummy->id,
                        dummy->score, dummy->life,
                        dummy->mychar, dummy->alliance);
         }
@@ -498,37 +498,37 @@ void Tank_handle_detach(player_t *pl)
 
 void Make_wreckage(
     /* pos.cx, pos.cy   */ int cx, int cy,
-    /* vel.x, vel.y     */ double velx, double vely,
+    /* vel.x, vel.y     */ DFLOAT velx, DFLOAT vely,
     /* owner id         */ int id,
     /* owner team       */ unsigned short team,
-    /* min,max mass     */ double min_mass, double max_mass,
-    /* total mass       */ double total_mass,
+    /* min,max mass     */ DFLOAT min_mass, DFLOAT max_mass,
+    /* total mass       */ DFLOAT total_mass,
     /* status           */ long status,
     /* color            */ int color,
     /* max wreckage     */ int max_wreckage,
     /* min,max dir      */ int min_dir, int max_dir,
-    /* min,max speed    */ double min_speed, double max_speed,
+    /* min,max speed    */ DFLOAT min_speed, DFLOAT max_speed,
     /* min,max life     */ int min_life, int max_life)
 {
     wireobject_t *wreckage;
     int i, life, size;
     modifiers_t mods;
-    double mass, sum_mass = 0.0;
+    DFLOAT mass, sum_mass = 0.0;
 
     if (!options.useWreckage)
         return;
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += world->click_width;
-        else if (cx >= world->click_width)
-            cx -= world->click_width;
+            cx += World.click_width;
+        else if (cx >= World.click_width)
+            cx -= World.click_width;
         if (cy < 0)
-            cy += world->click_height;
-        else if (cy >= world->click_height)
-            cy -= world->click_height;
+            cy += World.click_height;
+        else if (cy >= World.click_height)
+            cy -= World.click_height;
     }
-    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
+    if (cx < 0 || cx >= World.click_width || cy < 0 || cy >= World.click_height)
     {
         return;
     }
@@ -543,10 +543,10 @@ void Make_wreckage(
         }
     }
 
-    if (min_speed * max_life > world->hypotenuse)
-        min_speed = world->hypotenuse / max_life;
-    if (max_speed * min_life > world->hypotenuse)
-        max_speed = world->hypotenuse / min_life;
+    if (min_speed * max_life > World.hypotenuse)
+        min_speed = World.hypotenuse / max_life;
+    if (max_speed * min_life > World.hypotenuse)
+        max_speed = World.hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -560,7 +560,7 @@ void Make_wreckage(
     for (i = 0; i < max_wreckage && sum_mass < total_mass; i++)
     {
 
-        double speed;
+        DFLOAT speed;
         int dir, radius;
 
         /* Calculate mass */
@@ -605,9 +605,9 @@ void Make_wreckage(
 
         /* Lifespan  */
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > world->hypotenuse)
+        if (life * speed > World.hypotenuse)
         {
-            life = (long)(world->hypotenuse / speed);
+            life = (long)(World.hypotenuse / speed);
         }
         wreckage->life = life;
         wreckage->fuselife = wreckage->life;

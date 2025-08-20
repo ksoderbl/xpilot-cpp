@@ -26,9 +26,6 @@
 
 #include <X11/Xlib.h>
 
-/* avoid trouble with Atoms and 64 bit archs */
-typedef CARD32 Atom32;
-
 void SelectionNotify_event(XEvent *event);
 void SelectionRequest_event(XEvent *event);
 void MapNotify_event(XEvent *event);

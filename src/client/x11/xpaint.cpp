@@ -61,20 +61,20 @@
 /*
  * Globals.
  */
-// XFontStruct *gameFont; /* The fonts used in the game */
-// XFontStruct *messageFont;
-// XFontStruct *scoreListFont;
-// XFontStruct *buttonFont;
-// XFontStruct *textFont;
-// XFontStruct *talkFont;
-// XFontStruct *motdFont;
-// char gameFontName[FONT_LEN]; /* The fonts used in the game */
-// char messageFontName[FONT_LEN];
-// char scoreListFontName[FONT_LEN];
-// char buttonFontName[FONT_LEN];
-// char textFontName[FONT_LEN];
-// char talkFontName[FONT_LEN];
-// char motdFontName[FONT_LEN];
+XFontStruct *gameFont; /* The fonts used in the game */
+XFontStruct *messageFont;
+XFontStruct *scoreListFont;
+XFontStruct *buttonFont;
+XFontStruct *textFont;
+XFontStruct *talkFont;
+XFontStruct *motdFont;
+char gameFontName[FONT_LEN]; /* The fonts used in the game */
+char messageFontName[FONT_LEN];
+char scoreListFontName[FONT_LEN];
+char buttonFontName[FONT_LEN];
+char textFontName[FONT_LEN];
+char talkFontName[FONT_LEN];
+char motdFontName[FONT_LEN];
 
 Display *dpy;     /* Display of player (pointer) */
 Display *kdpy;    /* Keyboard display */
@@ -118,41 +118,15 @@ int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 // char *texturePath = NULL; /* Path list of texture directories */
 
+keydefs_t *keyDefs = NULL;
+
 // other_t     *self;          /* player info */
 
 // long        loops = 0;
 
 int cacheShips = 0; /* cache some ship bitmaps every frame */
 
-static int clockColor;         /* Clock color index */
-static int scoreColor;         /* Score list color indices */
-static int scoreSelfColor;     /* Score list own score color index */
-static int scoreInactiveColor; /* Score list inactive player color index */
-static int scoreInactiveSelfColor;
-/* Score list inactive self color index */
-static int scoreOwnTeamColor;   /* Score list own team color index */
-static int scoreEnemyTeamColor; /* Score list enemy team color index */
-
 static void Paint_clock(int redraw);
-
-int Paint_init(void)
-{
-    if (Init_wreckage() == -1)
-        return -1;
-
-    if (Init_asteroids() == -1)
-        return -1;
-
-    if (Bitmaps_init() == -1)
-        return -1;
-
-    return 0;
-}
-
-void Paint_cleanup(void)
-{
-    Bitmaps_cleanup();
-}
 
 void Game_over_action(uint8_t stat)
 {
@@ -180,7 +154,12 @@ void Paint_frame(void)
     static int prev_damaged = 0;
     static int prev_prev_damaged = 0;
 
-    Paint_frame_start();
+    if (start_loops != end_loops)
+    {
+        errno = 0;
+        xperror("Start neq. End (%ld,%ld,%ld)", start_loops, end_loops, loops);
+    }
+    loops = end_loops;
 
     /*
      * Switch between two different window titles.
@@ -194,7 +173,8 @@ void Paint_frame(void)
         else
             XStoreName(dpy, topWindow, TITLE);
     }
-
+    /* This seems to have a bug (in Windows) 'cause last frame we ended
+       with an XSetForeground(white) confusing SET_FG */
     SET_FG(colors[BLACK].pixel);
 
     rd.newFrame();
@@ -404,7 +384,7 @@ void Paint_score_start(void)
 
     thisLine = SCORE_BORDER + scoreListFont->ascent;
 
-    if (showUserName)
+    if (showRealName)
     {
         strlcpy(headingStr, "NICK=USER@HOST", sizeof(headingStr));
     }
@@ -482,12 +462,14 @@ void Paint_score_entry(int entry_num,
     /*
      * Setup the status line
      */
-    if (showUserName)
+    if (showRealName)
     {
         sprintf(label, "%s=%s@%s", other->nick_name, other->user_name, other->host_name);
     }
     else
     {
+        other_t *war = Other_by_id(other->war_id);
+
         if (BIT(Setup->mode, TIMING))
         {
             raceStr[0] = ' ';
@@ -525,6 +507,13 @@ void Paint_score_entry(int entry_num,
                 other->mychar, raceStr, teamStr,
                 scoreStr, lifeStr,
                 other->nick_name);
+        if (war)
+        {
+            if (strlen(label) + strlen(war->nick_name) + 5 < sizeof(label))
+            {
+                sprintf(label + strlen(label), " (%s)", war->nick_name);
+            }
+        }
     }
 
     /*
@@ -650,54 +639,4 @@ void ShadowDrawString(Display *dpy, Window w, GC gc,
     y--;
     XSetForeground(dpy, gc, fg);
     XDrawString(dpy, w, gc, x, y, str, strlen(str));
-}
-
-xp_option_t xpaint_options[] = {
-    COLOR_INDEX_OPTION(
-        "clockColor",
-        1,
-        &clockColor,
-        "Which color number to use for drawing the clock.\n"
-        "The clock is displayed in the top right of the score window.\n"),
-
-    COLOR_INDEX_OPTION(
-        "scoreColor",
-        1,
-        &scoreColor,
-        "Which color number to use for drawing score list entries.\n"),
-
-    COLOR_INDEX_OPTION(
-        "scoreSelfColor",
-        3,
-        &scoreSelfColor,
-        "Which color number to use for drawing your own score.\n"),
-
-    COLOR_INDEX_OPTION(
-        "scoreInactiveColor",
-        12,
-        &scoreInactiveColor,
-        "Which color number to use for drawing inactive players's scores.\n"),
-
-    COLOR_INDEX_OPTION(
-        "scoreInactiveSelfColor",
-        12,
-        &scoreInactiveSelfColor,
-        "Which color number to use for drawing your score when inactive.\n"),
-
-    COLOR_INDEX_OPTION(
-        "scoreOwnTeamColor",
-        4,
-        &scoreOwnTeamColor,
-        "Which color number to use for drawing your own team score.\n"),
-
-    COLOR_INDEX_OPTION(
-        "scoreEnemyTeamColor",
-        11,
-        &scoreEnemyTeamColor,
-        "Which color number to use for drawing enemy team score.\n"),
-};
-
-void Store_xpaint_options(void)
-{
-    STORE_OPTIONS(xpaint_options);
 }

@@ -34,15 +34,15 @@
 #include "const.h"
 #include "xperror.h"
 
-double tbl_sin[TABLE_SIZE];
-double tbl_cos[TABLE_SIZE];
+DFLOAT tbl_sin[TABLE_SIZE];
+DFLOAT tbl_cos[TABLE_SIZE];
 
-int ON(const char *optval)
+int ON(char *optval)
 {
     return (strncasecmp(optval, "true", 4) == 0 || strncasecmp(optval, "on", 2) == 0 || strncasecmp(optval, "yes", 3) == 0);
 }
 
-int OFF(const char *optval)
+int OFF(char *optval)
 {
     return (strncasecmp(optval, "false", 5) == 0 || strncasecmp(optval, "off", 3) == 0 || strncasecmp(optval, "no", 2) == 0);
 }
@@ -58,14 +58,14 @@ int mod(int x, int y)
     return x;
 }
 
-int f2i(double f)
+int f2i(DFLOAT f)
 {
     return (f < 0) ? -(int)(0.5f - f) : (int)(f + 0.5f);
 }
 
-double findDir(double x, double y)
+DFLOAT findDir(DFLOAT x, DFLOAT y)
 {
-    double angle;
+    DFLOAT angle;
 
     if (x != 0.0 || y != 0.0)
         angle = atan2(y, x) / (2 * PI);

@@ -58,58 +58,62 @@ void Pick_startpos(int ind)
     static int prev_num_bases = 0;
     static char *free_bases = NULL;
 
-    if (Player_is_tank(pl))
+    if (IS_TANK_PTR(pl))
     {
         pl->home_base = 0;
         return;
     }
 
-    if (prev_num_bases != world->NumBases)
+    if (prev_num_bases != World.NumBases)
     {
-        prev_num_bases = world->NumBases;
+        prev_num_bases = World.NumBases;
         XFREE(free_bases);
-        free_bases = (char *)malloc(world->NumBases * sizeof(*free_bases));
+        free_bases = (char *)malloc(World.NumBases * sizeof(*free_bases));
         if (free_bases == NULL)
         {
-            error("Can't allocate memory for free_bases");
+            xperror("Can't allocate memory for free_bases");
             End_game();
         }
     }
 
     num_free = 0;
-    for (i = 0; i < world->NumBases; i++)
+    for (i = 0; i < World.NumBases; i++)
     {
-        if (world->base[i].team == pl->team)
+        if (World.base[i].team == pl->team)
         {
             num_free++;
             free_bases[i] = 1;
         }
         else
+        {
             free_bases[i] = 0; /* other team */
+        }
     }
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i != ind && !Player_is_tank(Players[i]) && free_bases[Players[i]->home_base])
+        if (i != ind && !IS_TANK_IND(i) && free_bases[Players[i]->home_base])
         {
             free_bases[Players[i]->home_base] = 0; /* occupado */
             num_free--;
         }
     }
 
-    if (BIT(world->rules->mode, TIMING))
+    if (BIT(World.rules->mode, TIMING))
     { /* pick first free base */
-        for (i = 0; i < world->NumBases; i++)
+        for (i = 0; i < World.NumBases; i++)
         {
-            if (free_bases[world->baseorder[i].base_idx])
+            if (free_bases[World.baseorder[i].base_idx])
+            {
                 break;
+            }
         }
     }
     else
     {
         pick = (int)(rfrac() * num_free);
         seen = 0;
-        for (i = 0; i < world->NumBases; i++)
+        for (i = 0; i < World.NumBases; i++)
         {
             if (free_bases[i] != 0)
             {
@@ -121,22 +125,22 @@ void Pick_startpos(int ind)
         }
     }
 
-    if (i == world->NumBases)
+    if (i == World.NumBases)
     {
-        error("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
-              ind, world->NumBases, num_free, pick, seen);
+        xperror("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
+                ind, World.NumBases, num_free, pick, seen);
         End_game();
     }
     else
     {
-        pl->home_base = BIT(world->rules->mode, TIMING) ? world->baseorder[i].base_idx : i;
+        pl->home_base = BIT(World.rules->mode, TIMING) ? World.baseorder[i].base_idx : i;
         if (ind < NumPlayers)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->conn != NULL)
+                if (Players[i]->connp != NULL)
                 {
-                    Send_base(Players[i]->conn,
+                    Send_base(Players[i]->connp,
                               pl->id,
                               pl->home_base);
                 }
@@ -163,24 +167,24 @@ void Go_home(int ind)
     }
 
     int i, x, y, dir, check;
-    double vx, vy, velo;
+    DFLOAT vx, vy, velo;
 
-    if (Player_is_tank(pl))
+    if (IS_TANK_PTR(pl))
     {
         /*NOTREACHED*/
         /* Tanks have no homebase. */
-        error("BUG: gohome tank");
+        xperror("BUG: gohome tank");
         return;
     }
 
-    if (BIT(world->rules->mode, TIMING) && pl->round && !BIT(pl->status, GAME_OVER))
+    if (BIT(World.rules->mode, TIMING) && pl->round && !BIT(pl->status, GAME_OVER))
     {
         if (pl->check)
             check = pl->check - 1;
         else
-            check = world->NumChecks - 1;
-        x = world->check[check].x;
-        y = world->check[check].y;
+            check = World.NumChecks - 1;
+        x = World.check[check].x;
+        y = World.check[check].y;
         vx = (rfrac() - 0.5) * 0.1;
         vy = (rfrac() - 0.5) * 0.1;
         velo = LENGTH(vx, vy);
@@ -189,9 +193,9 @@ void Go_home(int ind)
     }
     else
     {
-        x = world->base[pl->home_base].blk_pos.x;
-        y = world->base[pl->home_base].blk_pos.y;
-        dir = world->base[pl->home_base].dir;
+        x = World.base[pl->home_base].blk_pos.x;
+        y = World.base[pl->home_base].blk_pos.y;
+        dir = World.base[pl->home_base].dir;
         vx = vy = velo = 0;
     }
 
@@ -228,7 +232,7 @@ void Go_home(int ind)
         Players[i]->visibility[ind].lastChange = 0;
     }
 
-    if (Player_is_robot(pl))
+    if (IS_ROBOT_PTR(pl))
         Robot_go_home(ind);
 }
 
@@ -240,7 +244,7 @@ void Go_home(int ind)
 void Compute_sensor_range(player_t *pl)
 {
     static int init = 0;
-    static double EnergyRangeFactor;
+    static DFLOAT EnergyRangeFactor;
 
     if (!init)
     {
@@ -249,14 +253,14 @@ void Compute_sensor_range(player_t *pl)
         else
             options.minVisibilityDistance *= BLOCK_SZ;
         if (options.maxVisibilityDistance <= 0.0)
-            options.maxVisibilityDistance = world->hypotenuse;
+            options.maxVisibilityDistance = World.hypotenuse;
         else
             options.maxVisibilityDistance *= BLOCK_SZ;
 
-        if (world->items[ITEM_FUEL].initial > 0.0)
+        if (World.items[ITEM_FUEL].initial > 0.0)
         {
             EnergyRangeFactor = options.minVisibilityDistance /
-                                (world->items[ITEM_FUEL].initial * (1.0 + ((double)world->items[ITEM_SENSOR].initial * 0.25)));
+                                (World.items[ITEM_FUEL].initial * (1.0 + ((DFLOAT)World.items[ITEM_SENSOR].initial * 0.25)));
             EnergyRangeFactor /= FUEL_SCALE_FACT;
         }
         else
@@ -267,7 +271,7 @@ void Compute_sensor_range(player_t *pl)
     }
 
     pl->sensor_range = pl->fuel.sum * EnergyRangeFactor;
-    pl->sensor_range *= (1.0 + ((double)pl->item[ITEM_SENSOR] * 0.25));
+    pl->sensor_range *= (1.0 + ((DFLOAT)pl->item[ITEM_SENSOR] * 0.25));
     if (pl->sensor_range < options.minVisibilityDistance)
         pl->sensor_range = options.minVisibilityDistance;
     if (pl->sensor_range > options.maxVisibilityDistance)
@@ -380,7 +384,7 @@ static void Player_init_fuel(int ind, long total_fuel)
 
     fuel -= pl->fuel.sum;
 
-    for (i = 1; i <= world->items[ITEM_TANK].initial; i++)
+    for (i = 1; i <= World.items[ITEM_TANK].initial; i++)
     {
         Player_add_tank(pl, fuel);
         fuel -= pl->fuel.tank[i];
@@ -405,10 +409,10 @@ int Init_player(int ind, shipshape_t *ship)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = world->items[i].initial;
+            pl->item[i] = World.items[i].initial;
     }
 
-    pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
+    pl->fuel.sum = World.items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
     Player_init_fuel(ind, pl->fuel.sum);
 
     if (options.allowShipShapes == true && ship)
@@ -489,7 +493,7 @@ int Init_player(int ind, shipshape_t *ship)
     }
     pl->mychar = ' ';
     pl->prev_mychar = pl->mychar;
-    pl->life = world->rules->lives;
+    pl->life = World.rules->lives;
     pl->prev_life = pl->life;
     pl->ball = NULL;
 
@@ -502,13 +506,13 @@ int Init_player(int ind, shipshape_t *ship)
      * If limited lives and if nobody has lost a life yet, you may enter
      * now, otherwise you will have to wait 'til everyone gets GAME OVER.
      */
-    if (BIT(world->rules->mode, LIMITED_LIVES))
+    if (BIT(World.rules->mode, LIMITED_LIVES))
     {
         for (i = 0; i < NumPlayers; i++)
         {
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (Players[i]->life < world->rules->lives && !Players_are_teammates(pl, Players[i]))
+            if (Players[i]->life < World.rules->lives && !TEAM(ind, i))
             {
                 too_late = true;
                 break;
@@ -539,7 +543,7 @@ int Init_player(int ind, shipshape_t *ship)
     GetInd[pl->id] = ind;
     pl->ind = ind;
 
-    pl->conn = NULL;
+    pl->connp = NULL;
     pl->audio = NULL;
 
     pl->lose_item = 0;
@@ -581,7 +585,7 @@ void Alloc_players(int number)
 
     if (!Players || !playerArray || !visibilityArray)
     {
-        error("Not enough memory for Players.");
+        xperror("Not enough memory for Players.");
         exit(1);
     }
 
@@ -626,15 +630,15 @@ void Update_score_table(void)
             pl->prev_alliance = pl->alliance;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->conn != NULL)
+                if (Players[i]->connp != NULL)
                 {
-                    Send_score(Players[i]->conn, pl->id,
+                    Send_score(Players[i]->connp, pl->id,
                                pl->score, pl->life,
                                pl->mychar, pl->alliance);
                 }
             }
         }
-        if (BIT(world->rules->mode, TIMING))
+        if (BIT(World.rules->mode, TIMING))
         {
             if (pl->check != pl->prev_check || pl->round != pl->prev_round)
             {
@@ -643,13 +647,13 @@ void Update_score_table(void)
                 check = (pl->round == 0)
                             ? 0
                         : (pl->check == 0)
-                            ? (world->NumChecks - 1)
+                            ? (World.NumChecks - 1)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    if (Players[i]->conn != NULL)
+                    if (Players[i]->connp != NULL)
                     {
-                        Send_timing(Players[i]->conn, pl->id, check, pl->round);
+                        Send_timing(Players[i]->connp, pl->id, check, pl->round);
                     }
                 }
             }
@@ -700,18 +704,18 @@ void Reset_all_players(void)
         {
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
-            pl->life = world->rules->lives;
-            if (BIT(world->rules->mode, TIMING))
+            pl->life = World.rules->lives;
+            if (BIT(World.rules->mode, TIMING))
             {
                 pl->count = RECOVERY_DELAY;
             }
         }
-        if (Player_is_tank(pl))
+        if (IS_TANK_PTR(pl))
             pl->mychar = 'T';
-        else if (Player_is_robot(pl))
+        else if (IS_ROBOT_PTR(pl))
             pl->mychar = 'R';
     }
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
 
         /* Detach any balls and kill ball */
@@ -730,33 +734,33 @@ void Reset_all_players(void)
         }
 
         /* Reset the treasures */
-        for (i = 0; i < world->NumTreasures; i++)
+        for (i = 0; i < World.NumTreasures; i++)
         {
-            world->treasures[i].destroyed = 0;
-            world->treasures[i].have = false;
+            World.treasures[i].destroyed = 0;
+            World.treasures[i].have = false;
             Make_treasure_ball(i);
         }
 
         /* Reset the teams */
         for (i = 0; i < MAX_TEAMS; i++)
         {
-            world->teams[i].TreasuresDestroyed = 0;
-            world->teams[i].TreasuresLeft = world->teams[i].NumTreasures - world->teams[i].NumEmptyTreasures;
+            World.teams[i].TreasuresDestroyed = 0;
+            World.teams[i].TreasuresLeft = World.teams[i].NumTreasures - World.teams[i].NumEmptyTreasures;
         }
 
         if (options.endOfRoundReset)
         {
             /* Reset the targets */
-            for (i = 0; i < world->NumTargets; i++)
+            for (i = 0; i < World.NumTargets; i++)
             {
-                if (world->targets[i].damage != TARGET_DAMAGE || world->targets[i].dead_time != 0)
+                if (World.targets[i].damage != TARGET_DAMAGE || World.targets[i].dead_time != 0)
                 {
-                    world->block[world->targets[i].blk_pos.x][world->targets[i].blk_pos.y] = TARGET;
-                    world->targets[i].dead_time = 0;
-                    world->targets[i].damage = TARGET_DAMAGE;
-                    world->targets[i].conn_mask = 0;
-                    world->targets[i].update_mask = (unsigned)-1;
-                    world->targets[i].last_change = frame_loops;
+                    World.block[World.targets[i].blk_pos.x][World.targets[i].blk_pos.y] = TARGET;
+                    World.targets[i].dead_time = 0;
+                    World.targets[i].damage = TARGET_DAMAGE;
+                    World.targets[i].conn_mask = 0;
+                    World.targets[i].update_mask = (unsigned)-1;
+                    World.targets[i].last_change = frame_loops;
                 }
             }
         }
@@ -779,7 +783,26 @@ void Reset_all_players(void)
         }
     }
 
-    roundtime = options.maxRoundTime * FPS;
+    if (round_delay_send > 0)
+    {
+        round_delay_send--;
+    }
+    if (options.roundDelaySeconds)
+    {
+        /* Hold your horses! The next round will start in a few moments. */
+        round_delay = options.roundDelaySeconds * FPS;
+        /* Send him an extra seconds worth to be sure he gets the 0. */
+        round_delay_send = round_delay + FPS;
+        roundtime = -1;
+        sprintf(msg, "Delaying %d seconds until start of next %s.",
+                options.roundDelaySeconds,
+                (BIT(World.rules->mode, TIMING) ? "race" : "round"));
+        Set_message(msg);
+    }
+    else
+    {
+        roundtime = options.maxRoundTime * FPS;
+    }
 
     Update_score_table();
 }
@@ -789,37 +812,37 @@ void Check_team_members(int team)
     player_t *pl;
     int members, i;
 
-    if (!BIT(world->rules->mode, TEAM_PLAY))
+    if (!BIT(World.rules->mode, TEAM_PLAY))
         return;
 
     for (members = i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
+        if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl) && pl->team == team)
             members++;
     }
-    if (world->teams[team].NumMembers != members)
+    if (World.teams[team].NumMembers != members)
     {
-        error("Server has reset team %d members from %d to %d",
-              team, world->teams[team].NumMembers, members);
+        xperror("Server has reset team %d members from %d to %d",
+                team, World.teams[team].NumMembers, members);
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
-                error("Team %d currently has player %d: \"%s\"",
-                      team, i + 1, pl->name);
+            if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl) && pl->team == team)
+                xperror("Team %d currently has player %d: \"%s\"",
+                        team, i + 1, pl->name);
         }
-        world->teams[team].NumMembers = members;
+        World.teams[team].NumMembers = members;
     }
 }
 
-static void Compute_end_of_round_values(double *average_score,
+static void Compute_end_of_round_values(DFLOAT *average_score,
                                         int *num_best_players,
-                                        double *best_ratio,
+                                        DFLOAT *best_ratio,
                                         int best_players[])
 {
     int i;
-    double ratio;
+    DFLOAT ratio;
 
     /* Initialize everything */
     *average_score = 0;
@@ -830,10 +853,12 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0))
+        if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0))
+        {
             continue;
+        }
         *average_score += Players[i]->score;
-        ratio = (double)Players[i]->kills / (Players[i]->deaths + 1);
+        ratio = (DFLOAT)Players[i]->kills / (Players[i]->deaths + 1);
         if (ratio > *best_ratio)
         {
             *best_ratio = ratio;
@@ -841,18 +866,20 @@ static void Compute_end_of_round_values(double *average_score,
             *num_best_players = 1;
         }
         else if (ratio == *best_ratio)
+        {
             best_players[(*num_best_players)++] = i;
+        }
     }
     *average_score /= NumPlayers;
 }
 
-static void Give_best_player_bonus(double average_score,
+static void Give_best_player_bonus(DFLOAT average_score,
                                    int num_best_players,
-                                   double best_ratio,
+                                   DFLOAT best_ratio,
                                    int best_players[])
 {
     int i;
-    double points;
+    DFLOAT points;
     char msg[MSG_LEN];
 
     if (best_ratio == 0)
@@ -868,7 +895,7 @@ static void Give_best_player_bonus(double average_score,
                 bp->name,
                 bp->kills, bp->deaths);
         points = best_ratio * Rate(bp->score, average_score);
-        SCORE(bp, points, bp->pos.cx, bp->pos.cy,
+        SCORE(best_players[0], points, bp->pos.cx, bp->pos.cy,
               "[Deadliest]");
     }
     else
@@ -877,8 +904,8 @@ static void Give_best_player_bonus(double average_score,
         for (i = 0; i < num_best_players; i++)
         {
             player *bp = Players[best_players[i]];
-            double ratio = Rate(bp->score, average_score);
-            double score = (ratio + num_best_players) / num_best_players;
+            DFLOAT ratio = Rate(bp->score, average_score);
+            DFLOAT score = (ratio + num_best_players) / num_best_players;
 
             if (msg[0])
             {
@@ -894,7 +921,7 @@ static void Give_best_player_bonus(double average_score,
             }
             strcat(msg, bp->name);
             points = (int)(best_ratio * score);
-            SCORE(bp, points, bp->pos.cx, bp->pos.cy,
+            SCORE(best_players[i], points, bp->pos.cx, bp->pos.cy,
                   "[Deadly]");
         }
         if (strlen(msg) + 64 >= sizeof(msg))
@@ -910,15 +937,15 @@ static void Give_best_player_bonus(double average_score,
     Set_message(msg);
 }
 
-static void Give_individual_bonus(int ind, double average_score)
+static void Give_individual_bonus(int ind, DFLOAT average_score)
 {
-    double ratio;
-    double points;
+    DFLOAT ratio;
+    DFLOAT points;
     player_t *pl = Players[ind];
 
-    ratio = (double)pl->kills / (pl->deaths + 1);
+    ratio = (DFLOAT)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(pl->score, average_score);
-    SCORE(pl, points, pl->pos.cx, pl->pos.cy,
+    SCORE(ind, points, pl->pos.cx, pl->pos.cy,
           "[Winner]");
 }
 
@@ -945,15 +972,15 @@ static void Count_rounds(void)
 void Team_game_over(int winning_team, const char *reason)
 {
     int i, j;
-    double average_score;
+    DFLOAT average_score;
     int num_best_players;
     int *best_players;
-    double best_ratio;
+    DFLOAT best_ratio;
     char msg[MSG_LEN];
 
     if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
     {
-        error("no mem");
+        xperror("no mem");
         End_game();
     }
 
@@ -990,18 +1017,24 @@ void Team_game_over(int winning_team, const char *reason)
         for (i = 0; i < NumPlayers; i++)
         {
             if (Players[i]->team != winning_team)
+            {
                 continue;
-            if (Player_is_tank(Players[i]) ||
-                (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
-                (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+            }
+            if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+            {
                 continue;
+            }
             for (j = 0; j < num_best_players; j++)
             {
                 if (i == best_players[j])
+                {
                     break;
+                }
             }
             if (j == num_best_players)
+            {
                 Give_individual_bonus(i, average_score);
+            }
         }
     }
 
@@ -1015,15 +1048,15 @@ void Team_game_over(int winning_team, const char *reason)
 void Individual_game_over(int winner)
 {
     int i, j;
-    double average_score;
+    DFLOAT average_score;
     int num_best_players;
     int *best_players;
-    double best_ratio;
+    DFLOAT best_ratio;
     char msg[MSG_LEN];
 
     if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
     {
-        error("no mem");
+        xperror("no mem");
         End_game();
     }
 
@@ -1120,7 +1153,7 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (Player_is_tank(pl))
+            if (IS_TANK_PTR(pl))
             {
                 continue;
             }
@@ -1152,14 +1185,14 @@ void Race_game_over(void)
         for (i = 0; i < num_ordered_players; i++)
         {
             pl = Players[order[i]];
-            if (pl->home_base != world->baseorder[i].base_idx)
+            if (pl->home_base != World.baseorder[i].base_idx)
             {
-                pl->home_base = world->baseorder[i].base_idx;
+                pl->home_base = World.baseorder[i].base_idx;
                 for (j = 0; j < NumPlayers; j++)
                 {
-                    if (Players[j]->conn != NULL)
+                    if (Players[j]->connp != NULL)
                     {
-                        Send_base(Players[j]->conn,
+                        Send_base(Players[j]->connp,
                                   pl->id,
                                   pl->home_base);
                     }
@@ -1177,7 +1210,7 @@ void Race_game_over(void)
     {
         pl = Players[i];
         CLR_BIT(pl->status, RACE_OVER | FINISH);
-        if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+        if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || IS_TANK_PTR(pl))
         {
             continue;
         }
@@ -1208,7 +1241,7 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+            if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || IS_TANK_PTR(pl))
             {
                 continue;
             }
@@ -1218,9 +1251,9 @@ void Race_game_over(void)
                         "%s %s the best lap time of %.2fs",
                         pl->name,
                         (num_best_players == 1) ? "had" : "shares",
-                        (double)bestlap / FPS);
+                        (DFLOAT)bestlap / FPS);
                 Set_message(msg);
-                SCORE(pl, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
+                SCORE(i, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
                       (num_best_players == 1) ? "[Fastest lap]" : "[Joint fastest lap]");
             }
         }
@@ -1244,10 +1277,32 @@ void Compute_game_status(void)
     player_t *pl;
     char msg[MSG_LEN];
 
-    if (roundtime > 0)
-        roundtime--;
+    if (round_delay_send > 0)
+    {
+        round_delay_send--;
+    }
+    if (round_delay > 0)
+    {
+        if (!--round_delay)
+        {
+            sprintf(msg, "%s starts now.",
+                    (BIT(World.rules->mode, TIMING) ? "Race" : "Round"));
+            Set_message(msg);
+            roundtime = options.maxRoundTime * FPS;
+            /* make sure players get the full 60 seconds of allowed idle time */
+            for (i = 0; i < NumPlayers; i++)
+            {
+                Players[i]->frame_last_busy = frame_loops;
+            }
+        }
+    }
 
-    if (BIT(world->rules->mode, TIMING))
+    if (roundtime > 0)
+    {
+        roundtime--;
+    }
+
+    if (BIT(World.rules->mode, TIMING))
     {
         /*
          * We need a completely separate scoring system for race mode.
@@ -1278,16 +1333,20 @@ void Compute_game_status(void)
             num_waiting_players = 0,
             position = 1,
             total_pts;
-        double pts;
+        DFLOAT pts;
 
         /* First count the players */
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (BIT(pl->status, PAUSE) || Player_is_tank(pl))
+            if (BIT(pl->status, PAUSE) || IS_TANK_PTR(pl))
+            {
                 continue;
+            }
             if (!BIT(pl->status, GAME_OVER))
+            {
                 num_alive_players++;
+            }
             else if (pl->mychar == 'W')
             {
                 num_waiting_players++;
@@ -1300,9 +1359,13 @@ void Compute_game_status(void)
                 position++;
             }
             else if (BIT(pl->status, FINISH))
+            {
                 num_finished_players++;
+            }
             else if (!BIT(pl->status, GAME_OVER))
+            {
                 alive = pl;
+            }
 
             /*
              * An active player is one who is:
@@ -1314,7 +1377,9 @@ void Compute_game_status(void)
             num_active_players++;
         }
         if (num_active_players == 0 && num_waiting_players == 0)
+        {
             return;
+        }
 
         /* Now if any players are unaccounted for */
         if (num_finished_players > 0)
@@ -1330,14 +1395,18 @@ void Compute_game_status(void)
 
             total_pts = 0;
             for (i = 0; i < num_finished_players; i++)
+            {
                 total_pts += (10 + 2 * num_active_players) >> (position - 1 + i);
+            }
             pts = total_pts / num_finished_players;
 
             for (i = 0; i < NumPlayers; i++)
             {
                 pl = Players[i];
-                if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+                if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || IS_TANK_PTR(pl))
+                {
                     continue;
+                }
                 if (BIT(pl->status, FINISH))
                 {
                     CLR_BIT(pl->status, FINISH);
@@ -1354,7 +1423,7 @@ void Compute_game_status(void)
                         Set_message(msg);
                         sprintf(msg, "[Position %d%s]", position,
                                 (num_finished_players == 1) ? "" : " (jointly)");
-                        SCORE(pl, pts, pl->pos.cx, pl->pos.cy, msg);
+                        SCORE(i, pts, pl->pos.cx, pl->pos.cy, msg);
                     }
                     else
                     {
@@ -1383,25 +1452,34 @@ void Compute_game_status(void)
          * In limited lives mode, wait for everyone to die, except
          * for the last player.
          */
-        if (BIT(world->rules->mode, LIMITED_LIVES))
+        if (BIT(World.rules->mode, LIMITED_LIVES))
         {
             if (num_alive_players > 1)
+            {
                 return;
+            }
             if (num_alive_players == 1)
             {
                 if (num_finished_players + num_race_over_players == 0)
+                {
                     return;
+                }
                 if (!alive || alive->round == 0)
+                {
                     return;
+                }
             }
         }
         else if (num_finished_players == 0)
+        {
             return;
+        }
 
         Race_game_over();
     }
-    else if (BIT(world->rules->mode, TEAM_PLAY))
+    else if (BIT(World.rules->mode, TEAM_PLAY))
     {
+
         /* Do we have a winning team ? */
 
         enum TeamState
@@ -1415,19 +1493,25 @@ void Compute_game_status(void)
         int winning_team = -1;
 
         for (i = 0; i < MAX_TEAMS; i++)
+        {
             team_state[i] = TeamEmpty;
+        }
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(Players[i]))
+            if (IS_TANK_IND(i))
+            {
                 /* Ignore tanks. */
                 continue;
+            }
             else if (BIT(Players[i]->status, PAUSE))
+            {
                 /* Ignore paused players. */
                 continue;
+            }
 #if 0
             /* not all teammode maps have treasures. */
-            else if (world->teams[Players[i]->team].NumTreasures == 0) {
+            else if (World.teams[Players[i]->team].NumTreasures == 0) {
                 /* Ignore players with no treasure troves */
                 continue;
             }
@@ -1452,8 +1536,10 @@ void Compute_game_status(void)
             else if (team_state[Players[i]->team] != TeamAlive)
             {
                 if (team_state[Players[i]->team] == TeamDead)
+                {
                     /* Oops!  Not all teammembers are dead yet. */
                     num_dead_teams--;
+                }
                 team_state[Players[i]->team] = TeamAlive;
                 ++num_alive_teams;
                 /* Remember a team which was alive. */
@@ -1466,11 +1552,11 @@ void Compute_game_status(void)
             char *bp;
             int teams_with_treasure = 0;
             int team_win[MAX_TEAMS];
-            double team_score[MAX_TEAMS];
+            DFLOAT team_score[MAX_TEAMS];
             int winners;
             int max_destroyed = 0;
             int max_left = 0;
-            double max_score = 0;
+            DFLOAT max_score = 0;
             team_t *team_ptr;
 
             /*
@@ -1489,22 +1575,30 @@ void Compute_game_status(void)
                     continue;
                 }
                 team_win[i] = 1;
-                team_ptr = &(world->teams[i]);
+                team_ptr = &(World.teams[i]);
                 if (team_ptr->TreasuresDestroyed > max_destroyed)
+                {
                     max_destroyed = team_ptr->TreasuresDestroyed;
+                }
                 if ((team_ptr->TreasuresLeft > 0) ||
                     (team_ptr->NumTreasures == team_ptr->NumEmptyTreasures))
+                {
                     teams_with_treasure++;
+                }
             }
 
             /*
              * Game is not over if more than one team has treasure.
              */
             if ((teams_with_treasure > 1 || !max_destroyed) && (roundtime != 0 || options.maxRoundTime <= 0))
+            {
                 return;
+            }
 
             if (options.maxRoundTime > 0 && roundtime == 0)
+            {
                 Set_message("Timer expired. Round ends now.");
+            }
 
             /*
              * Find the winning team;
@@ -1517,15 +1611,17 @@ void Compute_game_status(void)
             {
                 if (!team_win[i])
                     continue;
-                if (world->teams[i].TreasuresDestroyed == max_destroyed)
+                if (World.teams[i].TreasuresDestroyed == max_destroyed)
                 {
-                    if (world->teams[i].TreasuresLeft > max_left)
-                        max_left = world->teams[i].TreasuresLeft;
+                    if (World.teams[i].TreasuresLeft > max_left)
+                        max_left = World.teams[i].TreasuresLeft;
                     winning_team = i;
                     winners++;
                 }
                 else
+                {
                     team_win[i] = 0;
+                }
             }
             if (winners == 1)
             {
@@ -1536,8 +1632,10 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                if (BIT(Players[i]->status, PAUSE) || Player_is_tank(Players[i]))
+                if (BIT(Players[i]->status, PAUSE) || IS_TANK_IND(i))
+                {
                     continue;
+                }
                 team_score[Players[i]->team] += Players[i]->score;
             }
 
@@ -1545,7 +1643,7 @@ void Compute_game_status(void)
             {
                 if (!team_win[i])
                     continue;
-                if (world->teams[i].TreasuresLeft == max_left)
+                if (World.teams[i].TreasuresLeft == max_left)
                 {
                     if (team_score[i] > max_score)
                         max_score = team_score[i];
@@ -1553,7 +1651,9 @@ void Compute_game_status(void)
                     winners++;
                 }
                 else
+                {
                     team_win[i] = 0;
+                }
             }
             if (winners == 1)
             {
@@ -1575,7 +1675,9 @@ void Compute_game_status(void)
                     winners++;
                 }
                 else
+                {
                     team_win[i] = 0;
+                }
             }
             if (winners == 1)
             {
@@ -1622,7 +1724,7 @@ void Compute_game_status(void)
             int i, treasures_destroyed;
 
             for (treasures_destroyed = i = 0; i < MAX_TEAMS; i++)
-                treasures_destroyed += (world->teams[i].NumTreasures - world->teams[i].NumEmptyTreasures - world->teams[i].TreasuresLeft);
+                treasures_destroyed += (World.teams[i].NumTreasures - World.teams[i].NumEmptyTreasures - World.teams[i].TreasuresLeft);
             if (treasures_destroyed)
                 Team_game_over(winning_team, " by staying in the game");
         }
@@ -1639,17 +1741,23 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (BIT(Players[i]->status, PAUSE) || Player_is_tank(Players[i]))
+            if (BIT(Players[i]->status, PAUSE) || IS_TANK_IND(i))
+            {
                 continue;
+            }
             if (!BIT(Players[i]->status, GAME_OVER))
             {
                 num_alive_players++;
                 if (IS_ROBOT_IND(i))
+                {
                     num_alive_robots++;
+                }
                 winner = i; /* Tag player that's alive */
             }
             else if (IS_HUMAN_IND(i))
+            {
                 num_active_humans++;
+            }
             num_active_players++;
         }
 
@@ -1683,7 +1791,7 @@ void Delete_player(int ind)
     /* call before important player structures are destroyed */
     Leave_alliance(ind);
 
-    if (Player_is_robot(pl))
+    if (IS_ROBOT_PTR(pl))
     {
         Robot_destroy(ind);
     }
@@ -1778,20 +1886,22 @@ void Delete_player(int ind)
     sound_close(pl);
 
     NumPlayers--;
-    if (Player_is_tank(pl))
+    if (IS_TANK_PTR(pl))
     {
         NumPseudoPlayers--;
     }
 
-    if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl))
+    if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl))
     {
-        world->teams[pl->team].NumMembers--;
-        if (Player_is_robot(pl))
-            world->teams[pl->team].NumRobots--;
+        World.teams[pl->team].NumMembers--;
+        if (IS_ROBOT_PTR(pl))
+            World.teams[pl->team].NumRobots--;
     }
 
-    if (Player_is_robot(pl))
+    if (IS_ROBOT_PTR(pl))
+    {
         NumRobots--;
+    }
 
     /*
      * Swap entry no 'ind' with the last one.
@@ -1811,13 +1921,17 @@ void Delete_player(int ind)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Player_is_tank(Players[i]) && Players[i]->lock.pl_id == id)
+        if (IS_TANK_IND(i) && Players[i]->lock.pl_id == id)
         {
             /* remove tanks which were released by this player. */
             if (options.keepShots)
+            {
                 Players[i]->lock.pl_id = NO_ID;
+            }
             else
+            {
                 Delete_player(i);
+            }
             continue;
         }
         if (BIT(Players[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (Players[i]->lock.pl_id == id || NumPlayers <= 1))
@@ -1837,18 +1951,24 @@ void Delete_player(int ind)
         for (j = 0; j < MAX_RECORDED_SHOVES; j++)
         {
             if (Players[i]->shove_record[j].pusher_id == id)
+            {
                 Players[i]->shove_record[j].pusher_id = NO_ID;
+            }
         }
     }
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Players[i]->conn != NULL)
-            Send_leave(Players[i]->conn, id);
-        else if (Player_is_tank(Players[i]))
+        if (Players[i]->connp != NULL)
+        {
+            Send_leave(Players[i]->connp, id);
+        }
+        else if (IS_TANK_IND(i))
         {
             if (Players[i]->lock.pl_id == id)
+            {
                 Delete_player(i);
+            }
         }
     }
 
@@ -1906,7 +2026,7 @@ void Player_death_reset(int ind)
     long minfuel;
     int i;
 
-    if (Player_is_tank(pl))
+    if (IS_TANK_PTR(pl))
     {
         Delete_player(ind);
         return;
@@ -1928,7 +2048,7 @@ void Player_death_reset(int ind)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = world->items[i].initial;
+            pl->item[i] = World.items[i].initial;
     }
 
     pl->forceVisible = 0;
@@ -1946,7 +2066,7 @@ void Player_death_reset(int ind)
     pl->lock.distance = 0;
 
     pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
-    minfuel = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
+    minfuel = (World.items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
     minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(ind, pl->fuel.sum);
@@ -1968,14 +2088,14 @@ void Player_death_reset(int ind)
     {
         pl->deaths++;
 
-        if (BIT(world->rules->mode, LIMITED_LIVES))
+        if (BIT(World.rules->mode, LIMITED_LIVES))
         {
             pl->life--;
             if (pl->life == -1)
             {
-                if (Player_is_robot(pl))
+                if (IS_ROBOT_PTR(pl))
                 {
-                    if (!BIT(world->rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
+                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
                     {
                         Robot_delete(ind, false);
                         return;
@@ -2002,27 +2122,37 @@ void Player_death_reset(int ind)
 /* determines if two players are immune to eachother */
 int Team_immune(int id1, int id2)
 {
-    player_t *pl1, *pl2;
+    int ind1, ind2;
 
     if (id1 == id2)
+    {
         /* owned stuff is never team immune */
         return 0;
+    }
     if (!options.teamImmunity)
+    {
         return 0;
+    }
     if (id1 == NO_ID || id2 == NO_ID)
+    {
         /* can't find owner for cannon stuff */
         return 0;
+    }
 
-    pl1 = Players[GetInd[id1]];
-    pl2 = Players[GetInd[id2]];
+    ind1 = GetInd[id1];
+    ind2 = GetInd[id2];
 
-    if (Players_are_teammates(pl1, pl2))
+    if (TEAM(ind1, ind2))
+    {
         /* players are teammates */
         return 1;
+    }
 
-    if (Players_are_allies(pl1, pl2))
+    if (ALLIANCE(ind1, ind2))
+    {
         /* players are allies */
         return 1;
+    }
 
     return 0;
 }

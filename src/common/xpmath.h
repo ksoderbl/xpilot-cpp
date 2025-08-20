@@ -26,11 +26,11 @@
 
 #include "types.h"
 
-int ON(const char *optval);
-int OFF(const char *optval);
+int ON(char *optval);
+int OFF(char *optval);
 int mod(int x, int y);
-int f2i(double f);
-double findDir(double x, double y);
+int f2i(DFLOAT f);
+DFLOAT findDir(DFLOAT x, DFLOAT y);
 double rfrac(void);
 void Make_table(void);
 

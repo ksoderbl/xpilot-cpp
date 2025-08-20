@@ -105,12 +105,11 @@ am_xpilot_cpp_server_OBJECTS = alliance.$(OBJEXT) asteroid.$(OBJEXT) \
 	id.$(OBJEXT) item.$(OBJEXT) laser.$(OBJEXT) map.$(OBJEXT) \
 	metaserver.$(OBJEXT) netserver.$(OBJEXT) object.$(OBJEXT) \
 	option.$(OBJEXT) parser.$(OBJEXT) play.$(OBJEXT) \
-	player.$(OBJEXT) polygon.$(OBJEXT) robot.$(OBJEXT) \
-	robotdef.$(OBJEXT) rules.$(OBJEXT) saudio.$(OBJEXT) \
-	sched.$(OBJEXT) score.$(OBJEXT) server.$(OBJEXT) \
-	ship.$(OBJEXT) shot.$(OBJEXT) showtime.$(OBJEXT) \
-	stratbot.$(OBJEXT) tuner.$(OBJEXT) update.$(OBJEXT) \
-	walls.$(OBJEXT) wildmap.$(OBJEXT)
+	player.$(OBJEXT) robot.$(OBJEXT) robotdef.$(OBJEXT) \
+	rules.$(OBJEXT) saudio.$(OBJEXT) sched.$(OBJEXT) \
+	score.$(OBJEXT) server.$(OBJEXT) ship.$(OBJEXT) shot.$(OBJEXT) \
+	showtime.$(OBJEXT) stratbot.$(OBJEXT) tuner.$(OBJEXT) \
+	update.$(OBJEXT) walls.$(OBJEXT) wildmap.$(OBJEXT)
 xpilot_cpp_server_OBJECTS = $(am_xpilot_cpp_server_OBJECTS)
 xpilot_cpp_server_DEPENDENCIES = ../common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -138,14 +137,14 @@ am__depfiles_remade = ./$(DEPDIR)/alliance.Po ./$(DEPDIR)/asteroid.Po \
 	./$(DEPDIR)/metaserver.Po ./$(DEPDIR)/netserver.Po \
 	./$(DEPDIR)/object.Po ./$(DEPDIR)/option.Po \
 	./$(DEPDIR)/parser.Po ./$(DEPDIR)/play.Po \
-	./$(DEPDIR)/player.Po ./$(DEPDIR)/polygon.Po \
-	./$(DEPDIR)/robot.Po ./$(DEPDIR)/robotdef.Po \
-	./$(DEPDIR)/rules.Po ./$(DEPDIR)/saudio.Po \
-	./$(DEPDIR)/sched.Po ./$(DEPDIR)/score.Po \
-	./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po ./$(DEPDIR)/shot.Po \
-	./$(DEPDIR)/showtime.Po ./$(DEPDIR)/stratbot.Po \
-	./$(DEPDIR)/tuner.Po ./$(DEPDIR)/update.Po \
-	./$(DEPDIR)/walls.Po ./$(DEPDIR)/wildmap.Po
+	./$(DEPDIR)/player.Po ./$(DEPDIR)/robot.Po \
+	./$(DEPDIR)/robotdef.Po ./$(DEPDIR)/rules.Po \
+	./$(DEPDIR)/saudio.Po ./$(DEPDIR)/sched.Po \
+	./$(DEPDIR)/score.Po ./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po \
+	./$(DEPDIR)/shot.Po ./$(DEPDIR)/showtime.Po \
+	./$(DEPDIR)/stratbot.Po ./$(DEPDIR)/tuner.Po \
+	./$(DEPDIR)/update.Po ./$(DEPDIR)/walls.Po \
+	./$(DEPDIR)/wildmap.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -321,9 +320,6 @@ xpilot_cpp_server_SOURCES = \
     parser.cpp \
     play.cpp \
     player.cpp \
-    player.h \
-    polygon.cpp \
-    polygon.h \
     proto.h \
     robot.cpp \
     robotdef.cpp \
@@ -458,7 +454,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/play.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/polygon.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotdef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rules.Po@am__quote@ # am--include-marker
@@ -643,7 +638,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/parser.Po
 	-rm -f ./$(DEPDIR)/play.Po
 	-rm -f ./$(DEPDIR)/player.Po
-	-rm -f ./$(DEPDIR)/polygon.Po
 	-rm -f ./$(DEPDIR)/robot.Po
 	-rm -f ./$(DEPDIR)/robotdef.Po
 	-rm -f ./$(DEPDIR)/rules.Po
@@ -726,7 +720,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/parser.Po
 	-rm -f ./$(DEPDIR)/play.Po
 	-rm -f ./$(DEPDIR)/player.Po
-	-rm -f ./$(DEPDIR)/polygon.Po
 	-rm -f ./$(DEPDIR)/robot.Po
 	-rm -f ./$(DEPDIR)/robotdef.Po
 	-rm -f ./$(DEPDIR)/rules.Po

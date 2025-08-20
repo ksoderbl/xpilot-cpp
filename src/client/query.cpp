@@ -89,7 +89,7 @@ static int Query_subnet(sock_t *sock,
         if (nbits >= 8)
         {
             /* break; ? */
-            error("too many host bits in subnet mask");
+            xperror("too many host bits in subnet mask");
             return (-1);
         }
         hostmask |= bit;
@@ -104,7 +104,7 @@ static int Query_subnet(sock_t *sock,
     }
     if (nbits < 2)
     {
-        error("malformed subnet mask");
+        xperror("malformed subnet mask");
         return (-1);
     }
 
@@ -121,7 +121,7 @@ static int Query_subnet(sock_t *sock,
         sendto(sock->fd, msg, msglen, 0,
                (struct sockaddr *)&addr, sizeof(addr));
         D(printf("sendto %s/%d\n",
-                 inet_ntoa(addr.sin_addr), ntohs(addr.sin_port)));
+                 inet_ntoa(addr.sin_addr), ntohs(addr.sin_port)););
         /*
          * Imagine a server responding to our query while we
          * are still transmitting packets for non-existing servers
@@ -145,14 +145,14 @@ static int Query_fudged(sock_t *sock, int port, char *msg, int msglen)
     gethostname(hostname, sizeof(hostname));
     if ((h = gethostbyname(hostname)) == NULL)
     {
-        error("gethostbyname");
+        xperror("gethostbyname");
         return -1;
     }
     if (h->h_addrtype != AF_INET || h->h_length != 4)
     {
         errno = 0;
-        error("Dunno about addresses with address type %d and length %d\n",
-              h->h_addrtype, h->h_length);
+        xperror("Dunno about addresses with address type %d and length %d\n",
+                h->h_addrtype, h->h_length);
         return -1;
     }
     for (i = 0; h->h_addr_list[i]; i++)
@@ -217,7 +217,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
      */
     if (sock_set_broadcast(sock, 1) == -1)
     {
-        error("set broadcast");
+        xperror("set broadcast");
         return (-1);
     }
 
@@ -226,7 +226,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
      */
     if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
-        error("socket");
+        xperror("socket");
         return (-1);
     }
 
@@ -238,7 +238,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
     memset((void *)ifbuf, 0, sizeof(ifbuf));
     if (ioctl(fd, SIOCGIFCONF, (char *)&ifconf) == -1)
     {
-        error("ioctl SIOCGIFCONF");
+        xperror("ioctl SIOCGIFCONF");
         close(fd);
         return Query_fudged(sock, port, msg, msglen);
     }
@@ -246,8 +246,8 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
     {
         ifreqp = (struct ifreq *)&ifconf.ifc_buf[len];
 
-        D(printf("interface name %s\n", ifreqp->ifr_name));
-        D(printf("\taddress family %d\n", ifreqp->ifr_addr.sa_family));
+        D(printf("interface name %s\n", ifreqp->ifr_name););
+        D(printf("\taddress family %d\n", ifreqp->ifr_addr.sa_family););
 
         len += sizeof(struct ifreq);
 #if BSD >= 199006 || HAVE_SA_LEN || defined(_SOCKADDR_LEN) || defined(_AIX)
@@ -260,7 +260,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         {
             len += ifreqp->ifr_addr.sa_len - sizeof(ifreqp->ifr_addr);
             D(printf("\textra address length %d\n",
-                     ifreqp->ifr_addr.sa_len - sizeof(ifreqp->ifr_addr)));
+                     ifreqp->ifr_addr.sa_len - sizeof(ifreqp->ifr_addr)););
         }
 #endif
         if (ifreqp->ifr_addr.sa_family != AF_INET)
@@ -272,7 +272,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         }
 
         addr = *(struct sockaddr_in *)&ifreqp->ifr_addr;
-        D(printf("\taddress %s\n", inet_ntoa(addr.sin_addr)));
+        D(printf("\taddress %s\n", inet_ntoa(addr.sin_addr)););
 
         /*
          * Get interface flags.
@@ -280,22 +280,22 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         ifreq = *ifreqp;
         if (ioctl(fd, SIOCGIFFLAGS, (char *)&ifreq) == -1)
         {
-            error("ioctl SIOCGIFFLAGS");
+            xperror("ioctl SIOCGIFFLAGS");
             continue;
         }
         ifflags = ifreq.ifr_flags;
 
         if ((ifflags & IFF_UP) == 0)
         {
-            D(printf("\tinterface is down\n"));
+            D(printf("\tinterface is down\n"););
             continue;
         }
         D(printf("\tinterface %s running\n",
-                 (ifflags & IFF_RUNNING) ? "is" : "not"));
+                 (ifflags & IFF_RUNNING) ? "is" : "not"););
 
         if ((ifflags & IFF_LOOPBACK) != 0)
         {
-            D(printf("\tloopback interface\n"));
+            D(printf("\tloopback interface\n"););
             /*
              * Only send on the loopback if we don't broadcast.
              */
@@ -308,27 +308,27 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         }
         else if ((ifflags & IFF_POINTOPOINT) != 0)
         {
-            D(printf("\tpoint-to-point interface\n"));
+            D(printf("\tpoint-to-point interface\n"););
             ifreq = *ifreqp;
             if (ioctl(fd, SIOCGIFDSTADDR, (char *)&ifreq) == -1)
             {
-                error("ioctl SIOCGIFDSTADDR");
+                xperror("ioctl SIOCGIFDSTADDR");
                 continue;
             }
             addr = *(struct sockaddr_in *)&ifreq.ifr_addr;
-            D(printf("\tdestination address %s\n", inet_ntoa(addr.sin_addr)));
+            D(printf("\tdestination address %s\n", inet_ntoa(addr.sin_addr)););
         }
         else if ((ifflags & IFF_BROADCAST) != 0)
         {
-            D(printf("\tbroadcast interface\n"));
+            D(printf("\tbroadcast interface\n"););
             ifreq = *ifreqp;
             if (ioctl(fd, SIOCGIFBRDADDR, (char *)&ifreq) == -1)
             {
-                error("ioctl SIOCGIFBRDADDR");
+                xperror("ioctl SIOCGIFBRDADDR");
                 continue;
             }
             addr = *(struct sockaddr_in *)&ifreq.ifr_addr;
-            D(printf("\tbroadcast address %s\n", inet_ntoa(addr.sin_addr)));
+            D(printf("\tbroadcast address %s\n", inet_ntoa(addr.sin_addr)););
         }
         else
         {
@@ -348,7 +348,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
             if (sendto(sock->fd, msg, msglen, 0,
                        (struct sockaddr *)&addr, sizeof addr) == msglen)
             {
-                D(printf("\tsendto %s/%d\n", inet_ntoa(addr.sin_addr), port));
+                D(printf("\tsendto %s/%d\n", inet_ntoa(addr.sin_addr), port););
                 /*
                  * Success!
                  */
@@ -363,7 +363,7 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
             /*
              * Failure.
              */
-            error("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
+            xperror("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
 
             if ((ifflags & (IFF_LOOPBACK | IFF_POINTOPOINT | IFF_BROADCAST)) != IFF_BROADCAST)
             {
@@ -385,11 +385,11 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         ifreq = *ifreqp;
         if (ioctl(fd, SIOCGIFNETMASK, (char *)&ifreq) == -1)
         {
-            error("ioctl SIOCGIFNETMASK");
+            xperror("ioctl SIOCGIFNETMASK");
             continue;
         }
         mask = *(struct sockaddr_in *)&ifreq.ifr_addr;
-        D(printf("\tmask %s\n", inet_ntoa(mask.sin_addr)));
+        D(printf("\tmask %s\n", inet_ntoa(mask.sin_addr)););
 
         addr.sin_port = htons(port);
         if (Query_subnet(sock, &addr, &mask, msg, msglen) != -1)
@@ -421,12 +421,12 @@ int Query_all(sock_t *sock, int port, char *msg, int msglen)
         if (sendto(sock->fd, msg, msglen, 0,
                    (struct sockaddr *)&addr, sizeof addr) == msglen)
         {
-            D(printf("\tsendto %s/%d\n", inet_ntoa(addr.sin_addr), port));
+            D(printf("\tsendto %s/%d\n", inet_ntoa(addr.sin_addr), port););
             count++;
         }
         else
         {
-            error("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
+            xperror("sendto %s/%d failed", inet_ntoa(addr.sin_addr), port);
         }
     }
 

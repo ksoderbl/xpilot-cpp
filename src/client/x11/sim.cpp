@@ -51,13 +51,13 @@ int simulating;
 #include "protoclient.h"
 #include "portability.h"
 
-double findDir(double x, double y);
+DFLOAT findDir(DFLOAT x, DFLOAT y);
 
 typedef struct rpos_s
 {
-        double x, y;
-        double vx, vy;
-        double ax, ay;
+        DFLOAT x, y;
+        DFLOAT vx, vy;
+        DFLOAT ax, ay;
         int last_dir_change;
 } rpos_t;
 
@@ -149,7 +149,7 @@ static int Fake_setup(void)
 
         if ((Setup = (setup_t *)malloc(sizeof(setup_t) + x * y)) == NULL)
         {
-                error("No memory for setup data");
+                xperror("No memory for setup data");
                 return -1;
         }
         Setup->mode = WRAP_PLAY;

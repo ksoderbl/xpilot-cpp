@@ -111,8 +111,6 @@
  * 4.F.1.5: Possibility to change polygon styles.
  */
 #define MAGIC 0x4501F4ED
-#define POLYGON_VERSION 0x4F15
-#define OLD_VERSION 0x4501
 // #define MAGIC 0x4F15F4ED
 // TODO
 // #ifdef SERVER

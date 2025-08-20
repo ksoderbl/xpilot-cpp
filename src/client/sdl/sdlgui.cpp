@@ -159,14 +159,14 @@ int GL_Y(int y)
 }
 
 /* remove this later maybe? to tedious for me to edit them all away now */
-void Segment_add(Uint32 color, int x1, int y1, int x2, int y2)
+void Segment_add(Uint32 color, int x1, int y1, int x_2, int y_2)
 {
     if (smoothLines)
         glEnable(GL_LINE_SMOOTH);
     set_alphacolor(color);
     glBegin(GL_LINE_LOOP);
     glVertex2i(x1, y1);
-    glVertex2i(x2, y2);
+    glVertex2i(x_2, y_2);
     glEnd();
     if (smoothLines)
         glDisable(GL_LINE_SMOOTH);
@@ -340,7 +340,7 @@ int Gui_init(void)
 
     if (asteroid_init() == -1)
     {
-        error("failed to initialize asteroids");
+        xperror("failed to initialize asteroids");
         return -1;
     }
 
@@ -351,14 +351,14 @@ int Gui_init(void)
     polyEdgeListBase = glGenLists(num_polygons);
     if ((!polyListBase) || (!polyEdgeListBase))
     {
-        error("failed to generate display lists");
+        xperror("failed to generate display lists");
         return -1;
     }
 
     tess = gluNewTess();
     if (tess == NULL)
     {
-        error("failed to create tessellation object");
+        xperror("failed to create tessellation object");
         return -1;
     }
 
@@ -410,7 +410,7 @@ void Gui_paint_cannon(int x, int y, int type)
         break;
     default:
         errno = 0;
-        error("Bad cannon dir.");
+        xperror("Bad cannon dir.");
         return;
     }
 }
@@ -476,7 +476,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         break;
     default:
         errno = 0;
-        error("Bad base dir.");
+        xperror("Bad base dir.");
         return;
     }
 
@@ -546,7 +546,7 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         break;
     default:
         errno = 0;
-        error("Bad base dir.");
+        xperror("Bad base dir.");
     }
 }
 
@@ -996,7 +996,7 @@ void Gui_paint_ball(int x, int y, int style)
     }
 }
 
-void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
+void Gui_paint_ball_connector(int x1, int y1, int x_2, int y_2)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -1005,7 +1005,7 @@ void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
-    glVertex2i(x2, y2);
+    glVertex2i(x_2, y_2);
     glEnd();
     if (smoothLines)
         glDisable(GL_LINE_SMOOTH);
@@ -1167,9 +1167,9 @@ void Gui_paint_lasers_end(void)
 
 void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
 {
-    int x2, y2, rgba;
-    x2 = (int)(x1 + len * tcos(dir));
-    y2 = (int)(y1 + len * tsin(dir));
+    int x_2, y_2, rgba;
+    x_2 = (int)(x1 + len * tcos(dir));
+    y_2 = (int)(y1 + len * tsin(dir));
 
     rgba =
         (color == RED) ? redRGBA : (color == BLUE) ? blueRGBA
@@ -1179,14 +1179,14 @@ void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
     glLineWidth(5);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
-    glVertex2i(x2, y2);
+    glVertex2i(x_2, y_2);
     glEnd();
 
     set_alphacolor(rgba);
     glLineWidth(1);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
-    glVertex2i(x2, y2);
+    glVertex2i(x_2, y_2);
     glEnd();
 }
 
@@ -2266,7 +2266,7 @@ void Add_alert_message(const char *message, double timeout)
     }
     else
     {
-        error("Add_alert_message: Failed to create LabelWidget");
+        xperror("Add_alert_message: Failed to create LabelWidget");
         return;
     }
 
@@ -2383,7 +2383,7 @@ void Paint_messages(void)
             {
                 if (!(wi = (LabelWidget *)tmp->wid_info))
                 {
-                    error("Paint_messages: ListWidget lacks a wid_info ptr!");
+                    xperror("Paint_messages: ListWidget lacks a wid_info ptr!");
                     continue;
                 }
                 if (strlen(msg->txt))

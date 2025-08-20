@@ -277,7 +277,7 @@ int Parser_list_option(int *index, char *buf)
         break;
     case valReal:
         sprintf(buf, "%s:%g", option_descs[i].name,
-                *(double *)option_descs[i].variable);
+                *(DFLOAT *)option_descs[i].variable);
         break;
     case valBool:
         sprintf(buf, "%s:%s", option_descs[i].name,
@@ -420,7 +420,7 @@ bool Parser(int argc, char **argv)
                 {
                     if (i + 1 == argc)
                     {
-                        warn("Option '%s' needs an argument", argv[i]);
+                        xpwarn("Option '%s' needs an argument", argv[i]);
                     }
                     else
                     {
@@ -431,12 +431,12 @@ bool Parser(int argc, char **argv)
             }
             else
             {
-                warn("Unknown option '%s'", argv[i]);
+                xpwarn("Unknown option '%s'", argv[i]);
             }
         }
         else
         {
-            warn("Unknown option '%s'", argv[i]);
+            xpwarn("Unknown option '%s'", argv[i]);
         }
     }
 
@@ -522,7 +522,7 @@ bool Parser(int argc, char **argv)
 int Tune_option(char *name, char *val)
 {
     int ival;
-    double fval;
+    DFLOAT fval;
     option_desc *opt;
 
     if (!(opt = Find_option_by_name(name)))
@@ -565,7 +565,7 @@ int Tune_option(char *name, char *val)
         {
             return 0;
         }
-        *(double *)opt->variable = fval;
+        *(DFLOAT *)opt->variable = fval;
         (*opt->tuner)();
         return 1;
     case valSec:
@@ -619,7 +619,7 @@ int Get_option_value(const char *name, char *value, unsigned size)
         sprintf(value, "%d", *((int *)opt->variable));
         break;
     case valReal:
-        sprintf(value, "%g", *((double *)opt->variable));
+        sprintf(value, "%g", *((DFLOAT *)opt->variable));
         break;
     case valBool:
         sprintf(value, "%s", *((bool *)opt->variable) ? "true" : "false");

@@ -385,7 +385,7 @@ static int Radar_init(GLWidget *widget)
                              RMASK, GMASK, BMASK, AMASK);
     if (!radar_surface)
     {
-        error("Could not create radar surface: %s", SDL_GetError());
+        xperror("Could not create radar surface: %s", SDL_GetError());
         return -1;
     }
 
@@ -418,7 +418,7 @@ GLWidget *Init_RadarWidget(void)
     GLWidget *tmp = Init_EmptyBaseGLWidget();
     if (!tmp)
     {
-        error("Failed to malloc in Init_RadarWidget");
+        xperror("Failed to malloc in Init_RadarWidget");
         return NULL;
     }
     tmp->WIDGET = RADARWIDGET;

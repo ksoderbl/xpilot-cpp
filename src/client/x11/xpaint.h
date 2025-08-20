@@ -54,8 +54,7 @@ extern Display *kdpy;    /* Keyboard display */
 extern short about_page; /* Which page is the player on? */
 // extern unsigned short        team;                /* What team is the player on? */
 // extern bool players_exposed; /* Is score window exposed? */
-extern int radar_exposures;     /* Is radar window exposed? */
-extern bool radar_score_mapped; /* Is the radar and score window mapped */
+extern int radar_exposures; /* Is radar window exposed? */
 
 /* windows has 2 sets of item bitmaps */
 #define ITEM_HUD 0       /* one color for the HUD */
@@ -103,20 +102,14 @@ extern bool talk_mapped;          /* Is talk window visible */
 // extern int        ext_view_x_offset;        /* Offset of ext_view_width */
 // extern int        ext_view_y_offset;        /* Offset of ext_view_height */
 // extern uint8_t        debris_colors;                /* Number of debris intensities */
-extern double charsPerTick;          /* Output speed of messages */
+extern DFLOAT charsPerTick;          /* Output speed of messages */
 extern bool markingLights;           /* Marking lights on ships */
 extern bool titleFlip;               /* Do special titlebar flipping? */
 extern int shieldDrawMode;           /* How to draw players shield */
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 extern char *texturePath;            /* Path list of texture directories */
 
-// extern void Paint_item_symbol(int type, Drawable d, GC mygc,
-//                               int x, int y, int color);
-// extern void Paint_item(int type, Drawable d, GC mygc, int x, int y);
-extern void Gui_paint_item_symbol(int type, Drawable d, GC mygc,
-                                  int x, int y, int c);
-extern void Gui_paint_item(int type, Drawable d, GC mygc, int x, int y);
-
-extern void Store_xpaint_options(void);
+void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
+void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);
 
 #endif

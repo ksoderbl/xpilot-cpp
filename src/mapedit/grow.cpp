@@ -40,7 +40,7 @@ int grow_minx, grow_miny, grow_maxx, grow_maxy,
 double grow_xa = 1.0, grow_ya = 1.0;
 grow_t *grow = NULL;
 
-int GrowMapArea(HandlerInfo_t info)
+int GrowMapArea(HandlerInfo info)
 {
     grow_t *next, *delgrow;
     int i, j, growat;

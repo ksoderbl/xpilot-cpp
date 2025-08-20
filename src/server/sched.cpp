@@ -66,7 +66,7 @@ static void sig_ok(int signum, int flag)
     sigaddset(&sigset, signum);
     if (sigprocmask((flag) ? SIG_UNBLOCK : SIG_BLOCK, &sigset, NULL) == -1)
     {
-        error("sigprocmask(%d,%d)", signum, flag);
+        xperror("sigprocmask(%d,%d)", signum, flag);
         exit(1);
     }
 }
@@ -144,7 +144,7 @@ static void setup_timer(void)
     sigaddset(&act.sa_mask, SIGALRM);
     if (sigaction(SIGALRM, &act, (struct sigaction *)NULL) == -1)
     {
-        error("sigaction SIGALRM");
+        xperror("sigaction SIGALRM");
         exit(1);
     }
 
@@ -155,7 +155,7 @@ static void setup_timer(void)
     // The limit was removed for testing purposes.
     if (timer_freq <= 0)
     {
-        error("illegal timer frequency: %ld", timer_freq);
+        xperror("illegal timer frequency: %ld", timer_freq);
         exit(1);
     }
 
@@ -167,7 +167,7 @@ static void setup_timer(void)
     itv.it_value = itv.it_interval;
     if (setitimer(ITIMER_REAL, &itv, NULL) == -1)
     {
-        error("setitimer");
+        xperror("setitimer");
         exit(1);
     }
 
@@ -235,7 +235,7 @@ static struct to_handler *to_alloc(void)
     to_fill();
     if (!to_free_list)
     {
-        error("Not enough memory for timeouts");
+        xperror("Not enough memory for timeouts");
         exit(1);
     }
 
@@ -368,12 +368,12 @@ void install_input(void (*func)(int, void *), int fd, void *arg)
     }
     if (fd < min_fd || fd >= min_fd + NUM_SELECT_FD)
     {
-        error("install illegal input handler fd %d (%d)", fd, min_fd);
+        xperror("install illegal input handler fd %d (%d)", fd, min_fd);
         exit(1);
     }
     if (FD_ISSET(fd, &input_mask))
     {
-        error("input handler %d busy", fd);
+        xperror("input handler %d busy", fd);
         exit(1);
     }
     input_handlers[fd - min_fd].fd = fd;
@@ -390,7 +390,7 @@ void remove_input(int fd)
 {
     if (fd < min_fd || fd >= min_fd + NUM_SELECT_FD)
     {
-        error("remove illegal input handler fd %d (%d)", fd, min_fd);
+        xperror("remove illegal input handler fd %d (%d)", fd, min_fd);
         exit(1);
     }
     if (FD_ISSET(fd, &input_mask))
@@ -424,7 +424,7 @@ extern void End_game(void);
 
 static void sched_select_error(void)
 {
-    error("sched select error");
+    xperror("sched select error");
 
     End_game();
 }
@@ -440,7 +440,7 @@ void sched(void)
 
     if (sched_running)
     {
-        error("sched already running");
+        xperror("sched already running");
         exit(1);
     }
 

@@ -55,7 +55,7 @@ unsigned SPACE_BLOCKS = (SPACE_BIT | BASE_BIT | WORMHOLE_BIT |
                          FRICTION_BIT | ASTEROID_CONCENTRATOR_BIT);
 
 static struct move_parameters mp;
-static double wallBounceExplosionMult;
+static DFLOAT wallBounceExplosionMult;
 static char msg[MSG_LEN];
 
 /*
@@ -74,19 +74,19 @@ static void Walldist_alloc(void)
     uint8_t **wall_ptr;
 
     walldist = (uint8_t **)malloc(
-        world->x * sizeof(uint8_t *) + world->x * world->y);
+        World.x * sizeof(uint8_t *) + World.x * World.y);
     if (!walldist)
     {
-        error("No memory for walldist");
+        xperror("No memory for walldist");
         exit(1);
     }
     wall_ptr = walldist;
-    wall_line = (uint8_t *)(wall_ptr + world->x);
-    for (x = 0; x < world->x; x++)
+    wall_line = (uint8_t *)(wall_ptr + World.x);
+    for (x = 0; x < World.x; x++)
     {
         *wall_ptr = wall_line;
         wall_ptr += 1;
-        wall_line += world->y;
+        wall_line += World.y;
     }
 }
 
@@ -111,22 +111,22 @@ static void Walldist_dump(void)
     fp = fopen(name, "w");
     if (!fp)
     {
-        error("%s", name);
+        xperror("%s", name);
         return;
     }
-    line = (uint8_t *)malloc(3 * world->x);
+    line = (uint8_t *)malloc(3 * World.x);
     if (!line)
     {
-        error("No memory for walldist dump");
+        xperror("No memory for walldist dump");
         fclose(fp);
         return;
     }
     fprintf(fp, "P6\n");
-    fprintf(fp, "%d %d\n", world->x, world->y);
+    fprintf(fp, "%d %d\n", World.x, World.y);
     fprintf(fp, "%d\n", 255);
-    for (y = world->y - 1; y >= 0; y--)
+    for (y = World.y - 1; y >= 0; y--)
     {
-        for (x = 0; x < world->x; x++)
+        for (x = 0; x < World.x; x++)
         {
             if (walldist[x][y] == 0)
             {
@@ -153,7 +153,7 @@ static void Walldist_dump(void)
                 line[x * 3 + 2] = walldist[x][y];
             }
         }
-        fwrite(line, world->x, 3, fp);
+        fwrite(line, World.x, 3, fp);
     }
     free(line);
     fclose(fp);
@@ -167,7 +167,7 @@ static void Walldist_init(void)
     int x, y, dx, dy, wx, wy;
     int dist;
     int mindist;
-    int maxdist = 2 * MIN(world->x, world->y);
+    int maxdist = 2 * MIN(World.x, World.y);
     int newdist;
 
     typedef struct Qelmt
@@ -181,17 +181,17 @@ static void Walldist_init(void)
     {
         maxdist = 255;
     }
-    q = (Qelmt_t *)malloc(world->x * world->y * sizeof(Qelmt_t));
+    q = (Qelmt_t *)malloc(World.x * World.y * sizeof(Qelmt_t));
     if (!q)
     {
-        error("No memory for walldist init");
+        xperror("No memory for walldist init");
         exit(1);
     }
-    for (x = 0; x < world->x; x++)
+    for (x = 0; x < World.x; x++)
     {
-        for (y = 0; y < world->y; y++)
+        for (y = 0; y < World.y; y++)
         {
-            if (BIT((1 << world->block[x][y]), WALLDIST_MASK) && (world->block[x][y] != WORMHOLE || world->wormHoles[wormXY(x, y)].type != WORM_OUT))
+            if (BIT((1 << World.block[x][y]), WALLDIST_MASK) && (World.block[x][y] != WORMHOLE || World.wormHoles[wormXY(x, y)].type != WORM_OUT))
             {
                 walldist[x][y] = 0;
                 q[qback].x = x;
@@ -204,13 +204,13 @@ static void Walldist_init(void)
             }
         }
     }
-    if (!BIT(world->rules->mode, WRAP_PLAY))
+    if (!BIT(World.rules->mode, WRAP_PLAY))
     {
-        for (x = 0; x < world->x; x++)
+        for (x = 0; x < World.x; x++)
         {
-            for (y = 0; y < world->y; y += (!x || x == world->x - 1)
-                                               ? 1
-                                               : (world->y - (world->y > 1)))
+            for (y = 0; y < World.y; y += (!x || x == World.x - 1)
+                                              ? 1
+                                              : (World.y - (World.y > 1)))
             {
                 if (walldist[x][y] > 1)
                 {
@@ -226,7 +226,7 @@ static void Walldist_init(void)
     {
         x = q[qfront].x;
         y = q[qfront].y;
-        if (++qfront == world->x * world->y)
+        if (++qfront == World.x * World.y)
         {
             qfront = 0;
         }
@@ -238,12 +238,12 @@ static void Walldist_init(void)
         }
         for (dx = -1; dx <= 1; dx++)
         {
-            if (BIT(world->rules->mode, WRAP_PLAY) || (x + dx >= 0 && x + dx < world->x))
+            if (BIT(World.rules->mode, WRAP_PLAY) || (x + dx >= 0 && x + dx < World.x))
             {
                 wx = WRAP_XBLOCK(x + dx);
                 for (dy = -1; dy <= 1; dy++)
                 {
-                    if (BIT(world->rules->mode, WRAP_PLAY) || (y + dy >= 0 && y + dy < world->y))
+                    if (BIT(World.rules->mode, WRAP_PLAY) || (y + dy >= 0 && y + dy < World.y))
                     {
                         wy = WRAP_YBLOCK(y + dy);
                         if (walldist[wx][wy] > mindist)
@@ -251,28 +251,28 @@ static void Walldist_init(void)
                             newdist = mindist;
                             if (dist == 0)
                             {
-                                if (world->block[x][y] == REC_LD)
+                                if (World.block[x][y] == REC_LD)
                                 {
                                     if (dx == +1 && dy == +1)
                                     {
                                         newdist = mindist + 1;
                                     }
                                 }
-                                else if (world->block[x][y] == REC_RD)
+                                else if (World.block[x][y] == REC_RD)
                                 {
                                     if (dx == -1 && dy == +1)
                                     {
                                         newdist = mindist + 1;
                                     }
                                 }
-                                else if (world->block[x][y] == REC_LU)
+                                else if (World.block[x][y] == REC_LU)
                                 {
                                     if (dx == +1 && dy == -1)
                                     {
                                         newdist = mindist + 1;
                                     }
                                 }
-                                else if (world->block[x][y] == REC_RU)
+                                else if (World.block[x][y] == REC_RU)
                                 {
                                     if (dx == -1 && dy == -1)
                                     {
@@ -285,7 +285,7 @@ static void Walldist_init(void)
                                 walldist[wx][wy] = newdist;
                                 q[qback].x = wx;
                                 q[qback].y = wy;
-                                if (++qback == world->x * world->y)
+                                if (++qback == World.x * World.y)
                                 {
                                     qback = 0;
                                 }
@@ -309,7 +309,7 @@ void Walls_init(void)
 void Treasure_init(void)
 {
     int i;
-    for (i = 0; i < world->NumTreasures; i++)
+    for (i = 0; i < World.NumTreasures; i++)
     {
         Make_treasure_ball(i);
     }
@@ -317,12 +317,12 @@ void Treasure_init(void)
 
 void Move_init(void)
 {
-    mp.click_width = PIXEL_TO_CLICK(world->width);
-    mp.click_height = PIXEL_TO_CLICK(world->height);
+    mp.click_width = PIXEL_TO_CLICK(World.width);
+    mp.click_height = PIXEL_TO_CLICK(World.height);
 
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->hypotenuse);
+    LIMIT(options.maxObjectWallBounceSpeed, 0, World.hypotenuse);
+    LIMIT(options.maxShieldedWallBounceSpeed, 0, World.hypotenuse);
+    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, World.hypotenuse);
     LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
     LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);
     LIMIT(options.playerWallBrakeFactor, 0, 1);
@@ -695,7 +695,7 @@ void Move_segment(move_state_t *ms)
         {
             if (mi->edge_wrap)
             {
-                block.x += world->x;
+                block.x += World.x;
             }
             else
             {
@@ -716,7 +716,7 @@ void Move_segment(move_state_t *ms)
         {
             if (mi->edge_wrap)
             {
-                block.y += world->y;
+                block.y += World.y;
             }
             else
             {
@@ -809,7 +809,7 @@ void Move_segment(move_state_t *ms)
     delta.cx = leave.cx - enter.cx;
     delta.cy = leave.cy - enter.cy;
 
-    block_type = world->block[block.x][block.y];
+    block_type = World.block[block.x][block.y];
 
     /*
      * We test for several different bouncing directions against the wall.
@@ -835,7 +835,7 @@ void Move_segment(move_state_t *ms)
                 break;
             }
             hole = wormXY(block.x, block.y);
-            if (world->wormHoles[hole].type == WORM_OUT)
+            if (World.wormHoles[hole].type == WORM_OUT)
             {
                 break;
             }
@@ -845,10 +845,10 @@ void Move_segment(move_state_t *ms)
                 blk2.y = OBJ_Y_IN_BLOCKS(mi->pl);
                 if (BIT(mi->pl->status, WARPED))
                 {
-                    if (world->block[blk2.x][blk2.y] == WORMHOLE)
+                    if (World.block[blk2.x][blk2.y] == WORMHOLE)
                     {
                         int oldhole = wormXY(blk2.x, blk2.y);
-                        if (world->wormHoles[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
+                        if (World.wormHoles[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
                         {
                             /*
                              * Don't warp again if we are still on the
@@ -873,11 +873,11 @@ void Move_segment(move_state_t *ms)
                  * Warp the object to the same destination as the
                  * player has been warped to.
                  */
-                int last = world->wormHoles[hole].lastdest;
-                if (last >= 0 && (world->wormHoles[hole].countdown > 0 || !options.wormTime) && last < world->NumWormholes && world->wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
+                int last = World.wormHoles[hole].lastdest;
+                if (last >= 0 && (World.wormHoles[hole].countdown > 0 || !options.wormTime) && last < World.NumWormholes && World.wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.cx += (world->wormHoles[last].blk_pos.x - world->wormHoles[hole].blk_pos.x) * BLOCK_CLICKS;
-                    ms->done.cy += (world->wormHoles[last].blk_pos.y - world->wormHoles[hole].blk_pos.y) * BLOCK_CLICKS;
+                    ms->done.cx += (World.wormHoles[last].blk_pos.x - World.wormHoles[hole].blk_pos.x) * BLOCK_CLICKS;
+                    ms->done.cy += (World.wormHoles[last].blk_pos.y - World.wormHoles[hole].blk_pos.y) * BLOCK_CLICKS;
                     break;
                 }
             }
@@ -888,25 +888,25 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (BIT(mi->obj->status, FROMCANNON) && !BIT(world->rules->mode, TEAM_PLAY))
+            if (BIT(mi->obj->status, FROMCANNON) && !BIT(World.rules->mode, TEAM_PLAY))
             {
                 break;
             }
             for (i = 0;; i++)
             {
-                if (world->cannon[i].blk_pos.x == block.x && world->cannon[i].blk_pos.y == block.y)
+                if (World.cannon[i].blk_pos.x == block.x && World.cannon[i].blk_pos.y == block.y)
                 {
                     break;
                 }
             }
             ms->cannon = i;
 
-            if (BIT(world->cannon[i].used, HAS_PHASING_DEVICE))
+            if (BIT(World.cannon[i].used, HAS_PHASING_DEVICE))
             {
                 break;
             }
 
-            if (BIT(world->rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == world->cannon[i].team)
+            if (BIT(World.rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == World.cannon[i].team)
             {
                 break;
             }
@@ -927,7 +927,7 @@ void Move_segment(move_state_t *ms)
                 mirx.cy = 0;
                 miry.cx = 0;
                 miry.cy = 0;
-                switch (world->cannon[i].dir)
+                switch (World.cannon[i].dir)
                 {
                 case DIR_UP:
                     mx.x = 1;
@@ -1098,7 +1098,7 @@ void Move_segment(move_state_t *ms)
                      * If this is the case then we test if 3 samples
                      * are not hitting the treasure.
                      */
-                    const double r = 0.5f * BLOCK_CLICKS;
+                    const DFLOAT r = 0.5f * BLOCK_CLICKS;
                     off2.cx = offset.cx + delta.cx;
                     off2.cy = offset.cy + delta.cy;
                     mid.cx = (offset.cx + off2.cx) / 2;
@@ -1110,7 +1110,7 @@ void Move_segment(move_state_t *ms)
 
                     for (i = 0;; i++)
                     {
-                        if (world->treasures[i].blk_pos.x == block.x && world->treasures[i].blk_pos.y == block.y)
+                        if (World.treasures[i].blk_pos.x == block.x && World.treasures[i].blk_pos.y == block.y)
                         {
                             break;
                         }
@@ -1139,12 +1139,12 @@ void Move_segment(move_state_t *ms)
                          * nothing interesting happens.
                          */
                         player_t *pl = NULL;
-                        treasure_t *tt = &world->treasures[ms->treasure];
+                        treasure_t *tt = &World.treasures[ms->treasure];
 
                         if (ball->owner != NO_ID)
                             pl = Players[GetInd[ball->owner]];
 
-                        if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
+                        if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != World.treasures[ball->treasure].team))
                         {
                             ball->life = LONG_MAX;
                             ms->crash = NotACrash;
@@ -1154,7 +1154,8 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
 
-                        SCORE(pl, 5, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+                        SCORE(GetInd[pl->id], 5,
+                              tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
                                 pl->name, pl->team);
                         Set_message(msg);
@@ -1165,8 +1166,8 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         return;
                     }
-                    if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team ==
-                                                                  Players[GetInd[ball->owner]]->team)
+                    if (BIT(World.rules->mode, TEAM_PLAY) && World.treasures[ms->treasure].team ==
+                                                                 Players[GetInd[ball->owner]]->team)
                     {
                         /*
                          * Ball has been brought back to home treasure.
@@ -1175,7 +1176,7 @@ void Move_segment(move_state_t *ms)
                         sprintf(msg, " < The ball was loose for %ld frames >",
                                 LONG_MAX - ball->life);
                         Set_message(msg);
-                        if (options.captureTheFlag && !world->treasures[ms->treasure].have && !world->treasures[ms->treasure].empty)
+                        if (options.captureTheFlag && !World.treasures[ms->treasure].have && !World.treasures[ms->treasure].empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(Players[GetInd[ball->owner]], msg);
@@ -1199,15 +1200,15 @@ void Move_segment(move_state_t *ms)
                      *     added itemID array for extra speed, (at cost of some memory.)
                      *
                      *for (i = 0; ; i++) {
-                     *    if (world->targets[i].pos.x == block.x
-                     *        && world->targets[i].pos.y == block.y) {
+                     *    if (World.targets[i].pos.x == block.x
+                     *        && World.targets[i].pos.y == block.y) {
                      *        break;
                      *     }
                      * }
                      *
                      * ms->target = i;
                      */
-                    ms->target = i = world->itemID[block.x][block.y];
+                    ms->target = i = World.itemID[block.x][block.y];
 
                     if (!options.targetTeamCollision)
                     {
@@ -1232,7 +1233,7 @@ void Move_segment(move_state_t *ms)
                         {
                             team = mi->obj->team;
                         }
-                        if (team == world->targets[i].team)
+                        if (team == World.targets[i].team)
                         {
                             break;
                         }
@@ -1650,10 +1651,10 @@ void Move_segment(move_state_t *ms)
                         {
                             continue;
                         }
-                        blk2.x += world->x;
+                        blk2.x += World.x;
                     }
                     blk2.y = block.y;
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_RU_BIT | REC_RD_BIT))
                     {
                         continue;
@@ -1662,16 +1663,16 @@ void Move_segment(move_state_t *ms)
 
                 case BounceHorHi:
                     blk2.x = block.x + 1;
-                    if (blk2.x >= world->x)
+                    if (blk2.x >= World.x)
                     {
                         if (!mi->edge_wrap)
                         {
                             continue;
                         }
-                        blk2.x -= world->x;
+                        blk2.x -= World.x;
                     }
                     blk2.y = block.y;
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_LU_BIT | REC_LD_BIT))
                     {
                         continue;
@@ -1687,9 +1688,9 @@ void Move_segment(move_state_t *ms)
                         {
                             continue;
                         }
-                        blk2.y += world->y;
+                        blk2.y += World.y;
                     }
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_RU_BIT | REC_LU_BIT))
                     {
                         continue;
@@ -1699,15 +1700,15 @@ void Move_segment(move_state_t *ms)
                 case BounceVerHi:
                     blk2.x = block.x;
                     blk2.y = block.y + 1;
-                    if (blk2.y >= world->y)
+                    if (blk2.y >= World.y)
                     {
                         if (!mi->edge_wrap)
                         {
                             continue;
                         }
-                        blk2.y -= world->y;
+                        blk2.y -= World.y;
                     }
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_RD_BIT | REC_LD_BIT))
                     {
                         continue;
@@ -1817,7 +1818,7 @@ void Move_segment(move_state_t *ms)
 
 static void Cannon_dies(move_state_t *ms)
 {
-    cannon_t *cannon = world->cannon + ms->cannon;
+    cannon_t *cannon = World.cannon + ms->cannon;
     int x = (int)cannon->pix_pos.x;
     int y = (int)cannon->pix_pos.y;
     int cx = cannon->clk_pos.cx;
@@ -1827,7 +1828,7 @@ static void Cannon_dies(move_state_t *ms)
 
     cannon->dead_time = options.cannonDeadTime;
     cannon->conn_mask = 0;
-    world->block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
+    World.block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
     Cannon_throw_items(ms->cannon);
     Cannon_init(ms->cannon);
     sound_play_sensors(cx, cy, CANNON_EXPLOSION_SOUND);
@@ -1876,9 +1877,9 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (options.cannonPoints > 0)
         {
-            if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
+            if (pl->score <= options.cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(Players[killer], options.cannonPoints, cannon->clk_pos.cx,
+                SCORE(killer, options.cannonPoints, cannon->clk_pos.cx,
                       cannon->clk_pos.cy, "");
             }
         }
@@ -1887,7 +1888,7 @@ static void Cannon_dies(move_state_t *ms)
 
 static void Object_hits_target(move_state_t *ms, long player_cost)
 {
-    target_t *targ = &world->targets[ms->target];
+    target_t *targ = &World.targets[ms->target];
     object_t *obj = ms->mip->obj;
     int j, sc, por,
         x, y,
@@ -1978,7 +1979,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
      */
     x = targ->blk_pos.x;
     y = targ->blk_pos.y;
-    world->block[x][y] = SPACE;
+    World.block[x][y] = SPACE;
 
     int cx = targ->clk_pos.cx;
     int cy = targ->clk_pos.cy;
@@ -2003,20 +2004,22 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         /* min,max speed  */ 20, 70,
         /* min,max life   */ 10, 100);
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            if (Player_is_tank(Players[j]) ||
-                (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
-                (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
+            if (IS_TANK_IND(j) || (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) || (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
+            {
                 continue;
+            }
             if (Players[j]->team == targ->team)
             {
                 lose_score += Players[j]->score;
                 lose_team_members++;
                 if (BIT(Players[j]->status, GAME_OVER) == 0)
+                {
                     somebody_flag = 1;
+                }
             }
             else if (Players[j]->team == Players[killer]->team)
             {
@@ -2027,18 +2030,22 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     }
     if (somebody_flag)
     {
-        for (j = 0; j < world->NumTargets; j++)
+        for (j = 0; j < World.NumTargets; j++)
         {
-            if (world->targets[j].team == targ->team)
+            if (World.targets[j].team == targ->team)
             {
                 targets_total++;
-                if (world->targets[j].dead_time == 0)
+                if (World.targets[j].dead_time == 0)
+                {
                     targets_remaining++;
+                }
             }
         }
     }
     if (!somebody_flag)
+    {
         return;
+    }
 
     sound_play_sensors(cx, cy, DESTROY_TARGET_SOUND);
 
@@ -2048,7 +2055,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            SCORE(Players[killer], sc,
+            SCORE(killer, sc,
                   targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         /*
@@ -2081,20 +2088,23 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        if (Player_is_tank(Players[j]) ||
-            (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
-            (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
+        if (IS_TANK_IND(j) || (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) || (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
+        {
             continue;
-
+        }
         if (Players[j]->team == targ->team)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(Players[j]->status, KILLED);
-            SCORE(Players[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+            SCORE(j, -sc, targ->clk_pos.cx, targ->clk_pos.cy,
+                  "Target: ");
         }
         else if (Players[j]->team == Players[killer]->team &&
                  (Players[j]->team != TEAM_NOT_SET || j == killer))
-            SCORE(Players[j], por, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+        {
+            SCORE(j, por, targ->clk_pos.cx, targ->clk_pos.cy,
+                  "Target: ");
+        }
     }
 }
 
@@ -2162,10 +2172,10 @@ static void Object_crash(move_state_t *ms)
         }
         else
         {
-            if (!BIT(world->cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
+            if (!BIT(World.cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
             {
-                if (world->cannon[ms->cannon].item[ITEM_ARMOR] > 0)
-                    world->cannon[ms->cannon].item[ITEM_ARMOR]--;
+                if (World.cannon[ms->cannon].item[ITEM_ARMOR] > 0)
+                    World.cannon[ms->cannon].item[ITEM_ARMOR]--;
                 else
                     Cannon_dies(ms);
             }
@@ -2206,7 +2216,7 @@ void Move_object(object_t *obj)
 
     mi.pl = NULL;
     mi.obj = obj;
-    mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = BIT(mp.obj_bounce_mask, obj->type);
     mi.cannon_crashes = BIT(mp.obj_cannon_mask, obj->type);
@@ -2323,7 +2333,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
     default:
     case NotACrash:
         errno = 0;
-        error("Player_crash not a crash %d", ms->crash);
+        xperror("Player_crash not a crash %d", ms->crash);
         break;
 
     case CrashWormHole:
@@ -2375,7 +2385,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_CANNON_SOUND);
         }
-        if (!BIT(world->cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
+        if (!BIT(World.cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
         {
             Cannon_dies(ms);
         }
@@ -2411,9 +2421,13 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         {
             shove_t *shove = &pl->shove_record[i];
             if (shove->pusher_id == NO_ID)
+            {
                 continue;
+            }
             if (shove->time < frame_loops - 20)
+            {
                 continue;
+            }
             for (j = 0; j < num_pushers; j++)
             {
                 if (shove->pusher_id == pushers[j]->id)
@@ -2433,7 +2447,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         if (num_pushers == 0)
         {
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
+            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -2462,14 +2476,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
-                SCORE(pusher, sc, pl->pos.cx, pl->pos.cy, pl->name);
+                SCORE(GetInd[pusher->id], sc, pl->pos.cx, pl->pos.cy, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
             sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
-            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
+            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
 
             strcpy(msg_ptr, ".");
             Set_message(msg);
@@ -2480,7 +2494,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->status, KILLED) && pl->score < 0 && Player_is_robot(pl))
+    if (BIT(pl->status, KILLED) && pl->score < 0 && IS_ROBOT_PTR(pl))
     {
         pl->home_base = 0;
         Pick_startpos(ind);
@@ -2508,8 +2522,8 @@ void Move_player(int ind)
     ivec_t sign;  /* sign (-1 or 1) of direction */
     ipos_t block; /* block index */
     bool pos_update = false;
-    double fric;
-    double oldvx, oldvy;
+    DFLOAT fric;
+    DFLOAT oldvx, oldvy;
 
     if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
     {
@@ -2536,7 +2550,7 @@ void Move_player(int ind)
     }
     else
     {
-        switch (world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)])
+        switch (World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)])
         {
         case FRICTION:
             fric = options.blockFriction;
@@ -2573,7 +2587,7 @@ void Move_player(int ind)
 
     mi.pl = pl;
     mi.obj = (object_t *)pl;
-    mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;
@@ -2587,8 +2601,8 @@ void Move_player(int ind)
     todo.cy = FLOAT_TO_CLICK(vel.y);
     for (i = 0; i < pl->ship->num_points; i++)
     {
-        double x = pl->ship->pts[i][pl->dir].x;
-        double y = pl->ship->pts[i][pl->dir].y;
+        DFLOAT x = pl->ship->pts[i][pl->dir].x;
+        DFLOAT y = pl->ship->pts[i][pl->dir].y;
         ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
         ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
         ms[i].vel = vel;
@@ -2705,15 +2719,15 @@ void Move_player(int ind)
             pl->last_wall_touch = frame_loops;
             if (ms[worst].bounce != BounceEdge)
             {
-                double speed = VECTOR_LENGTH(ms[worst].vel);
+                DFLOAT speed = VECTOR_LENGTH(ms[worst].vel);
                 int v = (int)speed >> 2;
                 int m = (int)(pl->mass - pl->emptymass * 0.75f);
-                double b = 1 - 0.5f * options.playerWallBrakeFactor;
+                DFLOAT b = 1 - 0.5f * options.playerWallBrakeFactor;
                 long cost = (long)(b * m * v);
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
-                double max_speed = BIT(pl->used, HAS_SHIELD)
+                DFLOAT max_speed = BIT(pl->used, HAS_SHIELD)
                                        ? options.maxShieldedWallBounceSpeed
                                        : options.maxUnshieldedWallBounceSpeed;
                 int max_angle = BIT(pl->used, HAS_SHIELD)
@@ -2865,8 +2879,8 @@ void Move_player(int ind)
         {
             for (i = 0; i < pl->ship->num_points; i++)
             {
-                r[i].x = (vel.x) ? (double)ms[i].todo.cx / vel.x : 0;
-                r[i].y = (vel.y) ? (double)ms[i].todo.cy / vel.y : 0;
+                r[i].x = (vel.x) ? (DFLOAT)ms[i].todo.cx / vel.x : 0;
+                r[i].y = (vel.y) ? (DFLOAT)ms[i].todo.cy / vel.y : 0;
                 r[i].x = ABS(r[i].x);
                 r[i].y = ABS(r[i].y);
             }
@@ -2964,7 +2978,7 @@ void Turn_player(player_t *pl)
 
     mi.pl = pl;
     mi.obj = (object_t *)pl;
-    mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;
@@ -3104,7 +3118,7 @@ void Turn_player(player_t *pl)
 
     if (blocked)
     {
-        pl->float_dir = (double)pl->dir;
+        pl->float_dir = (DFLOAT)pl->dir;
         pl->last_wall_touch = frame_loops;
     }
 

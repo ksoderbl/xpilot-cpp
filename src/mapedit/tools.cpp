@@ -44,7 +44,7 @@ undo_t *undolist = NULL;
 /*   btn                                                                   */
 /* Purpose :                                                               */
 /***************************************************************************/
-int DrawMapIcon(HandlerInfo_t info)
+int DrawMapIcon(HandlerInfo info)
 {
     char icon = ' ';
     int deltax, deltay, sign, i, x2, y2, x, y, count;
@@ -355,7 +355,7 @@ void ChangeMapData(int x, int y, char icon, int save)
 /*   btn                                                                   */
 /* Purpose :                                                               */
 /***************************************************************************/
-int MoveMapView(HandlerInfo_t info)
+int MoveMapView(HandlerInfo info)
 {
     int oldx, oldy;
     int width, height, xclear, yclear;
@@ -449,7 +449,7 @@ int MoveMapView(HandlerInfo_t info)
 /*   btnname                                                               */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ZoomOut(HandlerInfo_t info)
+int ZoomOut(HandlerInfo info)
 {
     int x, y, oldvx = 0, oldvy = 0;
 
@@ -497,7 +497,7 @@ int ZoomOut(HandlerInfo_t info)
 /*   btnname                                                               */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ZoomIn(HandlerInfo_t info)
+int ZoomIn(HandlerInfo info)
 {
     int x, y, oldvx = 0, oldvy = 0;
 
@@ -569,7 +569,7 @@ void SizeSelectBounds(int oldvx, int oldvy)
 /*   name                                                                  */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ExitApplication(HandlerInfo_t info)
+int ExitApplication(HandlerInfo info)
 {
     if (ChangedPrompt(ExitApplication))
         return 0;
@@ -630,7 +630,7 @@ int SaveUndoIcon(int x, int y, char icon)
 /*   btnname                                                               */
 /* Purpose :                                                               */
 /***************************************************************************/
-int Undo(HandlerInfo_t info)
+int Undo(HandlerInfo info)
 {
     undo_t *traverse;
 
@@ -679,7 +679,7 @@ void ClearUndo(void)
 /*   btnname                                                               */
 /* Purpose :                                                               */
 /***************************************************************************/
-int NewMap(HandlerInfo_t info)
+int NewMap(HandlerInfo info)
 {
     int i, j;
 
@@ -716,7 +716,7 @@ int NewMap(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ResizeWidth(HandlerInfo_t info)
+int ResizeWidth(HandlerInfo info)
 {
     int width;
 
@@ -740,7 +740,7 @@ int ResizeWidth(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ResizeHeight(HandlerInfo_t info)
+int ResizeHeight(HandlerInfo info)
 {
     int height;
 
@@ -766,7 +766,7 @@ int ResizeHeight(HandlerInfo_t info)
 /*   name                                                                  */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenPreferencesPopup(HandlerInfo_t info)
+int OpenPreferencesPopup(HandlerInfo info)
 {
     XMapWindow(display, prefwin);
     return 0;
@@ -776,7 +776,7 @@ int OpenPreferencesPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenMapInfoPopup(HandlerInfo_t info)
+int OpenMapInfoPopup(HandlerInfo info)
 {
     //    Window *temp;
 
@@ -809,7 +809,7 @@ int OpenMapInfoPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenRobotsPopup(HandlerInfo_t info)
+int OpenRobotsPopup(HandlerInfo info)
 {
     XMapWindow(display, robots);
     return 0;
@@ -819,7 +819,7 @@ int OpenRobotsPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenVisibilityPopup(HandlerInfo_t info)
+int OpenVisibilityPopup(HandlerInfo info)
 {
     XMapWindow(display, visibility);
     return 0;
@@ -829,7 +829,7 @@ int OpenVisibilityPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenCannonsPopup(HandlerInfo_t info)
+int OpenCannonsPopup(HandlerInfo info)
 {
     XMapWindow(display, cannons);
     return 0;
@@ -839,7 +839,7 @@ int OpenCannonsPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenRoundsPopup(HandlerInfo_t info)
+int OpenRoundsPopup(HandlerInfo info)
 {
     XMapWindow(display, rounds);
     return 0;
@@ -849,7 +849,7 @@ int OpenRoundsPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenInitItemsPopup(HandlerInfo_t info)
+int OpenInitItemsPopup(HandlerInfo info)
 {
     XMapWindow(display, inititems);
     return 0;
@@ -859,7 +859,7 @@ int OpenInitItemsPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenMaxItemsPopup(HandlerInfo_t info)
+int OpenMaxItemsPopup(HandlerInfo info)
 {
     XMapWindow(display, maxitems);
     return 0;
@@ -869,7 +869,7 @@ int OpenMaxItemsPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenProbsPopup(HandlerInfo_t info)
+int OpenProbsPopup(HandlerInfo info)
 {
     XMapWindow(display, probs);
     return 0;
@@ -879,7 +879,7 @@ int OpenProbsPopup(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int OpenScoringPopup(HandlerInfo_t info)
+int OpenScoringPopup(HandlerInfo info)
 {
     XMapWindow(display, scoring);
     return 0;
@@ -892,7 +892,7 @@ int OpenScoringPopup(HandlerInfo_t info)
 /*   variable                                                              */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ValidateCoordHandler(HandlerInfo_t info)
+int ValidateCoordHandler(HandlerInfo info)
 {
     char *returnval;
     char *string, *start;
@@ -923,7 +923,7 @@ int ValidateCoordHandler(HandlerInfo_t info)
 /*   btnname                                                               */
 /* Purpose :                                                               */
 /***************************************************************************/
-int ShowHoles(HandlerInfo_t info)
+int ShowHoles(HandlerInfo info)
 {
     int i, j, w, /*h,*/ x, y;
 
@@ -1043,7 +1043,7 @@ void DrawSelectArea(void)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int FillMapArea(HandlerInfo_t info)
+int FillMapArea(HandlerInfo info)
 {
     int i, j, x1, y1, x2, y2;
 
@@ -1083,7 +1083,7 @@ int FillMapArea(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int CopyMapArea(HandlerInfo_t info)
+int CopyMapArea(HandlerInfo info)
 {
     int i, j, x1, y1, x2, y2;
 
@@ -1125,7 +1125,7 @@ int CopyMapArea(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int CutMapArea(HandlerInfo_t info)
+int CutMapArea(HandlerInfo info)
 {
     int i, j, x1, y1, x2, y2;
 
@@ -1171,7 +1171,7 @@ int CutMapArea(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int PasteMapArea(HandlerInfo_t info)
+int PasteMapArea(HandlerInfo info)
 {
     int i, j, x1, y1, x2, y2;
 
@@ -1212,7 +1212,7 @@ int PasteMapArea(HandlerInfo_t info)
 /* Arguments :                                                             */
 /* Purpose :                                                               */
 /***************************************************************************/
-int NegativeMapArea(HandlerInfo_t info)
+int NegativeMapArea(HandlerInfo info)
 {
     int i, j, x1, y1, x2, y2;
 

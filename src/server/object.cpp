@@ -75,7 +75,7 @@ object_t *Object_allocate(void)
     }
     else
     {
-        warn("Object_allocate: MAX_TOTAL_SHOTS (ObjCount = %d) reached", ObjCount);
+        xpwarn("Object_allocate: MAX_TOTAL_SHOTS (ObjCount = %d) reached", ObjCount);
     }
 
     return obj;
@@ -92,8 +92,8 @@ void Object_free_ind(int ind)
     }
     else
     {
-        warn("Cannot free object %d, when count = %d, and total = %d !",
-             ind, ObjCount, MAX_TOTAL_SHOTS);
+        xpwarn("Cannot free object %d, when count = %d, and total = %d !",
+               ind, ObjCount, MAX_TOTAL_SHOTS);
     }
 }
 
@@ -111,7 +111,7 @@ void Object_free_ptr(object_t *obj)
     }
     if (i < 0)
     {
-        warn("Could NOT free object!");
+        xpwarn("Could NOT free object!");
     }
 }
 
@@ -148,7 +148,7 @@ void Alloc_shots(int number)
     x = XCALLOC(anyobject_t, number);
     if (!x)
     {
-        error("Not enough memory for shots.");
+        xperror("Not enough memory for shots.");
         exit(1);
     }
 
@@ -179,7 +179,7 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= world->click_width)
+    if (cx >= World.click_width)
     {
         printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -191,7 +191,7 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= world->click_height)
+    if (cy >= World.click_height)
     {
         printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -226,7 +226,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= world->click_width)
+    if (cx >= World.click_width)
     {
         printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -238,7 +238,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= world->click_height)
+    if (cy >= World.click_height)
     {
         printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -262,8 +262,8 @@ void Player_position_limit(player_t *pl)
     int x = pl->pos.x, ox = x;
     int y = pl->pos.y, oy = y;
 
-    LIMIT(x, 0, world->width - 1);
-    LIMIT(y, 0, world->height - 1);
+    LIMIT(x, 0, World.width - 1);
+    LIMIT(y, 0, World.height - 1);
     if (x != ox || y != oy)
     {
         Player_position_set_clicks(pl, PIXEL_TO_CLICK(x), PIXEL_TO_CLICK(y));

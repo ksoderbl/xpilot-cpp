@@ -204,7 +204,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar);
  */
 static void Not_enough_memory(void)
 {
-    error("Not enough memory.");
+    xperror("Not enough memory.");
 }
 
 /*
@@ -264,8 +264,8 @@ static int Welcome_create_label(int position, const char *label_text)
     subform_label_widget =
         Widget_create_label(subform_widget,
                             label_x, label_y,
-                            label_width, label_height, true, 0,
-                            label_text);
+                            label_width, label_height,
+                            0, label_text);
     if (subform_label_widget != NO_WIDGET)
     {
         /* map children */
@@ -431,7 +431,7 @@ static int Localnet_cb(int widget, void *user_data, const char **text)
             /* button = */
             Widget_create_label(subform_widget,
                                 button_x, button_y,
-                                button_width, button_height, true,
+                                button_width, button_height,
                                 1, localnet_conpars[i].server_name);
 
 #if 0
@@ -875,7 +875,7 @@ static void Meta_connect(int *connections_ptr, int *maxfd_ptr)
         {
             sprintf(buf, "Could not establish connection with %s",
                     metas[i].name);
-            error(buf);
+            xperror(buf);
             Welcome_create_label(1, buf);
         }
         else
@@ -1222,8 +1222,8 @@ static int Get_meta_data(void)
                 {
                     if (bytes_read == -1)
                     {
-                        error("Error while reading data from meta %d\n",
-                              i + 1);
+                        xperror("Error while reading data from meta %d\n",
+                                i + 1);
                     }
                     FD_CLR(metas[i].sock.fd, &rset_in);
                     close(metas[i].sock.fd);
@@ -1609,7 +1609,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
 
     w = Widget_create_label(subform_widget,
                             player_offset, yoff,
-                            player_width, label_height, true,
+                            player_width, label_height,
                             border, player_header);
     if (!w)
     {
@@ -1617,40 +1617,40 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
     }
     Widget_create_label(subform_widget,
                         queue_offset, yoff,
-                        queue_width, label_height, true,
+                        queue_width, label_height,
                         border, queue_header);
     Widget_create_label(subform_widget,
                         bases_offset, yoff,
-                        bases_width, label_height, true,
+                        bases_width, label_height,
                         border, bases_header);
     Widget_create_label(subform_widget,
                         team_offset, yoff,
-                        team_width, label_height, true,
+                        team_width, label_height,
                         border, team_header);
     Widget_create_label(subform_widget,
                         fps_offset, yoff,
-                        fps_width, label_height, true,
+                        fps_width, label_height,
                         border, fps_header);
     Widget_create_label(subform_widget,
                         status_offset, yoff,
-                        status_width, label_height, true,
+                        status_width, label_height,
                         border, status_header);
     Widget_create_label(subform_widget,
                         version_offset, yoff,
-                        version_width, label_height, true,
+                        version_width, label_height,
                         border, version_header);
     Widget_create_label(subform_widget,
                         map_offset, yoff,
-                        map_width, label_height, true,
+                        map_width, label_height,
                         border, map_header);
     Widget_create_label(subform_widget,
                         server_offset, yoff,
                         /* server_width, label_height, */
-                        server_width + server_border_width - 2 * border, label_height, true,
+                        server_width + server_border_width - 2 * border, label_height,
                         border, server_header);
     Widget_create_label(subform_widget,
                         ping_offset, yoff,
-                        ping_width, label_height, true,
+                        ping_width, label_height,
                         border, ping_header);
 
     /* Widget_map_sub(subform_widget);
@@ -1666,24 +1666,24 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
         sip = SI_DATA(server_it);
         Widget_create_label(subform_widget,
                             player_offset, yoff,
-                            player_width, label_height, true,
+                            player_width, label_height,
                             border, sip->users ? sip->users_str : "");
         Widget_create_label(subform_widget,
                             queue_offset, yoff,
-                            queue_width, label_height, true,
+                            queue_width, label_height,
                             border, sip->queue ? sip->queue_str : "");
         Widget_create_label(subform_widget,
                             bases_offset, yoff,
-                            bases_width, label_height, true,
+                            bases_width, label_height,
                             border, sip->bases_str);
         Widget_create_label(subform_widget,
                             team_offset, yoff,
-                            team_width, label_height, true,
+                            team_width, label_height,
                             border,
                             (sip->teambases > 0) ? sip->teambases_str : "");
         Widget_create_label(subform_widget,
                             fps_offset, yoff,
-                            fps_width, label_height, true,
+                            fps_width, label_height,
                             border, sip->fps_str);
         if (strlen(sip->status) > 4)
         {
@@ -1691,7 +1691,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
         }
         Widget_create_label(subform_widget,
                             status_offset, yoff,
-                            status_width, label_height, true,
+                            status_width, label_height,
                             border,
                             strcmp(sip->status, "ok") ? sip->status : "");
         if (strlen(sip->version) > max_version_length)
@@ -1701,11 +1701,11 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
         string_to_lower(sip->version);
         Widget_create_label(subform_widget,
                             version_offset, yoff,
-                            version_width, label_height, true,
+                            version_width, label_height,
                             border, sip->version);
         Widget_create_label(subform_widget,
                             map_offset, yoff,
-                            map_width, label_height, true,
+                            map_width, label_height,
                             border, sip->mapname);
         Widget_create_activate(subform_widget,
                                server_offset,
@@ -1716,7 +1716,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
         sprintf(sip->pingtime_str, "%4d", sip->pingtime);
         Widget_create_label(subform_widget,
                             ping_offset, yoff,
-                            ping_width, label_height, true,
+                            ping_width, label_height,
                             border, (sip->pingtime == PING_NORESP) ? "none" : ((sip->pingtime == PING_SLOW) ? "slow" : ((sip->pingtime == PING_UNKNOWN) ? "" : sip->pingtime_str)));
     }
 
@@ -2208,22 +2208,29 @@ static int Welcome_doit(Connect_param_t *conpar)
     XSynchronize(dpy, True);
 #endif
     if (Init_top() == -1)
+    {
         return -1;
-
+    }
     XMapSubwindows(dpy, topWindow);
     XMapWindow(dpy, topWindow);
     XSync(dpy, False);
 
     result = Welcome_process_pending_events(conpar);
     if (result)
+    {
         return result;
+    }
 
     if (Welcome_create_windows(conpar) == -1)
+    {
         return -1;
+    }
 
     result = Welcome_process_pending_events(conpar);
     if (result)
+    {
         return result;
+    }
 
     result = Welcome_input_loop(conpar);
     return result;
@@ -2242,9 +2249,21 @@ int Welcome_screen(Connect_param_t *conpar)
     result = Welcome_doit(conpar);
 
     if (!quitting && joining)
+    {
         Welcome_cleanup();
+        result = Join(conpar->server_addr,
+                      conpar->server_name,
+                      conpar->login_port,
+                      conpar->user_name,
+                      conpar->nick_name,
+                      conpar->team,
+                      conpar->disp_name,
+                      conpar->server_version);
+    }
     else
+    {
         Platform_specific_cleanup();
+    }
 
     return result;
 }

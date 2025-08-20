@@ -21,8 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
-#include <cstdio>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define SERVER
 #include "xpconfig.h"
@@ -69,49 +69,60 @@ long USED_KILL =
  */
 static void Set_item_chance(int item)
 {
-    double max = options.itemProbMult * options.maxItemDensity * world->x * world->y;
-    double sum = 0;
+    DFLOAT max = options.itemProbMult * options.maxItemDensity * World.x * World.y;
+    DFLOAT sum = 0;
     int i, num = 0;
 
-    if (options.itemProbMult * world->items[item].prob > 0)
+    if (options.itemProbMult * World.items[item].prob > 0)
     {
-        world->items[item].chance = (int)(1.0 / (options.itemProbMult * world->items[item].prob * world->x * world->y * FPS));
-        world->items[item].chance = MAX(world->items[item].chance, 1);
+        World.items[item].chance = (int)(1.0 / (options.itemProbMult * World.items[item].prob * World.x * World.y * FPS));
+        World.items[item].chance = MAX(World.items[item].chance, 1);
     }
     else
-        world->items[item].chance = 0;
+    {
+        World.items[item].chance = 0;
+    }
     if (max > 0)
     {
         if (max < 1)
-            world->items[item].max = 1;
+        {
+            World.items[item].max = 1;
+        }
         else
-            world->items[item].max = (int)max;
+        {
+            World.items[item].max = (int)max;
+        }
     }
     else
-        world->items[item].max = 0;
-
+    {
+        World.items[item].max = 0;
+    }
     if (!BIT(CANNON_USE_ITEM, 1U << item))
     {
-        world->items[item].cannonprob = 0;
+        World.items[item].cannonprob = 0;
         return;
     }
     for (i = 0; i < NUM_ITEMS; i++)
     {
-        if (world->items[i].prob > 0 && BIT(CANNON_USE_ITEM, 1U << i))
+        if (World.items[i].prob > 0 && BIT(CANNON_USE_ITEM, 1U << i))
         {
-            sum += world->items[i].prob;
+            sum += World.items[i].prob;
             num++;
         }
     }
     if (num)
-        world->items[item].cannonprob = world->items[item].prob * (num / sum) * (options.maxItemDensity / 0.00012);
+    {
+        World.items[item].cannonprob = World.items[item].prob * (num / sum) * (options.maxItemDensity / 0.00012);
+    }
     else
-        world->items[item].cannonprob = 0;
+    {
+        World.items[item].cannonprob = 0;
+    }
 }
 
 /*
  * An item probability has been changed during game play.
- * Update the world->items structure and test if there are more items
+ * Update the World.items structure and test if there are more items
  * in the world than wanted for the new item probabilities.
  * This function is also called when itemProbMult or maxItemDensity changes.
  */
@@ -122,7 +133,7 @@ void Tune_item_probs(void)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         Set_item_chance(i);
-        excess = world->items[i].num - world->items[i].max;
+        excess = World.items[i].num - World.items[i].max;
         if (excess > 0)
         {
             for (j = 0; j < NumObjs; j++)
@@ -135,7 +146,9 @@ void Tune_item_probs(void)
                         Delete_shot(j);
                         j--;
                         if (--excess == 0)
+                        {
                             break;
+                        }
                     }
                 }
             }
@@ -145,30 +158,36 @@ void Tune_item_probs(void)
 
 void Tune_asteroid_prob(void)
 {
-    double max = options.maxAsteroidDensity * world->x * world->y;
+    DFLOAT max = options.maxAsteroidDensity * World.x * World.y;
 
-    if (world->asteroids.prob > 0)
+    if (World.asteroids.prob > 0)
     {
-        world->asteroids.chance = (int)(1.0 / (world->asteroids.prob * world->x * world->y * FPS));
-        world->asteroids.chance = MAX(world->asteroids.chance, 1);
+        World.asteroids.chance = (int)(1.0 / (World.asteroids.prob * World.x * World.y * FPS));
+        World.asteroids.chance = MAX(World.asteroids.chance, 1);
     }
     else
-        world->asteroids.chance = 0;
-
+    {
+        World.asteroids.chance = 0;
+    }
     if (max > 0)
     {
         if (max < 1)
-            world->asteroids.max = 1;
+        {
+            World.asteroids.max = 1;
+        }
         else
-            world->asteroids.max = (int)max;
+        {
+            World.asteroids.max = (int)max;
+        }
     }
     else
-        world->asteroids.max = 0;
-
+    {
+        World.asteroids.max = 0;
+    }
     /* superfluous asteroids are handled by Asteroid_update() */
 
     /* Tune asteroid concentrator parameters */
-    LIMIT(options.asteroidConcentratorRadius, 1, world->diagonal);
+    LIMIT(options.asteroidConcentratorRadius, 1, World.diagonal);
     LIMIT(options.asteroidConcentratorProb, 0.0, 1.0);
 }
 
@@ -177,8 +196,8 @@ void Tune_asteroid_prob(void)
  */
 void Tune_item_packs(void)
 {
-    world->items[ITEM_MINE].max_per_pack = options.maxMinesPerPack;
-    world->items[ITEM_MISSILE].max_per_pack = options.maxMissilesPerPack;
+    World.items[ITEM_MINE].max_per_pack = options.maxMinesPerPack;
+    World.items[ITEM_MISSILE].max_per_pack = options.maxMissilesPerPack;
 }
 
 /*
@@ -189,10 +208,10 @@ void Tune_item_packs(void)
  */
 static void Init_item(int item, int minpp, int maxpp)
 {
-    world->items[item].num = 0;
+    World.items[item].num = 0;
 
-    world->items[item].min_per_pack = minpp;
-    world->items[item].max_per_pack = maxpp;
+    World.items[item].min_per_pack = minpp;
+    World.items[item].max_per_pack = maxpp;
 
     Set_item_chance(item);
 }
@@ -206,31 +225,31 @@ void Set_initial_resources(void)
 {
     int i;
 
-    LIMIT(world->items[ITEM_FUEL].limit, 0, MAX_FUEL);
-    LIMIT(world->items[ITEM_WIDEANGLE].limit, 0, MAX_WIDEANGLE);
-    LIMIT(world->items[ITEM_REARSHOT].limit, 0, MAX_REARSHOT);
-    LIMIT(world->items[ITEM_AFTERBURNER].limit, 0, MAX_AFTERBURNER);
-    LIMIT(world->items[ITEM_CLOAK].limit, 0, MAX_CLOAK);
-    LIMIT(world->items[ITEM_SENSOR].limit, 0, MAX_SENSOR);
-    LIMIT(world->items[ITEM_TRANSPORTER].limit, 0, MAX_TRANSPORTER);
-    LIMIT(world->items[ITEM_TANK].limit, 0, MAX_TANKS);
-    LIMIT(world->items[ITEM_MINE].limit, 0, MAX_MINE);
-    LIMIT(world->items[ITEM_MISSILE].limit, 0, MAX_MISSILE);
-    LIMIT(world->items[ITEM_ECM].limit, 0, MAX_ECM);
-    LIMIT(world->items[ITEM_LASER].limit, 0, MAX_LASER);
-    LIMIT(world->items[ITEM_EMERGENCY_THRUST].limit, 0, MAX_EMERGENCY_THRUST);
-    LIMIT(world->items[ITEM_TRACTOR_BEAM].limit, 0, MAX_TRACTOR_BEAM);
-    LIMIT(world->items[ITEM_AUTOPILOT].limit, 0, MAX_AUTOPILOT);
-    LIMIT(world->items[ITEM_EMERGENCY_SHIELD].limit, 0, MAX_EMERGENCY_SHIELD);
-    LIMIT(world->items[ITEM_DEFLECTOR].limit, 0, MAX_DEFLECTOR);
-    LIMIT(world->items[ITEM_PHASING].limit, 0, MAX_PHASING);
-    LIMIT(world->items[ITEM_HYPERJUMP].limit, 0, MAX_HYPERJUMP);
-    LIMIT(world->items[ITEM_MIRROR].limit, 0, MAX_MIRROR);
-    LIMIT(world->items[ITEM_ARMOR].limit, 0, MAX_ARMOR);
+    LIMIT(World.items[ITEM_FUEL].limit, 0, MAX_FUEL);
+    LIMIT(World.items[ITEM_WIDEANGLE].limit, 0, MAX_WIDEANGLE);
+    LIMIT(World.items[ITEM_REARSHOT].limit, 0, MAX_REARSHOT);
+    LIMIT(World.items[ITEM_AFTERBURNER].limit, 0, MAX_AFTERBURNER);
+    LIMIT(World.items[ITEM_CLOAK].limit, 0, MAX_CLOAK);
+    LIMIT(World.items[ITEM_SENSOR].limit, 0, MAX_SENSOR);
+    LIMIT(World.items[ITEM_TRANSPORTER].limit, 0, MAX_TRANSPORTER);
+    LIMIT(World.items[ITEM_TANK].limit, 0, MAX_TANKS);
+    LIMIT(World.items[ITEM_MINE].limit, 0, MAX_MINE);
+    LIMIT(World.items[ITEM_MISSILE].limit, 0, MAX_MISSILE);
+    LIMIT(World.items[ITEM_ECM].limit, 0, MAX_ECM);
+    LIMIT(World.items[ITEM_LASER].limit, 0, MAX_LASER);
+    LIMIT(World.items[ITEM_EMERGENCY_THRUST].limit, 0, MAX_EMERGENCY_THRUST);
+    LIMIT(World.items[ITEM_TRACTOR_BEAM].limit, 0, MAX_TRACTOR_BEAM);
+    LIMIT(World.items[ITEM_AUTOPILOT].limit, 0, MAX_AUTOPILOT);
+    LIMIT(World.items[ITEM_EMERGENCY_SHIELD].limit, 0, MAX_EMERGENCY_SHIELD);
+    LIMIT(World.items[ITEM_DEFLECTOR].limit, 0, MAX_DEFLECTOR);
+    LIMIT(World.items[ITEM_PHASING].limit, 0, MAX_PHASING);
+    LIMIT(World.items[ITEM_HYPERJUMP].limit, 0, MAX_HYPERJUMP);
+    LIMIT(World.items[ITEM_MIRROR].limit, 0, MAX_MIRROR);
+    LIMIT(World.items[ITEM_ARMOR].limit, 0, MAX_ARMOR);
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
-        LIMIT(world->items[i].initial, 0, world->items[i].limit);
+        LIMIT(World.items[i].initial, 0, World.items[i].limit);
     }
 
     CLR_BIT(DEF_HAVE,
@@ -244,23 +263,23 @@ void Set_initial_resources(void)
                 HAS_MIRROR |
                 HAS_ARMOR);
 
-    if (world->items[ITEM_CLOAK].initial > 0)
+    if (World.items[ITEM_CLOAK].initial > 0)
         SET_BIT(DEF_HAVE, HAS_CLOAKING_DEVICE);
-    if (world->items[ITEM_EMERGENCY_THRUST].initial > 0)
+    if (World.items[ITEM_EMERGENCY_THRUST].initial > 0)
         SET_BIT(DEF_HAVE, HAS_EMERGENCY_THRUST);
-    if (world->items[ITEM_EMERGENCY_SHIELD].initial > 0)
+    if (World.items[ITEM_EMERGENCY_SHIELD].initial > 0)
         SET_BIT(DEF_HAVE, HAS_EMERGENCY_SHIELD);
-    if (world->items[ITEM_PHASING].initial > 0)
+    if (World.items[ITEM_PHASING].initial > 0)
         SET_BIT(DEF_HAVE, HAS_PHASING_DEVICE);
-    if (world->items[ITEM_TRACTOR_BEAM].initial > 0)
+    if (World.items[ITEM_TRACTOR_BEAM].initial > 0)
         SET_BIT(DEF_HAVE, HAS_TRACTOR_BEAM);
-    if (world->items[ITEM_AUTOPILOT].initial > 0)
+    if (World.items[ITEM_AUTOPILOT].initial > 0)
         SET_BIT(DEF_HAVE, HAS_AUTOPILOT);
-    if (world->items[ITEM_DEFLECTOR].initial > 0)
+    if (World.items[ITEM_DEFLECTOR].initial > 0)
         SET_BIT(DEF_HAVE, HAS_DEFLECTOR);
-    if (world->items[ITEM_MIRROR].initial > 0)
+    if (World.items[ITEM_MIRROR].initial > 0)
         SET_BIT(DEF_HAVE, HAS_MIRROR);
-    if (world->items[ITEM_ARMOR].initial > 0)
+    if (World.items[ITEM_ARMOR].initial > 0)
         SET_BIT(DEF_HAVE, HAS_ARMOR);
 }
 
@@ -272,7 +291,7 @@ void Set_misc_item_limits(void)
     LIMIT(options.randomItemProb, 0.0, 1.0);
     LIMIT(options.destroyItemInCollisionProb, 0.0, 1.0);
 
-    LIMIT(options.itemConcentratorRadius, 1, world->diagonal);
+    LIMIT(options.itemConcentratorRadius, 1, World.diagonal);
     LIMIT(options.itemConcentratorProb, 0.0, 1.0);
 
     LIMIT(options.asteroidItemProb, 0.0, 1.0);
@@ -320,23 +339,29 @@ void Set_world_rules(void)
     rules.mode =
         ((options.crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (options.bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (options.playerKillings ? PLAYER_KILLINGS : 0) | (options.playerShielding ? PLAYER_SHIELDING : 0) | (options.limitedVisibility ? LIMITED_VISIBILITY : 0) | (options.limitedLives ? LIMITED_LIVES : 0) | (options.teamPlay ? TEAM_PLAY : 0) | (options.allowAlliances ? ALLIANCES : 0) | (options.timing ? TIMING : 0) | (options.allowNukes ? ALLOW_NUKES : 0) | (options.allowClusters ? ALLOW_CLUSTERS : 0) | (options.allowModifiers ? ALLOW_MODIFIERS : 0) | (options.allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (options.edgeWrap ? WRAP_PLAY : 0));
     rules.lives = options.worldLives;
-    world->rules = &rules;
+    World.rules = &rules;
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
-        CLR_BIT(world->rules->mode, ALLIANCES);
+    if (BIT(World.rules->mode, TEAM_PLAY))
+    {
+        CLR_BIT(World.rules->mode, ALLIANCES);
+    }
 
-    if (!BIT(world->rules->mode, PLAYER_KILLINGS))
+    if (!BIT(World.rules->mode, PLAYER_KILLINGS))
+    {
         CLR_BIT(KILLING_SHOTS,
                 OBJ_SHOT | OBJ_CANNON_SHOT | OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_PULSE);
+    }
 
-    if (!BIT(world->rules->mode, PLAYER_SHIELDING))
+    if (!BIT(World.rules->mode, PLAYER_SHIELDING))
+    {
         CLR_BIT(DEF_HAVE, HAS_SHIELD);
+    }
 
     DEF_USED &= DEF_HAVE;
 }
 
 void Set_world_asteroids(void)
 {
-    world->asteroids.num = 0;
+    World.asteroids.num = 0;
     Tune_asteroid_prob();
 }

@@ -187,7 +187,7 @@ static int RGetPixelIndex(unsigned long pixel)
 
 //     if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
 //     {
-//         error("Not enough memory");
+//         xperror("Not enough memory");
 //         RWriteByte(RC_TILE);
 //         RWriteByte(0);
 //         return;
@@ -901,42 +901,11 @@ void Record_cleanup(void)
  * Store the name of the file where the user
  * wants recordings to be written to.
  */
-void Record_init(const char *filename)
+void Record_init(char *filename)
 {
     rd = Xdrawing;
     if (filename != NULL && filename[0] != '\0')
+    {
         record_filename = xp_strdup(filename);
-}
-
-static bool setRecordFile(xp_option_t *opt, const char *value)
-{
-    assert(value);
-    /* Don't allow changing record file after file has been opened. */
-    if (recordFP != NULL)
-        return false;
-    Record_init(value);
-    return true;
-}
-
-static const char *getRecordFile(xp_option_t *opt)
-{
-    return record_filename;
-}
-
-xp_option_t record_options[] = {
-
-    XP_STRING_OPTION(
-        "recordFile",
-        "",
-        NULL, 0,
-        setRecordFile, NULL, getRecordFile,
-        XP_OPTFLAG_DEFAULT,
-        "An optional file where a recording of a game can be made.\n"
-        "If this file is undefined then recording isn't possible.\n"),
-
-};
-
-void Store_record_options(void)
-{
-    STORE_OPTIONS(record_options);
+    }
 }
