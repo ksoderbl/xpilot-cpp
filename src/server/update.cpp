@@ -53,9 +53,7 @@
         (o_)->vel.y += (o_)->acc.y;                                                             \
     }
 
-int round_delay = 0;      /* delay until start of next round */
-int round_delay_send = 0; /* number of frames to send round_delay */
-int roundtime = -1;       /* time left this round */
+int roundtime = -1; /* time left this round */
 
 static char msg[MSG_LEN];
 
@@ -836,9 +834,6 @@ void Update_objects(void)
         }
 
         if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
-            continue;
-
-        if (round_delay > 0)
             continue;
 
         if (pl->stunned > 0)

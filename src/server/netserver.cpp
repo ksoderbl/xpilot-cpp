@@ -1352,36 +1352,24 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
 
     num_logins++;
 
-    if (options.resetOnHuman > 0 && (NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman && !round_delay)
+    if (options.resetOnHuman > 0 && (NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman)
     {
         if (BIT(World.rules->mode, TIMING))
-        {
             Race_game_over();
-        }
         else if (BIT(World.rules->mode, TEAM_PLAY))
-        {
             Team_game_over(-1, "");
-        }
         else if (BIT(World.rules->mode, LIMITED_LIVES))
-        {
             Individual_game_over(-1);
-        }
     }
 
-    /* if the next round is delayed, delay it again */
-    if (round_delay > 0 || NumPlayers == 1)
+    if (NumPlayers == 1)
     {
-        round_delay = options.roundDelaySeconds * FPS;
-        if (options.maxRoundTime > 0 && options.roundDelaySeconds == 0)
-        {
+        if (options.maxRoundTime > 0)
             roundtime = options.maxRoundTime * FPS;
-        }
         else
-        {
             roundtime = -1;
-        }
-        sprintf(msg, "Player entered. Delaying %d seconds until next %s.",
-                options.roundDelaySeconds, (BIT(World.rules->mode, TIMING) ? "race" : "round"));
+        sprintf(msg, "Player entered. Delaying 0 seconds until next %s.",
+                (BIT(World.rules->mode, TIMING) ? "race" : "round"));
         Set_message(msg);
     }
 
@@ -2031,32 +2019,12 @@ int Send_thrusttime(connection_t *connp, int count, int max)
 
 int Send_shieldtime(connection_t *connp, int count, int max)
 {
-    if (connp->version < 0x3200)
-    {
-        printf("THIS NEVER HAPPENS: rvj2q+if8ufdasfdae\n");
-        return 1;
-    }
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_SHIELDTIME, count, max);
 }
 
 int Send_phasingtime(connection_t *connp, int count, int max)
 {
-    if (connp->version < 0x3800)
-    {
-        printf("THIS NEVER HAPPENS: 2rjfjwjaw\n");
-        return 1;
-    }
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_PHASINGTIME, count, max);
-}
-
-int Send_rounddelay(connection_t *connp, int count, int max)
-{
-    if (connp->version < 0x3800)
-    {
-        printf("THIS NEVER HAPPENS: cajf2ju2u9r30u2i90r3\n");
-        return 1;
-    }
-    return (Packet_printf(&connp->w, "%c%hd%hd", PKT_ROUNDDELAY, count, max));
 }
 
 int Send_debris(connection_t *connp, int type, uint8_t *p, int n)
@@ -2092,12 +2060,6 @@ int Send_debris(connection_t *connp, int type, uint8_t *p, int n)
 
 int Send_wreckage(connection_t *connp, int x, int y, uint8_t wrtype, uint8_t size, uint8_t rot)
 {
-    if (connp->version < 0x3800)
-    {
-        printf("THIS NEVER HAPPENS: 3kljto3iwjo3iju493\n");
-        return 1;
-    }
-
     if (options.wreckageCollisionMayKill && connp->version > 0x4201)
     {
         /* Set the highest bit when wreckage is deadly. */

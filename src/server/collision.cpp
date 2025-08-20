@@ -252,12 +252,7 @@ void Check_collision(void)
 {
     BallCollision();
     MineCollision();
-
-    if (round_delay == 0)
-    {
-        PlayerCollision();
-    }
-
+    PlayerCollision();
     Laser_pulse_collision();
     AsteroidCollision();
 }

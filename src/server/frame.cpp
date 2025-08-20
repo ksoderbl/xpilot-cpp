@@ -469,9 +469,7 @@ static int Frame_status(connection_t *connp, int ind)
                   Players[GetInd[Get_player_id(connp)]]->status,
                   mods);
     if (n <= 0)
-    {
         return 0;
-    }
 
     if (BIT(pl->used, HAS_EMERGENCY_THRUST))
         Send_thrusttime(connp,
@@ -490,14 +488,7 @@ static int Frame_status(connection_t *connp, int ind)
                          pl->phasing_left,
                          pl->phasing_max);
     if (ShutdownServer != -1)
-    {
         Send_shutdown(connp, ShutdownServer, ShutdownDelay);
-    }
-
-    if (round_delay_send > 0)
-    {
-        Send_rounddelay(connp, round_delay, options.roundDelaySeconds * FPS);
-    }
 
     return 1;
 }
