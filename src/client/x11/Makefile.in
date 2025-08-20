@@ -100,12 +100,12 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_xpilot_cpp_client_x11_OBJECTS = about.$(OBJEXT) bitmaps.$(OBJEXT) \
 	colors.$(OBJEXT) configure.$(OBJEXT) dbuff.$(OBJEXT) \
-	default.$(OBJEXT) guimap.$(OBJEXT) guiobjects.$(OBJEXT) \
-	join.$(OBJEXT) paintdata.$(OBJEXT) painthud.$(OBJEXT) \
-	paintradar.$(OBJEXT) record.$(OBJEXT) sim.$(OBJEXT) \
-	talk.$(OBJEXT) welcome.$(OBJEXT) widget.$(OBJEXT) \
-	xdefault.$(OBJEXT) xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) \
-	xinit.$(OBJEXT) xpaint.$(OBJEXT) xpilot.$(OBJEXT)
+	guimap.$(OBJEXT) guiobjects.$(OBJEXT) join.$(OBJEXT) \
+	paintdata.$(OBJEXT) painthud.$(OBJEXT) paintradar.$(OBJEXT) \
+	record.$(OBJEXT) sim.$(OBJEXT) talk.$(OBJEXT) \
+	welcome.$(OBJEXT) widget.$(OBJEXT) xdefault.$(OBJEXT) \
+	xevent.$(OBJEXT) xeventhandlers.$(OBJEXT) xinit.$(OBJEXT) \
+	xpaint.$(OBJEXT) xpilot.$(OBJEXT)
 xpilot_cpp_client_x11_OBJECTS = $(am_xpilot_cpp_client_x11_OBJECTS)
 xpilot_cpp_client_x11_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
@@ -127,15 +127,15 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/about.Po ./$(DEPDIR)/bitmaps.Po \
 	./$(DEPDIR)/colors.Po ./$(DEPDIR)/configure.Po \
-	./$(DEPDIR)/dbuff.Po ./$(DEPDIR)/default.Po \
-	./$(DEPDIR)/guimap.Po ./$(DEPDIR)/guiobjects.Po \
-	./$(DEPDIR)/join.Po ./$(DEPDIR)/paintdata.Po \
-	./$(DEPDIR)/painthud.Po ./$(DEPDIR)/paintradar.Po \
-	./$(DEPDIR)/record.Po ./$(DEPDIR)/sim.Po ./$(DEPDIR)/talk.Po \
-	./$(DEPDIR)/welcome.Po ./$(DEPDIR)/widget.Po \
-	./$(DEPDIR)/xdefault.Po ./$(DEPDIR)/xevent.Po \
-	./$(DEPDIR)/xeventhandlers.Po ./$(DEPDIR)/xinit.Po \
-	./$(DEPDIR)/xpaint.Po ./$(DEPDIR)/xpilot.Po
+	./$(DEPDIR)/dbuff.Po ./$(DEPDIR)/guimap.Po \
+	./$(DEPDIR)/guiobjects.Po ./$(DEPDIR)/join.Po \
+	./$(DEPDIR)/paintdata.Po ./$(DEPDIR)/painthud.Po \
+	./$(DEPDIR)/paintradar.Po ./$(DEPDIR)/record.Po \
+	./$(DEPDIR)/sim.Po ./$(DEPDIR)/talk.Po ./$(DEPDIR)/welcome.Po \
+	./$(DEPDIR)/widget.Po ./$(DEPDIR)/xdefault.Po \
+	./$(DEPDIR)/xevent.Po ./$(DEPDIR)/xeventhandlers.Po \
+	./$(DEPDIR)/xinit.Po ./$(DEPDIR)/xpaint.Po \
+	./$(DEPDIR)/xpilot.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -287,8 +287,6 @@ xpilot_cpp_client_x11_SOURCES = \
     configure.cpp \
     dbuff.cpp \
     dbuff.h \
-    default.cpp \
-    default.h \
     guimap.cpp \
     guiobjects.cpp \
     join.cpp \
@@ -407,7 +405,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/colors.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/configure.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbuff.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/default.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guimap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/guiobjects.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/join.Po@am__quote@ # am--include-marker
@@ -577,7 +574,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/colors.Po
 	-rm -f ./$(DEPDIR)/configure.Po
 	-rm -f ./$(DEPDIR)/dbuff.Po
-	-rm -f ./$(DEPDIR)/default.Po
 	-rm -f ./$(DEPDIR)/guimap.Po
 	-rm -f ./$(DEPDIR)/guiobjects.Po
 	-rm -f ./$(DEPDIR)/join.Po
@@ -645,7 +641,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/colors.Po
 	-rm -f ./$(DEPDIR)/configure.Po
 	-rm -f ./$(DEPDIR)/dbuff.Po
-	-rm -f ./$(DEPDIR)/default.Po
 	-rm -f ./$(DEPDIR)/guimap.Po
 	-rm -f ./$(DEPDIR)/guiobjects.Po
 	-rm -f ./$(DEPDIR)/join.Po

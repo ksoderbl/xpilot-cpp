@@ -244,42 +244,36 @@ void Paint_radar(void)
 
 void Paint_sliding_radar(void)
 {
+    if (!Setup)
+        return;
+
     if (BIT(Setup->mode, WRAP_PLAY) == 0)
-    {
         return;
-    }
+
     if (radarPixmap != radarPixmap2)
-    {
         return;
-    }
-    if (instruments.slidingRadar != 0)
+
+    if (instruments.slidingRadar)
     {
         if (radarPixmap2 != radarWindow)
-        {
             return;
-        }
+
         radarPixmap2 = XCreatePixmap(dpy, radarWindow,
                                      256, RadarHeight,
                                      dispDepth);
         radarPixmap = radarPixmap2;
         if (radar_exposures > 0)
-        {
             Paint_world_radar();
-        }
     }
     else
     {
         if (radarPixmap2 == radarWindow)
-        {
             return;
-        }
         XFreePixmap(dpy, radarPixmap2);
         radarPixmap2 = radarWindow;
         radarPixmap = radarWindow;
         if (radar_exposures > 0)
-        {
             Paint_world_radar();
-        }
     }
 }
 
@@ -686,4 +680,60 @@ void Radar_show_target(int x, int y)
 void Radar_hide_target(int x, int y)
 {
     Paint_radar_block(x, y, BLACK);
+}
+
+static bool Set_wallRadarColor(xp_option_t *opt, int value)
+{
+    UNUSED_PARAM(opt);
+
+    wallRadarColor = value;
+    return true;
+}
+
+static bool Set_decorRadarColor(xp_option_t *opt, int value)
+{
+    UNUSED_PARAM(opt);
+
+    decorRadarColor = value;
+    return true;
+}
+
+static bool Set_targetRadarColor(xp_option_t *opt, int value)
+{
+    UNUSED_PARAM(opt);
+
+    targetRadarColor = value;
+    return true;
+}
+
+static xp_option_t paintradar_options[] = {
+
+    COLOR_INDEX_OPTION_WITH_SETFUNC(
+        "wallRadarColor",
+        BLUE,
+        &wallRadarColor,
+        Set_wallRadarColor,
+        "Which color number to use for drawing walls on the radar.\n"
+        "Valid values all even numbers smaller than maxColors.\n"),
+
+    COLOR_INDEX_OPTION_WITH_SETFUNC(
+        "decorRadarColor",
+        6,
+        &decorRadarColor,
+        Set_decorRadarColor,
+        "Which color number to use for drawing decorations on the radar.\n"
+        "Valid values are all even numbers smaller than maxColors.\n"),
+
+    COLOR_INDEX_OPTION_WITH_SETFUNC(
+        "targetRadarColor",
+        4,
+        &targetRadarColor,
+        Set_targetRadarColor,
+        "Which color number to use for drawing targets on the radar.\n"
+        "Valid values are all even numbers smaller than maxColors.\n"),
+};
+
+void Store_paintradar_options(void)
+{
+    STORE_OPTIONS(paintradar_options);
 }

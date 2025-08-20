@@ -62,7 +62,7 @@ extern long last_keyboard_ack;
 extern bool dirPrediction;
 
 int Net_setup(void);
-int Net_verify(char *user_name, char *nick_name, char *dpy, int my_team);
+int Net_verify(char *user_name, char *nick_name, char *dpy);
 int Net_init(char *server, int port);
 void Net_cleanup(void);
 void Net_key_change(void);

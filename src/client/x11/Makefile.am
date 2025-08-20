@@ -9,8 +9,6 @@ xpilot_cpp_client_x11_SOURCES = \
     configure.cpp \
     dbuff.cpp \
     dbuff.h \
-    default.cpp \
-    default.h \
     guimap.cpp \
     guiobjects.cpp \
     join.cpp \

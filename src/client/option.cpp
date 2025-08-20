@@ -47,19 +47,19 @@
 
 #include "client.h" // For Add_message
 
-int num_options2 = 0;
-int max_options2 = 0;
+int num_options = 0;
+int max_options = 0;
 
-xp_option_t *options2 = nullptr;
+xp_option_t *options = nullptr;
 
 xp_option_t *Find_option(const char *name)
 {
     int i;
 
-    for (i = 0; i < num_options2; i++)
+    for (i = 0; i < num_options; i++)
     {
-        if (!strcasecmp(name, options2[i].name))
-            return &options2[i];
+        if (!strcasecmp(name, options[i].name))
+            return &options[i];
     }
 
     return nullptr;
@@ -143,7 +143,7 @@ void Usage(void)
     //        "Where options include:\n"
     //        "\n",
     //        Program_name());
-    for (i = 0; i < num_options2; i++)
+    for (i = 0; i < num_options; i++)
     {
         xp_option_t *opt = Option_by_index(i);
 
@@ -566,8 +566,8 @@ bool Set_option(const char *name, const char *value, xp_option_origin_t origin)
         return Set_double_option(opt, atof(value), origin);
     case xp_string_option:
         return Set_string_option(opt, value, origin);
-    // case xp_key_option:
-    //     return Set_key_option(opt, value, origin);
+    case xp_key_option:
+        return Set_key_option(opt, value, origin);
     default:
         assert(0 && "TODO");
     }
@@ -714,6 +714,8 @@ int Store_option(xp_option_t *opt)
     assert(opt->help);
     assert(strlen(opt->help) > 0);
 
+    printf("*** Store_option: option \"%s\"\n", opt->name);
+
     /*
      * Let's not allow several options with the same name
      */
@@ -734,7 +736,7 @@ int Store_option(xp_option_t *opt)
 
     memcpy(&option, opt, sizeof(xp_option_t));
 
-    STORE(xp_option_t, options2, num_options2, max_options2, option);
+    STORE(xp_option_t, options, num_options, max_options, option);
 
     opt = Find_option(opt->name);
     assert(opt);
@@ -780,7 +782,7 @@ typedef struct xpilotrc_line
 
 static xpilotrc_line_t *xpilotrc_lines = nullptr;
 static int num_xpilotrc_lines = 0, max_xpilotrc_lines = 0;
-static int num_ok_options2 = 0;
+static int num_ok_options = 0;
 
 /*
  * Function to parse an xpilotrc line if it is of the right form, otherwise
@@ -899,7 +901,7 @@ static int Parse_xpilotrc_line(const char *line)
     t.comment = comment;
     STORE(xpilotrc_line_t,
           xpilotrc_lines, num_xpilotrc_lines, max_xpilotrc_lines, t);
-    num_ok_options2++;
+    num_ok_options++;
     XFREE(lcpy);
     return 0;
 
@@ -1039,7 +1041,7 @@ int Xpilotrc_write(const char *path)
     }
 
     /* make sure all options are in the xpilotrc */
-    for (i = 0; i < num_options2; i++)
+    for (i = 0; i < num_options; i++)
     {
         xp_option_t *opt = Option_by_index(i);
         xp_option_origin_t origin;
@@ -1224,7 +1226,7 @@ const char *Get_keyHelpString(keys_t key)
     char *nl;
     static char buf[MAX_CHARS];
 
-    for (i = 0; i < num_options2; i++)
+    for (i = 0; i < num_options; i++)
     {
         xp_option_t *opt = Option_by_index(i);
 
@@ -1244,7 +1246,7 @@ const char *Get_keyResourceString(keys_t key)
 {
     int i;
 
-    for (i = 0; i < num_options2; i++)
+    for (i = 0; i < num_options; i++)
     {
         xp_option_t *opt = Option_by_index(i);
 

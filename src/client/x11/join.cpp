@@ -243,24 +243,24 @@ static void sigcatch(int signum)
     exit(1);
 }
 
-int Join(char *server_addr, char *server_name, int port, char *user_name,
-         char *nick_name, int my_team, char *display, unsigned version)
+int Join(Connect_param_t *conpar)
 {
     signal(SIGINT, sigcatch);
     signal(SIGTERM, sigcatch);
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
 
-    if (Client_init(server_name, version) == -1)
-    {
+    if (Client_init(conpar->server_name, conpar->server_version) == -1)
         return -1;
-    }
-    if (Net_init(server_addr, port) == -1)
+
+    if (Net_init(conpar->server_addr, conpar->login_port) == -1)
     {
         Client_cleanup();
         return -1;
     }
-    if (Net_verify(user_name, nick_name, display, my_team) == -1)
+    if (Net_verify(conpar->user_name,
+                   conpar->nick_name,
+                   conpar->disp_name) == -1)
     {
         Net_cleanup();
         Client_cleanup();
@@ -280,16 +280,14 @@ int Join(char *server_addr, char *server_name, int port, char *user_name,
     }
     if (Net_start() == -1)
     {
-        errno = 0;
-        error("Network start failed");
+        warn("Network start failed");
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
     if (Client_start() == -1)
     {
-        errno = 0;
-        error("Window init failed");
+        warn("Window init failed");
         Net_cleanup();
         Client_cleanup();
         return -1;

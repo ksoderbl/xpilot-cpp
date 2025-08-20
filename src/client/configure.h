@@ -29,8 +29,7 @@
 #define CONFIG_COLORS 2
 
 void Config_init(void);
-// int Config(bool, int);
-int Config(bool);
+int Config(bool, int);
 void Config_redraw(void);
 void Config_resize(void);
 void Config_destroy(void);

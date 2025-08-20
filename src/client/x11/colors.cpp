@@ -34,7 +34,9 @@
 #include <X11/Xutil.h>
 
 #include "draw.h"
+#include "strlcpy.h"
 
+#include "option.h"
 #include "paint.h"
 
 #include "xpconfig.h"
@@ -55,6 +57,26 @@
 /*
  * Default colors.
  */
+#define XP_COLOR0 "#000000" /* black */
+#define XP_COLOR1 "#FFFFFF" /* white */
+#define XP_COLOR2 "#4E7CFF" /* "xpblue" */
+#define XP_COLOR3 "#FF3A27" /* "xpred" */
+#define XP_COLOR4 "#33BB44" /* "xpgreen" */
+#define XP_COLOR5 "#992200"
+#define XP_COLOR6 "#BB7700"
+#define XP_COLOR7 "#EE9900"
+#define XP_COLOR8 "#002299"
+#define XP_COLOR9 "#CC4400"
+#define XP_COLOR10 "#DD8800"
+#define XP_COLOR11 "#FFBB11" /* "xpyellow" */
+#define XP_COLOR12 "#9F9F9F"
+#define XP_COLOR13 "#5F5F5F"
+#define XP_COLOR14 "#DFDFDF"
+#define XP_COLOR15 "#202020"
+
+/*
+ * Default colors.
+ */
 char color_names[MAX_COLORS][MAX_COLOR_LEN];
 static const char *color_defaults[MAX_COLORS] = {
     "#000000", "#FFFFFF", "#4E7CFF", "#FF3A27",
@@ -68,7 +90,7 @@ static const char *gray_defaults[MAX_COLORS] = {
     "#9f9f9f", "#5f5f5f", "#dfdfdf", "#202020"};
 
 char visualName[MAX_VISUAL_NAME];
-Visual *visual;
+Visual *visual = nullptr;
 int dispDepth;
 bool fullColor;       /* Whether to try using colors as close to
                        * the specified ones as possible, or just
@@ -585,6 +607,9 @@ static int Colors_init_bitmap_colors(void)
 {
     int r = -1;
 
+    if (!visual)
+        return r;
+
     switch (visual->c_class)
     {
     case PseudoColor:
@@ -1013,3 +1038,299 @@ void Colors_debug(void)
     exit(1);
 }
 #endif /* DEVELOPMENT */
+
+/*
+ * Convert a string of color numbers into an array
+ * of "colors[]" indices stored by "spark_color[]".
+ * Initialize "num_spark_colors".
+ */
+void Init_spark_colors(void)
+{
+    char buf[MSG_LEN];
+    char *src, *dst;
+    unsigned col;
+    int i;
+
+    num_spark_colors = 0;
+    /*
+     * The sparkColors specification may contain
+     * any possible separator.  Only look at numbers.
+     */
+
+    /* hack but protocol will allow max 9 (MM) */
+    for (src = sparkColors; *src && (num_spark_colors < 9); src++)
+    {
+        if (isascii(*src) && isdigit(*src))
+        {
+            dst = &buf[0];
+            do
+            {
+                *dst++ = *src++;
+            } while (*src &&
+                     isascii(*src) &&
+                     isdigit(*src) &&
+                     ((dst - buf) < (sizeof(buf) - 1)));
+            *dst = '\0';
+            src--;
+            if (sscanf(buf, "%u", &col) == 1)
+            {
+                if (col < (unsigned)maxColors)
+                    spark_color[num_spark_colors++] = col;
+            }
+        }
+    }
+    if (num_spark_colors == 0)
+    {
+        if (maxColors <= 8)
+        {
+            /* 3 colors ranging from 5 up to 7 */
+            for (i = 5; i < maxColors; i++)
+                spark_color[num_spark_colors++] = i;
+        }
+        else
+        {
+            /* 7 colors ranging from 5 till 11 */
+            for (i = 5; i < 12; i++)
+                spark_color[num_spark_colors++] = i;
+        }
+        /* default spark colors always include RED. */
+        spark_color[num_spark_colors++] = RED;
+    }
+    for (i = num_spark_colors; i < MAX_COLORS; i++)
+        spark_color[i] = spark_color[num_spark_colors - 1];
+}
+
+static bool Set_sparkColors(xp_option_t *opt, const char *val)
+{
+    strlcpy(sparkColors, val, sizeof sparkColors);
+    Init_spark_colors();
+    /* might fail to set what we wanted, but return ok nonetheless */
+    return true;
+}
+
+static bool Set_maxColors(xp_option_t *opt, int val)
+{
+    if (val == 4 || val == 8)
+    {
+        warn("Values 4 or 8 for maxColors are not actively "
+             "supported. Use at own risk.");
+        maxColors = val;
+    }
+    else
+        maxColors = MAX_COLORS;
+    return true;
+}
+
+static bool Set_color(xp_option_t *opt, const char *val)
+{
+    char *buf = (char *)Option_get_private_data(opt);
+
+    /*warn("Set_color: name=%s, val=\"%s\", buf=%p", opt->name, val, buf);*/
+    assert(val != NULL);
+    strlcpy(buf, val, MAX_COLOR_LEN);
+
+    return true;
+}
+
+static xp_option_t color_options[] = {
+
+    XP_INT_OPTION(
+        "maxColors",
+        MAX_COLORS,
+        4,
+        MAX_COLORS,
+        &maxColors,
+        Set_maxColors,
+        XP_OPTFLAG_DEFAULT,
+        "The number of colors to use.\n"
+        "Use value 16. Other values are not actively supported.\n"),
+
+    /* 16 user definable color values */
+    XP_STRING_OPTION(
+        "color0",
+        XP_COLOR0,
+        color_names[0],
+        MAX_COLOR_LEN,
+        Set_color, color_names[0], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the first color.\n"),
+
+    XP_STRING_OPTION(
+        "color1",
+        XP_COLOR1,
+        color_names[1],
+        MAX_COLOR_LEN,
+        Set_color, color_names[1], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the second color.\n"),
+
+    XP_STRING_OPTION(
+        "color2",
+        XP_COLOR2,
+        color_names[2],
+        MAX_COLOR_LEN,
+        Set_color, color_names[2], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the third color.\n"),
+
+    XP_STRING_OPTION(
+        "color3",
+        XP_COLOR3,
+        color_names[3],
+        MAX_COLOR_LEN,
+        Set_color, color_names[3], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the fourth color.\n"),
+
+    XP_STRING_OPTION(
+        "color4",
+        XP_COLOR4,
+        color_names[4],
+        MAX_COLOR_LEN,
+        Set_color, color_names[4], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the fifth color.\n"),
+
+    XP_STRING_OPTION(
+        "color5",
+        XP_COLOR5,
+        color_names[5],
+        MAX_COLOR_LEN,
+        Set_color, color_names[5], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the sixth color.\n"),
+
+    XP_STRING_OPTION(
+        "color6",
+        XP_COLOR6,
+        color_names[6],
+        MAX_COLOR_LEN,
+        Set_color, color_names[6], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the seventh color.\n"),
+
+    XP_STRING_OPTION(
+        "color7",
+        XP_COLOR7,
+        color_names[7],
+        MAX_COLOR_LEN,
+        Set_color, color_names[7], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the eighth color.\n"),
+
+    XP_STRING_OPTION(
+        "color8",
+        XP_COLOR8,
+        color_names[8],
+        MAX_COLOR_LEN,
+        Set_color, color_names[8], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the ninth color.\n"),
+
+    XP_STRING_OPTION(
+        "color9",
+        XP_COLOR9,
+        color_names[9],
+        MAX_COLOR_LEN,
+        Set_color, color_names[9], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the tenth color.\n"),
+
+    XP_STRING_OPTION(
+        "color10",
+        XP_COLOR10,
+        color_names[10],
+        MAX_COLOR_LEN,
+        Set_color, color_names[10], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the eleventh color.\n"),
+
+    XP_STRING_OPTION(
+        "color11",
+        XP_COLOR11,
+        color_names[11],
+        MAX_COLOR_LEN,
+        Set_color, color_names[11], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the twelfth color.\n"),
+
+    XP_STRING_OPTION(
+        "color12",
+        XP_COLOR12,
+        color_names[12],
+        MAX_COLOR_LEN,
+        Set_color, color_names[12], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the thirteenth color.\n"),
+
+    XP_STRING_OPTION(
+        "color13",
+        XP_COLOR13,
+        color_names[13],
+        MAX_COLOR_LEN,
+        Set_color, color_names[13], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the fourteenth color.\n"),
+
+    XP_STRING_OPTION(
+        "color14",
+        XP_COLOR14,
+        color_names[14],
+        MAX_COLOR_LEN,
+        Set_color, color_names[14], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the fifteenth color.\n"),
+
+    XP_STRING_OPTION(
+        "color15",
+        XP_COLOR15,
+        color_names[15],
+        MAX_COLOR_LEN,
+        Set_color, color_names[15], NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The color value for the sixteenth color.\n"),
+
+    XP_STRING_OPTION(
+        "sparkColors",
+        "5,6,7,3",
+        sparkColors,
+        sizeof sparkColors,
+        Set_sparkColors, NULL, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "Which color numbers to use for spark and debris particles.\n"),
+
+    COLOR_INDEX_OPTION(
+        "wallColor",
+        2,
+        &wallColor,
+        "Which color number to use for drawing walls.\n"),
+
+    COLOR_INDEX_OPTION(
+        "decorColor",
+        6,
+        &decorColor,
+        "Which color number to use for drawing decorations.\n"),
+
+    COLOR_INDEX_OPTION(
+        "windowColor",
+        8,
+        &windowColor,
+        "Which color number to use for drawing windows.\n"),
+
+    COLOR_INDEX_OPTION(
+        "buttonColor",
+        2,
+        &buttonColor,
+        "Which color number to use for drawing buttons.\n"),
+
+    COLOR_INDEX_OPTION(
+        "borderColor",
+        1,
+        &borderColor,
+        "Which color number to use for drawing borders.\n"),
+};
+
+void Store_color_options(void)
+{
+    STORE_OPTIONS(color_options);
+}

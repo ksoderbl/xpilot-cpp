@@ -21,11 +21,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
 
 #include "xpconfig.h"
+#include "xperror.h"
 
 char *Conf_datadir(void)
 {
@@ -155,4 +156,37 @@ char *Conf_sounddir(void)
     static char conf[] = CONF_SOUNDDIR;
 
     return conf;
+}
+
+void Conf_print(void)
+{
+    warn("============================================================");
+    warn("VERSION                   = %s", VERSION);
+    warn("PACKAGE                   = %s", PACKAGE);
+
+#ifdef PLOCKSERVER
+    warn("PLOCKSERVER");
+#endif
+#ifdef DEVELOPMENT
+    warn("DEVELOPMENT");
+#endif
+
+    warn("Conf_localguru()          = %s", Conf_localguru());
+    warn("Conf_datadir()            = %s", Conf_datadir());
+    warn("Conf_defaults_file_name() = %s", Conf_defaults_file_name());
+    warn("Conf_password_file_name() = %s", Conf_password_file_name());
+    warn("Conf_mapdir()             = %s", Conf_mapdir());
+    warn("Conf_default_map()        = %s", Conf_default_map());
+    warn("Conf_servermotdfile()     = %s", Conf_servermotdfile());
+    warn("Conf_robotfile()          = %s", Conf_robotfile());
+    warn("Conf_logfile()            = %s", Conf_logfile());
+    warn("Conf_localmotdfile()      = %s", Conf_localmotdfile());
+    warn("Conf_ship_file()          = %s", Conf_ship_file());
+    warn("Conf_texturedir()         = %s", Conf_texturedir());
+    // warn("Conf_fontdir()            = %s", Conf_fontdir());
+    warn("Conf_sounddir()           = %s", Conf_sounddir());
+    warn("Conf_soundfile()          = %s", Conf_soundfile());
+    warn("Conf_zcat_ext()           = %s", Conf_zcat_ext());
+    warn("Conf_zcat_format()        = %s", Conf_zcat_format());
+    warn("============================================================");
 }

@@ -252,8 +252,8 @@ static void Option_add_node(hash_node *node)
     {
         if (!strcasecmp(node->name, np->name))
         {
-            xpfatal("Option_add_node node exists (%s, %s)\n",
-                    node->name, np->name);
+            fatal("Option_add_node node exists (%s, %s)\n",
+                  node->name, np->name);
         }
     }
 
@@ -421,7 +421,7 @@ static void Option_change_node(
                 break;
 
             default:
-                xpfatal("unknown node->value origin in set value");
+                fatal("unknown node->value origin in set value");
             }
             break;
 
@@ -457,7 +457,7 @@ static void Option_change_node(
                 break;
 
             default:
-                xpfatal("unknown node->value origin in set value");
+                fatal("unknown node->value origin in set value");
             }
             break;
 
@@ -491,12 +491,12 @@ static void Option_change_node(
                 break;
 
             default:
-                xpfatal("unknown node->value origin in set value");
+                fatal("unknown node->value origin in set value");
             }
             break;
 
         default:
-            xpfatal("unknown opt_origin in set value");
+            fatal("unknown opt_origin in set value");
         }
     }
 
@@ -507,7 +507,7 @@ static void Option_change_node(
             node->value = Option_allocate_value(value, NULL, opt_origin);
             if (node->value == NULL)
             {
-                xpfatal("Not enough memory.");
+                fatal("Not enough memory.");
             }
             else
             {
@@ -797,7 +797,7 @@ void Convert_string_to_list(const char *value, list_t *list_ptr)
         *list_ptr = List_new();
         if (NULL == *list_ptr)
         {
-            xpfatal("Not enough memory for list");
+            fatal("Not enough memory for list");
         }
     }
 
@@ -829,7 +829,7 @@ void Convert_string_to_list(const char *value, list_t *list_ptr)
 
             if (NULL == List_push_back(*list_ptr, str))
             {
-                xpfatal("Not enough memory for list element");
+                fatal("Not enough memory for list element");
             }
         }
     }
@@ -1033,8 +1033,8 @@ static void Options_parse_FPS(void)
 
     if (FPS <= 0)
     {
-        xpfatal("Can't run with %d frames per second, should be positive\n",
-                FPS);
+        fatal("Can't run with %d frames per second, should be positive\n",
+              FPS);
     }
 }
 

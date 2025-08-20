@@ -145,8 +145,8 @@ struct xp_option
 };
 
 /* number of options in global option array */
-extern int num_options2;
-extern xp_option_t *options2;
+extern int num_options;
+extern xp_option_t *options;
 
 extern void Parse_options(int *argcp, char **argvp);
 
@@ -229,9 +229,9 @@ static inline void *Option_get_private_data(xp_option_t *opt)
 
 static inline xp_option_t *Option_by_index(int ind)
 {
-    if (ind < 0 || ind >= num_options2)
+    if (ind < 0 || ind >= num_options)
         return NULL;
-    return &options2[ind];
+    return &options[ind];
 }
 
 /*

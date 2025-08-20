@@ -80,7 +80,7 @@ typedef struct
  */
 setup_t *Setup = NULL;
 display_t server_display;
-int receive_window_size;
+int receive_window_size = 3;
 long last_loops;
 bool packetMeasurement;
 pointer_move_t pointer_moves[MAX_POINTER_MOVES];
@@ -99,9 +99,9 @@ static int (*receive_tbl[256])(void),
     (*reliable_tbl[256])(void);
 static int keyboard_delta;
 static unsigned magic;
+static time_t last_send_anything;
 static long last_keyboard_change,
     last_keyboard_update,
-    last_send_anything,
     reliable_offset,
     talk_pending,
     talk_sequence_num,
@@ -175,6 +175,7 @@ static void Receive_init(void)
     reliable_tbl[PKT_MESSAGE] = Receive_message;
     reliable_tbl[PKT_TEAM_SCORE] = Receive_team_score;
     reliable_tbl[PKT_PLAYER] = Receive_player;
+    reliable_tbl[PKT_TEAM] = Receive_team;
     reliable_tbl[PKT_SCORE] = Receive_score;
     reliable_tbl[PKT_TIMING] = Receive_timing;
     reliable_tbl[PKT_LEAVE] = Receive_leave;
@@ -305,8 +306,10 @@ int Net_setup(void)
                                      &Setup->map_data_len,
                                      &Setup->mode, &Setup->lives,
                                      &Setup->x, &Setup->y,
-                                     &Setup->frames_per_second, &Setup->map_order,
-                                     Setup->name, Setup->author);
+                                     &Setup->frames_per_second,
+                                     &Setup->map_order,
+                                     Setup->name,
+                                     Setup->author);
                     Setup->width = Setup->x * BLOCK_SZ;
                     Setup->height = Setup->y * BLOCK_SZ;
                 }
@@ -441,12 +444,13 @@ int Net_setup(void)
  * this info from the ENTER_GAME_pack.
  */
 #define MAX_VERIFY_RETRIES 5
-int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
+int Net_verify(char *user_name, char *nick_name, char *disp)
 {
     int n, type, result, retries;
     time_t last;
 
-    team = my_team;
+    // team = my_team;
+    printf("Net_verify: user %s, nick %s, disp %s\n", user_name, nick_name, disp);
 
     for (retries = 0;;)
     {
@@ -962,15 +966,13 @@ static int Net_packet(void)
                 return -1;
             }
             /* should do something more appropriate than this with the reply */
-            errno = 0;
-            error("Got reply packet (%d,%d)", replyto, status);
+            warn("Got reply packet (%d,%d)", replyto, status);
         }
         else if (reliable_tbl[type] == NULL)
         {
             int i;
-            errno = 0;
-            error("Received unknown reliable data packet type (%d,%d,%d)",
-                  type, cbuf.ptr - cbuf.buf, cbuf.len);
+            warn("Received unknown reliable data packet type (%d,%d,%d)",
+                 type, cbuf.ptr - cbuf.buf, cbuf.len);
             printf("\tdumping buffer for debugging:\n");
             for (i = 0; i < cbuf.len; i++)
             {
@@ -1209,6 +1211,7 @@ static int Net_read(frame_buf_t *frame)
 int Net_input(void)
 {
     int i, j, n;
+    int num_buffered_packets;
     frame_buf_t *frame,
         *last_frame,
         *oldest_frame = &Frames[0],
@@ -1228,11 +1231,13 @@ int Net_input(void)
                 oldest_frame = frame;
         }
         else if (frame->sbuf.len > 0 && frame->sbuf.ptr == frame->sbuf.buf)
+        {
             /*
              * Contains an unidentifiable packet.
              * No more input until this one is processed.
              */
             break;
+        }
         else
         {
             /*
@@ -1242,13 +1247,9 @@ int Net_input(void)
             {
                 if (n == 0)
                 {
-                    /*
-                     * No more new packets available.
-                     */
+                    /* No more new packets available. */
                     if (i == 0)
-                        /*
-                         * No frames to be processed.
-                         */
+                        /* No frames to be processed. */
                         return 0;
                     break;
                 }
@@ -1316,6 +1317,7 @@ int Net_input(void)
      * Find oldest packet.
      */
     last_frame = oldest_frame = &Frames[0];
+    num_buffered_packets = 1; /* Could be 0, but returns before using this */
     for (i = 1; i < receive_window_size; i++, last_frame++)
     {
         frame = &Frames[i];
@@ -2096,8 +2098,7 @@ int Receive_war(void)
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd",
                           &ch, &robot_id, &killer_id)) <= 0)
         return n;
-    if ((n = Handle_war(robot_id, killer_id)) == -1)
-        return -1;
+    /* not interested */
     return 1;
 }
 
@@ -2110,8 +2111,7 @@ int Receive_seek(void)
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd%hd", &ch,
                           &programmer_id, &robot_id, &sought_id)) <= 0)
         return n;
-    if ((n = Handle_seek(programmer_id, robot_id, sought_id)) == -1)
-        return -1;
+    /* not interested */
     return 1;
 }
 
@@ -2119,7 +2119,7 @@ int Receive_player(void)
 {
     int n;
     short id;
-    uint8_t ch, myteam, mychar;
+    uint8_t ch, myteam, mychar, myself = 0;
     char nick_name[MAX_CHARS],
         user_name[MAX_CHARS],
         host_name[MAX_CHARS],
@@ -2134,17 +2134,35 @@ int Receive_player(void)
                           nick_name, user_name, host_name,
                           shape)) <= 0)
         return n;
-
     nick_name[MAX_NAME_LEN - 1] = '\0';
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
 
-    if ((n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)])) <= 0)
+    if (version < 0x4F10)
+        n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)]);
+    else
+        n = Packet_scanf(&cbuf, "%S%c", &shape[strlen(shape)], &myself);
+    if (n <= 0)
     {
         cbuf.ptr = cbuf_ptr;
         return n;
     }
-    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name, shape)) == -1)
+
+    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name,
+                           shape, myself)) == -1)
+        return -1;
+    return 1;
+}
+
+int Receive_team(void)
+{
+    int n;
+    short id;
+    uint8_t ch, pl_team;
+
+    if ((n = Packet_scanf(&cbuf, "%c%hd%c", &ch, &id, &pl_team)) <= 0)
+        return n;
+    if (Handle_team(id, pl_team) == -1)
         return -1;
     return 1;
 }
@@ -2153,16 +2171,25 @@ int Receive_score_object(void)
 {
     int n;
     unsigned short x, y;
-    int score = 0;
+    double score = 0;
     char msg[MAX_CHARS];
     uint8_t ch;
 
-    /* newer servers send scores with two decimals */
-    int rcv_score;
-    n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
-                     &ch, &rcv_score, &x, &y, msg);
-    score = rcv_score / 100;
-
+    if (version < 0x4500 || (version >= 0x4F09 && version < 0x4F11))
+    {
+        short rcv_score;
+        n = Packet_scanf(&cbuf, "%c%hd%hu%hu%s",
+                         &ch, &rcv_score, &x, &y, msg);
+        score = rcv_score;
+    }
+    else
+    {
+        /* newer servers send scores with two decimals */
+        int rcv_score;
+        n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
+                         &ch, &rcv_score, &x, &y, msg);
+        score = (double)rcv_score / 100;
+    }
     if (n <= 0)
         return n;
     if ((n = Handle_score_object(score, x, y, msg)) == -1)

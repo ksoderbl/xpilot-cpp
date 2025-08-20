@@ -138,24 +138,26 @@ typedef struct
 
 typedef struct
 {
-    double ratio;
+    double score;
     short id;
-    short team;
-    short score;
+    uint16_t team;
     short check;
     short round;
-    short timing;
     long timing_loops;
+    short timing;
     short life;
     short mychar;
     short alliance;
-    short war_id;
-    short name_width; /* In pixels */
-    short name_len;   /* In bytes */
+    short name_width;         /* In pixels */
+    short name_len;           /* In bytes */
+    short max_chars_in_names; /* name_width was calculated
+                     for this value of maxCharsInNames */
+    short ignorelevel;
     shipshape_t *ship;
     char nick_name[MAX_CHARS];
     char user_name[MAX_CHARS];
     char host_name[MAX_CHARS];
+    char id_string[MAX_CHARS];
 } other_t;
 
 typedef struct
@@ -292,8 +294,8 @@ typedef struct
 
 typedef enum
 {
-    normal,
-    friendly
+    RadarEnemy,
+    RadarFriend
 } radar_type_t;
 
 typedef struct
@@ -678,13 +680,13 @@ int Check_index_by_pos(int x, int y);
 other_t *Other_by_id(int id);
 shipshape_t *Ship_by_id(int id);
 int Handle_leave(int id);
-int Handle_player(int id, int team, int mychar, char *player_name,
-                  char *user_name, char *host_name, char *shape);
+int Handle_player(int id, int team, int mychar,
+                  char *nick_name, char *user_name, char *host_name,
+                  char *shape, int myself);
+int Handle_team(int id, int pl_team);
 int Handle_score(int id, int score, int life, int mychar, int alliance);
 int Handle_score_object(int score, int x, int y, char *msg);
 int Handle_timing(int id, int check, int round);
-int Handle_war(int robot_id, int killer_id);
-int Handle_seek(int programmer_id, int robot_id, int sought_id);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
@@ -788,9 +790,31 @@ extern bool Set_scaleFactor(xp_option_t *opt, double val);
 extern bool Set_altScaleFactor(xp_option_t *opt, double val);
 
 /*
+ * event.c
+ */
+extern void Store_key_options(void);
+
+/*
+ * join.c
+ */
+extern int Join(Connect_param_t *conpar);
+extern void xpilotShutdown(void);
+
+/*
  * mapdata.cpp
  */
 extern int Mapdata_setup(const char *);
+
+/*
+ * paintdata.c
+ */
+extern void paintdataCleanup(void); /* memory cleanup */
+
+/*
+ * paintobjects.c
+ */
+extern int Init_wreckage(void);
+extern int Init_asteroids(void);
 
 // TODO: Move this stuff to messages.h.
 

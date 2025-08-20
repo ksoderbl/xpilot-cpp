@@ -24,6 +24,8 @@
 #ifndef RECORD_H
 #define RECORD_H
 
+#include <X11/Xlib.h>
+
 /*
  * Structure to call all user-interface drawing routines
  * which are modified versions when recording is active.
@@ -75,7 +77,9 @@ extern int recording; /* Are we recording or not. */
 
 long Record_size(void);
 void Record_toggle(void);
-void Record_init(char *filename);
+void Record_init(const char *filename);
 void Record_cleanup(void);
+
+void Store_record_options(void);
 
 #endif

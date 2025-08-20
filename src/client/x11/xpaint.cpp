@@ -41,8 +41,6 @@
 #include "paint.h"
 #include "paintdata.h"
 
-#include "default.h"
-
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
@@ -120,15 +118,41 @@ int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
 // char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
 // char *texturePath = NULL; /* Path list of texture directories */
 
-keydefs_t *keyDefs = NULL;
-
 // other_t     *self;          /* player info */
 
 // long        loops = 0;
 
 int cacheShips = 0; /* cache some ship bitmaps every frame */
 
+static int clockColor;         /* Clock color index */
+static int scoreColor;         /* Score list color indices */
+static int scoreSelfColor;     /* Score list own score color index */
+static int scoreInactiveColor; /* Score list inactive player color index */
+static int scoreInactiveSelfColor;
+/* Score list inactive self color index */
+static int scoreOwnTeamColor;   /* Score list own team color index */
+static int scoreEnemyTeamColor; /* Score list enemy team color index */
+
 static void Paint_clock(int redraw);
+
+int Paint_init(void)
+{
+    if (Init_wreckage() == -1)
+        return -1;
+
+    if (Init_asteroids() == -1)
+        return -1;
+
+    if (Bitmaps_init() == -1)
+        return -1;
+
+    return 0;
+}
+
+void Paint_cleanup(void)
+{
+    Bitmaps_cleanup();
+}
 
 void Game_over_action(uint8_t stat)
 {
@@ -464,8 +488,6 @@ void Paint_score_entry(int entry_num,
     }
     else
     {
-        other_t *war = Other_by_id(other->war_id);
-
         if (BIT(Setup->mode, TIMING))
         {
             raceStr[0] = ' ';
@@ -503,13 +525,6 @@ void Paint_score_entry(int entry_num,
                 other->mychar, raceStr, teamStr,
                 scoreStr, lifeStr,
                 other->nick_name);
-        if (war)
-        {
-            if (strlen(label) + strlen(war->nick_name) + 5 < sizeof(label))
-            {
-                sprintf(label + strlen(label), " (%s)", war->nick_name);
-            }
-        }
     }
 
     /*
@@ -635,4 +650,54 @@ void ShadowDrawString(Display *dpy, Window w, GC gc,
     y--;
     XSetForeground(dpy, gc, fg);
     XDrawString(dpy, w, gc, x, y, str, strlen(str));
+}
+
+xp_option_t xpaint_options[] = {
+    COLOR_INDEX_OPTION(
+        "clockColor",
+        1,
+        &clockColor,
+        "Which color number to use for drawing the clock.\n"
+        "The clock is displayed in the top right of the score window.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreColor",
+        1,
+        &scoreColor,
+        "Which color number to use for drawing score list entries.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreSelfColor",
+        3,
+        &scoreSelfColor,
+        "Which color number to use for drawing your own score.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreInactiveColor",
+        12,
+        &scoreInactiveColor,
+        "Which color number to use for drawing inactive players's scores.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreInactiveSelfColor",
+        12,
+        &scoreInactiveSelfColor,
+        "Which color number to use for drawing your score when inactive.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreOwnTeamColor",
+        4,
+        &scoreOwnTeamColor,
+        "Which color number to use for drawing your own team score.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreEnemyTeamColor",
+        11,
+        &scoreEnemyTeamColor,
+        "Which color number to use for drawing enemy team score.\n"),
+};
+
+void Store_xpaint_options(void)
+{
+    STORE_OPTIONS(xpaint_options);
 }

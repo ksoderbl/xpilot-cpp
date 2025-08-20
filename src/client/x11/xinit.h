@@ -36,8 +36,8 @@
 #define DEF_TOP_HEIGHT 1024
 
 // #define MAX_POINTER_BUTTONS 5
-#define MAX_BUTTON_DEFS 3
-#define NUM_BUTTON_DEFS(i) numButtonDefs[i]
+// #define MAX_BUTTON_DEFS 3
+// #define NUM_BUTTON_DEFS(i) numButtonDefs[i]
 
 extern Atom ProtocolAtom, KillAtom;
 extern int buttonColor, windowColor, borderColor;
@@ -48,8 +48,8 @@ extern int dispDepth;
 extern bool texturedObjects;
 extern bool fullColor;
 extern char color_names[MAX_COLORS][MAX_COLOR_LEN];
+extern int button_form;
 extern int top_width, top_height;
-// extern int                draw_width, draw_height;
 extern int players_width, players_height;
 extern char *geometry;
 extern bool autoServerMotdPopup;
@@ -61,28 +61,37 @@ extern bool ignoreWindowManager;
 extern bool quitting;
 
 /*
+ * xdefault.c
+ */
+extern void Store_X_options(void);
+extern void Handle_X_options(void);
+
+/*
  * Prototypes for xinit.c
  */
 extern const char *Item_get_text(int i);
 extern int Init_top(void);
-// extern int Init_playing_windows(void);
+extern void Expose_info_window(void);
 extern void Expose_button_window(int color, Window w);
+extern void Info(Window w);
 extern void Talk_resize(void);
 extern void Talk_cursor(bool visible);
 extern void Talk_map_window(bool map);
 extern int Talk_do_event(XEvent *event);
-extern int Talk_paste(char *data, int len, bool overwrite);
+extern int Talk_paste(char *data, size_t len, bool overwrite);
 extern int Talk_place_cursor(XButtonEvent *xbutton, bool pending);
 extern void Talk_window_cut(XButtonEvent *xbutton);
+extern bool Talk_cut_area_hit(XButtonEvent *xbutton);
 extern void Talk_cut_from_messages(XButtonEvent *xbutton);
 extern void Clear_selection(void);
-extern int FatalError(Display *dpy);
-extern void Resize(Window w, int width, int height);
+extern int FatalError(Display *);
+extern void Draw_score_table(void);
+extern void Resize(Window w, unsigned width, unsigned height);
 
-extern int DrawShadowText(Display *, Window w, GC gc,
+extern int DrawShadowText(Display *, Window, GC,
                           int x_border, int start_y, const char *str,
                           unsigned long fg, unsigned long bg);
-extern void ShadowDrawString(Display *, Window w, GC gc,
+extern void ShadowDrawString(Display *, Window, GC,
                              int x, int start_y, const char *str,
                              unsigned long fg, unsigned long bg);
 /*

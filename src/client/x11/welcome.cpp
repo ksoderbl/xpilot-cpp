@@ -2208,29 +2208,22 @@ static int Welcome_doit(Connect_param_t *conpar)
     XSynchronize(dpy, True);
 #endif
     if (Init_top() == -1)
-    {
         return -1;
-    }
+
     XMapSubwindows(dpy, topWindow);
     XMapWindow(dpy, topWindow);
     XSync(dpy, False);
 
     result = Welcome_process_pending_events(conpar);
     if (result)
-    {
         return result;
-    }
 
     if (Welcome_create_windows(conpar) == -1)
-    {
         return -1;
-    }
 
     result = Welcome_process_pending_events(conpar);
     if (result)
-    {
         return result;
-    }
 
     result = Welcome_input_loop(conpar);
     return result;
@@ -2249,21 +2242,9 @@ int Welcome_screen(Connect_param_t *conpar)
     result = Welcome_doit(conpar);
 
     if (!quitting && joining)
-    {
         Welcome_cleanup();
-        result = Join(conpar->server_addr,
-                      conpar->server_name,
-                      conpar->login_port,
-                      conpar->user_name,
-                      conpar->nick_name,
-                      conpar->team,
-                      conpar->disp_name,
-                      conpar->server_version);
-    }
     else
-    {
         Platform_specific_cleanup();
-    }
 
     return result;
 }

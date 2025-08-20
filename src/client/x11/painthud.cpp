@@ -458,34 +458,19 @@ void Paint_hudradar(void)
     }
 }
 
-/* from xpilot ng version 4.7.1, slightly modified */
 static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
                            int sz)
 {
-    int i, x, y, size;
+    int i, x, y;
     int hrw = (int)(hrscale * 256);
     int hrh = (int)(hrscale * RadarHeight);
     double xf = (double)hrw / (double)Setup->width;
     double yf = (double)hrh / (double)Setup->height;
-    bool enemy;
 
     for (i = 0; i < num_radar; i++)
     {
         x = (int)(radar_ptr[i].x * hrscale - (world.x + ext_view_width / 2) * xf);
         y = (int)(radar_ptr[i].y * hrscale - (world.y + ext_view_height / 2) * yf);
-        size = radar_ptr[i].size;
-
-        if ((size & 0x80) == 0)
-            enemy = true;
-        else
-        {
-            /* non-enemy */
-            enemy = false;
-            size &= ~0x80;
-        }
-
-        if (sz < 0)
-            sz = size * hudRadarScale;
 
         if (x < -hrw / 2)
             x += hrw;
@@ -499,10 +484,11 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
 
         if (!((x <= xlimit) && (x >= -xlimit) && (y <= ylimit) && (y >= -ylimit)))
         {
+
             x = x + ext_view_width / 2 - sz / 2;
             y = -y + ext_view_height / 2 - sz / 2;
 
-            if (enemy)
+            if (radar_ptr[i].type == RadarEnemy)
             {
                 if (hudRadarEnemyColor >= 1)
                     Arc_add(hudRadarEnemyColor, x, y, sz, sz, 0, 64 * 360);
@@ -514,6 +500,160 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
             }
         }
     }
+}
+
+/*called from guimap for basewarning */
+/*void Paint_baseInfoOnHudRadar(int xi, int yi)*/
+/*{
+   float x,y,x2,y2,x3,y3;
+    float hrscale = hrScale;
+    float hrw = (float)hrscale * (float)256;
+    float hrh = (float)hrscale * (float)RadarHeight;
+    int sz = hrSize;
+    float xf = (float) hrw / (float) Setup->width;
+   float yf = (float) hrh / (float) Setup->height;
+
+   x = X(xi) + SHIP_SZ/2;
+   y = Y(yi) - SHIP_SZ*4/3;
+   x2 = (ext_view_width / 2) - (sz/2);
+   y2 = (ext_view_height / 2) -(sz/2);
+   x3 = (x-x2)*xf + x2;
+   y3 = (y-y2)*yf + y2;
+
+   if (hrColor1 >= 1)
+       Arc_add(hrColor1, (int)x, (int)y, sz, sz, 0,
+               64 * 360);
+   if (hrColor1 >= 1)
+       Arc_add(hrColor1, (int)x2,(int)y2, sz, sz, 0,
+               64 * 360);
+   if (hrColor2 >= 1)
+       Arc_add(hrColor2, (int)x3, (int)y3, sz, sz, 0,
+               64 * 360);
+                       }*/
+/*doesn't work (yet) since client only knows visible bases */
+
+static void Paint_HUD_items(int hud_pos_x, int hud_pos_y)
+{
+    const int BORDER = 3;
+    char str[50];
+    int vert_pos, horiz_pos;
+    int i, maxWidth = -1,
+           rect_x, rect_y, rect_width = 0, rect_height = 0;
+    static int vertSpacing = -1;
+
+    SET_FG(colors[hudItemsColor].pixel);
+
+    /* Special itemtypes */
+    if (vertSpacing < 0)
+        vertSpacing = MAX(ITEM_SIZE, gameFont->ascent + gameFont->descent) + 1;
+    /* find the scaled location, then work in pixels */
+    vert_pos = WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + BORDER);
+    horiz_pos = WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER);
+    rect_width = 0;
+    rect_height = 0;
+    rect_x = horiz_pos;
+    rect_y = vert_pos;
+
+    for (i = 0; i < NUM_ITEMS; i++)
+    {
+        int num = numItems[i];
+
+        if (i == ITEM_FUEL)
+            continue;
+
+        if (instruments.showItems)
+        {
+            lastNumItems[i] = num;
+            if (num <= 0)
+                num = -1;
+        }
+        else
+        {
+            if (num != lastNumItems[i])
+            {
+                numItemsTime[i] = (int)(showItemsTime * (double)FPS);
+                lastNumItems[i] = num;
+            }
+            if (numItemsTime[i]-- <= 0)
+            {
+                numItemsTime[i] = 0;
+                num = -1;
+            }
+        }
+
+        if (num >= 0)
+        {
+            int len, width;
+
+            /* Paint item symbol */
+            Gui_paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
+                                  horiz_pos - ITEM_SIZE,
+                                  vert_pos,
+                                  ITEM_HUD);
+
+            if (i == lose_item)
+            {
+                if (lose_item_active != 0)
+                {
+                    if (lose_item_active < 0)
+                        lose_item_active++;
+                    rd.drawRectangle(dpy, drawPixmap, gameGC,
+                                     horiz_pos - ITEM_SIZE - 2,
+                                     vert_pos - 2, ITEM_SIZE + 2, ITEM_SIZE + 2);
+                }
+            }
+
+            /* Paint item count */
+            sprintf(str, "%d", num);
+            len = strlen(str);
+            width = XTextWidth(gameFont, str, len);
+            rd.drawString(dpy, drawPixmap, gameGC,
+                          horiz_pos - ITEM_SIZE - BORDER - width,
+                          vert_pos + ITEM_SIZE / 2 + gameFont->ascent / 2,
+                          str, len);
+
+            maxWidth = MAX(maxWidth, width + BORDER + ITEM_SIZE);
+            vert_pos += vertSpacing;
+
+            if (vert_pos + vertSpacing > WINSCALE(hud_pos_y + hudSize - HUD_OFFSET - BORDER))
+            {
+                rect_width += maxWidth + 2 * BORDER;
+                rect_height = MAX(rect_height, vert_pos - rect_y);
+                horiz_pos -= maxWidth + 2 * BORDER;
+                vert_pos = WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + BORDER);
+                maxWidth = -1;
+            }
+        }
+    }
+    if (maxWidth != -1)
+        rect_width += maxWidth + BORDER;
+
+    if (rect_width > 0)
+    {
+        if (rect_height == 0)
+            rect_height = vert_pos - rect_y;
+        rect_x -= rect_width;
+    }
+}
+
+static bool have_hudmsg = false;
+static char hudmsg[MSG_LEN];
+
+void Del_HUD_message(void);
+void Add_HUD_message(const char *message);
+
+void Del_HUD_message(void)
+{
+    have_hudmsg = false;
+}
+
+void Add_HUD_message(const char *message)
+{
+    if (!message)
+        return;
+
+    strlcpy(hudmsg, message, sizeof(hudmsg));
+    have_hudmsg = true;
 }
 
 void Paint_HUD(void)
@@ -1044,4 +1184,171 @@ void Paint_HUD_values(void)
     x = WINSCALE(ext_view_width) - 10 - wmax;
     y = 260 + gameFont->ascent;
     rd.drawString(dpy, drawPixmap, gameGC, x, y, buf2, len2);
+}
+
+xp_option_t hud_options[] = {
+
+    COLOR_INDEX_OPTION(
+        "hudColor",
+        2,
+        &hudColor,
+        "Which color number to use for drawing the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudHLineColor",
+        0,
+        &hudHLineColor,
+        "Which color number to use for drawing the horizontal lines\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudVLineColor",
+        0,
+        &hudVLineColor,
+        "Which color number to use for drawing the vertical lines\n"
+        "in the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudItemsColor",
+        2,
+        &hudItemsColor,
+        "Which color number to use for drawing owned items on the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudRadarEnemyColor",
+        3,
+        &hudRadarEnemyColor,
+        "Which color number to use for drawing hudradar dots\n"
+        "that represent enemy ships.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudRadarOtherColor",
+        2,
+        &hudRadarOtherColor,
+        "Which color number to use for drawing hudradar dots\n"
+        "that represent friendly ships or other objects.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudLockColor",
+        0,
+        &hudLockColor,
+        "Which color number to use for drawing the lock on the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "fuelGaugeColor",
+        0,
+        &fuelGaugeColor,
+        "Which color number to use for drawing the fuel gauge.\n"),
+
+    COLOR_INDEX_OPTION(
+        "dirPtrColor",
+        0,
+        &dirPtrColor,
+        "Which color number to use for drawing the direction pointer hack.\n"),
+
+    COLOR_INDEX_OPTION(
+        "messagesColor",
+        12,
+        &messagesColor,
+        "Which color number to use for drawing messages.\n"),
+
+    COLOR_INDEX_OPTION(
+        "oldMessagesColor",
+        13,
+        &oldMessagesColor,
+        "Which color number to use for drawing old messages.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanBallColor",
+        3,
+        &msgScanBallColor,
+        "Which color number to use for drawing ball message warning.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanSafeColor",
+        4,
+        &msgScanSafeColor,
+        "Which color number to use for drawing safe message.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanCoverColor",
+        2,
+        &msgScanCoverColor,
+        "Which color number to use for drawing cover message.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanPopColor",
+        11,
+        &msgScanPopColor,
+        "Which color number to use for drawing pop message.\n"),
+
+    COLOR_INDEX_OPTION(
+        "fuelMeterColor",
+        0,
+        &fuelMeterColor,
+        "Which color number to use for drawing the fuel meter.\n"),
+
+    COLOR_INDEX_OPTION(
+        "powerMeterColor",
+        0,
+        &powerMeterColor,
+        "Which color number to use for drawing the power meter.\n"),
+
+    COLOR_INDEX_OPTION(
+        "turnSpeedMeterColor",
+        0,
+        &turnSpeedMeterColor,
+        "Which color number to use for drawing the turn speed meter.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetSizeMeterColor",
+        0,
+        &packetSizeMeterColor,
+        "Which color number to use for drawing the packet size meter.\n"
+        "Each bar is equavalent to 1024 bytes, for a maximum of 4096 bytes.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetLossMeterColor",
+        3,
+        &packetLossMeterColor,
+        "Which color number to use for drawing the packet loss meter.\n"
+        "This gives the percentage of lost frames due to network failure.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetDropMeterColor",
+        3,
+        &packetDropMeterColor,
+        "Which color number to use for drawing the packet drop meter.\n"
+        "This gives the percentage of dropped frames due to display\n"
+        "slowness.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetLagMeterColor",
+        3,
+        &packetLagMeterColor,
+        "Which color number to use for drawing the packet lag meter.\n"
+        "This gives the amount of lag in frames over the past one second.\n"),
+
+    COLOR_INDEX_OPTION(
+        "temporaryMeterColor",
+        3,
+        &temporaryMeterColor,
+        "Which color number to use for drawing temporary meters.\n"),
+
+    COLOR_INDEX_OPTION(
+        "meterBorderColor",
+        2,
+        &meterBorderColor,
+        "Which color number to use for drawing borders of meters.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreObjectColor",
+        4,
+        &scoreObjectColor,
+        "Which color number to use for drawing score objects.\n"),
+
+};
+
+void Store_hud_options(void)
+{
+    STORE_OPTIONS(hud_options);
 }

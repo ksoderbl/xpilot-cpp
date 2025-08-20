@@ -325,42 +325,48 @@ static const char *Get_shipShapeFile(xp_option_t *opt)
 
 static bool Set_power(xp_option_t *opt, double val)
 {
-    Send_power(val);
+    if (Setup)
+        Send_power(val);
     power = val;
     controlTime = CONTROL_TIME;
     return true;
 }
 static bool Set_turnSpeed(xp_option_t *opt, double val)
 {
-    Send_turnspeed(val);
+    if (Setup)
+        Send_turnspeed(val);
     turnspeed = val;
     controlTime = CONTROL_TIME;
     return true;
 }
 static bool Set_turnResistance(xp_option_t *opt, double val)
 {
-    Send_turnresistance(val);
+    if (Setup)
+        Send_turnresistance(val);
     turnresistance = val;
     return true;
 }
 
 static bool Set_altPower(xp_option_t *opt, double val)
 {
-    Send_power_s(val);
+    if (Setup)
+        Send_power_s(val);
     power_s = val;
     controlTime = CONTROL_TIME;
     return true;
 }
 static bool Set_altTurnSpeed(xp_option_t *opt, double val)
 {
-    Send_turnspeed_s(val);
+    if (Setup)
+        Send_turnspeed_s(val);
     turnspeed_s = val;
     controlTime = CONTROL_TIME;
     return true;
 }
 static bool Set_altTurnResistance(xp_option_t *opt, double val)
 {
-    Send_turnresistance_s(val);
+    if (Setup)
+        Send_turnresistance_s(val);
     turnresistance_s = val;
     return true;
 }
@@ -380,7 +386,7 @@ static bool Set_toggleShield(xp_option_t *opt, bool val)
 static bool Set_maxFPS(xp_option_t *opt, int val)
 {
     maxFPS = val;
-    Check_client_fps();
+    // Check_client_fps(); // TODO: ENABLE
     return true;
 }
 
@@ -401,7 +407,7 @@ static bool Set_sparkProb(xp_option_t *opt, double val)
 {
     sparkProb = val;
     spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5);
-    Check_view_dimensions();
+    // Check_view_dimensions(); // TODO: ENABLE
     return true;
 }
 
@@ -471,8 +477,10 @@ static bool Set_texturedWalls(xp_option_t *opt, bool val)
             Map_restore(0, 0, Setup->x, Setup->y);
             Map_blue(0, 0, Setup->x, Setup->y);
         }
-        else
-            Mapdata_setup(Setup->data_url);
+        // TODO: Curretnly I get:
+        // ... default.cpp:475: undefined reference to `Mapdata_setup(char const*)'
+        // else
+        //     Mapdata_setup(Setup->data_url);
     }
     return true;
 }

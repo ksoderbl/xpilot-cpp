@@ -146,7 +146,7 @@ void error(const char *fmt, ...)
     va_end(ap);
 }
 
-void xpfatal(const char *fmt, ...)
+void fatal(const char *fmt, ...)
 {
     va_list ap;
 
