@@ -26,15 +26,15 @@
 
 #define SERVER
 
-#include "bit.h"
-#include "click.h"
-#include "connection.h"
-#include "item.h"
-#include "keys.h"
-#include "shipshape.h"
+// #include "bit.h"
+// #include "click.h"
+// #include "connection.h"
+// #include "item.h"
+// #include "keys.h"
+// #include "shipshape.h"
 
 #include "object.h"
-#include "serverconst.h"
+// #include "serverconst.h"
 
 /*
  * Some object types are overloaded.
@@ -44,6 +44,7 @@
 #define OBJ_EXT_ROBOT (1U << 2)
 
 /* macro's to query the type of player. */
+#define IS_TANK_IND(ind) Player_is_tank(Players[ind])
 #define IS_ROBOT_IND(ind) Player_is_robot(Players[ind])
 #define IS_HUMAN_IND(ind) Player_is_human(Players[ind])
 #define Player_is_tank(pl) (BIT((pl)->type_ext, OBJ_EXT_TANK) == OBJ_EXT_TANK)
@@ -65,8 +66,8 @@ struct player
 
     int type_ext; /* extended type info (tank, robot) */
 
-    double turnspeed; /* How fast player acc-turns */
-    double velocity;  /* Absolute speed */
+    DFLOAT turnspeed; /* How fast player acc-turns */
+    DFLOAT velocity;  /* Absolute speed */
 
     int kills;  /* Number of kills this round */
     int deaths; /* Number of deaths this round */
@@ -76,21 +77,21 @@ struct player
 
     int shield_time;         /* Shields if no playerShielding */
     pl_fuel_t fuel;          /* ship tanks and the stored fuel */
-    double emptymass;        /* Mass of empty ship */
-    double float_dir;        /* Direction, in float var */
-    double turnresistance;   /* How much is lost in % */
-    double turnvel;          /* Current velocity of turn (right) */
-    double oldturnvel;       /* Last velocity of turn (right) */
-    double turnacc;          /* Current acceleration of turn */
+    DFLOAT emptymass;        /* Mass of empty ship */
+    DFLOAT float_dir;        /* Direction, in float var */
+    DFLOAT turnresistance;   /* How much is lost in % */
+    DFLOAT turnvel;          /* Current velocity of turn (right) */
+    DFLOAT oldturnvel;       /* Last velocity of turn (right) */
+    DFLOAT turnacc;          /* Current acceleration of turn */
     int score;               /* Current score of player */
     int prev_score;          /* Last score that has been updated */
     int prev_life;           /* Last life that has been updated */
     shipshape_t *ship;       /* wire model of ship shape */
-    double power;            /* Force of thrust */
-    double power_s;          /* Saved power fiks */
-    double turnspeed_s;      /* Saved turnspeed */
-    double turnresistance_s; /* Saved (see above) */
-    double sensor_range;     /* Range of sensors (radar) */
+    DFLOAT power;            /* Force of thrust */
+    DFLOAT power_s;          /* Saved power fiks */
+    DFLOAT turnspeed_s;      /* Saved turnspeed */
+    DFLOAT turnresistance_s; /* Saved (see above) */
+    DFLOAT sensor_range;     /* Range of sensors (radar) */
     int shots;               /* Number of active shots by player */
     int missile_rack;        /* Next missile rack to be active */
 
@@ -107,10 +108,10 @@ struct player
     int lose_item;       /* which item to drop */
     int lose_item_state; /* lose item key state, 2=up,1=down */
 
-    double auto_power_s;               /* autopilot saves of current */
+    DFLOAT auto_power_s;               /* autopilot saves of current */
                                        /* power, turnspeed and */
-    double auto_turnspeed_s;           /* turnresistance settings. Restored */
-    double auto_turnresistance_s;      /* when autopilot turned off */
+    DFLOAT auto_turnspeed_s;           /* turnresistance settings. Restored */
+    DFLOAT auto_turnresistance_s;      /* when autopilot turned off */
     modifiers_t modbank[NUM_MODBANKS]; /* useful modifier settings */
     bool tractor_is_pressor;           /* on if tractor is pressor */
     int shot_max;                      /* Maximum number of shots active */
@@ -133,7 +134,7 @@ struct player
     {
         int tagged;      /* Flag, what is tagged? */
         int pl_id;       /* Tagging player id */
-        double distance; /* Distance to object */
+        DFLOAT distance; /* Distance to object */
     } lock;
     int lockbank[LOCKBANK_MAX]; /* Saved player locks */
 
@@ -142,7 +143,7 @@ struct player
     char mychar;                /* Special char for player */
     char prev_mychar;           /* Special char for player */
     char name[MAX_CHARS];       /* Nick-name of player */
-    char username[MAX_CHARS];   /* Real name of player */
+    char realname[MAX_CHARS];   /* Real name of player */
     char hostname[MAX_CHARS];   /* Hostname of client player uses */
     unsigned short pseudo_team; /* Which team for detaching tanks */
     int alliance;               /* Member of which alliance? */
@@ -175,8 +176,8 @@ struct player
 
     int ecmcount; /* number of active ecms */
 
-    connection_t *conn; /* connection pointer, NULL if robot */
-    unsigned version;   /* XPilot version number of client */
+    connection_t *connp; /* connection pointer, NULL if robot */
+    unsigned version;    /* XPilot version number of client */
 
     BITV_DECL(last_keyv, NUM_KEYS); /* Keyboard state */
     BITV_DECL(prev_keyv, NUM_KEYS); /* Keyboard state */

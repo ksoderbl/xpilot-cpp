@@ -26,6 +26,8 @@
 
 #include "click.h"
 
+#include "player.h"
+
 /*
  * Wall collision detection and bouncing.
  *

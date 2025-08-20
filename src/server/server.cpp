@@ -415,7 +415,7 @@ int Pick_team(int pick_for_type)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (IS_TANK_PTR(pl))
+        if (Player_is_tank(pl))
         {
             continue;
         }
@@ -427,7 +427,7 @@ int Pick_team(int pick_for_type)
         {
             playing_teams++;
         }
-        if (IS_HUMAN_PTR(pl) || Player_is_robot(pl))
+        if (Player_is_human(pl) || Player_is_robot(pl))
         {
             team_score[pl->team] += pl->score;
         }
@@ -609,7 +609,7 @@ void Server_info(char *str, unsigned max_size)
                 name, (int)pl->life, (int)pl->score);
         sprintf(msg, "%2d... %-36s%s@%s\n",
                 i + 1, lblstr, pl->realname,
-                IS_HUMAN_PTR(pl)
+                Player_is_human(pl)
                     ? pl->hostname
                     : "xpilot.org");
         if (strlen(msg) + strlen(str) >= max_size)

@@ -1112,7 +1112,7 @@ void Robot_update(void)
     {
         pl = Players[i];
 
-        if (IS_TANK_PTR(pl))
+        if (Player_is_tank(pl))
         {
             Tank_play(i);
             continue;

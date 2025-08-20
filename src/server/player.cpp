@@ -58,7 +58,7 @@ void Pick_startpos(int ind)
     static int prev_num_bases = 0;
     static char *free_bases = NULL;
 
-    if (IS_TANK_PTR(pl))
+    if (Player_is_tank(pl))
     {
         pl->home_base = 0;
         return;
@@ -169,7 +169,7 @@ void Go_home(int ind)
     int i, x, y, dir, check;
     DFLOAT vx, vy, velo;
 
-    if (IS_TANK_PTR(pl))
+    if (Player_is_tank(pl))
     {
         /*NOTREACHED*/
         /* Tanks have no homebase. */
@@ -710,7 +710,7 @@ void Reset_all_players(void)
                 pl->count = RECOVERY_DELAY;
             }
         }
-        if (IS_TANK_PTR(pl))
+        if (Player_is_tank(pl))
             pl->mychar = 'T';
         else if (Player_is_robot(pl))
             pl->mychar = 'R';
@@ -818,7 +818,7 @@ void Check_team_members(int team)
     for (members = i = 0; i < NumPlayers; i++)
     {
         pl = Players[i];
-        if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl) && pl->team == team)
+        if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
             members++;
     }
     if (World.teams[team].NumMembers != members)
@@ -828,7 +828,7 @@ void Check_team_members(int team)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl) && pl->team == team)
+            if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
                 error("Team %d currently has player %d: \"%s\"",
                       team, i + 1, pl->name);
         }
@@ -1153,7 +1153,7 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (IS_TANK_PTR(pl))
+            if (Player_is_tank(pl))
             {
                 continue;
             }
@@ -1210,7 +1210,7 @@ void Race_game_over(void)
     {
         pl = Players[i];
         CLR_BIT(pl->status, RACE_OVER | FINISH);
-        if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || IS_TANK_PTR(pl))
+        if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
         {
             continue;
         }
@@ -1241,7 +1241,7 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || IS_TANK_PTR(pl))
+            if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
             {
                 continue;
             }
@@ -1339,7 +1339,7 @@ void Compute_game_status(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Players[i];
-            if (BIT(pl->status, PAUSE) || IS_TANK_PTR(pl))
+            if (BIT(pl->status, PAUSE) || Player_is_tank(pl))
             {
                 continue;
             }
@@ -1403,7 +1403,7 @@ void Compute_game_status(void)
             for (i = 0; i < NumPlayers; i++)
             {
                 pl = Players[i];
-                if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || IS_TANK_PTR(pl))
+                if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
                 {
                     continue;
                 }
@@ -1886,12 +1886,12 @@ void Delete_player(int ind)
     sound_close(pl);
 
     NumPlayers--;
-    if (IS_TANK_PTR(pl))
+    if (Player_is_tank(pl))
     {
         NumPseudoPlayers--;
     }
 
-    if (pl->team != TEAM_NOT_SET && !IS_TANK_PTR(pl))
+    if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl))
     {
         World.teams[pl->team].NumMembers--;
         if (Player_is_robot(pl))
@@ -2026,7 +2026,7 @@ void Player_death_reset(int ind)
     long minfuel;
     int i;
 
-    if (IS_TANK_PTR(pl))
+    if (Player_is_tank(pl))
     {
         Delete_player(ind);
         return;

@@ -24,8 +24,8 @@
 #ifndef PROTO_H
 #define PROTO_H
 
-#include "object.h"
 #include "list.h"
+#include "player.h"
 
 /*
  * Prototypes for cell.c

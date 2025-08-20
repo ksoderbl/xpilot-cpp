@@ -568,7 +568,7 @@ static void PlayerCollision(void)
             {
                 pl->time++;
             }
-            if (BIT(pl->status, PLAYING | KILLED) == PLAYING && Wrap_length(pl->pos.x - World.check[pl->check].x * BLOCK_SZ, pl->pos.y - World.check[pl->check].y * BLOCK_SZ) < options.checkpointRadius * BLOCK_SZ && !IS_TANK_PTR(pl) && !options.ballrace)
+            if (BIT(pl->status, PLAYING | KILLED) == PLAYING && Wrap_length(pl->pos.x - World.check[pl->check].x * BLOCK_SZ, pl->pos.y - World.check[pl->check].y * BLOCK_SZ) < options.checkpointRadius * BLOCK_SZ && !Player_is_tank(pl) && !options.ballrace)
             {
                 Player_pass_checkpoint(i);
             }
@@ -679,7 +679,7 @@ static void PlayerObjectCollision(int ind)
                 }
             }
             else if (options.selfImmunity &&
-                     IS_TANK_PTR(pl) &&
+                     Player_is_tank(pl) &&
                      (pl->lock.pl_id == obj->id))
             {
                 continue;
@@ -1227,7 +1227,7 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
         Set_message(msg);
         sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
         SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "[Asteroid]");
-        if (IS_TANK_PTR(pl) && options.asteroidPoints > 0)
+        if (Player_is_tank(pl) && options.asteroidPoints > 0)
         {
             int owner = GetInd[pl->lock.pl_id];
             if (Players[owner]->score <= options.asteroidMaxScore)
