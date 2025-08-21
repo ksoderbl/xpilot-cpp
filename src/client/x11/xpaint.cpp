@@ -386,7 +386,7 @@ void Paint_score_start(void)
 
     thisLine = SCORE_BORDER + scoreListFont->ascent;
 
-    if (showRealName)
+    if (showUserName)
     {
         strlcpy(headingStr, "NICK=USER@HOST", sizeof(headingStr));
     }
@@ -464,7 +464,7 @@ void Paint_score_entry(int entry_num,
     /*
      * Setup the status line
      */
-    if (showRealName)
+    if (showUserName)
     {
         sprintf(label, "%s=%s@%s", other->nick_name, other->user_name, other->host_name);
     }

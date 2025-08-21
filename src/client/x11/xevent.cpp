@@ -307,7 +307,7 @@ bool Key_check_talk_macro(keys_t key)
 
 bool Key_press_id_mode(keys_t key)
 {
-    showRealName = showRealName ? false : true;
+    showUserName = showUserName ? false : true;
     scoresChanged++;
     return false; /* server doesn't need to know */
 }

@@ -42,10 +42,12 @@
 #include "strlcpy.h"
 #include "xpmemory.h"
 
+#include "configure.h"
 #include "messages.h"
-// #include "option.h"
+#include "option.h"
 #include "paint.h"
 
+#include "bitmaps.h"
 #include "keydefs.h"
 
 #include "version.h"
@@ -110,7 +112,7 @@ extern char conf_soundfile_string[];
  * Help lines can span multiple lines, but for
  * the key help window only the first line is used.
  */
-option options[] = {
+old_option_t oldOptions[] = {
     {"help",
      "Yes",
      "",
@@ -1469,7 +1471,7 @@ option options[] = {
      "Talkmessage 20.\n"},
 };
 
-int optionsCount = NELEM(options);
+int optionsCount = NELEM(oldOptions);
 
 static unsigned String_hash(const char *s)
 {
@@ -1488,11 +1490,11 @@ char *Get_keyHelpString(keys_t key)
     char *nl;
     static char buf[MAX_CHARS];
 
-    for (i = 0; i < NELEM(options); i++)
+    for (i = 0; i < NELEM(oldOptions); i++)
     {
-        if (options[i].key == key)
+        if (oldOptions[i].key == key)
         {
-            strlcpy(buf, options[i].help, sizeof buf);
+            strlcpy(buf, oldOptions[i].help, sizeof buf);
             if ((nl = strchr(buf, '\n')) != NULL)
             {
                 *nl = '\0';
@@ -1508,18 +1510,18 @@ const char *Get_keyResourceString(keys_t key)
 {
     int i;
 
-    for (i = 0; i < NELEM(options); i++)
+    for (i = 0; i < NELEM(oldOptions); i++)
     {
-        if (options[i].key == key)
+        if (oldOptions[i].key == key)
         {
-            return options[i].name;
+            return oldOptions[i].name;
         }
     }
 
     return NULL;
 }
 
-static void Usage(void)
+void Usage(void)
 {
     int i;
 
@@ -1527,15 +1529,15 @@ static void Usage(void)
         "Usage: xpilot [-options ...] [server]\n"
         "Where options include:\n"
         "\n");
-    for (i = 0; i < NELEM(options); i++)
+    for (i = 0; i < NELEM(oldOptions); i++)
     {
-        printf("    -%s %s\n", options[i].name,
-               (options[i].noArg == NULL) ? "<value>" : "");
-        if (options[i].help && options[i].help[0])
+        printf("    -%s %s\n", oldOptions[i].name,
+               (oldOptions[i].noArg == NULL) ? "<value>" : "");
+        if (oldOptions[i].help && oldOptions[i].help[0])
         {
             const char *str;
             printf("        ");
-            for (str = options[i].help; *str; str++)
+            for (str = oldOptions[i].help; *str; str++)
             {
                 putchar(*str);
                 if (*str == '\n' && str[1])
@@ -1548,15 +1550,15 @@ static void Usage(void)
                 putchar('\n');
             }
         }
-        if (options[i].fallback && options[i].fallback[0])
+        if (oldOptions[i].fallback && oldOptions[i].fallback[0])
         {
             printf("        The default %s: %s.\n",
-                   (options[i].key == KEY_DUMMY)
+                   (oldOptions[i].key == KEY_DUMMY)
                        ? "value is"
-                   : (strchr(options[i].fallback, ' ') == NULL)
+                   : (strchr(oldOptions[i].fallback, ' ') == NULL)
                        ? "key is"
                        : "keys are",
-                   options[i].fallback);
+                   oldOptions[i].fallback);
         }
         printf("\n");
     }
@@ -1585,12 +1587,12 @@ static int Find_resource(XrmDatabase db, const char *resource,
 
     for (i = 0;;)
     {
-        if (hash == options[i].hash && !strcmp(resource, options[i].name))
+        if (hash == oldOptions[i].hash && !strcmp(resource, oldOptions[i].name))
         {
             *index = i;
             break;
         }
-        if (++i >= NELEM(options))
+        if (++i >= NELEM(oldOptions))
         {
             errno = 0;
             error("BUG: Can't find option \"%s\"", resource);
@@ -1615,7 +1617,7 @@ static int Find_resource(XrmDatabase db, const char *resource,
         result[len] = '\0';
         return 1;
     }
-    strlcpy(result, options[*index].fallback, size);
+    strlcpy(result, oldOptions[*index].fallback, size);
 
     return 0;
 }
@@ -1661,7 +1663,7 @@ static void Get_int_resource(XrmDatabase db,
         errno = 0;
         error("Bad value \"%s\" for option \"%s\", using default...",
               resValue, resource);
-        sscanf(options[index].fallback, "%d", result);
+        sscanf(oldOptions[index].fallback, "%d", result);
     }
 }
 
@@ -1679,7 +1681,7 @@ static void Get_double_resource(XrmDatabase db,
         errno = 0;
         error("Bad value \"%s\" for option \"%s\", using default...",
               resValue, resource);
-        sscanf(options[index].fallback, "%lf", &temp_result);
+        sscanf(oldOptions[index].fallback, "%lf", &temp_result);
     }
     *result = (double)temp_result;
 }
@@ -1896,10 +1898,10 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     /*
      * Construct a Xrm Option table from our options array.
      */
-    size = sizeof(*xopt) * NELEM(options);
-    for (i = 0; i < NELEM(options); i++)
+    size = sizeof(*xopt) * NELEM(oldOptions);
+    for (i = 0; i < NELEM(oldOptions); i++)
     {
-        size += 2 * (strlen(options[i].name) + 2);
+        size += 2 * (strlen(oldOptions[i].name) + 2);
     }
     if ((ptr = (char *)malloc(size)) == NULL)
     {
@@ -1907,23 +1909,23 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         exit(1);
     }
     xopt = (XrmOptionDescRec *)ptr;
-    ptr += sizeof(*xopt) * NELEM(options);
-    for (i = 0; i < NELEM(options); i++)
+    ptr += sizeof(*xopt) * NELEM(oldOptions);
+    for (i = 0; i < NELEM(oldOptions); i++)
     {
-        options[i].hash = String_hash(options[i].name);
+        oldOptions[i].hash = String_hash(oldOptions[i].name);
         xopt[i].option = ptr;
         xopt[i].option[0] = '-';
-        strcpy(&xopt[i].option[1], options[i].name);
-        size = strlen(options[i].name) + 2;
+        strcpy(&xopt[i].option[1], oldOptions[i].name);
+        size = strlen(oldOptions[i].name) + 2;
         ptr += size;
         xopt[i].specifier = ptr;
         xopt[i].specifier[0] = '.';
-        strcpy(&xopt[i].specifier[1], options[i].name);
+        strcpy(&xopt[i].specifier[1], oldOptions[i].name);
         ptr += size;
-        if (options[i].noArg)
+        if (oldOptions[i].noArg)
         {
             xopt[i].argKind = XrmoptionNoArg;
-            xopt[i].value = (char *)options[i].noArg;
+            xopt[i].value = (char *)oldOptions[i].noArg;
         }
         else
         {
@@ -1932,7 +1934,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         }
     }
 
-    XrmParseCommand(&argDB, xopt, NELEM(options), myName, argcp, argvp);
+    XrmParseCommand(&argDB, xopt, NELEM(oldOptions), myName, argcp, argvp);
 
     /*
      * Check for bad arguments.
@@ -2273,13 +2275,13 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         exit(1);
     }
     num = 0;
-    for (i = 0; i < NELEM(options); i++)
+    for (i = 0; i < NELEM(oldOptions); i++)
     {
-        if ((key = options[i].key) == KEY_DUMMY)
+        if ((key = oldOptions[i].key) == KEY_DUMMY)
         {
             continue;
         }
-        Get_resource(rDB, options[i].name, resValue, sizeof resValue);
+        Get_resource(rDB, oldOptions[i].name, resValue, sizeof resValue);
         firstKeyDef = num;
         for (str = strtok(resValue, " \t\r\n");
              str != NULL;
@@ -2289,7 +2291,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
             if ((ks = XStringToKeysym(str)) == NoSymbol)
             {
                 printf("Invalid keysym \"%s\" for key \"%s\".\n",
-                       str, options[i].name);
+                       str, oldOptions[i].name);
                 continue;
             }
 
@@ -2361,11 +2363,11 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
             {
                 if (!strncasecmp(ptr, "key", 3))
                     ptr += 3;
-                for (j = 0; j < NELEM(options); j++)
+                for (j = 0; j < NELEM(oldOptions); j++)
                 {
-                    if (options[j].key != KEY_DUMMY)
+                    if (oldOptions[j].key != KEY_DUMMY)
                     {
-                        if (!strcasecmp(ptr, options[j].name + 3))
+                        if (!strcasecmp(ptr, oldOptions[j].name + 3))
                         {
                             if (NUM_BUTTON_DEFS(i) == MAX_BUTTON_DEFS)
                             {
@@ -2375,12 +2377,12 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
                                       MAX_BUTTON_DEFS, i);
                                 break;
                             }
-                            buttonDefs[i][NUM_BUTTON_DEFS(i)++] = options[j].key;
+                            buttonDefs[i][NUM_BUTTON_DEFS(i)++] = oldOptions[j].key;
                             break;
                         }
                     }
                 }
-                if (j == NELEM(options))
+                if (j == NELEM(oldOptions))
                 {
                     errno = 0;
                     error("Unknown key \"%s\" for pointer button %d", ptr, i);
@@ -2477,85 +2479,78 @@ static void Get_test_resources(XrmDatabase rDB)
 }
 #endif
 
-// static char displayName[MAX_DISP_LEN];
-// static char keyboardName[MAX_DISP_LEN];
+static char displayName[MAX_DISP_LEN];
+static char keyboardName[MAX_DISP_LEN];
 
-// /* kps - this is quite useless currently */
-// static bool Set_geometry(xp_option_t *opt, const char *value)
-// {
-//     UNUSED_PARAM(opt);
-//     XFREE(geometry);
-//     geometry = xp_safe_strdup(value);
-//     return true;
-// }
+/* kps - this is quite useless currently */
+static bool Set_geometry(xp_option_t *opt, const char *value)
+{
+    XFREE(geometry);
+    geometry = xp_safe_strdup(value);
+    return true;
+}
 
-// static const char *Get_geometry(xp_option_t *opt)
-// {
-//     static char buf[20]; /* should be enough */
-//     UNUSED_PARAM(opt);
-//     snprintf(buf, sizeof(buf), "%dx%d", top_width, top_height);
-//     return buf;
-// }
+static const char *Get_geometry(xp_option_t *opt)
+{
+    static char buf[20]; /* should be enough */
+    snprintf(buf, sizeof(buf), "%dx%d", top_width, top_height);
+    return buf;
+}
 
-// static bool Set_texturedObjects(xp_option_t *opt, bool val);
+static bool Set_texturedObjects(xp_option_t *opt, bool val);
 
-// static bool Set_fullColor(xp_option_t *opt, bool val)
-// {
-//     UNUSED_PARAM(opt);
+static bool Set_fullColor(xp_option_t *opt, bool val)
+{
+    if (val == fullColor)
+        return true;
 
-//     if (val == fullColor)
-//         return true;
+    if (val)
+    {
+        /* see if we can use fullColor at all. */
+        fullColor = true;
+        if (Colors_init_bitmaps() == -1)
+        {
+            /* no we can't have fullColor. */
+            warn("Unable to enable fullColor.");
+            fullColor = false;
+        }
+    }
+    else
+    {
+        Colors_free_bitmaps();
+        fullColor = false;
+        Set_texturedObjects(NULL, false);
+    }
+    /* Make sure texture on score list is redrawn. */
+    scoresChanged = true;
+    return true;
+}
 
-//     if (val)
-//     {
-//         /* see if we can use fullColor at all. */
-//         fullColor = true;
-//         if (Colors_init_bitmaps() == -1)
-//         {
-//             /* no we can't have fullColor. */
-//             warn("Unable to enable fullColor.");
-//             fullColor = false;
-//         }
-//     }
-//     else
-//     {
-//         Colors_free_bitmaps();
-//         fullColor = false;
-//         Set_texturedObjects(NULL, false);
-//     }
-//     /* Make sure texture on score list is redrawn. */
-//     scoresChanged = true;
-//     return true;
-// }
+static bool Set_texturedObjects(xp_option_t *opt, bool val)
+{
+    if (val == texturedObjects)
+        return true;
 
-// static bool Set_texturedObjects(xp_option_t *opt, bool val)
-// {
-//     UNUSED_PARAM(opt);
+    if (val)
+    {
+        /* Can't use texturedObjects without fullColor */
+        texturedObjects = true;
+        if (!fullColor)
+        {
+            /* no we can't have texturedObjects. */
+            warn("Unable to enable texturedObjects without fullColor on.");
+            texturedObjects = false;
+        }
+    }
+    else
+        texturedObjects = false;
 
-//     if (val == texturedObjects)
-//         return true;
+    return true;
+}
 
-//     if (val)
-//     {
-//         /* Can't use texturedObjects without fullColor */
-//         texturedObjects = true;
-//         if (!fullColor)
-//         {
-//             /* no we can't have texturedObjects. */
-//             warn("Unable to enable texturedObjects without fullColor on.");
-//             texturedObjects = false;
-//         }
-//     }
-//     else
-//         texturedObjects = false;
-
-//     return true;
-// }
-
+// TODO: enable ?
 // static bool Set_mouseAccelNum(xp_option_t *opt, int value)
 // {
-//     UNUSED_PARAM(opt);
-
 //     if (value < 0)
 //     {
 //         new_acc_num = 0;
@@ -2573,8 +2568,6 @@ static void Get_test_resources(XrmDatabase rDB)
 
 // static bool Set_mouseAccelDenom(xp_option_t *opt, int value)
 // {
-//     UNUSED_PARAM(opt);
-
 //     if (value < 0)
 //     {
 //         new_acc_denom = 1;
@@ -2592,8 +2585,6 @@ static void Get_test_resources(XrmDatabase rDB)
 
 // static bool Set_mouseAccelThresh(xp_option_t *opt, int value)
 // {
-//     UNUSED_PARAM(opt);
-
 //     if (value < 0)
 //     {
 //         new_threshold = 0;
@@ -2609,399 +2600,371 @@ static void Get_test_resources(XrmDatabase rDB)
 //     }
 // }
 
-// static bool Set_fontName(xp_option_t *opt, const char *val)
-// {
-//     char *buf = (char *)Option_get_private_data(opt);
-//     char *tmpval, *fontname;
+static bool Set_fontName(xp_option_t *opt, const char *val)
+{
+    char *buf = (char *)Option_get_private_data(opt);
+    char *tmpval, *fontname;
 
-//     assert(val != NULL);
+    assert(val != NULL);
 
-//     /* remove whitespace from font specification */
-//     tmpval = xp_safe_strdup(val);
+    /* remove whitespace from font specification */
+    tmpval = xp_safe_strdup(val);
 
-//     fontname = strtok(tmpval, " \t\r\n");
-//     if (!fontname)
-//     {
-//         XFREE(tmpval);
-//         return false;
-//     }
+    fontname = strtok(tmpval, " \t\r\n");
+    if (!fontname)
+    {
+        XFREE(tmpval);
+        return false;
+    }
 
-//     strlcpy(buf, fontname, FONT_LEN);
-//     XFREE(tmpval);
+    strlcpy(buf, fontname, FONT_LEN);
+    XFREE(tmpval);
 
-//     return true;
-// }
+    return true;
+}
 
-// xp_option_t xdefault_options[] = {
-//     XP_BOOL_OPTION(
-//         "fullColor",
-//         true,
-//         &fullColor,
-//         Set_fullColor,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "Whether to use a colors as close as possible to the specified ones\n"
-//         "or use a few standard colors for everything. May require more\n"
-//         "resources from your system.\n"),
+xp_option_t xdefault_options[] = {
+    XP_BOOL_OPTION(
+        "fullColor",
+        true,
+        &fullColor,
+        Set_fullColor,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Whether to use a colors as close as possible to the specified ones\n"
+        "or use a few standard colors for everything. May require more\n"
+        "resources from your system.\n"),
 
-//     XP_BOOL_OPTION(
-//         "texturedObjects",
-//         true,
-//         &texturedObjects,
-//         Set_texturedObjects,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "Whether to draw certain game objects with textures.\n"
-//         "Be warned that this requires more graphics speed.\n"
-//         "fullColor must be on for this to work.\n"
-//         "You may also need to enable multibuffering or double-buffering.\n"),
+    XP_BOOL_OPTION(
+        "texturedObjects",
+        true,
+        &texturedObjects,
+        Set_texturedObjects,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Whether to draw certain game objects with textures.\n"
+        "Be warned that this requires more graphics speed.\n"
+        "fullColor must be on for this to work.\n"
+        "You may also need to enable multibuffering or double-buffering.\n"),
 
-//     XP_STRING_OPTION(
-//         "geometry",
-//         "1024x768",
-//         NULL, 0,
-//         Set_geometry, NULL, Get_geometry,
-//         XP_OPTFLAG_DEFAULT,
-//         "Set the window size and position in standard X geometry format.\n"
-//         "The maximum allowed window size is 1922x1440.\n"),
+    XP_STRING_OPTION(
+        "geometry",
+        "1024x768",
+        NULL, 0,
+        Set_geometry, NULL, Get_geometry,
+        XP_OPTFLAG_DEFAULT,
+        "Set the window size and position in standard X geometry format.\n"
+        "The maximum allowed window size is 1922x1440.\n"),
 
-//     XP_STRING_OPTION(
-//         "display",
-//         "",
-//         displayName,
-//         sizeof displayName,
-//         NULL, NULL, NULL,
-//         XP_OPTFLAG_KEEP,
-//         "Set the X display.\n"),
+    XP_STRING_OPTION(
+        "display",
+        "",
+        displayName,
+        sizeof displayName,
+        NULL, NULL, NULL,
+        XP_OPTFLAG_KEEP,
+        "Set the X display.\n"),
 
-//     XP_STRING_OPTION(
-//         "keyboard",
-//         "",
-//         keyboardName,
-//         sizeof keyboardName,
-//         NULL, NULL, NULL,
-//         XP_OPTFLAG_KEEP,
-//         "Set the X keyboard input if you want keyboard input from\n"
-//         "another display.  The default is to use the keyboard input from\n"
-//         "the X display.\n"),
+    XP_STRING_OPTION(
+        "keyboard",
+        "",
+        keyboardName,
+        sizeof keyboardName,
+        NULL, NULL, NULL,
+        XP_OPTFLAG_KEEP,
+        "Set the X keyboard input if you want keyboard input from\n"
+        "another display.  The default is to use the keyboard input from\n"
+        "the X display.\n"),
 
-//     XP_STRING_OPTION(
-//         "visual",
-//         "",
-//         visualName,
-//         sizeof visualName,
-//         NULL, NULL, NULL,
-//         XP_OPTFLAG_KEEP,
-//         "Specify which visual to use for allocating colors.\n"
-//         "To get a listing of all possible visuals on your dislay\n"
-//         "set the argument for this option to list.\n"),
+    XP_STRING_OPTION(
+        "visual",
+        "",
+        visualName,
+        sizeof visualName,
+        NULL, NULL, NULL,
+        XP_OPTFLAG_KEEP,
+        "Specify which visual to use for allocating colors.\n"
+        "To get a listing of all possible visuals on your dislay\n"
+        "set the argument for this option to list.\n"),
 
-//     XP_BOOL_OPTION(
-//         "colorSwitch",
-//         true,
-//         &colorSwitch,
-//         NULL,
-//         XP_OPTFLAG_KEEP,
-//         "Use color buffering or not.\n"
-//         "Usually color buffering is faster, especially on 8-bit\n"
-//         "PseudoColor displays.\n"),
+    XP_BOOL_OPTION(
+        "ignoreWindowManager",
+        false,
+        &ignoreWindowManager,
+        NULL,
+        XP_OPTFLAG_DEFAULT,
+        "Ignore the window manager when opening the top level player window.\n"
+        "This can be handy if you want to have your XPilot window on a\n"
+        "preferred position without window manager borders.\n"
+        "Also sometimes window managers may interfere when switching\n"
+        "colormaps. This option may prevent that.\n"),
 
-//     XP_BOOL_OPTION(
-//         "multibuffer",
-//         false,
-//         &multibuffer,
-//         NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "Use the X windows multibuffer extension if present.\n"),
+    XP_STRING_OPTION(
+        "gameFont",
+        GAME_FONT,
+        gameFontName,
+        sizeof gameFontName,
+        Set_fontName, gameFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used on the HUD and for most other text.\n"),
 
-//     XP_BOOL_OPTION(
-//         "ignoreWindowManager",
-//         false,
-//         &ignoreWindowManager,
-//         NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "Ignore the window manager when opening the top level player window.\n"
-//         "This can be handy if you want to have your XPilot window on a\n"
-//         "preferred position without window manager borders.\n"
-//         "Also sometimes window managers may interfere when switching\n"
-//         "colormaps. This option may prevent that.\n"),
+    XP_STRING_OPTION(
+        "scoreListFont",
+        SCORE_LIST_FONT,
+        scoreListFontName,
+        sizeof scoreListFontName,
+        Set_fontName, scoreListFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used on the score list.\n"
+        "This must be a non-proportional font.\n"),
 
-//     XP_STRING_OPTION(
-//         "gameFont",
-//         GAME_FONT,
-//         gameFontName,
-//         sizeof gameFontName,
-//         Set_fontName, gameFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used on the HUD and for most other text.\n"),
+    XP_STRING_OPTION(
+        "buttonFont",
+        BUTTON_FONT,
+        buttonFontName,
+        sizeof buttonFontName,
+        Set_fontName, buttonFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used on all buttons.\n"),
 
-//     XP_STRING_OPTION(
-//         "scoreListFont",
-//         SCORE_LIST_FONT,
-//         scoreListFontName,
-//         sizeof scoreListFontName,
-//         Set_fontName, scoreListFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used on the score list.\n"
-//         "This must be a non-proportional font.\n"),
+    XP_STRING_OPTION(
+        "textFont",
+        TEXT_FONT,
+        textFontName,
+        sizeof textFontName,
+        Set_fontName, textFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used in the help and about windows.\n"),
 
-//     XP_STRING_OPTION(
-//         "buttonFont",
-//         BUTTON_FONT,
-//         buttonFontName,
-//         sizeof buttonFontName,
-//         Set_fontName, buttonFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used on all buttons.\n"),
+    XP_STRING_OPTION(
+        "talkFont",
+        TALK_FONT,
+        talkFontName,
+        sizeof talkFontName,
+        Set_fontName, talkFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used in the talk window.\n"),
 
-//     XP_STRING_OPTION(
-//         "textFont",
-//         TEXT_FONT,
-//         textFontName,
-//         sizeof textFontName,
-//         Set_fontName, textFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used in the help and about windows.\n"),
+    XP_STRING_OPTION(
+        "motdFont",
+        MOTD_FONT,
+        motdFontName,
+        sizeof motdFontName,
+        Set_fontName, motdFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used in the MOTD window and key list window.\n"
+        "This must be a non-proportional font.\n"),
 
-//     XP_STRING_OPTION(
-//         "talkFont",
-//         TALK_FONT,
-//         talkFontName,
-//         sizeof talkFontName,
-//         Set_fontName, talkFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used in the talk window.\n"),
+    XP_STRING_OPTION(
+        "messageFont",
+        MESSAGE_FONT,
+        messageFontName,
+        sizeof messageFontName,
+        Set_fontName, messageFontName, NULL,
+        XP_OPTFLAG_DEFAULT,
+        "The font used for drawing messages.\n"),
 
-//     XP_STRING_OPTION(
-//         "motdFont",
-//         MOTD_FONT,
-//         motdFontName,
-//         sizeof motdFontName,
-//         Set_fontName, motdFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used in the MOTD window and key list window.\n"
-//         "This must be a non-proportional font.\n"),
+// XP_BOOL_OPTION(
+//     "mouseAccelInClient",
+//     true,
+//     &mouseAccelInClient,
+//     NULL,
+//     XP_OPTFLAG_CONFIG_DEFAULT,
+//     "This option makes the client handle the mouse acceleration.\n"
+//     "Options mouseAccelNum, mouseAccelDenom and mouseAccelThresh can\n"
+//     "be used to fine tune the acceleration. The default values of these\n"
+//     "three options give linear response to mouse movements.\n"),
 
-//     XP_STRING_OPTION(
-//         "messageFont",
-//         MESSAGE_FONT,
-//         messageFontName,
-//         sizeof messageFontName,
-//         Set_fontName, messageFontName, NULL,
-//         XP_OPTFLAG_DEFAULT,
-//         "The font used for drawing messages.\n"),
+// XP_INT_OPTION(
+//     "mouseAccelNum",
+//     0,
+//     0,
+//     10,
+//     &new_acc_num,
+//     Set_mouseAccelNum,
+//     XP_OPTFLAG_CONFIG_DEFAULT,
+//     "Mouse acceleration numerator.\n"),
 
-//     XP_BOOL_OPTION(
-//         "showNastyShots",
-//         false,
-//         &instruments.showNastyShots,
-//         NULL,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "Use the Nasty Looking Shots instead of the round shots.\n"
-//         "You will probably want to increase your shotSize if you use this.\n"),
+// XP_INT_OPTION(
+//     "mouseAccelDenom",
+//     1,
+//     1,
+//     10,
+//     &new_acc_denom,
+//     Set_mouseAccelDenom,
+//     XP_OPTFLAG_CONFIG_DEFAULT,
+//     "Mouse acceleration denominator.\n"),
 
-//     XP_BOOL_OPTION(
-//         "mouseAccelInClient",
-//         true,
-//         &mouseAccelInClient,
-//         NULL,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "This option makes the client handle the mouse acceleration.\n"
-//         "Options mouseAccelNum, mouseAccelDenom and mouseAccelThresh can\n"
-//         "be used to fine tune the acceleration. The default values of these\n"
-//         "three options give linear response to mouse movements.\n"),
+// XP_INT_OPTION(
+//     "mouseAccelThresh",
+//     0,
+//     0,
+//     10,
+//     &new_threshold,
+//     Set_mouseAccelThresh,
+//     XP_OPTFLAG_CONFIG_DEFAULT,
+//     "Mouse acceleration threshold.\n"),
 
-//     XP_INT_OPTION(
-//         "mouseAccelNum",
-//         0,
-//         0,
-//         10,
-//         &new_acc_num,
-//         Set_mouseAccelNum,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "Mouse acceleration numerator.\n"),
+/* X debug stuff */
+#ifdef DEVELOPMENT
+    XP_NOARG_OPTION(
+        "testxsync",
+        &testxsync,
+        XP_OPTFLAG_NEVER_SAVE,
+        "Test XSynchronize() ?\n"),
 
-//     XP_INT_OPTION(
-//         "mouseAccelDenom",
-//         1,
-//         1,
-//         10,
-//         &new_acc_denom,
-//         Set_mouseAccelDenom,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "Mouse acceleration denominator.\n"),
+    XP_NOARG_OPTION(
+        "testxdebug",
+        &testxdebug,
+        XP_OPTFLAG_NEVER_SAVE,
+        "Test X_error_handler() ?\n"),
 
-//     XP_INT_OPTION(
-//         "mouseAccelThresh",
-//         0,
-//         0,
-//         10,
-//         &new_threshold,
-//         Set_mouseAccelThresh,
-//         XP_OPTFLAG_CONFIG_DEFAULT,
-//         "Mouse acceleration threshold.\n"),
+    XP_NOARG_OPTION(
+        "testxafter",
+        &testxafter,
+        XP_OPTFLAG_NEVER_SAVE,
+        "Test XAfterFunction ?\n"),
 
-// /* X debug stuff */
-// #ifdef DEVELOPMENT
-//     XP_NOARG_OPTION(
-//         "testxsync",
-//         &testxsync,
-//         XP_OPTFLAG_NEVER_SAVE,
-//         "Test XSynchronize() ?\n"),
+    XP_NOARG_OPTION(
+        "testxcolors",
+        &testxcolors,
+        XP_OPTFLAG_NEVER_SAVE,
+        "Do Colors_debug() ?\n"),
+#endif
 
-//     XP_NOARG_OPTION(
-//         "testxdebug",
-//         &testxdebug,
-//         XP_OPTFLAG_NEVER_SAVE,
-//         "Test X_error_handler() ?\n"),
+};
 
-//     XP_NOARG_OPTION(
-//         "testxafter",
-//         &testxafter,
-//         XP_OPTFLAG_NEVER_SAVE,
-//         "Test XAfterFunction ?\n"),
+void Store_X_options(void)
+{
+    STORE_OPTIONS(xdefault_options);
+}
 
-//     XP_NOARG_OPTION(
-//         "testxcolors",
-//         &testxcolors,
-//         XP_OPTFLAG_NEVER_SAVE,
-//         "Do Colors_debug() ?\n"),
-// #endif
+#ifdef DEVELOPMENT
+static int X_error_handler(Display *display, XErrorEvent *xev)
+{
+    char buf[1024];
 
-// };
+    fflush(stdout);
+    fprintf(stderr, "X error\n");
+    XGetErrorText(display, xev->error_code, buf, sizeof buf);
+    buf[sizeof(buf) - 1] = '\0';
+    fprintf(stderr, "%s\n", buf);
+    fflush(stderr);
+    *(double *)-3 = 2.10; /*core dump*/
+    exit(1);
+    return 0;
+}
 
-// void Store_X_options(void)
-// {
-//     STORE_OPTIONS(xdefault_options);
-// }
+static void X_after(Display *display)
+{
+    static int n;
 
-// #ifdef DEVELOPMENT
-// static int X_error_handler(Display *display, XErrorEvent *xev)
-// {
-//     char buf[1024];
+    if (n < 1000)
+        printf("_X_ %4d\n", n++);
+}
+#endif /* DEVELOPMENT */
 
-//     fflush(stdout);
-//     fprintf(stderr, "X error\n");
-//     XGetErrorText(display, xev->error_code, buf, sizeof buf);
-//     buf[sizeof(buf) - 1] = '\0';
-//     fprintf(stderr, "%s\n", buf);
-//     fflush(stderr);
-//     *(double *)-3 = 2.10; /*core dump*/
-//     exit(1);
-//     return 0;
-// }
+void Handle_X_options(void)
+{
+    char *ptr;
 
-// static void X_after(Display *display)
-// {
-//     static int n;
+    /* handle display */
+    assert(displayName);
+    if (strlen(displayName) == 0)
+    {
+        if ((ptr = getenv(DISPLAY_ENV)) != NULL)
+            Set_option("display", ptr, xp_option_origin_env);
+        else
+            Set_option("display", DISPLAY_DEF, xp_option_origin_default);
+    }
 
-//     UNUSED_PARAM(display);
-//     if (n < 1000)
-//         printf("_X_ %4d\n", n++);
-// }
-// #endif /* DEVELOPMENT */
+    if ((dpy = XOpenDisplay(displayName)) == NULL)
+        fatal("Can't open display '%s'.", displayName);
 
-// void Handle_X_options(void)
-// {
-//     char *ptr;
+    /* handle keyboard */
+    assert(keyboardName);
+    if (strlen(keyboardName) == 0)
+    {
+        if ((ptr = getenv(KEYBOARD_ENV)) != NULL)
+            Set_option("keyboard", ptr, xp_option_origin_env);
+    }
 
-//     /* handle display */
-//     assert(displayName);
-//     if (strlen(displayName) == 0)
-//     {
-//         if ((ptr = getenv(DISPLAY_ENV)) != NULL)
-//             Set_option("display", ptr, xp_option_origin_env);
-//         else
-//             Set_option("display", DISPLAY_DEF, xp_option_origin_default);
-//     }
+    if (strlen(keyboardName) == 0)
+        kdpy = NULL;
+    else if ((kdpy = XOpenDisplay(keyboardName)) == NULL)
+        fatal("Can't open keyboard '%s'.", keyboardName);
 
-//     if ((dpy = XOpenDisplay(displayName)) == NULL)
-//         fatal("Can't open display '%s'.", displayName);
+    /* handle visual */
+    assert(visualName);
+    if (strncasecmp(visualName, "list", 4) == 0)
+    {
+        List_visuals();
+        exit(0);
+    }
 
-//     /* handle keyboard */
-//     assert(keyboardName);
-//     if (strlen(keyboardName) == 0)
-//     {
-//         if ((ptr = getenv(KEYBOARD_ENV)) != NULL)
-//             Set_option("keyboard", ptr, xp_option_origin_env);
-//     }
+    /* handle mouse */
 
-//     if (strlen(keyboardName) == 0)
-//         kdpy = NULL;
-//     else if ((kdpy = XOpenDisplay(keyboardName)) == NULL)
-//         fatal("Can't open keyboard '%s'.", keyboardName);
+    /* We know that we have the display open here and this is as early */
+    /* in the code as we can back up the existing mouse acceleration   */
+    /* we are going to overide these with xpilot settings, and want to */
+    /* restore these settings on exiting xpilot                        */
 
-//     /* handle visual */
-//     assert(visualName);
-//     if (strncasecmp(visualName, "list", 4) == 0)
-//     {
-//         List_visuals();
-//         exit(0);
-//     }
+    // TODO: enable ?
+    // pre_exists = True;
+    // XGetPointerControl(dpy, &pre_acc_num, &pre_acc_denom, &pre_threshold);
 
-//     /* handle mouse */
+#ifdef DEVELOPMENT
+    if (testxsync)
+    {
+        XSynchronize(dpy, True);
+        XSetErrorHandler(X_error_handler);
+    }
 
-//     /* We know that we have the display open here and this is as early */
-//     /* in the code as we can back up the existing mouse acceleration   */
-//     /* we are going to overide these with xpilot settings, and want to */
-//     /* restore these settings on exiting xpilot                        */
-//     pre_exists = True;
-//     XGetPointerControl(dpy, &pre_acc_num, &pre_acc_denom, &pre_threshold);
+    if (testxdebug)
+        XSetErrorHandler(X_error_handler);
 
-// #ifdef DEVELOPMENT
-//     if (testxsync)
-//     {
-//         XSynchronize(dpy, True);
-//         XSetErrorHandler(X_error_handler);
-//     }
+    if (testxafter)
+    {
+        XSetAfterFunction(dpy, (int (*)(
+#if NeedNestedPrototypes
+                                   Display *
+#endif
+                                   ))X_after);
+    }
 
-//     if (testxdebug)
-//         XSetErrorHandler(X_error_handler);
+    if (testxcolors)
+        Colors_debug();
+#endif
+}
 
-//     if (testxafter)
-//     {
-//         XSetAfterFunction(dpy, (int (*)(
-// #if NeedNestedPrototypes
-//                                    Display *
-// #endif
-//                                    ))X_after);
-//     }
+bool Set_scaleFactor(xp_option_t *opt, double val)
+{
+    clData.scaleFactor = val;
+    clData.scale = 1.0 / val;
+    clData.fscale = (float)clData.scale;
+    /* Resize removed because it is not needed here */
+    Scale_dashes();
+    Config_redraw();
+    Bitmap_update_scale();
+    return true;
+}
 
-//     if (testxcolors)
-//         Colors_debug();
-// #endif
-// }
+bool Set_altScaleFactor(xp_option_t *opt, double val)
+{
+    clData.altScaleFactor = val;
+    return true;
+}
 
-// bool Set_scaleFactor(xp_option_t *opt, double val)
-// {
-//     UNUSED_PARAM(opt);
-//     clData.scaleFactor = val;
-//     clData.scale = 1.0 / val;
-//     clData.fscale = (float)clData.scale;
-//     /* Resize removed because it is not needed here */
-//     Scale_dashes();
-//     Config_redraw();
-//     Bitmap_update_scale();
-//     return true;
-// }
+xp_keysym_t String_to_xp_keysym(/*const*/ char *str)
+{
+    KeySym ks;
+    xp_keysym_t xpks;
 
-// bool Set_altScaleFactor(xp_option_t *opt, double val)
-// {
-//     UNUSED_PARAM(opt);
-//     clData.altScaleFactor = val;
-//     return true;
-// }
-
-// xp_keysym_t String_to_xp_keysym(/*const*/ char *str)
-// {
-//     KeySym ks;
-//     xp_keysym_t xpks;
-
-//     assert(str);
-//     if ((ks = XStringToKeysym(str)) == NoSymbol)
-//         return XP_KS_UNKNOWN;
-//     else
-//     {
-//         xpks = (xp_keysym_t)ks;
-//         assert(xpks != XP_KS_UNKNOWN);
-//         return xpks;
-//     }
-// }
+    assert(str);
+    if ((ks = XStringToKeysym(str)) == NoSymbol)
+        return XP_KS_UNKNOWN;
+    else
+    {
+        xpks = (xp_keysym_t)ks;
+        assert(xpks != XP_KS_UNKNOWN);
+        return xpks;
+    }
+}

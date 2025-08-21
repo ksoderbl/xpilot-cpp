@@ -27,7 +27,7 @@
 void List_visuals(void);
 int Colors_init(void);
 int Colors_init_bitmaps(void);
-void Colors_free_block_bitmaps(void);
+void Colors_free_bitmaps(void);
 void Colors_cleanup(void);
 void Colors_debug(void);
 

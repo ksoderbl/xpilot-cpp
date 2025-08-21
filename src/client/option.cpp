@@ -134,45 +134,45 @@ static void Print_default_value(xp_option_t *opt)
     }
 }
 
-void Usage(void)
-{
-    int i;
+// void Usage(void)
+// {
+//     int i;
 
-    printf("Usage: %s [-options ...] [server]\n"
-           "Where options include:\n"
-           "\n",
-           Program_name());
-    for (i = 0; i < num_options; i++)
-    {
-        xp_option_t *opt = Option_by_index(i);
+//     printf("Usage: %s [-options ...] [server]\n"
+//            "Where options include:\n"
+//            "\n",
+//            Program_name());
+//     for (i = 0; i < num_options; i++)
+//     {
+//         xp_option_t *opt = Option_by_index(i);
 
-        printf("    -%s %s\n", opt->name,
-               (opt->type != xp_noarg_option) ? "<value>" : "");
-        if (opt->help && opt->help[0])
-        {
-            const char *str;
-            printf("        ");
-            for (str = opt->help; *str; str++)
-            {
-                putchar(*str);
-                if (*str == '\n' && str[1])
-                    printf("        ");
-            }
-            if (str[-1] != '\n')
-                putchar('\n');
-        }
-        Print_default_value(opt);
-        printf("\n");
-    }
-    printf("Most of these options can also be set in the .xpilotrc file\n"
-           "in your home directory.\n"
-           "Each key option may have multiple keys bound to it and\n"
-           "one key may be used by multiple key options.\n"
-           "If no server is specified on the command line, xpilot will\n"
-           "display a welcome screen where you can select a server.\n");
+//         printf("    -%s %s\n", opt->name,
+//                (opt->type != xp_noarg_option) ? "<value>" : "");
+//         if (opt->help && opt->help[0])
+//         {
+//             const char *str;
+//             printf("        ");
+//             for (str = opt->help; *str; str++)
+//             {
+//                 putchar(*str);
+//                 if (*str == '\n' && str[1])
+//                     printf("        ");
+//             }
+//             if (str[-1] != '\n')
+//                 putchar('\n');
+//         }
+//         Print_default_value(opt);
+//         printf("\n");
+//     }
+//     printf("Most of these options can also be set in the .xpilotrc file\n"
+//            "in your home directory.\n"
+//            "Each key option may have multiple keys bound to it and\n"
+//            "one key may be used by multiple key options.\n"
+//            "If no server is specified on the command line, xpilot will\n"
+//            "display a welcome screen where you can select a server.\n");
 
-    exit(1);
-}
+//     exit(1);
+// }
 
 static void Version(void)
 {
@@ -1210,42 +1210,43 @@ void Parse_options(int *argcp, char **argvp)
 #endif /* SOUND */
 }
 
-const char *Get_keyHelpString(keys_t key)
-{
-    int i;
-    char *nl;
-    static char buf[MAX_CHARS];
+// TODO: enable
+// const char *Get_keyHelpString(keys_t key)
+// {
+//     int i;
+//     char *nl;
+//     static char buf[MAX_CHARS];
 
-    for (i = 0; i < num_options; i++)
-    {
-        xp_option_t *opt = Option_by_index(i);
+//     for (i = 0; i < num_options; i++)
+//     {
+//         xp_option_t *opt = Option_by_index(i);
 
-        if (opt->key == key)
-        {
-            strlcpy(buf, opt->help, sizeof buf);
-            if ((nl = strchr(buf, '\n')) != nullptr)
-                *nl = '\0';
-            return buf;
-        }
-    }
+//         if (opt->key == key)
+//         {
+//             strlcpy(buf, opt->help, sizeof buf);
+//             if ((nl = strchr(buf, '\n')) != nullptr)
+//                 *nl = '\0';
+//             return buf;
+//         }
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
-const char *Get_keyResourceString(keys_t key)
-{
-    int i;
+// const char *Get_keyResourceString(keys_t key)
+// {
+//     int i;
 
-    for (i = 0; i < num_options; i++)
-    {
-        xp_option_t *opt = Option_by_index(i);
+//     for (i = 0; i < num_options; i++)
+//     {
+//         xp_option_t *opt = Option_by_index(i);
 
-        if (opt->key == key)
-            return opt->name;
-    }
+//         if (opt->key == key)
+//             return opt->name;
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
 void Xpilotrc_get_filename(char *path, size_t size)
 {

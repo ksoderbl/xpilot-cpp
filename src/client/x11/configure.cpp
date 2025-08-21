@@ -184,6 +184,10 @@ static int config_page,
     config_arrow_height;
 static int *config_widget_desc,
     config_save_confirm_desc = NO_WIDGET;
+
+// static int *config_widget_ids = NULL; // TODO
+static int config_what = CONFIG_NONE;
+
 static int (*config_creator[])(int widget_desc, int *height) = {
     Config_create_power,
     Config_create_turnSpeed,
@@ -1235,7 +1239,7 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
         }
         else
         {
-            Colors_free_block_bitmaps();
+            Colors_free_bitmaps();
             texturedObjects = false;
         }
     }
@@ -1585,8 +1589,9 @@ static int Config_save_confirm_callback(int widget_desc, void *popup_desc, const
     return 0;
 }
 
-int Config(bool doit)
+int Config(bool doit, int what)
 {
+    /* get rid of the old widgets, it's the most easy way */
     if (config_created == false)
     {
         if (doit == false)
@@ -1630,9 +1635,7 @@ void Config_destroy(void)
             config_mapped = false;
         }
         for (i = 0; i < config_max; i++)
-        {
             Widget_destroy(config_widget_desc[i]);
-        }
         config_created = false;
         free(config_widget_desc);
         config_widget_desc = NULL;
@@ -1649,9 +1652,7 @@ void Config_resize(void)
     {
         Config_destroy();
         if (mapped == true)
-        {
-            Config(mapped);
-        }
+            Config(mapped, config_what);
     }
 }
 

@@ -196,6 +196,7 @@ char cdashes[NUM_CDASHES];
 
 static int Quit_callback(int, void *, const char **);
 static int Config_callback(int, void *, const char **);
+static int Colors_callback(int, void *, const char **);
 static int Score_callback(int, void *, const char **);
 static int Player_callback(int, void *, const char **);
 
@@ -643,6 +644,8 @@ int Init_playing_windows(void)
     Widget_add_pulldown_entry(menu_button,
                               "CONFIG", Config_callback, NULL);
     Widget_add_pulldown_entry(menu_button,
+                              "COLORS", Colors_callback, NULL);
+    Widget_add_pulldown_entry(menu_button,
                               "SCORE", Score_callback, NULL);
     Widget_add_pulldown_entry(menu_button,
                               "PLAYER", Player_callback, NULL);
@@ -719,16 +722,22 @@ int Init_playing_windows(void)
 
 static int Config_callback(int widget_desc, void *data, const char **str)
 {
-    Config(true);
+    Config(true, CONFIG_DEFAULT);
+    return 0;
+}
+
+static int Colors_callback(int widget_desc, void *data, const char **str)
+{
+    Config(true, CONFIG_COLORS);
     return 0;
 }
 
 static int Score_callback(int widget_desc, void *data, const char **str)
 {
-    Config(false);
-    if (showRealName != false)
+    Config(false, CONFIG_NONE);
+    if (showUserName)
     {
-        showRealName = false;
+        showUserName = false;
         scoresChanged = 1;
     }
     return 0;
@@ -736,10 +745,10 @@ static int Score_callback(int widget_desc, void *data, const char **str)
 
 static int Player_callback(int widget_desc, void *data, const char **str)
 {
-    Config(false);
-    if (showRealName != true)
+    Config(false, CONFIG_NONE);
+    if (showUserName != true)
     {
-        showRealName = true;
+        showUserName = true;
         scoresChanged = 1;
     }
     return 0;

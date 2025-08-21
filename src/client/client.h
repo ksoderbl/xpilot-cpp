@@ -445,7 +445,7 @@ extern int packet_lag;            /* approximate lag in frames */
 extern char *packet_measure;      /* packet measurement in a second */
 extern long packet_loop;          /* start of measurement */
 
-extern bool showRealName;          /* Show realname instead of nickname */
+extern bool showUserName;          /* Show realname instead of nickname */
 extern char name[MAX_CHARS];       /* Nick-name of player */
 extern char realname[MAX_CHARS];   /* Real name of player */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */

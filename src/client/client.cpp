@@ -136,7 +136,7 @@ int packet_lag;            /* approximate lag in frames */
 char *packet_measure;      /* packet measurement in a second */
 long packet_loop;          /* start of measurement */
 
-bool showRealName = false;  /* Show realname instead of nick name */
+bool showUserName = false;  /* Show realname instead of nick name */
 char name[MAX_CHARS];       /* Nick-name of player */
 char realname[MAX_CHARS];   /* Real name of player */
 char servername[MAX_CHARS]; /* Name of server connecting to */

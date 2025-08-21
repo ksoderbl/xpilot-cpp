@@ -8,6 +8,7 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
+    configure.h \
     connectparam.h \
     datagram.cpp \
     datagram.h \
