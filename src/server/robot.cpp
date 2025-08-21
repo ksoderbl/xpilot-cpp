@@ -735,7 +735,7 @@ static void Robot_create(void)
     robot->robot_data_ptr = new_data;
 
     strlcpy(robot->name, rob->name, MAX_CHARS);
-    strlcpy(robot->realname, options.robotRealName, MAX_CHARS);
+    strlcpy(robot->username, options.robotRealName, MAX_CHARS);
     strlcpy(robot->hostname, options.robotHostName, MAX_CHARS);
 
     robot->color = WHITE;
@@ -780,11 +780,9 @@ static void Robot_create(void)
 
     Robot_talks(ROBOT_TALK_ENTER, robot->name, "");
 
-#ifndef SILENT
     if (options.logRobots)
         xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
-                 showtime(), robot->name, NumPlayers, robot->realname, robot->home_base);
-#endif
+                 showtime(), robot->name, NumPlayers, robot->username, robot->home_base);
 
     if (NumPlayers == 1)
     {
@@ -813,7 +811,7 @@ void Robot_delete(int ind, int kicked)
 {
     long i,
         low_i = -1;
-    DFLOAT low_score = (DFLOAT)LONG_MAX;
+    double low_score = (double)LONG_MAX;
     char msg[MSG_LEN];
 
     if (ind == -1)
@@ -916,9 +914,7 @@ void Robot_war(int ind, int killer)
     int i;
 
     if (killer == ind)
-    {
         return;
-    }
 
     if (Player_is_robot(kp))
     {
@@ -928,16 +924,13 @@ void Robot_war(int ind, int killer)
             for (i = 0; i < NumPlayers; i++)
             {
                 if (Players[i]->conn != NULL)
-                {
                     Send_war(Players[i]->conn, kp->id, NO_ID);
-                }
             }
         Robot_set_war(killer, -1);
     }
 
-    if (Player_is_robot(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !TEAM(ind, killer) && !ALLIANCE(ind, killer))
+    if (Player_is_robot(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !Players_are_teammates(pl, kp) && !Players_are_allies(pl, kp))
     {
-
         Robot_talks(ROBOT_TALK_WAR, pl->name, kp->name);
 
         /*
@@ -951,9 +944,7 @@ void Robot_war(int ind, int killer)
             for (i = 0; i < NumPlayers; i++)
             {
                 if (Players[i]->conn != NULL)
-                {
                     Send_war(Players[i]->conn, pl->id, kp->id);
-                }
             }
             sound_play_all(DECLARE_WAR_SOUND);
             Robot_set_war(ind, kp->id);
@@ -1112,10 +1103,8 @@ void Robot_update(void)
         }
 
         if (!Player_is_robot(pl))
-        {
             /* Ignore non-robots. */
             continue;
-        }
 
         if (BIT(pl->status, PLAYING | GAME_OVER) != PLAYING)
         {
@@ -1123,9 +1112,7 @@ void Robot_update(void)
             if (!pl->count)
             {
                 if (Robot_check_leave(i))
-                {
                     i--;
-                }
             }
             continue;
         }

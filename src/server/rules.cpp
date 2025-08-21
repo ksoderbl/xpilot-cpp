@@ -21,8 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #define SERVER
 #include "xpconfig.h"
@@ -69,8 +69,8 @@ long USED_KILL =
  */
 static void Set_item_chance(int item)
 {
-    DFLOAT max = options.itemProbMult * options.maxItemDensity * world->x * world->y;
-    DFLOAT sum = 0;
+    double max = options.itemProbMult * options.maxItemDensity * world->x * world->y;
+    double sum = 0;
     int i, num = 0;
 
     if (options.itemProbMult * world->items[item].prob > 0)
@@ -79,24 +79,17 @@ static void Set_item_chance(int item)
         world->items[item].chance = MAX(world->items[item].chance, 1);
     }
     else
-    {
         world->items[item].chance = 0;
-    }
     if (max > 0)
     {
         if (max < 1)
-        {
             world->items[item].max = 1;
-        }
         else
-        {
             world->items[item].max = (int)max;
-        }
     }
     else
-    {
         world->items[item].max = 0;
-    }
+
     if (!BIT(CANNON_USE_ITEM, 1U << item))
     {
         world->items[item].cannonprob = 0;
@@ -111,13 +104,9 @@ static void Set_item_chance(int item)
         }
     }
     if (num)
-    {
         world->items[item].cannonprob = world->items[item].prob * (num / sum) * (options.maxItemDensity / 0.00012);
-    }
     else
-    {
         world->items[item].cannonprob = 0;
-    }
 }
 
 /*
@@ -146,9 +135,7 @@ void Tune_item_probs(void)
                         Delete_shot(j);
                         j--;
                         if (--excess == 0)
-                        {
                             break;
-                        }
                     }
                 }
             }
@@ -158,7 +145,7 @@ void Tune_item_probs(void)
 
 void Tune_asteroid_prob(void)
 {
-    DFLOAT max = options.maxAsteroidDensity * world->x * world->y;
+    double max = options.maxAsteroidDensity * world->x * world->y;
 
     if (world->asteroids.prob > 0)
     {
@@ -166,24 +153,18 @@ void Tune_asteroid_prob(void)
         world->asteroids.chance = MAX(world->asteroids.chance, 1);
     }
     else
-    {
         world->asteroids.chance = 0;
-    }
+
     if (max > 0)
     {
         if (max < 1)
-        {
             world->asteroids.max = 1;
-        }
         else
-        {
             world->asteroids.max = (int)max;
-        }
     }
     else
-    {
         world->asteroids.max = 0;
-    }
+
     /* superfluous asteroids are handled by Asteroid_update() */
 
     /* Tune asteroid concentrator parameters */
@@ -342,20 +323,14 @@ void Set_world_rules(void)
     world->rules = &rules;
 
     if (BIT(world->rules->mode, TEAM_PLAY))
-    {
         CLR_BIT(world->rules->mode, ALLIANCES);
-    }
 
     if (!BIT(world->rules->mode, PLAYER_KILLINGS))
-    {
         CLR_BIT(KILLING_SHOTS,
                 OBJ_SHOT | OBJ_CANNON_SHOT | OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_PULSE);
-    }
 
     if (!BIT(world->rules->mode, PLAYER_SHIELDING))
-    {
         CLR_BIT(DEF_HAVE, HAS_SHIELD);
-    }
 
     DEF_USED &= DEF_HAVE;
 }

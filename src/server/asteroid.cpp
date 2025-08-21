@@ -69,7 +69,7 @@ std::vector<wireobject_t *> Asteroid_vector;
 */
 static void Make_asteroid(int cx, int cy,
                           int size, int dir,
-                          DFLOAT speed);
+                          double speed);
 
 /*
 ** Return the asteroid list.
@@ -110,9 +110,9 @@ static bool Asteroid_remove_from_list(wireobject_t *ast)
 void Break_asteroid(int ind)
 {
     wireobject_t *asteroid = WIRE_IND(ind);
-    DFLOAT mass, mass3;
-    DFLOAT speed, speed1, speed2, radius;
-    DFLOAT /* velx1, vely1, velx2, vely2,*/ velx3, vely3;
+    double mass, mass3;
+    double speed, speed1, speed2, radius;
+    double /* velx1, vely1, velx2, vely2,*/ velx3, vely3;
     int dir, dir1, dir2, split_dir;
     int x1, y1, x2, y2;
 
@@ -204,7 +204,7 @@ void Break_asteroid(int ind)
         int i;
         int vx, vy;
         int item, item_dir, num_per_pack;
-        DFLOAT item_speed;
+        double item_speed;
         long status;
 
         for (i = 0; i < nitems; i++)
@@ -241,10 +241,10 @@ void Break_asteroid(int ind)
  */
 static void Make_asteroid(int cx, int cy,
                           int size, int dir,
-                          DFLOAT speed)
+                          double speed)
 {
     wireobject_t *asteroid;
-    DFLOAT radius;
+    double radius;
     int bx;
     int by;
 
@@ -276,7 +276,7 @@ static void Make_asteroid(int cx, int cy,
     }
     else if (BIT(world->block[bx][by], REC_LU | REC_RU | REC_LD | REC_RD))
     {
-        DFLOAT cx_in_b = cx - bx * BLOCK_CLICKS,
+        double cx_in_b = cx - bx * BLOCK_CLICKS,
                cy_in_b = cy - by * BLOCK_CLICKS;
         switch (world->block[bx][by])
         {
@@ -430,7 +430,7 @@ static void Place_asteroid(void)
         Make_asteroid(cx, cy,
                       (int)(1 + rfrac() * ASTEROID_MAX_SIZE),
                       (int)(rfrac() * RES),
-                      (DFLOAT)ASTEROID_START_SPEED);
+                      (double)ASTEROID_START_SPEED);
     }
 }
 

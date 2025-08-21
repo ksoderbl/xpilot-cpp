@@ -48,6 +48,7 @@
  * Globals.
  */
 world_t World, *world = &World;
+bool is_polygon_map = false;
 
 static void Init_map(void);
 static void Alloc_map(void);
@@ -1240,15 +1241,16 @@ unsigned short Find_closest_team(int cx, int cy)
 {
     unsigned short team = TEAM_NOT_SET;
     int i;
-    DFLOAT closest = FLT_MAX, l;
+    double closest = FLT_MAX, l;
 
     for (i = 0; i < world->NumBases; i++)
     {
         if (world->base[i].team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length(CLICK_TO_FLOAT(cx - world->base[i].clk_pos.cx),
-                        CLICK_TO_FLOAT(cy - world->base[i].clk_pos.cy));
+        l = Wrap_length(cx - world->base[i].clk_pos.cx,
+                        cy - world->base[i].clk_pos.cy) /
+            CLICK;
 
         if (l < closest)
         {
@@ -1267,7 +1269,8 @@ unsigned short Find_closest_team(int cx, int cy)
 static void Find_base_order(void)
 {
     int i, j, k, n;
-    DFLOAT cx, cy, dist;
+    int ccx, ccy;
+    double dist;
 
     if (!BIT(world->rules->mode, TIMING))
     {
@@ -1287,48 +1290,52 @@ static void Find_base_order(void)
         exit(-1);
     }
 
-    cx = world->check[0].x * BLOCK_SZ;
-    cy = world->check[0].y * BLOCK_SZ;
+    ccx = world->check[0].x * BLOCK_CLICKS;
+    ccy = world->check[0].y * BLOCK_CLICKS;
     for (i = 0; i < n; i++)
     {
-        dist = Wrap_length(world->base[i].blk_pos.x * BLOCK_SZ - cx,
-                           world->base[i].blk_pos.y * BLOCK_SZ - cy);
+        dist = Wrap_length(world->base[i].clk_pos.cx - ccx,
+                           world->base[i].clk_pos.cy - ccy) /
+               CLICK;
         for (j = 0; j < i; j++)
         {
             if (world->baseorder[j].dist > dist)
-            {
                 break;
-            }
         }
         for (k = i - 1; k >= j; k--)
-        {
             world->baseorder[k + 1] = world->baseorder[k];
-        }
+
         world->baseorder[j].base_idx = i;
         world->baseorder[j].dist = dist;
     }
 }
 
-// TODO: add click version
-DFLOAT Wrap_findDir(DFLOAT dx, DFLOAT dy)
+double Wrap_findDir(double dx, double dy)
 {
     dx = WRAP_DX(dx);
     dy = WRAP_DY(dy);
     return findDir(dx, dy);
 }
 
-// TODO: add click version
-DFLOAT Wrap_length(DFLOAT dx, DFLOAT dy)
+double Wrap_cfindDir(double dcx, double dcy)
 {
-    dx = WRAP_DX(dx);
-    dy = WRAP_DY(dy);
-    return LENGTH(dx, dy);
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return findDir(dcx, dcy);
+}
+
+// Returns length in clicks
+double Wrap_length(double dcx, double dcy)
+{
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return LENGTH(dcx, dcy);
 }
 
 static void Compute_global_gravity(void)
 {
     int xi, yi, dx, dy;
-    DFLOAT xforce, yforce, strength;
+    double xforce, yforce, strength;
     double theta;
     vector_t *grav;
 
@@ -1410,7 +1417,7 @@ static void Compute_local_gravity(void)
     int xi, yi, g, gx, gy, ax, ay, dx, dy, gtype;
     int first_xi, last_xi, first_yi, last_yi, mod_xi, mod_yi;
     int min_xi, max_xi, min_yi, max_yi;
-    DFLOAT force, fx, fy;
+    double force, fx, fy;
     vector_t *v, *grav, *tab, grav_tab[GRAV_RANGE + 1][GRAV_RANGE + 1];
 
     Compute_grav_tab(grav_tab);

@@ -55,7 +55,7 @@ unsigned SPACE_BLOCKS = (SPACE_BIT | BASE_BIT | WORMHOLE_BIT |
                          FRICTION_BIT | ASTEROID_CONCENTRATOR_BIT);
 
 static struct move_parameters mp;
-static DFLOAT wallBounceExplosionMult;
+static double wallBounceExplosionMult;
 static char msg[MSG_LEN];
 
 /*
@@ -1098,7 +1098,7 @@ void Move_segment(move_state_t *ms)
                      * If this is the case then we test if 3 samples
                      * are not hitting the treasure.
                      */
-                    const DFLOAT r = 0.5f * BLOCK_CLICKS;
+                    const double r = 0.5f * BLOCK_CLICKS;
                     off2.cx = offset.cx + delta.cx;
                     off2.cy = offset.cy + delta.cy;
                     mid.cx = (offset.cx + off2.cx) / 2;
@@ -1154,8 +1154,7 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
 
-                        SCORE(GetInd[pl->id], 5,
-                              tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+                        SCORE(pl, 5, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
                                 pl->name, pl->team);
                         Set_message(msg);
@@ -1879,7 +1878,7 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(killer, options.cannonPoints, cannon->clk_pos.cx,
+                SCORE(Players[killer], options.cannonPoints, cannon->clk_pos.cx,
                       cannon->clk_pos.cy, "");
             }
         }
@@ -2008,18 +2007,16 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            if (IS_TANK_IND(j) || (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) || (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
-            {
+            if (Player_is_tank(Players[j]) ||
+                (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
+                (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
                 continue;
-            }
             if (Players[j]->team == targ->team)
             {
                 lose_score += Players[j]->score;
                 lose_team_members++;
                 if (BIT(Players[j]->status, GAME_OVER) == 0)
-                {
                     somebody_flag = 1;
-                }
             }
             else if (Players[j]->team == Players[killer]->team)
             {
@@ -2036,16 +2033,12 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             {
                 targets_total++;
                 if (world->targets[j].dead_time == 0)
-                {
                     targets_remaining++;
-                }
             }
         }
     }
     if (!somebody_flag)
-    {
         return;
-    }
 
     sound_play_sensors(cx, cy, DESTROY_TARGET_SOUND);
 
@@ -2055,7 +2048,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            SCORE(killer, sc,
+            SCORE(Players[killer], sc,
                   targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         /*
@@ -2088,23 +2081,20 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        if (IS_TANK_IND(j) || (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) || (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
-        {
+        if (Player_is_tank(Players[j]) ||
+            (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
+            (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
             continue;
-        }
+
         if (Players[j]->team == targ->team)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(Players[j]->status, KILLED);
-            SCORE(j, -sc, targ->clk_pos.cx, targ->clk_pos.cy,
-                  "Target: ");
+            SCORE(Players[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         else if (Players[j]->team == Players[killer]->team &&
                  (Players[j]->team != TEAM_NOT_SET || j == killer))
-        {
-            SCORE(j, por, targ->clk_pos.cx, targ->clk_pos.cy,
-                  "Target: ");
-        }
+            SCORE(Players[j], por, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
     }
 }
 
@@ -2257,7 +2247,7 @@ void Move_object(object_t *obj)
                 /*
                  * Any bouncing sparks are no longer owner immune to give
                  * "reactive" thrust.  This is exactly like ground effect
-                 * in the real world->  Very useful for stopping against walls.
+                 * in the real world.  Very useful for stopping against walls.
                  *
                  * If the FROMBOUNCE bit is set the spark was caused by
                  * the player bouncing of a wall and thus although the spark
@@ -2421,13 +2411,9 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         {
             shove_t *shove = &pl->shove_record[i];
             if (shove->pusher_id == NO_ID)
-            {
                 continue;
-            }
             if (shove->time < frame_loops - 20)
-            {
                 continue;
-            }
             for (j = 0; j < num_pushers; j++)
             {
                 if (shove->pusher_id == pushers[j]->id)
@@ -2447,7 +2433,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         if (num_pushers == 0)
         {
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
+            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -2476,14 +2462,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
-                SCORE(GetInd[pusher->id], sc, pl->pos.cx, pl->pos.cy, pl->name);
+                SCORE(pusher, sc, pl->pos.cx, pl->pos.cy, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
             sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
-            SCORE(ind, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
+            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
 
             strcpy(msg_ptr, ".");
             Set_message(msg);
@@ -2522,8 +2508,8 @@ void Move_player(int ind)
     ivec_t sign;  /* sign (-1 or 1) of direction */
     ipos_t block; /* block index */
     bool pos_update = false;
-    DFLOAT fric;
-    DFLOAT oldvx, oldvy;
+    double fric;
+    double oldvx, oldvy;
 
     if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
     {
@@ -2601,8 +2587,8 @@ void Move_player(int ind)
     todo.cy = FLOAT_TO_CLICK(vel.y);
     for (i = 0; i < pl->ship->num_points; i++)
     {
-        DFLOAT x = pl->ship->pts[i][pl->dir].x;
-        DFLOAT y = pl->ship->pts[i][pl->dir].y;
+        double x = pl->ship->pts[i][pl->dir].x;
+        double y = pl->ship->pts[i][pl->dir].y;
         ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
         ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
         ms[i].vel = vel;
@@ -2719,15 +2705,15 @@ void Move_player(int ind)
             pl->last_wall_touch = frame_loops;
             if (ms[worst].bounce != BounceEdge)
             {
-                DFLOAT speed = VECTOR_LENGTH(ms[worst].vel);
+                double speed = VECTOR_LENGTH(ms[worst].vel);
                 int v = (int)speed >> 2;
                 int m = (int)(pl->mass - pl->emptymass * 0.75f);
-                DFLOAT b = 1 - 0.5f * options.playerWallBrakeFactor;
+                double b = 1 - 0.5f * options.playerWallBrakeFactor;
                 long cost = (long)(b * m * v);
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
-                DFLOAT max_speed = BIT(pl->used, HAS_SHIELD)
+                double max_speed = BIT(pl->used, HAS_SHIELD)
                                        ? options.maxShieldedWallBounceSpeed
                                        : options.maxUnshieldedWallBounceSpeed;
                 int max_angle = BIT(pl->used, HAS_SHIELD)
@@ -2879,8 +2865,8 @@ void Move_player(int ind)
         {
             for (i = 0; i < pl->ship->num_points; i++)
             {
-                r[i].x = (vel.x) ? (DFLOAT)ms[i].todo.cx / vel.x : 0;
-                r[i].y = (vel.y) ? (DFLOAT)ms[i].todo.cy / vel.y : 0;
+                r[i].x = (vel.x) ? (double)ms[i].todo.cx / vel.x : 0;
+                r[i].y = (vel.y) ? (double)ms[i].todo.cy / vel.y : 0;
                 r[i].x = ABS(r[i].x);
                 r[i].y = ABS(r[i].y);
             }
@@ -3118,7 +3104,7 @@ void Turn_player(player_t *pl)
 
     if (blocked)
     {
-        pl->float_dir = (DFLOAT)pl->dir;
+        pl->float_dir = (double)pl->dir;
         pl->last_wall_touch = frame_loops;
     }
 

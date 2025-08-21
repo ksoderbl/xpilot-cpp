@@ -90,7 +90,7 @@ void Cannon_throw_items(int ind)
     cannon_t *c = world->cannon + ind;
     int i, dir;
     object_t *obj;
-    DFLOAT velocity;
+    double velocity;
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
@@ -403,7 +403,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
         case 3:
             if (tdist < range)
             {
-                DFLOAT time = tdist / speed;
+                double time = tdist / speed;
                 int npx = (int)(pl->pos.x + pl->vel.x * time + pl->acc.x * time * time);
                 int npy = (int)(pl->pos.y + pl->vel.y * time + pl->acc.y * time * time);
                 int tdir;
@@ -557,9 +557,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         /* stun and blinding lasers are very dangerous,
            so we don't use them often */
         if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - options.cannonSmartness)) >= 1)
-        {
             mods.laser = (int)(rfrac() * (MODS_LASER_MAX + 1));
-        }
         Fire_general_laser(nullptr, c->team, c->clk_pos.cx, c->clk_pos.cy, dir, mods);
         IFSOUND(sound = FIRE_LASER_SOUND);
         break;
@@ -577,11 +575,11 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         break;
     case CW_TRANSPORTER:
         c->item[ITEM_TRANSPORTER]--;
-        if ((int)Wrap_length(pl->pos.x - cpx, pl->pos.y - cpy) < TRANSPORTER_DISTANCE)
+        if (Wrap_length(pl->pos.cx - c->clk_pos.cx, pl->pos.cy - c->clk_pos.cy) < TRANSPORTER_DISTANCE * CLICK)
         {
             int item = -1;
             long amount = 0;
-            Do_general_transporter(-1, c->clk_pos.cx, c->clk_pos.cy, target, &item, &amount);
+            Do_general_transporter(nullptr, c->clk_pos.cx, c->clk_pos.cy, target, &item, &amount);
             if (item != -1)
                 Cannon_add_item(ind, item, amount);
             IFSOUND(sound = -1);

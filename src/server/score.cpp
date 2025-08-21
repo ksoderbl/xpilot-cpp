@@ -37,10 +37,10 @@
 #include "proto.h"
 #include "score.h"
 #include "netserver.h"
+#include "player.h"
 
-void SCORE(int ind, int points, int cx, int cy, const char *msg)
+void SCORE(player_t *pl, int points, int cx, int cy, const char *msg)
 {
-    player *pl = Players[ind];
     int x = CLICK_TO_BLOCK(cx);
     int y = CLICK_TO_BLOCK(cy);
 
@@ -82,15 +82,15 @@ void Score_players(int winner, int winner_score, char *winner_msg,
 {
     player_t *wpl = Players[winner];
     player_t *lpl = Players[loser];
-    if (TEAM(winner, loser) ||
+    if (Players_are_teammates(wpl, lpl) ||
         (wpl->alliance != ALLIANCE_NOT_SET && wpl->alliance == lpl->alliance) ||
-        (IS_TANK_IND(loser) && GetInd[lpl->lock.pl_id] == winner))
+        (Player_is_tank(lpl) && GetInd[lpl->lock.pl_id] == winner))
     {
         if (winner_score > 0)
             winner_score = -winner_score;
         if (loser_score > 0)
             loser_score = -loser_score;
     }
-    SCORE(winner, winner_score, lpl->pos.cx, lpl->pos.cy, winner_msg);
-    SCORE(loser, loser_score, lpl->pos.cx, lpl->pos.cy, loser_msg);
+    SCORE(wpl, winner_score, lpl->pos.cx, lpl->pos.cy, winner_msg);
+    SCORE(lpl, loser_score, lpl->pos.cx, lpl->pos.cy, loser_msg);
 }

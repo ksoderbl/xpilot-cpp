@@ -30,11 +30,11 @@
 typedef struct options
 {
     list_t expandList;     /* List of predefined settings. */
-    DFLOAT Gravity;        /* Power of gravity */
-    DFLOAT ShipMass;       /* Default mass of ship */
-    DFLOAT ballMass;       /* Default mass of balls */
-    DFLOAT ShotsMass;      /* Default mass of shots */
-    DFLOAT ShotsSpeed;     /* Default speed of shots */
+    double Gravity;        /* Power of gravity */
+    double ShipMass;       /* Default mass of ship */
+    double ballMass;       /* Default mass of balls */
+    double ShotsMass;      /* Default mass of shots */
+    double ShotsSpeed;     /* Default speed of shots */
     int ShotsLife;         /* Default number of ticks */
                            /* each shot will live */
     int maxRobots;         /* How many robots should enter */
@@ -85,19 +85,19 @@ typedef struct options
     bool cloakedShield;                  /* Allowed to use shields when cloaked? */
     bool ecmsReprogramMines;             /* Do ecms reprogram mines? */
     bool ecmsReprogramRobots;            /* Do ecms reprogram robots? */
-    DFLOAT maxObjectWallBounceSpeed;     /* max object bounce speed */
-    DFLOAT maxShieldedWallBounceSpeed;   /* max shielded bounce speed */
-    DFLOAT maxUnshieldedWallBounceSpeed; /* max unshielded bounce speed */
-    DFLOAT maxShieldedWallBounceAngle;   /* max angle for landing */
-    DFLOAT maxUnshieldedWallBounceAngle; /* max angle for landing */
-    DFLOAT playerWallBrakeFactor;        /* wall lowers speed if less than 1 */
-    DFLOAT objectWallBrakeFactor;        /* wall lowers speed if less than 1 */
-    DFLOAT objectWallBounceLifeFactor;   /* reduce object life */
-    DFLOAT wallBounceFuelDrainMult;      /* Wall bouncing fuel drain factor */
-    DFLOAT wallBounceDestroyItemProb;    /* Wall bouncing item destroy prob */
+    double maxObjectWallBounceSpeed;     /* max object bounce speed */
+    double maxShieldedWallBounceSpeed;   /* max shielded bounce speed */
+    double maxUnshieldedWallBounceSpeed; /* max unshielded bounce speed */
+    double maxShieldedWallBounceAngle;   /* max angle for landing */
+    double maxUnshieldedWallBounceAngle; /* max angle for landing */
+    double playerWallBrakeFactor;        /* wall lowers speed if less than 1 */
+    double objectWallBrakeFactor;        /* wall lowers speed if less than 1 */
+    double objectWallBounceLifeFactor;   /* reduce object life */
+    double wallBounceFuelDrainMult;      /* Wall bouncing fuel drain factor */
+    double wallBounceDestroyItemProb;    /* Wall bouncing item destroy prob */
     bool limitedVisibility;              /* Is visibility limited? */
-    DFLOAT minVisibilityDistance;        /* Minimum visibility when starting */
-    DFLOAT maxVisibilityDistance;        /* Maximum visibility */
+    double minVisibilityDistance;        /* Minimum visibility when starting */
+    double maxVisibilityDistance;        /* Maximum visibility */
     bool limitedLives;                   /* Are lives limited? */
     int worldLives;                      /* If so, what's the max? */
     bool endOfRoundReset;                /* Reset the world when round ends? */
@@ -120,7 +120,7 @@ typedef struct options
     bool edgeBounce;                     /* Do objects bounce when they hit the edge of the Universe? */
     bool extraBorder;                    /* Give map an extra border? */
     ipos_t gravityPoint;                 /* Where does gravity originate? */
-    DFLOAT gravityAngle;                 /* If gravity is along a uniform line, at what angle is that line? */
+    double gravityAngle;                 /* If gravity is along a uniform line, at what angle is that line? */
     bool gravityPointSource;             /* Is gravity a point source? */
     bool gravityClockwise;               /* If so, is it clockwise? */
     bool gravityAnticlockwise;           /* If not clockwise, anticlockwise? */
@@ -138,55 +138,55 @@ typedef struct options
 
     int nukeMinSmarts;            /* minimum smarts for a nuke */
     int nukeMinMines;             /* minimum number of mines for nuke */
-    DFLOAT nukeClusterDamage;     /* multiplier for damage from nuke */
+    double nukeClusterDamage;     /* multiplier for damage from nuke */
                                   /* cluster debris, reduces number */
                                   /* of particles by similar amount */
     int mineFuseTime;             /* Length of time mine is fused */
     int mineLife;                 /* lifetime of mines */
-    DFLOAT minMineSpeed;          /* minimum speed of mines */
+    double minMineSpeed;          /* minimum speed of mines */
     int missileLife;              /* lifetime of missiles */
     int baseMineRange;            /* Distance from base mines may be used */
     int mineShotDetonateDistance; /* When does a shot trigger a mine? */
 
-    DFLOAT shotKillScoreMult;
-    DFLOAT torpedoKillScoreMult;
-    DFLOAT smartKillScoreMult;
-    DFLOAT heatKillScoreMult;
-    DFLOAT clusterKillScoreMult;
-    DFLOAT laserKillScoreMult;
-    DFLOAT tankKillScoreMult;
-    DFLOAT runoverKillScoreMult;
-    DFLOAT ballKillScoreMult;
-    DFLOAT explosionKillScoreMult;
-    DFLOAT shoveKillScoreMult;
-    DFLOAT crashScoreMult;
-    DFLOAT mineScoreMult;
-    DFLOAT selfKillScoreMult;
-    DFLOAT unownedKillScoreMult;
-    DFLOAT asteroidPoints;
-    DFLOAT cannonPoints;
-    DFLOAT asteroidMaxScore;
-    DFLOAT cannonMaxScore;
+    double shotKillScoreMult;
+    double torpedoKillScoreMult;
+    double smartKillScoreMult;
+    double heatKillScoreMult;
+    double clusterKillScoreMult;
+    double laserKillScoreMult;
+    double tankKillScoreMult;
+    double runoverKillScoreMult;
+    double ballKillScoreMult;
+    double explosionKillScoreMult;
+    double shoveKillScoreMult;
+    double crashScoreMult;
+    double mineScoreMult;
+    double selfKillScoreMult;
+    double unownedKillScoreMult;
+    double asteroidPoints;
+    double cannonPoints;
+    double asteroidMaxScore;
+    double cannonMaxScore;
 
-    DFLOAT movingItemProb;         /* Probability for moving items */
-    DFLOAT randomItemProb;         /* Probability for random-appearing items */
-    DFLOAT dropItemOnKillProb;     /* Probability for players items to */
+    double movingItemProb;         /* Probability for moving items */
+    double randomItemProb;         /* Probability for random-appearing items */
+    double dropItemOnKillProb;     /* Probability for players items to */
                                    /* drop when player is killed */
-    DFLOAT detonateItemOnKillProb; /* Probaility for remaining items to */
+    double detonateItemOnKillProb; /* Probaility for remaining items to */
                                    /* detonate when player is killed */
-    DFLOAT destroyItemInCollisionProb;
-    DFLOAT asteroidItemProb; /* prob. that a broken asteroid will */
+    double destroyItemInCollisionProb;
+    double asteroidItemProb; /* prob. that a broken asteroid will */
     int asteroidMaxItems;    /* have one or more items */
-    DFLOAT rogueHeatProb;    /* prob. that unclaimed rocketpack */
-    DFLOAT rogueMineProb;    /* or minepack will "activate" */
-    DFLOAT itemProbMult;
-    DFLOAT cannonItemProbMult;
-    DFLOAT maxItemDensity;
-    DFLOAT maxAsteroidDensity;
+    double rogueHeatProb;    /* prob. that unclaimed rocketpack */
+    double rogueMineProb;    /* or minepack will "activate" */
+    double itemProbMult;
+    double cannonItemProbMult;
+    double maxItemDensity;
+    double maxAsteroidDensity;
     int itemConcentratorRadius;
-    DFLOAT itemConcentratorProb;
+    double itemConcentratorProb;
     int asteroidConcentratorRadius;
-    DFLOAT asteroidConcentratorProb;
+    double asteroidConcentratorProb;
 
     int framesPerSecond;
 
@@ -215,7 +215,7 @@ typedef struct options
     bool reportToMetaServer;    /* Send status to meta-server? */
     bool searchDomainForXPilot; /* Do a DNS lookup for XPilot.domain? */
     char *denyHosts;            /* Computers which are denied service */
-    DFLOAT gameDuration;        /* total duration of game in minutes */
+    double gameDuration;        /* total duration of game in minutes */
     bool allowViewing;          /* Are players allowed to watch others? */
 
     bool teamAssign;   /* Assign player to team if not set? */
@@ -232,18 +232,18 @@ typedef struct options
     bool wreckageCollisionMayKill;
     bool asteroidCollisionMayKill;
 
-    DFLOAT ballConnectorSpringConstant;
-    DFLOAT ballConnectorDamping;
-    DFLOAT maxBallConnectorRatio;
-    DFLOAT ballConnectorLength;
+    double ballConnectorSpringConstant;
+    double ballConnectorDamping;
+    double maxBallConnectorRatio;
+    double ballConnectorLength;
     bool connectorIsString; /* can the connector get shorter? */
 
-    DFLOAT friction;           /* friction only affects ships */
-    DFLOAT blockFriction;      /* friction in friction blocks */
+    double friction;           /* friction only affects ships */
+    double blockFriction;      /* friction in friction blocks */
     bool blockFrictionVisible; /* if yes, friction blocks are decor; */
                                /* if no, friction blocks are space */
     int coriolis;              /* angle velocity turns each frame */
-    DFLOAT checkpointRadius;   /* in blocks */
+    double checkpointRadius;   /* in blocks */
     int raceLaps;              /* how many laps per race */
     bool lockOtherTeam;        /* lock ply from other teams when dead? */
     bool loseItemDestroys;     /* destroy item on loseItem? */

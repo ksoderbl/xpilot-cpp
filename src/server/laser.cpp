@@ -54,8 +54,8 @@
 typedef struct victim
 {
     int ind;          /* player index */
-    position_t pos;   /* current player position */
-    DFLOAT prev_dist; /* distance at previous sample */
+    clpos_t clk_pos;  /* current player position */
+    double prev_dist; /* distance at previous sample */
 } victim_t;
 
 /*
@@ -115,69 +115,60 @@ static void Laser_pulse_destroy_all(void)
 static void Laser_pulse_find_victims(
     vicbuf_t *vicbuf,
     pulse_t *pulse,
-    DFLOAT midx,
-    DFLOAT midy)
+    double midx,
+    double midy)
 {
     int i;
     player_t *vic;
-    DFLOAT dist;
+    double dist;
+    int midcx = FLOAT_TO_CLICK(midx);
+    int midcy = FLOAT_TO_CLICK(midy);
 
     vicbuf->num_vic = 0;
     for (i = 0; i < NumPlayers; i++)
     {
         vic = Players[i];
         if (BIT(vic->status, PLAYING | GAME_OVER | KILLED | PAUSE) != PLAYING)
-        {
             continue;
-        }
+
         if (BIT(vic->used, HAS_PHASING_DEVICE))
-        {
             continue;
-        }
+
         if (vic->id == pulse->id && options.selfImmunity)
-        {
             continue;
-        }
         if (options.selfImmunity &&
             Player_is_tank(vic) &&
             vic->lock.pl_id == pulse->id)
-        {
             continue;
-        }
         if (Team_immune(vic->id, pulse->id))
-        {
             continue;
-        }
+
         /* special case for cannon pulses */
         if (pulse->id == NO_ID &&
             options.teamImmunity &&
             BIT(world->rules->mode, TEAM_PLAY) &&
             pulse->team == vic->team)
-        {
             continue;
-        }
+
         if (vic->id == pulse->id && !pulse->refl)
-        {
             continue;
-        }
-        dist = Wrap_length(vic->pos.x - midx, vic->pos.y - midy);
+
+        dist = Wrap_length(vic->pos.cx - midcx, vic->pos.cy - midcy) / CLICK;
         if (dist > pulse->len / 2 + SHIP_SZ)
-        {
             continue;
-        }
+
         if (vicbuf->max_vic == 0)
         {
             size_t victim_bufsize = NumPlayers * sizeof(victim_t);
             vicbuf->vic_ptr = (victim_t *)malloc(victim_bufsize);
             if (vicbuf->vic_ptr == NULL)
-            {
                 break;
-            }
+
             vicbuf->max_vic = NumPlayers;
         }
         vicbuf->vic_ptr[vicbuf->num_vic].ind = i;
-        vicbuf->vic_ptr[vicbuf->num_vic].pos.x = vic->pos.x;
-        vicbuf->vic_ptr[vicbuf->num_vic].pos.y = vic->pos.y;
+        vicbuf->vic_ptr[vicbuf->num_vic].clk_pos.cx = vic->pos.cx;
+        vicbuf->vic_ptr[vicbuf->num_vic].clk_pos.cy = vic->pos.cy;
         vicbuf->vic_ptr[vicbuf->num_vic].prev_dist = 1e10;
         vicbuf->num_vic++;
     }
@@ -192,8 +183,8 @@ static void Laser_pulse_find_victims(
 static void Laser_pulse_hits_player(
     pulse_t *pulse,
     object_t *obj,
-    DFLOAT x,
-    DFLOAT y,
+    double x,
+    double y,
     victim_t *victim,
     bool *refl)
 {
@@ -283,7 +274,7 @@ static void Laser_pulse_hits_player(
                 if (vicpl->id == pl->id)
                 {
                     sc = Rate(0, pl->score) * options.laserKillScoreMult * options.selfKillScoreMult;
-                    SCORE(victim->ind, -sc, vicpl->pos.cx, vicpl->pos.cy, vicpl->name);
+                    SCORE(vicpl, -sc, vicpl->pos.cx, vicpl->pos.cy, vicpl->name);
                     strcat(msg, " How strange!");
                 }
                 else
@@ -299,7 +290,7 @@ static void Laser_pulse_hits_player(
             else
             {
                 sc = Rate(CANNON_SCORE, vicpl->score) / 4;
-                SCORE(victim->ind, -sc, vicpl->pos.cx, vicpl->pos.cy, "Cannon");
+                SCORE(vicpl, -sc, vicpl->pos.cx, vicpl->pos.cy, "Cannon");
                 sprintf(msg,
                         "%s got roasted alive by cannonfire.",
                         vicpl->name);
@@ -328,17 +319,20 @@ static void Laser_pulse_hits_player(
 static int Laser_pulse_check_player_hits(
     pulse_t *pulse,
     object_t *obj,
-    DFLOAT x,
-    DFLOAT y,
+    double x,
+    double y,
     vicbuf_t *vicbuf,
     bool *refl)
 {
     int j;
     int hits = 0;
     /* int                        ind; */
-    DFLOAT dist;
+    double dist;
     /* player                *pl; */
     victim_t *victim;
+
+    int cx = FLOAT_TO_CLICK(x);
+    int cy = FLOAT_TO_CLICK(y);
 
     /*
     if (pulse->id != NO_ID) {
@@ -353,8 +347,9 @@ static int Laser_pulse_check_player_hits(
     for (j = vicbuf->num_vic - 1; j >= 0; --j)
     {
         victim = &(vicbuf->vic_ptr[j]);
-        dist = Wrap_length(x - victim->pos.x,
-                           y - victim->pos.y);
+        dist = Wrap_length(cx - victim->clk_pos.cx,
+                           cy - victim->clk_pos.cy) /
+               CLICK;
         if (dist <= SHIP_SZ)
         {
             Laser_pulse_hits_player(
@@ -368,15 +363,11 @@ static int Laser_pulse_check_player_hits(
             break;
         }
         else if (dist >= victim->prev_dist)
-        {
             /* remove victim by copying the last victim over it */
             vicbuf->vic_ptr[j] = vicbuf->vic_ptr[--vicbuf->num_vic];
-        }
         else
-        {
             /* remember shortest distance from pulse to player_t */
             vicbuf->vic_ptr[j].prev_dist = dist;
-        }
     }
 
     return hits;
@@ -385,10 +376,10 @@ static int Laser_pulse_check_player_hits(
 static void Laser_pulse_get_object_list(
     std::vector<object_t *> &obj_list,
     pulse_t *pulse,
-    DFLOAT midx,
-    DFLOAT midy)
+    double midx,
+    double midy)
 {
-    DFLOAT dx, dy;
+    double dx, dy;
     int range;
     list_iter_t iter;
     object_t *ast;
@@ -427,10 +418,10 @@ void Laser_pulse_collision(void)
     int max, hits;
     bool refl;
     vicbuf_t vicbuf;
-    DFLOAT x, y, x1, x2, y1, y2;
-    DFLOAT dx, dy;
-    DFLOAT midx, midy;
-    /* player                        *pl; */
+    double x, y, x1, x2, y1, y2;
+    double dx, dy;
+    double midx, midy;
+    player *pl;
     pulse_t *pulse;
     object_t *obj = NULL, *ast = NULL;
     std::vector<object_t *> obj_list;
@@ -465,12 +456,12 @@ void Laser_pulse_collision(void)
         if (pulse->id != NO_ID)
         {
             ind = GetInd[pulse->id];
-            /* pl = Players[ind]; */
+            pl = Players[ind];
         }
         else
         {
             ind = -1;
-            /* pl = NULL; */
+            pl = nullptr;
         }
 
         pulse->pos.x += tcos(pulse->dir) * PULSE_SPEED;
@@ -620,7 +611,7 @@ void Laser_pulse_collision(void)
             {
                 for (object_t *ast : obj_list)
                 {
-                    DFLOAT adx, ady;
+                    double adx, ady;
                     adx = x - ast->pos.x;
                     ady = y - ast->pos.y;
                     adx = WRAP_DX(adx);
@@ -632,18 +623,16 @@ void Laser_pulse_collision(void)
                                                        WIRE_PTR(ast)->size);
                         if (ast->life < 0)
                             ast->life = 0;
-                        if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && Players[ind]->score <= options.asteroidMaxScore)
-                            SCORE(ind, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
+                        if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
+                            SCORE(pl, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
                         break;
                     }
                 }
             }
 
             if (obj->life == 0)
-            {
                 /* pulse hit asteroid */
                 continue;
-            }
 
             hits = Laser_pulse_check_player_hits(
                 pulse, obj,

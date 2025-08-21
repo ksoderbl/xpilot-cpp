@@ -6,6 +6,11 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2000-2004 by
+ *
+ *      Uoti Urpala
+ *      Kristian Söderblom
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,9 +30,10 @@
 #define MAP_H
 
 #include "click.h"
-#include "types.h"
-#include "rules.h"
+#include "const.h"
 #include "item.h"
+#include "rules.h"
+#include "types.h"
 
 #define SPACE 0
 #define BASE 1
@@ -110,7 +116,7 @@ typedef struct
 {
     ipos_t blk_pos;
     clpos_t clk_pos;
-    DFLOAT force;
+    double force;
 } grav_t;
 
 typedef struct
@@ -124,7 +130,7 @@ typedef struct
 typedef struct
 {
     int base_idx; /* Index in world->base[] */
-    DFLOAT dist;  /* Distance to first checkpoint */
+    double dist;  /* Distance to first checkpoint */
 } baseorder_t;
 
 typedef struct
@@ -149,11 +155,11 @@ typedef struct
 
 typedef struct
 {
-    DFLOAT prob;       /* Probability [0..1] for item to appear */
+    double prob;       /* Probability [0..1] for item to appear */
     int max;           /* Max on world at a given time */
     int num;           /* Number active right now */
     int chance;        /* Chance [0..127] for this item to appear */
-    DFLOAT cannonprob; /* Relative probability for item to appear */
+    double cannonprob; /* Relative probability for item to appear */
     int min_per_pack;  /* minimum number of elements per item. */
     int max_per_pack;  /* maximum number of elements per item. */
     int initial;       /* initial number of elements per player. */
@@ -162,7 +168,7 @@ typedef struct
 
 typedef struct
 {
-    DFLOAT prob; /* Probability [0..1] for asteroid to appear */
+    double prob; /* Probability [0..1] for asteroid to appear */
     int max;     /* Max on world at a given time */
     int num;     /* Number active right now */
     int chance;  /* Chance [0..127] for asteroid to appear */
@@ -278,5 +284,15 @@ typedef struct
 } world_t;
 
 extern world_t World, *world;
+extern bool is_polygon_map;
+
+static inline bool World_contains_clpos(clpos_t pos)
+{
+    if (pos.cx < 0 || pos.cx >= world->click_width)
+        return false;
+    if (pos.cy < 0 || pos.cy >= world->click_height)
+        return false;
+    return true;
+}
 
 #endif

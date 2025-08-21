@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "click.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -39,7 +41,7 @@
 
 #define SWAP(_a, _b)      \
     {                     \
-        DFLOAT _tmp = _a; \
+        double _tmp = _a; \
         _a = _b;          \
         _b = _tmp;        \
     }
@@ -53,7 +55,7 @@ static void Refuel(int ind)
 {
     player_t *pl = Players[ind];
     int i;
-    DFLOAT l, dist = 1e9;
+    double l, dist = 1e9;
 
     if (!BIT(pl->have, HAS_REFUEL))
         return;
@@ -64,8 +66,9 @@ static void Refuel(int ind)
         if (world->block[world->fuel[i].blk_pos.x]
                         [world->fuel[i].blk_pos.y] == FUEL)
         {
-            l = Wrap_length(pl->pos.x - world->fuel[i].pix_pos.x,
-                            pl->pos.y - world->fuel[i].pix_pos.y);
+            l = Wrap_length(pl->pos.cx - world->fuel[i].clk_pos.cx,
+                            pl->pos.cy - world->fuel[i].clk_pos.cy) /
+                CLICK;
             if (BIT(pl->used, HAS_REFUEL) == 0 || l < dist)
             {
                 SET_BIT(pl->used, HAS_REFUEL);
@@ -80,8 +83,7 @@ static void Repair(int ind)
 {
     player_t *pl = Players[ind];
     int i;
-    DFLOAT l, dist = 1e9;
-    DFLOAT x, y;
+    double l, dist = 1e9;
     target_t *targ = world->targets;
 
     if (!BIT(pl->have, HAS_REPAIR))
@@ -92,9 +94,7 @@ static void Repair(int ind)
     {
         if (targ->team == pl->team && targ->dead_time <= 0)
         {
-            x = targ->blk_pos.x * BLOCK_SZ + BLOCK_SZ / 2;
-            y = targ->blk_pos.y * BLOCK_SZ + BLOCK_SZ / 2;
-            l = Wrap_length(pl->pos.x - x, pl->pos.y - y);
+            l = Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK;
             if (BIT(pl->used, HAS_REPAIR) == 0 || l < dist)
             {
                 SET_BIT(pl->used, HAS_REPAIR);
@@ -148,10 +148,8 @@ static bool Player_lock_allowed(int ind, int lock)
     }
 
     /* we can always lock on players from our own team. */
-    if (TEAM(ind, lock))
-    {
+    if (Players_are_teammates(pl, Players[lock]))
         return true;
-    }
 
     /* if lockOtherTeam is true then we can always lock on other teams. */
     if (options.lockOtherTeam)
@@ -189,18 +187,17 @@ int Player_lock_closest(int ind, int next)
 {
     player_t *pl = Players[ind];
     int lock, i, newpl;
-    DFLOAT dist, best, l;
+    double dist, best, l;
 
     if (!next)
-    {
         CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
-    }
 
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         lock = GetInd[pl->lock.pl_id];
-        dist = Wrap_length(Players[lock]->pos.x - pl->pos.x,
-                           Players[lock]->pos.y - pl->pos.y);
+        dist = Wrap_length(Players[lock]->pos.cx - pl->pos.cx,
+                           Players[lock]->pos.cy - pl->pos.cy) /
+               CLICK;
     }
     else
     {
@@ -211,12 +208,17 @@ int Player_lock_closest(int ind, int next)
     best = FLT_MAX;
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i == lock || (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) || !Player_lock_allowed(ind, i) || OWNS_TANK(ind, i) || TEAM(ind, i) || ALLIANCE(ind, i))
-        {
+        player_t *pl_i = Players[i];
+        if (i == lock ||
+            (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
+            !Player_lock_allowed(ind, i) ||
+            Player_owns_tank(pl, pl_i) ||
+            Players_are_teammates(pl, pl_i) ||
+            Players_are_allies(pl, pl_i))
             continue;
-        }
-        l = Wrap_length(Players[i]->pos.x - pl->pos.x,
-                        Players[i]->pos.y - pl->pos.y);
+        l = Wrap_length(pl_i->pos.cx - pl->pos.cx,
+                        pl_i->pos.cy - pl->pos.cy) /
+            CLICK;
         if (l >= dist && l < best)
         {
             best = l;
@@ -268,7 +270,7 @@ void Pause_player(int ind, bool on)
                      * then it's too late to join. */
                     if (i == ind)
                         continue;
-                    if (Players[i]->life < world->rules->lives && !TEAM(ind, i))
+                    if (Players[i]->life < world->rules->lives && !Players_are_teammates(pl, Players[i]))
                     {
                         toolate = true;
                         break;
@@ -306,7 +308,7 @@ int Handle_keyboard(int ind)
 {
     player_t *pl = Players[ind];
     int i, j, k, key, pressed, xi, yi;
-    DFLOAT minv;
+    double minv;
 
     for (key = 0; key < NUM_KEYS; key++)
     {
@@ -363,10 +365,6 @@ int Handle_keyboard(int ind)
             case KEY_LOAD_LOCK_4:
             case KEY_REPROGRAM:
             case KEY_SWAP_SETTINGS:
-            case KEY_INCREASE_POWER:
-            case KEY_DECREASE_POWER:
-            case KEY_INCREASE_TURNSPEED:
-            case KEY_DECREASE_TURNSPEED:
             case KEY_TANK_NEXT:
             case KEY_TANK_PREV:
             case KEY_TURN_LEFT:  /* Needed so that we don't get */
@@ -397,10 +395,6 @@ int Handle_keyboard(int ind)
             case KEY_TOGGLE_VELOCITY:
             case KEY_TOGGLE_CLUSTER:
             case KEY_SWAP_SETTINGS:
-            case KEY_INCREASE_POWER:
-            case KEY_DECREASE_POWER:
-            case KEY_INCREASE_TURNSPEED:
-            case KEY_DECREASE_TURNSPEED:
             case KEY_THRUST:
             case KEY_CLOAK:
             case KEY_DROP_BALL:
@@ -547,7 +541,7 @@ int Handle_keyboard(int ind)
                         }
                     }
                     for (i = 0; i < NumPlayers; i++)
-                        if (i != ind && !IS_TANK_IND(i) && pl->home_base == Players[i]->home_base)
+                        if (i != ind && !Player_is_tank(Players[i]) && pl->home_base == Players[i]->home_base)
                         {
                             Pick_startpos(i);
                             sprintf(msg, "%s has taken over %s's home base.",
@@ -561,11 +555,9 @@ int Handle_keyboard(int ind)
                     for (i = 0; i < NumPlayers; i++)
                     {
                         if (Players[i]->conn != NULL)
-                        {
                             Send_base(Players[i]->conn,
                                       pl->id,
                                       pl->home_base);
-                        }
                     }
                 }
                 break;
@@ -932,36 +924,6 @@ int Handle_keyboard(int ind)
                 }
                 break;
 
-            case KEY_INCREASE_POWER:
-                if (BIT(pl->status, HOVERPAUSE) || BIT(pl->used, HAS_AUTOPILOT))
-                    break;
-                pl->power *= 1.10;
-                pl->power = MIN(pl->power, MAX_PLAYER_POWER);
-                break;
-
-            case KEY_DECREASE_POWER:
-                if (BIT(pl->status, HOVERPAUSE) || BIT(pl->used, HAS_AUTOPILOT))
-                    break;
-                pl->power *= 0.90;
-                pl->power = MAX(pl->power, MIN_PLAYER_POWER);
-                break;
-
-            case KEY_INCREASE_TURNSPEED:
-                if (BIT(pl->status, HOVERPAUSE) || BIT(pl->used, HAS_AUTOPILOT))
-                    break;
-                if (pl->turnacc == 0.0)
-                    pl->turnspeed *= 1.05;
-                pl->turnspeed = MIN(pl->turnspeed, MAX_PLAYER_TURNSPEED);
-                break;
-
-            case KEY_DECREASE_TURNSPEED:
-                if (BIT(pl->status, HOVERPAUSE) || BIT(pl->used, HAS_AUTOPILOT))
-                    break;
-                if (pl->turnacc == 0.0)
-                    pl->turnspeed *= 0.95;
-                pl->turnspeed = MAX(pl->turnspeed, MIN_PLAYER_TURNSPEED);
-                break;
-
             case KEY_THRUST:
                 if (BIT(pl->used, HAS_AUTOPILOT))
                     Autopilot(pl, false);
@@ -978,7 +940,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_TRANSPORTER:
-                Do_transporter(ind);
+                Do_transporter(pl);
                 break;
 
             case KEY_DEFLECTOR:

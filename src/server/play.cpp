@@ -57,18 +57,14 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
-            {
+            if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
                 continue;
-            }
             if (Players[i]->team == td->team)
             {
                 lose_score += Players[i]->score;
                 lose_team_members++;
                 if (BIT(Players[i]->status, GAME_OVER) == 0)
-                {
                     somebody_flag = 1;
-                }
             }
             else if (Players[i]->team == tt->team)
             {
@@ -85,7 +81,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     if (!somebody_flag)
     {
-        SCORE(ind, Rate(pl->score, CANNON_SCORE) / 2,
+        SCORE(pl, Rate(pl->score, CANNON_SCORE) / 2,
               tt->clk_pos.cx, tt->clk_pos.cy, "Treasure:");
         return 0;
     }
@@ -99,21 +95,19 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_TANK_IND(i) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
-        {
+        if (Player_is_tank(Players[i]) ||
+            (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
+            (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
             continue;
-        }
         if (Players[i]->team == td->team)
         {
-            SCORE(i, -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+            SCORE(Players[i], -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(Players[i]->status, KILLED);
         }
         else if (Players[i]->team == tt->team &&
                  (Players[i]->team != TEAM_NOT_SET || i == ind))
-        {
-            SCORE(i, (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
-        }
+            SCORE(Players[i], (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
     }
 
     if (options.treasureKillTeam)
@@ -133,17 +127,17 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 /* Create debris particles */
 void Make_debris(
     /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ DFLOAT velx, DFLOAT vely,
+    /* vel.x, vel.y   */ double velx, double vely,
     /* owner id       */ int id,
     /* owner team     */ unsigned short team,
     /* type           */ int type,
-    /* mass           */ DFLOAT mass,
+    /* mass           */ double mass,
     /* status         */ long status,
     /* color          */ int color,
     /* radius         */ int radius,
     /* min,max debris */ int min_debris, int max_debris,
     /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ DFLOAT min_speed, DFLOAT max_speed,
+    /* min,max speed  */ double min_speed, double max_speed,
     /* min,max life   */ int min_life, int max_life)
 {
     object_t *debris;
@@ -204,7 +198,7 @@ void Make_debris(
     }
     for (i = 0; i < num_debris; i++)
     {
-        DFLOAT speed, dx, dy, diroff;
+        double speed, dx, dy, diroff;
         int dir, dirplus;
 
         if ((debris = Object_allocate()) == NULL)

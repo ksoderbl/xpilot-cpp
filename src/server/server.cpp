@@ -513,7 +513,7 @@ void Server_info(char *str, unsigned max_size)
 {
     int i, j, k;
     player_t *pl, **order, *best = NULL;
-    DFLOAT ratio, best_ratio = -1e7;
+    double ratio, best_ratio = -1e7;
     char name[MAX_CHARS * 2 + 4];
     char lblstr[MAX_CHARS];
     char msg[MSG_LEN];
@@ -564,11 +564,11 @@ void Server_info(char *str, unsigned max_size)
         pl = Players[i];
         if (BIT(world->rules->mode, LIMITED_LIVES))
         {
-            ratio = (DFLOAT)pl->score;
+            ratio = (double)pl->score;
         }
         else
         {
-            ratio = (DFLOAT)pl->score / (pl->life + 1);
+            ratio = (double)pl->score / (pl->life + 1);
         }
         if ((best == NULL || ratio > best_ratio) && !BIT(pl->status, PAUSE))
         {
@@ -608,7 +608,7 @@ void Server_info(char *str, unsigned max_size)
                 (pl->team == TEAM_NOT_SET) ? ' ' : (pl->team + '0'),
                 name, (int)pl->life, (int)pl->score);
         sprintf(msg, "%2d... %-36s%s@%s\n",
-                i + 1, lblstr, pl->realname,
+                i + 1, lblstr, pl->username,
                 Player_is_human(pl)
                     ? pl->hostname
                     : "xpilot.org");
@@ -818,7 +818,7 @@ void Server_log_admin_message(int ind, const char *str)
                 "\t%s\n",
                 showtime(),
                 pl->name,
-                pl->realname, pl->hostname,
+                pl->username, pl->hostname,
                 Get_player_addr(pl->conn),
                 Get_player_dpy(pl->conn),
                 str);

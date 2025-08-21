@@ -28,8 +28,6 @@
 
 #include "strlcpy.h"
 
-#include "player.h"
-
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -39,6 +37,7 @@
 #include "bit.h"
 #include "netserver.h"
 #include "xperror.h"
+#include "player.h"
 
 /*
  * Alliance information.
@@ -69,16 +68,12 @@ int Invite_player(int ind, int ally_ind)
         /* we can never form an alliance with ourselves */
         return 0;
     }
-    if (IS_TANK_IND(ally_ind))
-    {
+    if (Player_is_tank(ally))
         /* tanks can't handle invitations */
         return 0;
-    }
-    if (ALLIANCE(ind, ally_ind))
-    {
+    if (Players_are_allies(pl, ally))
         /* we're already in the same alliance */
         return 0;
-    }
     if (pl->invite == ally->id)
     {
         /* player has already been invited by us */
@@ -386,7 +381,7 @@ void Player_join_alliance(int ind, int ally_ind)
     alliance_t *alliance = Find_alliance(ally->alliance);
     char msg[MSG_LEN];
 
-    if (!IS_TANK_IND(ind))
+    if (!Player_is_tank(pl))
     {
         /* announce first to avoid sending the player two messages */
         if (options.announceAlliances)
@@ -443,7 +438,7 @@ int Leave_alliance(int ind)
     alliance = Find_alliance(pl->alliance);
     Alliance_remove_player(alliance, pl);
     /* announcement */
-    if (!IS_TANK_IND(ind))
+    if (!Player_is_tank(pl))
     {
         if (options.announceAlliances)
         {
@@ -456,15 +451,11 @@ int Leave_alliance(int ind)
             sprintf(msg, " < %s has left your alliance >", pl->name);
             Set_alliance_message(alliance, msg);
             if (Player_is_human(pl))
-            {
                 Set_player_message(pl, " < You have left the alliance >");
-            }
         }
     }
     if (alliance->NumMembers <= 1)
-    {
         Dissolve_alliance(alliance->id);
-    }
     return 1;
 }
 

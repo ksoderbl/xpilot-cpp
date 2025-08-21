@@ -67,7 +67,7 @@ static void Transport_to_home(player_t *pl)
      * acceleration G, during the second part we make this a negative one -G.
      * This results in a visually pleasing take off and landing.
      */
-    DFLOAT bx, by, dx, dy, t, m;
+    double bx, by, dx, dy, t, m;
     const int T = RECOVERY_DELAY;
 
     if (BIT(world->rules->mode, TIMING) && pl->round)
@@ -344,14 +344,14 @@ static void do_Autopilot(player_t *pl)
     int dir;
     int afterburners;
     int ix, iy;
-    DFLOAT gx, gy;
-    DFLOAT acc, vel;
-    DFLOAT delta;
-    DFLOAT turnspeed, power;
-    const DFLOAT emergency_thrust_settings_delta = 150.0 / FPS;
-    const DFLOAT auto_pilot_settings_delta = 15.0 / FPS;
-    const DFLOAT auto_pilot_turn_factor = 2.5;
-    const DFLOAT auto_pilot_dead_velocity = 0.5;
+    double gx, gy;
+    double acc, vel;
+    double delta;
+    double turnspeed, power;
+    const double emergency_thrust_settings_delta = 150.0 / FPS;
+    const double auto_pilot_settings_delta = 15.0 / FPS;
+    const double auto_pilot_turn_factor = 2.5;
+    const double auto_pilot_dead_velocity = 0.5;
 
     /*
      * If the last movement touched a wall then we shouldn't
@@ -438,7 +438,7 @@ static void do_Autopilot(player_t *pl)
      * Calculate turnspeed needed to change direction instantaneously by
      * above direction change.
      */
-    turnspeed = ((DFLOAT)vad) / pl->turnresistance - pl->turnvel;
+    turnspeed = ((double)vad) / pl->turnresistance - pl->turnvel;
     if (turnspeed < 0)
     {
         turnspeed = -turnspeed;
@@ -696,8 +696,10 @@ void Update_objects(void)
         if (cannon->tractor_count > 0)
         {
             int ind = GetInd[cannon->tractor_target];
-            if (Wrap_length(Players[ind]->pos.x - cannon->pix_pos.x,
-                            Players[ind]->pos.y - cannon->pix_pos.y) < TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
+            if (Wrap_length(Players[ind]->pos.cx - cannon->clk_pos.cx,
+                            Players[ind]->pos.cy - cannon->clk_pos.cy) /
+                        CLICK <
+                    TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
                 BIT(Players[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
                 General_tractor_beam(-1, cannon->clk_pos.cx, cannon->clk_pos.cy,
@@ -971,8 +973,10 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_REFUEL))
         {
-            if ((Wrap_length(pl->pos.x - world->fuel[pl->fs].pix_pos.x,
-                             pl->pos.y - world->fuel[pl->fs].pix_pos.y) > 90.0) ||
+            if ((Wrap_length(pl->pos.cx - world->fuel[pl->fs].clk_pos.cx,
+                             pl->pos.cy - world->fuel[pl->fs].clk_pos.cy) /
+                     CLICK >
+                 90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
                 (world->block[world->fuel[pl->fs].blk_pos.x][world->fuel[pl->fs].blk_pos.y] != FUEL) ||
                 BIT(pl->used, HAS_PHASING_DEVICE) ||
@@ -1016,12 +1020,11 @@ void Update_objects(void)
         if (BIT(pl->used, HAS_REPAIR))
         {
             target_t *targ = &world->targets[pl->repair_target];
-            DFLOAT x = (targ->blk_pos.x + 0.5) * BLOCK_SZ;
-            DFLOAT y = (targ->blk_pos.y + 0.5) * BLOCK_SZ;
-            if (Wrap_length(pl->pos.x - x, pl->pos.y - y) > 90.0 || targ->damage >= TARGET_DAMAGE || targ->dead_time > 0 || BIT(pl->used, HAS_PHASING_DEVICE))
-            {
+            if (Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK > 90.0 ||
+                targ->damage >= TARGET_DAMAGE ||
+                targ->dead_time > 0 ||
+                BIT(pl->used, HAS_PHASING_DEVICE))
                 CLR_BIT(pl->used, HAS_REPAIR);
-            }
             else
             {
                 int i = pl->fuel.num_tanks;
@@ -1067,12 +1070,12 @@ void Update_objects(void)
          */
         if (BIT(pl->status, THRUSTING))
         {
-            DFLOAT power = pl->power;
-            DFLOAT f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
+            double power = pl->power;
+            double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
             int a = (BIT(pl->used, HAS_EMERGENCY_THRUST)
                          ? MAX_AFTERBURNER
                          : pl->item[ITEM_AFTERBURNER]);
-            DFLOAT inert = pl->mass;
+            double inert = pl->mass;
 
             if (a)
             {
@@ -1312,8 +1315,9 @@ void Update_objects(void)
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             pl->lock.distance =
-                Wrap_length(pl->pos.x - Players[GetInd[pl->lock.pl_id]]->pos.x,
-                            pl->pos.y - Players[GetInd[pl->lock.pl_id]]->pos.y);
+                Wrap_length(pl->pos.cx - Players[GetInd[pl->lock.pl_id]]->pos.cx,
+                            pl->pos.cy - Players[GetInd[pl->lock.pl_id]]->pos.cy) /
+                CLICK;
         }
     }
 

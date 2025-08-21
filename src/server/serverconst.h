@@ -96,19 +96,32 @@
                            : (dy)))                \
              : (dy))
 
+#define WRAP_DCX(dcx)                                    \
+        (BIT(world->rules->mode, WRAP_PLAY)              \
+             ? ((dcx) < -(world->click_width >> 1)       \
+                    ? (dcx) + world->click_width         \
+                    : ((dcx) > (world->click_width >> 1) \
+                           ? (dcx) - world->click_width  \
+                           : (dcx)))                     \
+             : (dcx))
+
+#define WRAP_DCY(dcy)                                     \
+        (BIT(world->rules->mode, WRAP_PLAY)               \
+             ? ((dcy) < -(world->click_height >> 1)       \
+                    ? (dcy) + world->click_height         \
+                    : ((dcy) > (world->click_height >> 1) \
+                           ? (dcy) - world->click_height  \
+                           : (dcy)))                      \
+             : (dcy))
+
 #define PSEUDO_TEAM(i, j) \
         (Players[(i)]->pseudo_team == Players[(j)]->pseudo_team)
 
 /*
  * Used where we wish to know if a player is simply on the same team.
  */
-/* #define TEAM(i, j)                                                        \
-        (BIT(Players[i]->status|Players[j]->status, PAUSE)                \
-        || (BIT(world->rules->mode, TEAM_PLAY)                                \
-           && (Players[i]->team == Players[j]->team)                        \
-           && (Players[i]->team != TEAM_NOT_SET))) */
-#define TEAM(i, j) \
-        (BIT(world->rules->mode, TEAM_PLAY) && (Players[i]->team == Players[j]->team) && (Players[i]->team != TEAM_NOT_SET))
+#define Players_are_teammates(pl_i, pl_j) \
+        (BIT(world->rules->mode, TEAM_PLAY) && (pl_i->team == pl_j->team) && (pl_i->team != TEAM_NOT_SET))
 
 /*
  * Used where we wish to know if a player is on the same team
@@ -119,14 +132,19 @@
 /*
  * Used where we wish to know if two players are members of the same alliance.
  */
-#define ALLIANCE(i, j) \
-        ((Players[i]->alliance != ALLIANCE_NOT_SET) && (Players[j]->alliance == Players[i]->alliance))
+#define Players_are_allies(pl_i, pl_j) \
+        ((pl_i->alliance != ALLIANCE_NOT_SET) && (pl_j->alliance == pl_i->alliance))
 
 /*
- * Used where we wish to know if a player (i) owns a tank (j).
+ * Used where we wish to know if a player (pl_i) owns a tank (pl_).
  */
-#define OWNS_TANK(i, j) \
-        (IS_TANK_IND(j) && (Players[j]->lock.pl_id != -1) && (GetInd[Players[j]->lock.pl_id] == (i)))
+#define Player_owns_tank(pl_i, pl_j) \
+        (Player_is_tank(pl_j) && (pl_j->lock.pl_id != -1) && (pl_j->lock.pl_id == pl_i->id))
+
+/*
+ * Used when we want to pass an index which is not in use.
+ */
+#define NO_IND (-1)
 
 #define RECOVERY_DELAY (FPS * 3)
 #define ROBOT_CREATE_DELAY (FPS * 2)
@@ -252,5 +270,24 @@
 
 #define WORM_BRAKE_FACTOR 1
 #define WORMCOUNT 64
+
+// walls2 stuff
+
+/* Wall code only considers one way of wrapping around the map, and
+ * assumes that after moving the length of one line or one unit of object
+ * movement (max 32000 clicks) the shortest distance from the start to
+ * the end position is the path that was moved (there are some fudge
+ * factors in the length). For this to hold, the map must be somewhat
+ * larger than 2 * 32000 clicks = 1000 pixels. */
+// #define MIN_MAP_SIZE 1100
+/* map dimension limitation: (0x7FFF - 1280) */
+/* Where does 1280 come from? uau */
+// #define MAX_MAP_SIZE 31500
+
+#define POLYGON_MAX_OFFSET 30000
+// #define NO_GROUP (-1)
+
+/* Maximum frames per second the server code supports. */
+#define MAX_SERVER_FPS 255
 
 #endif

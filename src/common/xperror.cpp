@@ -76,6 +76,30 @@ void xpinfo(const char *fmt, ...)
     va_end(ap);
 }
 
+void xpwarn(const char *fmt, ...)
+{
+    int len;
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    if (progname[0] != '\0')
+    {
+        fprintf(stderr, "%s: ", progname);
+    }
+
+    vfprintf(stderr, fmt, ap);
+
+    len = strlen(fmt);
+    if (len == 0 || fmt[len - 1] != '\n')
+    {
+        fprintf(stderr, "\n");
+    }
+
+    va_end(ap);
+}
+
+// Same as above.
 void warn(const char *fmt, ...)
 {
     int len;

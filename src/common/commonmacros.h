@@ -37,14 +37,14 @@
  * The goal is to keep the number of malloc/realloc calls low
  * while not wasting too much memory because of over-allocation.
  */
+
 #define STORE(T, P, N, M, V)                                                    \
     if (N >= M && ((M <= 0)                                                     \
                        ? (P = (T *)malloc((M = 1) * sizeof(*P)))                \
                        : (P = (T *)realloc(P, (M += M) * sizeof(*P)))) == NULL) \
     {                                                                           \
-        error("No memory");                                                     \
-        N = M = 0;                                                              \
-        return -1;                                                              \
+        warn("No memory");                                                      \
+        exit(1);                                                                \
     }                                                                           \
     else                                                                        \
         (P[N++] = V)

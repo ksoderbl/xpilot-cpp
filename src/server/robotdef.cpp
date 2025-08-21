@@ -95,8 +95,8 @@ int Robot_default_setup(robot_type_t *type_ptr);
 /*
  * Local static variables
  */
-static DFLOAT Visibility_distance;
-static DFLOAT Max_enemy_distance;
+static double Visibility_distance;
+static double Max_enemy_distance;
 
 /*
  * The robot type structure for the default robot.
@@ -317,7 +317,7 @@ static void Robot_default_invite(int ind, int inv_ind)
     int war_id = Robot_default_war_on_player(ind);
     robot_default_data_t *my_data = Robot_default_get_data(pl);
     int i;
-    DFLOAT limit;
+    double limit;
     int accept = 1; /* accept by default */
 
     if (pl->alliance != ALLIANCE_NOT_SET)
@@ -326,7 +326,7 @@ static void Robot_default_invite(int ind, int inv_ind)
            let robots refuse in this case */
         for (i = 0; i < NumPlayers; i++)
         {
-            if (IS_HUMAN_IND(i) && ALLIANCE(ind, i))
+            if (IS_HUMAN_IND(i) && Players_are_allies(pl, Players[i]))
             {
                 accept = 0;
                 break;
@@ -354,7 +354,7 @@ static void Robot_default_invite(int ind, int inv_ind)
     }
     else
     {
-        DFLOAT avg_score = 0;
+        double avg_score = 0;
         int member_count = Get_alliance_member_count(inviter->alliance);
 
         for (i = 0; i < NumPlayers; i++)
@@ -460,7 +460,7 @@ static bool Check_robot_evade(int ind, int mine_i, int ship_i)
     vector_t *gravity;
     int gravity_dir;
     long dx, dy;
-    DFLOAT velocity;
+    double velocity;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     safe_width = (my_data->defense / 200) * SHIP_SZ;
@@ -1056,38 +1056,28 @@ static bool Check_robot_target(int ind,
     if (new_mode == RM_ATTACK || (BIT(world->rules->mode, TIMING) && new_mode == RM_NAVIGATE))
     {
         if (pl->item[ITEM_ECM] > 0 && item_dist < ECM_DISTANCE / 4)
-        {
             Fire_ecm(ind);
-        }
         else if (pl->item[ITEM_TRANSPORTER] > 0 && item_dist < TRANSPORTER_DISTANCE && pl->fuel.sum > -ED_TRANSPORTER)
-        {
-            Do_transporter(ind);
-        }
+            Do_transporter(pl);
         else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER > pl->fuel.l3 && new_mode == RM_ATTACK)
         {
             if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Players[GetInd[my_data->robot_lock_id]]->status,
                                                              PLAYING | PAUSE | GAME_OVER) == PLAYING)
-            {
                 ship = Players[GetInd[my_data->robot_lock_id]];
-            }
             else if (BIT(pl->lock.tagged, LOCK_PLAYER))
-            {
                 ship = Players[GetInd[pl->lock.pl_id]];
-            }
             else
-            {
                 ship = NULL;
-            }
             if (ship && BIT(ship->status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
             {
 
-                DFLOAT x1, y1, x3, y3, x4, y4, x5, y5;
-                DFLOAT ship_dist, dir3, dir4, dir5;
+                double x1, y1, x3, y3, x4, y4, x5, y5;
+                double ship_dist, dir3, dir4, dir5;
 
-                x1 = pl->pos.x + pl->vel.x + pl->ship->m_gun[pl->dir].x;
-                y1 = pl->pos.y + pl->vel.y + pl->ship->m_gun[pl->dir].y;
-                x3 = ship->pos.x + ship->vel.x;
-                y3 = ship->pos.y + ship->vel.y;
+                x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + pl->ship->m_gun[pl->dir].x;
+                y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + pl->ship->m_gun[pl->dir].y;
+                x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
+                y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
 
                 ship_dist = Wrap_length(x3 - x1, y3 - y1);
 
@@ -1103,9 +1093,7 @@ static bool Check_robot_target(int ind,
                     if ((dir4 > dir5)
                             ? (pl->dir >= dir4 || pl->dir <= dir5)
                             : (pl->dir >= dir4 && pl->dir <= dir5))
-                    {
                         SET_BIT(pl->used, HAS_LASER);
-                    }
                 }
             }
         }
@@ -1117,7 +1105,7 @@ static bool Check_robot_target(int ind,
             if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > pl->fuel.l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
             {
 
-                DFLOAT xvd, yvd, vel;
+                double xvd, yvd, vel;
                 long dir;
                 int away;
 
@@ -1143,9 +1131,7 @@ static bool Check_robot_target(int ind,
                         pl->tractor_is_pressor = true;
                     }
                     else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
-                    {
                         SET_BIT(pl->used, HAS_TRACTOR_BEAM);
-                    }
                 }
                 if (BIT(pl->used, HAS_TRACTOR_BEAM))
                     SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
@@ -1490,20 +1476,26 @@ static bool Ball_handler(int ind)
 
     for (i = 0; i < world->NumTreasures; i++)
     {
-        if ((BIT(pl->have, HAS_BALL) || pl->ball) && world->treasures[i].team == pl->team)
+        if ((BIT(pl->have, HAS_BALL) || pl->ball) &&
+            world->treasures[i].team == pl->team)
         {
-            dist = (int)Wrap_length((world->treasures[i].blk_pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
-                                    (world->treasures[i].blk_pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
+            dist = Wrap_length(world->treasures[i].clk_pos.cx - pl->pos.cx,
+                               world->treasures[i].clk_pos.cy - pl->pos.cy) /
+                   CLICK;
             if (dist < closest_t_dist)
             {
                 closest_t = i;
                 closest_t_dist = dist;
             }
         }
-        else if (world->treasures[i].team != pl->team && world->teams[world->treasures[i].team].NumMembers > 0 && !BIT(pl->have, HAS_BALL) && !pl->ball && world->treasures[i].have)
+        else if (world->treasures[i].team != pl->team &&
+                 world->teams[world->treasures[i].team].NumMembers > 0 &&
+                 !BIT(pl->have, HAS_BALL) && !pl->ball &&
+                 world->treasures[i].have)
         {
-            dist = (int)Wrap_length((world->treasures[i].blk_pos.x + 0.5) * BLOCK_SZ - pl->pos.x,
-                                    (world->treasures[i].blk_pos.y + 0.5) * BLOCK_SZ - pl->pos.y);
+            dist = Wrap_length(world->treasures[i].clk_pos.cx - pl->pos.cx,
+                               world->treasures[i].clk_pos.cy - pl->pos.cy) /
+                   CLICK;
             if (dist < closest_nt_dist)
             {
                 closest_nt = i;
@@ -1548,7 +1540,7 @@ static bool Ball_handler(int ind)
              clear_path && dist < (closest_t_dist - BLOCK_SZ);
              dist += BLOCK_SZ / 2)
         {
-            DFLOAT fraction = (DFLOAT)dist / closest_t_dist;
+            double fraction = (double)dist / closest_t_dist;
             dx = (int)((fraction * xdist) + OBJ_X_IN_BLOCKS(ball));
             dy = (int)((fraction * ydist) + OBJ_Y_IN_BLOCKS(ball));
             if (BIT(world->rules->mode, WRAP_PLAY))
@@ -2041,7 +2033,7 @@ static void Robot_default_play(int ind)
 {
     player_t *pl = Players[ind],
              *ship;
-    DFLOAT distance, ship_dist,
+    double distance, ship_dist,
         enemy_dist,
         speed, x_speed, y_speed;
     int item_dist, mine_dist;
@@ -2505,8 +2497,8 @@ static void Robot_default_play(int ind)
  */
 static void Robot_default_round_tick(void)
 {
-    DFLOAT min_visibility = 256.0;
-    DFLOAT min_enemy_distance = 512.0;
+    double min_visibility = 256.0;
+    double min_enemy_distance = 512.0;
 
     /* reduce visibility when there are a lot of robots. */
     Visibility_distance = min_visibility + (((VISIBILITY_DISTANCE - min_visibility) * (NUM_IDS - NumRobots)) / NUM_IDS);

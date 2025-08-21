@@ -542,7 +542,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     /*
      * Any bouncing sparks are no longer owner immune to give
      * "reactive" thrust.  This is exactly like ground effect
-     * in the real world->  Very useful for stopping against walls.
+     * in the real world.  Very useful for stopping against walls.
      */
     if (obj->type != OBJ_PULSE &&
         obj->type != OBJ_SPARK &&
