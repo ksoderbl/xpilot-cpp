@@ -9,7 +9,6 @@ xpilot_cpp_client_x11_SOURCES = \
     configure.cpp \
     dbuff.cpp \
     dbuff.h \
-    default.h \
     guimap.cpp \
     guiobjects.cpp \
     join.cpp \
@@ -29,6 +28,7 @@ xpilot_cpp_client_x11_SOURCES = \
     widget.cpp \
     widget.h \
     xdefault.cpp \
+    xdefault.h \
     xevent.cpp \
     xevent.h \
     xeventhandlers.cpp \
