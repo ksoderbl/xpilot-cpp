@@ -21,8 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DEFAULT_H
-#define DEFAULT_H
+#ifndef XDEFAULT_H
+#define XDEFAULT_H
 
 typedef struct
 {
