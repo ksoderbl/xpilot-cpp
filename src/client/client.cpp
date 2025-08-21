@@ -47,6 +47,16 @@
 #include "protoclient.h"
 #include "talk.h"
 
+client_data_t clData = {
+    0,
+};
+
+char *geometry;
+xp_args_t xpArgs;
+Connect_param_t connectParam;
+
+bool newbie;
+
 int oldServer = true;
 ipos_t selfPos;
 ipos_t selfVel;

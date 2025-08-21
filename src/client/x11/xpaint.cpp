@@ -41,6 +41,8 @@
 #include "paint.h"
 #include "paintdata.h"
 
+#include "keydefs.h"
+
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"

@@ -14,6 +14,7 @@ xpilot_cpp_client_x11_SOURCES = \
     guimap.cpp \
     guiobjects.cpp \
     join.cpp \
+    keydefs.h \
     paintdata.cpp \
     paintdata.h \
     painthud.cpp \

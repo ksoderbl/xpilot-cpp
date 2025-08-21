@@ -103,7 +103,7 @@ bool quitting = false;
 int top_width, top_height, top_x, top_y, top_posmask;
 // int                        draw_width, draw_height;
 int players_width, players_height;
-char *geometry;
+// char *geometry;
 bool autoServerMotdPopup;
 bool refreshMotd;
 Cursor pointerControlCursor;

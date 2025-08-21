@@ -36,6 +36,8 @@
 #include "client.h"
 #include "paint.h"
 
+#include "keydefs.h"
+
 #include "xpconfig.h"
 #include "const.h"
 #include "keys.h"

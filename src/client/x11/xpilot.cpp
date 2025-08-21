@@ -72,6 +72,11 @@ static void printfile(const char *filename)
     fclose(fp);
 }
 
+const char *Program_name(void)
+{
+    return "xpilot-cpp-client-x11";
+}
+
 /*
  * Oh glorious main(), without thee we cannot exist.
  */

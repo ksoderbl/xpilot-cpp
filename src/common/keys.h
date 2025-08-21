@@ -1,5 +1,4 @@
-/* $Id: keys.h,v 5.0 2001/04/07 20:00:59 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -152,19 +151,5 @@ typedef enum
     NUM_CLIENT_KEYS /* The number of keys really used by the client. */
 #endif
 } keys_t;
-
-#ifndef SERVER
-typedef struct
-{
-    KeySym keysym; /* Keysym-to-action array */
-    keys_t key;
-} keydefs_t;
-
-extern keydefs_t *keyDefs;
-
-extern char *Get_keyHelpString(keys_t key);
-extern const char *Get_keyResourceString(keys_t key);
-
-#endif
 
 #endif

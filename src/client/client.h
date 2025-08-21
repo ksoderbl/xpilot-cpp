@@ -24,6 +24,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "connectparam.h"
 #include "item.h"
 #include "shipshape.h"
 #include "types.h"
@@ -109,7 +110,16 @@ typedef struct
 #define MIN_SCALEFACTOR 0.1
 #define MAX_SCALEFACTOR 20.0
 
+#define FUEL_NOTIFY_TIME 3.0
 #define CONTROL_TIME 8.0
+
+#define MAX_MSGS 15       /* Max. messages displayed ever */
+#define MAX_HIST_MSGS 128 /* Max. messages in history */
+
+#define MSG_LIFE_TIME 120.0  /* Seconds */
+#define MSG_FLASH_TIME 105.0 /* Old messages have life time less \
+                than this */
+#define MAX_POINTER_BUTTONS 5
 
 #define FIND_NAME_WIDTH(other)                                             \
     if ((other)->name_width == 0)                                          \
@@ -144,6 +154,7 @@ typedef struct
     char nick_name[MAX_CHARS];
     char user_name[MAX_CHARS];
     char host_name[MAX_CHARS];
+    char id_string[MAX_CHARS];
 } other_t;
 
 typedef struct
@@ -280,8 +291,8 @@ typedef struct
 
 typedef enum
 {
-    normal,
-    friendly
+    RadarEnemy,
+    RadarFriend
 } radar_type_t;
 
 typedef struct
@@ -347,6 +358,13 @@ typedef struct
     char msg[10],
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
+
+extern client_data_t clData;
+
+extern bool newbie;
+extern char *geometry;
+extern xp_args_t xpArgs;
+extern Connect_param_t connectParam;
 
 extern int oldServer; /* Compatibility mode for old block-based servers */
 extern ipos_t selfPos;
