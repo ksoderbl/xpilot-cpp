@@ -40,6 +40,6 @@
 */
 
 /* Talk Macros */
-int Talk_macro(char *str);
+int Talk_macro(int);
 
 #endif

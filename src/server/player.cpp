@@ -28,6 +28,7 @@
 #include <cerrno>
 
 #include "commonmacros.h"
+#include "const.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -41,7 +42,6 @@
 #include "saudio.h"
 #include "xperror.h"
 #include "object.h"
-#include "draw.h"
 #include "xpmath.h"
 
 bool updateScores = true;

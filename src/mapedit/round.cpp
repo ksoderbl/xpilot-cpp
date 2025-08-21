@@ -29,8 +29,9 @@
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cctype>
+#include <cstdint>
 
 #include "main.h"
 
@@ -51,7 +52,7 @@ int RoundMapArea(HandlerInfo_t info)
         type,
         mask,
         change = 0;
-    unsigned char up_filled[256],
+    uint8_t up_filled[256],
         left_filled[256],
         down_filled[256],
         right_filled[256],

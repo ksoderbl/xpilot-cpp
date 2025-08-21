@@ -37,7 +37,7 @@
 
 #include "bit.h"
 #include "click.h"
-#include "draw.h"
+#include "const.h"
 #include "keys.h"
 #include "xpconfig.h"
 #include "xpmath.h"

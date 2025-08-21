@@ -28,26 +28,22 @@
 #include <sys/types.h>
 
 #include <unistd.h>
-// #include <X11/Xlib.h>
-// #include <X11/Xos.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
 
-#include "draw.h"
 #include "commonmacros.h"
 #include "xpmath.h"
 
 #include "paint.h"
-// #include "paintdata.h"
 
 #include "xpconfig.h"
 #include "const.h"
 #include "xperror.h"
 #include "bit.h"
 #include "types.h"
-// #include "keys.h"
+#include "keys.h"
 #include "rules.h"
 #include "setup.h"
-// #include "paintdata.h"
-// #include "record.h"
 #include "protoclient.h"
 #include "guimap.h"
 
@@ -154,6 +150,10 @@ void Paint_world(void)
         fill_bottom_right = -1;
     static int wormDrawCount;
     uint8_t *mapptr, *mapbase;
+    static int wallTileReady = 0;
+    static Pixmap wallTile = None;
+    int wallTileDoit = false;
+    XPoint points[5];
 
     //     if (instruments.texturedWalls) {
     //         if (!wallTileReady) {
@@ -184,13 +184,21 @@ void Paint_world(void)
         if (ye >= Setup->y)
             ye = Setup->y - 1;
         if (world.x <= 0)
+        {
             Gui_paint_border(0, 0, 0, Setup->height);
+        }
         if (world.x + ext_view_width >= Setup->width)
+        {
             Gui_paint_border(Setup->width, 0, Setup->width, Setup->height);
+        }
         if (world.y <= 0)
+        {
             Gui_paint_border(0, 0, Setup->width, 0);
+        }
         if (world.y + ext_view_height >= Setup->height)
+        {
             Gui_paint_border(0, Setup->height, Setup->width, Setup->height);
+        }
     }
 
     y = yb * BLOCK_SZ;
@@ -222,6 +230,7 @@ void Paint_world(void)
         for (rxb = xb; rxb <= xe; rxb++, xi++, x += BLOCK_SZ,
             mapptr += Setup->y)
         {
+
             if (xi == Setup->x)
             {
                 if (!BIT(Setup->mode, WRAP_PLAY))
@@ -234,8 +243,10 @@ void Paint_world(void)
 
             if (!(type & BLUE_BIT))
             {
+
                 switch (type)
                 {
+
                 case SETUP_FILLED_NO_DRAW:
                     // if (BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS) && fill_top_left == -1)
                     if ((instruments.filledWorld || instruments.texturedWalls) && fill_top_left == -1)
@@ -313,7 +324,7 @@ void Paint_world(void)
                 case SETUP_DECOR_DOT_RD:
                 case SETUP_DECOR_DOT_LU:
                 case SETUP_DECOR_DOT_LD:
-                    Gui_paint_decor_dot(x, y, backgroundPointSize);
+                    Gui_paint_decor_dot(x, y, map_point_size);
                     break;
 
                 case SETUP_BASE_UP:

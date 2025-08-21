@@ -37,7 +37,7 @@
 #include <sys/param.h>
 
 #include "commonmacros.h"
-#include "draw.h"
+#include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"
@@ -52,7 +52,6 @@
 
 #include "version.h"
 #include "xpconfig.h"
-#include "const.h"
 #include "xpaint.h"
 #include "pack.h"
 #include "bit.h"
@@ -505,12 +504,6 @@ old_option_t oldOptions[] = {
      "No",
      KEY_DUMMY,
      "Reverse scroll direction of messages.\n"},
-    {"selectionAndHistory",
-     NULL,
-     "Yes",
-     KEY_DUMMY,
-     "Provide cut&paste for the player messages and the talk window and\n"
-     "a `history' for the talk window.\n"},
     {"maxLinesInHistory",
      NULL,
      "32",
@@ -2229,7 +2222,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     Get_int_resource(rDB, "maxMessages", &maxMessages);
     Get_int_resource(rDB, "messagesToStdout", &messagesToStdout);
-    Get_bool_resource(rDB, "selectionAndHistory", &selectionAndHistory);
     Get_int_resource(rDB, "maxLinesInHistory", &maxLinesInHistory);
     LIMIT(maxLinesInHistory, 1, MAX_HIST_MSGS);
 

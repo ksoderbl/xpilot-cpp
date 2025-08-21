@@ -28,7 +28,7 @@
 #include <cerrno>
 #include <climits>
 
-#include "draw.h"
+#include "const.h"
 
 #include "object.h"
 #include "walls.h"

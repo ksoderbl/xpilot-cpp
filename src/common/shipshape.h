@@ -72,6 +72,7 @@ extern shipshape_t *Convert_shape_str(char *str);
 extern void Calculate_shield_radius(shipshape_t *w);
 extern int Validate_shape_str(char *str);
 extern void Convert_ship_2_string(shipshape_t *w, char *buf, char *ext, unsigned shape_version);
-void Rotate_point(position_t pt[RES]);
+extern void Rotate_point(position_t pt[RES]);
+extern void Rotate_position(position_t pt[RES]);
 
 #endif

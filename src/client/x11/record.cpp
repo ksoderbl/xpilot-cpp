@@ -36,7 +36,7 @@
 
 #include "recordfile.h"
 
-#include "draw.h"
+#include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"
@@ -46,7 +46,6 @@
 
 #include "xpconfig.h"
 #include "xperror.h"
-#include "const.h"
 #include "xpaint.h"
 #include "setup.h"
 #include "record.h"

@@ -108,7 +108,7 @@
 #include <netdb.h>
 
 #include "commonmacros.h"
-#include "draw.h"
+#include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
 
@@ -2841,7 +2841,7 @@ static int Receive_ack_target(connection_t *connp)
 static int Receive_ack_polystyle(connection_t *connp)
 {
     long loops_ack;
-    unsigned char ch;
+    uint8_t ch;
     int n;
     unsigned short num;
     poly_t *poly;

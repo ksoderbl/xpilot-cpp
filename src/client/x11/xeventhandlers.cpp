@@ -80,6 +80,18 @@ extern bool save_talk_str;
 time_t back_in_play_since;
 #endif
 
+extern void Add_HUD_message(const char *message);
+extern void Del_HUD_message(void);
+
+void Add_alert_message(const char *message, double timeout)
+{
+    Add_HUD_message(message);
+}
+void Clear_alert_messages(void)
+{
+    Del_HUD_message();
+}
+
 /*
  * code for the following three functions and the selectionEvents
  * happily and with benediction taken from the terminal emulator
@@ -188,10 +200,8 @@ static void Selection_send(const XSelectionRequestEvent *rq)
 
 void SelectionNotify_event(XEvent *event)
 {
-    if (selectionAndHistory)
-
-        Selection_paste(event->xselection.requestor,
-                        event->xselection.property, True);
+    Selection_paste(event->xselection.requestor,
+                    event->xselection.property, True);
 }
 
 void SelectionRequest_event(XEvent *event)
@@ -330,7 +340,7 @@ void ButtonPress_event(XEvent *event)
                 }
             }
         }
-        else if (selectionAndHistory)
+        else
         {
             switch (event->xbutton.button)
             {
@@ -419,10 +429,6 @@ int ButtonRelease_event(XEvent *event)
                     Net_key_change();
                 }
             }
-        }
-        else if (!selectionAndHistory)
-        {
-            return 0;
         }
         if (!talk_mapped && event->xbutton.button == 1)
         {

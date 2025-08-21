@@ -36,6 +36,7 @@
 
 #include "strlcpy.h"
 
+#include "client.h"
 #include "netclient.h"
 #include "paint.h"
 
@@ -64,10 +65,135 @@ extern setup_t *Setup;
 
 extern XGCValues gcv;
 
-int blockBitmapShips = 1;
+// int blockBitmapShips = 1;
+// int ballColor = 4;
+// int connColor = 4;
 
-int ballColor = 4;
-int connectorColor = 4;
+static bool texturedShips = false; /* Turned this off because the images drawn
+                                    * don't match the actual shipshape used
+                                    * for wall collisions by the server. */
+static int ballColor = 4;          /* Color index for ball drawing */
+static int connColor = 4;          /* Color index for connector drawing */
+static int teamShotColor;          /* Color index for harmless shot drawing */
+static int zeroLivesColor;         /* Color to associate with 0 lives */
+static int oneLifeColor;           /* Color to associate with 1 life */
+static int twoLivesColor;          /* Color to associate with 2 lives */
+static int manyLivesColor;         /* Color to associate with >2 lives */
+static int selfLWColor;            /* Color index for selfLifeWarning */
+static int enemyLWColor;           /* Color index for enemyLifeWarning */
+static int teamLWColor;            /* Color index for teamLifeWarning */
+static int shipNameColor;          /* Color index for ship name drawing */
+static int mineNameColor;          /* Color index for mine name drawing */
+static int teamShipColor;          /* Color index to associate with team 0 */
+static int team0Color;             /* Color index to associate with team 0 */
+static int team1Color;             /* Color index to associate with team 1 */
+static int team2Color;             /* Color index to associate with team 2 */
+static int team3Color;             /* Color index to associate with team 3 */
+static int team4Color;             /* Color index to associate with team 4 */
+static int team5Color;             /* Color index to associate with team 5 */
+static int team6Color;             /* Color index to associate with team 6 */
+static int team7Color;             /* Color index to associate with team 7 */
+static int team8Color;             /* Color index to associate with team 8 */
+static int team9Color;             /* Color index to associate with team 9 */
+
+static int asteroidRawShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS][2] = {
+    {ASTEROID_SHAPE_0},
+    {ASTEROID_SHAPE_1},
+};
+
+position_t *asteroidShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS];
+
+int Init_asteroids(void)
+{
+    int shp, i;
+    size_t point_size;
+    size_t total_size;
+    char *dynmem;
+
+    /*
+     * Allocate memory for all the asteroid points.
+     */
+    point_size = sizeof(position_t) * RES;
+    total_size = point_size * NUM_ASTEROID_POINTS * NUM_ASTEROID_SHAPES;
+    if ((dynmem = (char *)malloc(total_size)) == NULL)
+    {
+        error("Not enough memory for asteroid shapes");
+        return -1;
+    }
+
+    /*
+     * For each asteroid-shape rotate all points.
+     */
+    for (shp = 0; shp < NUM_ASTEROID_SHAPES; shp++)
+    {
+        for (i = 0; i < NUM_ASTEROID_POINTS; i++)
+        {
+            asteroidShapes[shp][i] = (position_t *)dynmem;
+            dynmem += point_size;
+            asteroidShapes[shp][i][0].x = asteroidRawShapes[shp][i][0];
+            asteroidShapes[shp][i][0].y = asteroidRawShapes[shp][i][1];
+            Rotate_position(&asteroidShapes[shp][i][0]);
+        }
+    }
+
+    return 0;
+}
+
+void Gui_paint_item_symbol(int type, Drawable d, GC mygc, int x, int y, int c)
+{
+    if (!texturedObjects)
+    {
+        gcv.stipple = itemBitmaps[type];
+        gcv.fill_style = FillStippled;
+        gcv.ts_x_origin = x;
+        gcv.ts_y_origin = y;
+        XChangeGC(dpy, mygc,
+                  GCStipple | GCFillStyle | GCTileStipXOrigin | GCTileStipYOrigin,
+                  &gcv);
+        rd.paintItemSymbol(type, d, mygc, x, y, c);
+        XFillRectangle(dpy, d, mygc, x, y, ITEM_SIZE, ITEM_SIZE);
+        gcv.fill_style = FillSolid;
+        XChangeGC(dpy, mygc, GCFillStyle, &gcv);
+    }
+    else
+        Bitmap_paint(d, BM_ALL_ITEMS, x, y, type);
+}
+
+void Gui_paint_item(int type, Drawable d, GC mygc, int x, int y)
+{
+    const int SIZE = ITEM_TRIANGLE_SIZE;
+    XPoint points[5];
+
+#ifndef NO_ITEM_TRIANGLES
+    points[0].x = x - SIZE;
+    points[0].y = y - SIZE;
+    points[1].x = x;
+    points[1].y = y + SIZE;
+    points[2].x = x + SIZE;
+    points[2].y = y - SIZE;
+    points[3] = points[0];
+    SET_FG(colors[BLUE].pixel);
+    rd.drawLines(dpy, d, mygc, points, 4, CoordModeOrigin);
+#endif
+
+    SET_FG(colors[RED].pixel);
+#if 0
+    str[0] = itemtype_ptr[i].type + '0';
+    str[1] = '\0';
+    rd.drawString(dpy, d, mygc,
+          x - XTextWidth(gameFont, str, 1)/2,
+          y + SIZE - 1,
+          str, 1);
+#endif
+    Gui_paint_item_symbol(type, d, mygc,
+                          x - ITEM_SIZE / 2,
+                          y - SIZE + 2, ITEM_PLAYFIELD);
+}
+
+void Gui_paint_item_object(int type, int x, int y)
+{
+    Gui_paint_item(type, drawPixmap, gameGC, WINSCALE(X(x)), WINSCALE(Y(y)));
+}
 
 void Gui_paint_ball(int x, int y)
 {
@@ -123,7 +249,7 @@ void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
     y2 = Y(y2);
     x1 = X(x1);
     y1 = Y(y1);
-    Segment_add(connectorColor, x1, y1, x2, y2);
+    Segment_add(connColor, x1, y1, x2, y2);
 }
 
 /* used by Paint_mine */
@@ -491,7 +617,7 @@ void Gui_paint_all_connectors_begin()
 {
     unsigned long mask;
 
-    SET_FG(colors[connectorColor].pixel);
+    SET_FG(colors[connColor].pixel);
     if (gcv.line_style != LineOnOffDash)
     {
         gcv.line_style = LineOnOffDash;
@@ -781,7 +907,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
 
     if (cloak == 0 && phased == 0)
     {
-        if (!texturedObjects || !blockBitmapShips)
+        if (!texturedObjects)
             Gui_paint_ship_uncloaked(id, points, ship_color, cnt);
         else
         {

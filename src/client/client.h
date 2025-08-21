@@ -359,12 +359,84 @@ typedef struct
         hud_msg[MAX_CHARS + 10];
 } score_object_t;
 
+/*
+ * is a selection pending (in progress), done, drawn emphasized?
+ */
+#define SEL_NONE (1 << 0)
+#define SEL_PENDING (1 << 1)
+#define SEL_SELECTED (1 << 2)
+#define SEL_EMPHASIZED (1 << 3)
+
+/*
+ * a selection (text, string indices, state,...)
+ */
+typedef struct
+{
+    /* a selection in the talk window */
+    struct
+    {
+        bool state; /* current state of the selection */
+        size_t x1;  /* string indices */
+        size_t x2;
+        bool incl_nl; /* include a '\n'? */
+    } talk;
+    /* a selection in the draw window */
+    struct
+    {
+        bool state;
+        int x1; /* string indices (for TalkMsg[].txt) */
+        int x2; /* they are modified when the emphasized area */
+        int y1; /* is scrolled down by new messages coming in */
+        int y2;
+    } draw;
+    char *txt;       /* allocated when needed */
+    size_t txt_size; /* size of txt buffer */
+    size_t len;
+    /* when a message 'jumps' from talk window to the player messages: */
+    bool keep_emphasizing;
+} selection_t;
+
+/* typedefs begin */
+typedef enum
+{
+    BmsNone = 0,
+    BmsBall,
+    BmsSafe,
+    BmsCover,
+    BmsPop
+} msg_bms_t;
+
+typedef struct
+{
+    char txt[MSG_LEN];
+    size_t len;
+    /*short        pixelLen;*/
+    double lifeTime;
+    msg_bms_t bmsinfo;
+} message_t;
+/* typedefs end */
+
 extern client_data_t clData;
 
 extern bool newbie;
 extern char *geometry;
 extern xp_args_t xpArgs;
 extern Connect_param_t connectParam;
+extern message_t *TalkMsg[];
+extern message_t *GameMsg[];
+extern message_t *TalkMsg_pending[]; /* store incoming messages */
+extern message_t *GameMsg_pending[]; /* while a cut is pending */
+extern char *HistoryMsg[];           /* talk window history */
+
+extern int maxLinesInHistory; /* lines to save in history */
+extern selection_t selection; /* in talk/draw window */
+extern int maxMessages;
+extern int messagesToStdout;
+
+extern char *talk_fast_msgs[]; /* talk macros */
+
+extern score_object_t score_objects[MAX_SCORE_OBJECTS];
+extern int score_object;
 
 extern int oldServer; /* Compatibility mode for old block-based servers */
 extern ipos_t selfPos;
@@ -464,12 +536,12 @@ extern double clientFPS;    /* FPS client is drawing at */
 extern double timePerFrame; /* Time a frame is shown, unit s */
 extern int clientLag;       /* Time to draw a frame, unit us */
 extern bool newSecond;      /* Second changed this frame */
-extern bool played_this_round;
-extern long twelveHz; /* Attempt to increment this at 12Hz */
+extern long twelveHz;       /* Attempt to increment this at 12Hz */
 
 extern int clientPortStart; /* First UDP port for clients */
 extern int clientPortEnd;   /* Last one (these are for firewalls) */
-
+extern int baseWarningType; /* Which type of base warning you prefer */
+extern int maxCharsInNames;
 extern uint8_t lose_item;    /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */
 
@@ -478,6 +550,10 @@ extern char sounds[MAX_CHARS];      /* audio mappings */
 extern char audioServer[MAX_CHARS]; /* audio server */
 extern int maxVolume;               /* maximum volume (in percent) */
 #endif                              /* SOUND */
+
+/* mapdata accessible to outside world */
+
+extern int num_playing_teams;
 
 extern fuelstation_t *fuels;
 extern int num_fuels;
@@ -492,6 +568,10 @@ extern int num_edge_styles, max_edge_styles;
 extern polygon_style_t *polygon_styles;
 extern int num_polygon_styles, max_polygon_styles;
 
+/* dynamic global game data */
+
+extern other_t *Others;
+extern int num_others, max_others;
 extern refuel_t *refuel_ptr;
 extern int num_refuel, max_refuel;
 extern connector_t *connector_ptr;
@@ -540,6 +620,10 @@ extern int num_wormholes, max_wormholes;
 extern long start_loops, end_loops;
 extern long time_left;
 
+extern bool roundend;
+extern bool played_this_round;
+extern int protocolVersion;
+
 extern int eyesId;     /* Player we get frame updates for */
 extern short snooping; /* are we snooping on someone else? */
 
@@ -560,7 +644,9 @@ int Base_info_by_pos(int x, int y, int *id, int *team);
 int Handle_base(int id, int ind);
 int Check_pos_by_index(int ind, int *xp, int *yp);
 int Check_index_by_pos(int x, int y);
+homebase_t *Homebase_by_id(int id);
 other_t *Other_by_id(int id);
+other_t *Other_by_name(const char *name, bool show_error_msg);
 shipshape_t *Ship_by_id(int id);
 int Handle_leave(int id);
 int Handle_player(int id, int team, int mychar, char *player_name,

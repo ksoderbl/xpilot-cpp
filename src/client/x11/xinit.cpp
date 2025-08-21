@@ -34,14 +34,13 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
-#include "draw.h"
+#include "const.h"
 
 #include "messages.h"
 #include "paint.h"
 
 #include "version.h"
 #include "xpconfig.h"
-#include "const.h"
 #include "keys.h"
 #include "icon.h"
 #include "xpaint.h"
@@ -667,10 +666,7 @@ int Init_playing_windows(void)
     XSelectInput(dpy, radarWindow, ExposureMask);
     XSelectInput(dpy, playersWindow, ExposureMask);
 
-    if (!selectionAndHistory)
-        XSelectInput(dpy, drawWindow, 0);
-    else
-        XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
+    XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
 
     /*
      * Initialize misc. pixmaps if we're not color switching.

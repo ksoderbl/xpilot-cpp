@@ -152,8 +152,7 @@ double clientFPS = 1.0; /* FPS client is drawing at */
 // double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
 int clientLag = 0;
 bool newSecond = false; /* Second changed this frame */
-bool played_this_round = false;
-long twelveHz = 0; /* We attempt to increment this at 12 Hz */
+long twelveHz = 0;      /* We attempt to increment this at 12 Hz */
 
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
@@ -189,8 +188,6 @@ target_t *targets = NULL;
 int num_targets = 0;
 
 #define MAX_CHECKPOINT 26
-
-char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
 
 int scoresChanged = 0;
 
@@ -247,6 +244,7 @@ int num_asteroids, max_asteroids;
 wormhole_t *wormhole_ptr;
 int num_wormholes, max_wormholes;
 
+int num_playing_teams = 0;
 long time_left = -1;
 long start_loops, end_loops;
 
@@ -1257,6 +1255,21 @@ static int Map_cleanup(void)
     return 0;
 }
 
+homebase_t *Homebase_by_id(int id)
+{
+    int i;
+
+    if (id != -1)
+    {
+        for (i = 0; i < num_bases; i++)
+        {
+            if (bases[i].id == id)
+                return &bases[i];
+        }
+    }
+    return NULL;
+}
+
 other_t *Other_by_id(int id)
 {
     int i;
@@ -1270,6 +1283,75 @@ other_t *Other_by_id(int id)
         }
     }
     return NULL;
+}
+
+other_t *Other_by_name(const char *name, bool show_error_msg)
+{
+    int i;
+    other_t *found_other = NULL, *other;
+    size_t len;
+
+    if (name == NULL || (len = strlen(name)) == 0)
+        goto match_none;
+
+    /* Look for an exact match on player nickname. */
+    for (i = 0; i < num_others; i++)
+    {
+        other = &Others[i];
+        if (!strcasecmp(other->nick_name, name))
+            return other;
+    }
+
+    /* Look if 'name' matches beginning of only one nick. */
+    for (i = 0; i < num_others; i++)
+    {
+        other = &Others[i];
+
+        if (!strncasecmp(other->nick_name, name, len))
+        {
+            if (found_other)
+                goto match_several;
+            found_other = other;
+            continue;
+        }
+    }
+    if (found_other)
+        return found_other;
+
+    /*
+     * Check what players' name 'name' is a substring of (case insensitively).
+     */
+    for (i = 0; i < num_others; i++)
+    {
+        int j;
+        other = &Others[i];
+
+        for (j = 0; j < 1 + (int)strlen(other->nick_name) - (int)len; j++)
+        {
+            if (!strncasecmp(other->nick_name + j, name, len))
+            {
+                if (found_other)
+                    goto match_several;
+                found_other = other;
+                break;
+            }
+        }
+    }
+    if (found_other)
+        return found_other;
+
+match_none:
+{
+    if (show_error_msg)
+        Add_message("Name does not match any player. [*Client reply*]");
+    return NULL;
+}
+match_several:
+{
+    if (show_error_msg)
+        Add_message("Name matches several players. [*Client reply*]");
+    return NULL;
+}
 }
 
 shipshape_t *Ship_by_id(int id)

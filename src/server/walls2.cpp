@@ -1601,29 +1601,29 @@ static int Shape_away(move_t *move, shape_t *s,
     return ans->line == -1 && ans->point == -1;
 }
 
-static void store_byte(int value, unsigned char **start, int *offset, int *sz)
+static void store_byte(int value, uint8_t **start, int *offset, int *sz)
 {
     (*start)[(*offset)++] = value;
     if (*offset == *sz)
     {
         *sz *= 2;
-        *start = (unsigned char *)ralloc(*start, *sz);
+        *start = (uint8_t *)ralloc(*start, *sz);
     }
 }
 
-static void store_2byte(int value, unsigned char **start, int *offset, int *sz)
+static void store_2byte(int value, uint8_t **start, int *offset, int *sz)
 {
     store_byte(value >> 8, start, offset, sz);
     store_byte(value & 0xff, start, offset, sz);
 }
 
-static void store_4byte(int value, unsigned char **start, int *offset, int *sz)
+static void store_4byte(int value, uint8_t **start, int *offset, int *sz)
 {
     store_2byte(value >> 16, start, offset, sz);
     store_2byte(value & 0xffff, start, offset, sz);
 }
 
-int Polys_to_client(unsigned char **start)
+int Polys_to_client(uint8_t **start)
 {
     int i, j, startx, starty, dx, dy;
     int *edges;
@@ -1632,7 +1632,7 @@ int Polys_to_client(unsigned char **start)
 #define STORE2(x) store_2byte(x, start, &offset, &size)
 #define STORE4(x) store_4byte(x, start, &offset, &size)
 
-    *start = (unsigned char *)ralloc(NULL, 100);
+    *start = (uint8_t *)ralloc(NULL, 100);
     size = 100;
     offset = 0;
 

@@ -37,12 +37,11 @@
 #include <sys/time.h>
 
 #include "commonmacros.h"
-#include "draw.h"
+#include "const.h"
 #include "item.h"
 #include "strlcpy.h"
 
 #include "xpconfig.h"
-#include "const.h"
 #include "xperror.h"
 #include "net.h"
 #include "netclient.h"

@@ -147,6 +147,25 @@ void Gui_paint_walls(int x, int y, int type, int xi, int yi)
     }
 }
 
+void Gui_paint_filled_slice(int bl, int tl, int tr, int br, int y)
+{
+    XPoint points[5];
+
+    SET_FG(colors[wallColor].pixel);
+
+    points[0].x = WINSCALE(X(bl));
+    points[0].y = WINSCALE(Y(y));
+    points[1].x = WINSCALE(X(tl));
+    points[1].y = WINSCALE(Y(y + BLOCK_SZ));
+    points[2].x = WINSCALE(X(tr));
+    points[2].y = WINSCALE(Y(y + BLOCK_SZ));
+    points[3].x = WINSCALE(X(br));
+    points[3].y = WINSCALE(Y(y));
+    points[4] = points[0];
+    rd.fillPolygon(dpy, drawPixmap, gameGC, points, 5, Convex,
+                   CoordModeOrigin);
+}
+
 void Gui_paint_cannon(int x, int y, int type)
 {
     if (!texturedObjects)

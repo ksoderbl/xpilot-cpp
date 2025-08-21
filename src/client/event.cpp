@@ -51,7 +51,7 @@
 #define MAX_BUTTON_DEFS 10
 
 static BITV_DECL(keyv, NUM_KEYS);
-static unsigned char keyv_new[NUM_KEYS];
+static uint8_t keyv_new[NUM_KEYS];
 
 keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
 

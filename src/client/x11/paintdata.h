@@ -24,7 +24,7 @@
 #ifndef PAINTDATA_H
 #define PAINTDATA_H
 
-#include "draw.h"
+#include "const.h"
 #include "types.h"
 
 #include "xpaint.h"

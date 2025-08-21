@@ -34,7 +34,7 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
-#include "draw.h"
+#include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
 
@@ -45,7 +45,6 @@
 #include "keydefs.h"
 
 #include "xpconfig.h"
-#include "const.h"
 #include "xpaint.h"
 #include "xinit.h"
 #include "bit.h"

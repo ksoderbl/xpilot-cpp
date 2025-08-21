@@ -30,7 +30,6 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
-#include "draw.h"
 #include "bit.h"
 #include "dbuff.h"
 

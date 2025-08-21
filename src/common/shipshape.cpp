@@ -33,7 +33,6 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
-#include "draw.h"
 #include "xperror.h"
 
 static int debugShapeParsing = 0;
@@ -44,6 +43,17 @@ static int Get_shape_keyword(char *keyw);
 extern void Make_table(void);
 
 void Rotate_point(position_t pt[RES])
+{
+    int i;
+
+    for (i = 1; i < RES; i++)
+    {
+        pt[i].x = tcos(i) * pt[0].x - tsin(i) * pt[0].y;
+        pt[i].y = tsin(i) * pt[0].x + tcos(i) * pt[0].y;
+    }
+}
+
+void Rotate_position(position_t pt[RES])
 {
     int i;
 
@@ -155,8 +165,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     struct grid_t
     {
         int todo, done;
-        unsigned char pt[32][32];
-        unsigned char chk[32 * 32][2];
+        uint8_t pt[32][32];
+        uint8_t chk[32 * 32][2];
     } grid;
 
     int i, j, x, y, dx, dy,

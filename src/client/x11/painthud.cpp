@@ -517,6 +517,160 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
     }
 }
 
+/*called from guimap for basewarning */
+/*void Paint_baseInfoOnHudRadar(int xi, int yi)*/
+/*{
+   float x,y,x2,y2,x3,y3;
+    float hrscale = hrScale;
+    float hrw = (float)hrscale * (float)256;
+    float hrh = (float)hrscale * (float)RadarHeight;
+    int sz = hrSize;
+    float xf = (float) hrw / (float) Setup->width;
+   float yf = (float) hrh / (float) Setup->height;
+
+   x = X(xi) + SHIP_SZ/2;
+   y = Y(yi) - SHIP_SZ*4/3;
+   x2 = (ext_view_width / 2) - (sz/2);
+   y2 = (ext_view_height / 2) -(sz/2);
+   x3 = (x-x2)*xf + x2;
+   y3 = (y-y2)*yf + y2;
+
+   if (hrColor1 >= 1)
+       Arc_add(hrColor1, (int)x, (int)y, sz, sz, 0,
+               64 * 360);
+   if (hrColor1 >= 1)
+       Arc_add(hrColor1, (int)x2,(int)y2, sz, sz, 0,
+               64 * 360);
+   if (hrColor2 >= 1)
+       Arc_add(hrColor2, (int)x3, (int)y3, sz, sz, 0,
+               64 * 360);
+                       }*/
+/*doesn't work (yet) since client only knows visible bases */
+
+static void Paint_HUD_items(int hud_pos_x, int hud_pos_y)
+{
+    const int BORDER = 3;
+    char str[50];
+    int vert_pos, horiz_pos;
+    int i, maxWidth = -1,
+           rect_x, rect_y, rect_width = 0, rect_height = 0;
+    static int vertSpacing = -1;
+
+    SET_FG(colors[hudItemsColor].pixel);
+
+    /* Special itemtypes */
+    if (vertSpacing < 0)
+        vertSpacing = MAX(ITEM_SIZE, gameFont->ascent + gameFont->descent) + 1;
+    /* find the scaled location, then work in pixels */
+    vert_pos = WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + BORDER);
+    horiz_pos = WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER);
+    rect_width = 0;
+    rect_height = 0;
+    rect_x = horiz_pos;
+    rect_y = vert_pos;
+
+    for (i = 0; i < NUM_ITEMS; i++)
+    {
+        int num = numItems[i];
+
+        if (i == ITEM_FUEL)
+            continue;
+
+        if (instruments.showItems)
+        {
+            lastNumItems[i] = num;
+            if (num <= 0)
+                num = -1;
+        }
+        else
+        {
+            if (num != lastNumItems[i])
+            {
+                numItemsTime[i] = (int)(showItemsTime * (double)FPS);
+                lastNumItems[i] = num;
+            }
+            if (numItemsTime[i]-- <= 0)
+            {
+                numItemsTime[i] = 0;
+                num = -1;
+            }
+        }
+
+        if (num >= 0)
+        {
+            int len, width;
+
+            /* Paint item symbol */
+            Gui_paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
+                                  horiz_pos - ITEM_SIZE,
+                                  vert_pos,
+                                  ITEM_HUD);
+
+            if (i == lose_item)
+            {
+                if (lose_item_active != 0)
+                {
+                    if (lose_item_active < 0)
+                        lose_item_active++;
+                    rd.drawRectangle(dpy, drawPixmap, gameGC,
+                                     horiz_pos - ITEM_SIZE - 2,
+                                     vert_pos - 2, ITEM_SIZE + 2, ITEM_SIZE + 2);
+                }
+            }
+
+            /* Paint item count */
+            sprintf(str, "%d", num);
+            len = strlen(str);
+            width = XTextWidth(gameFont, str, len);
+            rd.drawString(dpy, drawPixmap, gameGC,
+                          horiz_pos - ITEM_SIZE - BORDER - width,
+                          vert_pos + ITEM_SIZE / 2 + gameFont->ascent / 2,
+                          str, len);
+
+            maxWidth = MAX(maxWidth, width + BORDER + ITEM_SIZE);
+            vert_pos += vertSpacing;
+
+            if (vert_pos + vertSpacing > WINSCALE(hud_pos_y + hudSize - HUD_OFFSET - BORDER))
+            {
+                rect_width += maxWidth + 2 * BORDER;
+                rect_height = MAX(rect_height, vert_pos - rect_y);
+                horiz_pos -= maxWidth + 2 * BORDER;
+                vert_pos = WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + BORDER);
+                maxWidth = -1;
+            }
+        }
+    }
+    if (maxWidth != -1)
+        rect_width += maxWidth + BORDER;
+
+    if (rect_width > 0)
+    {
+        if (rect_height == 0)
+            rect_height = vert_pos - rect_y;
+        rect_x -= rect_width;
+    }
+}
+
+static bool have_hudmsg = false;
+static char hudmsg[MSG_LEN];
+
+void Del_HUD_message(void);
+void Add_HUD_message(const char *message);
+
+void Del_HUD_message(void)
+{
+    have_hudmsg = false;
+}
+
+void Add_HUD_message(const char *message)
+{
+    if (!message)
+        return;
+
+    strlcpy(hudmsg, message, sizeof(hudmsg));
+    have_hudmsg = true;
+}
+
 void Paint_HUD(void)
 {
     const int BORDER = 3;
@@ -643,10 +797,10 @@ void Paint_HUD(void)
             int len, width;
 
             /* Paint item symbol */
-            Paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
-                              horiz_pos - ITEM_SIZE,
-                              vert_pos,
-                              ITEM_HUD);
+            Gui_paint_item_symbol((uint8_t)i, drawPixmap, gameGC,
+                                  horiz_pos - ITEM_SIZE,
+                                  vert_pos,
+                                  ITEM_HUD);
 
             if (i == lose_item)
             {
@@ -791,56 +945,90 @@ void Paint_HUD(void)
 
 void Paint_messages(void)
 {
-    int i, x, y, top_y, bot_y, width, len;
+    int i, x, y, top_y, bot_y, width;
+    size_t len;
     const int BORDER = 10,
               SPACING = messageFont->ascent + messageFont->descent + 1;
     message_t *msg;
-    int msg_color;
-    int last_msg_index = 0;
-
-    if (charsPerTick <= 0.0)
-        charsPerTick = (float)charsPerSecond / FPS;
+    int last_msg_index = 0, msg_color;
 
     top_y = BORDER + messageFont->ascent;
     bot_y = WINSCALE(ext_view_height) - messageFont->descent - BORDER;
 
     /* get number of player messages */
-    if (selectionAndHistory)
-    {
-        while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
-        {
-            last_msg_index++;
-        }
-        last_msg_index--; /* make it an index */
-    }
+    while (last_msg_index < maxMessages && TalkMsg[last_msg_index]->len != 0)
+        last_msg_index++;
+    last_msg_index--; /* make it an index */
 
     for (i = 0; i < 2 * maxMessages; i++)
     {
         if (i < maxMessages)
-        {
             msg = TalkMsg[i];
-        }
         else
-        {
             msg = GameMsg[i - maxMessages];
-        }
         if (msg->len == 0)
             continue;
 
         /*
-         * while there is something emphasized, freeze the life time counter
-         * of a message if it is not drawn `flashed' (red) anymore
+         * While there is something emphasized, freeze the life time counter
+         * of a message if it is not drawn "flashed" (not in oldMessagesColor)
+         * anymore.
          */
-        if (msg->life > MSG_FLASH || !selectionAndHistory || (selection.draw.state != SEL_PENDING && selection.draw.state != SEL_EMPHASIZED))
+        if (msg->lifeTime > MSG_FLASH_TIME || (selection.draw.state != SEL_PENDING && selection.draw.state != SEL_EMPHASIZED))
         {
-            if (msg->life-- <= 0)
+            if ((msg->lifeTime -= timePerFrame) <= 0.0)
             {
                 msg->txt[0] = '\0';
                 msg->len = 0;
-                msg->life = 0;
+                msg->lifeTime = 0.0;
                 continue;
             }
         }
+
+        if (msg->lifeTime <= MSG_FLASH_TIME)
+            msg_color = oldMessagesColor;
+        else
+        {
+            /* If paused, don't bother to paint messages in mscScan* colors. */
+            if (self && strchr("P", self->mychar))
+                msg_color = messagesColor;
+            else
+            {
+                switch (msg->bmsinfo)
+                {
+                case BmsBall:
+                    msg_color = msgScanBallColor;
+                    break;
+                case BmsSafe:
+                    msg_color = msgScanSafeColor;
+                    break;
+                case BmsCover:
+                    msg_color = msgScanCoverColor;
+                    break;
+                case BmsPop:
+                    msg_color = msgScanPopColor;
+                    break;
+                default:
+                    msg_color = messagesColor;
+                    break;
+                }
+            }
+        }
+
+        /* kps ugly hack */
+        if (newbie && msg->txt)
+        {
+            const char *help = "[*Newbie help*]";
+            size_t sz = strlen(msg->txt);
+            size_t hsz = strlen(help);
+
+            if (sz > hsz && !strcmp(help, &msg->txt[sz - hsz]))
+                msg_color = WHITE;
+        }
+
+        if (msg_color == 0)
+            continue;
+
         if (i < maxMessages)
         {
             x = BORDER;
@@ -850,28 +1038,18 @@ void Paint_messages(void)
         else
         {
             if (!instruments.showMessages)
-            {
                 continue;
-            }
             x = BORDER;
             y = bot_y;
             bot_y -= SPACING;
         }
-        len = (int)(charsPerTick * (MSG_DURATION - msg->life));
+        len = (int)(charsPerSecond * (MSG_LIFE_TIME - msg->lifeTime));
         len = MIN(msg->len, len);
-        if (msg->life > MSG_FLASH)
-        {
-            msg_color = RED;
-        }
-        else
-        {
-            msg_color = oldMessagesColor;
-        }
 
         /*
          * it's an emphasized talk message
          */
-        if (selectionAndHistory && selection.draw.state == SEL_EMPHASIZED && i < maxMessages && TALK_MSG_SCREENPOS(last_msg_index, i) >= selection.draw.y1 && TALK_MSG_SCREENPOS(last_msg_index, i) <= selection.draw.y2)
+        if (selection.draw.state == SEL_EMPHASIZED && i < maxMessages && i >= selection.draw.y1 && i <= selection.draw.y2)
         {
 
             /*
@@ -881,7 +1059,7 @@ void Paint_messages(void)
              *   2nd an emphasized part itself,
              *   3rd an unemph. part to the right of a selection.
              * set the according variables if a part exists.
-             * e.g: a selection of several lines `stopping' somewhere in
+             * e.g: a selection of several lines 'stopping' somewhere in
              *   the middle of a line -> ptr2,ptr3 are needed to draw
              *   this line
              */
@@ -892,7 +1070,7 @@ void Paint_messages(void)
             char *ptr3 = NULL;
             int xoff3 = 0, l3 = 0;
 
-            if (TALK_MSG_SCREENPOS(last_msg_index, i) > selection.draw.y1 && TALK_MSG_SCREENPOS(last_msg_index, i) < selection.draw.y2)
+            if (i > selection.draw.y1 && i < selection.draw.y2)
             {
                 /* all emphasized on this line */
                 /*xxxxxxxxx*/
@@ -900,16 +1078,14 @@ void Paint_messages(void)
                 l2 = len;
                 xoff2 = 0;
             }
-            else if (TALK_MSG_SCREENPOS(last_msg_index, i) == selection.draw.y1)
+            else if (i == selection.draw.y1)
             {
                 /* first/only line */
                 /*___xxx[___]*/
                 ptr = msg->txt;
                 xoff = 0;
-                if (len < selection.draw.x1)
-                {
+                if ((int)len < selection.draw.x1)
                     l = len;
-                }
                 else
                 {
                     /* at least two parts */
@@ -917,9 +1093,10 @@ void Paint_messages(void)
                     /*    ^      */
                     l = selection.draw.x1;
                     ptr2 = &(msg->txt[selection.draw.x1]);
-                    xoff2 = XTextWidth(messageFont, msg->txt, selection.draw.x1);
+                    xoff2 = XTextWidth(messageFont, msg->txt,
+                                       selection.draw.x1);
 
-                    if (TALK_MSG_SCREENPOS(last_msg_index, i) < selection.draw.y2)
+                    if (i < selection.draw.y2)
                     {
                         /* first line */
                         /*___xxxxxx*/
@@ -930,19 +1107,18 @@ void Paint_messages(void)
                     {
                         /* only line */
                         /*___xxx___*/
-                        if (len <= selection.draw.x2)
-                        {
+                        if ((int)len <= selection.draw.x2)
                             /*___xxx___*/
                             /*    ^    */
                             l2 = len - selection.draw.x1;
-                        }
                         else
                         {
                             /*___xxx___*/
                             /*       ^ */
                             l2 = selection.draw.x2 - selection.draw.x1 + 1;
                             ptr3 = &(msg->txt[selection.draw.x2 + 1]);
-                            xoff3 = XTextWidth(messageFont, msg->txt, selection.draw.x2 + 1);
+                            xoff3 = XTextWidth(messageFont, msg->txt,
+                                               selection.draw.x2 + 1);
                             l3 = len - selection.draw.x2 - 1;
                         }
                     } /* only line */
@@ -954,20 +1130,19 @@ void Paint_messages(void)
                 /*xxxxxx[___]*/
                 ptr2 = msg->txt;
                 xoff2 = 0;
-                if (len <= selection.draw.x2 + 1)
-                {
+                if ((int)len <= selection.draw.x2 + 1)
                     /* all blue */
                     /*xxxxxx[___]*/
                     /*  ^        */
                     l2 = len;
-                }
                 else
                 {
                     /*xxxxxx___*/
                     /*       ^ */
                     l2 = selection.draw.x2 + 1;
                     ptr3 = &(msg->txt[selection.draw.x2 + 1]);
-                    xoff3 = XTextWidth(messageFont, msg->txt, selection.draw.x2 + 1);
+                    xoff3 = XTextWidth(messageFont, msg->txt,
+                                       selection.draw.x2 + 1);
                     l3 = len - selection.draw.x2 - 1;
                 }
             } /* last line */
@@ -975,34 +1150,30 @@ void Paint_messages(void)
             if (ptr)
             {
                 XSetForeground(dpy, messageGC, colors[msg_color].pixel);
-                rd.drawString(dpy, drawPixmap, messageGC, x + xoff, y, ptr, l);
+                rd.drawString(dpy, drawPixmap, messageGC, x + xoff, y,
+                              ptr, l);
             }
             if (ptr2)
             {
                 XSetForeground(dpy, messageGC, colors[DRAW_EMPHASIZED].pixel);
-                rd.drawString(dpy, drawPixmap, messageGC, x + xoff2, y, ptr2, l2);
+                rd.drawString(dpy, drawPixmap, messageGC, x + xoff2, y,
+                              ptr2, l2);
             }
             if (ptr3)
             {
                 XSetForeground(dpy, messageGC, colors[msg_color].pixel);
-                rd.drawString(dpy, drawPixmap, messageGC, x + xoff3, y, ptr3, l3);
+                rd.drawString(dpy, drawPixmap, messageGC, x + xoff3, y,
+                              ptr3, l3);
             }
         }
         else /* not emphasized */
         {
             XSetForeground(dpy, messageGC, colors[msg_color].pixel);
-            rd.drawString(dpy, drawPixmap, messageGC, x, y, msg->txt, len);
+            rd.drawString(dpy, drawPixmap, messageGC, x, y,
+                          msg->txt, (int)len);
         }
 
-        if (len < msg->len)
-        {
-            width = XTextWidth(messageFont, msg->txt, len);
-        }
-        else
-        {
-            // TODO: Always calculate it here, remove msg->pixelLen
-            width = msg->pixelLen;
-        }
+        width = XTextWidth(messageFont, msg->txt, (int)MIN(len, msg->len));
     }
 }
 

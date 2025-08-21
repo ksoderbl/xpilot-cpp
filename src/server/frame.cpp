@@ -34,7 +34,7 @@
 #include <sys/param.h>
 
 #include "commonmacros.h"
-#include "draw.h"
+#include "const.h"
 #include "strlcpy.h"
 
 #define SERVER

@@ -22,7 +22,6 @@
  */
 
 #include "const.h"
-#include "draw.h"
 
 #include "netclient.h"
 #include "paint.h"

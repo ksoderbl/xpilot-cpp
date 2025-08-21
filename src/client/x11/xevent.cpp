@@ -238,10 +238,7 @@ void Pointer_control_set_state(bool on)
         pointerControl = false;
         XUngrabPointer(dpy, CurrentTime);
         XDefineCursor(dpy, drawWindow, None);
-        if (!selectionAndHistory)
-            XSelectInput(dpy, drawWindow, 0);
-        else
-            XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
+        XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
     }
     XFlush(dpy);
 }
@@ -257,10 +254,7 @@ static void Talk_set_state(bool onoff)
             initialPointerControl = true;
             Pointer_control_set_state(false);
         }
-        if (selectionAndHistory)
-        {
-            XSelectInput(dpy, drawWindow, PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
-        }
+        XSelectInput(dpy, drawWindow, PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
         Talk_map_window(true);
     }
     else
@@ -300,7 +294,7 @@ bool Key_check_talk_macro(keys_t key)
     if (key >= KEY_MSG_1 && key < KEY_MSG_1 + TALK_FAST_NR_OF_MSGS)
     {
         /* talk macros */
-        Talk_macro(talk_fast_msgs[key - KEY_MSG_1]);
+        Talk_macro((int)(key - KEY_MSG_1));
     }
     return true;
 }
@@ -465,8 +459,7 @@ bool Key_press_toggle_record(keys_t key)
 
 bool Key_press_msgs_stdout(keys_t key)
 {
-    if (selectionAndHistory)
-        Print_messages_to_stdout();
+    Print_messages_to_stdout();
     return false; /* server doesn't need to know */
 }
 
@@ -887,8 +880,7 @@ int x_event(int new_input)
             break;
 
         case SelectionClear:
-            if (selectionAndHistory)
-                Clear_selection();
+            Clear_selection();
             break;
 
         case MapNotify:

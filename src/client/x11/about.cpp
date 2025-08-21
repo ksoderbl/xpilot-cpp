@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 
-#include "draw.h"
+#include "const.h"
 #include "item.h"
 
 #include "client.h"
@@ -39,7 +39,6 @@
 #include "keydefs.h"
 
 #include "xpconfig.h"
-#include "const.h"
 #include "keys.h"
 #include "xinit.h"
 #include "widget.h"
@@ -207,8 +206,8 @@ void Expose_about_window(void)
                            BORDER, box_start,
                            2 * ITEM_SIZE + 2 * BORDER, box_end - box_start);
             XSetForeground(dpy, textGC, colors[RED].pixel);
-            Paint_item((uint8_t)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
-                       old_y + ITEM_TRIANGLE_SIZE);
+            Gui_paint_item(i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
+                           old_y + ITEM_TRIANGLE_SIZE);
             XSetForeground(dpy, textGC, colors[WHITE].pixel);
 
             /*

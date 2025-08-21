@@ -169,6 +169,33 @@ extern double tbl_cos[];
 #define rand() please dont use rand.
 
 /*
+ * The server supports only 4 colors, except for spark/debris, which
+ * may have 8 different colors.
+ */
+#define NUM_COLORS 4
+
+#define BLACK 0
+#define WHITE 1
+#define BLUE 2
+#define RED 3
+
+/*
+ * The minimum and maximum playing window sizes supported by the server.
+ */
+#define MIN_VIEW_SIZE 384
+#define MAX_VIEW_SIZE 1024
+#define DEF_VIEW_SIZE 768
+
+/*
+ * Spark rand limits.
+ */
+#define MIN_SPARK_RAND 0    /* Not display spark */
+#define MAX_SPARK_RAND 0x80 /* Always display spark */
+#define DEF_SPARK_RAND 0x55 /* 66% */
+
+#define DSIZE 4 /* Size of diamond (on radar) */
+
+/*
  * Polygon style flags
  */
 #define STYLE_FILLED (1U << 0)

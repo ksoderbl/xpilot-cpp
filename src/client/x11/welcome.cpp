@@ -32,12 +32,11 @@
 #include <sys/time.h>
 #include <X11/Xlib.h>
 
-#include "draw.h"
+#include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
 
 #include "xpconfig.h"
-#include "const.h"
 #include "xpaint.h"
 #include "xinit.h"
 #include "list.h"

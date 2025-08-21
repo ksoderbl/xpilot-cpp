@@ -33,12 +33,11 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
-#include "draw.h"
+#include "const.h"
 
 #include "paint.h"
 
 #include "xpconfig.h"
-#include "const.h"
 #include "types.h"
 #include "xpaint.h"
 #include "xinit.h"

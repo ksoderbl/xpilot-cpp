@@ -26,6 +26,8 @@ libxpclient_a_SOURCES = \
     option.h \
     paint.cpp \
     paint.h \
+    paintmap.cpp \
+    paintobjects.cpp \
     paintradar.h \
     protoclient.h \
     query.cpp \

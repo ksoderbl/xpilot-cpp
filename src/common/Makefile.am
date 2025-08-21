@@ -11,7 +11,6 @@ libxpcommon_a_SOURCES = \
     click.h \
     commonmacros.h \
     const.h \
-    draw.h \
     item.h \
     keys.h \
     list.cpp \
