@@ -634,33 +634,33 @@ static void Button_MetaRowWidget(Uint8 button, Uint8 state, Uint16 x,
     {
         SelectRow_MetaWidget(row->table->meta, row);
 #if 0
-        printf("version: %s\n", row->sip->version);
-        printf("hostname: %s\n", row->sip->hostname);
-        printf("users_str: %s\n", row->sip->users_str);
-        printf("mapname: %s\n", row->sip->mapname);
-        printf("mapsize: %s\n", row->sip->mapsize);
-        printf("author: %s\n", row->sip->author);
-        printf("status: %s\n", row->sip->status);
-        printf("bases_str: %s\n", row->sip->bases_str);
-        printf("fps_str: %s\n", row->sip->fps_str);
-        printf("playlist: %s\n", row->sip->playlist);
-        printf("sound: %s\n", row->sip->sound);
-        printf("teambases_str: %s\n", row->sip->teambases_str);
-        printf("timing: %s\n", row->sip->timing);
-        printf("ip_str: %s\n", row->sip->ip_str);
-        printf("freebases: %s\n", row->sip->freebases);
-        printf("queue_str: %s\n", row->sip->queue_str);
-        printf("domain: %s\n", row->sip->domain);
-        printf("pingtime_str: %s\n", row->sip->pingtime_str);
-        printf("port: %u\n", row->sip->port);
-        printf("ip: %u\n", row->sip->ip);
-        printf("users: %u\n", row->sip->users);
-        printf("bases: %u\n", row->sip->bases);
-        printf("fps: %u\n", row->sip->fps);
-        printf("uptime: %u\n", row->sip->uptime);
-        printf("queue: %u\n", row->sip->queue);
-        printf("pingtime: %u\n", row->sip->pingtime);
-        printf("serial: %c\n", row->sip->serial);
+    printf("version: %s\n", row->sip->version);
+    printf("hostname: %s\n", row->sip->hostname);
+    printf("users_str: %s\n", row->sip->users_str);
+    printf("mapname: %s\n", row->sip->mapname);
+    printf("mapsize: %s\n", row->sip->mapsize);
+    printf("author: %s\n", row->sip->author);
+    printf("status: %s\n", row->sip->status);
+    printf("bases_str: %s\n", row->sip->bases_str);
+    printf("fps_str: %s\n", row->sip->fps_str);
+    printf("playlist: %s\n", row->sip->playlist);
+    printf("sound: %s\n", row->sip->sound);
+    printf("teambases_str: %s\n", row->sip->teambases_str);
+    printf("timing: %s\n", row->sip->timing);
+    printf("ip_str: %s\n", row->sip->ip_str);
+    printf("freebases: %s\n", row->sip->freebases);
+    printf("queue_str: %s\n", row->sip->queue_str);
+    printf("domain: %s\n", row->sip->domain);
+    printf("pingtime_str: %s\n", row->sip->pingtime_str);
+    printf("port: %u\n", row->sip->port);
+    printf("ip: %u\n", row->sip->ip);
+    printf("users: %u\n", row->sip->users);
+    printf("bases: %u\n", row->sip->bases);
+    printf("fps: %u\n", row->sip->fps);
+    printf("uptime: %u\n", row->sip->uptime);
+    printf("queue: %u\n", row->sip->queue);
+    printf("pingtime: %u\n", row->sip->pingtime);
+    printf("serial: %c\n", row->sip->serial);
 #endif
     }
 }

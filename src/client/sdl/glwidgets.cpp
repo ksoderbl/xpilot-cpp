@@ -27,7 +27,7 @@
 #include "scrap.h"
 
 /****************************************************/
-/* BEGIN: Main GLWidget stuff                                    */
+/* BEGIN: Main GLWidget stuff                        */
 /****************************************************/
 
 static void option_callback(void *opt, const char *value);
@@ -512,7 +512,7 @@ void load_textscrap(char *text)
     put_scrap(TextScrap('T', 'E', 'X', 'T'), strlen(scrap), scrap);
 }
 /****************************************************/
-/* END: Main GLWidget stuff                                     */
+/* END: Main GLWidget stuff                         */
 /****************************************************/
 
 /**********************/

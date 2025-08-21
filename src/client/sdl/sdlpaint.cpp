@@ -39,6 +39,7 @@
 #include "sdlwindow.h"
 #include "text.h"
 #include "glwidgets.h"
+#include "radar.h"
 
 #define SCORE_BORDER 5
 
@@ -198,8 +199,6 @@ bool Set_altScaleFactor(xp_option_t *opt, double val)
 
 int Paint_init(void)
 {
-    int i;
-
     if (Init_wreckage() == -1)
         return -1;
 
@@ -334,6 +333,11 @@ void Paint_frame(void)
         Console_paint();
         Paint_select();
 
+        if (UpdateRadar)
+        {
+            Radar_update();
+            UpdateRadar = false;
+        }
         DrawGLWidgets(MainWidget);
 
         glPopMatrix();

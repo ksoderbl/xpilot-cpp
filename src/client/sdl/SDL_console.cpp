@@ -1,23 +1,23 @@
 /*
-        SDL_console: An easy to use drop-down console based on the SDL library
-        Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004 Clemens Wacha
+    SDL_console: An easy to use drop-down console based on the SDL library
+    Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004 Clemens Wacha
 
-        This library is free software; you can redistribute it and/or
-        modify it under the terms of the GNU Library General Public
-        License as published by the Free Software Foundation; either
-        version 2 of the License, or (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
-        This library is distributed in the hope that it will be useful,
-        but WHITOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-        Library General Public License for more details.
+    This library is distributed in the hope that it will be useful,
+    but WHITOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
 
-        You should have received a copy of the GNU Library Generla Public
-        License along with this library; if not, write to the Free
-        <https://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Library Generla Public
+    License along with this library; if not, write to the Free
+    <https://www.gnu.org/licenses/>.
 
-        Clemens Wacha
-        reflex-2000@gmx.net
+    Clemens Wacha
+    reflex-2000@gmx.net
 */
 
 /*  SDL_console.c
@@ -71,10 +71,10 @@ SDL_Event *CON_Events(SDL_Event *event)
             case SDLK_e:
                 Cursor_End(Topmost);
                 break;
-                /*
-                 * kps - Ctrl-k should really just clear from current
-                 * cursor position to end of line.
-                 */
+            /*
+             * kps - Ctrl-k should really just clear from current
+             * cursor position to end of line.
+             */
             case SDLK_k:
             case SDLK_u:
                 Clear_Command(Topmost);
@@ -87,20 +87,13 @@ SDL_Event *CON_Events(SDL_Event *event)
                 return event;
             }
 #if 0
-        } else if (event->key.keysym.mod & KMOD_ALT) {
-            /* the console does not handle ALT combinations! */
-            return event;
+    } else if (event->key.keysym.mod & KMOD_ALT) {
+        /* the console does not handle ALT combinations! */
+        return event;
 #endif
         }
         else
         {
-            /* first of all, check if the console hide key was pressed */
-            if ((int)event->key.keysym.sym == Topmost->HideKey)
-            {
-                /*was: CON_Hide(Topmost);*/
-                Talk_set_state(false);
-                return NULL;
-            }
             switch (event->key.keysym.sym)
             {
             case SDLK_HOME:
@@ -187,6 +180,16 @@ SDL_Event *CON_Events(SDL_Event *event)
                     Talk_set_state(false);
                 break;
             case SDLK_ESCAPE:
+                if (strlen(Topmost->Command) > 0)
+                {
+                    CON_NewLineCommand(Topmost);
+
+                    /* copy the input into the past commands strings */
+                    strcpy(Topmost->CommandLines[0], Topmost->Command);
+
+                    Clear_Command(Topmost);
+                    Topmost->CommandScrollBack = -1;
+                }
                 /* deactivate Console */
 
                 /*was: CON_Hide(Topmost);*/
@@ -1147,6 +1150,8 @@ void Command_Up(ConsoleInformation *console)
 {
     if (console->CommandScrollBack < console->TotalCommands - 1)
     {
+        if (console->CommandScrollBack == -1)
+            strcpy(console->BackupCommand, console->LCommand);
         /* move back a line in the command strings and copy the command to the current input string */
         console->CommandScrollBack++;
         /* I want to know if my string handling REALLY works :-) */
@@ -1176,8 +1181,9 @@ void Command_Down(ConsoleInformation *console)
 
         console->Offset = 0;
         if (console->CommandScrollBack > -1)
-            strcpy(console->LCommand,
-                   console->CommandLines[console->CommandScrollBack]);
+            strcpy(console->LCommand, console->CommandLines[console->CommandScrollBack]);
+        else
+            strcpy(console->LCommand, console->BackupCommand);
         console->CursorPos = strlen(console->LCommand);
         Assemble_Command(console);
     }

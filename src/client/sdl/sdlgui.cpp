@@ -159,14 +159,14 @@ int GL_Y(int y)
 }
 
 /* remove this later maybe? to tedious for me to edit them all away now */
-void Segment_add(Uint32 color, int x1, int y1, int x_2, int y_2)
+void Segment_add(Uint32 color, int x1, int y1, int x2, int y2)
 {
     if (smoothLines)
         glEnable(GL_LINE_SMOOTH);
     set_alphacolor(color);
     glBegin(GL_LINE_LOOP);
     glVertex2i(x1, y1);
-    glVertex2i(x_2, y_2);
+    glVertex2i(x2, y2);
     glEnd();
     if (smoothLines)
         glDisable(GL_LINE_SMOOTH);
@@ -996,7 +996,7 @@ void Gui_paint_ball(int x, int y, int style)
     }
 }
 
-void Gui_paint_ball_connector(int x1, int y1, int x_2, int y_2)
+void Gui_paint_ball_connector(int x1, int y1, int x2, int y2)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -1005,7 +1005,7 @@ void Gui_paint_ball_connector(int x1, int y1, int x_2, int y_2)
         glEnable(GL_LINE_SMOOTH);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
-    glVertex2i(x_2, y_2);
+    glVertex2i(x2, y2);
     glEnd();
     if (smoothLines)
         glDisable(GL_LINE_SMOOTH);
@@ -1029,9 +1029,9 @@ void Gui_paint_spark(int color, int x, int y)
 {
     /*
     Image_paint(IMG_SPARKS,
-                x + world.x,
-                world.y + ext_view_height - y,
-                color);
+        x + world.x,
+        world.y + ext_view_height - y,
+        color);
     */
     glColor3ub(255 * (color + 1) / 8,
                255 * color * color / 64,
@@ -1086,12 +1086,12 @@ void Gui_paint_asteroids_end(void)
 #if 0
     int i, x, y, size;
     for (i = 0; i < num_asteroids; i++) {
-        x = asteroid_ptr[i].x;
-        y = asteroid_ptr[i].y;
-        if (wrap(&x, &y)) {
-            size = asteroid_ptr[i].size;
-            Circle(whiteRGBA, x, y, (int)(0.8 * SHIP_SZ * size), 0);
-        }
+    x = asteroid_ptr[i].x;
+    y = asteroid_ptr[i].y;
+    if (wrap(&x, &y)) {
+        size = asteroid_ptr[i].size;
+        Circle(whiteRGBA, x, y, (int)(0.8 * SHIP_SZ * size), 0);
+    }
     }
 #endif
 }
@@ -1167,9 +1167,9 @@ void Gui_paint_lasers_end(void)
 
 void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
 {
-    int x_2, y_2, rgba;
-    x_2 = (int)(x1 + len * tcos(dir));
-    y_2 = (int)(y1 + len * tsin(dir));
+    int x2, y2, rgba;
+    x2 = (int)(x1 + len * tcos(dir));
+    y2 = (int)(y1 + len * tsin(dir));
 
     rgba =
         (color == RED) ? redRGBA : (color == BLUE) ? blueRGBA
@@ -1179,14 +1179,14 @@ void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
     glLineWidth(5);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
-    glVertex2i(x_2, y_2);
+    glVertex2i(x2, y2);
     glEnd();
 
     set_alphacolor(rgba);
     glLineWidth(1);
     glBegin(GL_LINES);
     glVertex2i(x1, y1);
-    glVertex2i(x_2, y_2);
+    glVertex2i(x2, y2);
     glEnd();
 }
 
@@ -1456,12 +1456,18 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     position_t point;
     other_t *other;
 
-    ship = Ship_by_id(id);
     if (!(other = Other_by_id(id)))
         return;
 
     if (!(color = Gui_calculate_ship_color(id, other)))
         return;
+
+    if ((!instruments.showShipShapes) && (self != NULL) && (self->id != id))
+        ship = Default_ship();
+    else if ((!instruments.showMyShipShape) && (self != NULL) && (self->id == id))
+        ship = Default_ship();
+    else
+        ship = Ship_by_id(id);
 
     if (shield)
     {
@@ -1853,7 +1859,7 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
             x = x + draw_width / 2;
             y = -y + draw_height / 2;
 
-            if (radar_ptr[i].type == normal)
+            if (radar_ptr[i].type == RadarEnemy)
             {
                 c = hudRadarEnemyColorRGBA;
                 shape = hudRadarEnemyShape;
@@ -2042,11 +2048,11 @@ void Paint_HUD(void)
     }
 
     glDisable(GL_BLEND);
-    /* message scan hack by mara*/
-    if (ball_shout && msgScanBallColorRGBA)
+    /* message scan hack by mara and jpv */
+    if (Bms_test_state(BmsBall) && msgScanBallColorRGBA)
         Circle(msgScanBallColorRGBA, draw_width / 2,
                draw_height / 2, (int)(8 * clData.scale), 0);
-    if (need_cover && msgScanCoverColorRGBA)
+    if (Bms_test_state(BmsCover) && msgScanCoverColorRGBA)
         Circle(msgScanCoverColorRGBA, draw_width / 2,
                draw_height / 2, (int)(6 * clData.scale), 0);
 

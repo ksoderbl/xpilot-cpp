@@ -32,16 +32,16 @@ BOOL drawPending;
 int RadarDivisor;
 struct
 {
-        HANDLE eventNotDrawing;
+    HANDLE eventNotDrawing;
 } dinfo;
 
 /* SDL client does not use MFC crap */
 void _Trace(char *fmt, ...)
 {
-        va_list ap;
-        va_start(ap, fmt);
-        vprintf(fmt, ap);
-        va_end(ap);
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
 }
 
 void Progress(char *fmt, ...) {}

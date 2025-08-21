@@ -167,8 +167,8 @@ int FTinit(font_data *font, const char *fontname, int ptsize)
 
     /* Initialize the TTF library */
     /*if ( TTF_Init() < 0 ) {
-            fprintf(stderr, "Couldn't initialize TTF: %s\n",SDL_GetError());
-            return(2);
+        fprintf(stderr, "Couldn't initialize TTF: %s\n",SDL_GetError());
+        return(2);
     }*/
     font->ttffont = TTF_OpenFont(fontname, ptsize);
     if (font->ttffont == NULL)

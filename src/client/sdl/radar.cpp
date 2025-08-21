@@ -262,7 +262,7 @@ static void Radar_paint_objects(GLWidget *radar)
         to_screen(radar, &x, &y, RadarWidth, RadarHeight);
         x -= s / 2;
         y -= s / 2;
-        if (radar_ptr[i].type == friendly)
+        if (radar_ptr[i].type == RadarFriend)
             glColor3ub(0, 0xff, 0);
         else
             glColor3ub(0xff, 0xff, 0xff);
@@ -376,19 +376,8 @@ static void button(Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data)
     }
 }
 
-static int Radar_init(GLWidget *widget)
+static void Radar_init_texture(GLWidget *widget)
 {
-    radar_surface =
-        SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA,
-                             pow2_ceil(widget->bounds.w - 1),
-                             pow2_ceil(widget->bounds.h - 1), 32,
-                             RMASK, GMASK, BMASK, AMASK);
-    if (!radar_surface)
-    {
-        error("Could not create radar surface: %s", SDL_GetError());
-        return -1;
-    }
-
     if (oldServer)
         Radar_paint_world_blocks(widget, radar_surface);
     else
@@ -404,7 +393,28 @@ static int Radar_init(GLWidget *widget)
                     GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_NEAREST);
+}
+
+static int Radar_init(GLWidget *widget)
+{
+    radar_surface =
+        SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA,
+                             pow2_ceil(widget->bounds.w - 1),
+                             pow2_ceil(widget->bounds.h - 1), 32,
+                             RMASK, GMASK, BMASK, AMASK);
+    if (!radar_surface)
+    {
+        error("Could not create radar surface: %s", SDL_GetError());
+        return -1;
+    }
+    Radar_init_texture(widget);
     return 0;
+}
+
+void Radar_update(void)
+{
+    glDeleteTextures(1, &radar_texture);
+    Radar_init_texture(radar_widget);
 }
 
 /*

@@ -27,7 +27,7 @@
 #include "text.h"
 
 /****************************************************/
-/* BEGIN: Main GLWidget stuff                                    */
+/* BEGIN: Main GLWidget stuff                        */
 /****************************************************/
 /* Basically the init function will set default width, height in bounds
  * Then the caller should reshape and position the widget defaults to 0,0
@@ -63,13 +63,13 @@ struct glwidget_struct
 
 GLWidget *Init_EmptyBaseGLWidget(void);
 /*GLWidget *Init_BaseGLWidget( int WIDGET, void *wid_info, SDL_Rect bounds,
-                                        void (*Draw)( GLWidget *widget ), void (*Close)( GLWidget *widget ),
-                            void (*SetBounds)( GLWidget *widget, SDL_Rect *b ),
-                            void (*button)( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data ), void *buttondata,
-                            void (*motion)( Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data ), void *motiondata,
-                            void (*hover)( int over, Uint16 x , Uint16 y , void *data ), void *hoverdata,
-                            GLWidget *children, GLWidget *next
-                             );*/
+                            void (*Draw)( GLWidget *widget ), void (*Close)( GLWidget *widget ),
+                void (*SetBounds)( GLWidget *widget, SDL_Rect *b ),
+                void (*button)( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data ), void *buttondata,
+                void (*motion)( Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data ), void *motiondata,
+                void (*hover)( int over, Uint16 x , Uint16 y , void *data ), void *hoverdata,
+                GLWidget *children, GLWidget *next
+                 );*/
 
 extern GLWidget *MainWidget;
 
@@ -99,11 +99,11 @@ extern GLWidget *hovertarget;
 /* puts text into the copy buffer */
 void load_textscrap(char *text);
 /****************************************************/
-/* END: Main GLWidget stuff                                     */
+/* END: Main GLWidget stuff                         */
 /****************************************************/
 
 /****************************************************/
-/* widget-specific stuff is below                           */
+/* widget-specific stuff is below                   */
 /****************************************************/
 
 /***********************/
