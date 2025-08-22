@@ -231,4 +231,7 @@ void Individual_game_over(int winner);
 void Race_game_over(void);
 int Team_immune(int id1, int id2);
 
+bool Players_are_teammates(player_t *pl_i, player_t *pl_j);
+bool Players_are_allies(player_t *pl_i, player_t *pl_j);
+
 #endif

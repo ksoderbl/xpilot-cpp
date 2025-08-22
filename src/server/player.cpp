@@ -2027,3 +2027,22 @@ int Team_immune(int id1, int id2)
 
     return 0;
 }
+
+/*
+ * Used where we wish to know if a player is simply on the same team.
+ */
+
+bool Players_are_teammates(player_t *pl_i, player_t *pl_j)
+{
+    return (BIT(world->rules->mode, TEAM_PLAY) &&
+            (pl_i->team == pl_j->team) &&
+            (pl_i->team != TEAM_NOT_SET));
+}
+
+/*
+ * Used where we wish to know if two players are members of the same alliance.
+ */
+bool Players_are_allies(player_t *pl_i, player_t *pl_j)
+{
+    return ((pl_i->alliance != ALLIANCE_NOT_SET) && (pl_j->alliance == pl_i->alliance));
+}
