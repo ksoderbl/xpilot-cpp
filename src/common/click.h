@@ -24,6 +24,9 @@
 #ifndef CLICK_H
 #define CLICK_H
 
+#include "const.h"
+#include "types.h"
+
 /*
  * The wall collision detection routines depend on repeatability
  * (getting the same result even after some "neutral" calculations)
@@ -33,6 +36,18 @@
  * However, a resolution of a pixel is a bit rough and ugly.
  * Therefore a fixed point sub-pixel resolution is used called clicks.
  */
+
+typedef int click_t;
+
+typedef struct
+{
+    click_t cx, cy;
+} clpos_t;
+
+typedef struct
+{
+    click_t cx, cy;
+} clvec_t;
 
 // TODO: WAS 6, TESTING WITH 8
 #define CLICK_SHIFT 8
@@ -68,16 +83,40 @@
                        : (y_)))                    \
          : (y_))
 
-typedef int click_t;
-
-typedef struct
+/*
+ * Return the block position this click position is in.
+ */
+static inline blkpos_t Clpos_to_blkpos(clpos_t pos)
 {
-    click_t cx, cy;
-} clpos_t;
+    blkpos_t bpos;
 
-typedef struct
+    bpos.bx = CLICK_TO_BLOCK(pos.cx);
+    bpos.by = CLICK_TO_BLOCK(pos.cy);
+
+    return bpos;
+}
+
+static inline blkpos_t Clicks_to_blkpos(int cx, int cy)
 {
-    click_t cx, cy;
-} clvec_t;
+    blkpos_t bpos;
+
+    bpos.bx = CLICK_TO_BLOCK(cx);
+    bpos.by = CLICK_TO_BLOCK(cy);
+
+    return bpos;
+}
+
+#define BLOCK_CENTER(B) ((int)((B) * BLOCK_CLICKS) + BLOCK_CLICKS / 2)
+
+/* calculate the clpos of the center of a block */
+static inline clpos_t Block_get_center_clpos(blkpos_t bpos)
+{
+    clpos_t pos;
+
+    pos.cx = (bpos.bx * BLOCK_CLICKS) + BLOCK_CLICKS / 2;
+    pos.cy = (bpos.by * BLOCK_CLICKS) + BLOCK_CLICKS / 2;
+
+    return pos;
+}
 
 #endif

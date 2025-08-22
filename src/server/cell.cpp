@@ -28,6 +28,8 @@
 #include <climits>
 #include <cassert>
 
+#include "commonmacros.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
@@ -43,33 +45,29 @@
 #undef SQRT2
 #define SQRT2 1.41421356237309504880
 
-typedef struct cell_dist_ cell_dist_t;
-struct cell_dist_
+typedef struct cell_dist cell_dist_t;
+struct cell_dist
 {
-    float dist;
+    double dist;
     short x;
     short y;
 };
 
-typedef struct cell_offset_ cell_offset_t;
-struct cell_offset_
+typedef struct cell_offset cell_offset_t;
+struct cell_offset
 {
     short x;
     short y;
 };
 
-static cell_node **Cells;
+static cell_node_t **Cells;
 static int object_node_offset;
 static cell_dist_t *cell_dist;
-static int cell_dist_size;
+static size_t cell_dist_size;
 
 static void Free_cell_dist(void)
 {
-    if (cell_dist)
-    {
-        free(cell_dist);
-        cell_dist = NULL;
-    }
+    XFREE(cell_dist);
 }
 
 static int Compare_cell_dist(const void *a, const void *b)
@@ -126,7 +124,7 @@ static void Init_cell_dist(void)
     cell_dist_height = cell_max_down + 1 + cell_max_up;
     cell_dist_size = cell_dist_width * cell_dist_height;
 
-    cell_dist = (cell_dist_t *)malloc(cell_dist_size * sizeof(cell_dist_t));
+    cell_dist = XMALLOC(cell_dist_t, cell_dist_size);
     if (cell_dist == NULL)
     {
         error("No cell dist mem");
@@ -140,41 +138,37 @@ static void Init_cell_dist(void)
         {
             dists->x = x;
             dists->y = y;
-            dists->dist = (float)LENGTH(x, y);
+            dists->dist = (double)LENGTH(x, y);
             dists++;
         }
     }
 
-    qsort(cell_dist, cell_dist_size, sizeof(cell_dist_t), Compare_cell_dist);
+    qsort(cell_dist, cell_dist_size, sizeof(cell_dist_t),
+          Compare_cell_dist);
 }
 
 void Free_cells(void)
 {
-    if (Cells)
-    {
-        free(Cells);
-        Cells = NULL;
-    }
-
+    XFREE(Cells);
     Free_cell_dist();
 }
 
 void Alloc_cells(void)
 {
-    unsigned size;
-    cell_node *cell_ptr;
+    size_t size;
+    cell_node_t *cell_ptr;
     int x, y;
 
     Free_cells();
 
-    size = sizeof(cell_node *) * world->x;
-    size += sizeof(cell_node) * world->x * world->y;
-    if (!(Cells = (cell_node **)malloc(size)))
+    size = sizeof(cell_node_t *) * world->x;
+    size += sizeof(cell_node_t) * world->x * world->y;
+    if (!(Cells = (cell_node_t **)malloc(size)))
     {
         error("No Cell mem");
         End_game();
     }
-    cell_ptr = (cell_node *)&Cells[world->x];
+    cell_ptr = (cell_node_t *)&Cells[world->x];
     for (x = 0; x < world->x; x++)
     {
         Cells[x] = cell_ptr;
@@ -197,19 +191,14 @@ void Cell_init_object(object_t *obj)
     obj->cell.prev = &(obj->cell);
 
     if (object_node_offset == 0)
-    {
         object_node_offset = ((char *)&(obj->cell) - (char *)obj);
-    }
 }
 
 void Cell_add_object(object_t *obj)
 {
-    int bx, by;
-    cell_node *obj_node_ptr, *cell_node_ptr;
-    cell_node *prev, *next;
-
-    bx = OBJ_X_IN_BLOCKS(obj);
-    by = OBJ_Y_IN_BLOCKS(obj);
+    blkpos_t bpos = Clicks_to_blkpos(obj->pos.cx, obj->pos.cy);
+    cell_node_t *obj_node_ptr, *cell_node_ptr;
+    cell_node_t *prev, *next;
 
     obj_node_ptr = &(obj->cell);
     next = obj_node_ptr->next;
@@ -222,7 +211,7 @@ void Cell_add_object(object_t *obj)
     next->prev = prev;
     prev->next = next;
 
-    if (bx < 0 || bx >= world->x || by < 0 || by >= world->y)
+    if (!World_contains_clicks(obj->pos.cx, obj->pos.cy))
     {
         /* put obj on list with only itself. */
         obj_node_ptr->next = obj_node_ptr;
@@ -231,7 +220,7 @@ void Cell_add_object(object_t *obj)
     else
     {
         /* put obj in cell list. */
-        cell_node_ptr = &Cells[bx][by];
+        cell_node_ptr = &Cells[bpos.bx][bpos.by];
         obj_node_ptr->next = cell_node_ptr->next;
         obj_node_ptr->prev = cell_node_ptr;
         cell_node_ptr->next->prev = obj_node_ptr;
@@ -241,8 +230,8 @@ void Cell_add_object(object_t *obj)
 
 void Cell_remove_object(object_t *obj)
 {
-    cell_node *obj_node_ptr;
-    cell_node *next, *prev;
+    cell_node_t *obj_node_ptr;
+    cell_node_t *next, *prev;
 
     obj_node_ptr = &(obj->cell);
     next = obj_node_ptr->next;
@@ -260,35 +249,33 @@ void Cell_remove_object(object_t *obj)
     obj_node_ptr->prev = obj_node_ptr;
 }
 
-void Cell_get_objects(
-    int cx,
-    int cy,
-    int range,
-    int max_obj_count,
-    object_t ***obj_list,
-    int *count_ptr)
+void Cell_get_objects(int cx, int cy, // TODO: clpos_t pos, ?
+                      int range,
+                      int max_obj_count,
+                      object_t ***obj_list, int *count_ptr)
 {
     static object_t *ObjectList[MAX_TOTAL_SHOTS + 1];
-    int i, count;
-    int xw, yw;
-    int wrap;
+    int i, count, x, y, xw, yw, wrap;
     object_t *obj;
-    cell_node *cell_node_ptr, *next;
-    float dist;
-    int bx = CLICK_TO_BLOCK(cx);
-    int by = CLICK_TO_BLOCK(cy);
+    cell_node_t *cell_node_ptr, *next;
+    double dist;
+    // blkpos_t bpos = Clpos_to_blkpos(pos);
+    blkpos_t bpos = Clicks_to_blkpos(cx, cy);
+
+    x = bpos.bx;
+    y = bpos.by;
 
     wrap = (BIT(world->rules->mode, WRAP_PLAY) != 0);
-    dist = (float)(range * SQRT2);
+    dist = (double)(range * SQRT2);
     count = 0;
-    for (i = 0; i < cell_dist_size && count < max_obj_count; i++)
+    for (i = 0; i < (int)cell_dist_size && count < max_obj_count; i++)
     {
         if (dist < cell_dist[i].dist)
             break;
         else
         {
-            xw = bx + cell_dist[i].x;
-            yw = by + cell_dist[i].y;
+            xw = x + cell_dist[i].x;
+            yw = y + cell_dist[i].y;
             if (xw < 0)
             {
                 if (wrap)

@@ -124,8 +124,6 @@ typedef struct
 
 /*
  * Object position is non-modifiable, except at one place.
- *
- * NB: position in pixels used to be a float.
  */
 typedef const struct _objposition objposition_t;
 struct _objposition
@@ -133,21 +131,22 @@ struct _objposition
     int cx, cy; /* object position in clicks. */
     int x, y;   /* object position in pixels. */
 };
+
 #define OBJ_X_IN_CLICKS(obj) ((obj)->pos.cx)
 #define OBJ_Y_IN_CLICKS(obj) ((obj)->pos.cy)
-#define OBJ_X_IN_PIXELS(obj) ((obj)->pos.x)
-#define OBJ_Y_IN_PIXELS(obj) ((obj)->pos.y)
+#define OBJ_X_IN_PIXELS(obj) CLICK_TO_PIXEL((obj)->pos.cx)
+#define OBJ_Y_IN_PIXELS(obj) CLICK_TO_PIXEL((obj)->pos.cy)
 #define OBJ_X_IN_BLOCKS(obj) CLICK_TO_BLOCK((obj)->pos.cx)
 #define OBJ_Y_IN_BLOCKS(obj) CLICK_TO_BLOCK((obj)->pos.cy)
 
 /*
  * Node within a Cell list.
  */
-typedef struct _cell_node cell_node;
-struct _cell_node
+typedef struct cell_node cell_node_t;
+struct cell_node
 {
-    cell_node *next;
-    cell_node *prev;
+    cell_node_t *next;
+    cell_node_t *prev;
 };
 
 #define OBJECT_BASE                                      \

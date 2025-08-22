@@ -295,4 +295,13 @@ static inline bool World_contains_clpos(clpos_t pos)
     return true;
 }
 
+static inline bool World_contains_clicks(int cx, int cy)
+{
+    if (cx < 0 || cx >= world->click_width)
+        return false;
+    if (cy < 0 || cy >= world->click_height)
+        return false;
+    return true;
+}
+
 #endif
