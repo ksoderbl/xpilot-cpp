@@ -44,8 +44,8 @@
 #define OBJ_EXT_ROBOT (1U << 2)
 
 /* macro's to query the type of player. */
-#define IS_ROBOT_IND(ind) Player_is_robot(Players[ind])
-#define IS_HUMAN_IND(ind) Player_is_human(Players[ind])
+#define IS_ROBOT_IND(ind) Player_is_robot(PlayersArray[ind])
+#define IS_HUMAN_IND(ind) Player_is_human(PlayersArray[ind])
 #define Player_is_tank(pl) (BIT((pl)->type_ext, OBJ_EXT_TANK) == OBJ_EXT_TANK)
 #define Player_is_robot(pl) (BIT((pl)->type_ext, OBJ_EXT_ROBOT) == OBJ_EXT_ROBOT)
 #define Player_is_human(pl) (!BIT((pl)->type_ext, OBJ_EXT_TANK | OBJ_EXT_ROBOT))
@@ -190,10 +190,10 @@ struct player
     int isowner;    /* If player started this server. */
     int isoperator; /* If player has operator privileges. */
 
-    int ind; /* Index in Players[] */
+    int ind; /* Index in PlayersArray[] */
 };
 
-extern player_t **Players;
+extern player_t **PlayersArray;
 
 void Player_position_set_clicks(player_t *pl, int cx, int cy);
 void Player_position_init_clicks(player_t *pl, int cx, int cy);
@@ -203,5 +203,32 @@ void Player_position_limit(player_t *pl);
 void Player_position_debug(player_t *pl, const char *msg);
 
 #define Player_position_remember(p_) Object_position_remember(p_)
+
+/*
+ * Prototypes for player.cpp
+ */
+void Pick_startpos(int ind);
+void Go_home(int ind);
+void Compute_sensor_range(player_t *pl);
+void Player_add_tank(player_t *pl, long tank_fuel);
+void Player_remove_tank(int ind, int which_tank);
+void Player_hit_armor(int ind);
+void Player_used_kill(int ind);
+void Player_set_mass(player_t *pl);
+int Init_player(int ind, shipshape_t *ship);
+void Alloc_players(int number);
+void Free_players(void);
+void Update_score_table(void);
+void Reset_all_players(void);
+void Check_team_members(int);
+void Compute_game_status(void);
+void Delete_player(int ind);
+void Detach_ball(int ind, int ball);
+void Kill_player(int ind);
+void Player_death_reset(int ind);
+void Team_game_over(int winning_team, const char *reason);
+void Individual_game_over(int winner);
+void Race_game_over(void);
+int Team_immune(int id1, int id2);
 
 #endif

@@ -43,7 +43,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     static char msg[MSG_LEN];
     treasure_t *td = &world->treasures[t_destroyed];
     treasure_t *tt = &world->treasures[t_target];
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i;
     int win_score = 0, lose_score = 0;
     int win_team_members = 0, lose_team_members = 0;
@@ -58,18 +58,18 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) || (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+            if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0) || (BIT(PlayersArray[i]->status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
                 continue;
-            if (Players[i]->team == td->team)
+            if (PlayersArray[i]->team == td->team)
             {
-                lose_score += Players[i]->score;
+                lose_score += PlayersArray[i]->score;
                 lose_team_members++;
-                if (BIT(Players[i]->status, GAME_OVER) == 0)
+                if (BIT(PlayersArray[i]->status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
-            else if (Players[i]->team == tt->team)
+            else if (PlayersArray[i]->team == tt->team)
             {
-                win_score += Players[i]->score;
+                win_score += PlayersArray[i]->score;
                 win_team_members++;
             }
         }
@@ -96,24 +96,24 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Players[i]) ||
-            (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
-            (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+        if (Player_is_tank(PlayersArray[i]) ||
+            (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0) ||
+            (BIT(PlayersArray[i]->status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
             continue;
-        if (Players[i]->team == td->team)
+        if (PlayersArray[i]->team == td->team)
         {
-            SCORE(Players[i], -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+            SCORE(PlayersArray[i], -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
             if (options.treasureKillTeam)
-                SET_BIT(Players[i]->status, KILLED);
+                SET_BIT(PlayersArray[i]->status, KILLED);
         }
-        else if (Players[i]->team == tt->team &&
-                 (Players[i]->team != TEAM_NOT_SET || i == ind))
-            SCORE(Players[i], (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+        else if (PlayersArray[i]->team == tt->team &&
+                 (PlayersArray[i]->team != TEAM_NOT_SET || i == ind))
+            SCORE(PlayersArray[i], (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
     }
 
     if (options.treasureKillTeam)
     {
-        Players[ind]->kills++;
+        PlayersArray[ind]->kills++;
     }
 
     updateScores = true;

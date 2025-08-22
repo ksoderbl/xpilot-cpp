@@ -139,7 +139,7 @@ static void Stratbot_round_tick(void)
  */
 static void Stratbot_create(int ind, char *str)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     stratbot_data_t *my_data;
 
     if (!(my_data = (stratbot_data_t *)malloc(sizeof(*my_data))))
@@ -157,7 +157,7 @@ static void Stratbot_create(int ind, char *str)
 static void Stratbot_go_home(int ind)
 {
 #if 0
-    player                        *pl = Players[ind];
+    player                        *pl = PlayersArray[ind];
     stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 }
@@ -175,7 +175,7 @@ static void Stratbot_play(int ind)
 static void Stratbot_set_war(int ind, int victim_id)
 {
 #if 0
-    player                        *pl = Players[ind];
+    player                        *pl = PlayersArray[ind];
     stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 
@@ -193,7 +193,7 @@ static void Stratbot_set_war(int ind, int victim_id)
 static int Stratbot_war_on_player(int ind)
 {
 #if 0
-    player                        *pl = Players[ind];
+    player                        *pl = PlayersArray[ind];
     stratbot_data_t                *my_data = Stratbot_get_data(pl);
 #endif
 
@@ -206,7 +206,7 @@ static int Stratbot_war_on_player(int ind)
 static void Stratbot_message(int ind, const char *message)
 {
 #if 0
-    player                        *pl = Players[ind];
+    player                        *pl = PlayersArray[ind];
     stratbot_data_t                *my_data = Stratbot_get_data(pl);
     int                                len;
     char                        *ptr;
@@ -241,7 +241,7 @@ static void Stratbot_message(int ind, const char *message)
  */
 static void Stratbot_destroy(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     free(pl->robot_data_ptr->private_data);
     pl->robot_data_ptr->private_data = NULL;
@@ -258,7 +258,7 @@ static void Stratbot_invite(int ind, int inv_ind)
 #if 0
 static bool Really_empty_space(int ind, int x, int y)
 {
-    player        *pl = Players[ind];
+    player        *pl = PlayersArray[ind];
     int                type = world->block[x][y];
 
     if (EMPTY_SPACE(type))

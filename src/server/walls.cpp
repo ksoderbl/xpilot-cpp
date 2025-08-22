@@ -1143,7 +1143,7 @@ void Move_segment(move_state_t *ms)
                         treasure_t *tt = &world->treasures[ms->treasure];
 
                         if (ball->owner != NO_ID)
-                            pl = Players[GetInd[ball->owner]];
+                            pl = PlayersArray[GetInd[ball->owner]];
 
                         if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
                         {
@@ -1167,7 +1167,7 @@ void Move_segment(move_state_t *ms)
                         return;
                     }
                     if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team ==
-                                                                  Players[GetInd[ball->owner]]->team)
+                                                                  PlayersArray[GetInd[ball->owner]]->team)
                     {
                         /*
                          * Ball has been brought back to home treasure.
@@ -1179,7 +1179,7 @@ void Move_segment(move_state_t *ms)
                         if (options.captureTheFlag && !world->treasures[ms->treasure].have && !world->treasures[ms->treasure].empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
-                            Set_player_message(Players[GetInd[ball->owner]], msg);
+                            Set_player_message(PlayersArray[GetInd[ball->owner]], msg);
                         }
                         else if (Punish_team(GetInd[ball->owner],
                                              ball->treasure, ms->treasure))
@@ -1222,7 +1222,7 @@ void Move_segment(move_state_t *ms)
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->owner != NO_ID)
                             {
-                                team = Players[GetInd[ball->owner]]->team;
+                                team = PlayersArray[GetInd[ball->owner]]->team;
                             }
                             else
                             {
@@ -1865,7 +1865,7 @@ static void Cannon_dies(move_state_t *ms)
         if (ms->mip->obj->id != NO_ID)
         {
             killer = GetInd[ms->mip->obj->id];
-            pl = Players[killer];
+            pl = PlayersArray[killer];
         }
     }
     else if (BIT(ms->mip->pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
@@ -1879,7 +1879,7 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(Players[killer], options.cannonPoints, cannon->clk_pos.cx,
+                SCORE(PlayersArray[killer], options.cannonPoints, cannon->clk_pos.cx,
                       cannon->clk_pos.cy, "");
             }
         }
@@ -2008,20 +2008,20 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            if (Player_is_tank(Players[j]) ||
-                (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
-                (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
+            if (Player_is_tank(PlayersArray[j]) ||
+                (BIT(PlayersArray[j]->status, PAUSE) && PlayersArray[j]->count <= 0) ||
+                (BIT(PlayersArray[j]->status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
                 continue;
-            if (Players[j]->team == targ->team)
+            if (PlayersArray[j]->team == targ->team)
             {
-                lose_score += Players[j]->score;
+                lose_score += PlayersArray[j]->score;
                 lose_team_members++;
-                if (BIT(Players[j]->status, GAME_OVER) == 0)
+                if (BIT(PlayersArray[j]->status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
-            else if (Players[j]->team == Players[killer]->team)
+            else if (PlayersArray[j]->team == PlayersArray[killer]->team)
             {
-                win_score += Players[j]->score;
+                win_score += PlayersArray[j]->score;
                 win_team_members++;
             }
         }
@@ -2045,11 +2045,11 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     if (targets_remaining > 0)
     {
-        sc = Rate(Players[killer]->score, CANNON_SCORE) / 4;
+        sc = Rate(PlayersArray[killer]->score, CANNON_SCORE) / 4;
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            SCORE(Players[killer], sc,
+            SCORE(PlayersArray[killer], sc,
                   targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
         /*
@@ -2060,21 +2060,21 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         if (options.targetTeamCollision && targets_total < 10)
         {
             sprintf(msg, "%s blew up one of team %d's targets.",
-                    Players[killer]->name, (int)targ->team);
+                    PlayersArray[killer]->name, (int)targ->team);
             Set_message(msg);
         }
         return;
     }
 
     sprintf(msg, "%s blew up team %d's %starget.",
-            Players[killer]->name,
+            PlayersArray[killer]->name,
             (int)targ->team,
             (targets_total > 1) ? "last " : "");
     Set_message(msg);
 
     if (options.targetKillTeam)
     {
-        Players[killer]->kills++;
+        PlayersArray[killer]->kills++;
     }
 
     sc = Rate(win_score, lose_score);
@@ -2082,20 +2082,20 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        if (Player_is_tank(Players[j]) ||
-            (BIT(Players[j]->status, PAUSE) && Players[j]->count <= 0) ||
-            (BIT(Players[j]->status, GAME_OVER) && Players[j]->mychar == 'W' && Players[j]->score == 0))
+        if (Player_is_tank(PlayersArray[j]) ||
+            (BIT(PlayersArray[j]->status, PAUSE) && PlayersArray[j]->count <= 0) ||
+            (BIT(PlayersArray[j]->status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
             continue;
 
-        if (Players[j]->team == targ->team)
+        if (PlayersArray[j]->team == targ->team)
         {
-            if (options.targetKillTeam && targets_remaining == 0 && !BIT(Players[j]->status, KILLED | PAUSE | GAME_OVER))
-                SET_BIT(Players[j]->status, KILLED);
-            SCORE(Players[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+            if (options.targetKillTeam && targets_remaining == 0 && !BIT(PlayersArray[j]->status, KILLED | PAUSE | GAME_OVER))
+                SET_BIT(PlayersArray[j]->status, KILLED);
+            SCORE(PlayersArray[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
         }
-        else if (Players[j]->team == Players[killer]->team &&
-                 (Players[j]->team != TEAM_NOT_SET || j == killer))
-            SCORE(Players[j], por, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+        else if (PlayersArray[j]->team == PlayersArray[killer]->team &&
+                 (PlayersArray[j]->team != TEAM_NOT_SET || j == killer))
+            SCORE(PlayersArray[j], por, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
     }
 }
 
@@ -2215,7 +2215,7 @@ void Move_object(object_t *obj)
     mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
     if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
-        mi.phased = BIT(Players[GetInd[obj->id]]->used, HAS_PHASING_DEVICE);
+        mi.phased = BIT(PlayersArray[GetInd[obj->id]]->used, HAS_PHASING_DEVICE);
     else
         mi.phased = 0;
 
@@ -2425,7 +2425,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
             }
             if (j == num_pushers)
             {
-                pushers[num_pushers++] = Players[GetInd[shove->pusher_id]];
+                pushers[num_pushers++] = PlayersArray[GetInd[shove->pusher_id]];
                 cnt[j] = 1;
             }
             total_pusher_count++;
@@ -2490,7 +2490,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
 
 void Move_player(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int nothing_done = 0;
     int i;
     int dist;

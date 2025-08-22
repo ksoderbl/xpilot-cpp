@@ -406,7 +406,7 @@ static int num2str(int num, char *str, int i)
 static int Frame_status(connection_t *conn, int ind)
 {
     static char mods[MAX_CHARS];
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int n,
         lock_ind,
         lock_id = NO_ID,
@@ -434,17 +434,17 @@ static int Frame_status(connection_t *conn, int ind)
         if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
             && (pl->visibility[lock_ind].canSee ||
-                Player_owns_tank(pl, Players[lock_ind]) ||
-                Players_are_teammates(pl, Players[lock_ind]) ||
-                Players_are_allies(pl, Players[lock_ind]))
+                Player_owns_tank(pl, PlayersArray[lock_ind]) ||
+                Players_are_teammates(pl, PlayersArray[lock_ind]) ||
+                Players_are_allies(pl, PlayersArray[lock_ind]))
 #endif
-            && BIT(Players[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING &&
-            (options.playersOnRadar || click_inview(cv, Players[lock_ind]->pos.cx, Players[lock_ind]->pos.cy)) &&
+            && BIT(PlayersArray[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING &&
+            (options.playersOnRadar || click_inview(cv, PlayersArray[lock_ind]->pos.cx, PlayersArray[lock_ind]->pos.cy)) &&
             pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
-            lock_dir = (int)Wrap_findDir((int)(Players[lock_ind]->pos.x - pl->pos.x),
-                                         (int)(Players[lock_ind]->pos.y - pl->pos.y));
+            lock_dir = (int)Wrap_findDir((int)(PlayersArray[lock_ind]->pos.x - pl->pos.x),
+                                         (int)(PlayersArray[lock_ind]->pos.y - pl->pos.y));
             lock_dist = (int)pl->lock.distance;
         }
     }
@@ -510,7 +510,7 @@ static int Frame_status(connection_t *conn, int ind)
                   lock_dist,
                   lock_dir,
                   showautopilot,
-                  Players[GetInd[Get_player_id(conn)]]->status,
+                  PlayersArray[GetInd[Get_player_id(conn)]]->status,
                   mods);
     if (n <= 0)
     {
@@ -745,7 +745,7 @@ static void Frame_shuffle(void)
 
 static void Frame_shots(connection_t *conn, int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int x, y, cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
@@ -841,7 +841,7 @@ static void Frame_shots(connection_t *conn, int ind)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(Players[GetInd[shot->id]]->status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetInd[shot->id]]->status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -898,7 +898,7 @@ static void Frame_shots(connection_t *conn, int ind)
                 if (BIT(mine->status, CONFUSED))
                     confused = 1;
             }
-            if (mine->id != NO_ID && BIT(Players[GetInd[mine->id]]->status, PAUSE))
+            if (mine->id != NO_ID && BIT(PlayersArray[GetInd[mine->id]]->status, PAUSE))
                 laid_by_team = 1;
             else
             {
@@ -933,7 +933,7 @@ static void Frame_shots(connection_t *conn, int ind)
 
 static void Frame_ships(connection_t *conn, int ind)
 {
-    player_t *pl = Players[ind],
+    player_t *pl = PlayersArray[ind],
              *pl_i;
     pulse_t *pulse;
     int i, j, k, color, dir;
@@ -1001,8 +1001,8 @@ static void Frame_ships(connection_t *conn, int ind)
     for (i = 0; i < NumTransporters; i++)
     {
         trans_t *trans = Transporters[i];
-        player_t *victim = Players[GetInd[trans->target]],
-                 *pl = (trans->id == NO_ID ? NULL : Players[GetInd[trans->id]]);
+        player_t *victim = PlayersArray[GetInd[trans->target]],
+                 *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetInd[trans->id]]);
         int cx = (pl ? pl->pos.cx : trans->clk_pos.cx);
         int cy = (pl ? pl->pos.cy : trans->clk_pos.cy);
         Send_trans(conn, victim->pos.x, victim->pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
@@ -1012,7 +1012,7 @@ static void Frame_ships(connection_t *conn, int ind)
         cannon_t *cannon = world->cannon + i;
         if (cannon->tractor_count > 0)
         {
-            player_t *t = Players[GetInd[cannon->tractor_target]];
+            player_t *t = PlayersArray[GetInd[cannon->tractor_target]];
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
@@ -1031,7 +1031,7 @@ static void Frame_ships(connection_t *conn, int ind)
     for (k = 0; k < num_player_shuffle; k++)
     {
         i = player_shuffle_ptr[k];
-        pl_i = Players[i];
+        pl_i = PlayersArray[i];
         if (!BIT(pl_i->status, PLAYING | PAUSE))
             continue;
         if (BIT(pl_i->status, GAME_OVER))
@@ -1086,7 +1086,7 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_TRACTOR_BEAM))
         {
-            player_t *t = Players[GetInd[pl_i->lock.pl_id]];
+            player_t *t = PlayersArray[GetInd[pl_i->lock.pl_id]];
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
@@ -1112,7 +1112,7 @@ static void Frame_ships(connection_t *conn, int ind)
 static void Frame_radar(connection_t *conn, int ind)
 {
     int i, k, mask, shownuke, size;
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     object_t *shot;
     int cx, cy;
 
@@ -1191,21 +1191,21 @@ static void Frame_radar(connection_t *conn, int ind)
              *                People in other teams or alliances if;
              *                        no playersOnRadar or if not visible
              */
-            if (Players[i]->conn == conn ||
-                BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-                (!Players_are_teammates(pl, Players[i]) && !Players_are_allies(pl, Players[i]) && !Player_owns_tank(pl, Players[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
+            if (PlayersArray[i]->conn == conn ||
+                BIT(PlayersArray[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
+                (!Players_are_teammates(pl, PlayersArray[i]) && !Players_are_allies(pl, PlayersArray[i]) && !Player_owns_tank(pl, PlayersArray[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
-            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - Players[i]->pos.cx,
-                                                                           pl->pos.cy - Players[i]->pos.cy) /
+            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - PlayersArray[i]->pos.cx,
+                                                                           pl->pos.cy - PlayersArray[i]->pos.cy) /
                                                                        CLICK >
                                                                    pl->sensor_range)
                 continue;
             if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
                 continue;
             size = 3;
-            if (Players_are_teammates(pl, Players[i]) || Players_are_allies(pl, Players[i]) || Player_owns_tank(pl, Players[i]))
+            if (Players_are_teammates(pl, PlayersArray[i]) || Players_are_allies(pl, PlayersArray[i]) || Player_owns_tank(pl, PlayersArray[i]))
                 size |= 0x80;
-            Frame_radar_buffer_add(Players[i]->pos.cx, Players[i]->pos.cy, size);
+            Frame_radar_buffer_add(PlayersArray[i]->pos.cx, PlayersArray[i]->pos.cy, size);
         }
     }
 
@@ -1214,7 +1214,7 @@ static void Frame_radar(connection_t *conn, int ind)
 
 static void Frame_lose_item_state(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     if (pl->lose_item_state != 0)
     {
@@ -1300,7 +1300,7 @@ void Frame_update(void)
 
     for (i = 0; i < num_player_shuffle; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         conn = pl->conn;
         if (conn == NULL)
             continue;
@@ -1352,7 +1352,7 @@ void Frame_update(void)
         {
             if ((BIT(pl->status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
                 (BIT(pl->status, PAUSE) &&
-                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Players[GetInd[pl->lock.pl_id]]->team) ||
+                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == PlayersArray[GetInd[pl->lock.pl_id]]->team) ||
                   pl->isowner ||
                   options.allowViewing)))
                 ind = GetInd[pl->lock.pl_id];
@@ -1361,7 +1361,7 @@ void Frame_update(void)
         }
         else
             ind = i;
-        pl2 = Players[ind];
+        pl2 = PlayersArray[ind];
         if (pl2->damaged > 0)
             Send_damaged(conn, pl2->damaged);
         else
@@ -1377,7 +1377,7 @@ void Frame_update(void)
             debris_end(conn);
             fastshot_end(conn);
         }
-        sound_play_queued(Players[ind]);
+        sound_play_queued(PlayersArray[ind]);
         Send_end_of_frame(conn);
     }
     oldTimeLeft = newTimeLeft;
@@ -1405,7 +1405,7 @@ void Set_message(const char *message)
         msg = message;
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         if (pl->conn != NULL)
             Send_message(pl->conn, msg);
     }

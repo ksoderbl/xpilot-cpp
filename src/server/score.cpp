@@ -81,8 +81,8 @@ int Rate(int winner, int loser)
 void Score_players(int winner, int winner_score, char *winner_msg,
                    int loser, int loser_score, char *loser_msg)
 {
-    player_t *wpl = Players[winner];
-    player_t *lpl = Players[loser];
+    player_t *wpl = PlayersArray[winner];
+    player_t *lpl = PlayersArray[loser];
     if (Players_are_teammates(wpl, lpl) ||
         (wpl->alliance != ALLIANCE_NOT_SET && wpl->alliance == lpl->alliance) ||
         (Player_is_tank(lpl) && GetInd[lpl->lock.pl_id] == winner))

@@ -83,7 +83,7 @@ static void Laser_pulse_destroy_one(int pulse_index)
     if (pulse_ptr->id != NO_ID)
     {
         ind = GetInd[pulse_ptr->id];
-        pl = Players[ind];
+        pl = PlayersArray[ind];
         pl->num_pulses--;
     }
 
@@ -128,7 +128,7 @@ static void Laser_pulse_find_victims(
     vicbuf->num_vic = 0;
     for (i = 0; i < NumPlayers; i++)
     {
-        vic = Players[i];
+        vic = PlayersArray[i];
         if (BIT(vic->status, PLAYING | GAME_OVER | KILLED | PAUSE) != PLAYING)
             continue;
 
@@ -198,7 +198,7 @@ static void Laser_pulse_hits_player(
     if (pulse->id != NO_ID)
     {
         ind = GetInd[pulse->id];
-        pl = Players[ind];
+        pl = PlayersArray[ind];
     }
     else
     {
@@ -206,7 +206,7 @@ static void Laser_pulse_hits_player(
         pl = NULL;
     }
 
-    vicpl = Players[victim->ind];
+    vicpl = PlayersArray[victim->ind];
     vicpl->forceVisible++;
     if (BIT(vicpl->have, HAS_MIRROR) && (rfrac() * (2 * vicpl->item[ITEM_MIRROR])) >= 1)
     {
@@ -338,7 +338,7 @@ static int Laser_pulse_check_player_hits(
     /*
     if (pulse->id != NO_ID) {
         ind = GetInd[pulse->id];
-        pl = Players[ind];
+        pl = PlayersArray[ind];
     } else {
         ind = -1;
         pl = NULL;
@@ -457,7 +457,7 @@ void Laser_pulse_collision(void)
         if (pulse->id != NO_ID)
         {
             ind = GetInd[pulse->id];
-            pl = Players[ind];
+            pl = PlayersArray[ind];
         }
         else
         {
@@ -552,7 +552,7 @@ void Laser_pulse_collision(void)
             printf("Laser_pulse_collision: pulse %d, obj_list.size() = %d\n", p, obj_list.size());
             if (ind >= 0)
             {
-                player_t *pl = Players[ind];
+                player_t *pl = PlayersArray[ind];
                 printf("Laser_pulse_collision: Player %d: %s\n", ind, pl->name);
             }
         }

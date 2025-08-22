@@ -96,7 +96,7 @@ void Item_damage(int ind, double prob)
 {
     if (prob < 1.0f)
     {
-        player_t *pl = Players[ind];
+        player_t *pl = PlayersArray[ind];
         int i;
         double loss;
 
@@ -412,7 +412,7 @@ void Throw_items(player_t *pl)
  */
 void Detonate_items(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i;
     modifiers_t mods;
     int owner_ind;
@@ -425,7 +425,7 @@ void Detonate_items(int ind)
         owner_ind = GetInd[pl->lock.pl_id];
     else
         owner_ind = ind;
-    player_t *owner = Players[owner_ind];
+    player_t *owner = PlayersArray[owner_ind];
 
     /*
      * These are always immune to detonation.
@@ -475,7 +475,7 @@ void Detonate_items(int ind)
              * mean a misfire.
              */
             SET_BIT(pl->lock.tagged, LOCK_PLAYER);
-            pl->lock.pl_id = Players[(int)(rfrac() * NumPlayers)]->id;
+            pl->lock.pl_id = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
 
             switch ((int)(rfrac() * 3))
             {
@@ -501,12 +501,12 @@ void Detonate_items(int ind)
 
 void Tractor_beam(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     double maxdist, percent;
     long cost;
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(Players[GetInd[pl->lock.pl_id]]->status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, HAS_PHASING_DEVICE) || BIT(Players[GetInd[pl->lock.pl_id]]->used, HAS_PHASING_DEVICE))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, HAS_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, HAS_PHASING_DEVICE))
     {
         CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
         return;
@@ -526,8 +526,8 @@ void Tractor_beam(int ind)
 void General_tractor_beam(int ind, int cx, int cy,
                           int items, int target, bool pressor)
 {
-    player_t *pl = (ind == -1 ? NULL : Players[ind]),
-             *victim = Players[target];
+    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]),
+             *victim = PlayersArray[target];
     double maxdist = TRACTOR_MAX_RANGE(items),
            maxforce = TRACTOR_MAX_FORCE(items),
            percent, force, dist;
@@ -640,7 +640,7 @@ void Do_transporter(player_t *pl)
     /* find victim */
     for (i = 0; i < NumPlayers; i++)
     {
-        p = Players[i];
+        p = PlayersArray[i];
         if (p == pl ||
             BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
             Team_immune(pl->id, p->id) ||
@@ -671,7 +671,7 @@ void Do_transporter(player_t *pl)
 void Do_general_transporter(player_t *pl, int cx, int cy, int target,
                             int *itemp, long *amountp)
 {
-    player_t *victim = Players[target];
+    player_t *victim = PlayersArray[target];
     char msg[MSG_LEN];
     const char *what = NULL;
     int i;
@@ -980,7 +980,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
     double closest_mine_range = world->hypotenuse;
     int i, j, owner;
     double range, perim, damage;
-    player_t *pl = (ind == -1 ? NULL : Players[ind]), *p;
+    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]), *p;
     ecm_t *ecm;
 
     if (NumEcms >= MAX_TOTAL_ECMS)
@@ -1053,7 +1053,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
             if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee)
                 smart->new_info = pl->lock.pl_id;
             else
-                smart->new_info = Players[(int)(rfrac() * NumPlayers)]->id;
+                smart->new_info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
             /* Can't redirect missiles to team mates. */
             /* So let the missile keep on following this unlucky player. */
             /*-BA Why not redirect missiles to team mates?
@@ -1143,7 +1143,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
         if (i == ind)
             continue;
 
-        p = Players[i];
+        p = PlayersArray[i];
         /*
          * Team members are always immune from ECM effects from other
          * team members.  Its too nasty otherwise.
@@ -1235,9 +1235,9 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
                     Robot_program(i, pl->lock.pl_id);
                     for (j = 0; j < NumPlayers; j++)
                     {
-                        if (Players[j]->conn != NULL)
+                        if (PlayersArray[j]->conn != NULL)
                         {
-                            Send_seek(Players[j]->conn, pl->id,
+                            Send_seek(PlayersArray[j]->conn, pl->id,
                                       p->id, pl->lock.pl_id);
                         }
                     }
@@ -1249,7 +1249,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
 
 void Fire_ecm(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, HAS_PHASING_DEVICE))
         return;

@@ -115,7 +115,7 @@
              : (dcy))
 
 #define PSEUDO_TEAM(i, j) \
-        (Players[(i)]->pseudo_team == Players[(j)]->pseudo_team)
+        (PlayersArray[(i)]->pseudo_team == PlayersArray[(j)]->pseudo_team)
 
 /*
  * Used where we wish to know if a player is simply on the same team.

@@ -49,11 +49,6 @@ typedef struct
 #define FPS options.framesPerSecond
 // #define NumObjs (ObjCount + 0)
 
-// extern player_t **Players;
-// extern object_t *Obj[];
-// extern pulse_t *Pulses[];
-// extern ecm_t *Ecms[];
-// extern trans_t *Transporters[];
 extern long frame_loops;
 // extern int NumPlayers;
 // extern int NumPseudoPlayers;

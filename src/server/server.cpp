@@ -74,7 +74,7 @@ char server_version[] = VERSION;
  */
 int NumPlayers = 0;
 int NumAlliances = 0;
-player_t **Players;
+player_t **PlayersArray;
 int GetInd_1;
 int GetInd[NUM_IDS + 1];
 server_t Server;
@@ -321,7 +321,7 @@ void End_game(void)
 
     while (NumPlayers > 0)
     { /* Kick out all remaining players */
-        pl = Players[NumPlayers - 1];
+        pl = PlayersArray[NumPlayers - 1];
         if (pl->conn == NULL)
         {
             Delete_player(NumPlayers - 1);
@@ -415,7 +415,7 @@ int Pick_team(int pick_for_type)
      */
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         if (Player_is_tank(pl))
         {
             continue;
@@ -562,7 +562,7 @@ void Server_info(char *str, unsigned max_size)
     }
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         if (BIT(world->rules->mode, LIMITED_LIVES))
         {
             ratio = (double)pl->score;
@@ -597,7 +597,7 @@ void Server_info(char *str, unsigned max_size)
         {
             if ((k = Robot_war_on_player(GetInd[pl->id])) != NO_ID)
             {
-                sprintf(name + strlen(name), " (%s)", Players[GetInd[k]]->name);
+                sprintf(name + strlen(name), " (%s)", PlayersArray[GetInd[k]]->name);
                 if (strlen(name) >= 19)
                 {
                     strcpy(&name[17], ")");
@@ -716,12 +716,12 @@ void Game_Over(void)
             int team;
             if (IS_HUMAN_IND(i))
             {
-                team = Players[i]->team;
+                team = PlayersArray[i]->team;
                 if (teamscore[team] == 1234567)
                 {
                     teamscore[team] = 0;
                 }
-                teamscore[team] += Players[i]->score;
+                teamscore[team] += PlayersArray[i]->score;
             }
         }
 
@@ -763,30 +763,30 @@ void Game_Over(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        SET_BIT(Players[i]->status, GAME_OVER);
+        SET_BIT(PlayersArray[i]->status, GAME_OVER);
         if (IS_HUMAN_IND(i))
         {
-            if (Players[i]->score > maxsc)
+            if (PlayersArray[i]->score > maxsc)
             {
-                maxsc = Players[i]->score;
+                maxsc = PlayersArray[i]->score;
                 win = i;
             }
-            if (Players[i]->score < minsc)
+            if (PlayersArray[i]->score < minsc)
             {
-                minsc = Players[i]->score;
+                minsc = PlayersArray[i]->score;
                 loose = i;
             }
         }
     }
     if (win != -1)
     {
-        sprintf(msg, "Best human player: %s", Players[win]->name);
+        sprintf(msg, "Best human player: %s", PlayersArray[win]->name);
         Set_message(msg);
         xpprintf("%s\n", msg);
     }
     if (loose != -1 && loose != win)
     {
-        sprintf(msg, "Worst human player: %s", Players[loose]->name);
+        sprintf(msg, "Worst human player: %s", PlayersArray[loose]->name);
         Set_message(msg);
         xpprintf("%s\n", msg);
     }
@@ -802,7 +802,7 @@ void Server_log_admin_message(int ind, const char *str)
     const int logfile_size_limit = options.adminMessageFileSizeLimit;
     FILE *fp;
     struct stat st;
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     char msg[MSG_LEN * 2];
 
     if ((logfilename != NULL) &&

@@ -43,7 +43,7 @@ char *showtime(void)
     {
         tmp = localtime(&now);
         sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d",
-                tmp->tm_year, tmp->tm_mon, tmp->tm_mday,
+                tmp->tm_year + 1900, tmp->tm_mon + 1, tmp->tm_mday,
                 tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
         past = now;
     }

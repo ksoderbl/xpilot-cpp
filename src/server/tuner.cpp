@@ -47,7 +47,7 @@ void tuner_shotsmax(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        Players[i]->shot_max = options.ShotsMax;
+        PlayersArray[i]->shot_max = options.ShotsMax;
     }
 }
 
@@ -57,7 +57,7 @@ void tuner_shipmass(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        Players[i]->emptymass = options.ShipMass;
+        PlayersArray[i]->emptymass = options.ShipMass;
     }
 }
 
@@ -117,13 +117,13 @@ void tuner_playershielding(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Player_is_tank(Players[i]))
+            if (!Player_is_tank(PlayersArray[i]))
             {
-                if (!BIT(Players[i]->used, HAS_SHOT))
-                    SET_BIT(Players[i]->used, HAS_SHIELD);
+                if (!BIT(PlayersArray[i]->used, HAS_SHOT))
+                    SET_BIT(PlayersArray[i]->used, HAS_SHIELD);
 
-                SET_BIT(Players[i]->have, HAS_SHIELD);
-                Players[i]->shield_time = 0;
+                SET_BIT(PlayersArray[i]->have, HAS_SHIELD);
+                PlayersArray[i]->shield_time = 0;
             }
         }
     }
@@ -133,7 +133,7 @@ void tuner_playershielding(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            Players[i]->shield_time = 2 * FPS;
+            PlayersArray[i]->shield_time = 2 * FPS;
             /* 2 seconds to get to safety */
         }
     }
@@ -248,7 +248,7 @@ void tuner_modifiers(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        filter_mods(&Players[i]->mods);
+        filter_mods(&PlayersArray[i]->mods);
     }
 }
 

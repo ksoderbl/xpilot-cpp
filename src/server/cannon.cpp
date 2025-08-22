@@ -364,7 +364,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
 
     for (i = 0; i < NumPlayers && !ready; i++)
     {
-        player_t *pl = Players[i];
+        player_t *pl = PlayersArray[i];
         int tdist, tdx, tdy;
 
         tdx = WRAP_DX(pl->pos.x - cpx);
@@ -467,7 +467,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
 static void Cannon_fire(int ind, int weapon, int target, int dir)
 {
     cannon_t *c = world->cannon + ind;
-    player_t *pl = Players[target];
+    player_t *pl = PlayersArray[target];
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;
     modifiers_t mods;
@@ -538,7 +538,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
             }
             /* FALLTHROUGH */
         case 1:
-            if (options.allowHeatSeekers && BIT(Players[target]->status, THRUSTING))
+            if (options.allowHeatSeekers && BIT(PlayersArray[target]->status, THRUSTING))
             {
                 Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_HEAT_SHOT,
                                   dir, mods, target);

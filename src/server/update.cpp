@@ -560,7 +560,7 @@ void Update_objects(void)
     {
         for (int i = 0; i < NumPlayers; i++)
         {
-            player_t *pl = Players[i];
+            player_t *pl = PlayersArray[i];
             if (BIT(pl->used, HAS_SHOT))
                 Fire_normal_shots(pl);
         }
@@ -645,7 +645,7 @@ void Update_objects(void)
         if ((Ecms[i]->size >>= 1) == 0)
         {
             if (Ecms[i]->id != NO_ID)
-                Players[GetInd[Ecms[i]->id]]->ecmcount--;
+                PlayersArray[GetInd[Ecms[i]->id]]->ecmcount--;
             free(Ecms[i]);
             --NumEcms;
             Ecms[i] = Ecms[NumEcms];
@@ -712,11 +712,11 @@ void Update_objects(void)
         if (cannon->tractor_count > 0)
         {
             int ind = GetInd[cannon->tractor_target];
-            if (Wrap_length(Players[ind]->pos.cx - cannon->clk_pos.cx,
-                            Players[ind]->pos.cy - cannon->clk_pos.cy) /
+            if (Wrap_length(PlayersArray[ind]->pos.cx - cannon->clk_pos.cx,
+                            PlayersArray[ind]->pos.cy - cannon->clk_pos.cy) /
                         CLICK <
                     TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
-                BIT(Players[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
+                BIT(PlayersArray[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
                 General_tractor_beam(-1, cannon->clk_pos.cx, cannon->clk_pos.cy,
                                      cannon->item[ITEM_TRACTOR_BEAM], ind,
@@ -809,7 +809,7 @@ void Update_objects(void)
      */
     for (int ind = 0; ind < NumPlayers; ind++)
     {
-        player_t *pl = Players[ind];
+        player_t *pl = PlayersArray[ind];
 
         /* Limits. */
         LIMIT(pl->power, MIN_PLAYER_POWER, MAX_PLAYER_POWER);
@@ -975,15 +975,15 @@ void Update_objects(void)
         for (int j = 0; j < NumPlayers; j++)
         {
             if (pl->forceVisible)
-                Players[j]->visibility[ind].canSee = 1;
+                PlayersArray[j]->visibility[ind].canSee = 1;
 
-            if (ind == j || !BIT(Players[j]->used, HAS_CLOAKING_DEVICE))
+            if (ind == j || !BIT(PlayersArray[j]->used, HAS_CLOAKING_DEVICE))
                 pl->visibility[j].canSee = 1;
-            else if (pl->updateVisibility || Players[j]->updateVisibility || (int)(rfrac() * UPDATE_RATE) < ABS(frame_loops - pl->visibility[j].lastChange))
+            else if (pl->updateVisibility || PlayersArray[j]->updateVisibility || (int)(rfrac() * UPDATE_RATE) < ABS(frame_loops - pl->visibility[j].lastChange))
             {
 
                 pl->visibility[j].lastChange = frame_loops;
-                pl->visibility[j].canSee = (rfrac() * (pl->item[ITEM_SENSOR] + 1)) > (rfrac() * (Players[j]->item[ITEM_CLOAK] + 1));
+                pl->visibility[j].canSee = (rfrac() * (pl->item[ITEM_SENSOR] + 1)) > (rfrac() * (PlayersArray[j]->item[ITEM_CLOAK] + 1));
             }
         }
 
@@ -1313,7 +1313,7 @@ void Update_objects(void)
 
     for (int ind = 0; ind < NumPlayers; ind++)
     {
-        player_t *pl = Players[ind];
+        player_t *pl = PlayersArray[ind];
 
         pl->updateVisibility = 0;
 
@@ -1331,8 +1331,8 @@ void Update_objects(void)
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             pl->lock.distance =
-                Wrap_length(pl->pos.cx - Players[GetInd[pl->lock.pl_id]]->pos.cx,
-                            pl->pos.cy - Players[GetInd[pl->lock.pl_id]]->pos.cy) /
+                Wrap_length(pl->pos.cx - PlayersArray[GetInd[pl->lock.pl_id]]->pos.cx,
+                            pl->pos.cy - PlayersArray[GetInd[pl->lock.pl_id]]->pos.cy) /
                 CLICK;
         }
     }
@@ -1347,7 +1347,7 @@ void Update_objects(void)
      */
     for (int ind = NumPlayers - 1; ind >= 0; ind--)
     {
-        player_t *pl = Players[ind];
+        player_t *pl = PlayersArray[ind];
 
         if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             Update_tanks(&(pl->fuel));

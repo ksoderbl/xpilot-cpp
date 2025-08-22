@@ -54,7 +54,7 @@ static char msg[MSG_LEN];
 
 static void Refuel(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i;
     double l, dist = 1e9;
 
@@ -82,7 +82,7 @@ static void Refuel(int ind)
 
 static void Repair(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i;
     double l, dist = 1e9;
     target_t *targ = world->targets;
@@ -113,8 +113,8 @@ bool team_dead(int team)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Players[i]->team == team &&
-            BIT(Players[i]->status, PLAYING | GAME_OVER) == PLAYING)
+        if (PlayersArray[i]->team == team &&
+            BIT(PlayersArray[i]->status, PLAYING | GAME_OVER) == PLAYING)
         {
             alive = true;
             break;
@@ -128,7 +128,7 @@ bool team_dead(int team)
  */
 static bool Player_lock_allowed(int ind, int lock)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     /* we can never lock on ourselves, nor on -1. */
     if (ind == lock || lock == -1)
@@ -149,7 +149,7 @@ static bool Player_lock_allowed(int ind, int lock)
     }
 
     /* we can always lock on players from our own team. */
-    if (Players_are_teammates(pl, Players[lock]))
+    if (Players_are_teammates(pl, PlayersArray[lock]))
         return true;
 
     /* if lockOtherTeam is true then we can always lock on other teams. */
@@ -186,7 +186,7 @@ static bool Player_lock_allowed(int ind, int lock)
  */
 int Player_lock_closest(int ind, int next)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int lock, i, newpl;
     double dist, best, l;
 
@@ -196,8 +196,8 @@ int Player_lock_closest(int ind, int next)
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         lock = GetInd[pl->lock.pl_id];
-        dist = Wrap_length(Players[lock]->pos.cx - pl->pos.cx,
-                           Players[lock]->pos.cy - pl->pos.cy) /
+        dist = Wrap_length(PlayersArray[lock]->pos.cx - pl->pos.cx,
+                           PlayersArray[lock]->pos.cy - pl->pos.cy) /
                CLICK;
     }
     else
@@ -209,9 +209,9 @@ int Player_lock_closest(int ind, int next)
     best = FLT_MAX;
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Players[i];
+        player_t *pl_i = PlayersArray[i];
         if (i == lock ||
-            (BIT(Players[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
+            (BIT(PlayersArray[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
             !Player_lock_allowed(ind, i) ||
             Player_owns_tank(pl, pl_i) ||
             Players_are_teammates(pl, pl_i) ||
@@ -232,14 +232,14 @@ int Player_lock_closest(int ind, int next)
     }
 
     SET_BIT(pl->lock.tagged, LOCK_PLAYER);
-    pl->lock.pl_id = Players[newpl]->id;
+    pl->lock.pl_id = PlayersArray[newpl]->id;
 
     return 1;
 }
 
 void Pause_player(int ind, bool on)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i;
 
     if (on && !BIT(pl->status, PAUSE))
@@ -271,7 +271,7 @@ void Pause_player(int ind, bool on)
                      * then it's too late to join. */
                     if (i == ind)
                         continue;
-                    if (Players[i]->life < world->rules->lives && !Players_are_teammates(pl, Players[i]))
+                    if (PlayersArray[i]->life < world->rules->lives && !Players_are_teammates(pl, PlayersArray[i]))
                     {
                         toolate = true;
                         break;
@@ -307,7 +307,7 @@ void Pause_player(int ind, bool on)
 
 int Handle_keyboard(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i, j, k, key, pressed, xi, yi;
     double minv;
 
@@ -476,14 +476,14 @@ int Handle_keyboard(int ind)
                     }
                     if (i == j)
                         break;
-                } while (i == ind || BIT(Players[i]->status, GAME_OVER | PAUSE) || !Player_lock_allowed(ind, i));
+                } while (i == ind || BIT(PlayersArray[i]->status, GAME_OVER | PAUSE) || !Player_lock_allowed(ind, i));
                 if (i == ind)
                 {
                     CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
                 }
                 else
                 {
-                    pl->lock.pl_id = Players[i]->id;
+                    pl->lock.pl_id = PlayersArray[i]->id;
                     SET_BIT(pl->lock.tagged, LOCK_PLAYER);
                 }
                 break;
@@ -500,7 +500,7 @@ int Handle_keyboard(int ind)
                  * Verify if the lock has ever been initialized at all
                  * and if the lock is still valid.
                  */
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetInd[k]) > 0 && i < NumPlayers && Players[i]->id == k && i != ind)
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetInd[k]) > 0 && i < NumPlayers && PlayersArray[i]->id == k && i != ind)
                 {
                     break;
                 }
@@ -542,11 +542,11 @@ int Handle_keyboard(int ind)
                         }
                     }
                     for (i = 0; i < NumPlayers; i++)
-                        if (i != ind && !Player_is_tank(Players[i]) && pl->home_base == Players[i]->home_base)
+                        if (i != ind && !Player_is_tank(PlayersArray[i]) && pl->home_base == PlayersArray[i]->home_base)
                         {
                             Pick_startpos(i);
                             sprintf(msg, "%s has taken over %s's home base.",
-                                    pl->name, Players[i]->name);
+                                    pl->name, PlayersArray[i]->name);
                         }
                     if (msg[0])
                     {
@@ -555,8 +555,8 @@ int Handle_keyboard(int ind)
                     }
                     for (i = 0; i < NumPlayers; i++)
                     {
-                        if (Players[i]->conn != NULL)
-                            Send_base(Players[i]->conn,
+                        if (PlayersArray[i]->conn != NULL)
+                            Send_base(PlayersArray[i]->conn,
                                       pl->id,
                                       pl->home_base);
                     }

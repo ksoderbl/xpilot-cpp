@@ -143,9 +143,9 @@ void sound_play_all(int index)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (BIT(Players[i]->status, WANT_AUDIO))
+        if (BIT(PlayersArray[i]->status, WANT_AUDIO))
         {
-            sound_play_player(Players[i], index);
+            sound_play_player(PlayersArray[i], index);
         }
     }
 }
@@ -170,7 +170,7 @@ void sound_play_sensors(int cx, int cy, int index)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
 
         if (!BIT(pl->status, WANT_AUDIO))
             continue;

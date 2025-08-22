@@ -733,7 +733,7 @@ void Destroy_connection(connection_t *connp, const char *reason)
     {
         id = connp->id;
         connp->id = NO_ID;
-        Players[GetInd[id]]->conn = NULL;
+        PlayersArray[GetInd[id]]->conn = NULL;
         Delete_player(GetInd[id]);
     }
 
@@ -1156,7 +1156,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (strcasecmp(Players[i]->name, connp->nick) == 0)
+        if (strcasecmp(PlayersArray[i]->name, connp->nick) == 0)
         {
             warn("Name already in use %s", connp->nick);
             strlcpy(errmsg, "Name already in use", errsize);
@@ -1168,7 +1168,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         strlcpy(errmsg, "Init_player failed: no free ID", errsize);
         return -1;
     }
-    pl = Players[NumPlayers];
+    pl = PlayersArray[NumPlayers];
     strlcpy(pl->name, connp->nick, MAX_CHARS);
     strlcpy(pl->username, connp->user, MAX_CHARS);
     strlcpy(pl->hostname, connp->host, MAX_CHARS);
@@ -1213,23 +1213,23 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        Send_player(pl->conn, Players[i]->id);
-        Send_score(pl->conn, Players[i]->id, Players[i]->score,
-                   Players[i]->life, Players[i]->mychar, Players[i]->alliance);
-        if (!Player_is_tank(Players[i]))
-            Send_base(pl->conn, Players[i]->id, Players[i]->home_base);
+        Send_player(pl->conn, PlayersArray[i]->id);
+        Send_score(pl->conn, PlayersArray[i]->id, PlayersArray[i]->score,
+                   PlayersArray[i]->life, PlayersArray[i]->mychar, PlayersArray[i]->alliance);
+        if (!Player_is_tank(PlayersArray[i]))
+            Send_base(pl->conn, PlayersArray[i]->id, PlayersArray[i]->home_base);
     }
     /*
      * And tell all the others about him.
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Players[i]->conn != NULL)
+        if (PlayersArray[i]->conn != NULL)
         {
-            Send_player(Players[i]->conn, pl->id);
-            Send_score(Players[i]->conn, pl->id, pl->score,
+            Send_player(PlayersArray[i]->conn, pl->id);
+            Send_score(PlayersArray[i]->conn, pl->id, pl->score,
                        pl->life, pl->mychar, pl->alliance);
-            Send_base(Players[i]->conn, pl->id, pl->home_base);
+            Send_base(PlayersArray[i]->conn, pl->id, pl->home_base);
         }
         /*
          * And tell him about the relationships others have with eachother.
@@ -1237,7 +1237,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         else if (IS_ROBOT_IND(i))
         {
             if ((war_on_id = Robot_war_on_player(i)) != NO_ID)
-                Send_war(pl->conn, Players[i]->id, war_on_id);
+                Send_war(pl->conn, PlayersArray[i]->id, war_on_id);
         }
     }
 
@@ -1776,7 +1776,7 @@ int Send_seek(connection_t *connp, int programmer_id, int robot_id, int sought_i
  */
 int Send_player(connection_t *connp, int id)
 {
-    player_t *pl = Players[GetInd[id]];
+    player_t *pl = PlayersArray[GetInd[id]];
     int n;
     char buf[MSG_LEN], ext[MSG_LEN];
     int sbuf_len = connp->c.len;
@@ -1842,7 +1842,7 @@ int Send_score(connection_t *connp, int id, int score,
             }
             else
             {
-                if (Players[GetInd[connp->id]]->alliance == alliance)
+                if (PlayersArray[GetInd[connp->id]]->alliance == alliance)
                     allchar = '+';
             }
         }
@@ -2343,7 +2343,7 @@ static int Receive_keyboard(connection_t *connp)
     else
     {
         connp->last_key_change = change;
-        pl = Players[GetInd[connp->id]];
+        pl = PlayersArray[GetInd[connp->id]];
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
         Handle_keyboard(GetInd[connp->id]);
@@ -2428,7 +2428,7 @@ static int Receive_power(connection_t *connp)
         return n;
     }
     power = (double)tmp / 256.0F;
-    pl = Players[GetInd[connp->id]];
+    pl = PlayersArray[GetInd[connp->id]];
     autopilot = BIT(pl->used, HAS_AUTOPILOT);
     /* old client are going to send autopilot-mangled data, ignore it */
     if (autopilot && pl->version < 0x4200)
@@ -2871,7 +2871,7 @@ static int Receive_ack_polystyle(connection_t *connp)
  */
 static void Handle_talk(connection_t *connp, char *str)
 {
-    player_t *pl = Players[GetInd[connp->id]];
+    player_t *pl = PlayersArray[GetInd[connp->id]];
     int i, sent, team;
     unsigned int len;
     char *cp,
@@ -2894,10 +2894,10 @@ static void Handle_talk(connection_t *connp, char *str)
         sprintf(msg + strlen(msg), ":[%d]", team);
         for (sent = i = 0; i < NumPlayers; i++)
         {
-            if (Players[i]->team != TEAM_NOT_SET && Players[i]->team == team)
+            if (PlayersArray[i]->team != TEAM_NOT_SET && PlayersArray[i]->team == team)
             {
                 sent++;
-                Set_player_message(Players[i], msg);
+                Set_player_message(PlayersArray[i], msg);
             }
         }
         if (sent)
@@ -2922,7 +2922,7 @@ static void Handle_talk(connection_t *connp, char *str)
         /* first look for an exact match on player nickname. */
         for (i = 0; i < NumPlayers; i++)
         {
-            if (strcasecmp(Players[i]->name, str) == 0)
+            if (strcasecmp(PlayersArray[i]->name, str) == 0)
             {
                 sent = i;
                 break;
@@ -2933,7 +2933,7 @@ static void Handle_talk(connection_t *connp, char *str)
             /* now look for a partial match on both nick and username. */
             for (sent = -1, i = 0; i < NumPlayers; i++)
             {
-                if (strncasecmp(Players[i]->name, str, len) == 0 || strncasecmp(Players[i]->username, str, len) == 0)
+                if (strncasecmp(PlayersArray[i]->name, str, len) == 0 || strncasecmp(PlayersArray[i]->username, str, len) == 0)
                     sent = (sent == -1) ? i : -2;
             }
         }
@@ -2950,10 +2950,10 @@ static void Handle_talk(connection_t *connp, char *str)
             Set_player_message(pl, msg);
             break;
         default:
-            if (Players[sent] != pl)
+            if (PlayersArray[sent] != pl)
             {
-                sprintf(msg + strlen(msg), ":[%s]", Players[sent]->name);
-                Set_player_message(Players[sent], msg);
+                sprintf(msg + strlen(msg), ":[%s]", PlayersArray[sent]->name);
+                Set_player_message(PlayersArray[sent], msg);
                 Set_player_message(pl, msg);
             }
             break;
@@ -2984,7 +2984,7 @@ static int Receive_talk(connection_t *connp)
         }
         connp->talk_sequence_num = seq;
         if (*str == '/')
-            Handle_player_command(Players[GetInd[connp->id]], str + 1);
+            Handle_player_command(PlayersArray[GetInd[connp->id]], str + 1);
         else
             Handle_talk(connp, str);
     }
@@ -3045,7 +3045,7 @@ static int Receive_modifier_bank(connection_t *connp)
             Destroy_connection(connp, "read modbank");
         return n;
     }
-    pl = Players[GetInd[connp->id]];
+    pl = PlayersArray[GetInd[connp->id]];
     if (bank < NUM_MODBANKS)
     {
         CLEAR_MODS(mods);
@@ -3341,7 +3341,7 @@ static int Receive_pointer_move(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    pl = Players[GetInd[connp->id]];
+    pl = PlayersArray[GetInd[connp->id]];
     if (BIT(pl->status, HOVERPAUSE))
         return 1;
 
@@ -3389,7 +3389,7 @@ static int Receive_fps_request(connection_t *connp)
     }
     if (connp->id != NO_ID)
     {
-        pl = Players[GetInd[connp->id]];
+        pl = PlayersArray[GetInd[connp->id]];
         pl->player_fps = fps;
         // TODO: Fix this stuff
         if (fps > FPS)
@@ -3420,7 +3420,7 @@ static int Receive_audio_request(connection_t *connp)
     }
     if (connp->id != NO_ID)
     {
-        pl = Players[GetInd[connp->id]];
+        pl = PlayersArray[GetInd[connp->id]];
         sound_player_onoff(pl, onoff);
     }
 

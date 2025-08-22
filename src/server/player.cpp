@@ -53,7 +53,7 @@ bool updateScores = true;
 
 void Pick_startpos(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i, num_free;
     int pick = 0, seen = 0;
     static int prev_num_bases = 0;
@@ -91,9 +91,9 @@ void Pick_startpos(int ind)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i != ind && !Player_is_tank(Players[i]) && free_bases[Players[i]->home_base])
+        if (i != ind && !Player_is_tank(PlayersArray[i]) && free_bases[PlayersArray[i]->home_base])
         {
-            free_bases[Players[i]->home_base] = 0; /* occupado */
+            free_bases[PlayersArray[i]->home_base] = 0; /* occupado */
             num_free--;
         }
     }
@@ -135,9 +135,9 @@ void Pick_startpos(int ind)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->conn != NULL)
+                if (PlayersArray[i]->conn != NULL)
                 {
-                    Send_base(Players[i]->conn,
+                    Send_base(PlayersArray[i]->conn,
                               pl->id,
                               pl->home_base);
                 }
@@ -152,13 +152,13 @@ void Pick_startpos(int ind)
 
 void Go_home(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
     if (ind != pl->ind)
     {
-        player_t *pl1 = Players[ind];
-        player_t *pl2 = Players[pl->ind];
+        player_t *pl1 = PlayersArray[ind];
+        player_t *pl2 = PlayersArray[pl->ind];
         warn("******** ERROR!!!!");
         warn("pl1: '%s', pl2: '%s'", pl1->name, pl2->name);
     }
@@ -226,7 +226,7 @@ void Go_home(int ind)
     for (i = 0; i < NumPlayers; i++)
     {
         pl->visibility[i].lastChange = 0;
-        Players[i]->visibility[ind].lastChange = 0;
+        PlayersArray[i]->visibility[ind].lastChange = 0;
     }
 
     if (Player_is_robot(pl))
@@ -301,7 +301,7 @@ void Player_add_tank(player_t *pl, long tank_fuel)
  */
 void Player_remove_tank(int ind, int which_tank)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i, tank_ind;
     long tank_fuel, tank_cap;
 
@@ -332,7 +332,7 @@ void Player_remove_tank(int ind, int which_tank)
 
 void Player_hit_armor(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     if (--pl->item[ITEM_ARMOR] <= 0)
         CLR_BIT(pl->have, HAS_ARMOR);
@@ -340,7 +340,7 @@ void Player_hit_armor(int ind)
 
 void Player_used_kill(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     pl->used &= ~USED_KILL;
     if (!BIT(DEF_HAVE, HAS_SHIELD))
@@ -367,7 +367,7 @@ void Player_set_mass(player_t *pl)
  */
 static void Player_init_fuel(int ind, long total_fuel)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     long fuel = total_fuel;
     int i;
 
@@ -390,7 +390,7 @@ static void Player_init_fuel(int ind, long total_fuel)
 
 int Init_player(int ind, shipshape_t *ship)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     bool too_late = false;
     int i;
 
@@ -509,7 +509,7 @@ int Init_player(int ind, shipshape_t *ship)
         {
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (Players[i]->life < world->rules->lives && !Players_are_teammates(pl, Players[i]))
+            if (PlayersArray[i]->life < world->rules->lives && !Players_are_teammates(pl, PlayersArray[i]))
             {
                 too_late = true;
                 break;
@@ -570,7 +570,7 @@ void Alloc_players(int number)
     int i;
 
     /* Allocate space for pointers */
-    Players = (player **)calloc(number + 1, sizeof(player *));
+    PlayersArray = (player **)calloc(number + 1, sizeof(player *));
 
     /* Allocate space for all entries, all player structs */
     p = playerArray = (player *)calloc(number, sizeof(player));
@@ -580,19 +580,19 @@ void Alloc_players(int number)
         (struct _visibility *)calloc(number * number,
                                      sizeof(struct _visibility));
 
-    if (!Players || !playerArray || !visibilityArray)
+    if (!PlayersArray || !playerArray || !visibilityArray)
     {
         error("Not enough memory for Players.");
         exit(1);
     }
 
-    /* Players[-1] should evaluate to NULL. */
-    Players++;
+    /* PlayersArray[-1] should evaluate to NULL. */
+    PlayersArray++;
 
     for (i = 0; i < number; i++)
     {
-        Players[i] = p++;
-        Players[i]->visibility = t;
+        PlayersArray[i] = p++;
+        PlayersArray[i]->visibility = t;
         /* Advance to next block/array */
         t += number;
     }
@@ -600,11 +600,11 @@ void Alloc_players(int number)
 
 void Free_players(void)
 {
-    if (Players)
+    if (PlayersArray)
     {
-        --Players;
-        free(Players);
-        Players = NULL;
+        --PlayersArray;
+        free(PlayersArray);
+        PlayersArray = NULL;
 
         free(playerArray);
         free(visibilityArray);
@@ -618,7 +618,7 @@ void Update_score_table(void)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        pl = Players[j];
+        pl = PlayersArray[j];
         if (pl->score != pl->prev_score || pl->life != pl->prev_life || pl->mychar != pl->prev_mychar || pl->alliance != pl->prev_alliance)
         {
             pl->prev_score = pl->score;
@@ -627,9 +627,9 @@ void Update_score_table(void)
             pl->prev_alliance = pl->alliance;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->conn != NULL)
+                if (PlayersArray[i]->conn != NULL)
                 {
-                    Send_score(Players[i]->conn, pl->id,
+                    Send_score(PlayersArray[i]->conn, pl->id,
                                pl->score, pl->life,
                                pl->mychar, pl->alliance);
                 }
@@ -648,9 +648,9 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    if (Players[i]->conn != NULL)
+                    if (PlayersArray[i]->conn != NULL)
                     {
-                        Send_timing(Players[i]->conn, pl->id, check, pl->round);
+                        Send_timing(PlayersArray[i]->conn, pl->id, check, pl->round);
                     }
                 }
             }
@@ -669,7 +669,7 @@ void Reset_all_players(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         if (options.endOfRoundReset)
         {
             if (BIT(pl->status, PAUSE))
@@ -679,7 +679,7 @@ void Reset_all_players(void)
             else
             {
                 Kill_player(i);
-                if (pl != Players[i])
+                if (pl != PlayersArray[i])
                 {
                     /* player was deleted. */
                     i--;
@@ -795,7 +795,7 @@ void Check_team_members(int team)
 
     for (members = i = 0; i < NumPlayers; i++)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
             members++;
     }
@@ -805,7 +805,7 @@ void Check_team_members(int team)
               team, world->teams[team].NumMembers, members);
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = Players[i];
+            pl = PlayersArray[i];
             if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
                 error("Team %d currently has player %d: \"%s\"",
                       team, i + 1, pl->name);
@@ -831,10 +831,10 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Players[i]) || (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0))
+        if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0))
             continue;
-        *average_score += Players[i]->score;
-        ratio = (double)Players[i]->kills / (Players[i]->deaths + 1);
+        *average_score += PlayersArray[i]->score;
+        ratio = (double)PlayersArray[i]->kills / (PlayersArray[i]->deaths + 1);
         if (ratio > *best_ratio)
         {
             *best_ratio = ratio;
@@ -862,7 +862,7 @@ static void Give_best_player_bonus(double average_score,
     }
     else if (num_best_players == 1)
     {
-        player *bp = Players[best_players[0]];
+        player *bp = PlayersArray[best_players[0]];
 
         sprintf(msg,
                 "%s is the Deadliest Player with a kill ratio of %d/%d.",
@@ -877,7 +877,7 @@ static void Give_best_player_bonus(double average_score,
         msg[0] = '\0';
         for (i = 0; i < num_best_players; i++)
         {
-            player *bp = Players[best_players[i]];
+            player *bp = PlayersArray[best_players[i]];
             double ratio = Rate(bp->score, average_score);
             double score = (ratio + num_best_players) / num_best_players;
 
@@ -905,8 +905,8 @@ static void Give_best_player_bonus(double average_score,
         }
         sprintf(msg + strlen(msg),
                 " are the Deadly Players with kill ratios of %d/%d.",
-                Players[best_players[0]]->kills,
-                Players[best_players[0]]->deaths);
+                PlayersArray[best_players[0]]->kills,
+                PlayersArray[best_players[0]]->deaths);
     }
     Set_message(msg);
 }
@@ -915,7 +915,7 @@ static void Give_individual_bonus(int ind, double average_score)
 {
     double ratio;
     double points;
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     ratio = (double)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(pl->score, average_score);
@@ -990,11 +990,11 @@ void Team_game_over(int winning_team, const char *reason)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Players[i]->team != winning_team)
+            if (PlayersArray[i]->team != winning_team)
                 continue;
-            if (Player_is_tank(Players[i]) ||
-                (BIT(Players[i]->status, PAUSE) && Players[i]->count <= 0) ||
-                (BIT(Players[i]->status, GAME_OVER) && Players[i]->mychar == 'W' && Players[i]->score == 0))
+            if (Player_is_tank(PlayersArray[i]) ||
+                (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0) ||
+                (BIT(PlayersArray[i]->status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
                 continue;
             for (j = 0; j < num_best_players; j++)
             {
@@ -1047,7 +1047,7 @@ void Individual_game_over(int winner)
     }
     else
     {
-        sprintf(msg, " < %s has won the game! >", Players[winner]->name);
+        sprintf(msg, " < %s has won the game! >", PlayersArray[winner]->name);
         Set_message(msg);
         sound_play_all(PLAYER_WIN_SOUND);
     }
@@ -1120,7 +1120,7 @@ void Race_game_over(void)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = Players[i];
+            pl = PlayersArray[i];
             if (Player_is_tank(pl))
             {
                 continue;
@@ -1133,11 +1133,11 @@ void Race_game_over(void)
             {
                 for (j = 0; j < i; j++)
                 {
-                    if (pl->best_lap < Players[order[j]]->best_lap)
+                    if (pl->best_lap < PlayersArray[order[j]]->best_lap)
                     {
                         break;
                     }
-                    if (BIT(Players[order[j]]->status, PAUSE) || (BIT(Players[order[j]]->status, GAME_OVER) && Players[order[j]]->mychar == 'W'))
+                    if (BIT(PlayersArray[order[j]]->status, PAUSE) || (BIT(PlayersArray[order[j]]->status, GAME_OVER) && PlayersArray[order[j]]->mychar == 'W'))
                     {
                         break;
                     }
@@ -1152,15 +1152,15 @@ void Race_game_over(void)
         }
         for (i = 0; i < num_ordered_players; i++)
         {
-            pl = Players[order[i]];
+            pl = PlayersArray[order[i]];
             if (pl->home_base != world->baseorder[i].base_idx)
             {
                 pl->home_base = world->baseorder[i].base_idx;
                 for (j = 0; j < NumPlayers; j++)
                 {
-                    if (Players[j]->conn != NULL)
+                    if (PlayersArray[j]->conn != NULL)
                     {
-                        Send_base(Players[j]->conn,
+                        Send_base(PlayersArray[j]->conn,
                                   pl->id,
                                   pl->home_base);
                     }
@@ -1176,7 +1176,7 @@ void Race_game_over(void)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        pl = Players[i];
+        pl = PlayersArray[i];
         CLR_BIT(pl->status, RACE_OVER | FINISH);
         if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
         {
@@ -1189,7 +1189,7 @@ void Race_game_over(void)
             Kill_player(i);
         else
             Player_death_reset(i);
-        if (pl != Players[i])
+        if (pl != PlayersArray[i])
         {
             continue;
         }
@@ -1208,7 +1208,7 @@ void Race_game_over(void)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = Players[i];
+            pl = PlayersArray[i];
             if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
             {
                 continue;
@@ -1284,7 +1284,7 @@ void Compute_game_status(void)
         /* First count the players */
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = Players[i];
+            pl = PlayersArray[i];
             if (BIT(pl->status, PAUSE) || Player_is_tank(pl))
                 continue;
             if (!BIT(pl->status, GAME_OVER))
@@ -1336,7 +1336,7 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                pl = Players[i];
+                pl = PlayersArray[i];
                 if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
                     continue;
                 if (BIT(pl->status, FINISH))
@@ -1420,26 +1420,26 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(Players[i]))
+            if (Player_is_tank(PlayersArray[i]))
                 /* Ignore tanks. */
                 continue;
-            else if (BIT(Players[i]->status, PAUSE))
+            else if (BIT(PlayersArray[i]->status, PAUSE))
                 /* Ignore paused players. */
                 continue;
 #if 0
             /* not all teammode maps have treasures. */
-            else if (world->teams[Players[i]->team].NumTreasures == 0) {
+            else if (world->teams[PlayersArray[i]->team].NumTreasures == 0) {
                 /* Ignore players with no treasure troves */
                 continue;
             }
 #endif
-            else if (BIT(Players[i]->status, GAME_OVER))
+            else if (BIT(PlayersArray[i]->status, GAME_OVER))
             {
-                if (team_state[Players[i]->team] == TeamEmpty)
+                if (team_state[PlayersArray[i]->team] == TeamEmpty)
                 {
                     /* Assume all teammembers are dead. */
                     num_dead_teams++;
-                    team_state[Players[i]->team] = TeamDead;
+                    team_state[PlayersArray[i]->team] = TeamDead;
                 }
             }
             /*
@@ -1450,15 +1450,15 @@ void Compute_game_status(void)
              * was genocided very quickly after game reset, while this
              * player was still being transported back to his homebase.
              */
-            else if (team_state[Players[i]->team] != TeamAlive)
+            else if (team_state[PlayersArray[i]->team] != TeamAlive)
             {
-                if (team_state[Players[i]->team] == TeamDead)
+                if (team_state[PlayersArray[i]->team] == TeamDead)
                     /* Oops!  Not all teammembers are dead yet. */
                     num_dead_teams--;
-                team_state[Players[i]->team] = TeamAlive;
+                team_state[PlayersArray[i]->team] = TeamAlive;
                 ++num_alive_teams;
                 /* Remember a team which was alive. */
-                winning_team = Players[i]->team;
+                winning_team = PlayersArray[i]->team;
             }
         }
 
@@ -1537,9 +1537,9 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                if (BIT(Players[i]->status, PAUSE) || Player_is_tank(Players[i]))
+                if (BIT(PlayersArray[i]->status, PAUSE) || Player_is_tank(PlayersArray[i]))
                     continue;
-                team_score[Players[i]->team] += Players[i]->score;
+                team_score[PlayersArray[i]->team] += PlayersArray[i]->score;
             }
 
             for (winners = i = 0; i < MAX_TEAMS; i++)
@@ -1640,9 +1640,9 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (BIT(Players[i]->status, PAUSE) || Player_is_tank(Players[i]))
+            if (BIT(PlayersArray[i]->status, PAUSE) || Player_is_tank(PlayersArray[i]))
                 continue;
-            if (!BIT(Players[i]->status, GAME_OVER))
+            if (!BIT(PlayersArray[i]->status, GAME_OVER))
             {
                 num_alive_players++;
                 if (IS_ROBOT_IND(i))
@@ -1676,7 +1676,7 @@ void Compute_game_status(void)
 
 void Delete_player(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     object_t *obj;
     int i, j,
         id = pl->id;
@@ -1797,34 +1797,34 @@ void Delete_player(int ind)
     /*
      * Swap entry no 'ind' with the last one.
      *
-     * Change the Players[] pointer array to have Players[ind] point to
-     * a valid player and move our leaving player to Players[NumPlayers].
+     * Change the PlayersArray[] pointer array to have PlayersArray[ind] point to
+     * a valid player and move our leaving player to PlayersArray[NumPlayers].
      */
-    pl = Players[NumPlayers]; /* Swap pointers... */
-    Players[NumPlayers] = Players[ind];
-    Players[ind] = pl;
-    pl = Players[NumPlayers]; /* Restore pointer. */
+    pl = PlayersArray[NumPlayers]; /* Swap pointers... */
+    PlayersArray[NumPlayers] = PlayersArray[ind];
+    PlayersArray[ind] = pl;
+    pl = PlayersArray[NumPlayers]; /* Restore pointer. */
 
-    GetInd[Players[ind]->id] = ind;
-    GetInd[Players[NumPlayers]->id] = NumPlayers;
+    GetInd[PlayersArray[ind]->id] = ind;
+    GetInd[PlayersArray[NumPlayers]->id] = NumPlayers;
 
     Check_team_members(pl->team);
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Player_is_tank(Players[i]) && Players[i]->lock.pl_id == id)
+        if (Player_is_tank(PlayersArray[i]) && PlayersArray[i]->lock.pl_id == id)
         {
             /* remove tanks which were released by this player. */
             if (options.keepShots)
-                Players[i]->lock.pl_id = NO_ID;
+                PlayersArray[i]->lock.pl_id = NO_ID;
             else
                 Delete_player(i);
             continue;
         }
-        if (BIT(Players[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (Players[i]->lock.pl_id == id || NumPlayers <= 1))
+        if (BIT(PlayersArray[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (PlayersArray[i]->lock.pl_id == id || NumPlayers <= 1))
         {
-            CLR_BIT(Players[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
-            CLR_BIT(Players[i]->used, HAS_TRACTOR_BEAM);
+            CLR_BIT(PlayersArray[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
+            CLR_BIT(PlayersArray[i]->used, HAS_TRACTOR_BEAM);
         }
         if (IS_ROBOT_IND(i) && Robot_war_on_player(i) == id)
         {
@@ -1832,23 +1832,23 @@ void Delete_player(int ind)
         }
         for (j = 0; j < LOCKBANK_MAX; j++)
         {
-            if (Players[i]->lockbank[j] == id)
-                Players[i]->lockbank[j] = NOT_CONNECTED;
+            if (PlayersArray[i]->lockbank[j] == id)
+                PlayersArray[i]->lockbank[j] = NOT_CONNECTED;
         }
         for (j = 0; j < MAX_RECORDED_SHOVES; j++)
         {
-            if (Players[i]->shove_record[j].pusher_id == id)
-                Players[i]->shove_record[j].pusher_id = NO_ID;
+            if (PlayersArray[i]->shove_record[j].pusher_id == id)
+                PlayersArray[i]->shove_record[j].pusher_id = NO_ID;
         }
     }
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Players[i]->conn != NULL)
-            Send_leave(Players[i]->conn, id);
-        else if (Player_is_tank(Players[i]))
+        if (PlayersArray[i]->conn != NULL)
+            Send_leave(PlayersArray[i]->conn, id);
+        else if (Player_is_tank(PlayersArray[i]))
         {
-            if (Players[i]->lock.pl_id == id)
+            if (PlayersArray[i]->lock.pl_id == id)
                 Delete_player(i);
         }
     }
@@ -1859,7 +1859,7 @@ void Delete_player(int ind)
 void Detach_ball(int ind, int obj)
 {
     int i, cnt;
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
     {
@@ -1895,7 +1895,7 @@ void Detach_ball(int ind, int obj)
 
 void Kill_player(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     Explode_fighter(pl);
     Player_death_reset(ind);
@@ -1903,7 +1903,7 @@ void Kill_player(int ind)
 
 void Player_death_reset(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     long minfuel;
     int i;
 
@@ -2014,8 +2014,8 @@ int Team_immune(int id1, int id2)
         /* can't find owner for cannon stuff */
         return 0;
 
-    pl1 = Players[GetInd[id1]];
-    pl2 = Players[GetInd[id2]];
+    pl1 = PlayersArray[GetInd[id1]];
+    pl2 = PlayersArray[GetInd[id2]];
 
     if (Players_are_teammates(pl1, pl2))
         /* players are teammates */

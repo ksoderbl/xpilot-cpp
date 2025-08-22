@@ -141,12 +141,12 @@ static int Kick_robot_players(int team)
             int i;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (!IS_ROBOT_IND(i) || Players[i]->team == options.robotTeam)
+                if (!IS_ROBOT_IND(i) || PlayersArray[i]->team == options.robotTeam)
                     continue;
-                if (Players[i]->score < low_score)
+                if (PlayersArray[i]->score < low_score)
                 {
                     low_i = i;
-                    low_score = Players[i]->score;
+                    low_score = PlayersArray[i]->score;
                 }
             }
             if (low_i >= 0)
@@ -173,12 +173,12 @@ static int Kick_robot_players(int team)
             int i;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (!IS_ROBOT_IND(i) || Players[i]->team != team)
+                if (!IS_ROBOT_IND(i) || PlayersArray[i]->team != team)
                     continue;
-                if (Players[i]->score < low_score)
+                if (PlayersArray[i]->score < low_score)
                 {
                     low_i = i;
-                    low_score = Players[i]->score;
+                    low_score = PlayersArray[i]->score;
                 }
             }
             if (low_i >= 0)
@@ -206,21 +206,21 @@ static int Kick_paused_players(int team)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Players[i]->conn != NULL && BIT(Players[i]->status, PAUSE) && (team == TEAM_NOT_SET || Players[i]->team == team))
+        if (PlayersArray[i]->conn != NULL && BIT(PlayersArray[i]->status, PAUSE) && (team == TEAM_NOT_SET || PlayersArray[i]->team == team))
         {
             if (team == TEAM_NOT_SET)
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because the game is full.",
-                        Players[i]->name);
-                Destroy_connection(Players[i]->conn, "no pause with full game");
+                        PlayersArray[i]->name);
+                Destroy_connection(PlayersArray[i]->conn, "no pause with full game");
             }
             else
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because team %d is full.",
-                        Players[i]->name, team);
-                Destroy_connection(Players[i]->conn, "no pause with full team");
+                        PlayersArray[i]->name, team);
+                Destroy_connection(PlayersArray[i]->conn, "no pause with full team");
             }
             Set_message(msg);
             num_unpaused++;
@@ -280,9 +280,9 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
     }
     for (i = 0; i < NumPlayers; i++)
     {
-        if (strcasecmp(Players[i]->name, nick_name) == 0)
+        if (strcasecmp(PlayersArray[i]->name, nick_name) == 0)
         {
-            D(printf("%s %s\n", Players[i]->name, nick_name);)
+            D(printf("%s %s\n", PlayersArray[i]->name, nick_name);)
             return E_IN_USE;
         }
     }
@@ -612,7 +612,7 @@ void Contact(int fd, void *arg)
                  * because several players may have the same username.
                  * E.g., system administrators joining as root...
                  */
-                if (strcasecmp(str, Players[i]->name) == 0 || strcasecmp(str, Players[i]->username) == 0)
+                if (strcasecmp(str, PlayersArray[i]->name) == 0 || strcasecmp(str, PlayersArray[i]->username) == 0)
                 {
                     found = i;
                 }
@@ -625,15 +625,15 @@ void Contact(int fd, void *arg)
             {
                 sprintf(msg,
                         "\"%s\" upset the gods and was kicked out of the game.",
-                        Players[found]->name);
+                        PlayersArray[found]->name);
                 Set_message(msg);
-                if (Players[found]->conn == NULL)
+                if (PlayersArray[found]->conn == NULL)
                 {
                     Delete_player(found);
                 }
                 else
                 {
-                    Destroy_connection(Players[found]->conn, "kicked out");
+                    Destroy_connection(PlayersArray[found]->conn, "kicked out");
                 }
                 updateScores = true;
             }

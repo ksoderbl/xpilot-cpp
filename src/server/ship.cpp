@@ -150,7 +150,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
-        player_t *pusher = Players[GetInd[obj->id]];
+        player_t *pusher = PlayersArray[GetInd[obj->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -183,7 +183,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
-        player_t *pusher = Players[GetInd[obj2->id]];
+        player_t *pusher = PlayersArray[GetInd[obj2->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -220,7 +220,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
-        player_t *pusher = Players[GetInd[obj2->id]];
+        player_t *pusher = PlayersArray[GetInd[obj2->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -230,7 +230,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
-        player_t *pusher = Players[GetInd[obj1->id]];
+        player_t *pusher = PlayersArray[GetInd[obj1->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -385,7 +385,7 @@ void Tank_handle_detach(player_t *pl)
 
     Update_tanks(&(pl->fuel));
     /* Fork the current player_t */
-    dummy = Players[NumPlayers];
+    dummy = PlayersArray[NumPlayers];
     /*
      * MWAAH: this was ... naieve at least:
      * *dummy              = *pl;
@@ -443,7 +443,7 @@ void Tank_handle_detach(player_t *pl)
     for (i = 0; i <= NumPlayers; i++)
     {
         dummy->visibility[i].lastChange = 0;
-        Players[i]->visibility[NumPlayers].lastChange = 0;
+        PlayersArray[i]->visibility[NumPlayers].lastChange = 0;
     }
 
     /* Remember whose tank this is */
@@ -475,7 +475,7 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && Players[GetInd[Obj[i]->info]] == pl)
+        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && PlayersArray[GetInd[Obj[i]->info]] == pl)
         {
             Obj[i]->info = NumPlayers - 1;
         }
@@ -486,10 +486,10 @@ void Tank_handle_detach(player_t *pl)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Players[i]->conn != NULL)
+        if (PlayersArray[i]->conn != NULL)
         {
-            Send_player(Players[i]->conn, dummy->id);
-            Send_score(Players[i]->conn, dummy->id,
+            Send_player(PlayersArray[i]->conn, dummy->id);
+            Send_score(PlayersArray[i]->conn, dummy->id,
                        dummy->score, dummy->life,
                        dummy->mychar, dummy->alliance);
         }

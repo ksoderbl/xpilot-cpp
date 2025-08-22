@@ -63,7 +63,7 @@
 
 void Place_mine(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
 
     if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
     {
@@ -82,7 +82,7 @@ void Place_mine(int ind)
 
 void Place_moving_mine(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     double vx = pl->vel.x;
     double vy = pl->vel.y;
 
@@ -117,7 +117,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
                         double vx, double vy, modifiers_t mods)
 {
     char msg[MSG_LEN];
-    player_t *pl = (ind == -1 ? NULL : Players[ind]);
+    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]);
     int used, life;
     long drain;
     double mass;
@@ -205,10 +205,10 @@ void Place_general_mine(int ind, unsigned short team, long status,
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (i != ind && !Team_immune(Players[i]->id, pl->id) && !Player_is_tank(Players[i]))
+                if (i != ind && !Team_immune(PlayersArray[i]->id, pl->id) && !Player_is_tank(PlayersArray[i]))
                 {
-                    int dx = CLICK_TO_PIXEL(cx - world->base[Players[i]->home_base].clk_pos.cx);
-                    int dy = CLICK_TO_PIXEL(cy - world->base[Players[i]->home_base].clk_pos.cy);
+                    int dx = CLICK_TO_PIXEL(cx - world->base[PlayersArray[i]->home_base].clk_pos.cx);
+                    int dy = CLICK_TO_PIXEL(cy - world->base[PlayersArray[i]->home_base].clk_pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -307,7 +307,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
  */
 void Detonate_mines(int ind)
 {
-    player_t *pl = Players[ind];
+    player_t *pl = PlayersArray[ind];
     int i;
     int closest = -1;
     double dist;
@@ -1175,8 +1175,8 @@ void Delete_shot(int ind)
              */
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Players[i]->ball == ball)
-                    Players[i]->ball = NULL;
+                if (PlayersArray[i]->ball == ball)
+                    PlayersArray[i]->ball = NULL;
             }
         }
         if (ball->owner == NO_ID)
@@ -1241,7 +1241,7 @@ void Delete_shot(int ind)
             type = OBJ_SHOT;
             if (shot->id != NO_ID)
             {
-                player_t *pl = Players[GetInd[shot->id]];
+                player_t *pl = PlayersArray[GetInd[shot->id]];
                 color = pl->color;
             }
             else
@@ -1321,7 +1321,7 @@ void Delete_shot(int ind)
     case OBJ_SHOT:
         if (shot->id == NO_ID || BIT(shot->status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
             break;
-        pl = Players[GetInd[shot->id]];
+        pl = PlayersArray[GetInd[shot->id]];
         if (--pl->shots <= 0)
             pl->shots = 0;
         break;
@@ -1511,7 +1511,7 @@ void Move_ball(int ind)
      */
 
     ballobject_t *ball = BALL_IND(ind);
-    player_t *pl = Players[GetInd[ball->id]];
+    player_t *pl = PlayersArray[GetInd[ball->id]];
     vector_t D;
     double length, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
@@ -1605,7 +1605,7 @@ void Move_smart_shot(int ind)
         if (shot->info >= 0)
         {
             /* Get player and set min to distance */
-            pl = Players[GetInd[shot->info]];
+            pl = PlayersArray[GetInd[shot->info]];
             range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
                                 CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
                     CLICK;
@@ -1641,7 +1641,7 @@ void Move_smart_shot(int ind)
                 range = HEAT_RANGE * (shot->count / HEAT_CLOSE_TIMEOUT);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player *p = Players[i];
+                    player *p = PlayersArray[i];
 
                     if (!BIT(p->status, THRUSTING))
                         continue;
@@ -1659,7 +1659,7 @@ void Move_smart_shot(int ind)
                         l *= 16 - p->item[ITEM_AFTERBURNER];
                     if (l < range)
                     {
-                        shot->info = Players[i]->id;
+                        shot->info = PlayersArray[i]->id;
                         range = l;
                         shot->count =
                             l < HEAT_CLOSE_RANGE ? HEAT_CLOSE_ERROR : l < HEAT_MID_RANGE ? HEAT_MID_ERROR
@@ -1687,7 +1687,7 @@ void Move_smart_shot(int ind)
 
             if (smart->count)
             {
-                smart->info = Players[(int)(rfrac() * NumPlayers)]->id;
+                smart->info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
                 smart->count--;
             }
             else
@@ -1710,7 +1710,7 @@ void Move_smart_shot(int ind)
                 }
             }
         }
-        pl = Players[GetInd[shot->info]];
+        pl = PlayersArray[GetInd[shot->info]];
     }
     else
     {

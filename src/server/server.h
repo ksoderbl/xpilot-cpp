@@ -204,33 +204,6 @@ void Cannon_check_fire(int ind);
 void Handle_player_command(player_t *pl, char *cmd);
 
 /*
- * Prototypes for player.c
- */
-void Pick_startpos(int ind);
-void Go_home(int ind);
-void Compute_sensor_range(player_t *pl);
-void Player_add_tank(player_t *pl, long tank_fuel);
-void Player_remove_tank(int ind, int which_tank);
-void Player_hit_armor(int ind);
-void Player_used_kill(int ind);
-void Player_set_mass(player_t *pl);
-int Init_player(int ind, shipshape_t *ship);
-void Alloc_players(int number);
-void Free_players(void);
-void Update_score_table(void);
-void Reset_all_players(void);
-void Check_team_members(int);
-void Compute_game_status(void);
-void Delete_player(int ind);
-void Detach_ball(int ind, int ball);
-void Kill_player(int ind);
-void Player_death_reset(int ind);
-void Team_game_over(int winning_team, const char *reason);
-void Individual_game_over(int winner);
-void Race_game_over(void);
-int Team_immune(int id1, int id2);
-
-/*
  * Prototypes for robot.c
  */
 void Parse_robot_file(void);
