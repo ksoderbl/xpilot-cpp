@@ -27,11 +27,12 @@
 #include <climits>
 #include <cmath>
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "saudio.h"
 #include "score.h"
 #include "object.h"
@@ -42,7 +43,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     static char msg[MSG_LEN];
     treasure_t *td = &world->treasures[t_destroyed];
     treasure_t *tt = &world->treasures[t_target];
-    player *pl = Players[ind];
+    player_t *pl = Players[ind];
     int i;
     int win_score = 0, lose_score = 0;
     int win_team_members = 0, lose_team_members = 0;

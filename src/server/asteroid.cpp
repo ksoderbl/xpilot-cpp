@@ -33,6 +33,8 @@
 #include <cmath>
 #include <climits>
 
+#include "server.h"
+
 #define SERVER
 
 #include "bit.h"
@@ -45,7 +47,6 @@
 #include "asteroid.h"
 #include "map.h"
 #include "object.h"
-#include "proto.h"
 #include "saudio.h"
 #include "walls.h"
 

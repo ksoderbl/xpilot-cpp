@@ -48,13 +48,14 @@
 #endif
 #endif
 
+#include "server.h"
+
 #define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "types.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "socklib.h"
 #include "map.h"
 #include "bit.h"

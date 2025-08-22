@@ -31,12 +31,13 @@
 
 #include <unistd.h>
 
+#include "server.h"
+
 #define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"

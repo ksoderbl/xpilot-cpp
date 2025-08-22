@@ -31,16 +31,16 @@
 #include "const.h"
 #include "strlcpy.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "saudio.h"
 #include "xperror.h"
 #include "object.h"
 #include "netserver.h"
-#include "proto.h"
 #include "xpmath.h"
 
 /******************************

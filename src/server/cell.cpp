@@ -30,11 +30,12 @@
 
 #include "commonmacros.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "xperror.h"
 #include "object.h"
 

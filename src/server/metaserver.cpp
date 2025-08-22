@@ -34,13 +34,14 @@
 
 #include "strlcpy.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "version.h"
 #include "serverconst.h"
 #include "types.h"
 #include "global.h"
-#include "proto.h"
 #include "socklib.h"
 #include "map.h"
 #include "pack.h"

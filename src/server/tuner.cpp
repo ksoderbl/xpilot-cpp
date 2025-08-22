@@ -24,10 +24,11 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "server.h"
+
 #define SERVER
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "xperror.h"
 #include "xpmath.h"
 #include "sched.h"

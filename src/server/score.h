@@ -24,6 +24,8 @@
 #ifndef SCORE_H
 #define SCORE_H
 
+#include "player.h"
+
 #define ED_SHOT (-0.2 * FUEL_SCALE_FACT)
 #define ED_SMART_SHOT (-30 * FUEL_SCALE_FACT)
 #define ED_MINE (-60 * FUEL_SCALE_FACT)

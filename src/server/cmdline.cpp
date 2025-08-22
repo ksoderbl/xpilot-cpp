@@ -29,11 +29,12 @@
 
 #include "option.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "defaults.h"
 #include "xperror.h"
 #include "portability.h"

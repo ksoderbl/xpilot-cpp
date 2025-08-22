@@ -24,6 +24,10 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "object.h"
+#include "player.h"
+#include "list.h"
+
 enum TeamPickType
 {
     PickForHuman = 1,
@@ -31,5 +35,339 @@ enum TeamPickType
 };
 
 #define APPNAME "xpilot-cpp-server"
+
+/*
+ * Prototypes for cell.c
+ */
+void Free_cells(void);
+void Alloc_cells(void);
+void Cell_init_object(object_t *obj);
+void Cell_add_object(object_t *obj);
+void Cell_remove_object(object_t *obj);
+void Cell_get_objects(int cx, int cy, int r, int max, object_t ***list, int *count);
+
+/*
+ * Prototypes for collision.c
+ */
+void Check_collision(void);
+int wormXY(int x, int y);
+int IsOffensiveItem(enum Item i);
+int IsDefensiveItem(enum Item i);
+int CountOffensiveItems(player_t *pl);
+int CountDefensiveItems(player_t *pl);
+
+/*
+ * Prototypes for id.c
+ */
+int peek_ID(void);
+int request_ID(void);
+void release_ID(int id);
+
+/*
+ * Prototypes for event.c
+ */
+int Handle_keyboard(int);
+void Pause_player(int ind, bool on);
+int Player_lock_closest(int ind, int next);
+bool team_dead(int team);
+void filter_mods(modifiers_t *mods);
+
+/*
+ * Prototypes for map.c
+ */
+void Free_map(void);
+bool Grok_map(void);
+void Find_base_direction(void);
+void Compute_gravity(void);
+double Wrap_findDir(double dx, double dy);
+double Wrap_cfindDir(double dcx, double dcy);
+double Wrap_length(double dx, double dy);
+unsigned short Find_closest_team(int cx, int cy);
+
+int Wildmap(
+    int width,
+    int height,
+    char *name,
+    char *author,
+    char **data,
+    int *width_ptr,
+    int *height_ptr);
+
+/*
+ * Prototypes for cmdline.c
+ */
+void tuner_none(void);
+void tuner_dummy(void);
+bool Init_options(void);
+void Free_options(void);
+
+/*
+ * Prototypes for play.c
+ */
+void Thrust(player_t *pl);
+void Recoil(object_t *ship, object_t *shot);
+void Record_shove(player_t *pl, player_t *pusher, long time);
+void Delta_mv(object_t *ship, object_t *obj);
+void Delta_mv_elastic(object_t *obj1, object_t *obj2);
+void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
+void Item_damage(int ind, double prob);
+void Tank_handle_detach(player_t *pl);
+void Add_fuel(pl_fuel_t *, long);
+void Update_tanks(pl_fuel_t *);
+void Place_item(int type, player_t *pl);
+int Choose_random_item(void);
+void Tractor_beam(int ind);
+void General_tractor_beam(int ind, int cx, int cy,
+                          int items, int target, bool pressor);
+void Place_mine(int ind);
+void Place_moving_mine(int ind);
+void Place_general_mine(int ind, unsigned short team, long status, int cx, int cy,
+                        double vx, double vy, modifiers_t mods);
+void Detonate_mines(int ind);
+char *Describe_shot(int type, long status, modifiers_t mods, int hit);
+void Fire_ecm(int ind);
+void Fire_general_ecm(int ind, unsigned short team, int cx, int cy);
+void Move_ball(int ind);
+void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
+                       int cx, int cy, int type, int dir,
+                       modifiers_t mods, int target);
+void Fire_normal_shots(player_t *pl);
+void Fire_main_shot(player_t *pl, int type, int dir);
+void Fire_shot(player_t *pl, int type, int dir);
+void Fire_left_shot(player_t *pl, int type, int dir, int gun);
+void Fire_right_shot(player_t *pl, int type, int dir, int gun);
+void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
+void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
+void Make_treasure_ball(int treasure);
+int Punish_team(int ind, int t_destroyed, int t_target);
+void Delete_shot(int ind);
+void Fire_laser(player_t *pl);
+void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy, int dir,
+                        modifiers_t mods);
+void Do_deflector(player_t *pl);
+void Do_transporter(player_t *pl);
+void Do_general_transporter(player_t *pl, int cx, int cy, int target,
+                            int *item, long *amount);
+void do_hyperjump(player_t *pl);
+void do_lose_item(player_t *pl);
+void Move_smart_shot(int ind);
+void Move_mine(int ind);
+void Make_debris(
+    /* pos.cx, pos.cy */ int cx, int cy,
+    /* vel.x, vel.y   */ double velx, double vely,
+    /* owner id       */ int id,
+    /* owner team     */ unsigned short team,
+    /* type           */ int type,
+    /* mass           */ double mass,
+    /* status         */ long status,
+    /* color          */ int color,
+    /* radius         */ int radius,
+    /* min,max debris */ int min_debris, int max_debris,
+    /* min,max dir    */ int min_dir, int max_dir,
+    /* min,max speed  */ double min_speed, double max_speed,
+    /* min,max life   */ int min_life, int max_life);
+void Make_wreckage(
+    /* pos.cx, pos.cy */ int cx, int cy,
+    /* vel.x, vel.y   */ double velx, double vely,
+    /* owner id       */ int id,
+    /* owner team     */ unsigned short team,
+    /* min,max mass   */ double min_mass, double max_mass,
+    /* total mass     */ double total_mass,
+    /* status         */ long status,
+    /* color          */ int color,
+    /* max wreckage   */ int max_wreckage,
+    /* min,max dir    */ int min_dir, int max_dir,
+    /* min,max speed  */ double min_speed, double max_speed,
+    /* min,max life   */ int min_life, int max_life);
+void Make_item(int cx, int cy,
+               int vx, int vy,
+               int item, int num_per_pack,
+               long status);
+void Explode_fighter(player_t *pl);
+void Throw_items(player_t *pl);
+void Detonate_items(int ind);
+void add_temp_wormholes(int xin, int yin, int xout, int yout);
+void remove_temp_wormhole(int ind);
+
+/*
+ * Prototypes for cannon.c
+ */
+void Cannon_init(int ind);
+void Cannon_add_item(int ind, int item, int amount);
+void Cannon_throw_items(int ind);
+void Cannon_check_defense(int ind);
+void Cannon_check_fire(int ind);
+
+/*
+ * Prototypes for command.c
+ */
+void Handle_player_command(player_t *pl, char *cmd);
+
+/*
+ * Prototypes for player.c
+ */
+void Pick_startpos(int ind);
+void Go_home(int ind);
+void Compute_sensor_range(player_t *pl);
+void Player_add_tank(player_t *pl, long tank_fuel);
+void Player_remove_tank(int ind, int which_tank);
+void Player_hit_armor(int ind);
+void Player_used_kill(int ind);
+void Player_set_mass(player_t *pl);
+int Init_player(int ind, shipshape_t *ship);
+void Alloc_players(int number);
+void Free_players(void);
+void Update_score_table(void);
+void Reset_all_players(void);
+void Check_team_members(int);
+void Compute_game_status(void);
+void Delete_player(int ind);
+void Detach_ball(int ind, int ball);
+void Kill_player(int ind);
+void Player_death_reset(int ind);
+void Team_game_over(int winning_team, const char *reason);
+void Individual_game_over(int winner);
+void Race_game_over(void);
+int Team_immune(int id1, int id2);
+
+/*
+ * Prototypes for robot.c
+ */
+void Parse_robot_file(void);
+void Robot_init(void);
+void Robot_delete(int ind, int kicked);
+void Robot_destroy(int ind);
+void Robot_update(void);
+void Robot_invite(int ind, int inv_ind);
+void Robot_war(int ind, int killer);
+void Robot_reset_war(int ind);
+int Robot_war_on_player(int ind);
+void Robot_go_home(int ind);
+void Robot_program(int ind, int victim_id);
+void Robot_message(int ind, const char *message);
+
+/*
+ * Prototypes for rules.c
+ */
+void Tune_item_probs(void);
+void Tune_item_packs(void);
+void Set_initial_resources(void);
+void Set_world_items(void);
+void Set_world_rules(void);
+void Set_world_asteroids(void);
+void Set_misc_item_limits(void);
+void Tune_asteroid_prob(void);
+
+/*
+ * Prototypes for server.c
+ */
+void End_game(void);
+int Pick_team(int pick_for_type);
+void Server_info(char *str, unsigned max_size);
+void Log_game(const char *heading);
+void Game_Over(void);
+void Server_log_admin_message(int ind, const char *str);
+int plock_server(bool on);
+void Main_loop(void);
+
+/*
+ * Prototypes for contact.c
+ */
+void Contact_cleanup(void);
+bool Contact_init(void);
+void Contact(int fd, void *arg);
+void Queue_loop(void);
+int Queue_advance_player(char *name, char *msg);
+int Queue_show_list(char *msg);
+void Set_deny_hosts(void);
+
+/*
+ * Prototypes for metaserver.c
+ */
+void Meta_send(char *mesg, int len);
+int Meta_from(char *addr, int port);
+void Meta_gone(void);
+void Meta_init(void);
+void Meta_update(int change);
+
+/*
+ * Prototypes for frame.c
+ */
+void Frame_update(void);
+void Set_message(const char *message);
+void Set_player_message(player_t *pl, const char *message);
+
+/*
+ * Prototypes for update.c
+ */
+void Update_objects(void);
+void Autopilot(player_t *pl, bool on);
+void Cloak(player_t *pl, bool on);
+void Deflector(player_t *pl, bool on);
+void Emergency_thrust(player_t *pl, bool on);
+void Emergency_shield(player_t *pl, bool on);
+void Phasing(player_t *pl, bool on);
+void Thrust(player_t *pl, bool on);
+
+/*
+ * Prototypes for option.c
+ */
+void Options_parse(void);
+void Options_free(void);
+bool Convert_string_to_int(const char *value_str, int *int_ptr);
+bool Convert_string_to_float(const char *value_str, double *float_ptr);
+bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
+void Convert_list_to_string(list_t list, char **string);
+void Convert_string_to_list(const char *value, list_t *list_ptr);
+
+/*
+ * Prototypes for parser.c
+ */
+int Parser_list_option(int *index, char *buf);
+bool Parser(int argc, char **argv);
+int Tune_option(char *name, char *val);
+int Get_option_value(const char *name, char *value, unsigned size);
+
+/*
+ * Prototypes for fileparser.c
+ */
+bool parseDefaultsFile(const char *filename);
+bool parsePasswordFile(const char *filename);
+bool parseMapFile(const char *filename);
+void expandKeyword(const char *keyword);
+
+/*
+ * Prototypes for laser.c
+ */
+void Laser_pulse_collision(void);
+
+/*
+ * Prototypes for alliance.c
+ */
+int Invite_player(int ind, int ally_ind);
+int Cancel_invitation(int ind);
+int Refuse_alliance(int ind, int ally_ind);
+int Refuse_all_alliances(int ind);
+int Accept_alliance(int ind, int ally_ind);
+int Accept_all_alliances(int ind);
+int Get_alliance_member_count(int id);
+void Player_join_alliance(int ind, int ally_ind);
+void Dissolve_all_alliances(void);
+int Leave_alliance(int ind);
+void Alliance_player_list(int ind);
+
+/*
+ * Prototypes for object.c
+ */
+object_t *Object_allocate(void);
+void Object_free_ind(int ind);
+void Object_free_ptr(object_t *obj);
+void Alloc_shots(int number);
+void Free_shots(void);
+
+/*
+ * Prototypes for showtime.c
+ */
+char *showtime(void);
 
 #endif

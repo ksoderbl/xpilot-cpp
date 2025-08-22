@@ -31,13 +31,13 @@
 #include "const.h"
 
 #include "object.h"
+#include "server.h"
 #include "walls.h"
 
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "saudio.h"
 #include "score.h"
 #include "netserver.h"

@@ -31,11 +31,12 @@
 #include "const.h"
 #include "randommt.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "bit.h"
 #include "object.h"
 #include "cannon.h"

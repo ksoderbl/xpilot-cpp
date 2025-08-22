@@ -27,10 +27,11 @@
 
 #include <unistd.h>
 
+#include "server.h"
+
 #define SERVER
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "xperror.h"
 
 static int ID_queue[NUM_IDS];

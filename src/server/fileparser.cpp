@@ -33,11 +33,12 @@
 
 #include "strdup.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "defaults.h"
 #include "map.h"
 #include "xperror.h"

@@ -37,11 +37,12 @@
 #include "const.h"
 #include "strlcpy.h"
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "bit.h"
 #include "netserver.h"
 #include "saudio.h"

@@ -25,11 +25,12 @@
 #include <cstdio>
 #include <cmath>
 
+#include "server.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
-#include "proto.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -300,6 +301,21 @@ void Emergency_shield(player_t *pl, bool on)
                                EMERGENCY_SHIELD_OFF_SOUND);
         }
     }
+}
+
+/*
+ * Turn thrust on or off.
+ */
+void Thrust(player_t *pl, bool on)
+{
+    // if (on)
+    //     SET_BIT(pl->obj_status, THRUSTING);
+    // else
+    //     CLR_BIT(pl->obj_status, THRUSTING);
+    if (on)
+        SET_BIT(pl->status, THRUSTING);
+    else
+        CLR_BIT(pl->status, THRUSTING);
 }
 
 /*

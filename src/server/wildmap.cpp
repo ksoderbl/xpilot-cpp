@@ -1488,7 +1488,7 @@ static int wildmain(int argc, char **argv)
 #undef NELEM
 #include "serverconst.h"
 #include "object.h"
-#include "proto.h"
+#include "server.h"
 
 int Wildmap(
     int width,
