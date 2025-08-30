@@ -548,8 +548,14 @@ int Net_init(char *server, int port)
 
     signal(SIGPIPE, SIG_IGN);
 
+    server_display.view_width = 0;
+    server_display.view_height = 0;
+    server_display.spark_rand = 0;
+    server_display.num_spark_colors = 0;
+
     Receive_init();
-    if (!clientPortStart || !clientPortEnd || (clientPortStart > clientPortEnd))
+    if (!clientPortStart || !clientPortEnd ||
+        (clientPortStart > clientPortEnd))
     {
         if (sock_open_udp(&sock, NULL, 0) == SOCK_IS_ERROR)
         {
@@ -1616,28 +1622,16 @@ int Receive_self(void)
 
     memset(num_items, 0, sizeof num_items);
 
-    // n = Packet_scanf(&rbuf,
-    //                  "%c%hd%hd"
-    //                  "%hd%hd%c"
-    //                  "%c%c",
-    //                  &currentTank, &fuelSum, &fuelMax,
-    //                  &ext_view_width, &ext_view_height, &debris_colors,
-    //                  &stat, &autopilotLight);
-
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
+
                      &currentTank, &sFuelSum, &sFuelMax,
                      &sViewWidth, &sViewHeight, &sNumSparkColors,
                      &sStat, &sAutopilotLight);
     if (n <= 0)
         return n;
-
-    if (debris_colors > num_spark_colors)
-        debris_colors = num_spark_colors;
-
-    Check_view_dimensions();
 
     /*
      * These assignments are done here because the server_display
@@ -1664,6 +1658,9 @@ int Receive_self(void)
                 currentTank, (double)sFuelSum, (double)sFuelMax, rbuf.len,
                 (int)sStat);
 
+#ifdef _WINDOWS
+    received_self = TRUE;
+#endif
     return 1;
 }
 
@@ -2632,36 +2629,27 @@ int Send_talk(void)
     return 0;
 }
 
-int Send_display(void)
+int Send_display(int width, int height, int sparks, int spark_colors)
 {
-    int width_wanted = draw_width;
-    int height_wanted = draw_height;
+    int width_wanted = width;
+    int height_wanted = height;
 
-    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
-    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
-
-    LIMIT(width_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    LIMIT(height_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-
-    if (width_wanted == ext_view_width &&
-        height_wanted == ext_view_height &&
-        debris_colors == num_spark_colors &&
-        spark_rand == old_spark_rand &&
+    if (width_wanted == server_display.view_width &&
+        height_wanted == server_display.view_height &&
+        spark_colors == server_display.num_spark_colors &&
+        sparks == server_display.spark_rand &&
         last_loops != 0)
-        return 0;
-
-    if (simulating)
     {
-        ext_view_width = width_wanted;
-        ext_view_height = height_wanted;
-        Check_view_dimensions();
+        return 0;
     }
-    else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
-                           width_wanted, height_wanted,
-                           num_spark_colors, spark_rand) == -1)
+
+    if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
+                      width_wanted, height_wanted,
+                      spark_colors,
+                      sparks) == -1)
         return -1;
 
-    old_spark_rand = spark_rand;
+    server_display.spark_rand = sparks;
 
     return 0;
 }

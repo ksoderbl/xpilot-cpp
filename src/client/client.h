@@ -535,11 +535,16 @@ extern bool pointerControl;        /* current state of mouse ship flying */
 
 extern int maxFPS; /* Client's own FPS */
 extern int oldMaxFPS;
+extern double clientFPS;   /* FPS client is drawing at */
+extern int recordFPS;      /* What FPS to record at */
+extern time_t currentTime; /* Current value of time() */
+extern bool newSecond;     /* Did time() increment this frame? */
+extern int maxMouseTurnsPS;
+extern int mouseMovementInterval;
+extern int cumulativeMouseMovement;
 
-extern double clientFPS;    /* FPS client is drawing at */
 extern double timePerFrame; /* Time a frame is shown, unit s */
 extern int clientLag;       /* Time to draw a frame, unit us */
-extern bool newSecond;      /* Second changed this frame */
 extern long twelveHz;       /* Attempt to increment this at 12Hz */
 
 extern int clientPortStart; /* First UDP port for clients */

@@ -1191,7 +1191,7 @@ static int Config_update_altTurnResistance(int widget_desc, void *data, double *
 static int Config_update_sparkProb(int widget_desc, void *data, double *val)
 {
     spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
-    Send_display();
+    // Send_display(); // TODO
     return 0;
 }
 

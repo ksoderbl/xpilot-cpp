@@ -60,8 +60,6 @@ bool newbie;
 int oldServer = true;
 ipos_t selfPos;
 ipos_t selfVel;
-ipos_t world; // TODO: remove?
-ipos_t realWorld;
 short heading;
 short nextCheckPoint;
 
@@ -156,10 +154,12 @@ bool auto_shield = 1; /* shield drops for fire */
 int maxFPS; /* Client's own FPS */
 int oldMaxFPS;
 double clientFPS = 1.0; /* FPS client is drawing at */
-// double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
+int recordFPS = 0;      /* What FPS to record at */
+time_t currentTime = 0; /* Current value of time() */
+bool newSecond = false; /* Did time() increment this frame? */
+
 int clientLag = 0;
-bool newSecond = false; /* Second changed this frame */
-long twelveHz = 0;      /* We attempt to increment this at 12 Hz */
+long twelveHz = 0; /* We attempt to increment this at 12 Hz */
 
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
@@ -2403,12 +2403,11 @@ int Client_power(void)
         Send_turnspeed(turnspeed) == -1 ||
         Send_turnspeed_s(turnspeed_s) == -1 ||
         Send_turnresistance(turnresistance) == -1 ||
-        Send_turnresistance_s(turnresistance_s) == -1 ||
-        Send_display() == -1)
+        Send_turnresistance_s(turnresistance_s) == -1)
         return -1;
 
-    // if (Check_view_dimensions() == -1)
-    //     return -1;
+    if (Check_view_dimensions() == -1)
+        return -1;
 
     for (i = 0; i < NUM_MODBANKS; i++)
     {
