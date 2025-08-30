@@ -171,6 +171,7 @@ static void Receive_init(void)
     reliable_tbl[PKT_MESSAGE] = Receive_message;
     reliable_tbl[PKT_TEAM_SCORE] = Receive_team_score;
     reliable_tbl[PKT_PLAYER] = Receive_player;
+    reliable_tbl[PKT_TEAM] = Receive_team;
     reliable_tbl[PKT_SCORE] = Receive_score;
     reliable_tbl[PKT_TIMING] = Receive_timing;
     reliable_tbl[PKT_LEAVE] = Receive_leave;
@@ -437,12 +438,10 @@ int Net_setup(void)
  * this info from the ENTER_GAME_pack.
  */
 #define MAX_VERIFY_RETRIES 5
-int Net_verify(char *user_name, char *nick_name, char *disp, int my_team)
+int Net_verify(char *user_name, char *nick_name, char *disp)
 {
     int n, type, result, retries;
     time_t last;
-
-    team = my_team;
 
     for (retries = 0;;)
     {
@@ -2072,8 +2071,7 @@ int Receive_war(void)
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd",
                           &ch, &robot_id, &killer_id)) <= 0)
         return n;
-    if ((n = Handle_war(robot_id, killer_id)) == -1)
-        return -1;
+    /* not interested */
     return 1;
 }
 
@@ -2086,8 +2084,7 @@ int Receive_seek(void)
     if ((n = Packet_scanf(&cbuf, "%c%hd%hd%hd", &ch,
                           &programmer_id, &robot_id, &sought_id)) <= 0)
         return n;
-    if ((n = Handle_seek(programmer_id, robot_id, sought_id)) == -1)
-        return -1;
+    /* not interested */
     return 1;
 }
 
@@ -2095,7 +2092,7 @@ int Receive_player(void)
 {
     int n;
     short id;
-    uint8_t ch, myteam, mychar;
+    uint8_t ch, myteam, mychar, myself = 0;
     char nick_name[MAX_CHARS],
         user_name[MAX_CHARS],
         host_name[MAX_CHARS],
@@ -2115,12 +2112,30 @@ int Receive_player(void)
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
 
-    if ((n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)])) <= 0)
+    if (version < 0x4F10)
+        n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)]);
+    else
+        n = Packet_scanf(&cbuf, "%S%c", &shape[strlen(shape)], &myself);
+    if (n <= 0)
     {
         cbuf.ptr = cbuf_ptr;
         return n;
     }
-    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name, shape)) == -1)
+    if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name,
+                           shape, myself)) == -1)
+        return -1;
+    return 1;
+}
+
+int Receive_team(void)
+{
+    int n;
+    short id;
+    uint8_t ch, pl_team;
+
+    if ((n = Packet_scanf(&cbuf, "%c%hd%c", &ch, &id, &pl_team)) <= 0)
+        return n;
+    if (Handle_team(id, pl_team) == -1)
         return -1;
     return 1;
 }

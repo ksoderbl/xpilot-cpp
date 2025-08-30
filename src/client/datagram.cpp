@@ -52,13 +52,9 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
     if (saved == 0)
     {
         if (clientPortStart && (!clientPortEnd || clientPortEnd > 65535))
-        {
             clientPortEnd = 65535;
-        }
         if (clientPortEnd && (!clientPortStart || clientPortStart < 1024))
-        {
             clientPortStart = 1024;
-        }
 
         if (port || !clientPortStart || (clientPortStart > clientPortEnd))
         {
@@ -92,9 +88,7 @@ int create_dgram_addr_socket(sock_t *sock, char *dotaddr, int port)
         if (status == SOCK_IS_OK)
         {
             if (dgram_one_socket)
-            {
                 save_sock = *sock;
-            }
         }
     }
     else
@@ -116,7 +110,5 @@ int create_dgram_socket(sock_t *sock, int port)
 void close_dgram_socket(sock_t *sock)
 {
     if (!dgram_one_socket)
-    {
         sock_close(sock);
-    }
 }

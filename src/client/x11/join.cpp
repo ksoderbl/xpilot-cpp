@@ -260,7 +260,7 @@ int Join(char *server_addr, char *server_name, int port, char *user_name,
         Client_cleanup();
         return -1;
     }
-    if (Net_verify(user_name, nick_name, display, my_team) == -1)
+    if (Net_verify(user_name, nick_name, display) == -1)
     {
         Net_cleanup();
         Client_cleanup();

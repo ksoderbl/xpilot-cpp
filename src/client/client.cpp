@@ -1407,121 +1407,80 @@ int Handle_leave(int id)
 }
 
 int Handle_player(int id, int player_team, int mychar, char *nick_name,
-                  char *user_name, char *host_name, char *shape)
+                  char *user_name, char *host_name, char *shape, int myself)
 {
     other_t *other;
 
+    if (BIT(Setup->mode, TEAM_PLAY) && (player_team < 0 || player_team >= MAX_TEAMS))
+    {
+        warn("Illegal team %d for received player, setting to 0", player_team);
+        player_team = 0;
+    }
     if ((other = Other_by_id(id)) == NULL)
     {
         if (num_others >= max_others)
         {
             max_others += 5;
             if (num_others == 0)
-                Others = (other_t *)malloc(max_others * sizeof(other_t));
+                Others = XMALLOC(other_t, max_others);
             else
-                Others = (other_t *)realloc(Others,
-                                            max_others * sizeof(other_t));
+                Others = XREALLOC(other_t, Others, max_others);
             if (Others == NULL)
             {
-                error("Not enough memory for player info");
-                num_others = max_others = 0;
-                self = NULL;
-                return -1;
+                fatal("Not enough memory for player info");
+                // return -1;
             }
             if (self != NULL)
             {
-                /*
-                 * We've made `self' the first member of Others[].
-                 */
+                /* We've made `self' the first member of Others[]. */
                 self = &Others[0];
             }
         }
         other = &Others[num_others++];
     }
-    if (self == NULL && strcmp(name, nick_name) == 0)
+    if (self == NULL && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
     {
         if (other != &Others[0])
         {
-            /*
-             * Make `self' the first member of Others[].
-             */
+            /* Make `self' the first member of Others[]. */
             *other = Others[0];
             other = &Others[0];
         }
         self = other;
-        team = player_team;
     }
+    memset(other, 0, sizeof(other_t));
     other->id = id;
     other->team = player_team;
-    other->score = 0;
-    other->round = 0;
-    other->check = 0;
-    other->timing = 0;
-    other->life = 0;
     other->mychar = mychar;
     other->war_id = -1;
-    other->name_width = 0;
     strlcpy(other->nick_name, nick_name, sizeof(other->nick_name));
     strlcpy(other->user_name, user_name, sizeof(other->user_name));
     strlcpy(other->host_name, host_name, sizeof(other->host_name));
-    scoresChanged = 1;
+    strlcpy(other->id_string, nick_name, sizeof(other->id_string));
+    scoresChanged = true;
     other->ship = Convert_shape_str(shape);
     Calculate_shield_radius(other->ship);
 
     return 0;
 }
 
-int Handle_war(int robot_id, int killer_id)
+int Handle_team(int id, int pl_team)
 {
-    other_t *robot,
-        *killer;
-    char msg[MSG_LEN];
+    other_t *other;
 
-    if ((robot = Other_by_id(robot_id)) == NULL)
+    other = Other_by_id(id);
+    if (other == NULL)
     {
-        warn("Can't update war for non-existing player (%d,%d)", robot_id, killer_id);
+        warn("Received packet to change team for nonexistent id %d", id);
         return 0;
     }
-    if (killer_id == -1)
+    if (BIT(Setup->mode, TEAM_PLAY) && (pl_team < 0 || pl_team >= MAX_TEAMS))
     {
-        /*
-         * Robot is no longer in war mode.
-         */
-        robot->war_id = -1;
+        warn("Illegal team %d received for player id %d", pl_team, id);
         return 0;
     }
-    if ((killer = Other_by_id(killer_id)) == NULL)
-    {
-        warn("Can't update war against non-existing player (%d,%d)", robot_id, killer_id);
-        return 0;
-    }
-    robot->war_id = killer_id;
-    sprintf(msg, "%s declares war on %s.", robot->nick_name, killer->nick_name);
-    Add_message(msg);
-    scoresChanged = 1;
-
-    return 0;
-}
-
-int Handle_seek(int programmer_id, int robot_id, int sought_id)
-{
-    other_t *programmer,
-        *robot,
-        *sought;
-    char msg[MSG_LEN + 8];
-
-    if ((programmer = Other_by_id(programmer_id)) == NULL || (robot = Other_by_id(robot_id)) == NULL || (sought = Other_by_id(sought_id)) == NULL)
-    {
-        errno = 0;
-        error("Bad player seek (%d,%d,%d)",
-              programmer_id, robot_id, sought_id);
-        return 0;
-    }
-    robot->war_id = sought_id;
-    sprintf(msg, "%s has programmed %s to seek %s.",
-            programmer->nick_name, robot->nick_name, sought->nick_name);
-    Add_message(msg);
-    scoresChanged = 1;
+    other->team = pl_team;
+    scoresChanged = true;
 
     return 0;
 }
