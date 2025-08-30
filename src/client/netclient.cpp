@@ -1596,9 +1596,10 @@ int Receive_self(void)
 {
     int n;
     short x, y, vx, vy, lockId, lockDist,
-        fuelSum, fuelMax;
-    uint8_t ch, heading, power, turnspeed, turnresistance,
-        nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
+        sFuelSum, sFuelMax, sViewWidth, sViewHeight;
+    uint8_t ch, sNumSparkColors, sHeading, sPower, sTurnSpeed,
+        sTurnResistance, sNextCheckPoint, lockDir, sAutopilotLight,
+        currentTank, sStat;
     uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf,
@@ -1607,20 +1608,29 @@ int Receive_self(void)
                      "%c%c%c"
                      "%hd%hd%c%c",
                      &ch,
-                     &x, &y, &vx, &vy, &heading,
-                     &power, &turnspeed, &turnresistance,
-                     &lockId, &lockDist, &lockDir, &nextCheckPoint);
+                     &x, &y, &vx, &vy, &sHeading,
+                     &sPower, &sTurnSpeed, &sTurnResistance,
+                     &lockId, &lockDist, &lockDir, &sNextCheckPoint);
     if (n <= 0)
         return n;
 
     memset(num_items, 0, sizeof num_items);
+
+    // n = Packet_scanf(&rbuf,
+    //                  "%c%hd%hd"
+    //                  "%hd%hd%c"
+    //                  "%c%c",
+    //                  &currentTank, &fuelSum, &fuelMax,
+    //                  &ext_view_width, &ext_view_height, &debris_colors,
+    //                  &stat, &autopilotLight);
+
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
-                     &currentTank, &fuelSum, &fuelMax,
-                     &ext_view_width, &ext_view_height, &debris_colors,
-                     &stat, &autopilotLight);
+                     &currentTank, &sFuelSum, &sFuelMax,
+                     &sViewWidth, &sViewHeight, &sNumSparkColors,
+                     &sStat, &sAutopilotLight);
     if (n <= 0)
         return n;
 
@@ -1629,15 +1639,30 @@ int Receive_self(void)
 
     Check_view_dimensions();
 
-    Game_over_action(stat);
-    Handle_self(x, y, vx, vy, heading,
-                (float)power,
-                (float)turnspeed,
-                (float)turnresistance / 255.0F,
+    /*
+     * These assignments are done here because the server_display
+     * structure members are not of the type that Packet_scanf()
+     * expects, which breaks things on big endian architectures.
+     */
+    server_display.view_width = sViewWidth;
+    server_display.view_height = sViewHeight;
+    LIMIT(server_display.view_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (sViewWidth != server_display.view_width)
+        warn("unsupported view width from server");
+    LIMIT(server_display.view_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (sViewHeight != server_display.view_height)
+        warn("unsupported view height from server");
+    server_display.num_spark_colors = sNumSparkColors;
+
+    Handle_self(x, y, vx, vy, sHeading,
+                (double)sPower,
+                (double)sTurnSpeed,
+                (double)sTurnResistance / 255.0,
                 lockId, lockDist, lockDir,
-                nextCheckPoint, autopilotLight,
+                sNextCheckPoint, sAutopilotLight,
                 num_items,
-                currentTank, fuelSum, fuelMax, rbuf.len);
+                currentTank, (double)sFuelSum, (double)sFuelMax, rbuf.len,
+                (int)sStat);
 
     return 1;
 }
@@ -1715,11 +1740,20 @@ int Receive_ball(void)
 {
     int n;
     short x, y, id;
-    uint8_t ch;
+    uint8_t ch, style = 0xff /* no style */;
 
-    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
-        return n;
-    if ((n = Handle_ball(x, y, id)) == -1)
+    if (version < 0x4F14)
+    {
+        if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
+            return n;
+    }
+    else
+    {
+        if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%c", &ch, &x, &y, &id,
+                              &style)) <= 0)
+            return n;
+    }
+    if ((n = Handle_ball(x, y, id, style)) == -1)
         return -1;
     return 1;
 }
@@ -2196,7 +2230,9 @@ int Receive_team_score(void)
 
 int Receive_timing(void)
 {
-    int n, check, round;
+    int n,
+        check,
+        round;
     short id;
     unsigned short timing;
     uint8_t ch;
@@ -2204,9 +2240,9 @@ int Receive_timing(void)
     n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &timing);
     if (n <= 0)
         return n;
-    check = timing % MAX_CHECKS;
-    round = timing / MAX_CHECKS;
-    if ((n = Handle_timing(id, check, round)) == -1)
+    check = timing % num_checks;
+    round = timing / num_checks;
+    if ((n = Handle_timing(id, check, round, last_loops)) == -1)
         return -1;
     return 1;
 }
@@ -2219,7 +2255,7 @@ int Receive_fuel(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &fuel)) <= 0)
         return n;
-    if ((n = Handle_fuel(num, fuel << FUEL_SCALE_BITS)) == -1)
+    if ((n = Handle_fuel(num, (double)fuel)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_FUEL, last_loops, num);
@@ -2244,13 +2280,15 @@ int Receive_cannon(void)
 int Receive_target(void)
 {
     int n;
-    unsigned short num, dead_time, damage;
+    unsigned short num,
+        dead_time,
+        damage;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
                           &num, &dead_time, &damage)) <= 0)
         return n;
-    if ((n = Handle_target(num, dead_time, damage)) == -1)
+    if ((n = Handle_target(num, dead_time, (double)damage / 256.0)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_TARGET, last_loops, num);

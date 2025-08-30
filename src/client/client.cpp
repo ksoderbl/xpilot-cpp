@@ -60,7 +60,7 @@ bool newbie;
 int oldServer = true;
 ipos_t selfPos;
 ipos_t selfVel;
-ipos_t world;
+ipos_t world; // TODO: remove?
 ipos_t realWorld;
 short heading;
 short nextCheckPoint;
@@ -69,11 +69,18 @@ uint8_t numItems[NUM_ITEMS];     /* Count of currently owned items */
 uint8_t lastNumItems[NUM_ITEMS]; /* Last item count shown */
 int numItemsTime[NUM_ITEMS];     /* Number of frames to show this item count */
 double showItemsTime;            /* How long to show changed item count for */
+double scoreObjectTime;          /* How long to flash score objects */
+
 short autopilotLight;
 
 short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
 short lock_dist; /* Distance to player locked onto */
+
+int eyesId;           /* Player we get frame updates for */
+other_t *eyes = NULL; /* Player we get frame updates for */
+bool snooping;        /* are we snooping on someone else? */
+int eyeTeam = TEAM_NOT_SET;
 
 other_t *self;     /* player info */
 short selfVisible; /* Are we alive and playing? */
@@ -89,15 +96,15 @@ short phasingtime;
 short phasingtimemax;
 
 int RadarHeight = 0;
-int RadarWidth = 256;   /* must always be 256! */
-int map_point_distance; /* spacing of navigation points */
-int map_point_size;     /* size of navigation points */
-int spark_size;         /* size of debris and spark */
-int shot_size;          /* size of shot */
-int teamshot_size;      /* size of team shot */
-long control_count;     /* Display control for how long? */
-int roundDelay;         /* != 0 means we're in a delay */
-int roundDelayMax;      /* (not yet) used for graph of time remaining in delay */
+int RadarWidth = 256;    /* must always be 256! */
+int backgroundPointDist; /* spacing of navigation points */
+int backgroundPointSize; /* size of navigation points */
+int spark_size;          /* size of debris and spark */
+int shot_size;           /* size of shot */
+int teamshot_size;       /* size of team shot */
+long control_count;      /* Display control for how long? */
+int roundDelay;          /* != 0 means we're in a delay */
+int roundDelayMax;       /* (not yet) used for graph of time remaining in delay */
 
 double controlTime;     /* Display control for how long? */
 uint8_t spark_rand;     /* Sparkling effect */
@@ -165,9 +172,6 @@ char sounds[MAX_CHARS];      /* audio mappings */
 char audioServer[MAX_CHARS]; /* audio server */
 int maxVolume;               /* maximum volume (in percent) */
 #endif                       /* SOUND */
-
-int eyesId;     /* Player we get frame updates for */
-short snooping; /* are we snooping on someone else? */
 
 fuelstation_t *fuels = NULL;
 int num_fuels = 0;
@@ -259,23 +263,17 @@ static fuelstation_t *Fuelstation_by_pos(int x, int y)
     {
         i = (lo + hi) >> 1;
         if (pos > fuels[i].pos)
-        {
             lo = i + 1;
-        }
         else
-        {
             hi = i;
-        }
     }
     if (lo == hi && pos == fuels[lo].pos)
-    {
         return &fuels[lo];
-    }
     warn("No fuelstation at (%d,%d)", x, y);
     return NULL;
 }
 
-int Fuel_by_pos(int x, int y)
+double Fuel_by_pos(int x, int y)
 {
     fuelstation_t *fuelp;
 
@@ -284,7 +282,7 @@ int Fuel_by_pos(int x, int y)
     return fuelp->fuel;
 }
 
-int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage)
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
 {
     if (ind < 0 || ind >= num_targets)
         return -1;
@@ -295,7 +293,7 @@ int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage)
     return 0;
 }
 
-int Target_alive(int x, int y, int *damage)
+int Target_alive(int x, int y, double *damage)
 {
     int i, lo, hi, pos;
 
@@ -319,7 +317,7 @@ int Target_alive(int x, int y, int *damage)
     return -1;
 }
 
-int Handle_fuel(int ind, int fuel)
+int Handle_fuel(int ind, double fuel)
 {
     if (ind < 0 || ind >= num_fuels)
     {
@@ -374,15 +372,16 @@ int Handle_cannon(int ind, int dead_time)
     return 0;
 }
 
-int Handle_target(int num, int dead_time, int damage)
+int Handle_target(int num, int dead_time, double damage)
 {
     if (num < 0 || num >= num_targets)
     {
         warn("Bad target index (%d)", num);
         return 0;
     }
-    if (dead_time == 0 && (damage < 1 || damage > TARGET_DAMAGE))
-        printf("BUG target %d, dead %d, damage %d\n", num, dead_time, damage);
+    if (dead_time == 0 && (damage <= 0.0 || damage > TARGET_DAMAGE))
+        warn("BUG target %d, dead %d, damage %f", num, dead_time, damage);
+
     if (targets[num].dead_time > 0 && dead_time == 0)
     {
         int pos = targets[num].pos;
@@ -560,7 +559,7 @@ void Map_dots(void)
     /*
      * Optimize.
      */
-    if (map_point_size > 0)
+    if (backgroundPointSize > 0)
     {
         if (BIT(Setup->mode, WRAP_PLAY))
         {
@@ -574,17 +573,17 @@ void Map_dots(void)
                 if (dot[Setup->map_data[y]])
                     Map_make_dot(&Setup->map_data[y]);
             }
-            start = map_point_distance;
+            start = backgroundPointDist;
         }
         else
         {
             start = 0;
         }
-        if (map_point_distance > 0)
+        if (backgroundPointDist > 0)
         {
-            for (x = start; x < Setup->x; x += map_point_distance)
+            for (x = start; x < Setup->x; x += backgroundPointDist)
             {
-                for (y = start; y < Setup->y; y += map_point_distance)
+                for (y = start; y < Setup->y; y += backgroundPointDist)
                 {
                     if (dot[Setup->map_data[x * Setup->y + y]])
                         Map_make_dot(&Setup->map_data[x * Setup->y + y]);
@@ -597,7 +596,7 @@ void Map_dots(void)
             y = cannons[i].pos % Setup->y;
             if ((x == 0 || y == 0) && BIT(Setup->mode, WRAP_PLAY))
                 cannons[i].dot = 1;
-            else if (map_point_distance > 0 && x % map_point_distance == 0 && y % map_point_distance == 0)
+            else if (backgroundPointDist > 0 && x % backgroundPointDist == 0 && y % backgroundPointDist == 0)
                 cannons[i].dot = 1;
             else
                 cannons[i].dot = 0;
@@ -1485,15 +1484,14 @@ int Handle_team(int id, int pl_team)
     return 0;
 }
 
-int Handle_score(int id, int score, int life, int mychar, int alliance)
+int Handle_score(int id, double score, int life, int mychar, int alliance)
 {
     other_t *other;
 
     if ((other = Other_by_id(id)) == NULL)
     {
-        errno = 0;
-        error("Can't update score for non-existing player %d,%d,%d",
-              id, score, life);
+        warn("Can't update score for non-existing player %d,%.2f,%d",
+             id, score, life);
         return 0;
     }
     else if (other->score != score || other->life != life || other->mychar != mychar || other->alliance != alliance)
@@ -1502,60 +1500,60 @@ int Handle_score(int id, int score, int life, int mychar, int alliance)
         other->life = life;
         other->mychar = mychar;
         other->alliance = alliance;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
 
     return 0;
 }
 
-int Handle_timing(int id, int check, int round)
+int Handle_timing(int id, int check, int round, long tloops)
 {
     other_t *other;
 
     if ((other = Other_by_id(id)) == NULL)
     {
-        errno = 0;
-        error("Can't update timing for non-existing player %d,%d,%d", id, check, round);
+        warn("Can't update timing for non-existing player %d,%d,%d",
+             id, check, round);
         return 0;
     }
     else if (other->check != check || other->round != round)
     {
         other->check = check;
         other->round = round;
-        other->timing = round * MAX_CHECKS + check;
-        other->timing_loops = last_loops;
-        scoresChanged = 1;
+        other->timing = round * num_checks + check;
+        other->timing_loops = tloops;
+        scoresChanged = true;
     }
 
     return 0;
 }
 
-int Handle_score_object(int score, int x, int y, char *msg)
+int Handle_score_object(double score, int x, int y, char *msg)
 {
     score_object_t *sobj = &score_objects[score_object];
 
     sobj->score = score;
     sobj->x = x;
     sobj->y = y;
-    sobj->count = 1;
+    sobj->life_time = scoreObjectTime;
 
     /* Initialize sobj->hud_msg (is shown on the HUD) */
     if (msg[0] != '\0')
     {
-        sprintf(sobj->hud_msg, "%s %d", msg, score);
+        int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
+        sprintf(sobj->hud_msg, "%s %d", msg, sc);
+
         sobj->hud_msg_len = strlen(sobj->hud_msg);
-        // sobj->hud_msg_width = XTextWidth(gameFont,
-        //                                  sobj->hud_msg, sobj->hud_msg_len);
         sobj->hud_msg_width = -1;
     }
     else
         sobj->hud_msg_len = 0;
 
     /* Initialize sobj->msg data (is shown on game area) */
-    sprintf(sobj->msg, "%d", score);
+    int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
+    sprintf(sobj->msg, "%d", sc);
 
     sobj->msg_len = strlen(sobj->msg);
-    // sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);
     sobj->msg_width = -1;
 
     /* Update global index variable */
@@ -1657,12 +1655,30 @@ int Handle_self_items(uint8_t *newNumItems)
     return 0;
 }
 
+static void update_status(int status)
+{
+    static int old_status = 0;
+
+    if (BIT(old_status, OLD_GAME_OVER) && !BIT(status, OLD_GAME_OVER) && !BIT(status, OLD_PAUSE))
+        Raise_window();
+
+    /* Player appeared? */
+    if (BIT(old_status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) != OLD_PLAYING)
+    {
+        if (BIT(status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) == OLD_PLAYING)
+            Reset_shields();
+    }
+
+    old_status = status;
+}
+
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
-                float newPower, float newTurnspeed, float newTurnresistance,
+                double newPower, double newTurnspeed, double newTurnresistance,
                 int newLockId, int newLockDist, int newLockBearing,
                 int newNextCheckPoint, int newAutopilotLight,
                 uint8_t *newNumItems, int newCurrentTank,
-                int newFuelSum, int newFuelMax, int newPacketSize)
+                double newFuelSum, double newFuelMax, int newPacketSize,
+                int status)
 {
     selfPos.x = x;
     selfPos.y = y;
@@ -1815,13 +1831,14 @@ int Handle_missile(int x, int y, int len, int dir)
     return 0;
 }
 
-int Handle_ball(int x, int y, int id)
+int Handle_ball(int x, int y, int id, int style)
 {
     ball_t t;
 
     t.x = x;
     t.y = y;
     t.id = id;
+    t.style = style;
     STORE(ball_t, ball_ptr, num_ball, max_ball, t);
     return 0;
 }
@@ -2066,7 +2083,7 @@ int Handle_vcannon(int x, int y, int type)
     return 0;
 }
 
-int Handle_vfuel(int x, int y, long fuel)
+int Handle_vfuel(int x, int y, double fuel)
 {
     vfuel_t t;
 
@@ -2387,17 +2404,16 @@ int Client_power(void)
         Send_turnspeed_s(turnspeed_s) == -1 ||
         Send_turnresistance(turnresistance) == -1 ||
         Send_turnresistance_s(turnresistance_s) == -1 ||
-        Send_display() == -1 ||
-        Startup_server_motd() == -1)
-    {
+        Send_display() == -1)
         return -1;
-    }
+
+    // if (Check_view_dimensions() == -1)
+    //     return -1;
+
     for (i = 0; i < NUM_MODBANKS; i++)
     {
         if (Send_modifier_bank(i) == -1)
-        {
             return -1;
-        }
     }
 
     return 0;

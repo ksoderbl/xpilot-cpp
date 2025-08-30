@@ -2112,9 +2112,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_int_resource(rDB, "charsPerSecond", &charsPerSecond);
     Get_bool_resource(rDB, "markingLights", &markingLights);
 
-    Get_int_resource(rDB, "backgroundPointDist", &map_point_distance);
-    Get_int_resource(rDB, "backgroundPointSize", &map_point_size);
-    LIMIT(map_point_size, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
+    Get_int_resource(rDB, "backgroundPointDist", &backgroundPointDist);
+    Get_int_resource(rDB, "backgroundPointSize", &backgroundPointSize);
+    LIMIT(backgroundPointSize, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
     Get_int_resource(rDB, "sparkSize", &spark_size);
     LIMIT(spark_size, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
     Get_int_resource(rDB, "shotSize", &shot_size);

@@ -34,6 +34,7 @@
 #include "commonmacros.h"
 #include "xpmath.h"
 
+#include "client.h"
 #include "paint.h"
 
 #include "xpconfig.h"
@@ -101,6 +102,134 @@ void Paint_vdecor(void)
                             vdecor_ptr[i].type, last, more_y);
         }
         RELEASE(vdecor_ptr, num_vdecor, max_vdecor);
+    }
+}
+
+static void Paint_background_dots(void)
+{
+    double dx, dy;
+    int xi, yi;
+    ipos_t min, max, count;
+
+    if (backgroundPointDist == 0)
+        return;
+
+    count.x = Setup->width / (BLOCK_SZ * backgroundPointDist);
+    count.y = Setup->height / (BLOCK_SZ * backgroundPointDist);
+
+    dx = (double)Setup->width / count.x;
+    dy = (double)Setup->height / count.y;
+
+    min.x = (int)(world.x / dx);
+    if (world.x > 0)
+        min.x++;
+    min.y = (int)(world.y / dy);
+    if (world.y > 0)
+        min.y++;
+
+    max.x = (int)((world.x + ext_view_width) / dx);
+    max.y = (int)((world.y + ext_view_height) / dy);
+
+    for (yi = min.y; yi <= max.y; yi++)
+    {
+        for (xi = min.x; xi <= max.x; xi++)
+        {
+            Gui_paint_decor_dot((int)(xi * dx - BLOCK_SZ / 2),
+                                (int)(yi * dy - BLOCK_SZ / 2),
+                                backgroundPointSize);
+        }
+    }
+}
+
+static void Compute_bounds(ipos_t *min, ipos_t *max, const irec_t *b)
+{
+    min->x = (world.x - (b->x + b->w)) / Setup->width;
+    if (world.x > b->x + b->w)
+        min->x++;
+    max->x = (world.x + ext_view_width - b->x) / Setup->width;
+    if (world.x + ext_view_width < b->x)
+        max->x--;
+    min->y = (world.y - (b->y + b->h)) / Setup->height;
+    if (world.y > b->y + b->h)
+        min->y++;
+    max->y = (world.y + ext_view_height - b->y) / Setup->height;
+    if (world.y + ext_view_height < b->y)
+        max->y--;
+    if (!BIT(Setup->mode, WRAP_PLAY))
+    {
+        if (min->x <= max->x)
+            min->x = max->x = 0;
+        if (min->y <= max->y)
+            min->y = max->y = 0;
+    }
+}
+
+void Paint_objects(void)
+{
+    int i, xoff, yoff;
+    ipos_t min, max;
+
+    for (i = 0; i < num_polygons; i++)
+    {
+
+        Compute_bounds(&min, &max, &polygons[i].bounds);
+
+        for (xoff = min.x; xoff <= max.x; xoff++)
+        {
+            for (yoff = min.y; yoff <= max.y; yoff++)
+            {
+                Gui_paint_polygon(i, xoff, yoff);
+            }
+        }
+    }
+
+    for (i = 0; i < num_fuels; i++)
+    {
+
+        Compute_bounds(&min, &max, &fuels[i].bounds);
+
+        for (xoff = min.x; xoff <= max.x; xoff++)
+        {
+            for (yoff = min.y; yoff <= max.y; yoff++)
+            {
+                Gui_paint_fuel(fuels[i].bounds.x + xoff * Setup->width,
+                               fuels[i].bounds.y + yoff * Setup->height,
+                               fuels[i].fuel);
+            }
+        }
+    }
+
+    for (i = 0; i < num_bases; i++)
+    {
+
+        Compute_bounds(&min, &max, &bases[i].bounds);
+
+        for (xoff = min.x; xoff <= max.x; xoff++)
+        {
+            for (yoff = min.y; yoff <= max.y; yoff++)
+            {
+                Gui_paint_base(bases[i].bounds.x + xoff * Setup->width,
+                               bases[i].bounds.y + yoff * Setup->height,
+                               bases[i].id, bases[i].team,
+                               bases[i].type);
+            }
+        }
+    }
+
+    for (i = 0; i < num_checks; i++)
+    {
+
+        Compute_bounds(&min, &max, &checks[i].bounds);
+
+        for (xoff = min.x; xoff <= max.x; xoff++)
+        {
+            for (yoff = min.y; yoff <= max.y; yoff++)
+            {
+                Gui_paint_setup_check(checks[i].bounds.x + xoff * Setup->width,
+                                      checks[i].bounds.y + yoff * Setup->height,
+                                      (i == nextCheckPoint));
+            }
+        }
     }
 }
 
@@ -255,7 +384,7 @@ void Paint_world(void)
                     }
                     break;
                 case SETUP_CHECK:
-                    Gui_paint_setup_check(x, y, xi, yi);
+                    Gui_paint_setup_check(x, y, (Check_index_by_pos(xi, yi) == nextCheckPoint));
                     break;
 
                 case SETUP_ACWISE_GRAV:
@@ -292,7 +421,7 @@ void Paint_world(void)
 
                 case SETUP_WORM_IN:
                 case SETUP_WORM_NORMAL:
-                    Gui_paint_setup_worm(x, y, wormDrawCount);
+                    Gui_paint_setup_worm(x, y);
                     break;
 
                 case SETUP_ITEM_CONCENTRATOR:
@@ -324,7 +453,7 @@ void Paint_world(void)
                 case SETUP_DECOR_DOT_RD:
                 case SETUP_DECOR_DOT_LU:
                 case SETUP_DECOR_DOT_LD:
-                    Gui_paint_decor_dot(x, y, map_point_size);
+                    Gui_paint_decor_dot(x, y, backgroundPointSize);
                     break;
 
                 case SETUP_BASE_UP:
@@ -354,15 +483,16 @@ void Paint_world(void)
                 case SETUP_TARGET + 8:
                 case SETUP_TARGET + 9:
                 {
-                    int damage, target, own;
+                    int team, own;
+                    double damage;
 
                     if (Target_alive(xi, yi, &damage) != 0)
                         break;
 
-                    target = type - SETUP_TARGET;
-                    own = (self && (self->team == target));
+                    team = type - SETUP_TARGET;
+                    own = (eyeTeam == team);
 
-                    Gui_paint_setup_target(x, y, target, damage, own);
+                    Gui_paint_setup_target(x, y, team, damage, own);
                 }
                 break;
 
@@ -377,13 +507,13 @@ void Paint_world(void)
                 case SETUP_TREASURE + 8:
                 case SETUP_TREASURE + 9:
                 {
-                    int treasure;
+                    int team;
                     bool own;
 
-                    treasure = type - SETUP_TREASURE;
-                    own = (self && self->team == treasure);
+                    team = type - SETUP_TREASURE;
+                    own = (eyeTeam == team);
 
-                    Gui_paint_setup_treasure(x, y, treasure, own);
+                    Gui_paint_setup_treasure(x, y, team, own);
                 }
                 break;
 
@@ -396,21 +526,15 @@ void Paint_world(void)
                 // if (!BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS))
                 if (!(instruments.filledWorld || instruments.texturedWalls))
                 {
-                    Gui_paint_walls(x, y, type, xi, yi);
+                    Gui_paint_walls(x, y, type);
 
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                    {
-                        fuel = Fuel_by_pos(xi, yi);
-                        Handle_vfuel(x, y, fuel);
-                    }
+                        Handle_vfuel(x, y, Fuel_by_pos(xi, yi));
                 }
                 else
                 {
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                    {
-                        fuel = Fuel_by_pos(xi, yi);
-                        Handle_vfuel(x, y, fuel);
-                    }
+                        Handle_vfuel(x, y, Fuel_by_pos(xi, yi));
                     else if (type & BLUE_OPEN)
                     {
                         if (type & BLUE_BELOW)

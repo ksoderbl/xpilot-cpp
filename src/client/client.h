@@ -29,6 +29,8 @@
 #include "shipshape.h"
 #include "types.h"
 
+#include "option.h"
+
 typedef struct
 {
     bool talking;        /* Some talk window is open? */
@@ -128,11 +130,6 @@ typedef struct
         (other)->name_width = 2 + XTextWidth(gameFont, (other)->nick_name, \
                                              (other)->name_len);           \
     }
-
-/* macros begin */
-#define X(co) ((int)((co) - world.x))
-#define Y(co) ((int)(world.y + ext_view_height - (co)))
-/* macros end */
 
 typedef struct
 {
@@ -250,6 +247,7 @@ typedef struct
 typedef struct
 {
     short x, y, id;
+    uint8_t style;
 } ball_t;
 
 typedef struct
@@ -344,13 +342,13 @@ typedef struct
     short x, y;
 } wormhole_t;
 
-#define SCORE_OBJECT_COUNT 100
+/*#define SCORE_OBJECT_COUNT    100*/
 typedef struct
 {
-    int score,
-        x,
+    double score,
+        life_time;
+    int x,
         y,
-        count,
         hud_msg_len,
         hud_msg_width,
         msg_width,
@@ -450,10 +448,16 @@ extern uint8_t lastNumItems[NUM_ITEMS];
 extern int numItemsTime[NUM_ITEMS];
 extern double showItemsTime;
 extern short autopilotLight;
+extern double scoreObjectTime; /* How long to show score objects */
 
 extern short lock_id;   /* Id of player locked onto */
 extern short lock_dir;  /* Direction of lock */
 extern short lock_dist; /* Distance to player locked onto */
+
+extern int eyesId;    /* Player we get frame updates for */
+extern other_t *eyes; /* Player we get frame updates for */
+extern bool snooping; /* are we snooping on someone else? */
+extern int eyeTeam;   /* Team of player we get updates for */
 
 extern other_t *self;     /* Player info */
 extern short selfVisible; /* Are we alive and playing? */
@@ -473,12 +477,12 @@ extern int roundDelayMax;
 
 extern int RadarWidth;
 extern int RadarHeight;
-extern int map_point_distance; /* spacing of navigation points */
-extern int map_point_size;     /* size of navigation points */
-extern int spark_size;         /* size of sparks and debris */
-extern int shot_size;          /* size of shot */
-extern int teamshot_size;      /* size of team shot */
-extern long control_count;     /* Display control for how long? */
+extern int backgroundPointDist; /* spacing of navigation points */
+extern int backgroundPointSize; /* size of navigation points */
+extern int spark_size;          /* size of sparks and debris */
+extern int shot_size;           /* size of shot */
+extern int teamshot_size;       /* size of team shot */
+extern long control_count;      /* Display control for how long? */
 
 extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
@@ -624,22 +628,71 @@ extern bool roundend;
 extern bool played_this_round;
 extern int protocolVersion;
 
-extern int eyesId;     /* Player we get frame updates for */
-extern short snooping; /* are we snooping on someone else? */
-
 /*
  * somewhere
  */
 const char *Program_name(void);
 int Bitmap_add(const char *filename, int count, bool scalable);
+void Pointer_control_newbie_message(void);
 
-int Fuel_by_pos(int x, int y);
-int Target_alive(int x, int y, int *damage);
-int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage);
-int Handle_fuel(int ind, int fuel);
+/*
+ * Platform specific code needs to implement these.
+ */
+void Platform_specific_pointer_control_set_state(bool on);
+void Platform_specific_talk_set_state(bool on);
+void Record_toggle(void);
+void Toggle_fullscreen(void);
+void Toggle_radar_and_scorelist(void);
+
+/*
+ * event.c
+ */
+void Pointer_control_set_state(bool on);
+void Talk_set_state(bool on);
+
+void Pointer_button_pressed(int button);
+void Pointer_button_released(int button);
+void Keyboard_button_pressed(xp_keysym_t ks);
+void Keyboard_button_released(xp_keysym_t ks);
+
+int Key_init(void);
+int Key_update(void);
+void Key_clear_counts(void);
+bool Key_press(keys_t key);
+bool Key_release(keys_t key);
+void Set_auto_shield(bool on);
+void Set_toggle_shield(bool on);
+
+/*
+ * messages.c
+ */
+bool Bms_test_state(msg_bms_t bms);
+void Bms_set_state(msg_bms_t bms);
+int Alloc_msgs(void);
+void Free_msgs(void);
+int Alloc_history(void);
+void Free_selectionAndHistory(void);
+void Add_message(const char *message);
+void Add_newbie_message(const char *message);
+extern void Add_alert_message(const char *message, double timeout);
+extern void Clear_alert_messages(void);
+void Add_pending_messages(void);
+void Add_roundend_messages(other_t **order);
+void Print_messages_to_stdout(void);
+
+/*
+ * client.c
+ */
+/*
+ * client.c
+ */
+double Fuel_by_pos(int x, int y);
+int Target_alive(int x, int y, double *damage);
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage);
+int Handle_fuel(int ind, double fuel);
 int Cannon_dead_time_by_pos(int x, int y, int *dot);
 int Handle_cannon(int ind, int dead_time);
-int Handle_target(int num, int dead_time, int damage);
+int Handle_target(int num, int dead_time, double damage);
 int Base_info_by_pos(int x, int y, int *id, int *team);
 int Handle_base(int id, int ind);
 int Check_pos_by_index(int ind, int *xp, int *yp);
@@ -653,20 +706,23 @@ int Handle_player(int id, int team, int mychar,
                   char *nick_name, char *user_name, char *host_name,
                   char *shape, int myself);
 int Handle_team(int id, int pl_team);
-int Handle_score(int id, int score, int life, int mychar, int alliance);
-int Handle_score_object(int score, int x, int y, char *msg);
-int Handle_timing(int id, int check, int round);
+int Handle_score(int id, double score, int life, int mychar, int alliance);
+int Handle_score_object(double score, int x, int y, char *msg);
+int Handle_team_score(int team, double score);
+int Handle_timing(int id, int check, int round, long loops);
+int Handle_seek(int programmer_id, int robot_id, int sought_id);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
-int Handle_self(int x, int y, int vx, int vy, int dir,
-                float power, float turnspeed, float turnresistance,
-                int lock_id, int lock_dist, int lock_dir,
-                int nextCheckPoint, int autopilotLight,
-                uint8_t *newNumItems,
-                int currentTank, int fuel_sum, int fuel_max, int packet_size);
+int Handle_self(int x, int y, int vx, int vy, int newHeading,
+                double newPower, double newTurnspeed, double newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                uint8_t *newNumItems, int newCurrentTank,
+                double newFuelSum, double newFuelMax, int newPacketSize,
+                int status);
 int Handle_self_items(uint8_t *newNumItems);
 int Handle_modifiers(char *m);
-int Handle_damaged(int damaged);
+int Handle_damaged(int dam);
 int Handle_destruct(int count);
 int Handle_shutdown(int count, int delay);
 int Handle_thrusttime(int count, int max);
@@ -677,8 +733,9 @@ int Handle_refuel(int x0, int y0, int x1, int y1);
 int Handle_connector(int x0, int y0, int x1, int y1, int tractor);
 int Handle_laser(int color, int x, int y, int len, int dir);
 int Handle_missile(int x, int y, int dir, int len);
-int Handle_ball(int x, int y, int id);
-int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
+int Handle_ball(int x, int y, int id, int style);
+int Handle_ship(int x, int y, int id, int dir, int shield, int cloak,
+                int eshield, int phased, int deflector);
 int Handle_mine(int x, int y, int teammine, int id);
 int Handle_item(int x, int y, int type);
 int Handle_fastshot(int type, uint8_t *p, int n);
@@ -692,8 +749,9 @@ int Handle_trans(int x1, int y1, int x2, int y2);
 int Handle_paused(int x, int y, int count);
 int Handle_appearing(int x, int y, int id, int count);
 int Handle_radar(int x, int y, int size);
+int Handle_fastradar(int x, int y, int size);
 int Handle_vcannon(int x, int y, int type);
-int Handle_vfuel(int x, int y, long fuel);
+int Handle_vfuel(int x, int y, double fuel);
 int Handle_vbase(int x, int y, int xi, int yi, int type);
 int Handle_vdecor(int x, int y, int xi, int yi, int type);
 int Handle_message(char *msg);
@@ -710,34 +768,111 @@ int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
 int Client_wrap_mode(void);
-void Reset_shields(void);
-void Set_toggle_shield(bool on);
-void Set_auto_shield(bool on);
+int Client_pointer_move(int movement);
+int Client_check_pointer_move_interval(void);
+void Client_exit(int status);
 
-#ifdef XlibSpecificationRelease
-void Key_event(XEvent *event);
-#endif
 int x_event(int);
+int Init_playing_windows(void);
+void Raise_window(void);
+void Reset_shields(void);
+void Platform_specific_cleanup(void);
 
-int Key_init(void);
-int Key_update(void);
 int Check_client_fps(void);
 
-#ifdef SOUND
-extern void audioEvents();
+/*
+ * about.c
+ */
+extern int Handle_motd(long off, char *buf, int len, long filesize);
+extern void aboutCleanup(void);
+
+#ifdef _WINDOWS
+extern void Motd_destroy(void);
+extern void Keys_destroy(void);
 #endif
 
-extern int Init_playing_windows(void);
-extern int Alloc_msgs(void);
-extern int Startup_server_motd(void);
-
-void Platform_specific_cleanup(void);
+extern int motd_viewer; /* so Windows can clean him up */
+extern int keys_viewer;
 
 extern void Colors_init_style_colors(void);
 
 /*
- * mapdata.cpp
+ * default.c
+ */
+extern void Store_default_options(void);
+extern void defaultCleanup(void); /* memory cleanup */
+
+extern bool Set_scaleFactor(xp_option_t *opt, double val);
+extern bool Set_altScaleFactor(xp_option_t *opt, double val);
+
+#ifdef _WINDOWS
+extern char *Get_xpilotini_file(int level);
+#endif
+
+/*
+ * event.c
+ */
+extern void Store_key_options(void);
+
+/*
+ * join.c
+ */
+extern int Join(Connect_param_t *conpar);
+extern void xpilotShutdown(void);
+
+/*
+ * mapdata.c
  */
 extern int Mapdata_setup(const char *);
+
+/*
+ * metaclient.c
+ */
+extern int metaclient(int, char **);
+
+/*
+ * paintdata.c
+ */
+extern void paintdataCleanup(void); /* memory cleanup */
+
+/*
+ * paintobjects.c
+ */
+extern int Init_wreckage(void);
+extern int Init_asteroids(void);
+
+/*
+ * query.c
+ */
+extern int Query_all(sock_t *sockfd, int port, char *msg, size_t msglen);
+
+/*
+ * textinterface.c
+ */
+extern int Connect_to_server(int auto_connect, int list_servers,
+                             int auto_shutdown, char *shutdown_reason,
+                             Connect_param_t *conpar);
+extern int Contact_servers(int count, char **servers,
+                           int auto_connect, int list_servers,
+                           int auto_shutdown, char *shutdown_message,
+                           int find_max, int *num_found,
+                           char **server_addresses, char **server_names,
+                           unsigned *server_versions,
+                           Connect_param_t *conpar);
+
+/*
+ * usleep.c
+ */
+extern int micro_delay(unsigned usec);
+
+/*
+ * welcome.c
+ */
+extern int Welcome_screen(Connect_param_t *conpar);
+
+/*
+ * widget.c
+ */
+extern void Widget_cleanup(void);
 
 #endif

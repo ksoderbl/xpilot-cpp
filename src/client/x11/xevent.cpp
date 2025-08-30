@@ -159,7 +159,7 @@ void Pointer_control_set_state(bool on)
     XFlush(dpy);
 }
 
-static void Talk_set_state(bool onoff)
+void Talk_set_state(bool onoff)
 {
 
     if (onoff)

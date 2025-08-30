@@ -32,6 +32,7 @@
 #include <X11/Xos.h>
 
 #include "client.h"
+#include "option.h"
 #include "paint.h"
 
 #include "gfx2d.h"
@@ -57,67 +58,54 @@ extern int decorColor; /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
-static int baseNameColor;         /* Color index for base name drawing */
-static int backgroundPointColor;  /* background point drawing */
-static int fuelColor = RED;       /* fuel station drawing */
-static int visibilityBorderColor; /* visibility border drawing */
+static int baseNameColor = 1;         /* Color index for base name drawing */
+static int backgroundPointColor = 1;  /* background point drawing */
+static int fuelColor = 1;             /* fuel station drawing */
+static int visibilityBorderColor = 1; /* visibility border drawing */
+static int hudRadarLimitColor = 1;    /* hudradar limit drawing */
 
-void Gui_paint_walls(int x, int y, int type, int xi, int yi)
+void Gui_paint_walls(int x, int y, int type)
 {
     if (!texturedObjects)
     {
         if (type & BLUE_LEFT)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y),
                         X(x),
                         Y(y + BLOCK_SZ));
-        }
         if (type & BLUE_DOWN)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y));
-        }
         if (type & BLUE_RIGHT)
-        {
             Segment_add(wallColor,
                         X(x + BLOCK_SZ),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
-        }
         if (type & BLUE_UP)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
-        }
-
         if ((type & BLUE_FUEL) == BLUE_FUEL)
-        {
-        }
+            ;
         else if (type & BLUE_OPEN)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
-        }
         else if (type & BLUE_CLOSED)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
                         Y(y));
-        }
     }
     else
     {
@@ -135,9 +123,7 @@ void Gui_paint_walls(int x, int y, int type, int xi, int yi)
             Bitmap_paint(drawPixmap, BM_WALL_TOP, WINSCALE(X(x)),
                          WINSCALE(Y(y + BLOCK_SZ + 1)), 0);
         if ((type & BLUE_FUEL) == BLUE_FUEL)
-        {
-        }
-
+            ;
         else if (type & BLUE_OPEN)
             Bitmap_paint(drawPixmap, BM_WALL_UR, WINSCALE(X(x)),
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
@@ -714,7 +700,7 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
     }
 }
 
-void Gui_paint_setup_check(int x, int y, int xi, int yi)
+void Gui_paint_setup_check(int x, int y, bool isNext)
 {
     XPoint points[5];
     if (!texturedObjects)
@@ -730,27 +716,23 @@ void Gui_paint_setup_check(int x, int y, int xi, int yi)
         points[3].y = WINSCALE(Y(y + (BLOCK_SZ / 2)));
         points[4] = points[0];
 
-        if (Check_index_by_pos(xi, yi) == nextCheckPoint)
-        {
-            rd.fillPolygon(dpy, drawPixmap, gameGC, points, 5, Convex, CoordModeOrigin);
-        }
+        if (isNext)
+            rd.fillPolygon(dpy, drawPixmap, gameGC,
+                           points, 5,
+                           Convex, CoordModeOrigin);
         else
-        {
-            rd.drawLines(dpy, drawPixmap, gameGC, points, 5, 0);
-        }
+            rd.drawLines(dpy, drawPixmap, gameGC,
+                         points, 5, 0);
     }
     else
     {
-        if (Check_index_by_pos(xi, yi) == nextCheckPoint)
-        {
-            Bitmap_paint(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                         1);
-        }
+        if (isNext)
+            Bitmap_paint(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 1);
+
         else
-        {
-            Bitmap_paint(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                         0);
-        }
+            Bitmap_paint(drawPixmap, BM_CHECKPOINT, WINSCALE(X(x)),
+                         WINSCALE(Y(y + BLOCK_SZ)), 0);
     }
 }
 
@@ -761,23 +743,35 @@ void Gui_paint_border(int x, int y, int xi, int yi)
                 X(xi), Y(yi));
 }
 
-void Gui_paint_visible_border(int x, int y, int xi, int yi)
+static void Gui_paint_rectangle(int x, int y, int xi, int yi, int color)
 {
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(x), Y(y),
                 X(x), Y(yi));
 
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(xi), Y(y),
                 X(xi), Y(yi));
 
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(x), Y(y),
                 X(xi), Y(y));
 
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(x), Y(yi),
                 X(xi), Y(yi));
+}
+
+void Gui_paint_visible_border(int x, int y, int xi, int yi)
+{
+    if (visibilityBorderColor)
+        Gui_paint_rectangle(x, y, xi, yi, visibilityBorderColor);
+}
+
+void Gui_paint_hudradar_limit(int x, int y, int xi, int yi)
+{
+    if (hudRadarLimitColor)
+        Gui_paint_rectangle(x, y, xi, yi, hudRadarLimitColor);
 }
 
 void Gui_paint_setup_acwise_grav(int x, int y)
@@ -939,8 +933,9 @@ void Gui_paint_setup_left_grav(int x, int y)
                 Y(y + BLOCK_SZ / 2 - 10));
 }
 
-void Gui_paint_setup_worm(int x, int y, int wormDrawCount)
+void Gui_paint_setup_worm(int x, int y)
 {
+    int wormDrawCount = loopsSlow & 7;
     if (!texturedObjects)
     {
         static const int INSIDE_BL = BLOCK_SZ - 2;
@@ -969,10 +964,8 @@ void Gui_paint_setup_worm(int x, int y, int wormDrawCount)
                 INSIDE_BL - _O[2] * 2, INSIDE_BL - _O[2] * 2, 0, 64 * 360);
     }
     else
-    {
-        Bitmap_paint(drawPixmap, BM_WORMHOLE, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                     wormDrawCount);
-    }
+        Bitmap_paint(drawPixmap, BM_WORMHOLE, WINSCALE(X(x)),
+                     WINSCALE(Y(y + BLOCK_SZ)), wormDrawCount);
 }
 
 void Gui_paint_setup_item_concentrator(int x, int y)
@@ -1115,17 +1108,25 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
 
 void Gui_paint_decor_dot(int x, int y, int size)
 {
-    Rectangle_add(BLUE, X(x + BLOCK_SZ / 2) - (map_point_size >> 1),
-                  Y(y + BLOCK_SZ / 2) - (map_point_size >> 1),
+    Rectangle_add(BLUE, X(x + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
+                  Y(y + BLOCK_SZ / 2) - (backgroundPointSize >> 1),
                   size, size);
 }
 
-void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
+void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
 {
     int size, a1, a2, b1, b2, color;
     char s[2];
 
     color = own ? BLUE : RED;
+
+    if (BIT(Setup->mode, TEAM_PLAY))
+    {
+        int team_color = Team_color(team);
+
+        if (team_color)
+            color = team_color;
+    }
 
     SET_FG(colors[color].pixel);
 
@@ -1141,12 +1142,12 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
     rd.drawRectangle(dpy, drawPixmap, gameGC,
                      WINSCALE(X(x + (BLOCK_SZ + 2) / 4)),
                      WINSCALE(Y(y + 3 * BLOCK_SZ / 4)),
-                     WINSCALE(BLOCK_SZ / 2),
-                     WINSCALE(BLOCK_SZ / 2));
+                     UWINSCALE(BLOCK_SZ / 2),
+                     UWINSCALE(BLOCK_SZ / 2));
 
     if (BIT(Setup->mode, TEAM_PLAY))
     {
-        s[0] = '0' + target;
+        s[0] = '0' + team;
         s[1] = '\0';
         size = XTextWidth(gameFont, s, 1);
         rd.drawString(dpy, drawPixmap, gameGC,
@@ -1157,7 +1158,7 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
 
     if (damage != TARGET_DAMAGE)
     {
-        size = (damage * BLOCK_SZ) / (TARGET_DAMAGE * 2);
+        size = (int)((damage * BLOCK_SZ) / (TARGET_DAMAGE * 2));
         a1 = x + size;
         a2 = y + size;
         b1 = x + (BLOCK_SZ - size);
@@ -1233,4 +1234,163 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
                           WINSCALE(Y(y + BALL_RADIUS + 5)), s, 1);
         }
     }
+}
+
+void Gui_paint_polygon(int i, int xoff, int yoff)
+{
+    static XPoint points[10000];
+
+    int j, x, y, sindex, width, did_fill;
+    ipos_t ship;
+    xp_polygon_t polygon;
+    polygon_style_t style;
+    bool textured, filled;
+
+    polygon = polygons[i];
+    style = polygon_styles[polygon.style];
+
+    if (BIT(style.flags, STYLE_INVISIBLE))
+        return;
+
+    textured = instruments.texturedWalls && fullColor;
+    filled = instruments.filledWorld;
+
+    x = xoff * Setup->width;
+    y = yoff * Setup->height;
+    ship.x = WINSCALE(world.x);
+    ship.y = WINSCALE(world.y + ext_view_height);
+
+    for (j = 0; j < polygon.num_points; j++)
+    {
+        x += polygon.points[j].x;
+        y += polygon.points[j].y;
+        points[j].x = WINSCALE(x) - ship.x;
+        points[j].y = ship.y - WINSCALE(y);
+    }
+    points[j].x = points[0].x;
+    points[j].y = points[0].y;
+
+    did_fill = 0;
+    if ((filled || textured) && (BIT(style.flags,
+                                     STYLE_TEXTURED | STYLE_FILLED)))
+    {
+        if (textured && BIT(style.flags, STYLE_TEXTURED))
+        {
+            xp_bitmap_t *bmp = Bitmap_get(drawPixmap, NUM_BITMAPS + style.texture, 0);
+            if (bmp == NULL)
+                goto notexture; /* Print an error here? */
+            XSetTile(dpy, gameGC, bmp->bitmap);
+            /*
+              XSetTSOrigin(dpy, gc, -WINSCALE(realWorld.x),
+              WINSCALE(realWorld.y));
+            */
+            XSetTSOrigin(dpy, gameGC, WINSCALE(polygon.bounds.x + xoff * Setup->width) - ship.x, ship.y - WINSCALE(polygon.bounds.y + polygon.bounds.h + yoff * Setup->height));
+            XSetFillStyle(dpy, gameGC, FillTiled);
+        }
+        else
+        {
+        notexture:
+            XSetFillStyle(dpy, gameGC, FillSolid);
+            SET_FG(fullColor ? style.color : colors[wallColor].pixel);
+        }
+        did_fill = 1;
+        rd.fillPolygon(dpy, drawPixmap, gameGC, points, polygon.num_points,
+                       Nonconvex, CoordModeOrigin);
+    }
+    XSetFillStyle(dpy, gameGC, FillSolid);
+
+    sindex = style.def_edge_style;
+
+    if (polygon.edge_styles == NULL)
+    { /* No special edges */
+        width = edge_styles[sindex].width;
+        if (width != -1 || !did_fill)
+        { /* did_fill to avoid invisibility */
+            if (width == -1)
+                width = 0;
+            width = WINSCALE(width);
+            if (width == 1)
+                width = 0;
+            XSetLineAttributes(dpy, gameGC, (unsigned)width,
+                               edge_styles[sindex].style, CapButt, JoinMiter);
+
+            if (fullColor)
+                SET_FG(edge_styles[sindex].color);
+            else
+                SET_FG(colors[wallColor].pixel);
+
+            rd.drawLines(dpy, drawPixmap, gameGC, points,
+                         polygon.num_points + 1, CoordModeOrigin);
+        }
+    }
+    else
+    {
+        /* This polygon has special edges */
+
+        int begin;
+
+        for (j = 0; j < polygon.num_points;)
+        {
+            begin = j;
+            sindex = polygon.edge_styles[j++];
+
+            while ((polygon.edge_styles[j] == sindex) && (j < polygon.num_points - 1))
+                j++;
+
+            /* Style 0 means internal edges which are never shown */
+            width = edge_styles[sindex].width;
+            if (sindex != 0 && (edge_styles[sindex].width != -1 || !did_fill))
+            {
+                if (width == -1)
+                    width = 0;
+                width = WINSCALE(width);
+                if (width == 1)
+                    width = 0;
+                XSetLineAttributes(dpy, gameGC, (unsigned)width,
+                                   edge_styles[sindex].style, CapButt, JoinMiter);
+
+                if (fullColor)
+                    SET_FG(edge_styles[sindex].color);
+                else
+                    SET_FG(colors[wallColor].pixel);
+
+                rd.drawLines(dpy, drawPixmap, gameGC,
+                             points + begin, j + 1 - begin,
+                             CoordModeOrigin);
+            }
+        }
+    }
+    XSetLineAttributes(dpy, gameGC, 0, LineSolid, CapButt, JoinMiter);
+}
+
+xp_option_t guimap_options[] = {
+    COLOR_INDEX_OPTION(
+        "baseNameColor",
+        2,
+        &baseNameColor,
+        "Which color number to use for drawing names of bases\n"
+        "(unless drawn in one of the life colors).\n"),
+
+    COLOR_INDEX_OPTION(
+        "backgroundPointColor",
+        2,
+        &backgroundPointColor,
+        "Which color number to use for drawing background points.\n"),
+
+    COLOR_INDEX_OPTION(
+        "fuelColor",
+        3,
+        &fuelColor,
+        "Which color number to use for drawing fuel stations.\n"),
+
+    COLOR_INDEX_OPTION(
+        "visibilityBorderColor",
+        2,
+        &visibilityBorderColor,
+        "Which color number to use for drawing the visibility border.\n"),
+};
+
+void Store_guimap_options(void)
+{
+    STORE_OPTIONS(guimap_options);
 }
