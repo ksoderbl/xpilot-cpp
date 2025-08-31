@@ -30,7 +30,6 @@
 #include "bit.h"
 #include "checknames.h"
 #include "commonmacros.h"
-#include "draw.h"
 #include "pack.h"
 #include "packet.h"
 #include "portability.h"
@@ -91,41 +90,41 @@ void Pointer_control_newbie_message(void)
     // Add_newbie_message(msg); // TODO
 }
 
-void Pointer_control_set_state(bool on)
-{
-    if (clData.pointerControl == on)
-        return;
-    Platform_specific_pointer_control_set_state(on);
-    clData.pointerControl = on;
-    if (!clData.restorePointerControl)
-        Pointer_control_newbie_message();
-}
+// void Pointer_control_set_state(bool on)
+// {
+//     if (clData.pointerControl == on)
+//         return;
+//     Platform_specific_pointer_control_set_state(on);
+//     clData.pointerControl = on;
+//     if (!clData.restorePointerControl)
+//         Pointer_control_newbie_message();
+// }
 
-void Talk_set_state(bool on)
-{
-    if (clData.talking == on)
-        return;
-    if (on)
-    {
-        /* When enabling talking, disable pointer control if it is enabled. */
-        if (clData.pointerControl)
-        {
-            clData.restorePointerControl = true;
-            Pointer_control_set_state(false);
-        }
-    }
-    Platform_specific_talk_set_state(on);
-    if (!on)
-    {
-        /* When disabling talking, enable pointer control if it was enabled. */
-        if (clData.restorePointerControl)
-        {
-            Pointer_control_set_state(true);
-            clData.restorePointerControl = false;
-        }
-    }
-    clData.talking = on;
-}
+// void Talk_set_state(bool on)
+// {
+//     if (clData.talking == on)
+//         return;
+//     if (on)
+//     {
+//         /* When enabling talking, disable pointer control if it is enabled. */
+//         if (clData.pointerControl)
+//         {
+//             clData.restorePointerControl = true;
+//             Pointer_control_set_state(false);
+//         }
+//     }
+//     Platform_specific_talk_set_state(on);
+//     if (!on)
+//     {
+//         /* When disabling talking, enable pointer control if it was enabled. */
+//         if (clData.restorePointerControl)
+//         {
+//             Pointer_control_set_state(true);
+//             clData.restorePointerControl = false;
+//         }
+//     }
+//     clData.talking = on;
+// }
 
 static inline int pointer_button_index_by_option(xp_option_t *opt)
 {
@@ -231,15 +230,15 @@ static bool Key_press_swap_settings(void)
     return true;
 }
 
-static bool Key_press_swap_scalefactor(void)
-{
-    double a = clData.altScaleFactor;
+// static bool Key_press_swap_scalefactor(void)
+// {
+//     double a = clData.altScaleFactor;
 
-    Set_altScaleFactor(NULL, clData.scaleFactor);
-    Set_scaleFactor(NULL, a);
+//     Set_altScaleFactor(NULL, clData.scaleFactor);
+//     Set_scaleFactor(NULL, a);
 
-    return false;
-}
+//     return false;
+// }
 
 static bool Key_press_increase_power(void)
 {
@@ -285,21 +284,21 @@ static bool Key_press_decrease_turnspeed(void)
     return false; /* server doesn't see these keypresses anymore */
 }
 
-static bool Key_press_talk(void)
-{
-    int i;
+// static bool Key_press_talk(void)
+// {
+//     int i;
 
-    /*
-     * this releases mouse in x11 client, so we clear the mouse buttons
-     * so they don't lock on
-     */
-    if (clData.pointerControl)
-        for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-            Pointer_button_released(i);
+//     /*
+//      * this releases mouse in x11 client, so we clear the mouse buttons
+//      * so they don't lock on
+//      */
+//     if (clData.pointerControl)
+//         for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+//             Pointer_button_released(i);
 
-    Talk_set_state(!clData.talking);
-    return false; /* server doesn't need to know */
-}
+//     Talk_set_state(!clData.talking);
+//     return false; /* server doesn't need to know */
+// }
 
 static bool Key_press_show_items(void)
 {
@@ -313,29 +312,29 @@ static bool Key_press_show_messages(void)
     return false; /* server doesn't need to know */
 }
 
-static bool Key_press_pointer_control(void)
-{
-    Pointer_control_set_state(!clData.pointerControl);
-    return false; /* server doesn't need to know */
-}
+// static bool Key_press_pointer_control(void)
+// {
+//     Pointer_control_set_state(!clData.pointerControl);
+//     return false; /* server doesn't need to know */
+// }
 
-static bool Key_press_toggle_fullscreen(void)
-{
-    Toggle_fullscreen();
-    return false; /* server doesn't need to know */
-}
+// static bool Key_press_toggle_fullscreen(void)
+// {
+//     Toggle_fullscreen();
+//     return false; /* server doesn't need to know */
+// }
 
-static bool Key_press_toggle_radar_score(void)
-{
-    Toggle_radar_and_scorelist();
-    return false; /* server doesn't need to know */
-}
+// static bool Key_press_toggle_radar_score(void)
+// {
+//     Toggle_radar_and_scorelist();
+//     return false; /* server doesn't need to know */
+// }
 
-static bool Key_press_toggle_record(void)
-{
-    Record_toggle();
-    return false; /* server doesn't need to know */
-}
+// static bool Key_press_toggle_record(void)
+// {
+//     Record_toggle();
+//     return false; /* server doesn't need to know */
+// }
 
 static bool Key_press_toggle_sound(void)
 {
@@ -373,29 +372,29 @@ static bool Key_press_no(void)
     return false; /* server doesn't need to know */
 }
 
-static bool Key_press_exit(void)
-{
-    int i;
+// static bool Key_press_exit(void)
+// {
+//     int i;
 
-    /* exit pointer control if exit key pressed in pointer control mode */
-    if (clData.pointerControl)
-    {
-        /*
-         * this releases mouse, so we clear the mouse buttons so
-         * they don't lock on
-         */
-        for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-            Pointer_button_released(i);
+//     /* exit pointer control if exit key pressed in pointer control mode */
+//     if (clData.pointerControl)
+//     {
+//         /*
+//          * this releases mouse, so we clear the mouse buttons so
+//          * they don't lock on
+//          */
+//         for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+//             Pointer_button_released(i);
 
-        Pointer_control_set_state(false);
-        return false; /* server doesn't need to know */
-    }
+//         Pointer_control_set_state(false);
+//         return false; /* server doesn't need to know */
+//     }
 
-    clData.quitMode = true;
-    Add_alert_message("Really Quit (y/n) ?", 0.0);
+//     clData.quitMode = true;
+//     Add_alert_message("Really Quit (y/n) ?", 0.0);
 
-    return false; /* server doesn't need to know */
-}
+//     return false; /* server doesn't need to know */
+// }
 
 static int Key_get_count(keys_t key)
 {
@@ -433,177 +432,177 @@ static bool Key_dec_count(keys_t key)
     return false;
 }
 
-void Key_clear_counts(void)
-{
-    int i;
-    bool change = false;
+// void Key_clear_counts(void)
+// {
+//     int i;
+//     bool change = false;
 
-    for (i = 0; i < NUM_KEYS; i++)
-    {
-        if (keyv_new[i] > 0)
-        {
-            /* set to one so that Key_release(i) will trigger */
-            keyv_new[i] = 1;
-            change |= Key_release((keys_t)i);
-        }
-    }
+//     for (i = 0; i < NUM_KEYS; i++)
+//     {
+//         if (keyv_new[i] > 0)
+//         {
+//             /* set to one so that Key_release(i) will trigger */
+//             keyv_new[i] = 1;
+//             change |= Key_release((keys_t)i);
+//         }
+//     }
 
-    if (change)
-        Net_key_change();
-}
+//     if (change)
+//         Net_key_change();
+// }
 
 /* Remember which key we used to exit quit mode. */
 static keys_t quit_mode_exit_key = KEY_DUMMY;
 
-static bool Quit_mode_key_press(keys_t key)
-{
-    if (key == KEY_YES)
-        Client_exit(0);
+// static bool Quit_mode_key_press(keys_t key)
+// {
+//     if (key == KEY_YES)
+//         Client_exit(0);
 
-    if (key == KEY_NO || key == KEY_EXIT)
-    {
-        clData.quitMode = false;
-        Clear_alert_messages();
-        quit_mode_exit_key = key;
-    }
+//     if (key == KEY_NO || key == KEY_EXIT)
+//     {
+//         clData.quitMode = false;
+//         Clear_alert_messages();
+//         quit_mode_exit_key = key;
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
-bool Key_press(keys_t key)
-{
-    bool countchange;
-    int keycount, i;
+// bool Key_press(keys_t key)
+// {
+//     bool countchange;
+//     int keycount, i;
 
-    if (clData.quitMode)
-        return Quit_mode_key_press(key);
+//     if (clData.quitMode)
+//         return Quit_mode_key_press(key);
 
-    countchange = Key_inc_count(key);
-    keycount = Key_get_count(key);
+//     countchange = Key_inc_count(key);
+//     keycount = Key_get_count(key);
 
-    /*
-     * keycount -1 means this was a client only key, we don't count those
-     */
-    if (keycount != -1)
-    {
-        /*
-         * if countchange is false it means that Key_<inc|dec>_count()
-         * failed to change the count due to being at the end of the range
-         * (should be very rare) keycount != 1 means that this key was
-         * already pressed (multiple key mappings)
-         */
-        if ((!countchange) || (keycount != 1))
-            return true;
-    }
+//     /*
+//      * keycount -1 means this was a client only key, we don't count those
+//      */
+//     if (keycount != -1)
+//     {
+//         /*
+//          * if countchange is false it means that Key_<inc|dec>_count()
+//          * failed to change the count due to being at the end of the range
+//          * (should be very rare) keycount != 1 means that this key was
+//          * already pressed (multiple key mappings)
+//          */
+//         if ((!countchange) || (keycount != 1))
+//             return true;
+//     }
 
-    Key_check_talk_macro(key);
+//     Key_check_talk_macro(key);
 
-    switch (key)
-    {
-    case KEY_ID_MODE:
-        return Key_press_id_mode();
+//     switch (key)
+//     {
+//     case KEY_ID_MODE:
+//         return Key_press_id_mode();
 
-    case KEY_FIRE_SHOT:
-    case KEY_FIRE_LASER:
-    case KEY_FIRE_MISSILE:
-    case KEY_FIRE_TORPEDO:
-    case KEY_FIRE_HEAT:
-    case KEY_DROP_MINE:
-    case KEY_DETACH_MINE:
-        Key_press_autoshield_hack();
-        break;
+//     case KEY_FIRE_SHOT:
+//     case KEY_FIRE_LASER:
+//     case KEY_FIRE_MISSILE:
+//     case KEY_FIRE_TORPEDO:
+//     case KEY_FIRE_HEAT:
+//     case KEY_DROP_MINE:
+//     case KEY_DETACH_MINE:
+//         Key_press_autoshield_hack();
+//         break;
 
-    case KEY_SHIELD:
-        if (Key_press_shield(key))
-            return true;
-        break;
+//     case KEY_SHIELD:
+//         if (Key_press_shield(key))
+//             return true;
+//         break;
 
-    case KEY_REFUEL:
-    case KEY_REPAIR:
-    case KEY_TANK_NEXT:
-    case KEY_TANK_PREV:
-        Key_press_fuel();
-        break;
+//     case KEY_REFUEL:
+//     case KEY_REPAIR:
+//     case KEY_TANK_NEXT:
+//     case KEY_TANK_PREV:
+//         Key_press_fuel();
+//         break;
 
-    case KEY_SWAP_SETTINGS:
-        if (!Key_press_swap_settings())
-            return false;
-        break;
+//     case KEY_SWAP_SETTINGS:
+//         if (!Key_press_swap_settings())
+//             return false;
+//         break;
 
-    case KEY_SWAP_SCALEFACTOR:
-        if (!Key_press_swap_scalefactor())
-            return false;
-        break;
+//     case KEY_SWAP_SCALEFACTOR:
+//         if (!Key_press_swap_scalefactor())
+//             return false;
+//         break;
 
-    case KEY_INCREASE_POWER:
-        return Key_press_increase_power();
+//     case KEY_INCREASE_POWER:
+//         return Key_press_increase_power();
 
-    case KEY_DECREASE_POWER:
-        return Key_press_decrease_power();
+//     case KEY_DECREASE_POWER:
+//         return Key_press_decrease_power();
 
-    case KEY_INCREASE_TURNSPEED:
-        return Key_press_increase_turnspeed();
+//     case KEY_INCREASE_TURNSPEED:
+//         return Key_press_increase_turnspeed();
 
-    case KEY_DECREASE_TURNSPEED:
-        return Key_press_decrease_turnspeed();
+//     case KEY_DECREASE_TURNSPEED:
+//         return Key_press_decrease_turnspeed();
 
-    case KEY_TALK:
-        return Key_press_talk();
+//     case KEY_TALK:
+//         return Key_press_talk();
 
-    case KEY_TOGGLE_OWNED_ITEMS:
-        return Key_press_show_items();
+//     case KEY_TOGGLE_OWNED_ITEMS:
+//         return Key_press_show_items();
 
-    case KEY_TOGGLE_MESSAGES:
-        return Key_press_show_messages();
+//     case KEY_TOGGLE_MESSAGES:
+//         return Key_press_show_messages();
 
-    case KEY_POINTER_CONTROL:
-        /*
-         * this releases mouse, so we clear the mouse buttons so they
-         * don't lock on
-         */
-        if (clData.pointerControl)
-            for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-                Pointer_button_released(i);
+//     case KEY_POINTER_CONTROL:
+//         /*
+//          * this releases mouse, so we clear the mouse buttons so they
+//          * don't lock on
+//          */
+//         if (clData.pointerControl)
+//             for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+//                 Pointer_button_released(i);
 
-        return Key_press_pointer_control();
+//         return Key_press_pointer_control();
 
-    case KEY_TOGGLE_RECORD:
-        return Key_press_toggle_record();
+//     case KEY_TOGGLE_RECORD:
+//         return Key_press_toggle_record();
 
-    case KEY_TOGGLE_SOUND:
-        return Key_press_toggle_sound();
+//     case KEY_TOGGLE_SOUND:
+//         return Key_press_toggle_sound();
 
-    case KEY_TOGGLE_RADAR_SCORE:
-        return Key_press_toggle_radar_score();
+//     case KEY_TOGGLE_RADAR_SCORE:
+//         return Key_press_toggle_radar_score();
 
-    case KEY_PRINT_MSGS_STDOUT:
-        return Key_press_msgs_stdout();
+//     case KEY_PRINT_MSGS_STDOUT:
+//         return Key_press_msgs_stdout();
 
-    case KEY_TOGGLE_FULLSCREEN:
-        return Key_press_toggle_fullscreen();
+//     case KEY_TOGGLE_FULLSCREEN:
+//         return Key_press_toggle_fullscreen();
 
-    case KEY_SELECT_ITEM:
-    case KEY_LOSE_ITEM:
-        if (!Key_press_select_lose_item())
-            return false;
-        break;
+//     case KEY_SELECT_ITEM:
+//     case KEY_LOSE_ITEM:
+//         if (!Key_press_select_lose_item())
+//             return false;
+//         break;
 
-    case KEY_EXIT:
-        return Key_press_exit();
-    case KEY_YES:
-        return Key_press_yes();
-    case KEY_NO:
-        return Key_press_no();
+//     case KEY_EXIT:
+//         return Key_press_exit();
+//     case KEY_YES:
+//         return Key_press_yes();
+//     case KEY_NO:
+//         return Key_press_no();
 
-    default:
-        break;
-    }
+//     default:
+//         break;
+//     }
 
-    if (key < NUM_KEYS)
-        BITV_SET(keyv, key);
+//     if (key < NUM_KEYS)
+//         BITV_SET(keyv, key);
 
-    return true;
-}
+//     return true;
+// }
 
 bool Key_release(keys_t key)
 {
@@ -742,20 +741,20 @@ void Set_toggle_shield(bool on)
  * Function to call when a button of a pointing device has been pressed.
  * Argument 'button' should be 1 for the first pointer button, etc.
  */
-void Pointer_button_pressed(int button)
-{
-    int i, b_index = button - 1;
-    bool key_change = false;
+// void Pointer_button_pressed(int button)
+// {
+//     int i, b_index = button - 1;
+//     bool key_change = false;
 
-    if (button < 1 || button > MAX_POINTER_BUTTONS)
-        return;
+//     if (button < 1 || button > MAX_POINTER_BUTTONS)
+//         return;
 
-    for (i = 0; i < Num_buttonDefs(b_index); i++)
-        key_change |= Key_press(buttonDefs[b_index][i]);
+//     for (i = 0; i < Num_buttonDefs(b_index); i++)
+//         key_change |= Key_press(buttonDefs[b_index][i]);
 
-    if (key_change)
-        Net_key_change();
-}
+//     if (key_change)
+//         Net_key_change();
+// }
 
 void Pointer_button_released(int button)
 {
@@ -772,28 +771,29 @@ void Pointer_button_released(int button)
         Net_key_change();
 }
 
-void Keyboard_button_pressed(xp_keysym_t ks)
-{
-    bool change = false;
-    keys_t key;
+// void Keyboard_button_pressed(xp_keysym_t ks)
+// {
+//     bool change = false;
+//     keys_t key;
 
-#if 0
-    {
-    char foo[80];
+// #if 0
+//     {
+//     char foo[80];
 
-    sprintf(foo, "keysym = %d (0x%x) []", (int)ks, (int)ks);
-    Add_message(foo);
-    }
-#endif
+//     sprintf(foo, "keysym = %d (0x%x) []", (int)ks, (int)ks);
+//     Add_message(foo);
+//     }
+// #endif
 
-    for (key = Generic_lookup_key(ks, true);
-         key != KEY_DUMMY;
-         key = Generic_lookup_key(ks, false))
-        change |= Key_press(key);
+//     for (key = Generic_lookup_key(ks, true);
+//          key != KEY_DUMMY;
+//          key = Generic_lookup_key(ks, false))
+//         change |= Key_press(key);
 
-    if (change)
-        Net_key_change();
-}
+//     if (change)
+//         Net_key_change();
+// }
+
 void Keyboard_button_released(xp_keysym_t ks)
 {
     bool change = false;

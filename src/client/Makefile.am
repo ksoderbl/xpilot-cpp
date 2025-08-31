@@ -13,6 +13,7 @@ libxpclient_a_SOURCES = \
     datagram.cpp \
     datagram.h \
     debugaudio.cpp \
+    event.cpp \
     gfx2d.cpp \
     gfx2d.h \
     guimap.h \
