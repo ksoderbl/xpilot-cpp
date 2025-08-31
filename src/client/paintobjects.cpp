@@ -357,7 +357,7 @@ static void Paint_wormholes(void)
             x = wormhole_ptr[i].x;
             y = wormhole_ptr[i].y;
             if (wrap(&x, &y))
-                Gui_paint_setup_worm(x, y);
+                Gui_paint_setup_worm(x, y, loops & 7);
         }
         RELEASE(wormhole_ptr, num_wormholes, max_wormholes);
     }
@@ -523,7 +523,6 @@ static void Paint_all_ships(void)
 
     if (num_ship > 0)
     {
-
         for (i = 0; i < num_ship; i++)
         {
             x = ship_ptr[i].x;
@@ -535,12 +534,7 @@ static void Paint_all_ships(void)
              * ship in the center? (svenska-hack)
              */
             if (abs(X(x) - ext_view_width / 2) <= 1 && abs(Y(y) - ext_view_height / 2) <= 1 && Other_by_id(ship_ptr[i].id) != NULL)
-            {
                 eyesId = ship_ptr[i].id;
-                eyes = Other_by_id(eyesId);
-                if (eyes != NULL)
-                    eyeTeam = eyes->team;
-            }
 
             Gui_paint_ship(x, y,
                            ship_ptr[i].dir, ship_ptr[i].id,

@@ -130,6 +130,26 @@ int cacheShips = 0; /* cache some ship bitmaps every frame */
 
 static void Paint_clock(int redraw);
 
+void Game_over_action(uint8_t stat)
+{
+    static uint8_t old_stat = 0;
+
+    if (BIT(old_stat, GAME_OVER) && !BIT(stat, GAME_OVER) && !BIT(stat, PAUSE))
+    {
+        XMapRaised(dpy, topWindow);
+    }
+    /* GAME_OVER -> PLAYING */
+    if (BIT(old_stat, PLAYING | PAUSE | GAME_OVER) != PLAYING)
+    {
+        if (BIT(stat, PLAYING | PAUSE | GAME_OVER) == PLAYING)
+        {
+            Reset_shields();
+        }
+    }
+
+    old_stat = stat;
+}
+
 void Paint_frame(void)
 {
     static long scroll_i = 0;

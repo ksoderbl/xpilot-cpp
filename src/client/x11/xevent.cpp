@@ -33,9 +33,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xmd.h>
 
-#include "client.h"
 #include "messages.h"
-#include "option.h"
 #include "paint.h"
 
 #include "keydefs.h"
@@ -63,12 +61,98 @@ extern char *talk_fast_msgs[]; /* talk macros */
 static BITV_DECL(keyv, NUM_KEYS);
 
 bool initialPointerControl = false;
+bool pointerControl = false;
 extern Cursor pointerControlCursor;
+
+#if defined(JOYSTICK) && defined(__linux__)
+/*
+ * Joystick support for Linux 1.0 by Eckard Kopatzki (eko@isar.muc.de).
+ * Needs joystick-0.7 by Art Smith, Jeff Tranter, Carlos Puchol.
+ * Which in turn requires Linux 1.0 or higher.
+ */
+#include <linux/joystick.h>
+
+#define JS_DEVICE "/dev/js0"
+
+/*
+ * center position of the joystick in X and Y, resp.
+ * thresholds which lead to the emulation of the key action
+ */
+#define JS_X0 630
+#define JS_Y0 630
+#define JS_DX 100
+#define JS_DY 100
+
+/*
+ * Functions which are bound to the joystick actions.
+ * These should be specified as defined in default.c.
+ */
+#define JS_LEFT KEY_TURN_LEFT
+#define JS_RIGHT KEY_TURN_RIGHT
+#define JS_UP KEY_THRUST
+#define JS_DOWN KEY_SWAP_SETTINGS
+#define JS_BUTTON0 KEY_FIRE_SHOT
+#define JS_BUTTON1 KEY_SHIELD
+
+static int Key_set(int key, bool on)
+{
+    if (onoff)
+    {
+        if (!BITV_ISSET(keyv, key))
+        {
+            BITV_SET(keyv, key);
+            return true;
+        }
+    }
+    else
+    {
+        if (BITV_ISSET(keyv, key))
+        {
+            BITV_CLR(keyv, key);
+            return true;
+        }
+    }
+    return false;
+}
+
+static void Joystick_event(void)
+{
+    static int js_fd = 0;
+    static bool js_avail = false;
+    struct JS_DATA_TYPE js;
+    int change = 0;
+
+    if (!draw)
+    {
+        return;
+    }
+    if (!js_fd && !js_avail)
+    {
+        if ((js_fd = open(JS_DEVICE, O_RDONLY)) == -1)
+        {
+            return;
+        }
+        js_avail = true;
+    }
+    if (js_avail && read(js_fd, &js, JS_RETURN) == JS_RETURN)
+    {
+        change |= Key_set(JS_BUTTON0, (js.buttons & 1));
+        change |= Key_set(JS_BUTTON1, (js.buttons & 2));
+        change |= Key_set(JS_LEFT, (js.x < JS_X0 - JS_DX));
+        change |= Key_set(JS_RIGHT, (js.x > JS_X0 + JS_DX));
+        change |= Key_set(JS_UP, (js.y < JS_Y0 - JS_DY));
+        change |= Key_set(JS_DOWN, (js.y > JS_Y0 + JS_DY));
+        if (change)
+        {
+            Net_key_change();
+        }
+    }
+}
+#endif
 
 keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
     keys_t ret = KEY_DUMMY;
-    keys_t ret2 = Generic_lookup_key((xp_keysym_t)ks, reset);
     static int i = 0;
 
     if (reset)
@@ -139,7 +223,7 @@ void Pointer_control_set_state(bool on)
 {
     if (on)
     {
-        clData.pointerControl = true;
+        pointerControl = true;
         XGrabPointer(dpy, drawWindow, true, 0, GrabModeAsync,
                      GrabModeAsync, drawWindow, pointerControlCursor, CurrentTime);
         XWarpPointer(dpy, None, drawWindow,
@@ -151,7 +235,7 @@ void Pointer_control_set_state(bool on)
     }
     else
     {
-        clData.pointerControl = false;
+        pointerControl = false;
         XUngrabPointer(dpy, CurrentTime);
         XDefineCursor(dpy, drawWindow, None);
         XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
@@ -159,13 +243,13 @@ void Pointer_control_set_state(bool on)
     XFlush(dpy);
 }
 
-void Talk_set_state(bool onoff)
+static void Talk_set_state(bool onoff)
 {
 
     if (onoff)
     {
         /* Enable talking, disable pointer control if it is enabled. */
-        if (clData.pointerControl)
+        if (pointerControl)
         {
             initialPointerControl = true;
             Pointer_control_set_state(false);
@@ -362,7 +446,7 @@ bool Key_press_pointer_control(keys_t key)
     }
     else
     {
-        Pointer_control_set_state(!clData.pointerControl);
+        Pointer_control_set_state(!pointerControl);
     }
     return false; /* server doesn't need to know */
 }
@@ -706,20 +790,20 @@ void xevent_keyboard(int queued)
 }
 
 ipos_t delta;
-ipos_t mouse;      /* position of mouse pointer. */
-int mouseMovement; /* horizontal mouse movement. */
+ipos_t mouse; /* position of mouse pointer. */
+int movement; /* horizontal mouse movement. */
 
 void xevent_pointer(void)
 {
     XEvent event;
 
-    if (clData.pointerControl)
+    if (pointerControl)
     {
         if (!talk_mapped)
         {
-            if (mouseMovement != 0)
+            if (movement != 0)
             {
-                Send_pointer_move(mouseMovement);
+                Send_pointer_move(movement);
                 delta.x = draw_width / 2 - mouse.x;
                 delta.y = draw_height / 2 - mouse.y;
                 if (ABS(delta.x) > 3 * draw_width / 8 || ABS(delta.y) > 1 * draw_height / 8)
@@ -756,7 +840,7 @@ int x_event(int new_input)
     Joystick_event();
 #endif /* JOYSTICK */
 
-    mouseMovement = 0;
+    movement = 0;
 
     switch (new_input)
     {

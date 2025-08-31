@@ -29,6 +29,7 @@
 
 #include "checknames.h"
 #include "commonmacros.h"
+#include "draw.h"
 #include "pack.h"
 #include "portability.h"
 #include "socklib.h"

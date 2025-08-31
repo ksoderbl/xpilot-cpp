@@ -55,13 +55,14 @@
 /* how to draw a selection */
 #define DRAW_EMPHASIZED BLUE
 
-extern unsigned draw_width, draw_height;
+extern int draw_width, draw_height;
 
 extern char dashes[NUM_DASHES];
 extern char cdashes[NUM_CDASHES];
 
 extern int num_spark_colors;
 
+extern unsigned short team;  /* What team is the player on? */
 extern bool players_exposed; /* Is score window exposed? */
 
 extern short ext_view_width;   /* Width of extended visible area */
@@ -86,89 +87,35 @@ extern short scaleArray[SCALE_ARRAY_SIZE];
 extern void Init_scale_array(void);
 #define WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
 
-extern bool players_exposed;
-
-// static inline float WINSCALE_f(float x)
-// {
-//     return x * clData.fscale;
-// }
-
-// static inline double WINSCALE_d(double x)
-// {
-//     return x * clData.scale;
-// }
-
-// static inline int WINSCALE(int x)
-// {
-//     bool negative = false;
-//     int y, t = x;
-//     float f = (float)0.0;
-
-//     if (x == 0)
-//         return 0;
-
-//     if (t < 0)
-//     {
-//         negative = true;
-//         t = -t;
-//     }
-
-//     f = WINSCALE_f(t);
-//     y = (int)(f + (float)0.5);
-
-//     if (y < 1)
-//         y = 1;
-
-//     if (negative)
-//         y = -y;
-
-//     return y;
-// }
-
-#define UWINSCALE(x) ((unsigned)WINSCALE(x))
-
 #define SCALEX(co) ((int)(WINSCALE(co) - WINSCALE(world.x)))
 #define SCALEY(co) ((int)(WINSCALE(world.y + ext_view_height) - WINSCALE(co)))
-#define X(co) ((int)((co) - world.x))
-#define Y(co) ((int)(world.y + ext_view_height - (co)))
+// #define X(co) ((int)((co) - world.x))
+// #define Y(co) ((int)(world.y + ext_view_height - (co)))
 
-/*
- * Prototypes from the paint*.c files.
- */
-
-int Paint_init(void);
-void Paint_cleanup(void);
+// void Paint_item_symbol(uint8_t type, Drawable d, GC mygc, int x, int y, int color);
+// void Paint_item(uint8_t type, Drawable d, GC mygc, int x, int y);
 void Paint_shots(void);
 void Paint_ships(void);
 void Paint_radar(void);
 void Paint_sliding_radar(void);
 void Paint_world_radar(void);
-void Radar_show_target(int x, int y);
-void Radar_hide_target(int x, int y);
+void Paint_radar_block(int, int, int);
 void Paint_vcannon(void);
 void Paint_vfuel(void);
 void Paint_vbase(void);
 void Paint_vdecor(void);
-void Paint_objects(void);
 void Paint_world(void);
-void Paint_score_table(void);
-void Paint_score_entry(int entry_num, other_t *other, bool is_team);
+void Paint_score_entry(int entry_num, other_t *other, bool best);
 void Paint_score_start(void);
 void Paint_score_objects(void);
 void Paint_meters(void);
 void Paint_HUD(void);
-int Get_message(int *pos, char *message, int req_length, int key);
+void Paint_HUD_values(void);
 void Paint_messages(void);
 void Paint_recording(void);
-void Paint_HUD_values(void);
 void Paint_frame(void);
-void Paint_frame_start(void);
-int Team_color(int);
-int Life_color(other_t *other);
-int Life_color_by_life(int life);
-void Play_beep(void);
+void Game_over_action(uint8_t stat);
+
 int Check_view_dimensions(void);
-void Store_hud_options(void);
-void Store_paintradar_options(void);
 
 #endif

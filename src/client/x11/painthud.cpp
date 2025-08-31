@@ -187,24 +187,18 @@ void Paint_score_objects(void)
 {
     int i, x, y;
 
-    if (!scoreObjectColor)
-        return;
-
     for (i = 0; i < MAX_SCORE_OBJECTS; i++)
     {
         score_object_t *sobj = &score_objects[i];
-        if (sobj->life_time > 0)
+        if (sobj->count > 0)
         {
-            if (loopsSlow % 3)
+            if (sobj->count % 3)
             {
                 x = sobj->x * BLOCK_SZ + BLOCK_SZ / 2;
                 y = sobj->y * BLOCK_SZ + BLOCK_SZ / 2;
                 if (wrap(&x, &y))
                 {
-                    if (sobj->msg_width == -1)
-                        sobj->msg_width =
-                            XTextWidth(gameFont, sobj->msg, sobj->msg_len);
-                    SET_FG(colors[scoreObjectColor].pixel);
+                    SET_FG(colors[hudColor].pixel);
                     x = WINSCALE(X(x)) - sobj->msg_width / 2,
                     y = WINSCALE(Y(y)) + gameFont->ascent / 2,
                     rd.drawString(dpy, drawPixmap, gameGC,
@@ -213,10 +207,10 @@ void Paint_score_objects(void)
                                   sobj->msg_len);
                 }
             }
-            sobj->life_time -= timePerFrame;
-            if (sobj->life_time <= 0.0)
+            sobj->count++;
+            if (sobj->count > SCORE_OBJECT_COUNT)
             {
-                sobj->life_time = 0.0;
+                sobj->count = 0;
                 sobj->hud_msg_len = 0;
             }
         }

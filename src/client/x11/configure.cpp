@@ -777,7 +777,7 @@ static int Config_create_slidingRadar(int widget_desc, int *height)
 static int Config_create_backgroundPointDist(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "backgroundPointDist", &backgroundPointDist, 0, 10,
+                             "backgroundPointDist", &map_point_distance, 0, 10,
                              Config_update_dots, NULL);
 }
 
@@ -801,7 +801,7 @@ static int Config_create_showItemsTime(int widget_desc, int *height)
 static int Config_create_backgroundPointSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "backgroundPointSize", &backgroundPointSize,
+                             "backgroundPointSize", &map_point_size,
                              MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE,
                              Config_update_dots, NULL);
 }
@@ -1142,7 +1142,7 @@ static int Config_update_bool(int widget_desc, void *data, bool *val)
 
 static int Config_update_dots(int widget_desc, void *data, int *val)
 {
-    if (val == &backgroundPointSize && backgroundPointSize > 1)
+    if (val == &map_point_size && map_point_size > 1)
     {
         return 0;
     }
@@ -1191,7 +1191,7 @@ static int Config_update_altTurnResistance(int widget_desc, void *data, double *
 static int Config_update_sparkProb(int widget_desc, void *data, double *val)
 {
     spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
-    // Send_display(); // TODO
+    Send_display();
     return 0;
 }
 
@@ -1523,8 +1523,8 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_bool(fp, "texturedObjects", texturedObjects);
     Config_save_bool(fp, "clock", instruments.clock);
     Config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
-    Config_save_int(fp, "backgroundPointDist", backgroundPointDist);
-    Config_save_int(fp, "backgroundPointSize", backgroundPointSize);
+    Config_save_int(fp, "backgroundPointDist", map_point_distance);
+    Config_save_int(fp, "backgroundPointSize", map_point_size);
     Config_save_int(fp, "sparkSize", spark_size);
     Config_save_double(fp, "sparkProb", spark_prob);
     Config_save_int(fp, "shotSize", shot_size);

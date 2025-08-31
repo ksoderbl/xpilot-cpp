@@ -756,15 +756,12 @@ static int Quit_callback(int widget_desc, void *data, const char **str)
     return 0;
 }
 
-void Raise_window(void)
-{
-    XMapRaised(dpy, topWindow);
-}
-
-void Resize(Window w, unsigned width, unsigned height)
+void Resize(Window w, int width, int height)
 {
     if (w != topWindow)
+    {
         return;
+    }
 
     std::cout << "Resize: size: " << width << "x" << height << std::endl;
 
@@ -789,7 +786,7 @@ void Resize(Window w, unsigned width, unsigned height)
 
     std::cout << "Resize: drawWindow size: " << width << "x" << height << std::endl;
 
-    Check_view_dimensions();
+    Send_display();
     Net_flush();
     XResizeWindow(dpy, drawWindow, draw_width, draw_height);
     if (dbuf_state->type == PIXMAP_COPY)

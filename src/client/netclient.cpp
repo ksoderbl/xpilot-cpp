@@ -548,14 +548,8 @@ int Net_init(char *server, int port)
 
     signal(SIGPIPE, SIG_IGN);
 
-    server_display.view_width = 0;
-    server_display.view_height = 0;
-    server_display.spark_rand = 0;
-    server_display.num_spark_colors = 0;
-
     Receive_init();
-    if (!clientPortStart || !clientPortEnd ||
-        (clientPortStart > clientPortEnd))
+    if (!clientPortStart || !clientPortEnd || (clientPortStart > clientPortEnd))
     {
         if (sock_open_udp(&sock, NULL, 0) == SOCK_IS_ERROR)
         {
@@ -1602,10 +1596,9 @@ int Receive_self(void)
 {
     int n;
     short x, y, vx, vy, lockId, lockDist,
-        sFuelSum, sFuelMax, sViewWidth, sViewHeight;
-    uint8_t ch, sNumSparkColors, sHeading, sPower, sTurnSpeed,
-        sTurnResistance, sNextCheckPoint, lockDir, sAutopilotLight,
-        currentTank, sStat;
+        fuelSum, fuelMax;
+    uint8_t ch, heading, power, turnspeed, turnresistance,
+        nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
     uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf,
@@ -1614,53 +1607,38 @@ int Receive_self(void)
                      "%c%c%c"
                      "%hd%hd%c%c",
                      &ch,
-                     &x, &y, &vx, &vy, &sHeading,
-                     &sPower, &sTurnSpeed, &sTurnResistance,
-                     &lockId, &lockDist, &lockDir, &sNextCheckPoint);
+                     &x, &y, &vx, &vy, &heading,
+                     &power, &turnspeed, &turnresistance,
+                     &lockId, &lockDist, &lockDir, &nextCheckPoint);
     if (n <= 0)
         return n;
 
     memset(num_items, 0, sizeof num_items);
-
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
-
-                     &currentTank, &sFuelSum, &sFuelMax,
-                     &sViewWidth, &sViewHeight, &sNumSparkColors,
-                     &sStat, &sAutopilotLight);
+                     &currentTank, &fuelSum, &fuelMax,
+                     &ext_view_width, &ext_view_height, &debris_colors,
+                     &stat, &autopilotLight);
     if (n <= 0)
         return n;
 
-    /*
-     * These assignments are done here because the server_display
-     * structure members are not of the type that Packet_scanf()
-     * expects, which breaks things on big endian architectures.
-     */
-    server_display.view_width = sViewWidth;
-    server_display.view_height = sViewHeight;
-    LIMIT(server_display.view_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    if (sViewWidth != server_display.view_width)
-        warn("unsupported view width from server");
-    LIMIT(server_display.view_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-    if (sViewHeight != server_display.view_height)
-        warn("unsupported view height from server");
-    server_display.num_spark_colors = sNumSparkColors;
+    if (debris_colors > num_spark_colors)
+        debris_colors = num_spark_colors;
 
-    Handle_self(x, y, vx, vy, sHeading,
-                (double)sPower,
-                (double)sTurnSpeed,
-                (double)sTurnResistance / 255.0,
+    Check_view_dimensions();
+
+    Game_over_action(stat);
+    Handle_self(x, y, vx, vy, heading,
+                (float)power,
+                (float)turnspeed,
+                (float)turnresistance / 255.0F,
                 lockId, lockDist, lockDir,
-                sNextCheckPoint, sAutopilotLight,
+                nextCheckPoint, autopilotLight,
                 num_items,
-                currentTank, (double)sFuelSum, (double)sFuelMax, rbuf.len,
-                (int)sStat);
+                currentTank, fuelSum, fuelMax, rbuf.len);
 
-#ifdef _WINDOWS
-    received_self = TRUE;
-#endif
     return 1;
 }
 
@@ -1737,20 +1715,11 @@ int Receive_ball(void)
 {
     int n;
     short x, y, id;
-    uint8_t ch, style = 0xff /* no style */;
+    uint8_t ch;
 
-    if (version < 0x4F14)
-    {
-        if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
-            return n;
-    }
-    else
-    {
-        if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%c", &ch, &x, &y, &id,
-                              &style)) <= 0)
-            return n;
-    }
-    if ((n = Handle_ball(x, y, id, style)) == -1)
+    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
+        return n;
+    if ((n = Handle_ball(x, y, id)) == -1)
         return -1;
     return 1;
 }
@@ -2227,9 +2196,7 @@ int Receive_team_score(void)
 
 int Receive_timing(void)
 {
-    int n,
-        check,
-        round;
+    int n, check, round;
     short id;
     unsigned short timing;
     uint8_t ch;
@@ -2237,9 +2204,9 @@ int Receive_timing(void)
     n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &timing);
     if (n <= 0)
         return n;
-    check = timing % num_checks;
-    round = timing / num_checks;
-    if ((n = Handle_timing(id, check, round, last_loops)) == -1)
+    check = timing % MAX_CHECKS;
+    round = timing / MAX_CHECKS;
+    if ((n = Handle_timing(id, check, round)) == -1)
         return -1;
     return 1;
 }
@@ -2252,7 +2219,7 @@ int Receive_fuel(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &fuel)) <= 0)
         return n;
-    if ((n = Handle_fuel(num, (double)fuel)) == -1)
+    if ((n = Handle_fuel(num, fuel << FUEL_SCALE_BITS)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_FUEL, last_loops, num);
@@ -2277,15 +2244,13 @@ int Receive_cannon(void)
 int Receive_target(void)
 {
     int n;
-    unsigned short num,
-        dead_time,
-        damage;
+    unsigned short num, dead_time, damage;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
                           &num, &dead_time, &damage)) <= 0)
         return n;
-    if ((n = Handle_target(num, dead_time, (double)damage / 256.0)) == -1)
+    if ((n = Handle_target(num, dead_time, damage)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_TARGET, last_loops, num);
@@ -2629,27 +2594,36 @@ int Send_talk(void)
     return 0;
 }
 
-int Send_display(int width, int height, int sparks, int spark_colors)
+int Send_display(void)
 {
-    int width_wanted = width;
-    int height_wanted = height;
+    int width_wanted = draw_width;
+    int height_wanted = draw_height;
 
-    if (width_wanted == server_display.view_width &&
-        height_wanted == server_display.view_height &&
-        spark_colors == server_display.num_spark_colors &&
-        sparks == server_display.spark_rand &&
+    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
+    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
+
+    LIMIT(width_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    LIMIT(height_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+
+    if (width_wanted == ext_view_width &&
+        height_wanted == ext_view_height &&
+        debris_colors == num_spark_colors &&
+        spark_rand == old_spark_rand &&
         last_loops != 0)
-    {
         return 0;
-    }
 
-    if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
-                      width_wanted, height_wanted,
-                      spark_colors,
-                      sparks) == -1)
+    if (simulating)
+    {
+        ext_view_width = width_wanted;
+        ext_view_height = height_wanted;
+        Check_view_dimensions();
+    }
+    else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
+                           width_wanted, height_wanted,
+                           num_spark_colors, spark_rand) == -1)
         return -1;
 
-    server_display.spark_rand = sparks;
+    old_spark_rand = spark_rand;
 
     return 0;
 }

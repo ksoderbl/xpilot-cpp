@@ -233,6 +233,7 @@ static int Simulate_frames(void)
 
         Client_score_table();
         Handle_message("Starting Test");
+        Game_over_action(PLAYING);
         Send_display();
 
         bzero(newitems, sizeof(newitems));
