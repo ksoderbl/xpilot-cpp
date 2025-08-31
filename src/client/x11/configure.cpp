@@ -703,23 +703,23 @@ static int Config_create_speedFactPTR(int widget_desc, int *height)
 
 static int Config_create_fuelNotify(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "fuelNotify", &fuelLevel3, 0, 1000,
-                             NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "fuelNotify", &fuelNotify, 0, 1000,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelWarning(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "fuelWarning", &fuelLevel2, 0, 1000,
-                             NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "fuelWarning", &fuelWarning, 0, 1000,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelCritical(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "fuelCritical", &fuelLevel1, 0, 1000,
-                             NULL, NULL);
+    return Config_create_double(widget_desc, height,
+                                "fuelCritical", &fuelCritical, 0, 1000,
+                                NULL, NULL);
 }
 
 static int Config_create_fuelGauge(int widget_desc, int *height)
@@ -777,7 +777,7 @@ static int Config_create_slidingRadar(int widget_desc, int *height)
 static int Config_create_backgroundPointDist(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "backgroundPointDist", &map_point_distance, 0, 10,
+                             "backgroundPointDist", &backgroundPointDist, 0, 10,
                              Config_update_dots, NULL);
 }
 
@@ -801,7 +801,7 @@ static int Config_create_showItemsTime(int widget_desc, int *height)
 static int Config_create_backgroundPointSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "backgroundPointSize", &map_point_size,
+                             "backgroundPointSize", &backgroundPointSize,
                              MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE,
                              Config_update_dots, NULL);
 }
@@ -1142,7 +1142,7 @@ static int Config_update_bool(int widget_desc, void *data, bool *val)
 
 static int Config_update_dots(int widget_desc, void *data, int *val)
 {
-    if (val == &map_point_size && map_point_size > 1)
+    if (val == &backgroundPointSize && backgroundPointSize > 1)
     {
         return 0;
     }
@@ -1493,9 +1493,9 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_double(fp, "altTurnResistance", turnresistance_s);
     Config_save_double(fp, "speedFactHUD", hud_move_fact);
     Config_save_double(fp, "speedFactPTR", ptr_move_fact);
-    Config_save_double(fp, "fuelNotify", (double)fuelLevel3);
-    Config_save_double(fp, "fuelWarning", (double)fuelLevel2);
-    Config_save_double(fp, "fuelCritical", (double)fuelLevel1);
+    Config_save_double(fp, "fuelNotify", fuelNotify);
+    Config_save_double(fp, "fuelWarning", fuelWarning);
+    Config_save_double(fp, "fuelCritical", fuelCritical);
     Config_save_bool(fp, "showShipName", instruments.showShipName);
     Config_save_bool(fp, "showMineName", instruments.showMineName);
     Config_save_bool(fp, "showMessages", instruments.showMessages);
@@ -1523,8 +1523,8 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_bool(fp, "texturedObjects", texturedObjects);
     Config_save_bool(fp, "clock", instruments.clock);
     Config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
-    Config_save_int(fp, "backgroundPointDist", map_point_distance);
-    Config_save_int(fp, "backgroundPointSize", map_point_size);
+    Config_save_int(fp, "backgroundPointDist", backgroundPointDist);
+    Config_save_int(fp, "backgroundPointSize", backgroundPointSize);
     Config_save_int(fp, "sparkSize", spark_size);
     Config_save_double(fp, "sparkProb", spark_prob);
     Config_save_int(fp, "shotSize", shot_size);

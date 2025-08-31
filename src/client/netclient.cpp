@@ -1631,13 +1631,14 @@ int Receive_self(void)
 
     Game_over_action(stat);
     Handle_self(x, y, vx, vy, heading,
-                (float)power,
-                (float)turnspeed,
-                (float)turnresistance / 255.0F,
+                (double)power,
+                (double)turnspeed,
+                (double)turnresistance / 255.0,
                 lockId, lockDist, lockDir,
                 nextCheckPoint, autopilotLight,
                 num_items,
-                currentTank, fuelSum, fuelMax, rbuf.len);
+                currentTank, (double)fuelSum, (double)fuelMax, rbuf.len,
+                (int)stat);
 
     return 1;
 }

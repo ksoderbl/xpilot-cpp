@@ -89,30 +89,30 @@ short phasingtime;
 short phasingtimemax;
 
 int RadarHeight = 0;
-int RadarWidth = 256;   /* must always be 256! */
-int map_point_distance; /* spacing of navigation points */
-int map_point_size;     /* size of navigation points */
-int spark_size;         /* size of debris and spark */
-int shot_size;          /* size of shot */
-int teamshot_size;      /* size of team shot */
-long control_count;     /* Display control for how long? */
-int roundDelay;         /* != 0 means we're in a delay */
-int roundDelayMax;      /* (not yet) used for graph of time remaining in delay */
+int RadarWidth = 256;    /* must always be 256! */
+int backgroundPointDist; /* spacing of navigation points */
+int backgroundPointSize; /* size of navigation points */
+int spark_size;          /* size of debris and spark */
+int shot_size;           /* size of shot */
+int teamshot_size;       /* size of team shot */
+long control_count;      /* Display control for how long? */
+int roundDelay;          /* != 0 means we're in a delay */
+int roundDelayMax;       /* (not yet) used for graph of time remaining in delay */
 
 double controlTime;     /* Display control for how long? */
 uint8_t spark_rand;     /* Sparkling effect */
 uint8_t old_spark_rand; /* previous value of spark_rand */
 
-long fuelSum;      /* Sum of fuel in all tanks */
-long fuelMax;      /* How much fuel can you take? */
-short fuelCurrent; /* Number of currently used tank */
-short numTanks;    /* Number of tanks */
-long fuelCount;    /* Display fuel for how long? */
-int fuelLevel1;    /* Fuel critical level */
-int fuelLevel2;    /* Fuel warning level */
-int fuelLevel3;    /* Fuel notify level */
+double fuelSum;      /* Sum of fuel in all tanks */
+double fuelMax;      /* How much fuel can you take? */
+short fuelCurrent;   /* Number of currently used tank */
+short numTanks;      /* Number of tanks */
+double fuelTime;     /* Display fuel for how long? */
+double fuelCritical; /* Fuel critical level */
+double fuelWarning;  /* Fuel warning level */
+double fuelNotify;   /* Fuel notify level */
 
-char *shipShape;                /* Shape of player's ship */
+char *shipShape = NULL;         /* Shape of player's ship */
 double power;                   /* Force of thrust */
 double power_s;                 /* Saved power fiks */
 double turnspeed;               /* How fast player acc-turns */
@@ -560,7 +560,7 @@ void Map_dots(void)
     /*
      * Optimize.
      */
-    if (map_point_size > 0)
+    if (backgroundPointSize > 0)
     {
         if (BIT(Setup->mode, WRAP_PLAY))
         {
@@ -574,17 +574,17 @@ void Map_dots(void)
                 if (dot[Setup->map_data[y]])
                     Map_make_dot(&Setup->map_data[y]);
             }
-            start = map_point_distance;
+            start = backgroundPointDist;
         }
         else
         {
             start = 0;
         }
-        if (map_point_distance > 0)
+        if (backgroundPointDist > 0)
         {
-            for (x = start; x < Setup->x; x += map_point_distance)
+            for (x = start; x < Setup->x; x += backgroundPointDist)
             {
-                for (y = start; y < Setup->y; y += map_point_distance)
+                for (y = start; y < Setup->y; y += backgroundPointDist)
                 {
                     if (dot[Setup->map_data[x * Setup->y + y]])
                         Map_make_dot(&Setup->map_data[x * Setup->y + y]);
@@ -597,7 +597,7 @@ void Map_dots(void)
             y = cannons[i].pos % Setup->y;
             if ((x == 0 || y == 0) && BIT(Setup->mode, WRAP_PLAY))
                 cannons[i].dot = 1;
-            else if (map_point_distance > 0 && x % map_point_distance == 0 && y % map_point_distance == 0)
+            else if (backgroundPointDist > 0 && x % backgroundPointDist == 0 && y % backgroundPointDist == 0)
                 cannons[i].dot = 1;
             else
                 cannons[i].dot = 0;
@@ -1658,11 +1658,12 @@ int Handle_self_items(uint8_t *newNumItems)
 }
 
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
-                float newPower, float newTurnspeed, float newTurnresistance,
+                double newPower, double newTurnspeed, double newTurnresistance,
                 int newLockId, int newLockDist, int newLockBearing,
                 int newNextCheckPoint, int newAutopilotLight,
                 uint8_t *newNumItems, int newCurrentTank,
-                int newFuelSum, int newFuelMax, int newPacketSize)
+                double newFuelSum, double newFuelMax, int newPacketSize,
+                int status)
 {
     selfPos.x = x;
     selfPos.y = y;
@@ -1679,8 +1680,8 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
     autopilotLight = newAutopilotLight;
     memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
     fuelCurrent = newCurrentTank;
-    if (newFuelSum > fuelSum && selfVisible != 0)
-        fuelCount = FUEL_NOTIFY;
+    if (newFuelSum > fuelSum && selfVisible)
+        fuelTime = FUEL_NOTIFY_TIME;
     fuelSum = newFuelSum;
     fuelMax = newFuelMax;
     selfVisible = 0;

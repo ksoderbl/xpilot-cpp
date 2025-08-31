@@ -129,11 +129,6 @@ typedef struct
                                              (other)->name_len);           \
     }
 
-/* macros begin */
-#define X(co) ((int)((co) - world.x))
-#define Y(co) ((int)(world.y + ext_view_height - (co)))
-/* macros end */
-
 typedef struct
 {
     double ratio;
@@ -473,25 +468,25 @@ extern int roundDelayMax;
 
 extern int RadarWidth;
 extern int RadarHeight;
-extern int map_point_distance; /* spacing of navigation points */
-extern int map_point_size;     /* size of navigation points */
-extern int spark_size;         /* size of sparks and debris */
-extern int shot_size;          /* size of shot */
-extern int teamshot_size;      /* size of team shot */
-extern long control_count;     /* Display control for how long? */
+extern int backgroundPointDist; /* spacing of navigation points */
+extern int backgroundPointSize; /* size of navigation points */
+extern int spark_size;          /* size of sparks and debris */
+extern int shot_size;           /* size of shot */
+extern int teamshot_size;       /* size of team shot */
+extern long control_count;      /* Display control for how long? */
 
 extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
 extern uint8_t old_spark_rand; /* previous value of spark_rand */
 
-extern long fuelSum;      /* Sum of fuel in all tanks */
-extern long fuelMax;      /* How much fuel can you take? */
-extern short fuelCurrent; /* Number of currently used tank */
-extern short numTanks;    /* Number of tanks */
-extern long fuelCount;    /* Display fuel for how long? */
-extern int fuelLevel1;    /* Fuel critical level */
-extern int fuelLevel2;    /* Fuel warning level */
-extern int fuelLevel3;    /* Fuel notify level */
+extern double fuelSum;      /* Sum of fuel in all tanks */
+extern double fuelMax;      /* How much fuel can you take? */
+extern short fuelCurrent;   /* Number of currently used tank */
+extern short numTanks;      /* Number of tanks */
+extern double fuelTime;     /* Display fuel for how long? */
+extern double fuelCritical; /* Fuel critical level */
+extern double fuelWarning;  /* Fuel warning level */
+extern double fuelNotify;   /* Fuel notify level */
 
 extern char *shipShape;                /* Shape of player's ship */
 extern double power;                   /* Force of thrust */
@@ -658,12 +653,13 @@ int Handle_score_object(int score, int x, int y, char *msg);
 int Handle_timing(int id, int check, int round);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
-int Handle_self(int x, int y, int vx, int vy, int dir,
-                float power, float turnspeed, float turnresistance,
-                int lock_id, int lock_dist, int lock_dir,
-                int nextCheckPoint, int autopilotLight,
-                uint8_t *newNumItems,
-                int currentTank, int fuel_sum, int fuel_max, int packet_size);
+int Handle_self(int x, int y, int vx, int vy, int newHeading,
+                double newPower, double newTurnspeed, double newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                uint8_t *newNumItems, int newCurrentTank,
+                double newFuelSum, double newFuelMax, int newPacketSize,
+                int status);
 int Handle_self_items(uint8_t *newNumItems);
 int Handle_modifiers(char *m);
 int Handle_damaged(int damaged);
