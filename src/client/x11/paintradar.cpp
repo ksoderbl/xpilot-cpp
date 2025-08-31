@@ -292,6 +292,57 @@ void Paint_sliding_radar(void)
     }
 }
 
+/*
+ * Try and draw an area of the radar which represents block position
+ * `xi' `yi'.  If `draw' is zero the area is cleared.
+ */
+static void Paint_radar_block(int xi, int yi, int color)
+{
+    float xs, ys;
+    int xp, yp, xw, yw;
+
+    if (radarPixmap2 == radarPixmap)
+    {
+        XSetPlaneMask(dpy, radarGC, AllPlanes & ~(dpl_1[0] | dpl_1[1]));
+    }
+    XSetForeground(dpy, radarGC, colors[color].pixel);
+
+    if (Setup->x >= 256)
+    {
+        xs = (float)(256 - 1) / (Setup->x - 1);
+        ys = (float)(RadarHeight - 1) / (Setup->y - 1);
+        xp = (int)(xi * xs + 0.5);
+        yp = RadarHeight - 1 - (int)(yi * ys + 0.5);
+        XDrawPoint(dpy, radarPixmap2, radarGC, xp, yp);
+    }
+    else
+    {
+        xs = (float)(Setup->x - 1) / (256 - 1);
+        ys = (float)(Setup->y - 1) / (RadarHeight - 1);
+        /*
+         * Calculate the min and max points on the radar that would show
+         * block position `xi' and `yi'.  Note `xp' is the minimum x coord
+         * for `xi',which is one more than the previous xi value would give,
+         * and `xw' is the maximum, which is then changed to a width value.
+         * Similarly for `yw' and `yp' (the roles are reversed because the
+         * radar is upside down).
+         */
+        xp = (int)((xi - 0.5) / xs) + 1;
+        xw = (int)((xi + 0.5) / xs);
+        yw = (int)((yi - 0.5) / ys) + 1;
+        yp = (int)((yi + 0.5) / ys);
+        xw -= xp;
+        yw = yp - yw;
+        yp = RadarHeight - 1 - yp;
+        XFillRectangle(dpy, radarPixmap2, radarGC, xp, yp, xw + 1, yw + 1);
+    }
+    if (radarPixmap2 == radarPixmap)
+    {
+        XSetPlaneMask(dpy, radarGC,
+                      AllPlanes & ~(dpl_2[0] | dpl_2[1]));
+    }
+}
+
 void Paint_world_radar(void)
 {
     int i, xi, yi, xm, ym, xp, yp = 0;
@@ -633,57 +684,6 @@ void Paint_world_radar(void)
             continue;
         }
         Paint_radar_block(xi, yi, targetRadarColor);
-    }
-}
-
-/*
- * Try and draw an area of the radar which represents block position
- * `xi' `yi'.  If `draw' is zero the area is cleared.
- */
-void Paint_radar_block(int xi, int yi, int color)
-{
-    float xs, ys;
-    int xp, yp, xw, yw;
-
-    if (radarPixmap2 == radarPixmap)
-    {
-        XSetPlaneMask(dpy, radarGC, AllPlanes & ~(dpl_1[0] | dpl_1[1]));
-    }
-    XSetForeground(dpy, radarGC, colors[color].pixel);
-
-    if (Setup->x >= 256)
-    {
-        xs = (float)(256 - 1) / (Setup->x - 1);
-        ys = (float)(RadarHeight - 1) / (Setup->y - 1);
-        xp = (int)(xi * xs + 0.5);
-        yp = RadarHeight - 1 - (int)(yi * ys + 0.5);
-        XDrawPoint(dpy, radarPixmap2, radarGC, xp, yp);
-    }
-    else
-    {
-        xs = (float)(Setup->x - 1) / (256 - 1);
-        ys = (float)(Setup->y - 1) / (RadarHeight - 1);
-        /*
-         * Calculate the min and max points on the radar that would show
-         * block position `xi' and `yi'.  Note `xp' is the minimum x coord
-         * for `xi',which is one more than the previous xi value would give,
-         * and `xw' is the maximum, which is then changed to a width value.
-         * Similarly for `yw' and `yp' (the roles are reversed because the
-         * radar is upside down).
-         */
-        xp = (int)((xi - 0.5) / xs) + 1;
-        xw = (int)((xi + 0.5) / xs);
-        yw = (int)((yi - 0.5) / ys) + 1;
-        yp = (int)((yi + 0.5) / ys);
-        xw -= xp;
-        yw = yp - yw;
-        yp = RadarHeight - 1 - yp;
-        XFillRectangle(dpy, radarPixmap2, radarGC, xp, yp, xw + 1, yw + 1);
-    }
-    if (radarPixmap2 == radarPixmap)
-    {
-        XSetPlaneMask(dpy, radarGC,
-                      AllPlanes & ~(dpl_2[0] | dpl_2[1]));
     }
 }
 
