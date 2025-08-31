@@ -75,10 +75,15 @@ short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
 short lock_dist; /* Distance to player locked onto */
 
-other_t *self;     /* player info */
-short selfVisible; /* Are we alive and playing? */
-short damaged;     /* Damaged by ECM */
-short destruct;    /* If self destructing */
+int eyesId;           /* Player we get frame updates for */
+other_t *eyes = NULL; /* Player we get frame updates for */
+bool snooping;        /* are we snooping on someone else? */
+int eyeTeam = TEAM_NOT_SET;
+
+other_t *self = NULL; /* player info */
+short selfVisible;    /* Are we alive and playing? */
+short damaged;        /* Damaged by ECM */
+short destruct;       /* If self destructing */
 short shutdown_delay;
 short shutdown_count;
 short thrusttime;
@@ -165,9 +170,6 @@ char sounds[MAX_CHARS];      /* audio mappings */
 char audioServer[MAX_CHARS]; /* audio server */
 int maxVolume;               /* maximum volume (in percent) */
 #endif                       /* SOUND */
-
-int eyesId;     /* Player we get frame updates for */
-short snooping; /* are we snooping on someone else? */
 
 fuelstation_t *fuels = NULL;
 int num_fuels = 0;

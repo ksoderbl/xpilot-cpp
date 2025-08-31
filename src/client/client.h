@@ -450,6 +450,11 @@ extern short lock_id;   /* Id of player locked onto */
 extern short lock_dir;  /* Direction of lock */
 extern short lock_dist; /* Distance to player locked onto */
 
+extern int eyesId;    /* Player we get frame updates for */
+extern other_t *eyes; /* Player we get frame updates for */
+extern bool snooping; /* are we snooping on someone else? */
+extern int eyeTeam;   /* Team of player we get updates for */
+
 extern other_t *self;     /* Player info */
 extern short selfVisible; /* Are we alive and playing? */
 extern short damaged;     /* Damaged by ECM */
@@ -618,9 +623,6 @@ extern long time_left;
 extern bool roundend;
 extern bool played_this_round;
 extern int protocolVersion;
-
-extern int eyesId;     /* Player we get frame updates for */
-extern short snooping; /* are we snooping on someone else? */
 
 /*
  * somewhere

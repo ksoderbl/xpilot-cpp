@@ -53,9 +53,6 @@ char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
 /* The final string, sent to the server */
 static char final_str[MAX_CHARS];
 
-extern int eyesId;     /* Player we get frame updates for */
-extern short snooping; /* Are we snooping on someone else? */
-
 #define MSG_PARSED_FIELD_LEN 20
 
 /*
