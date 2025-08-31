@@ -357,7 +357,7 @@ static void Paint_wormholes(void)
             x = wormhole_ptr[i].x;
             y = wormhole_ptr[i].y;
             if (wrap(&x, &y))
-                Gui_paint_setup_worm(x, y, loops & 7);
+                Gui_paint_setup_worm(x, y);
         }
         RELEASE(wormhole_ptr, num_wormholes, max_wormholes);
     }

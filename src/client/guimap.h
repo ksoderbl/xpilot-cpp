@@ -33,7 +33,7 @@ void Gui_paint_border(int x, int y, int xi, int yi);
 void Gui_paint_visible_border(int x, int y, int xi, int yi);
 void Gui_paint_hudradar_limit(int x, int y, int xi, int yi);
 
-void Gui_paint_setup_check(int x, int y, int xi, int yi);
+void Gui_paint_setup_check(int x, int y, bool isNext);
 void Gui_paint_setup_acwise_grav(int x, int y);
 void Gui_paint_setup_cwise_grav(int x, int y);
 void Gui_paint_setup_pos_grav(int x, int y);
@@ -42,7 +42,7 @@ void Gui_paint_setup_up_grav(int x, int y);
 void Gui_paint_setup_down_grav(int x, int y);
 void Gui_paint_setup_right_grav(int x, int y);
 void Gui_paint_setup_left_grav(int x, int y);
-void Gui_paint_setup_worm(int x, int y, int wormDrawCount);
+void Gui_paint_setup_worm(int x, int y);
 void Gui_paint_setup_item_concentrator(int x, int y);
 void Gui_paint_setup_asteroid_concentrator(int x, int y);
 void Gui_paint_decor_dot(int x, int y, int size);
