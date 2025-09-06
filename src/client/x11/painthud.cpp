@@ -37,6 +37,7 @@
 #include "client.h"
 #include "messages.h"
 #include "netclient.h"
+#include "option.h"
 #include "paint.h"
 #include "paintdata.h"
 
@@ -1230,4 +1231,171 @@ void Paint_HUD_values(void)
     x = WINSCALE(ext_view_width) - 10 - wmax;
     y = 260 + gameFont->ascent;
     rd.drawString(dpy, drawPixmap, gameGC, x, y, buf2, len2);
+}
+
+xp_option_t hud_options[] = {
+
+    COLOR_INDEX_OPTION(
+        "hudColor",
+        2,
+        &hudColor,
+        "Which color number to use for drawing the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudHLineColor",
+        0,
+        &hudHLineColor,
+        "Which color number to use for drawing the horizontal lines\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudVLineColor",
+        0,
+        &hudVLineColor,
+        "Which color number to use for drawing the vertical lines\n"
+        "in the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudItemsColor",
+        2,
+        &hudItemsColor,
+        "Which color number to use for drawing owned items on the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudRadarEnemyColor",
+        3,
+        &hudRadarEnemyColor,
+        "Which color number to use for drawing hudradar dots\n"
+        "that represent enemy ships.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudRadarOtherColor",
+        2,
+        &hudRadarOtherColor,
+        "Which color number to use for drawing hudradar dots\n"
+        "that represent friendly ships or other objects.\n"),
+
+    COLOR_INDEX_OPTION(
+        "hudLockColor",
+        0,
+        &hudLockColor,
+        "Which color number to use for drawing the lock on the HUD.\n"),
+
+    COLOR_INDEX_OPTION(
+        "fuelGaugeColor",
+        0,
+        &fuelGaugeColor,
+        "Which color number to use for drawing the fuel gauge.\n"),
+
+    COLOR_INDEX_OPTION(
+        "dirPtrColor",
+        0,
+        &dirPtrColor,
+        "Which color number to use for drawing the direction pointer hack.\n"),
+
+    COLOR_INDEX_OPTION(
+        "messagesColor",
+        12,
+        &messagesColor,
+        "Which color number to use for drawing messages.\n"),
+
+    COLOR_INDEX_OPTION(
+        "oldMessagesColor",
+        13,
+        &oldMessagesColor,
+        "Which color number to use for drawing old messages.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanBallColor",
+        3,
+        &msgScanBallColor,
+        "Which color number to use for drawing ball message warning.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanSafeColor",
+        4,
+        &msgScanSafeColor,
+        "Which color number to use for drawing safe message.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanCoverColor",
+        2,
+        &msgScanCoverColor,
+        "Which color number to use for drawing cover message.\n"),
+
+    COLOR_INDEX_OPTION(
+        "msgScanPopColor",
+        11,
+        &msgScanPopColor,
+        "Which color number to use for drawing pop message.\n"),
+
+    COLOR_INDEX_OPTION(
+        "fuelMeterColor",
+        0,
+        &fuelMeterColor,
+        "Which color number to use for drawing the fuel meter.\n"),
+
+    COLOR_INDEX_OPTION(
+        "powerMeterColor",
+        0,
+        &powerMeterColor,
+        "Which color number to use for drawing the power meter.\n"),
+
+    COLOR_INDEX_OPTION(
+        "turnSpeedMeterColor",
+        0,
+        &turnSpeedMeterColor,
+        "Which color number to use for drawing the turn speed meter.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetSizeMeterColor",
+        0,
+        &packetSizeMeterColor,
+        "Which color number to use for drawing the packet size meter.\n"
+        "Each bar is equavalent to 1024 bytes, for a maximum of 4096 bytes.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetLossMeterColor",
+        3,
+        &packetLossMeterColor,
+        "Which color number to use for drawing the packet loss meter.\n"
+        "This gives the percentage of lost frames due to network failure.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetDropMeterColor",
+        3,
+        &packetDropMeterColor,
+        "Which color number to use for drawing the packet drop meter.\n"
+        "This gives the percentage of dropped frames due to display\n"
+        "slowness.\n"),
+
+    COLOR_INDEX_OPTION(
+        "packetLagMeterColor",
+        3,
+        &packetLagMeterColor,
+        "Which color number to use for drawing the packet lag meter.\n"
+        "This gives the amount of lag in frames over the past one second.\n"),
+
+    COLOR_INDEX_OPTION(
+        "temporaryMeterColor",
+        3,
+        &temporaryMeterColor,
+        "Which color number to use for drawing temporary meters.\n"),
+
+    COLOR_INDEX_OPTION(
+        "meterBorderColor",
+        2,
+        &meterBorderColor,
+        "Which color number to use for drawing borders of meters.\n"),
+
+    COLOR_INDEX_OPTION(
+        "scoreObjectColor",
+        4,
+        &scoreObjectColor,
+        "Which color number to use for drawing score objects.\n"),
+
+};
+
+void Store_hud_options(void)
+{
+    STORE_OPTIONS(hud_options);
 }
