@@ -178,18 +178,18 @@ void tuner_teamcannons(void)
     {
         for (i = 0; i < world->NumCannons; i++)
         {
-            team = Find_closest_team(world->cannon[i].clk_pos.cx, world->cannon[i].clk_pos.cy);
+            team = Find_closest_team(world->cannons[i].clk_pos);
             if (team == TEAM_NOT_SET)
             {
                 error("Couldn't find a matching team for the cannon.");
             }
-            world->cannon[i].team = team;
+            world->cannons[i].team = team;
         }
     }
     else
     {
         for (i = 0; i < world->NumCannons; i++)
-            world->cannon[i].team = TEAM_NOT_SET;
+            world->cannons[i].team = TEAM_NOT_SET;
     }
 }
 
@@ -202,7 +202,7 @@ void tuner_cannonsuseitems(void)
 
     for (i = 0; i < world->NumCannons; i++)
     {
-        c = world->cannon + i;
+        c = world->cannons + i;
         for (j = 0; j < NUM_ITEMS; j++)
         {
             c->item[j] = 0;
@@ -225,17 +225,17 @@ void tuner_wormtime(void)
     {
         for (i = 0; i < world->NumWormholes; i++)
         {
-            world->wormHoles[i].countdown = options.wormTime;
+            world->wormholes[i].countdown = options.wormTime;
         }
     }
     else
     {
         for (i = 0; i < world->NumWormholes; i++)
         {
-            if (world->wormHoles[i].temporary)
+            if (world->wormholes[i].temporary)
                 remove_temp_wormhole(i);
             else
-                world->wormHoles[i].countdown = WORMCOUNT;
+                world->wormholes[i].countdown = WORMCOUNT;
         }
     }
 }

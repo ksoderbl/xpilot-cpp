@@ -148,15 +148,15 @@ void Make_debris(
     if (BIT(world->rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += world->click_width;
-        else if (cx >= world->click_width)
-            cx -= world->click_width;
+            cx += world->cwidth;
+        else if (cx >= world->cwidth)
+            cx -= world->cwidth;
         if (cy < 0)
-            cy += world->click_height;
-        else if (cy >= world->click_height)
-            cy -= world->click_height;
+            cy += world->cheight;
+        else if (cy >= world->cheight)
+            cy -= world->cheight;
     }
-    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
+    if (cx < 0 || cx >= world->cwidth || cy < 0 || cy >= world->cheight)
     {
         return;
     }

@@ -64,11 +64,11 @@ static void Refuel(int ind)
     CLR_BIT(pl->used, HAS_REFUEL);
     for (i = 0; i < world->NumFuels; i++)
     {
-        if (world->block[world->fuel[i].blk_pos.x]
-                        [world->fuel[i].blk_pos.y] == FUEL)
+        if (world->block[world->fuels[i].blk_pos.x]
+                        [world->fuels[i].blk_pos.y] == FUEL)
         {
-            l = Wrap_length(pl->pos.cx - world->fuel[i].clk_pos.cx,
-                            pl->pos.cy - world->fuel[i].clk_pos.cy) /
+            l = Wrap_length(pl->pos.cx - world->fuels[i].clk_pos.cx,
+                            pl->pos.cy - world->fuels[i].clk_pos.cy) /
                 CLICK;
             if (BIT(pl->used, HAS_REFUEL) == 0 || l < dist)
             {
@@ -526,14 +526,14 @@ int Handle_keyboard(int ind)
                     msg[0] = '\0';
                     for (i = 0; i < world->NumBases; i++)
                     {
-                        if (world->base[i].blk_pos.x == xi && world->base[i].blk_pos.y == yi)
+                        if (world->bases[i].blk_pos.x == xi && world->bases[i].blk_pos.y == yi)
                         {
 
                             if (i == pl->home_base)
                             {
                                 break;
                             }
-                            if (world->base[i].team != TEAM_NOT_SET && world->base[i].team != pl->team)
+                            if (world->bases[i].team != TEAM_NOT_SET && world->bases[i].team != pl->team)
                                 break;
                             pl->home_base = i;
                             sprintf(msg, "%s has changed home base.",
@@ -797,8 +797,8 @@ int Handle_keyboard(int ind)
                 {
                     xi = OBJ_X_IN_BLOCKS(pl);
                     yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = world->base[pl->home_base].blk_pos.x;
-                    k = world->base[pl->home_base].blk_pos.y;
+                    j = world->bases[pl->home_base].blk_pos.x;
+                    k = world->bases[pl->home_base].blk_pos.y;
                     if (j == xi && k == yi)
                     {
                         minv = 3.0f;

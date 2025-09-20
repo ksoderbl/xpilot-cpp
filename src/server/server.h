@@ -24,9 +24,18 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "map.h"
 #include "object.h"
 #include "player.h"
 #include "list.h"
+#include "shipshape.h"
+
+extern shape_t ball_wire, wormhole_wire, filled_wire;
+
+static inline vector_t World_gravity(clpos_t pos)
+{
+    return world->gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
+}
 
 enum TeamPickType
 {
@@ -75,6 +84,18 @@ void filter_mods(modifiers_t *mods);
 /*
  * Prototypes for map.c
  */
+int World_place_base(clpos_t pos, int dir, int team, int order);
+int World_place_cannon(clpos_t pos, int dir, int team);
+int World_place_check(clpos_t pos, int ind);
+int World_place_fuel(clpos_t pos, int team);
+int World_place_grav(clpos_t pos, double force, int type);
+int World_place_target(clpos_t pos, int team);
+int World_place_treasure(clpos_t pos, int team, bool empty, int ball_style);
+int World_place_wormhole(clpos_t pos, wormtype_t type);
+int World_place_item_concentrator(clpos_t pos);
+int World_place_asteroid_concentrator(clpos_t pos);
+int World_place_friction_area(clpos_t pos, double fric);
+
 void Free_map(void);
 bool Grok_map(void);
 void Find_base_direction(void);
@@ -82,7 +103,7 @@ void Compute_gravity(void);
 double Wrap_findDir(double dx, double dy);
 double Wrap_cfindDir(double dcx, double dcy);
 double Wrap_length(double dx, double dy);
-unsigned short Find_closest_team(int cx, int cy);
+int Find_closest_team(clpos_t pos);
 
 int Wildmap(
     int width,

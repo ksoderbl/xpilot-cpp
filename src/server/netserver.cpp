@@ -405,7 +405,7 @@ static int Init_setup(void)
                 *mapptr = SETUP_DECOR_LD;
                 break;
             case WORMHOLE:
-                switch (world->wormHoles[wormhole++].type)
+                switch (world->wormholes[wormhole++].type)
                 {
                 case WORM_NORMAL:
                     *mapptr = SETUP_WORM_NORMAL;
@@ -429,15 +429,15 @@ static int Init_setup(void)
                 *mapptr = SETUP_TARGET + world->targets[target++].team;
                 break;
             case BASE:
-                if (world->base[base].team == TEAM_NOT_SET)
+                if (world->bases[base].team == TEAM_NOT_SET)
                 {
                     team = 0;
                 }
                 else
                 {
-                    team = world->base[base].team;
+                    team = world->bases[base].team;
                 }
-                switch (world->base[base++].dir)
+                switch (world->bases[base++].dir)
                 {
                 case DIR_UP:
                     *mapptr = SETUP_BASE_UP + team;
@@ -458,7 +458,7 @@ static int Init_setup(void)
                 }
                 break;
             case CANNON:
-                switch (world->cannon[cannon++].dir)
+                switch (world->cannons[cannon++].dir)
                 {
                 case DIR_UP:
                     *mapptr = SETUP_CANNON_UP;
@@ -481,7 +481,7 @@ static int Init_setup(void)
             case CHECK:
                 for (i = 0; i < world->NumChecks; i++)
                 {
-                    if (x != world->check[i].x || y != world->check[i].y)
+                    if (x != world->checks[i].x || y != world->checks[i].y)
                     {
                         continue;
                     }
@@ -1280,20 +1280,20 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         /*
          * The client assumes at startup that all cannons are active.
          */
-        if (world->cannon[i].dead_time == 0)
-            SET_BIT(world->cannon[i].conn_mask, conn_bit);
+        if (world->cannons[i].dead_time == 0)
+            SET_BIT(world->cannons[i].conn_mask, conn_bit);
         else
-            CLR_BIT(world->cannon[i].conn_mask, conn_bit);
+            CLR_BIT(world->cannons[i].conn_mask, conn_bit);
     }
     for (i = 0; i < world->NumFuels; i++)
     {
         /*
          * The client assumes at startup that all fuelstations are filled.
          */
-        if (world->fuel[i].fuel == MAX_STATION_FUEL)
-            SET_BIT(world->fuel[i].conn_mask, conn_bit);
+        if (world->fuels[i].fuel == MAX_STATION_FUEL)
+            SET_BIT(world->fuels[i].conn_mask, conn_bit);
         else
-            CLR_BIT(world->fuel[i].conn_mask, conn_bit);
+            CLR_BIT(world->fuels[i].conn_mask, conn_bit);
     }
     for (i = 0; i < world->NumTargets; i++)
     {
@@ -2766,8 +2766,8 @@ static int Receive_ack_cannon(connection_t *connp)
         Destroy_connection(connp, "bad cannon ack");
         return -1;
     }
-    if (loops_ack > world->cannon[num].last_change)
-        SET_BIT(world->cannon[num].conn_mask, 1 << connp->conn_index);
+    if (loops_ack > world->cannons[num].last_change)
+        SET_BIT(world->cannons[num].conn_mask, 1 << connp->conn_index);
 
     return 1;
 }
@@ -2791,8 +2791,8 @@ static int Receive_ack_fuel(connection_t *connp)
         Destroy_connection(connp, "bad fuel ack");
         return -1;
     }
-    if (loops_ack > world->fuel[num].last_change)
-        SET_BIT(world->fuel[num].conn_mask, 1 << connp->conn_index);
+    if (loops_ack > world->fuels[num].last_change)
+        SET_BIT(world->fuels[num].conn_mask, 1 << connp->conn_index);
     return 1;
 }
 

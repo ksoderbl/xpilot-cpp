@@ -192,7 +192,7 @@ static void Walldist_init(void)
     {
         for (y = 0; y < world->y; y++)
         {
-            if (BIT((1 << world->block[x][y]), WALLDIST_MASK) && (world->block[x][y] != WORMHOLE || world->wormHoles[wormXY(x, y)].type != WORM_OUT))
+            if (BIT((1 << world->block[x][y]), WALLDIST_MASK) && (world->block[x][y] != WORMHOLE || world->wormholes[wormXY(x, y)].type != WORM_OUT))
             {
                 walldist[x][y] = 0;
                 q[qback].x = x;
@@ -836,7 +836,7 @@ void Move_segment(move_state_t *ms)
                 break;
             }
             hole = wormXY(block.x, block.y);
-            if (world->wormHoles[hole].type == WORM_OUT)
+            if (world->wormholes[hole].type == WORM_OUT)
             {
                 break;
             }
@@ -849,7 +849,7 @@ void Move_segment(move_state_t *ms)
                     if (world->block[blk2.x][blk2.y] == WORMHOLE)
                     {
                         int oldhole = wormXY(blk2.x, blk2.y);
-                        if (world->wormHoles[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
+                        if (world->wormholes[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
                         {
                             /*
                              * Don't warp again if we are still on the
@@ -874,11 +874,11 @@ void Move_segment(move_state_t *ms)
                  * Warp the object to the same destination as the
                  * player has been warped to.
                  */
-                int last = world->wormHoles[hole].lastdest;
-                if (last >= 0 && (world->wormHoles[hole].countdown > 0 || !options.wormTime) && last < world->NumWormholes && world->wormHoles[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
+                int last = world->wormholes[hole].lastdest;
+                if (last >= 0 && (world->wormholes[hole].countdown > 0 || !options.wormTime) && last < world->NumWormholes && world->wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.cx += (world->wormHoles[last].blk_pos.x - world->wormHoles[hole].blk_pos.x) * BLOCK_CLICKS;
-                    ms->done.cy += (world->wormHoles[last].blk_pos.y - world->wormHoles[hole].blk_pos.y) * BLOCK_CLICKS;
+                    ms->done.cx += (world->wormholes[last].blk_pos.x - world->wormholes[hole].blk_pos.x) * BLOCK_CLICKS;
+                    ms->done.cy += (world->wormholes[last].blk_pos.y - world->wormholes[hole].blk_pos.y) * BLOCK_CLICKS;
                     break;
                 }
             }
@@ -895,19 +895,19 @@ void Move_segment(move_state_t *ms)
             }
             for (i = 0;; i++)
             {
-                if (world->cannon[i].blk_pos.x == block.x && world->cannon[i].blk_pos.y == block.y)
+                if (world->cannons[i].blk_pos.x == block.x && world->cannons[i].blk_pos.y == block.y)
                 {
                     break;
                 }
             }
             ms->cannon = i;
 
-            if (BIT(world->cannon[i].used, HAS_PHASING_DEVICE))
+            if (BIT(world->cannons[i].used, HAS_PHASING_DEVICE))
             {
                 break;
             }
 
-            if (BIT(world->rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == world->cannon[i].team)
+            if (BIT(world->rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == world->cannons[i].team)
             {
                 break;
             }
@@ -928,7 +928,7 @@ void Move_segment(move_state_t *ms)
                 mirx.cy = 0;
                 miry.cx = 0;
                 miry.cy = 0;
-                switch (world->cannon[i].dir)
+                switch (world->cannons[i].dir)
                 {
                 case DIR_UP:
                     mx.x = 1;
@@ -1818,7 +1818,7 @@ void Move_segment(move_state_t *ms)
 
 static void Cannon_dies(move_state_t *ms)
 {
-    cannon_t *cannon = world->cannon + ms->cannon;
+    cannon_t *cannon = world->cannons + ms->cannon;
     int x = (int)cannon->pix_pos.x;
     int y = (int)cannon->pix_pos.y;
     int cx = cannon->clk_pos.cx;
@@ -2163,10 +2163,10 @@ static void Object_crash(move_state_t *ms)
         }
         else
         {
-            if (!BIT(world->cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
+            if (!BIT(world->cannons[ms->cannon].used, HAS_EMERGENCY_SHIELD))
             {
-                if (world->cannon[ms->cannon].item[ITEM_ARMOR] > 0)
-                    world->cannon[ms->cannon].item[ITEM_ARMOR]--;
+                if (world->cannons[ms->cannon].item[ITEM_ARMOR] > 0)
+                    world->cannons[ms->cannon].item[ITEM_ARMOR]--;
                 else
                     Cannon_dies(ms);
             }
@@ -2376,7 +2376,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_CANNON_SOUND);
         }
-        if (!BIT(world->cannon[ms->cannon].used, HAS_EMERGENCY_SHIELD))
+        if (!BIT(world->cannons[ms->cannon].used, HAS_EMERGENCY_SHIELD))
         {
             Cannon_dies(ms);
         }

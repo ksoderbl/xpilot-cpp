@@ -275,7 +275,7 @@ static bool Really_empty_space(int ind, int x, int y)
 
     case WORMHOLE:
         if (!wormholeVisible
-            || world->wormHoles[world->itemID[x][y]].type == WORM_OUT) {
+            || world->wormholes[world->itemID[x][y]].type == WORM_OUT) {
             return true;
         } else {
             return false;
@@ -293,7 +293,7 @@ static bool Really_empty_space(int ind, int x, int y)
     case CANNON:
         if (teamImmunity
             && BIT(world->rules->mode, TEAM_PLAY)
-            && world->cannon[world->itemID[x][y]].team == pl->team) {
+            && world->cannons[world->itemID[x][y]].team == pl->team) {
             return true;
         } else {
             return false;

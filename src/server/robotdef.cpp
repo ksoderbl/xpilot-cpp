@@ -408,7 +408,7 @@ static bool Really_empty_space(int ind, int x, int y)
         return false;
 
     case WORMHOLE:
-        if (!options.wormholeVisible || world->wormHoles[world->itemID[x][y]].type == WORM_OUT)
+        if (!options.wormholeVisible || world->wormholes[world->itemID[x][y]].type == WORM_OUT)
         {
             return true;
         }
@@ -428,7 +428,7 @@ static bool Really_empty_space(int ind, int x, int y)
         }
 
     case CANNON:
-        if (options.teamImmunity && BIT(world->rules->mode, TEAM_PLAY) && world->cannon[world->itemID[x][y]].team == pl->team)
+        if (options.teamImmunity && BIT(world->rules->mode, TEAM_PLAY) && world->cannons[world->itemID[x][y]].team == pl->team)
         {
             return true;
         }
@@ -1648,20 +1648,20 @@ static int Robot_default_play_check_map(int ind)
     for (j = 0; j < world->NumFuels; j++)
     {
 
-        if (world->fuel[j].fuel < 100 * FUEL_SCALE_FACT)
+        if (world->fuels[j].fuel < 100 * FUEL_SCALE_FACT)
             continue;
 
-        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuel[j].team != pl->team)
+        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[j].team != pl->team)
             continue;
 
-        if ((dx = (world->fuel[j].pix_pos.x - pl->pos.x),
+        if ((dx = (world->fuels[j].pix_pos.x - pl->pos.x),
              dx = WRAP_DX(dx), ABS(dx)) < fuel_dist &&
-            (dy = (world->fuel[j].pix_pos.y - pl->pos.y),
+            (dy = (world->fuels[j].pix_pos.y - pl->pos.y),
              dy = WRAP_DY(dy), ABS(dy)) < fuel_dist &&
             (distance = (int)LENGTH(dx, dy)) < fuel_dist)
         {
-            if (world->block[world->fuel[j].blk_pos.x]
-                            [world->fuel[j].blk_pos.y] == FUEL)
+            if (world->block[world->fuels[j].blk_pos.x]
+                            [world->fuels[j].blk_pos.y] == FUEL)
             {
                 fuel_i = j;
                 fuel_dist = distance;
@@ -1691,8 +1691,8 @@ static int Robot_default_play_check_map(int ind)
     {
 
         fuel_checked = true;
-        dx = world->fuel[fuel_i].pix_pos.x;
-        dy = world->fuel[fuel_i].pix_pos.y;
+        dx = world->fuels[fuel_i].pix_pos.x;
+        dy = world->fuels[fuel_i].pix_pos.y;
 
         SET_BIT(pl->used, HAS_REFUEL);
         pl->fs = fuel_i;
@@ -1718,15 +1718,15 @@ static int Robot_default_play_check_map(int ind)
     for (j = 0; j < world->NumCannons; j++)
     {
 
-        if (world->cannon[j].dead_time > 0)
+        if (world->cannons[j].dead_time > 0)
             continue;
 
-        if (BIT(world->rules->mode, TEAM_PLAY) && world->cannon[j].team == pl->team)
+        if (BIT(world->rules->mode, TEAM_PLAY) && world->cannons[j].team == pl->team)
             continue;
 
-        if ((dx = world->cannon[j].pix_pos.x - pl->pos.x,
+        if ((dx = world->cannons[j].pix_pos.x - pl->pos.x,
              dx = WRAP_DX(dx), ABS(dx)) < cannon_dist &&
-            (dy = world->cannon[j].pix_pos.y - pl->pos.y,
+            (dy = world->cannons[j].pix_pos.y - pl->pos.y,
              dy = WRAP_DY(dy), ABS(dy)) < cannon_dist &&
             (distance = (int)LENGTH(dx, dy)) < cannon_dist)
         {
@@ -1738,10 +1738,10 @@ static int Robot_default_play_check_map(int ind)
     if (cannon_i >= 0)
     {
 
-        dx = world->cannon[cannon_i].pix_pos.x;
-        dx += (BLOCK_SZ * 0.1 * tcos(world->cannon[cannon_i].dir));
-        dy = world->cannon[cannon_i].pix_pos.y;
-        dy += (BLOCK_SZ * 0.1 * tsin(world->cannon[cannon_i].dir));
+        dx = world->cannons[cannon_i].pix_pos.x;
+        dx += (BLOCK_SZ * 0.1 * tcos(world->cannons[cannon_i].dir));
+        dy = world->cannons[cannon_i].pix_pos.y;
+        dy += (BLOCK_SZ * 0.1 * tsin(world->cannons[cannon_i].dir));
 
         if (Check_robot_target(ind, dx, dy, RM_CANNON_KILL))
         {
@@ -1752,8 +1752,8 @@ static int Robot_default_play_check_map(int ind)
     if (fuel_i >= 0 && !fuel_checked && BIT(my_data->longterm_mode, NEED_FUEL))
     {
 
-        dx = world->fuel[fuel_i].pix_pos.x;
-        dy = world->fuel[fuel_i].pix_pos.y;
+        dx = world->fuels[fuel_i].pix_pos.x;
+        dy = world->fuels[fuel_i].pix_pos.y;
 
         SET_BIT(pl->used, HAS_REFUEL);
         pl->fs = fuel_i;
@@ -2102,15 +2102,15 @@ static void Robot_default_play(int ind)
         for (j = 0; j < world->NumFuels; j++)
         {
             int dx, dy;
-            if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuel[j].team != pl->team)
+            if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[j].team != pl->team)
             {
                 continue;
             }
-            dx = (int)(world->fuel[j].pix_pos.x - pl->pos.x);
-            dy = (int)(world->fuel[j].pix_pos.y - pl->pos.y);
+            dx = (int)(world->fuels[j].pix_pos.x - pl->pos.x);
+            dy = (int)(world->fuels[j].pix_pos.y - pl->pos.y);
             /* dx = WRAP_DX(dx);
                dy = WRAP_DY(dy); */
-            if (sqr(dx) + sqr(dy) <= sqr(90) && world->fuel[j].fuel > REFUEL_RATE)
+            if (sqr(dx) + sqr(dy) <= sqr(90) && world->fuels[j].fuel > REFUEL_RATE)
             {
                 pl->fs = j;
                 SET_BIT(pl->used, HAS_REFUEL);
@@ -2174,8 +2174,8 @@ static void Robot_default_play(int ind)
     /* KK: unfortunately, this introduced a new bug. robots with large
         shipshapes don't take off from their bases. here's an attempt to
         fix it */
-    if (QUICK_LENGTH(pl->pos.x - (world->base[pl->home_base].blk_pos.x * BLOCK_SZ),
-                     pl->pos.y - (world->base[pl->home_base].blk_pos.y * BLOCK_SZ)) < BLOCK_SZ)
+    if (QUICK_LENGTH(pl->pos.x - (world->bases[pl->home_base].blk_pos.x * BLOCK_SZ),
+                     pl->pos.y - (world->bases[pl->home_base].blk_pos.y * BLOCK_SZ)) < BLOCK_SZ)
     {
         SET_BIT(pl->status, THRUSTING);
     }
@@ -2361,8 +2361,8 @@ static void Robot_default_play(int ind)
         {
             navigate_checked = true;
             if (Check_robot_target(ind,
-                                   world->check[pl->check].x * BLOCK_SZ,
-                                   world->check[pl->check].y * BLOCK_SZ,
+                                   world->checks[pl->check].x * BLOCK_SZ,
+                                   world->checks[pl->check].y * BLOCK_SZ,
                                    RM_NAVIGATE))
             {
                 return;

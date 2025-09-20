@@ -67,7 +67,7 @@ long CANNON_USE_ITEM = (ITEM_BIT_FUEL | ITEM_BIT_WIDEANGLE | ITEM_BIT_REARSHOT |
    fuel is given in 'units', but is stored in fuelpacks. */
 void Cannon_add_item(int ind, int item, int amount)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
 
     switch (item)
     {
@@ -88,7 +88,7 @@ void Cannon_add_item(int ind, int item, int amount)
 
 void Cannon_throw_items(int ind)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
     int i, dir;
     object_t *obj;
     double velocity;
@@ -135,7 +135,7 @@ void Cannon_throw_items(int ind)
    items. */
 void Cannon_init(int ind)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
     int i;
 
     c->last_change = frame_loops;
@@ -178,7 +178,7 @@ void Cannon_check_fire(int ind)
 /* selects one of the available defenses. see cannon.h for descriptions. */
 static int Cannon_select_defense(int ind)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
 
     if (options.cannonSmartness == 0)
         return -1; /* mode 0 does not defend */
@@ -196,7 +196,7 @@ static int Cannon_select_defense(int ind)
    modes 1 - 3 use progressively more accurate detection. */
 static int Cannon_in_danger(int ind)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
     const int range = 4 * BLOCK_SZ;
     const long kill_shots = (KILLING_SHOTS) | OBJ_MINE | OBJ_SHOT | OBJ_PULSE | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_TORPEDO | OBJ_ASTEROID;
     object_t *shot, **obj_list;
@@ -252,7 +252,7 @@ static int Cannon_in_danger(int ind)
 /* activates the selected defense. */
 static void Cannon_defend(int ind, int defense)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
     IFSOUND(int sound = -1);
 
     switch (defense)
@@ -278,7 +278,7 @@ static void Cannon_defend(int ind, int defense)
 /* selects one of the available weapons. see cannon.h for descriptions. */
 static int Cannon_select_weapon(int ind)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
 
     if (c->item[ITEM_MINE] && rfrac() < 0.5f)
         return CW_MINE;
@@ -313,7 +313,7 @@ static int Cannon_select_weapon(int ind)
  */
 static void Cannon_aim(int ind, int weapon, int *target, int *dir)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
     int speed = options.ShotsSpeed;
     int range = CANNON_SHOT_LIFE_MAX * speed;
     int cpx = (int)c->pix_pos.x;
@@ -466,7 +466,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
    have more than one possible use. */
 static void Cannon_fire(int ind, int weapon, int target, int dir)
 {
-    cannon_t *c = world->cannon + ind;
+    cannon_t *c = world->cannons + ind;
     player_t *pl = PlayersArray[target];
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;

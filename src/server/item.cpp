@@ -700,18 +700,18 @@ void Do_general_transporter(player_t *pl, int cx, int cy, int target,
     else
     {
         sound_play_sensors(cx, cy, TRANSPORTER_SUCCESS_SOUND);
-        if (NumTransporters < MAX_TOTAL_TRANSPORTERS)
+        if (world->NumTransporters < MAX_TOTAL_TRANSPORTERS)
         {
-            Transporters[NumTransporters] = (trans_t *)malloc(sizeof(trans_t));
-            if (Transporters[NumTransporters] != NULL)
-            {
-                Transporters[NumTransporters]->clk_pos.cx = cx;
-                Transporters[NumTransporters]->clk_pos.cy = cy;
-                Transporters[NumTransporters]->target = victim->id;
-                Transporters[NumTransporters]->id = (pl ? pl->id : NO_ID);
-                Transporters[NumTransporters]->count = 5;
-                NumTransporters++;
-            }
+            // Transporters[world->NumTransporters] = (transporter_t *)malloc(sizeof(transporter_t));
+            // if (Transporters[world->NumTransporters] != NULL)
+            // {
+            world->transporters[world->NumTransporters].clk_pos.cx = cx;
+            world->transporters[world->NumTransporters].clk_pos.cy = cy;
+            world->transporters[world->NumTransporters].target = victim->id;
+            world->transporters[world->NumTransporters].id = (pl ? pl->id : NO_ID);
+            world->transporters[world->NumTransporters].count = 5;
+            world->NumTransporters++;
+            // }
         }
     }
 
@@ -983,17 +983,17 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
     player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]), *p;
     ecm_t *ecm;
 
-    if (NumEcms >= MAX_TOTAL_ECMS)
+    if (world->NumEcms >= MAX_TOTAL_ECMS)
         return;
-    Ecms[NumEcms] = (ecm_t *)malloc(sizeof(ecm_t));
-    if (Ecms[NumEcms] == NULL)
-        return;
-    ecm = Ecms[NumEcms];
+    // Ecms[world->NumEcms] = (ecm_t *)malloc(sizeof(ecm_t));
+    // if (Ecms[world->NumEcms] == NULL)
+    //     return;
+    ecm = &world->ecms[world->NumEcms];
     ecm->clk_pos.cx = cx;
     ecm->clk_pos.cy = cy;
     ecm->id = (pl ? pl->id : NO_ID);
     ecm->size = (int)ECM_DISTANCE;
-    NumEcms++;
+    world->NumEcms++;
     if (pl)
     {
         pl->ecmcount++;
@@ -1125,7 +1125,7 @@ void Fire_general_ecm(int ind, unsigned short team, int cx, int cy)
     {
         for (i = 0; i < world->NumCannons; i++)
         {
-            cannon_t *c = world->cannon + i;
+            cannon_t *c = world->cannons + i;
             if (BIT(world->rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
             range = Wrap_length(CLICK_TO_FLOAT(cx - c->clk_pos.cx), CLICK_TO_FLOAT(cy - c->clk_pos.cy));

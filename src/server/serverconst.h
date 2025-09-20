@@ -33,89 +33,71 @@
  * Two macros for edge wrap of x and y coordinates measured in pixels.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XPIXEL(x_)                          \
-        (BIT(world->rules->mode, WRAP_PLAY)      \
-             ? ((x_) < 0                         \
-                    ? (x_) + world->width        \
-                    : ((x_) >= world->width      \
-                           ? (x_) - world->width \
-                           : (x_)))              \
-             : (x_))
+#define WRAP_XPIXEL(x_)                      \
+    (BIT(world->rules->mode, WRAP_PLAY)      \
+         ? ((x_) < 0                         \
+                ? (x_) + world->width        \
+                : ((x_) >= world->width      \
+                       ? (x_) - world->width \
+                       : (x_)))              \
+         : (x_))
 
-#define WRAP_YPIXEL(y_)                           \
-        (BIT(world->rules->mode, WRAP_PLAY)       \
-             ? ((y_) < 0                          \
-                    ? (y_) + world->height        \
-                    : ((y_) >= world->height      \
-                           ? (y_) - world->height \
-                           : (y_)))               \
-             : (y_))
+#define WRAP_YPIXEL(y_)                       \
+    (BIT(world->rules->mode, WRAP_PLAY)       \
+         ? ((y_) < 0                          \
+                ? (y_) + world->height        \
+                : ((y_) >= world->height      \
+                       ? (y_) - world->height \
+                       : (y_)))               \
+         : (y_))
 
 /*
  * Two macros for edge wrap of x and y coordinates measured in map blocks.
  * Note that the correction needed shouldn't ever be bigger than one mapsize.
  */
-#define WRAP_XBLOCK(x_)                      \
-        (BIT(world->rules->mode, WRAP_PLAY)  \
-             ? ((x_) < 0                     \
-                    ? (x_) + world->x        \
-                    : ((x_) >= world->x      \
-                           ? (x_) - world->x \
-                           : (x_)))          \
-             : (x_))
+#define WRAP_XBLOCK(x_)                  \
+    (BIT(world->rules->mode, WRAP_PLAY)  \
+         ? ((x_) < 0                     \
+                ? (x_) + world->x        \
+                : ((x_) >= world->x      \
+                       ? (x_) - world->x \
+                       : (x_)))          \
+         : (x_))
 
-#define WRAP_YBLOCK(y_)                      \
-        (BIT(world->rules->mode, WRAP_PLAY)  \
-             ? ((y_) < 0                     \
-                    ? (y_) + world->y        \
-                    : ((y_) >= world->y      \
-                           ? (y_) - world->y \
-                           : (y_)))          \
-             : (y_))
+#define WRAP_YBLOCK(y_)                  \
+    (BIT(world->rules->mode, WRAP_PLAY)  \
+         ? ((y_) < 0                     \
+                ? (y_) + world->y        \
+                : ((y_) >= world->y      \
+                       ? (y_) - world->y \
+                       : (y_)))          \
+         : (y_))
 
 /*
  * Two macros for edge wrap of differences in position.
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
  */
-#define WRAP_DX(dx)                               \
-        (BIT(world->rules->mode, WRAP_PLAY)       \
-             ? ((dx) < -(world->width >> 1)       \
-                    ? (dx) + world->width         \
-                    : ((dx) > (world->width >> 1) \
-                           ? (dx) - world->width  \
-                           : (dx)))               \
-             : (dx))
+#define WRAP_DX(dx)                           \
+    (BIT(world->rules->mode, WRAP_PLAY)       \
+         ? ((dx) < -(world->width >> 1)       \
+                ? (dx) + world->width         \
+                : ((dx) > (world->width >> 1) \
+                       ? (dx) - world->width  \
+                       : (dx)))               \
+         : (dx))
 
-#define WRAP_DY(dy)                                \
-        (BIT(world->rules->mode, WRAP_PLAY)        \
-             ? ((dy) < -(world->height >> 1)       \
-                    ? (dy) + world->height         \
-                    : ((dy) > (world->height >> 1) \
-                           ? (dy) - world->height  \
-                           : (dy)))                \
-             : (dy))
-
-#define WRAP_DCX(dcx)                                    \
-        (BIT(world->rules->mode, WRAP_PLAY)              \
-             ? ((dcx) < -(world->click_width >> 1)       \
-                    ? (dcx) + world->click_width         \
-                    : ((dcx) > (world->click_width >> 1) \
-                           ? (dcx) - world->click_width  \
-                           : (dcx)))                     \
-             : (dcx))
-
-#define WRAP_DCY(dcy)                                     \
-        (BIT(world->rules->mode, WRAP_PLAY)               \
-             ? ((dcy) < -(world->click_height >> 1)       \
-                    ? (dcy) + world->click_height         \
-                    : ((dcy) > (world->click_height >> 1) \
-                           ? (dcy) - world->click_height  \
-                           : (dcy)))                      \
-             : (dcy))
+#define WRAP_DY(dy)                            \
+    (BIT(world->rules->mode, WRAP_PLAY)        \
+         ? ((dy) < -(world->height >> 1)       \
+                ? (dy) + world->height         \
+                : ((dy) > (world->height >> 1) \
+                       ? (dy) - world->height  \
+                       : (dy)))                \
+         : (dy))
 
 #define PSEUDO_TEAM(i, j) \
-        (PlayersArray[(i)]->pseudo_team == PlayersArray[(j)]->pseudo_team)
+    (PlayersArray[(i)]->pseudo_team == PlayersArray[(j)]->pseudo_team)
 
 /*
  * Used where we wish to know if a player is simply on the same team.
@@ -139,7 +121,7 @@
  * Used where we wish to know if a player (pl_i) owns a tank (pl_).
  */
 #define Player_owns_tank(pl_i, pl_j) \
-        (Player_is_tank(pl_j) && (pl_j->lock.pl_id != -1) && (pl_j->lock.pl_id == pl_i->id))
+    (Player_is_tank(pl_j) && (pl_j->lock.pl_id != -1) && (pl_j->lock.pl_id == pl_i->id))
 
 /*
  * Used when we want to pass an index which is not in use.
@@ -158,6 +140,8 @@
 #define MAX_TOTAL_PULSES (5 * 64)
 #define MAX_TOTAL_ECMS 64
 #define MAX_TOTAL_TRANSPORTERS (2 * 64)
+// TODO: Remove later
+#define MAX_TOTAL_FRICTIONAREAS (2 * 64)
 
 #define LG2_MAX_AFTERBURNER 4
 #define ALT_SPARK_MASS_FACT 4.2
@@ -165,11 +149,11 @@
 #define MAX_AFTERBURNER ((1 << LG2_MAX_AFTERBURNER) - 1)
 #define AFTER_BURN_SPARKS(s, n) (((s) * (n)) >> LG2_MAX_AFTERBURNER)
 #define AFTER_BURN_POWER_FACTOR(n) \
-        (1.0 + (n) * ((ALT_SPARK_MASS_FACT - 1.0) / (MAX_AFTERBURNER + 1.0)))
+    (1.0 + (n) * ((ALT_SPARK_MASS_FACT - 1.0) / (MAX_AFTERBURNER + 1.0)))
 #define AFTER_BURN_POWER(p, n) \
-        ((p) * AFTER_BURN_POWER_FACTOR(n))
+    ((p) * AFTER_BURN_POWER_FACTOR(n))
 #define AFTER_BURN_FUEL(f, n) \
-        (((f) * ((MAX_AFTERBURNER + 1) + (n) * (ALT_FUEL_FACT - 1))) / (MAX_AFTERBURNER + 1.0))
+    (((f) * ((MAX_AFTERBURNER + 1) + (n) * (ALT_FUEL_FACT - 1))) / (MAX_AFTERBURNER + 1.0))
 
 #define TURN_FUEL(acc) (0.005 * FUEL_SCALE_FACT * ABS(acc))
 #define TURN_SPARKS(tf) (5 + ((tf) >> ((FUEL_SCALE_BITS) - 6)))
@@ -192,10 +176,10 @@
 #define ECM_DISTANCE (VISIBILITY_DISTANCE * 0.4)
 #define TRANSPORTER_DISTANCE (VISIBILITY_DISTANCE * 0.2)
 
-#define SHOT_MULT(o)                                                          \
-        ((BIT((o)->mods.nuclear, NUCLEAR) && BIT((o)->mods.warhead, CLUSTER)) \
-             ? options.nukeClusterDamage                                      \
-             : 1.0f)
+#define SHOT_MULT(o)                                                      \
+    ((BIT((o)->mods.nuclear, NUCLEAR) && BIT((o)->mods.warhead, CLUSTER)) \
+         ? options.nukeClusterDamage                                      \
+         : 1.0f)
 
 #define MINE_RADIUS 8
 #define MINE_RANGE (VISIBILITY_DISTANCE * 0.1)
@@ -252,10 +236,10 @@
 #define TRACTOR_MAX_RANGE(items) (200 + (items) * 50)
 #define TRACTOR_MAX_FORCE(items) (-40 + (items) * -20)
 #define TRACTOR_PERCENT(dist, maxdist) \
-        (1.0 - (0.5 * (dist) / (maxdist)))
+    (1.0 - (0.5 * (dist) / (maxdist)))
 #define TRACTOR_COST(percent) (-1.5 * FUEL_SCALE_FACT * (percent))
 #define TRACTOR_FORCE(tr_pr, percent, maxforce) \
-        ((percent) * (maxforce) * ((tr_pr) ? -1 : 1))
+    ((percent) * (maxforce) * ((tr_pr) ? -1 : 1))
 
 #define WARN_TIME 2
 
@@ -285,7 +269,7 @@
 // #define MAX_MAP_SIZE 31500
 
 #define POLYGON_MAX_OFFSET 30000
-// #define NO_GROUP (-1)
+#define NO_GROUP (-1)
 
 /* Maximum frames per second the server code supports. */
 #define MAX_SERVER_FPS 255

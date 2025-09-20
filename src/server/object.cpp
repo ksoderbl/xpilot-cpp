@@ -49,8 +49,8 @@ int NumEcms = 0;
 int NumTransporters = 0;
 object_t *Obj[MAX_TOTAL_SHOTS];
 pulse_t *Pulses[MAX_TOTAL_PULSES];
-ecm_t *Ecms[MAX_TOTAL_ECMS];
-trans_t *Transporters[MAX_TOTAL_TRANSPORTERS];
+// ecm_t *Ecms[MAX_TOTAL_ECMS];
+// transporter_t *Transporters[MAX_TOTAL_TRANSPORTERS];
 
 static void Object_incr_count(void)
 {
@@ -180,7 +180,7 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= world->click_width)
+    if (cx >= world->cwidth)
     {
         printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -192,7 +192,7 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= world->click_height)
+    if (cy >= world->cheight)
     {
         printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -227,7 +227,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= world->click_width)
+    if (cx >= world->cwidth)
     {
         printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;
@@ -239,7 +239,7 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= world->click_height)
+    if (cy >= world->cheight)
     {
         printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
         // *(double *)(-1) = 4321.0;

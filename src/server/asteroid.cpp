@@ -258,15 +258,15 @@ static void Make_asteroid(int cx, int cy,
     if (BIT(world->rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += world->click_width;
-        else if (cx >= world->click_width)
-            cx -= world->click_width;
+            cx += world->cwidth;
+        else if (cx >= world->cwidth)
+            cx -= world->cwidth;
         if (cy < 0)
-            cy += world->click_height;
-        else if (cy >= world->click_height)
-            cy -= world->click_height;
+            cy += world->cheight;
+        else if (cy >= world->cheight)
+            cy -= world->cheight;
     }
-    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
+    if (cx < 0 || cx >= world->cwidth || cy < 0 || cy >= world->cheight)
         return;
 
     bx = CLICK_TO_BLOCK(cx);
@@ -381,21 +381,21 @@ static void Place_asteroid(void)
             if (BIT(world->rules->mode, WRAP_PLAY))
             {
                 if (cx < 0)
-                    cx += world->click_width;
-                if (cx > world->click_width)
-                    cx -= world->click_width;
+                    cx += world->cwidth;
+                if (cx > world->cwidth)
+                    cx -= world->cwidth;
                 if (cy < 0)
-                    cy += world->click_height;
-                if (cy > world->click_height)
-                    cy -= world->click_height;
+                    cy += world->cheight;
+                if (cy > world->cheight)
+                    cy -= world->cheight;
             }
-            if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
+            if (cx < 0 || cx >= world->cwidth || cy < 0 || cy >= world->cheight)
                 continue;
         }
         else
         {
-            cx = (int)(rfrac() * world->click_width);
-            cy = (int)(rfrac() * world->click_height);
+            cx = (int)(rfrac() * world->cwidth);
+            cy = (int)(rfrac() * world->cheight);
         }
         bx = CLICK_TO_BLOCK(cx);
         by = CLICK_TO_BLOCK(cy);

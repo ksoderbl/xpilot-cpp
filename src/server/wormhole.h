@@ -1,12 +1,10 @@
 /*
- * XPilot NG, a multiplayer space war game.
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- * Copyright (C) 1991-2001 by
- *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +24,7 @@
 #ifndef WORMHOLE_H
 #define WORMHOLE_H
 
-#ifndef CLICK_H
 #include "click.h"
-#endif
 
 #define WORMHOLE_RADIUS ((BLOCK_CLICKS / 2) - 1)
 

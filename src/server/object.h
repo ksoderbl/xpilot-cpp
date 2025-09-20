@@ -372,15 +372,6 @@ struct _visibility
     long lastChange;
 };
 
-#define MAX_PLAYER_ECMS 8 /* Maximum simultaneous per player */
-typedef struct
-{
-    int size;
-    // position_t pos;
-    clpos_t clk_pos;
-    int id;
-} ecm_t;
-
 /*
  * Structure holding the info for one pulse of a laser.
  */
@@ -396,18 +387,6 @@ typedef struct
     modifiers_t mods;
     bool refl;
 } pulse_t;
-
-/*
- * Transporter info.
- */
-typedef struct
-{
-    // position_t pos;
-    clpos_t clk_pos;
-    int target;
-    int id;
-    int count;
-} trans_t;
 
 /*
  * Shove-information.
@@ -429,15 +408,15 @@ struct robot_data;
 
 extern object_t *Obj[];
 extern pulse_t *Pulses[];
-extern ecm_t *Ecms[];
-extern trans_t *Transporters[];
+// extern ecm_t *Ecms[];
+// extern transporter_t *Transporters[];
 
 extern int NumPlayers;
 extern int NumPseudoPlayers;
 extern int ObjCount;
 extern int NumPulses;
-extern int NumEcms;
-extern int NumTransporters;
+// extern int NumEcms;
+// extern int NumTransporters;
 extern int NumAlliances;
 extern int NumRobots;
 

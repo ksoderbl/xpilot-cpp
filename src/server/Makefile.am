@@ -60,6 +60,8 @@ xpilot_cpp_server_SOURCES = \
     update.cpp \
     walls.cpp \
     walls.h \
-    wildmap.cpp
+    wildmap.cpp \
+    wormhole.h \
+    xpmap.cpp
 
 xpilot_cpp_server_LDADD = -lm ../common/libxpcommon.a

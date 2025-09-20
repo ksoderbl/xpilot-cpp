@@ -278,6 +278,8 @@ typedef struct options
     char *tankShipShape;    /* What ship shape is used for tanks? */
     int maxPauseTime;       /* Max. time you can stay paused for */
     int maxClientsPerIP;    /* Max. number of clients that can login from the same IP */
+
+    bool polygonMode;
 } options_t;
 
 extern options_t options;

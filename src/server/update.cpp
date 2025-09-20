@@ -79,13 +79,13 @@ static void Transport_to_home(player_t *pl)
             check = pl->check - 1;
         else
             check = world->NumChecks - 1;
-        bx = (world->check[check].x + 0.5) * BLOCK_SZ;
-        by = (world->check[check].y + 0.5) * BLOCK_SZ;
+        bx = (world->checks[check].x + 0.5) * BLOCK_SZ;
+        by = (world->checks[check].y + 0.5) * BLOCK_SZ;
     }
     else
     {
-        bx = (world->base[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
-        by = (world->base[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
+        bx = (world->bases[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
+        by = (world->bases[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pos.x);
     dy = WRAP_DY(by - pl->pos.y);
@@ -582,19 +582,19 @@ void Update_objects(void)
         int frames_per_update = MAX_STATION_FUEL / (fuel * BLOCK_SZ);
         for (int i = 0; i < world->NumFuels; i++)
         {
-            if (world->fuel[i].fuel == MAX_STATION_FUEL)
+            if (world->fuels[i].fuel == MAX_STATION_FUEL)
                 continue;
-            if ((world->fuel[i].fuel += fuel) >= MAX_STATION_FUEL)
-                world->fuel[i].fuel = MAX_STATION_FUEL;
-            else if (world->fuel[i].last_change + frames_per_update > frame_loops)
+            if ((world->fuels[i].fuel += fuel) >= MAX_STATION_FUEL)
+                world->fuels[i].fuel = MAX_STATION_FUEL;
+            else if (world->fuels[i].last_change + frames_per_update > frame_loops)
                 /*
                  * We don't send fuelstation info to the clients every frame
                  * if it wouldn't change their display.
                  */
                 continue;
 
-            world->fuel[i].conn_mask = 0;
-            world->fuel[i].last_change = frame_loops;
+            world->fuels[i].conn_mask = 0;
+            world->fuels[i].last_change = frame_loops;
         }
     }
 
@@ -637,18 +637,21 @@ void Update_objects(void)
      */
     Asteroid_update();
 
+    double ecmSizeFactor = 0.5;
     /*
      * Update ECM blasts
      */
-    for (int i = 0; i < NumEcms; i++)
+    for (int i = 0; i < world->NumEcms; i++)
     {
-        if ((Ecms[i]->size >>= 1) == 0)
+        ecm_t *ecm = Ecm_by_index(i);
+
+        if ((ecm->size *= ecmSizeFactor) < 1.0)
         {
-            if (Ecms[i]->id != NO_ID)
-                PlayersArray[GetInd[Ecms[i]->id]]->ecmcount--;
-            free(Ecms[i]);
-            --NumEcms;
-            Ecms[i] = Ecms[NumEcms];
+            if (ecm->id != NO_ID)
+                PlayersArray[GetInd[ecm->id]]->ecmcount--;
+            // free(Ecms[i]);
+            --world->NumEcms;
+            world->ecms[i] = world->ecms[world->NumEcms];
             i--;
         }
     }
@@ -656,13 +659,15 @@ void Update_objects(void)
     /*
      * Update transporters
      */
-    for (int i = 0; i < NumTransporters; i++)
+    for (int i = 0; i < Num_transporters(); i++)
     {
-        if (--Transporters[i]->count <= 0)
+        transporter_t *trans = Transporter_by_index(i);
+
+        if (--trans->count <= 0)
         {
-            free(Transporters[i]);
-            --NumTransporters;
-            Transporters[i] = Transporters[NumTransporters];
+            // free(Transporters[i]);
+            --world->NumTransporters;
+            world->transporters[i] = world->transporters[world->NumTransporters];
             i--;
         }
     }
@@ -672,7 +677,7 @@ void Update_objects(void)
      */
     for (int i = 0; i < world->NumCannons; i++)
     {
-        cannon_t *cannon = world->cannon + i;
+        cannon_t *cannon = world->cannons + i;
         if (cannon->dead_time > 0)
         {
             if (!--cannon->dead_time)
@@ -989,14 +994,14 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_REFUEL))
         {
-            if ((Wrap_length(pl->pos.cx - world->fuel[pl->fs].clk_pos.cx,
-                             pl->pos.cy - world->fuel[pl->fs].clk_pos.cy) /
+            if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].clk_pos.cx,
+                             pl->pos.cy - world->fuels[pl->fs].clk_pos.cy) /
                      CLICK >
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
-                (world->block[world->fuel[pl->fs].blk_pos.x][world->fuel[pl->fs].blk_pos.y] != FUEL) ||
+                (world->block[world->fuels[pl->fs].blk_pos.x][world->fuels[pl->fs].blk_pos.y] != FUEL) ||
                 BIT(pl->used, HAS_PHASING_DEVICE) ||
-                (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuel[pl->fs].team != pl->team))
+                (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[pl->fs].team != pl->team))
             {
                 CLR_BIT(pl->used, HAS_REFUEL);
             }
@@ -1007,19 +1012,19 @@ void Update_objects(void)
 
                 do
                 {
-                    if (world->fuel[pl->fs].fuel > REFUEL_RATE)
+                    if (world->fuels[pl->fs].fuel > REFUEL_RATE)
                     {
-                        world->fuel[pl->fs].fuel -= REFUEL_RATE;
-                        world->fuel[pl->fs].conn_mask = 0;
-                        world->fuel[pl->fs].last_change = frame_loops;
+                        world->fuels[pl->fs].fuel -= REFUEL_RATE;
+                        world->fuels[pl->fs].conn_mask = 0;
+                        world->fuels[pl->fs].last_change = frame_loops;
                         Add_fuel(&(pl->fuel), REFUEL_RATE);
                     }
                     else
                     {
-                        Add_fuel(&(pl->fuel), world->fuel[pl->fs].fuel);
-                        world->fuel[pl->fs].fuel = 0;
-                        world->fuel[pl->fs].conn_mask = 0;
-                        world->fuel[pl->fs].last_change = frame_loops;
+                        Add_fuel(&(pl->fuel), world->fuels[pl->fs].fuel);
+                        world->fuels[pl->fs].fuel = 0;
+                        world->fuels[pl->fs].conn_mask = 0;
+                        world->fuels[pl->fs].last_change = frame_loops;
                         CLR_BIT(pl->used, HAS_REFUEL);
                         break;
                     }
@@ -1126,15 +1131,15 @@ void Update_objects(void)
 
             if (pl->wormHoleHit != -1)
             {
-                if (world->wormHoles[pl->wormHoleHit].countdown > 0)
+                if (world->wormholes[pl->wormHoleHit].countdown > 0)
                 {
-                    j = world->wormHoles[pl->wormHoleHit].lastdest;
+                    j = world->wormholes[pl->wormHoleHit].lastdest;
                 }
                 else if (rfrac() < 0.10f)
                 {
                     do
                         j = (int)(rfrac() * world->NumWormholes);
-                    while (world->wormHoles[j].type == WORM_IN || pl->wormHoleHit == j || world->wormHoles[j].temporary);
+                    while (world->wormholes[j].type == WORM_IN || pl->wormHoleHit == j || world->wormholes[j].temporary);
                 }
                 else
                 {
@@ -1143,14 +1148,14 @@ void Update_objects(void)
 
                     for (j = 0; j < world->NumWormholes; j++)
                     {
-                        if (j == pl->wormHoleHit || world->wormHoles[j].type == WORM_IN || world->wormHoles[j].temporary)
+                        if (j == pl->wormHoleHit || world->wormholes[j].type == WORM_IN || world->wormholes[j].temporary)
                             continue;
 
-                        wx = (world->wormHoles[j].blk_pos.x -
-                              world->wormHoles[pl->wormHoleHit].blk_pos.x) *
+                        wx = (world->wormholes[j].blk_pos.x -
+                              world->wormholes[pl->wormHoleHit].blk_pos.x) *
                              BLOCK_SZ;
-                        wy = (world->wormHoles[j].blk_pos.y -
-                              world->wormHoles[pl->wormHoleHit].blk_pos.y) *
+                        wy = (world->wormholes[j].blk_pos.y -
+                              world->wormholes[pl->wormHoleHit].blk_pos.y) *
                              BLOCK_SZ;
                         wx = WRAP_DX(wx);
                         wy = WRAP_DX(wy);
@@ -1185,15 +1190,15 @@ void Update_objects(void)
                     {
                         do
                             j = (int)(rfrac() * world->NumWormholes);
-                        while (world->wormHoles[j].type == WORM_IN || j == pl->wormHoleHit);
+                        while (world->wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
                     }
 #endif /* RANDOM_REAR_WORM */
                 }
 
                 sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
 
-                w.x = (world->wormHoles[j].blk_pos.x + 0.5) * BLOCK_SZ;
-                w.y = (world->wormHoles[j].blk_pos.y + 0.5) * BLOCK_SZ;
+                w.x = (world->wormholes[j].blk_pos.x + 0.5) * BLOCK_SZ;
+                w.y = (world->wormholes[j].blk_pos.y + 0.5) * BLOCK_SZ;
             }
             else
             { /* wormHoleHit == -1 */
@@ -1273,10 +1278,10 @@ void Update_objects(void)
 
             if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
             {
-                world->wormHoles[pl->wormHoleHit].lastdest = j;
-                if (!world->wormHoles[j].temporary)
+                world->wormholes[pl->wormHoleHit].lastdest = j;
+                if (!world->wormholes[j].temporary)
                 {
-                    world->wormHoles[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
+                    world->wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
                 }
             }
 
@@ -1305,9 +1310,9 @@ void Update_objects(void)
 
     for (int i = world->NumWormholes - 1; i >= 0; i--)
     {
-        if (world->wormHoles[i].countdown > 0)
-            world->wormHoles[i].countdown--;
-        if (world->wormHoles[i].temporary && world->wormHoles[i].countdown <= 0)
+        if (world->wormholes[i].countdown > 0)
+            world->wormholes[i].countdown--;
+        if (world->wormholes[i].temporary && world->wormholes[i].countdown <= 0)
             remove_temp_wormhole(i);
     }
 

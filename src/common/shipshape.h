@@ -25,6 +25,7 @@
 #define SHIPSHAPE_H
 
 #include "types.h"
+#include "click.h"
 #include "const.h"
 
 /*
@@ -33,9 +34,20 @@
  */
 #define MIN_SHIP_PTS 3
 #define MAX_SHIP_PTS 24
+/* SSHACK needs to double the vertices */
+#define MAX_SHIP_PTS2 (MAX_SHIP_PTS * 2)
 #define MAX_GUN_PTS 3
 #define MAX_LIGHT_PTS 3
 #define MAX_RACK_PTS 4
+
+typedef struct
+{
+    clpos_t *pts[MAX_SHIP_PTS2]; /* the shape rotated many ways */
+    int num_points;              /* total points in object */
+    int num_orig_points;         /* points before SSHACK */
+    clpos_t cashed_pts[MAX_SHIP_PTS2];
+    int cashed_dir;
+} shape_t;
 
 typedef struct
 {                                  /* Defines wire-obj, i.e. ship */

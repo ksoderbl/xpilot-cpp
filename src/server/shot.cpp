@@ -129,15 +129,15 @@ void Place_general_mine(int ind, unsigned short team, long status,
     if (BIT(world->rules->mode, WRAP_PLAY))
     {
         if (cx < 0)
-            cx += world->click_width;
-        else if (cx >= world->click_width)
-            cx -= world->click_width;
+            cx += world->cwidth;
+        else if (cx >= world->cwidth)
+            cx -= world->cwidth;
         if (cy < 0)
-            cy += world->click_height;
-        else if (cy >= world->click_height)
-            cy -= world->click_height;
+            cy += world->cheight;
+        else if (cy >= world->cheight)
+            cy -= world->cheight;
     }
-    if (cx < 0 || cx >= world->click_width || cy < 0 || cy >= world->click_height)
+    if (cx < 0 || cx >= world->cwidth || cy < 0 || cy >= world->cheight)
         return;
 
     if (pl && BIT(pl->status, KILLED))
@@ -207,8 +207,8 @@ void Place_general_mine(int ind, unsigned short team, long status,
             {
                 if (i != ind && !Team_immune(PlayersArray[i]->id, pl->id) && !Player_is_tank(PlayersArray[i]))
                 {
-                    int dx = CLICK_TO_PIXEL(cx - world->base[PlayersArray[i]->home_base].clk_pos.cx);
-                    int dy = CLICK_TO_PIXEL(cy - world->base[PlayersArray[i]->home_base].clk_pos.cy);
+                    int dx = CLICK_TO_PIXEL(cx - world->bases[PlayersArray[i]->home_base].clk_pos.cx);
+                    int dy = CLICK_TO_PIXEL(cy - world->bases[PlayersArray[i]->home_base].clk_pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -1010,7 +1010,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         }
         shotpos.cx = WRAP_XCLICK(shotpos.cx);
         shotpos.cy = WRAP_YCLICK(shotpos.cy);
-        if (shotpos.cx < 0 || shotpos.cx >= world->click_width || shotpos.cy < 0 || shotpos.cy >= world->click_height)
+        if (shotpos.cx < 0 || shotpos.cx >= world->cwidth || shotpos.cy < 0 || shotpos.cy >= world->cheight)
             continue;
 
         Object_position_init_clicks(shot, shotpos.cx, shotpos.cy);
@@ -1421,7 +1421,7 @@ void Fire_laser(player_t *pl)
             int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
             cx = WRAP_XCLICK(cx);
             cy = WRAP_YCLICK(cy);
-            if (cx >= 0 && cx < world->click_width && cy >= 0 && cy < world->click_height)
+            if (cx >= 0 && cx < world->cwidth && cy >= 0 && cy < world->cheight)
                 Fire_general_laser(pl, pl->team, cx, cy, pl->dir, pl->mods);
         }
     }

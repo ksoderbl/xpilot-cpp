@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 
+#include "commonmacros.h"
 #include "strlcpy.h"
 
 #include "server.h"
@@ -82,6 +83,330 @@ static void Print_map(void) /* Debugging only. */
 }
 #endif
 
+int World_place_cannon(clpos_t pos, int dir, int team)
+{
+    // cannon_t t, *cannon;
+    // int ind = Num_cannons(), i;
+
+    // t.pos = pos;
+    // t.dir = dir;
+    // t.team = team;
+    // t.dead_ticks = 0;
+    // t.conn_mask = ~0;
+    // t.group = NO_GROUP;
+    // t.score = CANNON_SCORE;
+    // t.id = ind + MIN_CANNON_ID;
+    // assert(Is_cannon_id(t.id));
+    // if (t.id > MAX_CANNON_ID)
+    // {
+    //     warn("The server supports only %d cannons per map.", NUM_CANNON_IDS);
+    //     exit(1);
+    // }
+    // for (i = 0; i < NUM_ITEMS; i++)
+    //     t.initial_items[i] = -1;
+    // t.shot_speed = -1;
+    // t.smartness = -1;
+    // Arraylist_add(world->cannons, &t);
+    // cannon = Cannon_by_index(ind);
+    // assert(Cannon_by_id(t.id) == cannon);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_fuel(clpos_t pos, int team)
+{
+    // fuel_t t;
+    // int ind = Num_fuels();
+
+    // t.pos = pos;
+    // t.fuel = START_STATION_FUEL;
+    // t.conn_mask = ~0;
+    // t.last_change = frame_loops;
+    // t.team = team;
+    // Arraylist_add(world->fuels, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_base(clpos_t pos, int dir, int team, int order)
+{
+    // base_t t;
+    // int ind = Num_bases(), i;
+
+    // t.pos = pos;
+    // t.order = order;
+    // /*
+    //  * The direction of the base should be so that it points
+    //  * up with respect to the gravity in the region.  This
+    //  * is fixed in Find_base_direction() when the gravity has
+    //  * been computed.
+    //  */
+    // if (dir < 0 || dir >= RES)
+    // {
+    //     warn("Base with direction %d in map.", dir);
+    //     warn("Valid base directions are from 0 to %d.", RES - 1);
+    //     while (dir < 0)
+    //         dir += RES;
+    //     while (dir >= RES)
+    //         dir -= RES;
+    //     warn("Using direction %d for this base.", dir);
+    // }
+
+    // t.dir = dir;
+    // if (BIT(world->rules->mode, TEAM_PLAY))
+    // {
+    //     if (team < 0 || team >= MAX_TEAMS)
+    //         team = 0;
+    //     t.team = team;
+    //     world->teams[team].NumBases++;
+    //     if (world->teams[team].NumBases == 1)
+    //         world->NumTeamBases++;
+    // }
+    // else
+    //     t.team = TEAM_NOT_SET;
+    // t.ind = Num_bases();
+
+    // for (i = 0; i < NUM_ITEMS; i++)
+    //     t.initial_items[i] = -1;
+    // Arraylist_add(world->bases, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_treasure(clpos_t pos, int team, bool empty,
+                         int ball_style)
+{
+    // treasure_t t;
+    // int ind = Num_treasures();
+
+    // t.pos = pos;
+    // t.have = false;
+    // t.destroyed = 0;
+    // t.team = team;
+    // t.empty = empty;
+    // t.ball_style = ball_style;
+    // if (team != TEAM_NOT_SET)
+    // {
+    //     world->teams[team].NumTreasures++;
+    //     world->teams[team].TreasuresLeft++;
+    // }
+    // Arraylist_add(world->treasures, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_target(clpos_t pos, int team)
+{
+    // target_t t;
+    // int ind = Num_targets();
+
+    // t.pos = pos;
+    // /*
+    //  * If we have a block based map, the team is determined in
+    //  * in Xpmap_find_map_object_teams().
+    //  */
+    // t.team = team;
+    // t.dead_ticks = 0;
+    // t.damage = TARGET_DAMAGE;
+    // t.conn_mask = ~0;
+    // t.update_mask = 0;
+    // t.last_change = frame_loops;
+    // t.group = NO_GROUP;
+    // Arraylist_add(world->targets, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_wormhole(clpos_t pos, wormtype_t type)
+{
+    // wormhole_t t;
+    // int ind = Num_wormholes();
+
+    // t.pos = pos;
+    // t.countdown = 0;
+    // t.lastdest = NO_IND;
+    // t.type = type;
+    // t.lastblock = SPACE;
+    // t.lastID = NO_ID;
+    // t.group = NO_GROUP;
+    // Arraylist_add(world->wormholes, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+/*
+ * Allocate checkpoints for an xp map.
+ */
+static void alloc_old_checks(void)
+{
+    // int i;
+    // check_t t;
+    // clpos_t pos = {-1, -1};
+
+    // t.pos = pos;
+
+    // for (i = 0; i < OLD_MAX_CHECKS; i++)
+    //     STORE(check_t, world->checks, world->NumChecks, world->MaxChecks, t);
+
+    // SHRINK(check_t, world->checks, world->NumChecks, world->MaxChecks);
+    // world->NumChecks = 0;
+}
+
+int World_place_check(clpos_t pos, int ind)
+{
+    // check_t t;
+
+    // if (!BIT(world->rules->mode, TIMING))
+    // {
+    //     warn("Checkpoint on map with no timing.");
+    //     return NO_IND;
+    // }
+
+    // /* kps - need to do this for other map object types ? */
+    // if (!World_contains_clpos(pos))
+    // {
+    //     warn("Checkpoint outside world, ignoring.");
+    //     return NO_IND;
+    // }
+
+    // /*
+    //  * On xp maps we can have only 26 checkpoints.
+    //  */
+    // if (ind >= 0 && ind < OLD_MAX_CHECKS)
+    // {
+    //     check_t *check;
+
+    //     if (world->NumChecks == 0)
+    //         alloc_old_checks();
+
+    //     /*
+    //      * kps hack - we can't use Check_by_index because it might return
+    //      * NULL since ind can here be >= world->NumChecks.
+    //      */
+    //     check = &world->checks[ind];
+    //     if (World_contains_clpos(check->pos))
+    //     {
+    //         warn("Map contains too many '%c' checkpoints.", 'A' + ind);
+    //         return NO_IND;
+    //     }
+
+    //     check->pos = pos;
+    //     world->NumChecks++;
+    //     return ind;
+    // }
+
+    // ind = world->NumChecks;
+    // t.pos = pos;
+    // STORE(check_t, world->checks, world->NumChecks, world->MaxChecks, t);
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_item_concentrator(clpos_t pos)
+{
+    // item_concentrator_t t;
+    // int ind = Num_itemConcs();
+
+    // t.pos = pos;
+    // Arraylist_add(world->itemConcs, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_asteroid_concentrator(clpos_t pos)
+{
+    // asteroid_concentrator_t t;
+    // int ind = Num_asteroidConcs();
+
+    // t.pos = pos;
+    // Arraylist_add(world->asteroidConcs, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_grav(clpos_t pos, double force, int type)
+{
+    // grav_t t;
+    // int ind = Num_gravs();
+
+    // t.pos = pos;
+    // t.force = force;
+    // t.type = type;
+    // Arraylist_add(world->gravs, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+int World_place_friction_area(clpos_t pos, double fric)
+{
+    // friction_area_t t;
+    // int ind = Num_frictionAreas();
+
+    // t.pos = pos;
+    // t.friction_setting = fric;
+    // /*t.friction = ... ; handled in timing setup */
+    // Arraylist_add(world->frictionAreas, &t);
+
+    // return ind;
+
+    // TODO
+    return -1;
+}
+
+shape_t filled_wire;
+clpos_t filled_coords[4];
+
+static void Filled_wire_init(void)
+{
+    int i, h;
+
+    filled_wire.num_points = 4;
+
+    for (i = 0; i < 4; i++)
+        filled_wire.pts[i] = &filled_coords[i];
+
+    h = BLOCK_CLICKS / 2;
+
+    /* whole (filled) block */
+    filled_coords[0].cx = -h;
+    filled_coords[0].cy = -h;
+    filled_coords[1].cx = h - 1;
+    filled_coords[1].cy = -h;
+    filled_coords[2].cx = h - 1;
+    filled_coords[2].cy = h - 1;
+    filled_coords[3].cx = -h;
+    filled_coords[3].cy = h - 1;
+}
+
 static void Init_map(void)
 {
     world->x = 256;
@@ -92,73 +417,42 @@ static void Init_map(void)
     world->height = world->y * BLOCK_SZ;
     world->hypotenuse = (int)LENGTH(world->width, world->height);
 
-    world->click_width = PIXEL_TO_CLICK(world->width);
-    world->click_height = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->click_width, world->click_height);
+    world->cwidth = PIXEL_TO_CLICK(world->width);
+    world->cheight = PIXEL_TO_CLICK(world->height);
+    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 
-    world->NumFuels = 0;
-    world->NumBases = 0;
-    world->NumGravs = 0;
-    world->NumCannons = 0;
-    world->NumWormholes = 0;
-    world->NumTreasures = 0;
-    world->NumTargets = 0;
-    world->NumItemConcentrators = 0;
     world->NumAsteroidConcs = 0;
+    world->NumBases = 0;
+    world->NumCannons = 0;
+    world->NumEcms = 0;
+    world->NumFuels = 0;
+    world->NumFrictionAreas = 0;
+    world->NumGravs = 0;
+    world->NumItemConcentrators = 0;
+    world->NumTargets = 0;
+    world->NumTransporters = 0;
+    world->NumTreasures = 0;
+    world->NumWormholes = 0;
 }
 
 void Free_map(void)
 {
-    if (world->block)
-    {
-        free(world->block);
-        world->block = NULL;
-    }
-    if (world->itemID)
-    {
-        free(world->itemID);
-        world->itemID = NULL;
-    }
-    if (world->gravity)
-    {
-        free(world->gravity);
-        world->gravity = NULL;
-    }
-    if (world->grav)
-    {
-        free(world->grav);
-        world->grav = NULL;
-    }
-    if (world->base)
-    {
-        free(world->base);
-        world->base = NULL;
-    }
-    if (world->cannon)
-    {
-        free(world->cannon);
-        world->cannon = NULL;
-    }
-    if (world->fuel)
-    {
-        free(world->fuel);
-        world->fuel = NULL;
-    }
-    if (world->wormHoles)
-    {
-        free(world->wormHoles);
-        world->wormHoles = NULL;
-    }
-    if (world->itemConcentrators)
-    {
-        free(world->itemConcentrators);
-        world->itemConcentrators = NULL;
-    }
-    if (world->asteroidConcs)
-    {
-        free(world->asteroidConcs);
-        world->asteroidConcs = NULL;
-    }
+    XFREE(world->block);
+    XFREE(world->itemID);
+    XFREE(world->gravity);
+
+    XFREE(world->asteroidConcs);
+    XFREE(world->bases);
+    XFREE(world->cannons);
+    XFREE(world->ecms);
+    XFREE(world->fuels);
+    XFREE(world->frictionAreas);
+    XFREE(world->gravs);
+    XFREE(world->itemConcentrators);
+    XFREE(world->targets);
+    XFREE(world->transporters);
+    XFREE(world->treasures);
+    XFREE(world->wormholes);
 }
 
 static void Alloc_map(void)
@@ -174,13 +468,16 @@ static void Alloc_map(void)
         (unsigned short **)malloc(sizeof(unsigned short *) * world->x + world->x * sizeof(unsigned short) * world->y);
     world->gravity =
         (vector_t **)malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
-    world->grav = NULL;
-    world->base = NULL;
-    world->fuel = NULL;
-    world->cannon = NULL;
-    world->wormHoles = NULL;
+    world->gravs = NULL;
+    world->bases = NULL;
+    world->fuels = NULL;
+    world->cannons = NULL;
+    world->wormholes = NULL;
     world->itemConcentrators = NULL;
     world->asteroidConcs = NULL;
+    world->ecms = NULL;
+    world->frictionAreas = NULL;
+    world->transporters = NULL;
     if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
     {
         Free_map();
@@ -294,9 +591,9 @@ bool Grok_map(void)
     world->height = world->y * BLOCK_SZ;
     world->hypotenuse = (int)LENGTH(world->width, world->height);
 
-    world->click_width = PIXEL_TO_CLICK(world->width);
-    world->click_height = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->click_width, world->click_height);
+    world->cwidth = PIXEL_TO_CLICK(world->width);
+    world->cheight = PIXEL_TO_CLICK(world->height);
+    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 
     strlcpy(world->name, options.mapName, sizeof(world->name));
     strlcpy(world->author, options.mapAuthor, sizeof(world->author));
@@ -484,25 +781,25 @@ bool Grok_map(void)
     /*
      * Get space for special objects.
      */
-    if (world->NumCannons > 0 && (world->cannon = (cannon_t *)
+    if (world->NumCannons > 0 && (world->cannons = (cannon_t *)
                                       malloc(world->NumCannons * sizeof(cannon_t))) == NULL)
     {
         error("Out of memory - cannons");
         exit(-1);
     }
-    if (world->NumFuels > 0 && (world->fuel = (fuel_t *)
+    if (world->NumFuels > 0 && (world->fuels = (fuel_t *)
                                     malloc(world->NumFuels * sizeof(fuel_t))) == NULL)
     {
         error("Out of memory - fuel depots");
         exit(-1);
     }
-    if (world->NumGravs > 0 && (world->grav = (grav_t *)
+    if (world->NumGravs > 0 && (world->gravs = (grav_t *)
                                     malloc(world->NumGravs * sizeof(grav_t))) == NULL)
     {
         error("Out of memory - gravs");
         exit(-1);
     }
-    if (world->NumWormholes > 0 && (world->wormHoles = (wormhole_t *)
+    if (world->NumWormholes > 0 && (world->wormholes = (wormhole_t *)
                                         malloc(world->NumWormholes * sizeof(wormhole_t))) == NULL)
     {
         error("Out of memory - wormholes");
@@ -534,7 +831,7 @@ bool Grok_map(void)
     }
     if (world->NumBases > 0)
     {
-        if ((world->base = (base_t *)
+        if ((world->bases = (base_t *)
                  malloc(world->NumBases * sizeof(base_t))) == NULL)
         {
             error("Out of memory - bases");
@@ -546,20 +843,45 @@ bool Grok_map(void)
         error("WARNING: map has no bases!");
     }
 
+    // Allocate space for Ecms, FrictionAreas and Transporters
+    // ecm_t *Ecms[MAX_TOTAL_ECMS];
+    // transporter_t *Transporters[MAX_TOTAL_TRANSPORTERS];
+    if (MAX_TOTAL_ECMS > 0 && (world->ecms = (ecm_t *)
+                                   malloc(MAX_TOTAL_ECMS * sizeof(ecm_t))) == NULL)
+    {
+        error("Out of memory - ecms");
+        exit(-1);
+    }
+    if (MAX_TOTAL_FRICTIONAREAS > 0 && (world->frictionAreas = (friction_area_t *)
+                                            malloc(MAX_TOTAL_FRICTIONAREAS * sizeof(friction_area_t))) == NULL)
+    {
+        error("Out of memory - friction areas");
+        exit(-1);
+    }
+    if (MAX_TOTAL_TRANSPORTERS > 0 && (world->transporters = (transporter_t *)
+                                           malloc(MAX_TOTAL_TRANSPORTERS * sizeof(transporter_t))) == NULL)
+    {
+        error("Out of memory - transporters");
+        exit(-1);
+    }
+
     /*
      * Now reset all counters since we will recount everything
      * and reuse these counters while inserting the objects
      * into structures.
      */
-    world->NumCannons = 0;
-    world->NumFuels = 0;
-    world->NumGravs = 0;
-    world->NumWormholes = 0;
-    world->NumTreasures = 0;
-    world->NumTargets = 0;
-    world->NumBases = 0;
-    world->NumItemConcentrators = 0;
     world->NumAsteroidConcs = 0;
+    world->NumBases = 0;
+    world->NumCannons = 0;
+    world->NumEcms = 0;
+    world->NumFuels = 0;
+    world->NumFrictionAreas = 0;
+    world->NumGravs = 0;
+    world->NumItemConcentrators = 0;
+    world->NumTargets = 0;
+    world->NumTransporters = 0;
+    world->NumTreasures = 0;
+    world->NumWormholes = 0;
 
     for (i = 0; i < MAX_TEAMS; i++)
     {
@@ -620,64 +942,64 @@ bool Grok_map(void)
                 case 'r':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannon[world->NumCannons].dir = DIR_UP;
-                    world->cannon[world->NumCannons].blk_pos.x = x;
-                    world->cannon[world->NumCannons].blk_pos.y = y;
-                    world->cannon[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].clk_pos.cx = cx;
-                    world->cannon[world->NumCannons].clk_pos.cy = (y + 0.333) * BLOCK_CLICKS;
-                    world->cannon[world->NumCannons].dead_time = 0;
-                    world->cannon[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannon[world->NumCannons].team = TEAM_NOT_SET;
+                    world->cannons[world->NumCannons].dir = DIR_UP;
+                    world->cannons[world->NumCannons].blk_pos.x = x;
+                    world->cannons[world->NumCannons].blk_pos.y = y;
+                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].clk_pos.cx = cx;
+                    world->cannons[world->NumCannons].clk_pos.cy = (y + 0.333) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(world->NumCannons);
                     world->NumCannons++;
                     break;
                 case 'd':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannon[world->NumCannons].dir = DIR_LEFT;
-                    world->cannon[world->NumCannons].blk_pos.x = x;
-                    world->cannon[world->NumCannons].blk_pos.y = y;
-                    world->cannon[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].clk_pos.cx = (x + 0.667) * BLOCK_CLICKS;
-                    world->cannon[world->NumCannons].clk_pos.cy = cy;
-                    world->cannon[world->NumCannons].dead_time = 0;
-                    world->cannon[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannon[world->NumCannons].team = TEAM_NOT_SET;
+                    world->cannons[world->NumCannons].dir = DIR_LEFT;
+                    world->cannons[world->NumCannons].blk_pos.x = x;
+                    world->cannons[world->NumCannons].blk_pos.y = y;
+                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].clk_pos.cx = (x + 0.667) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].clk_pos.cy = cy;
+                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(world->NumCannons);
                     world->NumCannons++;
                     break;
                 case 'f':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannon[world->NumCannons].dir = DIR_RIGHT;
-                    world->cannon[world->NumCannons].blk_pos.x = x;
-                    world->cannon[world->NumCannons].blk_pos.y = y;
-                    world->cannon[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].clk_pos.cx = (x + 0.333) * BLOCK_CLICKS;
-                    world->cannon[world->NumCannons].clk_pos.cy = cy;
-                    world->cannon[world->NumCannons].dead_time = 0;
-                    world->cannon[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannon[world->NumCannons].team = TEAM_NOT_SET;
+                    world->cannons[world->NumCannons].dir = DIR_RIGHT;
+                    world->cannons[world->NumCannons].blk_pos.x = x;
+                    world->cannons[world->NumCannons].blk_pos.y = y;
+                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].clk_pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].clk_pos.cy = cy;
+                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(world->NumCannons);
                     world->NumCannons++;
                     break;
                 case 'c':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannon[world->NumCannons].dir = DIR_DOWN;
-                    world->cannon[world->NumCannons].blk_pos.x = x;
-                    world->cannon[world->NumCannons].blk_pos.y = y;
-                    world->cannon[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
-                    world->cannon[world->NumCannons].clk_pos.cx = cx;
-                    world->cannon[world->NumCannons].clk_pos.cy = (y + 0.667) * BLOCK_CLICKS;
-                    world->cannon[world->NumCannons].dead_time = 0;
-                    world->cannon[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannon[world->NumCannons].team = TEAM_NOT_SET;
+                    world->cannons[world->NumCannons].dir = DIR_DOWN;
+                    world->cannons[world->NumCannons].blk_pos.x = x;
+                    world->cannons[world->NumCannons].blk_pos.y = y;
+                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
+                    world->cannons[world->NumCannons].clk_pos.cx = cx;
+                    world->cannons[world->NumCannons].clk_pos.cy = (y + 0.667) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(world->NumCannons);
                     world->NumCannons++;
                     break;
@@ -685,16 +1007,16 @@ bool Grok_map(void)
                 case '#':
                     line[y] = FUEL;
                     itemID[y] = world->NumFuels;
-                    world->fuel[world->NumFuels].blk_pos.x = x;
-                    world->fuel[world->NumFuels].blk_pos.y = y;
-                    world->fuel[world->NumFuels].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->fuel[world->NumFuels].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->fuel[world->NumFuels].clk_pos.cx = cx;
-                    world->fuel[world->NumFuels].clk_pos.cy = cy;
-                    world->fuel[world->NumFuels].fuel = START_STATION_FUEL;
-                    world->fuel[world->NumFuels].conn_mask = (unsigned)-1;
-                    world->fuel[world->NumFuels].last_change = frame_loops;
-                    world->fuel[world->NumFuels].team = TEAM_NOT_SET;
+                    world->fuels[world->NumFuels].blk_pos.x = x;
+                    world->fuels[world->NumFuels].blk_pos.y = y;
+                    world->fuels[world->NumFuels].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    world->fuels[world->NumFuels].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    world->fuels[world->NumFuels].clk_pos.cx = cx;
+                    world->fuels[world->NumFuels].clk_pos.cy = cy;
+                    world->fuels[world->NumFuels].fuel = START_STATION_FUEL;
+                    world->fuels[world->NumFuels].conn_mask = (unsigned)-1;
+                    world->fuels[world->NumFuels].last_change = frame_loops;
+                    world->fuels[world->NumFuels].team = TEAM_NOT_SET;
                     world->NumFuels++;
                     break;
 
@@ -769,34 +1091,34 @@ bool Grok_map(void)
                 case '9':
                     line[y] = BASE;
                     itemID[y] = world->NumBases;
-                    world->base[world->NumBases].blk_pos.x = x;
-                    world->base[world->NumBases].blk_pos.y = y;
-                    world->base[world->NumBases].clk_pos.cx = cx;
-                    world->base[world->NumBases].clk_pos.cy = cy;
+                    world->bases[world->NumBases].blk_pos.x = x;
+                    world->bases[world->NumBases].blk_pos.y = y;
+                    world->bases[world->NumBases].clk_pos.cx = cx;
+                    world->bases[world->NumBases].clk_pos.cy = cy;
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
                      * is fixed in Find_base_dir() when the gravity has
                      * been computed.
                      */
-                    world->base[world->NumBases].dir = DIR_UP;
+                    world->bases[world->NumBases].dir = DIR_UP;
                     if (BIT(world->rules->mode, TEAM_PLAY))
                     {
                         if (c >= '0' && c <= '9')
                         {
-                            world->base[world->NumBases].team = c - '0';
+                            world->bases[world->NumBases].team = c - '0';
                         }
                         else
                         {
-                            world->base[world->NumBases].team = 0;
+                            world->bases[world->NumBases].team = 0;
                         }
-                        world->teams[world->base[world->NumBases].team].NumBases++;
-                        if (world->teams[world->base[world->NumBases].team].NumBases == 1)
+                        world->teams[world->bases[world->NumBases].team].NumBases++;
+                        if (world->teams[world->bases[world->NumBases].team].NumBases == 1)
                             world->NumTeamBases++;
                     }
                     else
                     {
-                        world->base[world->NumBases].team = TEAM_NOT_SET;
+                        world->bases[world->NumBases].team = TEAM_NOT_SET;
                     }
                     world->NumBases++;
                     break;
@@ -804,109 +1126,109 @@ bool Grok_map(void)
                 case '+':
                     line[y] = POS_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = -GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case '-':
                     line[y] = NEG_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case '>':
                     line[y] = CWISE_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case '<':
                     line[y] = ACWISE_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = -GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case 'i':
                     line[y] = UP_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case 'm':
                     line[y] = DOWN_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = -GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case 'k':
                     line[y] = RIGHT_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
                 case 'j':
                     line[y] = LEFT_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->grav[world->NumGravs].blk_pos.x = x;
-                    world->grav[world->NumGravs].blk_pos.y = y;
-                    world->grav[world->NumGravs].clk_pos.cx = cx;
-                    world->grav[world->NumGravs].clk_pos.cy = cy;
-                    world->grav[world->NumGravs].force = -GRAVS_POWER;
+                    world->gravs[world->NumGravs].blk_pos.x = x;
+                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].clk_pos.cx = cx;
+                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
 
                 case '@':
                 case '(':
                 case ')':
-                    world->wormHoles[world->NumWormholes].blk_pos.x = x;
-                    world->wormHoles[world->NumWormholes].blk_pos.y = y;
-                    world->wormHoles[world->NumWormholes].clk_pos.cx = cx;
-                    world->wormHoles[world->NumWormholes].clk_pos.cy = cy;
-                    world->wormHoles[world->NumWormholes].countdown = 0;
-                    world->wormHoles[world->NumWormholes].lastdest = -1;
-                    world->wormHoles[world->NumWormholes].temporary = 0;
-                    world->wormHoles[world->NumWormholes].lastblock = SPACE;
-                    world->wormHoles[world->NumWormholes].lastID = -1;
+                    world->wormholes[world->NumWormholes].blk_pos.x = x;
+                    world->wormholes[world->NumWormholes].blk_pos.y = y;
+                    world->wormholes[world->NumWormholes].clk_pos.cx = cx;
+                    world->wormholes[world->NumWormholes].clk_pos.cy = cy;
+                    world->wormholes[world->NumWormholes].countdown = 0;
+                    world->wormholes[world->NumWormholes].lastdest = -1;
+                    world->wormholes[world->NumWormholes].temporary = 0;
+                    world->wormholes[world->NumWormholes].lastblock = SPACE;
+                    world->wormholes[world->NumWormholes].lastID = -1;
                     if (c == '@')
                     {
-                        world->wormHoles[world->NumWormholes].type = WORM_NORMAL;
+                        world->wormholes[world->NumWormholes].type = WORM_NORMAL;
                         worm_norm++;
                     }
                     else if (c == '(')
                     {
-                        world->wormHoles[world->NumWormholes].type = WORM_IN;
+                        world->wormholes[world->NumWormholes].type = WORM_IN;
                         worm_in++;
                     }
                     else
                     {
-                        world->wormHoles[world->NumWormholes].type = WORM_OUT;
+                        world->wormholes[world->NumWormholes].type = WORM_OUT;
                         worm_out++;
                     }
                     line[y] = WORMHOLE;
@@ -942,8 +1264,8 @@ bool Grok_map(void)
                 case 'Z':
                     if (BIT(world->rules->mode, TIMING))
                     {
-                        world->check[c - 'A'].x = x;
-                        world->check[c - 'A'].y = y;
+                        world->checks[c - 'A'].x = x;
+                        world->checks[c - 'A'].y = y;
                         line[y] = CHECK;
                     }
                     else
@@ -992,11 +1314,11 @@ bool Grok_map(void)
             for (i = 0; i < world->NumWormholes; i++)
             {
                 world->block
-                    [world->wormHoles[i].blk_pos.x]
-                    [world->wormHoles[i].blk_pos.y] = SPACE;
+                    [world->wormholes[i].blk_pos.x]
+                    [world->wormholes[i].blk_pos.y] = SPACE;
                 world->itemID
-                    [world->wormHoles[i].blk_pos.x]
-                    [world->wormHoles[i].blk_pos.y] = (unsigned short)-1;
+                    [world->wormholes[i].blk_pos.x]
+                    [world->wormholes[i].blk_pos.y] = (unsigned short)-1;
             }
             world->NumWormholes = 0;
         }
@@ -1006,9 +1328,9 @@ bool Grok_map(void)
             for (i = 0; i < world->NumWormholes; i++)
             {
                 int j = (int)(rfrac() * world->NumWormholes);
-                while (world->wormHoles[j].type == WORM_IN)
+                while (world->wormholes[j].type == WORM_IN)
                     j = (int)(rfrac() * world->NumWormholes);
-                world->wormHoles[i].lastdest = j;
+                world->wormholes[i].lastdest = j;
             }
         }
 
@@ -1027,7 +1349,7 @@ bool Grok_map(void)
             unsigned short team = TEAM_NOT_SET;
             for (i = 0; i < world->NumTreasures; i++)
             {
-                team = Find_closest_team(world->treasures[i].clk_pos.cx, world->treasures[i].clk_pos.cy);
+                team = Find_closest_team(world->treasures[i].clk_pos);
                 world->treasures[i].team = team;
                 if (team == TEAM_NOT_SET)
                 {
@@ -1044,7 +1366,7 @@ bool Grok_map(void)
             }
             for (i = 0; i < world->NumTargets; i++)
             {
-                team = Find_closest_team(world->targets[i].clk_pos.cx, world->targets[i].clk_pos.cy);
+                team = Find_closest_team(world->targets[i].clk_pos);
                 if (team == TEAM_NOT_SET)
                 {
                     error("Couldn't find a matching team for the target.");
@@ -1055,22 +1377,22 @@ bool Grok_map(void)
             {
                 for (i = 0; i < world->NumCannons; i++)
                 {
-                    team = Find_closest_team(world->cannon[i].clk_pos.cx, world->cannon[i].clk_pos.cy);
+                    team = Find_closest_team(world->cannons[i].clk_pos);
                     if (team == TEAM_NOT_SET)
                     {
                         error("Couldn't find a matching team for the cannon.");
                     }
-                    world->cannon[i].team = team;
+                    world->cannons[i].team = team;
                 }
             }
             for (i = 0; i < world->NumFuels; i++)
             {
-                team = Find_closest_team(world->fuel[i].clk_pos.cx, world->fuel[i].clk_pos.cy);
+                team = Find_closest_team(world->fuels[i].clk_pos);
                 if (team == TEAM_NOT_SET)
                 {
                     error("Couldn't find a matching team for fuelstation.");
                 }
-                world->fuel[i].team = team;
+                world->fuels[i].team = team;
             }
         }
     }
@@ -1120,9 +1442,9 @@ static void Generate_random_map(void)
     world->height = world->y * BLOCK_SZ;
     world->hypotenuse = (int)LENGTH(world->width, world->height);
 
-    world->click_width = PIXEL_TO_CLICK(world->width);
-    world->click_height = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->click_width, world->click_height);
+    world->cwidth = PIXEL_TO_CLICK(world->width);
+    world->cheight = PIXEL_TO_CLICK(world->height);
+    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 }
 
 /*
@@ -1138,8 +1460,8 @@ void Find_base_direction(void)
 
     for (i = 0; i < world->NumBases; i++)
     {
-        int x = world->base[i].blk_pos.x,
-            y = world->base[i].blk_pos.y,
+        int x = world->bases[i].blk_pos.x,
+            y = world->bases[i].blk_pos.y,
             dir,
             att;
         double dx = world->gravity[x][y].x,
@@ -1220,7 +1542,7 @@ void Find_base_direction(void)
         {
             dir = att;
         }
-        world->base[i].dir = dir;
+        world->bases[i].dir = dir;
     }
     for (i = 0; i < world->x; i++)
     {
@@ -1236,26 +1558,24 @@ void Find_base_direction(void)
 }
 
 /*
- * Return the team that is closest to this position.
+ * Return the team that is closest to this click position.
  */
-unsigned short Find_closest_team(int cx, int cy)
+int Find_closest_team(clpos_t pos)
 {
-    unsigned short team = TEAM_NOT_SET;
-    int i;
+    int team = TEAM_NOT_SET, i;
     double closest = FLT_MAX, l;
 
-    for (i = 0; i < world->NumBases; i++)
+    for (i = 0; i < Num_bases(); i++)
     {
-        if (world->base[i].team == TEAM_NOT_SET)
+        base_t *base = Base_by_index(i);
+
+        if (base->team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length(cx - world->base[i].clk_pos.cx,
-                        cy - world->base[i].clk_pos.cy) /
-            CLICK;
-
+        l = Wrap_length(pos.cx - base->clk_pos.cx, pos.cy - base->clk_pos.cy);
         if (l < closest)
         {
-            team = world->base[i].team;
+            team = world->bases[i].team;
             closest = l;
         }
     }
@@ -1291,12 +1611,12 @@ static void Find_base_order(void)
         exit(-1);
     }
 
-    ccx = world->check[0].x * BLOCK_CLICKS;
-    ccy = world->check[0].y * BLOCK_CLICKS;
+    ccx = world->checks[0].x * BLOCK_CLICKS;
+    ccy = world->checks[0].y * BLOCK_CLICKS;
     for (i = 0; i < n; i++)
     {
-        dist = Wrap_length(world->base[i].clk_pos.cx - ccx,
-                           world->base[i].clk_pos.cy - ccy) /
+        dist = Wrap_length(world->bases[i].clk_pos.cx - ccx,
+                           world->bases[i].clk_pos.cy - ccy) /
                CLICK;
         for (j = 0; j < i; j++)
         {
@@ -1309,28 +1629,6 @@ static void Find_base_order(void)
         world->baseorder[j].base_idx = i;
         world->baseorder[j].dist = dist;
     }
-}
-
-double Wrap_findDir(double dx, double dy)
-{
-    dx = WRAP_DX(dx);
-    dy = WRAP_DY(dy);
-    return findDir(dx, dy);
-}
-
-double Wrap_cfindDir(double dcx, double dcy)
-{
-    dcx = WRAP_DCX(dcx);
-    dcy = WRAP_DCY(dcy);
-    return findDir(dcx, dcy);
-}
-
-// Returns length in clicks
-double Wrap_length(double dcx, double dcy)
-{
-    dcx = WRAP_DCX(dcx);
-    dcy = WRAP_DCY(dcy);
-    return LENGTH(dcx, dcy);
 }
 
 static void Compute_global_gravity(void)
@@ -1436,9 +1734,9 @@ static void Compute_local_gravity(void)
     }
     for (g = 0; g < world->NumGravs; g++)
     {
-        gx = world->grav[g].blk_pos.x;
-        gy = world->grav[g].blk_pos.y;
-        force = world->grav[g].force;
+        gx = world->gravs[g].blk_pos.x;
+        gy = world->gravs[g].blk_pos.y;
+        force = world->gravs[g].force;
 
         if ((first_xi = gx - GRAV_RANGE) < min_xi)
             first_xi = min_xi;
@@ -1546,13 +1844,13 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
 {
     wormhole_t inhole, outhole, *wwhtemp;
 
-    if ((wwhtemp = (wormhole_t *)realloc(world->wormHoles,
+    if ((wwhtemp = (wormhole_t *)realloc(world->wormholes,
                                          (world->NumWormholes + 2) * sizeof(wormhole_t))) == NULL)
     {
         error("No memory for temporary wormholes.");
         return;
     }
-    world->wormHoles = wwhtemp;
+    world->wormholes = wwhtemp;
 
     inhole.blk_pos.x = xin;
     inhole.blk_pos.y = yin;
@@ -1567,8 +1865,8 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     outhole.lastblock = world->block[xout][yout];
     inhole.lastID = world->itemID[xin][yin];
     outhole.lastID = world->itemID[xout][yout];
-    world->wormHoles[world->NumWormholes] = inhole;
-    world->wormHoles[world->NumWormholes + 1] = outhole;
+    world->wormholes[world->NumWormholes] = inhole;
+    world->wormholes[world->NumWormholes + 1] = outhole;
     world->block[xin][yin] = world->block[xout][yout] = WORMHOLE;
     world->itemID[xin][yin] = world->NumWormholes;
     world->itemID[xout][yout] = world->NumWormholes + 1;
@@ -1579,14 +1877,36 @@ void remove_temp_wormhole(int ind)
 {
     wormhole_t hole;
 
-    hole = world->wormHoles[ind];
+    hole = world->wormholes[ind];
     world->block[hole.blk_pos.x][hole.blk_pos.y] = hole.lastblock;
     world->itemID[hole.blk_pos.x][hole.blk_pos.y] = hole.lastID;
     world->NumWormholes--;
     if (ind != world->NumWormholes)
     {
-        world->wormHoles[ind] = world->wormHoles[world->NumWormholes];
+        world->wormholes[ind] = world->wormholes[world->NumWormholes];
     }
-    world->wormHoles = (wormhole_t *)realloc(world->wormHoles,
+    world->wormholes = (wormhole_t *)realloc(world->wormholes,
                                              world->NumWormholes * sizeof(wormhole_t));
+}
+
+double Wrap_findDir(double dx, double dy)
+{
+    dx = WRAP_DX(dx);
+    dy = WRAP_DY(dy);
+    return findDir(dx, dy);
+}
+
+double Wrap_cfindDir(double dcx, double dcy)
+{
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return findDir(dcx, dcy);
+}
+
+// Returns length in clicks
+double Wrap_length(double dcx, double dcy)
+{
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return LENGTH(dcx, dcy);
 }

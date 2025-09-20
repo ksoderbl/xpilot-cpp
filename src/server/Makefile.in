@@ -112,7 +112,7 @@ am_xpilot_cpp_server_OBJECTS = alliance.$(OBJEXT) asteroid.$(OBJEXT) \
 	sched.$(OBJEXT) score.$(OBJEXT) server.$(OBJEXT) \
 	ship.$(OBJEXT) shot.$(OBJEXT) showtime.$(OBJEXT) \
 	stratbot.$(OBJEXT) tuner.$(OBJEXT) update.$(OBJEXT) \
-	walls.$(OBJEXT) wildmap.$(OBJEXT)
+	walls.$(OBJEXT) wildmap.$(OBJEXT) xpmap.$(OBJEXT)
 xpilot_cpp_server_OBJECTS = $(am_xpilot_cpp_server_OBJECTS)
 xpilot_cpp_server_DEPENDENCIES = ../common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -147,7 +147,8 @@ am__depfiles_remade = ./$(DEPDIR)/alliance.Po ./$(DEPDIR)/asteroid.Po \
 	./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po ./$(DEPDIR)/shot.Po \
 	./$(DEPDIR)/showtime.Po ./$(DEPDIR)/stratbot.Po \
 	./$(DEPDIR)/tuner.Po ./$(DEPDIR)/update.Po \
-	./$(DEPDIR)/walls.Po ./$(DEPDIR)/wildmap.Po
+	./$(DEPDIR)/walls.Po ./$(DEPDIR)/wildmap.Po \
+	./$(DEPDIR)/xpmap.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -350,7 +351,9 @@ xpilot_cpp_server_SOURCES = \
     update.cpp \
     walls.cpp \
     walls.h \
-    wildmap.cpp
+    wildmap.cpp \
+    wormhole.h \
+    xpmap.cpp
 
 xpilot_cpp_server_LDADD = -lm ../common/libxpcommon.a
 all: all-am
@@ -477,6 +480,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/update.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/walls.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wildmap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmap.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -662,6 +666,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/update.Po
 	-rm -f ./$(DEPDIR)/walls.Po
 	-rm -f ./$(DEPDIR)/wildmap.Po
+	-rm -f ./$(DEPDIR)/xpmap.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -745,6 +750,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/update.Po
 	-rm -f ./$(DEPDIR)/walls.Po
 	-rm -f ./$(DEPDIR)/wildmap.Po
+	-rm -f ./$(DEPDIR)/xpmap.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

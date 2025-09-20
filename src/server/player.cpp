@@ -80,7 +80,7 @@ void Pick_startpos(int ind)
     num_free = 0;
     for (i = 0; i < world->NumBases; i++)
     {
-        if (world->base[i].team == pl->team)
+        if (world->bases[i].team == pl->team)
         {
             num_free++;
             free_bases[i] = 1;
@@ -180,8 +180,8 @@ void Go_home(int ind)
             check = pl->check - 1;
         else
             check = world->NumChecks - 1;
-        x = world->check[check].x;
-        y = world->check[check].y;
+        x = world->checks[check].x;
+        y = world->checks[check].y;
         vx = (rfrac() - 0.5) * 0.1;
         vy = (rfrac() - 0.5) * 0.1;
         velo = LENGTH(vx, vy);
@@ -190,9 +190,9 @@ void Go_home(int ind)
     }
     else
     {
-        x = world->base[pl->home_base].blk_pos.x;
-        y = world->base[pl->home_base].blk_pos.y;
-        dir = world->base[pl->home_base].dir;
+        x = world->bases[pl->home_base].blk_pos.x;
+        y = world->bases[pl->home_base].blk_pos.y;
+        dir = world->bases[pl->home_base].dir;
         vx = vy = velo = 0;
     }
 

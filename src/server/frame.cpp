@@ -40,6 +40,7 @@
 #include "server.h"
 
 #define SERVER
+#include "map.h"
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "global.h"
@@ -597,12 +598,12 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (++i >= world->NumCannons)
             i = 0;
         if (click_inview(cv,
-                         world->cannon[i].clk_pos.cx,
-                         world->cannon[i].clk_pos.cy))
+                         world->cannons[i].clk_pos.cx,
+                         world->cannons[i].clk_pos.cy))
         {
-            if (BIT(world->cannon[i].conn_mask, conn_bit) == 0)
+            if (BIT(world->cannons[i].conn_mask, conn_bit) == 0)
             {
-                Send_cannon(conn, i, world->cannon[i].dead_time);
+                Send_cannon(conn, i, world->cannons[i].dead_time);
                 pl->last_cannon_update = i;
                 bytes_left -= max_packet * cannon_packet_size;
                 if (++packet_count >= max_packet)
@@ -618,16 +619,16 @@ static void Frame_map(connection_t *conn, player_t *pl)
     {
         if (++i >= world->NumFuels)
             i = 0;
-        if (BIT(world->fuel[i].conn_mask, conn_bit) == 0)
+        if (BIT(world->fuels[i].conn_mask, conn_bit) == 0)
         {
-            if (world->block[world->fuel[i].blk_pos.x]
-                            [world->fuel[i].blk_pos.y] == FUEL)
+            if (world->block[world->fuels[i].blk_pos.x]
+                            [world->fuels[i].blk_pos.y] == FUEL)
             {
                 if (click_inview(cv,
-                                 world->fuel[i].clk_pos.cx,
-                                 world->fuel[i].clk_pos.cy))
+                                 world->fuels[i].clk_pos.cx,
+                                 world->fuels[i].clk_pos.cy))
                 {
-                    Send_fuel(conn, i, (int)world->fuel[i].fuel);
+                    Send_fuel(conn, i, (int)world->fuels[i].fuel);
                     pl->last_fuel_update = i;
                     bytes_left -= max_packet * fuel_packet_size;
                     if (++packet_count >= max_packet)
@@ -647,7 +648,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         wormhole_t *worm;
         if (++i >= world->NumWormholes)
             i = 0;
-        worm = &world->wormHoles[i];
+        worm = &world->wormholes[i];
         if (options.wormholeVisible &&
             worm->temporary &&
             (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
@@ -949,13 +950,13 @@ static void Frame_ships(connection_t *conn, int ind)
         if (BIT(world->rules->mode, WRAP_PLAY))
         {
             if (cx < 0)
-                cx += world->click_width;
-            else if (cx >= world->click_width)
-                cx -= world->click_width;
+                cx += world->cwidth;
+            else if (cx >= world->cwidth)
+                cx -= world->cwidth;
             if (cy < 0)
-                cy += world->click_height;
-            else if (cy >= world->click_height)
-                cy -= world->click_height;
+                cy += world->cheight;
+            else if (cy >= world->cheight)
+                cy -= world->cheight;
         }
 
         double x = CLICK_TO_FLOAT(cx);
@@ -993,14 +994,14 @@ static void Frame_ships(connection_t *conn, int ind)
             color = RED;
         Send_laser(conn, color, (int)x, (int)y, pulse->len, dir);
     }
-    for (i = 0; i < NumEcms; i++)
+    for (i = 0; i < Num_ecms(); i++)
     {
-        ecm_t *ecm = Ecms[i];
+        ecm_t *ecm = Ecm_by_index(i);
         Send_ecm(conn, CLICK_TO_PIXEL(ecm->clk_pos.cx), CLICK_TO_PIXEL(ecm->clk_pos.cy), ecm->size);
     }
-    for (i = 0; i < NumTransporters; i++)
+    for (i = 0; i < Num_transporters(); i++)
     {
-        trans_t *trans = Transporters[i];
+        transporter_t *trans = Transporter_by_index(i);
         player_t *victim = PlayersArray[GetInd[trans->target]],
                  *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetInd[trans->id]]);
         int cx = (pl ? pl->pos.cx : trans->clk_pos.cx);
@@ -1009,7 +1010,7 @@ static void Frame_ships(connection_t *conn, int ind)
     }
     for (i = 0; i < world->NumCannons; i++)
     {
-        cannon_t *cannon = world->cannon + i;
+        cannon_t *cannon = world->cannons + i;
         if (cannon->tractor_count > 0)
         {
             player_t *t = PlayersArray[GetInd[cannon->tractor_target]];
@@ -1066,11 +1067,11 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_REFUEL))
         {
-            if (click_inview(cv, world->fuel[pl_i->fs].clk_pos.cx,
-                             world->fuel[pl_i->fs].clk_pos.cy))
+            if (click_inview(cv, world->fuels[pl_i->fs].clk_pos.cx,
+                             world->fuels[pl_i->fs].clk_pos.cy))
                 Send_refuel(conn,
-                            (int)world->fuel[pl_i->fs].pix_pos.x,
-                            (int)world->fuel[pl_i->fs].pix_pos.y,
+                            (int)world->fuels[pl_i->fs].pix_pos.x,
+                            (int)world->fuels[pl_i->fs].pix_pos.y,
                             pl_i->pos.x,
                             pl_i->pos.y);
         }
@@ -1259,14 +1260,14 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     cv.realWorld = cv.world;
     if (BIT(world->rules->mode, WRAP_PLAY))
     {
-        if (cv.world.cx < 0 && cv.world.cx + view_click_width < world->click_width)
-            cv.world.cx += world->click_width;
-        else if (cv.world.cx > 0 && cv.world.cx + view_click_width >= world->click_width)
-            cv.realWorld.cx -= world->click_width;
-        if (cv.world.cy < 0 && cv.world.cy + view_click_height < world->click_height)
-            cv.world.cy += world->click_height;
-        else if (cv.world.cy > 0 && cv.world.cy + view_click_height >= world->click_height)
-            cv.realWorld.cy -= world->click_height;
+        if (cv.world.cx < 0 && cv.world.cx + view_click_width < world->cwidth)
+            cv.world.cx += world->cwidth;
+        else if (cv.world.cx > 0 && cv.world.cx + view_click_width >= world->cwidth)
+            cv.realWorld.cx -= world->cwidth;
+        if (cv.world.cy < 0 && cv.world.cy + view_click_height < world->cheight)
+            cv.world.cy += world->cheight;
+        else if (cv.world.cy > 0 && cv.world.cy + view_click_height >= world->cheight)
+            cv.realWorld.cy -= world->cheight;
     }
 }
 

@@ -42,6 +42,7 @@ libxpcommon_a_SOURCES = \
     xpconfig.h \
     xperror.cpp \
     xperror.h \
+    xpmap.h \
     xpmath.cpp \
     xpmath.h \
     xpmemory.cpp \

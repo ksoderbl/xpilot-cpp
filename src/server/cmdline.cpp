@@ -2483,6 +2483,18 @@ static option_desc opts[] = {
      "Duration of last Main_loop() function call (in microseconds).\n"
      "This option is read only.\n",
      OPT_COMMAND | OPT_VISIBLE},
+
+    {"polygonMode",
+     "polygonMode",
+     "false",
+     &options.polygonMode,
+     valBool,
+     tuner_dummy,
+     "Force use of polygon protocol when communicating with clients?\n"
+     "(useful for debugging if you want to see the polygons created\n"
+     "in the blocks to polygons conversion function).\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
+
 };
 
 static bool options_inited = false;
