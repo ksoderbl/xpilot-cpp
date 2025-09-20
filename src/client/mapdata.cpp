@@ -18,12 +18,17 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+#include <sys/types.h>
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/param.h>
 #include <sys/stat.h>
 #include <zlib.h>
 
@@ -32,6 +37,8 @@
 #include "socklib.h"
 #include "strlcpy.h"
 #include "xperror.h"
+
+#include "gfx2d.h"
 
 #define DATADIR ".xpilot-data"
 #define COPY_BUF_SIZE 8192

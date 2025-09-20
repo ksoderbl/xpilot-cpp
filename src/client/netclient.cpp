@@ -2205,8 +2205,8 @@ int Receive_timing(void)
     n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &timing);
     if (n <= 0)
         return n;
-    check = timing % MAX_CHECKS;
-    round = timing / MAX_CHECKS;
+    check = timing % num_checks;
+    round = timing / num_checks;
     if ((n = Handle_timing(id, check, round)) == -1)
         return -1;
     return 1;

@@ -471,14 +471,16 @@ extern short phasingtimemax;
 extern int roundDelay;
 extern int roundDelayMax;
 
-extern int RadarWidth;
-extern int RadarHeight;
+extern bool UpdateRadar;
+extern unsigned RadarWidth;
+extern unsigned RadarHeight;
 extern int backgroundPointDist; /* spacing of navigation points */
 extern int backgroundPointSize; /* size of navigation points */
 extern int spark_size;          /* size of sparks and debris */
 extern int shot_size;           /* size of shot */
 extern int teamshot_size;       /* size of team shot */
-extern long control_count;      /* Display control for how long? */
+
+extern long control_count; /* Display control for how long? */
 
 extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
@@ -522,7 +524,7 @@ extern char name[MAX_CHARS];       /* Nick-name of player */
 extern char realname[MAX_CHARS];   /* Real name of player */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */
 extern unsigned version;           /* Version of the server */
-extern int scoresChanged;
+extern bool scoresChanged;
 extern bool toggle_shield;         /* Are shields toggled by a press? */
 extern int shields;                /* When shields are considered up */
 extern bool auto_shield;           /* drops shield for fire */

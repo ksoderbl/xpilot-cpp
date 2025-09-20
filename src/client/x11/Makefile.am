@@ -37,4 +37,4 @@ xpilot_cpp_client_x11_SOURCES = \
     xpaint.h \
     xpilot.cpp
 
-xpilot_cpp_client_x11_LDADD = $(top_builddir)/src/client/libxpclient.a $(top_builddir)/src/common/libxpcommon.a -lX11 -lm
+xpilot_cpp_client_x11_LDADD = $(top_builddir)/src/client/libxpclient.a $(top_builddir)/src/common/libxpcommon.a -lX11 -lm -lz

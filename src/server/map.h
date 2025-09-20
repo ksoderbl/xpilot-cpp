@@ -270,7 +270,7 @@ typedef struct
     int NumCannons;
     cannon_t *cannon;
     int NumChecks;
-    ipos_t check[MAX_CHECKS];
+    ipos_t check[OLD_MAX_CHECKS];
     int NumWormholes;
     wormhole_t *wormHoles;
     int NumTreasures;

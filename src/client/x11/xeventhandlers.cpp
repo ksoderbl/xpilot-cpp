@@ -480,7 +480,7 @@ void Expose_event(XEvent *event)
         if (event->xexpose.count == 0)
         {
             players_exposed = true;
-            scoresChanged++;
+            scoresChanged = true;
         }
     }
     else if (event->xexpose.window == aboutWindow)

@@ -49,7 +49,6 @@
 extern double tbl_sin[];
 extern double tbl_cos[];
 extern setup_t *Setup;
-extern int RadarHeight;
 
 Pixmap radarPixmap, radarPixmap2; /* Pixmaps for the radar (implements */
                                   /* the planes hack on the radar for */

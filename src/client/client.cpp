@@ -56,12 +56,25 @@ xp_args_t xpArgs;
 Connect_param_t connectParam;
 
 bool newbie;
+int baseWarningType; /* Which type of base warning you prefer */
+int maxCharsInNames;
+int hudRadarDotSize;            /* Size for hudradar dot drawing */
+double hudRadarScale = 3.0;     /* Scale for hudradar drawing */
+double hudRadarLimit = 0.05;    /* Hudradar dots are not drawn if closer to
+                your ship than this factor of visible
+                range */
+int hudSize = 3 * MIN_HUD_SIZE; /* Size for HUD drawing, depends on hudScale */
+
+bool is_server = false; /* used in common code */
+
+bool scoresChanged = true;
+unsigned RadarHeight = 0;
+unsigned RadarWidth = 256; /* radar width at the server */
+bool UpdateRadar = false;  /* radar update because of polystyle changes? */
 
 int oldServer = true;
 ipos_t selfPos;
 ipos_t selfVel;
-ipos_t world;
-ipos_t realWorld;
 short heading;
 short nextCheckPoint;
 
@@ -93,8 +106,6 @@ short shieldtimemax;
 short phasingtime;
 short phasingtimemax;
 
-int RadarHeight = 0;
-int RadarWidth = 256;    /* must always be 256! */
 int backgroundPointDist; /* spacing of navigation points */
 int backgroundPointSize; /* size of navigation points */
 int spark_size;          /* size of debris and spark */
@@ -191,8 +202,6 @@ int num_targets = 0;
 
 #define MAX_CHECKPOINT 26
 
-int scoresChanged = 0;
-
 other_t *Others = 0;
 int num_others = 0, max_others = 0;
 
@@ -261,18 +270,12 @@ static fuelstation_t *Fuelstation_by_pos(int x, int y)
     {
         i = (lo + hi) >> 1;
         if (pos > fuels[i].pos)
-        {
             lo = i + 1;
-        }
         else
-        {
             hi = i;
-        }
     }
     if (lo == hi && pos == fuels[lo].pos)
-    {
         return &fuels[lo];
-    }
     warn("No fuelstation at (%d,%d)", x, y);
     return NULL;
 }
@@ -348,9 +351,7 @@ static cannontime_t *Cannon_by_pos(int x, int y)
             hi = i;
     }
     if (lo == hi && pos == cannons[lo].pos)
-    {
         return &cannons[lo];
-    }
     warn("No cannon at (%d,%d)", x, y);
     return NULL;
 }
@@ -482,7 +483,7 @@ int Check_index_by_pos(int x, int y)
 }
 
 /*
- * Convert a `space' map block into a dot.
+ * Convert a 'space' map block into a dot.
  */
 static void Map_make_dot(uint8_t *data)
 {
@@ -579,9 +580,8 @@ void Map_dots(void)
             start = backgroundPointDist;
         }
         else
-        {
             start = 0;
-        }
+
         if (backgroundPointDist > 0)
         {
             for (x = start; x < Setup->x; x += backgroundPointDist)
@@ -715,9 +715,7 @@ void Map_blue(int startx, int starty, int width, int height)
     for (i = BLUE_BIT; i < sizeof blue; i++)
     {
         if ((i & BLUE_FUEL) == BLUE_FUEL || (i & (BLUE_OPEN | BLUE_CLOSED)) == 0)
-        {
             blue[i] = blue[SETUP_FILLED];
-        }
     }
 
     x = startx;
@@ -1105,8 +1103,8 @@ static int init_polymap(void)
     return 0;
 }
 
-// static int init_blockmap(void)
-static int Map_init(void)
+// static int Map_init(void)
+static int init_blockmap(void)
 {
     int i,
         max,
@@ -1117,10 +1115,12 @@ static int Map_init(void)
     num_bases = 0;
     num_cannons = 0;
     num_targets = 0;
+    num_checks = 0;
     fuels = NULL;
     bases = NULL;
     cannons = NULL;
     targets = NULL;
+    checks = NULL;
     memset(types, 0, sizeof types);
     types[SETUP_FUEL] = 1;
     types[SETUP_CANNON_UP] = 2;
@@ -1131,6 +1131,8 @@ static int Map_init(void)
         types[i] = 3;
     for (i = SETUP_BASE_LOWEST; i <= SETUP_BASE_HIGHEST; i++)
         types[i] = 4;
+    for (i = 0; i < OLD_MAX_CHECKS; i++)
+        types[SETUP_CHECK + i] = 5;
     max = Setup->x * Setup->y;
     for (i = 0; i < max; i++)
     {
@@ -1147,6 +1149,11 @@ static int Map_init(void)
             break;
         case 4:
             num_bases++;
+            break;
+        case 5:
+            num_checks++;
+            break;
+        default:
             break;
         }
     }
@@ -1220,16 +1227,26 @@ static int Map_init(void)
             bases[num_bases].pos = i;
             bases[num_bases].id = -1;
             bases[num_bases].team = type % 10;
+            bases[num_bases].type = type - (type % 10);
+            bases[num_bases].appeartime = 0;
             num_bases++;
             Setup->map_data[i] = type - (type % 10);
             break;
         case 5:
             checks[type - SETUP_CHECK].pos = i;
+            num_checks++;
             Setup->map_data[i] = SETUP_CHECK;
+            break;
+        default:
             break;
         }
     }
     return 0;
+}
+
+static int Map_init(void)
+{
+    return oldServer ? init_blockmap() : init_polymap();
 }
 
 static int Map_cleanup(void)
@@ -1434,7 +1451,7 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
             }
             if (self != NULL)
             {
-                /* We've made `self' the first member of Others[]. */
+                /* We've made 'self' the first member of Others[]. */
                 self = &Others[0];
             }
         }
@@ -1444,7 +1461,7 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
     {
         if (other != &Others[0])
         {
-            /* Make `self' the first member of Others[]. */
+            /* Make 'self' the first member of Others[]. */
             *other = Others[0];
             other = &Others[0];
         }
@@ -1493,9 +1510,8 @@ int Handle_score(int id, int score, int life, int mychar, int alliance)
 
     if ((other = Other_by_id(id)) == NULL)
     {
-        errno = 0;
-        error("Can't update score for non-existing player %d,%d,%d",
-              id, score, life);
+        warn("Can't update score for non-existing player %d,%d,%d",
+             id, score, life);
         return 0;
     }
     else if (other->score != score || other->life != life || other->mychar != mychar || other->alliance != alliance)
@@ -1504,7 +1520,7 @@ int Handle_score(int id, int score, int life, int mychar, int alliance)
         other->life = life;
         other->mychar = mychar;
         other->alliance = alliance;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
 
     return 0;
@@ -1524,7 +1540,7 @@ int Handle_timing(int id, int check, int round)
     {
         other->check = check;
         other->round = round;
-        other->timing = round * MAX_CHECKS + check;
+        other->timing = round * num_checks + check;
         other->timing_loops = last_loops;
         scoresChanged = 1;
     }
@@ -2047,16 +2063,13 @@ int Handle_message(char *msg)
     return 0;
 }
 
-// int Handle_time_left(long sec)
-// {
-//     if (sec >= 0 && sec < 10 && (time_left > sec || sec == 0))
-//     {
-//         XBell(dpy, 0);
-//         XFlush(dpy);
-//     }
-//     time_left = (sec >= 0) ? sec : 0;
-//     return 0;
-// }
+int Handle_time_left(long sec)
+{
+    if (sec >= 0 && sec < 10 && (time_left > sec || sec == 0))
+        Play_beep();
+    time_left = (sec >= 0) ? sec : 0;
+    return 0;
+}
 
 int Handle_vcannon(int x, int y, int type)
 {

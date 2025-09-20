@@ -90,8 +90,6 @@
 #define ABOUT_WINDOW_WIDTH 600
 #define ABOUT_WINDOW_HEIGHT 700
 
-extern int RadarHeight;
-
 /*
  * Globals.
  */

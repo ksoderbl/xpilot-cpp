@@ -40,13 +40,6 @@ extern unsigned long current_foreground;
 
 #define MAX_LINE_WIDTH 4
 
-extern XRectangle *rect_ptr[MAX_COLORS];
-extern int num_rect[MAX_COLORS], max_rect[MAX_COLORS];
-extern XArc *arc_ptr[MAX_COLORS];
-extern int num_arc[MAX_COLORS], max_arc[MAX_COLORS];
-extern XSegment *seg_ptr[MAX_COLORS];
-extern int num_seg[MAX_COLORS], max_seg[MAX_COLORS];
-
 extern void Rectangle_start(void);
 extern void Rectangle_end(void);
 extern int Rectangle_add(int color, int x, int y, int width, int height);

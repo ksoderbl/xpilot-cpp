@@ -55,7 +55,19 @@
 /* how to draw a selection */
 #define DRAW_EMPHASIZED BLUE
 
-extern int draw_width, draw_height;
+/*
+ * Global objects.
+ */
+
+extern ipos_t world;
+extern ipos_t realWorld;
+
+extern int hudSize;          /* Size for HUD drawing */
+extern int hudRadarDotSize;  /* Size for hudradar dot drawing */
+extern double hudRadarScale; /* Scale for hudradar drawing */
+extern double hudRadarLimit; /* Limit for hudradar drawing */
+
+extern unsigned draw_width, draw_height;
 
 extern char dashes[NUM_DASHES];
 extern char cdashes[NUM_CDASHES];

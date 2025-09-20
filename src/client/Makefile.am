@@ -19,6 +19,7 @@ libxpclient_a_SOURCES = \
     guimap.h \
     guiobjects.h \
     icon.h \
+    mapdata.cpp \
     messages.h \
     messages.cpp \
     netclient.cpp \

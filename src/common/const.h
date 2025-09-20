@@ -105,7 +105,7 @@ extern double tbl_cos[];
 #endif /* MOD2 */
 
 /* Do NOT change these! */
-#define MAX_CHECKS 26
+#define OLD_MAX_CHECKS 26
 #define MAX_TEAMS 10
 
 #define EXPIRED_MINE_ID 4096 /* assume no player has this id */

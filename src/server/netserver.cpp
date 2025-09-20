@@ -1864,7 +1864,7 @@ int Send_timing(connection_t *connp, int id, int check, int round)
         return 0;
     }
     return Packet_printf(&connp->c, "%c%hd%hu", PKT_TIMING,
-                         id, round * MAX_CHECKS + check);
+                         id, round * OLD_MAX_CHECKS + check);
 }
 
 /*

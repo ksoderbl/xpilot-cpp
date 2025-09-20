@@ -56,7 +56,6 @@
 #include "bitmaps.h"
 
 extern setup_t *Setup;
-extern int RadarHeight;
 extern score_object_t score_objects[MAX_SCORE_OBJECTS];
 extern int score_object;
 extern XGCValues gcv;
@@ -89,11 +88,11 @@ int scoreObjectColor = BLUE;     /* Color index for map score objects */
 
 DFLOAT charsPerTick = 0.0; /* Output speed of messages */
 
-int hudSize = 3 * MIN_HUD_SIZE;
+// int hudSize = 3 * MIN_HUD_SIZE;
 int hudRadarEnemyColor = 3;
 int hudRadarOtherColor = 2;
-double hudRadarScale = 3.0;
-double hudRadarLimit = 0.05;
+// double hudRadarScale = 3.0;
+// double hudRadarLimit = 0.05;
 
 static int meterWidth = 60;
 static int meterHeight = 10;

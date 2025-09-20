@@ -26,10 +26,11 @@
 #include "netclient.h"
 #include "paint.h"
 
-// from xinit.cpp
-int draw_width, draw_height;
-
-int num_spark_colors;
+/*
+ * Globals.
+ */
+ipos_t world;
+ipos_t realWorld;
 
 unsigned short team; /* What team is the player on? */
 bool players_exposed;
@@ -50,6 +51,9 @@ long loops = 0;
 long loopsSlow = 0; /* Proceeds slower than loops */
 double timePerFrame = 0.0;
 static double time_counter = 0.0;
+
+unsigned draw_width, draw_height;
+int num_spark_colors;
 
 double scaleFactor;
 double scaleFactor_s;

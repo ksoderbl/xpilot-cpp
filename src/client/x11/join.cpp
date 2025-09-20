@@ -103,31 +103,24 @@ static void Input_loop(void)
     max = (clientfd > netfd) ? clientfd : netfd;
     for (tfds = rfds;; rfds = tfds)
     {
-        if ((scoresChanged != 0 && ++scoresChanged > SCORE_UPDATE_DELAY) || result > 1)
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+
+        /*
+        if (maxMouseTurnsPS > 0)
         {
-            if (scoresChanged > 2 * SCORE_UPDATE_DELAY)
-            {
-                Client_score_table();
-                tv.tv_sec = 10;
-                tv.tv_usec = 0;
-            }
-            else
-            {
-                tv.tv_sec = 0;
-                tv.tv_usec = 0;
-            }
+            int t = Client_check_pointer_move_interval();
+
+            assert(t > 0);
+            tv.tv_sec = t / 1000000;
+            tv.tv_usec = t % 1000000;
         }
-        else
-        {
-            tv.tv_sec = 10;
-            tv.tv_usec = 0;
-        }
+            */
+
         if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1)
         {
             if (errno == EINTR)
-            {
                 continue;
-            }
             error("Select failed");
             return;
         }
