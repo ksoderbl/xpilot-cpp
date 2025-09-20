@@ -117,7 +117,7 @@ extern double tbl_cos[];
 
 #define SPEED_LIMIT 65.0
 #define MAX_PLAYER_TURNSPEED 64.0
-#define MIN_PLAYER_TURNSPEED 4.0
+#define MIN_PLAYER_TURNSPEED 0.0
 #define MAX_PLAYER_POWER 55.0
 #define MIN_PLAYER_POWER 5.0
 #define MAX_PLAYER_TURNRESISTANCE 1.0
@@ -143,7 +143,7 @@ extern double tbl_cos[];
 
 /*
  * Size (pixels) of radius for legal HIT!
- * Was 14 until 4.2. Increased due to `analytical collision detection'
+ * Was 14 until 4.2. Increased due to 'analytical collision detection'
  * which inspects a real circle and not just a square anymore.
  */
 #define SHIP_SZ 16

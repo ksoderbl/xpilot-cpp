@@ -33,7 +33,12 @@
 #define SERVER_SEND_SIZE (4 * 1024)
 
 #define CLIENT_SEND_SIZE SERVER_RECV_SIZE
-#define CLIENT_RECV_SIZE SERVER_SEND_SIZE
+/* I added 1024 to this because the client can get 4 1035 byte packets
+   at once when starting a game (from Handle_setup). Seems there is some
+   overhead in storing multiple packets - I had to increase this by at
+   least 657 to avoid losing packets on Linux. That's why the change here
+   instead of changing the size to 1024 in netserver.c */
+#define CLIENT_RECV_SIZE (SERVER_SEND_SIZE + 1024)
 
 /*
  * Definitions for the states a socket buffer can be in.
@@ -61,7 +66,7 @@
  */
 typedef struct
 {
-    sock_t sock; /* socket descriptor */
+    sock_t sock; /* socket filedescriptor */
     char *buf;   /* i/o data buffer */
     int size;    /* size of buffer */
     int len;     /* amount of data in buffer (writing/reading) */
@@ -71,7 +76,7 @@ typedef struct
 
 extern int last_packet_of_frame;
 
-int Sockbuf_init(sockbuf_t *sbuf, sock_t *sock, int size, int state);
+int Sockbuf_init(sockbuf_t *sbuf, sock_t *sock, size_t size, int state);
 int Sockbuf_cleanup(sockbuf_t *sbuf);
 int Sockbuf_clear(sockbuf_t *sbuf);
 int Sockbuf_advance(sockbuf_t *sbuf, int len);

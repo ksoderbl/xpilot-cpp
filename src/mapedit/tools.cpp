@@ -26,6 +26,8 @@
 
 #include "main.h"
 
+#include "xpmap.h"
+
 Window changedwin;
 int prefx = PREF_X, prefy = PREF_Y;
 int prevdraw_x, prevdraw_y;
@@ -314,28 +316,28 @@ void ChangeMapData(int x, int y, char icon, int save)
     if ((x2 < 0) || (y2 < 0) || (x2 > (mapwin_width - TOOLSWIDTH)) || (y2 > mapwin_height))
         return;
     data = MapData(x - 1, y);
-    if ((data == MAP_FILLED) || (data == MAP_FUEL) ||
-        (data == MAP_REC_RU) || (data == MAP_REC_RD) || (data == MAP_DEC_RU) || (data == MAP_DEC_RD) || (data == MAP_DEC_FLD))
+    if ((data == XPMAP_FILLED) || (data == XPMAP_FUEL) ||
+        (data == XPMAP_REC_RU) || (data == XPMAP_REC_RD) || (data == XPMAP_DECOR_RU) || (data == XPMAP_DECOR_RD) || (data == XPMAP_DECOR_FILLED))
     {
         xo++;
         wo--;
     }
     data = MapData(x + 1, y);
-    if ((data == MAP_FILLED) || (data == MAP_FUEL) ||
-        (data == MAP_REC_LU) || (data == MAP_REC_LD) || (data == MAP_DEC_LU) || (data == MAP_DEC_LD) || (data == MAP_DEC_FLD))
+    if ((data == XPMAP_FILLED) || (data == XPMAP_FUEL) ||
+        (data == XPMAP_REC_LU) || (data == XPMAP_REC_LD) || (data == XPMAP_DECOR_LU) || (data == XPMAP_DECOR_LD) || (data == XPMAP_DECOR_FILLED))
     {
         wo--;
     }
     data = MapData(x, y - 1);
-    if ((data == MAP_FILLED) || (data == MAP_FUEL) ||
-        (data == MAP_REC_RD) || (data == MAP_REC_LD) || (data == MAP_DEC_RD) || (data == MAP_DEC_LD) || (data == MAP_DEC_FLD))
+    if ((data == XPMAP_FILLED) || (data == XPMAP_FUEL) ||
+        (data == XPMAP_REC_RD) || (data == XPMAP_REC_LD) || (data == XPMAP_DECOR_RD) || (data == XPMAP_DECOR_LD) || (data == XPMAP_DECOR_FILLED))
     {
         yo++;
         ho--;
     }
     data = MapData(x, y + 1);
-    if ((data == MAP_FILLED) || (data == MAP_FUEL) ||
-        (data == MAP_REC_RU) || (data == MAP_REC_LU) || (data == MAP_DEC_RU) || (data == MAP_DEC_LU) || (data == MAP_DEC_FLD))
+    if ((data == XPMAP_FILLED) || (data == XPMAP_FUEL) ||
+        (data == XPMAP_REC_RU) || (data == XPMAP_REC_LU) || (data == XPMAP_DECOR_RU) || (data == XPMAP_DECOR_LU) || (data == XPMAP_DECOR_FILLED))
     {
         ho--;
     }

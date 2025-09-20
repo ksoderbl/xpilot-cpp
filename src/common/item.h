@@ -26,6 +26,7 @@
 
 enum Item
 {
+    NO_ITEM = -1,
     ITEM_FUEL = 0,
     ITEM_WIDEANGLE = 1,
     ITEM_REARSHOT = 2,

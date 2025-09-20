@@ -30,6 +30,7 @@
 
 #include <unistd.h>
 
+#include "commonmacros.h"
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"
@@ -116,16 +117,12 @@ static int Option_hash_string(const char *name)
         uint8_t c = string[i];
 
         if (isascii(c) && isalpha(c) && islower(c))
-        {
             c = toupper(c);
-        }
 
         hashVal = (((hashVal << 3) + c) ^ i);
 
         while (hashVal > HASH_SIZE)
-        {
             hashVal = (hashVal % HASH_SIZE) + (hashVal / HASH_SIZE);
-        }
     }
 
     return (int)(hashVal % HASH_SIZE);
@@ -138,17 +135,13 @@ static int Option_hash_string(const char *name)
 static void Option_free_value(hash_value *val)
 {
     if (val->refcount > 0)
-    {
         val->refcount--;
-    }
     if (val->refcount == 0)
     {
         if (val->value)
         {
             if (!val->desc || val->value != val->desc->defaultValue)
-            {
                 free(val->value);
-            }
             val->value = NULL;
         }
         free(val);
@@ -176,24 +169,16 @@ static hash_value *Option_allocate_value(
     if (value == NULL)
     {
         if (desc != NULL && desc->defaultValue != NULL)
-        {
             /* might also simply point to default value instead. */
             tmp->value = xp_safe_strdup(desc->defaultValue);
-        }
         else
-        {
             tmp->value = NULL;
-        }
     }
     else
-    {
         tmp->value = xp_safe_strdup(value);
-    }
 
     if (tmp)
-    {
         hash_values_allocated++;
-    }
 
     return tmp;
 }
@@ -208,11 +193,7 @@ static void Option_free_node(hash_node *node)
         Option_free_value(node->value);
         node->value = NULL;
     }
-    if (node->name)
-    {
-        free(node->name);
-        node->name = NULL;
-    }
+    XFREE(node->name);
     node->next = NULL;
     free(node);
     hash_nodes_freed++;
@@ -229,14 +210,10 @@ static hash_node *Option_allocate_node(const char *name, hash_value *value)
     tmp->value = value;
     tmp->name = xp_safe_strdup(name);
     if (tmp->value)
-    {
         tmp->value->refcount++;
-    }
 
     if (tmp)
-    {
         hash_nodes_allocated++;
-    }
 
     return tmp;
 }
@@ -252,10 +229,8 @@ static void Option_add_node(hash_node *node)
     for (np = Option_hash_array[ix]; np; np = np->next)
     {
         if (!strcasecmp(node->name, np->name))
-        {
             fatal("Option_add_node node exists (%s, %s)\n",
                   node->name, np->name);
-        }
     }
 
     node->next = Option_hash_array[ix];
@@ -274,12 +249,10 @@ static hash_node *Get_hash_node_by_name(const char *name)
     for (np = Option_hash_array[ix]; np; np = np->next)
     {
         if (!strcasecmp(name, np->name))
-        {
             return np;
-        }
     }
 
-    return (hash_node *)NULL;
+    return NULL;
 }
 
 /*
@@ -291,9 +264,7 @@ bool Option_add_desc(option_desc *desc)
     hash_node *node1, *node2;
 
     if (!val)
-    {
         return false;
-    }
 
     node1 = Option_allocate_node(desc->name, val);
     if (!node1)
@@ -315,9 +286,7 @@ bool Option_add_desc(option_desc *desc)
 
     Option_add_node(node1);
     if (node2 != NULL)
-    {
         Option_add_node(node2);
-    }
 
     return true;
 }
@@ -400,17 +369,13 @@ static void Option_change_node(
             case OPT_DEFAULTS:
                 /* can't change if previous value has override. */
                 if (!node->value->override)
-                {
                     set_ok = true;
-                }
                 break;
 
             case OPT_MAP:
                 /* defaults file override wins over map. */
                 if (override)
-                {
                     set_ok = true;
-                }
                 break;
 
             case OPT_PASSWORD:
@@ -436,17 +401,13 @@ static void Option_change_node(
             case OPT_DEFAULTS:
                 /* can't change if defaults value has override. */
                 if (!node->value->override)
-                {
                     set_ok = true;
-                }
                 break;
 
             case OPT_MAP:
                 /* can't change if previous value has override. */
                 if (!node->value->override)
-                {
                     set_ok = true;
-                }
                 break;
 
             case OPT_PASSWORD:
@@ -482,9 +443,7 @@ static void Option_change_node(
             case OPT_PASSWORD:
                 /* can't change if previous value has override. */
                 if (!node->value->override)
-                {
                     set_ok = true;
-                }
                 break;
 
             case OPT_INIT:
@@ -501,19 +460,15 @@ static void Option_change_node(
         }
     }
 
-    if (set_ok == true)
+    if (set_ok)
     {
         if (node->value == NULL)
         {
             node->value = Option_allocate_value(value, NULL, opt_origin);
             if (node->value == NULL)
-            {
                 fatal("Not enough memory.");
-            }
             else
-            {
                 node->value->refcount++;
-            }
         }
         else
         {
@@ -521,18 +476,12 @@ static void Option_change_node(
             {
                 option_desc *desc = node->value->desc;
                 if (!desc || node->value->value != desc->defaultValue)
-                {
                     free(node->value->value);
-                }
             }
             if (value == NULL)
-            {
                 node->value->value = NULL;
-            }
             else
-            {
                 node->value->value = xp_safe_strdup(value);
-            }
         }
         node->value->override = override;
         node->value->origin = opt_origin;
@@ -575,22 +524,16 @@ void Option_set_value(
     }
 
     if (!value)
-    {
         return;
-    }
 
     vp = Option_allocate_value(value, NULL, opt_origin);
     if (!vp)
-    {
         exit(1);
-    }
     vp->override = override;
 
     np = Option_allocate_node(name, vp);
     if (!np)
-    {
         exit(1);
-    }
 
     np->next = Option_hash_array[ix];
     Option_hash_array[ix] = np;
@@ -607,13 +550,11 @@ char *Option_get_value(const char *name, optOrigin *origin_ptr)
     if (np != NULL)
     {
         if (origin_ptr != NULL)
-        {
             *origin_ptr = np->value->origin;
-        }
         return np->value->value;
     }
 
-    return (char *)NULL;
+    return NULL;
 }
 
 /*
@@ -634,20 +575,14 @@ static void Options_hash_free(void)
     }
 
     if (hash_nodes_allocated != hash_nodes_freed)
-    {
-        errno = 0;
-        error("hash nodes alloc = %d, hash nodes free = %d, delta = %d\n",
-              hash_nodes_allocated, hash_nodes_freed,
-              hash_nodes_allocated - hash_nodes_freed);
-    }
+        warn("hash nodes alloc = %d, hash nodes free = %d, delta = %d\n",
+             hash_nodes_allocated, hash_nodes_freed,
+             hash_nodes_allocated - hash_nodes_freed);
 
     if (hash_values_allocated != hash_values_freed)
-    {
-        errno = 0;
-        error("hash values alloc = %d, hash values free = %d, delta = %d\n",
-              hash_values_allocated, hash_values_freed,
-              hash_values_allocated - hash_values_freed);
-    }
+        warn("hash values alloc = %d, hash values free = %d, delta = %d\n",
+             hash_values_allocated, hash_values_freed,
+             hash_values_allocated - hash_values_freed);
 }
 
 /*
@@ -663,18 +598,14 @@ static void Options_hash_performance(void)
     char msg[MSG_LEN];
 
     if (getenv("XPILOTSHASHPERF") == NULL)
-    {
         return;
-    }
 
     memset(histo, 0, sizeof(histo));
     for (i = 0; i < HASH_SIZE; i++)
     {
         bucket_use_count = 0;
         for (np = Option_hash_array[i]; np; np = np->next)
-        {
             bucket_use_count++;
-        }
         histo[bucket_use_count]++;
     }
 
@@ -683,9 +614,7 @@ static void Options_hash_performance(void)
     {
         sprintf(msg + strlen(msg), " %d", histo[i]);
         if (strlen(msg) > 75)
-        {
             break;
-        }
     }
     printf("%s\n", msg);
 #endif
@@ -705,13 +634,9 @@ bool Convert_string_to_int(const char *value_str, int *int_ptr)
 
     /* if at least one digit was found we're satisfied. */
     if (end_ptr > value_str)
-    {
         result = true;
-    }
     else
-    {
         result = false;
-    }
 
     return result;
 }
@@ -729,13 +654,9 @@ bool Convert_string_to_float(const char *value_str, double *float_ptr)
 
     /* if at least one digit was found we're satisfied. */
     if (end_ptr > value_str)
-    {
         result = true;
-    }
     else
-    {
         result = false;
-    }
 
     return result;
 }
@@ -755,14 +676,12 @@ bool Convert_string_to_bool(const char *value_str, bool *bool_ptr)
         result = true;
     }
     else
-    {
         result = false;
-    }
 
     return result;
 }
 
-void Convert_list_to_string(list_t list, char **string)
+void Convert_list_to_string(list_t list, char **str)
 {
     list_iter_t iter;
     size_t size = 0;
@@ -770,20 +689,17 @@ void Convert_list_to_string(list_t list, char **string)
     for (iter = List_begin(list);
          iter != List_end(list);
          LI_FORWARD(iter))
-    {
         size += 1 + strlen((const char *)LI_DATA(iter));
-    }
-    *string = (char *)xp_safe_malloc(size);
-    **string = '\0';
+
+    *str = (char *)xp_safe_malloc(size);
+    **str = '\0';
     for (iter = List_begin(list);
          iter != List_end(list);
          LI_FORWARD(iter))
     {
         if (iter != List_begin(list))
-        {
-            strlcat(*string, ",", size);
-        }
-        strlcat(*string, (const char *)LI_DATA(iter), size);
+            strlcat(*str, ",", size);
+        strlcat(*str, (const char *)LI_DATA(iter), size);
     }
 }
 
@@ -797,9 +713,7 @@ void Convert_string_to_list(const char *value, list_t *list_ptr)
     {
         *list_ptr = List_new();
         if (NULL == *list_ptr)
-        {
             fatal("Not enough memory for list");
-        }
     }
 
     /* make sure list is empty. */
@@ -810,28 +724,22 @@ void Convert_string_to_list(const char *value, list_t *list_ptr)
     {
         /* skip comma separators. */
         while (*start == ',')
-        {
             start++;
-        }
         /* search for end of list element. */
         end = start;
         while (*end && *end != ',')
-        {
             end++;
-        }
         /* copy non-zero results to list. */
         if (start < end)
         {
-            str = (char *)xp_safe_malloc((end - start) + 1);
-            memcpy(str, start, (end - start));
-            str[(end - start)] = '\0';
+            size_t size = end - start;
 
-            printf("str = '%s'\n", str);
+            str = (char *)xp_safe_malloc(size + 1);
+            memcpy(str, start, size);
+            str[size] = '\0';
 
             if (NULL == List_push_back(*list_ptr, str))
-            {
                 fatal("Not enough memory for list element");
-            }
         }
     }
 }
@@ -846,9 +754,7 @@ static void Option_parse_node(hash_node *np)
 
     /* Does it have a description?   If so, get a pointer to it */
     if ((desc = np->value->desc) == NULL)
-    {
         return;
-    }
 
     /* get value from command line, defaults file or map file. */
     value = np->value->value;
@@ -859,6 +765,7 @@ static void Option_parse_node(hash_node *np)
         if (value == NULL)
         {
             /* no value at all.  (mapData or serverHost.) */
+            assert(desc->type == valString);
             return;
         }
     }
@@ -866,13 +773,9 @@ static void Option_parse_node(hash_node *np)
     if (!desc->variable)
     {
         if (desc->type == valVoid)
-        {
             return;
-        }
         else
-        {
             dumpcore("Hashed option %s has no value", np->name);
-        }
     }
 
     switch (desc->type)
@@ -975,6 +878,9 @@ static void Option_parse_node(hash_node *np)
         Convert_string_to_list(value, list_ptr);
         break;
     }
+    default:
+        warn("Option_parse_node: unknown option type.");
+        break;
     }
 }
 
@@ -987,22 +893,16 @@ static void Options_parse_expand(void)
 
     np = Get_hash_node_by_name("expand");
     if (np == NULL)
-    {
         dumpcore("Could not find option hash node for option '%s'.",
                  "expand");
-    }
     else
-    {
         Option_parse_node(np);
-    }
 
     if (options.expandList != NULL)
     {
         char *name;
         while ((name = (char *)List_pop_front(options.expandList)) != NULL)
-        {
             expandKeyword(name);
-        }
         List_delete(options.expandList);
         options.expandList = NULL;
     }
@@ -1022,21 +922,14 @@ static void Options_parse_FPS(void)
         int frames;
 
         if (Convert_string_to_int(fpsstr, &frames) != true)
-        {
             warn("Invalid framesPerSecond specification '%s' in %s.",
                  fpsstr, Origin_name(value_origin));
-        }
         else
-        {
             options.framesPerSecond = frames;
-        }
     }
 
     if (FPS <= 0)
-    {
-        fatal("Can't run with %d frames per second, should be positive\n",
-              FPS);
-    }
+        fatal("Can't run with %d frames per second, should be positive\n", FPS);
 }
 
 /*

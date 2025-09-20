@@ -21,6 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <cstdlib>
 #include <cstdio>
 #include <cerrno>
@@ -47,11 +48,11 @@
 
 int last_packet_of_frame;
 
-int Sockbuf_init(sockbuf_t *sbuf, sock_t *sock, int size, int state)
+int Sockbuf_init(sockbuf_t *sbuf, sock_t *sock, size_t size, int state)
 {
     if ((sbuf->buf = sbuf->ptr = XMALLOC(char, size)) == NULL)
         return -1;
-    if (sock != (sock_t *)NULL)
+    if (sock != NULL)
         sbuf->sock = *sock;
     else
         sock_init(&sbuf->sock);
@@ -113,12 +114,13 @@ int Sockbuf_advance(sockbuf_t *sbuf, int len)
     {
         if (len > sbuf->len)
             warn("Sockbuf advancing too far");
+
         sbuf->len = 0;
         sbuf->ptr = sbuf->buf;
     }
     else
     {
-        memmove(sbuf->buf, sbuf->buf + len, sbuf->len - len);
+        memmove(sbuf->buf, sbuf->buf + len, (size_t)(sbuf->len - len));
         sbuf->len -= len;
         if (sbuf->ptr - sbuf->buf <= len)
             sbuf->ptr = sbuf->buf;
@@ -140,9 +142,6 @@ int Sockbuf_flush(sockbuf_t *sbuf)
              sbuf->sock);
         return -1;
     }
-    /*Trace("Sockbuf_flush: state=%02x,buf=%08x,ptr=%08x,size=%d,len=%d,sock=%d\n",
-        sbuf->state, sbuf->buf, sbuf->ptr, sbuf->size, sbuf->len,
-        sbuf->sock); */
     if (BIT(sbuf->state, SOCKBUF_LOCK) != 0)
     {
         warn("No flush on locked socket buffer (0x%02x)", sbuf->state);
@@ -213,9 +212,7 @@ int Sockbuf_flush(sockbuf_t *sbuf)
             {
                 static int send_err;
                 if ((send_err++ & 0x3F) == 0)
-                {
                     error("send (%d)", i);
-                }
             }
             if (sock_get_error(&sbuf->sock) == -1)
             {
@@ -267,10 +264,11 @@ int Sockbuf_write(sockbuf_t *sbuf, char *buf, int len)
         }
         if (Sockbuf_flush(sbuf) == -1)
             return -1;
+
         if (sbuf->size - sbuf->len < len)
             return 0;
     }
-    memcpy(sbuf->buf + sbuf->len, buf, len);
+    memcpy(sbuf->buf + sbuf->len, buf, (size_t)len);
     sbuf->len += len;
 
     return len;
@@ -316,7 +314,9 @@ int Sockbuf_read(sockbuf_t *sbuf)
                 continue;
             }
             if (errno == EWOULDBLOCK || errno == EAGAIN)
+            {
                 return 0;
+            }
 #if 0
             if (errno == ECONNREFUSED) {
                 error("Receive refused");
@@ -383,7 +383,7 @@ int Sockbuf_copy(sockbuf_t *dest, sockbuf_t *src, int len)
         warn("Not enough data in source copy socket buffer");
         return -1;
     }
-    memcpy(dest->buf + dest->len, src->buf, len);
+    memcpy(dest->buf + dest->len, src->buf, (size_t)len);
     dest->len += len;
 
     return len;
@@ -411,6 +411,12 @@ int Packet_printf(sockbuf_t *sbuf, const char *fmt, ...)
         *buf,
         *stop;
     va_list ap;
+
+    /* kps hack - let's not segfault if sbuf was not initialized yet. */
+    assert(sbuf);
+    if (sbuf->buf == NULL)
+        return -1;
+    /* kps hack ends */
 
     va_start(ap, fmt);
 
@@ -553,10 +559,9 @@ int Packet_printf(sockbuf_t *sbuf, const char *fmt, ...)
         {
 #if 0
             static int before;
-            if ((before++ & 0x0F) == 0) {
+            if ((before++ & 0x0F) == 0)
                 printf("Write socket buffer not big enough (%d,%d,\"%s\")\n",
                     sbuf->size, sbuf->len, fmt);
-            }
 #endif
             if (BIT(sbuf->state, SOCKBUF_DGRAM) != 0)
             {
@@ -779,9 +784,7 @@ int Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
                         }
                     }
                     if ((str[k++] = sbuf->ptr[j++]) == '\0')
-                    {
                         break;
-                    }
                     else if (k >= max_str_size)
                     {
                         /*
@@ -812,9 +815,7 @@ int Packet_scanf(sockbuf_t *sbuf, const char *fmt, ...)
             failure = 1;
     }
     if (failure == 1)
-    {
         warn("Error in format string (%s)", fmt);
-    }
     else if (failure == 3)
     {
         /* Not enough input for one complete packet */
