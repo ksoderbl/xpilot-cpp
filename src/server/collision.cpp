@@ -272,7 +272,7 @@ static void PlayerCollision(void)
         if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
             continue;
 
-        if (pl->pos.x < 0 || pl->pos.y < 0 || pl->pos.x >= world->width || pl->pos.y >= world->height)
+        if (pl->pix_pos.x < 0 || pl->pix_pos.y < 0 || pl->pix_pos.x >= world->width || pl->pix_pos.y >= world->height)
         {
             SET_BIT(pl->status, KILLED);
             sprintf(msg, "%s left the known universe.", pl->name);

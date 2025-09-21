@@ -122,16 +122,6 @@ typedef struct
 
 #define NOT_CONNECTED (-1)
 
-/*
- * Object position is non-modifiable, except at one place.
- */
-typedef const struct _objposition objposition_t;
-struct _objposition
-{
-    int cx, cy; /* object position in clicks. */
-    int x, y;   /* object position in pixels. */
-};
-
 #define OBJ_X_IN_CLICKS(obj) ((obj)->pos.cx)
 #define OBJ_Y_IN_CLICKS(obj) ((obj)->pos.cy)
 #define OBJ_X_IN_PIXELS(obj) CLICK_TO_PIXEL((obj)->pos.cx)
@@ -152,7 +142,8 @@ struct cell_node
 #define OBJECT_BASE                                      \
     short id;            /* For shots => id of player */ \
     unsigned short team; /* Team of player or cannon */  \
-    objposition_t pos;   /* World coordinates */         \
+    clpos_t pos;         /* World coordinates */         \
+    ipos_t pix_pos;      /* World pixel coordinates */   \
     clpos_t prevpos;     /* previous position */         \
     vector_t vel;        /* speed in x,y */              \
     vector_t acc;        /* acceleration in x,y */       \
@@ -377,7 +368,7 @@ struct _visibility
  */
 typedef struct
 {
-    position_t pos;
+    position_t pix_pos;
     // clpos_t clk_pos; // TODO
     int dir;
     int len;

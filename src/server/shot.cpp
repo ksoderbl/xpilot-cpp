@@ -521,8 +521,8 @@ void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    int cx = pl->pos.x + pl->ship->r_rgun[gun][pl->dir].x;
-    int cy = pl->pos.y + pl->ship->r_rgun[gun][pl->dir].y;
+    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].x);
+    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].y);
 
     Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
 }
@@ -1456,8 +1456,8 @@ void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy,
     pulse->life = life;
     pulse->mods = mods;
     pulse->refl = false;
-    pulse->pos.x = CLICK_TO_FLOAT(cx) - PULSE_SPEED * tcos(dir);
-    pulse->pos.y = CLICK_TO_FLOAT(cy) - PULSE_SPEED * tsin(dir);
+    pulse->pix_pos.x = CLICK_TO_FLOAT(cx) - PULSE_SPEED * tcos(dir);
+    pulse->pix_pos.y = CLICK_TO_FLOAT(cy) - PULSE_SPEED * tsin(dir);
     NumPulses++;
     if (pl)
         pl->num_pulses++;
@@ -1519,8 +1519,8 @@ void Move_ball(int ind)
     /* const double                max_spring_ratio = 0.30; */
 
     /* compute the normalized vector between the ball and the player */
-    D.x = WRAP_DX(pl->pos.x - ball->pos.x);
-    D.y = WRAP_DY(pl->pos.y - ball->pos.y);
+    D.x = WRAP_DX(pl->pix_pos.x - ball->pix_pos.x);
+    D.y = WRAP_DY(pl->pix_pos.y - ball->pix_pos.y);
     length = VECTOR_LENGTH(D);
     if (length > 0.0)
     {
@@ -1727,8 +1727,8 @@ void Move_smart_shot(int ind)
     range = Wrap_length(pl->pos.cx - shot->pos.cx, pl->pos.cy - shot->pos.cy) / CLICK;
     x_dif += pl->vel.x * (range / shot_speed);
     y_dif += pl->vel.y * (range / shot_speed);
-    theta = (int)Wrap_findDir(pl->pos.x + x_dif - shot->pos.x,
-                              pl->pos.y + y_dif - shot->pos.y);
+    theta = (int)Wrap_findDir(pl->pix_pos.x + x_dif - shot->pix_pos.x,
+                              pl->pix_pos.y + y_dif - shot->pix_pos.y);
 
     {
         double x, y, vx, vy;
@@ -1745,8 +1745,8 @@ void Move_smart_shot(int ind)
         x = shot_speed / (BLOCK_SZ * BLOCK_PARTS);
         vx /= x;
         vy /= x;
-        x = shot->pos.x;
-        y = shot->pos.y;
+        x = shot->pix_pos.x;
+        y = shot->pix_pos.y;
         foundw = 0;
 
         for (i = SMART_SHOT_LOOK_AH; i > 0 && foundw == 0; i--)
@@ -1836,8 +1836,8 @@ void Move_smart_shot(int ind)
         if (angle >= 0)
         {
             i = angle & 7;
-            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (shot->pos.y + 2 * shot->vel.y),
-                                      (xi + sur[i].dx) * BLOCK_SZ - (shot->pos.x - 2 * shot->vel.x));
+            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (shot->pix_pos.y + 2 * shot->vel.y),
+                                      (xi + sur[i].dx) * BLOCK_SZ - (shot->pix_pos.x - 2 * shot->vel.x));
 #ifdef SHOT_EXTRA_SLOWDOWN
             if (!foundw && range > (SHOT_LOOK_AH - i) * BLOCK_SZ)
             {

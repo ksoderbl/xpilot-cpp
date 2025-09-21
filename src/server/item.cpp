@@ -604,8 +604,8 @@ void Do_deflector(player_t *pl)
         if (BIT(obj->type, OBJ_BALL) && !BIT(obj->status, GRAVITY))
             continue;
 
-        dx = (obj->pos.x - pl->pos.x);
-        dy = (obj->pos.y - pl->pos.y);
+        dx = (obj->pix_pos.x - pl->pix_pos.x);
+        dy = (obj->pix_pos.y - pl->pix_pos.y);
         dx = WRAP_DX(dx);
         dy = WRAP_DY(dy);
 
@@ -1254,5 +1254,5 @@ void Fire_ecm(int ind)
     if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, HAS_PHASING_DEVICE))
         return;
 
-    Fire_general_ecm(ind, pl->team, pl->pos.x, pl->pos.y);
+    Fire_general_ecm(ind, pl->team, pl->pix_pos.x, pl->pix_pos.y);
 }

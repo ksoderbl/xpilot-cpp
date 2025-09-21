@@ -444,8 +444,8 @@ static int Frame_status(connection_t *conn, int ind)
             pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
-            lock_dir = (int)Wrap_findDir((int)(PlayersArray[lock_ind]->pos.x - pl->pos.x),
-                                         (int)(PlayersArray[lock_ind]->pos.y - pl->pos.y));
+            lock_dir = (int)Wrap_findDir((int)(PlayersArray[lock_ind]->pix_pos.x - pl->pix_pos.x),
+                                         (int)(PlayersArray[lock_ind]->pix_pos.y - pl->pix_pos.y));
             lock_dist = (int)pl->lock.distance;
         }
     }
@@ -767,8 +767,8 @@ static void Frame_shots(connection_t *conn, int ind)
         if (i >= obj_count)
             continue;
         shot = obj_list[i];
-        x = shot->pos.x;
-        y = shot->pos.y;
+        x = shot->pix_pos.x;
+        y = shot->pix_pos.y;
         cx = shot->pos.cx;
         cy = shot->pos.cy;
         if (!click_inview(cv, cx, cy))
@@ -818,8 +818,8 @@ static void Frame_shots(connection_t *conn, int ind)
                     color = debris_colors - 1;
             }
 
-            debris_store((int)(shot->pos.x - pv.world.x),
-                         (int)(shot->pos.y - pv.world.y),
+            debris_store((int)(shot->pix_pos.x - pv.world.x),
+                         (int)(shot->pix_pos.y - pv.world.y),
                          color);
             break;
 
@@ -860,8 +860,8 @@ static void Frame_shots(connection_t *conn, int ind)
             else
                 teamshot = 0;
 
-            fastshot_store((int)(shot->pos.x - pv.world.x),
-                           (int)(shot->pos.y - pv.world.y),
+            fastshot_store((int)(shot->pix_pos.x - pv.world.x),
+                           (int)(shot->pix_pos.y - pv.world.y),
                            color, teamshot);
             break;
 
@@ -945,8 +945,8 @@ static void Frame_ships(connection_t *conn, int ind)
         pulse = Pulses[j];
         if (pulse->len <= 0)
             continue;
-        cx = FLOAT_TO_CLICK(pulse->pos.x);
-        cy = FLOAT_TO_CLICK(pulse->pos.y);
+        cx = FLOAT_TO_CLICK(pulse->pix_pos.x);
+        cy = FLOAT_TO_CLICK(pulse->pix_pos.y);
         if (BIT(world->rules->mode, WRAP_PLAY))
         {
             if (cx < 0)
@@ -1006,7 +1006,7 @@ static void Frame_ships(connection_t *conn, int ind)
                  *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetInd[trans->id]]);
         int cx = (pl ? pl->pos.cx : trans->clk_pos.cx);
         int cy = (pl ? pl->pos.cy : trans->clk_pos.cy);
-        Send_trans(conn, victim->pos.x, victim->pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
+        Send_trans(conn, victim->pix_pos.x, victim->pix_pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
     }
     for (i = 0; i < world->NumCannons; i++)
     {
@@ -1020,8 +1020,8 @@ static void Frame_ships(connection_t *conn, int ind)
                 for (j = 0; j < 3; j++)
                 {
                     Send_connector(conn,
-                                   (int)(t->pos.x + t->ship->pts[j][t->dir].x),
-                                   (int)(t->pos.y + t->ship->pts[j][t->dir].y),
+                                   (int)(t->pix_pos.x + t->ship->pts[j][t->dir].x),
+                                   (int)(t->pix_pos.y + t->ship->pts[j][t->dir].y),
                                    CLICK_TO_PIXEL(cannon->clk_pos.cx),
                                    CLICK_TO_PIXEL(cannon->clk_pos.cy), 1);
                 }
@@ -1042,8 +1042,8 @@ static void Frame_ships(connection_t *conn, int ind)
         if (BIT(pl_i->status, PAUSE))
         {
             Send_paused(conn,
-                        pl_i->pos.x,
-                        pl_i->pos.y,
+                        pl_i->pix_pos.x,
+                        pl_i->pix_pos.y,
                         pl_i->count);
             continue;
         }
@@ -1055,8 +1055,8 @@ static void Frame_ships(connection_t *conn, int ind)
              * Transmit ship information
              */
             Send_ship(conn,
-                      pl_i->pos.x,
-                      pl_i->pos.y,
+                      pl_i->pix_pos.x,
+                      pl_i->pix_pos.y,
                       pl_i->id,
                       pl_i->dir,
                       BIT(pl_i->used, HAS_SHIELD) != 0,
@@ -1072,8 +1072,8 @@ static void Frame_ships(connection_t *conn, int ind)
                 Send_refuel(conn,
                             (int)world->fuels[pl_i->fs].pix_pos.x,
                             (int)world->fuels[pl_i->fs].pix_pos.y,
-                            pl_i->pos.x,
-                            pl_i->pos.y);
+                            pl_i->pix_pos.x,
+                            pl_i->pix_pos.y);
         }
         if (BIT(pl_i->used, HAS_REPAIR))
         {
@@ -1083,7 +1083,7 @@ static void Frame_ships(connection_t *conn, int ind)
             cy = FLOAT_TO_CLICK(y);
             if (click_inview(cv, cx, cy))
                 /* same packet as refuel */
-                Send_refuel(conn, pl_i->pos.x, pl_i->pos.y, (int)x, (int)y);
+                Send_refuel(conn, pl_i->pix_pos.x, pl_i->pix_pos.y, (int)x, (int)y);
         }
         if (BIT(pl_i->used, HAS_TRACTOR_BEAM))
         {
@@ -1094,19 +1094,19 @@ static void Frame_ships(connection_t *conn, int ind)
 
                 for (j = 0; j < 3; j++)
                     Send_connector(conn,
-                                   (int)(t->pos.x + t->ship->pts[j][t->dir].x),
-                                   (int)(t->pos.y + t->ship->pts[j][t->dir].y),
-                                   pl_i->pos.x,
-                                   pl_i->pos.y, 1);
+                                   (int)(t->pix_pos.x + t->ship->pts[j][t->dir].x),
+                                   (int)(t->pix_pos.y + t->ship->pts[j][t->dir].y),
+                                   pl_i->pix_pos.x,
+                                   pl_i->pix_pos.y, 1);
             }
         }
 
         if (pl_i->ball != NULL && click_inview(cv, pl_i->ball->pos.cx, pl_i->ball->pos.cy))
             Send_connector(conn,
-                           pl_i->ball->pos.x,
-                           pl_i->ball->pos.y,
-                           pl_i->pos.x,
-                           pl_i->pos.y, 0);
+                           pl_i->ball->pix_pos.x,
+                           pl_i->ball->pix_pos.y,
+                           pl_i->pix_pos.x,
+                           pl_i->pix_pos.y, 0);
     }
 }
 
@@ -1237,8 +1237,8 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     horizontal_blocks = (view_width + (BLOCK_SZ - 1)) / BLOCK_SZ;
     vertical_blocks = (view_height + (BLOCK_SZ - 1)) / BLOCK_SZ;
 
-    pv.world.x = pl->pos.x - view_width / 2; /* Scroll */
-    pv.world.y = pl->pos.y - view_height / 2;
+    pv.world.x = pl->pix_pos.x - view_width / 2; /* Scroll */
+    pv.world.y = pl->pix_pos.y - view_height / 2;
     pv.realWorld = pv.world;
     if (BIT(world->rules->mode, WRAP_PLAY))
     {

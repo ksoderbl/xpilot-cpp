@@ -171,8 +171,6 @@ void Free_shots(void)
 // TODO: Remove pixel positions, store only subpixel position (i.e. clicks)
 void Object_position_set_clicks(object_t *obj, int cx, int cy)
 {
-    struct _objposition *pos = (struct _objposition *)&obj->pos;
-
 #if 1
     if (cx < 0)
     {
@@ -199,10 +197,10 @@ void Object_position_set_clicks(object_t *obj, int cx, int cy)
         // abort();
     }
 #endif
-    pos->cx = cx;
-    pos->x = CLICK_TO_PIXEL(cx);
-    pos->cy = cy;
-    pos->y = CLICK_TO_PIXEL(cy);
+    obj->pos.cx = cx;
+    obj->pix_pos.x = CLICK_TO_PIXEL(cx);
+    obj->pos.cy = cy;
+    obj->pix_pos.y = CLICK_TO_PIXEL(cy);
 }
 
 void Object_position_init_clicks(object_t *obj, int cx, int cy)
@@ -218,8 +216,6 @@ void Player_position_restore(player_t *pl)
 
 void Player_position_set_clicks(player_t *pl, int cx, int cy)
 {
-    struct _objposition *pos = (struct _objposition *)&pl->pos;
-
 #if 1
     if (cx < 0)
     {
@@ -246,10 +242,10 @@ void Player_position_set_clicks(player_t *pl, int cx, int cy)
         // abort();
     }
 #endif
-    pos->cx = cx;
-    pos->x = CLICK_TO_PIXEL(cx);
-    pos->cy = cy;
-    pos->y = CLICK_TO_PIXEL(cy);
+    pl->pos.cx = cx;
+    pl->pix_pos.x = CLICK_TO_PIXEL(cx);
+    pl->pos.cy = cy;
+    pl->pix_pos.y = CLICK_TO_PIXEL(cy);
 }
 
 void Player_position_init_clicks(player_t *pl, int cx, int cy)
@@ -260,14 +256,14 @@ void Player_position_init_clicks(player_t *pl, int cx, int cy)
 
 void Player_position_limit(player_t *pl)
 {
-    int x = pl->pos.x, ox = x;
-    int y = pl->pos.y, oy = y;
+    int cx = pl->pos.cx, ocx = cx;
+    int cy = pl->pos.cy, ocy = cy;
 
-    LIMIT(x, 0, world->width - 1);
-    LIMIT(y, 0, world->height - 1);
-    if (x != ox || y != oy)
+    LIMIT(cx, 0, world->cwidth - 1);
+    LIMIT(cy, 0, world->cheight - 1);
+    if (cx != ocx || cy != ocy)
     {
-        Player_position_set_clicks(pl, PIXEL_TO_CLICK(x), PIXEL_TO_CLICK(y));
+        Player_position_set_clicks(pl, cx, cy);
     }
 }
 

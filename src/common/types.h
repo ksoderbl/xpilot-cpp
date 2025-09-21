@@ -38,15 +38,18 @@ typedef struct
         DFLOAT x, y;
 } vector_t;
 typedef vector_t position_t;
+
 typedef struct
 {
         int x, y;
 } ivec_t;
 typedef ivec_t ipos_t;
+
 typedef struct
 {
         int x, y, w, h;
 } irec_t;
+
 typedef struct
 {
         int bx, by;

@@ -210,10 +210,10 @@ static void Laser_pulse_hits_player(
     vicpl->forceVisible++;
     if (BIT(vicpl->have, HAS_MIRROR) && (rfrac() * (2 * vicpl->item[ITEM_MIRROR])) >= 1)
     {
-        pulse->pos.x = x - tcos(pulse->dir) * 0.5 * PULSE_SAMPLE_DISTANCE;
-        pulse->pos.y = y - tsin(pulse->dir) * 0.5 * PULSE_SAMPLE_DISTANCE;
-        pulse->dir = (int)Wrap_findDir(vicpl->pos.x - pulse->pos.x,
-                                       vicpl->pos.y - pulse->pos.y) *
+        pulse->pix_pos.x = x - tcos(pulse->dir) * 0.5 * PULSE_SAMPLE_DISTANCE;
+        pulse->pix_pos.y = y - tsin(pulse->dir) * 0.5 * PULSE_SAMPLE_DISTANCE;
+        pulse->dir = (int)Wrap_findDir(vicpl->pix_pos.x - pulse->pix_pos.x,
+                                       vicpl->pix_pos.y - pulse->pix_pos.y) *
                          2 -
                      RES / 2 - pulse->dir;
         pulse->dir = MOD2(pulse->dir, RES);
@@ -395,8 +395,8 @@ static void Laser_pulse_get_object_list(
         for (wireobject_t *wireobject : asteroids)
         {
             ast = OBJ_PTR(wireobject);
-            dx = midx - ast->pos.x;
-            dy = midy - ast->pos.y;
+            dx = midx - ast->pix_pos.x;
+            dy = midy - ast->pix_pos.y;
             dx = WRAP_DX(dx);
             dy = WRAP_DY(dy);
             range = ast->pl_radius + pulse->len / 2;
@@ -465,27 +465,27 @@ void Laser_pulse_collision(void)
             pl = nullptr;
         }
 
-        pulse->pos.x += tcos(pulse->dir) * PULSE_SPEED;
-        pulse->pos.y += tsin(pulse->dir) * PULSE_SPEED;
+        pulse->pix_pos.x += tcos(pulse->dir) * PULSE_SPEED;
+        pulse->pix_pos.y += tsin(pulse->dir) * PULSE_SPEED;
         if (BIT(world->rules->mode, WRAP_PLAY))
         {
-            if (pulse->pos.x < 0)
-                pulse->pos.x += world->width;
-            else if (pulse->pos.x >= world->width)
-                pulse->pos.x -= world->width;
-            if (pulse->pos.y < 0)
-                pulse->pos.y += world->height;
-            else if (pulse->pos.y >= world->height)
-                pulse->pos.y -= world->height;
-            x1 = pulse->pos.x;
-            y1 = pulse->pos.y;
+            if (pulse->pix_pos.x < 0)
+                pulse->pix_pos.x += world->width;
+            else if (pulse->pix_pos.x >= world->width)
+                pulse->pix_pos.x -= world->width;
+            if (pulse->pix_pos.y < 0)
+                pulse->pix_pos.y += world->height;
+            else if (pulse->pix_pos.y >= world->height)
+                pulse->pix_pos.y -= world->height;
+            x1 = pulse->pix_pos.x;
+            y1 = pulse->pix_pos.y;
             x2 = x1 + tcos(pulse->dir) * pulse->len;
             y2 = y1 + tsin(pulse->dir) * pulse->len;
         }
         else
         {
-            x1 = pulse->pos.x;
-            y1 = pulse->pos.y;
+            x1 = pulse->pix_pos.x;
+            y1 = pulse->pix_pos.y;
             if (x1 < 0 || x1 >= world->width || y1 < 0 || y1 >= world->height)
             {
                 pulse->len = 0;
@@ -613,8 +613,8 @@ void Laser_pulse_collision(void)
                 for (object_t *ast : obj_list)
                 {
                     double adx, ady;
-                    adx = x - ast->pos.x;
-                    ady = y - ast->pos.y;
+                    adx = x - ast->pix_pos.x;
+                    ady = y - ast->pix_pos.y;
                     adx = WRAP_DX(adx);
                     ady = WRAP_DY(ady);
                     if (sqr(adx) + sqr(ady) <= sqr(ast->pl_radius))

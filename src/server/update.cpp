@@ -87,8 +87,8 @@ static void Transport_to_home(player_t *pl)
         bx = (world->bases[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
         by = (world->bases[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
     }
-    dx = WRAP_DX(bx - pl->pos.x);
-    dy = WRAP_DY(by - pl->pos.y);
+    dx = WRAP_DX(bx - pl->pix_pos.x);
+    dy = WRAP_DY(by - pl->pix_pos.y);
     t = pl->count + 0.5f;
     if (2 * t <= T)
     {
@@ -1250,8 +1250,8 @@ void Update_objects(void)
                     if (BIT(b->type, OBJ_BALL) && b->id == pl->id)
                     {
                         position_t ballpos;
-                        ballpos.x = b->pos.x + (w.x - pl->pos.x);
-                        ballpos.y = b->pos.y + (w.y - pl->pos.y);
+                        ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
+                        ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
                         ballpos.x = WRAP_XPIXEL(ballpos.x);
                         ballpos.y = WRAP_YPIXEL(ballpos.y);
                         if (ballpos.x < 0 || ballpos.x >= world->width || ballpos.y < 0 || ballpos.y >= world->height)

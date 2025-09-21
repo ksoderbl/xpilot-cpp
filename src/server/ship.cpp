@@ -199,8 +199,8 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         dvx2, dvy2;
     int obj_theta;
 
-    xd = WRAP_DX(obj2->pos.x - obj1->pos.x);
-    yd = WRAP_DY(obj2->pos.y - obj1->pos.y);
+    xd = WRAP_DX(obj2->pix_pos.x - obj1->pix_pos.x);
+    yd = WRAP_DY(obj2->pix_pos.y - obj1->pix_pos.y);
     force = (repel_dist - LENGTH(xd, yd));
 
     if (force <= 0)

@@ -164,10 +164,10 @@ void Break_asteroid(int ind)
         vely2 = tsin(dir2) * speed2; */
         split_dir = MOD2(dir - RES / 4, RES);
         radius = ASTEROID_RADIUS(asteroid->size - 1);
-        x1 = WRAP_XPIXEL(asteroid->pos.x + tcos(split_dir) * radius);
-        y1 = WRAP_YPIXEL(asteroid->pos.y + tsin(split_dir) * radius);
-        x2 = WRAP_XPIXEL(asteroid->pos.x - tcos(split_dir) * radius);
-        y2 = WRAP_YPIXEL(asteroid->pos.y - tsin(split_dir) * radius);
+        x1 = WRAP_XPIXEL(asteroid->pix_pos.x + tcos(split_dir) * radius);
+        y1 = WRAP_YPIXEL(asteroid->pix_pos.y + tsin(split_dir) * radius);
+        x2 = WRAP_XPIXEL(asteroid->pix_pos.x - tcos(split_dir) * radius);
+        y2 = WRAP_YPIXEL(asteroid->pix_pos.y - tsin(split_dir) * radius);
         velx3 = asteroid->vel.x;
         vely3 = asteroid->vel.y;
         Make_asteroid(x1, y1, asteroid->size - 1, dir1, speed1);

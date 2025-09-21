@@ -225,8 +225,8 @@ static int Cannon_in_danger(int ind)
         if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity && shot->team == c->team)
             continue;
 
-        npx = shot->pos.x;
-        npy = shot->pos.y;
+        npx = shot->pix_pos.x;
+        npy = shot->pix_pos.y;
         if (options.cannonSmartness > 1)
         {
             npx += shot->vel.x;
@@ -367,10 +367,10 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
         player_t *pl = PlayersArray[i];
         int tdist, tdx, tdy;
 
-        tdx = WRAP_DX(pl->pos.x - cpx);
+        tdx = WRAP_DX(pl->pix_pos.x - cpx);
         if (ABS(tdx) >= visualrange)
             continue;
-        tdy = WRAP_DY(pl->pos.y - cpy);
+        tdy = WRAP_DY(pl->pix_pos.y - cpy);
         if (ABS(tdy) >= visualrange)
             continue;
         tdist = (int)LENGTH(tdx, tdy);
@@ -405,8 +405,8 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
             if (tdist < range)
             {
                 double time = tdist / speed;
-                int npx = (int)(pl->pos.x + pl->vel.x * time + pl->acc.x * time * time);
-                int npy = (int)(pl->pos.y + pl->vel.y * time + pl->acc.y * time * time);
+                int npx = (int)(pl->pix_pos.x + pl->vel.x * time + pl->acc.x * time * time);
+                int npy = (int)(pl->pix_pos.y + pl->vel.y * time + pl->acc.y * time * time);
                 int tdir;
 
                 tdx = WRAP_DX(npx - cpx);
