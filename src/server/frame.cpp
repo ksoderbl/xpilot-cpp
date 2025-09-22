@@ -580,7 +580,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
             i = 0;
         targ = &world->targets[i];
         if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 &&
-                                                 click_inview(cv, targ->clk_pos.cx, targ->clk_pos.cy)))
+                                                 click_inview(cv, targ->pos.cx, targ->pos.cy)))
         {
             Send_target(conn, i, targ->dead_time, targ->damage);
             pl->last_target_update = i;
@@ -598,8 +598,8 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (++i >= world->NumCannons)
             i = 0;
         if (click_inview(cv,
-                         world->cannons[i].clk_pos.cx,
-                         world->cannons[i].clk_pos.cy))
+                         world->cannons[i].pos.cx,
+                         world->cannons[i].pos.cy))
         {
             if (BIT(world->cannons[i].conn_mask, conn_bit) == 0)
             {
@@ -625,8 +625,8 @@ static void Frame_map(connection_t *conn, player_t *pl)
                             [world->fuels[i].blk_pos.y] == FUEL)
             {
                 if (click_inview(cv,
-                                 world->fuels[i].clk_pos.cx,
-                                 world->fuels[i].clk_pos.cy))
+                                 world->fuels[i].pos.cx,
+                                 world->fuels[i].pos.cy))
                 {
                     Send_fuel(conn, i, (int)world->fuels[i].fuel);
                     pl->last_fuel_update = i;
@@ -652,10 +652,10 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (options.wormholeVisible &&
             worm->temporary &&
             (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
-            click_inview(cv, worm->clk_pos.cx, worm->clk_pos.cy))
+            click_inview(cv, worm->pos.cx, worm->pos.cy))
         {
-            int cx = worm->clk_pos.cx;
-            int cy = worm->clk_pos.cy;
+            int cx = worm->pos.cx;
+            int cy = worm->pos.cy;
             Send_wormhole(conn, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
             pl->last_wormhole_update = i;
             bytes_left -= max_packet * wormhole_packet_size;
@@ -757,7 +757,7 @@ static void Frame_shots(connection_t *conn, int ind)
 
     hori_blocks = (view_width + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
     vert_blocks = (view_height + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
-    Cell_get_objects(pl->pos.cx, pl->pos.cy,
+    Cell_get_objects(pl->pos,
                      MAX(hori_blocks, vert_blocks), num_object_shuffle,
                      &obj_list,
                      &obj_count);
@@ -997,15 +997,15 @@ static void Frame_ships(connection_t *conn, int ind)
     for (i = 0; i < Num_ecms(); i++)
     {
         ecm_t *ecm = Ecm_by_index(i);
-        Send_ecm(conn, CLICK_TO_PIXEL(ecm->clk_pos.cx), CLICK_TO_PIXEL(ecm->clk_pos.cy), ecm->size);
+        Send_ecm(conn, CLICK_TO_PIXEL(ecm->pos.cx), CLICK_TO_PIXEL(ecm->pos.cy), ecm->size);
     }
     for (i = 0; i < Num_transporters(); i++)
     {
         transporter_t *trans = Transporter_by_index(i);
         player_t *victim = PlayersArray[GetInd[trans->target]],
                  *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetInd[trans->id]]);
-        int cx = (pl ? pl->pos.cx : trans->clk_pos.cx);
-        int cy = (pl ? pl->pos.cy : trans->clk_pos.cy);
+        int cx = (pl ? pl->pos.cx : trans->pos.cx);
+        int cy = (pl ? pl->pos.cy : trans->pos.cy);
         Send_trans(conn, victim->pix_pos.x, victim->pix_pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
     }
     for (i = 0; i < world->NumCannons; i++)
@@ -1022,8 +1022,8 @@ static void Frame_ships(connection_t *conn, int ind)
                     Send_connector(conn,
                                    (int)(t->pix_pos.x + t->ship->pts[j][t->dir].x),
                                    (int)(t->pix_pos.y + t->ship->pts[j][t->dir].y),
-                                   CLICK_TO_PIXEL(cannon->clk_pos.cx),
-                                   CLICK_TO_PIXEL(cannon->clk_pos.cy), 1);
+                                   CLICK_TO_PIXEL(cannon->pos.cx),
+                                   CLICK_TO_PIXEL(cannon->pos.cy), 1);
                 }
             }
         }
@@ -1067,8 +1067,8 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, HAS_REFUEL))
         {
-            if (click_inview(cv, world->fuels[pl_i->fs].clk_pos.cx,
-                             world->fuels[pl_i->fs].clk_pos.cy))
+            if (click_inview(cv, world->fuels[pl_i->fs].pos.cx,
+                             world->fuels[pl_i->fs].pos.cy))
                 Send_refuel(conn,
                             (int)world->fuels[pl_i->fs].pix_pos.x,
                             (int)world->fuels[pl_i->fs].pix_pos.y,

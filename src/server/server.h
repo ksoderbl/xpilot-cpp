@@ -53,7 +53,7 @@ void Alloc_cells(void);
 void Cell_init_object(object_t *obj);
 void Cell_add_object(object_t *obj);
 void Cell_remove_object(object_t *obj);
-void Cell_get_objects(int cx, int cy, int r, int max, object_t ***list, int *count);
+void Cell_get_objects(clpos_t pos, int r, int max, object_t ***list, int *count);
 
 /*
  * Prototypes for collision.c
@@ -138,19 +138,18 @@ void Update_tanks(pl_fuel_t *);
 void Place_item(int type, player_t *pl);
 int Choose_random_item(void);
 void Tractor_beam(int ind);
-void General_tractor_beam(int ind, int cx, int cy,
-                          int items, int target, bool pressor);
+void General_tractor_beam(int ind, clpos_t pos, int items, int target, bool pressor);
 void Place_mine(int ind);
 void Place_moving_mine(int ind);
-void Place_general_mine(int ind, unsigned short team, long status, int cx, int cy,
-                        double vx, double vy, modifiers_t mods);
+void Place_general_mine(int ind, unsigned short team, long status, clpos_t pos,
+                        vector_t vel, modifiers_t mods);
 void Detonate_mines(int ind);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(int ind);
-void Fire_general_ecm(int ind, unsigned short team, int cx, int cy);
+void Fire_general_ecm(int ind, unsigned short team, clpos_t pos);
 void Move_ball(int ind);
 void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
-                       int cx, int cy, int type, int dir,
+                       clpos_t pos, int type, int dir,
                        modifiers_t mods, int target);
 void Fire_normal_shots(player_t *pl);
 void Fire_main_shot(player_t *pl, int type, int dir);
@@ -163,45 +162,43 @@ void Make_treasure_ball(int treasure);
 int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
-void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy, int dir,
-                        modifiers_t mods);
+void Fire_general_laser(player_t *pl, unsigned short team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(player_t *pl);
 void Do_transporter(player_t *pl);
-void Do_general_transporter(player_t *pl, int cx, int cy, int target,
-                            int *item, long *amount);
+void Do_general_transporter(player_t *pl, clpos_t pos, int target, int *item, long *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
 void Move_smart_shot(int ind);
 void Move_mine(int ind);
 void Make_debris(
-    /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ double velx, double vely,
-    /* owner id       */ int id,
-    /* owner team     */ unsigned short team,
-    /* type           */ int type,
-    /* mass           */ double mass,
-    /* status         */ long status,
-    /* color          */ int color,
-    /* radius         */ int radius,
-    /* min,max debris */ int min_debris, int max_debris,
-    /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ double min_speed, double max_speed,
-    /* min,max life   */ int min_life, int max_life);
+    clpos_t pos,
+    vector_t vel,
+    int id,
+    unsigned short team,
+    int type,
+    double mass,
+    long status,
+    int color,
+    int radius,
+    int min_debris, int max_debris,
+    int min_dir, int max_dir,
+    double min_speed, double max_speed,
+    int min_life, int max_life);
 void Make_wreckage(
-    /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ double velx, double vely,
-    /* owner id       */ int id,
-    /* owner team     */ unsigned short team,
-    /* min,max mass   */ double min_mass, double max_mass,
-    /* total mass     */ double total_mass,
-    /* status         */ long status,
-    /* color          */ int color,
-    /* max wreckage   */ int max_wreckage,
-    /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ double min_speed, double max_speed,
-    /* min,max life   */ int min_life, int max_life);
-void Make_item(int cx, int cy,
-               int vx, int vy,
+    clpos_t pos,
+    vector_t vel,
+    int id,
+    unsigned short team,
+    double min_mass, double max_mass,
+    double total_mass,
+    long status,
+    int color,
+    int max_wreckage,
+    int min_dir, int max_dir,
+    double min_speed, double max_speed,
+    int min_life, int max_life);
+void Make_item(clpos_t pos,
+               vector_t vel,
                int item, int num_per_pack,
                long status);
 void Explode_fighter(player_t *pl);

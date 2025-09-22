@@ -1155,7 +1155,7 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
 
-                        SCORE(pl, 5, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+                        SCORE(pl, 5, tt->pos, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
                                 pl->name, pl->team);
                         Set_message(msg);
@@ -1819,46 +1819,43 @@ void Move_segment(move_state_t *ms)
 static void Cannon_dies(move_state_t *ms)
 {
     cannon_t *cannon = world->cannons + ms->cannon;
-    int x = (int)cannon->pix_pos.x;
-    int y = (int)cannon->pix_pos.y;
-    int cx = cannon->clk_pos.cx;
-    int cy = cannon->clk_pos.cy;
+    int cx = cannon->pos.cx;
+    int cy = cannon->pos.cy;
     int killer = -1;
     player_t *pl = NULL;
+    vector_t zero_vel = {0.0, 0.0};
 
     cannon->dead_time = options.cannonDeadTime;
     cannon->conn_mask = 0;
     world->block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
     Cannon_throw_items(ms->cannon);
     Cannon_init(ms->cannon);
-    sound_play_sensors(cx, cy, CANNON_EXPLOSION_SOUND);
-    Make_debris(
-        /* pos.cx, pos.cy */ cx, cy,
-        /* vel.x, vel.y   */ 0.0, 0.0,
-        /* owner id       */ NO_ID,
-        /* owner team     */ cannon->team,
-        /* kind           */ OBJ_DEBRIS,
-        /* mass           */ 4.5,
-        /* status         */ GRAVITY,
-        /* color          */ RED,
-        /* radius         */ 6,
-        /* min,max debris */ 20, 40,
-        /* min,max dir    */ (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
-        /* min,max speed  */ 20, 50,
-        /* min,max life   */ 8, 68);
-    Make_wreckage(
-        /* pos.cx, pos.cy */ cx, cy,
-        /* vel.x, vel.y   */ 0.0, 0.0,
-        /* owner id       */ NO_ID,
-        /* owner team          */ cannon->team,
-        /* min,max mass   */ 3.5, 23,
-        /* total mass     */ 28,
-        /* status         */ GRAVITY,
-        /* color          */ WHITE,
-        /* max wreckage   */ 10,
-        /* min,max dir    */ (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
-        /* min,max speed  */ 10, 25,
-        /* min,max life   */ 8, 68);
+    sound_play_sensors(cannon->pos, CANNON_EXPLOSION_SOUND);
+    Make_debris(cannon->pos,
+                zero_vel,
+                NO_ID,
+                cannon->team,
+                OBJ_DEBRIS,
+                4.5,
+                GRAVITY,
+                RED,
+                6,
+                20, 40,
+                (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
+                20, 50,
+                8, 68);
+    Make_wreckage(cannon->pos,
+                  zero_vel,
+                  NO_ID,
+                  cannon->team,
+                  3.5, 23,
+                  28,
+                  GRAVITY,
+                  WHITE,
+                  10,
+                  (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
+                  10, 25,
+                  8, 68);
 
     if (!ms->mip->pl)
     {
@@ -1879,8 +1876,7 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(PlayersArray[killer], options.cannonPoints, cannon->clk_pos.cx,
-                      cannon->clk_pos.cy, "");
+                SCORE(PlayersArray[killer], options.cannonPoints, cannon->pos, "");
             }
         }
     }
@@ -1891,7 +1887,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     target_t *targ = &world->targets[ms->target];
     object_t *obj = ms->mip->obj;
     int j, sc, por,
-        x, y,
+        bx, by,
         killer;
     int win_score = 0,
         lose_score = 0;
@@ -1901,6 +1897,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         targets_remaining = 0,
         targets_total = 0;
     int drainfactor;
+    vector_t zero_vel = {0.0, 0.0};
 
     /* a normal shot or a direct mine hit work, cannons don't */
     /* KK: should shots/mines by cannons of opposing teams work? */
@@ -1977,32 +1974,23 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
      * Destroy target.
      * Turn it into a space to simplify other calculations.
      */
-    x = targ->blk_pos.x;
-    y = targ->blk_pos.y;
-    world->block[x][y] = SPACE;
+    bx = targ->blk_pos.x;
+    by = targ->blk_pos.y;
+    world->block[bx][by] = SPACE;
 
-    int cx = targ->clk_pos.cx;
-    int cy = targ->clk_pos.cy;
-
-    int tcx = (x + 0.5f) * BLOCK_CLICKS;
-    int tcy = (y + 0.5f) * BLOCK_CLICKS;
-
-    // TODO: check that cx == tcx and cy == tcy
-
-    Make_debris(
-        /* pos.cx, pos.cy */ tcx, tcy,
-        /* vel.x, vel.y   */ 0.0, 0.0,
-        /* owner id       */ NO_ID,
-        /* owner team     */ targ->team,
-        /* kind           */ OBJ_DEBRIS,
-        /* mass           */ 4.5,
-        /* status         */ GRAVITY,
-        /* color          */ RED,
-        /* radius         */ 6,
-        /* min,max debris */ 75, 150,
-        /* min,max dir    */ 0, RES - 1,
-        /* min,max speed  */ 20, 70,
-        /* min,max life   */ 10, 100);
+    Make_debris(targ->pos,
+                zero_vel,
+                NO_ID,
+                targ->team,
+                OBJ_DEBRIS,
+                4.5,
+                GRAVITY,
+                RED,
+                6,
+                75, 150,
+                0, RES - 1,
+                20, 70,
+                10, 100);
 
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
@@ -2041,7 +2029,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     if (!somebody_flag)
         return;
 
-    sound_play_sensors(cx, cy, DESTROY_TARGET_SOUND);
+    sound_play_sensors(targ->pos, DESTROY_TARGET_SOUND);
 
     if (targets_remaining > 0)
     {
@@ -2049,8 +2037,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            SCORE(PlayersArray[killer], sc,
-                  targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+            SCORE(PlayersArray[killer], sc, targ->pos, "Target: ");
         }
         /*
          * If players can't collide with their own targets, we
@@ -2091,11 +2078,11 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(PlayersArray[j]->status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(PlayersArray[j]->status, KILLED);
-            SCORE(PlayersArray[j], -sc, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+            SCORE(PlayersArray[j], -sc, targ->pos, "Target: ");
         }
         else if (PlayersArray[j]->team == PlayersArray[killer]->team &&
                  (PlayersArray[j]->team != TEAM_NOT_SET || j == killer))
-            SCORE(PlayersArray[j], por, targ->clk_pos.cx, targ->clk_pos.cy, "Target: ");
+            SCORE(PlayersArray[j], por, targ->pos, "Target: ");
     }
 }
 
@@ -2195,11 +2182,12 @@ void Move_object(object_t *obj)
         int max = ((dist - 2) * BLOCK_SZ) >> 1;
         if (sqr(max) >= sqr(obj->vel.x) + sqr(obj->vel.y))
         {
-            int cx = obj->pos.cx + FLOAT_TO_CLICK(obj->vel.x);
-            int cy = obj->pos.cy + FLOAT_TO_CLICK(obj->vel.y);
-            cx = WRAP_XCLICK(cx);
-            cy = WRAP_YCLICK(cy);
-            Object_position_set_clicks(obj, cx, cy);
+            clpos_t pos;
+            pos.cx = obj->pos.cx + FLOAT_TO_CLICK(obj->vel.x);
+            pos.cy = obj->pos.cy + FLOAT_TO_CLICK(obj->vel.y);
+            pos.cx = WRAP_XCLICK(pos.cx);
+            pos.cy = WRAP_YCLICK(pos.cy);
+            Object_position_set_clpos(obj, pos);
             Cell_add_object(obj);
             return;
         }
@@ -2295,7 +2283,7 @@ void Move_object(object_t *obj)
         if (ms.pos.cy >= mp.click_height)
             ms.pos.cy -= mp.click_height;
     }
-    Object_position_set_clicks(obj, ms.pos.cx, ms.pos.cy);
+    Object_position_set_clpos(obj, ms.pos);
     obj->vel = ms.vel;
     obj->missile_dir = ms.dir;
     if (ms.crash)
@@ -2335,38 +2323,38 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
     case CrashWall:
         howfmt = "%s crashed%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashWallSpeed:
         howfmt = "%s smashed%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashWallNoFuel:
         howfmt = "%s smacked%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashWallAngle:
         howfmt = "%s was trashed%s against a wall";
         hudmsg = "[Wall]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashTarget:
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         Object_hits_target(ms, -1);
         break;
 
     case CrashTreasure:
         howfmt = "%s smashed%s against a treasure";
         hudmsg = "[Treasure]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashCannon:
@@ -2374,7 +2362,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         {
             howfmt = "%s smashed%s against a cannon";
             hudmsg = "[Cannon]";
-            sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_CANNON_SOUND);
+            sound_play_sensors(pl->pos, PLAYER_HIT_CANNON_SOUND);
         }
         if (!BIT(world->cannons[ms->cannon].used, HAS_EMERGENCY_SHIELD))
         {
@@ -2385,13 +2373,13 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
     case CrashUniverse:
         howfmt = "%s left the known universe%s";
         hudmsg = "[Universe]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
 
     case CrashUnknown:
         howfmt = "%s slammed%s into a programming error";
         hudmsg = "[Bug]";
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_HIT_WALL_SOUND);
+        sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
         break;
     }
 
@@ -2434,7 +2422,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         if (num_pushers == 0)
         {
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, hudmsg);
+            SCORE(pl, -sc, pl->pos, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -2463,14 +2451,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
-                SCORE(pusher, sc, pl->pos.cx, pl->pos.cy, pl->name);
+                SCORE(pusher, sc, pl->pos, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
             sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
-            SCORE(pl, -sc, pl->pos.cx, pl->pos.cy, "[Shove]");
+            SCORE(pl, -sc, pl->pos, "[Shove]");
 
             strcpy(msg_ptr, ".");
             Set_message(msg);
@@ -2523,7 +2511,7 @@ void Move_player(int ind)
             if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
             {
                 Player_position_remember(pl);
-                Player_position_set_clicks(pl, pos.cx, pos.cy);
+                Player_position_set_clicks(pl, pos);
             }
         }
         pl->velocity = VECTOR_LENGTH(pl->vel);
@@ -2566,7 +2554,7 @@ void Move_player(int ind)
             pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
             pos.cx = WRAP_XCLICK(pos.cx);
             pos.cy = WRAP_YCLICK(pos.cy);
-            Player_position_set_clicks(pl, pos.cx, pos.cy);
+            Player_position_set_clicks(pl, pos);
             pl->velocity = VECTOR_LENGTH(pl->vel);
             return;
         }
@@ -2838,21 +2826,20 @@ void Move_player(int ind)
                 if (cost)
                 {
                     int intensity = (int)(cost * wallBounceExplosionMult);
-                    Make_debris(
-                        /* pos.cx, pos.cy */ pl->pos.cx, pl->pos.cy,
-                        /* vel.x, vel.y   */ pl->vel.x, pl->vel.y,
-                        /* owner id       */ pl->id,
-                        /* owner team     */ pl->team,
-                        /* kind           */ OBJ_SPARK,
-                        /* mass           */ 3.5,
-                        /* status         */ GRAVITY | OWNERIMMUNE | FROMBOUNCE,
-                        /* color          */ RED,
-                        /* radius         */ 1,
-                        /* min,max debris */ intensity >> 1, intensity,
-                        /* min,max dir    */ wall_dir - (RES / 4), wall_dir + (RES / 4),
-                        /* min,max speed  */ 20, 20 + (intensity >> 2),
-                        /* min,max life   */ 10, 10 + (intensity >> 1));
-                    sound_play_sensors(pl->pos.cx, pl->pos.cy, PLAYER_BOUNCED_SOUND);
+                    Make_debris(pl->pos,
+                                pl->vel,
+                                pl->id,
+                                pl->team,
+                                OBJ_SPARK,
+                                3.5,
+                                GRAVITY | OWNERIMMUNE | FROMBOUNCE,
+                                RED,
+                                1,
+                                intensity >> 1, intensity,
+                                wall_dir - (RES / 4), wall_dir + (RES / 4),
+                                20, 20 + (intensity >> 2),
+                                10, 10 + (intensity >> 1));
+                    sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
                     if (ms[worst].target >= 0)
                     {
                         cost <<= FUEL_SCALE_BITS;
@@ -2918,7 +2905,7 @@ void Move_player(int ind)
     pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
     pos.cx = WRAP_XCLICK(pos.cx);
     pos.cy = WRAP_YCLICK(pos.cy);
-    Player_position_set_clicks(pl, pos.cx, pos.cy);
+    Player_position_set_clicks(pl, pos);
     pl->vel = ms[worst].vel;
     pl->velocity = VECTOR_LENGTH(pl->vel);
 
@@ -3042,7 +3029,7 @@ void Turn_player(player_t *pl)
             }
             if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
             {
-                Player_position_set_clicks(pl, pos.cx, pos.cy);
+                Player_position_set_clicks(pl, pos);
             }
         }
 

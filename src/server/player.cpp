@@ -198,9 +198,10 @@ void Go_home(int ind)
 
     pl->dir = dir;
     pl->float_dir = dir;
-    Player_position_init_clicks(pl,
-                                FLOAT_TO_CLICK((x + 0.5) * BLOCK_SZ + vx),
-                                FLOAT_TO_CLICK((y + 0.5) * BLOCK_SZ + vy));
+    clpos_t pos;
+    pos.cx = FLOAT_TO_CLICK((x + 0.5) * BLOCK_SZ + vx);
+    pos.cy = FLOAT_TO_CLICK((y + 0.5) * BLOCK_SZ + vy);
+    Player_position_init_clpos(pl, pos);
     pl->vel.x = vx;
     pl->vel.y = vy;
     pl->velocity = velo;
@@ -376,7 +377,7 @@ static void Player_init_fuel(int ind, long total_fuel)
     pl->fuel.max = TANK_CAP(0);
     pl->fuel.sum = MIN(fuel, pl->fuel.max);
     pl->fuel.tank[0] = pl->fuel.sum;
-    pl->emptymass = options.ShipMass;
+    pl->emptymass = options.shipMass;
     pl->item[ITEM_TANK] = pl->fuel.num_tanks;
 
     fuel -= pl->fuel.sum;
@@ -400,8 +401,8 @@ int Init_player(int ind, shipshape_t *ship)
     pl->turnvel = 0.0;
     pl->oldturnvel = 0.0;
     pl->turnacc = 0.0;
-    pl->mass = options.ShipMass;
-    pl->emptymass = options.ShipMass;
+    pl->mass = options.shipMass;
+    pl->emptymass = options.shipMass;
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
@@ -450,7 +451,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->missile_rack = 0;
     pl->forceVisible = 0;
     Compute_sensor_range(pl);
-    pl->shot_max = options.ShotsMax;
+    pl->shot_max = options.maxPlayerShots;
     pl->shot_time = 0;
     pl->color = WHITE;
     pl->score = 0;
@@ -869,8 +870,7 @@ static void Give_best_player_bonus(double average_score,
                 bp->name,
                 bp->kills, bp->deaths);
         points = best_ratio * Rate(bp->score, average_score);
-        SCORE(bp, points, bp->pos.cx, bp->pos.cy,
-              "[Deadliest]");
+        SCORE(bp, points, bp->pos, "[Deadliest]");
     }
     else
     {
@@ -895,8 +895,7 @@ static void Give_best_player_bonus(double average_score,
             }
             strcat(msg, bp->name);
             points = (int)(best_ratio * score);
-            SCORE(bp, points, bp->pos.cx, bp->pos.cy,
-                  "[Deadly]");
+            SCORE(bp, points, bp->pos, "[Deadly]");
         }
         if (strlen(msg) + 64 >= sizeof(msg))
         {
@@ -919,8 +918,7 @@ static void Give_individual_bonus(int ind, double average_score)
 
     ratio = (double)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(pl->score, average_score);
-    SCORE(pl, points, pl->pos.cx, pl->pos.cy,
-          "[Winner]");
+    SCORE(pl, points, pl->pos, "[Winner]");
 }
 
 static void Count_rounds(void)
@@ -1221,7 +1219,7 @@ void Race_game_over(void)
                         (num_best_players == 1) ? "had" : "shares",
                         (double)bestlap / FPS);
                 Set_message(msg);
-                SCORE(pl, 5 + num_active_players, pl->pos.cx, pl->pos.cy,
+                SCORE(pl, 5 + num_active_players, pl->pos,
                       (num_best_players == 1) ? "[Fastest lap]" : "[Joint fastest lap]");
             }
         }
@@ -1355,7 +1353,7 @@ void Compute_game_status(void)
                         Set_message(msg);
                         sprintf(msg, "[Position %d%s]", position,
                                 (num_finished_players == 1) ? "" : " (jointly)");
-                        SCORE(pl, pts, pl->pos.cx, pl->pos.cy, msg);
+                        SCORE(pl, pts, pl->pos, msg);
                     }
                     else
                     {
@@ -1888,7 +1886,7 @@ void Detach_ball(int ind, int obj)
             CLR_BIT(pl->have, HAS_BALL);
         else
         {
-            sound_play_sensors(pl->pos.cx, pl->pos.cy, DROP_BALL_SOUND);
+            sound_play_sensors(pl->pos, DROP_BALL_SOUND);
         }
     }
 }
@@ -1922,7 +1920,7 @@ void Player_death_reset(int ind)
 
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
-    pl->emptymass = pl->mass = options.ShipMass;
+    pl->emptymass = pl->mass = options.shipMass;
     pl->status |= DEF_BITS;
     pl->status &= ~(KILL_BITS);
 
@@ -1933,7 +1931,7 @@ void Player_death_reset(int ind)
     }
 
     pl->forceVisible = 0;
-    pl->shot_max = options.ShotsMax;
+    pl->shot_max = options.maxPlayerShots;
     pl->count = MAX(RECOVERY_DELAY, pl->count);
     pl->ecmcount = 0;
     pl->emergency_thrust_left = 0;

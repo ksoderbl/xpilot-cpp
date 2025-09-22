@@ -55,7 +55,7 @@
 typedef struct victim
 {
     int ind;          /* player index */
-    clpos_t clk_pos;  /* current player position */
+    clpos_t pos;      /* current player position */
     double prev_dist; /* distance at previous sample */
 } victim_t;
 
@@ -168,8 +168,8 @@ static void Laser_pulse_find_victims(
             vicbuf->max_vic = NumPlayers;
         }
         vicbuf->vic_ptr[vicbuf->num_vic].ind = i;
-        vicbuf->vic_ptr[vicbuf->num_vic].clk_pos.cx = vic->pos.cx;
-        vicbuf->vic_ptr[vicbuf->num_vic].clk_pos.cy = vic->pos.cy;
+        vicbuf->vic_ptr[vicbuf->num_vic].pos.cx = vic->pos.cx;
+        vicbuf->vic_ptr[vicbuf->num_vic].pos.cy = vic->pos.cy;
         vicbuf->vic_ptr[vicbuf->num_vic].prev_dist = 1e10;
         vicbuf->num_vic++;
     }
@@ -224,7 +224,7 @@ static void Laser_pulse_hits_player(
         return;
     }
 
-    sound_play_sensors(vicpl->pos.cx, vicpl->pos.cy, PLAYER_EAT_LASER_SOUND);
+    sound_play_sensors(vicpl->pos, PLAYER_EAT_LASER_SOUND);
     if (BIT(vicpl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         return;
     if (!BIT(obj->type, KILLING_SHOTS))
@@ -275,7 +275,7 @@ static void Laser_pulse_hits_player(
                 if (vicpl->id == pl->id)
                 {
                     sc = Rate(0, pl->score) * options.laserKillScoreMult * options.selfKillScoreMult;
-                    SCORE(vicpl, -sc, vicpl->pos.cx, vicpl->pos.cy, vicpl->name);
+                    SCORE(vicpl, -sc, vicpl->pos, vicpl->name);
                     strcat(msg, " How strange!");
                 }
                 else
@@ -291,12 +291,12 @@ static void Laser_pulse_hits_player(
             else
             {
                 sc = Rate(CANNON_SCORE, vicpl->score) / 4;
-                SCORE(vicpl, -sc, vicpl->pos.cx, vicpl->pos.cy, "Cannon");
+                SCORE(vicpl, -sc, vicpl->pos, "Cannon");
                 sprintf(msg,
                         "%s got roasted alive by cannonfire.",
                         vicpl->name);
             }
-            sound_play_sensors(vicpl->pos.cx, vicpl->pos.cy, PLAYER_ROASTED_SOUND);
+            sound_play_sensors(vicpl->pos, PLAYER_ROASTED_SOUND);
             Set_message(msg);
             if (pl && pl->id != vicpl->id)
             {
@@ -348,8 +348,8 @@ static int Laser_pulse_check_player_hits(
     for (j = vicbuf->num_vic - 1; j >= 0; --j)
     {
         victim = &(vicbuf->vic_ptr[j]);
-        dist = Wrap_length(cx - victim->clk_pos.cx,
-                           cy - victim->clk_pos.cy) /
+        dist = Wrap_length(cx - victim->pos.cx,
+                           cy - victim->pos.cy) /
                CLICK;
         if (dist <= SHIP_SZ)
         {
@@ -565,9 +565,10 @@ void Laser_pulse_collision(void)
         obj->status = 0;
         if (pulse->id == NO_ID)
             obj->status = FROMCANNON;
-        int cx = FLOAT_TO_CLICK(x1);
-        int cy = FLOAT_TO_CLICK(y1);
-        Object_position_init_clicks(obj, cx, cy);
+        clpos_t pos;
+        pos.cx = FLOAT_TO_CLICK(x1);
+        pos.cy = FLOAT_TO_CLICK(y1);
+        Object_position_init_clpos(obj, pos);
 
         refl = false;
 
@@ -625,7 +626,7 @@ void Laser_pulse_collision(void)
                         if (ast->life < 0)
                             ast->life = 0;
                         if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
-                            SCORE(pl, options.asteroidPoints, ast->pos.cx, ast->pos.cy, "");
+                            SCORE(pl, options.asteroidPoints, ast->pos, "");
                         break;
                     }
                 }

@@ -125,7 +125,7 @@ void Phasing(player_t *pl, bool on)
             pl->ball = NULL;
         CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
         CLR_BIT(pl->status, GRAVITY);
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PHASING_ON_SOUND);
+        sound_play_sensors(pl->pos, PHASING_ON_SOUND);
     }
     else
     {
@@ -136,7 +136,7 @@ void Phasing(player_t *pl, bool on)
                 CLR_BIT(pl->have, HAS_PHASING_DEVICE);
         }
         SET_BIT(pl->status, GRAVITY);
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, PHASING_OFF_SOUND);
+        sound_play_sensors(pl->pos, PHASING_OFF_SOUND);
     }
 }
 
@@ -235,7 +235,7 @@ void Emergency_thrust(player_t *pl, bool on)
         if (!BIT(pl->used, HAS_EMERGENCY_THRUST))
         {
             SET_BIT(pl->used, HAS_EMERGENCY_THRUST);
-            sound_play_sensors(pl->pos.cx, pl->pos.cy, EMERGENCY_THRUST_ON_SOUND);
+            sound_play_sensors(pl->pos, EMERGENCY_THRUST_ON_SOUND);
         }
     }
     else
@@ -243,7 +243,7 @@ void Emergency_thrust(player_t *pl, bool on)
         if (BIT(pl->used, HAS_EMERGENCY_THRUST))
         {
             CLR_BIT(pl->used, HAS_EMERGENCY_THRUST);
-            sound_play_sensors(pl->pos.cx, pl->pos.cy, EMERGENCY_THRUST_OFF_SOUND);
+            sound_play_sensors(pl->pos, EMERGENCY_THRUST_OFF_SOUND);
         }
         if (pl->emergency_thrust_left <= 0)
         {
@@ -276,8 +276,7 @@ void Emergency_shield(player_t *pl, bool on)
                 if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
                 {
                     SET_BIT(pl->used, HAS_EMERGENCY_SHIELD);
-                    sound_play_sensors(pl->pos.cx, pl->pos.cy,
-                                       EMERGENCY_SHIELD_ON_SOUND);
+                    sound_play_sensors(pl->pos, EMERGENCY_SHIELD_ON_SOUND);
                 }
             }
         }
@@ -297,8 +296,7 @@ void Emergency_shield(player_t *pl, bool on)
         if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         {
             CLR_BIT(pl->used, HAS_EMERGENCY_SHIELD);
-            sound_play_sensors(pl->pos.cx, pl->pos.cy,
-                               EMERGENCY_SHIELD_OFF_SOUND);
+            sound_play_sensors(pl->pos, EMERGENCY_SHIELD_OFF_SOUND);
         }
     }
 }
@@ -335,7 +333,7 @@ void Autopilot(player_t *pl, bool on)
         pl->power = (MIN_PLAYER_POWER + MAX_PLAYER_POWER) / 2.0;
         pl->turnspeed = (MIN_PLAYER_TURNSPEED + MAX_PLAYER_TURNSPEED) / 2.0;
         pl->turnresistance = 0.2;
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, AUTOPILOT_ON_SOUND);
+        sound_play_sensors(pl->pos, AUTOPILOT_ON_SOUND);
     }
     else
     {
@@ -344,7 +342,7 @@ void Autopilot(player_t *pl, bool on)
         pl->turnspeed = pl->auto_turnspeed_s;
         pl->turnresistance = pl->auto_turnresistance_s;
         CLR_BIT(pl->used, HAS_AUTOPILOT);
-        sound_play_sensors(pl->pos.cx, pl->pos.cy, AUTOPILOT_OFF_SOUND);
+        sound_play_sensors(pl->pos, AUTOPILOT_OFF_SOUND);
     }
 }
 
@@ -717,13 +715,13 @@ void Update_objects(void)
         if (cannon->tractor_count > 0)
         {
             int ind = GetInd[cannon->tractor_target];
-            if (Wrap_length(PlayersArray[ind]->pos.cx - cannon->clk_pos.cx,
-                            PlayersArray[ind]->pos.cy - cannon->clk_pos.cy) /
+            if (Wrap_length(PlayersArray[ind]->pos.cx - cannon->pos.cx,
+                            PlayersArray[ind]->pos.cy - cannon->pos.cy) /
                         CLICK <
                     TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
                 BIT(PlayersArray[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
-                General_tractor_beam(-1, cannon->clk_pos.cx, cannon->clk_pos.cy,
+                General_tractor_beam(-1, cannon->pos,
                                      cannon->item[ITEM_TRACTOR_BEAM], ind,
                                      cannon->tractor_is_pressor);
                 cannon->tractor_count--;
@@ -738,7 +736,7 @@ void Update_objects(void)
             if (--cannon->emergency_shield_left <= 0)
             {
                 CLR_BIT(cannon->used, HAS_EMERGENCY_SHIELD);
-                sound_play_sensors(cannon->clk_pos.cx, cannon->clk_pos.cy, EMERGENCY_SHIELD_OFF_SOUND);
+                sound_play_sensors(cannon->pos, EMERGENCY_SHIELD_OFF_SOUND);
             }
         }
         if (cannon->phasing_left > 0)
@@ -746,7 +744,7 @@ void Update_objects(void)
             if (--cannon->phasing_left <= 0)
             {
                 CLR_BIT(cannon->used, HAS_PHASING_DEVICE);
-                sound_play_sensors(cannon->clk_pos.cx, cannon->clk_pos.cy, PHASING_OFF_SOUND);
+                sound_play_sensors(cannon->pos, PHASING_OFF_SOUND);
             }
         }
     }
@@ -994,8 +992,8 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_REFUEL))
         {
-            if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].clk_pos.cx,
-                             pl->pos.cy - world->fuels[pl->fs].clk_pos.cy) /
+            if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].pos.cx,
+                             pl->pos.cy - world->fuels[pl->fs].pos.cy) /
                      CLICK >
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
@@ -1041,7 +1039,7 @@ void Update_objects(void)
         if (BIT(pl->used, HAS_REPAIR))
         {
             target_t *targ = &world->targets[pl->repair_target];
-            if (Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK > 90.0 ||
+            if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
                 targ->damage >= TARGET_DAMAGE ||
                 targ->dead_time > 0 ||
                 BIT(pl->used, HAS_PHASING_DEVICE))
@@ -1195,7 +1193,7 @@ void Update_objects(void)
 #endif /* RANDOM_REAR_WORM */
                 }
 
-                sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
+                sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 
                 w.x = (world->wormholes[j].blk_pos.x + 0.5) * BLOCK_SZ;
                 w.y = (world->wormholes[j].blk_pos.y + 0.5) * BLOCK_SZ;
@@ -1227,7 +1225,7 @@ void Update_objects(void)
                                        (int)(w.y / BLOCK_SZ));
                 }
                 j = -2;
-                sound_play_sensors(pl->pos.cx, pl->pos.cy, HYPERJUMP_SOUND);
+                sound_play_sensors(pl->pos, HYPERJUMP_SOUND);
             }
 
             /*
@@ -1260,7 +1258,10 @@ void Update_objects(void)
                         }
                         else
                         {
-                            Object_position_set_clicks(b, FLOAT_TO_CLICK(ballpos.x), FLOAT_TO_CLICK(ballpos.y));
+                            clpos_t ball_clpos;
+                            ball_clpos.cx = FLOAT_TO_CLICK(ballpos.x);
+                            ball_clpos.cy = FLOAT_TO_CLICK(ballpos.y);
+                            Object_position_set_clpos(b, ball_clpos);
                             Object_position_remember(b);
                             b->vel.x *= WORM_BRAKE_FACTOR;
                             b->vel.y *= WORM_BRAKE_FACTOR;
@@ -1271,7 +1272,10 @@ void Update_objects(void)
             }
 
             pl->wormHoleDest = j;
-            Player_position_init_clicks(pl, FLOAT_TO_CLICK(w.x), FLOAT_TO_CLICK(w.y));
+            clpos_t pos;
+            pos.cx = FLOAT_TO_CLICK(w.x);
+            pos.cy = FLOAT_TO_CLICK(w.y);
+            Player_position_init_clpos(pl, pos);
             pl->vel.x *= WORM_BRAKE_FACTOR;
             pl->vel.y *= WORM_BRAKE_FACTOR;
             pl->forceVisible += 15;
@@ -1288,7 +1292,7 @@ void Update_objects(void)
             CLR_BIT(pl->status, WARPING);
             SET_BIT(pl->status, WARPED);
 
-            sound_play_sensors(pl->pos.cx, pl->pos.cy, WORM_HOLE_SOUND);
+            sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
         }
 
         if (!BIT(pl->status, PAUSE))

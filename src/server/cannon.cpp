@@ -22,6 +22,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -42,6 +43,7 @@
 #include "cannon.h"
 #include "saudio.h"
 #include "xpmath.h"
+#include "polygon.h"
 
 #ifdef SOUND
 #define IFSOUND(__x) __x
@@ -112,7 +114,7 @@ void Cannon_throw_items(int ind)
                 dir = MOD2(dir, RES);
                 obj->id = NO_ID;
                 obj->team = TEAM_NOT_SET;
-                Object_position_init_clicks(obj, c->clk_pos.cx, c->clk_pos.cy);
+                Object_position_init_clpos(obj, c->pos);
                 velocity = rfrac() * 6;
                 obj->vel.x = tcos(dir) * velocity;
                 obj->vel.y = tsin(dir) * velocity;
@@ -209,7 +211,7 @@ static int Cannon_in_danger(int ind)
     if (options.cannonSmartness == 0)
         return false;
 
-    Cell_get_objects(c->clk_pos.cx, c->clk_pos.cy, range, max_objs,
+    Cell_get_objects(c->pos, range, max_objs,
                      &obj_list, &obj_count);
 
     for (i = 0; (i < obj_count) && !danger; i++)
@@ -272,7 +274,7 @@ static void Cannon_defend(int ind, int defense)
         break;
     }
     IFSOUND(if (sound != -1)
-                sound_play_sensors(c->clk_pos.cx, c->clk_pos.cy, sound));
+                sound_play_sensors(c->pos, sound));
 }
 
 /* selects one of the available weapons. see cannon.h for descriptions. */
@@ -474,6 +476,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
     IFSOUND(int sound = CANNON_FIRE_SOUND);
     int i;
     int speed = options.ShotsSpeed;
+    vector_t zero_vel = {0.0, 0.0};
 
     CLEAR_MODS(mods);
     switch (weapon)
@@ -490,19 +493,21 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         }
         if (rfrac() < 0.5f)
         { /* place mine in front of cannon */
-            Place_general_mine(-1, c->team, FROMCANNON, c->clk_pos.cx, c->clk_pos.cy, 0, 0, mods);
+            Place_general_mine(-1, c->team, FROMCANNON, c->pos, zero_vel, mods);
             IFSOUND(sound = DROP_MINE_SOUND);
         }
         else
         { /* throw mine at player */
+            vector_t vel;
             if (BIT(world->rules->mode, ALLOW_MODIFIERS))
             {
                 mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
                 mods.spread = (int)(rfrac() * (MODS_SPREAD_MAX + 1));
             }
             speed = (int)(speed * 0.5 + 0.1 * options.cannonSmartness);
-            Place_general_mine(-1, c->team, GRAVITY | FROMCANNON, c->clk_pos.cx, c->clk_pos.cy,
-                               tcos(dir) * speed, tsin(dir) * speed, mods);
+            vel.x = tcos(dir) * speed;
+            vel.y = tsin(dir) * speed;
+            Place_general_mine(-1, c->team, GRAVITY | FROMCANNON, c->pos, vel, mods);
             IFSOUND(sound = DROP_MOVING_MINE_SOUND);
         }
         c->item[ITEM_MINE]--;
@@ -531,7 +536,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         default:
             if (options.allowSmartMissiles)
             {
-                Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_SMART_SHOT,
+                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_SMART_SHOT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_SMART_SHOT_SOUND);
                 break;
@@ -540,14 +545,14 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         case 1:
             if (options.allowHeatSeekers && BIT(PlayersArray[target]->status, THRUSTING))
             {
-                Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_HEAT_SHOT,
+                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_HEAT_SHOT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_HEAT_SHOT_SOUND);
                 break;
             }
             /* FALLTHROUGH */
         case 0:
-            Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_TORPEDO,
+            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_TORPEDO,
                               dir, mods, -1);
             IFSOUND(sound = FIRE_TORPEDO_SOUND);
             break;
@@ -559,11 +564,11 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
            so we don't use them often */
         if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - options.cannonSmartness)) >= 1)
             mods.laser = (int)(rfrac() * (MODS_LASER_MAX + 1));
-        Fire_general_laser(nullptr, c->team, c->clk_pos.cx, c->clk_pos.cy, dir, mods);
+        Fire_general_laser(nullptr, c->team, c->pos, dir, mods);
         IFSOUND(sound = FIRE_LASER_SOUND);
         break;
     case CW_ECM:
-        Fire_general_ecm(-1, c->team, c->clk_pos.cx, c->clk_pos.cy);
+        Fire_general_ecm(-1, c->team, c->pos);
         c->item[ITEM_ECM]--;
         IFSOUND(sound = ECM_SOUND);
         break;
@@ -576,11 +581,11 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         break;
     case CW_TRANSPORTER:
         c->item[ITEM_TRANSPORTER]--;
-        if (Wrap_length(pl->pos.cx - c->clk_pos.cx, pl->pos.cy - c->clk_pos.cy) < TRANSPORTER_DISTANCE * CLICK)
+        if (Wrap_length(pl->pos.cx - c->pos.cx, pl->pos.cy - c->pos.cy) < TRANSPORTER_DISTANCE * CLICK)
         {
             int item = -1;
             long amount = 0;
-            Do_general_transporter(nullptr, c->clk_pos.cx, c->clk_pos.cy, target, &item, &amount);
+            Do_general_transporter(nullptr, c->pos, target, &item, &amount);
             if (item != -1)
                 Cannon_add_item(ind, item, amount);
             IFSOUND(sound = -1);
@@ -594,40 +599,38 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         /* use emergency thrusts to make extra big jets */
         if ((rfrac() * (c->item[ITEM_EMERGENCY_THRUST] + 1)) >= 1)
         {
-            Make_debris(
-                /* pos */ c->clk_pos.cx, c->clk_pos.cy,
-                /* vel */ 0, 0,
-                /* id */ NO_ID,
-                /* team */ c->team,
-                /* type */ OBJ_SPARK,
-                /* mass */ THRUST_MASS,
-                /* status */ GRAVITY | FROMCANNON,
-                /* color */ RED,
-                /* radius */ 8,
-                /* number */ 300, 700,
-                /* dir */ dir - 4 * (4 - options.cannonSmartness),
-                dir + 4 * (4 - options.cannonSmartness),
-                /* speed */ 0.1, speed * 4,
-                /* life */ 3, 20);
+            Make_debris(c->pos,
+                        zero_vel,
+                        NO_ID,
+                        c->team,
+                        OBJ_SPARK,
+                        THRUST_MASS,
+                        GRAVITY | FROMCANNON,
+                        RED,
+                        8,
+                        300, 700,
+                        dir - 4 * (4 - options.cannonSmartness),
+                        dir + 4 * (4 - options.cannonSmartness),
+                        0.1, speed * 4,
+                        3, 20);
             c->item[ITEM_EMERGENCY_THRUST]--;
         }
         else
         {
-            Make_debris(
-                /* pos */ c->clk_pos.cx, c->clk_pos.cy,
-                /* vel */ 0, 0,
-                /* id */ NO_ID,
-                /* team */ c->team,
-                /* type */ OBJ_SPARK,
-                /* mass */ THRUST_MASS,
-                /* status */ GRAVITY | FROMCANNON,
-                /* color */ RED,
-                /* radius */ 8,
-                /* number */ 150, 350,
-                /* dir */ dir - 3 * (4 - options.cannonSmartness),
-                dir + 3 * (4 - options.cannonSmartness),
-                /* speed */ 0.1, speed * 2,
-                /* life */ 3, 20);
+            Make_debris(c->pos,
+                        zero_vel,
+                        NO_ID,
+                        c->team,
+                        OBJ_SPARK,
+                        THRUST_MASS,
+                        GRAVITY | FROMCANNON,
+                        RED,
+                        8,
+                        150, 350,
+                        dir - 3 * (4 - options.cannonSmartness),
+                        dir + 3 * (4 - options.cannonSmartness),
+                        0.1, speed * 2,
+                        3, 20);
         }
         c->item[ITEM_FUEL]--;
         IFSOUND(sound = THRUST_SOUND);
@@ -642,7 +645,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int a_dir = dir + (4 - options.cannonSmartness) * (-c->item[ITEM_WIDEANGLE] + i);
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_CANNON_SHOT,
+            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT,
                               a_dir, mods, -1);
         }
         /* I'm not sure cannons should use rearshots.
@@ -652,12 +655,12 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int a_dir = (int)(dir + (RES / 2) + (4 - options.cannonSmartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(nullptr, c->team, 1, c->clk_pos.cx, c->clk_pos.cy, OBJ_CANNON_SHOT,
+            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT,
                               a_dir, mods, -1);
         }
     }
 
     /* finally, play sound effect */
     IFSOUND(if (sound != -1)
-                sound_play_sensors(c->clk_pos.cx, c->clk_pos.cy, sound));
+                sound_play_sensors(c->pos, sound));
 }

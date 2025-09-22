@@ -280,7 +280,7 @@ void Create_blockmap_from_polygons(void)
     {
         fuel_t *fs = Fuel_by_index(i);
 
-        blk = Clpos_to_blkpos(fs->clk_pos);
+        blk = Clpos_to_blkpos(fs->pos);
         World_set_block(blk, FUEL);
     }
 
@@ -288,7 +288,7 @@ void Create_blockmap_from_polygons(void)
     {
         asteroid_concentrator_t *aconc = AsteroidConc_by_index(i);
 
-        blk = Clpos_to_blkpos(aconc->clk_pos);
+        blk = Clpos_to_blkpos(aconc->pos);
         World_set_block(blk, ASTEROID_CONCENTRATOR);
     }
 
@@ -296,7 +296,7 @@ void Create_blockmap_from_polygons(void)
     {
         item_concentrator_t *iconc = ItemConc_by_index(i);
 
-        blk = Clpos_to_blkpos(iconc->clk_pos);
+        blk = Clpos_to_blkpos(iconc->pos);
         World_set_block(blk, ITEM_CONCENTRATOR);
     }
 
@@ -304,7 +304,7 @@ void Create_blockmap_from_polygons(void)
     {
         wormhole_t *wh = Wormhole_by_index(i);
 
-        blk = Clpos_to_blkpos(wh->clk_pos);
+        blk = Clpos_to_blkpos(wh->pos);
         World_set_block(blk, WORMHOLE);
     }
 
@@ -344,7 +344,7 @@ void Create_blockmap_from_polygons(void)
     {
         base_t *base = Base_by_index(i);
 
-        blk = Clpos_to_blkpos(base->clk_pos);
+        blk = Clpos_to_blkpos(base->pos);
         type = World_get_block(blk);
 
         /* don't put the base on top of a fuel or treasure */
@@ -362,7 +362,7 @@ void Create_blockmap_from_polygons(void)
         base_t *base = Base_by_index(i);
         bool done;
 
-        blk = Clpos_to_blkpos(base->clk_pos);
+        blk = Clpos_to_blkpos(base->pos);
         type = World_get_block(blk);
         done = false;
 
@@ -400,7 +400,7 @@ void Create_blockmap_from_polygons(void)
                 fatal("Create_blockmap_from_polygons:\n"
                       "Couldn't find any place on map to put base on "
                       "(%d, %d).",
-                      base->clk_pos.cx, base->clk_pos.cy);
+                      base->pos.cx, base->pos.cy);
         }
 
         assert(type == BASE_ATTRACTOR);
@@ -1146,7 +1146,7 @@ void Xpmap_find_map_object_teams(void)
         treasure_t *treasure = Treasure_by_index(i);
         team_t *teamp;
 
-        treasure->team = Find_closest_team(treasure->clk_pos);
+        treasure->team = Find_closest_team(treasure->pos);
         teamp = Team_by_index(treasure->team);
         // assert(teamp != NULL);
 
@@ -1161,7 +1161,7 @@ void Xpmap_find_map_object_teams(void)
     {
         target_t *targ = Target_by_index(i);
 
-        targ->team = Find_closest_team(targ->clk_pos);
+        targ->team = Find_closest_team(targ->pos);
     }
 
     if (options.teamCannons)
@@ -1170,7 +1170,7 @@ void Xpmap_find_map_object_teams(void)
         {
             cannon_t *cannon = Cannon_by_index(i);
 
-            cannon->team = Find_closest_team(cannon->clk_pos);
+            cannon->team = Find_closest_team(cannon->pos);
         }
     }
 
@@ -1178,7 +1178,7 @@ void Xpmap_find_map_object_teams(void)
     {
         fuel_t *fs = Fuel_by_index(i);
 
-        fs->team = Find_closest_team(fs->clk_pos);
+        fs->team = Find_closest_team(fs->pos);
     }
 }
 
@@ -1198,7 +1198,7 @@ void Xpmap_find_base_direction(void)
     {
         base_t *base = Base_by_index(i);
         int x, y, dir, att;
-        vector_t gravity = World_gravity(base->clk_pos);
+        vector_t gravity = World_gravity(base->pos);
 
         if (gravity.x == 0.0 && gravity.y == 0.0)
             /*
@@ -1216,8 +1216,8 @@ void Xpmap_find_base_direction(void)
         }
         att = -1;
 
-        x = CLICK_TO_BLOCK(base->clk_pos.cx);
-        y = CLICK_TO_BLOCK(base->clk_pos.cy);
+        x = CLICK_TO_BLOCK(base->pos.cx);
+        y = CLICK_TO_BLOCK(base->pos.cy);
 
         /* First check upwards attractor */
         if (y == world->y - 1 && world->block[x][0] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
@@ -1299,16 +1299,16 @@ static void Xpmap_treasure_to_polygon(int treasure_ind)
     polystyle = P_get_poly_id("treasure_ps");
     edgestyle = P_get_edge_id("treasure_es");
 
-    cx = treasure->clk_pos.cx - BLOCK_CLICKS / 2;
-    cy = treasure->clk_pos.cy - BLOCK_CLICKS / 2;
+    cx = treasure->pos.cx - BLOCK_CLICKS / 2;
+    cy = treasure->pos.cy - BLOCK_CLICKS / 2;
 
     pos[0].cx = cx;
     pos[0].cy = cy;
     pos[1].cx = cx + (BLOCK_CLICKS - 1);
     pos[1].cy = cy;
 
-    cx = treasure->clk_pos.cx;
-    cy = treasure->clk_pos.cy;
+    cx = treasure->pos.cx;
+    cy = treasure->pos.cy;
     /* -1 is to ensure the vertices are inside the block */
     r = (BLOCK_CLICKS / 2) - 1;
     /* number of points in half circle */
@@ -1379,17 +1379,17 @@ static void Xpmap_target_to_polygon(int target_ind)
 
     /* create target polygon */
     P_start_target(target_ind);
-    Xpmap_block_polygon(targ->clk_pos, ps, es, ds);
+    Xpmap_block_polygon(targ->pos, ps, es, ds);
     P_end_target();
 }
 
 static void Xpmap_cannon_polygon(cannon_t *cannon,
                                  int polystyle, int edgestyle)
 {
-    clpos_t pos[4], cpos = cannon->clk_pos;
+    clpos_t pos[4], cpos = cannon->pos;
     int i, ds;
 
-    pos[0] = cannon->clk_pos;
+    pos[0] = cannon->pos;
 
     cpos.cx = CLICK_TO_BLOCK(cpos.cx) * BLOCK_CLICKS;
     cpos.cy = CLICK_TO_BLOCK(cpos.cy) * BLOCK_CLICKS;
@@ -1463,7 +1463,7 @@ static void Xpmap_wormhole_to_polygon(int wormhole_ind)
     ps = P_get_poly_id("wormhole_ps");
     es = P_get_edge_id("wormhole_es");
 
-    wpos = wormhole->clk_pos;
+    wpos = wormhole->pos;
     r = WORMHOLE_RADIUS;
 
     for (i = 0; i < N; i++)
@@ -1491,7 +1491,7 @@ static void Xpmap_friction_area_to_polygon(int fa_ind)
     es = P_get_edge_id("fa_es");
 
     P_start_friction_area(fa_ind);
-    Xpmap_block_polygon(fa->clk_pos, ps, es, -1);
+    Xpmap_block_polygon(fa->pos, ps, es, -1);
     P_end_friction_area();
 }
 

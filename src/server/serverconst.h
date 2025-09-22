@@ -160,10 +160,10 @@
 
 #define THRUST_MASS 0.7
 
-#define ARMOR_MASS (options.ShipMass / 14)
+#define ARMOR_MASS (options.shipMass / 14)
 
 #define MAX_TANKS 8
-#define TANK_MASS (options.ShipMass / 10)
+#define TANK_MASS (options.shipMass / 10)
 #define TANK_CAP(n) (!(n) ? MAX_PLAYER_FUEL : (MAX_PLAYER_FUEL / 3))
 #define TANK_FUEL(n) ((TANK_CAP(n) * (5 + (randomMT() & 3))) / 32)
 #define TANK_REFILL_LIMIT (MIN_PLAYER_FUEL / 8)

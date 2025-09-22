@@ -1,12 +1,11 @@
-/* $Id: asteroid.h,v 5.4 2001/05/29 18:59:38 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-98 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
  *      Bert Gijsbers
  *      Dick Balaska
- *          Guido Koopman
+ *      Guido Koopman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +33,7 @@
 /* maximum size of asteroid */
 #define ASTEROID_MAX_SIZE 4
 /* mass of asteroid size 1 */
-#define ASTEROID_BASE_MASS (options.ShipMass * 3)
+#define ASTEROID_BASE_MASS (options.shipMass * 3)
 /* amount of mass lost in breaking, relative to asteroids size n - 1 */
 #define ASTEROID_DUST_MASS 0.25
 /* factor of above, relative to asteroid size n */
@@ -63,5 +62,27 @@
 void Break_asteroid(int ind);
 void Asteroid_update(void);
 std::vector<wireobject_t *> &Asteroid_get_list(void);
+
+extern shape_t asteroid_wire1;
+extern shape_t asteroid_wire2;
+extern shape_t asteroid_wire3;
+extern shape_t asteroid_wire4;
+
+static inline shape_t *Asteroid_get_shape_by_size(int size)
+{
+    switch (size)
+    {
+    case 1:
+        return &asteroid_wire1;
+    case 2:
+        return &asteroid_wire2;
+    case 3:
+        return &asteroid_wire3;
+    case 4:
+        return &asteroid_wire4;
+    default:
+        return NULL;
+    }
+}
 
 #endif

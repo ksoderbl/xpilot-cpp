@@ -197,7 +197,7 @@ void Cell_init_object(object_t *obj)
 
 void Cell_add_object(object_t *obj)
 {
-    blkpos_t bpos = Clicks_to_blkpos(obj->pos.cx, obj->pos.cy);
+    blkpos_t bpos = Clpos_to_blkpos(obj->pos);
     cell_node_t *obj_node_ptr, *cell_node_ptr;
     cell_node_t *prev, *next;
 
@@ -212,7 +212,7 @@ void Cell_add_object(object_t *obj)
     next->prev = prev;
     prev->next = next;
 
-    if (!World_contains_clicks(obj->pos.cx, obj->pos.cy))
+    if (!World_contains_clpos(obj->pos))
     {
         /* put obj on list with only itself. */
         obj_node_ptr->next = obj_node_ptr;
@@ -250,7 +250,7 @@ void Cell_remove_object(object_t *obj)
     obj_node_ptr->prev = obj_node_ptr;
 }
 
-void Cell_get_objects(int cx, int cy, // TODO: clpos_t pos, ?
+void Cell_get_objects(clpos_t pos,
                       int range,
                       int max_obj_count,
                       object_t ***obj_list, int *count_ptr)
@@ -260,8 +260,7 @@ void Cell_get_objects(int cx, int cy, // TODO: clpos_t pos, ?
     object_t *obj;
     cell_node_t *cell_node_ptr, *next;
     double dist;
-    // blkpos_t bpos = Clpos_to_blkpos(pos);
-    blkpos_t bpos = Clicks_to_blkpos(cx, cy);
+    blkpos_t bpos = Clpos_to_blkpos(pos);
 
     x = bpos.bx;
     y = bpos.by;

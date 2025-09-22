@@ -169,101 +169,99 @@ void Free_shots(void)
 }
 
 // TODO: Remove pixel positions, store only subpixel position (i.e. clicks)
-void Object_position_set_clicks(object_t *obj, int cx, int cy)
+void Object_position_set_clpos(object_t *obj, clpos_t pos)
 {
 #if 1
-    if (cx < 0)
+    if (pos.cx < 0)
     {
-        printf("BUG!  Illegal object position (cx < 0): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal object position (cx < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= world->cwidth)
+    if (pos.cx >= world->cwidth)
     {
-        printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy < 0)
+    if (pos.cy < 0)
     {
-        printf("BUG!  Illegal object position (cy < 0): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal oebject position (cy < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= world->cheight)
+    if (pos.cy >= world->cheight)
     {
-        printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
 #endif
-    obj->pos.cx = cx;
-    obj->pix_pos.x = CLICK_TO_PIXEL(cx);
-    obj->pos.cy = cy;
-    obj->pix_pos.y = CLICK_TO_PIXEL(cy);
+    obj->pos = pos;
+    obj->pix_pos.x = CLICK_TO_PIXEL(pos.cx);
+    obj->pix_pos.y = CLICK_TO_PIXEL(pos.cy);
 }
 
-void Object_position_init_clicks(object_t *obj, int cx, int cy)
+void Object_position_init_clpos(object_t *obj, clpos_t pos)
 {
-    Object_position_set_clicks(obj, cx, cy);
+    Object_position_set_clpos(obj, pos);
     Object_position_remember(obj);
 }
 
 void Player_position_restore(player_t *pl)
 {
-    Player_position_set_clicks(pl, pl->prevpos.cx, pl->prevpos.cy);
+    Player_position_set_clicks(pl, pl->prevpos);
 }
 
-void Player_position_set_clicks(player_t *pl, int cx, int cy)
+void Player_position_set_clicks(player_t *pl, clpos_t pos)
 {
 #if 1
-    if (cx < 0)
+    if (pos.cx < 0)
     {
-        printf("BUG!  Illegal player position (cx < 0): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal player position (cx < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cx >= world->cwidth)
+    if (pos.cx >= world->cwidth)
     {
-        printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy < 0)
+    if (pos.cy < 0)
     {
-        printf("BUG!  Illegal player position (cy < 0): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal player position (cy < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (cy >= world->cheight)
+    if (pos.cy >= world->cheight)
     {
-        printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", cx, cy);
+        printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }
 #endif
-    pl->pos.cx = cx;
-    pl->pix_pos.x = CLICK_TO_PIXEL(cx);
-    pl->pos.cy = cy;
-    pl->pix_pos.y = CLICK_TO_PIXEL(cy);
+    pl->pos = pos;
+    pl->pix_pos.x = CLICK_TO_PIXEL(pos.cx);
+    pl->pix_pos.y = CLICK_TO_PIXEL(pos.cy);
 }
 
-void Player_position_init_clicks(player_t *pl, int cx, int cy)
+void Player_position_init_clpos(player_t *pl, clpos_t pos)
 {
-    Player_position_set_clicks(pl, cx, cy);
+    Player_position_set_clicks(pl, pos);
     Player_position_remember(pl);
 }
 
 void Player_position_limit(player_t *pl)
 {
-    int cx = pl->pos.cx, ocx = cx;
-    int cy = pl->pos.cy, ocy = cy;
+    clpos_t pos = pl->pos;
+    clpos_t opos = pos;
 
-    LIMIT(cx, 0, world->cwidth - 1);
-    LIMIT(cy, 0, world->cheight - 1);
-    if (cx != ocx || cy != ocy)
+    LIMIT(pos.cx, 0, world->cwidth - 1);
+    LIMIT(pos.cy, 0, world->cheight - 1);
+    if (pos.cx != opos.cx || pos.cy != opos.cy)
     {
-        Player_position_set_clicks(pl, cx, cy);
+        Player_position_set_clicks(pl, pos);
     }
 }
 

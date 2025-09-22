@@ -734,7 +734,7 @@ static void Robot_create(void)
     robot->robot_data_ptr = new_data;
 
     strlcpy(robot->name, rob->name, MAX_CHARS);
-    strlcpy(robot->username, options.robotRealName, MAX_CHARS);
+    strlcpy(robot->username, options.robotUserName, MAX_CHARS);
     strlcpy(robot->hostname, options.robotHostName, MAX_CHARS);
 
     robot->color = WHITE;

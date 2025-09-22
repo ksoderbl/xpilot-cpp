@@ -67,8 +67,8 @@ static void Refuel(int ind)
         if (world->block[world->fuels[i].blk_pos.x]
                         [world->fuels[i].blk_pos.y] == FUEL)
         {
-            l = Wrap_length(pl->pos.cx - world->fuels[i].clk_pos.cx,
-                            pl->pos.cy - world->fuels[i].clk_pos.cy) /
+            l = Wrap_length(pl->pos.cx - world->fuels[i].pos.cx,
+                            pl->pos.cy - world->fuels[i].pos.cy) /
                 CLICK;
             if (BIT(pl->used, HAS_REFUEL) == 0 || l < dist)
             {
@@ -95,7 +95,7 @@ static void Repair(int ind)
     {
         if (targ->team == pl->team && targ->dead_time <= 0)
         {
-            l = Wrap_length(pl->pos.cx - targ->clk_pos.cx, pl->pos.cy - targ->clk_pos.cy) / CLICK;
+            l = Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK;
             if (BIT(pl->used, HAS_REPAIR) == 0 || l < dist)
             {
                 SET_BIT(pl->used, HAS_REPAIR);

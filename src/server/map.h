@@ -108,7 +108,7 @@ typedef struct fuel
 {
     ipos_t blk_pos;
     position_t pix_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     long fuel;
     unsigned conn_mask;
     long last_change;
@@ -118,14 +118,14 @@ typedef struct fuel
 typedef struct grav
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     double force;
 } grav_t;
 
 typedef struct base
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     int dir;
     unsigned short team;
 } base_t;
@@ -140,7 +140,7 @@ typedef struct cannon
 {
     ipos_t blk_pos;
     position_t pix_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     int dir;
     int dead_time;
     unsigned conn_mask;
@@ -193,7 +193,7 @@ typedef enum
 typedef struct
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     int lastdest,   /* last destination wormhole */
         countdown;  /* if >0 warp to lastdest else random */
     bool temporary; /* wormhole was left by hyperjump */
@@ -206,7 +206,7 @@ typedef struct
 typedef struct treasure
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     bool have;           /* true if this treasure has ball in it */
     unsigned short team; /* team of this treasure */
     int destroyed;       /* how often this treasure destroyed */
@@ -216,7 +216,7 @@ typedef struct treasure
 typedef struct target
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     unsigned short team;
     int dead_time;
     int damage;
@@ -239,18 +239,18 @@ typedef struct team
 typedef struct item_concentrator
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
 } item_concentrator_t;
 
 typedef struct asteroid_concentrator
 {
     ipos_t blk_pos;
-    clpos_t clk_pos;
+    clpos_t pos;
 } asteroid_concentrator_t;
 
 typedef struct friction_area
 {
-    clpos_t clk_pos;
+    clpos_t pos;
     double friction_setting; /* Setting from map */
     double friction;         /* Changes with gameSpeed */
     int group;
@@ -260,7 +260,7 @@ typedef struct friction_area
 typedef struct
 {
     double size;
-    clpos_t clk_pos;
+    clpos_t pos;
     int id;
 } ecm_t;
 
@@ -269,8 +269,7 @@ typedef struct
  */
 typedef struct
 {
-    // position_t pos;
-    clpos_t clk_pos;
+    clpos_t pos;
     int target;
     int id;
     double count;

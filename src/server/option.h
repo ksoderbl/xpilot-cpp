@@ -31,7 +31,7 @@ typedef struct options
 {
     list_t expandList;     /* List of predefined settings. */
     double Gravity;        /* Power of gravity */
-    double ShipMass;       /* Default mass of ship */
+    double shipMass;       /* Default mass of ship */
     double ballMass;       /* Default mass of balls */
     double ShotsMass;      /* Default mass of shots */
     double ShotsSpeed;     /* Default speed of shots */
@@ -48,8 +48,8 @@ typedef struct options
     int robotTeam;         /* Team for robots */
     bool restrictRobots;   /* Restrict robots to robotTeam? */
     bool reserveRobotTeam; /* Allow only robots in robotTeam? */
-    int ShotsMax;          /* Max shots pr. player */
-    bool ShotsGravity;     /* Shots affected by gravity */
+    int maxPlayerShots;    /* Max shots pr. player */
+    bool shotsGravity;     /* Shots affected by gravity */
     int fireRepeatRate;    /* Frames per autorepeat fire (0=off) */
 
     bool RawMode;      /* Let robots live even if there */
@@ -263,10 +263,10 @@ typedef struct options
     int clientPortStart;  /* First UDP port for clients */
     int clientPortEnd;    /* Last one (these are for firewalls) */
 
-    char *robotRealName; /* Real name for robot */
+    char *robotUserName; /* Real name for robot */
     char *robotHostName; /* Host name for robot */
 
-    char *tankRealName;     /* Real name for tank */
+    char *tankUserName;     /* Real name for tank */
     char *tankHostName;     /* Host name for tank */
     int tankScoreDecrement; /* Amount by which the tank's score */
                             /* is decreased from the player's */

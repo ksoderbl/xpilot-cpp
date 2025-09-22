@@ -96,15 +96,15 @@ static inline blkpos_t Clpos_to_blkpos(clpos_t pos)
     return bpos;
 }
 
-static inline blkpos_t Clicks_to_blkpos(int cx, int cy)
-{
-    blkpos_t bpos;
+// static inline blkpos_t Clicks_to_blkpos(int cx, int cy)
+// {
+//     blkpos_t bpos;
 
-    bpos.bx = CLICK_TO_BLOCK(cx);
-    bpos.by = CLICK_TO_BLOCK(cy);
+//     bpos.bx = CLICK_TO_BLOCK(cx);
+//     bpos.by = CLICK_TO_BLOCK(cy);
 
-    return bpos;
-}
+//     return bpos;
+// }
 
 #define BLOCK_CENTER(B) ((int)((B) * BLOCK_CLICKS) + BLOCK_CLICKS / 2)
 

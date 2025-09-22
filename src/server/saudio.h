@@ -25,6 +25,8 @@
 #ifndef SAUDIO_H
 #define SAUDIO_H
 
+#define SOUND 1
+
 #if defined(SERVER_SOUND) && defined(SERVER) && !defined(SOUND)
 /* Enable only sound support in the server, not in the client. */
 #define SOUND 1
@@ -37,13 +39,13 @@
 /*
  * Define like this to avoid having to put #ifdef SOUND all over the place.
  */
-#define sound_player_init(player) ((player)->audio = NULL)
-#define sound_player_onoff(player, onoff)
-#define sound_play_player(player, index)
+#define sound_player_init(pl) ((pl)->audio = NULL)
+#define sound_player_onoff(pl, onoff)
+#define sound_play_player(pl, index)
 #define sound_play_all(index)
-#define sound_play_sensors(cx, cy, index)
-#define sound_play_queued(player)
-#define sound_close(player)
+#define sound_play_sensors(pos, index)
+#define sound_play_queued(pl)
+#define sound_close(pl)
 
 #else /* SOUND */
 
@@ -53,7 +55,7 @@ int sound_player_init(player_t *pl);
 void sound_player_onoff(player_t *pl, bool on);
 void sound_play_player(player_t *pl, int index);
 void sound_play_all(int index);
-void sound_play_sensors(int cx, int cy, int index);
+void sound_play_sensors(clpos_t pos, int index);
 void sound_play_queued(player_t *pl);
 void sound_close(player_t *pl);
 

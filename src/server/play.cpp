@@ -83,7 +83,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     if (!somebody_flag)
     {
         SCORE(pl, Rate(pl->score, CANNON_SCORE) / 2,
-              tt->clk_pos.cx, tt->clk_pos.cy, "Treasure:");
+              tt->pos, "Treasure:");
         return 0;
     }
 
@@ -102,13 +102,13 @@ int Punish_team(int ind, int t_destroyed, int t_target)
             continue;
         if (PlayersArray[i]->team == td->team)
         {
-            SCORE(PlayersArray[i], -sc, tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+            SCORE(PlayersArray[i], -sc, tt->pos, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(PlayersArray[i]->status, KILLED);
         }
         else if (PlayersArray[i]->team == tt->team &&
                  (PlayersArray[i]->team != TEAM_NOT_SET || i == ind))
-            SCORE(PlayersArray[i], (i == ind ? 3 * por : 2 * por), tt->clk_pos.cx, tt->clk_pos.cy, "Treasure: ");
+            SCORE(PlayersArray[i], (i == ind ? 3 * por : 2 * por), tt->pos, "Treasure: ");
     }
 
     if (options.treasureKillTeam)
@@ -127,39 +127,30 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
 /* Create debris particles */
 void Make_debris(
-    /* pos.cx, pos.cy */ int cx, int cy,
-    /* vel.x, vel.y   */ double velx, double vely,
-    /* owner id       */ int id,
-    /* owner team     */ unsigned short team,
-    /* type           */ int type,
-    /* mass           */ double mass,
-    /* status         */ long status,
-    /* color          */ int color,
-    /* radius         */ int radius,
-    /* min,max debris */ int min_debris, int max_debris,
-    /* min,max dir    */ int min_dir, int max_dir,
-    /* min,max speed  */ double min_speed, double max_speed,
-    /* min,max life   */ int min_life, int max_life)
+    clpos_t pos,
+    vector_t vel,
+    int id,
+    unsigned short team,
+    int type,
+    double mass,
+    long status,
+    int color,
+    int radius,
+    int min_debris, int max_debris,
+    int min_dir, int max_dir,
+    double min_speed, double max_speed,
+    int min_life, int max_life)
 {
     object_t *debris;
     int i, num_debris, life;
     modifiers_t mods;
 
     if (BIT(world->rules->mode, WRAP_PLAY))
-    {
-        if (cx < 0)
-            cx += world->cwidth;
-        else if (cx >= world->cwidth)
-            cx -= world->cwidth;
-        if (cy < 0)
-            cy += world->cheight;
-        else if (cy >= world->cheight)
-            cy -= world->cheight;
-    }
-    if (cx < 0 || cx >= world->cwidth || cy < 0 || cy >= world->cheight)
-    {
+        pos = World_wrap_clpos(pos);
+
+    if (!World_contains_clpos(pos))
         return;
-    }
+
     if (max_life < min_life)
         max_life = min_life;
     if (options.ShotsLife >= FPS)
@@ -186,7 +177,7 @@ void Make_debris(
     if (type == OBJ_SHOT)
     {
         SET_BIT(mods.warhead, CLUSTER);
-        if (!options.ShotsGravity)
+        if (!options.shotsGravity)
         {
             CLR_BIT(status, GRAVITY);
         }
@@ -203,22 +194,20 @@ void Make_debris(
         int dir, dirplus;
 
         if ((debris = Object_allocate()) == NULL)
-        {
             break;
-        }
 
         debris->color = color;
         debris->id = id;
         debris->team = team;
-        Object_position_init_clicks(debris, cx, cy);
+        Object_position_init_clpos(debris, pos);
         dir = MOD2(min_dir + (int)(rfrac() * (max_dir - min_dir)), RES);
         dirplus = MOD2(dir + 1, RES);
         diroff = rfrac();
         dx = tcos(dir) + (tcos(dirplus) - tcos(dir)) * diroff;
         dy = tsin(dir) + (tsin(dirplus) - tsin(dir)) * diroff;
         speed = min_speed + rfrac() * (max_speed - min_speed);
-        debris->vel.x = velx + dx * speed;
-        debris->vel.y = vely + dy * speed;
+        debris->vel.x = vel.x + dx * speed;
+        debris->vel.y = vel.y + dy * speed;
         debris->acc.x = 0;
         debris->acc.y = 0;
         debris->mass = mass;

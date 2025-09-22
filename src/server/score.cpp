@@ -40,10 +40,10 @@
 #include "netserver.h"
 #include "player.h"
 
-void SCORE(player_t *pl, int points, int cx, int cy, const char *msg)
+void SCORE(player_t *pl, int points, clpos_t pos, const char *msg)
 {
-    int x = CLICK_TO_BLOCK(cx);
-    int y = CLICK_TO_BLOCK(cy);
+    int x = CLICK_TO_BLOCK(pos.cx);
+    int y = CLICK_TO_BLOCK(pos.cy);
 
     pl->score += (points);
 
@@ -92,6 +92,6 @@ void Score_players(int winner, int winner_score, char *winner_msg,
         if (loser_score > 0)
             loser_score = -loser_score;
     }
-    SCORE(wpl, winner_score, lpl->pos.cx, lpl->pos.cy, winner_msg);
-    SCORE(lpl, loser_score, lpl->pos.cx, lpl->pos.cy, loser_msg);
+    SCORE(wpl, winner_score, lpl->pos, winner_msg);
+    SCORE(lpl, loser_score, lpl->pos, loser_msg);
 }

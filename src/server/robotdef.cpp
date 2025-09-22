@@ -1418,7 +1418,7 @@ static int Rank_item_value(int ind, Item_t itemtype)
 
         case ITEM_REARSHOT:
         case ITEM_WIDEANGLE:
-            if (options.ShotsMax <= 0 || options.ShotsLife <= 0 || !options.playerKillings)
+            if (options.maxPlayerShots <= 0 || options.ShotsLife <= 0 || !options.playerKillings)
             {
                 return ROBOT_HANDY_ITEM;
             }
@@ -1428,7 +1428,7 @@ static int Rank_item_value(int ind, Item_t itemtype)
             }
 
         case ITEM_MISSILE:
-            if (options.ShotsMax <= 0 || options.ShotsLife <= 0 || !options.playerKillings)
+            if (options.maxPlayerShots <= 0 || options.ShotsLife <= 0 || !options.playerKillings)
             {
                 return ROBOT_IGNORE_ITEM;
             }
@@ -1480,8 +1480,8 @@ static bool Ball_handler(int ind)
         if ((BIT(pl->have, HAS_BALL) || pl->ball) &&
             world->treasures[i].team == pl->team)
         {
-            dist = Wrap_length(world->treasures[i].clk_pos.cx - pl->pos.cx,
-                               world->treasures[i].clk_pos.cy - pl->pos.cy) /
+            dist = Wrap_length(world->treasures[i].pos.cx - pl->pos.cx,
+                               world->treasures[i].pos.cy - pl->pos.cy) /
                    CLICK;
             if (dist < closest_t_dist)
             {
@@ -1494,8 +1494,8 @@ static bool Ball_handler(int ind)
                  !BIT(pl->have, HAS_BALL) && !pl->ball &&
                  world->treasures[i].have)
         {
-            dist = Wrap_length(world->treasures[i].clk_pos.cx - pl->pos.cx,
-                               world->treasures[i].clk_pos.cy - pl->pos.cy) /
+            dist = Wrap_length(world->treasures[i].pos.cx - pl->pos.cx,
+                               world->treasures[i].pos.cy - pl->pos.cy) /
                    CLICK;
             if (dist < closest_nt_dist)
             {
@@ -1804,7 +1804,7 @@ static void Robot_default_play_check_objects(int ind,
     if (options.asteroidCollisionMayKill)
         killing_shots |= OBJ_ASTEROID;
 
-    Cell_get_objects(pl->pos.cx, pl->pos.cy,
+    Cell_get_objects(pl->pos,
                      (int)(Visibility_distance / BLOCK_SZ), max_objs,
                      &obj_list, &obj_count);
 

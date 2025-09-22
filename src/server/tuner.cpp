@@ -47,7 +47,7 @@ void tuner_shotsmax(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        PlayersArray[i]->shot_max = options.ShotsMax;
+        PlayersArray[i]->shot_max = options.maxPlayerShots;
     }
 }
 
@@ -57,7 +57,7 @@ void tuner_shipmass(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        PlayersArray[i]->emptymass = options.ShipMass;
+        PlayersArray[i]->emptymass = options.shipMass;
     }
 }
 
@@ -178,7 +178,7 @@ void tuner_teamcannons(void)
     {
         for (i = 0; i < world->NumCannons; i++)
         {
-            team = Find_closest_team(world->cannons[i].clk_pos);
+            team = Find_closest_team(world->cannons[i].pos);
             if (team == TEAM_NOT_SET)
             {
                 error("Couldn't find a matching team for the cannon.");

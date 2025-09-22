@@ -195,8 +195,8 @@ struct player
 
 extern player_t **PlayersArray;
 
-void Player_position_set_clicks(player_t *pl, int cx, int cy);
-void Player_position_init_clicks(player_t *pl, int cx, int cy);
+void Player_position_set_clicks(player_t *pl, clpos_t pos);
+void Player_position_init_clpos(player_t *pl, clpos_t pos);
 
 void Player_position_restore(player_t *pl);
 void Player_position_limit(player_t *pl);

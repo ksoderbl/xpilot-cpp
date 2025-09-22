@@ -64,6 +64,7 @@
 void Place_mine(int ind)
 {
     player_t *pl = PlayersArray[ind];
+    vector_t zero_vel = {0.0, 0.0};
 
     if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
     {
@@ -76,15 +77,13 @@ void Place_mine(int ind)
         return;
     }
 
-    Place_general_mine(ind, pl->team, 0,
-                       pl->pos.cx, pl->pos.cy, 0.0, 0.0, pl->mods);
+    Place_general_mine(ind, pl->team, 0, pl->pos, zero_vel, pl->mods);
 }
 
 void Place_moving_mine(int ind)
 {
     player_t *pl = PlayersArray[ind];
-    double vx = pl->vel.x;
-    double vy = pl->vel.y;
+    vector_t vel = pl->vel;
 
     if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
     {
@@ -97,24 +96,22 @@ void Place_moving_mine(int ind)
         {
             if (pl->velocity >= 1)
             {
-                vx *= (options.minMineSpeed / pl->velocity);
-                vy *= (options.minMineSpeed / pl->velocity);
+                vel.x *= (options.minMineSpeed / pl->velocity);
+                vel.y *= (options.minMineSpeed / pl->velocity);
             }
             else
             {
-                vx = options.minMineSpeed * tcos(pl->dir);
-                vy = options.minMineSpeed * tsin(pl->dir);
+                vel.x = options.minMineSpeed * tcos(pl->dir);
+                vel.y = options.minMineSpeed * tsin(pl->dir);
             }
         }
     }
 
-    Place_general_mine(ind, pl->team, GRAVITY,
-                       pl->pos.cx, pl->pos.cy, vx, vy, pl->mods);
+    Place_general_mine(ind, pl->team, GRAVITY, pl->pos, vel, pl->mods);
 }
 
 void Place_general_mine(int ind, unsigned short team, long status,
-                        int cx, int cy,
-                        double vx, double vy, modifiers_t mods)
+                        clpos_t pos, vector_t vel, modifiers_t mods)
 {
     char msg[MSG_LEN];
     player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]);
@@ -126,18 +123,11 @@ void Place_general_mine(int ind, unsigned short team, long status,
 
     if (NumObjs + mods.mini >= MAX_TOTAL_SHOTS)
         return;
+
     if (BIT(world->rules->mode, WRAP_PLAY))
-    {
-        if (cx < 0)
-            cx += world->cwidth;
-        else if (cx >= world->cwidth)
-            cx -= world->cwidth;
-        if (cy < 0)
-            cy += world->cheight;
-        else if (cy >= world->cheight)
-            cy -= world->cheight;
-    }
-    if (cx < 0 || cx >= world->cwidth || cy < 0 || cy >= world->cheight)
+        pos = World_wrap_clpos(pos);
+
+    if (!World_contains_clpos(pos))
         return;
 
     if (pl && BIT(pl->status, KILLED))
@@ -207,8 +197,8 @@ void Place_general_mine(int ind, unsigned short team, long status,
             {
                 if (i != ind && !Team_immune(PlayersArray[i]->id, pl->id) && !Player_is_tank(PlayersArray[i]))
                 {
-                    int dx = CLICK_TO_PIXEL(cx - world->bases[PlayersArray[i]->home_base].clk_pos.cx);
-                    int dy = CLICK_TO_PIXEL(cy - world->bases[PlayersArray[i]->home_base].clk_pos.cy);
+                    int dx = CLICK_TO_PIXEL(pos.cx - world->bases[PlayersArray[i]->home_base].pos.cx);
+                    int dy = CLICK_TO_PIXEL(pos.cy - world->bases[PlayersArray[i]->home_base].pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -230,8 +220,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
         }
         else
         {
-            sound_play_sensors(pl->pos.cx, pl->pos.cy,
-                               BIT(status, GRAVITY) ? DROP_MOVING_MINE_SOUND : DROP_MINE_SOUND);
+            sound_play_sensors(pl->pos, BIT(status, GRAVITY) ? DROP_MOVING_MINE_SOUND : DROP_MINE_SOUND);
         }
     }
 
@@ -252,7 +241,7 @@ void Place_general_mine(int ind, unsigned short team, long status,
         mine->id = (pl ? pl->id : NO_ID);
         mine->team = team;
         mine->owner = mine->id;
-        Object_position_init_clicks(OBJ_PTR(mine), cx, cy);
+        Object_position_init_clpos(OBJ_PTR(mine), pos);
         if (minis > 1)
         {
             int space = RES / minis;
@@ -286,8 +275,8 @@ void Place_general_mine(int ind, unsigned short team, long status,
             mine->spread_left = 0;
         }
         mine->vel = mv;
-        mine->vel.x += vx * MINE_SPEED_FACT;
-        mine->vel.y += vy * MINE_SPEED_FACT;
+        mine->vel.x += vel.x * MINE_SPEED_FACT;
+        mine->vel.y += vel.y * MINE_SPEED_FACT;
         mine->mass = mass / minis;
         mine->life = life / minis;
         mine->mods = mods;
@@ -371,7 +360,7 @@ void Make_treasure_ball(int treasure)
     ball->vel.y = 0; /* longer to the ground */
     ball->acc.x = 0;
     ball->acc.y = 0;
-    Object_position_init_clicks(OBJ_PTR(ball), t->clk_pos.cx, t->clk_pos.cy);
+    Object_position_init_clpos(OBJ_PTR(ball), t->pos);
     ball->id = NO_ID;
     ball->owner = NO_ID;
     ball->team = t->team;
@@ -468,10 +457,11 @@ void Fire_main_shot(player_t *pl, int type, int dir)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x);
-    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
+    clpos_t pos;
+    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x);
+    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_shot(player_t *pl, int type, int dir)
@@ -479,8 +469,7 @@ void Fire_shot(player_t *pl, int type, int dir)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    Fire_general_shot(pl, pl->team, 0, pl->pos.cx, pl->pos.cy,
-                      type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, pl->pos, type, dir, pl->mods, -1);
 }
 
 void Fire_left_shot(player_t *pl, int type, int dir, int gun)
@@ -488,10 +477,11 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].x);
-    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].y);
+    clpos_t pos;
+    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].x);
+    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_right_shot(player_t *pl, int type, int dir, int gun)
@@ -499,10 +489,11 @@ void Fire_right_shot(player_t *pl, int type, int dir, int gun)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].x);
-    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].y);
+    clpos_t pos;
+    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].x);
+    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
@@ -510,10 +501,11 @@ void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].x);
-    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].y);
+    clpos_t pos;
+    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].x);
+    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
@@ -521,15 +513,15 @@ void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].x);
-    int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].y);
+    clpos_t pos;
+    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].x);
+    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, cx, cy, type, dir, pl->mods, -1);
+    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
-                       int cx, int cy,
-                       int type, int dir,
+                       clpos_t pos, int type, int dir,
                        modifiers_t mods, int target)
 {
     char msg[MSG_LEN];
@@ -588,10 +580,10 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
             if (pl->fuel.sum < -ED_SHOT)
                 return;
             Add_fuel(&(pl->fuel), (long)(ED_SHOT));
-            sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_SHOT_SOUND);
+            sound_play_sensors(pl->pos, FIRE_SHOT_SOUND);
             pl->shots++;
         }
-        if (!options.ShotsGravity)
+        if (!options.shotsGravity)
         {
             CLR_BIT(status, GRAVITY);
         }
@@ -688,7 +680,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
 #endif /* HEAT_LOCK */
             if (pl)
             {
-                sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_HEAT_SHOT_SOUND);
+                sound_play_sensors(pl->pos, FIRE_HEAT_SHOT_SOUND);
             }
             max_speed = SMART_SHOT_MAX_SPEED * HEAT_SPEED_FACT;
             turnspeed = SMART_TURNSPEED * HEAT_SPEED_FACT;
@@ -735,9 +727,9 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
                 sound_play_all(NUKE_LAUNCH_SOUND);
             }
             else if (type == OBJ_SMART_SHOT)
-                sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_SMART_SHOT_SOUND);
+                sound_play_sensors(pl->pos, FIRE_SMART_SHOT_SOUND);
             else if (type == OBJ_TORPEDO)
-                sound_play_sensors(pl->pos.cx, pl->pos.cy, FIRE_TORPEDO_SOUND);
+                sound_play_sensors(pl->pos, FIRE_TORPEDO_SOUND);
         }
         break;
     }
@@ -987,8 +979,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
             MISSILE_PTR(shot)->max_speed = max_speed;
         }
 
-        shotpos.cx = cx;
-        shotpos.cy = cy;
+        shotpos = pos;
         if (pl && type != OBJ_SHOT)
         {
             if (r == on_this_rack)
@@ -1013,7 +1004,7 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         if (shotpos.cx < 0 || shotpos.cx >= world->cwidth || shotpos.cy < 0 || shotpos.cy >= world->cheight)
             continue;
 
-        Object_position_init_clicks(shot, shotpos.cx, shotpos.cy);
+        Object_position_init_clpos(shot, shotpos);
 
         if (type == OBJ_SHOT || !pl)
             angle = 0.0;
@@ -1151,6 +1142,7 @@ void Delete_shot(int ind)
     int type, color;
     double modv, speed_modv, life_modv, num_modv;
     double mass;
+    vector_t zero_vel = {0.0, 0.0};
 
     switch (shot->type)
     {
@@ -1194,21 +1186,21 @@ void Delete_shot(int ind)
             addBall = 1;
             if (BIT(ball->status, NOEXPLOSION))
                 break;
-            sound_play_sensors(ball->pos.cx, ball->pos.cy, EXPLODE_BALL_SOUND);
+            sound_play_sensors(ball->pos, EXPLODE_BALL_SOUND);
             Make_debris(
-                /* pos.cx, pos.cy */ ball->prevpos.cx, ball->prevpos.cy,
-                /* vel.x, vel.y   */ ball->vel.x, ball->vel.y,
-                /* owner id       */ ball->id,
-                /* owner team     */ ball->team,
-                /* kind           */ OBJ_DEBRIS,
-                /* mass           */ DEBRIS_MASS,
-                /* status         */ GRAVITY,
-                /* color          */ RED,
-                /* radius         */ 8,
-                /* min,max debris */ 10, 20,
-                /* min,max dir    */ 0, RES - 1,
-                /* min,max speed  */ 10, 50,
-                /* min,max life   */ 10, 2 * (FPS + 15));
+                ball->prevpos,
+                ball->vel,
+                ball->id,
+                ball->team,
+                OBJ_DEBRIS,
+                DEBRIS_MASS,
+                GRAVITY,
+                RED,
+                8,
+                10, 20,
+                0, RES - 1,
+                10, 50,
+                10, 2 * (FPS + 15));
         }
         break;
         /* Shots related to a player. */
@@ -1232,9 +1224,9 @@ void Delete_shot(int ind)
             sound_play_all(NUKE_EXPLOSION_SOUND);
 
         else if (BIT(shot->type, OBJ_MINE))
-            sound_play_sensors(shot->pos.cx, shot->pos.cy, MINE_EXPLOSION_SOUND);
+            sound_play_sensors(shot->pos, MINE_EXPLOSION_SOUND);
         else
-            sound_play_sensors(shot->pos.cx, shot->pos.cy, OBJECT_EXPLOSION_SOUND);
+            sound_play_sensors(shot->pos, OBJECT_EXPLOSION_SOUND);
 
         if (BIT(shot->mods.warhead, CLUSTER))
         {
@@ -1299,23 +1291,22 @@ void Delete_shot(int ind)
         if (BIT(shot->type, OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_SMART_SHOT))
             intensity /= (1 + shot->mods.power);
 
-        Make_debris(
-            /* pos.cx, pos.cy */ shot->prevpos.cx, shot->prevpos.cy,
-            /* vel.x, vel.y   */ shot->vel.x, shot->vel.y,
-            /* owner id       */ shot->id,
-            /* owner team     */ shot->team,
-            /* kind           */ type,
-            /* mass           */ mass,
-            /* status         */ status,
-            /* color          */ color,
-            /* radius         */ 6,
-            /* min,max debris */ (int)(0.20f * intensity * num_modv),
-            (int)(0.30f * intensity * num_modv),
-            /* min,max dir    */ 0, RES - 1,
-            /* min,max speed  */ 20 * speed_modv,
-            (intensity >> 2) * speed_modv,
-            /* min,max life   */ (int)(8 * life_modv),
-            (int)((intensity >> 1) * life_modv));
+        Make_debris(shot->prevpos,
+                    shot->vel,
+                    shot->id,
+                    shot->team,
+                    type,
+                    mass,
+                    status,
+                    color,
+                    6,
+                    (int)(0.20f * intensity * num_modv),
+                    (int)(0.30f * intensity * num_modv),
+                    0, RES - 1,
+                    20 * speed_modv,
+                    (intensity >> 2) * speed_modv,
+                    (int)(8 * life_modv),
+                    (int)((intensity >> 1) * life_modv));
         break;
 
     case OBJ_SHOT:
@@ -1393,13 +1384,11 @@ void Delete_shot(int ind)
         {
             long gravity_status = ((rfrac() < 0.5f) ? GRAVITY : 0);
             Place_general_mine(-1, TEAM_NOT_SET, gravity_status,
-                               shot->pos.cx, shot->pos.cy,
-                               0.0, 0.0, mods);
+                               shot->pos, zero_vel, mods);
         }
         else if (addHeat)
             Fire_general_shot(nullptr, TEAM_NOT_SET, 0,
-                              shot->pos.cx, shot->pos.cy,
-                              OBJ_HEAT_SHOT, (int)(rfrac() * RES),
+                              shot->pos, OBJ_HEAT_SHOT, (int)(rfrac() * RES),
                               mods, -1);
     }
     else if (addBall)
@@ -1417,17 +1406,18 @@ void Fire_laser(player_t *pl)
             CLR_BIT(pl->used, HAS_LASER);
         else
         {
-            int cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x + pl->vel.x);
-            int cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
-            cx = WRAP_XCLICK(cx);
-            cy = WRAP_YCLICK(cy);
-            if (cx >= 0 && cx < world->cwidth && cy >= 0 && cy < world->cheight)
-                Fire_general_laser(pl, pl->team, cx, cy, pl->dir, pl->mods);
+            clpos_t pos;
+            pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x + pl->vel.x);
+            pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
+            pos.cx = WRAP_XCLICK(pos.cx);
+            pos.cy = WRAP_YCLICK(pos.cy);
+            if (World_contains_clpos(pos))
+                Fire_general_laser(pl, pl->team, pos, pl->dir, pl->mods);
         }
     }
 }
 
-void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy,
+void Fire_general_laser(player_t *pl, unsigned short team, clpos_t pos,
                         int dir, modifiers_t mods)
 {
     pulse_t *pulse;
@@ -1436,7 +1426,7 @@ void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy,
     if (pl)
     {
         Add_fuel(&(pl->fuel), (long)ED_LASER);
-        sound_play_sensors(cx, cy, FIRE_LASER_SOUND);
+        sound_play_sensors(pos, FIRE_LASER_SOUND);
         life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
     }
     else
@@ -1456,8 +1446,8 @@ void Fire_general_laser(player_t *pl, unsigned short team, int cx, int cy,
     pulse->life = life;
     pulse->mods = mods;
     pulse->refl = false;
-    pulse->pix_pos.x = CLICK_TO_FLOAT(cx) - PULSE_SPEED * tcos(dir);
-    pulse->pix_pos.y = CLICK_TO_FLOAT(cy) - PULSE_SPEED * tsin(dir);
+    pulse->pix_pos.x = CLICK_TO_FLOAT(pos.cx) - PULSE_SPEED * tcos(dir);
+    pulse->pix_pos.y = CLICK_TO_FLOAT(pos.cy) - PULSE_SPEED * tsin(dir);
     NumPulses++;
     if (pl)
         pl->num_pulses++;

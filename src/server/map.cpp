@@ -947,8 +947,8 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].blk_pos.y = y;
                     world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].clk_pos.cx = cx;
-                    world->cannons[world->NumCannons].clk_pos.cy = (y + 0.333) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].pos.cx = cx;
+                    world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
@@ -963,8 +963,8 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].blk_pos.y = y;
                     world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].clk_pos.cx = (x + 0.667) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].clk_pos.cy = cy;
+                    world->cannons[world->NumCannons].pos.cx = (x + 0.667) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].pos.cy = cy;
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
@@ -979,8 +979,8 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].blk_pos.y = y;
                     world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].clk_pos.cx = (x + 0.333) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].clk_pos.cy = cy;
+                    world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].pos.cy = cy;
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
@@ -995,8 +995,8 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].blk_pos.y = y;
                     world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].clk_pos.cx = cx;
-                    world->cannons[world->NumCannons].clk_pos.cy = (y + 0.667) * BLOCK_CLICKS;
+                    world->cannons[world->NumCannons].pos.cx = cx;
+                    world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
@@ -1011,8 +1011,8 @@ bool Grok_map(void)
                     world->fuels[world->NumFuels].blk_pos.y = y;
                     world->fuels[world->NumFuels].pix_pos.x = (x + 0.5) * BLOCK_SZ;
                     world->fuels[world->NumFuels].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->fuels[world->NumFuels].clk_pos.cx = cx;
-                    world->fuels[world->NumFuels].clk_pos.cy = cy;
+                    world->fuels[world->NumFuels].pos.cx = cx;
+                    world->fuels[world->NumFuels].pos.cy = cy;
                     world->fuels[world->NumFuels].fuel = START_STATION_FUEL;
                     world->fuels[world->NumFuels].conn_mask = (unsigned)-1;
                     world->fuels[world->NumFuels].last_change = frame_loops;
@@ -1026,8 +1026,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumTreasures;
                     world->treasures[world->NumTreasures].blk_pos.x = x;
                     world->treasures[world->NumTreasures].blk_pos.y = y;
-                    world->treasures[world->NumTreasures].clk_pos.cx = cx;
-                    world->treasures[world->NumTreasures].clk_pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
+                    world->treasures[world->NumTreasures].pos.cx = cx;
+                    world->treasures[world->NumTreasures].pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
                     world->treasures[world->NumTreasures].have = false;
                     world->treasures[world->NumTreasures].destroyed = 0;
                     world->treasures[world->NumTreasures].empty = (c == '^');
@@ -1043,8 +1043,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumTargets;
                     world->targets[world->NumTargets].blk_pos.x = x;
                     world->targets[world->NumTargets].blk_pos.y = y;
-                    world->targets[world->NumTargets].clk_pos.cx = cx;
-                    world->targets[world->NumTargets].clk_pos.cy = cy;
+                    world->targets[world->NumTargets].pos.cx = cx;
+                    world->targets[world->NumTargets].pos.cy = cy;
                     /*
                      * Determining which team it belongs to is done later,
                      * in Find_closest_team().
@@ -1062,8 +1062,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumItemConcentrators;
                     world->itemConcentrators[world->NumItemConcentrators].blk_pos.x = x;
                     world->itemConcentrators[world->NumItemConcentrators].blk_pos.y = y;
-                    world->itemConcentrators[world->NumItemConcentrators].clk_pos.cx = cx;
-                    world->itemConcentrators[world->NumItemConcentrators].clk_pos.cy = cy;
+                    world->itemConcentrators[world->NumItemConcentrators].pos.cx = cx;
+                    world->itemConcentrators[world->NumItemConcentrators].pos.cy = cy;
                     world->NumItemConcentrators++;
                     break;
                 case '&':
@@ -1071,8 +1071,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumAsteroidConcs;
                     world->asteroidConcs[world->NumAsteroidConcs].blk_pos.x = x;
                     world->asteroidConcs[world->NumAsteroidConcs].blk_pos.y = y;
-                    world->asteroidConcs[world->NumAsteroidConcs].clk_pos.cx = cx;
-                    world->asteroidConcs[world->NumAsteroidConcs].clk_pos.cy = cy;
+                    world->asteroidConcs[world->NumAsteroidConcs].pos.cx = cx;
+                    world->asteroidConcs[world->NumAsteroidConcs].pos.cy = cy;
                     world->NumAsteroidConcs++;
                     break;
                 case '$':
@@ -1093,8 +1093,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumBases;
                     world->bases[world->NumBases].blk_pos.x = x;
                     world->bases[world->NumBases].blk_pos.y = y;
-                    world->bases[world->NumBases].clk_pos.cx = cx;
-                    world->bases[world->NumBases].clk_pos.cy = cy;
+                    world->bases[world->NumBases].pos.cx = cx;
+                    world->bases[world->NumBases].pos.cy = cy;
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
@@ -1128,8 +1128,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1138,8 +1138,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1148,8 +1148,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1158,8 +1158,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1168,8 +1168,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1178,8 +1178,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1188,8 +1188,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1198,8 +1198,8 @@ bool Grok_map(void)
                     itemID[y] = world->NumGravs;
                     world->gravs[world->NumGravs].blk_pos.x = x;
                     world->gravs[world->NumGravs].blk_pos.y = y;
-                    world->gravs[world->NumGravs].clk_pos.cx = cx;
-                    world->gravs[world->NumGravs].clk_pos.cy = cy;
+                    world->gravs[world->NumGravs].pos.cx = cx;
+                    world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     world->NumGravs++;
                     break;
@@ -1209,8 +1209,8 @@ bool Grok_map(void)
                 case ')':
                     world->wormholes[world->NumWormholes].blk_pos.x = x;
                     world->wormholes[world->NumWormholes].blk_pos.y = y;
-                    world->wormholes[world->NumWormholes].clk_pos.cx = cx;
-                    world->wormholes[world->NumWormholes].clk_pos.cy = cy;
+                    world->wormholes[world->NumWormholes].pos.cx = cx;
+                    world->wormholes[world->NumWormholes].pos.cy = cy;
                     world->wormholes[world->NumWormholes].countdown = 0;
                     world->wormholes[world->NumWormholes].lastdest = -1;
                     world->wormholes[world->NumWormholes].temporary = 0;
@@ -1349,7 +1349,7 @@ bool Grok_map(void)
             unsigned short team = TEAM_NOT_SET;
             for (i = 0; i < world->NumTreasures; i++)
             {
-                team = Find_closest_team(world->treasures[i].clk_pos);
+                team = Find_closest_team(world->treasures[i].pos);
                 world->treasures[i].team = team;
                 if (team == TEAM_NOT_SET)
                 {
@@ -1366,7 +1366,7 @@ bool Grok_map(void)
             }
             for (i = 0; i < world->NumTargets; i++)
             {
-                team = Find_closest_team(world->targets[i].clk_pos);
+                team = Find_closest_team(world->targets[i].pos);
                 if (team == TEAM_NOT_SET)
                 {
                     error("Couldn't find a matching team for the target.");
@@ -1377,7 +1377,7 @@ bool Grok_map(void)
             {
                 for (i = 0; i < world->NumCannons; i++)
                 {
-                    team = Find_closest_team(world->cannons[i].clk_pos);
+                    team = Find_closest_team(world->cannons[i].pos);
                     if (team == TEAM_NOT_SET)
                     {
                         error("Couldn't find a matching team for the cannon.");
@@ -1387,7 +1387,7 @@ bool Grok_map(void)
             }
             for (i = 0; i < world->NumFuels; i++)
             {
-                team = Find_closest_team(world->fuels[i].clk_pos);
+                team = Find_closest_team(world->fuels[i].pos);
                 if (team == TEAM_NOT_SET)
                 {
                     error("Couldn't find a matching team for fuelstation.");
@@ -1572,7 +1572,7 @@ int Find_closest_team(clpos_t pos)
         if (base->team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length(pos.cx - base->clk_pos.cx, pos.cy - base->clk_pos.cy);
+        l = Wrap_length(pos.cx - base->pos.cx, pos.cy - base->pos.cy);
         if (l < closest)
         {
             team = world->bases[i].team;
@@ -1615,8 +1615,8 @@ static void Find_base_order(void)
     ccy = world->checks[0].y * BLOCK_CLICKS;
     for (i = 0; i < n; i++)
     {
-        dist = Wrap_length(world->bases[i].clk_pos.cx - ccx,
-                           world->bases[i].clk_pos.cy - ccy) /
+        dist = Wrap_length(world->bases[i].pos.cx - ccx,
+                           world->bases[i].pos.cy - ccy) /
                CLICK;
         for (j = 0; j < i; j++)
         {

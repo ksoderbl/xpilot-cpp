@@ -369,7 +369,7 @@ struct _visibility
 typedef struct
 {
     position_t pix_pos;
-    // clpos_t clk_pos; // TODO
+    // clpos_t pos; // TODO
     int dir;
     int len;
     int life;
@@ -411,8 +411,8 @@ extern int NumPulses;
 extern int NumAlliances;
 extern int NumRobots;
 
-void Object_position_set_clicks(object_t *obj, int cx, int cy);
-void Object_position_init_clicks(object_t *obj, int cx, int cy);
+void Object_position_set_clpos(object_t *obj, clpos_t pos);
+void Object_position_init_clpos(object_t *obj, clpos_t pos);
 
 #define Object_position_remember(o_)  \
     ((o_)->prevpos.cx = (o_)->pos.cx, \
