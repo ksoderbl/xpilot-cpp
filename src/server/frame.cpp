@@ -452,7 +452,7 @@ static int Frame_status(connection_t *conn, int ind)
 
     if (BIT(pl->status, HOVERPAUSE))
         showautopilot = (pl->count <= 0 || (frame_loops % 8) < 4);
-    else if (BIT(pl->used, HAS_AUTOPILOT))
+    else if (BIT(pl->used, USES_AUTOPILOT))
         showautopilot = (frame_loops % 8) < 4;
     else
         showautopilot = 0;
@@ -518,17 +518,17 @@ static int Frame_status(connection_t *conn, int ind)
         return 0;
     }
 
-    if (BIT(pl->used, HAS_EMERGENCY_THRUST))
+    if (BIT(pl->used, USES_EMERGENCY_THRUST))
         Send_thrusttime(conn,
                         pl->emergency_thrust_left,
                         pl->emergency_thrust_max);
-    if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
     if (BIT(pl->status, SELF_DESTRUCT) && pl->count > 0)
         Send_destruct(conn, pl->count);
-    if (BIT(pl->used, HAS_PHASING_DEVICE))
+    if (BIT(pl->used, USES_PHASING_DEVICE))
         Send_phasingtime(conn,
                          pl->phasing_left,
                          pl->phasing_max);
@@ -1059,13 +1059,13 @@ static void Frame_ships(connection_t *conn, int ind)
                       pl_i->pix_pos.y,
                       pl_i->id,
                       pl_i->dir,
-                      BIT(pl_i->used, HAS_SHIELD) != 0,
-                      BIT(pl_i->used, HAS_CLOAKING_DEVICE) != 0,
-                      BIT(pl_i->used, HAS_EMERGENCY_SHIELD) != 0,
-                      BIT(pl_i->used, HAS_PHASING_DEVICE) != 0,
-                      BIT(pl_i->used, HAS_DEFLECTOR) != 0);
+                      BIT(pl_i->used, USES_SHIELD) != 0,
+                      BIT(pl_i->used, USES_CLOAKING_DEVICE) != 0,
+                      BIT(pl_i->used, USES_EMERGENCY_SHIELD) != 0,
+                      BIT(pl_i->used, USES_PHASING_DEVICE) != 0,
+                      BIT(pl_i->used, USES_DEFLECTOR) != 0);
         }
-        if (BIT(pl_i->used, HAS_REFUEL))
+        if (BIT(pl_i->used, USES_REFUEL))
         {
             if (click_inview(cv, world->fuels[pl_i->fs].pos.cx,
                              world->fuels[pl_i->fs].pos.cy))
@@ -1075,7 +1075,7 @@ static void Frame_ships(connection_t *conn, int ind)
                             pl_i->pix_pos.x,
                             pl_i->pix_pos.y);
         }
-        if (BIT(pl_i->used, HAS_REPAIR))
+        if (BIT(pl_i->used, USES_REPAIR))
         {
             double x = (double)(world->targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
             double y = (double)(world->targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
@@ -1085,7 +1085,7 @@ static void Frame_ships(connection_t *conn, int ind)
                 /* same packet as refuel */
                 Send_refuel(conn, pl_i->pix_pos.x, pl_i->pix_pos.y, (int)x, (int)y);
         }
-        if (BIT(pl_i->used, HAS_TRACTOR_BEAM))
+        if (BIT(pl_i->used, USES_TRACTOR_BEAM))
         {
             player_t *t = PlayersArray[GetInd[pl_i->lock.pl_id]];
             if (click_inview(cv, t->pos.cx, t->pos.cy))

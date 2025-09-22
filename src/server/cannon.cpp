@@ -184,7 +184,7 @@ static int Cannon_select_defense(int ind)
 
     if (options.cannonSmartness == 0)
         return -1; /* mode 0 does not defend */
-    if (BIT(c->used, HAS_EMERGENCY_SHIELD) || BIT(c->used, HAS_PHASING_DEVICE))
+    if (BIT(c->used, USES_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
         return -1; /* still protected */
     if (c->item[ITEM_EMERGENCY_SHIELD])
         return CD_EM_SHIELD;
@@ -261,13 +261,13 @@ static void Cannon_defend(int ind, int defense)
     {
     case CD_EM_SHIELD:
         c->emergency_shield_left += 4 * FPS;
-        SET_BIT(c->used, HAS_EMERGENCY_SHIELD);
+        SET_BIT(c->used, USES_EMERGENCY_SHIELD);
         c->item[ITEM_EMERGENCY_SHIELD]--;
         IFSOUND(sound = EMERGENCY_SHIELD_ON_SOUND);
         break;
     case CD_PHASING:
         c->phasing_left += 4 * FPS;
-        SET_BIT(c->used, HAS_PHASING_DEVICE);
+        SET_BIT(c->used, USES_PHASING_DEVICE);
         c->tractor_count = 0;
         c->item[ITEM_PHASING]--;
         IFSOUND(sound = PHASING_ON_SOUND);
@@ -382,8 +382,8 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
         /* mode 3 also checks if a player is using a phasing device */
         if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE | KILLED) != PLAYING ||
             (BIT(world->rules->mode, TEAM_PLAY) && pl->team == c->team) ||
-            (!pl->forceVisible && BIT(pl->used, HAS_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
-            (options.cannonSmartness > 2 && BIT(pl->used, HAS_PHASING_DEVICE)))
+            (!pl->forceVisible && BIT(pl->used, USES_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
+            (options.cannonSmartness > 2 && BIT(pl->used, USES_PHASING_DEVICE)))
             continue;
 
         switch (options.cannonSmartness)

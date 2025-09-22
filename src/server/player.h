@@ -37,6 +37,48 @@
 #include "serverconst.h"
 
 /*
+ * Different types of attributes a player can have.
+ * These are the bits of the player->have and player->used fields.
+ */
+#define HAS_EMERGENCY_THRUST (1U << 30)
+#define HAS_AUTOPILOT (1U << 29)
+#define HAS_TRACTOR_BEAM (1U << 28)
+#define HAS_LASER (1U << 27)
+#define HAS_CLOAKING_DEVICE (1U << 26)
+#define HAS_SHIELD (1U << 25)
+#define HAS_REFUEL (1U << 24)
+#define HAS_REPAIR (1U << 23)
+#define HAS_COMPASS (1U << 22)
+#define HAS_AFTERBURNER (1U << 21)
+#define HAS_CONNECTOR (1U << 20)
+#define HAS_EMERGENCY_SHIELD (1U << 19)
+#define HAS_DEFLECTOR (1U << 18)
+#define HAS_PHASING_DEVICE (1U << 17)
+#define HAS_MIRROR (1U << 16)
+#define HAS_ARMOR (1U << 15)
+#define HAS_SHOT (1U << 4)
+#define HAS_BALL (1U << 3)
+
+#define USES_EMERGENCY_THRUST HAS_EMERGENCY_THRUST
+#define USES_AUTOPILOT HAS_AUTOPILOT
+#define USES_TRACTOR_BEAM HAS_TRACTOR_BEAM
+#define USES_LASER HAS_LASER
+#define USES_CLOAKING_DEVICE HAS_CLOAKING_DEVICE
+#define USES_SHIELD HAS_SHIELD
+#define USES_REFUEL HAS_REFUEL
+#define USES_REPAIR HAS_REPAIR
+#define USES_COMPASS HAS_COMPASS
+#define USES_AFTERBURNER HAS_AFTERBURNER
+#define USES_CONNECTOR HAS_CONNECTOR
+#define USES_EMERGENCY_SHIELD HAS_EMERGENCY_SHIELD
+#define USES_DEFLECTOR HAS_DEFLECTOR
+#define USES_PHASING_DEVICE HAS_PHASING_DEVICE
+#define USES_MIRROR HAS_MIRROR
+#define USES_ARMOR HAS_ARMOR
+#define USES_SHOT HAS_SHOT
+#define USES_BALL HAS_BALL
+
+/*
  * Some object types are overloaded.
  * These bits are set in the player->type_ext field.
  */

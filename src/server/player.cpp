@@ -213,7 +213,7 @@ void Go_home(int ind)
 
     if (options.playerStartsShielded != 0)
     {
-        SET_BIT(pl->used, HAS_SHIELD);
+        SET_BIT(pl->used, USES_SHIELD);
         if (options.playerShielding == 0)
         {
             pl->shield_time = 2 * FPS;
@@ -1822,7 +1822,7 @@ void Delete_player(int ind)
         if (BIT(PlayersArray[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (PlayersArray[i]->lock.pl_id == id || NumPlayers <= 1))
         {
             CLR_BIT(PlayersArray[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
-            CLR_BIT(PlayersArray[i]->used, HAS_TRACTOR_BEAM);
+            CLR_BIT(PlayersArray[i]->used, USES_TRACTOR_BEAM);
         }
         if (IS_ROBOT_IND(i) && Robot_war_on_player(i) == id)
         {
@@ -1862,7 +1862,7 @@ void Detach_ball(int ind, int obj)
     if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
     {
         pl->ball = NULL;
-        CLR_BIT(pl->used, HAS_CONNECTOR);
+        CLR_BIT(pl->used, USES_CONNECTOR);
     }
 
     if (BIT(pl->have, HAS_BALL))
@@ -1912,7 +1912,7 @@ void Player_death_reset(int ind)
     }
 
     Detach_ball(ind, -1);
-    if (BIT(pl->used, HAS_AUTOPILOT) || BIT(pl->status, HOVERPAUSE))
+    if (BIT(pl->used, USES_AUTOPILOT) || BIT(pl->status, HOVERPAUSE))
     {
         CLR_BIT(pl->status, HOVERPAUSE);
         Autopilot(pl, false);

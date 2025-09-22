@@ -57,29 +57,6 @@
 #define OBJ_CANNON_SHOT (1U << 13)
 
 /*
- * Different types of attributes a player can have.
- * These are the bits of the player->have and player->used fields.
- */
-#define HAS_EMERGENCY_THRUST (1U << 30)
-#define HAS_AUTOPILOT (1U << 29)
-#define HAS_TRACTOR_BEAM (1U << 28)
-#define HAS_LASER (1U << 27)
-#define HAS_CLOAKING_DEVICE (1U << 26)
-#define HAS_SHIELD (1U << 25)
-#define HAS_REFUEL (1U << 24)
-#define HAS_REPAIR (1U << 23)
-#define HAS_COMPASS (1U << 22)
-#define HAS_AFTERBURNER (1U << 21)
-#define HAS_CONNECTOR (1U << 20)
-#define HAS_EMERGENCY_SHIELD (1U << 19)
-#define HAS_DEFLECTOR (1U << 18)
-#define HAS_PHASING_DEVICE (1U << 17)
-#define HAS_MIRROR (1U << 16)
-#define HAS_ARMOR (1U << 15)
-#define HAS_SHOT (1U << 4)
-#define HAS_BALL (1U << 3)
-
-/*
  * Weapons modifiers.
  */
 typedef struct

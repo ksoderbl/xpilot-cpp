@@ -66,7 +66,7 @@ void Thrust(player_t *pl)
 
     sound_play_sensors(pl->pos, THRUST_SOUND);
 
-    afterburners = (BIT(pl->used, HAS_EMERGENCY_THRUST)
+    afterburners = (BIT(pl->used, USES_EMERGENCY_THRUST)
                         ? MAX_AFTERBURNER
                         : pl->item[ITEM_AFTERBURNER]);
     alt_sparks = afterburners
@@ -371,7 +371,7 @@ void Tank_handle_detach(player_t *pl)
     player_t *dummy;
     int i, ct;
 
-    if (BIT(pl->used, HAS_PHASING_DEVICE))
+    if (BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     /* Return, if no more players or no tanks */

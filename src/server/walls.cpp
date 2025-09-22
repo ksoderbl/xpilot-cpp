@@ -1865,7 +1865,7 @@ static void Cannon_dies(move_state_t *ms)
             pl = PlayersArray[killer];
         }
     }
-    else if (BIT(ms->mip->pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+    else if (BIT(ms->mip->pl->used, USES_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
         pl = ms->mip->pl;
         killer = GetInd[pl->id];
@@ -2203,7 +2203,7 @@ void Move_object(object_t *obj)
     mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
     if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
-        mi.phased = BIT(PlayersArray[GetInd[obj->id]]->used, HAS_PHASING_DEVICE);
+        mi.phased = BIT(PlayersArray[GetInd[obj->id]]->used, USES_PHASING_DEVICE);
     else
         mi.phased = 0;
 
@@ -2358,7 +2358,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         break;
 
     case CrashCannon:
-        if (BIT(pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_SHIELD | HAS_EMERGENCY_SHIELD) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         {
             howfmt = "%s smashed%s against a cannon";
             hudmsg = "[Cannon]";
@@ -2519,7 +2519,7 @@ void Move_player(int ind)
     }
 
     /* Figure out which friction to use. */
-    if (BIT(pl->used, HAS_PHASING_DEVICE))
+    if (BIT(pl->used, USES_PHASING_DEVICE))
     {
         fric = options.friction;
     }
@@ -2569,7 +2569,7 @@ void Move_player(int ind)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = true;
-    mi.phased = BIT(pl->used, HAS_PHASING_DEVICE);
+    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
 
     vel = pl->vel;
     todo.cx = FLOAT_TO_CLICK(vel.x);
@@ -2702,10 +2702,10 @@ void Move_player(int ind)
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
-                double max_speed = BIT(pl->used, HAS_SHIELD)
+                double max_speed = BIT(pl->used, USES_SHIELD)
                                        ? options.maxShieldedWallBounceSpeed
                                        : options.maxUnshieldedWallBounceSpeed;
-                int max_angle = BIT(pl->used, HAS_SHIELD)
+                int max_angle = BIT(pl->used, USES_SHIELD)
                                     ? mp.max_shielded_angle
                                     : mp.max_unshielded_angle;
 
@@ -2724,7 +2724,7 @@ void Move_player(int ind)
                 ms[worst].todo.cy = (int)(ms[worst].todo.cy * options.playerWallBrakeFactor);
 
                 /* only use armor if neccessary */
-                if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+                if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
                 {
                     max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;
@@ -2780,7 +2780,7 @@ void Move_player(int ind)
                 }
                 abs_delta_dir = ABS(delta_dir);
                 /* only use armor if neccessary */
-                if (abs_delta_dir > max_angle && max_angle < mp.max_shielded_angle && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+                if (abs_delta_dir > max_angle && max_angle < mp.max_shielded_angle && !BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
                 {
                     max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;
@@ -2959,7 +2959,7 @@ void Turn_player(player_t *pl)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = false;
-    mi.phased = BIT(pl->used, HAS_PHASING_DEVICE);
+    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
 
     if (new_dir > pl->dir)
     {

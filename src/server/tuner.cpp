@@ -120,7 +120,7 @@ void tuner_playershielding(void)
             if (!Player_is_tank(PlayersArray[i]))
             {
                 if (!BIT(PlayersArray[i]->used, HAS_SHOT))
-                    SET_BIT(PlayersArray[i]->used, HAS_SHIELD);
+                    SET_BIT(PlayersArray[i]->used, USES_SHIELD);
 
                 SET_BIT(PlayersArray[i]->have, HAS_SHIELD);
                 PlayersArray[i]->shield_time = 0;

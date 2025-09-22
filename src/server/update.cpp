@@ -118,18 +118,18 @@ void Phasing(player_t *pl, bool on)
             pl->phasing_max = phasing_time;
             pl->item[ITEM_PHASING]--;
         }
-        SET_BIT(pl->used, HAS_PHASING_DEVICE);
-        CLR_BIT(pl->used, HAS_REFUEL);
-        CLR_BIT(pl->used, HAS_REPAIR);
-        if (BIT(pl->used, HAS_CONNECTOR))
+        SET_BIT(pl->used, USES_PHASING_DEVICE);
+        CLR_BIT(pl->used, USES_REFUEL);
+        CLR_BIT(pl->used, USES_REPAIR);
+        if (BIT(pl->used, USES_CONNECTOR))
             pl->ball = NULL;
-        CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
+        CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         CLR_BIT(pl->status, GRAVITY);
         sound_play_sensors(pl->pos, PHASING_ON_SOUND);
     }
     else
     {
-        CLR_BIT(pl->used, HAS_PHASING_DEVICE);
+        CLR_BIT(pl->used, USES_PHASING_DEVICE);
         if (pl->phasing_left <= 0)
         {
             if (pl->item[ITEM_PHASING] <= 0)
@@ -147,29 +147,29 @@ void Cloak(player_t *pl, bool on)
 {
     if (on)
     {
-        if (!BIT(pl->used, HAS_CLOAKING_DEVICE) && pl->item[ITEM_CLOAK] > 0)
+        if (!BIT(pl->used, USES_CLOAKING_DEVICE) && pl->item[ITEM_CLOAK] > 0)
         {
             if (!options.cloakedShield)
             {
-                if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (BIT(pl->used, USES_EMERGENCY_SHIELD))
                     Emergency_shield(pl, false);
-                if (BIT(pl->used, HAS_DEFLECTOR))
+                if (BIT(pl->used, USES_DEFLECTOR))
                     Deflector(pl, false);
-                CLR_BIT(pl->used, HAS_SHIELD);
+                CLR_BIT(pl->used, USES_SHIELD);
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
             sound_play_player(pl, CLOAK_SOUND);
             pl->updateVisibility = 1;
-            SET_BIT(pl->used, HAS_CLOAKING_DEVICE);
+            SET_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
     }
     else
     {
-        if (BIT(pl->used, HAS_CLOAKING_DEVICE))
+        if (BIT(pl->used, USES_CLOAKING_DEVICE))
         {
             sound_play_player(pl, CLOAK_SOUND);
             pl->updateVisibility = 1;
-            CLR_BIT(pl->used, HAS_CLOAKING_DEVICE);
+            CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
         if (!pl->item[ITEM_CLOAK])
             CLR_BIT(pl->have, HAS_CLOAKING_DEVICE);
@@ -183,7 +183,7 @@ void Cloak(player_t *pl, bool on)
             if (BIT(DEF_HAVE, HAS_SHIELD) && !BIT(pl->have, HAS_SHIELD))
                 SET_BIT(pl->have, HAS_SHIELD);
             if (BITV_ISSET(pl->last_keyv, KEY_SHIELD))
-                SET_BIT(pl->used, HAS_SHIELD);
+                SET_BIT(pl->used, USES_SHIELD);
         }
     }
 }
@@ -195,21 +195,21 @@ void Deflector(player_t *pl, bool on)
 {
     if (on)
     {
-        if (!BIT(pl->used, HAS_DEFLECTOR) && pl->item[ITEM_DEFLECTOR] > 0)
+        if (!BIT(pl->used, USES_DEFLECTOR) && pl->item[ITEM_DEFLECTOR] > 0)
         {
             /* only allow deflector when cloaked shielding or not cloaked */
-            if (options.cloakedShield || !BIT(pl->used, HAS_CLOAKING_DEVICE))
+            if (options.cloakedShield || !BIT(pl->used, USES_CLOAKING_DEVICE))
             {
-                SET_BIT(pl->used, HAS_DEFLECTOR);
+                SET_BIT(pl->used, USES_DEFLECTOR);
                 sound_play_player(pl, DEFLECTOR_SOUND);
             }
         }
     }
     else
     {
-        if (BIT(pl->used, HAS_DEFLECTOR))
+        if (BIT(pl->used, USES_DEFLECTOR))
         {
-            CLR_BIT(pl->used, HAS_DEFLECTOR);
+            CLR_BIT(pl->used, USES_DEFLECTOR);
             sound_play_player(pl, DEFLECTOR_SOUND);
         }
         if (!pl->item[ITEM_DEFLECTOR])
@@ -232,17 +232,17 @@ void Emergency_thrust(player_t *pl, bool on)
             pl->emergency_thrust_max = emergency_thrust_time;
             pl->item[ITEM_EMERGENCY_THRUST]--;
         }
-        if (!BIT(pl->used, HAS_EMERGENCY_THRUST))
+        if (!BIT(pl->used, USES_EMERGENCY_THRUST))
         {
-            SET_BIT(pl->used, HAS_EMERGENCY_THRUST);
+            SET_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_ON_SOUND);
         }
     }
     else
     {
-        if (BIT(pl->used, HAS_EMERGENCY_THRUST))
+        if (BIT(pl->used, USES_EMERGENCY_THRUST))
         {
-            CLR_BIT(pl->used, HAS_EMERGENCY_THRUST);
+            CLR_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_OFF_SOUND);
         }
         if (pl->emergency_thrust_left <= 0)
@@ -270,12 +270,12 @@ void Emergency_shield(player_t *pl, bool on)
                 pl->emergency_shield_max = emergency_shield_time;
                 pl->item[ITEM_EMERGENCY_SHIELD]--;
             }
-            if (options.cloakedShield || !BIT(pl->used, HAS_CLOAKING_DEVICE))
+            if (options.cloakedShield || !BIT(pl->used, USES_CLOAKING_DEVICE))
             {
                 SET_BIT(pl->have, HAS_SHIELD);
-                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                 {
-                    SET_BIT(pl->used, HAS_EMERGENCY_SHIELD);
+                    SET_BIT(pl->used, USES_EMERGENCY_SHIELD);
                     sound_play_sensors(pl->pos, EMERGENCY_SHIELD_ON_SOUND);
                 }
             }
@@ -291,11 +291,11 @@ void Emergency_shield(player_t *pl, bool on)
         if (!BIT(DEF_HAVE, HAS_SHIELD))
         {
             CLR_BIT(pl->have, HAS_SHIELD);
-            CLR_BIT(pl->used, HAS_SHIELD);
+            CLR_BIT(pl->used, USES_SHIELD);
         }
-        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
-            CLR_BIT(pl->used, HAS_EMERGENCY_SHIELD);
+            CLR_BIT(pl->used, USES_EMERGENCY_SHIELD);
             sound_play_sensors(pl->pos, EMERGENCY_SHIELD_OFF_SOUND);
         }
     }
@@ -329,7 +329,7 @@ void Autopilot(player_t *pl, bool on)
         pl->auto_power_s = pl->power;
         pl->auto_turnspeed_s = pl->turnspeed;
         pl->auto_turnresistance_s = pl->turnresistance;
-        SET_BIT(pl->used, HAS_AUTOPILOT);
+        SET_BIT(pl->used, USES_AUTOPILOT);
         pl->power = (MIN_PLAYER_POWER + MAX_PLAYER_POWER) / 2.0;
         pl->turnspeed = (MIN_PLAYER_TURNSPEED + MAX_PLAYER_TURNSPEED) / 2.0;
         pl->turnresistance = 0.2;
@@ -341,7 +341,7 @@ void Autopilot(player_t *pl, bool on)
         pl->turnacc = 0.0;
         pl->turnspeed = pl->auto_turnspeed_s;
         pl->turnresistance = pl->auto_turnresistance_s;
-        CLR_BIT(pl->used, HAS_AUTOPILOT);
+        CLR_BIT(pl->used, USES_AUTOPILOT);
         sound_play_sensors(pl->pos, AUTOPILOT_OFF_SOUND);
     }
 }
@@ -386,7 +386,7 @@ static void do_Autopilot(player_t *pl)
     if (pl->item[ITEM_AUTOPILOT])
         delta *= pl->item[ITEM_AUTOPILOT];
 
-    if (BIT(pl->used, HAS_EMERGENCY_THRUST))
+    if (BIT(pl->used, USES_EMERGENCY_THRUST))
     {
         afterburners = MAX_AFTERBURNER;
         if (delta < emergency_thrust_settings_delta)
@@ -694,7 +694,7 @@ void Update_objects(void)
             {
                 Cannon_check_defense(i);
             }
-            if (!BIT(cannon->used, HAS_EMERGENCY_SHIELD) && !BIT(cannon->used, HAS_PHASING_DEVICE) && !cannon->damaged && !cannon->tractor_count && rfrac() * 16 < 1)
+            if (!BIT(cannon->used, USES_EMERGENCY_SHIELD) && !BIT(cannon->used, USES_PHASING_DEVICE) && !cannon->damaged && !cannon->tractor_count && rfrac() * 16 < 1)
             {
                 Cannon_check_fire(i);
             }
@@ -735,7 +735,7 @@ void Update_objects(void)
         {
             if (--cannon->emergency_shield_left <= 0)
             {
-                CLR_BIT(cannon->used, HAS_EMERGENCY_SHIELD);
+                CLR_BIT(cannon->used, USES_EMERGENCY_SHIELD);
                 sound_play_sensors(cannon->pos, EMERGENCY_SHIELD_OFF_SOUND);
             }
         }
@@ -743,7 +743,7 @@ void Update_objects(void)
         {
             if (--cannon->phasing_left <= 0)
             {
-                CLR_BIT(cannon->used, HAS_PHASING_DEVICE);
+                CLR_BIT(cannon->used, USES_PHASING_DEVICE);
                 sound_play_sensors(cannon->pos, PHASING_OFF_SOUND);
             }
         }
@@ -860,7 +860,7 @@ void Update_objects(void)
         if (pl->stunned > 0)
         {
             pl->stunned--;
-            CLR_BIT(pl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT);
+            CLR_BIT(pl->used, USES_SHIELD | HAS_LASER | HAS_SHOT);
             CLR_BIT(pl->status, THRUSTING);
         }
 
@@ -868,19 +868,19 @@ void Update_objects(void)
         {
             if (--pl->shield_time == 0)
             {
-                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
-                    CLR_BIT(pl->used, HAS_SHIELD);
+                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
+                    CLR_BIT(pl->used, USES_SHIELD);
             }
-            if (BIT(pl->used, HAS_SHIELD) == 0)
+            if (BIT(pl->used, USES_SHIELD) == 0)
             {
                 /* BG 95/06/03: change test on "have" to "used". */
-                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                     CLR_BIT(pl->have, HAS_SHIELD);
                 pl->shield_time = 0;
             }
         }
 
-        if (BIT(pl->used, HAS_PHASING_DEVICE))
+        if (BIT(pl->used, USES_PHASING_DEVICE))
         {
             if (--pl->phasing_left <= 0)
             {
@@ -891,7 +891,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, HAS_EMERGENCY_THRUST))
+        if (BIT(pl->used, USES_EMERGENCY_THRUST))
         {
             if (pl->fuel.sum > 0 && BIT(pl->status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
@@ -902,9 +902,9 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
-            if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
+            if (pl->fuel.sum > 0 && BIT(pl->used, USES_SHIELD) && --pl->emergency_shield_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_SHIELD])
                     Emergency_shield(pl, true);
@@ -915,20 +915,20 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_LASER))
         {
-            if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, HAS_PHASING_DEVICE))
+            if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, USES_PHASING_DEVICE))
                 CLR_BIT(pl->used, HAS_LASER);
             else
                 Fire_laser(pl);
         }
 
-        if (BIT(pl->used, HAS_DEFLECTOR))
+        if (BIT(pl->used, USES_DEFLECTOR))
             Do_deflector(pl);
 
         /*
          * Only do autopilot code if switched on and player is not
          * damaged (ie. can see).
          */
-        if ((BIT(pl->used, HAS_AUTOPILOT)) || (BIT(pl->status, HOVERPAUSE) && !pl->damaged))
+        if ((BIT(pl->used, USES_AUTOPILOT)) || (BIT(pl->status, HOVERPAUSE) && !pl->damaged))
             do_Autopilot(pl);
 
         /*
@@ -964,13 +964,13 @@ void Update_objects(void)
         /*
          * Compute energy drainage
          */
-        if (BIT(pl->used, HAS_SHIELD))
+        if (BIT(pl->used, USES_SHIELD))
             Add_fuel(&(pl->fuel), (long)ED_SHIELD);
 
-        if (BIT(pl->used, HAS_PHASING_DEVICE))
+        if (BIT(pl->used, USES_PHASING_DEVICE))
             Add_fuel(&(pl->fuel), (long)ED_PHASING_DEVICE);
 
-        if (BIT(pl->used, HAS_CLOAKING_DEVICE))
+        if (BIT(pl->used, USES_CLOAKING_DEVICE))
             Add_fuel(&(pl->fuel), (long)ED_CLOAKING_DEVICE);
 
 #define UPDATE_RATE 100
@@ -980,7 +980,7 @@ void Update_objects(void)
             if (pl->forceVisible)
                 PlayersArray[j]->visibility[ind].canSee = 1;
 
-            if (ind == j || !BIT(PlayersArray[j]->used, HAS_CLOAKING_DEVICE))
+            if (ind == j || !BIT(PlayersArray[j]->used, USES_CLOAKING_DEVICE))
                 pl->visibility[j].canSee = 1;
             else if (pl->updateVisibility || PlayersArray[j]->updateVisibility || (int)(rfrac() * UPDATE_RATE) < ABS(frame_loops - pl->visibility[j].lastChange))
             {
@@ -990,7 +990,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, HAS_REFUEL))
+        if (BIT(pl->used, USES_REFUEL))
         {
             if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].pos.cx,
                              pl->pos.cy - world->fuels[pl->fs].pos.cy) /
@@ -998,10 +998,10 @@ void Update_objects(void)
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
                 (world->block[world->fuels[pl->fs].blk_pos.x][world->fuels[pl->fs].blk_pos.y] != FUEL) ||
-                BIT(pl->used, HAS_PHASING_DEVICE) ||
+                BIT(pl->used, USES_PHASING_DEVICE) ||
                 (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[pl->fs].team != pl->team))
             {
-                CLR_BIT(pl->used, HAS_REFUEL);
+                CLR_BIT(pl->used, USES_REFUEL);
             }
             else
             {
@@ -1023,7 +1023,7 @@ void Update_objects(void)
                         world->fuels[pl->fs].fuel = 0;
                         world->fuels[pl->fs].conn_mask = 0;
                         world->fuels[pl->fs].last_change = frame_loops;
-                        CLR_BIT(pl->used, HAS_REFUEL);
+                        CLR_BIT(pl->used, USES_REFUEL);
                         break;
                     }
                     if (pl->fuel.current == pl->fuel.num_tanks)
@@ -1036,14 +1036,14 @@ void Update_objects(void)
         }
 
         /* target repair */
-        if (BIT(pl->used, HAS_REPAIR))
+        if (BIT(pl->used, USES_REPAIR))
         {
             target_t *targ = &world->targets[pl->repair_target];
             if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
                 targ->damage >= TARGET_DAMAGE ||
                 targ->dead_time > 0 ||
-                BIT(pl->used, HAS_PHASING_DEVICE))
-                CLR_BIT(pl->used, HAS_REPAIR);
+                BIT(pl->used, USES_PHASING_DEVICE))
+                CLR_BIT(pl->used, USES_REPAIR);
             else
             {
                 int i = pl->fuel.num_tanks;
@@ -1065,7 +1065,7 @@ void Update_objects(void)
                     }
                     else
                     {
-                        CLR_BIT(pl->used, HAS_REPAIR);
+                        CLR_BIT(pl->used, USES_REPAIR);
                     }
                     if (pl->fuel.current == pl->fuel.num_tanks)
                         pl->fuel.current = 0;
@@ -1078,11 +1078,11 @@ void Update_objects(void)
 
         if (pl->fuel.sum <= 0)
         {
-            CLR_BIT(pl->used, HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
+            CLR_BIT(pl->used, USES_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
             CLR_BIT(pl->status, THRUSTING);
         }
         if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
-            CLR_BIT(pl->used, HAS_REFUEL);
+            CLR_BIT(pl->used, USES_REFUEL);
 
         /*
          * Update acceleration vector etc.
@@ -1091,7 +1091,7 @@ void Update_objects(void)
         {
             double power = pl->power;
             double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
-            int a = (BIT(pl->used, HAS_EMERGENCY_THRUST)
+            int a = (BIT(pl->used, USES_EMERGENCY_THRUST)
                          ? MAX_AFTERBURNER
                          : pl->item[ITEM_AFTERBURNER]);
             double inert = pl->mass;
@@ -1231,7 +1231,7 @@ void Update_objects(void)
             /*
              * Don't connect to balls while warping.
              */
-            if (BIT(pl->used, HAS_CONNECTOR))
+            if (BIT(pl->used, USES_CONNECTOR))
                 pl->ball = NULL;
 
             if (BIT(pl->have, HAS_BALL))
@@ -1301,7 +1301,7 @@ void Update_objects(void)
             Move_player(ind);
         }
 
-        if ((!BIT(pl->used, HAS_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, HAS_PHASING_DEVICE))
+        if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
         {
             if (BIT(pl->status, THRUSTING))
                 Thrust(pl);
@@ -1334,7 +1334,7 @@ void Update_objects(void)
                 pl->updateVisibility = 1;
         }
 
-        if (BIT(pl->used, HAS_TRACTOR_BEAM))
+        if (BIT(pl->used, USES_TRACTOR_BEAM))
             Tractor_beam(ind);
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))

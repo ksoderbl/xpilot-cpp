@@ -132,7 +132,7 @@ static void Laser_pulse_find_victims(
         if (BIT(vic->status, PLAYING | GAME_OVER | KILLED | PAUSE) != PLAYING)
             continue;
 
-        if (BIT(vic->used, HAS_PHASING_DEVICE))
+        if (BIT(vic->used, USES_PHASING_DEVICE))
             continue;
 
         if (vic->id == pulse->id && options.selfImmunity)
@@ -231,7 +231,7 @@ static void Laser_pulse_hits_player(
         return;
     if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
-        if (BIT(vicpl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->status, THRUSTING))
+        if (BIT(vicpl->used, USES_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->status, THRUSTING))
         {
             if (pl)
             {
@@ -264,7 +264,7 @@ static void Laser_pulse_hits_player(
     else
     {
         Add_fuel(&(vicpl->fuel), (long)ED_LASER_HIT);
-        if (!BIT(vicpl->used, HAS_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
+        if (!BIT(vicpl->used, USES_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
             SET_BIT(vicpl->status, KILLED);
             if (pl)
@@ -304,7 +304,7 @@ static void Laser_pulse_hits_player(
                 Robot_war(victim->ind, ind);
             }
         }
-        if (!BIT(vicpl->used, HAS_SHIELD) && BIT(vicpl->have, HAS_ARMOR))
+        if (!BIT(vicpl->used, USES_SHIELD) && BIT(vicpl->have, HAS_ARMOR))
         {
             Player_hit_armor(victim->ind);
         }

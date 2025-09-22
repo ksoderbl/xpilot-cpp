@@ -59,11 +59,11 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_DEFLECTOR);
     if (pl->item[ITEM_AFTERBURNER] <= 0)
         CLR_BIT(pl->have, HAS_AFTERBURNER);
-    if (pl->item[ITEM_PHASING] <= 0 && !BIT(pl->used, HAS_PHASING_DEVICE) && pl->phasing_left == 0)
+    if (pl->item[ITEM_PHASING] <= 0 && !BIT(pl->used, USES_PHASING_DEVICE) && pl->phasing_left == 0)
         CLR_BIT(pl->have, HAS_PHASING_DEVICE);
-    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, HAS_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
+    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, USES_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
         CLR_BIT(pl->have, HAS_EMERGENCY_THRUST);
-    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, HAS_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
+    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, USES_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
     {
         if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
         {
@@ -71,7 +71,7 @@ static void Item_update_flags(player_t *pl)
             if (!BIT(DEF_HAVE, HAS_SHIELD) && pl->shield_time <= 0)
             {
                 CLR_BIT(pl->have, HAS_SHIELD);
-                CLR_BIT(pl->used, HAS_SHIELD);
+                CLR_BIT(pl->used, USES_SHIELD);
             }
         }
     }
@@ -79,7 +79,7 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_TRACTOR_BEAM);
     if (pl->item[ITEM_AUTOPILOT] <= 0)
     {
-        if (BIT(pl->used, HAS_AUTOPILOT))
+        if (BIT(pl->used, USES_AUTOPILOT))
             Autopilot(pl, false);
         CLR_BIT(pl->have, HAS_AUTOPILOT);
     }
@@ -435,7 +435,7 @@ void Detonate_items(int ind)
     /*
      * Drop shields in order to launch mines and missiles.
      */
-    CLR_BIT(pl->used, HAS_SHIELD);
+    CLR_BIT(pl->used, USES_SHIELD);
 
     /*
      * Mines are always affected by gravity and are sent in random directions
@@ -502,16 +502,16 @@ void Tractor_beam(int ind)
     long cost;
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, HAS_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, HAS_PHASING_DEVICE))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
     {
-        CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
+        CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
     }
     percent = TRACTOR_PERCENT(pl->lock.distance, maxdist);
     cost = (long)TRACTOR_COST(percent);
     if (pl->fuel.sum < -cost)
     {
-        CLR_BIT(pl->used, HAS_TRACTOR_BEAM);
+        CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
     }
     General_tractor_beam(ind, pl->pos, pl->item[ITEM_TRACTOR_BEAM],
@@ -565,7 +565,7 @@ void Do_deflector(player_t *pl)
 
     if (pl->fuel.sum < -ED_DEFLECTOR)
     {
-        if (BIT(pl->used, HAS_DEFLECTOR))
+        if (BIT(pl->used, USES_DEFLECTOR))
             Deflector(pl, false);
         return;
     }
@@ -627,7 +627,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, HAS_PHASING_DEVICE))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     /* find victim */
@@ -638,7 +638,7 @@ void Do_transporter(player_t *pl)
             BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
             Team_immune(pl->id, p->id) ||
             Player_is_tank(p) ||
-            BIT(p->used, HAS_PHASING_DEVICE))
+            BIT(p->used, USES_PHASING_DEVICE))
             continue;
         dist = Wrap_length(pl->pos.cx - p->pos.cx, pl->pos.cy - p->pos.cy) / CLICK;
         if (dist < closest)
@@ -777,7 +777,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
         what = "a phasing device";
         if (!victim->item[item])
         {
-            if (BIT(victim->used, HAS_PHASING_DEVICE))
+            if (BIT(victim->used, USES_PHASING_DEVICE))
                 Phasing(victim, false);
             CLR_BIT(victim->have, HAS_PHASING_DEVICE);
         }
@@ -789,7 +789,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
         what = "an emergency thrust";
         if (!victim->item[item])
         {
-            if (BIT(victim->used, HAS_EMERGENCY_THRUST))
+            if (BIT(victim->used, USES_EMERGENCY_THRUST))
                 Emergency_thrust(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_THRUST);
         }
@@ -798,13 +798,13 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
         what = "an emergency shield";
         if (!victim->item[item])
         {
-            if (BIT(victim->used, HAS_EMERGENCY_SHIELD))
+            if (BIT(victim->used, USES_EMERGENCY_SHIELD))
                 Emergency_shield(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_SHIELD);
             if (!BIT(DEF_HAVE, HAS_SHIELD))
             {
                 CLR_BIT(victim->have, HAS_SHIELD);
-                CLR_BIT(victim->used, HAS_SHIELD);
+                CLR_BIT(victim->used, USES_SHIELD);
             }
         }
         break;
@@ -817,7 +817,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
         what = "an autopilot";
         if (!victim->item[item])
         {
-            if (BIT(victim->used, HAS_AUTOPILOT))
+            if (BIT(victim->used, USES_AUTOPILOT))
                 Autopilot(victim, false);
             CLR_BIT(victim->have, HAS_AUTOPILOT);
         }
@@ -947,7 +947,7 @@ void do_lose_item(player_t *pl)
         return;
     }
 
-    if (options.loseItemDestroys == false && !BIT(pl->used, HAS_PHASING_DEVICE))
+    if (options.loseItemDestroys == false && !BIT(pl->used, USES_PHASING_DEVICE))
     {
         Place_item(item, pl);
     }
@@ -1141,7 +1141,7 @@ void Fire_general_ecm(int ind, unsigned short team, clpos_t pos)
         if (pl && Players_are_allies(pl, p))
             continue;
 
-        if (BIT(p->used, HAS_PHASING_DEVICE))
+        if (BIT(p->used, USES_PHASING_DEVICE))
             continue;
 
         if (BIT(p->status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
@@ -1238,7 +1238,7 @@ void Fire_ecm(int ind)
 {
     player_t *pl = PlayersArray[ind];
 
-    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, HAS_PHASING_DEVICE))
+    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     Fire_general_ecm(ind, pl->team, pl->pos);

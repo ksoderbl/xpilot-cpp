@@ -282,7 +282,7 @@ static void PlayerCollision(void)
             continue;
         }
 
-        if (BIT(pl->used, HAS_PHASING_DEVICE))
+        if (BIT(pl->used, USES_PHASING_DEVICE))
             continue;
 
         /* Player - player */
@@ -292,7 +292,7 @@ static void PlayerCollision(void)
             {
                 if (BIT(PlayersArray[j]->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
                     continue;
-                if (BIT(PlayersArray[j]->used, HAS_PHASING_DEVICE))
+                if (BIT(PlayersArray[j]->used, USES_PHASING_DEVICE))
                     continue;
                 if (!in_range_acd(pl->prevpos.cx, pl->prevpos.cy,
                                   pl->pos.cx, pl->pos.cy,
@@ -344,16 +344,16 @@ static void PlayerCollision(void)
                 if (!BIT(world->rules->mode, CRASH_WITH_PLAYER))
                     continue;
 
-                if (pl->fuel.sum <= 0 || (!BIT(pl->used, HAS_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
+                if (pl->fuel.sum <= 0 || (!BIT(pl->used, USES_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
                     SET_BIT(pl->status, KILLED);
 
-                if (PlayersArray[j]->fuel.sum <= 0 || (!BIT(PlayersArray[j]->used, HAS_SHIELD) && !BIT(PlayersArray[j]->have, HAS_ARMOR)))
+                if (PlayersArray[j]->fuel.sum <= 0 || (!BIT(PlayersArray[j]->used, USES_SHIELD) && !BIT(PlayersArray[j]->have, HAS_ARMOR)))
                     SET_BIT(PlayersArray[j]->status, KILLED);
 
-                if (!BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+                if (!BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
                     Player_hit_armor(i);
 
-                if (!BIT(PlayersArray[j]->used, HAS_SHIELD) && BIT(PlayersArray[j]->have, HAS_ARMOR))
+                if (!BIT(PlayersArray[j]->used, USES_SHIELD) && BIT(PlayersArray[j]->have, HAS_ARMOR))
                     Player_hit_armor(j);
 
                 if (BIT(PlayersArray[j]->status, KILLED))
@@ -460,7 +460,7 @@ static void PlayerCollision(void)
         }
 
         /* Player picking up ball/treasure */
-        if (!BIT(pl->used, HAS_CONNECTOR) || BIT(pl->used, HAS_PHASING_DEVICE))
+        if (!BIT(pl->used, USES_CONNECTOR) || BIT(pl->used, USES_PHASING_DEVICE))
         {
             pl->ball = NULL;
         }
@@ -672,7 +672,7 @@ static void PlayerObjectCollision(int ind)
 
         if (obj->type == OBJ_ITEM)
         {
-            if (BIT(pl->used, HAS_SHIELD) && !options.shieldedItemPickup)
+            if (BIT(pl->used, USES_SHIELD) && !options.shieldedItemPickup)
             {
                 SET_BIT(obj->status, GRAVITY);
                 Delta_mv((object_t *)pl, obj);
@@ -695,7 +695,7 @@ static void PlayerObjectCollision(int ind)
         }
         else if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
         {
-            if (BIT(PlayersArray[GetInd[obj->id]]->used, HAS_PHASING_DEVICE))
+            if (BIT(PlayersArray[GetInd[obj->id]]->used, USES_PHASING_DEVICE))
             {
                 continue;
             }
@@ -817,9 +817,9 @@ static void Player_collides_with_ball(int ind, object_t *obj, int radius)
     }
     if (pl->fuel.sum > 0)
     {
-        if (!options.treasureCollisionMayKill || BIT(pl->used, HAS_SHIELD))
+        if (!options.treasureCollisionMayKill || BIT(pl->used, USES_SHIELD))
             return;
-        if (!BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+        if (!BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
         {
             Player_hit_armor(ind);
             return;
@@ -1119,7 +1119,7 @@ static void Player_collides_with_debris(int ind, object_t *obj)
 
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         Add_fuel(&pl->fuel, -cost);
-    if (pl->fuel.sum == 0 || (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
+    if (pl->fuel.sum == 0 || (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, USES_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
     {
         SET_BIT(pl->status, KILLED);
         sprintf(msg, "%s succumbed to an explosion.", pl->name);
@@ -1151,7 +1151,7 @@ static void Player_collides_with_debris(int ind, object_t *obj)
         obj->life = 0;
         return;
     }
-    if (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+    if (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
     {
         Player_hit_armor(ind);
     }
@@ -1175,7 +1175,7 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
     {
         Add_fuel(&pl->fuel, -cost);
     }
-    if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, HAS_SHIELD) && !BIT(pl->have, HAS_ARMOR))))
+    if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, USES_SHIELD) && !BIT(pl->have, HAS_ARMOR))))
     {
         int sc;
         SET_BIT(pl->status, KILLED);
@@ -1199,7 +1199,7 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
         }
         return;
     }
-    if (options.asteroidCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+    if (options.asteroidCollisionMayKill && !BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
     {
         Player_hit_armor(ind);
     }
@@ -1224,7 +1224,7 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
      * Sound effects are missing when shot is deadly.
      */
 
-    if (BIT(pl->used, HAS_SHIELD) || BIT(pl->have, HAS_ARMOR) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, NUCLEAR) && (int)(rfrac() >= 0.25f)))
+    if (BIT(pl->used, USES_SHIELD) || BIT(pl->have, HAS_ARMOR) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, NUCLEAR) && (int)(rfrac() >= 0.25f)))
     {
         switch (obj->type)
         {
@@ -1283,9 +1283,9 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
         }
         if (pl->fuel.sum <= 0)
         {
-            CLR_BIT(pl->used, HAS_SHIELD);
+            CLR_BIT(pl->used, USES_SHIELD);
         }
-        if (!BIT(pl->used, HAS_SHIELD) && BIT(pl->have, HAS_ARMOR))
+        if (!BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
         {
             Player_hit_armor(ind);
         }
@@ -1485,7 +1485,7 @@ static void AsteroidCollision(void)
             if (obj == ast)
                 continue;
             /* don't collide with phased balls */
-            if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID && BIT(PlayersArray[GetInd[obj->id]]->used, HAS_PHASING_DEVICE))
+            if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID && BIT(PlayersArray[GetInd[obj->id]]->used, USES_PHASING_DEVICE))
                 continue;
 
             radius = ast->pl_radius + obj->pl_radius;
@@ -1604,7 +1604,7 @@ static void BallCollision(void)
         /* ignore if: */
         if (ball->type != OBJ_BALL || /* not a ball */
             ball->life <= 0 ||        /* dying ball */
-            (ball->id != NO_ID && BIT(PlayersArray[GetInd[ball->id]]->used, HAS_PHASING_DEVICE)) ||
+            (ball->id != NO_ID && BIT(PlayersArray[GetInd[ball->id]]->used, USES_PHASING_DEVICE)) ||
             /* phased ball */
             world->treasures[ball->treasure].have)
             /* safe in a treasure */
@@ -1668,7 +1668,7 @@ static void BallCollision(void)
                     {
                         break;
                     }
-                    if (b2->id != NO_ID && BIT(PlayersArray[GetInd[b2->id]]->used, HAS_PHASING_DEVICE))
+                    if (b2->id != NO_ID && BIT(PlayersArray[GetInd[b2->id]]->used, USES_PHASING_DEVICE))
                     {
                         break;
                     }
