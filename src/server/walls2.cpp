@@ -560,7 +560,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     }
 
     if (obj->type == OBJ_SPARK)
-        CLR_BIT(obj->status, OWNERIMMUNE);
+        CLR_BIT(obj->obj_status, OWNERIMMUNE);
 
     if (line >= num_lines)
     {

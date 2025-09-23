@@ -109,7 +109,7 @@ void Cannon_throw_items(int ind)
                 obj->type = OBJ_ITEM;
                 obj->info = i;
                 obj->color = RED;
-                obj->status = GRAVITY;
+                obj->obj_status = GRAVITY;
                 dir = (int)(c->dir - (CANNON_SPREAD * 0.5) + (rfrac() * CANNON_SPREAD));
                 dir = MOD2(dir, RES);
                 obj->id = NO_ID;
@@ -222,7 +222,7 @@ static int Cannon_in_danger(int ind)
             continue;
         if (!BIT(shot->type, kill_shots))
             continue;
-        if (BIT(shot->status, FROMCANNON))
+        if (BIT(shot->obj_status, FROMCANNON))
             continue;
         if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity && shot->team == c->team)
             continue;
@@ -380,7 +380,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
             continue;
 
         /* mode 3 also checks if a player is using a phasing device */
-        if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE | KILLED) != PLAYING ||
+        if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE | KILLED) != PLAYING ||
             (BIT(world->rules->mode, TEAM_PLAY) && pl->team == c->team) ||
             (!pl->forceVisible && BIT(pl->used, USES_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
             (options.cannonSmartness > 2 && BIT(pl->used, USES_PHASING_DEVICE)))
@@ -543,7 +543,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
             }
             /* FALLTHROUGH */
         case 1:
-            if (options.allowHeatSeekers && BIT(PlayersArray[target]->status, THRUSTING))
+            if (options.allowHeatSeekers && BIT(PlayersArray[target]->obj_status, THRUSTING))
             {
                 Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_HEAT_SHOT,
                                   dir, mods, target);

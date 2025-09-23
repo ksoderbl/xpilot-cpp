@@ -265,7 +265,7 @@ void tuner_minelife(void)
         if (Obj[i]->type != OBJ_MINE)
             continue;
 
-        if (!BIT(Obj[i]->status, FROMCANNON))
+        if (!BIT(Obj[i]->obj_status, FROMCANNON))
         {
             life =
                 (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Obj[i]->mods.mini +
@@ -293,7 +293,7 @@ void tuner_missilelife(void)
             Obj[i]->type != OBJ_HEAT_SHOT && Obj[i]->type != OBJ_TORPEDO)
             continue;
 
-        if (!BIT(Obj[i]->status, FROMCANNON))
+        if (!BIT(Obj[i]->obj_status, FROMCANNON))
         {
             life =
                 (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Obj[i]->mods.mini +

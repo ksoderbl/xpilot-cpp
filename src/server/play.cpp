@@ -58,13 +58,13 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0) || (BIT(PlayersArray[i]->status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
+            if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0) || (BIT(PlayersArray[i]->obj_status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
                 continue;
             if (PlayersArray[i]->team == td->team)
             {
                 lose_score += PlayersArray[i]->score;
                 lose_team_members++;
-                if (BIT(PlayersArray[i]->status, GAME_OVER) == 0)
+                if (BIT(PlayersArray[i]->obj_status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
             else if (PlayersArray[i]->team == tt->team)
@@ -97,14 +97,14 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     for (i = 0; i < NumPlayers; i++)
     {
         if (Player_is_tank(PlayersArray[i]) ||
-            (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0) ||
-            (BIT(PlayersArray[i]->status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
+            (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0) ||
+            (BIT(PlayersArray[i]->obj_status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
             continue;
         if (PlayersArray[i]->team == td->team)
         {
             SCORE(PlayersArray[i], -sc, tt->pos, "Treasure: ");
             if (options.treasureKillTeam)
-                SET_BIT(PlayersArray[i]->status, KILLED);
+                SET_BIT(PlayersArray[i]->obj_status, KILLED);
         }
         else if (PlayersArray[i]->team == tt->team &&
                  (PlayersArray[i]->team != TEAM_NOT_SET || i == ind))
@@ -221,7 +221,7 @@ void Make_debris(
         debris->fuselife = life;
         debris->pl_range = radius;
         debris->pl_radius = radius;
-        debris->status = status;
+        debris->obj_status = status;
         debris->mods = mods;
         Cell_add_object(debris);
     }

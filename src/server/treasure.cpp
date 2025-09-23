@@ -62,7 +62,7 @@ void Make_treasure_ball(treasure_t *t)
     ball->pl_range = BALL_RADIUS;
     ball->pl_radius = BALL_RADIUS;
     Mods_clear(&ball->mods);
-    ball->status = RECREATE;
+    ball->obj_status = RECREATE;
     ball->ball_treasure = t;
     ball->ball_loose_ticks = 0;
     ball->ball_style = t->ball_style;
@@ -91,7 +91,7 @@ void Ball_is_replaced(ballobject_t *ball)
     player_t *pl = Player_by_id(ball->ball_owner);
 
     ball->life = 0;
-    SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
+    SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
     if (!options.zeroSumScoring)
         Score(pl, 2.0, ball->pos, "Treasure: ");
@@ -181,7 +181,7 @@ void Ball_hits_goal(ballobject_t *ball, group_t *gp)
      */
     if (ball->ball_owner == NO_ID)
     {
-        SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
+        SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
         return;
     }
     /*
@@ -208,7 +208,7 @@ void Ball_hits_goal(ballobject_t *ball, group_t *gp)
             Set_message(" < The treasure must be safe before you "
                         "can cash an opponent's! >");
         else if (Punish_team(owner, td, ball->pos))
-            CLR_BIT(ball->status, RECREATE);
+            CLR_BIT(ball->obj_status, RECREATE);
         return;
     }
 
@@ -235,7 +235,7 @@ void Ball_hits_goal(ballobject_t *ball, group_t *gp)
             td->team = i; /* give ball to team that has to be punished*/
             if (Punish_team(owner, td, ball->pos))
             {
-                CLR_BIT(ball->status, RECREATE);
+                CLR_BIT(ball->obj_status, RECREATE);
                 /*undo treasure counts from Punish_team so we don't
                   have to touch that function and possibly break it*/
                 world->teams[owner->team].TreasuresDestroyed--;
@@ -249,7 +249,7 @@ void Ball_hits_goal(ballobject_t *ball, group_t *gp)
 
         if (!opponent_teams)
         {
-            SET_BIT(ball->status, RECREATE);
+            SET_BIT(ball->obj_status, RECREATE);
             if (Punish_team(owner, td, ball->pos))
                 world->teams[options.specialBallTeam].TreasuresLeft++;
         }
@@ -262,7 +262,7 @@ void Ball_hits_goal(ballobject_t *ball, group_t *gp)
         td->team = gp->team; /* give ball to team that has to be punished*/
         if (Punish_team(owner, td, ball->pos))
         {
-            CLR_BIT(ball->status, RECREATE);
+            CLR_BIT(ball->obj_status, RECREATE);
             /*undo treasure counts from Punish_team so we don't
               have to touch that function and possibly break it*/
             world->teams[td->team].TreasuresLeft++;

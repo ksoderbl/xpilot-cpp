@@ -420,7 +420,7 @@ int Pick_team(int pick_for_type)
         {
             continue;
         }
-        if (BIT(pl->status, PAUSE))
+        if (BIT(pl->obj_status, PAUSE))
         {
             continue;
         }
@@ -571,7 +571,7 @@ void Server_info(char *str, unsigned max_size)
         {
             ratio = (double)pl->score / (pl->life + 1);
         }
-        if ((best == NULL || ratio > best_ratio) && !BIT(pl->status, PAUSE))
+        if ((best == NULL || ratio > best_ratio) && !BIT(pl->obj_status, PAUSE))
         {
             best_ratio = ratio;
             best = pl;
@@ -763,7 +763,7 @@ void Game_Over(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        SET_BIT(PlayersArray[i]->status, GAME_OVER);
+        SET_BIT(PlayersArray[i]->obj_status, GAME_OVER);
         if (IS_HUMAN_IND(i))
         {
             if (PlayersArray[i]->score > maxsc)

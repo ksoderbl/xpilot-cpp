@@ -123,7 +123,7 @@ bool Wormhole_hitfunc(group_t *gp, const move_t *move)
     if (obj == NULL)
         return true;
 
-    if (BIT(obj->status, WARPED | WARPING))
+    if (BIT(obj->obj_status, WARPED | WARPING))
         return false;
 
     return true;
@@ -131,7 +131,7 @@ bool Wormhole_hitfunc(group_t *gp, const move_t *move)
 
 void Object_hits_wormhole(object_t *obj, int ind)
 {
-    SET_BIT(obj->status, WARPING);
+    SET_BIT(obj->obj_status, WARPING);
     obj->wormHoleHit = ind;
 }
 
@@ -228,8 +228,8 @@ static void Traverse_wormhole(player_t *pl)
     /*else
       assert(0);*/
 
-    CLR_BIT(pl->status, WARPING);
-    SET_BIT(pl->status, WARPED);
+    CLR_BIT(pl->obj_status, WARPING);
+    SET_BIT(pl->obj_status, WARPED);
 
     sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 }
@@ -245,7 +245,7 @@ bool Initiate_hyperjump(player_t *pl)
         return false;
     pl->item[ITEM_HYPERJUMP]--;
     Player_add_fuel(pl, ED_HYPERJUMP);
-    SET_BIT(pl->status, WARPING);
+    SET_BIT(pl->obj_status, WARPING);
     pl->wormHoleHit = -1;
     return true;
 }
@@ -273,7 +273,7 @@ static void Hyperjump(player_t *pl)
     {
         /* need to do something else here ? */
         Set_player_message(pl, "Could not hyperjump. [*Server notice*]");
-        CLR_BIT(pl->status, WARPING);
+        CLR_BIT(pl->obj_status, WARPING);
         sound_play_sensors(pl->pos, HYPERJUMP_SOUND);
         return;
     }
@@ -285,7 +285,7 @@ static void Hyperjump(player_t *pl)
     Object_position_init_clpos(OBJ_PTR(pl), dest);
     pl->forceVisible += 15;
 
-    CLR_BIT(pl->status, WARPING);
+    CLR_BIT(pl->obj_status, WARPING);
 }
 
 void Player_warp(player_t *pl)
@@ -304,7 +304,7 @@ void Player_finish_warp(player_t *pl)
      * clear warped, so we can use shape_is inside,
      * Wormhole_hitfunc check for WARPED bit.
      */
-    CLR_BIT(pl->status, WARPED);
+    CLR_BIT(pl->obj_status, WARPED);
     group = shape_is_inside(pl->pos.cx, pl->pos.cy, hitmask,
                             OBJ_PTR(pl), (shape_t *)pl->ship,
                             pl->dir);
@@ -313,7 +313,7 @@ void Player_finish_warp(player_t *pl)
      * a wormhole ?
      */
     if (group != NO_GROUP)
-        SET_BIT(pl->status, WARPED);
+        SET_BIT(pl->obj_status, WARPED);
 }
 
 void Object_warp(object_t *obj)
@@ -337,8 +337,8 @@ void Object_warp(object_t *obj)
     /*else
       assert(0);*/
 
-    CLR_BIT(obj->status, WARPING);
-    SET_BIT(obj->status, WARPED);
+    CLR_BIT(obj->obj_status, WARPING);
+    SET_BIT(obj->obj_status, WARPED);
 }
 
 void Object_finish_warp(object_t *obj)
@@ -349,7 +349,7 @@ void Object_finish_warp(object_t *obj)
      * clear warped, so we can use shape_is inside,
      * Wormhole_hitfunc check for WARPED bit.
      */
-    CLR_BIT(obj->status, WARPED);
+    CLR_BIT(obj->obj_status, WARPED);
     group = is_inside(obj->pos.cx, obj->pos.cy, hitmask, obj);
 
     /*
@@ -357,5 +357,5 @@ void Object_finish_warp(object_t *obj)
      * a wormhole ?
      */
     if (group != NO_GROUP)
-        SET_BIT(obj->status, WARPED);
+        SET_BIT(obj->obj_status, WARPED);
 }

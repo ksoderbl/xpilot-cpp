@@ -43,7 +43,7 @@
 #include "walls.h"
 
 #define update_object_speed(o_)                                                                  \
-    if (BIT((o_)->status, GRAVITY))                                                              \
+    if (BIT((o_)->obj_status, GRAVITY))                                                          \
     {                                                                                            \
         (o_)->vel.x += (o_)->acc.x + world->gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].x; \
         (o_)->vel.y += (o_)->acc.y + world->gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].y; \
@@ -124,7 +124,7 @@ void Phasing(player_t *pl, bool on)
         if (BIT(pl->used, USES_CONNECTOR))
             pl->ball = NULL;
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
-        CLR_BIT(pl->status, GRAVITY);
+        CLR_BIT(pl->obj_status, GRAVITY);
         sound_play_sensors(pl->pos, PHASING_ON_SOUND);
     }
     else
@@ -135,7 +135,7 @@ void Phasing(player_t *pl, bool on)
             if (pl->item[ITEM_PHASING] <= 0)
                 CLR_BIT(pl->have, HAS_PHASING_DEVICE);
         }
-        SET_BIT(pl->status, GRAVITY);
+        SET_BIT(pl->obj_status, GRAVITY);
         sound_play_sensors(pl->pos, PHASING_OFF_SOUND);
     }
 }
@@ -307,13 +307,13 @@ void Emergency_shield(player_t *pl, bool on)
 void Thrust(player_t *pl, bool on)
 {
     // if (on)
-    //     SET_BIT(pl->status, THRUSTING);
+    //     SET_BIT(pl->obj_status, THRUSTING);
     // else
-    //     CLR_BIT(pl->status, THRUSTING);
+    //     CLR_BIT(pl->obj_status, THRUSTING);
     if (on)
-        SET_BIT(pl->status, THRUSTING);
+        SET_BIT(pl->obj_status, THRUSTING);
     else
-        CLR_BIT(pl->status, THRUSTING);
+        CLR_BIT(pl->obj_status, THRUSTING);
 }
 
 /*
@@ -323,7 +323,7 @@ void Thrust(player_t *pl, bool on)
  */
 void Autopilot(player_t *pl, bool on)
 {
-    CLR_BIT(pl->status, THRUSTING);
+    CLR_BIT(pl->obj_status, THRUSTING);
     if (on)
     {
         pl->auto_power_s = pl->power;
@@ -519,7 +519,7 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->turnspeed != turnspeed && vad > RES / 32)
     {
-        CLR_BIT(pl->status, THRUSTING);
+        CLR_BIT(pl->obj_status, THRUSTING);
         return;
     }
 
@@ -529,11 +529,11 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->power > power)
     {
-        CLR_BIT(pl->status, THRUSTING);
+        CLR_BIT(pl->obj_status, THRUSTING);
     }
     else
     {
-        SET_BIT(pl->status, THRUSTING);
+        SET_BIT(pl->obj_status, THRUSTING);
     }
 }
 
@@ -719,7 +719,7 @@ void Update_objects(void)
                             PlayersArray[ind]->pos.cy - cannon->pos.cy) /
                         CLICK <
                     TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
-                BIT(PlayersArray[ind]->status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
+                BIT(PlayersArray[ind]->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
             {
                 General_tractor_beam(-1, cannon->pos,
                                      cannon->item[ITEM_TRACTOR_BEAM], ind,
@@ -826,7 +826,7 @@ void Update_objects(void)
         if (pl->count > 0)
         {
             pl->count--;
-            if (!BIT(pl->status, PLAYING))
+            if (!BIT(pl->obj_status, PLAYING))
             {
                 Transport_to_home(pl);
                 Move_player(ind);
@@ -838,14 +838,14 @@ void Update_objects(void)
         {
             pl->count = -1;
 
-            if (!BIT(pl->status, PLAYING))
+            if (!BIT(pl->obj_status, PLAYING))
             {
-                SET_BIT(pl->status, PLAYING);
+                SET_BIT(pl->obj_status, PLAYING);
                 Go_home(ind);
             }
-            if (BIT(pl->status, SELF_DESTRUCT))
+            if (BIT(pl->obj_status, SELF_DESTRUCT))
             {
-                SET_BIT(pl->status, KILLED);
+                SET_BIT(pl->obj_status, KILLED);
                 sprintf(msg, "%s has committed suicide.", pl->name);
                 Set_message(msg);
                 Throw_items(pl);
@@ -854,14 +854,14 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
+        if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
             continue;
 
         if (pl->stunned > 0)
         {
             pl->stunned--;
             CLR_BIT(pl->used, USES_SHIELD | HAS_LASER | HAS_SHOT);
-            CLR_BIT(pl->status, THRUSTING);
+            CLR_BIT(pl->obj_status, THRUSTING);
         }
 
         if (pl->shield_time > 0)
@@ -893,7 +893,7 @@ void Update_objects(void)
 
         if (BIT(pl->used, USES_EMERGENCY_THRUST))
         {
-            if (pl->fuel.sum > 0 && BIT(pl->status, THRUSTING) && --pl->emergency_thrust_left <= 0)
+            if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_THRUST])
                     Emergency_thrust(pl, true);
@@ -928,7 +928,7 @@ void Update_objects(void)
          * Only do autopilot code if switched on and player is not
          * damaged (ie. can see).
          */
-        if ((BIT(pl->used, USES_AUTOPILOT)) || (BIT(pl->status, HOVERPAUSE) && !pl->damaged))
+        if ((BIT(pl->used, USES_AUTOPILOT)) || (BIT(pl->obj_status, HOVERPAUSE) && !pl->damaged))
             do_Autopilot(pl);
 
         /*
@@ -1079,7 +1079,7 @@ void Update_objects(void)
         if (pl->fuel.sum <= 0)
         {
             CLR_BIT(pl->used, USES_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
-            CLR_BIT(pl->status, THRUSTING);
+            CLR_BIT(pl->obj_status, THRUSTING);
         }
         if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
             CLR_BIT(pl->used, USES_REFUEL);
@@ -1087,7 +1087,7 @@ void Update_objects(void)
         /*
          * Update acceleration vector etc.
          */
-        if (BIT(pl->status, THRUSTING))
+        if (BIT(pl->obj_status, THRUSTING))
         {
             double power = pl->power;
             double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
@@ -1112,7 +1112,7 @@ void Update_objects(void)
 
         Player_set_mass(pl);
 
-        if (BIT(pl->status, WARPING))
+        if (BIT(pl->obj_status, WARPING))
         {
             position_t w;
             int wx, wy, proximity,
@@ -1123,7 +1123,7 @@ void Update_objects(void)
             {
                 /* could happen if the player hit a temporary wormhole
                    that was removed while the player was warping */
-                CLR_BIT(pl->status, WARPING);
+                CLR_BIT(pl->obj_status, WARPING);
                 break;
             }
 
@@ -1289,13 +1289,13 @@ void Update_objects(void)
                 }
             }
 
-            CLR_BIT(pl->status, WARPING);
-            SET_BIT(pl->status, WARPED);
+            CLR_BIT(pl->obj_status, WARPING);
+            SET_BIT(pl->obj_status, WARPED);
 
             sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
         }
 
-        if (!BIT(pl->status, PAUSE))
+        if (!BIT(pl->obj_status, PAUSE))
         {
             update_object_speed(pl); /* New position */
             Move_player(ind);
@@ -1303,7 +1303,7 @@ void Update_objects(void)
 
         if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
         {
-            if (BIT(pl->status, THRUSTING))
+            if (BIT(pl->obj_status, THRUSTING))
                 Thrust(pl);
         }
 
@@ -1358,9 +1358,9 @@ void Update_objects(void)
     {
         player_t *pl = PlayersArray[ind];
 
-        if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+        if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             Update_tanks(&(pl->fuel));
-        if (BIT(pl->status, KILLED))
+        if (BIT(pl->obj_status, KILLED))
         {
             Throw_items(pl);
 
@@ -1379,7 +1379,7 @@ void Update_objects(void)
         }
 
         if (options.maxPauseTime > 0 &&
-            Player_is_human(pl) && BIT(pl->status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
+            Player_is_human(pl) && BIT(pl->obj_status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
             sprintf(msg,
                     "%s was auto-kicked for pausing too long [*Server notice*]",

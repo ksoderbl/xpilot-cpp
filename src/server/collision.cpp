@@ -269,12 +269,12 @@ static void PlayerCollision(void)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = PlayersArray[i];
-        if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+        if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
             continue;
 
         if (pl->pix_pos.x < 0 || pl->pix_pos.y < 0 || pl->pix_pos.x >= world->width || pl->pix_pos.y >= world->height)
         {
-            SET_BIT(pl->status, KILLED);
+            SET_BIT(pl->obj_status, KILLED);
             sprintf(msg, "%s left the known universe.", pl->name);
             Set_message(msg);
             sc = Rate(WALL_SCORE, pl->score);
@@ -290,7 +290,7 @@ static void PlayerCollision(void)
         {
             for (j = i + 1; j < NumPlayers; j++)
             {
-                if (BIT(PlayersArray[j]->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+                if (BIT(PlayersArray[j]->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
                     continue;
                 if (BIT(PlayersArray[j]->used, USES_PHASING_DEVICE))
                     continue;
@@ -345,10 +345,10 @@ static void PlayerCollision(void)
                     continue;
 
                 if (pl->fuel.sum <= 0 || (!BIT(pl->used, USES_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
-                    SET_BIT(pl->status, KILLED);
+                    SET_BIT(pl->obj_status, KILLED);
 
                 if (PlayersArray[j]->fuel.sum <= 0 || (!BIT(PlayersArray[j]->used, USES_SHIELD) && !BIT(PlayersArray[j]->have, HAS_ARMOR)))
-                    SET_BIT(PlayersArray[j]->status, KILLED);
+                    SET_BIT(PlayersArray[j]->obj_status, KILLED);
 
                 if (!BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
                     Player_hit_armor(i);
@@ -356,9 +356,9 @@ static void PlayerCollision(void)
                 if (!BIT(PlayersArray[j]->used, USES_SHIELD) && BIT(PlayersArray[j]->have, HAS_ARMOR))
                     Player_hit_armor(j);
 
-                if (BIT(PlayersArray[j]->status, KILLED))
+                if (BIT(PlayersArray[j]->obj_status, KILLED))
                 {
-                    if (BIT(pl->status, KILLED))
+                    if (BIT(pl->obj_status, KILLED))
                     {
                         sprintf(msg, "%s and %s crashed.",
                                 pl->name, PlayersArray[j]->name);
@@ -415,7 +415,7 @@ static void PlayerCollision(void)
                 }
                 else
                 {
-                    if (BIT(pl->status, KILLED))
+                    if (BIT(pl->obj_status, KILLED))
                     {
                         int j_tank_owner = j;
                         if (Player_is_tank(PlayersArray[j]))
@@ -438,7 +438,7 @@ static void PlayerCollision(void)
                     }
                 }
 
-                if (BIT(PlayersArray[j]->status, KILLED))
+                if (BIT(PlayersArray[j]->obj_status, KILLED))
                 {
                     if (IS_ROBOT_IND(j) && Robot_war_on_player(j) == pl->id)
                     {
@@ -446,7 +446,7 @@ static void PlayerCollision(void)
                     }
                 }
 
-                if (BIT(pl->status, KILLED))
+                if (BIT(pl->obj_status, KILLED))
                 {
                     if (Player_is_robot(pl) && Robot_war_on_player(i) == PlayersArray[j]->id)
                     {
@@ -485,7 +485,7 @@ static void PlayerCollision(void)
                         ball->life = LONG_MAX; /* for frame counter */
                     ball->owner = pl->id;
                     ball->length = distance;
-                    SET_BIT(ball->status, GRAVITY);
+                    SET_BIT(ball->obj_status, GRAVITY);
                     world->treasures[ball->treasure].have = false;
                     SET_BIT(pl->have, HAS_BALL);
                     pl->ball = NULL;
@@ -532,12 +532,12 @@ static void PlayerCollision(void)
         PlayerObjectCollision(i);
 
         /* Player checkpoint */
-        if (BIT(world->rules->mode, TIMING) && BIT(pl->status, PAUSE | GAME_OVER) == 0)
+        if (BIT(world->rules->mode, TIMING) && BIT(pl->obj_status, PAUSE | GAME_OVER) == 0)
         {
             if (pl->round != 0)
                 pl->time++;
 
-            if (BIT(pl->status, PLAYING | KILLED) == PLAYING &&
+            if (BIT(pl->obj_status, PLAYING | KILLED) == PLAYING &&
                 Wrap_length(pl->pos.cx - world->checks[pl->check].x * BLOCK_CLICKS, pl->pos.cy - world->checks[pl->check].y * BLOCK_CLICKS) < options.checkpointRadius * BLOCK_CLICKS &&
                 !Player_is_tank(pl) &&
                 !options.ballrace)
@@ -612,7 +612,7 @@ static void PlayerObjectCollision(int ind)
     /*
      * Collision between a player and an object.
      */
-    if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
         return;
 
     Cell_get_objects(pl->pos, 4, 500, &obj_list, &obj_count);
@@ -635,7 +635,7 @@ static void PlayerObjectCollision(int ind)
         {
             if (obj->id == pl->id)
             {
-                if (BIT(obj->type, OBJ_SPARK | OBJ_MINE) && BIT(obj->status, OWNERIMMUNE))
+                if (BIT(obj->type, OBJ_SPARK | OBJ_MINE) && BIT(obj->obj_status, OWNERIMMUNE))
                     continue;
                 else if (options.selfImmunity)
                     continue;
@@ -646,7 +646,7 @@ static void PlayerObjectCollision(int ind)
                 continue;
             else if (Team_immune(obj->id, pl->id))
                 continue;
-            else if (BIT(PlayersArray[GetInd[obj->id]]->status, PAUSE))
+            else if (BIT(PlayersArray[GetInd[obj->id]]->obj_status, PAUSE))
                 continue;
         }
         else if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity && obj->team == pl->team
@@ -658,7 +658,7 @@ static void PlayerObjectCollision(int ind)
         {
             if (BIT(pl->used, USES_SHIELD) && !options.shieldedItemPickup)
             {
-                SET_BIT(obj->status, GRAVITY);
+                SET_BIT(obj->obj_status, GRAVITY);
                 Delta_mv((object_t *)pl, obj);
                 continue;
             }
@@ -670,7 +670,7 @@ static void PlayerObjectCollision(int ind)
         }
         else if (BIT(obj->type, OBJ_MINE))
         {
-            if (BIT(obj->status, CONFUSED))
+            if (BIT(obj->obj_status, CONFUSED))
                 continue;
         }
         else if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
@@ -703,7 +703,7 @@ static void PlayerObjectCollision(int ind)
             if (!hit)
                 continue;
             Player_collides_with_ball(ind, obj, radius);
-            if (BIT(pl->status, KILLED))
+            if (BIT(pl->obj_status, KILLED))
                 return;
             continue;
 
@@ -721,7 +721,7 @@ static void PlayerObjectCollision(int ind)
         case OBJ_WRECKAGE:
         case OBJ_DEBRIS:
             Player_collides_with_debris(ind, obj);
-            if (BIT(pl->status, KILLED))
+            if (BIT(pl->obj_status, KILLED))
                 return;
             break;
 
@@ -731,7 +731,7 @@ static void PlayerObjectCollision(int ind)
                 Player_collides_with_asteroid(ind, WIRE_PTR(obj));
                 Delta_mv_elastic((object_t *)pl, (object_t *)obj);
             }
-            if (BIT(pl->status, KILLED))
+            if (BIT(pl->obj_status, KILLED))
                 return;
             continue;
 
@@ -749,7 +749,7 @@ static void PlayerObjectCollision(int ind)
         if (BIT(obj->type, KILLING_SHOTS))
         {
             Player_collides_with_killing_shot(ind, obj);
-            if (BIT(pl->status, KILLED))
+            if (BIT(pl->obj_status, KILLED))
             {
                 return;
             }
@@ -822,7 +822,7 @@ static void Player_collides_with_ball(int ind, object_t *obj, int radius)
         }
     }
     Set_message(msg);
-    SET_BIT(pl->status, KILLED);
+    SET_BIT(pl->obj_status, KILLED);
 }
 
 static void Player_collides_with_item(int ind, object_t *obj)
@@ -1023,14 +1023,14 @@ static void Player_collides_with_mine(int ind, object_t *obj)
     {
         sprintf(msg, "%s hit %s.",
                 pl->name,
-                Describe_shot(mine->type, mine->status, mine->mods, 1));
+                Describe_shot(mine->type, mine->obj_status, mine->mods, 1));
     }
     else if (mine->owner == mine->id)
     {
         killer = GetInd[mine->owner];
         sprintf(msg, "%s hit %s %s by %s.", pl->name,
-                Describe_shot(mine->type, mine->status, mine->mods, 1),
-                BIT(mine->status, GRAVITY) ? "thrown " : "dropped ",
+                Describe_shot(mine->type, mine->obj_status, mine->mods, 1),
+                BIT(mine->obj_status, GRAVITY) ? "thrown " : "dropped ",
                 PlayersArray[killer]->name);
     }
     else if (mine->owner == NO_ID)
@@ -1043,7 +1043,7 @@ static void Player_collides_with_mine(int ind, object_t *obj)
         }
         sprintf(msg, "%s hit %s reprogrammed by %s.",
                 pl->name,
-                Describe_shot(mine->type, mine->status, mine->mods, 1),
+                Describe_shot(mine->type, mine->obj_status, mine->mods, 1),
                 reprogrammer_name);
     }
     else
@@ -1056,8 +1056,8 @@ static void Player_collides_with_mine(int ind, object_t *obj)
         }
         sprintf(msg, "%s hit %s %s by %s and reprogrammed by %s.",
                 pl->name,
-                Describe_shot(mine->type, mine->status, mine->mods, 1),
-                BIT(mine->status, GRAVITY) ? "thrown " : "dropped ",
+                Describe_shot(mine->type, mine->obj_status, mine->mods, 1),
+                BIT(mine->obj_status, GRAVITY) ? "thrown " : "dropped ",
                 PlayersArray[GetInd[mine->owner]]->name,
                 reprogrammer_name);
     }
@@ -1089,7 +1089,7 @@ static void Player_collides_with_debris(int ind, object_t *obj)
         Add_fuel(&pl->fuel, -cost);
     if (pl->fuel.sum == 0 || (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, USES_SHIELD) && !BIT(pl->have, HAS_ARMOR)))
     {
-        SET_BIT(pl->status, KILLED);
+        SET_BIT(pl->obj_status, KILLED);
         sprintf(msg, "%s succumbed to an explosion.", pl->name);
         killer = -1;
         if (obj->id != NO_ID)
@@ -1146,7 +1146,7 @@ static void Player_collides_with_asteroid(int ind, wireobject_t *ast)
     if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, USES_SHIELD) && !BIT(pl->have, HAS_ARMOR))))
     {
         int sc;
-        SET_BIT(pl->status, KILLED);
+        SET_BIT(pl->obj_status, KILLED);
         if (pl->velocity > v)
         {
             /* player moves faster than asteroid */
@@ -1214,11 +1214,11 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
         case OBJ_SMART_SHOT:
             if (obj->id == NO_ID)
                 sprintf(msg, "%s ate %s.", pl->name,
-                        Describe_shot(obj->type, obj->status,
+                        Describe_shot(obj->type, obj->obj_status,
                                       obj->mods, 1));
             else
                 sprintf(msg, "%s ate %s from %s.", pl->name,
-                        Describe_shot(obj->type, obj->status,
+                        Describe_shot(obj->type, obj->obj_status,
                                       obj->mods, 1),
                         PlayersArray[killer = GetInd[obj->id]]->name);
             drain = (long)(ED_SMART_SHOT_HIT /
@@ -1268,7 +1268,7 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
         case OBJ_HEAT_SHOT:
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (BIT(obj->status, FROMCANNON))
+            if (BIT(obj->obj_status, FROMCANNON))
             {
                 sound_play_sensors(pl->pos, PLAYER_HIT_CANNONFIRE_SOUND);
                 sprintf(msg, "%s was hit by cannonfire.", pl->name);
@@ -1277,14 +1277,14 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
             else if (obj->id == NO_ID)
             {
                 sprintf(msg, "%s was killed by %s.", pl->name,
-                        Describe_shot(obj->type, obj->status,
+                        Describe_shot(obj->type, obj->obj_status,
                                       obj->mods, 1));
                 sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
             }
             else
             {
                 sprintf(msg, "%s was killed by %s from %s.", pl->name,
-                        Describe_shot(obj->type, obj->status,
+                        Describe_shot(obj->type, obj->obj_status,
                                       obj->mods, 1),
                         PlayersArray[killer = GetInd[obj->id]]->name);
                 if (killer == ind)
@@ -1321,7 +1321,7 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
                 break;
             }
             sc *= factor;
-            if (BIT(obj->status, FROMCANNON))
+            if (BIT(obj->obj_status, FROMCANNON))
                 SCORE(pl, -sc, pl->pos, "Cannon");
             else if (obj->id == NO_ID || killer == ind)
                 SCORE(pl, -sc, pl->pos,
@@ -1333,7 +1333,7 @@ static void Player_collides_with_killing_shot(int ind, object_t *obj)
                 Robot_war(ind, killer);
             }
             Set_message(msg);
-            SET_BIT(pl->status, KILLED);
+            SET_BIT(pl->obj_status, KILLED);
             return;
 
         default:
@@ -1375,7 +1375,7 @@ static void Player_pass_checkpoint(int ind)
             }
             Player_death_reset(ind);
             pl->mychar = 'D';
-            SET_BIT(pl->status, GAME_OVER | FINISH);
+            SET_BIT(pl->obj_status, GAME_OVER | FINISH);
             sprintf(msg,
                     "%s finished the race. Last lap time: %.2fs. "
                     "Personal race best lap time: %.2fs.",
@@ -1444,7 +1444,7 @@ static void AsteroidCollision(void)
                 continue;
 
             /* asteroids don't hit these objects */
-            if (BIT(obj->type, OBJ_ITEM | OBJ_DEBRIS | OBJ_SPARK | OBJ_WRECKAGE) && obj->id == NO_ID && !BIT(obj->status, FROMCANNON))
+            if (BIT(obj->type, OBJ_ITEM | OBJ_DEBRIS | OBJ_SPARK | OBJ_WRECKAGE) && obj->id == NO_ID && !BIT(obj->obj_status, FROMCANNON))
                 continue;
             /* don't collide while still overlapping  after breaking */
             if (obj->type == OBJ_ASTEROID && ast->life > ast->fuselife)
@@ -1496,7 +1496,7 @@ static void AsteroidCollision(void)
                 Delta_mv(ast, obj);
                 break;
             case OBJ_MINE:
-                if (!BIT(obj->status, CONFUSED))
+                if (!BIT(obj->obj_status, CONFUSED))
                     obj->life = 0;
                 break;
             case OBJ_SHOT:

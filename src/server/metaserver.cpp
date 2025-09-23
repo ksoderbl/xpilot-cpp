@@ -200,7 +200,7 @@ void Meta_update(int change)
     memset(active_per_team, 0, sizeof active_per_team);
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_HUMAN_IND(i) && !BIT(PlayersArray[i]->status, PAUSE))
+        if (IS_HUMAN_IND(i) && !BIT(PlayersArray[i]->obj_status, PAUSE))
         {
             num_active_players++;
             if (BIT(world->rules->mode, TEAM_PLAY))
@@ -278,7 +278,7 @@ void Meta_update(int change)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_HUMAN_IND(i) && !BIT(PlayersArray[i]->status, PAUSE))
+        if (IS_HUMAN_IND(i) && !BIT(PlayersArray[i]->obj_status, PAUSE))
         {
             if ((len + (4 * MAX_CHARS)) < sizeof(string))
             {

@@ -844,7 +844,7 @@ void Move_segment(move_state_t *ms)
             {
                 blk2.x = OBJ_X_IN_BLOCKS(mi->pl);
                 blk2.y = OBJ_Y_IN_BLOCKS(mi->pl);
-                if (BIT(mi->pl->status, WARPED))
+                if (BIT(mi->pl->obj_status, WARPED))
                 {
                     if (world->block[blk2.x][blk2.y] == WORMHOLE)
                     {
@@ -858,7 +858,7 @@ void Move_segment(move_state_t *ms)
                             break;
                         }
                     }
-                    CLR_BIT(mi->pl->status, WARPED);
+                    CLR_BIT(mi->pl->obj_status, WARPED);
                 }
                 if (blk2.x == block.x && blk2.y == block.y)
                 {
@@ -889,7 +889,7 @@ void Move_segment(move_state_t *ms)
             {
                 break;
             }
-            if (BIT(mi->obj->status, FROMCANNON) && !BIT(world->rules->mode, TEAM_PLAY))
+            if (BIT(mi->obj->obj_status, FROMCANNON) && !BIT(world->rules->mode, TEAM_PLAY))
             {
                 break;
             }
@@ -907,7 +907,7 @@ void Move_segment(move_state_t *ms)
                 break;
             }
 
-            if (BIT(world->rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->status, FROMCANNON)) && mi->obj->team == world->cannons[i].team)
+            if (BIT(world->rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) && mi->obj->team == world->cannons[i].team)
             {
                 break;
             }
@@ -1153,7 +1153,7 @@ void Move_segment(move_state_t *ms)
                         }
 
                         ball->life = 0;
-                        SET_BIT(ball->status, (NOEXPLOSION | RECREATE));
+                        SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
                         SCORE(pl, 5, tt->pos, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
@@ -1183,7 +1183,7 @@ void Move_segment(move_state_t *ms)
                         }
                         else if (Punish_team(GetInd[ball->owner],
                                              ball->treasure, ms->treasure))
-                            CLR_BIT(ball->status, RECREATE);
+                            CLR_BIT(ball->obj_status, RECREATE);
                     }
                     ball->life = 0;
                     return;
@@ -1997,14 +1997,14 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         for (j = 0; j < NumPlayers; j++)
         {
             if (Player_is_tank(PlayersArray[j]) ||
-                (BIT(PlayersArray[j]->status, PAUSE) && PlayersArray[j]->count <= 0) ||
-                (BIT(PlayersArray[j]->status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
+                (BIT(PlayersArray[j]->obj_status, PAUSE) && PlayersArray[j]->count <= 0) ||
+                (BIT(PlayersArray[j]->obj_status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
                 continue;
             if (PlayersArray[j]->team == targ->team)
             {
                 lose_score += PlayersArray[j]->score;
                 lose_team_members++;
-                if (BIT(PlayersArray[j]->status, GAME_OVER) == 0)
+                if (BIT(PlayersArray[j]->obj_status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
             else if (PlayersArray[j]->team == PlayersArray[killer]->team)
@@ -2070,14 +2070,14 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     for (j = 0; j < NumPlayers; j++)
     {
         if (Player_is_tank(PlayersArray[j]) ||
-            (BIT(PlayersArray[j]->status, PAUSE) && PlayersArray[j]->count <= 0) ||
-            (BIT(PlayersArray[j]->status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
+            (BIT(PlayersArray[j]->obj_status, PAUSE) && PlayersArray[j]->count <= 0) ||
+            (BIT(PlayersArray[j]->obj_status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
             continue;
 
         if (PlayersArray[j]->team == targ->team)
         {
-            if (options.targetKillTeam && targets_remaining == 0 && !BIT(PlayersArray[j]->status, KILLED | PAUSE | GAME_OVER))
-                SET_BIT(PlayersArray[j]->status, KILLED);
+            if (options.targetKillTeam && targets_remaining == 0 && !BIT(PlayersArray[j]->obj_status, KILLED | PAUSE | GAME_OVER))
+                SET_BIT(PlayersArray[j]->obj_status, KILLED);
             SCORE(PlayersArray[j], -sc, targ->pos, "Target: ");
         }
         else if (PlayersArray[j]->team == PlayersArray[killer]->team &&
@@ -2243,8 +2243,8 @@ void Move_object(object_t *obj)
                  * should bounce, it is not reactive thrust otherwise wall
                  * bouncing would cause acceleration of the player.
                  */
-                if (!BIT(obj->status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK))
-                    CLR_BIT(obj->status, OWNERIMMUNE);
+                if (!BIT(obj->obj_status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK))
+                    CLR_BIT(obj->obj_status, OWNERIMMUNE);
                 if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(options.maxObjectWallBounceSpeed))
                 {
                     obj->life = 0;
@@ -2316,7 +2316,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         break;
 
     case CrashWormHole:
-        SET_BIT(pl->status, WARPING);
+        SET_BIT(pl->obj_status, WARPING);
         pl->wormHoleHit = ms->wormhole;
         break;
 
@@ -2392,7 +2392,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         int total_pusher_score = 0;
         int i, j, sc;
 
-        SET_BIT(pl->status, KILLED);
+        SET_BIT(pl->obj_status, KILLED);
         sprintf(msg, howfmt, pl->name, (!pt) ? " head first" : "");
 
         /* get a list of who pushed me */
@@ -2469,7 +2469,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->status, KILLED) && pl->score < 0 && Player_is_robot(pl))
+    if (BIT(pl->obj_status, KILLED) && pl->score < 0 && Player_is_robot(pl))
     {
         pl->home_base = 0;
         Pick_startpos(ind);
@@ -2500,9 +2500,9 @@ void Move_player(int ind)
     double fric;
     double oldvx, oldvy;
 
-    if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
     {
-        if (!BIT(pl->status, KILLED | PAUSE))
+        if (!BIT(pl->obj_status, KILLED | PAUSE))
         {
             pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
             pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
@@ -2938,7 +2938,7 @@ void Turn_player(player_t *pl)
     {
         return;
     }
-    if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
     {
         pl->dir = new_dir;
         return;

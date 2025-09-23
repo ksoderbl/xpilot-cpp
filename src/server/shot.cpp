@@ -130,7 +130,7 @@ void Place_general_mine(int ind, uint16_t team, long status,
     if (!World_contains_clpos(pos))
         return;
 
-    if (pl && BIT(pl->status, KILLED))
+    if (pl && BIT(pl->obj_status, KILLED))
         life = (int)(rfrac() * FPS);
     else if (BIT(status, FROMCANNON))
         life = CANNON_SHOT_LIFE;
@@ -237,7 +237,7 @@ void Place_general_mine(int ind, uint16_t team, long status,
         mine->type = OBJ_MINE;
         mine->color = BLUE;
         mine->info = options.mineFuseTime;
-        mine->status = status;
+        mine->obj_status = status;
         mine->id = (pl ? pl->id : NO_ID);
         mine->team = team;
         mine->owner = mine->id;
@@ -370,7 +370,7 @@ void Make_treasure_ball(int treasure)
     ball->pl_range = BALL_RADIUS;
     ball->pl_radius = BALL_RADIUS;
     CLEAR_MODS(ball->mods);
-    ball->status = RECREATE;
+    ball->obj_status = RECREATE;
     ball->treasure = treasure;
     Cell_add_object(OBJ_PTR(ball));
 
@@ -651,7 +651,7 @@ void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
                 drain += (long)(CLUSTER_MASS_DRAIN(mass));
         }
 
-        if (pl && BIT(pl->status, KILLED))
+        if (pl && BIT(pl->obj_status, KILLED))
             life = (int)(rfrac() * FPS);
         else if (!cannon)
             life = (options.missileLife ? options.missileLife : MISSILE_LIFETIME);
@@ -1061,7 +1061,7 @@ void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
 
         shot->vel.x = mv.x + (pl ? pl->vel.x : 0.0) + tcos(ldir) * speed;
         shot->vel.y = mv.y + (pl ? pl->vel.y : 0.0) + tsin(ldir) * speed;
-        shot->status = status;
+        shot->obj_status = status;
         shot->missile_dir = ldir;
         shot->mods = mods;
         shot->pl_range = pl_range;
@@ -1179,12 +1179,12 @@ void Delete_shot(int ind)
              * Therefore we force the ball to be recreated.
              */
             world->treasures[ball->treasure].have = false;
-            SET_BIT(ball->status, RECREATE);
+            SET_BIT(ball->obj_status, RECREATE);
         }
-        if (BIT(ball->status, RECREATE))
+        if (BIT(ball->obj_status, RECREATE))
         {
             addBall = 1;
-            if (BIT(ball->status, NOEXPLOSION))
+            if (BIT(ball->obj_status, NOEXPLOSION))
                 break;
             sound_play_sensors(ball->pos, EXPLODE_BALL_SOUND);
             Make_debris(
@@ -1217,7 +1217,7 @@ void Delete_shot(int ind)
         if (shot->type == OBJ_MINE)
             status |= COLLISIONSHOVE;
 
-        if (BIT(shot->status, FROMCANNON))
+        if (BIT(shot->obj_status, FROMCANNON))
             status |= FROMCANNON;
 
         if (BIT(shot->mods.nuclear, NUCLEAR))
@@ -1310,7 +1310,7 @@ void Delete_shot(int ind)
         break;
 
     case OBJ_SHOT:
-        if (shot->id == NO_ID || BIT(shot->status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
+        if (shot->id == NO_ID || BIT(shot->obj_status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
             break;
         pl = PlayersArray[GetInd[shot->id]];
         if (--pl->shots <= 0)
@@ -1606,7 +1606,7 @@ void Move_smart_shot(int ind)
             pl = 0;
             shot->count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
         }
-        if (pl && BIT(pl->status, THRUSTING))
+        if (pl && BIT(pl->obj_status, THRUSTING))
         {
             /*
              * Target is thrusting,
@@ -1633,7 +1633,7 @@ void Move_smart_shot(int ind)
                 {
                     player *p = PlayersArray[i];
 
-                    if (!BIT(p->status, THRUSTING))
+                    if (!BIT(p->obj_status, THRUSTING))
                         continue;
 
                     l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
@@ -1672,7 +1672,7 @@ void Move_smart_shot(int ind)
     {
         smartobject_t *smart = SMART_PTR(shot);
 
-        if (BIT(smart->status, CONFUSED) && (!(frame_loops % CONFUSED_UPDATE_GRANULARITY) || smart->count == CONFUSED_TIME))
+        if (BIT(smart->obj_status, CONFUSED) && (!(frame_loops % CONFUSED_UPDATE_GRANULARITY) || smart->count == CONFUSED_TIME))
         {
 
             if (smart->count)
@@ -1682,7 +1682,7 @@ void Move_smart_shot(int ind)
             }
             else
             {
-                CLR_BIT(smart->status, CONFUSED);
+                CLR_BIT(smart->obj_status, CONFUSED);
 
                 /* range is percentage from center to periphery of ecm burst */
                 range = (ECM_DISTANCE - smart->ecm_range) / ECM_DISTANCE;
@@ -1871,13 +1871,13 @@ void Move_mine(int ind)
 {
     mineobject_t *mine = MINE_IND(ind);
 
-    if (BIT(mine->status, CONFUSED) && --mine->count <= 0)
-        CLR_BIT(mine->status, CONFUSED);
+    if (BIT(mine->obj_status, CONFUSED) && --mine->count <= 0)
+        CLR_BIT(mine->obj_status, CONFUSED);
 
-    if (BIT(mine->status, OWNERIMMUNE) && mine->info)
+    if (BIT(mine->obj_status, OWNERIMMUNE) && mine->info)
     {
         if (--mine->info <= 0)
-            CLR_BIT(mine->status, OWNERIMMUNE);
+            CLR_BIT(mine->obj_status, OWNERIMMUNE);
     }
 
     if (mine->mods.mini && mine->spread_left-- <= 0)

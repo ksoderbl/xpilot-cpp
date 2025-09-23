@@ -129,7 +129,7 @@ static void Laser_pulse_find_victims(
     for (i = 0; i < NumPlayers; i++)
     {
         vic = PlayersArray[i];
-        if (BIT(vic->status, PLAYING | GAME_OVER | KILLED | PAUSE) != PLAYING)
+        if (BIT(vic->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) != PLAYING)
             continue;
 
         if (BIT(vic->used, USES_PHASING_DEVICE))
@@ -231,7 +231,7 @@ static void Laser_pulse_hits_player(
         return;
     if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
-        if (BIT(vicpl->used, USES_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->status, THRUSTING))
+        if (BIT(vicpl->used, USES_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->obj_status, THRUSTING))
         {
             if (pl)
             {
@@ -250,7 +250,7 @@ static void Laser_pulse_hits_player(
             Set_message(msg);
             CLR_BIT(vicpl->used,
                     HAS_SHIELD | HAS_LASER | OBJ_SHOT);
-            CLR_BIT(vicpl->status, THRUSTING);
+            CLR_BIT(vicpl->obj_status, THRUSTING);
             vicpl->stunned += 5;
         }
     }
@@ -266,7 +266,7 @@ static void Laser_pulse_hits_player(
         Add_fuel(&(vicpl->fuel), (long)ED_LASER_HIT);
         if (!BIT(vicpl->used, USES_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
-            SET_BIT(vicpl->status, KILLED);
+            SET_BIT(vicpl->obj_status, KILLED);
             if (pl)
             {
                 sprintf(msg,
@@ -562,9 +562,9 @@ void Laser_pulse_collision(void)
         obj->id = pulse->id;
         obj->team = pulse->team;
         obj->count = 0;
-        obj->status = 0;
+        obj->obj_status = 0;
         if (pulse->id == NO_ID)
-            obj->status = FROMCANNON;
+            obj->obj_status = FROMCANNON;
         clpos_t pos;
         pos.cx = FLOAT_TO_CLICK(x1);
         pos.cy = FLOAT_TO_CLICK(y1);

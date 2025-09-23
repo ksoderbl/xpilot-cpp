@@ -131,7 +131,7 @@ struct cell_node
     int count;           /* Misc timings */              \
     uint8_t color;       /* Color of object */           \
     uint8_t missile_dir; /* missile direction */         \
-    uint32_t status;     /* gravity, etc. */
+    uint32_t obj_status; /* gravity, etc. */
 
 /* up to here all object types are the same as all player types. */
 

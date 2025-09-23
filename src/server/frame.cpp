@@ -439,7 +439,7 @@ static int Frame_status(connection_t *conn, int ind)
                 Players_are_teammates(pl, PlayersArray[lock_ind]) ||
                 Players_are_allies(pl, PlayersArray[lock_ind]))
 #endif
-            && BIT(PlayersArray[lock_ind]->status, PLAYING | GAME_OVER) == PLAYING &&
+            && BIT(PlayersArray[lock_ind]->obj_status, PLAYING | GAME_OVER) == PLAYING &&
             (options.playersOnRadar || click_inview(cv, PlayersArray[lock_ind]->pos.cx, PlayersArray[lock_ind]->pos.cy)) &&
             pl->lock.distance != 0)
         {
@@ -450,7 +450,7 @@ static int Frame_status(connection_t *conn, int ind)
         }
     }
 
-    if (BIT(pl->status, HOVERPAUSE))
+    if (BIT(pl->obj_status, HOVERPAUSE))
         showautopilot = (pl->count <= 0 || (frame_loops % 8) < 4);
     else if (BIT(pl->used, USES_AUTOPILOT))
         showautopilot = (frame_loops % 8) < 4;
@@ -511,7 +511,7 @@ static int Frame_status(connection_t *conn, int ind)
                   lock_dist,
                   lock_dir,
                   showautopilot,
-                  PlayersArray[GetInd[Get_player_id(conn)]]->status,
+                  PlayersArray[GetInd[Get_player_id(conn)]]->obj_status,
                   mods);
     if (n <= 0)
     {
@@ -526,7 +526,7 @@ static int Frame_status(connection_t *conn, int ind)
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
-    if (BIT(pl->status, SELF_DESTRUCT) && pl->count > 0)
+    if (BIT(pl->obj_status, SELF_DESTRUCT) && pl->count > 0)
         Send_destruct(conn, pl->count);
     if (BIT(pl->used, USES_PHASING_DEVICE))
         Send_phasingtime(conn,
@@ -842,7 +842,7 @@ static void Frame_shots(connection_t *conn, int ind)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetInd[shot->id]]->status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetInd[shot->id]]->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -896,14 +896,14 @@ static void Frame_shots(connection_t *conn, int ind)
                 id = mine->id;
                 if (id == NO_ID)
                     id = EXPIRED_MINE_ID;
-                if (BIT(mine->status, CONFUSED))
+                if (BIT(mine->obj_status, CONFUSED))
                     confused = 1;
             }
-            if (mine->id != NO_ID && BIT(PlayersArray[GetInd[mine->id]]->status, PAUSE))
+            if (mine->id != NO_ID && BIT(PlayersArray[GetInd[mine->id]]->obj_status, PAUSE))
                 laid_by_team = 1;
             else
             {
-                laid_by_team = (Team_immune(mine->id, pl->id) || (BIT(mine->status, OWNERIMMUNE) && mine->owner == pl->id));
+                laid_by_team = (Team_immune(mine->id, pl->id) || (BIT(mine->obj_status, OWNERIMMUNE) && mine->owner == pl->id));
                 if (confused)
                 {
                     id = 0;
@@ -918,7 +918,7 @@ static void Frame_shots(connection_t *conn, int ind)
         {
             int item_type = shot->info;
 
-            if (BIT(shot->status, RANDOM_ITEM))
+            if (BIT(shot->obj_status, RANDOM_ITEM))
                 item_type = Choose_random_item();
 
             Send_item(conn, x, y, item_type);
@@ -1033,13 +1033,13 @@ static void Frame_ships(connection_t *conn, int ind)
     {
         i = player_shuffle_ptr[k];
         pl_i = PlayersArray[i];
-        if (!BIT(pl_i->status, PLAYING | PAUSE))
+        if (!BIT(pl_i->obj_status, PLAYING | PAUSE))
             continue;
-        if (BIT(pl_i->status, GAME_OVER))
+        if (BIT(pl_i->obj_status, GAME_OVER))
             continue;
         if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
             continue;
-        if (BIT(pl_i->status, PAUSE))
+        if (BIT(pl_i->obj_status, PAUSE))
         {
             Send_paused(conn,
                         pl_i->pix_pos.x,
@@ -1193,7 +1193,7 @@ static void Frame_radar(connection_t *conn, int ind)
              *                        no playersOnRadar or if not visible
              */
             if (PlayersArray[i]->conn == conn ||
-                BIT(PlayersArray[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
+                BIT(PlayersArray[i]->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
                 (!Players_are_teammates(pl, PlayersArray[i]) && !Players_are_allies(pl, PlayersArray[i]) && !Player_owns_tank(pl, PlayersArray[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
             if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - PlayersArray[i]->pos.cx,
@@ -1305,7 +1305,7 @@ void Frame_update(void)
         conn = pl->conn;
         if (conn == NULL)
             continue;
-        if (BIT(pl->status, PAUSE | GAME_OVER) && !options.allowViewing && !pl->isowner)
+        if (BIT(pl->obj_status, PAUSE | GAME_OVER) && !options.allowViewing && !pl->isowner)
         {
             /*
              * Lower the frame rate for non-playing players
@@ -1313,7 +1313,7 @@ void Frame_update(void)
              * Owner always gets full framerate even if paused.
              * With allowViewing on, everyone gets full framerate.
              */
-            if (BIT(pl->status, PAUSE))
+            if (BIT(pl->obj_status, PAUSE))
             {
                 if (frame_loops & 0x03)
                     continue;
@@ -1351,8 +1351,8 @@ void Frame_update(void)
          */
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
-            if ((BIT(pl->status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
-                (BIT(pl->status, PAUSE) &&
+            if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
+                (BIT(pl->obj_status, PAUSE) &&
                  ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == PlayersArray[GetInd[pl->lock.pl_id]]->team) ||
                   pl->isowner ||
                   options.allowViewing)))

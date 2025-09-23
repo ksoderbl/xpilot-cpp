@@ -990,7 +990,7 @@ static bool Robot_check_leave(int ind)
     player_t *pl = PlayersArray[ind];
     char msg[MSG_LEN];
 
-    if (options.robotsLeave && pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->status, PLAYING) || pl->count <= 0))
+    if (options.robotsLeave && pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
     {
         msg[0] = '\0';
         if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
@@ -1043,11 +1043,11 @@ static void Tank_play(int ind)
 
     if (t == 0)
     {
-        SET_BIT(pl->status, THRUSTING);
+        SET_BIT(pl->obj_status, THRUSTING);
     }
     else if (t == TANK_THRUST_TIME)
     {
-        CLR_BIT(pl->status, THRUSTING);
+        CLR_BIT(pl->obj_status, THRUSTING);
     }
 }
 
@@ -1105,7 +1105,7 @@ void Robot_update(void)
             /* Ignore non-robots. */
             continue;
 
-        if (BIT(pl->status, PLAYING | GAME_OVER) != PLAYING)
+        if (BIT(pl->obj_status, PLAYING | GAME_OVER) != PLAYING)
         {
             /* Only check for leave if not being transported to homebase. */
             if (!pl->count)

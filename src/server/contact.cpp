@@ -206,7 +206,7 @@ static int Kick_paused_players(int team)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (PlayersArray[i]->conn != NULL && BIT(PlayersArray[i]->status, PAUSE) && (team == TEAM_NOT_SET || PlayersArray[i]->team == team))
+        if (PlayersArray[i]->conn != NULL && BIT(PlayersArray[i]->obj_status, PAUSE) && (team == TEAM_NOT_SET || PlayersArray[i]->team == team))
         {
             if (team == TEAM_NOT_SET)
             {

@@ -142,9 +142,9 @@ void Pick_startpos(int ind)
                               pl->home_base);
                 }
             }
-            if (BIT(pl->status, PLAYING) == 0)
+            if (BIT(pl->obj_status, PLAYING) == 0)
                 pl->count = RECOVERY_DELAY;
-            else if (BIT(pl->status, PAUSE | GAME_OVER))
+            else if (BIT(pl->obj_status, PAUSE | GAME_OVER))
                 Go_home(ind);
         }
     }
@@ -174,7 +174,7 @@ void Go_home(int ind)
         return;
     }
 
-    if (BIT(world->rules->mode, TIMING) && pl->round && !BIT(pl->status, GAME_OVER))
+    if (BIT(world->rules->mode, TIMING) && pl->round && !BIT(pl->obj_status, GAME_OVER))
     {
         if (pl->check)
             check = pl->check - 1;
@@ -222,7 +222,7 @@ void Go_home(int ind)
         if (BIT(pl->have, HAS_DEFLECTOR))
             Deflector(pl, true);
     }
-    CLR_BIT(pl->status, THRUSTING);
+    CLR_BIT(pl->obj_status, THRUSTING);
     pl->updateVisibility = 1;
     for (i = 0; i < NumPlayers; i++)
     {
@@ -472,7 +472,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->damaged = 0;
     pl->stunned = 0;
 
-    pl->status = PLAYING | GRAVITY | DEF_BITS;
+    pl->obj_status = PLAYING | GRAVITY | DEF_BITS;
     pl->have = DEF_HAVE;
     pl->used = DEF_USED;
 
@@ -520,7 +520,7 @@ int Init_player(int ind, shipshape_t *ship)
         {
             pl->mychar = 'W';
             pl->prev_life = pl->life = 0;
-            SET_BIT(pl->status, GAME_OVER);
+            SET_BIT(pl->obj_status, GAME_OVER);
         }
     }
 
@@ -672,7 +672,7 @@ void Reset_all_players(void)
         pl = PlayersArray[i];
         if (options.endOfRoundReset)
         {
-            if (BIT(pl->status, PAUSE))
+            if (BIT(pl->obj_status, PAUSE))
             {
                 Player_death_reset(i);
             }
@@ -687,7 +687,7 @@ void Reset_all_players(void)
                 }
             }
         }
-        CLR_BIT(pl->status, GAME_OVER);
+        CLR_BIT(pl->obj_status, GAME_OVER);
         CLR_BIT(pl->have, HAS_BALL);
         pl->kills = 0;
         pl->deaths = 0;
@@ -697,7 +697,7 @@ void Reset_all_players(void)
         pl->best_lap = 0;
         pl->last_lap = 0;
         pl->last_lap_time = 0;
-        if (!BIT(pl->status, PAUSE))
+        if (!BIT(pl->obj_status, PAUSE))
         {
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
@@ -725,7 +725,7 @@ void Reset_all_players(void)
                 ball->id = NO_ID;
                 ball->life = 0;
                 ball->owner = 0; /* why not -1 ??? */
-                CLR_BIT(ball->status, RECREATE);
+                CLR_BIT(ball->obj_status, RECREATE);
                 Delete_shot(j);
             }
         }
@@ -831,7 +831,7 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0))
+        if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0))
             continue;
         *average_score += PlayersArray[i]->score;
         ratio = (double)PlayersArray[i]->kills / (PlayersArray[i]->deaths + 1);
@@ -990,8 +990,8 @@ void Team_game_over(int winning_team, const char *reason)
             if (PlayersArray[i]->team != winning_team)
                 continue;
             if (Player_is_tank(PlayersArray[i]) ||
-                (BIT(PlayersArray[i]->status, PAUSE) && PlayersArray[i]->count <= 0) ||
-                (BIT(PlayersArray[i]->status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
+                (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0) ||
+                (BIT(PlayersArray[i]->obj_status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
                 continue;
             for (j = 0; j < num_best_players; j++)
             {
@@ -1122,7 +1122,7 @@ void Race_game_over(void)
             {
                 continue;
             }
-            if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || pl->best_lap <= 0)
+            if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || pl->best_lap <= 0)
             {
                 j = i;
             }
@@ -1134,7 +1134,7 @@ void Race_game_over(void)
                     {
                         break;
                     }
-                    if (BIT(PlayersArray[order[j]]->status, PAUSE) || (BIT(PlayersArray[order[j]]->status, GAME_OVER) && PlayersArray[order[j]]->mychar == 'W'))
+                    if (BIT(PlayersArray[order[j]]->obj_status, PAUSE) || (BIT(PlayersArray[order[j]]->obj_status, GAME_OVER) && PlayersArray[order[j]]->mychar == 'W'))
                     {
                         break;
                     }
@@ -1162,7 +1162,7 @@ void Race_game_over(void)
                                   pl->home_base);
                     }
                 }
-                if (BIT(pl->status, PAUSE))
+                if (BIT(pl->obj_status, PAUSE))
                 {
                     Go_home(order[i]);
                 }
@@ -1174,15 +1174,15 @@ void Race_game_over(void)
     for (i = NumPlayers - 1; i >= 0; i--)
     {
         pl = PlayersArray[i];
-        CLR_BIT(pl->status, RACE_OVER | FINISH);
-        if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+        CLR_BIT(pl->obj_status, RACE_OVER | FINISH);
+        if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
         {
             continue;
         }
         num_active_players++;
 
         /* Kill any remaining players */
-        if (!BIT(pl->status, GAME_OVER))
+        if (!BIT(pl->obj_status, GAME_OVER))
             Kill_player(i);
         else
             Player_death_reset(i);
@@ -1206,7 +1206,7 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = PlayersArray[i];
-            if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+            if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
             {
                 continue;
             }
@@ -1282,9 +1282,9 @@ void Compute_game_status(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = PlayersArray[i];
-            if (BIT(pl->status, PAUSE) || Player_is_tank(pl))
+            if (BIT(pl->obj_status, PAUSE) || Player_is_tank(pl))
                 continue;
-            if (!BIT(pl->status, GAME_OVER))
+            if (!BIT(pl->obj_status, GAME_OVER))
                 num_alive_players++;
             else if (pl->mychar == 'W')
             {
@@ -1292,14 +1292,14 @@ void Compute_game_status(void)
                 continue;
             }
 
-            if (BIT(pl->status, RACE_OVER))
+            if (BIT(pl->obj_status, RACE_OVER))
             {
                 num_race_over_players++;
                 position++;
             }
-            else if (BIT(pl->status, FINISH))
+            else if (BIT(pl->obj_status, FINISH))
                 num_finished_players++;
-            else if (!BIT(pl->status, GAME_OVER))
+            else if (!BIT(pl->obj_status, GAME_OVER))
                 alive = pl;
 
             /*
@@ -1334,12 +1334,12 @@ void Compute_game_status(void)
             for (i = 0; i < NumPlayers; i++)
             {
                 pl = PlayersArray[i];
-                if (BIT(pl->status, PAUSE) || (BIT(pl->status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+                if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
                     continue;
-                if (BIT(pl->status, FINISH))
+                if (BIT(pl->obj_status, FINISH))
                 {
-                    CLR_BIT(pl->status, FINISH);
-                    SET_BIT(pl->status, RACE_OVER);
+                    CLR_BIT(pl->obj_status, FINISH);
+                    SET_BIT(pl->obj_status, RACE_OVER);
                     if (pts > 0)
                     {
                         sprintf(msg,
@@ -1420,7 +1420,7 @@ void Compute_game_status(void)
             if (Player_is_tank(PlayersArray[i]))
                 /* Ignore tanks. */
                 continue;
-            else if (BIT(PlayersArray[i]->status, PAUSE))
+            else if (BIT(PlayersArray[i]->obj_status, PAUSE))
                 /* Ignore paused players. */
                 continue;
 #if 0
@@ -1430,7 +1430,7 @@ void Compute_game_status(void)
                 continue;
             }
 #endif
-            else if (BIT(PlayersArray[i]->status, GAME_OVER))
+            else if (BIT(PlayersArray[i]->obj_status, GAME_OVER))
             {
                 if (team_state[PlayersArray[i]->team] == TeamEmpty)
                 {
@@ -1534,7 +1534,7 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                if (BIT(PlayersArray[i]->status, PAUSE) || Player_is_tank(PlayersArray[i]))
+                if (BIT(PlayersArray[i]->obj_status, PAUSE) || Player_is_tank(PlayersArray[i]))
                     continue;
                 team_score[PlayersArray[i]->team] += PlayersArray[i]->score;
             }
@@ -1637,9 +1637,9 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (BIT(PlayersArray[i]->status, PAUSE) || Player_is_tank(PlayersArray[i]))
+            if (BIT(PlayersArray[i]->obj_status, PAUSE) || Player_is_tank(PlayersArray[i]))
                 continue;
-            if (!BIT(PlayersArray[i]->status, GAME_OVER))
+            if (!BIT(PlayersArray[i]->obj_status, GAME_OVER))
             {
                 num_alive_players++;
                 if (IS_ROBOT_IND(i))
@@ -1911,17 +1911,17 @@ void Player_death_reset(int ind)
     }
 
     Detach_ball(ind, -1);
-    if (BIT(pl->used, USES_AUTOPILOT) || BIT(pl->status, HOVERPAUSE))
+    if (BIT(pl->used, USES_AUTOPILOT) || BIT(pl->obj_status, HOVERPAUSE))
     {
-        CLR_BIT(pl->status, HOVERPAUSE);
+        CLR_BIT(pl->obj_status, HOVERPAUSE);
         Autopilot(pl, false);
     }
 
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
     pl->emptymass = pl->mass = options.shipMass;
-    pl->status |= DEF_BITS;
-    pl->status &= ~(KILL_BITS);
+    pl->obj_status |= DEF_BITS;
+    pl->obj_status &= ~(KILL_BITS);
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
@@ -1962,7 +1962,7 @@ void Player_death_reset(int ind)
      *-KK have different robots in your team every round.
      */
 
-    if (!BIT(pl->status, PAUSE))
+    if (!BIT(pl->obj_status, PAUSE))
     {
         pl->deaths++;
 
@@ -1980,7 +1980,7 @@ void Player_death_reset(int ind)
                     }
                 }
                 pl->life = 0;
-                SET_BIT(pl->status, GAME_OVER);
+                SET_BIT(pl->obj_status, GAME_OVER);
                 pl->mychar = 'D';
                 Player_lock_closest(ind, 0);
             }

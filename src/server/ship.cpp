@@ -148,7 +148,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
     vy = (ship->vel.y * ship->mass + obj->vel.y * obj->mass) / m;
-    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->status, COLLISIONSHOVE))
+    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
         player_t *pusher = PlayersArray[GetInd[obj->id]];
@@ -181,7 +181,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->status, COLLISIONSHOVE))
+    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = PlayersArray[GetInd[obj2->id]];
@@ -464,7 +464,7 @@ void Tank_handle_detach(player_t *pl)
     sound_play_sensors(pl->pos, TANK_DETACH_SOUND);
 
     /* The tank uses shield and thrust */
-    dummy->status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
+    dummy->obj_status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
     dummy->have = DEF_HAVE;
     dummy->used = (DEF_USED & ~USED_KILL & pl->have) | HAS_SHIELD;
     if (options.playerShielding == 0)
@@ -619,7 +619,7 @@ void Make_wreckage(
 
         wreckage->pl_range = radius;
         wreckage->pl_radius = radius;
-        wreckage->status = status;
+        wreckage->obj_status = status;
         wreckage->mods = mods;
         Cell_add_object((object_t *)wreckage);
     }
@@ -653,7 +653,7 @@ void Explode_fighter(player_t *pl)
         20.0, 20 + (((int)(pl->mass)) >> 1),
         5, (int)(5 + (pl->mass * 1.5)));
 
-    if (!BIT(pl->status, KILLED))
+    if (!BIT(pl->obj_status, KILLED))
         return;
     Make_wreckage(
         pl->pos,

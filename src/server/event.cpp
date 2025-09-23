@@ -114,7 +114,7 @@ bool team_dead(int team)
     for (i = 0; i < NumPlayers; i++)
     {
         if (PlayersArray[i]->team == team &&
-            BIT(PlayersArray[i]->status, PLAYING | GAME_OVER) == PLAYING)
+            BIT(PlayersArray[i]->obj_status, PLAYING | GAME_OVER) == PLAYING)
         {
             alive = true;
             break;
@@ -137,7 +137,7 @@ static bool Player_lock_allowed(int ind, int lock)
     }
 
     /* if we are actively playing then we can lock since we are not viewing. */
-    if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
+    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
     {
         return true;
     }
@@ -211,7 +211,7 @@ int Player_lock_closest(int ind, int next)
     {
         player_t *pl_i = PlayersArray[i];
         if (i == lock ||
-            (BIT(PlayersArray[i]->status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
+            (BIT(PlayersArray[i]->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
             !Player_lock_allowed(ind, i) ||
             Player_owns_tank(pl, pl_i) ||
             Players_are_teammates(pl, pl_i) ||
@@ -242,26 +242,26 @@ void Pause_player(int ind, bool on)
     player_t *pl = PlayersArray[ind];
     int i;
 
-    if (on && !BIT(pl->status, PAUSE))
+    if (on && !BIT(pl->obj_status, PAUSE))
     {
         /* Turn pause mode on */
         pl->count = 10 * FPS;
         pl->updateVisibility = 1;
-        CLR_BIT(pl->status, SELF_DESTRUCT | PLAYING);
-        SET_BIT(pl->status, PAUSE);
+        CLR_BIT(pl->obj_status, SELF_DESTRUCT | PLAYING);
+        SET_BIT(pl->obj_status, PAUSE);
         pl->mychar = 'P';
         updateScores = true;
         if (BIT(pl->have, HAS_BALL))
             Detach_ball(ind, -1);
     }
-    else if (!on && BIT(pl->status, PAUSE))
+    else if (!on && BIT(pl->obj_status, PAUSE))
     {
         /* Turn pause mode off */
         if (pl->count <= 0)
         {
             bool toolate = false;
 
-            CLR_BIT(pl->status, PAUSE);
+            CLR_BIT(pl->obj_status, PAUSE);
             updateScores = true;
             if (BIT(world->rules->mode, LIMITED_LIVES))
             {
@@ -282,13 +282,13 @@ void Pause_player(int ind, bool on)
             {
                 pl->life = 0;
                 pl->mychar = 'W';
-                SET_BIT(pl->status, GAME_OVER);
+                SET_BIT(pl->obj_status, GAME_OVER);
             }
             else
             {
                 pl->mychar = ' ';
                 Go_home(ind);
-                SET_BIT(pl->status, PLAYING);
+                SET_BIT(pl->obj_status, PLAYING);
                 if (BIT(world->rules->mode, LIMITED_LIVES))
                     pl->life = world->rules->lives;
             }
@@ -337,7 +337,7 @@ int Handle_keyboard(int ind)
         /*
          * Allow these functions while you're 'dead'.
          */
-        if (BIT(pl->status, PLAYING | GAME_OVER | PAUSE | HOVERPAUSE) != PLAYING)
+        if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE | HOVERPAUSE) != PLAYING)
         {
             switch (key)
             {
@@ -476,7 +476,7 @@ int Handle_keyboard(int ind)
                     }
                     if (i == j)
                         break;
-                } while (i == ind || BIT(PlayersArray[i]->status, GAME_OVER | PAUSE) || !Player_lock_allowed(ind, i));
+                } while (i == ind || BIT(PlayersArray[i]->obj_status, GAME_OVER | PAUSE) || !Player_lock_allowed(ind, i));
                 if (i == ind)
                 {
                     CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -697,7 +697,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_REPROGRAM:
-                SET_BIT(pl->status, REPROGRAM);
+                SET_BIT(pl->obj_status, REPROGRAM);
                 break;
 
             case KEY_LOAD_MODIFIERS_1:
@@ -707,7 +707,7 @@ int Handle_keyboard(int ind)
             {
                 modifiers_t *m = &(pl->modbank[key - KEY_LOAD_MODIFIERS_1]);
 
-                if (BIT(pl->status, REPROGRAM))
+                if (BIT(pl->obj_status, REPROGRAM))
                 {
                     *m = pl->mods;
                 }
@@ -726,7 +726,7 @@ int Handle_keyboard(int ind)
             {
                 int *l = &(pl->lockbank[key - KEY_LOAD_LOCK_1]);
 
-                if (BIT(pl->status, REPROGRAM))
+                if (BIT(pl->obj_status, REPROGRAM))
                 {
                     if (BIT(pl->lock.tagged, LOCK_PLAYER))
                     {
@@ -783,15 +783,15 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_SELF_DESTRUCT:
-                TOGGLE_BIT(pl->status, SELF_DESTRUCT);
-                if (BIT(pl->status, SELF_DESTRUCT))
+                TOGGLE_BIT(pl->obj_status, SELF_DESTRUCT);
+                if (BIT(pl->obj_status, SELF_DESTRUCT))
                     pl->count = 150;
                 break;
 
             case KEY_PAUSE:
-                if (BIT(pl->status, PAUSE))
+                if (BIT(pl->obj_status, PAUSE))
                     i = PAUSE;
-                else if (BIT(pl->status, HOVERPAUSE))
+                else if (BIT(pl->obj_status, HOVERPAUSE))
                     i = HOVERPAUSE;
                 else
                 {
@@ -823,15 +823,15 @@ int Handle_keyboard(int ind)
                 switch (i)
                 {
                 case PAUSE:
-                    if (BIT(pl->status, HOVERPAUSE))
+                    if (BIT(pl->obj_status, HOVERPAUSE))
                         break;
 
                     if (BIT(pl->used, USES_AUTOPILOT))
                         Autopilot(pl, false);
 
                     /* toggle pause mode */
-                    Pause_player(ind, !BIT(pl->status, PAUSE));
-                    if (BIT(pl->status, PLAYING))
+                    Pause_player(ind, !BIT(pl->obj_status, PAUSE));
+                    if (BIT(pl->obj_status, PLAYING))
                     {
                         BITV_SET(pl->last_keyv, key);
                         BITV_SET(pl->prev_keyv, key);
@@ -840,17 +840,17 @@ int Handle_keyboard(int ind)
                     break;
 
                 case HOVERPAUSE:
-                    if (BIT(pl->status, PAUSE))
+                    if (BIT(pl->obj_status, PAUSE))
                         break;
 
-                    if (!BIT(pl->status, HOVERPAUSE))
+                    if (!BIT(pl->obj_status, HOVERPAUSE))
                     {
                         /*
                          * Turn hover pause on, together with shields.
                          */
                         pl->count = 5 * FPS;
-                        CLR_BIT(pl->status, SELF_DESTRUCT);
-                        SET_BIT(pl->status, HOVERPAUSE);
+                        CLR_BIT(pl->obj_status, SELF_DESTRUCT);
+                        SET_BIT(pl->obj_status, HOVERPAUSE);
 
                         if (BIT(pl->used, USES_EMERGENCY_THRUST))
                             Emergency_thrust(pl, false);
@@ -877,7 +877,7 @@ int Handle_keyboard(int ind)
                     else if (pl->count <= 0)
                     {
                         Autopilot(pl, false);
-                        CLR_BIT(pl->status, HOVERPAUSE);
+                        CLR_BIT(pl->obj_status, HOVERPAUSE);
                         if (!BIT(pl->have, HAS_SHIELD))
                             CLR_BIT(pl->used, USES_SHIELD);
                     }
@@ -886,7 +886,7 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_SWAP_SETTINGS:
-                if (BIT(pl->status, HOVERPAUSE) || BIT(pl->used, USES_AUTOPILOT))
+                if (BIT(pl->obj_status, HOVERPAUSE) || BIT(pl->used, USES_AUTOPILOT))
                     break;
                 if (pl->turnacc == 0.0)
                 {
@@ -928,7 +928,7 @@ int Handle_keyboard(int ind)
             case KEY_THRUST:
                 if (BIT(pl->used, USES_AUTOPILOT))
                     Autopilot(pl, false);
-                SET_BIT(pl->status, THRUSTING);
+                SET_BIT(pl->obj_status, THRUSTING);
                 break;
 
             case KEY_CLOAK:
@@ -1044,11 +1044,11 @@ int Handle_keyboard(int ind)
             case KEY_THRUST:
                 if (BIT(pl->used, USES_AUTOPILOT))
                     Autopilot(pl, false);
-                CLR_BIT(pl->status, THRUSTING);
+                CLR_BIT(pl->obj_status, THRUSTING);
                 break;
 
             case KEY_REPROGRAM:
-                CLR_BIT(pl->status, REPROGRAM);
+                CLR_BIT(pl->obj_status, REPROGRAM);
                 break;
 
             case KEY_SELECT_ITEM:

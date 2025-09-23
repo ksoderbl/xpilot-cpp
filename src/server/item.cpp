@@ -160,14 +160,14 @@ void Place_item(int item, player_t *pl)
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
     {
-        if (pl && !BIT(pl->status, KILLED))
+        if (pl && !BIT(pl->obj_status, KILLED))
             pl->item[item]--;
         return;
     }
 
     if (pl)
     {
-        if (BIT(pl->status, KILLED))
+        if (BIT(pl->obj_status, KILLED))
         {
             num_lose = pl->item[item] - world->items[item].initial;
             if (num_lose <= 0)
@@ -207,7 +207,7 @@ void Place_item(int item, player_t *pl)
         rand = 0;
         px = CLICK_TO_PIXEL(pl->prevpos.cx);
         py = CLICK_TO_PIXEL(pl->prevpos.cy);
-        if (!BIT(pl->status, KILLED))
+        if (!BIT(pl->obj_status, KILLED))
         {
             /*
              * Player is dropping an item on purpose.
@@ -301,7 +301,7 @@ void Place_item(int item, player_t *pl)
         {
             vel.x += pl->vel.x;
             vel.y += pl->vel.y;
-            if (!BIT(pl->status, KILLED))
+            if (!BIT(pl->obj_status, KILLED))
             {
                 double vl = LENGTH(vel.x, vel.y);
                 int dvx = (int)(rfrac() * 8);
@@ -360,7 +360,7 @@ void Make_item(clpos_t pos,
     obj->type = OBJ_ITEM;
     obj->info = item;
     obj->color = RED;
-    obj->status = status;
+    obj->obj_status = status;
     obj->id = NO_ID;
     obj->team = TEAM_NOT_SET;
     Object_position_init_clpos(obj, pos);
@@ -414,7 +414,7 @@ void Detonate_items(int ind)
     modifiers_t mods;
     int owner_ind;
 
-    if (!BIT(pl->status, KILLED))
+    if (!BIT(pl->obj_status, KILLED))
         return;
 
     /* ZE: Detonated items on tanks should belong to the tank's owner. */
@@ -502,7 +502,7 @@ void Tractor_beam(int ind)
     long cost;
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -584,7 +584,7 @@ void Do_deflector(player_t *pl)
 
         if (obj->id == pl->id)
         {
-            if (BIT(obj->status, OWNERIMMUNE) || obj->fuselife < obj->life || options.selfImmunity)
+            if (BIT(obj->obj_status, OWNERIMMUNE) || obj->fuselife < obj->life || options.selfImmunity)
                 continue;
         }
         else
@@ -594,7 +594,7 @@ void Do_deflector(player_t *pl)
         }
 
         /* don't push balls out of treasure boxes */
-        if (BIT(obj->type, OBJ_BALL) && !BIT(obj->status, GRAVITY))
+        if (BIT(obj->type, OBJ_BALL) && !BIT(obj->obj_status, GRAVITY))
             continue;
 
         dx = (obj->pix_pos.x - pl->pix_pos.x);
@@ -635,7 +635,7 @@ void Do_transporter(player_t *pl)
     {
         p = PlayersArray[i];
         if (p == pl ||
-            BIT(p->status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
+            BIT(p->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
             Team_immune(pl->id, p->id) ||
             Player_is_tank(p) ||
             BIT(p->used, USES_PHASING_DEVICE))
@@ -923,7 +923,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
 
 void do_hyperjump(player_t *pl)
 {
-    SET_BIT(pl->status, WARPING);
+    SET_BIT(pl->obj_status, WARPING);
     pl->wormHoleHit = -1;
 }
 
@@ -1013,7 +1013,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
             {
                 if (shot->type == OBJ_MINE)
                 {
-                    if (BIT(shot->status, OWNERIMMUNE))
+                    if (BIT(shot->obj_status, OWNERIMMUNE))
                         continue;
                 }
                 if (shot->type == OBJ_SMART_SHOT)
@@ -1034,7 +1034,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
              * ends.
              */
             smart = SMART_PTR(shot);
-            SET_BIT(smart->status, CONFUSED);
+            SET_BIT(smart->obj_status, CONFUSED);
             smart->ecm_range = range;
             smart->count = CONFUSED_TIME;
             if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee)
@@ -1079,14 +1079,14 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
                 break;
             }
             mine->count = ((int)(8 * (1 - range)) + 2) * FPS;
-            if (!BIT(mine->status, CONFUSED) && (closest_mine == NULL || range < closest_mine_range))
+            if (!BIT(mine->obj_status, CONFUSED) && (closest_mine == NULL || range < closest_mine_range))
             {
                 closest_mine = mine;
                 closest_mine_range = range;
             }
-            SET_BIT(mine->status, CONFUSED);
+            SET_BIT(mine->obj_status, CONFUSED);
             if (mine->count <= 0)
-                CLR_BIT(mine->status, CONFUSED);
+                CLR_BIT(mine->obj_status, CONFUSED);
             break;
         }
     }
@@ -1144,7 +1144,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
         if (BIT(p->used, USES_PHASING_DEVICE))
             continue;
 
-        if (BIT(p->status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
+        if (BIT(p->obj_status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
         {
             range = Wrap_length(CLICK_TO_FLOAT(pos.cx - p->pos.cx),
                                 CLICK_TO_FLOAT(pos.cy - p->pos.cy));

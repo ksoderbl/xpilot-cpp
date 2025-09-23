@@ -107,15 +107,15 @@ void sound_player_onoff(player_t *pl, bool on)
 
     if (on)
     {
-        if (!BIT(pl->status, WANT_AUDIO))
+        if (!BIT(pl->obj_status, WANT_AUDIO))
         {
-            SET_BIT(pl->status, WANT_AUDIO);
+            SET_BIT(pl->obj_status, WANT_AUDIO);
             sound_play_player(pl, START_SOUND);
         }
     }
     else
     {
-        CLR_BIT(pl->status, WANT_AUDIO);
+        CLR_BIT(pl->obj_status, WANT_AUDIO);
     }
 }
 
@@ -126,7 +126,7 @@ void sound_play_player(player_t *pl, int index)
 {
     SDBG(printf("sound_play_player %p, %d\n", pl, index));
 
-    if (BIT(pl->status, WANT_AUDIO))
+    if (BIT(pl->obj_status, WANT_AUDIO))
     {
         queue_audio(pl, index, 100);
     }
@@ -143,7 +143,7 @@ void sound_play_all(int index)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (BIT(PlayersArray[i]->status, WANT_AUDIO))
+        if (BIT(PlayersArray[i]->obj_status, WANT_AUDIO))
         {
             sound_play_player(PlayersArray[i], index);
         }
@@ -172,7 +172,7 @@ void sound_play_sensors(clpos_t pos, int index)
     {
         pl = PlayersArray[i];
 
-        if (!BIT(pl->status, WANT_AUDIO))
+        if (!BIT(pl->obj_status, WANT_AUDIO))
             continue;
 
         int dcx = ABS(pl->pos.cx - pos.cx);

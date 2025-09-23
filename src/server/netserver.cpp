@@ -3342,7 +3342,7 @@ static int Receive_pointer_move(connection_t *connp)
         return n;
     }
     pl = PlayersArray[GetInd[connp->id]];
-    if (BIT(pl->status, HOVERPAUSE))
+    if (BIT(pl->obj_status, HOVERPAUSE))
         return 1;
 
     if (BIT(pl->used, USES_AUTOPILOT))

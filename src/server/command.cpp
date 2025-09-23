@@ -408,7 +408,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Players_are_teammates(pl, PlayersArray[i]) && !BIT(PlayersArray[i]->status, PAUSE))
+            if (!Players_are_teammates(pl, PlayersArray[i]) && !BIT(PlayersArray[i]->obj_status, PAUSE))
             {
                 /* put team swapping player waiting mode. */
                 if (pl->mychar == ' ')
@@ -416,8 +416,8 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
                     pl->mychar = 'W';
                 }
                 pl->prev_life = pl->life = 0;
-                SET_BIT(pl->status, GAME_OVER | PLAYING);
-                CLR_BIT(pl->status, SELF_DESTRUCT);
+                SET_BIT(pl->obj_status, GAME_OVER | PLAYING);
+                CLR_BIT(pl->obj_status, SELF_DESTRUCT);
                 pl->count = -1;
                 break;
             }
@@ -838,7 +838,7 @@ static int Cmd_pause(char *arg, player_t *pl, int oper, char *msg)
     {
         if (PlayersArray[i]->conn != NULL)
         {
-            if (BIT(PlayersArray[i]->status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+            if (BIT(PlayersArray[i]->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             {
                 Kill_player(i);
             }
