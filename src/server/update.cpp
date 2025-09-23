@@ -307,9 +307,9 @@ void Emergency_shield(player_t *pl, bool on)
 void Thrust(player_t *pl, bool on)
 {
     // if (on)
-    //     SET_BIT(pl->obj_status, THRUSTING);
+    //     SET_BIT(pl->status, THRUSTING);
     // else
-    //     CLR_BIT(pl->obj_status, THRUSTING);
+    //     CLR_BIT(pl->status, THRUSTING);
     if (on)
         SET_BIT(pl->status, THRUSTING);
     else
@@ -765,7 +765,7 @@ void Update_objects(void)
 
                 if (options.targetSync)
                 {
-                    unsigned short team = world->targets[i].team;
+                    uint16_t team = world->targets[i].team;
 
                     for (int j = 0; j < world->NumTargets; j++)
                     {

@@ -37,6 +37,24 @@
 #include "serverconst.h"
 
 /*
+ * These values are set in the player->pl_type field.
+ */
+#define PL_TYPE_HUMAN 0
+#define PL_TYPE_ROBOT 1
+#define PL_TYPE_TANK 2
+
+/*
+ * These values are set in the player->pl_state field.
+ */
+#define PL_STATE_UNDEFINED 0
+#define PL_STATE_WAITING 1
+#define PL_STATE_APPEARING 2
+#define PL_STATE_ALIVE 3
+#define PL_STATE_KILLED 4
+#define PL_STATE_DEAD 5
+#define PL_STATE_PAUSED 6
+
+/*
  * Different types of attributes a player can have.
  * These are the bits of the player->have and player->used fields.
  */
@@ -92,6 +110,27 @@
 #define Player_is_robot(pl) (BIT((pl)->type_ext, OBJ_EXT_ROBOT) == OBJ_EXT_ROBOT)
 #define Player_is_human(pl) (!BIT((pl)->type_ext, OBJ_EXT_TANK | OBJ_EXT_ROBOT))
 
+/*
+ * Fuel structure, used by player
+ */
+typedef struct
+{
+    long sum;                 /* Sum of fuel in all tanks */
+    long max;                 /* How much fuel can you take? */
+    int current;              /* Number of currently used tank */
+    int num_tanks;            /* Number of tanks */
+    long tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
+    long l1;                  /* Fuel critical level */
+    long l2;                  /* Fuel warning level */
+    long l3;                  /* Fuel notify level */
+} pl_fuel_t;
+
+typedef struct
+{
+    bool canSee;
+    long lastChange;
+} visibility_t;
+
 /* IMPORTANT
  *
  * This is the player structure, the first part MUST be similar to object_t,
@@ -107,14 +146,25 @@ struct player
 
     int type_ext; /* extended type info (tank, robot) */
 
+    int pl_type;           /* extended type info (tank, robot) */
+    char pl_type_mychar;   /* Special char for player type */
+    uint8_t pl_old_status; /* OLD_PLAYING etc. */
+
+    // uint16_t pl_status;       /* HOVERPAUSE etc. */
+    uint16_t pl_state;        /* one of PL_STATE_* */
+    int pl_life;              /* Lives left (if lives limited) */
+    int pl_deaths_since_join; /* Deaths since last joining server */
+
+    uint16_t pl_prev_team; /* Team before pause */
+
     double turnspeed; /* How fast player acc-turns */
     double velocity;  /* Absolute speed */
 
     int kills;  /* Number of kills this round */
     int deaths; /* Number of deaths this round */
 
-    long used; /** Items you use **/
-    long have; /** Items you have **/
+    long used; /* Items you use */
+    long have; /* Items you have */
 
     int shield_time;         /* Shields if no playerShielding */
     pl_fuel_t fuel;          /* ship tanks and the stored fuel */
@@ -179,17 +229,17 @@ struct player
     } lock;
     int lockbank[LOCKBANK_MAX]; /* Saved player locks */
 
-    uint8_t dir;                /* Direction of acceleration */
-    uint8_t unused1;            /* padding for alignment */
-    char mychar;                /* Special char for player */
-    char prev_mychar;           /* Special char for player */
-    char name[MAX_CHARS];       /* Nick-name of player */
-    char username[MAX_CHARS];   /* Real name of player */
-    char hostname[MAX_CHARS];   /* Hostname of client player uses */
-    unsigned short pseudo_team; /* Which team for detaching tanks */
-    int alliance;               /* Member of which alliance? */
-    int prev_alliance;          /* prev. alliance for score */
-    int invite;                 /* Invitation for alliance */
+    uint8_t dir;              /* Direction of acceleration */
+    uint8_t unused1;          /* padding for alignment */
+    char mychar;              /* Special char for player */
+    char prev_mychar;         /* Special char for player */
+    char name[MAX_CHARS];     /* Nick-name of player */
+    char username[MAX_CHARS]; /* Real name of player */
+    char hostname[MAX_CHARS]; /* Hostname of client player uses */
+    uint16_t pseudo_team;     /* Which team for detaching tanks */
+    int alliance;             /* Member of which alliance? */
+    int prev_alliance;        /* prev. alliance for score */
+    int invite;               /* Invitation for alliance */
     ballobject_t *ball;
 
     /*
@@ -204,7 +254,7 @@ struct player
     shove_t shove_record[MAX_RECORDED_SHOVES];
     int shove_next;
 
-    struct _visibility *visibility;
+    visibility_t *visibility;
 
     int updateVisibility, forceVisible, damaged;
     int wormDrawCount, wormHoleHit, wormHoleDest;

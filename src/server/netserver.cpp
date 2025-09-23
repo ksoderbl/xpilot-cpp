@@ -2752,7 +2752,7 @@ static int Receive_ack_cannon(connection_t *connp)
     long loops_ack;
     uint8_t ch;
     int n;
-    unsigned short num;
+    uint16_t num;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2777,7 +2777,7 @@ static int Receive_ack_fuel(connection_t *connp)
     long loops_ack;
     uint8_t ch;
     int n;
-    unsigned short num;
+    uint16_t num;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2801,7 +2801,7 @@ static int Receive_ack_target(connection_t *connp)
     long loops_ack;
     uint8_t ch;
     int n;
-    unsigned short num;
+    uint16_t num;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2842,7 +2842,7 @@ static int Receive_ack_polystyle(connection_t *connp)
     long loops_ack;
     uint8_t ch;
     int n;
-    unsigned short num;
+    uint16_t num;
     poly_t *poly;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",

@@ -29,23 +29,23 @@
 
 typedef struct options
 {
-    list_t expandList;     /* List of predefined settings. */
-    double Gravity;        /* Power of gravity */
-    double shipMass;       /* Default mass of ship */
-    double ballMass;       /* Default mass of balls */
-    double ShotsMass;      /* Default mass of shots */
-    double ShotsSpeed;     /* Default speed of shots */
-    int ShotsLife;         /* Default number of ticks */
-                           /* each shot will live */
-    int maxRobots;         /* How many robots should enter */
-    int minRobots;         /* the game? */
-    char *robotFile;       /* Filename for robot parameters */
-    int robotsTalk;        /* Do robots talk? */
-    int robotsLeave;       /* Do robots leave at all? */
-    int robotLeaveLife;    /* Max life per robot (0=off)*/
-    int robotLeaveScore;   /* Min score for robot to live (0=off)*/
-    int robotLeaveRatio;   /* Min ratio for robot to live (0=off)*/
-    int robotTeam;         /* Team for robots */
+    list_t expandList; /* List of predefined settings. */
+    double gravity;
+    double shipMass;
+    double ballMass;
+    double shotMass;
+    double shotSpeed;
+    int shotLife;  /* Default number of ticks */
+                   /* each shot will live */
+    int maxRobots; /* How many robots should enter */
+    int minRobots; /* the game? */
+    char *robotFile;
+    int robotsTalk;
+    int robotsLeave;     /* Do robots leave at all? */
+    int robotLeaveLife;  /* Max life per robot (0=off)*/
+    int robotLeaveScore; /* Min score for robot to live (0=off)*/
+    int robotLeaveRatio; /* Min ratio for robot to live (0=off)*/
+    int robotTeam;
     bool restrictRobots;   /* Restrict robots to robotTeam? */
     bool reserveRobotTeam; /* Allow only robots in robotTeam? */
     int maxPlayerShots;    /* Max shots pr. player */

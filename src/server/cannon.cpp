@@ -316,7 +316,7 @@ static int Cannon_select_weapon(int ind)
 static void Cannon_aim(int ind, int weapon, int *target, int *dir)
 {
     cannon_t *c = world->cannons + ind;
-    int speed = options.ShotsSpeed;
+    int speed = options.shotSpeed;
     int range = CANNON_SHOT_LIFE_MAX * speed;
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;
@@ -475,7 +475,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
     modifiers_t mods;
     IFSOUND(int sound = CANNON_FIRE_SOUND);
     int i;
-    int speed = options.ShotsSpeed;
+    int speed = options.shotSpeed;
     vector_t zero_vel = {0.0, 0.0};
 
     CLEAR_MODS(mods);

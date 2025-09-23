@@ -130,7 +130,7 @@ void Make_debris(
     clpos_t pos,
     vector_t vel,
     int id,
-    unsigned short team,
+    uint16_t team,
     int type,
     double mass,
     long status,
@@ -153,16 +153,16 @@ void Make_debris(
 
     if (max_life < min_life)
         max_life = min_life;
-    if (options.ShotsLife >= FPS)
+    if (options.shotLife >= FPS)
     {
-        if (min_life > options.ShotsLife)
+        if (min_life > options.shotLife)
         {
-            min_life = options.ShotsLife;
-            max_life = options.ShotsLife;
+            min_life = options.shotLife;
+            max_life = options.shotLife;
         }
-        else if (max_life > options.ShotsLife)
+        else if (max_life > options.shotLife)
         {
-            max_life = options.ShotsLife;
+            max_life = options.shotLife;
         }
     }
     if (min_speed * max_life > world->hypotenuse)

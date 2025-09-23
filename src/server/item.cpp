@@ -330,8 +330,8 @@ void Place_item(int item, player_t *pl)
         }
         else
         {
-            vel.x -= options.Gravity * world->gravity[bx][by].x;
-            vel.y -= options.Gravity * world->gravity[bx][by].y;
+            vel.x -= options.gravity * world->gravity[bx][by].x;
+            vel.y -= options.gravity * world->gravity[bx][by].y;
             vel.x += (int)(rfrac() * 8) - 3;
             vel.y += (int)(rfrac() * 8) - 3;
         }
@@ -959,7 +959,7 @@ void do_lose_item(player_t *pl)
     Item_update_flags(pl);
 }
 
-void Fire_general_ecm(int ind, unsigned short team, clpos_t pos)
+void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
 {
     object_t *shot;
     mineobject_t *closest_mine = NULL;

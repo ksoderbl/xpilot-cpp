@@ -615,9 +615,7 @@ static void PlayerObjectCollision(int ind)
     if (BIT(pl->status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
         return;
 
-    Cell_get_objects(pl->pos,
-                     4, 500,
-                     &obj_list, &obj_count);
+    Cell_get_objects(pl->pos, 4, 500, &obj_list, &obj_count);
 
     for (j = 0; j < obj_count; j++)
     {
@@ -631,44 +629,30 @@ static void PlayerObjectCollision(int ind)
                           obj->prevpos.cx, obj->prevpos.cy,
                           obj->pos.cx, obj->pos.cy,
                           range))
-        {
             continue;
-        }
 
         if (obj->id != NO_ID)
         {
             if (obj->id == pl->id)
             {
                 if (BIT(obj->type, OBJ_SPARK | OBJ_MINE) && BIT(obj->status, OWNERIMMUNE))
-                {
                     continue;
-                }
                 else if (options.selfImmunity)
-                {
                     continue;
-                }
             }
             else if (options.selfImmunity &&
                      Player_is_tank(pl) &&
                      (pl->lock.pl_id == obj->id))
-            {
                 continue;
-            }
             else if (Team_immune(obj->id, pl->id))
-            {
                 continue;
-            }
             else if (BIT(PlayersArray[GetInd[obj->id]]->status, PAUSE))
-            {
                 continue;
-            }
         }
         else if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity && obj->team == pl->team
                  /* allow players to destroy their team's unowned balls */
                  && obj->type != OBJ_BALL)
-        {
             continue;
-        }
 
         if (obj->type == OBJ_ITEM)
         {
@@ -682,23 +666,17 @@ static void PlayerObjectCollision(int ind)
         else if (BIT(obj->type, OBJ_HEAT_SHOT | OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_SHOT | OBJ_CANNON_SHOT))
         {
             if (pl->id == obj->id && obj->life > obj->fuselife)
-            {
                 continue;
-            }
         }
         else if (BIT(obj->type, OBJ_MINE))
         {
             if (BIT(obj->status, CONFUSED))
-            {
                 continue;
-            }
         }
         else if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
         {
             if (BIT(PlayersArray[GetInd[obj->id]]->used, USES_PHASING_DEVICE))
-            {
                 continue;
-            }
         }
 
         /*
@@ -723,23 +701,17 @@ static void PlayerObjectCollision(int ind)
         {
         case OBJ_BALL:
             if (!hit)
-            {
                 continue;
-            }
             Player_collides_with_ball(ind, obj, radius);
             if (BIT(pl->status, KILLED))
-            {
                 return;
-            }
             continue;
 
         case OBJ_ITEM:
             Player_collides_with_item(ind, obj);
             /* if life is non-zero then no collision occurred */
             if (obj->life != 0)
-            {
                 continue;
-            }
             break;
 
         case OBJ_MINE:
@@ -750,9 +722,7 @@ static void PlayerObjectCollision(int ind)
         case OBJ_DEBRIS:
             Player_collides_with_debris(ind, obj);
             if (BIT(pl->status, KILLED))
-            {
                 return;
-            }
             break;
 
         case OBJ_ASTEROID:
@@ -762,9 +732,7 @@ static void PlayerObjectCollision(int ind)
                 Delta_mv_elastic((object_t *)pl, (object_t *)obj);
             }
             if (BIT(pl->status, KILLED))
-            {
                 return;
-            }
             continue;
 
         case OBJ_CANNON_SHOT:

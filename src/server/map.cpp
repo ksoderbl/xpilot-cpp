@@ -465,7 +465,7 @@ static void Alloc_map(void)
     world->block =
         (uint8_t **)malloc(sizeof(uint8_t *) * world->x + world->x * sizeof(uint8_t) * world->y);
     world->itemID =
-        (unsigned short **)malloc(sizeof(unsigned short *) * world->x + world->x * sizeof(unsigned short) * world->y);
+        (uint16_t **)malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
     world->gravity =
         (vector_t **)malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
     world->gravs = NULL;
@@ -489,15 +489,15 @@ static void Alloc_map(void)
     {
         uint8_t *map_line;
         uint8_t **map_pointer;
-        unsigned short *item_line;
-        unsigned short **item_pointer;
+        uint16_t *item_line;
+        uint16_t **item_pointer;
         vector_t *grav_line;
         vector_t **grav_pointer;
 
         map_pointer = world->block;
         map_line = (uint8_t *)((uint8_t **)map_pointer + world->x);
         item_pointer = world->itemID;
-        item_line = (unsigned short *)((unsigned short **)item_pointer + world->x);
+        item_line = (uint16_t *)((uint16_t **)item_pointer + world->x);
         grav_pointer = world->gravity;
         grav_line = (vector_t *)((vector_t **)grav_pointer + world->x);
 
@@ -905,7 +905,7 @@ bool Grok_map(void)
         for (x = 0; x < world->x; x++)
         {
             uint8_t *line = world->block[x];
-            unsigned short *itemID = world->itemID[x];
+            uint16_t *itemID = world->itemID[x];
 
             for (y = 0; y < world->y; y++)
             {
@@ -913,7 +913,7 @@ bool Grok_map(void)
                 int cx = (x + 0.5) * BLOCK_CLICKS;
                 int cy = (y + 0.5) * BLOCK_CLICKS;
 
-                itemID[y] = (unsigned short)-1;
+                itemID[y] = (uint16_t)-1;
 
                 switch (c)
                 {
@@ -1318,7 +1318,7 @@ bool Grok_map(void)
                     [world->wormholes[i].blk_pos.y] = SPACE;
                 world->itemID
                     [world->wormholes[i].blk_pos.x]
-                    [world->wormholes[i].blk_pos.y] = (unsigned short)-1;
+                    [world->wormholes[i].blk_pos.y] = (uint16_t)-1;
             }
             world->NumWormholes = 0;
         }
@@ -1346,7 +1346,7 @@ bool Grok_map(void)
          */
         if (BIT(world->rules->mode, TEAM_PLAY))
         {
-            unsigned short team = TEAM_NOT_SET;
+            uint16_t team = TEAM_NOT_SET;
             for (i = 0; i < world->NumTreasures; i++)
             {
                 team = Find_closest_team(world->treasures[i].pos);
@@ -1641,8 +1641,8 @@ static void Compute_global_gravity(void)
     if (options.gravityPointSource == false)
     {
         theta = (options.gravityAngle * PI) / 180.0;
-        xforce = cos(theta) * options.Gravity;
-        yforce = sin(theta) * options.Gravity;
+        xforce = cos(theta) * options.gravity;
+        yforce = sin(theta) * options.gravity;
         for (xi = 0; xi < world->x; xi++)
         {
             grav = world->gravity[xi];
@@ -1673,7 +1673,7 @@ static void Compute_global_gravity(void)
                     grav->y = 0.0;
                     continue;
                 }
-                strength = options.Gravity / LENGTH(dx, dy);
+                strength = options.gravity / LENGTH(dx, dy);
                 if (options.gravityClockwise)
                 {
                     grav->x = dy * strength;

@@ -501,7 +501,7 @@ void Make_wreckage(
     clpos_t pos,
     vector_t vel,
     int id,
-    unsigned short team,
+    uint16_t team,
     double min_mass, double max_mass,
     double total_mass,
     long status,
@@ -526,12 +526,12 @@ void Make_wreckage(
 
     if (max_life < min_life)
         max_life = min_life;
-    if (options.ShotsLife >= FPS)
+    if (options.shotLife >= FPS)
     {
-        if (min_life > options.ShotsLife)
+        if (min_life > options.shotLife)
         {
-            min_life = options.ShotsLife;
-            max_life = options.ShotsLife;
+            min_life = options.shotLife;
+            max_life = options.shotLife;
         }
     }
 

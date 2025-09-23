@@ -53,7 +53,7 @@
 
 #define MAX_SHUFFLE_INDEX 65535
 
-typedef unsigned short shuffle_t;
+typedef uint16_t shuffle_t;
 
 /*
  * Structure for calculating if a pixel is visible by a player.

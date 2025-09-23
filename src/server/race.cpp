@@ -63,7 +63,7 @@ void Race_compute_game_status(void)
     /* Handle finishing of laps */
     for (i = 0; i < NumPlayers; i++) {
     pl = Player_by_index(i);
-    if (!BIT(pl->pl_status, FINISH))
+    if (!BIT(pl->status, FINISH))
         continue;
     pl->last_lap_time = pl->time - pl->last_lap;
     if ((pl->best_lap > pl->last_lap_time || pl->best_lap == 0)
@@ -90,7 +90,7 @@ void Race_compute_game_status(void)
     else {
         sprintf(msg, "%s starts lap 1 of %d", pl->name,
             options.raceLaps);
-        CLR_BIT(pl->pl_status, FINISH); /* no elimination from starting */
+        CLR_BIT(pl->status, FINISH); /* no elimination from starting */
     }
     Set_message(msg);
     }
@@ -101,7 +101,7 @@ void Race_compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++) {
         pl = Player_by_index(i);
-        if (BIT(pl->pl_status, FINISH) && pl->round < lap) {
+        if (BIT(pl->status, FINISH) && pl->round < lap) {
             lap = pl->round;
             pli = i;
         }
@@ -109,7 +109,7 @@ void Race_compute_game_status(void)
         if (lap == INT_MAX)
         break;
         pl_i = Player_by_index(pli);
-        CLR_BIT(pl_i->pl_status, FINISH);
+        CLR_BIT(pl_i->status, FINISH);
         lap = 0;
         for (i = 0; i < NumPlayers; i++) {
         pl = Player_by_index(i);
@@ -163,17 +163,17 @@ void Race_compute_game_status(void)
         else if (!Player_is_dead(pl))
             num_alive_players++;
 
-        if (BIT(pl->pl_status, RACE_OVER))
+        if (BIT(pl->status, RACE_OVER))
         {
             num_race_over_players++;
             pos++;
         }
-        else if (BIT(pl->pl_status, FINISH))
+        else if (BIT(pl->status, FINISH))
         {
             if (pl->round > options.raceLaps)
                 num_finished_players++;
             else
-                CLR_BIT(pl->pl_status, FINISH);
+                CLR_BIT(pl->status, FINISH);
         }
         else if (!Player_is_dead(pl))
             alive = pl;
@@ -213,10 +213,10 @@ void Race_compute_game_status(void)
             if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
                 continue;
 
-            if (BIT(pl->pl_status, FINISH))
+            if (BIT(pl->status, FINISH))
             {
-                CLR_BIT(pl->pl_status, FINISH);
-                SET_BIT(pl->pl_status, RACE_OVER);
+                CLR_BIT(pl->status, FINISH);
+                SET_BIT(pl->status, RACE_OVER);
                 if (pts > 0)
                 {
                     sprintf(msg,
@@ -342,7 +342,7 @@ void Race_game_over(void)
     for (i = NumPlayers - 1; i >= 0; i--)
     {
         pl = Player_by_index(i);
-        CLR_BIT(pl->pl_status, RACE_OVER | FINISH);
+        CLR_BIT(pl->status, RACE_OVER | FINISH);
         if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
             continue;
         num_active_players++;
@@ -442,7 +442,7 @@ void Player_pass_checkpoint(player_t *pl)
             }
             Player_death_reset(pl, false);
             Player_set_state(pl, PL_STATE_DEAD);
-            SET_BIT(pl->pl_status, FINISH);
+            SET_BIT(pl->status, FINISH);
             Set_message_f("%s finished the race. Last lap time: %.2fs. "
                           "Personal race best lap time: %.2fs.",
                           pl->name,
@@ -463,7 +463,7 @@ void Player_pass_checkpoint(player_t *pl)
                           pl->name, options.raceLaps);
 #else
         /* this is how 4.3.1X did this */
-        SET_BIT(pl->pl_status, FINISH);
+        SET_BIT(pl->status, FINISH);
         /* Rest done in Compute_game_status() */
 #endif
     }

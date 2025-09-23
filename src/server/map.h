@@ -127,7 +127,7 @@ typedef struct base
     ipos_t blk_pos;
     clpos_t pos;
     int dir;
-    unsigned short team;
+    uint16_t team;
 } base_t;
 
 typedef struct baseorder
@@ -150,7 +150,7 @@ typedef struct cannon
     int tractor_target;
     int tractor_count;
     bool tractor_is_pressor;
-    unsigned short team;
+    uint16_t team;
     long used;
     int emergency_shield_left;
     int phasing_left;
@@ -199,7 +199,7 @@ typedef struct
     bool temporary; /* wormhole was left by hyperjump */
     wormtype_t type;
     uint8_t lastblock; /* block it occluded */
-    unsigned short lastID;
+    uint16_t lastID;
     int group;
 } wormhole_t;
 
@@ -207,17 +207,17 @@ typedef struct treasure
 {
     ipos_t blk_pos;
     clpos_t pos;
-    bool have;           /* true if this treasure has ball in it */
-    unsigned short team; /* team of this treasure */
-    int destroyed;       /* how often this treasure destroyed */
-    bool empty;          /* true if this treasure never had a ball in it */
+    bool have;     /* true if this treasure has ball in it */
+    uint16_t team; /* team of this treasure */
+    int destroyed; /* how often this treasure destroyed */
+    bool empty;    /* true if this treasure never had a ball in it */
 } treasure_t;
 
 typedef struct target
 {
     ipos_t blk_pos;
     clpos_t pos;
-    unsigned short team;
+    uint16_t team;
     int dead_time;
     int damage;
     unsigned conn_mask;
@@ -297,7 +297,7 @@ typedef struct
 
     /* index into mapobject depending on value of corresponding block,
     ** -1 for space, walls, etc */
-    unsigned short **itemID;
+    uint16_t **itemID;
 
     vector_t **gravity;
 

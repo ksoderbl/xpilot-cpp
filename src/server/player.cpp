@@ -486,7 +486,7 @@ int Init_player(int ind, shipshape_t *ship)
         pl->lockbank[i] = NOT_CONNECTED;
 
     {
-        static unsigned short pseudo_team_no = 0;
+        static uint16_t pseudo_team_no = 0;
         pl->pseudo_team = pseudo_team_no++;
     }
     pl->mychar = ' ';
@@ -562,24 +562,23 @@ int Init_player(int ind, shipshape_t *ship)
 }
 
 static player_t *playerArray;
-static struct _visibility *visibilityArray;
+static visibility_t *visibilityArray;
 
 void Alloc_players(int number)
 {
-    player *p;
-    struct _visibility *t;
+    player_t *p;
+    visibility_t *t;
+    size_t n = number;
     int i;
 
     /* Allocate space for pointers */
     PlayersArray = (player **)calloc(number + 1, sizeof(player *));
 
     /* Allocate space for all entries, all player structs */
-    p = playerArray = (player *)calloc(number, sizeof(player));
+    p = playerArray = XCALLOC(player_t, n);
 
     /* Allocate space for all visibility arrays, n arrays of n entries */
-    t = visibilityArray =
-        (struct _visibility *)calloc(number * number,
-                                     sizeof(struct _visibility));
+    t = visibilityArray = XCALLOC(visibility_t, n * n);
 
     if (!PlayersArray || !playerArray || !visibilityArray)
     {

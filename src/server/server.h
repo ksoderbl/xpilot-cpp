@@ -141,14 +141,14 @@ void Tractor_beam(int ind);
 void General_tractor_beam(int ind, clpos_t pos, int items, int target, bool pressor);
 void Place_mine(int ind);
 void Place_moving_mine(int ind);
-void Place_general_mine(int ind, unsigned short team, long status, clpos_t pos,
+void Place_general_mine(int ind, uint16_t team, long status, clpos_t pos,
                         vector_t vel, modifiers_t mods);
 void Detonate_mines(int ind);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(int ind);
-void Fire_general_ecm(int ind, unsigned short team, clpos_t pos);
+void Fire_general_ecm(int ind, uint16_t team, clpos_t pos);
 void Move_ball(int ind);
-void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
+void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target);
 void Fire_normal_shots(player_t *pl);
@@ -162,7 +162,7 @@ void Make_treasure_ball(int treasure);
 int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
-void Fire_general_laser(player_t *pl, unsigned short team, clpos_t pos, int dir, modifiers_t mods);
+void Fire_general_laser(player_t *pl, uint16_t team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(player_t *pl);
 void Do_transporter(player_t *pl);
 void Do_general_transporter(player_t *pl, clpos_t pos, int target, int *item, long *amount);
@@ -174,7 +174,7 @@ void Make_debris(
     clpos_t pos,
     vector_t vel,
     int id,
-    unsigned short team,
+    uint16_t team,
     int type,
     double mass,
     long status,
@@ -188,7 +188,7 @@ void Make_wreckage(
     clpos_t pos,
     vector_t vel,
     int id,
-    unsigned short team,
+    uint16_t team,
     double min_mass, double max_mass,
     double total_mass,
     long status,

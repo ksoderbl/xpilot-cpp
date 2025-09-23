@@ -1418,7 +1418,7 @@ static int Rank_item_value(int ind, Item_t itemtype)
 
         case ITEM_REARSHOT:
         case ITEM_WIDEANGLE:
-            if (options.maxPlayerShots <= 0 || options.ShotsLife <= 0 || !options.playerKillings)
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.playerKillings)
             {
                 return ROBOT_HANDY_ITEM;
             }
@@ -1428,7 +1428,7 @@ static int Rank_item_value(int ind, Item_t itemtype)
             }
 
         case ITEM_MISSILE:
-            if (options.maxPlayerShots <= 0 || options.ShotsLife <= 0 || !options.playerKillings)
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.playerKillings)
             {
                 return ROBOT_IGNORE_ITEM;
             }
@@ -2393,7 +2393,7 @@ static void Robot_default_play(int ind)
     {
 
         ship = PlayersArray[GetInd[pl->lock.pl_id]];
-        shoot_time = (int)(pl->lock.distance / (options.ShotsSpeed + 1));
+        shoot_time = (int)(pl->lock.distance / (options.shotSpeed + 1));
         dx = (long)(ship->pix_pos.x + ship->vel.x * shoot_time);
         dy = (long)(ship->pix_pos.y + ship->vel.y * shoot_time);
         /*-BA Also allow for our own momentum. */

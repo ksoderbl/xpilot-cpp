@@ -118,21 +118,22 @@ struct cell_node
 
 #define OBJECT_BASE                                      \
     short id;            /* For shots => id of player */ \
-    unsigned short team; /* Team of player or cannon */  \
+    uint16_t team;       /* Team of player or cannon */  \
     clpos_t pos;         /* World coordinates */         \
     ipos_t pix_pos;      /* World pixel coordinates */   \
     clpos_t prevpos;     /* previous position */         \
     vector_t vel;        /* speed in x,y */              \
     vector_t acc;        /* acceleration in x,y */       \
-    DFLOAT mass;         /* mass in unigrams */          \
+    float mass;          /* mass in unigrams */          \
+    modifiers_t mods;    /* Modifiers to this object */  \
     long life;           /* No of ticks left to live */  \
-    long status;         /* gravity, etc. */             \
     int type;            /* one bit of OBJ_XXX */        \
     int count;           /* Misc timings */              \
-    modifiers_t mods;    /* Modifiers to this object */  \
     uint8_t color;       /* Color of object */           \
     uint8_t missile_dir; /* missile direction */         \
-    /* up to here all object types are the same as all player types. */
+    uint32_t status;     /* gravity, etc. */
+
+/* up to here all object types are the same as all player types. */
 
 #define OBJECT_EXTEND                              \
     cell_node cell; /* node in cell linked list */ \
@@ -145,17 +146,13 @@ struct cell_node
 /*
  * Generic object
  */
-typedef struct _object object_t;
-struct _object
+typedef struct xp_object object_t;
+struct xp_object
 {
 
     OBJECT_BASE
 
     OBJECT_EXTEND
-
-    // #ifdef __cplusplus
-    //                         _object() {}
-    // #endif
 
 #define OBJ_IND(ind) (Obj[(ind)])
 #define OBJ_PTR(ptr) ((object_t *)(ptr))
@@ -164,8 +161,8 @@ struct _object
 /*
  * Mine object
  */
-typedef struct _mineobject mineobject_t;
-struct _mineobject
+typedef struct xp_mineobject mineobject_t;
+struct xp_mineobject
 {
 
     OBJECT_BASE
@@ -175,10 +172,6 @@ struct _mineobject
     int owner;        /* Who's object is this ? */
     DFLOAT ecm_range; /* Range from last ecm center */
     int spread_left;  /* how much spread time left */
-
-    // #ifdef __cplusplus
-    //                         _mineobject() {}
-    // #endif
 
 #define MINE_IND(ind) ((mineobject_t *)Obj[(ind)])
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
@@ -192,8 +185,8 @@ struct _mineobject
 /*
  * Generic missile object
  */
-typedef struct _missileobject missileobject_t;
-struct _missileobject
+typedef struct xp_missileobject missileobject_t;
+struct xp_missileobject
 {
 
     OBJECT_BASE
@@ -202,10 +195,6 @@ struct _missileobject
 
     MISSILE_EXTEND
 
-    // #ifdef __cplusplus
-    //                         _missileobject() {}
-    // #endif
-
 #define MISSILE_IND(ind) ((missileobject_t *)Obj[(ind)])
 #define MISSILE_PTR(ptr) ((missileobject_t *)(ptr))
 };
@@ -213,8 +202,8 @@ struct _missileobject
 /*
  * Smart missile is a generic missile with extras.
  */
-typedef struct _smartobject smartobject_t;
-struct _smartobject
+typedef struct xp_smartobject smartobject_t;
+struct xp_smartobject
 {
 
     OBJECT_BASE
@@ -226,10 +215,6 @@ struct _smartobject
     int new_info;     /* smart re-lock id */
     DFLOAT ecm_range; /* Range from last ecm center */
 
-    // #ifdef __cplusplus
-    //                         _smartobject() {}
-    // #endif
-
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
 };
@@ -237,8 +222,8 @@ struct _smartobject
 /*
  * Torpedo is a generic missile with extras
  */
-typedef struct _torpobject torpobject_t;
-struct _torpobject
+typedef struct xp_torpobject torpobject_t;
+struct xp_torpobject
 {
 
     OBJECT_BASE
@@ -249,10 +234,6 @@ struct _torpobject
 
     int spread_left; /* how much spread time left */
 
-    // #ifdef __cplusplus
-    //                         _torpobject() {}
-    // #endif
-
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))
 };
@@ -260,8 +241,8 @@ struct _torpobject
 /*
  * The ball object.
  */
-typedef struct _ballobject ballobject_t;
-struct _ballobject
+typedef struct xp_ballobject ballobject_t;
+struct xp_ballobject
 {
 
     OBJECT_BASE
@@ -272,10 +253,6 @@ struct _ballobject
     int treasure;  /* treasure for ball */
     DFLOAT length; /* distance ball to player */
 
-    // #ifdef __cplusplus
-    //                         _ballobject() {}
-    // #endif
-
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))
 };
@@ -283,8 +260,8 @@ struct _ballobject
 /*
  * Object with a wireframe representation.
  */
-typedef struct _wireobject wireobject_t;
-struct _wireobject
+typedef struct xp_wireobject wireobject_t;
+struct xp_wireobject
 {
 
     OBJECT_BASE
@@ -295,10 +272,6 @@ struct _wireobject
 
     uint8_t size;     /* Size of object (wreckage) */
     uint8_t rotation; /* Rotation direction */
-
-    // #ifdef __cplusplus
-    //                         _wireobject() {}
-    // #endif
 
 #define WIRE_IND(ind) ((wireobject_t *)Obj[(ind)])
 #define WIRE_PTR(obj) ((wireobject_t *)(obj))
@@ -320,27 +293,6 @@ union _anyobject
 };
 
 /*
- * Fuel structure, used by player
- */
-typedef struct
-{
-    long sum;                 /* Sum of fuel in all tanks */
-    long max;                 /* How much fuel can you take? */
-    int current;              /* Number of currently used tank */
-    int num_tanks;            /* Number of tanks */
-    long tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
-    long l1;                  /* Fuel critical level */
-    long l2;                  /* Fuel warning level */
-    long l3;                  /* Fuel notify level */
-} pl_fuel_t;
-
-struct _visibility
-{
-    int canSee;
-    long lastChange;
-};
-
-/*
  * Structure holding the info for one pulse of a laser.
  */
 typedef struct
@@ -351,7 +303,7 @@ typedef struct
     int len;
     int life;
     int id;
-    unsigned short team;
+    uint16_t team;
     modifiers_t mods;
     bool refl;
 } pulse_t;

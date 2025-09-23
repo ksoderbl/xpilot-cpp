@@ -110,7 +110,7 @@ void Place_moving_mine(int ind)
     Place_general_mine(ind, pl->team, GRAVITY, pl->pos, vel, pl->mods);
 }
 
-void Place_general_mine(int ind, unsigned short team, long status,
+void Place_general_mine(int ind, uint16_t team, long status,
                         clpos_t pos, vector_t vel, modifiers_t mods)
 {
     char msg[MSG_LEN];
@@ -520,13 +520,13 @@ void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
     Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
-void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
+void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target)
 {
     char msg[MSG_LEN];
     int used,
-        life = options.ShotsLife,
+        life = options.shotLife,
         fuse = 0,
         lock = 0,
         status = GRAVITY,
@@ -540,8 +540,8 @@ void Fire_general_shot(player_t *pl, unsigned short team, bool cannon,
         side = 0,
         fired = 0;
     long drain;
-    double mass = options.ShotsMass,
-           speed = options.ShotsSpeed,
+    double mass = options.shotMass,
+           speed = options.shotSpeed,
            turnspeed = 0,
            max_speed = SPEED_LIMIT,
            angle,
@@ -1239,7 +1239,7 @@ void Delete_shot(int ind)
             else
                 color = WHITE;
 
-            mass = options.ShotsMass;
+            mass = options.shotMass;
             mass *= 3;
             modv = 1 << shot->mods.velocity;
             num_modv = 4;
@@ -1417,7 +1417,7 @@ void Fire_laser(player_t *pl)
     }
 }
 
-void Fire_general_laser(player_t *pl, unsigned short team, clpos_t pos,
+void Fire_general_laser(player_t *pl, uint16_t team, clpos_t pos,
                         int dir, modifiers_t mods)
 {
     pulse_t *pulse;

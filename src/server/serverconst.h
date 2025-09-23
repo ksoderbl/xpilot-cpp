@@ -220,7 +220,7 @@
 #define HEAT_WIDE_TIMEOUT (8 * FPS)
 #define HEAT_WIDE_ERROR 16
 
-#define CLUSTER_MASS_SHOTS(mass) ((mass) * 0.9 / options.ShotsMass)
+#define CLUSTER_MASS_SHOTS(mass) ((mass) * 0.9 / options.shotMass)
 #define CLUSTER_MASS_DRAIN(mass) (CLUSTER_MASS_SHOTS(mass) * ED_SHOT)
 
 #define SMART_SHOT_LEN 12

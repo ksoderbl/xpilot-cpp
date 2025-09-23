@@ -79,9 +79,9 @@ struct bline
 
 struct blockinfo
 {
-    unsigned short distance;
-    unsigned short *lines;
-    unsigned short *points;
+    uint16_t distance;
+    uint16_t *lines;
+    uint16_t *points;
 };
 
 struct inside_block
@@ -118,8 +118,8 @@ struct bline *linet;
 // int num_groups = 0, max_groups = 0;
 
 struct blockinfo *blockline;
-unsigned short *llist;
-unsigned short *plist;
+uint16_t *llist;
+uint16_t *plist;
 // int num_lines = 0;
 // int num_polys = 0;
 int mapx, mapy;
@@ -437,10 +437,10 @@ static void *ralloc(void *ptr, size_t size)
     return ptr;
 }
 
-static unsigned short *Shape_lines(shape_t *s, int dir)
+static uint16_t *Shape_lines(shape_t *s, int dir)
 {
     int i;
-    static unsigned short foo[100];
+    static uint16_t foo[100];
     static shape_t *lastshape;
     static int lastdir;
     const int os = num_lines;
@@ -560,7 +560,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     }
 
     if (obj->type == OBJ_SPARK)
-        CLR_BIT(obj->obj_status, OWNERIMMUNE);
+        CLR_BIT(obj->status, OWNERIMMUNE);
 
     if (line >= num_lines)
     {
@@ -810,7 +810,7 @@ static void Bounce_player(player_t *pl, move_t *move, int line, int point)
 /* Used internally by the movement routines to find the first line
  * (in the list given by *lines) that the given trajectory hits. */
 static int Lines_check(int msx, int msy, int mdx, int mdy, int *mindone,
-                       const unsigned short *lines, int chx, int chy,
+                       const uint16_t *lines, int chx, int chy,
                        int chxy, const move_t *move, int *minline,
                        int *height)
 {
@@ -979,7 +979,7 @@ extern void Move_point(const move_t *move, struct collans *answer)
     int mbase;
     int chxy = 0, chx = 0, chy = 0;
     int x, temp;
-    unsigned short *lines;
+    uint16_t *lines;
 
     block = (move->start.cx >> B_SHIFT) + mapx * (move->start.cy >> B_SHIFT);
     x = blockline[block].distance;
@@ -1088,8 +1088,8 @@ static void Shape_move(const move_t *move, shape_t *s,
     int mbase;
     int chxy = 0, chx = 0, chy = 0;
     int x, temp;
-    unsigned short *lines;
-    unsigned short *points;
+    uint16_t *lines;
+    uint16_t *points;
     clpos_t *pts;
 
     if (mdx < 0)
@@ -1232,7 +1232,7 @@ static int Shape_morph(shape_t *shape1, int dir1,
 {
     struct collans answer;
     int i, p, xo1, xo2, yo1, yo2, xn1, xn2, yn1, yn2, xp, yp, s, t;
-    unsigned short *points;
+    uint16_t *points;
     move_t mv;
     /*clpos_t *pts1, *pts2;*/
     int num_points;
@@ -2233,7 +2233,7 @@ static void Distance_init(void)
     int lsx, lsy, ldx, ldy, temp, dist, n, i, bx, by, j, k;
     int base, height2, by2, width, height;
     int distbound, size;
-    unsigned short *lptr;
+    uint16_t *lptr;
 
     /* max line delta 30000 */
 
@@ -2381,7 +2381,7 @@ static void Distance_init(void)
             stored:; /* semicolon for ansi compatibility */
             }
     }
-    llist = (unsigned short *)ralloc(NULL, size * sizeof(unsigned short));
+    llist = (uint16_t *)ralloc(NULL, size * sizeof(uint16_t));
     lptr = llist;
     *lptr++ = 65535; /* All blocks with no lines stored point to this. */
     for (bx = 0; bx < mapx; bx++)
@@ -2453,13 +2453,13 @@ static void Distance_init(void)
 static void Corner_init(void)
 {
     int bx, by, cx, cy, dist, i;
-    unsigned short *ptr, *temp;
+    uint16_t *ptr, *temp;
     int block, size = mapx * mapy;
     int height, height2, width, by2;
 
 #define DISIZE 350
-    temp = (unsigned short *)
-        ralloc(NULL, mapx * mapy * DISIZE * sizeof(unsigned short)); /* !@# */
+    temp = (uint16_t *)
+        ralloc(NULL, mapx * mapy * DISIZE * sizeof(uint16_t)); /* !@# */
     for (i = 0; i < mapx * mapy; i++)
         temp[i * DISIZE] = 0;
     for (i = 0; i < num_lines; i++)
@@ -2496,7 +2496,7 @@ static void Corner_init(void)
                 size++;
             }
     }
-    plist = (unsigned short *)ralloc(NULL, size * sizeof(unsigned short));
+    plist = (uint16_t *)ralloc(NULL, size * sizeof(uint16_t));
     ptr = plist;
     for (block = 0; block < mapx * mapy; block++)
     {
