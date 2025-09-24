@@ -627,9 +627,7 @@ int Setup_net_server(void)
     Init_receive();
 
     if (Init_setup() == -1)
-    {
         return -1;
-    }
     /*
      * The number of connections is limited by the number of bases
      * and the max number of possible file descriptors to use in
@@ -772,9 +770,7 @@ int Check_connection(char *user, char *nick, char *dpy, char *addr)
             if (strcasecmp(connp->nick, nick) == 0)
             {
                 if (!strcmp(user, connp->user) && !strcmp(dpy, connp->dpy) && !strcmp(addr, connp->addr))
-                {
                     return connp->my_port;
-                }
                 return -1;
             }
         }
@@ -1043,8 +1039,7 @@ static int Handle_listening(connection_t *connp)
 static int Handle_setup(connection_t *connp)
 {
     char *buf;
-    int n,
-        len;
+    int n, len;
 
     if (connp->state != CONN_SETUP)
     {
@@ -1358,17 +1353,11 @@ static void Handle_input(int fd, void *arg)
         (**receive_tbl)(connection_t *connp);
 
     if (connp->state & (CONN_PLAYING | CONN_READY))
-    {
         receive_tbl = &playing_receive[0];
-    }
     else if (connp->state == CONN_LOGIN)
-    {
         receive_tbl = &login_receive[0];
-    }
     else if (connp->state & (CONN_DRAIN | CONN_SETUP))
-    {
         receive_tbl = &drain_receive[0];
-    }
     else if (connp->state == CONN_LISTENING)
     {
         Handle_listening(connp);
@@ -1436,9 +1425,7 @@ int Input(void)
     {
         connp = &Conn[i];
         if (connp->state == CONN_FREE)
-        {
             continue;
-        }
         if (connp->start + connp->timeout * FPS < main_loops)
         {
             /*
@@ -1474,9 +1461,7 @@ int Input(void)
             if (connp->c.len > 0)
             {
                 if (Send_reliable(connp) == -1)
-                {
                     continue;
-                }
             }
         }
     }
@@ -1578,62 +1563,17 @@ int Send_self(connection_t *connp,
     uint8_t stat = (uint8_t)status;
     int sbuf_len = connp->w.len;
 
-    if (connp->version >= 0x4203)
-    {
-        n = Packet_printf(&connp->w,
-                          "%c"
-                          "%hd%hd%hd%hd%c"
-                          "%c%c%c"
-                          "%hd%hd%c%c"
-                          "%c%hd%hd"
-                          "%hd%hd%c"
-                          "%c%c",
-                          PKT_SELF,
-                          (int)(pl->pix_pos.x + 0.5), (int)(pl->pix_pos.y + 0.5),
-                          (int)pl->vel.x, (int)pl->vel.y,
-                          pl->dir,
-                          (int)(pl->power + 0.5),
-                          (int)(pl->turnspeed + 0.5),
-                          (int)(pl->turnresistance * 255.0 + 0.5),
-                          lock_id, lock_dist, lock_dir,
-                          pl->check,
-
-                          pl->fuel.current,
-                          pl->fuel.sum >> FUEL_SCALE_BITS,
-                          pl->fuel.max >> FUEL_SCALE_BITS,
-
-                          connp->view_width, connp->view_height,
-                          connp->debris_colors,
-
-                          stat,
-                          autopilotlight
-
-        );
-        if (n <= 0)
-        {
-            return n;
-        }
-        n = Send_self_items(connp, pl);
-        if (n <= 0)
-        {
-            return n;
-        }
-        return Send_modifiers(connp, mods);
-    }
-
     n = Packet_printf(&connp->w,
                       "%c"
                       "%hd%hd%hd%hd%c"
                       "%c%c%c"
                       "%hd%hd%c%c"
-                      "%c%c%c%c%c"
-                      "%c%c%c%c%c"
-                      "%c%c%c%c"
                       "%c%hd%hd"
                       "%hd%hd%c"
                       "%c%c",
                       PKT_SELF,
-                      (int)(pl->pix_pos.x + 0.5), (int)(pl->pix_pos.y + 0.5),
+                      // was: (int)(pl->pix_pos.x + 0.5), (int)(pl->pix_pos.y + 0.5),
+                      CLICK_TO_PIXEL(pl->pos.cx), CLICK_TO_PIXEL(pl->pos.cy),
                       (int)pl->vel.x, (int)pl->vel.y,
                       pl->dir,
                       (int)(pl->power + 0.5),
@@ -1641,23 +1581,6 @@ int Send_self(connection_t *connp,
                       (int)(pl->turnresistance * 255.0 + 0.5),
                       lock_id, lock_dist, lock_dir,
                       pl->check,
-
-                      pl->item[ITEM_CLOAK],
-                      pl->item[ITEM_SENSOR],
-                      pl->item[ITEM_MINE],
-                      pl->item[ITEM_MISSILE],
-                      pl->item[ITEM_ECM],
-
-                      pl->item[ITEM_TRANSPORTER],
-                      pl->item[ITEM_WIDEANGLE],
-                      pl->item[ITEM_REARSHOT],
-                      pl->item[ITEM_AFTERBURNER],
-                      pl->fuel.num_tanks,
-
-                      pl->item[ITEM_LASER],
-                      pl->item[ITEM_EMERGENCY_THRUST],
-                      pl->item[ITEM_TRACTOR_BEAM],
-                      pl->item[ITEM_AUTOPILOT],
 
                       pl->fuel.current,
                       pl->fuel.sum >> FUEL_SCALE_BITS,
@@ -1671,59 +1594,10 @@ int Send_self(connection_t *connp,
 
     );
     if (n <= 0)
-    {
         return n;
-    }
-    if (connp->version >= 0x3800)
-    {
-        n = Packet_printf(&connp->w,
-                          "%c%c%c%c", /* %c", */
-                          pl->item[ITEM_EMERGENCY_SHIELD],
-                          pl->item[ITEM_DEFLECTOR],
-                          pl->item[ITEM_HYPERJUMP],
-                          pl->item[ITEM_PHASING] /* ,
-                          pl->item[ITEM_MIRROR] */
-        );
-        if (n <= 0)
-        {
-            connp->w.len = sbuf_len;
-            return n;
-        }
-        if (connp->version >= 0x4100)
-        {
-            n = Packet_printf(&connp->w,
-                              "%c",
-                              pl->item[ITEM_MIRROR]);
-            if (n <= 0)
-            {
-                connp->w.len = sbuf_len;
-                return n;
-            }
-            if (connp->version >= 0x4201)
-            {
-                n = Packet_printf(&connp->w,
-                                  "%c",
-                                  pl->item[ITEM_ARMOR]);
-                if (n <= 0)
-                {
-                    connp->w.len = sbuf_len;
-                    return n;
-                }
-            }
-        }
-    }
-    else if (connp->version >= 0x3200)
-    {
-        n = Packet_printf(&connp->w,
-                          "%c",
-                          pl->item[ITEM_EMERGENCY_SHIELD]);
-        if (n <= 0)
-        {
-            connp->w.len = sbuf_len;
-            return n;
-        }
-    }
-
+    n = Send_self_items(connp, pl);
+    if (n <= 0)
+        return n;
     return Send_modifiers(connp, mods);
 }
 
@@ -2243,10 +2117,8 @@ int Send_start_of_frame(connection_t *connp)
     if (connp->state != CONN_PLAYING)
     {
         if (connp->state != CONN_READY)
-        {
             warn("Connection not ready for frame (%d,%d)",
                  connp->state, connp->id);
-        }
         return -1;
     }
     /*
@@ -2288,19 +2160,14 @@ int Send_end_of_frame(connection_t *connp)
         return 0;
     }
     while (connp->motd_offset >= 0 && connp->c.len + connp->w.len < MAX_RELIABLE_DATA_PACKET_SIZE)
-    {
         Send_motd(connp);
-    }
+
     if (connp->c.len > 0 && connp->w.len < MAX_RELIABLE_DATA_PACKET_SIZE)
     {
         if (Send_reliable(connp) == -1)
-        {
             return -1;
-        }
         if (connp->w.len == 0)
-        {
             return 1;
-        }
     }
     if (Sockbuf_flush(&connp->w) == -1)
     {
@@ -2316,30 +2183,21 @@ static int Receive_keyboard(connection_t *connp)
     player_t *pl;
     long change;
     uint8_t ch;
-    int size = KEYBOARD_SIZE;
+    size_t size = KEYBOARD_SIZE;
 
-    if (connp->version < 0x3800)
-    {
-        printf("THIS NEVER HAPPENS: 2nkj23kj4j2k342k\n");
-        /* older servers have a keyboard_size of 8 bytes instead of 9. */
-        size--;
-    }
-    if (connp->r.ptr - connp->r.buf + size + 1 + 4 > connp->r.len)
-    {
+    if (connp->r.ptr - connp->r.buf + (int)size + 1 + 4 > connp->r.len)
         /*
          * Incomplete client packet.
          */
         return 0;
-    }
+
     Packet_scanf(&connp->r, "%c%ld", &ch, &change);
     if (change <= connp->last_key_change)
-    {
         /*
          * We already have this key.
          * Nothing to do.
          */
         connp->r.ptr += size;
-    }
     else
     {
         connp->last_key_change = change;
@@ -2396,9 +2254,7 @@ static int Receive_play(connection_t *connp)
             return -1;
         }
         if (Send_reliable(connp) == -1)
-        {
             return -1;
-        }
         return 0;
     }
     Sockbuf_clear(&connp->w);
