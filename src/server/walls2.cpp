@@ -146,30 +146,30 @@ void Move_init(void)
 
     mp.obj_bounce_mask = 0;
     if (options.sparksWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT_BIT);
     if (options.debrisWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT_BIT);
     if (options.shotsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT_BIT | OBJ_CANNON_SHOT_BIT_BIT);
     if (options.itemsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT_BIT);
     if (options.missilesWallBounce)
         SET_BIT(mp.obj_bounce_mask,
-                OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT);
+                OBJ_SMART_SHOT_BIT_BIT | OBJ_TORPEDO_BIT_BIT | OBJ_HEAT_SHOT_BIT_BIT);
     if (options.minesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT_BIT);
     if (options.ballsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT_BIT);
     if (options.asteroidsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT_BIT);
     if (options.pulsesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_PULSE_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_PULSE_BIT_BIT);
 
-    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ASTEROID_BIT;
+    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT_BIT | OBJ_SHOT_BIT_BIT | OBJ_PULSE_BIT_BIT | OBJ_SMART_SHOT_BIT_BIT | OBJ_TORPEDO_BIT_BIT | OBJ_HEAT_SHOT_BIT_BIT | OBJ_ASTEROID_BIT_BIT;
     if (options.cannonsPickupItems)
-        mp.obj_cannon_mask |= OBJ_ITEM_BIT;
-    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT | OBJ_SPARK_BIT;
-    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT | OBJ_PULSE_BIT;
+        mp.obj_cannon_mask |= OBJ_ITEM_BIT_BIT;
+    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT_BIT | OBJ_SPARK_BIT_BIT;
+    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT_BIT | OBJ_PULSE_BIT_BIT;
 }
 
 void Object_crash(object_t *obj, int crashtype, int mapobj_ind)
@@ -188,7 +188,7 @@ void Object_crash(object_t *obj, int crashtype, int mapobj_ind)
         /*
          * Ball type has already been handled.
          */
-        if (obj->type == OBJ_BALL)
+        if (obj->type == OBJ_BALL_BIT)
             break;
         obj->life = 0;
         break;
@@ -501,7 +501,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
 
     if (type == TREASURE)
     {
-        if (obj->type == OBJ_BALL)
+        if (obj->type == OBJ_BALL_BIT)
             Ball_hits_goal(BALL_PTR(obj), groupptr_by_id(group));
         obj->life = 0;
         return 0;
@@ -532,7 +532,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         return 0;
     }
 
-    if (obj->type != OBJ_BALL && obj->type != OBJ_PULSE)
+    if (obj->type != OBJ_BALL_BIT && obj->type != OBJ_PULSE_BIT)
     {
         obj->life *= options.objectWallBounceLifeFactor;
         if (obj->life <= 0)
@@ -544,22 +544,22 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
      * "reactive" thrust.  This is exactly like ground effect
      * in the real world.  Very useful for stopping against walls.
      */
-    if (obj->type != OBJ_PULSE &&
-        obj->type != OBJ_SPARK &&
+    if (obj->type != OBJ_PULSE_BIT &&
+        obj->type != OBJ_SPARK_BIT &&
         sqr(obj->vel.x) + sqr(obj->vel.y) > sqr(options.maxObjectWallBounceSpeed))
     {
         obj->life = 0;
         return 0;
     }
 
-    if (obj->type == OBJ_SPARK &&
+    if (obj->type == OBJ_SPARK_BIT &&
         sqr(obj->vel.x) + sqr(obj->vel.y) > sqr(options.maxSparkWallBounceSpeed))
     {
         obj->life = 0;
         return 0;
     }
 
-    if (obj->type == OBJ_SPARK)
+    if (obj->type == OBJ_SPARK_BIT)
         CLR_BIT(obj->obj_status, OWNERIMMUNE);
 
     if (line >= num_lines)
@@ -578,7 +578,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         s = linet[line].s;
     }
 
-    if (obj->type == OBJ_PULSE)
+    if (obj->type == OBJ_PULSE_BIT)
         wall_brake_factor = 1.0;
     fx = move->delta.cx * c + move->delta.cy * s;
     fy = move->delta.cx * s - move->delta.cy * c;
@@ -592,7 +592,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         obj->collmode = 3;
 
     /* find direction of pulse after bounce */
-    if (obj->type == OBJ_PULSE)
+    if (obj->type == OBJ_PULSE_BIT)
     {
         pulseobject_t *pulse = PULSE_PTR(obj);
 
@@ -2783,20 +2783,20 @@ void Move_object(object_t *obj)
 
     obj->collmode = 1;
 
-    if (obj->type == OBJ_ASTEROID)
+    if (obj->type == OBJ_ASTEROID_BIT)
     {
         Move_asteroid(obj);
         return;
     }
 
 #if 1
-    if (obj->type == OBJ_BALL)
+    if (obj->type == OBJ_BALL_BIT)
     {
         Move_ball(obj);
         return;
     }
 #else
-    if (obj->type == OBJ_BALL)
+    if (obj->type == OBJ_BALL_BIT)
     {
         if (obj->owner != NO_ID)
             team = Player_by_id(obj->owner).team;

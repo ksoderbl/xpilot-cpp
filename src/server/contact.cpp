@@ -141,12 +141,12 @@ static int Kick_robot_players(int team)
             int i;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (!IS_ROBOT_IND(i) || PlayersArray[i]->team == options.robotTeam)
+                if (!IS_ROBOT_IND(i) || Player_by_index(i)->team == options.robotTeam)
                     continue;
-                if (PlayersArray[i]->score < low_score)
+                if (Player_by_index(i)->score < low_score)
                 {
                     low_i = i;
-                    low_score = PlayersArray[i]->score;
+                    low_score = Player_by_index(i)->score;
                 }
             }
             if (low_i >= 0)
@@ -173,12 +173,12 @@ static int Kick_robot_players(int team)
             int i;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (!IS_ROBOT_IND(i) || PlayersArray[i]->team != team)
+                if (!IS_ROBOT_IND(i) || Player_by_index(i)->team != team)
                     continue;
-                if (PlayersArray[i]->score < low_score)
+                if (Player_by_index(i)->score < low_score)
                 {
                     low_i = i;
-                    low_score = PlayersArray[i]->score;
+                    low_score = Player_by_index(i)->score;
                 }
             }
             if (low_i >= 0)
@@ -206,21 +206,21 @@ static int Kick_paused_players(int team)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (PlayersArray[i]->conn != NULL && BIT(PlayersArray[i]->obj_status, PAUSE) && (team == TEAM_NOT_SET || PlayersArray[i]->team == team))
+        if (Player_by_index(i)->conn != NULL && BIT(Player_by_index(i)->obj_status, PAUSE) && (team == TEAM_NOT_SET || Player_by_index(i)->team == team))
         {
             if (team == TEAM_NOT_SET)
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because the game is full.",
-                        PlayersArray[i]->name);
-                Destroy_connection(PlayersArray[i]->conn, "no pause with full game");
+                        Player_by_index(i)->name);
+                Destroy_connection(Player_by_index(i)->conn, "no pause with full game");
             }
             else
             {
                 sprintf(msg,
                         "The paused \"%s\" was kicked because team %d is full.",
-                        PlayersArray[i]->name, team);
-                Destroy_connection(PlayersArray[i]->conn, "no pause with full team");
+                        Player_by_index(i)->name, team);
+                Destroy_connection(Player_by_index(i)->conn, "no pause with full team");
             }
             Set_message(msg);
             num_unpaused++;
@@ -280,9 +280,9 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
     }
     for (i = 0; i < NumPlayers; i++)
     {
-        if (strcasecmp(PlayersArray[i]->name, nick_name) == 0)
+        if (strcasecmp(Player_by_index(i)->name, nick_name) == 0)
         {
-            D(printf("%s %s\n", PlayersArray[i]->name, nick_name);)
+            D(printf("%s %s\n", Player_by_index(i)->name, nick_name);)
             return E_IN_USE;
         }
     }
@@ -612,7 +612,7 @@ void Contact(int fd, void *arg)
                  * because several players may have the same username.
                  * E.g., system administrators joining as root...
                  */
-                if (strcasecmp(str, PlayersArray[i]->name) == 0 || strcasecmp(str, PlayersArray[i]->username) == 0)
+                if (strcasecmp(str, Player_by_index(i)->name) == 0 || strcasecmp(str, Player_by_index(i)->username) == 0)
                 {
                     found = i;
                 }

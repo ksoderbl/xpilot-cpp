@@ -47,6 +47,11 @@
 
 bool updateScores = true;
 
+int playerArrayNumber;
+player_t **PlayersArray;
+#define MAX_SPECTATORS 0
+static int GetIndArray[NUM_IDS + MAX_SPECTATORS + 1];
+
 /********* **********
  * Functions on player array.
  */
@@ -91,9 +96,9 @@ void Pick_startpos(int ind)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i != ind && !Player_is_tank(PlayersArray[i]) && free_bases[PlayersArray[i]->home_base])
+        if (i != ind && !Player_is_tank(Player_by_index(i)) && free_bases[Player_by_index(i)->home_base])
         {
-            free_bases[PlayersArray[i]->home_base] = 0; /* occupado */
+            free_bases[Player_by_index(i)->home_base] = 0; /* occupado */
             num_free--;
         }
     }
@@ -135,9 +140,9 @@ void Pick_startpos(int ind)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (PlayersArray[i]->conn != NULL)
+                if (Player_by_index(i)->conn != NULL)
                 {
-                    Send_base(PlayersArray[i]->conn,
+                    Send_base(Player_by_index(i)->conn,
                               pl->id,
                               pl->home_base);
                 }
@@ -227,7 +232,7 @@ void Go_home(int ind)
     for (i = 0; i < NumPlayers; i++)
     {
         pl->visibility[i].lastChange = 0;
-        PlayersArray[i]->visibility[ind].lastChange = 0;
+        Player_by_index(i)->visibility[ind].lastChange = 0;
     }
 
     if (Player_is_robot(pl))
@@ -445,7 +450,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->shield_time = 0;
     pl->last_wall_touch = 0;
 
-    pl->type = OBJ_PLAYER;
+    pl->type = OBJ_PLAYER_BIT;
     pl->type_ext = 0; /* assume human player */
     pl->shots = 0;
     pl->missile_rack = 0;
@@ -510,7 +515,7 @@ int Init_player(int ind, shipshape_t *ship)
         {
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (PlayersArray[i]->life < world->rules->lives && !Players_are_teammates(pl, PlayersArray[i]))
+            if (Player_by_index(i)->life < world->rules->lives && !Players_are_teammates(pl, Player_by_index(i)))
             {
                 too_late = true;
                 break;
@@ -596,6 +601,12 @@ void Alloc_players(int number)
         /* Advance to next block/array */
         t += number;
     }
+
+    playerArrayNumber = number;
+
+    /* Initialize player id to index lookup table */
+    for (i = 0; i < NELEM(GetIndArray); i++)
+        GetIndArray[i] = NO_IND;
 }
 
 void Free_players(void)
@@ -627,9 +638,9 @@ void Update_score_table(void)
             pl->prev_alliance = pl->alliance;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (PlayersArray[i]->conn != NULL)
+                if (Player_by_index(i)->conn != NULL)
                 {
-                    Send_score(PlayersArray[i]->conn, pl->id,
+                    Send_score(Player_by_index(i)->conn, pl->id,
                                pl->score, pl->life,
                                pl->mychar, pl->alliance);
                 }
@@ -648,9 +659,9 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    if (PlayersArray[i]->conn != NULL)
+                    if (Player_by_index(i)->conn != NULL)
                     {
-                        Send_timing(PlayersArray[i]->conn, pl->id, check, pl->round);
+                        Send_timing(Player_by_index(i)->conn, pl->id, check, pl->round);
                     }
                 }
             }
@@ -669,7 +680,7 @@ void Reset_all_players(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         if (options.endOfRoundReset)
         {
             if (BIT(pl->obj_status, PAUSE))
@@ -679,7 +690,7 @@ void Reset_all_players(void)
             else
             {
                 Kill_player(i);
-                if (pl != PlayersArray[i])
+                if (pl != Player_by_index(i))
                 {
                     /* player was deleted. */
                     i--;
@@ -719,7 +730,7 @@ void Reset_all_players(void)
         /* We are starting all over again */
         for (j = NumObjs - 1; j >= 0; j--)
         {
-            if (BIT(Obj[j]->type, OBJ_BALL))
+            if (BIT(Obj[j]->type, OBJ_BALL_BIT))
             {
                 ballobject_t *ball = BALL_IND(j);
                 ball->id = NO_ID;
@@ -768,10 +779,10 @@ void Reset_all_players(void)
         for (i = 0; i < NumObjs; i++)
         {
             object_t *obj = Obj[i];
-            if (BIT(obj->type, OBJ_SHOT | OBJ_MINE | OBJ_DEBRIS | OBJ_SPARK | OBJ_CANNON_SHOT | OBJ_TORPEDO | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_ITEM))
+            if (BIT(obj->type, OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ITEM_BIT))
             {
                 obj->life = 0;
-                if (BIT(obj->type, OBJ_TORPEDO | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_CANNON_SHOT | OBJ_MINE))
+                if (BIT(obj->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
                 {
                     /* Take care that no new explosions are made. */
                     obj->mass = 0;
@@ -795,7 +806,7 @@ void Check_team_members(int team)
 
     for (members = i = 0; i < NumPlayers; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
             members++;
     }
@@ -805,7 +816,7 @@ void Check_team_members(int team)
               team, world->teams[team].NumMembers, members);
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = PlayersArray[i];
+            pl = Player_by_index(i);
             if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
                 error("Team %d currently has player %d: \"%s\"",
                       team, i + 1, pl->name);
@@ -831,10 +842,10 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0))
+        if (Player_is_tank(Player_by_index(i)) || (BIT(Player_by_index(i)->obj_status, PAUSE) && Player_by_index(i)->count <= 0))
             continue;
-        *average_score += PlayersArray[i]->score;
-        ratio = (double)PlayersArray[i]->kills / (PlayersArray[i]->deaths + 1);
+        *average_score += Player_by_index(i)->score;
+        ratio = (double)Player_by_index(i)->kills / (Player_by_index(i)->deaths + 1);
         if (ratio > *best_ratio)
         {
             *best_ratio = ratio;
@@ -987,11 +998,11 @@ void Team_game_over(int winning_team, const char *reason)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (PlayersArray[i]->team != winning_team)
+            if (Player_by_index(i)->team != winning_team)
                 continue;
-            if (Player_is_tank(PlayersArray[i]) ||
-                (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0) ||
-                (BIT(PlayersArray[i]->obj_status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
+            if (Player_is_tank(Player_by_index(i)) ||
+                (BIT(Player_by_index(i)->obj_status, PAUSE) && Player_by_index(i)->count <= 0) ||
+                (BIT(Player_by_index(i)->obj_status, GAME_OVER) && Player_by_index(i)->mychar == 'W' && Player_by_index(i)->score == 0))
                 continue;
             for (j = 0; j < num_best_players; j++)
             {
@@ -1117,7 +1128,7 @@ void Race_game_over(void)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = PlayersArray[i];
+            pl = Player_by_index(i);
             if (Player_is_tank(pl))
             {
                 continue;
@@ -1173,7 +1184,7 @@ void Race_game_over(void)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         CLR_BIT(pl->obj_status, RACE_OVER | FINISH);
         if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
         {
@@ -1186,7 +1197,7 @@ void Race_game_over(void)
             Kill_player(i);
         else
             Player_death_reset(i);
-        if (pl != PlayersArray[i])
+        if (pl != Player_by_index(i))
         {
             continue;
         }
@@ -1205,7 +1216,7 @@ void Race_game_over(void)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = PlayersArray[i];
+            pl = Player_by_index(i);
             if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
             {
                 continue;
@@ -1281,7 +1292,7 @@ void Compute_game_status(void)
         /* First count the players */
         for (i = 0; i < NumPlayers; i++)
         {
-            pl = PlayersArray[i];
+            pl = Player_by_index(i);
             if (BIT(pl->obj_status, PAUSE) || Player_is_tank(pl))
                 continue;
             if (!BIT(pl->obj_status, GAME_OVER))
@@ -1333,7 +1344,7 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                pl = PlayersArray[i];
+                pl = Player_by_index(i);
                 if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
                     continue;
                 if (BIT(pl->obj_status, FINISH))
@@ -1417,26 +1428,26 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(PlayersArray[i]))
+            if (Player_is_tank(Player_by_index(i)))
                 /* Ignore tanks. */
                 continue;
-            else if (BIT(PlayersArray[i]->obj_status, PAUSE))
+            else if (BIT(Player_by_index(i)->obj_status, PAUSE))
                 /* Ignore paused players. */
                 continue;
 #if 0
             /* not all teammode maps have treasures. */
-            else if (world->teams[PlayersArray[i]->team].NumTreasures == 0) {
+            else if (world->teams[Player_by_index(i)->team].NumTreasures == 0) {
                 /* Ignore players with no treasure troves */
                 continue;
             }
 #endif
-            else if (BIT(PlayersArray[i]->obj_status, GAME_OVER))
+            else if (BIT(Player_by_index(i)->obj_status, GAME_OVER))
             {
-                if (team_state[PlayersArray[i]->team] == TeamEmpty)
+                if (team_state[Player_by_index(i)->team] == TeamEmpty)
                 {
                     /* Assume all teammembers are dead. */
                     num_dead_teams++;
-                    team_state[PlayersArray[i]->team] = TeamDead;
+                    team_state[Player_by_index(i)->team] = TeamDead;
                 }
             }
             /*
@@ -1447,15 +1458,15 @@ void Compute_game_status(void)
              * was genocided very quickly after game reset, while this
              * player was still being transported back to his homebase.
              */
-            else if (team_state[PlayersArray[i]->team] != TeamAlive)
+            else if (team_state[Player_by_index(i)->team] != TeamAlive)
             {
-                if (team_state[PlayersArray[i]->team] == TeamDead)
+                if (team_state[Player_by_index(i)->team] == TeamDead)
                     /* Oops!  Not all teammembers are dead yet. */
                     num_dead_teams--;
-                team_state[PlayersArray[i]->team] = TeamAlive;
+                team_state[Player_by_index(i)->team] = TeamAlive;
                 ++num_alive_teams;
                 /* Remember a team which was alive. */
-                winning_team = PlayersArray[i]->team;
+                winning_team = Player_by_index(i)->team;
             }
         }
 
@@ -1534,9 +1545,9 @@ void Compute_game_status(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                if (BIT(PlayersArray[i]->obj_status, PAUSE) || Player_is_tank(PlayersArray[i]))
+                if (BIT(Player_by_index(i)->obj_status, PAUSE) || Player_is_tank(Player_by_index(i)))
                     continue;
-                team_score[PlayersArray[i]->team] += PlayersArray[i]->score;
+                team_score[Player_by_index(i)->team] += Player_by_index(i)->score;
             }
 
             for (winners = i = 0; i < MAX_TEAMS; i++)
@@ -1637,9 +1648,9 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (BIT(PlayersArray[i]->obj_status, PAUSE) || Player_is_tank(PlayersArray[i]))
+            if (BIT(Player_by_index(i)->obj_status, PAUSE) || Player_is_tank(Player_by_index(i)))
                 continue;
-            if (!BIT(PlayersArray[i]->obj_status, GAME_OVER))
+            if (!BIT(Player_by_index(i)->obj_status, GAME_OVER))
             {
                 num_alive_players++;
                 if (IS_ROBOT_IND(i))
@@ -1692,12 +1703,12 @@ void Delete_player(int ind)
         obj = Obj[i];
         if (obj->id == id)
         {
-            if (obj->type == OBJ_BALL)
+            if (obj->type == OBJ_BALL_BIT)
             {
                 Delete_shot(i);
                 BALL_PTR(obj)->owner = NO_ID;
             }
-            else if (BIT(obj->type, OBJ_DEBRIS | OBJ_SPARK))
+            else if (BIT(obj->type, OBJ_DEBRIS_BIT | OBJ_SPARK_BIT))
             {
                 /* Okay, so you want robot explosions to exist,
                  * even if the robot left the game. */
@@ -1709,13 +1720,13 @@ void Delete_player(int ind)
                 {
                     obj->life = 0;
                     if (BIT(obj->type,
-                            OBJ_CANNON_SHOT | OBJ_MINE | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_TORPEDO))
+                            OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT))
                     {
                         obj->mass = 0;
                     }
                 }
                 obj->id = NO_ID;
-                if (BIT(obj->type, OBJ_MINE))
+                if (BIT(obj->type, OBJ_MINE_BIT))
                 {
                     MINE_PTR(obj)->owner = NO_ID;
                 }
@@ -1723,7 +1734,7 @@ void Delete_player(int ind)
         }
         else
         {
-            if (BIT(obj->type, OBJ_MINE))
+            if (BIT(obj->type, OBJ_MINE_BIT))
             {
                 mineobject_t *mine = MINE_PTR(obj);
                 if (mine->owner == id)
@@ -1736,7 +1747,7 @@ void Delete_player(int ind)
                     }
                 }
             }
-            else if (BIT(obj->type, OBJ_CANNON_SHOT))
+            else if (BIT(obj->type, OBJ_CANNON_SHOT_BIT))
             {
                 if (!options.keepShots)
                 {
@@ -1744,7 +1755,7 @@ void Delete_player(int ind)
                     obj->mass = 0;
                 }
             }
-            else if (BIT(obj->type, OBJ_BALL))
+            else if (BIT(obj->type, OBJ_BALL_BIT))
             {
                 ballobject_t *ball = BALL_PTR(obj);
                 if (ball->owner == id)
@@ -1809,19 +1820,19 @@ void Delete_player(int ind)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Player_is_tank(PlayersArray[i]) && PlayersArray[i]->lock.pl_id == id)
+        if (Player_is_tank(Player_by_index(i)) && Player_by_index(i)->lock.pl_id == id)
         {
             /* remove tanks which were released by this player. */
             if (options.keepShots)
-                PlayersArray[i]->lock.pl_id = NO_ID;
+                Player_by_index(i)->lock.pl_id = NO_ID;
             else
                 Delete_player(i);
             continue;
         }
-        if (BIT(PlayersArray[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (PlayersArray[i]->lock.pl_id == id || NumPlayers <= 1))
+        if (BIT(Player_by_index(i)->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (Player_by_index(i)->lock.pl_id == id || NumPlayers <= 1))
         {
-            CLR_BIT(PlayersArray[i]->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
-            CLR_BIT(PlayersArray[i]->used, USES_TRACTOR_BEAM);
+            CLR_BIT(Player_by_index(i)->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
+            CLR_BIT(Player_by_index(i)->used, USES_TRACTOR_BEAM);
         }
         if (IS_ROBOT_IND(i) && Robot_war_on_player(i) == id)
         {
@@ -1829,23 +1840,23 @@ void Delete_player(int ind)
         }
         for (j = 0; j < LOCKBANK_MAX; j++)
         {
-            if (PlayersArray[i]->lockbank[j] == id)
-                PlayersArray[i]->lockbank[j] = NOT_CONNECTED;
+            if (Player_by_index(i)->lockbank[j] == id)
+                Player_by_index(i)->lockbank[j] = NOT_CONNECTED;
         }
         for (j = 0; j < MAX_RECORDED_SHOVES; j++)
         {
-            if (PlayersArray[i]->shove_record[j].pusher_id == id)
-                PlayersArray[i]->shove_record[j].pusher_id = NO_ID;
+            if (Player_by_index(i)->shove_record[j].pusher_id == id)
+                Player_by_index(i)->shove_record[j].pusher_id = NO_ID;
         }
     }
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (PlayersArray[i]->conn != NULL)
-            Send_leave(PlayersArray[i]->conn, id);
-        else if (Player_is_tank(PlayersArray[i]))
+        if (Player_by_index(i)->conn != NULL)
+            Send_leave(Player_by_index(i)->conn, id);
+        else if (Player_is_tank(Player_by_index(i)))
         {
-            if (PlayersArray[i]->lock.pl_id == id)
+            if (Player_by_index(i)->lock.pl_id == id)
                 Delete_player(i);
         }
     }
@@ -1868,7 +1879,7 @@ void Detach_ball(int ind, int obj)
     {
         for (cnt = i = 0; i < NumObjs; i++)
         {
-            if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
+            if (Obj[i]->type == OBJ_BALL_BIT && Obj[i]->id == pl->id)
             {
                 if (obj == -1 || obj == i)
                 {

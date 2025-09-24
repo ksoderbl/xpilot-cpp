@@ -38,23 +38,30 @@
 /*
  * Different types of objects, including player.
  * Robots and tanks are players but have an additional type_ext field.
+ * Smart missile, heatseeker and torpedo can be merged into missile.
+ */
+#define OBJ_TYPEBIT(type) (1U << (type))
+
+/*
+ * Different types of objects, including player.
+ * Robots and tanks are players but have an additional type_ext field.
  * Smart missile, heatseeker and torpedoe can be merged into missile.
  * ECM doesn't really need an object type.
  */
-#define OBJ_PLAYER (1U << 0)
-#define OBJ_DEBRIS (1U << 1)
-#define OBJ_SPARK (1U << 2)
-#define OBJ_BALL (1U << 3)
-#define OBJ_SHOT (1U << 4)
-#define OBJ_SMART_SHOT (1U << 5)
-#define OBJ_MINE (1U << 6)
-#define OBJ_TORPEDO (1U << 7)
-#define OBJ_HEAT_SHOT (1U << 8)
-#define OBJ_PULSE (1U << 9)
-#define OBJ_ITEM (1U << 10)
-#define OBJ_WRECKAGE (1U << 11)
-#define OBJ_ASTEROID (1U << 12)
-#define OBJ_CANNON_SHOT (1U << 13)
+#define OBJ_PLAYER_BIT (1U << 0)
+#define OBJ_DEBRIS_BIT (1U << 1)
+#define OBJ_SPARK_BIT (1U << 2)
+#define OBJ_BALL_BIT (1U << 3)
+#define OBJ_SHOT_BIT (1U << 4)
+#define OBJ_SMART_SHOT_BIT (1U << 5)
+#define OBJ_MINE_BIT (1U << 6)
+#define OBJ_TORPEDO_BIT (1U << 7)
+#define OBJ_HEAT_SHOT_BIT (1U << 8)
+#define OBJ_PULSE_BIT (1U << 9)
+#define OBJ_ITEM_BIT (1U << 10)
+#define OBJ_WRECKAGE_BIT (1U << 11)
+#define OBJ_ASTEROID_BIT (1U << 12)
+#define OBJ_CANNON_SHOT_BIT (1U << 13)
 
 /*
  * Weapons modifiers.

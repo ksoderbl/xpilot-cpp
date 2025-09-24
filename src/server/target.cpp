@@ -84,7 +84,7 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
     /* KK: should shots/mines by cannons of opposing teams work? */
     /* also players suiciding on target will cause damage */
     if (!BIT(OBJ_TYPEBIT(obj->type),
-             KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
+             KILLING_SHOTS | OBJ_MINE_BIT_BIT | OBJ_PULSE_BIT_BIT | OBJ_PLAYER_BIT_BIT))
         return;
 
     if (obj->id == NO_ID)
@@ -98,7 +98,7 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
 
     switch (obj->type)
     {
-    case OBJ_SHOT:
+    case OBJ_SHOT_BIT:
         if (options.shotHitFuelDrainUsesKineticEnergy)
         {
             drainfactor = VECTOR_LENGTH(obj->vel);
@@ -108,12 +108,12 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
             drainfactor = 1.0;
         targ->damage += ED_SHOT_HIT * drainfactor * SHOT_MULT(obj);
         break;
-    case OBJ_PULSE:
+    case OBJ_PULSE_BIT:
         targ->damage += ED_LASER_HIT;
         break;
-    case OBJ_SMART_SHOT:
-    case OBJ_TORPEDO:
-    case OBJ_HEAT_SHOT:
+    case OBJ_SMART_SHOT_BIT:
+    case OBJ_TORPEDO_BIT:
+    case OBJ_HEAT_SHOT_BIT:
         if (!obj->mass)
             /* happens at end of round reset. */
             return;
@@ -123,13 +123,13 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
             targ->damage += ED_SMART_SHOT_HIT /
                             (Mods_get(obj->mods, ModsMini) + 1);
         break;
-    case OBJ_MINE:
+    case OBJ_MINE_BIT:
         if (!obj->mass)
             /* happens at end of round reset. */
             return;
         targ->damage -= TARGET_DAMAGE / (Mods_get(obj->mods, ModsMini) + 1);
         break;
-    case OBJ_PLAYER:
+    case OBJ_PLAYER_BIT:
         if (player_cost <= 0.0 || player_cost > TARGET_DAMAGE / 4.0)
             player_cost = TARGET_DAMAGE / 4.0;
         targ->damage -= player_cost;
@@ -151,7 +151,7 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
                 zero_vel,
                 NO_ID,
                 targ->team,
-                OBJ_DEBRIS,
+                OBJ_DEBRIS_BIT,
                 4.5,
                 GRAVITY,
                 RED,

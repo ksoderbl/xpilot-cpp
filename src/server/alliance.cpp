@@ -158,7 +158,7 @@ int Refuse_all_alliances(int ind)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->invite == pl->id)
+        if (Player_by_index(i)->invite == pl->id)
         {
             Refuse_alliance(ind, i);
             j++;
@@ -231,7 +231,7 @@ int Accept_all_alliances(int ind)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->invite == pl->id)
+        if (Player_by_index(i)->invite == pl->id)
         {
             Accept_alliance(ind, i);
             j++;
@@ -297,9 +297,9 @@ static void Set_alliance_message(alliance_t *alliance, const char *msg)
     {
         if (IS_HUMAN_IND(i))
         {
-            if (PlayersArray[i]->alliance == alliance->id)
+            if (Player_by_index(i)->alliance == alliance->id)
             {
-                Set_player_message(PlayersArray[i], msg);
+                Set_player_message(Player_by_index(i), msg);
             }
         }
     }
@@ -414,7 +414,7 @@ static void Alliance_add_player(alliance_t *alliance, player_t *pl)
     /* drop invitations for this player from other members */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->invite == pl->id)
+        if (Player_by_index(i)->invite == pl->id)
         {
             Cancel_invitation(i);
         }
@@ -481,12 +481,12 @@ static void Dissolve_alliance(int id)
     /* remove all remaining members from the alliance */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->alliance == id)
+        if (Player_by_index(i)->alliance == id)
         {
-            Alliance_remove_player(alliance, PlayersArray[i]);
+            Alliance_remove_player(alliance, Player_by_index(i));
             if (!options.announceAlliances && IS_HUMAN_IND(i))
             {
-                Set_player_message(PlayersArray[i],
+                Set_player_message(Player_by_index(i),
                                    " < Your alliance has been dissolved >");
             }
         }
@@ -542,9 +542,9 @@ static void Merge_alliances(int ind, int id2)
     /* move each member of alliance2 to alliance1 */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->alliance == id2)
+        if (Player_by_index(i)->alliance == id2)
         {
-            Alliance_remove_player(alliance2, PlayersArray[i]);
+            Alliance_remove_player(alliance2, Player_by_index(i));
             Player_join_alliance(i, ind);
         }
     }
@@ -573,7 +573,7 @@ void Alliance_player_list(int ind)
         }
         for (i = 0; i < NumPlayers; i++)
         {
-            if (PlayersArray[i]->alliance == pl->alliance)
+            if (Player_by_index(i)->alliance == pl->alliance)
             {
                 if (IS_HUMAN_IND(i))
                 {
@@ -583,14 +583,14 @@ void Alliance_player_list(int ind)
                         Set_player_message(pl, msg);
                         strlcpy(msg, " <            ", sizeof(msg));
                     }
-                    strlcat(msg, PlayersArray[i]->name, sizeof(msg));
+                    strlcat(msg, Player_by_index(i)->name, sizeof(msg));
                     strlcat(msg, ", ", sizeof(msg));
                 }
             }
         }
         for (i = 0; i < NumPlayers; i++)
         {
-            if (PlayersArray[i]->alliance == pl->alliance)
+            if (Player_by_index(i)->alliance == pl->alliance)
             {
                 if (IS_ROBOT_IND(i))
                 {
@@ -600,7 +600,7 @@ void Alliance_player_list(int ind)
                         Set_player_message(pl, msg);
                         strlcpy(msg, " <            ", sizeof(msg));
                     }
-                    strlcat(msg, PlayersArray[i]->name, sizeof(msg));
+                    strlcat(msg, Player_by_index(i)->name, sizeof(msg));
                     strlcat(msg, ", ", sizeof(msg));
                 }
             }

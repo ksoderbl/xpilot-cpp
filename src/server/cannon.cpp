@@ -106,7 +106,7 @@ void Cannon_throw_items(int ind)
             LIMIT(amount, 0, c->item[i]);
             if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (obj = Object_allocate()) != NULL)
             {
-                obj->type = OBJ_ITEM;
+                obj->type = OBJ_ITEM_BIT;
                 obj->info = i;
                 obj->color = RED;
                 obj->obj_status = GRAVITY;
@@ -200,7 +200,7 @@ static int Cannon_in_danger(int ind)
 {
     cannon_t *c = world->cannons + ind;
     const int range = 4 * BLOCK_SZ;
-    const long kill_shots = (KILLING_SHOTS) | OBJ_MINE | OBJ_SHOT | OBJ_PULSE | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_TORPEDO | OBJ_ASTEROID;
+    const long kill_shots = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_ASTEROID_BIT;
     object_t *shot, **obj_list;
     const int max_objs = 100;
     int obj_count, i, danger = false;
@@ -366,7 +366,7 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
 
     for (i = 0; i < NumPlayers && !ready; i++)
     {
-        player_t *pl = PlayersArray[i];
+        player_t *pl = Player_by_index(i);
         int tdist, tdx, tdy;
 
         tdx = WRAP_DX(pl->pix_pos.x - cpx);
@@ -536,7 +536,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         default:
             if (options.allowSmartMissiles)
             {
-                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_SMART_SHOT,
+                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_SMART_SHOT_BIT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_SMART_SHOT_SOUND);
                 break;
@@ -545,14 +545,14 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         case 1:
             if (options.allowHeatSeekers && BIT(PlayersArray[target]->obj_status, THRUSTING))
             {
-                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_HEAT_SHOT,
+                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_HEAT_SHOT_BIT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_HEAT_SHOT_SOUND);
                 break;
             }
             /* FALLTHROUGH */
         case 0:
-            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_TORPEDO,
+            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_TORPEDO_BIT,
                               dir, mods, -1);
             IFSOUND(sound = FIRE_TORPEDO_SOUND);
             break;
@@ -603,7 +603,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
                         zero_vel,
                         NO_ID,
                         c->team,
-                        OBJ_SPARK,
+                        OBJ_SPARK_BIT,
                         THRUST_MASS,
                         GRAVITY | FROMCANNON,
                         RED,
@@ -621,7 +621,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
                         zero_vel,
                         NO_ID,
                         c->team,
-                        OBJ_SPARK,
+                        OBJ_SPARK_BIT,
                         THRUST_MASS,
                         GRAVITY | FROMCANNON,
                         RED,
@@ -645,7 +645,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int a_dir = dir + (4 - options.cannonSmartness) * (-c->item[ITEM_WIDEANGLE] + i);
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT,
+            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT_BIT,
                               a_dir, mods, -1);
         }
         /* I'm not sure cannons should use rearshots.
@@ -655,7 +655,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
         {
             int a_dir = (int)(dir + (RES / 2) + (4 - options.cannonSmartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT,
+            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT_BIT,
                               a_dir, mods, -1);
         }
     }

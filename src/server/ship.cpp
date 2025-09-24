@@ -78,7 +78,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK,
+        OBJ_SPARK_BIT,
         THRUST_MASS,
         GRAVITY | OWNERIMMUNE,
         RED,
@@ -93,7 +93,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK,
+        OBJ_SPARK_BIT,
         THRUST_MASS * ALT_SPARK_MASS_FACT,
         GRAVITY | OWNERIMMUNE,
         BLUE,
@@ -148,7 +148,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
     vy = (ship->vel.y * ship->mass + obj->vel.y * obj->mass) / m;
-    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
+    if (ship->type == OBJ_PLAYER_BIT && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
         player_t *pusher = PlayersArray[GetInd[obj->id]];
@@ -181,7 +181,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
+    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = PlayersArray[GetInd[obj2->id]];
@@ -218,7 +218,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     dvx1 = -(tcos(obj_theta) * force / dm);
     dvy1 = -(tsin(obj_theta) * force / dm);
 
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
+    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = PlayersArray[GetInd[obj2->id]];
@@ -228,7 +228,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         }
     }
 
-    if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
+    if (obj2->type == OBJ_PLAYER_BIT && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
         player_t *pusher = PlayersArray[GetInd[obj1->id]];
@@ -444,7 +444,7 @@ void Tank_handle_detach(player_t *pl)
     for (i = 0; i <= NumPlayers; i++)
     {
         dummy->visibility[i].lastChange = 0;
-        PlayersArray[i]->visibility[NumPlayers].lastChange = 0;
+        Player_by_index(i)->visibility[NumPlayers].lastChange = 0;
     }
 
     /* Remember whose tank this is */
@@ -476,7 +476,7 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && PlayersArray[GetInd[Obj[i]->info]] == pl)
+        if (Obj[i]->type == OBJ_HEAT_SHOT_BIT && Obj[i]->info > 0 && PlayersArray[GetInd[Obj[i]->info]] == pl)
         {
             Obj[i]->info = NumPlayers - 1;
         }
@@ -487,10 +487,10 @@ void Tank_handle_detach(player_t *pl)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (PlayersArray[i]->conn != NULL)
+        if (Player_by_index(i)->conn != NULL)
         {
-            Send_player(PlayersArray[i]->conn, dummy->id);
-            Send_score(PlayersArray[i]->conn, dummy->id,
+            Send_player(Player_by_index(i)->conn, dummy->id);
+            Send_score(Player_by_index(i)->conn, dummy->id,
                        dummy->score, dummy->life,
                        dummy->mychar, dummy->alliance);
         }
@@ -576,7 +576,7 @@ void Make_wreckage(
         wreckage->color = color;
         wreckage->id = id;
         wreckage->team = team;
-        wreckage->type = OBJ_WRECKAGE;
+        wreckage->type = OBJ_WRECKAGE_BIT;
 
         /* Position */
         Object_position_init_clpos(OBJ_PTR(wreckage), pos);
@@ -643,7 +643,7 @@ void Explode_fighter(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_DEBRIS,
+        OBJ_DEBRIS_BIT,
         3.5,
         GRAVITY,
         RED,

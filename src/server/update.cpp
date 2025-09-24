@@ -240,7 +240,7 @@ void Emergency_thrust(player_t *pl, bool on)
     }
     else
     {
-        if (BIT(pl->used, USES_EMERGENCY_THRUST))
+        if (Player_uses_emergency_thrust(pl))
         {
             CLR_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_OFF_SOUND);
@@ -386,7 +386,7 @@ static void do_Autopilot(player_t *pl)
     if (pl->item[ITEM_AUTOPILOT])
         delta *= pl->item[ITEM_AUTOPILOT];
 
-    if (BIT(pl->used, USES_EMERGENCY_THRUST))
+    if (Player_uses_emergency_thrust(pl))
     {
         afterburners = MAX_AFTERBURNER;
         if (delta < emergency_thrust_settings_delta)
@@ -558,7 +558,7 @@ void Update_objects(void)
     {
         for (int i = 0; i < NumPlayers; i++)
         {
-            player_t *pl = PlayersArray[i];
+            player_t *pl = Player_by_index(i);
             if (BIT(pl->used, HAS_SHOT))
                 Fire_normal_shots(pl);
         }
@@ -603,19 +603,19 @@ void Update_objects(void)
     {
         obj = Obj[i];
 
-        if (BIT(obj->type, OBJ_MINE))
+        if (BIT(obj->type, OBJ_MINE_BIT))
             Move_mine(i);
 
-        else if (BIT(obj->type, OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_TORPEDO))
+        else if (BIT(obj->type, OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT))
             Move_smart_shot(i);
 
-        else if (BIT(obj->type, OBJ_BALL))
+        else if (BIT(obj->type, OBJ_BALL_BIT))
         {
             if (obj->id != NO_ID)
                 Move_ball(i);
         }
 
-        else if (BIT(obj->type, OBJ_WRECKAGE))
+        else if (BIT(obj->type, OBJ_WRECKAGE_BIT))
         {
             wireobject_t *wireobj = WIRE_PTR(obj);
             wireobj->rotation =
@@ -624,7 +624,7 @@ void Update_objects(void)
 
         update_object_speed(obj);
 
-        if (!BIT(obj->type, OBJ_ASTEROID))
+        if (!BIT(obj->type, OBJ_ASTEROID_BIT))
         {
             Move_object(obj);
         }
@@ -891,7 +891,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, USES_EMERGENCY_THRUST))
+        if (Player_uses_emergency_thrust(pl))
         {
             if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
@@ -1245,7 +1245,7 @@ void Update_objects(void)
                 for (k = 0; k < NumObjs; k++)
                 {
                     object_t *b = Obj[k];
-                    if (BIT(b->type, OBJ_BALL) && b->id == pl->id)
+                    if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
                     {
                         position_t ballpos;
                         ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);

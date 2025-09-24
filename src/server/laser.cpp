@@ -128,7 +128,7 @@ static void Laser_pulse_find_victims(
     vicbuf->num_vic = 0;
     for (i = 0; i < NumPlayers; i++)
     {
-        vic = PlayersArray[i];
+        vic = Player_by_index(i);
         if (BIT(vic->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) != PLAYING)
             continue;
 
@@ -249,7 +249,7 @@ static void Laser_pulse_hits_player(
             }
             Set_message(msg);
             CLR_BIT(vicpl->used,
-                    HAS_SHIELD | HAS_LASER | OBJ_SHOT);
+                    HAS_SHIELD | HAS_LASER | OBJ_SHOT_BIT);
             CLR_BIT(vicpl->obj_status, THRUSTING);
             vicpl->stunned += 5;
         }
@@ -557,7 +557,7 @@ void Laser_pulse_collision(void)
             }
         }
 
-        obj->type = OBJ_PULSE;
+        obj->type = OBJ_PULSE_BIT;
         obj->life = 1;
         obj->id = pulse->id;
         obj->team = pulse->team;
@@ -652,7 +652,7 @@ void Laser_pulse_collision(void)
     if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
         free(vicbuf.vic_ptr);
 
-    obj->type = OBJ_DEBRIS;
+    obj->type = OBJ_DEBRIS_BIT;
     obj->life = 0;
     Cell_add_object(obj);
 }

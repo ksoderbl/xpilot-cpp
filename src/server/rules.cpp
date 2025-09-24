@@ -55,7 +55,7 @@
 #define MAX_LASER 99
 #define MAX_TRACTOR_BEAM 99
 
-long KILLING_SHOTS = (OBJ_SHOT | OBJ_CANNON_SHOT | OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_PULSE);
+long KILLING_SHOTS = (OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_PULSE_BIT);
 long DEF_BITS = 0;
 long KILL_BITS = (THRUSTING | PLAYING | KILLED | SELF_DESTRUCT | WARPING | WARPED);
 long DEF_HAVE =
@@ -129,7 +129,7 @@ void Tune_item_probs(void)
             for (j = 0; j < NumObjs; j++)
             {
                 object_t *obj = Obj[j];
-                if (obj->type == OBJ_ITEM)
+                if (obj->type == OBJ_ITEM_BIT)
                 {
                     if (obj->info == i)
                     {
@@ -328,7 +328,7 @@ void Set_world_rules(void)
 
     if (!BIT(world->rules->mode, PLAYER_KILLINGS))
         CLR_BIT(KILLING_SHOTS,
-                OBJ_SHOT | OBJ_CANNON_SHOT | OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_PULSE);
+                OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_PULSE_BIT);
 
     if (!BIT(world->rules->mode, PLAYER_SHIELDING))
         CLR_BIT(DEF_HAVE, HAS_SHIELD);

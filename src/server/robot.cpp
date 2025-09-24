@@ -690,7 +690,7 @@ static void Robot_create(void)
     {
         if (IS_ROBOT_IND(i))
         {
-            data = (robot_data_t *)PlayersArray[i]->robot_data_ptr;
+            data = (robot_data_t *)Player_by_index(i)->robot_data_ptr;
             if (Robots[data->robots_ind].used < Robots[most_used].used)
             {
                 Robots[data->robots_ind].used = Robots[most_used].used;
@@ -770,10 +770,10 @@ static void Robot_create(void)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (PlayersArray[i]->conn != NULL)
+        if (Player_by_index(i)->conn != NULL)
         {
-            Send_player(PlayersArray[i]->conn, robot->id);
-            Send_base(PlayersArray[i]->conn, robot->id, robot->home_base);
+            Send_player(Player_by_index(i)->conn, robot->id);
+            Send_base(Player_by_index(i)->conn, robot->id, robot->home_base);
         }
     }
 
@@ -824,10 +824,10 @@ void Robot_delete(int ind, int kicked)
             if (!IS_ROBOT_IND(i))
                 continue;
 
-            if (PlayersArray[i]->score < low_score)
+            if (Player_by_index(i)->score < low_score)
             {
                 low_i = i;
-                low_score = PlayersArray[i]->score;
+                low_score = Player_by_index(i)->score;
             }
         }
         if (low_i >= 0)
@@ -922,8 +922,8 @@ void Robot_war(int ind, int killer)
         if (Robot_war_on_player(killer) == pl->id)
             for (i = 0; i < NumPlayers; i++)
             {
-                if (PlayersArray[i]->conn != NULL)
-                    Send_war(PlayersArray[i]->conn, kp->id, NO_ID);
+                if (Player_by_index(i)->conn != NULL)
+                    Send_war(Player_by_index(i)->conn, kp->id, NO_ID);
             }
         Robot_set_war(killer, -1);
     }
@@ -942,8 +942,8 @@ void Robot_war(int ind, int killer)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (PlayersArray[i]->conn != NULL)
-                    Send_war(PlayersArray[i]->conn, pl->id, kp->id);
+                if (Player_by_index(i)->conn != NULL)
+                    Send_war(Player_by_index(i)->conn, pl->id, kp->id);
             }
             sound_play_all(DECLARE_WAR_SOUND);
             Robot_set_war(ind, kp->id);
@@ -1093,7 +1093,7 @@ void Robot_update(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
 
         if (Player_is_tank(pl))
         {

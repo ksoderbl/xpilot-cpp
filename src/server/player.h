@@ -296,6 +296,26 @@ void Player_position_debug(player_t *pl, const char *msg);
 
 #define Player_position_remember(p_) Object_position_remember(p_)
 
+extern int playerArrayNumber;
+extern player_t **PlayersArray;
+
+/*
+ * Get player with index 'ind' from Players array.
+ */
+static inline player_t *Player_by_index(int ind)
+{
+    if (ind < 0 || ind >= playerArrayNumber)
+        return NULL;
+    return PlayersArray[ind];
+}
+
+static inline bool Player_uses_emergency_thrust(player_t *pl)
+{
+    if (BIT(pl->used, USES_EMERGENCY_THRUST))
+        return true;
+    return false;
+}
+
 /*
  * Prototypes for player.cpp
  */

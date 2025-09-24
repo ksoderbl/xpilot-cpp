@@ -1156,7 +1156,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (strcasecmp(PlayersArray[i]->name, connp->nick) == 0)
+        if (strcasecmp(Player_by_index(i)->name, connp->nick) == 0)
         {
             warn("Name already in use %s", connp->nick);
             strlcpy(errmsg, "Name already in use", errsize);
@@ -1213,23 +1213,23 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        Send_player(pl->conn, PlayersArray[i]->id);
-        Send_score(pl->conn, PlayersArray[i]->id, PlayersArray[i]->score,
-                   PlayersArray[i]->life, PlayersArray[i]->mychar, PlayersArray[i]->alliance);
-        if (!Player_is_tank(PlayersArray[i]))
-            Send_base(pl->conn, PlayersArray[i]->id, PlayersArray[i]->home_base);
+        Send_player(pl->conn, Player_by_index(i)->id);
+        Send_score(pl->conn, Player_by_index(i)->id, Player_by_index(i)->score,
+                   Player_by_index(i)->life, Player_by_index(i)->mychar, Player_by_index(i)->alliance);
+        if (!Player_is_tank(Player_by_index(i)))
+            Send_base(pl->conn, Player_by_index(i)->id, Player_by_index(i)->home_base);
     }
     /*
      * And tell all the others about him.
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (PlayersArray[i]->conn != NULL)
+        if (Player_by_index(i)->conn != NULL)
         {
-            Send_player(PlayersArray[i]->conn, pl->id);
-            Send_score(PlayersArray[i]->conn, pl->id, pl->score,
+            Send_player(Player_by_index(i)->conn, pl->id);
+            Send_score(Player_by_index(i)->conn, pl->id, pl->score,
                        pl->life, pl->mychar, pl->alliance);
-            Send_base(PlayersArray[i]->conn, pl->id, pl->home_base);
+            Send_base(Player_by_index(i)->conn, pl->id, pl->home_base);
         }
         /*
          * And tell him about the relationships others have with eachother.
@@ -1237,7 +1237,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         else if (IS_ROBOT_IND(i))
         {
             if ((war_on_id = Robot_war_on_player(i)) != NO_ID)
-                Send_war(pl->conn, PlayersArray[i]->id, war_on_id);
+                Send_war(pl->conn, Player_by_index(i)->id, war_on_id);
         }
     }
 
@@ -2894,10 +2894,10 @@ static void Handle_talk(connection_t *connp, char *str)
         sprintf(msg + strlen(msg), ":[%d]", team);
         for (sent = i = 0; i < NumPlayers; i++)
         {
-            if (PlayersArray[i]->team != TEAM_NOT_SET && PlayersArray[i]->team == team)
+            if (Player_by_index(i)->team != TEAM_NOT_SET && Player_by_index(i)->team == team)
             {
                 sent++;
-                Set_player_message(PlayersArray[i], msg);
+                Set_player_message(Player_by_index(i), msg);
             }
         }
         if (sent)
@@ -2922,7 +2922,7 @@ static void Handle_talk(connection_t *connp, char *str)
         /* first look for an exact match on player nickname. */
         for (i = 0; i < NumPlayers; i++)
         {
-            if (strcasecmp(PlayersArray[i]->name, str) == 0)
+            if (strcasecmp(Player_by_index(i)->name, str) == 0)
             {
                 sent = i;
                 break;
@@ -2933,7 +2933,7 @@ static void Handle_talk(connection_t *connp, char *str)
             /* now look for a partial match on both nick and username. */
             for (sent = -1, i = 0; i < NumPlayers; i++)
             {
-                if (strncasecmp(PlayersArray[i]->name, str, len) == 0 || strncasecmp(PlayersArray[i]->username, str, len) == 0)
+                if (strncasecmp(Player_by_index(i)->name, str, len) == 0 || strncasecmp(Player_by_index(i)->username, str, len) == 0)
                     sent = (sent == -1) ? i : -2;
             }
         }

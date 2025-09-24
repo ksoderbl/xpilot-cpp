@@ -74,7 +74,6 @@ char server_version[] = VERSION;
  */
 int NumPlayers = 0;
 int NumAlliances = 0;
-player_t **PlayersArray;
 int GetInd_1;
 int GetInd[NUM_IDS + 1];
 server_t Server;
@@ -415,7 +414,7 @@ int Pick_team(int pick_for_type)
      */
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         if (Player_is_tank(pl))
         {
             continue;
@@ -562,7 +561,7 @@ void Server_info(char *str, unsigned max_size)
     }
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         if (BIT(world->rules->mode, LIMITED_LIVES))
         {
             ratio = (double)pl->score;
@@ -716,12 +715,12 @@ void Game_Over(void)
             int team;
             if (IS_HUMAN_IND(i))
             {
-                team = PlayersArray[i]->team;
+                team = Player_by_index(i)->team;
                 if (teamscore[team] == 1234567)
                 {
                     teamscore[team] = 0;
                 }
-                teamscore[team] += PlayersArray[i]->score;
+                teamscore[team] += Player_by_index(i)->score;
             }
         }
 
@@ -763,17 +762,17 @@ void Game_Over(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        SET_BIT(PlayersArray[i]->obj_status, GAME_OVER);
+        SET_BIT(Player_by_index(i)->obj_status, GAME_OVER);
         if (IS_HUMAN_IND(i))
         {
-            if (PlayersArray[i]->score > maxsc)
+            if (Player_by_index(i)->score > maxsc)
             {
-                maxsc = PlayersArray[i]->score;
+                maxsc = Player_by_index(i)->score;
                 win = i;
             }
-            if (PlayersArray[i]->score < minsc)
+            if (Player_by_index(i)->score < minsc)
             {
-                minsc = PlayersArray[i]->score;
+                minsc = Player_by_index(i)->score;
                 loose = i;
             }
         }

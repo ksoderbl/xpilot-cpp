@@ -338,44 +338,44 @@ void Move_init(void)
     mp.obj_bounce_mask = 0;
     if (options.sparksWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT);
     }
     if (options.debrisWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS);
+        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT);
     }
     if (options.shotsWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT | OBJ_CANNON_SHOT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT);
     }
     if (options.itemsWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM);
+        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT);
     }
     if (options.missilesWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT);
     }
     if (options.minesWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_MINE);
+        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT);
     }
     if (options.ballsWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_BALL);
+        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT);
     }
     if (options.asteroidsWallBounce)
     {
-        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID);
+        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT);
     }
 
-    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE | OBJ_SHOT | OBJ_PULSE |
-                         OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT |
-                         OBJ_ASTEROID;
+    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT |
+                         OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT |
+                         OBJ_ASTEROID_BIT;
     if (options.cannonsUseItems)
-        mp.obj_cannon_mask |= OBJ_ITEM;
-    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL | OBJ_SPARK;
-    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL | OBJ_PULSE;
+        mp.obj_cannon_mask |= OBJ_ITEM_BIT;
+    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT | OBJ_SPARK_BIT;
+    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT | OBJ_PULSE_BIT;
 }
 
 static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
@@ -1124,7 +1124,7 @@ void Move_segment(move_state_t *ms)
                      * depends on which team the treasure and the ball
                      * belong to.
                      */
-                    if (mi->obj->type != OBJ_BALL)
+                    if (mi->obj->type != OBJ_BALL_BIT)
                     {
                         return;
                     }
@@ -1217,7 +1217,7 @@ void Move_segment(move_state_t *ms)
                         {
                             team = mi->pl->team;
                         }
-                        else if (BIT(mi->obj->type, OBJ_BALL))
+                        else if (BIT(mi->obj->type, OBJ_BALL_BIT))
                         {
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->owner != NO_ID)
@@ -1835,7 +1835,7 @@ static void Cannon_dies(move_state_t *ms)
                 zero_vel,
                 NO_ID,
                 cannon->team,
-                OBJ_DEBRIS,
+                OBJ_DEBRIS_BIT,
                 4.5,
                 GRAVITY,
                 RED,
@@ -1902,7 +1902,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     /* a normal shot or a direct mine hit work, cannons don't */
     /* KK: should shots/mines by cannons of opposing teams work? */
     /* also players suiciding on target will cause damage */
-    if (!BIT(obj->type, KILLING_SHOTS | OBJ_MINE | OBJ_PULSE | OBJ_PLAYER))
+    if (!BIT(obj->type, KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
     {
         return;
     }
@@ -1918,16 +1918,16 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     switch (obj->type)
     {
-    case OBJ_SHOT:
+    case OBJ_SHOT_BIT:
         drainfactor = 1;
         targ->damage += (int)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
         break;
-    case OBJ_PULSE:
+    case OBJ_PULSE_BIT:
         targ->damage += (int)(ED_LASER_HIT);
         break;
-    case OBJ_SMART_SHOT:
-    case OBJ_TORPEDO:
-    case OBJ_HEAT_SHOT:
+    case OBJ_SMART_SHOT_BIT:
+    case OBJ_TORPEDO_BIT:
+    case OBJ_HEAT_SHOT_BIT:
         if (!obj->mass)
         {
             /* happens at end of round reset. */
@@ -1942,7 +1942,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
         }
         break;
-    case OBJ_MINE:
+    case OBJ_MINE_BIT:
         if (!obj->mass)
         {
             /* happens at end of round reset. */
@@ -1950,7 +1950,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         }
         targ->damage -= TARGET_DAMAGE / (obj->mods.mini + 1);
         break;
-    case OBJ_PLAYER:
+    case OBJ_PLAYER_BIT:
         if (player_cost <= 0 || player_cost > TARGET_DAMAGE / 4)
             player_cost = TARGET_DAMAGE / 4;
         targ->damage -= player_cost;
@@ -1982,7 +1982,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
                 zero_vel,
                 NO_ID,
                 targ->team,
-                OBJ_DEBRIS,
+                OBJ_DEBRIS_BIT,
                 4.5,
                 GRAVITY,
                 RED,
@@ -2101,7 +2101,7 @@ static void Object_crash(move_state_t *ms)
         /*
          * Ball type has already been handled.
          */
-        if (obj->type == OBJ_BALL)
+        if (obj->type == OBJ_BALL_BIT)
         {
             break;
         }
@@ -2116,16 +2116,16 @@ static void Object_crash(move_state_t *ms)
     case CrashWall:
         obj->life = 0;
 #if 0
-/* KK: - Added sparks to wallcrashes for objects != OBJ_SPARK|OBJ_DEBRIS.
+/* KK: - Added sparks to wallcrashes for objects != OBJ_SPARK_BIT|OBJ_DEBRIS_BIT.
 **       I'm not sure of the amount of sparks or the direction.
 */
-        if (!BIT(obj->type, OBJ_SPARK | OBJ_DEBRIS)) {
+        if (!BIT(obj->type, OBJ_SPARK_BIT | OBJ_DEBRIS_BIT)) {
             Make_debris(CLICK_TO_FLOAT(ms->pos.x),
                         CLICK_TO_FLOAT(ms->pos.y),
                         0, 0,
                         obj->owner,
                         obj->team,
-                        OBJ_SPARK,
+                        OBJ_SPARK_BIT,
                         (obj->mass * VECTOR_LENGTH(obj->vel)) / 3,
                         GRAVITY,
                         RED,
@@ -2144,7 +2144,7 @@ static void Object_crash(move_state_t *ms)
 
     case CrashCannon:
         obj->life = 0;
-        if (BIT(obj->type, OBJ_ITEM))
+        if (BIT(obj->type, OBJ_ITEM_BIT))
         {
             Cannon_add_item(ms->cannon, obj->info, obj->count);
         }
@@ -2202,7 +2202,7 @@ void Move_object(object_t *obj)
     mi.target_crashes = BIT(mp.obj_target_mask, obj->type);
     mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
-    if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
+    if (BIT(obj->type, OBJ_BALL_BIT) && obj->id != NO_ID)
         mi.phased = BIT(PlayersArray[GetInd[obj->id]]->used, USES_PHASING_DEVICE);
     else
         mi.phased = 0;
@@ -2227,7 +2227,7 @@ void Move_object(object_t *obj)
             }
             if (ms.bounce && ms.bounce != BounceEdge)
             {
-                if (obj->type != OBJ_BALL)
+                if (obj->type != OBJ_BALL_BIT)
                     obj->life = (long)(obj->life * options.objectWallBounceLifeFactor);
                 if (obj->life <= 0)
                 {
@@ -2243,7 +2243,7 @@ void Move_object(object_t *obj)
                  * should bounce, it is not reactive thrust otherwise wall
                  * bouncing would cause acceleration of the player.
                  */
-                if (!BIT(obj->obj_status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK))
+                if (!BIT(obj->obj_status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK_BIT))
                     CLR_BIT(obj->obj_status, OWNERIMMUNE);
                 if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(options.maxObjectWallBounceSpeed))
                 {
@@ -2830,7 +2830,7 @@ void Move_player(int ind)
                                 pl->vel,
                                 pl->id,
                                 pl->team,
-                                OBJ_SPARK,
+                                OBJ_SPARK_BIT,
                                 3.5,
                                 GRAVITY | OWNERIMMUNE | FROMBOUNCE,
                                 RED,

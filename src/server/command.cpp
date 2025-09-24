@@ -67,7 +67,7 @@ static int Get_player_index_by_name(char *name)
     /* look for an exact match on player nickname. */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (strcasecmp(PlayersArray[i]->name, name) == 0)
+        if (strcasecmp(Player_by_index(i)->name, name) == 0)
         {
             return i;
         }
@@ -77,7 +77,7 @@ static int Get_player_index_by_name(char *name)
     len = strlen(name);
     for (j = -1, i = 0; i < NumPlayers; i++)
     {
-        if (strncasecmp(PlayersArray[i]->name, name, len) == 0 || strncasecmp(PlayersArray[i]->username, name, len) == 0)
+        if (strncasecmp(Player_by_index(i)->name, name, len) == 0 || strncasecmp(Player_by_index(i)->username, name, len) == 0)
         {
             j = (j == -1) ? i : -2;
         }
@@ -92,12 +92,12 @@ static void Send_info_about_player(player *pl)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->conn != NULL)
+        if (Player_by_index(i)->conn != NULL)
         {
-            Send_player(PlayersArray[i]->conn, pl->id);
-            Send_score(PlayersArray[i]->conn, pl->id, pl->score, pl->life,
+            Send_player(Player_by_index(i)->conn, pl->id);
+            Send_score(Player_by_index(i)->conn, pl->id, pl->score, pl->life,
                        pl->mychar, pl->alliance);
-            Send_base(PlayersArray[i]->conn, pl->id, pl->home_base);
+            Send_base(Player_by_index(i)->conn, pl->id, pl->home_base);
         }
     }
 }
@@ -408,7 +408,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Players_are_teammates(pl, PlayersArray[i]) && !BIT(PlayersArray[i]->obj_status, PAUSE))
+            if (!Players_are_teammates(pl, Player_by_index(i)) && !BIT(Player_by_index(i)->obj_status, PAUSE))
             {
                 /* put team swapping player waiting mode. */
                 if (pl->mychar == ' ')
@@ -581,14 +581,14 @@ static int Cmd_kick(char *arg, player_t *pl, int oper, char *msg)
     if (i >= 0)
     {
         sprintf(msg, "%s kicked %s out! [*Server notice*]",
-                pl->name, PlayersArray[i]->name);
-        if (PlayersArray[i]->conn == NULL)
+                pl->name, Player_by_index(i)->name);
+        if (Player_by_index(i)->conn == NULL)
         {
             Delete_player(i);
         }
         else
         {
-            Destroy_connection(PlayersArray[i]->conn, "kicked out");
+            Destroy_connection(Player_by_index(i)->conn, "kicked out");
         }
         Set_message(msg);
         strcpy(msg, "");
@@ -665,7 +665,7 @@ static int Cmd_reset(char *arg, player_t *pl, int oper, char *msg)
     {
         for (i = NumPlayers - 1; i >= 0; i--)
         {
-            PlayersArray[i]->score = 0;
+            Player_by_index(i)->score = 0;
         }
         Reset_all_players();
         if (options.gameDuration == -1)
@@ -836,14 +836,14 @@ static int Cmd_pause(char *arg, player_t *pl, int oper, char *msg)
     i = Get_player_index_by_name(arg);
     if (i >= 0)
     {
-        if (PlayersArray[i]->conn != NULL)
+        if (Player_by_index(i)->conn != NULL)
         {
-            if (BIT(PlayersArray[i]->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+            if (BIT(Player_by_index(i)->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             {
                 Kill_player(i);
             }
             Pause_player(i, true);
-            sprintf(msg, "%s was paused by %s.", PlayersArray[i]->name, pl->name);
+            sprintf(msg, "%s was paused by %s.", Player_by_index(i)->name, pl->name);
             Set_message(msg);
             strcpy(msg, "");
             return CMD_RESULT_SUCCESS;

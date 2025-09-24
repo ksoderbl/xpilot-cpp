@@ -283,14 +283,14 @@ static void Frame_radar_buffer_reset(void)
     num_radar = 0;
 }
 
-static void Frame_radar_buffer_add(int cx, int cy, int s)
+static void Frame_radar_buffer_add(clpos_t pos, int s)
 {
     radar_t *p;
 
     EXPAND(radar_ptr, num_radar, max_radar, radar_t, 1);
     p = &radar_ptr[num_radar++];
-    p->x = CLICK_TO_PIXEL(cx);
-    p->y = CLICK_TO_PIXEL(cy);
+    p->x = CLICK_TO_PIXEL(pos.cx);
+    p->y = CLICK_TO_PIXEL(pos.cy);
     p->size = s;
 }
 
@@ -518,7 +518,7 @@ static int Frame_status(connection_t *conn, int ind)
         return 0;
     }
 
-    if (BIT(pl->used, USES_EMERGENCY_THRUST))
+    if (Player_uses_emergency_thrust(pl))
         Send_thrusttime(conn,
                         pl->emergency_thrust_left,
                         pl->emergency_thrust_max);
@@ -668,7 +668,6 @@ static void Frame_map(connection_t *conn, player_t *pl)
 static void Frame_shuffle_objects(void)
 {
     int i;
-    size_t memsize;
 
     num_object_shuffle = MIN(NumObjs, options.maxVisibleObject);
 
@@ -676,8 +675,7 @@ static void Frame_shuffle_objects(void)
     {
         XFREE(object_shuffle_ptr);
         max_object_shuffle = num_object_shuffle;
-        memsize = max_object_shuffle * sizeof(shuffle_t);
-        object_shuffle_ptr = (shuffle_t *)malloc(memsize);
+        object_shuffle_ptr = XMALLOC(shuffle_t, max_object_shuffle);
         if (object_shuffle_ptr == NULL)
             max_object_shuffle = 0;
     }
@@ -704,7 +702,6 @@ static void Frame_shuffle_objects(void)
 static void Frame_shuffle_players(void)
 {
     int i;
-    size_t memsize;
 
     num_player_shuffle = MIN(NumPlayers, MAX_SHUFFLE_INDEX);
 
@@ -712,8 +709,7 @@ static void Frame_shuffle_players(void)
     {
         XFREE(player_shuffle_ptr);
         max_player_shuffle = num_player_shuffle;
-        memsize = max_player_shuffle * sizeof(shuffle_t);
-        player_shuffle_ptr = (shuffle_t *)malloc(memsize);
+        player_shuffle_ptr = XMALLOC(shuffle_t, max_player_shuffle);
         if (player_shuffle_ptr == NULL)
             max_player_shuffle = 0;
     }
@@ -781,8 +777,8 @@ static void Frame_shots(connection_t *conn, int ind)
         }
         switch (shot->type)
         {
-        case OBJ_SPARK:
-        case OBJ_DEBRIS:
+        case OBJ_SPARK_BIT:
+        case OBJ_DEBRIS_BIT:
             if ((fuzz >>= 7) < 0x40)
                 fuzz = randomMT();
             if ((fuzz & 0x7F) >= spark_rand)
@@ -823,7 +819,7 @@ static void Frame_shots(connection_t *conn, int ind)
                          color);
             break;
 
-        case OBJ_WRECKAGE:
+        case OBJ_WRECKAGE_BIT:
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
@@ -832,7 +828,7 @@ static void Frame_shots(connection_t *conn, int ind)
             }
             break;
 
-        case OBJ_ASTEROID:
+        case OBJ_ASTEROID_BIT:
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(conn, x, y,
@@ -840,8 +836,8 @@ static void Frame_shots(connection_t *conn, int ind)
         }
         break;
 
-        case OBJ_SHOT:
-        case OBJ_CANNON_SHOT:
+        case OBJ_SHOT_BIT:
+        case OBJ_CANNON_SHOT_BIT:
             if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetInd[shot->id]]->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
@@ -865,22 +861,22 @@ static void Frame_shots(connection_t *conn, int ind)
                            color, teamshot);
             break;
 
-        case OBJ_TORPEDO:
+        case OBJ_TORPEDO_BIT:
             len = options.distinguishMissiles ? TORPEDO_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_SMART_SHOT:
+        case OBJ_SMART_SHOT_BIT:
             len = options.distinguishMissiles ? SMART_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_HEAT_SHOT:
+        case OBJ_HEAT_SHOT_BIT:
             len = options.distinguishMissiles ? HEAT_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_BALL:
+        case OBJ_BALL_BIT:
             Send_ball(conn, x, y, shot->id);
             break;
-        case OBJ_MINE:
+        case OBJ_MINE_BIT:
         {
             int id = 0;
             int laid_by_team = 0;
@@ -914,7 +910,7 @@ static void Frame_shots(connection_t *conn, int ind)
         }
         break;
 
-        case OBJ_ITEM:
+        case OBJ_ITEM_BIT:
         {
             int item_type = shot->info;
 
@@ -1032,7 +1028,7 @@ static void Frame_ships(connection_t *conn, int ind)
     for (k = 0; k < num_player_shuffle; k++)
     {
         i = player_shuffle_ptr[k];
-        pl_i = PlayersArray[i];
+        pl_i = Player_by_index(i);
         if (!BIT(pl_i->obj_status, PLAYING | PAUSE))
             continue;
         if (BIT(pl_i->obj_status, GAME_OVER))
@@ -1121,16 +1117,16 @@ static void Frame_radar(connection_t *conn, int ind)
 
 #ifndef NO_SMART_MIS_RADAR
     if (options.nukesOnRadar)
-        mask = OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_MINE;
+        mask = OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT;
     else
     {
-        mask = (options.missilesOnRadar ? (OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT) : 0);
-        mask |= (options.minesOnRadar) ? OBJ_MINE : 0;
+        mask = (options.missilesOnRadar ? (OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT) : 0);
+        mask |= (options.minesOnRadar) ? OBJ_MINE_BIT : 0;
     }
     if (options.treasuresOnRadar)
-        mask |= OBJ_BALL;
+        mask |= OBJ_BALL_BIT;
     if (options.asteroidsOnRadar)
-        mask |= OBJ_ASTEROID;
+        mask |= OBJ_ASTEROID_BIT;
 
     if (mask)
     {
@@ -1146,16 +1142,16 @@ static void Frame_radar(connection_t *conn, int ind)
             else
                 size = 0;
 
-            if (BIT(shot->type, OBJ_MINE))
+            if (BIT(shot->type, OBJ_MINE_BIT))
             {
                 if (!options.minesOnRadar && !shownuke)
                     continue;
                 if (frame_loops % 8 >= 6)
                     continue;
             }
-            else if (BIT(shot->type, OBJ_BALL))
+            else if (BIT(shot->type, OBJ_BALL_BIT))
                 size = 2;
-            else if (BIT(shot->type, OBJ_ASTEROID))
+            else if (BIT(shot->type, OBJ_ASTEROID_BIT))
             {
                 size = WIRE_PTR(shot)->size + 1;
                 size |= 0x80;
@@ -1172,7 +1168,7 @@ static void Frame_radar(connection_t *conn, int ind)
                             pl->pos.cy - shot->pos.cy) /
                     CLICK <=
                 pl->sensor_range)
-                Frame_radar_buffer_add(shot->pos.cx, shot->pos.cy, size);
+                Frame_radar_buffer_add(shot->pos, size);
         }
     }
 #endif
@@ -1192,21 +1188,21 @@ static void Frame_radar(connection_t *conn, int ind)
              *                People in other teams or alliances if;
              *                        no playersOnRadar or if not visible
              */
-            if (PlayersArray[i]->conn == conn ||
-                BIT(PlayersArray[i]->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-                (!Players_are_teammates(pl, PlayersArray[i]) && !Players_are_allies(pl, PlayersArray[i]) && !Player_owns_tank(pl, PlayersArray[i]) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
+            if (Player_by_index(i)->conn == conn ||
+                BIT(Player_by_index(i)->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
+                (!Players_are_teammates(pl, Player_by_index(i)) && !Players_are_allies(pl, Player_by_index(i)) && !Player_owns_tank(pl, Player_by_index(i)) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
-            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - PlayersArray[i]->pos.cx,
-                                                                           pl->pos.cy - PlayersArray[i]->pos.cy) /
+            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - Player_by_index(i)->pos.cx,
+                                                                           pl->pos.cy - Player_by_index(i)->pos.cy) /
                                                                        CLICK >
                                                                    pl->sensor_range)
                 continue;
             if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
                 continue;
             size = 3;
-            if (Players_are_teammates(pl, PlayersArray[i]) || Players_are_allies(pl, PlayersArray[i]) || Player_owns_tank(pl, PlayersArray[i]))
+            if (Players_are_teammates(pl, Player_by_index(i)) || Players_are_allies(pl, Player_by_index(i)) || Player_owns_tank(pl, Player_by_index(i)))
                 size |= 0x80;
-            Frame_radar_buffer_add(PlayersArray[i]->pos.cx, PlayersArray[i]->pos.cy, size);
+            Frame_radar_buffer_add(Player_by_index(i)->pos, size);
         }
     }
 
@@ -1301,7 +1297,7 @@ void Frame_update(void)
 
     for (i = 0; i < num_player_shuffle; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         conn = pl->conn;
         if (conn == NULL)
             continue;
@@ -1406,7 +1402,7 @@ void Set_message(const char *message)
         msg = message;
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = PlayersArray[i];
+        pl = Player_by_index(i);
         if (pl->conn != NULL)
             Send_message(pl->conn, msg);
     }

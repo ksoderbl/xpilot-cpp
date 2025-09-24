@@ -47,7 +47,7 @@ void tuner_shotsmax(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        PlayersArray[i]->shot_max = options.maxPlayerShots;
+        Player_by_index(i)->shot_max = options.maxPlayerShots;
     }
 }
 
@@ -57,7 +57,7 @@ void tuner_shipmass(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        PlayersArray[i]->emptymass = options.shipMass;
+        Player_by_index(i)->emptymass = options.shipMass;
     }
 }
 
@@ -67,7 +67,7 @@ void tuner_ballmass(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (BIT(Obj[i]->type, OBJ_BALL))
+        if (BIT(Obj[i]->type, OBJ_BALL_BIT))
         {
             Obj[i]->mass = options.ballMass;
         }
@@ -117,13 +117,13 @@ void tuner_playershielding(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Player_is_tank(PlayersArray[i]))
+            if (!Player_is_tank(Player_by_index(i)))
             {
-                if (!BIT(PlayersArray[i]->used, HAS_SHOT))
-                    SET_BIT(PlayersArray[i]->used, USES_SHIELD);
+                if (!BIT(Player_by_index(i)->used, HAS_SHOT))
+                    SET_BIT(Player_by_index(i)->used, USES_SHIELD);
 
-                SET_BIT(PlayersArray[i]->have, HAS_SHIELD);
-                PlayersArray[i]->shield_time = 0;
+                SET_BIT(Player_by_index(i)->have, HAS_SHIELD);
+                Player_by_index(i)->shield_time = 0;
             }
         }
     }
@@ -133,7 +133,7 @@ void tuner_playershielding(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            PlayersArray[i]->shield_time = 2 * FPS;
+            Player_by_index(i)->shield_time = 2 * FPS;
             /* 2 seconds to get to safety */
         }
     }
@@ -248,7 +248,7 @@ void tuner_modifiers(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        filter_mods(&PlayersArray[i]->mods);
+        filter_mods(&Player_by_index(i)->mods);
     }
 }
 
@@ -262,7 +262,7 @@ void tuner_minelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type != OBJ_MINE)
+        if (Obj[i]->type != OBJ_MINE_BIT)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
@@ -289,8 +289,8 @@ void tuner_missilelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type != OBJ_SMART_SHOT &&
-            Obj[i]->type != OBJ_HEAT_SHOT && Obj[i]->type != OBJ_TORPEDO)
+        if (Obj[i]->type != OBJ_SMART_SHOT_BIT &&
+            Obj[i]->type != OBJ_HEAT_SHOT_BIT && Obj[i]->type != OBJ_TORPEDO_BIT)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))

@@ -135,7 +135,7 @@ void Break_asteroid(int ind)
                     asteroid->vel,
                     -1,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS,
+                    OBJ_DEBRIS_BIT,
                     mass,
                     GRAVITY,
                     RED,
@@ -190,7 +190,7 @@ void Break_asteroid(int ind)
                     asteroid->vel,
                     -1,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS,
+                    OBJ_DEBRIS_BIT,
                     mass3 / 2,
                     GRAVITY,
                     RED,
@@ -300,7 +300,7 @@ static void Make_asteroid(clpos_t pos,
     asteroid->color = WHITE;
     asteroid->id = NO_ID;
     asteroid->team = TEAM_NOT_SET;
-    asteroid->type = OBJ_ASTEROID;
+    asteroid->type = OBJ_ASTEROID_BIT;
 
     /* Position */
     Object_position_init_clpos(OBJ_PTR(asteroid), pos);
@@ -394,8 +394,8 @@ static void Place_asteroid(void)
             {
                 if (IS_HUMAN_IND(i))
                 {
-                    ocx = OBJ_X_IN_CLICKS(PlayersArray[i]);
-                    ocy = OBJ_Y_IN_CLICKS(PlayersArray[i]);
+                    ocx = OBJ_X_IN_CLICKS(Player_by_index(i));
+                    ocy = OBJ_Y_IN_CLICKS(Player_by_index(i));
                     dcx = WRAP_XCLICK(pos.cx - ocx);
                     dcy = WRAP_YCLICK(pos.cy - ocy);
                     int dpx = CLICK_TO_PIXEL(dcx);

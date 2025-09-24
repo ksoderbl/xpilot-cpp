@@ -58,18 +58,18 @@ int Punish_team(int ind, int t_destroyed, int t_target)
     {
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(PlayersArray[i]) || (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0) || (BIT(PlayersArray[i]->obj_status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
+            if (Player_is_tank(Player_by_index(i)) || (BIT(Player_by_index(i)->obj_status, PAUSE) && Player_by_index(i)->count <= 0) || (BIT(Player_by_index(i)->obj_status, GAME_OVER) && Player_by_index(i)->mychar == 'W' && Player_by_index(i)->score == 0))
                 continue;
-            if (PlayersArray[i]->team == td->team)
+            if (Player_by_index(i)->team == td->team)
             {
-                lose_score += PlayersArray[i]->score;
+                lose_score += Player_by_index(i)->score;
                 lose_team_members++;
-                if (BIT(PlayersArray[i]->obj_status, GAME_OVER) == 0)
+                if (BIT(Player_by_index(i)->obj_status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
-            else if (PlayersArray[i]->team == tt->team)
+            else if (Player_by_index(i)->team == tt->team)
             {
-                win_score += PlayersArray[i]->score;
+                win_score += Player_by_index(i)->score;
                 win_team_members++;
             }
         }
@@ -96,19 +96,19 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(PlayersArray[i]) ||
-            (BIT(PlayersArray[i]->obj_status, PAUSE) && PlayersArray[i]->count <= 0) ||
-            (BIT(PlayersArray[i]->obj_status, GAME_OVER) && PlayersArray[i]->mychar == 'W' && PlayersArray[i]->score == 0))
+        if (Player_is_tank(Player_by_index(i)) ||
+            (BIT(Player_by_index(i)->obj_status, PAUSE) && Player_by_index(i)->count <= 0) ||
+            (BIT(Player_by_index(i)->obj_status, GAME_OVER) && Player_by_index(i)->mychar == 'W' && Player_by_index(i)->score == 0))
             continue;
-        if (PlayersArray[i]->team == td->team)
+        if (Player_by_index(i)->team == td->team)
         {
-            SCORE(PlayersArray[i], -sc, tt->pos, "Treasure: ");
+            SCORE(Player_by_index(i), -sc, tt->pos, "Treasure: ");
             if (options.treasureKillTeam)
-                SET_BIT(PlayersArray[i]->obj_status, KILLED);
+                SET_BIT(Player_by_index(i)->obj_status, KILLED);
         }
-        else if (PlayersArray[i]->team == tt->team &&
-                 (PlayersArray[i]->team != TEAM_NOT_SET || i == ind))
-            SCORE(PlayersArray[i], (i == ind ? 3 * por : 2 * por), tt->pos, "Treasure: ");
+        else if (Player_by_index(i)->team == tt->team &&
+                 (Player_by_index(i)->team != TEAM_NOT_SET || i == ind))
+            SCORE(Player_by_index(i), (i == ind ? 3 * por : 2 * por), tt->pos, "Treasure: ");
     }
 
     if (options.treasureKillTeam)
@@ -174,7 +174,7 @@ void Make_debris(
 
     CLEAR_MODS(mods);
 
-    if (type == OBJ_SHOT)
+    if (type == OBJ_SHOT_BIT)
     {
         SET_BIT(mods.warhead, CLUSTER);
         if (!options.shotsGravity)

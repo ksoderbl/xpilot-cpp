@@ -113,8 +113,8 @@ bool team_dead(int team)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (PlayersArray[i]->team == team &&
-            BIT(PlayersArray[i]->obj_status, PLAYING | GAME_OVER) == PLAYING)
+        if (Player_by_index(i)->team == team &&
+            BIT(Player_by_index(i)->obj_status, PLAYING | GAME_OVER) == PLAYING)
         {
             alive = true;
             break;
@@ -209,9 +209,9 @@ int Player_lock_closest(int ind, int next)
     best = FLT_MAX;
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = PlayersArray[i];
+        player_t *pl_i = Player_by_index(i);
         if (i == lock ||
-            (BIT(PlayersArray[i]->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
+            (BIT(Player_by_index(i)->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
             !Player_lock_allowed(ind, i) ||
             Player_owns_tank(pl, pl_i) ||
             Players_are_teammates(pl, pl_i) ||
@@ -271,7 +271,7 @@ void Pause_player(int ind, bool on)
                      * then it's too late to join. */
                     if (i == ind)
                         continue;
-                    if (PlayersArray[i]->life < world->rules->lives && !Players_are_teammates(pl, PlayersArray[i]))
+                    if (Player_by_index(i)->life < world->rules->lives && !Players_are_teammates(pl, Player_by_index(i)))
                     {
                         toolate = true;
                         break;
@@ -476,14 +476,14 @@ int Handle_keyboard(int ind)
                     }
                     if (i == j)
                         break;
-                } while (i == ind || BIT(PlayersArray[i]->obj_status, GAME_OVER | PAUSE) || !Player_lock_allowed(ind, i));
+                } while (i == ind || BIT(Player_by_index(i)->obj_status, GAME_OVER | PAUSE) || !Player_lock_allowed(ind, i));
                 if (i == ind)
                 {
                     CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
                 }
                 else
                 {
-                    pl->lock.pl_id = PlayersArray[i]->id;
+                    pl->lock.pl_id = Player_by_index(i)->id;
                     SET_BIT(pl->lock.tagged, LOCK_PLAYER);
                 }
                 break;
@@ -500,7 +500,7 @@ int Handle_keyboard(int ind)
                  * Verify if the lock has ever been initialized at all
                  * and if the lock is still valid.
                  */
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetInd[k]) > 0 && i < NumPlayers && PlayersArray[i]->id == k && i != ind)
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetInd[k]) > 0 && i < NumPlayers && Player_by_index(i)->id == k && i != ind)
                 {
                     break;
                 }
@@ -542,11 +542,11 @@ int Handle_keyboard(int ind)
                         }
                     }
                     for (i = 0; i < NumPlayers; i++)
-                        if (i != ind && !Player_is_tank(PlayersArray[i]) && pl->home_base == PlayersArray[i]->home_base)
+                        if (i != ind && !Player_is_tank(Player_by_index(i)) && pl->home_base == Player_by_index(i)->home_base)
                         {
                             Pick_startpos(i);
                             sprintf(msg, "%s has taken over %s's home base.",
-                                    pl->name, PlayersArray[i]->name);
+                                    pl->name, Player_by_index(i)->name);
                         }
                     if (msg[0])
                     {
@@ -555,8 +555,8 @@ int Handle_keyboard(int ind)
                     }
                     for (i = 0; i < NumPlayers; i++)
                     {
-                        if (PlayersArray[i]->conn != NULL)
-                            Send_base(PlayersArray[i]->conn,
+                        if (Player_by_index(i)->conn != NULL)
+                            Send_base(Player_by_index(i)->conn,
                                       pl->id,
                                       pl->home_base);
                     }
@@ -585,17 +585,17 @@ int Handle_keyboard(int ind)
 
             case KEY_FIRE_MISSILE:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(pl, OBJ_SMART_SHOT, pl->dir);
+                    Fire_shot(pl, OBJ_SMART_SHOT_BIT, pl->dir);
                 break;
 
             case KEY_FIRE_HEAT:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(pl, OBJ_HEAT_SHOT, pl->dir);
+                    Fire_shot(pl, OBJ_HEAT_SHOT_BIT, pl->dir);
                 break;
 
             case KEY_FIRE_TORPEDO:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(pl, OBJ_TORPEDO, pl->dir);
+                    Fire_shot(pl, OBJ_TORPEDO_BIT, pl->dir);
                 break;
 
             case KEY_FIRE_LASER:
@@ -852,7 +852,7 @@ int Handle_keyboard(int ind)
                         CLR_BIT(pl->obj_status, SELF_DESTRUCT);
                         SET_BIT(pl->obj_status, HOVERPAUSE);
 
-                        if (BIT(pl->used, USES_EMERGENCY_THRUST))
+                        if (Player_uses_emergency_thrust(pl))
                             Emergency_thrust(pl, false);
 
                         if (BIT(pl->used, USES_EMERGENCY_SHIELD))

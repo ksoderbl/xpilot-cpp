@@ -357,7 +357,7 @@ void Make_item(clpos_t pos,
     if ((obj = Object_allocate()) == NULL)
         return;
 
-    obj->type = OBJ_ITEM;
+    obj->type = OBJ_ITEM_BIT;
     obj->info = item;
     obj->color = RED;
     obj->obj_status = status;
@@ -476,13 +476,13 @@ void Detonate_items(int ind)
             switch ((int)(rfrac() * 3))
             {
             case 0:
-                type = OBJ_TORPEDO;
+                type = OBJ_TORPEDO_BIT;
                 break;
             case 1:
-                type = OBJ_HEAT_SHOT;
+                type = OBJ_HEAT_SHOT_BIT;
                 break;
             default:
-                type = OBJ_SMART_SHOT;
+                type = OBJ_SMART_SHOT_BIT;
                 break;
             }
 
@@ -594,7 +594,7 @@ void Do_deflector(player_t *pl)
         }
 
         /* don't push balls out of treasure boxes */
-        if (BIT(obj->type, OBJ_BALL) && !BIT(obj->obj_status, GRAVITY))
+        if (BIT(obj->type, OBJ_BALL_BIT) && !BIT(obj->obj_status, GRAVITY))
             continue;
 
         dx = (obj->pix_pos.x - pl->pix_pos.x);
@@ -633,7 +633,7 @@ void Do_transporter(player_t *pl)
     /* find victim */
     for (i = 0; i < NumPlayers; i++)
     {
-        p = PlayersArray[i];
+        p = Player_by_index(i);
         if (p == pl ||
             BIT(p->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
             Team_immune(pl->id, p->id) ||
@@ -993,7 +993,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
     {
         shot = Obj[i];
 
-        if (!BIT(shot->type, OBJ_SMART_SHOT | OBJ_MINE))
+        if (!BIT(shot->type, OBJ_SMART_SHOT_BIT | OBJ_MINE_BIT))
             continue;
         if ((range = Wrap_length(CLICK_TO_FLOAT(pos.cx - shot->pos.cx),
                                  CLICK_TO_FLOAT(pos.cy - shot->pos.cy))) > ECM_DISTANCE)
@@ -1011,12 +1011,12 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
             owner = GetInd[shot->id];
             if (ind == owner)
             {
-                if (shot->type == OBJ_MINE)
+                if (shot->type == OBJ_MINE_BIT)
                 {
                     if (BIT(shot->obj_status, OWNERIMMUNE))
                         continue;
                 }
-                if (shot->type == OBJ_SMART_SHOT)
+                if (shot->type == OBJ_SMART_SHOT_BIT)
                 {
                     if (shot->info != owner)
                         continue;
@@ -1028,7 +1028,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
 
         switch (shot->type)
         {
-        case OBJ_SMART_SHOT:
+        case OBJ_SMART_SHOT_BIT:
             /*
              * See Move_smart_shot() for re-lock probablities after confusion
              * ends.
@@ -1051,7 +1051,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
              */
             break;
 
-        case OBJ_MINE:
+        case OBJ_MINE_BIT:
             mine = MINE_PTR(shot);
             mine->ecm_range = range;
 
@@ -1130,7 +1130,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
         if (i == ind)
             continue;
 
-        p = PlayersArray[i];
+        p = Player_by_index(i);
         /*
          * Team members are always immune from ECM effects from other
          * team members.  Its too nasty otherwise.
@@ -1182,7 +1182,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
                 for (j = 0; j < NumObjs; j++)
                 {
                     shot = Obj[j];
-                    if (BIT(shot->type, OBJ_BALL))
+                    if (BIT(shot->type, OBJ_BALL_BIT))
                     {
                         ballobject_t *ball = BALL_PTR(shot);
                         if (ball->owner == p->id)

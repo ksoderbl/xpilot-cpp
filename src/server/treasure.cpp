@@ -57,7 +57,7 @@ void Make_treasure_ball(treasure_t *t)
     ball->id = NO_ID;
     ball->ball_owner = NO_ID;
     ball->team = t->team;
-    ball->type = OBJ_BALL;
+    ball->type = OBJ_BALL_BIT;
     ball->color = WHITE;
     ball->pl_range = BALL_RADIUS;
     ball->pl_radius = BALL_RADIUS;
@@ -299,7 +299,7 @@ bool Balltarget_hitfunc(group_t *gp, const move_t *move)
     if (move->obj == NULL)
         return true;
 
-    assert(move->obj->type == OBJ_BALL);
+    assert(move->obj->type == OBJ_BALL_BIT);
 
     ball = (const ballobject_t *)move->obj;
 
