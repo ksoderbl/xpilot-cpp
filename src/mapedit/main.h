@@ -39,7 +39,6 @@
 
 #include "T_Toolkit.h"
 #include "defaults.h"
-#include "map.h"
 #include "proto.h"
 #include "tools.h"
 #include "expose.h"
@@ -49,6 +48,7 @@
 #include "grow.h"
 #include "forms.h"
 
+#include "xpmap.h"
 #include "xpconfig.h"
 
 #define MAPWIDTH 0

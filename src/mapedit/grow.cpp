@@ -111,7 +111,7 @@ int GrowMapArea(HandlerInfo_t info)
         {
             for (j = grow_miny; j < grow_maxy; j++)
             {
-                if (MapData(i, j) != MAP_FILLED)
+                if (MapData(i, j) != XPMAP_FILLED)
                 {
                     ChangeMapData(i, j, ' ', 1);
                 }
@@ -130,7 +130,7 @@ int GrowMapArea(HandlerInfo_t info)
         /* place a square in the center if there are none */
         if (grow == NULL)
         {
-            ChangeMapData(grow_centerx, grow_centery, MAP_FILLED, 1);
+            ChangeMapData(grow_centerx, grow_centery, XPMAP_FILLED, 1);
             grow = (grow_t *)malloc(sizeof(grow_t));
             grow->x = grow_centerx;
             grow->y = grow_centery;
@@ -171,7 +171,7 @@ int GrowMapArea(HandlerInfo_t info)
     dy = grow_ya * sin(2 * 3.14 * angle / 1000);
     x = next->x + dx;
     y = next->y + dy;
-    while (MapData((int)x, (int)y) == MAP_FILLED)
+    while (MapData((int)x, (int)y) == XPMAP_FILLED)
     {
         x += dx;
         y += dy;
@@ -181,7 +181,7 @@ int GrowMapArea(HandlerInfo_t info)
     {
         return 1;
     }
-    ChangeMapData((int)x, (int)y, MAP_FILLED, 1);
+    ChangeMapData((int)x, (int)y, XPMAP_FILLED, 1);
     next = grow;
     grow = (grow_t *)malloc(sizeof(grow_t));
     grow->x = (int)x;

@@ -640,17 +640,17 @@ static void Paint_clock(int redraw)
                      colors[BLACK].pixel);
 }
 
-void ShadowDrawString(Display *dpy, Window w, GC gc,
+void ShadowDrawString(Display *display, Window w, GC gc,
                       int x, int y, const char *str,
                       unsigned long fg, unsigned long bg)
 {
 
-    XSetForeground(dpy, gc, bg);
-    XDrawString(dpy, w, gc, x + 1, y + 1, str, strlen(str));
+    XSetForeground(display, gc, bg);
+    XDrawString(display, w, gc, x + 1, y + 1, str, (int)strlen(str));
     x--;
     y--;
-    XSetForeground(dpy, gc, fg);
-    XDrawString(dpy, w, gc, x, y, str, strlen(str));
+    XSetForeground(display, gc, fg);
+    XDrawString(display, w, gc, x, y, str, (int)strlen(str));
 }
 
 void Play_beep(void)

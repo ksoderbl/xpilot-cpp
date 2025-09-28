@@ -57,7 +57,7 @@ extern int dgram_one_socket; /* from datagram.c */
 /*
  * just like fgets() but strips newlines like gets().
  */
-static char *my_getline(char *buf, int len, FILE *stream)
+static char *get_line(char *buf, int len, FILE *stream)
 {
     char *nl;
 
@@ -101,10 +101,10 @@ static int Get_contact_message(sockbuf_t *sbuf,
     int server_version;
     unsigned magic;
     uint8_t reply_to, status;
-    int readable = 0;
+    bool readable = false;
 
     sock_set_timeout(&sbuf->sock, 2, 0);
-    while (readable == 0 && sock_readable(&sbuf->sock) > 0)
+    while (readable == false && sock_readable(&sbuf->sock) > 0)
     {
         Sockbuf_clear(sbuf);
         len = sock_receive_any(&sbuf->sock, sbuf->buf, sbuf->size);
@@ -273,7 +273,7 @@ static bool Process_commands(sockbuf_t *ibuf,
         {
             printf("*** Server on %s. Enter command> ", conpar->server_name);
 
-            my_getline(linebuf, MAX_LINE, stdin);
+            get_line(linebuf, MAX_LINE, stdin);
             if (feof(stdin))
             {
                 puts("");
@@ -309,21 +309,24 @@ static bool Process_commands(sockbuf_t *ibuf,
             ibuf->sock.fd = SOCK_FD_INVALID;
         }
 
-        privileged_cmd = (strchr("DKLMO", c) != NULL);
+        privileged_cmd = (strchr("DKLMO", c) != NULL) ? true : false;
         if (privileged_cmd)
         {
             if (!has_credentials)
             {
-                success = create_dgram_addr_socket(&ibuf->sock, conpar->server_addr, 0);
+                success = create_dgram_addr_socket(
+                    &ibuf->sock, conpar->server_addr, 0);
                 if (success == SOCK_IS_ERROR)
                 {
-                    printf("Server %s is not local, privileged command not possible.\n",
+                    printf("Server %s is not local, "
+                           "privileged command not possible.\n",
                            conpar->server_addr);
                     continue;
                 }
                 close_dgram_socket(&ibuf->sock);
             }
-            if ((success = create_dgram_addr_socket(&ibuf->sock, localhost, 0)) == SOCK_IS_ERROR)
+            if ((success = create_dgram_addr_socket(
+                     &ibuf->sock, localhost, 0)) == SOCK_IS_ERROR)
             {
                 error("Could not create localhost socket");
                 exit(1);
@@ -342,7 +345,9 @@ static bool Process_commands(sockbuf_t *ibuf,
                 error("Could not create socket");
                 exit(1);
             }
-            if (sock_connect(&ibuf->sock, conpar->server_addr, conpar->server_port) == SOCK_IS_ERROR && !dgram_one_socket)
+            if (sock_connect(
+                    &ibuf->sock, conpar->server_addr, conpar->server_port) == SOCK_IS_ERROR &&
+                !dgram_one_socket)
             {
                 error("Can't connect to server %s on port %d\n",
                       conpar->server_addr, conpar->server_port);
@@ -369,7 +374,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'K':
                 printf("Enter name of victim: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE, stdin))
+                if (!get_line(linebuf, MAX_LINE, stdin))
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -381,7 +386,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'M': /* Send a message to server. */
                 printf("Enter message: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE, stdin) || !linebuf[0])
+                if (!get_line(linebuf, MAX_LINE, stdin) || !linebuf[0])
                 {
                     printf("No message sent.\n");
                     continue;
@@ -398,7 +403,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                 if (!auto_shutdown)
                 {
                     printf("Enter delay in seconds or return for cancel: ");
-                    my_getline(linebuf, MAX_LINE, stdin);
+                    get_line(linebuf, MAX_LINE, stdin);
                     /*
                      * No argument = cancel shutdown = arg_int=0
                      */
@@ -408,7 +413,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                         delay = 1;
 
                     printf("Enter reason: ");
-                    my_getline(linebuf, MAX_LINE, stdin);
+                    get_line(linebuf, MAX_LINE, stdin);
                 }
                 else
                 {
@@ -416,13 +421,14 @@ static bool Process_commands(sockbuf_t *ibuf,
                     delay = 60;
                 }
                 linebuf[MAX_CHARS - 1] = '\0';
-                Packet_printf(ibuf, "%c%ld%d%s", SHUTDOWN_pack, key, delay, linebuf);
+                Packet_printf(ibuf, "%c%ld%d%s",
+                              SHUTDOWN_pack, key, delay, linebuf);
                 break;
 
             case 'O': /* Tune an option. */
                 printf("Enter option: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE, stdin) || (len = strlen(linebuf)) == 0)
+                if (!get_line(linebuf, MAX_LINE, stdin) || (len = strlen(linebuf)) == 0)
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -431,7 +437,7 @@ static bool Process_commands(sockbuf_t *ibuf,
                 fflush(stdout);
                 strcat(linebuf, ":");
                 len++;
-                if (!my_getline(&linebuf[len], MAX_LINE - len, stdin) || linebuf[len] == '\0')
+                if (!get_line(&linebuf[len], MAX_LINE - len, stdin) || linebuf[len] == '\0')
                 {
                     printf("Nothing changed.\n");
                     continue;
@@ -489,7 +495,7 @@ static bool Process_commands(sockbuf_t *ibuf,
             case 'T': /* Set team. */
                 printf("Enter team: ");
                 fflush(stdout);
-                if (!my_getline(linebuf, MAX_LINE, stdin) || (len = strlen(linebuf)) == 0)
+                if (!get_line(linebuf, MAX_LINE, stdin) || (len = strlen(linebuf)) == 0)
                     printf("Nothing changed.\n");
                 else
                 {
@@ -587,7 +593,8 @@ static bool Process_commands(sockbuf_t *ibuf,
                     if (ibuf->len > ibuf->ptr - ibuf->buf && (!auto_connect || list_servers))
                     {
                         if (list_servers)
-                            printf("SERVER HOST......: %s\n", conpar->server_name);
+                            printf("SERVER HOST......: %s\n",
+                                   conpar->server_name);
                         if (*ibuf->ptr != '\0')
                         {
                             if (ibuf->len < ibuf->size)
@@ -636,7 +643,8 @@ static bool Process_commands(sockbuf_t *ibuf,
                         Sockbuf_clear(ibuf);
                         Packet_printf(ibuf, "%u%s%hu",
                                       VERSION2MAGIC(conpar->server_version),
-                                      conpar->user_name, sock_get_port(&ibuf->sock));
+                                      conpar->user_name,
+                                      sock_get_port(&ibuf->sock));
                         Packet_printf(ibuf, "%c%s%s%s%d", ENTER_QUEUE_pack,
                                       conpar->nick_name, conpar->disp_name,
                                       conpar->host_name, conpar->team);
@@ -706,7 +714,8 @@ static bool Process_commands(sockbuf_t *ibuf,
                 warn("Requested operation is undefined, says the server");
                 break;
             default:
-                warn("Server answers with unknown error status '%02x'", status);
+                warn("Server answers with unknown error status '%02x'",
+                     status);
                 break;
             }
 

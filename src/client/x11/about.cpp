@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 
+#include "commonmacros.h"
 #include "const.h"
 #include "item.h"
 
@@ -79,11 +80,11 @@ extern const char *Item_get_text(int i);
  * if necessary at whitespaces.  The function returns the
  * vertical position it ended at.
  */
-int DrawShadowText(Display *dpy, Window w, GC gc,
+int DrawShadowText(Display *display, Window w, GC gc,
                    int x_border, int y_start, const char *str,
                    unsigned long fg, unsigned long bg)
 {
-    XFontStruct *font = XQueryFont(dpy, XGContextFromGC(gc));
+    XFontStruct *font = XQueryFont(display, XGContextFromGC(gc));
     int y, x;
     XWindowAttributes wattr;
 
@@ -91,7 +92,7 @@ int DrawShadowText(Display *dpy, Window w, GC gc,
         return 0;
 
     /* Get width of window */
-    XGetWindowAttributes(dpy, w, &wattr);
+    XGetWindowAttributes(display, w, &wattr);
 
     /* Start position */
     x = x_border;
@@ -117,7 +118,7 @@ int DrawShadowText(Display *dpy, Window w, GC gc,
         }
 
         /* Draw word and move cursor to point to after this word */
-        ShadowDrawString(dpy, w, gc, x, y, word, fg, bg);
+        ShadowDrawString(display, w, gc, x, y, word, fg, bg);
         x += wordLen;
 
         /* Handle whitespace */
@@ -181,7 +182,6 @@ void Expose_about_window(void)
         y += BORDER / 2;
         for (i = first; i <= last; i++)
         {
-
             y += BORDER / 2;
 
             /* Draw description text */
@@ -191,14 +191,10 @@ void Expose_about_window(void)
                                Item_get_text(i),
                                colors[WHITE].pixel, colors[BLACK].pixel);
             if (y - old_y < 2 * ITEM_TRIANGLE_SIZE)
-            {
                 y = old_y + 2 * ITEM_TRIANGLE_SIZE;
-            }
             box_end = y + BORDER / 2;
             if (i == last)
-            {
                 box_end += BORDER / 2;
-            }
 
             /* Paint the item on the left side */
             XSetForeground(dpy, textGC, colors[BLACK].pixel);
@@ -221,7 +217,8 @@ void Expose_about_window(void)
                 XSetForeground(dpy, textGC, colors[windowColor].pixel);
                 XFillRectangle(dpy, aboutWindow, textGC,
                                BORDER, box_start,
-                               ABOUT_WINDOW_WIDTH, box_end - box_start);
+                               ABOUT_WINDOW_WIDTH,
+                               box_end - box_start);
                 XSetForeground(dpy, textGC, colors[WHITE].pixel);
                 break;
             }
@@ -234,9 +231,7 @@ void Expose_about_window(void)
          * items.
          */
         if (about_page == 0 && itemsplit == -1)
-        {
             itemsplit = NUM_ITEMS - 1;
-        }
         break;
 
     case 2:
@@ -308,7 +303,7 @@ static void About_create_window(void)
     const int windowWidth = ABOUT_WINDOW_WIDTH,
               buttonWindowHeight = 2 * BTN_BORDER + buttonFont->ascent + buttonFont->descent,
               windowHeight = ABOUT_WINDOW_HEIGHT;
-    int textWidth;
+    unsigned textWidth;
     XSetWindowAttributes sattr;
     unsigned long mask;
 
@@ -332,7 +327,7 @@ static void About_create_window(void)
                                 DefaultRootWindow(dpy),
                                 0, 0,
                                 windowWidth, windowHeight,
-                                2, dispDepth,
+                                2, (int)dispDepth,
                                 InputOutput, visual,
                                 mask, &sattr);
     XStoreName(dpy, aboutWindow, "XPilot - information");
@@ -506,8 +501,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
                                  motdFont);
         if (keys_viewer == NO_WIDGET)
         {
-            errno = 0;
-            error("Can't create key viewer");
+            warn("Can't create key viewer");
             return 0;
         }
 
@@ -520,7 +514,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
     return 0;
 }
 
-void Keys_destroy()
+void Keys_destroy(void)
 {
     Widget_destroy(keys_viewer);
     keys_viewer = NO_WIDGET;
@@ -530,9 +524,9 @@ void Keys_destroy()
 #define MAX_MOTD_SIZE (30 * 1024)
 
 static char *motd_buf = NULL;
-static int motd_size;
+static size_t motd_size;
 int motd_viewer = NO_WIDGET;
-static int motd_auto_popup;
+static bool motd_auto_popup;
 
 int Motd_callback(int widget_desc, void *data, const char **str)
 {
@@ -543,21 +537,15 @@ int Motd_callback(int widget_desc, void *data, const char **str)
         Net_flush();
     }
     if (motd_viewer != NO_WIDGET)
-    {
         Widget_map(motd_viewer);
-    }
     return 0;
 }
 
-void Motd_destroy()
+void Motd_destroy(void)
 {
     Widget_destroy(motd_viewer);
     motd_viewer = NO_WIDGET;
-    if (motd_buf)
-    {
-        free(motd_buf);
-        motd_buf = NULL;
-    }
+    XFREE(motd_buf);
 }
 
 int Handle_motd(long off, char *buf, int len, long filesize)
@@ -575,37 +563,29 @@ int Handle_motd(long off, char *buf, int len, long filesize)
             return -1;
         }
         memset(motd_buf, ' ', motd_size);
-        for (i = 39; i < motd_size; i += 40)
-        {
+        for (i = 39; i < (int)motd_size; i += 40)
             motd_buf[i] = '\n';
-        }
     }
-    else if (filesize < motd_size)
+    else if (filesize < (long)motd_size)
     {
         motd_size = filesize;
         motd_buf[motd_size] = '\0';
     }
-    if (off < motd_size && len > 0)
+    if (off < (long)motd_size && len > 0)
     {
-        if (off + len > motd_size)
-        {
+        if (off + len > (long)motd_size)
             len = motd_size - off;
-        }
-        memcpy(motd_buf + off, buf, len);
+
+        memcpy(motd_buf + off, buf, (size_t)len);
     }
     else if (len == 0 && off > 0)
-    {
         return 0;
-    }
+
     if (motd_size == 0)
     {
         if (motd_auto_popup)
         {
-            if (motd_buf != NULL)
-            {
-                free(motd_buf);
-                motd_buf = NULL;
-            }
+            XFREE(motd_buf);
             return 0;
         }
         strcpy(motd_buf, no_motd_msg);
@@ -614,25 +594,20 @@ int Handle_motd(long off, char *buf, int len, long filesize)
     if (motd_viewer == NO_WIDGET)
     {
         char title[100];
-        sprintf(title, "XPilot motd from %s", servername);
-        motd_viewer =
-            Widget_create_viewer(motd_buf,
-                                 (off || len) ? (off + len) : strlen(motd_buf),
-                                 2 * DisplayWidth(dpy, DefaultScreen(dpy)) / 3,
-                                 4 * DisplayHeight(dpy, DefaultScreen(dpy)) / 8,
-                                 2,
-                                 title, "XPilot:motd",
-                                 motdFont);
+        snprintf(title, sizeof(title), "XPilot motd from %s", servername);
+        motd_viewer = Widget_create_viewer(
+            motd_buf,
+            (off || len) ? (off + len) : (int)strlen(motd_buf),
+            2 * DisplayWidth(dpy, DefaultScreen(dpy)) / 3,
+            4 * DisplayHeight(dpy, DefaultScreen(dpy)) / 8,
+            2,
+            title, "XPilot:motd",
+            motdFont);
         if (motd_viewer == NO_WIDGET)
-        {
-            errno = 0;
-            error("Can't create MOTD viewer");
-        }
+            warn("Can't create MOTD viewer");
     }
     else if (len > 0)
-    {
         Widget_update_viewer(motd_viewer, motd_buf, off + len);
-    }
 
     return 0;
 }
@@ -649,9 +624,5 @@ int Startup_server_motd(void)
 
 void aboutCleanup(void)
 {
-    if (motd_buf)
-    {
-        free(motd_buf);
-        motd_buf = NULL;
-    }
+    XFREE(motd_buf);
 }

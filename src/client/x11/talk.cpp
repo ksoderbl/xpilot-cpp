@@ -54,11 +54,12 @@ typedef CARD32 Atom32;
 #define TALK_TEXT_HEIGHT (textFont->ascent + textFont->descent)
 #define TALK_OUTSIDE_BORDER 2
 #define TALK_INSIDE_BORDER 3
-#define TALK_WINDOW_HEIGHT (TALK_TEXT_HEIGHT + 2 * TALK_INSIDE_BORDER)
+#define TALK_WINDOW_HEIGHT (unsigned)(TALK_TEXT_HEIGHT + 2 * TALK_INSIDE_BORDER)
 #define TALK_WINDOW_X (50 - TALK_OUTSIDE_BORDER)
-#define TALK_WINDOW_Y (draw_height * 3 / 4 - TALK_WINDOW_HEIGHT / 2)
+#define TALK_WINDOW_Y ((int)(draw_height * 3 / 4 - TALK_WINDOW_HEIGHT / 2))
 #define TALK_WINDOW_WIDTH (draw_width - 2 * (TALK_WINDOW_X + TALK_OUTSIDE_BORDER))
 
+#undef CTRL
 #define CTRL(c) ((c) & 0x1F)
 
 /*
@@ -71,8 +72,8 @@ static char talk_str[MAX_CHARS];
 static struct
 {
     bool visible;
-    short offset;
-    short point;
+    int offset;
+    size_t point;
 } talk_cursor;
 
 /* position in history when browsing in the talk window */
@@ -105,9 +106,8 @@ static void Talk_create_window(void)
 void Talk_cursor(bool visible)
 {
     if (talk_mapped == false || visible == talk_cursor.visible)
-    {
         return;
-    }
+
     if (visible == false)
     {
         XSetForeground(dpy, talkGC, colors[BLACK].pixel);

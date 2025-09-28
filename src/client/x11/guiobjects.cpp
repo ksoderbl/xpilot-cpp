@@ -534,7 +534,7 @@ void Gui_paint_paused(int x, int y, int count)
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(x0), WINSCALE(y0),
                          WINSCALE(2 * half_pause_size + 1), WINSCALE(2 * half_pause_size + 1));
-        if (count <= 0 || loops % 10 >= 5)
+        if (count <= 0 || loopsSlow % 10 >= 5)
         {
             SET_FG(colors[WHITE].pixel);
             rd.drawRectangle(dpy, drawPixmap, gameGC,
@@ -552,7 +552,7 @@ void Gui_paint_paused(int x, int y, int count)
     {
         Bitmap_paint(drawPixmap, BM_PAUSED, WINSCALE(X(x - BLOCK_SZ / 2)),
                      WINSCALE(Y(y + BLOCK_SZ / 2)),
-                     (count <= 0 || loops % 10 >= 5) ? 1 : 0);
+                     (count <= 0 || loopsSlow % 10 >= 5) ? 1 : 0);
     }
 }
 
@@ -589,7 +589,7 @@ void Gui_paint_refuel(int x0, int y0, int x1, int y1)
         {
             Bitmap_paint(drawPixmap, BM_REFUEL, (int)(x0 + (dx * i) - size / 2),
                          (int)(y0 + (dy * i) - size / 2),
-                         fuel[(loops + 16 - i) % 16]);
+                         fuel[(loopsSlow + 16 - i) % 16]);
         }
     }
 }
@@ -614,7 +614,7 @@ void Gui_paint_transporter(int x0, int y0, int x1, int y1)
                 WINSCALE(X(x1)), WINSCALE(Y(y1)));
 }
 
-void Gui_paint_all_connectors_begin()
+void Gui_paint_all_connectors_begin(void)
 {
     unsigned long mask;
 
@@ -630,12 +630,12 @@ void Gui_paint_all_connectors_begin()
     }
 }
 
-void Gui_paint_ships_begin()
+void Gui_paint_ships_begin(void)
 {
-    gcv.dash_offset = WINSCALE(DASHES_LENGTH - (loops % DASHES_LENGTH));
+    gcv.dash_offset = WINSCALE(DASHES_LENGTH - (loopsSlow % DASHES_LENGTH));
 }
 
-void Gui_paint_ships_end()
+void Gui_paint_ships_end(void)
 {
     unsigned long mask;
     if (gcv.line_style != LineSolid)
@@ -709,55 +709,61 @@ static int Gui_calculate_ship_color(int id, other_t *other)
     return ship_color;
 }
 
-static void Gui_paint_marking_lights(int id, int x, int y, shipshape_t *ship, int dir)
+static void Gui_paint_marking_lights(int id, int x, int y,
+                                     shipshape_t *ship, int dir)
 {
     int lcnt;
 
-    if (((loops + id) & 0xF) == 0)
+    if (((loopsSlow + id) & 0xF) == 0)
     {
         for (lcnt = 0; lcnt < ship->num_l_light; lcnt++)
         {
+            // position_t l_light = Ship_get_l_light_position(ship, lcnt, dir);
+            position_t l_light = ship->l_light[lcnt][dir];
             Rectangle_add(RED,
-                          X(x + ship->l_light[lcnt][dir].x) - 2,
-                          Y(y + ship->l_light[lcnt][dir].y) - 2,
+                          X(x + l_light.x) - 2,
+                          Y(y + l_light.y) - 2,
                           6, 6);
             Segment_add(RED,
-                        X(x + ship->l_light[lcnt][dir].x) - 8,
-                        Y(y + ship->l_light[lcnt][dir].y),
-                        X(x + ship->l_light[lcnt][dir].x) + 8,
-                        Y(y + ship->l_light[lcnt][dir].y));
+                        X(x + l_light.x) - 8,
+                        Y(y + l_light.y),
+                        X(x + l_light.x) + 8,
+                        Y(y + l_light.y));
             Segment_add(RED,
-                        X(x + ship->l_light[lcnt][dir].x),
-                        Y(y + ship->l_light[lcnt][dir].y) - 8,
-                        X(x + ship->l_light[lcnt][dir].x),
-                        Y(y + ship->l_light[lcnt][dir].y) + 8);
+                        X(x + l_light.x),
+                        Y(y + l_light.y) - 8,
+                        X(x + l_light.x),
+                        Y(y + l_light.y) + 8);
         }
     }
-    else if (((loops + id) & 0xF) == 2)
+    else if (((loopsSlow + id) & 0xF) == 2)
     {
         for (lcnt = 0; lcnt < ship->num_r_light; lcnt++)
         {
             int rightLightColor = maxColors > 4 ? 4 : BLUE;
+            // position_t r_light = Ship_get_r_light_position(ship, lcnt, dir);
+            position_t r_light = ship->r_light[lcnt][dir];
             Rectangle_add(rightLightColor,
-                          X(x + ship->r_light[lcnt][dir].x) - 2,
-                          Y(y + ship->r_light[lcnt][dir].y) - 2,
+                          X(x + r_light.x) - 2,
+                          Y(y + r_light.y) - 2,
                           6, 6);
             Segment_add(rightLightColor,
-                        X(x + ship->r_light[lcnt][dir].x) - 8,
-                        Y(y + ship->r_light[lcnt][dir].y),
-                        X(x + ship->r_light[lcnt][dir].x) + 8,
-                        Y(y + ship->r_light[lcnt][dir].y));
+                        X(x + r_light.x) - 8,
+                        Y(y + r_light.y),
+                        X(x + r_light.x) + 8,
+                        Y(y + r_light.y));
             Segment_add(rightLightColor,
-                        X(x + ship->r_light[lcnt][dir].x),
-                        Y(y + ship->r_light[lcnt][dir].y) - 8,
-                        X(x + ship->r_light[lcnt][dir].x),
-                        Y(y + ship->r_light[lcnt][dir].y) + 8);
+                        X(x + r_light.x),
+                        Y(y + r_light.y) - 8,
+                        X(x + r_light.x),
+                        Y(y + r_light.y) + 8);
         }
     }
 }
 
 static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
-                                         int deflector, int eshield, int ship_color)
+                                         int deflector, int eshield,
+                                         int ship_color)
 {
     int e_radius = radius + 4;
     int half_radius = radius >> 1;
@@ -768,7 +774,7 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
     if (shield)
         scolor = ship_color;
     if (deflector)
-        ecolor = loops & 0x02 ? RED : BLUE;
+        ecolor = loopsSlow & 0x02 ? RED : BLUE;
     if (eshield && shield)
     {
         if (ecolor != -1)
@@ -777,9 +783,7 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
             ecolor = ship_color;
         }
         else
-        {
             scolor = ecolor = ship_color;
-        }
     }
 
     if (ecolor != -1)
@@ -788,7 +792,8 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
         rd.drawArc(dpy, drawPixmap, gameGC,
                    WINSCALE(X(x - half_e_radius)),
                    WINSCALE(Y(y + half_e_radius)),
-                   WINSCALE(e_radius), WINSCALE(e_radius),
+                   (unsigned)WINSCALE(e_radius),
+                   (unsigned)WINSCALE(e_radius),
                    0, 64 * 360);
     }
     if (scolor != -1)
@@ -797,7 +802,8 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
         rd.drawArc(dpy, drawPixmap, gameGC,
                    WINSCALE(X(x - half_radius)),
                    WINSCALE(Y(y + half_radius)),
-                   WINSCALE(radius), WINSCALE(radius),
+                   (unsigned)WINSCALE(radius),
+                   (unsigned)WINSCALE(radius),
                    0, 64 * 360);
     }
 }
@@ -830,12 +836,11 @@ static void Gui_paint_ship_uncloaked(int id, XPoint *points,
     }
     SET_FG(colors[ship_color].pixel);
     rd.drawLines(dpy, drawPixmap, gameGC, points, point_count, 0);
+
     if (lock_id == id && id != -1 && lock_dist != 0)
-    {
         rd.fillPolygon(dpy, drawPixmap, gameGC,
                        points, point_count,
                        Complex, CoordModeOrigin);
-    }
 }
 
 static void Set_drawstyle_dashed(int ship_color, int cloak)
@@ -927,8 +932,10 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
         Gui_paint_ship_phased(ship_color, points, cnt);
     else if (cloak)
         Gui_paint_ship_cloaked(ship_color, points, cnt);
+
     if (markingLights)
         Gui_paint_marking_lights(id, x, y, ship, dir);
+
     if (shield || deflector)
     {
         Set_drawstyle_dashed(ship_color, cloak);

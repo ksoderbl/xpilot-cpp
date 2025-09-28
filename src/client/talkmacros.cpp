@@ -98,7 +98,8 @@ static char *Talk_macro_fields_info(char *buf, int *n_fields)
  */
 static char *Talk_macro_get_field(char *buf, int wanted_field)
 {
-    int finished = 0, level = 0, field = 0, len;
+    int finished = 0, level = 0, field = 0;
+    size_t len;
     char *field_ptr, *start_ptr = NULL, *end_ptr = NULL;
 
     while (!finished)
@@ -146,22 +147,22 @@ static char *Talk_macro_get_field(char *buf, int wanted_field)
         }
         buf++;
     }
-    len = end_ptr - start_ptr;
-    if ((field_ptr = (char *)malloc(len + 1)) == NULL)
+    len = (size_t)(end_ptr - start_ptr);
+    if ((field_ptr = XMALLOC(char, len + 1)) == NULL)
     {
         error("Can't allocate memory for talk macro");
         return NULL;
     }
-    strncpy(field_ptr, start_ptr, len);
-    field_ptr[len] = '\0';
+    strlcpy(field_ptr, start_ptr, len + 1);
     return field_ptr;
 }
 
-static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
+static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos,
+                                 long max)
 {
     FILE *fp;
     char c;
-    long fsize;
+    size_t fsize;
     int i;
     int done = 0;
     int n_fields;
@@ -177,19 +178,15 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
     {
         if (pos >= max - 2)
         {
-            if (outbuf == final_str) /* parsing to the talk buffer */
-            {
+            if (outbuf == final_str)
+            { /* parsing to the talk buffer */
                 outbuf[pos] = '\0';
                 if (Net_talk(outbuf) == -1)
-                {
                     return -1;
-                }
                 pos = 0;
             }
             else
-            {
                 break;
-            }
         }
 
         if (player != NULL)
@@ -240,7 +237,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                         error("Talk_macro_get_field (1) error!");
                         break;
                     }
-                    if ((tmpptr1 = (char *)malloc(MSG_PARSED_FIELD_LEN)) == NULL)
+                    if ((tmpptr1 = XMALLOC(char, MSG_PARSED_FIELD_LEN)) == NULL)
                     {
                         error("Can't allocate memory for talk macro.");
                         free(tmpptr); /* successful malloc from before */
@@ -255,13 +252,14 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                         error("Talk_macro_get_field (2) error!");
                         break;
                     }
-                    if ((tmpptr2 = (char *)malloc(MSG_PARSED_FIELD_LEN)) == NULL)
+                    if ((tmpptr2 = XMALLOC(char, MSG_PARSED_FIELD_LEN)) == NULL)
                     {
                         error("Can't allocate memory for talk macro.");
                         free(tmpptr); /* successful malloc from before */
                         break;
                     }
-                    Talk_macro_parse_mesg(tmpptr2, tmpptr, 0, MSG_PARSED_FIELD_LEN);
+                    Talk_macro_parse_mesg(tmpptr2, tmpptr, 0,
+                                          MSG_PARSED_FIELD_LEN);
                     free(tmpptr);
                     if (!strcmp(tmpptr1, tmpptr2))
                     {
@@ -273,7 +271,8 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                             free(tmpptr2);
                             break;
                         }
-                        pos = Talk_macro_parse_mesg(outbuf, tmpptr3, pos, max);
+                        pos = Talk_macro_parse_mesg(outbuf, tmpptr3,
+                                                    pos, max);
                     }
                     else if (n_fields == 4)
                     {
@@ -295,16 +294,14 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                 case 'f':
                     nextpos = Talk_macro_fields_info(inbuf, &n_fields);
                     if (n_fields != 1 || nextpos == NULL)
-                    {
                         break;
-                    }
                     if ((tmpptr = Talk_macro_get_field(inbuf, 1)) == NULL)
                     {
                         error("Talk_macro_get_field error!");
                         break;
                     }
                     inbuf = nextpos;
-                    if ((filename = (char *)malloc(TALK_FAST_MSG_FNLEN)) == NULL)
+                    if ((filename = XMALLOC(char, TALK_FAST_MSG_FNLEN)) == NULL)
                     {
                         error("Can't allocate memory for talk macro.");
                         break;
@@ -326,7 +323,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     fsize = ftell(fp);
                     rewind(fp);
 
-                    if ((tmpptr = (char *)malloc(fsize + 1)) == NULL)
+                    if ((tmpptr = XMALLOC(char, fsize + 1)) == NULL)
                     {
                         fclose(fp);
                         break;
@@ -342,17 +339,14 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     if (tmpptr != NULL)
                     {
                         while (*tmpptr != '\0' && pos < max - 2)
-                        {
                             outbuf[pos++] = *tmpptr++;
-                        }
                     }
                     break;
                 case 'r':
                     nextpos = Talk_macro_fields_info(inbuf, &n_fields);
                     if (n_fields <= 0 || nextpos == NULL)
                         break;
-                    if ((tmpptr = Talk_macro_get_field(inbuf,
-                                                       randomMT() % n_fields + 1)) == NULL)
+                    if ((tmpptr = Talk_macro_get_field(inbuf, (int)(randomMT() % n_fields + 1))) == NULL)
                     {
                         error("Talk_macro_get_field error (random)");
                         break;
@@ -365,9 +359,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     outbuf[pos] = '\0';
 
                     if (Net_talk(outbuf) == -1)
-                    {
                         return -1;
-                    }
                     pos = 0;
                     break;
                 case 'l':
@@ -395,9 +387,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos, long max)
                     break;
                 case 't':
                     if (BIT(Setup->mode, TEAM_PLAY))
-                    {
                         outbuf[pos++] = self->team + '0';
-                    }
                     break;
                 case TALK_FAST_SPECIAL_TALK_CHAR:
                     outbuf[pos++] = c;

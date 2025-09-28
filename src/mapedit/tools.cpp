@@ -695,7 +695,8 @@ int NewMap(HandlerInfo_t info)
     }
     free(map.comments);
     map.comments = (char *)NULL;
-    map.mapName[0] = map.mapAuthor[0] = map.mapFileName[0] = map.gravity[0] = '\0';
+    map.mapName[0] = map.mapAuthor[0] = map.mapFileName[0] =
+        map.gravity[0] = '\0';
     map.shipMass[0] = map.maxRobots[0] = map.worldLives[0] = '\0';
     map.width = DEFAULT_WIDTH;
     map.height = DEFAULT_HEIGHT;
@@ -1248,28 +1249,28 @@ int NegativeMapArea(HandlerInfo_t info)
             switch (MapData(i, j))
             {
 
-            case MAP_SPACE:
-                ChangeMapData(i, j, MAP_FILLED, 1);
+            case XPMAP_SPACE:
+                ChangeMapData(i, j, XPMAP_FILLED, 1);
                 break;
 
-            case MAP_FILLED:
-                ChangeMapData(i, j, MAP_SPACE, 1);
+            case XPMAP_FILLED:
+                ChangeMapData(i, j, XPMAP_SPACE, 1);
                 break;
 
-            case MAP_REC_RD:
-                ChangeMapData(i, j, MAP_REC_LU, 1);
+            case XPMAP_REC_RD:
+                ChangeMapData(i, j, XPMAP_REC_LU, 1);
                 break;
 
-            case MAP_REC_LU:
-                ChangeMapData(i, j, MAP_REC_RD, 1);
+            case XPMAP_REC_LU:
+                ChangeMapData(i, j, XPMAP_REC_RD, 1);
                 break;
 
-            case MAP_REC_LD:
-                ChangeMapData(i, j, MAP_REC_RU, 1);
+            case XPMAP_REC_LD:
+                ChangeMapData(i, j, XPMAP_REC_RU, 1);
                 break;
 
-            case MAP_REC_RU:
-                ChangeMapData(i, j, MAP_REC_LD, 1);
+            case XPMAP_REC_RU:
+                ChangeMapData(i, j, XPMAP_REC_LD, 1);
                 break;
             }
         }

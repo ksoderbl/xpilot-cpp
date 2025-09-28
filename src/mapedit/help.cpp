@@ -45,17 +45,17 @@ const char *iconlabel[36] = {
 
 char iconhelp[36] = {
     ' ',
-    MAP_FILLED, MAP_REC_RD, MAP_REC_LD, MAP_REC_RU, MAP_REC_LU,
-    MAP_DEC_FLD, MAP_DEC_RD, MAP_DEC_LD, MAP_DEC_RU, MAP_DEC_LU,
-    MAP_FUEL,
-    MAP_CAN_LEFT, MAP_CAN_UP, MAP_CAN_DOWN, MAP_CAN_RIGHT,
-    MAP_TREASURE, MAP_TARGET, MAP_ITEM_CONC,
-    MAP_GRAV_ACWISE, MAP_GRAV_CWISE,
-    MAP_WORM_NORMAL, MAP_WORM_IN, MAP_WORM_OUT,
-    MAP_GRAV_POS, MAP_GRAV_NEG,
-    MAP_CRNT_UP, MAP_CRNT_LT, MAP_CRNT_RT, MAP_CRNT_DN,
-    MAP_BASE, MAP_BASE_ORNT,
-    MAP_SPACE, MAP_EMPTY_TREASURE, MAP_FRICTION, MAP_ASTEROID_CONC};
+    XPMAP_FILLED, XPMAP_REC_RD, XPMAP_REC_LD, XPMAP_REC_RU, XPMAP_REC_LU,
+    XPMAP_DECOR_FILLED, XPMAP_DECOR_RD, XPMAP_DECOR_LD, XPMAP_DECOR_RU, XPMAP_DECOR_LU,
+    XPMAP_FUEL,
+    XPMAP_CANNON_LEFT, XPMAP_CANNON_UP, XPMAP_CANNON_DOWN, XPMAP_CANNON_RIGHT,
+    XPMAP_TREASURE, XPMAP_TARGET, XPMAP_ITEM_CONCENTRATOR,
+    XPMAP_ACWISE_GRAV, XPMAP_CWISE_GRAV,
+    XPMAP_WORMHOLE_NORMAL, XPMAP_WORMHOLE_IN, XPMAP_WORMHOLE_OUT,
+    XPMAP_POS_GRAV, XPMAP_NEG_GRAV,
+    XPMAP_UP_GRAV, XPMAP_LEFT_GRAV, XPMAP_RIGHT_GRAV, XPMAP_DOWN_GRAV,
+    XPMAP_BASE, XPMAP_BASE_ATTRACTOR,
+    XPMAP_SPACE, XPMAP_EMPTY_TREASURE, XPMAP_FRICTION_AREA, XPMAP_ASTEROID_CONCENTRATOR};
 
 /***************************************************************************/
 /* OpenHelpPopup                                                           */
@@ -82,13 +82,14 @@ void BuildHelpForm(Window win, int helppage)
 {
     T_FormClear(win);
     T_FormButton(win, "close_help", 10, HELP_HEIGHT - 10 - HELP_BTN_HEIGHT,
-                 HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Close", FormCloseHandler);
+                 HELP_BTN_WIDTH, HELP_BTN_HEIGHT, "Close",
+                 FormCloseHandler);
     T_FormButton(win, "next_help", 20 + HELP_BTN_WIDTH,
-                 HELP_HEIGHT - 10 - HELP_BTN_HEIGHT, HELP_BTN_WIDTH, HELP_BTN_HEIGHT,
-                 "Next", NextHelp);
+                 HELP_HEIGHT - 10 - HELP_BTN_HEIGHT, HELP_BTN_WIDTH,
+                 HELP_BTN_HEIGHT, "Next", NextHelp);
     T_FormButton(win, "prev_help", 30 + 2 * HELP_BTN_WIDTH,
-                 HELP_HEIGHT - 10 - HELP_BTN_HEIGHT, HELP_BTN_WIDTH, HELP_BTN_HEIGHT,
-                 "Prev", PrevHelp);
+                 HELP_HEIGHT - 10 - HELP_BTN_HEIGHT, HELP_BTN_WIDTH,
+                 HELP_BTN_HEIGHT, "Prev", PrevHelp);
 
     switch (helppage)
     {
