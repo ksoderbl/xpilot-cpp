@@ -1219,20 +1219,14 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Player_by_index(i)->conn != NULL)
+        player_t *pl_i;
+        pl_i = Player_by_index(i);
+        if (pl_i->conn != NULL)
         {
-            Send_player(Player_by_index(i)->conn, pl->id);
-            Send_score(Player_by_index(i)->conn, pl->id, pl->score,
+            Send_player(pl_i->conn, pl->id);
+            Send_score(pl_i->conn, pl->id, pl->score,
                        pl->life, pl->mychar, pl->alliance);
-            Send_base(Player_by_index(i)->conn, pl->id, pl->home_base);
-        }
-        /*
-         * And tell him about the relationships others have with eachother.
-         */
-        else if (IS_ROBOT_IND(i))
-        {
-            if ((war_on_id = Robot_war_on_player(i)) != NO_ID)
-                Send_war(pl->conn, Player_by_index(i)->id, war_on_id);
+            Send_base(pl_i->conn, pl->id, pl->home_base);
         }
     }
 
@@ -1613,36 +1607,6 @@ int Send_leave(connection_t *connp, int id)
         return 0;
     }
     return Packet_printf(&connp->c, "%c%hd", PKT_LEAVE, id);
-}
-
-/*
- * Somebody is declaring war.
- */
-int Send_war(connection_t *connp, int robot_id, int killer_id)
-{
-    if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
-    {
-        warn("Connection not ready for war declaration (%d,%d)",
-             connp->state, connp->id);
-        return 0;
-    }
-    return Packet_printf(&connp->c, "%c%hd%hd", PKT_WAR,
-                         robot_id, killer_id);
-}
-
-/*
- * Somebody is programming a robot to seek some player.
- */
-int Send_seek(connection_t *connp, int programmer_id, int robot_id, int sought_id)
-{
-    if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
-    {
-        warn("Connection not ready for seek declaration (%d,%d)",
-             connp->state, connp->id);
-        return 0;
-    }
-    return Packet_printf(&connp->c, "%c%hd%hd%hd", PKT_SEEK,
-                         programmer_id, robot_id, sought_id);
 }
 
 /*

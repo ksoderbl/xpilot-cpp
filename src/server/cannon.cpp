@@ -64,6 +64,88 @@ static void Cannon_defend(cannon_t *cannon, int defense);
    stealing them from players. */
 long CANNON_USE_ITEM = (ITEM_BIT_FUEL | ITEM_BIT_WIDEANGLE | ITEM_BIT_REARSHOT | ITEM_BIT_AFTERBURNER | ITEM_BIT_SENSOR | ITEM_BIT_TRANSPORTER | ITEM_BIT_TANK | ITEM_BIT_MINE | ITEM_BIT_ECM | ITEM_BIT_LASER | ITEM_BIT_EMERGENCY_THRUST | ITEM_BIT_ARMOR | ITEM_BIT_TRACTOR_BEAM | ITEM_BIT_MISSILE | ITEM_BIT_PHASING);
 
+void Cannon_update(bool tick)
+{
+    /*
+     * Updating cannons, maybe a little bit of fireworks too?
+     */
+    for (int i = 0; i < world->NumCannons; i++)
+    {
+        cannon_t *cannon = world->cannons + i;
+        if (cannon->dead_time > 0)
+        {
+            if (!--cannon->dead_time)
+            {
+                world->block[cannon->blk_pos.x][cannon->blk_pos.y] = CANNON;
+                cannon->conn_mask = 0;
+                cannon->last_change = frame_loops;
+            }
+            continue;
+        }
+        else
+        {
+            /* don't check too often, because this gets quite expensive
+               on maps with many cannons with defensive items */
+            if (options.cannonsUseItems && options.cannonsDefend && rfrac() < 0.65)
+            {
+                Cannon_check_defense(cannon);
+            }
+            if (!BIT(cannon->used, USES_EMERGENCY_SHIELD) && !BIT(cannon->used, USES_PHASING_DEVICE) && !cannon->damaged && !cannon->tractor_count && rfrac() * 16 < 1)
+            {
+                Cannon_check_fire(cannon);
+            }
+            else if (options.cannonsUseItems && options.itemProbMult > 0 && options.cannonItemProbMult > 0)
+            {
+                int item = (int)(rfrac() * NUM_ITEMS);
+                /* this gives the cannon an item about once every minute */
+                if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * world->items[item].cannonprob))
+                {
+                    Cannon_add_item(cannon, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
+                }
+            }
+        }
+        if (cannon->damaged > 0)
+        {
+            cannon->damaged--;
+        }
+        if (cannon->tractor_count > 0)
+        {
+            int ind = GetInd[cannon->tractor_target];
+            if (Wrap_length(PlayersArray[ind]->pos.cx - cannon->pos.cx,
+                            PlayersArray[ind]->pos.cy - cannon->pos.cy) /
+                        CLICK <
+                    TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
+                BIT(PlayersArray[ind]->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
+            {
+                General_tractor_beam(-1, cannon->pos,
+                                     cannon->item[ITEM_TRACTOR_BEAM], ind,
+                                     cannon->tractor_is_pressor);
+                cannon->tractor_count--;
+            }
+            else
+            {
+                cannon->tractor_count = 0;
+            }
+        }
+        if (cannon->emergency_shield_left > 0)
+        {
+            if (--cannon->emergency_shield_left <= 0)
+            {
+                CLR_BIT(cannon->used, USES_EMERGENCY_SHIELD);
+                sound_play_sensors(cannon->pos, EMERGENCY_SHIELD_OFF_SOUND);
+            }
+        }
+        if (cannon->phasing_left > 0)
+        {
+            if (--cannon->phasing_left <= 0)
+            {
+                CLR_BIT(cannon->used, USES_PHASING_DEVICE);
+                sound_play_sensors(cannon->pos, PHASING_OFF_SOUND);
+            }
+        }
+    }
+}
+
 /* adds the given amount of an item to the cannon's inventory. the number of
    tanks is taken to be 1. amount is then the amount of fuel in that tank.
    fuel is given in 'units', but is stored in fuelpacks. */

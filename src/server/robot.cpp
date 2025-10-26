@@ -918,13 +918,6 @@ void Robot_war(int ind, int killer)
     if (Player_is_robot(kp))
     {
         Robot_talks(ROBOT_TALK_KILL, kp->name, pl->name);
-
-        if (Robot_war_on_player(killer) == pl->id)
-            for (i = 0; i < NumPlayers; i++)
-            {
-                if (Player_by_index(i)->conn != NULL)
-                    Send_war(Player_by_index(i)->conn, kp->id, NO_ID);
-            }
         Robot_set_war(killer, -1);
     }
 
@@ -940,11 +933,6 @@ void Robot_war(int ind, int killer)
 
         if (Robot_war_on_player(ind) != kp->id)
         {
-            for (i = 0; i < NumPlayers; i++)
-            {
-                if (Player_by_index(i)->conn != NULL)
-                    Send_war(Player_by_index(i)->conn, pl->id, kp->id);
-            }
             sound_play_all(DECLARE_WAR_SOUND);
             Robot_set_war(ind, kp->id);
         }

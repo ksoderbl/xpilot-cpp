@@ -1,12 +1,11 @@
-/* $Id: cannon.h,v 5.3 2002/01/27 22:58:55 kimiko Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
  *      Bert Gijsbers
  *      Dick Balaska
- *          Kimiko Koopman
+ *      Kimiko Koopman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,5 +73,7 @@ extern long CANNON_USE_ITEM;
 
 /* sector in which cannonfire is possible */
 #define CANNON_SPREAD (RES / 3)
+
+void Cannon_update(bool tick);
 
 #endif
