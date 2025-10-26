@@ -1828,8 +1828,8 @@ static void Cannon_dies(move_state_t *ms)
     cannon->dead_time = options.cannonDeadTime;
     cannon->conn_mask = 0;
     world->block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
-    Cannon_throw_items(ms->cannon);
-    Cannon_init(ms->cannon);
+    Cannon_throw_items(Cannon_by_index(ms->cannon));
+    Cannon_init(Cannon_by_index(ms->cannon));
     sound_play_sensors(cannon->pos, CANNON_EXPLOSION_SOUND);
     Make_debris(cannon->pos,
                 zero_vel,
@@ -2146,14 +2146,15 @@ static void Object_crash(move_state_t *ms)
         obj->life = 0;
         if (BIT(obj->type, OBJ_ITEM_BIT))
         {
-            Cannon_add_item(ms->cannon, obj->info, obj->count);
+            Cannon_add_item(Cannon_by_index(ms->cannon), obj->info, obj->count);
         }
         else
         {
-            if (!BIT(world->cannons[ms->cannon].used, HAS_EMERGENCY_SHIELD))
+            cannon_t *cannon = Cannon_by_index(ms->cannon);
+            if (!BIT(cannon->used, HAS_EMERGENCY_SHIELD))
             {
-                if (world->cannons[ms->cannon].item[ITEM_ARMOR] > 0)
-                    world->cannons[ms->cannon].item[ITEM_ARMOR]--;
+                if (cannon->item[ITEM_ARMOR] > 0)
+                    cannon->item[ITEM_ARMOR]--;
                 else
                     Cannon_dies(ms);
             }

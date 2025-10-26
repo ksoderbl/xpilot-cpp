@@ -692,11 +692,11 @@ void Update_objects(void)
                on maps with many cannons with defensive items */
             if (options.cannonsUseItems && options.cannonsDefend && rfrac() < 0.65)
             {
-                Cannon_check_defense(i);
+                Cannon_check_defense(cannon);
             }
             if (!BIT(cannon->used, USES_EMERGENCY_SHIELD) && !BIT(cannon->used, USES_PHASING_DEVICE) && !cannon->damaged && !cannon->tractor_count && rfrac() * 16 < 1)
             {
-                Cannon_check_fire(i);
+                Cannon_check_fire(cannon);
             }
             else if (options.cannonsUseItems && options.itemProbMult > 0 && options.cannonItemProbMult > 0)
             {
@@ -704,7 +704,7 @@ void Update_objects(void)
                 /* this gives the cannon an item about once every minute */
                 if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * world->items[item].cannonprob))
                 {
-                    Cannon_add_item(i, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
+                    Cannon_add_item(cannon, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
                 }
             }
         }

@@ -856,8 +856,7 @@ static void Xpmap_place_cannon(blkpos_t blk, int dir)
 
     World_set_block(blk, CANNON);
     ind = World_place_cannon(pos, dir, TEAM_NOT_SET);
-    // TODO: Cannon_init(Cannon_by_index(ind));
-    Cannon_init(ind);
+    Cannon_init(Cannon_by_index(ind));
 }
 
 /*

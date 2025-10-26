@@ -952,7 +952,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(world->NumCannons);
+                    Cannon_init(Cannon_by_index(world->NumCannons));
                     world->NumCannons++;
                     break;
                 case 'd':
@@ -968,7 +968,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(world->NumCannons);
+                    Cannon_init(Cannon_by_index(world->NumCannons));
                     world->NumCannons++;
                     break;
                 case 'f':
@@ -984,7 +984,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(world->NumCannons);
+                    Cannon_init(Cannon_by_index(world->NumCannons));
                     world->NumCannons++;
                     break;
                 case 'c':
@@ -1000,7 +1000,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].dead_time = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(world->NumCannons);
+                    Cannon_init(Cannon_by_index(world->NumCannons));
                     world->NumCannons++;
                     break;
 

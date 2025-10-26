@@ -51,12 +51,12 @@
 #define IFSOUND(__x)
 #endif
 
-static int Cannon_select_weapon(int ind);
-static void Cannon_aim(int ind, int weapon, int *target, int *dir);
-static void Cannon_fire(int ind, int weapon, int target, int dir);
-static int Cannon_in_danger(int ind);
-static int Cannon_select_defense(int ind);
-static void Cannon_defend(int ind, int defense);
+static int Cannon_select_weapon(cannon_t *cannon);
+static void Cannon_aim(cannon_t *cannon, int weapon, int *target, int *dir);
+static void Cannon_fire(cannon_t *cannon, int weapon, int target, int dir);
+static int Cannon_in_danger(cannon_t *cannon);
+static int Cannon_select_defense(cannon_t *cannon);
+static void Cannon_defend(cannon_t *cannon, int defense);
 
 /* the items that are useful to cannons.
    these are the items that cannon get 'for free' once in a while.
@@ -67,9 +67,9 @@ long CANNON_USE_ITEM = (ITEM_BIT_FUEL | ITEM_BIT_WIDEANGLE | ITEM_BIT_REARSHOT |
 /* adds the given amount of an item to the cannon's inventory. the number of
    tanks is taken to be 1. amount is then the amount of fuel in that tank.
    fuel is given in 'units', but is stored in fuelpacks. */
-void Cannon_add_item(int ind, int item, int amount)
+void Cannon_add_item(cannon_t *c, int item, int amount)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
 
     switch (item)
     {
@@ -88,9 +88,9 @@ void Cannon_add_item(int ind, int item, int amount)
     }
 }
 
-void Cannon_throw_items(int ind)
+void Cannon_throw_items(cannon_t *c)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
     int i, dir;
     object_t *obj;
     double velocity;
@@ -135,9 +135,9 @@ void Cannon_throw_items(int ind)
 
 /* initializes the given cannon at startup or after death and gives it some
    items. */
-void Cannon_init(int ind)
+void Cannon_init(cannon_t *c)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
     int i;
 
     c->last_change = frame_loops;
@@ -145,7 +145,7 @@ void Cannon_init(int ind)
     {
         c->item[i] = 0;
         if (options.cannonsUseItems)
-            Cannon_add_item(ind, i, (int)(rfrac() * (world->items[i].initial + 1)));
+            Cannon_add_item(c, i, (int)(rfrac() * (world->items[i].initial + 1)));
     }
     c->damaged = 0;
     c->tractor_target = -1;
@@ -156,31 +156,31 @@ void Cannon_init(int ind)
     c->phasing_left = 0;
 }
 
-void Cannon_check_defense(int ind)
+void Cannon_check_defense(cannon_t *c)
 {
-    int defense = Cannon_select_defense(ind);
+    int defense = Cannon_select_defense(c);
 
-    if (defense >= 0 && Cannon_in_danger(ind))
+    if (defense >= 0 && Cannon_in_danger(c))
     {
-        Cannon_defend(ind, defense);
+        Cannon_defend(c, defense);
     }
 }
 
-void Cannon_check_fire(int ind)
+void Cannon_check_fire(cannon_t *c)
 {
     int target = -1,
         dir = 0,
-        weapon = Cannon_select_weapon(ind);
+        weapon = Cannon_select_weapon(c);
 
-    Cannon_aim(ind, weapon, &target, &dir);
+    Cannon_aim(c, weapon, &target, &dir);
     if (target != -1)
-        Cannon_fire(ind, weapon, target, dir);
+        Cannon_fire(c, weapon, target, dir);
 }
 
 /* selects one of the available defenses. see cannon.h for descriptions. */
-static int Cannon_select_defense(int ind)
+static int Cannon_select_defense(cannon_t *c)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
 
     if (options.cannonSmartness == 0)
         return -1; /* mode 0 does not defend */
@@ -196,9 +196,9 @@ static int Cannon_select_defense(int ind)
 /* checks if a cannon is about to be hit by a hazardous object.
    mode 0 does not detect danger.
    modes 1 - 3 use progressively more accurate detection. */
-static int Cannon_in_danger(int ind)
+static int Cannon_in_danger(cannon_t *c)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
     const int range = 4 * BLOCK_SZ;
     const long kill_shots = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_ASTEROID_BIT;
     object_t *shot, **obj_list;
@@ -252,9 +252,9 @@ static int Cannon_in_danger(int ind)
 }
 
 /* activates the selected defense. */
-static void Cannon_defend(int ind, int defense)
+static void Cannon_defend(cannon_t *c, int defense)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
     IFSOUND(int sound = -1);
 
     switch (defense)
@@ -278,9 +278,9 @@ static void Cannon_defend(int ind, int defense)
 }
 
 /* selects one of the available weapons. see cannon.h for descriptions. */
-static int Cannon_select_weapon(int ind)
+static int Cannon_select_weapon(cannon_t *c)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
 
     if (c->item[ITEM_MINE] && rfrac() < 0.5f)
         return CW_MINE;
@@ -313,9 +313,9 @@ static int Cannon_select_weapon(int ind)
    modes 1 and 2 only fire if a player is within range of the selected weapon.
    mode 3 only fires if a player will be in range when the shot is expected to hit.
  */
-static void Cannon_aim(int ind, int weapon, int *target, int *dir)
+static void Cannon_aim(cannon_t *c, int weapon, int *target, int *dir)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
     int speed = options.shotSpeed;
     int range = CANNON_SHOT_LIFE_MAX * speed;
     int cpx = (int)c->pix_pos.x;
@@ -466,9 +466,9 @@ static void Cannon_aim(int ind, int weapon, int *target, int *dir)
 
 /* does the actual firing. also determines in which way to use weapons that
    have more than one possible use. */
-static void Cannon_fire(int ind, int weapon, int target, int dir)
+static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
 {
-    cannon_t *c = world->cannons + ind;
+    // cannon_t *c = world->cannons + ind;
     player_t *pl = PlayersArray[target];
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;
@@ -587,7 +587,7 @@ static void Cannon_fire(int ind, int weapon, int target, int dir)
             long amount = 0;
             Do_general_transporter(nullptr, c->pos, target, &item, &amount);
             if (item != -1)
-                Cannon_add_item(ind, item, amount);
+                Cannon_add_item(c, item, amount);
             IFSOUND(sound = -1);
         }
         else

@@ -210,11 +210,11 @@ void remove_temp_wormhole(int ind);
 /*
  * Prototypes for cannon.c
  */
-void Cannon_init(int ind);
-void Cannon_add_item(int ind, int item, int amount);
-void Cannon_throw_items(int ind);
-void Cannon_check_defense(int ind);
-void Cannon_check_fire(int ind);
+void Cannon_init(cannon_t *cannon);
+void Cannon_add_item(cannon_t *cannon, int item, int amount);
+void Cannon_throw_items(cannon_t *cannon);
+void Cannon_check_defense(cannon_t *cannon);
+void Cannon_check_fire(cannon_t *cannon);
 
 /*
  * Prototypes for command.c
