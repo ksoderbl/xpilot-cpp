@@ -34,15 +34,10 @@ XFontStruct *T_Font;
 Atom ProtocolAtom;
 Atom KillAtom;
 
-#ifdef MONO
-const char *T_Background = COLOR_BACKGROUND,
-           *T_Foreground = COLOR_FOREGROUND;
-#else
 const char *T_Background = COLOR_BACKGROUND,
            *T_Highlight = COLOR_HIGHLIGHT,
            *T_Foreground = COLOR_FOREGROUND,
            *T_Shadow = COLOR_SHADOW;
-#endif
 
 /***************************************************************************/
 /* T_ConnectToServer                                                       */
@@ -69,10 +64,8 @@ void T_ConnectToServer(const char *display_name)
     root_height = DisplayHeight(display, screennum);
     T_GetGC(&T_Fore_GC, T_Foreground);
     T_GetGC(&T_Back_GC, T_Background);
-#ifndef MONO
     T_GetGC(&T_Hlgt_GC, T_Highlight);
     T_GetGC(&T_Shdw_GC, T_Shadow);
-#endif
     T_FontInit(&T_Font, "9x15");
     ProtocolAtom = XInternAtom(display, "WM_PROTOCOLS", False);
     KillAtom = XInternAtom(display, "WM_DELETE_WINDOW", False);
@@ -88,10 +81,8 @@ void T_CloseServerConnection(void)
     XUnloadFont(display, T_Font->fid);
     XFreeGC(display, T_Back_GC);
     XFreeGC(display, T_Fore_GC);
-#ifndef MONO
     XFreeGC(display, T_Hlgt_GC);
     XFreeGC(display, T_Shdw_GC);
-#endif
     XCloseDisplay(display);
 }
 
@@ -317,11 +308,7 @@ void T_SetWindowSizeLimits(Window window, int minwidth, int minheight,
 /***************************************************************************/
 void T_ClearArea(Window win, int x, int y, int width, int height)
 {
-#ifdef MONO
-    XFillRectangle(display, win, T_Back_GC, x, y, width, height);
-#else
     XFillRectangle(display, win, T_Fore_GC, x, y, width, height);
-#endif
 }
 
 /***************************************************************************/
@@ -341,21 +328,6 @@ void T_ClearArea(Window win, int x, int y, int width, int height)
 void T_DrawButton(Window win, int x, int y, int width, int height,
                   int zheight, int clear)
 {
-#ifdef MONO
-    if (clear)
-    {
-        XFillRectangle(display, win, T_Back_GC, x, y, width + 1, height + 1);
-    }
-    XDrawRectangle(display, win, T_Fore_GC, x, y, width, height);
-    if (zheight == RAISED)
-    {
-        XDrawRectangle(display, win, T_Back_GC, x + 1, y + 1, width - 2, height - 2);
-    }
-    else
-    {
-        XDrawRectangle(display, win, T_Fore_GC, x + 1, y + 1, width - 2, height - 2);
-    }
-#else
     if (clear)
     {
         XFillRectangle(display, win, T_Fore_GC, x, y, width + 1, height + 1);
@@ -374,7 +346,6 @@ void T_DrawButton(Window win, int x, int y, int width, int height,
         XDrawLine(display, win, T_Hlgt_GC, x, y + height, x + width, y + height);
         XDrawLine(display, win, T_Hlgt_GC, x + width, y, x + width, y + height);
     }
-#endif
 }
 
 /***************************************************************************/
@@ -394,12 +365,7 @@ void T_PopButton(Window win, int x, int y, int width, int height,
 {
     if (zheight == RAISED)
     {
-#ifdef MONO
-        XCopyArea(display, win, win, T_Fore_GC, x + 2, y + 2, width - 3, height - 3, x + 1, y + 1);
-        XDrawRectangle(display, win, T_Back_GC, x + 1, y + 1, width - 3, height - 3);
-#else
         XCopyArea(display, win, win, T_Fore_GC, x + 2, y + 2, width - 2, height - 2, x + 1, y + 1);
-#endif
     }
     else
     {

@@ -55,11 +55,7 @@ Window T_PopupCreate(int x, int y, int width, int height, const char *title)
         x = (root_width - width) / 2;
     if (y < 0)
         y = (root_height - height) / 2;
-#ifdef MONO
-    (*popup)->window = T_MakeWindow(x, y, width, height, T_Foreground, T_Background);
-#else
     (*popup)->window = T_MakeWindow(x, y, width, height, T_Background, T_Foreground);
-#endif
     XSelectInput(display, (*popup)->window, ExposureMask | ButtonPressMask | KeyPressMask | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask);
     T_SetWindowName((*popup)->window, title, title);
     return (*popup)->window;
