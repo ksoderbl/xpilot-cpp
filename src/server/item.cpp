@@ -71,7 +71,7 @@ static void Item_update_flags(player_t *pl)
             if (!BIT(DEF_HAVE, HAS_SHIELD) && pl->shield_time <= 0)
             {
                 CLR_BIT(pl->have, HAS_SHIELD);
-                CLR_BIT(pl->used, USES_SHIELD);
+                CLR_BIT(pl->used, HAS_SHIELD);
             }
         }
     }
@@ -407,22 +407,20 @@ void Throw_items(player_t *pl)
  * a random direction with a small life time (ie. magazine has
  * gone off).
  */
-void Detonate_items(int ind)
+void Detonate_items(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    player_t *owner_pl;
     int i;
     modifiers_t mods;
-    int owner_ind;
 
     if (!BIT(pl->obj_status, KILLED))
         return;
 
     /* ZE: Detonated items on tanks should belong to the tank's owner. */
     if (Player_is_tank(pl))
-        owner_ind = GetInd[pl->lock.pl_id];
+        owner_pl = Player_by_id(pl->lock.pl_id);
     else
-        owner_ind = ind;
-    player_t *owner = PlayersArray[owner_ind];
+        owner_pl = pl;
 
     /*
      * These are always immune to detonation.
@@ -435,7 +433,7 @@ void Detonate_items(int ind)
     /*
      * Drop shields in order to launch mines and missiles.
      */
-    CLR_BIT(pl->used, USES_SHIELD);
+    CLR_BIT(pl->used, HAS_SHIELD);
 
     /*
      * Mines are always affected by gravity and are sent in random directions
@@ -446,15 +444,15 @@ void Detonate_items(int ind)
         if (rfrac() < options.detonateItemOnKillProb)
         {
             int dir = (int)(rfrac() * RES);
-            double v = rfrac() * 4.0f;
+            double speed = rfrac() * 4.0;
 
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MINE] < options.nukeMinMines)
                 CLR_BIT(mods.nuclear, NUCLEAR);
             vector_t vel;
-            vel.x = pl->vel.x + v * tcos(dir);
-            vel.y = pl->vel.y + v * tsin(dir);
-            Place_general_mine(owner_ind, pl->team, GRAVITY, pl->pos, vel, mods);
+            vel.x = pl->vel.x + speed * tcos(dir);
+            vel.y = pl->vel.y + speed * tsin(dir);
+            Place_general_mine(owner_pl->id, pl->team, GRAVITY, pl->pos, vel, mods);
         }
     }
     for (i = 0; i < pl->item[ITEM_MISSILE]; i++)
@@ -489,20 +487,19 @@ void Detonate_items(int ind)
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
                 CLR_BIT(mods.nuclear, NUCLEAR);
-            Fire_general_shot(owner, 0, pl->team, pl->pos,
+            Fire_general_shot(owner_pl->id, 0, pl->team, pl->pos,
                               type, (int)(rfrac() * RES), mods, -1);
         }
     }
 }
 
-void Tractor_beam(int ind)
+void Tractor_beam(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
     double maxdist, percent;
     long cost;
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -514,8 +511,8 @@ void Tractor_beam(int ind)
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
     }
-    General_tractor_beam(ind, pl->pos, pl->item[ITEM_TRACTOR_BEAM],
-                         GetInd[pl->lock.pl_id], pl->tractor_is_pressor);
+    General_tractor_beam(pl->id, pl->pos, pl->item[ITEM_TRACTOR_BEAM],
+                         GetIndArray[pl->lock.pl_id], pl->tractor_is_pressor);
 }
 
 void General_tractor_beam(int ind, clpos_t pos, int items, int target, bool pressor)
@@ -959,7 +956,7 @@ void do_lose_item(player_t *pl)
     Item_update_flags(pl);
 }
 
-void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
+void Fire_general_ecm(int ind, int team, clpos_t pos)
 {
     object_t *shot;
     mineobject_t *closest_mine = NULL;
@@ -1008,7 +1005,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
          */
         if (shot->id != NO_ID)
         {
-            owner = GetInd[shot->id];
+            owner = GetIndArray[shot->id];
             if (ind == owner)
             {
                 if (shot->type == OBJ_MINE_BIT)
@@ -1037,7 +1034,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
             SET_BIT(smart->obj_status, CONFUSED);
             smart->ecm_range = range;
             smart->count = CONFUSED_TIME;
-            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee)
+            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetIndArray[pl->lock.pl_id]].canSee)
                 smart->new_info = pl->lock.pl_id;
             else
                 smart->new_info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
@@ -1045,7 +1042,7 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
             /* So let the missile keep on following this unlucky player. */
             /*-BA Why not redirect missiles to team mates?
              *-BA It's not ideal, but better them than me...
-             *if (TEAM_IMMUNE(ind, GetInd[smart->new_info])) {
+             *if (TEAM_IMMUNE(ind, GetIndArray[smart->new_info])) {
              *        smart->new_info = ind;
              * }
              */
@@ -1212,8 +1209,8 @@ void Fire_general_ecm(int ind, uint16_t team, clpos_t pos)
             }
             else
             {
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd[pl->lock.pl_id]].canSee && pl->lock.pl_id != p->id
-                    /*&& !TEAM_IMMUNE(ind, GetInd[pl->lock.pl_id])*/)
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetIndArray[pl->lock.pl_id]].canSee && pl->lock.pl_id != p->id
+                    /*&& !TEAM_IMMUNE(ind, GetIndArray[pl->lock.pl_id])*/)
                 {
 
                     /*

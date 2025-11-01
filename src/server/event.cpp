@@ -195,7 +195,7 @@ int Player_lock_closest(int ind, int next)
 
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
-        lock = GetInd[pl->lock.pl_id];
+        lock = GetIndArray[pl->lock.pl_id];
         dist = Wrap_length(PlayersArray[lock]->pos.cx - pl->pos.cx,
                            PlayersArray[lock]->pos.cy - pl->pos.cy) /
                CLICK;
@@ -451,7 +451,7 @@ int Handle_keyboard(int ind)
 
             case KEY_LOCK_NEXT:
             case KEY_LOCK_PREV:
-                j = i = GetInd[pl->lock.pl_id];
+                j = i = GetIndArray[pl->lock.pl_id];
                 if (!BIT(pl->lock.tagged, LOCK_PLAYER) || j < 0 || j >= NumPlayers)
                 {
                     /* better jump to KEY_LOCK_CLOSE... */
@@ -500,7 +500,7 @@ int Handle_keyboard(int ind)
                  * Verify if the lock has ever been initialized at all
                  * and if the lock is still valid.
                  */
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetInd[k]) > 0 && i < NumPlayers && Player_by_index(i)->id == k && i != ind)
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetIndArray[k]) > 0 && i < NumPlayers && Player_by_index(i)->id == k && i != ind)
                 {
                     break;
                 }
@@ -735,7 +735,7 @@ int Handle_keyboard(int ind)
                 }
                 else
                 {
-                    if (*l != NOT_CONNECTED && Player_lock_allowed(ind, GetInd[*l]))
+                    if (*l != NOT_CONNECTED && Player_lock_allowed(ind, GetIndArray[*l]))
                     {
                         pl->lock.pl_id = *l;
                         SET_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -760,15 +760,15 @@ int Handle_keyboard(int ind)
                 break;
 
             case KEY_DROP_MINE:
-                Place_mine(ind);
+                Place_mine(pl);
                 break;
 
             case KEY_DETACH_MINE:
-                Place_moving_mine(ind);
+                Place_moving_mine(pl);
                 break;
 
             case KEY_DETONATE_MINES:
-                Detonate_mines(ind);
+                Detonate_mines(pl);
                 break;
 
             case KEY_TURN_LEFT:
@@ -879,7 +879,7 @@ int Handle_keyboard(int ind)
                         Autopilot(pl, false);
                         CLR_BIT(pl->obj_status, HOVERPAUSE);
                         if (!BIT(pl->have, HAS_SHIELD))
-                            CLR_BIT(pl->used, USES_SHIELD);
+                            CLR_BIT(pl->used, HAS_SHIELD);
                     }
                     break;
                 }

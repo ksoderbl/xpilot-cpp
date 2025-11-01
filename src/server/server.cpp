@@ -75,7 +75,6 @@ char server_version[] = VERSION;
 int NumPlayers = 0;
 int NumAlliances = 0;
 int GetInd_1;
-int GetInd[NUM_IDS + 1];
 server_t Server;
 char *serverAddr;
 int ShutdownServer = -1;
@@ -594,9 +593,9 @@ void Server_info(char *str, unsigned max_size)
         strlcpy(name, pl->name, MAX_CHARS);
         if (Player_is_robot(pl))
         {
-            if ((k = Robot_war_on_player(GetInd[pl->id])) != NO_ID)
+            if ((k = Robot_war_on_player(GetIndArray[pl->id])) != NO_ID)
             {
-                sprintf(name + strlen(name), " (%s)", PlayersArray[GetInd[k]]->name);
+                sprintf(name + strlen(name), " (%s)", PlayersArray[GetIndArray[k]]->name);
                 if (strlen(name) >= 19)
                 {
                     strcpy(&name[17], ")");

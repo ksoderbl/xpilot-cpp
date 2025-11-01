@@ -430,7 +430,7 @@ static int Frame_status(connection_t *conn, int ind)
     if (BIT(pl->lock.tagged, LOCK_PLAYER) && BIT(pl->used, HAS_COMPASS))
     {
         lock_id = pl->lock.pl_id;
-        lock_ind = GetInd[lock_id];
+        lock_ind = GetIndArray[lock_id];
 
         if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
@@ -511,7 +511,7 @@ static int Frame_status(connection_t *conn, int ind)
                   lock_dist,
                   lock_dir,
                   showautopilot,
-                  PlayersArray[GetInd[Get_player_id(conn)]]->obj_status,
+                  PlayersArray[GetIndArray[Get_player_id(conn)]]->obj_status,
                   mods);
     if (n <= 0)
     {
@@ -838,7 +838,7 @@ static void Frame_shots(connection_t *conn, int ind)
 
         case OBJ_SHOT_BIT:
         case OBJ_CANNON_SHOT_BIT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetInd[shot->id]]->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetIndArray[shot->id]]->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -895,7 +895,7 @@ static void Frame_shots(connection_t *conn, int ind)
                 if (BIT(mine->obj_status, CONFUSED))
                     confused = 1;
             }
-            if (mine->id != NO_ID && BIT(PlayersArray[GetInd[mine->id]]->obj_status, PAUSE))
+            if (mine->id != NO_ID && BIT(PlayersArray[GetIndArray[mine->id]]->obj_status, PAUSE))
                 laid_by_team = 1;
             else
             {
@@ -998,8 +998,8 @@ static void Frame_ships(connection_t *conn, int ind)
     for (i = 0; i < Num_transporters(); i++)
     {
         transporter_t *trans = Transporter_by_index(i);
-        player_t *victim = PlayersArray[GetInd[trans->target]],
-                 *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetInd[trans->id]]);
+        player_t *victim = PlayersArray[GetIndArray[trans->target]],
+                 *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetIndArray[trans->id]]);
         int cx = (pl ? pl->pos.cx : trans->pos.cx);
         int cy = (pl ? pl->pos.cy : trans->pos.cy);
         Send_trans(conn, victim->pix_pos.x, victim->pix_pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
@@ -1009,7 +1009,7 @@ static void Frame_ships(connection_t *conn, int ind)
         cannon_t *cannon = world->cannons + i;
         if (cannon->tractor_count > 0)
         {
-            player_t *t = PlayersArray[GetInd[cannon->tractor_target]];
+            player_t *t = PlayersArray[GetIndArray[cannon->tractor_target]];
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
@@ -1083,7 +1083,7 @@ static void Frame_ships(connection_t *conn, int ind)
         }
         if (BIT(pl_i->used, USES_TRACTOR_BEAM))
         {
-            player_t *t = PlayersArray[GetInd[pl_i->lock.pl_id]];
+            player_t *t = PlayersArray[GetIndArray[pl_i->lock.pl_id]];
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
@@ -1197,7 +1197,7 @@ static void Frame_radar(connection_t *conn, int ind)
                                                                        CLICK >
                                                                    pl->sensor_range)
                 continue;
-            if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
+            if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetIndArray[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
                 continue;
             size = 3;
             if (Players_are_teammates(pl, Player_by_index(i)) || Players_are_allies(pl, Player_by_index(i)) || Player_owns_tank(pl, Player_by_index(i)))
@@ -1349,10 +1349,10 @@ void Frame_update(void)
         {
             if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
                 (BIT(pl->obj_status, PAUSE) &&
-                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == PlayersArray[GetInd[pl->lock.pl_id]]->team) ||
+                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == PlayersArray[GetIndArray[pl->lock.pl_id]]->team) ||
                   pl->isowner ||
                   options.allowViewing)))
-                ind = GetInd[pl->lock.pl_id];
+                ind = GetIndArray[pl->lock.pl_id];
             else
                 ind = i;
         }
@@ -1429,5 +1429,5 @@ void Set_player_message(player_t *pl, const char *message)
     if (pl->conn != NULL)
         Send_message(pl->conn, msg);
     else if (Player_is_robot(pl))
-        Robot_message(GetInd[pl->id], msg);
+        Robot_message(GetIndArray[pl->id], msg);
 }

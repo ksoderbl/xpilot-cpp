@@ -98,7 +98,7 @@ typedef struct
     int setup;                   /* amount of setup done */
     int my_port;                 /* server port for this player */
     int his_port;                /* client port for this player */
-    int id;                      /* index into GetInd[] or NO_ID */
+    int id;                      /* index into GetIndArray[] or NO_ID */
     int team;                    /* team of player */
     unsigned version;            /* XPilot version of client */
     long last_key_change;        /* last keyboard change */

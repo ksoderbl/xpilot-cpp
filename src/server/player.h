@@ -285,8 +285,6 @@ struct player
     int ind; /* Index in PlayersArray[] */
 };
 
-extern player_t **PlayersArray;
-
 void Player_position_set_clicks(player_t *pl, clpos_t pos);
 void Player_position_init_clpos(player_t *pl, clpos_t pos);
 
@@ -299,6 +297,8 @@ void Player_position_debug(player_t *pl, const char *msg);
 extern int playerArrayNumber;
 extern player_t **PlayersArray;
 
+int GetInd(int id);
+
 /*
  * Get player with index 'ind' from Players array.
  */
@@ -307,6 +307,11 @@ static inline player_t *Player_by_index(int ind)
     if (ind < 0 || ind >= playerArrayNumber)
         return NULL;
     return PlayersArray[ind];
+}
+
+static inline player_t *Player_by_id(int id)
+{
+    return Player_by_index(GetInd(id));
 }
 
 static inline bool Player_uses_emergency_thrust(player_t *pl)

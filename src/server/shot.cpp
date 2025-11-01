@@ -61,9 +61,8 @@
  * Functions for shots.
  */
 
-void Place_mine(int ind)
+void Place_mine(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
     vector_t zero_vel = {0.0, 0.0};
 
     if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
@@ -73,22 +72,24 @@ void Place_mine(int ind)
 
     if (options.minMineSpeed > 0)
     {
-        Place_moving_mine(ind);
+        Place_moving_mine(pl);
         return;
     }
 
-    Place_general_mine(ind, pl->team, 0, pl->pos, zero_vel, pl->mods);
+    /*
+     * Dropped mines are immune to gravity. The latest theory is that mines
+     * contain some sort of anti-gravity device. An even later theory
+     * claims that they are anchored to space the same way as the walls are.
+     */
+    Place_general_mine(pl->id, pl->team, 0, pl->pos, zero_vel, pl->mods);
 }
 
-void Place_moving_mine(int ind)
+void Place_moving_mine(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
     vector_t vel = pl->vel;
 
     if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
-    {
         return;
-    }
 
     if (options.minMineSpeed > 0)
     {
@@ -107,19 +108,20 @@ void Place_moving_mine(int ind)
         }
     }
 
-    Place_general_mine(ind, pl->team, GRAVITY, pl->pos, vel, pl->mods);
+    Place_general_mine(pl->id, pl->team, GRAVITY, pl->pos, vel, pl->mods);
 }
 
-void Place_general_mine(int ind, uint16_t team, long status,
+void Place_general_mine(int id, int team, long status,
                         clpos_t pos, vector_t vel, modifiers_t mods)
 {
+    int used, i, minis;
     char msg[MSG_LEN];
-    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]);
-    int used, life;
+    int life;
     long drain;
     double mass;
-    int i, minis;
     vector_t mv;
+    player_t *pl = Player_by_id(id);
+    // cannon_t *cannon = Cannon_by_id(id);
 
     if (NumObjs + mods.mini >= MAX_TOTAL_SHOTS)
         return;
@@ -195,7 +197,9 @@ void Place_general_mine(int ind, uint16_t team, long status,
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (i != ind && !Team_immune(Player_by_index(i)->id, pl->id) && !Player_is_tank(Player_by_index(i)))
+                player_t *pl_i = Player_by_index(i);
+
+                if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
                     int dx = CLICK_TO_PIXEL(pos.cx - world->bases[Player_by_index(i)->home_base].pos.cx);
                     int dy = CLICK_TO_PIXEL(pos.cy - world->bases[Player_by_index(i)->home_base].pos.cy);
@@ -294,9 +298,8 @@ void Place_general_mine(int ind, uint16_t team, long status,
  *     Cause the mine which is closest to a player and owned
  *     by that player to detonate.
  */
-void Detonate_mines(int ind)
+void Detonate_mines(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
     int i;
     int closest = -1;
     double dist;
@@ -461,7 +464,7 @@ void Fire_main_shot(player_t *pl, int type, int dir)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_shot(player_t *pl, int type, int dir)
@@ -469,7 +472,7 @@ void Fire_shot(player_t *pl, int type, int dir)
     if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    Fire_general_shot(pl, pl->team, 0, pl->pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, 0, pl->pos, type, dir, pl->mods, -1);
 }
 
 void Fire_left_shot(player_t *pl, int type, int dir, int gun)
@@ -481,7 +484,7 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_right_shot(player_t *pl, int type, int dir, int gun)
@@ -493,7 +496,7 @@ void Fire_right_shot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
@@ -505,7 +508,7 @@ void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
@@ -517,28 +520,18 @@ void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(pl, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
 }
 
-void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
+void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target)
 {
     char msg[MSG_LEN];
-    int used,
-        life = options.shotLife,
-        fuse = 0,
-        lock = 0,
-        status = GRAVITY,
-        i, ldir, minis,
-        pl_range,
-        pl_radius,
-        rack_no = 0,
-        racks_left = 0,
-        r,
-        on_this_rack = 0,
-        side = 0,
-        fired = 0;
+    int used, fuse = 0, lock = 0, status = GRAVITY, i, ldir, minis;
+    int pl_range, pl_radius, rack_no = 0, racks_left = 0, r, on_this_rack = 0;
+    int side = 0, fired = 0;
+    int life = options.shotLife;
     long drain;
     double mass = options.shotMass,
            speed = options.shotSpeed,
@@ -549,6 +542,7 @@ void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
     vector_t mv;
     clpos_t shotpos;
     object_t *mini_objs[MODS_MINI_MAX + 1];
+    player_t *pl = Player_by_id(id);
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
         return;
@@ -692,7 +686,7 @@ void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
                 lock = target;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd[pl->lock.pl_id]].canSee)
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetIndArray[pl->lock.pl_id]].canSee)
                     return;
                 lock = pl->lock.pl_id;
             }
@@ -1159,7 +1153,7 @@ void Delete_shot(int ind)
     case OBJ_BALL_BIT:
         ball = BALL_PTR(shot);
         if (ball->id != NO_ID)
-            Detach_ball(GetInd[ball->id], ind);
+            Detach_ball(GetIndArray[ball->id], ind);
         else
         {
             /*
@@ -1233,7 +1227,7 @@ void Delete_shot(int ind)
             type = OBJ_SHOT_BIT;
             if (shot->id != NO_ID)
             {
-                player_t *pl = PlayersArray[GetInd[shot->id]];
+                player_t *pl = PlayersArray[GetIndArray[shot->id]];
                 color = pl->color;
             }
             else
@@ -1312,7 +1306,7 @@ void Delete_shot(int ind)
     case OBJ_SHOT_BIT:
         if (shot->id == NO_ID || BIT(shot->obj_status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
             break;
-        pl = PlayersArray[GetInd[shot->id]];
+        pl = PlayersArray[GetIndArray[shot->id]];
         if (--pl->shots <= 0)
             pl->shots = 0;
         break;
@@ -1382,14 +1376,14 @@ void Delete_shot(int ind)
 
         if (addMine)
         {
-            long gravity_status = ((rfrac() < 0.5f) ? GRAVITY : 0);
-            Place_general_mine(-1, TEAM_NOT_SET, gravity_status,
+            long gravity_status = ((rfrac() < 0.5) ? GRAVITY : 0);
+            Place_general_mine(NO_ID, TEAM_NOT_SET, gravity_status,
                                shot->pos, zero_vel, mods);
         }
         else if (addHeat)
-            Fire_general_shot(nullptr, TEAM_NOT_SET, 0,
+            Fire_general_shot(NO_ID, TEAM_NOT_SET, 0,
                               shot->pos, OBJ_HEAT_SHOT_BIT, (int)(rfrac() * RES),
-                              mods, -1);
+                              mods, NO_ID);
     }
     else if (addBall)
     {
@@ -1417,7 +1411,7 @@ void Fire_laser(player_t *pl)
     }
 }
 
-void Fire_general_laser(player_t *pl, uint16_t team, clpos_t pos,
+void Fire_general_laser(player_t *pl, int team, clpos_t pos,
                         int dir, modifiers_t mods)
 {
     pulse_t *pulse;
@@ -1501,7 +1495,7 @@ void Move_ball(int ind)
      */
 
     ballobject_t *ball = BALL_IND(ind);
-    player_t *pl = PlayersArray[GetInd[ball->id]];
+    player_t *pl = PlayersArray[GetIndArray[ball->id]];
     vector_t D;
     double length, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
@@ -1534,7 +1528,7 @@ void Move_ball(int ind)
     /* if the tether is too long or too short, release it */
     if (ABS(ratio) > options.maxBallConnectorRatio)
     {
-        Detach_ball(GetInd[ball->id], ind);
+        Detach_ball(GetIndArray[ball->id], ind);
         return;
     }
     ball->length = length;
@@ -1595,7 +1589,7 @@ void Move_smart_shot(int ind)
         if (shot->info >= 0)
         {
             /* Get player and set min to distance */
-            pl = PlayersArray[GetInd[shot->info]];
+            pl = PlayersArray[GetIndArray[shot->info]];
             range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
                                 CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
                     CLICK;
@@ -1700,7 +1694,7 @@ void Move_smart_shot(int ind)
                 }
             }
         }
-        pl = PlayersArray[GetInd[shot->info]];
+        pl = PlayersArray[GetIndArray[shot->info]];
     }
     else
     {

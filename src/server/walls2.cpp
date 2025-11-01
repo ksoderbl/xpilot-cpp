@@ -27,6 +27,8 @@
 
 // #include "xpserver.h"
 
+// TODO: Add includes
+
 struct move_parameters mp;
 static char msg[MSG_LEN];
 
@@ -146,30 +148,30 @@ void Move_init(void)
 
     mp.obj_bounce_mask = 0;
     if (options.sparksWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT);
     if (options.debrisWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT);
     if (options.shotsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT_BIT | OBJ_CANNON_SHOT_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT);
     if (options.itemsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT);
     if (options.missilesWallBounce)
         SET_BIT(mp.obj_bounce_mask,
-                OBJ_SMART_SHOT_BIT_BIT | OBJ_TORPEDO_BIT_BIT | OBJ_HEAT_SHOT_BIT_BIT);
+                OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT);
     if (options.minesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT);
     if (options.ballsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT);
     if (options.asteroidsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT);
     if (options.pulsesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_PULSE_BIT_BIT);
+        SET_BIT(mp.obj_bounce_mask, OBJ_PULSE_BIT);
 
-    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT_BIT | OBJ_SHOT_BIT_BIT | OBJ_PULSE_BIT_BIT | OBJ_SMART_SHOT_BIT_BIT | OBJ_TORPEDO_BIT_BIT | OBJ_HEAT_SHOT_BIT_BIT | OBJ_ASTEROID_BIT_BIT;
+    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ASTEROID_BIT;
     if (options.cannonsPickupItems)
-        mp.obj_cannon_mask |= OBJ_ITEM_BIT_BIT;
-    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT_BIT | OBJ_SPARK_BIT_BIT;
-    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT_BIT | OBJ_PULSE_BIT_BIT;
+        mp.obj_cannon_mask |= OBJ_ITEM_BIT;
+    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT | OBJ_SPARK_BIT;
+    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT | OBJ_PULSE_BIT;
 }
 
 void Object_crash(object_t *obj, int crashtype, int mapobj_ind)

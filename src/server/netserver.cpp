@@ -731,8 +731,8 @@ void Destroy_connection(connection_t *connp, const char *reason)
     {
         id = connp->id;
         connp->id = NO_ID;
-        PlayersArray[GetInd[id]]->conn = NULL;
-        Delete_player(GetInd[id]);
+        PlayersArray[GetIndArray[id]]->conn = NULL;
+        Delete_player(GetIndArray[id]);
     }
 
     XFREE(connp->user);
@@ -1614,7 +1614,7 @@ int Send_leave(connection_t *connp, int id)
  */
 int Send_player(connection_t *connp, int id)
 {
-    player_t *pl = PlayersArray[GetInd[id]];
+    player_t *pl = PlayersArray[GetIndArray[id]];
     int n;
     char buf[MSG_LEN], ext[MSG_LEN];
     int sbuf_len = connp->c.len;
@@ -1680,7 +1680,7 @@ int Send_score(connection_t *connp, int id, int score,
             }
             else
             {
-                if (PlayersArray[GetInd[connp->id]]->alliance == alliance)
+                if (PlayersArray[GetIndArray[connp->id]]->alliance == alliance)
                     allchar = '+';
             }
         }
@@ -2165,10 +2165,10 @@ static int Receive_keyboard(connection_t *connp)
     else
     {
         connp->last_key_change = change;
-        pl = PlayersArray[GetInd[connp->id]];
+        pl = PlayersArray[GetIndArray[connp->id]];
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
-        Handle_keyboard(GetInd[connp->id]);
+        Handle_keyboard(GetIndArray[connp->id]);
     }
     if (connp->num_keyboard_updates++ && (connp->state & CONN_PLAYING))
     {
@@ -2248,7 +2248,7 @@ static int Receive_power(connection_t *connp)
         return n;
     }
     power = (double)tmp / 256.0F;
-    pl = PlayersArray[GetInd[connp->id]];
+    pl = PlayersArray[GetIndArray[connp->id]];
     autopilot = BIT(pl->used, USES_AUTOPILOT);
     /* old client are going to send autopilot-mangled data, ignore it */
     if (autopilot && pl->version < 0x4200)
@@ -2691,7 +2691,7 @@ static int Receive_ack_polystyle(connection_t *connp)
  */
 static void Handle_talk(connection_t *connp, char *str)
 {
-    player_t *pl = PlayersArray[GetInd[connp->id]];
+    player_t *pl = PlayersArray[GetIndArray[connp->id]];
     int i, sent, team;
     unsigned int len;
     char *cp,
@@ -2734,7 +2734,7 @@ static void Handle_talk(connection_t *connp, char *str)
     }
     else if (strcasecmp(str, "god") == 0)
     {
-        Server_log_admin_message(GetInd[connp->id], cp);
+        Server_log_admin_message(GetIndArray[connp->id], cp);
     }
     else
     { /* Player message */
@@ -2804,7 +2804,7 @@ static int Receive_talk(connection_t *connp)
         }
         connp->talk_sequence_num = seq;
         if (*str == '/')
-            Handle_player_command(PlayersArray[GetInd[connp->id]], str + 1);
+            Handle_player_command(PlayersArray[GetIndArray[connp->id]], str + 1);
         else
             Handle_talk(connp, str);
     }
@@ -2865,7 +2865,7 @@ static int Receive_modifier_bank(connection_t *connp)
             Destroy_connection(connp, "read modbank");
         return n;
     }
-    pl = PlayersArray[GetInd[connp->id]];
+    pl = PlayersArray[GetIndArray[connp->id]];
     if (bank < NUM_MODBANKS)
     {
         CLEAR_MODS(mods);
@@ -3161,7 +3161,7 @@ static int Receive_pointer_move(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    pl = PlayersArray[GetInd[connp->id]];
+    pl = PlayersArray[GetIndArray[connp->id]];
     if (BIT(pl->obj_status, HOVERPAUSE))
         return 1;
 
@@ -3209,7 +3209,7 @@ static int Receive_fps_request(connection_t *connp)
     }
     if (connp->id != NO_ID)
     {
-        pl = PlayersArray[GetInd[connp->id]];
+        pl = PlayersArray[GetIndArray[connp->id]];
         pl->player_fps = fps;
         // TODO: Fix this stuff
         if (fps > FPS)
@@ -3240,7 +3240,7 @@ static int Receive_audio_request(connection_t *connp)
     }
     if (connp->id != NO_ID)
     {
-        pl = PlayersArray[GetInd[connp->id]];
+        pl = PlayersArray[GetIndArray[connp->id]];
         sound_player_onoff(pl, onoff);
     }
 

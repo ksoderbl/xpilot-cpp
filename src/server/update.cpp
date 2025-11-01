@@ -155,7 +155,7 @@ void Cloak(player_t *pl, bool on)
                     Emergency_shield(pl, false);
                 if (BIT(pl->used, USES_DEFLECTOR))
                     Deflector(pl, false);
-                CLR_BIT(pl->used, USES_SHIELD);
+                CLR_BIT(pl->used, HAS_SHIELD);
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
             sound_play_player(pl, CLOAK_SOUND);
@@ -291,7 +291,7 @@ void Emergency_shield(player_t *pl, bool on)
         if (!BIT(DEF_HAVE, HAS_SHIELD))
         {
             CLR_BIT(pl->have, HAS_SHIELD);
-            CLR_BIT(pl->used, USES_SHIELD);
+            CLR_BIT(pl->used, HAS_SHIELD);
         }
         if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
@@ -646,7 +646,7 @@ void Update_objects(void)
         if ((ecm->size *= ecmSizeFactor) < 1.0)
         {
             if (ecm->id != NO_ID)
-                PlayersArray[GetInd[ecm->id]]->ecmcount--;
+                PlayersArray[GetIndArray[ecm->id]]->ecmcount--;
             // free(Ecms[i]);
             --world->NumEcms;
             world->ecms[i] = world->ecms[world->NumEcms];
@@ -794,7 +794,7 @@ void Update_objects(void)
             if (--pl->shield_time == 0)
             {
                 if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
-                    CLR_BIT(pl->used, USES_SHIELD);
+                    CLR_BIT(pl->used, HAS_SHIELD);
             }
             if (BIT(pl->used, USES_SHIELD) == 0)
             {
@@ -1260,13 +1260,13 @@ void Update_objects(void)
         }
 
         if (BIT(pl->used, USES_TRACTOR_BEAM))
-            Tractor_beam(ind);
+            Tractor_beam(pl);
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             pl->lock.distance =
-                Wrap_length(pl->pos.cx - PlayersArray[GetInd[pl->lock.pl_id]]->pos.cx,
-                            pl->pos.cy - PlayersArray[GetInd[pl->lock.pl_id]]->pos.cy) /
+                Wrap_length(pl->pos.cx - PlayersArray[GetIndArray[pl->lock.pl_id]]->pos.cx,
+                            pl->pos.cy - PlayersArray[GetIndArray[pl->lock.pl_id]]->pos.cy) /
                 CLICK;
         }
     }
@@ -1289,7 +1289,7 @@ void Update_objects(void)
         {
             Throw_items(pl);
 
-            Detonate_items(ind);
+            Detonate_items(pl);
 
             Kill_player(ind);
 

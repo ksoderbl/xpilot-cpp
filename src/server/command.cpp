@@ -54,7 +54,7 @@ static int Get_player_index_by_name(char *name)
     if (isdigit(*name))
     {
         i = atoi(name);
-        if ((i > 0 && i <= NUM_IDS) && (j = GetInd[i]) >= 0 && j < NumPlayers && PlayersArray[j]->id == i)
+        if ((i > 0 && i <= NUM_IDS) && (j = GetIndArray[i]) >= 0 && j < NumPlayers && PlayersArray[j]->id == i)
         {
             return j;
         }
@@ -334,7 +334,7 @@ static int Cmd_queue(char *arg, player_t *pl, int oper, char *msg)
 static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
 {
     int i;
-    int ind = GetInd[pl->id];
+    int ind = GetIndArray[pl->id];
     int team;
     int swap_allowed;
 
@@ -399,7 +399,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     Set_message(msg);
     if (BIT(pl->have, HAS_BALL))
     {
-        Detach_ball(GetInd[pl->id], -1);
+        Detach_ball(GetIndArray[pl->id], -1);
     }
     world->teams[pl->team].NumMembers--;
     pl->team = team;
@@ -423,7 +423,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
             }
         }
     }
-    Pick_startpos(GetInd[pl->id]);
+    Pick_startpos(GetIndArray[pl->id]);
     Send_info_about_player(pl);
     strcpy(msg, "");
 
@@ -497,15 +497,15 @@ static int Cmd_ally(char *arg, player_t *pl, int oper, char *msg)
             {
                 if (cmd == AllyInvite)
                 {
-                    Invite_player(GetInd[pl->id], i);
+                    Invite_player(GetIndArray[pl->id], i);
                 }
                 else if (cmd == AllyRefuse)
                 {
-                    Refuse_alliance(GetInd[pl->id], i);
+                    Refuse_alliance(GetIndArray[pl->id], i);
                 }
                 else if (cmd == AllyAccept)
                 {
-                    Accept_alliance(GetInd[pl->id], i);
+                    Accept_alliance(GetIndArray[pl->id], i);
                 }
                 else
                 {
@@ -535,23 +535,23 @@ static int Cmd_ally(char *arg, player_t *pl, int oper, char *msg)
             /* no player name is specified */
             if (cmd == AllyCancel)
             {
-                Cancel_invitation(GetInd[pl->id]);
+                Cancel_invitation(GetIndArray[pl->id]);
             }
             else if (cmd == AllyRefuse)
             {
-                Refuse_all_alliances(GetInd[pl->id]);
+                Refuse_all_alliances(GetIndArray[pl->id]);
             }
             else if (cmd == AllyAccept)
             {
-                Accept_all_alliances(GetInd[pl->id]);
+                Accept_all_alliances(GetIndArray[pl->id]);
             }
             else if (cmd == AllyLeave)
             {
-                Leave_alliance(GetInd[pl->id]);
+                Leave_alliance(GetIndArray[pl->id]);
             }
             else if (cmd == AllyList)
             {
-                Alliance_player_list(GetInd[pl->id]);
+                Alliance_player_list(GetIndArray[pl->id]);
             }
             else
             {

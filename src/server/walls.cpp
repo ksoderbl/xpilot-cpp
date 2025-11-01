@@ -1143,7 +1143,7 @@ void Move_segment(move_state_t *ms)
                         treasure_t *tt = &world->treasures[ms->treasure];
 
                         if (ball->owner != NO_ID)
-                            pl = PlayersArray[GetInd[ball->owner]];
+                            pl = PlayersArray[GetIndArray[ball->owner]];
 
                         if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
                         {
@@ -1167,7 +1167,7 @@ void Move_segment(move_state_t *ms)
                         return;
                     }
                     if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team ==
-                                                                  PlayersArray[GetInd[ball->owner]]->team)
+                                                                  PlayersArray[GetIndArray[ball->owner]]->team)
                     {
                         /*
                          * Ball has been brought back to home treasure.
@@ -1179,9 +1179,9 @@ void Move_segment(move_state_t *ms)
                         if (options.captureTheFlag && !world->treasures[ms->treasure].have && !world->treasures[ms->treasure].empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
-                            Set_player_message(PlayersArray[GetInd[ball->owner]], msg);
+                            Set_player_message(PlayersArray[GetIndArray[ball->owner]], msg);
                         }
-                        else if (Punish_team(GetInd[ball->owner],
+                        else if (Punish_team(GetIndArray[ball->owner],
                                              ball->treasure, ms->treasure))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
@@ -1222,7 +1222,7 @@ void Move_segment(move_state_t *ms)
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->owner != NO_ID)
                             {
-                                team = PlayersArray[GetInd[ball->owner]]->team;
+                                team = PlayersArray[GetIndArray[ball->owner]]->team;
                             }
                             else
                             {
@@ -1861,14 +1861,14 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (ms->mip->obj->id != NO_ID)
         {
-            killer = GetInd[ms->mip->obj->id];
+            killer = GetIndArray[ms->mip->obj->id];
             pl = PlayersArray[killer];
         }
     }
     else if (BIT(ms->mip->pl->used, USES_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
         pl = ms->mip->pl;
-        killer = GetInd[pl->id];
+        killer = GetIndArray[pl->id];
     }
     if (pl)
     {
@@ -1910,7 +1910,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         return;
     }
-    killer = GetInd[obj->id];
+    killer = GetIndArray[obj->id];
     if (targ->team == obj->team)
     {
         return;
@@ -2204,7 +2204,7 @@ void Move_object(object_t *obj)
     mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
     if (BIT(obj->type, OBJ_BALL_BIT) && obj->id != NO_ID)
-        mi.phased = BIT(PlayersArray[GetInd[obj->id]]->used, USES_PHASING_DEVICE);
+        mi.phased = BIT(PlayersArray[GetIndArray[obj->id]]->used, USES_PHASING_DEVICE);
     else
         mi.phased = 0;
 
@@ -2301,7 +2301,7 @@ void Move_object(object_t *obj)
 static void Player_crash(move_state_t *ms, int pt, bool turning)
 {
     player_t *pl = ms->mip->pl;
-    int ind = GetInd[pl->id];
+    int ind = GetIndArray[pl->id];
     const char *howfmt = NULL;
     const char *hudmsg = NULL;
 
@@ -2414,7 +2414,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
             }
             if (j == num_pushers)
             {
-                pushers[num_pushers++] = PlayersArray[GetInd[shove->pusher_id]];
+                pushers[num_pushers++] = PlayersArray[GetIndArray[shove->pusher_id]];
                 cnt[j] = 1;
             }
             total_pusher_count++;
@@ -2466,7 +2466,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
 
             /* Robots will declare war on anyone who shoves them. */
             i = (int)(rfrac() * num_pushers);
-            Robot_war(ind, GetInd[pushers[i]->id]);
+            Robot_war(ind, GetIndArray[pushers[i]->id]);
         }
     }
 

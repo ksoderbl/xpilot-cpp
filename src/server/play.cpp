@@ -130,7 +130,7 @@ void Make_debris(
     clpos_t pos,
     vector_t vel,
     int id,
-    uint16_t team,
+    int team,
     int type,
     double mass,
     long status,

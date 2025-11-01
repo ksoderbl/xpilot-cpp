@@ -50,7 +50,29 @@ bool updateScores = true;
 int playerArrayNumber;
 player_t **PlayersArray;
 #define MAX_SPECTATORS 0
-static int GetIndArray[NUM_IDS + MAX_SPECTATORS + 1];
+int GetIndArray[NUM_IDS + MAX_SPECTATORS + 1];
+
+/*
+ * Get index in Players array for player with id 'id'.
+ */
+int GetInd(int id)
+{
+    if (id == NO_ID)
+        return NO_IND;
+
+    /*
+     * kps - in some places where we look at the id we don't
+     * bother about spectators.
+     * This should be cleaned up in general.
+     */
+    if (id < 0 || id >= NELEM(GetIndArray))
+    {
+        /*warn("GetInd: id = %d, array size = %d\n",
+          id, NUM_IDS + MAX_SPECTATORS + 1);*/
+        return NO_IND;
+    }
+    return GetIndArray[id];
+}
 
 /********* **********
  * Functions on player array.
@@ -543,7 +565,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->wormDrawCount = 0;
 
     pl->id = peek_ID();
-    GetInd[pl->id] = ind;
+    GetIndArray[pl->id] = ind;
     pl->ind = ind;
 
     pl->conn = NULL;
@@ -1813,8 +1835,8 @@ void Delete_player(int ind)
     PlayersArray[ind] = pl;
     pl = PlayersArray[NumPlayers]; /* Restore pointer. */
 
-    GetInd[PlayersArray[ind]->id] = ind;
-    GetInd[PlayersArray[NumPlayers]->id] = NumPlayers;
+    GetIndArray[PlayersArray[ind]->id] = ind;
+    GetIndArray[PlayersArray[NumPlayers]->id] = NumPlayers;
 
     Check_team_members(pl->team);
 
@@ -2022,8 +2044,8 @@ int Team_immune(int id1, int id2)
         /* can't find owner for cannon stuff */
         return 0;
 
-    pl1 = PlayersArray[GetInd[id1]];
-    pl2 = PlayersArray[GetInd[id2]];
+    pl1 = PlayersArray[GetIndArray[id1]];
+    pl2 = PlayersArray[GetIndArray[id2]];
 
     if (Players_are_teammates(pl1, pl2))
         /* players are teammates */

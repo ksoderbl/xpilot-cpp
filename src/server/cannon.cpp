@@ -110,7 +110,7 @@ void Cannon_update(bool tick)
         }
         if (cannon->tractor_count > 0)
         {
-            int ind = GetInd[cannon->tractor_target];
+            int ind = GetIndArray[cannon->tractor_target];
             if (Wrap_length(PlayersArray[ind]->pos.cx - cannon->pos.cx,
                             PlayersArray[ind]->pos.cy - cannon->pos.cy) /
                         CLICK <
@@ -575,7 +575,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         }
         if (rfrac() < 0.5f)
         { /* place mine in front of cannon */
-            Place_general_mine(-1, c->team, FROMCANNON, c->pos, zero_vel, mods);
+            Place_general_mine(NO_ID, c->team, FROMCANNON, c->pos, zero_vel, mods);
             IFSOUND(sound = DROP_MINE_SOUND);
         }
         else
@@ -589,7 +589,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
             speed = (int)(speed * 0.5 + 0.1 * options.cannonSmartness);
             vel.x = tcos(dir) * speed;
             vel.y = tsin(dir) * speed;
-            Place_general_mine(-1, c->team, GRAVITY | FROMCANNON, c->pos, vel, mods);
+            Place_general_mine(NO_ID, c->team, GRAVITY | FROMCANNON, c->pos, vel, mods);
             IFSOUND(sound = DROP_MOVING_MINE_SOUND);
         }
         c->item[ITEM_MINE]--;
@@ -618,7 +618,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         default:
             if (options.allowSmartMissiles)
             {
-                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_SMART_SHOT_BIT,
+                Fire_general_shot(NO_ID, c->team, 1, c->pos, OBJ_SMART_SHOT_BIT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_SMART_SHOT_SOUND);
                 break;
@@ -627,14 +627,14 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         case 1:
             if (options.allowHeatSeekers && BIT(PlayersArray[target]->obj_status, THRUSTING))
             {
-                Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_HEAT_SHOT_BIT,
+                Fire_general_shot(NO_ID, c->team, 1, c->pos, OBJ_HEAT_SHOT_BIT,
                                   dir, mods, target);
                 IFSOUND(sound = FIRE_HEAT_SHOT_SOUND);
                 break;
             }
             /* FALLTHROUGH */
         case 0:
-            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_TORPEDO_BIT,
+            Fire_general_shot(NO_ID, c->team, 1, c->pos, OBJ_TORPEDO_BIT,
                               dir, mods, -1);
             IFSOUND(sound = FIRE_TORPEDO_SOUND);
             break;
@@ -727,7 +727,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         {
             int a_dir = dir + (4 - options.cannonSmartness) * (-c->item[ITEM_WIDEANGLE] + i);
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT_BIT,
+            Fire_general_shot(NO_ID, c->team, 1, c->pos, OBJ_CANNON_SHOT_BIT,
                               a_dir, mods, -1);
         }
         /* I'm not sure cannons should use rearshots.
@@ -737,7 +737,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         {
             int a_dir = (int)(dir + (RES / 2) + (4 - options.cannonSmartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
             a_dir = MOD2(a_dir, RES);
-            Fire_general_shot(nullptr, c->team, 1, c->pos, OBJ_CANNON_SHOT_BIT,
+            Fire_general_shot(NO_ID, c->team, 1, c->pos, OBJ_CANNON_SHOT_BIT,
                               a_dir, mods, -1);
         }
     }

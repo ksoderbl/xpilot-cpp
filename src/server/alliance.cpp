@@ -116,7 +116,7 @@ int Cancel_invitation(int ind)
         /* we have not invited anyone */
         return 0;
     }
-    ally = PlayersArray[GetInd[pl->invite]];
+    ally = PlayersArray[GetIndArray[pl->invite]];
     pl->invite = NO_ID;
     if (Player_is_human(ally))
     {

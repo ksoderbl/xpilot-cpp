@@ -151,7 +151,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     if (ship->type == OBJ_PLAYER_BIT && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
-        player_t *pusher = PlayersArray[GetInd[obj->id]];
+        player_t *pusher = PlayersArray[GetIndArray[obj->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -184,7 +184,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
-        player_t *pusher = PlayersArray[GetInd[obj2->id]];
+        player_t *pusher = PlayersArray[GetIndArray[obj2->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -221,7 +221,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
-        player_t *pusher = PlayersArray[GetInd[obj2->id]];
+        player_t *pusher = PlayersArray[GetIndArray[obj2->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -231,7 +231,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     if (obj2->type == OBJ_PLAYER_BIT && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
-        player_t *pusher = PlayersArray[GetInd[obj1->id]];
+        player_t *pusher = PlayersArray[GetIndArray[obj1->id]];
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -458,7 +458,7 @@ void Tank_handle_detach(player_t *pl)
     /* Possibly join alliance. */
     if (pl->alliance != ALLIANCE_NOT_SET)
     {
-        Player_join_alliance(GetInd[dummy->id], GetInd[pl->id]);
+        Player_join_alliance(GetIndArray[dummy->id], GetIndArray[pl->id]);
     }
 
     sound_play_sensors(pl->pos, TANK_DETACH_SOUND);
@@ -476,14 +476,14 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT_BIT && Obj[i]->info > 0 && PlayersArray[GetInd[Obj[i]->info]] == pl)
+        if (Obj[i]->type == OBJ_HEAT_SHOT_BIT && Obj[i]->info > 0 && PlayersArray[GetIndArray[Obj[i]->info]] == pl)
         {
             Obj[i]->info = NumPlayers - 1;
         }
     }
 
     /* Remove tank, fuel and mass from myself */
-    Player_remove_tank(GetInd[pl->id], ct);
+    Player_remove_tank(GetIndArray[pl->id], ct);
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
@@ -501,7 +501,7 @@ void Make_wreckage(
     clpos_t pos,
     vector_t vel,
     int id,
-    uint16_t team,
+    int team,
     double min_mass, double max_mass,
     double total_mass,
     long status,

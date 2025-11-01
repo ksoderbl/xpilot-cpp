@@ -84,7 +84,7 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
     /* KK: should shots/mines by cannons of opposing teams work? */
     /* also players suiciding on target will cause damage */
     if (!BIT(OBJ_TYPEBIT(obj->type),
-             KILLING_SHOTS | OBJ_MINE_BIT_BIT | OBJ_PULSE_BIT_BIT | OBJ_PLAYER_BIT_BIT))
+             KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
         return;
 
     if (obj->id == NO_ID)

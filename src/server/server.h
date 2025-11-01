@@ -137,18 +137,18 @@ void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
 void Place_item(int type, player_t *pl);
 int Choose_random_item(void);
-void Tractor_beam(int ind);
+void Tractor_beam(player_t *pl);
 void General_tractor_beam(int ind, clpos_t pos, int items, int target, bool pressor);
-void Place_mine(int ind);
-void Place_moving_mine(int ind);
-void Place_general_mine(int ind, uint16_t team, long status, clpos_t pos,
+void Place_mine(player_t *pl);
+void Place_moving_mine(player_t *pl);
+void Place_general_mine(int id, int team, long status, clpos_t pos,
                         vector_t vel, modifiers_t mods);
-void Detonate_mines(int ind);
+void Detonate_mines(player_t *pl);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(int ind);
-void Fire_general_ecm(int ind, uint16_t team, clpos_t pos);
+void Fire_general_ecm(int ind, int team, clpos_t pos);
 void Move_ball(int ind);
-void Fire_general_shot(player_t *pl, uint16_t team, bool cannon,
+void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target);
 void Fire_normal_shots(player_t *pl);
@@ -162,7 +162,7 @@ void Make_treasure_ball(int treasure);
 int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
-void Fire_general_laser(player_t *pl, uint16_t team, clpos_t pos, int dir, modifiers_t mods);
+void Fire_general_laser(player_t *pl, int team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(player_t *pl);
 void Do_transporter(player_t *pl);
 void Do_general_transporter(player_t *pl, clpos_t pos, int target, int *item, long *amount);
@@ -174,7 +174,7 @@ void Make_debris(
     clpos_t pos,
     vector_t vel,
     int id,
-    uint16_t team,
+    int team,
     int type,
     double mass,
     long status,
@@ -188,7 +188,7 @@ void Make_wreckage(
     clpos_t pos,
     vector_t vel,
     int id,
-    uint16_t team,
+    int team,
     double min_mass, double max_mass,
     double total_mass,
     long status,
@@ -203,7 +203,7 @@ void Make_item(clpos_t pos,
                long status);
 void Explode_fighter(player_t *pl);
 void Throw_items(player_t *pl);
-void Detonate_items(int ind);
+void Detonate_items(player_t *pl);
 void add_temp_wormholes(int xin, int yin, int xout, int yout);
 void remove_temp_wormhole(int ind);
 
