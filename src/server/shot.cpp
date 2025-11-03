@@ -1583,9 +1583,8 @@ void Update_torpedo(torpobject_t *torp)
     torp->vel.y += acc * tsin(torp->missile_dir);
 }
 
-void Move_smart_shot2(int ind)
+void Update_missile(missileobject_t *missile)
 {
-    missileobject_t *shot = MISSILE_IND(ind);
     player_t *pl;
     int angle, theta;
     double range = 0.0;
@@ -1594,42 +1593,24 @@ void Move_smart_shot2(int ind)
     double y_dif = 0.0;
     double shot_speed;
 
-    if (shot->type == OBJ_TORPEDO)
-    {
-        torpobject_t *torp = TORP_PTR(shot);
-        if (BIT(torp->mods.nuclear, NUCLEAR))
-            acc = (torp->info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
-        else
-            acc = (torp->info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
-        acc *= (1 + (torp->mods.power * MISSILE_POWER_SPEED_FACT));
-        if (torp->torp_spread_left-- <= 0)
-        {
-            torp->acc.x = 0;
-            torp->acc.y = 0;
-        }
-        torp->vel.x += acc * tcos(torp->missile_dir);
-        torp->vel.y += acc * tsin(torp->missile_dir);
-        return;
-    }
-
     acc = SMART_SHOT_ACC;
 
-    if (shot->type == OBJ_HEAT_SHOT)
+    if (missile->type == OBJ_HEAT_SHOT)
     {
         acc = SMART_SHOT_ACC * HEAT_SPEED_FACT;
-        if (shot->info >= 0)
+        if (missile->info >= 0)
         {
             /* Get player and set min to distance */
-            pl = PlayersArray[GetIndArray[shot->info]];
-            range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
-                                CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
+            pl = PlayersArray[GetIndArray[missile->info]];
+            range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(missile->pos.cx),
+                                CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(missile->pos.cy)) /
                     CLICK;
         }
         else
         {
             /* No player. Number of moves so that new target is searched */
             pl = 0;
-            shot->count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
+            missile->count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
         }
         if (pl && BIT(pl->obj_status, THRUSTING))
         {
@@ -1638,22 +1619,22 @@ void Move_smart_shot2(int ind)
              * set number to moves to correct error value
              */
             if (range < HEAT_CLOSE_RANGE)
-                shot->count = HEAT_CLOSE_ERROR;
+                missile->count = HEAT_CLOSE_ERROR;
             else if (range < HEAT_MID_RANGE)
-                shot->count = HEAT_MID_ERROR;
+                missile->count = HEAT_MID_ERROR;
             else
-                shot->count = HEAT_WIDE_ERROR;
+                missile->count = HEAT_WIDE_ERROR;
         }
         else
         {
-            shot->count++;
+            missile->count++;
             /* Look for new target */
-            if ((range < HEAT_CLOSE_RANGE && shot->count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) || (range < HEAT_MID_RANGE && shot->count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) || shot->count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
+            if ((range < HEAT_CLOSE_RANGE && missile->count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) || (range < HEAT_MID_RANGE && missile->count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) || missile->count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
             {
                 double l;
                 int i;
 
-                range = HEAT_RANGE * (shot->count / HEAT_CLOSE_TIMEOUT);
+                range = HEAT_RANGE * (missile->count / HEAT_CLOSE_TIMEOUT);
                 for (i = 0; i < NumPlayers; i++)
                 {
                     player *p = Player_by_index(i);
@@ -1661,8 +1642,8 @@ void Move_smart_shot2(int ind)
                     if (!BIT(p->obj_status, THRUSTING))
                         continue;
 
-                    l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
-                                    CLICK_TO_FLOAT(p->pos.cy) + p->ship->engine[p->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
+                    l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(missile->pos.cx),
+                                    CLICK_TO_FLOAT(p->pos.cy) + p->ship->engine[p->dir].y - CLICK_TO_FLOAT(missile->pos.cy)) /
                         CLICK;
                     /*
                      * After burners can be detected easier;
@@ -1674,9 +1655,9 @@ void Move_smart_shot2(int ind)
                         l *= 16 - p->item[ITEM_AFTERBURNER];
                     if (l < range)
                     {
-                        shot->info = Player_by_index(i)->id;
+                        missile->info = Player_by_index(i)->id;
                         range = l;
-                        shot->count =
+                        missile->count =
                             l < HEAT_CLOSE_RANGE ? HEAT_CLOSE_ERROR : l < HEAT_MID_RANGE ? HEAT_MID_ERROR
                                                                                          : HEAT_WIDE_ERROR;
                         pl = p;
@@ -1684,18 +1665,18 @@ void Move_smart_shot2(int ind)
                 }
             }
         }
-        if (shot->info < 0)
+        if (missile->info < 0)
             return;
         /*
          * Heat seekers cannot fly exactly, if target is far away or thrust
          * isn't active.  So simulate the error:
          */
-        x_dif = (int)(rfrac() * 4 * shot->count);
-        y_dif = (int)(rfrac() * 4 * shot->count);
+        x_dif = (int)(rfrac() * 4 * missile->count);
+        y_dif = (int)(rfrac() * 4 * missile->count);
     }
-    else if (shot->type == OBJ_SMART_SHOT)
+    else if (missile->type == OBJ_SMART_SHOT)
     {
-        smartobject_t *smart = SMART_PTR(shot);
+        smartobject_t *smart = SMART_PTR(missile);
 
         if (BIT(smart->obj_status, CONFUSED) && (!(frame_loops % CONFUSED_UPDATE_GRANULARITY) || smart->count == CONFUSED_TIME))
         {
@@ -1725,7 +1706,7 @@ void Move_smart_shot2(int ind)
                 }
             }
         }
-        pl = PlayersArray[GetIndArray[shot->info]];
+        pl = PlayersArray[GetIndArray[missile->info]];
     }
     else
     {
@@ -1736,14 +1717,14 @@ void Move_smart_shot2(int ind)
     /*
      * Use a little look ahead to fly more exact
      */
-    acc *= (1 + (shot->mods.power * MISSILE_POWER_SPEED_FACT));
-    if ((shot_speed = VECTOR_LENGTH(shot->vel)) < 1)
+    acc *= (1 + (missile->mods.power * MISSILE_POWER_SPEED_FACT));
+    if ((shot_speed = VECTOR_LENGTH(missile->vel)) < 1)
         shot_speed = 1;
-    range = Wrap_length(pl->pos.cx - shot->pos.cx, pl->pos.cy - shot->pos.cy) / CLICK;
+    range = Wrap_length(pl->pos.cx - missile->pos.cx, pl->pos.cy - missile->pos.cy) / CLICK;
     x_dif += pl->vel.x * (range / shot_speed);
     y_dif += pl->vel.y * (range / shot_speed);
-    theta = (int)Wrap_findDir(pl->pix_pos.x + x_dif - shot->pix_pos.x,
-                              pl->pix_pos.y + y_dif - shot->pix_pos.y);
+    theta = (int)Wrap_findDir(pl->pix_pos.x + x_dif - missile->pix_pos.x,
+                              pl->pix_pos.y + y_dif - missile->pix_pos.y);
 
     {
         double x, y, vx, vy;
@@ -1755,13 +1736,13 @@ void Move_smart_shot2(int ind)
             {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
 
 #define BLOCK_PARTS 2
-        vx = shot->vel.x;
-        vy = shot->vel.y;
+        vx = missile->vel.x;
+        vy = missile->vel.y;
         x = shot_speed / (BLOCK_SZ * BLOCK_PARTS);
         vx /= x;
         vy /= x;
-        x = shot->pix_pos.x;
-        y = shot->pix_pos.y;
+        x = missile->pix_pos.x;
+        y = missile->pix_pos.y;
         foundw = 0;
 
         for (i = SMART_SHOT_LOOK_AH; i > 0 && foundw == 0; i--)
@@ -1802,9 +1783,9 @@ void Move_smart_shot2(int ind)
             }
         }
 
-        i = ((int)(shot->missile_dir * 8 / RES) & 7) + 8;
-        xi = OBJ_X_IN_BLOCKS(shot);
-        yi = OBJ_Y_IN_BLOCKS(shot);
+        i = ((int)(missile->missile_dir * 8 / RES) & 7) + 8;
+        xi = OBJ_X_IN_BLOCKS(missile);
+        yi = OBJ_Y_IN_BLOCKS(missile);
 
         for (j = 2, angle = -1, freemax = 0; j >= -2; --j)
         {
@@ -1851,8 +1832,8 @@ void Move_smart_shot2(int ind)
         if (angle >= 0)
         {
             i = angle & 7;
-            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (shot->pix_pos.y + 2 * shot->vel.y),
-                                      (xi + sur[i].dx) * BLOCK_SZ - (shot->pix_pos.x - 2 * shot->vel.x));
+            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (missile->pix_pos.y + 2 * missile->vel.y),
+                                      (xi + sur[i].dx) * BLOCK_SZ - (missile->pix_pos.x - 2 * missile->vel.x));
 #ifdef SHOT_EXTRA_SLOWDOWN
             if (!foundw && range > (SHOT_LOOK_AH - i) * BLOCK_SZ)
             {
@@ -1868,337 +1849,28 @@ void Move_smart_shot2(int ind)
         angle += RES;
     angle %= RES;
 
-    if (angle < shot->missile_dir)
+    if (angle < missile->missile_dir)
         angle += RES;
-    angle = angle - shot->missile_dir - RES / 2;
+    angle = angle - missile->missile_dir - RES / 2;
 
     if (angle < 0)
-        shot->missile_dir += (uint8_t)(((-angle < shot->missile_turnspeed)
-                                            ? -angle
-                                            : shot->missile_turnspeed));
+        missile->missile_dir += (uint8_t)(((-angle < missile->missile_turnspeed)
+                                               ? -angle
+                                               : missile->missile_turnspeed));
     else
-        shot->missile_dir -= (uint8_t)(((angle < shot->missile_turnspeed)
-                                            ? angle
-                                            : shot->missile_turnspeed));
+        missile->missile_dir -= (uint8_t)(((angle < missile->missile_turnspeed)
+                                               ? angle
+                                               : missile->missile_turnspeed));
 
-    shot->missile_dir = MOD2(shot->missile_dir, RES); /* NOTE!!!! */
+    missile->missile_dir = MOD2(missile->missile_dir, RES); /* NOTE!!!! */
 
-    if (shot_speed < shot->missile_max_speed)
+    if (shot_speed < missile->missile_max_speed)
         shot_speed += acc;
 
-    /*  shot->velocity = MIN(shot->velocity, shot->max_speed);  */
+    /*  missile->velocity = MIN(missile->velocity, missile->max_speed);  */
 
-    shot->vel.x = tcos(shot->missile_dir) * shot_speed;
-    shot->vel.y = tsin(shot->missile_dir) * shot_speed;
-}
-
-void Move_smart_shot3(int ind)
-{
-    missileobject_t *shot = MISSILE_IND(ind);
-    player_t *pl;
-    int angle, theta;
-    double range = 0.0;
-    double acc;
-    double x_dif = 0.0;
-    double y_dif = 0.0;
-    double shot_speed;
-
-    if (shot->type == OBJ_TORPEDO)
-    {
-        torpobject_t *torp = TORP_PTR(shot);
-        if (BIT(torp->mods.nuclear, NUCLEAR))
-            acc = (torp->info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
-        else
-            acc = (torp->info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
-        acc *= (1 + (torp->mods.power * MISSILE_POWER_SPEED_FACT));
-        if (torp->torp_spread_left-- <= 0)
-        {
-            torp->acc.x = 0;
-            torp->acc.y = 0;
-        }
-        torp->vel.x += acc * tcos(torp->missile_dir);
-        torp->vel.y += acc * tsin(torp->missile_dir);
-        return;
-    }
-
-    acc = SMART_SHOT_ACC;
-
-    if (shot->type == OBJ_HEAT_SHOT)
-    {
-        acc = SMART_SHOT_ACC * HEAT_SPEED_FACT;
-        if (shot->info >= 0)
-        {
-            /* Get player and set min to distance */
-            pl = PlayersArray[GetIndArray[shot->info]];
-            range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
-                                CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
-                    CLICK;
-        }
-        else
-        {
-            /* No player. Number of moves so that new target is searched */
-            pl = 0;
-            shot->count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
-        }
-        if (pl && BIT(pl->obj_status, THRUSTING))
-        {
-            /*
-             * Target is thrusting,
-             * set number to moves to correct error value
-             */
-            if (range < HEAT_CLOSE_RANGE)
-                shot->count = HEAT_CLOSE_ERROR;
-            else if (range < HEAT_MID_RANGE)
-                shot->count = HEAT_MID_ERROR;
-            else
-                shot->count = HEAT_WIDE_ERROR;
-        }
-        else
-        {
-            shot->count++;
-            /* Look for new target */
-            if ((range < HEAT_CLOSE_RANGE && shot->count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) || (range < HEAT_MID_RANGE && shot->count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) || shot->count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
-            {
-                double l;
-                int i;
-
-                range = HEAT_RANGE * (shot->count / HEAT_CLOSE_TIMEOUT);
-                for (i = 0; i < NumPlayers; i++)
-                {
-                    player *p = Player_by_index(i);
-
-                    if (!BIT(p->obj_status, THRUSTING))
-                        continue;
-
-                    l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(shot->pos.cx),
-                                    CLICK_TO_FLOAT(p->pos.cy) + p->ship->engine[p->dir].y - CLICK_TO_FLOAT(shot->pos.cy)) /
-                        CLICK;
-                    /*
-                     * After burners can be detected easier;
-                     * so scale the length:
-                     */
-                    l *= MAX_AFTERBURNER + 1 - p->item[ITEM_AFTERBURNER];
-                    l /= MAX_AFTERBURNER + 1;
-                    if (BIT(p->have, HAS_AFTERBURNER))
-                        l *= 16 - p->item[ITEM_AFTERBURNER];
-                    if (l < range)
-                    {
-                        shot->info = Player_by_index(i)->id;
-                        range = l;
-                        shot->count =
-                            l < HEAT_CLOSE_RANGE ? HEAT_CLOSE_ERROR : l < HEAT_MID_RANGE ? HEAT_MID_ERROR
-                                                                                         : HEAT_WIDE_ERROR;
-                        pl = p;
-                    }
-                }
-            }
-        }
-        if (shot->info < 0)
-            return;
-        /*
-         * Heat seekers cannot fly exactly, if target is far away or thrust
-         * isn't active.  So simulate the error:
-         */
-        x_dif = (int)(rfrac() * 4 * shot->count);
-        y_dif = (int)(rfrac() * 4 * shot->count);
-    }
-    else if (shot->type == OBJ_SMART_SHOT)
-    {
-        smartobject_t *smart = SMART_PTR(shot);
-
-        if (BIT(smart->obj_status, CONFUSED) && (!(frame_loops % CONFUSED_UPDATE_GRANULARITY) || smart->count == CONFUSED_TIME))
-        {
-
-            if (smart->count)
-            {
-                smart->info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
-                smart->count--;
-            }
-            else
-            {
-                CLR_BIT(smart->obj_status, CONFUSED);
-
-                /* range is percentage from center to periphery of ecm burst */
-                range = (ECM_DISTANCE - smart->ecm_range) / ECM_DISTANCE;
-                range *= 100.0;
-
-                /*
-                 * range%        lock%
-                 * 100                100
-                 *  50                75
-                 *   0                50
-                 */
-                if ((int)(rfrac() * 100) <= ((int)(range / 2) + 50))
-                {
-                    smart->info = smart->new_info;
-                }
-            }
-        }
-        pl = PlayersArray[GetIndArray[shot->info]];
-    }
-    else
-    {
-        /*NOTREACHED*/
-        return;
-    }
-
-    /*
-     * Use a little look ahead to fly more exact
-     */
-    acc *= (1 + (shot->mods.power * MISSILE_POWER_SPEED_FACT));
-    if ((shot_speed = VECTOR_LENGTH(shot->vel)) < 1)
-        shot_speed = 1;
-    range = Wrap_length(pl->pos.cx - shot->pos.cx, pl->pos.cy - shot->pos.cy) / CLICK;
-    x_dif += pl->vel.x * (range / shot_speed);
-    y_dif += pl->vel.y * (range / shot_speed);
-    theta = (int)Wrap_findDir(pl->pix_pos.x + x_dif - shot->pix_pos.x,
-                              pl->pix_pos.y + y_dif - shot->pix_pos.y);
-
-    {
-        double x, y, vx, vy;
-        int i, xi, yi, j, freemax, k, foundw;
-        static struct
-        {
-            int dx, dy;
-        } sur[8] = {
-            {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
-
-#define BLOCK_PARTS 2
-        vx = shot->vel.x;
-        vy = shot->vel.y;
-        x = shot_speed / (BLOCK_SZ * BLOCK_PARTS);
-        vx /= x;
-        vy /= x;
-        x = shot->pix_pos.x;
-        y = shot->pix_pos.y;
-        foundw = 0;
-
-        for (i = SMART_SHOT_LOOK_AH; i > 0 && foundw == 0; i--)
-        {
-            xi = (int)((x += vx) / BLOCK_SZ);
-            yi = (int)((y += vy) / BLOCK_SZ);
-            if (BIT(world->rules->mode, WRAP_PLAY))
-            {
-                if (xi < 0)
-                    xi += world->x;
-                else if (xi >= world->x)
-                    xi -= world->x;
-                if (yi < 0)
-                    yi += world->y;
-                else if (yi >= world->y)
-                    yi -= world->y;
-            }
-            if (xi < 0 || xi >= world->x || yi < 0 || yi >= world->y)
-                break;
-
-            switch (world->block[xi][yi])
-            {
-            case TARGET:
-            case TREASURE:
-            case FUEL:
-            case FILLED:
-            case REC_LU:
-            case REC_RU:
-            case REC_LD:
-            case REC_RD:
-            case CANNON:
-                if (range > (SMART_SHOT_LOOK_AH - i) * (BLOCK_SZ / BLOCK_PARTS))
-                {
-                    if (shot_speed > SMART_SHOT_MIN_SPEED)
-                        shot_speed -= acc * (SMART_SHOT_DECFACT + 1);
-                }
-                foundw = 1;
-            }
-        }
-
-        i = ((int)(shot->missile_dir * 8 / RES) & 7) + 8;
-        xi = OBJ_X_IN_BLOCKS(shot);
-        yi = OBJ_Y_IN_BLOCKS(shot);
-
-        for (j = 2, angle = -1, freemax = 0; j >= -2; --j)
-        {
-            int si, xt, yt;
-
-            for (si = 1, k = 0; si >= -1; --si)
-            {
-                xt = xi + sur[(i + j + si) & 7].dx;
-                yt = yi + sur[(i + j + si) & 7].dy;
-
-                if (xt >= 0 && xt < world->x && yt >= 0 && yt < world->y)
-                    switch (world->block[xt][yt])
-                    {
-                    case TARGET:
-                    case TREASURE:
-                    case FUEL:
-                    case FILLED:
-                    case REC_LU:
-                    case REC_RU:
-                    case REC_LD:
-                    case REC_RD:
-                    case CANNON:
-                        if (!si)
-                            k = -32;
-                        break;
-                    default:
-                        ++k;
-                        break;
-                    }
-            }
-            if (k > freemax || (k == freemax && ((j == -1 && (rfrac() < 0.5f)) || j == 0 || j == 1)))
-            {
-                freemax = k > 2 ? 2 : k;
-                angle = i + j;
-            }
-
-            if (k == 3 && !j)
-            {
-                angle = -1;
-                break;
-            }
-        }
-
-        if (angle >= 0)
-        {
-            i = angle & 7;
-            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (shot->pix_pos.y + 2 * shot->vel.y),
-                                      (xi + sur[i].dx) * BLOCK_SZ - (shot->pix_pos.x - 2 * shot->vel.x));
-#ifdef SHOT_EXTRA_SLOWDOWN
-            if (!foundw && range > (SHOT_LOOK_AH - i) * BLOCK_SZ)
-            {
-                if (shot_speed > (SMART_SHOT_MIN_SPEED + SMART_SHOT_MAX_SPEED) / 2)
-                    shot_speed -= SMART_SHOT_DECC + SMART_SHOT_ACC;
-            }
-#endif
-        }
-    }
-    angle = theta;
-
-    if (angle < 0)
-        angle += RES;
-    angle %= RES;
-
-    if (angle < shot->missile_dir)
-        angle += RES;
-    angle = angle - shot->missile_dir - RES / 2;
-
-    if (angle < 0)
-        shot->missile_dir += (uint8_t)(((-angle < shot->missile_turnspeed)
-                                            ? -angle
-                                            : shot->missile_turnspeed));
-    else
-        shot->missile_dir -= (uint8_t)(((angle < shot->missile_turnspeed)
-                                            ? angle
-                                            : shot->missile_turnspeed));
-
-    shot->missile_dir = MOD2(shot->missile_dir, RES); /* NOTE!!!! */
-
-    if (shot_speed < shot->missile_max_speed)
-        shot_speed += acc;
-
-    /*  shot->velocity = MIN(shot->velocity, shot->max_speed);  */
-
-    shot->vel.x = tcos(shot->missile_dir) * shot_speed;
-    shot->vel.y = tsin(shot->missile_dir) * shot_speed;
+    missile->vel.x = tcos(missile->missile_dir) * shot_speed;
+    missile->vel.y = tsin(missile->missile_dir) * shot_speed;
 }
 
 void Update_mine(mineobject_t *mine)

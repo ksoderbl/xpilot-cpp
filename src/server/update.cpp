@@ -609,10 +609,10 @@ void Update_objects(void)
             Update_torpedo(TORP_PTR(obj));
 
         else if (BIT(obj->type, OBJ_HEAT_SHOT))
-            Move_smart_shot2(i);
+            Update_missile(MISSILE_PTR(obj));
 
         else if (BIT(obj->type, OBJ_SMART_SHOT))
-            Move_smart_shot3(i);
+            Update_missile(MISSILE_PTR(obj));
 
         else if (BIT(obj->type, OBJ_BALL))
         {

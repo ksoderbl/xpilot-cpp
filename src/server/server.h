@@ -169,8 +169,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target, int *item, lo
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
 void Update_torpedo(torpobject_t *torp);
-void Move_smart_shot2(int ind);
-void Move_smart_shot3(int ind);
+void Update_missile(missileobject_t *missile);
 void Update_mine(mineobject_t *mine);
 void Make_debris(
     clpos_t pos,
