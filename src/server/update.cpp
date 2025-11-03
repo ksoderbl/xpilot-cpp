@@ -605,13 +605,13 @@ void Update_objects(void)
         if (BIT(obj->type, OBJ_MINE))
             Update_mine(MINE_PTR(obj));
 
-        else if (BIT(obj->type, OBJ_SMART_SHOT))
-            Move_smart_shot1(i);
+        else if (BIT(obj->type, OBJ_TORPEDO))
+            Update_torpedo(TORP_PTR(obj));
 
         else if (BIT(obj->type, OBJ_HEAT_SHOT))
             Move_smart_shot2(i);
 
-        else if (BIT(obj->type, OBJ_TORPEDO))
+        else if (BIT(obj->type, OBJ_SMART_SHOT))
             Move_smart_shot3(i);
 
         else if (BIT(obj->type, OBJ_BALL))
