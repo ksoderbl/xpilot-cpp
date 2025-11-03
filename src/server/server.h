@@ -168,8 +168,10 @@ void Do_transporter(player_t *pl);
 void Do_general_transporter(player_t *pl, clpos_t pos, int target, int *item, long *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
-void Move_smart_shot(int ind);
-void Move_mine(int ind);
+void Move_smart_shot1(int ind);
+void Move_smart_shot2(int ind);
+void Move_smart_shot3(int ind);
+void Update_mine(mineobject_t *mine);
 void Make_debris(
     clpos_t pos,
     vector_t vel,

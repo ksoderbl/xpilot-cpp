@@ -184,9 +184,9 @@ struct xp_mineobject
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
 };
 
-#define MISSILE_EXTEND                       \
-    DFLOAT max_speed; /* speed limitation */ \
-    DFLOAT turnspeed; /* how fast to turn */
+#define MISSILE_EXTEND                              \
+    float missile_max_speed; /* speed limitation */ \
+    float missile_turnspeed; /* how fast to turn */
 /* up to here all missiles types are the same. */
 
 /*
@@ -239,10 +239,30 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    int spread_left; /* how much spread time left */
+    int torp_spread_left; /* how much spread time left */
 
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))
+};
+
+/*
+ * Heat-seeker is a generic missile with extras
+ */
+typedef struct xp_heatobject heatobject_t;
+struct xp_heatobject
+{
+
+    OBJECT_BASE
+
+    OBJECT_EXTEND
+
+    MISSILE_EXTEND
+
+    float heat_count;   /* Misc snafus */
+    short heat_lock_id; /* snafu */
+
+#define HEAT_IND(ind) ((heatobject_t *)Obj[(ind)])
+#define HEAT_PTR(ptr) ((heatobject_t *)(ptr))
 };
 
 /*
@@ -277,6 +297,7 @@ struct xp_wireobject
 
     float wire_turnspeed; /* how fast to turn */
 
+    uint8_t wire_type;     /* Type of object */
     uint8_t wire_size;     /* Size of object */
     uint8_t wire_rotation; /* Rotation direction */
 
@@ -285,10 +306,47 @@ struct xp_wireobject
 };
 
 /*
+ * Pulse object used for laser pulses.
+ */
+typedef struct xp_pulseobject pulseobject_t;
+struct xp_pulseobject
+{
+
+    OBJECT_BASE
+
+    OBJECT_EXTEND
+
+    float pulse_len;   /* Length of the pulse */
+    uint8_t pulse_dir; /* Direction of the pulse */
+    bool pulse_refl;   /* Pulse was reflected ? */
+
+#define PULSE_IND(ind) ((pulseobject_t *)Obj[(ind)])
+#define PULSE_PTR(obj) ((pulseobject_t *)(obj))
+};
+
+/*
+ * Item object.
+ */
+typedef struct xp_itemobject itemobject_t;
+struct xp_itemobject
+{
+
+    OBJECT_BASE
+
+    OBJECT_EXTEND
+
+    int item_type;  /* One of ITEM_* */
+    int item_count; /* Misc snafus */
+
+#define ITEM_IND(ind) ((itemobject_t *)Obj[(ind)])
+#define ITEM_PTR(obj) ((itemobject_t *)(obj))
+};
+
+/*
  * Any object type should be part of this union.
  */
-typedef union _anyobject anyobject_t;
-union _anyobject
+typedef union xp_anyobject anyobject_t;
+union xp_anyobject
 {
     object_t obj;
     ballobject_t ball;
@@ -296,7 +354,10 @@ union _anyobject
     missileobject_t missile;
     smartobject_t smart;
     torpobject_t torp;
+    heatobject_t heat;
     wireobject_t wireobj;
+    pulseobject_t pulse;
+    itemobject_t item;
 };
 
 /*

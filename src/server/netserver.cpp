@@ -2323,15 +2323,11 @@ int Send_reliable(connection_t *connp)
     {
         /* We are piggybacking on a frame update. */
         if (connp->w.len >= max_packet_size - min_send_size)
-        {
             /* Frame already too big */
             return 0;
-        }
         if (max_todo > max_packet_size - connp->w.len)
-        {
             /* Do not exceed minimum fragment size. */
             max_todo = max_packet_size - connp->w.len;
-        }
     }
     if (connp->retransmit_at_loop > main_loops)
     {
@@ -2339,23 +2335,19 @@ int Send_reliable(connection_t *connp)
          * It is no time to retransmit yet.
          */
         if (max_todo <= connp->reliable_unsent - connp->reliable_offset + min_send_size || connp->w.len == 0)
-        {
             /*
              * And we cannot send anything new either
              * and we do not want to introduce a new packet.
              */
             return 0;
-        }
     }
     else if (connp->retransmit_at_loop != 0)
-    {
         /*
          * Timeout.
          * Either our packet or the acknowledgement got lost,
          * so retransmit.
          */
         connp->acks >>= 1;
-    }
 
     todo = max_todo;
     for (i = 0; i <= connp->acks && todo > 0; i++)
@@ -2396,20 +2388,16 @@ int Send_reliable(connection_t *connp)
     connp->last_send_loops = main_loops;
 
     if (max_todo - todo <= 0)
-    {
         /*
          * We have not transmitted anything at all.
          */
         return 0;
-    }
 
     /*
      * Retransmission timer with exponential backoff.
      */
     if (connp->rtt_retransmit > MAX_RETRANSMIT)
-    {
         connp->rtt_retransmit = MAX_RETRANSMIT;
-    }
     if (connp->retransmit_at_loop <= main_loops)
     {
         connp->retransmit_at_loop = main_loops + connp->rtt_retransmit;
@@ -2417,14 +2405,10 @@ int Send_reliable(connection_t *connp)
         connp->rtt_timeouts++;
     }
     else
-    {
         connp->retransmit_at_loop = main_loops + connp->rtt_retransmit;
-    }
 
     if (rel_off > connp->reliable_unsent)
-    {
         connp->reliable_unsent = rel_off;
-    }
 
     return (max_todo - todo);
 }
@@ -2460,13 +2444,11 @@ static int Receive_ack(connection_t *connp)
          * books "Internetworking with TCP/IP" parts I & II.
          */
         if (connp->rtt_smoothed == 0)
-        {
             /*
              * Initialize the rtt estimator by this first measurement.
              * The estimator is scaled by 3 bits.
              */
             connp->rtt_smoothed = rtt << 3;
-        }
         /*
          * Scale the estimator back by 3 bits before calculating the error.
          */
@@ -2479,9 +2461,7 @@ static int Receive_ack(connection_t *connp)
          * Now we need the absolute value of the error.
          */
         if (delta < 0)
-        {
             delta = -delta;
-        }
         /*
          * The rtt deviation is scaled by 2 bits.
          * Now we add one fourth of the difference between the
@@ -2499,9 +2479,7 @@ static int Receive_ack(connection_t *connp)
          * Now keep it within reasonable bounds.
          */
         if (connp->rtt_retransmit < MIN_RETRANSMIT)
-        {
             connp->rtt_retransmit = MIN_RETRANSMIT;
-        }
     }
     diff = rel - connp->reliable_offset;
     if (diff > connp->c.len)
@@ -2623,12 +2601,10 @@ static int Receive_ack_target(connection_t *connp)
                           &ch, &loops_ack, &num)) <= 0)
     {
         if (n == -1)
-        {
             Destroy_connection(connp, "read error");
-        }
         return n;
     }
-    if (num >= world->NumTargets)
+    if (num >= Num_targets())
     {
         Destroy_connection(connp, "bad target ack");
         return -1;
@@ -2800,7 +2776,7 @@ static int Receive_talk(connection_t *connp)
         }
         connp->talk_sequence_num = seq;
         if (*str == '/')
-            Handle_player_command(PlayersArray[GetIndArray[connp->id]], str + 1);
+            Handle_player_command(Player_by_id(connp->id), str + 1);
         else
             Handle_talk(connp, str);
     }
@@ -2984,29 +2960,26 @@ static int Receive_shape(connection_t *connp)
         return n;
     }
     if (connp->state == CONN_LOGIN && connp->ship == NULL)
-    {
         connp->ship = Parse_shape_str(str);
-    }
     return 1;
 }
 
 static int Receive_motd(connection_t *connp)
 {
     uint8_t ch;
-    long offset;
+    long offset, nbytes;
     int n;
-    long bytes;
 
     if ((n = Packet_scanf(&connp->r,
                           "%c%ld%ld",
-                          &ch, &offset, &bytes)) <= 0)
+                          &ch, &offset, &nbytes)) <= 0)
     {
         if (n == -1)
             Destroy_connection(connp, "read error");
         return n;
     }
     connp->motd_offset = offset;
-    connp->motd_stop = offset + bytes;
+    connp->motd_stop = offset + nbytes;
 
     return 1;
 }
