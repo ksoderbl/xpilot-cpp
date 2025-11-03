@@ -178,9 +178,9 @@ typedef struct
 
 typedef struct
 {
-    int pos;               /* Block index */
-    short dead_time;       /* Frames inactive */
-    unsigned short damage; /* Damage to target */
+    int pos;         /* Block index */
+    short dead_time; /* Frames inactive */
+    uint16_t damage; /* Damage to target */
 } target_t;
 
 typedef struct
@@ -571,6 +571,8 @@ extern polygon_style_t *polygon_styles;
 extern int num_polygon_styles, max_polygon_styles;
 
 /* dynamic global game data */
+
+// TODO: use e.g. std::vectors here
 
 extern other_t *Others;
 extern int num_others, max_others;

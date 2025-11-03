@@ -68,7 +68,7 @@ static HWND SDL_Window;
 
 #elif defined(QNX_SCRAP)
 /* * */
-static unsigned short InputGroup;
+static uint16_t InputGroup;
 
 #endif /* scrap type */
 

@@ -50,6 +50,7 @@
 #include "xperror.h"
 #include "xpmath.h"
 #include "player.h"
+#include "robot.h"
 
 #define MAX_SHUFFLE_INDEX 65535
 
@@ -777,8 +778,8 @@ static void Frame_shots(connection_t *conn, int ind)
         }
         switch (shot->type)
         {
-        case OBJ_SPARK_BIT:
-        case OBJ_DEBRIS_BIT:
+        case OBJ_SPARK:
+        case OBJ_DEBRIS:
             if ((fuzz >>= 7) < 0x40)
                 fuzz = randomMT();
             if ((fuzz & 0x7F) >= spark_rand)
@@ -819,25 +820,25 @@ static void Frame_shots(connection_t *conn, int ind)
                          color);
             break;
 
-        case OBJ_WRECKAGE_BIT:
+        case OBJ_WRECKAGE:
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
                 Send_wreckage(conn, x, y, (uint8_t)wreck->info,
-                              wreck->size, wreck->rotation);
+                              wreck->wire_size, wreck->wire_rotation);
             }
             break;
 
-        case OBJ_ASTEROID_BIT:
+        case OBJ_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(conn, x, y,
-                          (uint8_t)ast->info, ast->size, ast->rotation);
+                          (uint8_t)ast->info, ast->wire_size, ast->wire_rotation);
         }
         break;
 
-        case OBJ_SHOT_BIT:
-        case OBJ_CANNON_SHOT_BIT:
+        case OBJ_SHOT:
+        case OBJ_CANNON_SHOT:
             if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetIndArray[shot->id]]->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
@@ -861,22 +862,22 @@ static void Frame_shots(connection_t *conn, int ind)
                            color, teamshot);
             break;
 
-        case OBJ_TORPEDO_BIT:
+        case OBJ_TORPEDO:
             len = options.distinguishMissiles ? TORPEDO_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_SMART_SHOT_BIT:
+        case OBJ_SMART_SHOT:
             len = options.distinguishMissiles ? SMART_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_HEAT_SHOT_BIT:
+        case OBJ_HEAT_SHOT:
             len = options.distinguishMissiles ? HEAT_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_BALL_BIT:
+        case OBJ_BALL:
             Send_ball(conn, x, y, shot->id);
             break;
-        case OBJ_MINE_BIT:
+        case OBJ_MINE:
         {
             int id = 0;
             int laid_by_team = 0;
@@ -899,7 +900,7 @@ static void Frame_shots(connection_t *conn, int ind)
                 laid_by_team = 1;
             else
             {
-                laid_by_team = (Team_immune(mine->id, pl->id) || (BIT(mine->obj_status, OWNERIMMUNE) && mine->owner == pl->id));
+                laid_by_team = (Team_immune(mine->id, pl->id) || (BIT(mine->obj_status, OWNERIMMUNE) && mine->mine_owner == pl->id));
                 if (confused)
                 {
                     id = 0;
@@ -910,7 +911,7 @@ static void Frame_shots(connection_t *conn, int ind)
         }
         break;
 
-        case OBJ_ITEM_BIT:
+        case OBJ_ITEM:
         {
             int item_type = shot->info;
 
@@ -1117,16 +1118,16 @@ static void Frame_radar(connection_t *conn, int ind)
 
 #ifndef NO_SMART_MIS_RADAR
     if (options.nukesOnRadar)
-        mask = OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT;
+        mask = OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_MINE;
     else
     {
-        mask = (options.missilesOnRadar ? (OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT) : 0);
-        mask |= (options.minesOnRadar) ? OBJ_MINE_BIT : 0;
+        mask = (options.missilesOnRadar ? (OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT) : 0);
+        mask |= (options.minesOnRadar) ? OBJ_MINE : 0;
     }
     if (options.treasuresOnRadar)
-        mask |= OBJ_BALL_BIT;
+        mask |= OBJ_BALL;
     if (options.asteroidsOnRadar)
-        mask |= OBJ_ASTEROID_BIT;
+        mask |= OBJ_ASTEROID;
 
     if (mask)
     {
@@ -1142,18 +1143,18 @@ static void Frame_radar(connection_t *conn, int ind)
             else
                 size = 0;
 
-            if (BIT(shot->type, OBJ_MINE_BIT))
+            if (BIT(shot->type, OBJ_MINE))
             {
                 if (!options.minesOnRadar && !shownuke)
                     continue;
                 if (frame_loops % 8 >= 6)
                     continue;
             }
-            else if (BIT(shot->type, OBJ_BALL_BIT))
+            else if (BIT(shot->type, OBJ_BALL))
                 size = 2;
-            else if (BIT(shot->type, OBJ_ASTEROID_BIT))
+            else if (BIT(shot->type, OBJ_ASTEROID))
             {
-                size = WIRE_PTR(shot)->size + 1;
+                size = WIRE_PTR(shot)->wire_size + 1;
                 size |= 0x80;
             }
             else
@@ -1209,10 +1210,8 @@ static void Frame_radar(connection_t *conn, int ind)
     Frame_radar_buffer_send(conn);
 }
 
-static void Frame_lose_item_state(int ind)
+static void Frame_lose_item_state(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
-
     if (pl->lose_item_state != 0)
     {
         Send_loseitem(pl->lose_item, pl->conn);
@@ -1370,7 +1369,7 @@ void Frame_update(void)
             Frame_ships(conn, ind);
             Frame_shots(conn, ind);
             Frame_radar(conn, ind);
-            Frame_lose_item_state(i);
+            Frame_lose_item_state(pl);
             debris_end(conn);
             fastshot_end(conn);
         }
@@ -1429,5 +1428,5 @@ void Set_player_message(player_t *pl, const char *message)
     if (pl->conn != NULL)
         Send_message(pl->conn, msg);
     else if (Player_is_robot(pl))
-        Robot_message(GetIndArray[pl->id], msg);
+        Robot_message(pl, msg);
 }

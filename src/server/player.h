@@ -26,6 +26,7 @@
 
 #define SERVER
 
+#include "rules.h"
 #include "bit.h"
 #include "click.h"
 #include "connection.h"
@@ -33,6 +34,7 @@
 #include "keys.h"
 #include "shipshape.h"
 
+#include "map.h"
 #include "object.h"
 #include "serverconst.h"
 
@@ -103,9 +105,7 @@
 #define OBJ_EXT_TANK (1U << 1)
 #define OBJ_EXT_ROBOT (1U << 2)
 
-/* macro's to query the type of player. */
-#define IS_ROBOT_IND(ind) Player_is_robot(PlayersArray[ind])
-#define IS_HUMAN_IND(ind) Player_is_human(PlayersArray[ind])
+/* macros to query the type of player. */
 #define Player_is_tank(pl) (BIT((pl)->type_ext, OBJ_EXT_TANK) == OBJ_EXT_TANK)
 #define Player_is_robot(pl) (BIT((pl)->type_ext, OBJ_EXT_ROBOT) == OBJ_EXT_ROBOT)
 #define Player_is_human(pl) (!BIT((pl)->type_ext, OBJ_EXT_TANK | OBJ_EXT_ROBOT))
@@ -137,8 +137,7 @@ typedef struct
  * this makes it possible to use the same basic operations on both of them
  * (mainly used in update.c).
  */
-typedef struct player player_t;
-struct player
+typedef struct player
 {
     OBJECT_BASE
 
@@ -150,7 +149,7 @@ struct player
     char pl_type_mychar;   /* Special char for player type */
     uint8_t pl_old_status; /* OLD_PLAYING etc. */
 
-    // uint16_t pl_status;       /* HOVERPAUSE etc. */
+    uint16_t pl_status;       /* HOVERPAUSE etc. */
     uint16_t pl_state;        /* one of PL_STATE_* */
     int pl_life;              /* Lives left (if lives limited) */
     int pl_deaths_since_join; /* Deaths since last joining server */
@@ -283,7 +282,7 @@ struct player
     int isoperator; /* If player has operator privileges. */
 
     int ind; /* Index in PlayersArray[] */
-};
+} player_t;
 
 void Player_position_set_clicks(player_t *pl, clpos_t pos);
 void Player_position_init_clpos(player_t *pl, clpos_t pos);
@@ -321,16 +320,372 @@ static inline bool Player_uses_emergency_thrust(player_t *pl)
     return false;
 }
 
+static inline bool Player_is_waiting(player_t *pl)
+{
+    return pl->pl_state == PL_STATE_WAITING ? true : false;
+}
+
+static inline bool Player_is_appearing(player_t *pl)
+{
+    return pl->pl_state == PL_STATE_APPEARING ? true : false;
+}
+
+// TODO
+// static inline bool Player_is_alive(player_t *pl)
+// {
+//     return pl->pl_state == PL_STATE_ALIVE ? true : false;
+// }
+static inline bool Player_is_alive(player_t *pl)
+{
+    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+        return true;
+    return false;
+}
+
+/* player was killed this frame ? */
+static inline bool Player_is_killed(player_t *pl)
+{
+    return pl->pl_state == PL_STATE_KILLED ? true : false;
+}
+
+static inline bool Player_is_dead(player_t *pl)
+{
+    return pl->pl_state == PL_STATE_DEAD ? true : false;
+}
+
+static inline bool Player_is_paused(player_t *pl)
+{
+    return pl->pl_state == PL_STATE_PAUSED ? true : false;
+}
+
+// static inline bool Player_is_hoverpaused(player_t *pl)
+// {
+//     if (BIT(pl->pl_status, HOVERPAUSE))
+//         return true;
+//     return false;
+// }
+
+// extern void Set_Score(player_t *pl, double score);
+// extern void Add_Score(player_t *pl, double score);
+
+// static inline void Player_add_score(player_t *pl, double points)
+// {
+//     Add_Score(pl, points);
+//     pl->update_score = true;
+//     updateScores = true;
+// }
+
+// static inline void Player_set_score(player_t *pl, double points)
+// {
+//     Set_Score(pl, points);
+//     pl->update_score = true;
+//     updateScores = true;
+// }
+
+static inline void Player_set_mychar(player_t *pl, char mychar)
+{
+    pl->mychar = mychar;
+    // pl->update_score = true;
+    // updateScores = true;
+}
+
+static inline void Player_set_life(player_t *pl, int life)
+{
+    pl->pl_life = life;
+    // pl->update_score = true;
+    // updateScores = true;
+}
+
+static inline void Player_set_alliance(player_t *pl, int alliance)
+{
+    pl->alliance = alliance;
+    // pl->update_score = true;
+    // updateScores = true;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_AFTERBURNER] > 0) return true; else return false;
+ */
+static inline bool Player_has_afterburner(player_t *pl)
+{
+    if (BIT(pl->have, HAS_AFTERBURNER))
+        return true;
+    return false;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_ARMOR] > 0) return true; else return false;
+ */
+static inline bool Player_has_armor(player_t *pl)
+{
+    if (BIT(pl->have, HAS_ARMOR))
+        return true;
+    return false;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_AUTOPILOT] > 0) return true; else return false;
+ */
+static inline bool Player_has_autopilot(player_t *pl)
+{
+    if (BIT(pl->have, HAS_AUTOPILOT))
+        return true;
+    return false;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_CLOAK] > 0) return true; else return false;
+ */
+static inline bool Player_has_cloaking_device(player_t *pl)
+{
+    if (BIT(pl->have, HAS_CLOAKING_DEVICE))
+        return true;
+    return false;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_DEFLECTOR] > 0) return true; else return false;
+ */
+static inline bool Player_has_deflector(player_t *pl)
+{
+    if (BIT(pl->have, HAS_DEFLECTOR))
+        return true;
+    return false;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_MIRROR] > 0) return true; else return false;
+ */
+static inline bool Player_has_mirror(player_t *pl)
+{
+    if (BIT(pl->have, HAS_MIRROR))
+        return true;
+    return false;
+}
+
+/*
+ * Should be:
+ * if (pl->item[ITEM_TRACTOR_BEAM] > 0) return true; else return false;
+ */
+static inline bool Player_has_tractor_beam(player_t *pl)
+{
+    if (BIT(pl->have, HAS_TRACTOR_BEAM))
+        return true;
+    return false;
+}
+
+static inline bool Player_is_thrusting(player_t *pl)
+{
+    if (BIT(pl->obj_status, THRUSTING))
+        return true;
+    return false;
+}
+
+static inline bool Player_is_refueling(player_t *pl)
+{
+    if (BIT(pl->used, USES_REFUEL))
+        return true;
+    return false;
+}
+
+static inline bool Player_is_repairing(player_t *pl)
+{
+    if (BIT(pl->used, USES_REPAIR))
+        return true;
+    return false;
+}
+
+// static inline bool Player_is_self_destructing(player_t *pl)
+// {
+//     return (pl->self_destruct_count > 0.0) ? true : false;
+// }
+
+// static inline void Player_self_destruct(player_t *pl, bool on)
+// {
+//     if (on)
+//     {
+//         if (Player_is_self_destructing(pl))
+//             return;
+//         pl->self_destruct_count = SELF_DESTRUCT_DELAY;
+//     }
+//     else
+//         pl->self_destruct_count = 0.0;
+// }
+
+// static inline bool Player_is_human(player_t *pl)
+// {
+//     return pl->pl_type == PL_TYPE_HUMAN ? true : false;
+// }
+
+// static inline bool Player_is_robot(player_t *pl)
+// {
+//     return pl->pl_type == PL_TYPE_ROBOT ? true : false;
+// }
+
+// static inline bool Player_is_tank(player_t *pl)
+// {
+//     return pl->pl_type == PL_TYPE_TANK ? true : false;
+// }
+
+// static inline bool Player_owns_tank(player_t *pl, player_t *tank)
+// {
+//     if (Player_is_tank(tank) && tank->lock.pl_id != NO_ID /* kps - probably redundant */
+//         && tank->lock.pl_id == pl->id)
+//         return true;
+//     return false;
+// }
+
+/*
+ * Used where we wish to know if a player is simply on the same team.
+ */
+static inline bool Players_are_teammates(player_t *pl1, player_t *pl2)
+{
+    if (BIT(world->rules->mode, TEAM_PLAY) && pl1->team != TEAM_NOT_SET && pl1->team == pl2->team)
+        return true;
+    return false;
+}
+
+/*
+ * Used where we wish to know if two players are members of the same alliance.
+ */
+static inline bool Players_are_allies(player_t *pl1, player_t *pl2)
+{
+    if (pl1->alliance != ALLIANCE_NOT_SET && pl1->alliance == pl2->alliance)
+        return true;
+    return false;
+}
+
+static inline bool Player_uses_autopilot(player_t *pl)
+{
+    if (BIT(pl->used, USES_AUTOPILOT))
+        return true;
+    return false;
+}
+
+static inline bool Player_uses_compass(player_t *pl)
+{
+    if (BIT(pl->used, USES_COMPASS))
+        return true;
+    return false;
+}
+
+static inline bool Player_uses_connector(player_t *pl)
+{
+    if (BIT(pl->used, USES_CONNECTOR))
+        return true;
+    return false;
+}
+
+static inline bool Player_uses_tractor_beam(player_t *pl)
+{
+    if (BIT(pl->used, USES_TRACTOR_BEAM))
+        return true;
+    return false;
+}
+
+static inline bool Player_uses_emergency_shield(player_t *pl)
+{
+    if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) ==
+        (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+        return true;
+    return false;
+}
+
+static inline bool Player_has_emergency_thrust(player_t *pl)
+{
+#if 0
+    if (pl->item[ITEM_EMERGENCY_THRUST] > 0
+    || pl->emergency_thrust_left > 0.0)
+    return true;
+    return false;
+#else
+    if (BIT(pl->have, HAS_EMERGENCY_THRUST))
+        return true;
+    return false;
+#endif
+}
+
+// static inline bool Player_uses_emergency_thrust(player_t *pl)
+// {
+//     if (BIT(pl->used, USES_EMERGENCY_THRUST))
+//         return true;
+//     return false;
+// }
+
+static inline bool Player_has_phasing_device(player_t *pl)
+{
+#if 0
+    if (pl->item[ITEM_PHASING] > 0
+    || pl->phasing_left > 0.0)
+    return true;
+#else
+    if (BIT(pl->have, HAS_PHASING_DEVICE))
+        return true;
+    return false;
+#endif
+    return false;
+}
+
+static inline bool Player_is_phasing(player_t *pl)
+{
+    if (BIT(pl->used, USES_PHASING_DEVICE))
+        return true;
+    return false;
+}
+
+static inline bool Player_is_cloaked(player_t *pl)
+{
+    if (BIT(pl->used, USES_CLOAKING_DEVICE))
+        return true;
+    return false;
+}
+
+// TODO
+// static inline bool Player_is_active(player_t *pl)
+// {
+//     if (Player_is_alive(pl) || Player_is_killed(pl))
+//         return true;
+//     return false;
+// }
+
+static inline bool Player_is_active(player_t *pl)
+{
+    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
+        return true;
+    return false;
+}
+
+/* kps - add id.h ? */
+static inline bool Is_player_id(int id)
+{
+    if (id >= 1 && id <= NUM_IDS)
+        return true;
+    return false;
+}
+
+static inline bool Is_cannon_id(int id)
+{
+    if (id >= MIN_CANNON_ID && id <= MAX_CANNON_ID)
+        return true;
+    return false;
+}
+
 /*
  * Prototypes for player.cpp
  */
-void Pick_startpos(int ind);
-void Go_home(int ind);
+void Pick_startpos(player_t *pl);
+void Go_home(player_t *pl);
 void Compute_sensor_range(player_t *pl);
 void Player_add_tank(player_t *pl, long tank_fuel);
-void Player_remove_tank(int ind, int which_tank);
-void Player_hit_armor(int ind);
-void Player_used_kill(int ind);
+void Player_remove_tank(player_t *pl, int which_tank);
+void Player_hit_armor(player_t *pl);
+void Player_used_kill(player_t *pl);
 void Player_set_mass(player_t *pl);
 int Init_player(int ind, shipshape_t *ship);
 void Alloc_players(int number);
@@ -339,14 +694,14 @@ void Update_score_table(void);
 void Reset_all_players(void);
 void Check_team_members(int);
 void Compute_game_status(void);
-void Delete_player(int ind);
-void Detach_ball(int ind, int ball);
-void Kill_player(int ind);
-void Player_death_reset(int ind);
+void Delete_player(player_t *pl);
+void Detach_ball(player_t *pl, int ball);
+void Kill_player(player_t *pl);
+void Player_death_reset(player_t *pl);
 void Team_game_over(int winning_team, const char *reason);
 void Individual_game_over(int winner);
 void Race_game_over(void);
-int Team_immune(int id1, int id2);
+bool Team_immune(int id1, int id2);
 
 bool Players_are_teammates(player_t *pl_i, player_t *pl_j);
 bool Players_are_allies(player_t *pl_i, player_t *pl_j);

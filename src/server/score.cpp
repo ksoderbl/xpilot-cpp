@@ -78,20 +78,18 @@ int Rate(int winner, int loser)
  * KK 28-4-98: Same for killing your own tank.
  * KK 7-11-1: And for killing a member of your alliance
  */
-void Score_players(int winner, int winner_score, char *winner_msg,
-                   int loser, int loser_score, char *loser_msg)
+void Score_players(player_t *winner_pl, int winner_score, char *winner_msg,
+                   player_t *loser_pl, int loser_score, char *loser_msg)
 {
-    player_t *wpl = PlayersArray[winner];
-    player_t *lpl = PlayersArray[loser];
-    if (Players_are_teammates(wpl, lpl) ||
-        (wpl->alliance != ALLIANCE_NOT_SET && wpl->alliance == lpl->alliance) ||
-        (Player_is_tank(lpl) && GetIndArray[lpl->lock.pl_id] == winner))
+    if (Players_are_teammates(winner_pl, loser_pl) ||
+        (winner_pl->alliance != ALLIANCE_NOT_SET && winner_pl->alliance == loser_pl->alliance) ||
+        (Player_is_tank(loser_pl) && loser_pl->lock.pl_id == winner_pl->id))
     {
         if (winner_score > 0)
             winner_score = -winner_score;
         if (loser_score > 0)
             loser_score = -loser_score;
     }
-    SCORE(wpl, winner_score, lpl->pos, winner_msg);
-    SCORE(lpl, loser_score, lpl->pos, loser_msg);
+    SCORE(winner_pl, winner_score, loser_pl->pos, winner_msg);
+    SCORE(loser_pl, loser_score, loser_pl->pos, loser_msg);
 }

@@ -32,7 +32,7 @@
 ipos_t world;
 ipos_t realWorld;
 
-unsigned short team; /* What team is the player on? */
+uint16_t team; /* What team is the player on? */
 bool players_exposed;
 
 short ext_view_width;   /* Width of extended visible area */

@@ -68,7 +68,7 @@ typedef struct options
 
     bool crashWithPlayer;                /* Can players overrun other players? */
     bool bounceWithPlayer;               /* Can players bounce other players? */
-    bool playerKillings;                 /* Can players kill each other? */
+    bool allowPlayerKilling;             /* Can players kill each other? */
     bool playerShielding;                /* Can players use shields? */
     bool playerStartsShielded;           /* Players start with shields up? */
     bool shotsWallBounce;                /* Do shots bounce off walls? */

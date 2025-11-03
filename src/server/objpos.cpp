@@ -38,7 +38,7 @@ void Object_position_set_clpos(object_t *obj, clpos_t pos)
         }
         else
         {
-            if (obj->type == OBJ_PLAYER_BIT)
+            if (obj->type == OBJ_PLAYER)
                 Player_crash((player_t *)obj, CrashUnknown, NO_IND, 1);
             else
                 Object_crash(obj, CrashUnknown, NO_IND);

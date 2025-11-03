@@ -48,20 +48,20 @@
  * Smart missile, heatseeker and torpedoe can be merged into missile.
  * ECM doesn't really need an object type.
  */
-#define OBJ_PLAYER_BIT (1U << 0)
-#define OBJ_DEBRIS_BIT (1U << 1)
-#define OBJ_SPARK_BIT (1U << 2)
-#define OBJ_BALL_BIT (1U << 3)
-#define OBJ_SHOT_BIT (1U << 4)
-#define OBJ_SMART_SHOT_BIT (1U << 5)
-#define OBJ_MINE_BIT (1U << 6)
-#define OBJ_TORPEDO_BIT (1U << 7)
-#define OBJ_HEAT_SHOT_BIT (1U << 8)
-#define OBJ_PULSE_BIT (1U << 9)
-#define OBJ_ITEM_BIT (1U << 10)
-#define OBJ_WRECKAGE_BIT (1U << 11)
-#define OBJ_ASTEROID_BIT (1U << 12)
-#define OBJ_CANNON_SHOT_BIT (1U << 13)
+#define OBJ_PLAYER (1U << 0)
+#define OBJ_DEBRIS (1U << 1)
+#define OBJ_SPARK (1U << 2)
+#define OBJ_BALL (1U << 3)
+#define OBJ_SHOT (1U << 4)
+#define OBJ_SMART_SHOT (1U << 5)
+#define OBJ_MINE (1U << 6)
+#define OBJ_TORPEDO (1U << 7)
+#define OBJ_HEAT_SHOT (1U << 8)
+#define OBJ_PULSE (1U << 9)
+#define OBJ_ITEM (1U << 10)
+#define OBJ_WRECKAGE (1U << 11)
+#define OBJ_ASTEROID (1U << 12)
+#define OBJ_CANNON_SHOT (1U << 13)
 
 /*
  * Weapons modifiers.
@@ -176,7 +176,7 @@ struct xp_mineobject
 
     OBJECT_EXTEND
 
-    int owner;        /* Who's object is this ? */
+    int mine_owner;   /* Who's object is this ? */
     DFLOAT ecm_range; /* Range from last ecm center */
     int spread_left;  /* how much spread time left */
 
@@ -219,8 +219,8 @@ struct xp_smartobject
 
     MISSILE_EXTEND
 
-    int new_info;     /* smart re-lock id */
-    DFLOAT ecm_range; /* Range from last ecm center */
+    int new_info;    /* smart re-lock id */
+    float ecm_range; /* Range from last ecm center */
 
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
@@ -256,9 +256,9 @@ struct xp_ballobject
 
     OBJECT_EXTEND
 
-    int owner;     /* Who's object is this ? */
-    int treasure;  /* treasure for ball */
-    DFLOAT length; /* distance ball to player */
+    short ball_owner; /* Who's object is this ? */
+    int treasure;     /* treasure for ball */
+    DFLOAT length;    /* distance ball to player */
 
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))
@@ -275,10 +275,10 @@ struct xp_wireobject
 
     OBJECT_EXTEND
 
-    DFLOAT turnspeed; /* how fast to turn */
+    float wire_turnspeed; /* how fast to turn */
 
-    uint8_t size;     /* Size of object (wreckage) */
-    uint8_t rotation; /* Rotation direction */
+    uint8_t wire_size;     /* Size of object */
+    uint8_t wire_rotation; /* Rotation direction */
 
 #define WIRE_IND(ind) ((wireobject_t *)Obj[(ind)])
 #define WIRE_PTR(obj) ((wireobject_t *)(obj))

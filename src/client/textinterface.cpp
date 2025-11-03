@@ -248,7 +248,7 @@ static bool Process_commands(sockbuf_t *ibuf,
 {
     int i, len, retries, delay, success, cmd_credentials = 0, max_replies;
     char c, status, reply_to, linebuf[MAX_LINE];
-    unsigned short port, qpos;
+    uint16_t port, qpos;
     bool has_credentials = false, privileged_cmd;
     long key = 0;
     time_t qsent = 0;

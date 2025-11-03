@@ -729,10 +729,13 @@ void Destroy_connection(connection_t *connp, const char *reason)
 
     if (connp->id != NO_ID)
     {
+        player_t *pl;
+
         id = connp->id;
         connp->id = NO_ID;
-        PlayersArray[GetIndArray[id]]->conn = NULL;
-        Delete_player(GetIndArray[id]);
+        pl = Player_by_id(id);
+        pl->conn = NULL;
+        Delete_player(pl);
     }
 
     XFREE(connp->user);
@@ -1173,8 +1176,10 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         pl->team = connp->team;
     pl->version = connp->version;
 
-    Pick_startpos(NumPlayers);
-    Go_home(NumPlayers);
+    Pick_startpos(pl);
+    warn("CALLING GO HOME");
+    Go_home(pl);
+    warn("GO HOME RETURNED");
     if (pl->team != TEAM_NOT_SET)
         world->teams[pl->team].NumMembers++;
     NumPlayers++;
@@ -1672,15 +1677,14 @@ int Send_score(connection_t *connp, int id, int score,
     else
     {
         int allchar = ' ';
+
         if (alliance != ALLIANCE_NOT_SET)
         {
             if (options.announceAlliances)
-            {
                 allchar = alliance + '0';
-            }
             else
             {
-                if (PlayersArray[GetIndArray[connp->id]]->alliance == alliance)
+                if (Player_by_id(connp->id)->alliance == alliance)
                     allchar = '+';
             }
         }
@@ -1798,13 +1802,9 @@ int Send_debris(connection_t *connp, int type, uint8_t *p, int n)
     if (n * 2 >= avail)
     {
         if (avail > 2)
-        {
             n = (avail - 1) / 2;
-        }
         else
-        {
             return 0;
-        }
     }
     w->buf[w->len++] = PKT_DEBRIS + type;
     w->buf[w->len++] = n;
@@ -1866,13 +1866,9 @@ int Send_fastshot(connection_t *connp, int type, uint8_t *p, int n)
     if (n * 2 >= avail)
     {
         if (avail > 2)
-        {
             n = (avail - 1) / 2;
-        }
         else
-        {
             return 0;
-        }
     }
     w->buf[w->len++] = PKT_FASTSHOT;
     w->buf[w->len++] = type;
@@ -2168,7 +2164,7 @@ static int Receive_keyboard(connection_t *connp)
         pl = PlayersArray[GetIndArray[connp->id]];
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
-        Handle_keyboard(GetIndArray[connp->id]);
+        Handle_keyboard(Player_by_id(connp->id));
     }
     if (connp->num_keyboard_updates++ && (connp->state & CONN_PLAYING))
     {

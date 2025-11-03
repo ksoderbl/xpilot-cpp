@@ -192,8 +192,6 @@ static int Robot_suibot_war_on_player(player_t *pl)
  */
 static void Robot_suibot_message(player_t *pl, const char *message)
 {
-    UNUSED_PARAM(pl);
-    UNUSED_PARAM(message);
 }
 
 /*
@@ -441,13 +439,13 @@ bool Robot_evade_shot(player_t *pl)
 
     killing_shots = KILLING_SHOTS;
     if (options.treasureCollisionMayKill)
-        killing_shots |= OBJ_BALL_BIT;
+        killing_shots |= OBJ_BALL;
     if (options.wreckageCollisionMayKill)
-        killing_shots |= OBJ_WRECKAGE_BIT;
+        killing_shots |= OBJ_WRECKAGE;
     if (options.asteroidCollisionMayKill)
-        killing_shots |= OBJ_ASTEROID_BIT;
+        killing_shots |= OBJ_ASTEROID;
     if (!options.allowShields)
-        killing_shots |= OBJ_PLAYER_BIT;
+        killing_shots |= OBJ_PLAYER;
 
     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
@@ -1218,7 +1216,7 @@ static void Robot_suibot_play(player_t *pl)
     for (i = 0; i < obj_count; i++)
     { /*for .. obj_count*/
         object = obj_list[i];
-        if (object->type == OBJ_BALL_BIT)
+        if (object->type == OBJ_BALL)
         {
             ball = BALL_PTR(object);
             ball_dist = Wrap_length(pl->pos.cx - ball->pos.cx,

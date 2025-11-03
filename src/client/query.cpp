@@ -159,7 +159,7 @@ static int Query_fudged(sock_t *sock, int port, char *msg, int msglen)
     {
         memset(&addr, 0, sizeof(addr));
         addr.sin_family = AF_INET;
-        addr.sin_port = (unsigned short)htons((unsigned short)port);
+        addr.sin_port = (uint16_t)htons((uint16_t)port);
         p = (uint8_t *)h->h_addr_list[i];
         addrmask = p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3];
         addr.sin_addr.s_addr = htonl(addrmask);

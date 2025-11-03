@@ -30,8 +30,8 @@ typedef struct ScoreNode
 {
     char nick[16];
     int timestamp;
-    unsigned short kills;
-    unsigned short deaths;
+    uint16_t kills;
+    uint16_t deaths;
 } ScoreNode;
 
 void Init_saved_scores(void);

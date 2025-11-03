@@ -25,6 +25,7 @@
 #include <ctime>
 
 #include "server.h"
+#include "robot.h"
 
 #define SERVER
 #include "serverconst.h"
@@ -67,7 +68,7 @@ void tuner_ballmass(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (BIT(Obj[i]->type, OBJ_BALL_BIT))
+        if (BIT(Obj[i]->type, OBJ_BALL))
         {
             Obj[i]->mass = options.ballMass;
         }
@@ -77,32 +78,22 @@ void tuner_ballmass(void)
 void tuner_maxrobots(void)
 {
     if (options.maxRobots < 0)
-    {
-        options.maxRobots = world->NumBases;
-    }
+        options.maxRobots = Num_bases();
 
     if (options.maxRobots < options.minRobots)
-    {
         options.minRobots = options.maxRobots;
-    }
 
     while (options.maxRobots < NumRobots)
-    {
-        Robot_delete(-1, true);
-    }
+        Robot_delete(NULL, true);
 }
 
 void tuner_minrobots(void)
 {
     if (options.minRobots < 0)
-    {
         options.minRobots = options.maxRobots;
-    }
 
     if (options.maxRobots < options.minRobots)
-    {
         options.maxRobots = options.minRobots;
-    }
 }
 
 void tuner_playershielding(void)
@@ -142,11 +133,8 @@ void tuner_playershielding(void)
 void tuner_playerstartsshielded(void)
 {
     if (options.playerShielding)
-    {
-        options.playerStartsShielded = true; /* Doesn't make sense
-                                    to turn off when
-                                    shields are on. */
-    }
+        /* Doesn't make sense to turn off when shields are on. */
+        options.playerStartsShielded = true;
 }
 
 void tuner_worldlives(void)
@@ -176,7 +164,7 @@ void tuner_teamcannons(void)
 
     if (options.teamCannons)
     {
-        for (i = 0; i < world->NumCannons; i++)
+        for (i = 0; i < Num_cannons(); i++)
         {
             team = Find_closest_team(world->cannons[i].pos);
             if (team == TEAM_NOT_SET)
@@ -188,7 +176,7 @@ void tuner_teamcannons(void)
     }
     else
     {
-        for (i = 0; i < world->NumCannons; i++)
+        for (i = 0; i < Num_cannons(); i++)
             world->cannons[i].team = TEAM_NOT_SET;
     }
 }
@@ -262,7 +250,7 @@ void tuner_minelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type != OBJ_MINE_BIT)
+        if (Obj[i]->type != OBJ_MINE)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
@@ -289,8 +277,8 @@ void tuner_missilelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type != OBJ_SMART_SHOT_BIT &&
-            Obj[i]->type != OBJ_HEAT_SHOT_BIT && Obj[i]->type != OBJ_TORPEDO_BIT)
+        if (Obj[i]->type != OBJ_SMART_SHOT &&
+            Obj[i]->type != OBJ_HEAT_SHOT && Obj[i]->type != OBJ_TORPEDO)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))

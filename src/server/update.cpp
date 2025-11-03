@@ -26,6 +26,7 @@
 #include <cmath>
 
 #include "server.h"
+#include "robot.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -306,10 +307,6 @@ void Emergency_shield(player_t *pl, bool on)
  */
 void Thrust(player_t *pl, bool on)
 {
-    // if (on)
-    //     SET_BIT(pl->obj_status, THRUSTING);
-    // else
-    //     CLR_BIT(pl->obj_status, THRUSTING);
     if (on)
         SET_BIT(pl->obj_status, THRUSTING);
     else
@@ -323,9 +320,9 @@ void Thrust(player_t *pl, bool on)
  */
 void Autopilot(player_t *pl, bool on)
 {
-    CLR_BIT(pl->obj_status, THRUSTING);
     if (on)
     {
+        Thrust(pl, false);
         pl->auto_power_s = pl->power;
         pl->auto_turnspeed_s = pl->turnspeed;
         pl->auto_turnresistance_s = pl->turnresistance;
@@ -337,6 +334,7 @@ void Autopilot(player_t *pl, bool on)
     }
     else
     {
+        Thrust(pl, false);
         pl->power = pl->auto_power_s;
         pl->turnacc = 0.0;
         pl->turnspeed = pl->auto_turnspeed_s;
@@ -519,7 +517,7 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->turnspeed != turnspeed && vad > RES / 32)
     {
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
         return;
     }
 
@@ -529,11 +527,11 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->power > power)
     {
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
     }
     else
     {
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
     }
 }
 
@@ -543,11 +541,12 @@ static void do_Autopilot(player_t *pl)
 void Update_objects(void)
 {
     object_t *obj;
+    bool tick = true;
 
     /*
      * Update robots.
      */
-    Robot_update();
+    Robot_update(tick);
 
     /*
      * Autorepeat fire, must unfortunately be done here, not in
@@ -603,28 +602,28 @@ void Update_objects(void)
     {
         obj = Obj[i];
 
-        if (BIT(obj->type, OBJ_MINE_BIT))
+        if (BIT(obj->type, OBJ_MINE))
             Move_mine(i);
 
-        else if (BIT(obj->type, OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT))
+        else if (BIT(obj->type, OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_TORPEDO))
             Move_smart_shot(i);
 
-        else if (BIT(obj->type, OBJ_BALL_BIT))
+        else if (BIT(obj->type, OBJ_BALL))
         {
             if (obj->id != NO_ID)
                 Move_ball(i);
         }
 
-        else if (BIT(obj->type, OBJ_WRECKAGE_BIT))
+        else if (BIT(obj->type, OBJ_WRECKAGE))
         {
             wireobject_t *wireobj = WIRE_PTR(obj);
-            wireobj->rotation =
-                (wireobj->rotation + (int)(wireobj->turnspeed * RES)) % RES;
+            wireobj->wire_rotation =
+                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
         }
 
         update_object_speed(obj);
 
-        if (!BIT(obj->type, OBJ_ASTEROID_BIT))
+        if (!BIT(obj->type, OBJ_ASTEROID))
         {
             Move_object(obj);
         }
@@ -646,7 +645,12 @@ void Update_objects(void)
         if ((ecm->size *= ecmSizeFactor) < 1.0)
         {
             if (ecm->id != NO_ID)
-                PlayersArray[GetIndArray[ecm->id]]->ecmcount--;
+            {
+                player_t *pl = Player_by_id(ecm->id);
+
+                if (pl)
+                    pl->ecmcount--;
+            }
             // free(Ecms[i]);
             --world->NumEcms;
             world->ecms[i] = world->ecms[world->NumEcms];
@@ -670,7 +674,6 @@ void Update_objects(void)
         }
     }
 
-    bool tick = true;
     if (Num_cannons() > 0)
         Cannon_update(tick);
 
@@ -754,7 +757,7 @@ void Update_objects(void)
             if (!BIT(pl->obj_status, PLAYING))
             {
                 Transport_to_home(pl);
-                Move_player(ind);
+                Move_player(pl);
                 continue;
             }
         }
@@ -766,7 +769,7 @@ void Update_objects(void)
             if (!BIT(pl->obj_status, PLAYING))
             {
                 SET_BIT(pl->obj_status, PLAYING);
-                Go_home(ind);
+                Go_home(pl);
             }
             if (BIT(pl->obj_status, SELF_DESTRUCT))
             {
@@ -774,7 +777,7 @@ void Update_objects(void)
                 sprintf(msg, "%s has committed suicide.", pl->name);
                 Set_message(msg);
                 Throw_items(pl);
-                Kill_player(ind);
+                Kill_player(pl);
                 updateScores = true;
             }
         }
@@ -786,7 +789,7 @@ void Update_objects(void)
         {
             pl->stunned--;
             CLR_BIT(pl->used, USES_SHIELD | HAS_LASER | HAS_SHOT);
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
         }
 
         if (pl->shield_time > 0)
@@ -1004,7 +1007,7 @@ void Update_objects(void)
         if (pl->fuel.sum <= 0)
         {
             CLR_BIT(pl->used, USES_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
         }
         if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
             CLR_BIT(pl->used, USES_REFUEL);
@@ -1170,7 +1173,7 @@ void Update_objects(void)
                 for (k = 0; k < NumObjs; k++)
                 {
                     object_t *b = Obj[k];
-                    if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
+                    if (BIT(b->type, OBJ_BALL) && b->id == pl->id)
                     {
                         position_t ballpos;
                         ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
@@ -1223,7 +1226,7 @@ void Update_objects(void)
         if (!BIT(pl->obj_status, PAUSE))
         {
             update_object_speed(pl); /* New position */
-            Move_player(ind);
+            Move_player(pl);
         }
 
         if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
@@ -1291,14 +1294,14 @@ void Update_objects(void)
 
             Detonate_items(pl);
 
-            Kill_player(ind);
+            Kill_player(pl);
 
             if (Player_is_human(pl))
             {
                 if (frame_loops - pl->frame_last_busy > 60 * FPS)
                 {
                     if ((NumPlayers - NumRobots - NumPseudoPlayers) > 1)
-                        Pause_player(ind, true);
+                        Pause_player(pl, true);
                 }
             }
         }

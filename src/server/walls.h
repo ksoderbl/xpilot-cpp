@@ -124,7 +124,7 @@ void Walls_init(void);
 void Treasure_init(void);
 void Move_init(void);
 void Move_object(object_t *obj);
-void Move_player(int ind);
+void Move_player(player_t *pl);
 void Turn_player(player_t *pl);
 void Move_segment(move_state_t *ms);
 

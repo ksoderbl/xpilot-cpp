@@ -135,6 +135,11 @@
 #define NUM_IDS 256
 #define MAX_PSEUDO_PLAYERS 16
 
+/* Cannon IDs. */
+#define NUM_CANNON_IDS 10000
+#define MIN_CANNON_ID (EXPIRED_MINE_ID + 1)
+#define MAX_CANNON_ID (EXPIRED_MINE_ID + NUM_CANNON_IDS)
+
 // MAX_TOTAL_SHOTS was increased from 16384 to 65536.
 #define MAX_TOTAL_SHOTS 65536 /* must be <= 65536? */
 #define MAX_TOTAL_PULSES (5 * 64)
@@ -142,6 +147,25 @@
 #define MAX_TOTAL_TRANSPORTERS (2 * 64)
 // TODO: Remove later
 #define MAX_TOTAL_FRICTIONAREAS (2 * 64)
+
+#define ED_SHOT (-0.2 * FUEL_SCALE_FACT)
+#define ED_SMART_SHOT (-30 * FUEL_SCALE_FACT)
+#define ED_MINE (-60 * FUEL_SCALE_FACT)
+#define ED_ECM (-60 * FUEL_SCALE_FACT)
+#define ED_TRANSPORTER (-60 * FUEL_SCALE_FACT)
+#define ED_HYPERJUMP (-60 * FUEL_SCALE_FACT)
+#define ED_SHIELD (-0.20 * FUEL_SCALE_FACT)
+#define ED_PHASING_DEVICE (-0.40 * FUEL_SCALE_FACT)
+#define ED_CLOAKING_DEVICE (-0.07 * FUEL_SCALE_FACT)
+#define ED_DEFLECTOR (-0.15 * FUEL_SCALE_FACT)
+#define ED_SHOT_HIT (-25.0 * FUEL_SCALE_FACT)
+#define ED_SMART_SHOT_HIT (-120.0 * FUEL_SCALE_FACT)
+#define ED_PL_CRASH (-100.0 * FUEL_SCALE_FACT)
+#define ED_BALL_HIT (-50.0 * FUEL_SCALE_FACT)
+#define ED_LASER (-10.0 * FUEL_SCALE_FACT)
+/* was 90 -> 2 -> 40 -> 20 -> 10 */
+#define ED_LASER_HIT (-100.0 * FUEL_SCALE_FACT)
+/* was 120 -> 80 -> 40 -> 50 -> 60 -> 100 */
 
 #define LG2_MAX_AFTERBURNER 4
 #define ALT_SPARK_MASS_FACT 4.2
@@ -155,11 +179,7 @@
 #define AFTER_BURN_FUEL(f, n) \
     (((f) * ((MAX_AFTERBURNER + 1) + (n) * (ALT_FUEL_FACT - 1))) / (MAX_AFTERBURNER + 1.0))
 
-#define TURN_FUEL(acc) (0.005 * FUEL_SCALE_FACT * ABS(acc))
-#define TURN_SPARKS(tf) (5 + ((tf) >> ((FUEL_SCALE_BITS) - 6)))
-
 #define THRUST_MASS 0.7
-
 #define ARMOR_MASS (options.shipMass / 14)
 
 #define MAX_TANKS 8

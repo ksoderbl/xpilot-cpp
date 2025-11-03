@@ -41,16 +41,13 @@ int Check_user_name(char *name)
 
     name[MAX_NAME_LEN - 1] = '\0';
     if (!*name)
-    {
         return NAME_ERROR;
-    }
+
     str = (uint8_t *)name;
     for (; *str; str++)
     {
         if (!isgraph(*str))
-        {
             return NAME_ERROR;
-        }
     }
 
     return NAME_OK;
@@ -82,26 +79,20 @@ int Check_nick_name(char *name)
 
     name[MAX_NAME_LEN - 1] = '\0';
     if (!*name)
-    {
         return NAME_ERROR;
-    }
+
     str = (uint8_t *)name;
     if (!isupper(*str))
-    {
         return NAME_ERROR;
-    }
+
     for (; *str; str++)
     {
         if (!isprint(*str))
-        {
             return NAME_ERROR;
-        }
     }
     --str;
     if (isspace(*str))
-    {
         return NAME_ERROR;
-    }
 
     return NAME_OK;
 }
@@ -121,38 +112,30 @@ void Fix_nick_name(char *name)
     if (!isupper(*str))
     {
         if (islower(*str))
-        {
             *str = toupper(*str);
-        }
         else
-        {
             *str = 'X';
-        }
     }
     for (; *str; str++)
     {
         if (!isprint(*str))
-        {
             *str = 'x';
-        }
     }
     --str;
     while (isspace(*str))
-    {
         *str-- = '\0';
-    }
 }
 
 /* isalnum() depends on locale. */
-static int is_alpha_numeric(uint8_t c)
+static bool is_alpha_numeric(uint8_t c)
 {
     if (c >= 'A' && c <= 'Z')
-        return 1;
+        return true;
     if (c >= 'a' && c <= 'z')
-        return 1;
+        return true;
     if (c >= '0' && c <= '9')
-        return 1;
-    return 0;
+        return true;
+    return false;
 }
 
 int Check_host_name(char *name)
@@ -162,9 +145,8 @@ int Check_host_name(char *name)
     name[MAX_HOST_LEN - 1] = '\0';
     str = (uint8_t *)name;
     if (!is_alpha_numeric(*str))
-    {
         return NAME_ERROR;
-    }
+
     for (; *str; str++)
     {
         if (!is_alpha_numeric(*str))
@@ -172,14 +154,10 @@ int Check_host_name(char *name)
             if (*str == '.' || *str == '-')
             {
                 if (str[1] == '.' || str[1] == '-' || !str[1])
-                {
                     return NAME_ERROR;
-                }
             }
             else
-            {
                 return NAME_ERROR;
-            }
         }
     }
     return NAME_OK;
@@ -203,14 +181,10 @@ void Fix_host_name(char *name)
             if (*str == '.' || *str == '-')
             {
                 if (str[1] == '.' || str[1] == '-' || !str[1])
-                {
                     *str = 'x';
-                }
             }
             else
-            {
                 *str = 'x';
-            }
         }
     }
 }
@@ -226,9 +200,7 @@ int Check_disp_name(char *name)
     for (; *str; str++)
     {
         if (!isgraph(*str))
-        {
             return NAME_ERROR;
-        }
     }
     return NAME_OK;
 }
@@ -242,8 +214,6 @@ void Fix_disp_name(char *name)
     for (; *str; str++)
     {
         if (!isgraph(*str))
-        {
             *str = 'x';
-        }
     }
 }

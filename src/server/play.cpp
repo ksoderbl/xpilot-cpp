@@ -174,7 +174,7 @@ void Make_debris(
 
     CLEAR_MODS(mods);
 
-    if (type == OBJ_SHOT_BIT)
+    if (type == OBJ_SHOT)
     {
         SET_BIT(mods.warhead, CLUSTER);
         if (!options.shotsGravity)

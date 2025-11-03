@@ -48,7 +48,7 @@ static void print_ignorelist(void)
 {
     char buffer[MAX_CHARS] = "";
     int i;
-    unsigned short check = 0;
+    uint16_t check = 0;
 
     for (i = 0; i < num_others; i++)
     {
@@ -238,10 +238,10 @@ void executeCommand(const char *talk_str)
     command_num = i;
     switch (command_num)
     {
-    case 0:               /* ignore */
-    case 1:               /* i */
-    case 2:               /* ignore! */
-    case 3:               /* i! */
+    case 0:            /* ignore */
+    case 1:            /* i */
+    case 2:            /* ignore! */
+    case 3:            /* i! */
         if (!argument) /* empty */
             print_ignorelist();
         else

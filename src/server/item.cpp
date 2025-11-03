@@ -43,6 +43,7 @@
 #include "netserver.h"
 #include "xperror.h"
 #include "xpmath.h"
+#include "robot.h"
 
 #define CONFUSED_TIME 3
 
@@ -89,14 +90,13 @@ static void Item_update_flags(player_t *pl)
 
 /*
  * Player loses some items after some event (collision, bounce).
- * The `prob' parameter gives the chance that items are lost
+ * The 'prob' parameter gives the chance that items are lost
  * and, if they are lost, what percentage.
  */
-void Item_damage(int ind, double prob)
+void Item_damage(player_t *pl, double prob)
 {
-    if (prob < 1.0f)
+    if (prob < 1.0)
     {
-        player_t *pl = PlayersArray[ind];
         int i;
         double loss;
 
@@ -357,7 +357,7 @@ void Make_item(clpos_t pos,
     if ((obj = Object_allocate()) == NULL)
         return;
 
-    obj->type = OBJ_ITEM_BIT;
+    obj->type = OBJ_ITEM;
     obj->info = item;
     obj->color = RED;
     obj->obj_status = status;
@@ -474,13 +474,13 @@ void Detonate_items(player_t *pl)
             switch ((int)(rfrac() * 3))
             {
             case 0:
-                type = OBJ_TORPEDO_BIT;
+                type = OBJ_TORPEDO;
                 break;
             case 1:
-                type = OBJ_HEAT_SHOT_BIT;
+                type = OBJ_HEAT_SHOT;
                 break;
             default:
-                type = OBJ_SMART_SHOT_BIT;
+                type = OBJ_SMART_SHOT;
                 break;
             }
 
@@ -591,7 +591,7 @@ void Do_deflector(player_t *pl)
         }
 
         /* don't push balls out of treasure boxes */
-        if (BIT(obj->type, OBJ_BALL_BIT) && !BIT(obj->obj_status, GRAVITY))
+        if (BIT(obj->type, OBJ_BALL) && !BIT(obj->obj_status, GRAVITY))
             continue;
 
         dx = (obj->pix_pos.x - pl->pix_pos.x);
@@ -824,7 +824,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
         what = "a tank";
         i = (int)(rfrac() * victim->fuel.num_tanks) + 1;
         amount = victim->fuel.tank[i];
-        Player_remove_tank(target, i);
+        Player_remove_tank(victim, i);
         break;
     case ITEM_FUEL:
     {
@@ -965,7 +965,8 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
     double closest_mine_range = world->hypotenuse;
     int i, j, owner;
     double range, perim, damage;
-    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]), *p;
+    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]);
+    player_t *p;
     ecm_t *ecm;
 
     if (world->NumEcms >= MAX_TOTAL_ECMS)
@@ -990,7 +991,7 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
     {
         shot = Obj[i];
 
-        if (!BIT(shot->type, OBJ_SMART_SHOT_BIT | OBJ_MINE_BIT))
+        if (!BIT(shot->type, OBJ_SMART_SHOT | OBJ_MINE))
             continue;
         if ((range = Wrap_length(CLICK_TO_FLOAT(pos.cx - shot->pos.cx),
                                  CLICK_TO_FLOAT(pos.cy - shot->pos.cy))) > ECM_DISTANCE)
@@ -1008,12 +1009,12 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
             owner = GetIndArray[shot->id];
             if (ind == owner)
             {
-                if (shot->type == OBJ_MINE_BIT)
+                if (shot->type == OBJ_MINE)
                 {
                     if (BIT(shot->obj_status, OWNERIMMUNE))
                         continue;
                 }
-                if (shot->type == OBJ_SMART_SHOT_BIT)
+                if (shot->type == OBJ_SMART_SHOT)
                 {
                     if (shot->info != owner)
                         continue;
@@ -1025,7 +1026,7 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
 
         switch (shot->type)
         {
-        case OBJ_SMART_SHOT_BIT:
+        case OBJ_SMART_SHOT:
             /*
              * See Move_smart_shot() for re-lock probablities after confusion
              * ends.
@@ -1048,7 +1049,7 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
              */
             break;
 
-        case OBJ_MINE_BIT:
+        case OBJ_MINE:
             mine = MINE_PTR(shot);
             mine->ecm_range = range;
 
@@ -1179,14 +1180,14 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
                 for (j = 0; j < NumObjs; j++)
                 {
                     shot = Obj[j];
-                    if (BIT(shot->type, OBJ_BALL_BIT))
+                    if (BIT(shot->type, OBJ_BALL))
                     {
                         ballobject_t *ball = BALL_PTR(shot);
-                        if (ball->owner == p->id)
+                        if (ball->ball_owner == p->id)
                         {
                             if ((int)(rfrac() * 100.0f) < ((int)(20 * range) + 5))
                             {
-                                Detach_ball(i, j);
+                                Detach_ball(p, j);
                             }
                         }
                     }
@@ -1216,19 +1217,18 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
                     /*
                      * Player programs robot to seek target.
                      */
-                    Robot_program(i, pl->lock.pl_id);
+                    Robot_program(p, pl->lock.pl_id);
                 }
             }
         }
     }
 }
 
-void Fire_ecm(int ind)
+void Fire_ecm(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
-
     if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
+    int ind = GetInd(pl->id);
     Fire_general_ecm(ind, pl->team, pl->pos);
 }

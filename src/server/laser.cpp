@@ -47,6 +47,7 @@
 #include "asteroid.h"
 #include "xpmath.h"
 #include "walls.h"
+#include "robot.h"
 
 /*
  * Type to hold info about a player
@@ -249,7 +250,7 @@ static void Laser_pulse_hits_player(
             }
             Set_message(msg);
             CLR_BIT(vicpl->used,
-                    HAS_SHIELD | HAS_LASER | OBJ_SHOT_BIT);
+                    HAS_SHIELD | HAS_LASER | OBJ_SHOT);
             CLR_BIT(vicpl->obj_status, THRUSTING);
             vicpl->stunned += 5;
         }
@@ -283,8 +284,8 @@ static void Laser_pulse_hits_player(
                     sc = Rate(pl->score,
                               vicpl->score) *
                          options.laserKillScoreMult;
-                    Score_players(ind, sc, vicpl->name,
-                                  victim->ind, -sc,
+                    Score_players(pl, sc, vicpl->name,
+                                  vicpl, -sc,
                                   pl->name);
                 }
             }
@@ -301,12 +302,12 @@ static void Laser_pulse_hits_player(
             if (pl && pl->id != vicpl->id)
             {
                 pl->kills++;
-                Robot_war(victim->ind, ind);
+                Robot_war(vicpl, pl);
             }
         }
         if (!BIT(vicpl->used, USES_SHIELD) && BIT(vicpl->have, HAS_ARMOR))
         {
-            Player_hit_armor(victim->ind);
+            Player_hit_armor(vicpl);
         }
     }
 }
@@ -557,7 +558,7 @@ void Laser_pulse_collision(void)
             }
         }
 
-        obj->type = OBJ_PULSE_BIT;
+        obj->type = OBJ_PULSE;
         obj->life = 1;
         obj->id = pulse->id;
         obj->team = pulse->team;
@@ -622,7 +623,7 @@ void Laser_pulse_collision(void)
                     {
                         obj->life = 0;
                         ast->life += ASTEROID_FUEL_HIT(ED_LASER_HIT,
-                                                       WIRE_PTR(ast)->size);
+                                                       WIRE_PTR(ast)->wire_size);
                         if (ast->life < 0)
                             ast->life = 0;
                         if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
@@ -652,7 +653,7 @@ void Laser_pulse_collision(void)
     if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
         free(vicbuf.vic_ptr);
 
-    obj->type = OBJ_DEBRIS_BIT;
+    obj->type = OBJ_DEBRIS;
     obj->life = 0;
     Cell_add_object(obj);
 }

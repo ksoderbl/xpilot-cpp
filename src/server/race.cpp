@@ -431,7 +431,7 @@ void Player_pass_checkpoint(player_t *pl)
                    This way, they can be reused by other players */
                 for (j = 0; j < NumObjs; j++)
                 {
-                    if (Obj[j]->type == OBJ_BALL_BIT)
+                    if (Obj[j]->type == OBJ_BALL)
                     {
                         ballobject_t *ball = BALL_PTR(Obj[j]);
 

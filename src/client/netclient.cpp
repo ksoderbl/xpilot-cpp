@@ -2144,7 +2144,7 @@ int Receive_team(void)
 int Receive_score_object(void)
 {
     int n;
-    unsigned short x, y;
+    uint16_t x, y;
     int score = 0;
     char msg[MAX_CHARS];
     uint8_t ch;
@@ -2199,7 +2199,7 @@ int Receive_timing(void)
 {
     int n, check, round;
     short id;
-    unsigned short timing;
+    uint16_t timing;
     uint8_t ch;
 
     n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &timing);
@@ -2215,7 +2215,7 @@ int Receive_timing(void)
 int Receive_fuel(void)
 {
     int n;
-    unsigned short num, fuel;
+    uint16_t num, fuel;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &fuel)) <= 0)
@@ -2230,7 +2230,7 @@ int Receive_fuel(void)
 int Receive_cannon(void)
 {
     int n;
-    unsigned short num, dead_time;
+    uint16_t num, dead_time;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &dead_time)) <= 0)
@@ -2245,7 +2245,7 @@ int Receive_cannon(void)
 int Receive_target(void)
 {
     int n;
-    unsigned short num, dead_time, damage;
+    uint16_t num, dead_time, damage;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
@@ -2261,7 +2261,7 @@ int Receive_target(void)
 int Receive_polystyle(void) /* since ng 4.7.0 */
 {
     int n;
-    unsigned short num, newstyle;
+    uint16_t num, newstyle;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &newstyle)) <= 0)
@@ -2277,7 +2277,7 @@ int Receive_base(void)
 {
     int n;
     short id;
-    unsigned short num;
+    uint16_t num;
     uint8_t ch;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%hu", &ch, &id, &num)) <= 0)
@@ -2301,7 +2301,7 @@ int Receive_string(void)
 {
     int n;
     uint8_t ch, type;
-    unsigned short arg1, arg2;
+    uint16_t arg1, arg2;
 
     if ((n = Packet_scanf(&cbuf, "%c%c%hu%hu",
                           &ch, &type, &arg1, &arg2)) <= 0)

@@ -399,7 +399,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
     Set_message(msg);
     if (BIT(pl->have, HAS_BALL))
     {
-        Detach_ball(GetIndArray[pl->id], -1);
+        Detach_ball(pl, -1);
     }
     world->teams[pl->team].NumMembers--;
     pl->team = team;
@@ -423,7 +423,7 @@ static int Cmd_team(char *arg, player_t *pl, int oper, char *msg)
             }
         }
     }
-    Pick_startpos(GetIndArray[pl->id]);
+    Pick_startpos(pl);
     Send_info_about_player(pl);
     strcpy(msg, "");
 
@@ -495,18 +495,13 @@ static int Cmd_ally(char *arg, player_t *pl, int oper, char *msg)
             int i = Get_player_index_by_name(arg);
             if (i >= 0)
             {
+                player_t *pl2 = PlayersArray[i];
                 if (cmd == AllyInvite)
-                {
-                    Invite_player(GetIndArray[pl->id], i);
-                }
+                    Invite_player(pl, pl2);
                 else if (cmd == AllyRefuse)
-                {
-                    Refuse_alliance(GetIndArray[pl->id], i);
-                }
+                    Refuse_alliance(pl, pl2);
                 else if (cmd == AllyAccept)
-                {
-                    Accept_alliance(GetIndArray[pl->id], i);
-                }
+                    Accept_alliance(pl, pl2);
                 else
                 {
                     strlcpy(msg, usage, MSG_LEN);
@@ -534,25 +529,15 @@ static int Cmd_ally(char *arg, player_t *pl, int oper, char *msg)
         {
             /* no player name is specified */
             if (cmd == AllyCancel)
-            {
-                Cancel_invitation(GetIndArray[pl->id]);
-            }
+                Cancel_invitation(pl);
             else if (cmd == AllyRefuse)
-            {
-                Refuse_all_alliances(GetIndArray[pl->id]);
-            }
+                Refuse_all_alliances(pl);
             else if (cmd == AllyAccept)
-            {
-                Accept_all_alliances(GetIndArray[pl->id]);
-            }
+                Accept_all_alliances(pl);
             else if (cmd == AllyLeave)
-            {
-                Leave_alliance(GetIndArray[pl->id]);
-            }
+                Leave_alliance(pl);
             else if (cmd == AllyList)
-            {
-                Alliance_player_list(GetIndArray[pl->id]);
-            }
+                Alliance_player_list(pl);
             else
             {
                 strlcpy(msg, usage, MSG_LEN);
@@ -580,15 +565,16 @@ static int Cmd_kick(char *arg, player_t *pl, int oper, char *msg)
     i = Get_player_index_by_name(arg);
     if (i >= 0)
     {
+        player_t *pl_i = Player_by_index(i);
         sprintf(msg, "%s kicked %s out! [*Server notice*]",
-                pl->name, Player_by_index(i)->name);
-        if (Player_by_index(i)->conn == NULL)
+                pl->name, pl_i->name);
+        if (pl_i->conn == NULL)
         {
-            Delete_player(i);
+            Delete_player(pl_i);
         }
         else
         {
-            Destroy_connection(Player_by_index(i)->conn, "kicked out");
+            Destroy_connection(pl_i->conn, "kicked out");
         }
         Set_message(msg);
         strcpy(msg, "");
@@ -836,14 +822,15 @@ static int Cmd_pause(char *arg, player_t *pl, int oper, char *msg)
     i = Get_player_index_by_name(arg);
     if (i >= 0)
     {
-        if (Player_by_index(i)->conn != NULL)
+        player_t *pl2 = Player_by_index(i);
+        if (pl2->conn != NULL)
         {
-            if (BIT(Player_by_index(i)->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+            if (BIT(pl2->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             {
-                Kill_player(i);
+                Kill_player(pl2);
             }
-            Pause_player(i, true);
-            sprintf(msg, "%s was paused by %s.", Player_by_index(i)->name, pl->name);
+            Pause_player(pl2, true);
+            sprintf(msg, "%s was paused by %s.", pl2->name, pl->name);
             Set_message(msg);
             strcpy(msg, "");
             return CMD_RESULT_SUCCESS;

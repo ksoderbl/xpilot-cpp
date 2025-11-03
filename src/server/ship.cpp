@@ -78,7 +78,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK_BIT,
+        OBJ_SPARK,
         THRUST_MASS,
         GRAVITY | OWNERIMMUNE,
         RED,
@@ -93,7 +93,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK_BIT,
+        OBJ_SPARK,
         THRUST_MASS * ALT_SPARK_MASS_FACT,
         GRAVITY | OWNERIMMUNE,
         BLUE,
@@ -148,7 +148,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
     vy = (ship->vel.y * ship->mass + obj->vel.y * obj->mass) / m;
-    if (ship->type == OBJ_PLAYER_BIT && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
+    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
         player_t *pusher = PlayersArray[GetIndArray[obj->id]];
@@ -181,7 +181,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
-    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
+    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = PlayersArray[GetIndArray[obj2->id]];
@@ -218,7 +218,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     dvx1 = -(tcos(obj_theta) * force / dm);
     dvy1 = -(tsin(obj_theta) * force / dm);
 
-    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID)
+    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = PlayersArray[GetIndArray[obj2->id]];
@@ -228,7 +228,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         }
     }
 
-    if (obj2->type == OBJ_PLAYER_BIT && obj1->id != NO_ID)
+    if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
         player_t *pusher = PlayersArray[GetIndArray[obj1->id]];
@@ -368,28 +368,28 @@ void Update_tanks(pl_fuel_t *ft)
  */
 void Tank_handle_detach(player_t *pl)
 {
-    player_t *dummy;
+    player_t *tank;
     int i, ct;
 
-    if (BIT(pl->used, USES_PHASING_DEVICE))
+    if (Player_is_phasing(pl))
         return;
 
     /* Return, if no more players or no tanks */
     if (pl->fuel.num_tanks == 0 || NumPseudoPlayers == MAX_PSEUDO_PLAYERS || peek_ID() == 0)
-    {
         return;
-    }
 
     /* If current tank is main, use another one */
     if ((ct = pl->fuel.current) == 0)
         ct = pl->fuel.num_tanks;
 
     Update_tanks(&(pl->fuel));
-    /* Fork the current player_t */
-    dummy = PlayersArray[NumPlayers];
+
+    /* Fork the current player */
+    tank = Player_by_index(NumPlayers);
+
     /*
      * MWAAH: this was ... naieve at least:
-     * *dummy              = *pl;
+     * *tank              = *pl;
      * Player structures contain pointers to dynamic memory...
      */
 
@@ -397,58 +397,57 @@ void Tank_handle_detach(player_t *pl)
                                 ? Parse_shape_str(options.tankShipShape)
                                 : NULL);
     /* Released tanks don't have tanks... */
-    while (dummy->fuel.num_tanks > 0)
-    {
-        Player_remove_tank(NumPlayers, dummy->fuel.num_tanks);
-    }
-    SET_BIT(dummy->type_ext, OBJ_EXT_TANK);
-    Player_position_init_clpos(dummy, pl->pos);
-    dummy->vel = pl->vel;
-    dummy->acc = pl->acc;
-    dummy->dir = pl->dir;
-    dummy->turnspeed = pl->turnspeed;
-    dummy->velocity = pl->velocity;
-    dummy->float_dir = pl->float_dir;
-    dummy->turnresistance = pl->turnresistance;
-    dummy->turnvel = pl->turnvel;
-    dummy->oldturnvel = pl->oldturnvel;
-    dummy->turnacc = pl->turnacc;
-    dummy->power = pl->power;
+    while (tank->fuel.num_tanks > 0)
+        Player_remove_tank(tank, tank->fuel.num_tanks);
 
-    strlcpy(dummy->name, pl->name, MAX_CHARS);
-    strlcat(dummy->name, "'s tank", MAX_CHARS);
-    strlcpy(dummy->username, options.tankUserName, MAX_CHARS);
-    strlcpy(dummy->hostname, options.tankHostName, MAX_CHARS);
-    dummy->home_base = pl->home_base;
-    dummy->team = pl->team;
-    dummy->pseudo_team = pl->pseudo_team;
-    dummy->alliance = ALLIANCE_NOT_SET;
-    dummy->invite = NO_ID;
-    dummy->mychar = 'T';
-    dummy->score = pl->score - options.tankScoreDecrement;
+    SET_BIT(tank->type_ext, OBJ_EXT_TANK);
+    Player_position_init_clpos(tank, pl->pos);
+    tank->vel = pl->vel;
+    tank->acc = pl->acc;
+    tank->dir = pl->dir;
+    tank->turnspeed = pl->turnspeed;
+    tank->velocity = pl->velocity;
+    tank->float_dir = pl->float_dir;
+    tank->turnresistance = pl->turnresistance;
+    tank->turnvel = pl->turnvel;
+    tank->oldturnvel = pl->oldturnvel;
+    tank->turnacc = pl->turnacc;
+    tank->power = pl->power;
+
+    strlcpy(tank->name, pl->name, MAX_CHARS);
+    strlcat(tank->name, "'s tank", MAX_CHARS);
+    strlcpy(tank->username, options.tankUserName, MAX_CHARS);
+    strlcpy(tank->hostname, options.tankHostName, MAX_CHARS);
+    tank->home_base = pl->home_base;
+    tank->team = pl->team;
+    tank->pseudo_team = pl->pseudo_team;
+    tank->alliance = ALLIANCE_NOT_SET;
+    tank->invite = NO_ID;
+    tank->mychar = 'T';
+    tank->score = pl->score - options.tankScoreDecrement;
     updateScores = true;
 
     /* Fuel is the one from choosen tank */
-    dummy->fuel.sum =
-        dummy->fuel.tank[0] = pl->fuel.tank[ct];
-    dummy->fuel.max = TANK_CAP(ct);
-    dummy->fuel.current = 0;
-    dummy->fuel.num_tanks = 0;
+    tank->fuel.sum =
+        tank->fuel.tank[0] = pl->fuel.tank[ct];
+    tank->fuel.max = TANK_CAP(ct);
+    tank->fuel.current = 0;
+    tank->fuel.num_tanks = 0;
 
     /* Mass is only tank + fuel */
-    dummy->mass = (dummy->emptymass = options.shipMass) + FUEL_MASS(dummy->fuel.sum);
-    dummy->power *= TANK_THRUST_FACT;
+    tank->mass = (tank->emptymass = options.shipMass) + FUEL_MASS(tank->fuel.sum);
+    tank->power *= TANK_THRUST_FACT;
 
     /* Reset visibility. */
-    dummy->updateVisibility = 1;
+    tank->updateVisibility = 1;
     for (i = 0; i <= NumPlayers; i++)
     {
-        dummy->visibility[i].lastChange = 0;
+        tank->visibility[i].lastChange = 0;
         Player_by_index(i)->visibility[NumPlayers].lastChange = 0;
     }
 
     /* Remember whose tank this is */
-    dummy->lock.pl_id = pl->id;
+    tank->lock.pl_id = pl->id;
 
     request_ID();
     NumPlayers++;
@@ -458,41 +457,41 @@ void Tank_handle_detach(player_t *pl)
     /* Possibly join alliance. */
     if (pl->alliance != ALLIANCE_NOT_SET)
     {
-        Player_join_alliance(GetIndArray[dummy->id], GetIndArray[pl->id]);
+        Player_join_alliance(tank, pl);
     }
 
     sound_play_sensors(pl->pos, TANK_DETACH_SOUND);
 
     /* The tank uses shield and thrust */
-    dummy->obj_status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
-    dummy->have = DEF_HAVE;
-    dummy->used = (DEF_USED & ~USED_KILL & pl->have) | HAS_SHIELD;
+    tank->obj_status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
+    tank->have = DEF_HAVE;
+    tank->used = (DEF_USED & ~USED_KILL & pl->have) | HAS_SHIELD;
     if (options.playerShielding == 0)
     {
-        dummy->shield_time = 30 * FPS;
-        dummy->have |= HAS_SHIELD;
+        tank->shield_time = 30 * FPS;
+        tank->have |= HAS_SHIELD;
     }
 
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT_BIT && Obj[i]->info > 0 && PlayersArray[GetIndArray[Obj[i]->info]] == pl)
+        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && PlayersArray[GetIndArray[Obj[i]->info]] == pl)
         {
             Obj[i]->info = NumPlayers - 1;
         }
     }
 
     /* Remove tank, fuel and mass from myself */
-    Player_remove_tank(GetIndArray[pl->id], ct);
+    Player_remove_tank(pl, ct);
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
         if (Player_by_index(i)->conn != NULL)
         {
-            Send_player(Player_by_index(i)->conn, dummy->id);
-            Send_score(Player_by_index(i)->conn, dummy->id,
-                       dummy->score, dummy->life,
-                       dummy->mychar, dummy->alliance);
+            Send_player(Player_by_index(i)->conn, tank->id);
+            Send_score(Player_by_index(i)->conn, tank->id,
+                       tank->score, tank->life,
+                       tank->mychar, tank->alliance);
         }
     }
 }
@@ -576,7 +575,7 @@ void Make_wreckage(
         wreckage->color = color;
         wreckage->id = id;
         wreckage->team = team;
-        wreckage->type = OBJ_WRECKAGE_BIT;
+        wreckage->type = OBJ_WRECKAGE;
 
         /* Position */
         Object_position_init_clpos(OBJ_PTR(wreckage), pos);
@@ -605,15 +604,16 @@ void Make_wreckage(
         wreckage->fuselife = wreckage->life;
 
         /* Wreckage type, rotation, and size */
-        wreckage->turnspeed = 0.02 + rfrac() * 0.35;
-        wreckage->rotation = (int)(rfrac() * RES);
+        wreckage->wire_turnspeed = 0.02 + rfrac() * 0.35;
+        wreckage->wire_rotation = (int)(rfrac() * RES);
         size = (int)(256.0 * 1.5 * mass / total_mass);
         if (size > 255)
             size = 255;
-        wreckage->size = size;
+        wreckage->wire_size = size;
         wreckage->info = (int)(rfrac() * 256);
+        // wreckage->wire_type = (uint8_t)(rfrac() * 256);
 
-        radius = wreckage->size * 16 / 256;
+        radius = wreckage->wire_size * 16 / 256;
         if (radius < 8)
             radius = 8;
 
@@ -621,7 +621,7 @@ void Make_wreckage(
         wreckage->pl_radius = radius;
         wreckage->obj_status = status;
         wreckage->mods = mods;
-        Cell_add_object((object_t *)wreckage);
+        Cell_add_object(OBJ_PTR(wreckage));
     }
 }
 
@@ -643,7 +643,7 @@ void Explode_fighter(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_DEBRIS_BIT,
+        OBJ_DEBRIS,
         3.5,
         GRAVITY,
         RED,

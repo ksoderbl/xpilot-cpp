@@ -71,7 +71,7 @@ object_t *Object_allocate(void)
         obj = Obj[ObjCount];
         Object_incr_count();
 
-        obj->type = OBJ_DEBRIS_BIT;
+        obj->type = OBJ_DEBRIS;
         obj->life = 0;
     }
     else
@@ -157,7 +157,7 @@ void Alloc_shots(int number)
     for (i = 0; i < number; i++)
     {
         Obj[i] = &(x->obj);
-        MINE_PTR(Obj[i])->owner = NO_ID;
+        MINE_PTR(Obj[i])->mine_owner = NO_ID;
         Cell_init_object(Obj[i]);
         x++;
     }

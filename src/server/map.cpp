@@ -435,7 +435,7 @@ static void Init_map(void)
     world->NumWormholes = 0;
 }
 
-void Free_map(void)
+void World_free(void)
 {
     XFREE(world->block);
     XFREE(world->itemID);
@@ -460,7 +460,7 @@ static void Alloc_map(void)
     int x;
 
     if (world->block || world->gravity)
-        Free_map();
+        World_free();
 
     world->block =
         (uint8_t **)malloc(sizeof(uint8_t *) * world->x + world->x * sizeof(uint8_t) * world->y);
@@ -480,7 +480,7 @@ static void Alloc_map(void)
     world->transporters = NULL;
     if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
     {
-        Free_map();
+        World_free();
         error("Couldn't allocate memory for map (%d bytes)",
               world->x * (world->y * (sizeof(uint8_t) + sizeof(vector_t)) + sizeof(vector_t *) + sizeof(uint8_t *)));
         exit(-1);

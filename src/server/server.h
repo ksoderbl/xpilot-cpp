@@ -75,9 +75,9 @@ void release_ID(int id);
 /*
  * Prototypes for event.c
  */
-int Handle_keyboard(int);
-void Pause_player(int ind, bool on);
-int Player_lock_closest(int ind, int next);
+int Handle_keyboard(player_t *pl);
+void Pause_player(player_t *pl, bool on);
+int Player_lock_closest(player_t *pl, bool next);
 bool team_dead(int team);
 void filter_mods(modifiers_t *mods);
 
@@ -96,7 +96,7 @@ int World_place_item_concentrator(clpos_t pos);
 int World_place_asteroid_concentrator(clpos_t pos);
 int World_place_friction_area(clpos_t pos, double fric);
 
-void Free_map(void);
+void World_free(void);
 bool Grok_map(void);
 void Find_base_direction(void);
 void Compute_gravity(void);
@@ -131,7 +131,7 @@ void Record_shove(player_t *pl, player_t *pusher, long time);
 void Delta_mv(object_t *ship, object_t *obj);
 void Delta_mv_elastic(object_t *obj1, object_t *obj2);
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
-void Item_damage(int ind, double prob);
+void Item_damage(player_t *pl, double prob);
 void Tank_handle_detach(player_t *pl);
 void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
@@ -145,7 +145,7 @@ void Place_general_mine(int id, int team, long status, clpos_t pos,
                         vector_t vel, modifiers_t mods);
 void Detonate_mines(player_t *pl);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
-void Fire_ecm(int ind);
+void Fire_ecm(player_t *pl);
 void Fire_general_ecm(int ind, int team, clpos_t pos);
 void Move_ball(int ind);
 void Fire_general_shot(int id, int team, bool cannon,
@@ -220,22 +220,6 @@ void Cannon_check_fire(cannon_t *cannon);
  * Prototypes for command.c
  */
 void Handle_player_command(player_t *pl, char *cmd);
-
-/*
- * Prototypes for robot.c
- */
-void Parse_robot_file(void);
-void Robot_init(void);
-void Robot_delete(int ind, int kicked);
-void Robot_destroy(int ind);
-void Robot_update(void);
-void Robot_invite(int ind, int inv_ind);
-void Robot_war(int ind, int killer);
-void Robot_reset_war(int ind);
-int Robot_war_on_player(int ind);
-void Robot_go_home(int ind);
-void Robot_program(int ind, int victim_id);
-void Robot_message(int ind, const char *message);
 
 /*
  * Prototypes for rules.c
@@ -335,17 +319,17 @@ void Laser_pulse_collision(void);
 /*
  * Prototypes for alliance.c
  */
-int Invite_player(int ind, int ally_ind);
-int Cancel_invitation(int ind);
-int Refuse_alliance(int ind, int ally_ind);
-int Refuse_all_alliances(int ind);
-int Accept_alliance(int ind, int ally_ind);
-int Accept_all_alliances(int ind);
+int Invite_player(player_t *pl, player_t *ally);
+int Cancel_invitation(player_t *pl);
+int Refuse_alliance(player_t *pl, player_t *ally);
+int Refuse_all_alliances(player_t *pl);
+int Accept_alliance(player_t *pl, player_t *ally);
+int Accept_all_alliances(player_t *pl);
 int Get_alliance_member_count(int id);
-void Player_join_alliance(int ind, int ally_ind);
+void Player_join_alliance(player_t *pl, player_t *ally);
 void Dissolve_all_alliances(void);
-int Leave_alliance(int ind);
-void Alliance_player_list(int ind);
+int Leave_alliance(player_t *pl);
+void Alliance_player_list(player_t *pl);
 
 /*
  * Prototypes for object.c

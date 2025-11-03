@@ -160,7 +160,7 @@ void Place_general_mine(int id, int team, long status,
                 sprintf(msg, "You need at least %d mines to %s %s!",
                         options.nukeMinMines,
                         (BIT(status, GRAVITY) ? "throw" : "drop"),
-                        Describe_shot(OBJ_MINE_BIT, status, mods, 0));
+                        Describe_shot(OBJ_MINE, status, mods, 0));
                 Set_player_message(pl, msg);
                 return;
             }
@@ -189,7 +189,7 @@ void Place_general_mine(int id, int team, long status,
             sprintf(msg, "You need at least %ld fuel units to %s %s!",
                     (-drain) >> FUEL_SCALE_BITS,
                     (BIT(status, GRAVITY) ? "throw" : "drop"),
-                    Describe_shot(OBJ_MINE_BIT, status, mods, 0));
+                    Describe_shot(OBJ_MINE, status, mods, 0));
             Set_player_message(pl, msg);
             return;
         }
@@ -218,7 +218,7 @@ void Place_general_mine(int id, int team, long status,
         {
             sprintf(msg, "%s has %s %s!", pl->name,
                     (BIT(status, GRAVITY) ? "thrown" : "dropped"),
-                    Describe_shot(OBJ_MINE_BIT, status, mods, 0));
+                    Describe_shot(OBJ_MINE, status, mods, 0));
             Set_message(msg);
             sound_play_all(NUKE_LAUNCH_SOUND);
         }
@@ -238,13 +238,13 @@ void Place_general_mine(int id, int team, long status,
         if ((mine = MINE_PTR(Object_allocate())) == NULL)
             break;
 
-        mine->type = OBJ_MINE_BIT;
+        mine->type = OBJ_MINE;
         mine->color = BLUE;
         mine->info = options.mineFuseTime;
         mine->obj_status = status;
         mine->id = (pl ? pl->id : NO_ID);
         mine->team = team;
-        mine->owner = mine->id;
+        mine->mine_owner = mine->id;
         Object_position_init_clpos(OBJ_PTR(mine), pos);
         if (minis > 1)
         {
@@ -312,7 +312,7 @@ void Detonate_mines(player_t *pl)
     {
         object_t *mine = Obj[i];
 
-        if (!BIT(mine->type, OBJ_MINE_BIT))
+        if (!BIT(mine->type, OBJ_MINE))
             continue;
         /*
          * Mines which have been ECM reprogrammed should only be detonatable
@@ -365,9 +365,9 @@ void Make_treasure_ball(int treasure)
     ball->acc.y = 0;
     Object_position_init_clpos(OBJ_PTR(ball), t->pos);
     ball->id = NO_ID;
-    ball->owner = NO_ID;
+    ball->ball_owner = NO_ID;
     ball->team = t->team;
-    ball->type = OBJ_BALL_BIT;
+    ball->type = OBJ_BALL;
     ball->color = WHITE;
     ball->count = 0;
     ball->pl_range = BALL_RADIUS;
@@ -392,22 +392,22 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit)
 
     switch (type)
     {
-    case OBJ_MINE_BIT:
+    case OBJ_MINE:
         if (BIT(status, GRAVITY))
             name = "bomb";
         else
             name = "mine";
         break;
-    case OBJ_SMART_SHOT_BIT:
+    case OBJ_SMART_SHOT:
         name = "smart missile";
         break;
-    case OBJ_TORPEDO_BIT:
+    case OBJ_TORPEDO:
         name = "torpedo";
         break;
-    case OBJ_HEAT_SHOT_BIT:
+    case OBJ_HEAT_SHOT:
         name = "heatseeker";
         break;
-    case OBJ_CANNON_SHOT_BIT:
+    case OBJ_CANNON_SHOT:
         if (BIT(mods.warhead, CLUSTER))
         {
             howmany = "";
@@ -438,7 +438,7 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit)
     if (mods.mini && !hit)
     {
         howmany = "some ";
-        plural = (type == OBJ_TORPEDO_BIT) ? "es" : "s";
+        plural = (type == OBJ_TORPEDO) ? "es" : "s";
     }
 
     sprintf(msg, "%s%s%s%s%s%s%s%s%s",
@@ -564,10 +564,10 @@ void Fire_general_shot(int id, int team, bool cannon,
     default:
         return;
 
-    case OBJ_SHOT_BIT:
+    case OBJ_SHOT:
         CLEAR_MODS(mods); /* Shots can't be modified! */
         /* FALLTHROUGH */
-    case OBJ_CANNON_SHOT_BIT:
+    case OBJ_CANNON_SHOT:
         pl_range = pl_radius = 0;
         if (pl)
         {
@@ -583,17 +583,17 @@ void Fire_general_shot(int id, int team, bool cannon,
         }
         break;
 
-    case OBJ_SMART_SHOT_BIT:
-    case OBJ_HEAT_SHOT_BIT:
-        if ((type == OBJ_HEAT_SHOT_BIT) ? !options.allowHeatSeekers : !options.allowSmartMissiles)
+    case OBJ_SMART_SHOT:
+    case OBJ_HEAT_SHOT:
+        if ((type == OBJ_HEAT_SHOT) ? !options.allowHeatSeekers : !options.allowSmartMissiles)
         {
             if (options.allowTorpedoes)
-                type = OBJ_TORPEDO_BIT;
+                type = OBJ_TORPEDO;
             else
                 return;
         }
         /* FALLTHROUGH */
-    case OBJ_TORPEDO_BIT:
+    case OBJ_TORPEDO:
         /*
          * Make sure there are enough object entries for the mini shots.
          */
@@ -627,13 +627,13 @@ void Fire_general_shot(int id, int team, bool cannon,
                 used = options.nukeMinSmarts;
 
             mass = MISSILE_MASS * used * NUKE_MASS_MULT;
-            pl_range = (type == OBJ_TORPEDO_BIT) ? (int)NUKE_RANGE : MISSILE_RANGE;
+            pl_range = (type == OBJ_TORPEDO) ? (int)NUKE_RANGE : MISSILE_RANGE;
         }
         else
         {
             mass = MISSILE_MASS;
             used = 1;
-            pl_range = (type == OBJ_TORPEDO_BIT) ? (int)TORPEDO_RANGE : MISSILE_RANGE;
+            pl_range = (type == OBJ_TORPEDO) ? (int)TORPEDO_RANGE : MISSILE_RANGE;
         }
         pl_range /= mods.mini + 1;
         pl_radius = MISSILE_LEN;
@@ -652,7 +652,7 @@ void Fire_general_shot(int id, int team, bool cannon,
 
         switch (type)
         {
-        case OBJ_HEAT_SHOT_BIT:
+        case OBJ_HEAT_SHOT:
 #ifndef HEAT_LOCK
             lock = -1;
 #else  /* HEAT_LOCK */
@@ -681,7 +681,7 @@ void Fire_general_shot(int id, int team, bool cannon,
             speed *= HEAT_SPEED_FACT;
             break;
 
-        case OBJ_SMART_SHOT_BIT:
+        case OBJ_SMART_SHOT:
             if (pl == NULL)
                 lock = target;
             else
@@ -694,7 +694,7 @@ void Fire_general_shot(int id, int team, bool cannon,
             turnspeed = SMART_TURNSPEED;
             break;
 
-        case OBJ_TORPEDO_BIT:
+        case OBJ_TORPEDO:
             lock = -1;
             fuse = 8;
             break;
@@ -720,9 +720,9 @@ void Fire_general_shot(int id, int team, bool cannon,
                 Set_message(msg);
                 sound_play_all(NUKE_LAUNCH_SOUND);
             }
-            else if (type == OBJ_SMART_SHOT_BIT)
+            else if (type == OBJ_SMART_SHOT)
                 sound_play_sensors(pl->pos, FIRE_SMART_SHOT_SOUND);
-            else if (type == OBJ_TORPEDO_BIT)
+            else if (type == OBJ_TORPEDO)
                 sound_play_sensors(pl->pos, FIRE_TORPEDO_SOUND);
         }
         break;
@@ -938,7 +938,7 @@ void Fire_general_shot(int id, int team, bool cannon,
      * Contact: harveyt@sco.com
      */
 
-    if (pl && type != OBJ_SHOT_BIT)
+    if (pl && type != OBJ_SHOT)
     {
         /*
          * Initialise missile rack spread variables. (See Comment Point 1)
@@ -967,14 +967,14 @@ void Fire_general_shot(int id, int team, bool cannon,
         shot->team = team;
         shot->color = (pl ? pl->color : WHITE);
 
-        if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT))
+        if (BIT(shot->type, OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_SMART_SHOT))
         {
             MISSILE_PTR(shot)->turnspeed = turnspeed;
             MISSILE_PTR(shot)->max_speed = max_speed;
         }
 
         shotpos = pos;
-        if (pl && type != OBJ_SHOT_BIT)
+        if (pl && type != OBJ_SHOT)
         {
             if (r == on_this_rack)
             {
@@ -1000,7 +1000,7 @@ void Fire_general_shot(int id, int team, bool cannon,
 
         Object_position_init_clpos(shot, shotpos);
 
-        if (type == OBJ_SHOT_BIT || !pl)
+        if (type == OBJ_SHOT || !pl)
             angle = 0.0;
         else
         {
@@ -1029,7 +1029,7 @@ void Fire_general_shot(int id, int team, bool cannon,
          */
         switch (type)
         {
-        case OBJ_TORPEDO_BIT:
+        case OBJ_TORPEDO:
             angle *= (MINI_TORPEDO_SPREAD_ANGLE / 360.0) * RES;
             ldir = MOD2(dir + (int)angle, RES);
             mv.x = MINI_TORPEDO_SPREAD_SPEED * tcos(ldir) / spread;
@@ -1087,36 +1087,36 @@ void Fire_normal_shots(player_t *pl)
 
     shot_angle = MODS_SPREAD_MAX - pl->mods.spread;
 
-    Fire_main_shot(pl, OBJ_SHOT_BIT, pl->dir);
+    Fire_main_shot(pl, OBJ_SHOT, pl->dir);
     for (i = 0; i < pl->item[ITEM_WIDEANGLE]; i++)
     {
         if (pl->ship->num_l_gun > 0)
-            Fire_left_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
+            Fire_left_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
         else
-            Fire_main_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
+            Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
         if (pl->ship->num_r_gun > 0)
-            Fire_right_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
+            Fire_right_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
         else
-            Fire_main_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
+            Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
     }
     for (i = 0; i < pl->item[ITEM_REARSHOT]; i++)
     {
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) < 0)
         {
             if (pl->ship->num_l_rgun > 0)
-                Fire_left_rshot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
+                Fire_left_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
             else
-                Fire_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+                Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) > 0)
         {
             if (pl->ship->num_r_rgun > 0)
-                Fire_right_rshot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
+                Fire_right_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
             else
-                Fire_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+                Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) == 0)
-            Fire_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
     }
 }
 
@@ -1141,19 +1141,19 @@ void Delete_shot(int ind)
     switch (shot->type)
     {
 
-    case OBJ_SPARK_BIT:
-    case OBJ_DEBRIS_BIT:
-    case OBJ_WRECKAGE_BIT:
+    case OBJ_SPARK:
+    case OBJ_DEBRIS:
+    case OBJ_WRECKAGE:
         break;
 
-    case OBJ_ASTEROID_BIT:
+    case OBJ_ASTEROID:
         Break_asteroid(ind);
         break;
 
-    case OBJ_BALL_BIT:
+    case OBJ_BALL:
         ball = BALL_PTR(shot);
         if (ball->id != NO_ID)
-            Detach_ball(GetIndArray[ball->id], ind);
+            Detach_ball(Player_by_id(ball->id), ind);
         else
         {
             /*
@@ -1165,7 +1165,7 @@ void Delete_shot(int ind)
                     Player_by_index(i)->ball = NULL;
             }
         }
-        if (ball->owner == NO_ID)
+        if (ball->ball_owner == NO_ID)
         {
             /*
              * If the ball has never been owned, the only way it could
@@ -1186,7 +1186,7 @@ void Delete_shot(int ind)
                 ball->vel,
                 ball->id,
                 ball->team,
-                OBJ_DEBRIS_BIT,
+                OBJ_DEBRIS,
                 DEBRIS_MASS,
                 GRAVITY,
                 RED,
@@ -1199,16 +1199,16 @@ void Delete_shot(int ind)
         break;
         /* Shots related to a player. */
 
-    case OBJ_MINE_BIT:
-    case OBJ_HEAT_SHOT_BIT:
-    case OBJ_TORPEDO_BIT:
-    case OBJ_SMART_SHOT_BIT:
-    case OBJ_CANNON_SHOT_BIT:
+    case OBJ_MINE:
+    case OBJ_HEAT_SHOT:
+    case OBJ_TORPEDO:
+    case OBJ_SMART_SHOT:
+    case OBJ_CANNON_SHOT:
         if (shot->mass == 0)
             break;
 
         status = GRAVITY;
-        if (shot->type == OBJ_MINE_BIT)
+        if (shot->type == OBJ_MINE)
             status |= COLLISIONSHOVE;
 
         if (BIT(shot->obj_status, FROMCANNON))
@@ -1217,14 +1217,14 @@ void Delete_shot(int ind)
         if (BIT(shot->mods.nuclear, NUCLEAR))
             sound_play_all(NUKE_EXPLOSION_SOUND);
 
-        else if (BIT(shot->type, OBJ_MINE_BIT))
+        else if (BIT(shot->type, OBJ_MINE))
             sound_play_sensors(shot->pos, MINE_EXPLOSION_SOUND);
         else
             sound_play_sensors(shot->pos, OBJECT_EXPLOSION_SOUND);
 
         if (BIT(shot->mods.warhead, CLUSTER))
         {
-            type = OBJ_SHOT_BIT;
+            type = OBJ_SHOT;
             if (shot->id != NO_ID)
             {
                 player_t *pl = PlayersArray[GetIndArray[shot->id]];
@@ -1248,14 +1248,14 @@ void Delete_shot(int ind)
         }
         else
         {
-            type = OBJ_DEBRIS_BIT;
+            type = OBJ_DEBRIS;
             color = RED;
             mass = DEBRIS_MASS;
             modv = 1;
             num_modv = 1;
             life_modv = modv;
             speed_modv = modv;
-            if (shot->type == OBJ_MINE_BIT)
+            if (shot->type == OBJ_MINE)
                 intensity = 512;
             else
                 intensity = 32;
@@ -1270,7 +1270,7 @@ void Delete_shot(int ind)
         if (BIT(shot->mods.nuclear, NUCLEAR))
         {
             double nuke_factor;
-            if (shot->type == OBJ_MINE_BIT)
+            if (shot->type == OBJ_MINE)
                 nuke_factor = NUKE_MINE_EXPL_MULT * shot->mass / MINE_MASS;
             else
                 nuke_factor = NUKE_SMART_EXPL_MULT * shot->mass / MISSILE_MASS;
@@ -1282,7 +1282,7 @@ void Delete_shot(int ind)
             /*intensity >>= 1;*/
             mass = -mass;
 
-        if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT))
+        if (BIT(shot->type, OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_SMART_SHOT))
             intensity /= (1 + shot->mods.power);
 
         Make_debris(shot->prevpos,
@@ -1303,7 +1303,7 @@ void Delete_shot(int ind)
                     (int)((intensity >> 1) * life_modv));
         break;
 
-    case OBJ_SHOT_BIT:
+    case OBJ_SHOT:
         if (shot->id == NO_ID || BIT(shot->obj_status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
             break;
         pl = PlayersArray[GetIndArray[shot->id]];
@@ -1312,7 +1312,7 @@ void Delete_shot(int ind)
         break;
 
         /* Special items. */
-    case OBJ_ITEM_BIT:
+    case OBJ_ITEM:
 
         switch (shot->info)
         {
@@ -1382,7 +1382,7 @@ void Delete_shot(int ind)
         }
         else if (addHeat)
             Fire_general_shot(NO_ID, TEAM_NOT_SET, 0,
-                              shot->pos, OBJ_HEAT_SHOT_BIT, (int)(rfrac() * RES),
+                              shot->pos, OBJ_HEAT_SHOT, (int)(rfrac() * RES),
                               mods, NO_ID);
     }
     else if (addBall)
@@ -1528,7 +1528,7 @@ void Move_ball(int ind)
     /* if the tether is too long or too short, release it */
     if (ABS(ratio) > options.maxBallConnectorRatio)
     {
-        Detach_ball(GetIndArray[ball->id], ind);
+        Detach_ball(Player_by_id(ball->id), ind);
         return;
     }
     ball->length = length;
@@ -1563,7 +1563,7 @@ void Move_smart_shot(int ind)
     double y_dif = 0.0;
     double shot_speed;
 
-    if (shot->type == OBJ_TORPEDO_BIT)
+    if (shot->type == OBJ_TORPEDO)
     {
         torpobject_t *torp = TORP_PTR(shot);
         if (BIT(torp->mods.nuclear, NUCLEAR))
@@ -1583,7 +1583,7 @@ void Move_smart_shot(int ind)
 
     acc = SMART_SHOT_ACC;
 
-    if (shot->type == OBJ_HEAT_SHOT_BIT)
+    if (shot->type == OBJ_HEAT_SHOT)
     {
         acc = SMART_SHOT_ACC * HEAT_SPEED_FACT;
         if (shot->info >= 0)
@@ -1662,7 +1662,7 @@ void Move_smart_shot(int ind)
         x_dif = (int)(rfrac() * 4 * shot->count);
         y_dif = (int)(rfrac() * 4 * shot->count);
     }
-    else if (shot->type == OBJ_SMART_SHOT_BIT)
+    else if (shot->type == OBJ_SMART_SHOT)
     {
         smartobject_t *smart = SMART_PTR(shot);
 

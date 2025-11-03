@@ -74,7 +74,7 @@ extern char cdashes[NUM_CDASHES];
 
 extern int num_spark_colors;
 
-extern unsigned short team;  /* What team is the player on? */
+extern uint16_t team;        /* What team is the player on? */
 extern bool players_exposed; /* Is score window exposed? */
 
 extern short ext_view_width;   /* Width of extended visible area */

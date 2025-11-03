@@ -44,6 +44,7 @@
 #include "xperror.h"
 #include "object.h"
 #include "xpmath.h"
+#include "robot.h"
 
 bool updateScores = true;
 
@@ -78,9 +79,10 @@ int GetInd(int id)
  * Functions on player array.
  */
 
-void Pick_startpos(int ind)
+void Pick_startpos(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
+    int ind = GetInd(pl->id);
     int i, num_free;
     int pick = 0, seen = 0;
     static int prev_num_bases = 0;
@@ -92,11 +94,11 @@ void Pick_startpos(int ind)
         return;
     }
 
-    if (prev_num_bases != world->NumBases)
+    if (prev_num_bases != Num_bases())
     {
-        prev_num_bases = world->NumBases;
+        prev_num_bases = Num_bases();
         XFREE(free_bases);
-        free_bases = (char *)malloc(world->NumBases * sizeof(*free_bases));
+        free_bases = (char *)malloc(Num_bases() * sizeof(*free_bases));
         if (free_bases == NULL)
         {
             error("Can't allocate memory for free_bases");
@@ -105,7 +107,7 @@ void Pick_startpos(int ind)
     }
 
     num_free = 0;
-    for (i = 0; i < world->NumBases; i++)
+    for (i = 0; i < Num_bases(); i++)
     {
         if (world->bases[i].team == pl->team)
         {
@@ -113,21 +115,25 @@ void Pick_startpos(int ind)
             free_bases[i] = 1;
         }
         else
+        {
             free_bases[i] = 0; /* other team */
+        }
     }
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i != ind && !Player_is_tank(Player_by_index(i)) && free_bases[Player_by_index(i)->home_base])
+        player_t *pl_i = Player_by_index(i);
+
+        if (pl_i->id != pl->id && !Player_is_tank(pl_i) && free_bases[pl_i->home_base])
         {
-            free_bases[Player_by_index(i)->home_base] = 0; /* occupado */
+            free_bases[pl_i->home_base] = 0; /* occupado */
             num_free--;
         }
     }
 
     if (BIT(world->rules->mode, TIMING))
     { /* pick first free base */
-        for (i = 0; i < world->NumBases; i++)
+        for (i = 0; i < Num_bases(); i++)
         {
             if (free_bases[world->baseorder[i].base_idx])
                 break;
@@ -137,7 +143,7 @@ void Pick_startpos(int ind)
     {
         pick = (int)(rfrac() * num_free);
         seen = 0;
-        for (i = 0; i < world->NumBases; i++)
+        for (i = 0; i < Num_bases(); i++)
         {
             if (free_bases[i] != 0)
             {
@@ -149,10 +155,10 @@ void Pick_startpos(int ind)
         }
     }
 
-    if (i == world->NumBases)
+    if (i == Num_bases())
     {
         error("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
-              ind, world->NumBases, num_free, pick, seen);
+              ind, Num_bases(), num_free, pick, seen);
         End_game();
     }
     else
@@ -162,9 +168,11 @@ void Pick_startpos(int ind)
         {
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Player_by_index(i)->conn != NULL)
+                player_t *pl_i = PlayersArray[i];
+
+                if (pl_i->conn != NULL)
                 {
-                    Send_base(Player_by_index(i)->conn,
+                    Send_base(pl_i->conn,
                               pl->id,
                               pl->home_base);
                 }
@@ -172,14 +180,15 @@ void Pick_startpos(int ind)
             if (BIT(pl->obj_status, PLAYING) == 0)
                 pl->count = RECOVERY_DELAY;
             else if (BIT(pl->obj_status, PAUSE | GAME_OVER))
-                Go_home(ind);
+                Go_home(pl);
         }
     }
 }
 
-void Go_home(int ind)
+void Go_home(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
+    int ind = GetInd(pl->id);
 
     printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
     if (ind != pl->ind)
@@ -236,7 +245,7 @@ void Go_home(int ind)
     pl->turnacc = pl->turnvel = 0.0;
     memset(pl->last_keyv, 0, sizeof(pl->last_keyv));
     memset(pl->prev_keyv, 0, sizeof(pl->prev_keyv));
-    Player_used_kill(ind);
+    Player_used_kill(pl);
 
     if (options.playerStartsShielded != 0)
     {
@@ -249,20 +258,24 @@ void Go_home(int ind)
         if (BIT(pl->have, HAS_DEFLECTOR))
             Deflector(pl, true);
     }
-    CLR_BIT(pl->obj_status, THRUSTING);
+    Thrust(pl, false);
     pl->updateVisibility = 1;
     for (i = 0; i < NumPlayers; i++)
     {
+        player_t *pl_i = PlayersArray[i];
+
         pl->visibility[i].lastChange = 0;
-        Player_by_index(i)->visibility[ind].lastChange = 0;
+        pl_i->visibility[ind].lastChange = 0;
     }
 
     if (Player_is_robot(pl))
-        Robot_go_home(ind);
+        Robot_go_home(pl);
+
+    warn("******** RETURN FROM GO HOME!!!!");
 }
 
 /*
- * Compute the current sensor range for player `pl'.  This is based on the
+ * Compute the current sensor range for player 'pl'.  This is based on the
  * amount of fuel, the number of sensor items (each one adds 25%), and the
  * minimum and maximum visibility limits in effect.
  */
@@ -327,9 +340,9 @@ void Player_add_tank(player_t *pl, long tank_fuel)
 /*
  * Remove a tank from a ship, if possible.
  */
-void Player_remove_tank(int ind, int which_tank)
+void Player_remove_tank(player_t *pl, int which_tank)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     int i, tank_ind;
     long tank_fuel, tank_cap;
 
@@ -344,37 +357,27 @@ void Player_remove_tank(int ind, int which_tank)
         pl->fuel.sum -= tank_fuel;
         pl->fuel.num_tanks--;
         if (pl->fuel.current > pl->fuel.num_tanks)
-        {
             pl->fuel.current = 0;
-        }
         else
         {
             for (i = tank_ind; i <= pl->fuel.num_tanks; i++)
-            {
                 pl->fuel.tank[i] = pl->fuel.tank[i + 1];
-            }
         }
         pl->item[ITEM_TANK] = pl->fuel.num_tanks;
     }
 }
 
-void Player_hit_armor(int ind)
+void Player_hit_armor(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
-
     if (--pl->item[ITEM_ARMOR] <= 0)
         CLR_BIT(pl->have, HAS_ARMOR);
 }
 
-void Player_used_kill(int ind)
+void Player_used_kill(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
-
     pl->used &= ~USED_KILL;
     if (!BIT(DEF_HAVE, HAS_SHIELD))
-    {
         CLR_BIT(pl->have, HAS_SHIELD);
-    }
 }
 
 /*
@@ -393,9 +396,9 @@ void Player_set_mass(player_t *pl)
  * Give player the initial number of tanks and amount of fuel.
  * Upto the maximum allowed.
  */
-static void Player_init_fuel(int ind, long total_fuel)
+static void Player_init_fuel(player_t *pl, long total_fuel)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     long fuel = total_fuel;
     int i;
 
@@ -438,7 +441,7 @@ int Init_player(int ind, shipshape_t *ship)
     }
 
     pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
-    Player_init_fuel(ind, pl->fuel.sum);
+    Player_init_fuel(pl, pl->fuel.sum);
 
     if (options.allowShipShapes == true && ship)
         pl->ship = ship;
@@ -472,7 +475,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->shield_time = 0;
     pl->last_wall_touch = 0;
 
-    pl->type = OBJ_PLAYER_BIT;
+    pl->type = OBJ_PLAYER;
     pl->type_ext = 0; /* assume human player */
     pl->shots = 0;
     pl->missile_rack = 0;
@@ -535,9 +538,10 @@ int Init_player(int ind, shipshape_t *ship)
     {
         for (i = 0; i < NumPlayers; i++)
         {
+            player_t *pl_i = PlayersArray[i];
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (Player_by_index(i)->life < world->rules->lives && !Players_are_teammates(pl, Player_by_index(i)))
+            if (pl_i->life < world->rules->lives && !Players_are_teammates(pl, pl_i))
             {
                 too_late = true;
                 break;
@@ -660,9 +664,11 @@ void Update_score_table(void)
             pl->prev_alliance = pl->alliance;
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Player_by_index(i)->conn != NULL)
+                player_t *pl_i = PlayersArray[i];
+
+                if (pl_i->conn != NULL)
                 {
-                    Send_score(Player_by_index(i)->conn, pl->id,
+                    Send_score(pl_i->conn, pl->id,
                                pl->score, pl->life,
                                pl->mychar, pl->alliance);
                 }
@@ -681,9 +687,10 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    if (Player_by_index(i)->conn != NULL)
+                    player_t *pl_i = PlayersArray[i];
+                    if (pl_i->conn != NULL)
                     {
-                        Send_timing(Player_by_index(i)->conn, pl->id, check, pl->round);
+                        Send_timing(pl_i->conn, pl->id, check, pl->round);
                     }
                 }
             }
@@ -707,11 +714,11 @@ void Reset_all_players(void)
         {
             if (BIT(pl->obj_status, PAUSE))
             {
-                Player_death_reset(i);
+                Player_death_reset(pl);
             }
             else
             {
-                Kill_player(i);
+                Kill_player(pl);
                 if (pl != Player_by_index(i))
                 {
                     /* player was deleted. */
@@ -752,12 +759,12 @@ void Reset_all_players(void)
         /* We are starting all over again */
         for (j = NumObjs - 1; j >= 0; j--)
         {
-            if (BIT(Obj[j]->type, OBJ_BALL_BIT))
+            if (BIT(Obj[j]->type, OBJ_BALL))
             {
                 ballobject_t *ball = BALL_IND(j);
                 ball->id = NO_ID;
                 ball->life = 0;
-                ball->owner = 0; /* why not -1 ??? */
+                ball->ball_owner = 0; /* why not -1 ??? */
                 CLR_BIT(ball->obj_status, RECREATE);
                 Delete_shot(j);
             }
@@ -801,10 +808,10 @@ void Reset_all_players(void)
         for (i = 0; i < NumObjs; i++)
         {
             object_t *obj = Obj[i];
-            if (BIT(obj->type, OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ITEM_BIT))
+            if (BIT(obj->type, OBJ_SHOT | OBJ_MINE | OBJ_DEBRIS | OBJ_SPARK | OBJ_CANNON_SHOT | OBJ_TORPEDO | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_ITEM))
             {
                 obj->life = 0;
-                if (BIT(obj->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
+                if (BIT(obj->type, OBJ_TORPEDO | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_CANNON_SHOT | OBJ_MINE))
                 {
                     /* Take care that no new explosions are made. */
                     obj->mass = 0;
@@ -1107,7 +1114,9 @@ void Individual_game_over(int winner)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            if (IS_ROBOT_IND(j))
+            player_t *pl_j = PlayersArray[j];
+
+            if (Player_is_robot(pl_j))
             {
                 for (i = 0; i < num_best_players; i++)
                 {
@@ -1197,7 +1206,7 @@ void Race_game_over(void)
                 }
                 if (BIT(pl->obj_status, PAUSE))
                 {
-                    Go_home(order[i]);
+                    Go_home(pl);
                 }
             }
         }
@@ -1216,9 +1225,9 @@ void Race_game_over(void)
 
         /* Kill any remaining players */
         if (!BIT(pl->obj_status, GAME_OVER))
-            Kill_player(i);
+            Kill_player(pl);
         else
-            Player_death_reset(i);
+            Player_death_reset(pl);
         if (pl != Player_by_index(i))
         {
             continue;
@@ -1670,32 +1679,28 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (BIT(Player_by_index(i)->obj_status, PAUSE) || Player_is_tank(Player_by_index(i)))
+            player_t *pl_i = Player_by_index(i);
+
+            if (BIT(pl_i->obj_status, PAUSE) || Player_is_tank(pl_i))
                 continue;
-            if (!BIT(Player_by_index(i)->obj_status, GAME_OVER))
+            if (!BIT(pl_i->obj_status, GAME_OVER))
             {
                 num_alive_players++;
-                if (IS_ROBOT_IND(i))
+                if (Player_is_robot(pl_i))
                     num_alive_robots++;
                 winner = i; /* Tag player that's alive */
             }
-            else if (IS_HUMAN_IND(i))
+            else if (Player_is_human(pl_i))
                 num_active_humans++;
             num_active_players++;
         }
 
         if (num_alive_players == 1 && num_active_players > 1)
-        {
             Individual_game_over(winner);
-        }
         else if (num_alive_players == 0 && num_active_players >= 1)
-        {
             Individual_game_over(-1);
-        }
         else if (num_alive_robots > 1 && num_alive_players == num_alive_robots && num_active_humans > 0)
-        {
             Individual_game_over(-2);
-        }
         else if (options.maxRoundTime > 0 && roundtime == 0)
         {
             Set_message("Timer expired. Round ends now.");
@@ -1704,19 +1709,33 @@ void Compute_game_status(void)
     }
 }
 
-void Delete_player(int ind)
+void Delete_player(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
+    // Hack to get ind
+    int ind = -1;
+    for (int k = 0; k < NumPlayers; k++)
+    {
+        if (pl == PlayersArray[k])
+        {
+            ind = k;
+            break;
+        }
+    }
+
+    warn("Delete_player: ind = %d", ind);
+    warn("Delete_player: getindarray's pl id = %d", GetIndArray[pl->id]);
+
     object_t *obj;
     int i, j,
         id = pl->id;
 
     /* call before important player structures are destroyed */
-    Leave_alliance(ind);
+    Leave_alliance(pl);
 
     if (Player_is_robot(pl))
     {
-        Robot_destroy(ind);
+        Robot_destroy(pl);
     }
 
     /* Delete remaining shots */
@@ -1725,12 +1744,12 @@ void Delete_player(int ind)
         obj = Obj[i];
         if (obj->id == id)
         {
-            if (obj->type == OBJ_BALL_BIT)
+            if (obj->type == OBJ_BALL)
             {
                 Delete_shot(i);
-                BALL_PTR(obj)->owner = NO_ID;
+                BALL_PTR(obj)->ball_owner = NO_ID;
             }
-            else if (BIT(obj->type, OBJ_DEBRIS_BIT | OBJ_SPARK_BIT))
+            else if (BIT(obj->type, OBJ_DEBRIS | OBJ_SPARK))
             {
                 /* Okay, so you want robot explosions to exist,
                  * even if the robot left the game. */
@@ -1742,26 +1761,25 @@ void Delete_player(int ind)
                 {
                     obj->life = 0;
                     if (BIT(obj->type,
-                            OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT))
+                            OBJ_CANNON_SHOT | OBJ_MINE | OBJ_SMART_SHOT | OBJ_HEAT_SHOT | OBJ_TORPEDO))
                     {
                         obj->mass = 0;
                     }
                 }
                 obj->id = NO_ID;
-                if (BIT(obj->type, OBJ_MINE_BIT))
-                {
-                    MINE_PTR(obj)->owner = NO_ID;
-                }
+                if (BIT(obj->type, OBJ_MINE))
+                    MINE_PTR(obj)->mine_owner = NO_ID;
             }
         }
         else
         {
-            if (BIT(obj->type, OBJ_MINE_BIT))
+            if (BIT(obj->type, OBJ_MINE))
             {
                 mineobject_t *mine = MINE_PTR(obj);
-                if (mine->owner == id)
+
+                if (mine->mine_owner == id)
                 {
-                    mine->owner = NO_ID;
+                    mine->mine_owner = NO_ID;
                     if (!options.keepShots)
                     {
                         obj->life = 0;
@@ -1769,7 +1787,7 @@ void Delete_player(int ind)
                     }
                 }
             }
-            else if (BIT(obj->type, OBJ_CANNON_SHOT_BIT))
+            else if (BIT(obj->type, OBJ_CANNON_SHOT))
             {
                 if (!options.keepShots)
                 {
@@ -1777,12 +1795,12 @@ void Delete_player(int ind)
                     obj->mass = 0;
                 }
             }
-            else if (BIT(obj->type, OBJ_BALL_BIT))
+            else if (BIT(obj->type, OBJ_BALL))
             {
                 ballobject_t *ball = BALL_PTR(obj);
-                if (ball->owner == id)
+                if (ball->ball_owner == id)
                 {
-                    ball->owner = NO_ID;
+                    ball->ball_owner = NO_ID;
                 }
             }
         }
@@ -1842,54 +1860,58 @@ void Delete_player(int ind)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Player_is_tank(Player_by_index(i)) && Player_by_index(i)->lock.pl_id == id)
+        player_t *pl_i = PlayersArray[i];
+
+        if (Player_is_tank(pl_i) && pl_i->lock.pl_id == id)
         {
             /* remove tanks which were released by this player. */
             if (options.keepShots)
-                Player_by_index(i)->lock.pl_id = NO_ID;
+                pl_i->lock.pl_id = NO_ID;
             else
-                Delete_player(i);
+                Delete_player(pl_i);
             continue;
         }
-        if (BIT(Player_by_index(i)->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (Player_by_index(i)->lock.pl_id == id || NumPlayers <= 1))
+        if (BIT(pl_i->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) && (pl_i->lock.pl_id == id || NumPlayers <= 1))
         {
-            CLR_BIT(Player_by_index(i)->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
-            CLR_BIT(Player_by_index(i)->used, USES_TRACTOR_BEAM);
+            CLR_BIT(pl_i->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE);
+            CLR_BIT(pl_i->used, USES_TRACTOR_BEAM);
         }
-        if (IS_ROBOT_IND(i) && Robot_war_on_player(i) == id)
+        if (Player_is_robot(pl_i) && Robot_war_on_player(pl_i) == id)
         {
-            Robot_reset_war(i);
+            Robot_reset_war(pl_i);
         }
         for (j = 0; j < LOCKBANK_MAX; j++)
         {
-            if (Player_by_index(i)->lockbank[j] == id)
-                Player_by_index(i)->lockbank[j] = NOT_CONNECTED;
+            if (pl_i->lockbank[j] == id)
+                pl_i->lockbank[j] = NOT_CONNECTED;
         }
         for (j = 0; j < MAX_RECORDED_SHOVES; j++)
         {
-            if (Player_by_index(i)->shove_record[j].pusher_id == id)
-                Player_by_index(i)->shove_record[j].pusher_id = NO_ID;
+            if (pl_i->shove_record[j].pusher_id == id)
+                pl_i->shove_record[j].pusher_id = NO_ID;
         }
     }
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        if (Player_by_index(i)->conn != NULL)
-            Send_leave(Player_by_index(i)->conn, id);
-        else if (Player_is_tank(Player_by_index(i)))
+        player_t *pl_i = PlayersArray[i];
+
+        if (pl_i->conn != NULL)
+            Send_leave(pl_i->conn, id);
+        else if (Player_is_tank(pl_i))
         {
-            if (Player_by_index(i)->lock.pl_id == id)
-                Delete_player(i);
+            if (pl_i->lock.pl_id == id)
+                Delete_player(pl_i);
         }
     }
 
     release_ID(id);
 }
 
-void Detach_ball(int ind, int obj)
+void Detach_ball(player_t *pl, int obj)
 {
     int i, cnt;
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
 
     if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
     {
@@ -1901,7 +1923,7 @@ void Detach_ball(int ind, int obj)
     {
         for (cnt = i = 0; i < NumObjs; i++)
         {
-            if (Obj[i]->type == OBJ_BALL_BIT && Obj[i]->id == pl->id)
+            if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
             {
                 if (obj == -1 || obj == i)
                 {
@@ -1923,27 +1945,27 @@ void Detach_ball(int ind, int obj)
     }
 }
 
-void Kill_player(int ind)
+void Kill_player(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
 
     Explode_fighter(pl);
-    Player_death_reset(ind);
+    Player_death_reset(pl);
 }
 
-void Player_death_reset(int ind)
+void Player_death_reset(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     long minfuel;
     int i;
 
     if (Player_is_tank(pl))
     {
-        Delete_player(ind);
+        Delete_player(pl);
         return;
     }
 
-    Detach_ball(ind, -1);
+    Detach_ball(pl, -1);
     if (BIT(pl->used, USES_AUTOPILOT) || BIT(pl->obj_status, HOVERPAUSE))
     {
         CLR_BIT(pl->obj_status, HOVERPAUSE);
@@ -1980,7 +2002,7 @@ void Player_death_reset(int ind)
     minfuel = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
     minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
-    Player_init_fuel(ind, pl->fuel.sum);
+    Player_init_fuel(pl, pl->fuel.sum);
 
     /*-BA Handle the combination of limited life games and
      *-BA robotLeaveLife by making a robot leave iff it gets
@@ -2008,14 +2030,14 @@ void Player_death_reset(int ind)
                 {
                     if (!BIT(world->rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
                     {
-                        Robot_delete(ind, false);
+                        Robot_delete(pl, false);
                         return;
                     }
                 }
                 pl->life = 0;
                 SET_BIT(pl->obj_status, GAME_OVER);
                 pl->mychar = 'D';
-                Player_lock_closest(ind, 0);
+                Player_lock_closest(pl, false);
             }
         }
         else
@@ -2031,48 +2053,29 @@ void Player_death_reset(int ind)
 }
 
 /* determines if two players are immune to eachother */
-int Team_immune(int id1, int id2)
+bool Team_immune(int id1, int id2)
 {
     player_t *pl1, *pl2;
 
     if (id1 == id2)
         /* owned stuff is never team immune */
-        return 0;
+        return false;
+
     if (!options.teamImmunity)
-        return 0;
+        return false;
+
     if (id1 == NO_ID || id2 == NO_ID)
         /* can't find owner for cannon stuff */
-        return 0;
+        return false;
 
-    pl1 = PlayersArray[GetIndArray[id1]];
-    pl2 = PlayersArray[GetIndArray[id2]];
+    pl1 = Player_by_id(id1);
+    pl2 = Player_by_id(id2);
 
     if (Players_are_teammates(pl1, pl2))
-        /* players are teammates */
-        return 1;
+        return true;
 
     if (Players_are_allies(pl1, pl2))
-        /* players are allies */
-        return 1;
+        return true;
 
-    return 0;
-}
-
-/*
- * Used where we wish to know if a player is simply on the same team.
- */
-
-bool Players_are_teammates(player_t *pl_i, player_t *pl_j)
-{
-    return (BIT(world->rules->mode, TEAM_PLAY) &&
-            (pl_i->team == pl_j->team) &&
-            (pl_i->team != TEAM_NOT_SET));
-}
-
-/*
- * Used where we wish to know if two players are members of the same alliance.
- */
-bool Players_are_allies(player_t *pl_i, player_t *pl_j)
-{
-    return ((pl_i->alliance != ALLIANCE_NOT_SET) && (pl_j->alliance == pl_i->alliance));
+    return false;
 }

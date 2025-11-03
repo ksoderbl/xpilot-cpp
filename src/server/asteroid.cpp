@@ -116,7 +116,7 @@ void Break_asteroid(int ind)
     int dir, dir1, dir2, split_dir;
     int x1, y1, x2, y2;
 
-    if (asteroid->size == 1)
+    if (asteroid->wire_size == 1)
     {
         mass = asteroid->mass / 2;
         Make_wreckage(asteroid->pos,
@@ -135,7 +135,7 @@ void Break_asteroid(int ind)
                     asteroid->vel,
                     -1,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS_BIT,
+                    OBJ_DEBRIS,
                     mass,
                     GRAVITY,
                     RED,
@@ -152,7 +152,7 @@ void Break_asteroid(int ind)
         speed = VECTOR_LENGTH(asteroid->vel);
         dir = (int)findDir(asteroid->vel.x, asteroid->vel.y);
         mass3 = asteroid->mass * ASTEROID_DUST_FACT;
-        mass = ASTEROID_MASS(asteroid->size - 1);
+        mass = ASTEROID_MASS(asteroid->wire_size - 1);
         dir1 = MOD2((int)(dir - ASTEROID_DELTA_DIR / 4 - (rfrac() * ASTEROID_DELTA_DIR / 4)), RES);
         dir2 = MOD2((int)(dir + ASTEROID_DELTA_DIR / 4 + (rfrac() * ASTEROID_DELTA_DIR / 4)), RES);
         speed1 = (speed * (1 - ASTEROID_DUST_FACT)) / tcos(ABS(dir - dir1));
@@ -162,7 +162,7 @@ void Break_asteroid(int ind)
         velx2 = tcos(dir2) * speed2;
         vely2 = tsin(dir2) * speed2; */
         split_dir = MOD2(dir - RES / 4, RES);
-        radius = ASTEROID_RADIUS(asteroid->size - 1);
+        radius = ASTEROID_RADIUS(asteroid->wire_size - 1);
         x1 = WRAP_XPIXEL(asteroid->pix_pos.x + tcos(split_dir) * radius);
         y1 = WRAP_YPIXEL(asteroid->pix_pos.y + tsin(split_dir) * radius);
         x2 = WRAP_XPIXEL(asteroid->pix_pos.x - tcos(split_dir) * radius);
@@ -172,8 +172,8 @@ void Break_asteroid(int ind)
         pos1.cy = PIXEL_TO_CLICK(y1);
         pos2.cx = PIXEL_TO_CLICK(x2);
         pos2.cy = PIXEL_TO_CLICK(y2);
-        Make_asteroid(pos1, asteroid->size - 1, dir1, speed1);
-        Make_asteroid(pos2, asteroid->size - 1, dir2, speed2);
+        Make_asteroid(pos1, asteroid->wire_size - 1, dir1, speed1);
+        Make_asteroid(pos2, asteroid->wire_size - 1, dir2, speed2);
         Make_wreckage(asteroid->pos,
                       asteroid->vel,
                       -1,
@@ -190,7 +190,7 @@ void Break_asteroid(int ind)
                     asteroid->vel,
                     -1,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS_BIT,
+                    OBJ_DEBRIS,
                     mass3 / 2,
                     GRAVITY,
                     RED,
@@ -233,7 +233,7 @@ void Break_asteroid(int ind)
 
     sound_play_sensors(asteroid->pos, ASTEROID_BREAK_SOUND);
 
-    world->asteroids.num -= 1 << (asteroid->size - 1);
+    world->asteroids.num -= 1 << (asteroid->wire_size - 1);
 
     Asteroid_remove_from_list(asteroid);
 }
@@ -300,7 +300,7 @@ static void Make_asteroid(clpos_t pos,
     asteroid->color = WHITE;
     asteroid->id = NO_ID;
     asteroid->team = TEAM_NOT_SET;
-    asteroid->type = OBJ_ASTEROID_BIT;
+    asteroid->type = OBJ_ASTEROID;
 
     /* Position */
     Object_position_init_clpos(OBJ_PTR(asteroid), pos);
@@ -310,9 +310,9 @@ static void Make_asteroid(clpos_t pos,
     asteroid->acc.x = asteroid->acc.y = 0;
     asteroid->mass = ASTEROID_MASS(size);
     asteroid->life = ASTEROID_LIFE;
-    asteroid->turnspeed = 0.02 + rfrac() * 0.05;
-    asteroid->rotation = (int)(rfrac() * RES);
-    asteroid->size = size;
+    asteroid->wire_turnspeed = 0.02 + rfrac() * 0.05;
+    asteroid->wire_rotation = (int)(rfrac() * RES);
+    asteroid->wire_size = size;
     asteroid->info = (int)(rfrac() * 256);
     radius = ASTEROID_RADIUS(size);
     asteroid->pl_range = radius;
@@ -392,10 +392,11 @@ static void Place_asteroid(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                if (IS_HUMAN_IND(i))
+                player_t *pl2 = Player_by_index(i);
+                if (Player_is_human(pl2))
                 {
-                    ocx = OBJ_X_IN_CLICKS(Player_by_index(i));
-                    ocy = OBJ_Y_IN_CLICKS(Player_by_index(i));
+                    ocx = OBJ_X_IN_CLICKS(pl2);
+                    ocy = OBJ_Y_IN_CLICKS(pl2);
                     dcx = WRAP_XCLICK(pos.cx - ocx);
                     dcy = WRAP_YCLICK(pos.cy - ocy);
                     int dpx = CLICK_TO_PIXEL(dcx);
@@ -426,8 +427,8 @@ static void Asteroid_move(wireobject_t *wireobj)
 
 static void Asteroid_rotate(wireobject_t *wireobj)
 {
-    wireobj->rotation =
-        (wireobj->rotation + (int)(wireobj->turnspeed * RES)) % RES;
+    wireobj->wire_rotation =
+        (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
 }
 
 /*
@@ -459,7 +460,7 @@ void Asteroid_update(void)
                 if (asteroid->life > 0)
                 {
                     asteroid->life = 0;
-                    if (asteroid->size == 1)
+                    if (asteroid->wire_size == 1)
                         num--;
                 }
                 if (num <= world->asteroids.max)

@@ -39,7 +39,6 @@ static void tagstart(void *data, const char *el, const char **attr)
     static double scale = 1;
     static bool xptag = false;
 
-    UNUSED_PARAM(data);
     if (!strcasecmp(el, "XPilotMap"))
     {
         double version = 0;
@@ -529,7 +528,6 @@ static void tagstart(void *data, const char *el, const char **attr)
 
 static void tagend(void *data, const char *el)
 {
-    UNUSED_PARAM(data);
     if (!strcasecmp(el, "Decor"))
         P_end_decor();
     else if (!strcasecmp(el, "Base"))
@@ -597,7 +595,6 @@ bool parseXp2MapFile(char *fname, optOrigin opt_origin)
     unsigned left;
     XML_Parser p = XML_ParserCreate(NULL);
 
-    UNUSED_PARAM(opt_origin);
     if (!p)
     {
         warn("Creating Expat instance for map parsing failed.\n");

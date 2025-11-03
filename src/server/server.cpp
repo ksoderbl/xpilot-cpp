@@ -49,6 +49,7 @@
 #endif
 
 #include "server.h"
+#include "robot.h"
 
 #define SERVER
 #include "version.h"
@@ -308,26 +309,19 @@ void End_game(void)
 
     if (ShutdownServer == 0)
     {
-        errno = 0;
-        error("Shutting down...");
-        sprintf(msg, "shutting down: %s", ShutdownReason);
+        warn("Shutting down...");
+        snprintf(msg, sizeof(msg), "shutting down: %s", ShutdownReason);
     }
     else
-    {
-        sprintf(msg, "server exiting");
-    }
+        snprintf(msg, sizeof(msg), "server exiting");
 
     while (NumPlayers > 0)
     { /* Kick out all remaining players */
-        pl = PlayersArray[NumPlayers - 1];
+        pl = Player_by_index(NumPlayers - 1);
         if (pl->conn == NULL)
-        {
-            Delete_player(NumPlayers - 1);
-        }
+            Delete_player(pl);
         else
-        {
             Destroy_connection(pl->conn, msg);
-        }
     }
 
     /* Tell meta server that we are gone. */
@@ -337,7 +331,7 @@ void End_game(void)
 
     Free_players();
     Free_shots();
-    Free_map();
+    World_free();
     Free_cells();
     Free_options();
     Log_game("END"); /* Log end */
@@ -593,7 +587,7 @@ void Server_info(char *str, unsigned max_size)
         strlcpy(name, pl->name, MAX_CHARS);
         if (Player_is_robot(pl))
         {
-            if ((k = Robot_war_on_player(GetIndArray[pl->id])) != NO_ID)
+            if ((k = Robot_war_on_player(Player_by_id(pl->id))) != NO_ID)
             {
                 sprintf(name + strlen(name), " (%s)", PlayersArray[GetIndArray[k]]->name);
                 if (strlen(name) >= 19)
@@ -711,15 +705,17 @@ void Game_Over(void)
         }
         for (i = 0; i < NumPlayers; i++)
         {
+            player_t *pl_i = Player_by_index(i);
             int team;
-            if (IS_HUMAN_IND(i))
+
+            if (Player_is_human(pl_i))
             {
-                team = Player_by_index(i)->team;
+                team = pl_i->team;
                 if (teamscore[team] == 1234567)
                 {
                     teamscore[team] = 0;
                 }
-                teamscore[team] += Player_by_index(i)->score;
+                teamscore[team] += pl_i->score;
             }
         }
 
@@ -761,17 +757,18 @@ void Game_Over(void)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        SET_BIT(Player_by_index(i)->obj_status, GAME_OVER);
-        if (IS_HUMAN_IND(i))
+        player_t *pl_i = Player_by_index(i);
+        SET_BIT(pl_i->obj_status, GAME_OVER);
+        if (Player_is_human(pl_i))
         {
-            if (Player_by_index(i)->score > maxsc)
+            if (pl_i->score > maxsc)
             {
-                maxsc = Player_by_index(i)->score;
+                maxsc = pl_i->score;
                 win = i;
             }
-            if (Player_by_index(i)->score < minsc)
+            if (pl_i->score < minsc)
             {
-                minsc = Player_by_index(i)->score;
+                minsc = pl_i->score;
                 loose = i;
             }
         }

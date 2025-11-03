@@ -200,7 +200,9 @@ void Meta_update(int change)
     memset(active_per_team, 0, sizeof active_per_team);
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_HUMAN_IND(i) && !BIT(Player_by_index(i)->obj_status, PAUSE))
+        player_t *pl_i = Player_by_index(i);
+
+        if (Player_is_human(pl_i) && !BIT(pl_i->obj_status, PAUSE))
         {
             num_active_players++;
             if (BIT(world->rules->mode, TEAM_PLAY))
@@ -278,21 +280,23 @@ void Meta_update(int change)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (IS_HUMAN_IND(i) && !BIT(Player_by_index(i)->obj_status, PAUSE))
+        player_t *pl_i = Player_by_index(i);
+
+        if (Player_is_human(pl_i) && !BIT(Player_by_index(i)->obj_status, PAUSE))
         {
             if ((len + (4 * MAX_CHARS)) < sizeof(string))
             {
                 sprintf(string + len,
                         "%s%s=%s@%s",
                         (first) ? "add players " : ",",
-                        Player_by_index(i)->name,
-                        Player_by_index(i)->username,
-                        Player_by_index(i)->hostname);
+                        pl_i->name,
+                        pl_i->username,
+                        pl_i->hostname);
                 len += strlen(&string[len]);
 
                 if (BIT(world->rules->mode, TEAM_PLAY))
                 {
-                    sprintf(string + len, "{%d}", Player_by_index(i)->team);
+                    sprintf(string + len, "{%d}", pl_i->team);
                     len += strlen(&string[len]);
                 }
 
