@@ -653,7 +653,7 @@ static void Bounce_player(player_t *pl, move_t *move, int line, int point)
         double m = pl->mass - pl->emptymass * 0.75;
         double b = 1.0 - 0.5 * options.playerWallBounceBrakeFactor;
         double cost = b * m * v;
-        double max_speed = BIT(pl->used, USES_SHIELD)
+        double max_speed = BIT(pl->used, HAS_SHIELD)
                                ? options.maxShieldedWallBounceSpeed
                                : options.maxUnshieldedWallBounceSpeed;
 
@@ -661,7 +661,7 @@ static void Bounce_player(player_t *pl, move_t *move, int line, int point)
             max_speed = 100.0;
 
         /* only use armor if neccessary */
-        if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, USES_SHIELD) && Player_has_armor(pl))
+        if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
         {
             max_speed = options.maxShieldedWallBounceSpeed;
             Player_hit_armor(pl);

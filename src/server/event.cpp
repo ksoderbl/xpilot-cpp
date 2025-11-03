@@ -562,7 +562,7 @@ int Handle_keyboard(player_t *pl)
             case KEY_SHIELD:
                 if (BIT(pl->have, HAS_SHIELD))
                 {
-                    SET_BIT(pl->used, USES_SHIELD);
+                    SET_BIT(pl->used, HAS_SHIELD);
                     CLR_BIT(pl->used, HAS_LASER); /* don't remove! */
                 }
                 break;
@@ -572,7 +572,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_FIRE_SHOT:
-                if (!BIT(pl->used, USES_SHIELD | HAS_SHOT) && BIT(pl->have, HAS_SHOT))
+                if (!BIT(pl->used, HAS_SHIELD | HAS_SHOT) && BIT(pl->have, HAS_SHOT))
                 {
                     SET_BIT(pl->used, HAS_SHOT);
                     Fire_normal_shots(pl);
@@ -595,7 +595,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_FIRE_LASER:
-                if (pl->item[ITEM_LASER] > 0 && BIT(pl->used, USES_SHIELD) == 0)
+                if (pl->item[ITEM_LASER] > 0 && BIT(pl->used, HAS_SHIELD) == 0)
                 {
                     SET_BIT(pl->used, HAS_LASER);
                 }
@@ -864,7 +864,7 @@ int Handle_keyboard(player_t *pl)
                          */
                         Player_used_kill(pl);
                         if (BIT(pl->have, HAS_SHIELD))
-                            SET_BIT(pl->used, USES_SHIELD);
+                            SET_BIT(pl->used, HAS_SHIELD);
                     }
                     else if (pl->count <= 0)
                     {
@@ -898,7 +898,7 @@ int Handle_keyboard(player_t *pl)
 
             case KEY_CONNECTOR:
                 if (BIT(pl->have, HAS_CONNECTOR))
-                    SET_BIT(pl->used, USES_CONNECTOR);
+                    SET_BIT(pl->used, HAS_CONNECTOR);
                 break;
 
             case KEY_PRESSOR_BEAM:
@@ -1004,7 +1004,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_CONNECTOR:
-                CLR_BIT(pl->used, USES_CONNECTOR);
+                CLR_BIT(pl->used, HAS_CONNECTOR);
                 break;
 
             case KEY_TRACTOR_BEAM:
@@ -1013,9 +1013,9 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_SHIELD:
-                if (BIT(pl->used, USES_SHIELD))
+                if (BIT(pl->used, HAS_SHIELD))
                 {
-                    CLR_BIT(pl->used, USES_SHIELD | HAS_LASER);
+                    CLR_BIT(pl->used, HAS_SHIELD | HAS_LASER);
                     /*
                      * Insert the default fireRepeatRate between lowering
                      * shields and firing in order to prevent macros

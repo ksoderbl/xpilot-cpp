@@ -345,7 +345,11 @@ static inline bool Player_is_alive(player_t *pl)
 /* player was killed this frame ? */
 static inline bool Player_is_killed(player_t *pl)
 {
-    return pl->pl_state == PL_STATE_KILLED ? true : false;
+    // TODO
+    // return pl->pl_state == PL_STATE_KILLED ? true : false;
+    if (BIT(pl->obj_status, KILLED))
+        return true;
+    return false;
 }
 
 static inline bool Player_is_dead(player_t *pl)
@@ -577,7 +581,7 @@ static inline bool Player_uses_compass(player_t *pl)
 
 static inline bool Player_uses_connector(player_t *pl)
 {
-    if (BIT(pl->used, USES_CONNECTOR))
+    if (BIT(pl->used, HAS_CONNECTOR))
         return true;
     return false;
 }

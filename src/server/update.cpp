@@ -122,7 +122,7 @@ void Phasing(player_t *pl, bool on)
         SET_BIT(pl->used, USES_PHASING_DEVICE);
         CLR_BIT(pl->used, USES_REFUEL);
         CLR_BIT(pl->used, USES_REPAIR);
-        if (BIT(pl->used, USES_CONNECTOR))
+        if (BIT(pl->used, HAS_CONNECTOR))
             pl->ball = NULL;
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         CLR_BIT(pl->obj_status, GRAVITY);
@@ -184,7 +184,7 @@ void Cloak(player_t *pl, bool on)
             if (BIT(DEF_HAVE, HAS_SHIELD) && !BIT(pl->have, HAS_SHIELD))
                 SET_BIT(pl->have, HAS_SHIELD);
             if (BITV_ISSET(pl->last_keyv, KEY_SHIELD))
-                SET_BIT(pl->used, USES_SHIELD);
+                SET_BIT(pl->used, HAS_SHIELD);
         }
     }
 }
@@ -788,7 +788,7 @@ void Update_objects(void)
         if (pl->stunned > 0)
         {
             pl->stunned--;
-            CLR_BIT(pl->used, USES_SHIELD | HAS_LASER | HAS_SHOT);
+            CLR_BIT(pl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT);
             Thrust(pl, false);
         }
 
@@ -799,7 +799,7 @@ void Update_objects(void)
                 if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                     CLR_BIT(pl->used, HAS_SHIELD);
             }
-            if (BIT(pl->used, USES_SHIELD) == 0)
+            if (BIT(pl->used, HAS_SHIELD) == 0)
             {
                 /* BG 95/06/03: change test on "have" to "used". */
                 if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
@@ -832,7 +832,7 @@ void Update_objects(void)
 
         if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
-            if (pl->fuel.sum > 0 && BIT(pl->used, USES_SHIELD) && --pl->emergency_shield_left <= 0)
+            if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_SHIELD])
                     Emergency_shield(pl, true);
@@ -892,7 +892,7 @@ void Update_objects(void)
         /*
          * Compute energy drainage
          */
-        if (BIT(pl->used, USES_SHIELD))
+        if (BIT(pl->used, HAS_SHIELD))
             Add_fuel(&(pl->fuel), (long)ED_SHIELD);
 
         if (BIT(pl->used, USES_PHASING_DEVICE))
@@ -1006,7 +1006,7 @@ void Update_objects(void)
 
         if (pl->fuel.sum <= 0)
         {
-            CLR_BIT(pl->used, USES_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
+            CLR_BIT(pl->used, HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
             Thrust(pl, false);
         }
         if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
@@ -1159,7 +1159,7 @@ void Update_objects(void)
             /*
              * Don't connect to balls while warping.
              */
-            if (BIT(pl->used, USES_CONNECTOR))
+            if (BIT(pl->used, HAS_CONNECTOR))
                 pl->ball = NULL;
 
             if (BIT(pl->have, HAS_BALL))
@@ -1288,7 +1288,7 @@ void Update_objects(void)
 
         if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
             Update_tanks(&(pl->fuel));
-        if (BIT(pl->obj_status, KILLED))
+        if (Player_is_killed(pl))
         {
             Throw_items(pl);
 

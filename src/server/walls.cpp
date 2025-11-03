@@ -1866,7 +1866,7 @@ static void Cannon_dies(move_state_t *ms)
             pl = PlayersArray[killer];
         }
     }
-    else if (BIT(ms->mip->pl->used, USES_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+    else if (BIT(ms->mip->pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
         pl = ms->mip->pl;
         killer = GetIndArray[pl->id];
@@ -2360,7 +2360,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         break;
 
     case CrashCannon:
-        if (BIT(pl->used, USES_SHIELD | HAS_EMERGENCY_SHIELD) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         {
             howfmt = "%s smashed%s against a cannon";
             hudmsg = "[Cannon]";
@@ -2471,7 +2471,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->obj_status, KILLED) && pl->score < 0 && Player_is_robot(pl))
+    if (Player_is_killed(pl) && pl->score < 0 && Player_is_robot(pl))
     {
         pl->home_base = 0;
         Pick_startpos(pl);
@@ -2704,10 +2704,10 @@ void Move_player(player_t *pl)
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
-                double max_speed = BIT(pl->used, USES_SHIELD)
+                double max_speed = BIT(pl->used, HAS_SHIELD)
                                        ? options.maxShieldedWallBounceSpeed
                                        : options.maxUnshieldedWallBounceSpeed;
-                int max_angle = BIT(pl->used, USES_SHIELD)
+                int max_angle = BIT(pl->used, HAS_SHIELD)
                                     ? mp.max_shielded_angle
                                     : mp.max_unshielded_angle;
 
@@ -2726,7 +2726,7 @@ void Move_player(player_t *pl)
                 ms[worst].todo.cy = (int)(ms[worst].todo.cy * options.playerWallBrakeFactor);
 
                 /* only use armor if neccessary */
-                if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
+                if (speed > max_speed && max_speed < options.maxShieldedWallBounceSpeed && !BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
                 {
                     max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;
@@ -2782,7 +2782,7 @@ void Move_player(player_t *pl)
                 }
                 abs_delta_dir = ABS(delta_dir);
                 /* only use armor if neccessary */
-                if (abs_delta_dir > max_angle && max_angle < mp.max_shielded_angle && !BIT(pl->used, USES_SHIELD) && BIT(pl->have, HAS_ARMOR))
+                if (abs_delta_dir > max_angle && max_angle < mp.max_shielded_angle && !BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
                 {
                     max_speed = options.maxShieldedWallBounceSpeed;
                     max_angle = mp.max_shielded_angle;

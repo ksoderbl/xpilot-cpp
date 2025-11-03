@@ -65,7 +65,7 @@ void Place_mine(player_t *pl)
 {
     vector_t zero_vel = {0.0, 0.0};
 
-    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
+    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
     {
         return;
     }
@@ -88,7 +88,7 @@ void Place_moving_mine(player_t *pl)
 {
     vector_t vel = pl->vel;
 
-    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
+    if (pl->item[ITEM_MINE] <= 0 || (BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE) && !options.shieldedMining))
         return;
 
     if (options.minMineSpeed > 0)
@@ -457,7 +457,7 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit)
 
 void Fire_main_shot(player_t *pl, int type, int dir)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
     clpos_t pos;
@@ -469,7 +469,7 @@ void Fire_main_shot(player_t *pl, int type, int dir)
 
 void Fire_shot(player_t *pl, int type, int dir)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
     Fire_general_shot(pl->id, pl->team, 0, pl->pos, type, dir, pl->mods, -1);
@@ -477,7 +477,7 @@ void Fire_shot(player_t *pl, int type, int dir)
 
 void Fire_left_shot(player_t *pl, int type, int dir, int gun)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
     clpos_t pos;
@@ -489,7 +489,7 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun)
 
 void Fire_right_shot(player_t *pl, int type, int dir, int gun)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
     clpos_t pos;
@@ -501,7 +501,7 @@ void Fire_right_shot(player_t *pl, int type, int dir, int gun)
 
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
     clpos_t pos;
@@ -513,7 +513,7 @@ void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
 
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, USES_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
     clpos_t pos;

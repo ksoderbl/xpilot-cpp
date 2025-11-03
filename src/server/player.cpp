@@ -249,7 +249,7 @@ void Go_home(player_t *pl)
 
     if (options.playerStartsShielded != 0)
     {
-        SET_BIT(pl->used, USES_SHIELD);
+        SET_BIT(pl->used, HAS_SHIELD);
         if (options.playerShielding == 0)
         {
             pl->shield_time = 2 * FPS;
@@ -1916,7 +1916,7 @@ void Detach_ball(player_t *pl, int obj)
     if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
     {
         pl->ball = NULL;
-        CLR_BIT(pl->used, USES_CONNECTOR);
+        CLR_BIT(pl->used, HAS_CONNECTOR);
     }
 
     if (BIT(pl->have, HAS_BALL))

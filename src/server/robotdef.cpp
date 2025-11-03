@@ -954,7 +954,7 @@ static bool Check_robot_target(player_t *pl,
     }
     pl->turnacc = (delta_dir < RES / 2 ? pl->turnspeed : (-pl->turnspeed));
 
-    if (slowing || BIT(pl->used, USES_SHIELD))
+    if (slowing || BIT(pl->used, HAS_SHIELD))
     {
 
         Thrust(pl, true);
@@ -1506,7 +1506,7 @@ static bool Ball_handler(player_t *pl)
         if (tdir == bdir && dist_np > closest_t_dist && clear_path && sqr(ball->vel.x) + sqr(ball->vel.y) > 60)
         {
             Detach_ball(pl, -1);
-            CLR_BIT(pl->used, USES_CONNECTOR);
+            CLR_BIT(pl->used, HAS_CONNECTOR);
             my_data->last_thrown_ball = my_data->robot_count;
             CLR_BIT(my_data->longterm_mode, FETCH_TREASURE);
         }
@@ -1760,10 +1760,10 @@ static void Robot_default_play_check_objects(player_t *pl,
         if (BIT(shot->type, OBJ_BALL) && !WITHIN(my_data->last_thrown_ball,
                                                  my_data->robot_count,
                                                  3 * FPS))
-            SET_BIT(pl->used, USES_CONNECTOR);
+            SET_BIT(pl->used, HAS_CONNECTOR);
 
         /* Ignore shots if shields already up - nothing else to do anyway */
-        if (BIT(shot->type, OBJ_SHOT | OBJ_CANNON_SHOT) && BIT(pl->used, USES_SHIELD))
+        if (BIT(shot->type, OBJ_SHOT | OBJ_CANNON_SHOT) && BIT(pl->used, HAS_SHIELD))
             continue;
 
         /*-BA This code shouldn't be executed for 'friendly' shots
@@ -1867,7 +1867,7 @@ static void Robot_default_play_check_objects(player_t *pl,
              ABS(dy)) < shield_range &&
             sqr(dx) + sqr(dy) <= sqr(shield_range) && (int)(rfrac() * 100) < (85 + (my_data->defense / 7) - (my_data->attack / 50)))
         {
-            SET_BIT(pl->used, USES_SHIELD);
+            SET_BIT(pl->used, HAS_SHIELD);
             if (!options.cloakedShield)
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             Thrust(pl, true);
@@ -1940,7 +1940,7 @@ static void Robot_default_play_check_lasers(player_t *pl)
      * Test if others are firing lasers at us.
      * Maybe move this into the player loop.
      */
-    if (BIT(pl->used, USES_SHIELD) == 0 && BIT(pl->have, HAS_SHIELD) != 0)
+    if (BIT(pl->used, HAS_SHIELD) == 0 && BIT(pl->have, HAS_SHIELD) != 0)
     {
         /* shield_range = 21 + SHIP_SZ; */
         for (j = 0; j < NumPulses; j++)
@@ -1958,7 +1958,7 @@ static void Robot_default_play_check_lasers(player_t *pl)
             if ((distance2 < sqr(PULSE_LENGTH) || (distance2 < sqr(2 * PULSE_LENGTH) && ABS(findDir(dx, dy) - pulse->dir) < RES / 8)) && (int)(rfrac() * 100) <
                                                                                                                                              (85 + (my_data->defense / 7) - (my_data->attack / 50)))
             {
-                SET_BIT(pl->used, USES_SHIELD);
+                SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
                     CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
                 break;
@@ -2029,7 +2029,7 @@ static void Robot_default_play(player_t *pl)
        put up shields and return */
     if (pl->damaged > 0)
     {
-        SET_BIT(pl->used, USES_SHIELD);
+        SET_BIT(pl->used, HAS_SHIELD);
         if (!options.cloakedShield)
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         return;
@@ -2099,12 +2099,12 @@ static void Robot_default_play(player_t *pl)
     /* KK: it seems that this 'Check_robot_navigate' function caused
         the infamous 'robot stuck under wall' bug, so I commented it out */
     /* KK: ps. I tried to change that function, but I don't grok it */
-    /*if (!(BIT(pl->used, USES_SHIELD) && BIT(pl->obj_status, THRUSTING))
+    /*if (!(BIT(pl->used, HAS_SHIELD) && BIT(pl->obj_status, THRUSTING))
         && Check_robot_navigate(ind, &evade_checked)) {
         if (playerShielding == 0
             && playerStartsShielded != 0
             && BIT(pl->have, HAS_SHIELD)) {
-            SET_BIT(pl->used, USES_SHIELD);
+            SET_BIT(pl->used, HAS_SHIELD);
         }
         return;
     }*/
@@ -2131,7 +2131,7 @@ static void Robot_default_play(player_t *pl)
         enemy_dist = Visibility_distance;
     }
 
-    if (BIT(pl->used, USES_SHIELD))
+    if (BIT(pl->used, HAS_SHIELD))
         ship_dist = 0;
 
     if (BIT(my_data->robot_lock, LOCK_PLAYER))
@@ -2207,7 +2207,7 @@ static void Robot_default_play(player_t *pl)
 
     if (ship_dist < 3 * SHIP_SZ && BIT(pl->have, HAS_SHIELD))
     {
-        SET_BIT(pl->used, USES_SHIELD);
+        SET_BIT(pl->used, HAS_SHIELD);
         if (!options.cloakedShield)
         {
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
@@ -2264,7 +2264,7 @@ static void Robot_default_play(player_t *pl)
         {
             if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
             {
-                SET_BIT(pl->used, USES_SHIELD);
+                SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
                     CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             }
@@ -2274,7 +2274,7 @@ static void Robot_default_play(player_t *pl)
                          options.maxUnshieldedWallBounceAngle &&
                      BIT(pl->have, HAS_SHIELD))
             {
-                SET_BIT(pl->used, USES_SHIELD);
+                SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
                     CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             }
@@ -2372,7 +2372,7 @@ static void Robot_default_play(player_t *pl)
     {
         if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
         {
-            SET_BIT(pl->used, USES_SHIELD);
+            SET_BIT(pl->used, HAS_SHIELD);
             if (!options.cloakedShield)
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
@@ -2386,7 +2386,7 @@ static void Robot_default_play(player_t *pl)
 
     if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
     {
-        SET_BIT(pl->used, USES_SHIELD);
+        SET_BIT(pl->used, HAS_SHIELD);
         if (!options.cloakedShield)
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
     }

@@ -167,7 +167,7 @@ void Place_item(int item, player_t *pl)
 
     if (pl)
     {
-        if (BIT(pl->obj_status, KILLED))
+        if (Player_is_killed(pl))
         {
             num_lose = pl->item[item] - world->items[item].initial;
             if (num_lose <= 0)

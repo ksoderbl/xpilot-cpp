@@ -232,7 +232,7 @@ static void Laser_pulse_hits_player(
         return;
     if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
-        if (BIT(vicpl->used, USES_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->obj_status, THRUSTING))
+        if (BIT(vicpl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->obj_status, THRUSTING))
         {
             if (pl)
             {
@@ -265,7 +265,7 @@ static void Laser_pulse_hits_player(
     else
     {
         Add_fuel(&(vicpl->fuel), (long)ED_LASER_HIT);
-        if (!BIT(vicpl->used, USES_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
+        if (!BIT(vicpl->used, HAS_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
             SET_BIT(vicpl->obj_status, KILLED);
             if (pl)
@@ -305,7 +305,7 @@ static void Laser_pulse_hits_player(
                 Robot_war(vicpl, pl);
             }
         }
-        if (!BIT(vicpl->used, USES_SHIELD) && BIT(vicpl->have, HAS_ARMOR))
+        if (!BIT(vicpl->used, HAS_SHIELD) && BIT(vicpl->have, HAS_ARMOR))
         {
             Player_hit_armor(vicpl);
         }
