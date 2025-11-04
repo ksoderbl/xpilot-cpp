@@ -122,7 +122,7 @@ void Phasing(player_t *pl, bool on)
         SET_BIT(pl->used, USES_PHASING_DEVICE);
         CLR_BIT(pl->used, USES_REFUEL);
         CLR_BIT(pl->used, USES_REPAIR);
-        if (BIT(pl->used, HAS_CONNECTOR))
+        if (BIT(pl->used, USES_CONNECTOR))
             pl->ball = NULL;
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         CLR_BIT(pl->obj_status, GRAVITY);
@@ -814,7 +814,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, USES_PHASING_DEVICE))
+        if (Player_is_phasing(pl))
         {
             if (--pl->phasing_left <= 0)
             {
@@ -849,7 +849,7 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_LASER))
         {
-            if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, USES_PHASING_DEVICE))
+            if (pl->item[ITEM_LASER] <= 0 || Player_is_phasing(pl))
                 CLR_BIT(pl->used, HAS_LASER);
             else
                 Fire_laser(pl);
@@ -862,7 +862,7 @@ void Update_objects(void)
          * Only do autopilot code if switched on and player is not
          * damaged (ie. can see).
          */
-        if ((BIT(pl->used, USES_AUTOPILOT)) || (BIT(pl->obj_status, HOVERPAUSE) && !pl->damaged))
+        if ((Player_uses_autopilot(pl)) || (BIT(pl->obj_status, HOVERPAUSE) && !pl->damaged))
             do_Autopilot(pl);
 
         /*
@@ -901,7 +901,7 @@ void Update_objects(void)
         if (BIT(pl->used, HAS_SHIELD))
             Add_fuel(&(pl->fuel), (long)ED_SHIELD);
 
-        if (BIT(pl->used, USES_PHASING_DEVICE))
+        if (Player_is_phasing(pl))
             Add_fuel(&(pl->fuel), (long)ED_PHASING_DEVICE);
 
         if (BIT(pl->used, USES_CLOAKING_DEVICE))
@@ -924,7 +924,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, USES_REFUEL))
+        if (Player_is_refueling(pl))
         {
             if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].pos.cx,
                              pl->pos.cy - world->fuels[pl->fs].pos.cy) /
@@ -932,7 +932,7 @@ void Update_objects(void)
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
                 (world->block[world->fuels[pl->fs].blk_pos.x][world->fuels[pl->fs].blk_pos.y] != FUEL) ||
-                BIT(pl->used, USES_PHASING_DEVICE) ||
+                Player_is_phasing(pl) ||
                 (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[pl->fs].team != pl->team))
             {
                 CLR_BIT(pl->used, USES_REFUEL);
@@ -976,7 +976,7 @@ void Update_objects(void)
             if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
                 targ->damage >= TARGET_DAMAGE ||
                 targ->dead_time > 0 ||
-                BIT(pl->used, USES_PHASING_DEVICE))
+                Player_is_phasing(pl))
                 CLR_BIT(pl->used, USES_REPAIR);
             else
             {
@@ -1165,7 +1165,7 @@ void Update_objects(void)
             /*
              * Don't connect to balls while warping.
              */
-            if (BIT(pl->used, HAS_CONNECTOR))
+            if (BIT(pl->used, USES_CONNECTOR))
                 pl->ball = NULL;
 
             if (BIT(pl->have, HAS_BALL))
@@ -1235,7 +1235,7 @@ void Update_objects(void)
             Move_player(pl);
         }
 
-        if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
+        if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !Player_is_phasing(pl))
         {
             if (BIT(pl->obj_status, THRUSTING))
                 Thrust(pl);

@@ -163,7 +163,7 @@ void Race_compute_game_status(void)
         else if (!Player_is_dead(pl))
             num_alive_players++;
 
-        if (BIT(pl->obj_status, RACE_OVER))
+        if (BIT(pl->pl_status, RACE_OVER))
         {
             num_race_over_players++;
             pos++;
@@ -216,7 +216,7 @@ void Race_compute_game_status(void)
             if (BIT(pl->obj_status, FINISH))
             {
                 CLR_BIT(pl->obj_status, FINISH);
-                SET_BIT(pl->obj_status, RACE_OVER);
+                SET_BIT(pl->pl_status, RACE_OVER);
                 if (pts > 0)
                 {
                     sprintf(msg,
@@ -342,7 +342,7 @@ void Race_game_over(void)
     for (i = NumPlayers - 1; i >= 0; i--)
     {
         pl = Player_by_index(i);
-        CLR_BIT(pl->obj_status, RACE_OVER | FINISH);
+        CLR_BIT(pl->pl_status, RACE_OVER | FINISH);
         if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
             continue;
         num_active_players++;

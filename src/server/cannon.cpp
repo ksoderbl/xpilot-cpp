@@ -465,7 +465,7 @@ static void Cannon_aim(cannon_t *c, int weapon, int *target, int *dir)
         if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE | KILLED) != PLAYING ||
             (BIT(world->rules->mode, TEAM_PLAY) && pl->team == c->team) ||
             (!pl->forceVisible && BIT(pl->used, USES_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
-            (options.cannonSmartness > 2 && BIT(pl->used, USES_PHASING_DEVICE)))
+            (options.cannonSmartness > 2 && Player_is_phasing(pl)))
             continue;
 
         switch (options.cannonSmartness)

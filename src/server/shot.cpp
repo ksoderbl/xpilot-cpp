@@ -305,7 +305,7 @@ void Detonate_mines(player_t *pl)
     double dist;
     double min_dist = world->hypotenuse + 1;
 
-    if (BIT(pl->used, USES_PHASING_DEVICE))
+    if (Player_is_phasing(pl))
         return;
 
     for (i = 0; i < NumObjs; i++)

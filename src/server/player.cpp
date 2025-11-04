@@ -1216,7 +1216,7 @@ void Race_game_over(void)
     for (i = NumPlayers - 1; i >= 0; i--)
     {
         pl = Player_by_index(i);
-        CLR_BIT(pl->obj_status, RACE_OVER | FINISH);
+        CLR_BIT(pl->pl_status, RACE_OVER | FINISH);
         if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
         {
             continue;
@@ -1334,7 +1334,7 @@ void Compute_game_status(void)
                 continue;
             }
 
-            if (BIT(pl->obj_status, RACE_OVER))
+            if (BIT(pl->pl_status, RACE_OVER))
             {
                 num_race_over_players++;
                 position++;
@@ -1381,7 +1381,7 @@ void Compute_game_status(void)
                 if (BIT(pl->obj_status, FINISH))
                 {
                     CLR_BIT(pl->obj_status, FINISH);
-                    SET_BIT(pl->obj_status, RACE_OVER);
+                    SET_BIT(pl->pl_status, RACE_OVER);
                     if (pts > 0)
                     {
                         sprintf(msg,
@@ -1916,7 +1916,7 @@ void Detach_ball(player_t *pl, int obj)
     if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
     {
         pl->ball = NULL;
-        CLR_BIT(pl->used, HAS_CONNECTOR);
+        CLR_BIT(pl->used, USES_CONNECTOR);
     }
 
     if (BIT(pl->have, HAS_BALL))
@@ -1966,7 +1966,7 @@ void Player_death_reset(player_t *pl)
     }
 
     Detach_ball(pl, -1);
-    if (BIT(pl->used, USES_AUTOPILOT) || BIT(pl->obj_status, HOVERPAUSE))
+    if (Player_uses_autopilot(pl) || BIT(pl->obj_status, HOVERPAUSE))
     {
         CLR_BIT(pl->obj_status, HOVERPAUSE);
         Autopilot(pl, false);

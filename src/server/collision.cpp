@@ -283,7 +283,7 @@ static void PlayerCollision(void)
             continue;
         }
 
-        if (BIT(pl->used, USES_PHASING_DEVICE))
+        if (Player_is_phasing(pl))
             continue;
 
         /* Player - player */
@@ -466,7 +466,7 @@ static void PlayerCollision(void)
         }
 
         /* Player picking up ball/treasure */
-        if (!BIT(pl->used, HAS_CONNECTOR) || BIT(pl->used, USES_PHASING_DEVICE))
+        if (!BIT(pl->used, USES_CONNECTOR) || Player_is_phasing(pl))
         {
             pl->ball = NULL;
         }

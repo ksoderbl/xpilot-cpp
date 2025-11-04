@@ -453,7 +453,7 @@ static int Frame_status(connection_t *conn, int ind)
 
     if (BIT(pl->obj_status, HOVERPAUSE))
         showautopilot = (pl->count <= 0 || (frame_loops % 8) < 4);
-    else if (BIT(pl->used, USES_AUTOPILOT))
+    else if (Player_uses_autopilot(pl))
         showautopilot = (frame_loops % 8) < 4;
     else
         showautopilot = 0;
@@ -529,7 +529,7 @@ static int Frame_status(connection_t *conn, int ind)
                         pl->emergency_shield_max);
     if (BIT(pl->obj_status, SELF_DESTRUCT) && pl->count > 0)
         Send_destruct(conn, pl->count);
-    if (BIT(pl->used, USES_PHASING_DEVICE))
+    if (Player_is_phasing(pl))
         Send_phasingtime(conn,
                          pl->phasing_left,
                          pl->phasing_max);

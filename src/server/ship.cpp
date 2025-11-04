@@ -496,19 +496,18 @@ void Tank_handle_detach(player_t *pl)
     }
 }
 
-void Make_wreckage(
-    clpos_t pos,
-    vector_t vel,
-    int id,
-    int team,
-    double min_mass, double max_mass,
-    double total_mass,
-    long status,
-    int color,
-    int max_wreckage,
-    int min_dir, int max_dir,
-    double min_speed, double max_speed,
-    int min_life, int max_life)
+void Make_wreckage(clpos_t pos,
+                   vector_t vel,
+                   int id,
+                   int team,
+                   double min_mass, double max_mass,
+                   double total_mass,
+                   long status,
+                   int color,
+                   int max_wreckage,
+                   int min_dir, int max_dir,
+                   double min_speed, double max_speed,
+                   int min_life, int max_life)
 {
     wireobject_t *wreckage;
     int i, life, size;
@@ -557,20 +556,14 @@ void Make_wreckage(
         /* Calculate mass */
         mass = min_mass + rfrac() * (max_mass - min_mass);
         if (sum_mass + mass > total_mass)
-        {
             mass = total_mass - sum_mass;
-        }
         if (mass < min_mass)
-        {
             /* not enough mass available. */
             break;
-        }
 
         /* Allocate object */
         if ((wreckage = WIRE_PTR(Object_allocate())) == NULL)
-        {
             break;
-        }
 
         wreckage->color = color;
         wreckage->id = id;
@@ -625,7 +618,6 @@ void Make_wreckage(
     }
 }
 
-/* Explode a fighter */
 void Explode_fighter(player_t *pl)
 {
     int min_debris, max_debris;

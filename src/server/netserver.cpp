@@ -2245,7 +2245,7 @@ static int Receive_power(connection_t *connp)
     }
     power = (double)tmp / 256.0F;
     pl = PlayersArray[GetIndArray[connp->id]];
-    autopilot = BIT(pl->used, USES_AUTOPILOT);
+    autopilot = Player_uses_autopilot(pl);
     /* old client are going to send autopilot-mangled data, ignore it */
     if (autopilot && pl->version < 0x4200)
         return 1;
@@ -3134,7 +3134,7 @@ static int Receive_pointer_move(connection_t *connp)
     if (BIT(pl->obj_status, HOVERPAUSE))
         return 1;
 
-    if (BIT(pl->used, USES_AUTOPILOT))
+    if (Player_uses_autopilot(pl))
         Autopilot(pl, false);
     turnspeed = movement * pl->turnspeed / MAX_PLAYER_TURNSPEED;
     if (turnspeed < 0)

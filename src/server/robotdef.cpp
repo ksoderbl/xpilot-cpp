@@ -1047,7 +1047,7 @@ static bool Check_robot_target(player_t *pl,
                 }
             }
         }
-        else if (BIT(pl->have, HAS_TRACTOR_BEAM))
+        else if (Player_has_tractor_beam(pl))
         {
             CLR_BIT(pl->used, USES_TRACTOR_BEAM);
             pl->tractor_is_pressor = false;
@@ -1506,7 +1506,7 @@ static bool Ball_handler(player_t *pl)
         if (tdir == bdir && dist_np > closest_t_dist && clear_path && sqr(ball->vel.x) + sqr(ball->vel.y) > 60)
         {
             Detach_ball(pl, -1);
-            CLR_BIT(pl->used, HAS_CONNECTOR);
+            CLR_BIT(pl->used, USES_CONNECTOR);
             my_data->last_thrown_ball = my_data->robot_count;
             CLR_BIT(my_data->longterm_mode, FETCH_TREASURE);
         }
@@ -1760,7 +1760,7 @@ static void Robot_default_play_check_objects(player_t *pl,
         if (BIT(shot->type, OBJ_BALL) && !WITHIN(my_data->last_thrown_ball,
                                                  my_data->robot_count,
                                                  3 * FPS))
-            SET_BIT(pl->used, HAS_CONNECTOR);
+            SET_BIT(pl->used, USES_CONNECTOR);
 
         /* Ignore shots if shields already up - nothing else to do anyway */
         if (BIT(shot->type, OBJ_SHOT | OBJ_CANNON_SHOT) && BIT(pl->used, HAS_SHIELD))
@@ -1822,21 +1822,13 @@ static void Robot_default_play_check_objects(player_t *pl,
             continue;
         }
 
-        /*
-         * Any shot of team members excluding self are passive.
-         */
+        /* Any shot of team members excluding self are passive. */
         if (Team_immune(shot->id, pl->id))
-        {
             continue;
-        }
 
-        /*
-         * Self shots may be passive too...
-         */
+        /* Self shots may be passive too... */
         if (shot->id == pl->id && options.selfImmunity)
-        {
             continue;
-        }
 
         /* Find nearest missile/mine */
         if (BIT(shot->type, OBJ_TORPEDO | OBJ_SMART_SHOT | OBJ_ASTEROID | OBJ_HEAT_SHOT | OBJ_BALL | OBJ_CANNON_SHOT) || (BIT(shot->type, OBJ_SHOT) && !BIT(world->rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) || (BIT(shot->type, OBJ_MINE) && shot->id != pl->id) || (BIT(shot->type, OBJ_WRECKAGE) && !BIT(world->rules->mode, TIMING)))
@@ -2003,7 +1995,7 @@ static void Robot_default_play(player_t *pl)
     item_dist = (int)Visibility_distance;
     item_imp = ROBOT_IGNORE_ITEM;
 
-    if (BIT(pl->have, HAS_CLOAKING_DEVICE) && pl->fuel.sum > pl->fuel.l2)
+    if (Player_has_cloaking_device(pl) && pl->fuel.sum > pl->fuel.l2)
         SET_BIT(pl->used, USES_CLOAKING_DEVICE);
 
     if (BIT(pl->have, HAS_EMERGENCY_THRUST) && !BIT(pl->used, USES_EMERGENCY_THRUST))
@@ -2054,20 +2046,14 @@ static void Robot_default_play(player_t *pl)
                 break;
             }
             else
-            {
                 CLR_BIT(pl->used, USES_REFUEL);
-            }
         }
 
     /* don't turn NEED_FUEL off until refueling stops */
     if (pl->fuel.sum < (BIT(world->rules->mode, TIMING) ? pl->fuel.l1 : pl->fuel.l3))
-    {
         SET_BIT(my_data->longterm_mode, NEED_FUEL);
-    }
-    else if (!BIT(pl->used, USES_REFUEL))
-    {
+    else if (!Player_is_refueling(pl))
         CLR_BIT(my_data->longterm_mode, NEED_FUEL);
-    }
 
     if (BIT(world->rules->mode, TEAM_PLAY))
     {

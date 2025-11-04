@@ -581,7 +581,7 @@ static inline bool Player_uses_compass(player_t *pl)
 
 static inline bool Player_uses_connector(player_t *pl)
 {
-    if (BIT(pl->used, HAS_CONNECTOR))
+    if (BIT(pl->used, USES_CONNECTOR))
         return true;
     return false;
 }

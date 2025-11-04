@@ -49,7 +49,7 @@
 
 static void Item_update_flags(player_t *pl)
 {
-    if (pl->item[ITEM_CLOAK] <= 0 && BIT(pl->have, HAS_CLOAKING_DEVICE))
+    if (pl->item[ITEM_CLOAK] <= 0 && Player_has_cloaking_device(pl))
     {
         CLR_BIT(pl->have, HAS_CLOAKING_DEVICE);
         pl->updateVisibility = 1;
@@ -60,7 +60,7 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_DEFLECTOR);
     if (pl->item[ITEM_AFTERBURNER] <= 0)
         CLR_BIT(pl->have, HAS_AFTERBURNER);
-    if (pl->item[ITEM_PHASING] <= 0 && !BIT(pl->used, USES_PHASING_DEVICE) && pl->phasing_left == 0)
+    if (pl->item[ITEM_PHASING] <= 0 && !Player_is_phasing(pl) && pl->phasing_left == 0)
         CLR_BIT(pl->have, HAS_PHASING_DEVICE);
     if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, USES_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
         CLR_BIT(pl->have, HAS_EMERGENCY_THRUST);
@@ -80,7 +80,7 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_TRACTOR_BEAM);
     if (pl->item[ITEM_AUTOPILOT] <= 0)
     {
-        if (BIT(pl->used, USES_AUTOPILOT))
+        if (Player_uses_autopilot(pl))
             Autopilot(pl, false);
         CLR_BIT(pl->have, HAS_AUTOPILOT);
     }
@@ -499,7 +499,7 @@ void Tractor_beam(player_t *pl)
     long cost;
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || Player_is_phasing(pl) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -624,7 +624,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || Player_is_phasing(pl))
         return;
 
     /* find victim */
@@ -944,7 +944,7 @@ void do_lose_item(player_t *pl)
         return;
     }
 
-    if (options.loseItemDestroys == false && !BIT(pl->used, USES_PHASING_DEVICE))
+    if (options.loseItemDestroys == false && !Player_is_phasing(pl))
     {
         Place_item(item, pl);
     }
@@ -1226,7 +1226,7 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
 
 void Fire_ecm(player_t *pl)
 {
-    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, USES_PHASING_DEVICE))
+    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
         return;
 
     int ind = GetInd(pl->id);

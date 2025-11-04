@@ -2521,7 +2521,7 @@ void Move_player(player_t *pl)
     }
 
     /* Figure out which friction to use. */
-    if (BIT(pl->used, USES_PHASING_DEVICE))
+    if (Player_is_phasing(pl))
     {
         fric = options.friction;
     }
@@ -2571,7 +2571,7 @@ void Move_player(player_t *pl)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = true;
-    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
+    mi.phased = Player_is_phasing(pl);
 
     vel = pl->vel;
     todo.cx = FLOAT_TO_CLICK(vel.x);
@@ -2961,7 +2961,7 @@ void Turn_player(player_t *pl)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = false;
-    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
+    mi.phased = Player_is_phasing(pl);
 
     if (new_dir > pl->dir)
     {
