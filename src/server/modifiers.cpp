@@ -1,12 +1,10 @@
 /*
- * XPilot NG, a multiplayer space war game.
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- * Copyright (C) 1991-2001 by
- *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +20,6 @@
  * along with this program; if not, see
  * <https://www.gnu.org/licenses/>.
  */
-
-#include "xpserver.h"
 
 /*
  * Fast conversion of 'num' into 'str' starting at position 'i', returns
@@ -58,8 +54,8 @@ static int num2str(int num, char *str, int i)
 
 #define MODS_N_BIT0 (1 << 0) /* nuclear */
 #define MODS_N_BIT1 (1 << 1) /* fullnuclear */
-#define MODS_C_BIT (1 << 2)     /* cluster */
-#define MODS_I_BIT (1 << 3)     /* implosion */
+#define MODS_C_BIT (1 << 2)  /* cluster */
+#define MODS_I_BIT (1 << 3)  /* implosion */
 #define MODS_V_BIT0 (1 << 4) /* velocity */
 #define MODS_V_BIT1 (1 << 5)
 #define MODS_X_BIT0 (1 << 6) /* mini */

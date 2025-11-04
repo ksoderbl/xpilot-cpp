@@ -93,7 +93,7 @@ static int sock_flags_test_any(sock_t *sock, unsigned bits)
 
 static int sock_set_error(sock_t *sock, int error, sock_call_t call, int line)
 {
-    DEB(printf("set error %d, %d, %d.  \"%s\"\n", error, call, line, strerror(error));)
+    DEB(printf("set error %d, %d, %d.  \"%s\"\n", error, call, line, strerror(error)));
 
     sock->error.error = error;
     sock->error.call = call;

@@ -428,10 +428,12 @@ static int Frame_status(connection_t *conn, player_t *pl)
      */
 
     CLR_BIT(pl->lock.tagged, LOCK_VISIBLE);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER) && BIT(pl->used, HAS_COMPASS))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER) && Player_uses_compass(pl))
     {
+        player_t *lock_pl = Player_by_id(pl->lock.pl_id);
+
         lock_id = pl->lock.pl_id;
-        lock_ind = GetIndArray[lock_id];
+        lock_ind = GetInd(lock_id);
 
         if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
@@ -512,7 +514,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
                   lock_dist,
                   lock_dir,
                   showautopilot,
-                  PlayersArray[GetIndArray[Get_player_id(conn)]]->obj_status,
+                  Player_by_id(Get_player_id(conn))->obj_status,
                   mods);
     if (n <= 0)
     {
@@ -523,7 +525,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
         Send_thrusttime(conn,
                         pl->emergency_thrust_left,
                         pl->emergency_thrust_max);
-    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+    if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
@@ -839,7 +841,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(PlayersArray[GetIndArray[shot->id]]->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(Player_by_id(shot->id)->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -896,7 +898,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                 if (BIT(mine->obj_status, CONFUSED))
                     confused = 1;
             }
-            if (mine->id != NO_ID && BIT(PlayersArray[GetIndArray[mine->id]]->obj_status, PAUSE))
+            if (mine->id != NO_ID && BIT(Player_by_id(mine->id)->obj_status, PAUSE))
                 laid_by_team = 1;
             else
             {
@@ -998,8 +1000,8 @@ static void Frame_ships(connection_t *conn, player_t *pl)
     for (i = 0; i < Num_transporters(); i++)
     {
         transporter_t *trans = Transporter_by_index(i);
-        player_t *victim = PlayersArray[GetIndArray[trans->target]],
-                 *pl = (trans->id == NO_ID ? NULL : PlayersArray[GetIndArray[trans->id]]);
+        player_t *victim = Player_by_id(trans->target),
+                 *pl = (trans->id == NO_ID ? NULL : Player_by_id(trans->id));
         int cx = (pl ? pl->pos.cx : trans->pos.cx);
         int cy = (pl ? pl->pos.cy : trans->pos.cy);
         Send_trans(conn, victim->pix_pos.x, victim->pix_pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
@@ -1009,7 +1011,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         cannon_t *cannon = world->cannons + i;
         if (cannon->tractor_count > 0)
         {
-            player_t *t = PlayersArray[GetIndArray[cannon->tractor_target]];
+            player_t *t = Player_by_id(cannon->tractor_target);
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
@@ -1057,7 +1059,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
                       pl_i->dir,
                       BIT(pl_i->used, HAS_SHIELD) != 0,
                       BIT(pl_i->used, USES_CLOAKING_DEVICE) != 0,
-                      BIT(pl_i->used, USES_EMERGENCY_SHIELD) != 0,
+                      BIT(pl_i->used, HAS_EMERGENCY_SHIELD) != 0,
                       BIT(pl_i->used, USES_PHASING_DEVICE) != 0,
                       BIT(pl_i->used, USES_DEFLECTOR) != 0);
         }
@@ -1083,7 +1085,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         }
         if (BIT(pl_i->used, USES_TRACTOR_BEAM))
         {
-            player_t *t = PlayersArray[GetIndArray[pl_i->lock.pl_id]];
+            player_t *t = Player_by_id(pl_i->lock.pl_id);
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;
@@ -1197,7 +1199,7 @@ static void Frame_radar(connection_t *conn, player_t *pl)
                                                                        CLICK >
                                                                    pl->sensor_range)
                 continue;
-            if (BIT(pl->used, HAS_COMPASS) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetIndArray[pl->lock.pl_id] == i && frame_loops % 5 >= 3)
+            if (Player_uses_compass(pl) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd(pl->lock.pl_id) == i && frame_loops % 5 >= 3)
                 continue;
             size = 3;
             if (Players_are_teammates(pl, Player_by_index(i)) || Players_are_allies(pl, Player_by_index(i)) || Player_owns_tank(pl, Player_by_index(i)))
@@ -1347,10 +1349,10 @@ void Frame_update(void)
         {
             if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
                 (BIT(pl->obj_status, PAUSE) &&
-                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == PlayersArray[GetIndArray[pl->lock.pl_id]]->team) ||
+                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
                   pl->isowner ||
                   options.allowViewing)))
-                ind = GetIndArray[pl->lock.pl_id];
+                ind = GetInd(pl->lock.pl_id);
             else
                 ind = i;
         }
@@ -1424,6 +1426,68 @@ void Set_player_message(player_t *pl, const char *message)
     }
     else
         msg = message;
+    if (pl->conn != NULL)
+        Send_message(pl->conn, msg);
+    else if (Player_is_robot(pl))
+        Robot_message(pl, msg);
+}
+
+void Set_message_f(const char *fmt, ...)
+{
+    player_t *pl;
+    int i;
+    size_t len;
+    static char msg[2 * MSG_LEN];
+    va_list ap;
+
+    va_start(ap, fmt);
+    vsnprintf(msg, sizeof(msg), fmt, ap);
+    va_end(ap);
+
+    if ((len = strlen(msg)) >= MSG_LEN)
+    {
+        warn("Set_message_f: Max len exceeded (%d,\"%s\")", len, msg);
+        msg[MSG_LEN - 1] = '\0';
+        assert(strlen(msg) < MSG_LEN);
+    }
+
+    // teamcup_log("    %s\n", msg);
+
+    // if (!rplayback || playback)
+    for (i = 0; i < NumPlayers; i++)
+    {
+        pl = Player_by_index(i);
+        if (pl->conn != NULL)
+            Send_message(pl->conn, msg);
+    }
+    // for (i = 0; i < NumSpectators; i++)
+    // {
+    //     pl = Player_by_index(i + spectatorStart);
+    //     Send_message(pl->conn, msg);
+    // }
+}
+
+void Set_player_message_f(player_t *pl, const char *fmt, ...)
+{
+    size_t len;
+    static char msg[2 * MSG_LEN];
+    va_list ap;
+
+    // if (rplayback && !playback && pl->rectype != 2)
+    //     return;
+
+    va_start(ap, fmt);
+    vsnprintf(msg, sizeof(msg), fmt, ap);
+    va_end(ap);
+
+    if ((len = strlen(msg)) >= MSG_LEN)
+    {
+        warn("Set_player_message_f: Max len exceeded (%d,\"%s\")",
+             len, msg);
+        msg[MSG_LEN - 1] = '\0';
+        assert(strlen(msg) < MSG_LEN);
+    }
+
     if (pl->conn != NULL)
         Send_message(pl->conn, msg);
     else if (Player_is_robot(pl))

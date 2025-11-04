@@ -766,7 +766,7 @@ static void Robot_create(void)
         if (pl_i->conn != NULL)
         {
             Send_player(pl_i->conn, robot->id);
-            Send_base(pl_i->conn, robot->id, robot->home_base);
+            Send_base(pl_i->conn, robot->id, robot->home_base->ind);
         }
     }
 
@@ -774,7 +774,8 @@ static void Robot_create(void)
 
     if (options.logRobots)
         xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
-                 showtime(), robot->name, NumPlayers, robot->username, robot->home_base);
+                 showtime(), robot->name, NumPlayers, robot->username,
+                 robot->home_base->ind);
 
     if (NumPlayers == 1)
     {
@@ -782,9 +783,8 @@ static void Robot_create(void)
             roundtime = options.maxRoundTime * FPS;
         else
             roundtime = -1;
-        sprintf(msg, "Player entered. Delaying 0 seconds until next %s.",
-                (BIT(world->rules->mode, TIMING) ? "race" : "round"));
-        Set_message(msg);
+        Set_message_f("Player entered. Delaying 0 seconds until next %s.",
+                      (BIT(world->rules->mode, TIMING) ? "race" : "round"));
     }
 
     updateScores = true;
@@ -792,7 +792,9 @@ static void Robot_create(void)
 
 void Robot_destroy(player_t *pl)
 {
-    (*robot_types[pl->robot_data_ptr->robot_types_ind].robot_destroy)(pl);
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
+
+    (*rob_type->robot_destroy)(pl);
     XFREE(pl->robot_data_ptr);
 }
 
@@ -843,7 +845,9 @@ void Robot_delete(player_t *pl, bool kicked)
  */
 void Robot_invite(player_t *pl, player_t *inviter)
 {
-    (*robot_types[pl->robot_data_ptr->robot_types_ind].robot_invite)(pl, inviter);
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
+
+    (*rob_type->robot_invite)(pl, inviter);
 }
 
 /*
@@ -851,7 +855,9 @@ void Robot_invite(player_t *pl, player_t *inviter)
  */
 static void Robot_set_war(player_t *pl, int victim_id)
 {
-    (*robot_types[pl->robot_data_ptr->robot_types_ind].robot_set_war)(pl, victim_id);
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
+
+    (*rob_type->robot_set_war)(pl, victim_id);
 }
 
 /*
@@ -861,7 +867,7 @@ static void Robot_set_war(player_t *pl, int victim_id)
  */
 void Robot_reset_war(player_t *pl)
 {
-    Robot_set_war(pl, -1);
+    Robot_set_war(pl, NO_ID);
 }
 
 /*
@@ -878,8 +884,7 @@ void Robot_program(player_t *pl, int victim_id)
  */
 int Robot_war_on_player(player_t *pl)
 {
-    robot_type_t *rob_type =
-        &robot_types[pl->robot_data_ptr->robot_types_ind];
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
 
     return (*rob_type->robot_war_on_player)(pl);
 }
@@ -892,17 +897,13 @@ int Robot_war_on_player(player_t *pl)
  */
 void Robot_war(player_t *pl, player_t *kp)
 {
-    // player_t *pl = PlayersArray[ind],
-    //          *kp = PlayersArray[killer];
-    int i;
-
     if (kp->id == pl->id)
         return;
 
     if (Player_is_robot(kp))
     {
         Robot_talks(ROBOT_TALK_KILL, kp->name, pl->name);
-        Robot_set_war(kp, -1);
+        Robot_set_war(kp, NO_ID);
     }
 
     if (Player_is_robot(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !Players_are_teammates(pl, kp) && !Players_are_allies(pl, kp))

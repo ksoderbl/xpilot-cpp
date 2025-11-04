@@ -52,6 +52,146 @@
  */
 static char msg[MSG_LEN];
 
+bool team_dead(int team)
+{
+    int i;
+    bool alive = false;
+
+    for (i = 0; i < NumPlayers; i++)
+    {
+        if (Player_by_index(i)->team == team &&
+            BIT(Player_by_index(i)->obj_status, PLAYING | GAME_OVER) == PLAYING)
+        {
+            alive = true;
+            break;
+        }
+    }
+    return (!alive);
+}
+
+/*
+ * Return true if a lock is allowed.
+ */
+static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
+{
+    /* we can never lock on ourselves, nor on NULL. */
+    if (lock_pl == NULL || pl->id == lock_pl->id)
+        return false;
+
+    /* if we are actively playing then we can lock since we are not viewing. */
+    if (Player_is_active(pl))
+        return true;
+
+    /* if there is no team play then we can always lock on anyone. */
+    if (!BIT(world->rules->mode, TEAM_PLAY))
+        return true;
+
+    /* we can always lock on players from our own team. */
+    if (Players_are_teammates(pl, lock_pl))
+        return true;
+
+    /* if lockOtherTeam is true then we can always lock on other teams. */
+    if (options.lockOtherTeam)
+        return true;
+
+    /* if our own team is dead then we can lock on anyone. */
+    if (team_dead(pl->team))
+        return true;
+
+    /* can't find any reason why this lock should be allowed. */
+    return false;
+}
+
+static void Player_lock_next_or_prev(player_t *pl, int key)
+{
+    int i, j, ind = GetInd(pl->id);
+    player_t *pl_i;
+
+    j = i = GetInd(pl->lock.pl_id);
+
+    if (!BIT(pl->lock.tagged, LOCK_PLAYER) || j < 0 || j >= NumPlayers)
+    {
+        /* better jump to KEY_LOCK_CLOSE... */
+        Player_lock_closest(pl, false);
+        return;
+    }
+    do
+    {
+        if (key == KEY_LOCK_PREV)
+        {
+            if (--i < 0)
+                i = NumPlayers - 1;
+        }
+        else
+        {
+            if (++i >= NumPlayers)
+                i = 0;
+        }
+        pl_i = Player_by_index(i);
+        if (i == j)
+            break;
+    } while (i == ind || BIT(pl_i->obj_status, GAME_OVER | PAUSE) || !Player_lock_allowed(pl, pl_i));
+
+    if (i == ind)
+        CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
+    else
+    {
+        pl->lock.pl_id = pl_i->id;
+        SET_BIT(pl->lock.tagged, LOCK_PLAYER);
+    }
+}
+
+int Player_lock_closest(player_t *pl, bool next)
+{
+    int i;
+    double dist = 0.0, best, l;
+    player_t *lock_pl = NULL, *new_pl = NULL;
+
+    if (!next)
+        CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
+
+    if (BIT(pl->lock.tagged, LOCK_PLAYER))
+    {
+        lock_pl = Player_by_id(pl->lock.pl_id);
+        dist = Wrap_length(lock_pl->pos.cx - pl->pos.cx,
+                           lock_pl->pos.cy - pl->pos.cy);
+    }
+    else
+    {
+        lock_pl = nullptr;
+        dist = 0.0;
+    }
+    new_pl = nullptr;
+    best = FLT_MAX;
+
+    for (i = 0; i < NumPlayers; i++)
+    {
+        player_t *pl_i = Player_by_index(i);
+
+        if (pl_i == lock_pl ||
+            !Player_is_active(pl_i) ||
+            !Player_lock_allowed(pl, pl_i) ||
+            Player_owns_tank(pl, pl_i) ||
+            Players_are_teammates(pl, pl_i) ||
+            Players_are_allies(pl, pl_i))
+            continue;
+        l = Wrap_length(pl_i->pos.cx - pl->pos.cx,
+                        pl_i->pos.cy - pl->pos.cy);
+        if (l >= dist && l < best)
+        {
+            best = l;
+            new_pl = pl_i;
+        }
+    }
+    if (new_pl == NULL)
+        return 0;
+
+    SET_BIT(pl->lock.tagged, LOCK_PLAYER);
+    pl->lock.pl_id = new_pl->id;
+
+    return 1;
+}
+
 static void Player_refuel(player_t *pl)
 {
     int i;
@@ -104,132 +244,52 @@ static void Player_repair(player_t *pl)
     }
 }
 
-bool team_dead(int team)
-{
-    int i;
-    bool alive = false;
-
-    for (i = 0; i < NumPlayers; i++)
-    {
-        if (Player_by_index(i)->team == team &&
-            BIT(Player_by_index(i)->obj_status, PLAYING | GAME_OVER) == PLAYING)
-        {
-            alive = true;
-            break;
-        }
+#define FOOBARSWAP(a, b) \
+    {                    \
+        double tmp = a;  \
+        a = b;           \
+        b = tmp;         \
     }
-    return (!alive);
+
+static void Player_swap_settings(player_t *pl)
+{
+    if (BIT(pl->obj_status, HOVERPAUSE) || Player_uses_autopilot(pl))
+        return;
+
+    /* kps - turnacc == 0.0 ? */
+    if (pl->turnacc == 0.0)
+    {
+        FOOBARSWAP(pl->power, pl->power_s);
+        FOOBARSWAP(pl->turnspeed, pl->turnspeed_s);
+        FOOBARSWAP(pl->turnresistance, pl->turnresistance_s);
+    }
 }
 
-/*
- * Return true if a lock is allowed.
- */
-static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
+#undef FOOBARSWAP
+
+static void Player_toggle_compass(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
+    int i, k, ind = GetInd(pl->id);
 
-    /* we can never lock on ourselves, nor on nullptr. */
-    if (!lock_pl || pl->id == lock_pl->id)
-        return false;
+    if (!BIT(pl->have, HAS_COMPASS))
+        return;
+    TOGGLE_BIT(pl->used, USES_COMPASS);
 
-    /* if we are actively playing then we can lock since we are not viewing. */
-    if (Player_is_active(pl))
-        return true;
+    if (!Player_uses_compass(pl))
+        return;
 
-    /* if there is no team play then we can always lock on anyone. */
-    if (!BIT(world->rules->mode, TEAM_PLAY))
-        return true;
+    /*
+     * Verify if the lock has ever been initialized at all
+     * and if the lock is still valid.
+     */
+    if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetInd(k)) > 0 && i < NumPlayers && Player_by_index(i)->id == k && i != ind)
+        return;
 
-    /* we can always lock on players from our own team. */
-    if (Players_are_teammates(pl, lock_pl))
-        return true;
-
-    /* if lockOtherTeam is true then we can always lock on other teams. */
-    if (options.lockOtherTeam)
-        return true;
-
-    /* if our own team is dead then we can lock on anyone. */
-    if (team_dead(pl->team))
-        return true;
-
-    /* can't find any reason why this lock should be allowed. */
-    return false;
-}
-
-/*
- * Sven Mascheck:
- * If all _opponents are paused, then even LOCK_NEXT (ot LOCK_PREV)
- * might not lock_next (or lock_prev), as Player_lock_closest() might
- * be called  [ "event.c" line 466 ] :
- * This happens when the player is not locked on any one anymore -
- * and this happens if he tried to lock_closest before (if all
- * opponents are paused).
- * Player_lock_closest() is called with (ind, 0) and that means that
- * the lock is cleared in _any case_ with the current code - that could
- * be done without calling Player_lock_closest().
- * (btw, code in Player_lock_closest() looks like 'evolutionary code :)
- * I am not sure where to fix that locking problem
- * ( in "case KEY_LOCK_NEXT" or in Player_lock_closest() ).
- * I tried to find a solution but now i am bit screwed up..  :)
- */
-int Player_lock_closest(player_t *pl, bool next)
-{
-    // player_t *pl = PlayersArray[ind];
-    player_t *lock_pl = nullptr;
-    player_t *new_pl = nullptr;
-    int i;
-    double dist, best, l;
-
-    if (!next)
-        CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
-
-    if (BIT(pl->lock.tagged, LOCK_PLAYER))
-    {
-        lock_pl = Player_by_id(pl->lock.pl_id);
-        dist = Wrap_length(lock_pl->pos.cx - pl->pos.cx,
-                           lock_pl->pos.cy - pl->pos.cy) /
-               CLICK;
-    }
-    else
-    {
-        lock_pl = nullptr;
-        dist = 0.0;
-    }
-    new_pl = nullptr;
-    best = FLT_MAX;
-
-    for (i = 0; i < NumPlayers; i++)
-    {
-        player_t *pl_i = Player_by_index(i);
-
-        if (pl_i == lock_pl ||
-            (BIT(pl_i->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING) ||
-            !Player_lock_allowed(pl, pl_i) ||
-            Player_owns_tank(pl, pl_i) ||
-            Players_are_teammates(pl, pl_i) ||
-            Players_are_allies(pl, pl_i))
-            continue;
-        l = Wrap_length(pl_i->pos.cx - pl->pos.cx,
-                        pl_i->pos.cy - pl->pos.cy) /
-            CLICK;
-        if (l >= dist && l < best)
-        {
-            best = l;
-            new_pl = pl_i;
-        }
-    }
-    if (new_pl == nullptr)
-        return 0;
-
-    SET_BIT(pl->lock.tagged, LOCK_PLAYER);
-    pl->lock.pl_id = new_pl->id;
-
-    return 1;
+    Player_lock_closest(pl, false);
 }
 
 void Pause_player(player_t *pl, bool on)
 {
-    // player_t *pl = PlayersArray[ind];
     int i;
 
     if (on && !BIT(pl->obj_status, PAUSE))
@@ -242,7 +302,7 @@ void Pause_player(player_t *pl, bool on)
         pl->mychar = 'P';
         updateScores = true;
         if (BIT(pl->have, HAS_BALL))
-            Detach_ball(pl, -1);
+            Detach_ball(pl, NULL);
     }
     else if (!on && BIT(pl->obj_status, PAUSE))
     {
@@ -299,31 +359,31 @@ void Pause_player(player_t *pl, bool on)
 
 int Handle_keyboard(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     player_t *pl_i = nullptr;
     int ind = GetInd(pl->id);
-    int i, j, k, key, pressed, xi, yi;
+    int i, j, k, key, xi, yi;
     double minv;
+    bool pressed;
 
     for (key = 0; key < NUM_KEYS; key++)
     {
+        /* Find first keyv element where last_keyv isn't equal to prev_keyv. */
         if (pl->last_keyv[key / BITV_SIZE] == pl->prev_keyv[key / BITV_SIZE])
         {
-            key |= (BITV_SIZE - 1); /* Skip to next keyv element */
+            /* Skip to next keyv element. */
+            key |= (BITV_SIZE - 1);
             continue;
         }
+        /* Now check which specific key it is that has changed state. */
         while (BITV_ISSET(pl->last_keyv, key) == BITV_ISSET(pl->prev_keyv, key))
         {
             if (++key >= NUM_KEYS)
-            {
                 break;
-            }
         }
         if (key >= NUM_KEYS)
-        {
             break;
-        }
-        pressed = BITV_ISSET(pl->last_keyv, key) != 0;
+
+        pressed = (BITV_ISSET(pl->last_keyv, key) != 0) ? true : false;
         BITV_TOGGLE(pl->prev_keyv, key);
         if (key != KEY_SHIELD)                 /* would interfere with auto-idle-pause.. */
             pl->frame_last_busy = frame_loops; /* due to client auto-shield */
@@ -445,58 +505,11 @@ int Handle_keyboard(player_t *pl)
 
             case KEY_LOCK_NEXT:
             case KEY_LOCK_PREV:
-                j = i = GetIndArray[pl->lock.pl_id];
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || j < 0 || j >= NumPlayers)
-                {
-                    /* better jump to KEY_LOCK_CLOSE... */
-                    Player_lock_closest(pl, false);
-                    break;
-                }
-                do
-                {
-                    if (key == KEY_LOCK_PREV)
-                    {
-                        if (--i < 0)
-                            i = NumPlayers - 1;
-                    }
-                    else
-                    {
-                        if (++i >= NumPlayers)
-                            i = 0;
-                    }
-                    pl_i = Player_by_index(i);
-                    if (i == j)
-                        break;
-                } while (i == ind || BIT(pl_i->obj_status, GAME_OVER | PAUSE) || !Player_lock_allowed(pl, pl_i));
-
-                if (i == ind)
-                {
-                    CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
-                }
-                else
-                {
-                    pl->lock.pl_id = Player_by_index(i)->id;
-                    SET_BIT(pl->lock.tagged, LOCK_PLAYER);
-                }
+                Player_lock_next_or_prev(pl, key);
                 break;
 
             case KEY_TOGGLE_COMPASS:
-                if (!BIT(pl->have, HAS_COMPASS))
-                    break;
-                TOGGLE_BIT(pl->used, HAS_COMPASS);
-                if (BIT(pl->used, HAS_COMPASS) == 0)
-                {
-                    break;
-                }
-                /*
-                 * Verify if the lock has ever been initialized at all
-                 * and if the lock is still valid.
-                 */
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && NumPlayers > 1 && (k = pl->lock.pl_id) > 0 && (i = GetIndArray[k]) > 0 && i < NumPlayers && Player_by_index(i)->id == k && i != ind)
-                {
-                    break;
-                }
-                Player_lock_closest(pl, false);
+                Player_toggle_compass(pl);
                 break;
 
             case KEY_LOCK_NEXT_CLOSE:
@@ -514,18 +527,17 @@ int Handle_keyboard(player_t *pl)
                 if (world->block[xi][yi] == BASE)
                 {
                     msg[0] = '\0';
-                    for (i = 0; i < world->NumBases; i++)
+                    for (i = 0; i < Num_bases(); i++)
                     {
-                        if (world->bases[i].blk_pos.x == xi && world->bases[i].blk_pos.y == yi)
+                        base_t *base = Base_by_index(i);
+                        if (base->blk_pos.x == xi && base->blk_pos.y == yi)
                         {
-
-                            if (i == pl->home_base)
-                            {
+                            if (base == pl->home_base)
                                 break;
-                            }
+
                             if (world->bases[i].team != TEAM_NOT_SET && world->bases[i].team != pl->team)
                                 break;
-                            pl->home_base = i;
+                            pl->home_base = base;
                             sprintf(msg, "%s has changed home base.",
                                     pl->name);
                             break;
@@ -552,7 +564,7 @@ int Handle_keyboard(player_t *pl)
                         if (Player_by_index(i)->conn != NULL)
                             Send_base(Player_by_index(i)->conn,
                                       pl->id,
-                                      pl->home_base);
+                                      pl->home_base->ind);
                     }
                 }
                 break;
@@ -566,7 +578,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_DROP_BALL:
-                Detach_ball(pl, -1);
+                Detach_ball(pl, NULL);
                 break;
 
             case KEY_FIRE_SHOT:
@@ -594,9 +606,7 @@ int Handle_keyboard(player_t *pl)
 
             case KEY_FIRE_LASER:
                 if (pl->item[ITEM_LASER] > 0 && BIT(pl->used, HAS_SHIELD) == 0)
-                {
                     SET_BIT(pl->used, HAS_LASER);
-                }
                 break;
 
             case KEY_TOGGLE_NUCLEAR:
@@ -789,8 +799,8 @@ int Handle_keyboard(player_t *pl)
                 {
                     xi = OBJ_X_IN_BLOCKS(pl);
                     yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = world->bases[pl->home_base].blk_pos.x;
-                    k = world->bases[pl->home_base].blk_pos.y;
+                    j = pl->home_base->blk_pos.x;
+                    k = pl->home_base->blk_pos.y;
                     if (j == xi && k == yi)
                     {
                         minv = 3.0f;
@@ -878,14 +888,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_SWAP_SETTINGS:
-                if (BIT(pl->obj_status, HOVERPAUSE) || Player_uses_autopilot(pl))
-                    break;
-                if (pl->turnacc == 0.0)
-                {
-                    SWAP(pl->power, pl->power_s);
-                    SWAP(pl->turnspeed, pl->turnspeed_s);
-                    SWAP(pl->turnresistance, pl->turnresistance_s);
-                }
+                Player_swap_settings(pl);
                 break;
 
             case KEY_REFUEL:

@@ -66,19 +66,20 @@ long CANNON_USE_ITEM = (ITEM_BIT_FUEL | ITEM_BIT_WIDEANGLE | ITEM_BIT_REARSHOT |
 
 void Cannon_update(bool tick)
 {
+    int i;
     /*
      * Updating cannons, maybe a little bit of fireworks too?
      */
-    for (int i = 0; i < world->NumCannons; i++)
+    for (i = 0; i < Num_cannons(); i++)
     {
-        cannon_t *cannon = world->cannons + i;
-        if (cannon->dead_time > 0)
+        cannon_t *c = Cannon_by_index(i);
+        if (c->dead_time > 0)
         {
-            if (!--cannon->dead_time)
+            if (!--c->dead_time)
             {
-                world->block[cannon->blk_pos.x][cannon->blk_pos.y] = CANNON;
-                cannon->conn_mask = 0;
-                cannon->last_change = frame_loops;
+                world->block[c->blk_pos.x][c->blk_pos.y] = CANNON;
+                c->conn_mask = 0;
+                c->last_change = frame_loops;
             }
             continue;
         }
@@ -88,11 +89,11 @@ void Cannon_update(bool tick)
                on maps with many cannons with defensive items */
             if (options.cannonsUseItems && options.cannonsDefend && rfrac() < 0.65)
             {
-                Cannon_check_defense(cannon);
+                Cannon_check_defense(c);
             }
-            if (!BIT(cannon->used, USES_EMERGENCY_SHIELD) && !BIT(cannon->used, USES_PHASING_DEVICE) && !cannon->damaged && !cannon->tractor_count && rfrac() * 16 < 1)
+            if (!BIT(c->used, HAS_EMERGENCY_SHIELD) && !BIT(c->used, USES_PHASING_DEVICE) && !c->damaged && !c->tractor_count && rfrac() * 16 < 1)
             {
-                Cannon_check_fire(cannon);
+                Cannon_check_fire(c);
             }
             else if (options.cannonsUseItems && options.itemProbMult > 0 && options.cannonItemProbMult > 0)
             {
@@ -100,47 +101,53 @@ void Cannon_update(bool tick)
                 /* this gives the cannon an item about once every minute */
                 if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * world->items[item].cannonprob))
                 {
-                    Cannon_add_item(cannon, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
+                    Cannon_add_item(c, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
                 }
             }
         }
-        if (cannon->damaged > 0)
+        if (c->damaged > 0)
         {
-            cannon->damaged--;
+            c->damaged--;
         }
-        if (cannon->tractor_count > 0)
+        if (c->tractor_count > 0)
         {
-            int ind = GetIndArray[cannon->tractor_target];
-            if (Wrap_length(PlayersArray[ind]->pos.cx - cannon->pos.cx,
-                            PlayersArray[ind]->pos.cy - cannon->pos.cy) /
-                        CLICK <
-                    TRACTOR_MAX_RANGE(cannon->item[ITEM_TRACTOR_BEAM]) &&
-                BIT(PlayersArray[ind]->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
+            player_t *tpl = Player_by_id(c->tractor_target);
+
+            if (tpl == NULL)
             {
-                General_tractor_beam(-1, cannon->pos,
-                                     cannon->item[ITEM_TRACTOR_BEAM], ind,
-                                     cannon->tractor_is_pressor);
-                cannon->tractor_count--;
+                c->tractor_target = NO_ID;
+                c->tractor_count = 0;
+            }
+            else if (Wrap_length(tpl->pos.cx - c->pos.cx,
+                                 tpl->pos.cy - c->pos.cy) /
+                             CLICK <
+                         TRACTOR_MAX_RANGE(c->item[ITEM_TRACTOR_BEAM]) &&
+                     BIT(tpl->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
+            {
+                General_tractor_beam(c->id, c->pos,
+                                     c->item[ITEM_TRACTOR_BEAM],
+                                     tpl, c->tractor_is_pressor);
+                c->tractor_count--;
             }
             else
             {
-                cannon->tractor_count = 0;
+                c->tractor_count = 0;
             }
         }
-        if (cannon->emergency_shield_left > 0)
+        if (c->emergency_shield_left > 0)
         {
-            if (--cannon->emergency_shield_left <= 0)
+            if (--c->emergency_shield_left <= 0)
             {
-                CLR_BIT(cannon->used, USES_EMERGENCY_SHIELD);
-                sound_play_sensors(cannon->pos, EMERGENCY_SHIELD_OFF_SOUND);
+                CLR_BIT(c->used, HAS_EMERGENCY_SHIELD);
+                sound_play_sensors(c->pos, EMERGENCY_SHIELD_OFF_SOUND);
             }
         }
-        if (cannon->phasing_left > 0)
+        if (c->phasing_left > 0)
         {
-            if (--cannon->phasing_left <= 0)
+            if (--c->phasing_left <= 0)
             {
-                CLR_BIT(cannon->used, USES_PHASING_DEVICE);
-                sound_play_sensors(cannon->pos, PHASING_OFF_SOUND);
+                CLR_BIT(c->used, USES_PHASING_DEVICE);
+                sound_play_sensors(c->pos, PHASING_OFF_SOUND);
             }
         }
     }
@@ -230,7 +237,7 @@ void Cannon_init(cannon_t *c)
             Cannon_add_item(c, i, (int)(rfrac() * (world->items[i].initial + 1)));
     }
     c->damaged = 0;
-    c->tractor_target = -1;
+    c->tractor_target = NO_ID;
     c->tractor_count = 0;
     c->tractor_is_pressor = false;
     c->used = 0;
@@ -266,7 +273,7 @@ static int Cannon_select_defense(cannon_t *c)
 
     if (options.cannonSmartness == 0)
         return -1; /* mode 0 does not defend */
-    if (BIT(c->used, USES_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
+    if (BIT(c->used, HAS_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
         return -1; /* still protected */
     if (c->item[ITEM_EMERGENCY_SHIELD])
         return CD_EM_SHIELD;
@@ -343,7 +350,7 @@ static void Cannon_defend(cannon_t *c, int defense)
     {
     case CD_EM_SHIELD:
         c->emergency_shield_left += 4 * FPS;
-        SET_BIT(c->used, USES_EMERGENCY_SHIELD);
+        SET_BIT(c->used, HAS_EMERGENCY_SHIELD);
         c->item[ITEM_EMERGENCY_SHIELD]--;
         IFSOUND(sound = EMERGENCY_SHIELD_ON_SOUND);
         break;
@@ -650,7 +657,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         IFSOUND(sound = FIRE_LASER_SOUND);
         break;
     case CW_ECM:
-        Fire_general_ecm(-1, c->team, c->pos);
+        Fire_general_ecm(c->id, c->team, c->pos);
         c->item[ITEM_ECM]--;
         IFSOUND(sound = ECM_SOUND);
         break;

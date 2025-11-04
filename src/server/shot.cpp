@@ -1506,7 +1506,7 @@ void Move_ball(int ind)
      */
 
     ballobject_t *ball = BALL_IND(ind);
-    player_t *pl = PlayersArray[GetIndArray[ball->id]];
+    player_t *pl = Player_by_id(ball->id);
     vector_t D;
     double length, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
@@ -1539,7 +1539,7 @@ void Move_ball(int ind)
     /* if the tether is too long or too short, release it */
     if (ABS(ratio) > options.maxBallConnectorRatio)
     {
-        Detach_ball(Player_by_id(ball->id), ind);
+        Detach_ball(Player_by_id(ball->id), ball);
         return;
     }
     ball->length = length;

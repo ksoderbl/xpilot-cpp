@@ -152,7 +152,7 @@ void Cloak(player_t *pl, bool on)
         {
             if (!options.cloakedShield)
             {
-                if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+                if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
                     Emergency_shield(pl, false);
                 if (BIT(pl->used, USES_DEFLECTOR))
                     Deflector(pl, false);
@@ -274,9 +274,9 @@ void Emergency_shield(player_t *pl, bool on)
             if (options.cloakedShield || !BIT(pl->used, USES_CLOAKING_DEVICE))
             {
                 SET_BIT(pl->have, HAS_SHIELD);
-                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
                 {
-                    SET_BIT(pl->used, USES_EMERGENCY_SHIELD);
+                    SET_BIT(pl->used, HAS_EMERGENCY_SHIELD);
                     sound_play_sensors(pl->pos, EMERGENCY_SHIELD_ON_SOUND);
                 }
             }
@@ -294,9 +294,9 @@ void Emergency_shield(player_t *pl, bool on)
             CLR_BIT(pl->have, HAS_SHIELD);
             CLR_BIT(pl->used, HAS_SHIELD);
         }
-        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         {
-            CLR_BIT(pl->used, USES_EMERGENCY_SHIELD);
+            CLR_BIT(pl->used, HAS_EMERGENCY_SHIELD);
             sound_play_sensors(pl->pos, EMERGENCY_SHIELD_OFF_SOUND);
         }
     }
@@ -802,13 +802,13 @@ void Update_objects(void)
         {
             if (--pl->shield_time == 0)
             {
-                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
                     CLR_BIT(pl->used, HAS_SHIELD);
             }
             if (BIT(pl->used, HAS_SHIELD) == 0)
             {
                 /* BG 95/06/03: change test on "have" to "used". */
-                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
                     CLR_BIT(pl->have, HAS_SHIELD);
                 pl->shield_time = 0;
             }
@@ -836,7 +836,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         {
             if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {

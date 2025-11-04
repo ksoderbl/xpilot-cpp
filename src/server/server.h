@@ -24,11 +24,16 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <cstdint>
+
+#include "click.h"
+#include "list.h"
+#include "shipshape.h"
+
 #include "map.h"
 #include "object.h"
 #include "player.h"
-#include "list.h"
-#include "shipshape.h"
+#include "polygon.h"
 
 extern shape_t ball_wire, wormhole_wire, filled_wire;
 
@@ -44,6 +49,20 @@ enum TeamPickType
 };
 
 #define APPNAME "xpilot-cpp-server"
+
+extern object_t *Obj[];
+
+extern int NumPlayers;
+extern int NumOperators;
+extern int NumPseudoPlayers;
+extern int NumQueuedPlayers;
+extern int ObjCount;
+extern int NumAlliances;
+extern int NumRobots;
+
+extern char ShutdownReason[];
+
+extern double timePerFrame;
 
 /*
  * Prototypes for cell.c
@@ -119,6 +138,7 @@ int Wildmap(
  */
 void tuner_none(void);
 void tuner_dummy(void);
+void Timing_setup(void);
 bool Init_options(void);
 void Free_options(void);
 
@@ -138,7 +158,7 @@ void Update_tanks(pl_fuel_t *);
 void Place_item(int type, player_t *pl);
 int Choose_random_item(void);
 void Tractor_beam(player_t *pl);
-void General_tractor_beam(int ind, clpos_t pos, int items, int target, bool pressor);
+void General_tractor_beam(int id, clpos_t pos, int items, player_t *victim, bool pressor);
 void Place_mine(player_t *pl);
 void Place_moving_mine(player_t *pl);
 void Place_general_mine(int id, int team, long status, clpos_t pos,
@@ -146,7 +166,7 @@ void Place_general_mine(int id, int team, long status, clpos_t pos,
 void Detonate_mines(player_t *pl);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(player_t *pl);
-void Fire_general_ecm(int ind, int team, clpos_t pos);
+void Fire_general_ecm(int id, int team, clpos_t pos);
 void Move_ball(int ind);
 void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
@@ -221,6 +241,10 @@ void Cannon_check_fire(cannon_t *cannon);
  * Prototypes for command.c
  */
 void Handle_player_command(player_t *pl, char *cmd);
+player_t *Get_player_by_name(const char *str,
+                             int *errcode, const char **errorstr_p);
+void Send_info_about_player(player_t *pl);
+void Set_swapper_state(player_t *pl);
 
 /*
  * Prototypes for rules.c
@@ -242,7 +266,8 @@ int Pick_team(int pick_for_type);
 void Server_info(char *str, unsigned max_size);
 void Log_game(const char *heading);
 void Game_Over(void);
-void Server_log_admin_message(int ind, const char *str);
+void Server_shutdown(const char *user_name, int delay, const char *reason);
+void Server_log_admin_message(player_t *pl, const char *str);
 int plock_server(bool on);
 void Main_loop(void);
 
@@ -254,7 +279,7 @@ bool Contact_init(void);
 void Contact(int fd, void *arg);
 void Queue_loop(void);
 int Queue_advance_player(char *name, char *msg);
-int Queue_show_list(char *msg);
+int Queue_show_list(char *qmsg, size_t size);
 void Set_deny_hosts(void);
 
 /*
@@ -272,6 +297,8 @@ void Meta_update(int change);
 void Frame_update(void);
 void Set_message(const char *message);
 void Set_player_message(player_t *pl, const char *message);
+void Set_message_f(const char *format, ...);
+void Set_player_message_f(player_t *pl, const char *format, ...);
 
 /*
  * Prototypes for update.c
@@ -340,6 +367,38 @@ void Object_free_ind(int ind);
 void Object_free_ptr(object_t *obj);
 void Alloc_shots(int number);
 void Free_shots(void);
+
+/*
+ * Prototypes for polygon.c
+ */
+void P_edgestyle(const char *id, int width, int color, int style);
+void P_polystyle(const char *id, int color, int texture_id, int defedge_id,
+                 int flags);
+void P_bmpstyle(const char *id, const char *filename, int flags);
+void P_start_polygon(clpos_t pos, int style);
+void P_offset(clpos_t offset, int edgestyle);
+void P_vertex(clpos_t pos, int edgestyle);
+void P_style(const char *state, int style);
+void P_end_polygon(void);
+int P_start_ballarea(void);
+void P_end_ballarea(void);
+int P_start_balltarget(int team, int treasure_ind);
+void P_end_balltarget(void);
+int P_start_target(int target_ind);
+void P_end_target(void);
+int P_start_cannon(int cannon_ind);
+void P_end_cannon(void);
+int P_start_wormhole(int wormhole_ind);
+void P_end_wormhole(void);
+void P_start_decor(void);
+void P_end_decor(void);
+int P_start_friction_area(int fa_ind);
+void P_end_friction_area(void);
+int P_get_bmp_id(const char *s);
+int P_get_edge_id(const char *s);
+int P_get_poly_id(const char *s);
+/*void P_grouphack(int type, void (*f)(int group, void *mapobj));*/
+void P_set_hitmask(int group, hitmask_t hitmask);
 
 /*
  * Prototypes for showtime.c

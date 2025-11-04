@@ -64,7 +64,7 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_PHASING_DEVICE);
     if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, USES_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
         CLR_BIT(pl->have, HAS_EMERGENCY_THRUST);
-    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, USES_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
+    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, HAS_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
     {
         if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
         {
@@ -500,7 +500,7 @@ void Tractor_beam(player_t *pl)
     long cost;
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || Player_is_phasing(pl) || BIT(PlayersArray[GetIndArray[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(Player_by_id(pl->lock.pl_id)->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || Player_is_phasing(pl) || BIT(Player_by_id(pl->lock.pl_id)->used, USES_PHASING_DEVICE))
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -513,13 +513,12 @@ void Tractor_beam(player_t *pl)
         return;
     }
     General_tractor_beam(pl->id, pl->pos, pl->item[ITEM_TRACTOR_BEAM],
-                         GetIndArray[pl->lock.pl_id], pl->tractor_is_pressor);
+                         Player_by_id(pl->lock.pl_id), pl->tractor_is_pressor);
 }
 
-void General_tractor_beam(int ind, clpos_t pos, int items, int target, bool pressor)
+void General_tractor_beam(int id, clpos_t pos, int items, player_t *victim, bool pressor)
 {
-    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]),
-             *victim = PlayersArray[target];
+    player_t *pl = Player_by_id(id);
     double maxdist = TRACTOR_MAX_RANGE(items),
            maxforce = TRACTOR_MAX_FORCE(items),
            percent, force, dist;
@@ -796,7 +795,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
         what = "an emergency shield";
         if (!victim->item[item])
         {
-            if (BIT(victim->used, USES_EMERGENCY_SHIELD))
+            if (BIT(victim->used, HAS_EMERGENCY_SHIELD))
                 Emergency_shield(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_SHIELD);
             if (!BIT(DEF_HAVE, HAS_SHIELD))
@@ -957,7 +956,7 @@ void do_lose_item(player_t *pl)
     Item_update_flags(pl);
 }
 
-void Fire_general_ecm(int ind, int team, clpos_t pos)
+void Fire_general_ecm(int id, int team, clpos_t pos)
 {
     object_t *shot;
     mineobject_t *closest_mine = NULL;
@@ -966,8 +965,7 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
     double closest_mine_range = world->hypotenuse;
     int i, j, owner;
     double range, perim, damage;
-    player_t *pl = (ind == -1 ? NULL : PlayersArray[ind]);
-    player_t *p;
+    player_t *p, *pl = Player_by_id(id);
     ecm_t *ecm;
 
     if (world->NumEcms >= MAX_TOTAL_ECMS)
@@ -1007,8 +1005,9 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
          */
         if (shot->id != NO_ID)
         {
-            owner = GetIndArray[shot->id];
-            if (ind == owner)
+            player_t *owner_pl = Player_by_id(shot->id);
+
+            if (pl == owner_pl)
             {
                 if (shot->type == OBJ_MINE)
                 {
@@ -1029,14 +1028,14 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
         {
         case OBJ_SMART_SHOT:
             /*
-             * See Move_smart_shot() for re-lock probablities after confusion
+             * See Move_smart_shot() for re-lock probabilities after confusion
              * ends.
              */
             smart = SMART_PTR(shot);
             SET_BIT(smart->obj_status, CONFUSED);
             smart->ecm_range = range;
             smart->count = CONFUSED_TIME;
-            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetIndArray[pl->lock.pl_id]].canSee)
+            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                 smart->new_info = pl->lock.pl_id;
             else
                 smart->new_info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
@@ -1057,7 +1056,7 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
             /*
              * perim is distance from the mine to its detonation perimeter
              *
-             * range is the proportion from the mine detontation perimeter
+             * range is the proportion from the mine detonation perimeter
              * to the maximum ecm range.
              * low values of range mean the mine is close
              *
@@ -1107,11 +1106,11 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
     }
 
     /* in non-team mode cannons are immune to cannon ECMs */
-    if (BIT(world->rules->mode, TEAM_PLAY) || ind != -1)
+    if (BIT(world->rules->mode, TEAM_PLAY) || pl)
     {
-        for (i = 0; i < world->NumCannons; i++)
+        for (i = 0; i < Num_cannons(); i++)
         {
-            cannon_t *c = world->cannons + i;
+            cannon_t *c = Cannon_by_index(i);
             if (BIT(world->rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
             range = Wrap_length(CLICK_TO_FLOAT(pos.cx - c->pos.cx), CLICK_TO_FLOAT(pos.cy - c->pos.cy));
@@ -1126,10 +1125,11 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (i == ind)
+        p = Player_by_index(i);
+
+        if (p == pl)
             continue;
 
-        p = Player_by_index(i);
         /*
          * Team members are always immune from ECM effects from other
          * team members.  Its too nasty otherwise.
@@ -1140,13 +1140,14 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
         if (pl && Players_are_allies(pl, p))
             continue;
 
-        if (BIT(p->used, USES_PHASING_DEVICE))
+        if (Player_is_phasing(p))
             continue;
 
-        if (BIT(p->obj_status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
+        if (Player_is_active(p))
         {
-            range = Wrap_length(CLICK_TO_FLOAT(pos.cx - p->pos.cx),
-                                CLICK_TO_FLOAT(pos.cy - p->pos.cy));
+            range = Wrap_length(pos.cx - p->pos.cx,
+                                pos.cy - p->pos.cy) /
+                    CLICK;
             if (range > ECM_DISTANCE)
                 continue;
 
@@ -1164,16 +1165,12 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
              * should this be FPS dependant: damage = 4.0f * FPS * range; ?
              * No, i think.
              */
-            damage = 24.0f * range;
+            damage = 24.0 * range;
 
             if (p->item[ITEM_CLOAK] <= 1)
-            {
                 p->forceVisible += (int)damage;
-            }
             else
-            {
                 p->forceVisible += (int)(damage * pow(0.75, (p->item[ITEM_CLOAK] - 1)));
-            }
 
             /* ECM may cause balls to detach. */
             if (BIT(p->have, HAS_BALL))
@@ -1186,10 +1183,8 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
                         ballobject_t *ball = BALL_PTR(shot);
                         if (ball->ball_owner == p->id)
                         {
-                            if ((int)(rfrac() * 100.0f) < ((int)(20 * range) + 5))
-                            {
-                                Detach_ball(p, j);
-                            }
+                            if ((int)(rfrac() * 100.0) < ((int)(20 * range) + 5))
+                                Detach_ball(p, ball);
                         }
                     }
                 }
@@ -1197,22 +1192,20 @@ void Fire_general_ecm(int ind, int team, clpos_t pos)
 
             /* ECM damages sensitive equipment like lasers */
             if (p->item[ITEM_LASER] > 0)
-            {
                 p->item[ITEM_LASER] -= (int)(range * p->item[ITEM_LASER] + 0.5);
-            }
 
             if (!Player_is_robot(p) || !options.ecmsReprogramRobots || !pl)
             {
                 /* player is blinded by light flashes. */
-                long duration = (int)(damage * pow(0.75, p->item[ITEM_SENSOR]));
-                p->damaged += duration;
+                double duration = (damage * pow(0.75, (double)p->item[ITEM_SENSOR]));
+                p->damaged += (int)duration;
                 if (pl)
-                    Record_shove(p, pl, frame_loops + duration);
+                    Record_shove(p, pl, frame_loops + (long)duration);
             }
             else
             {
-                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetIndArray[pl->lock.pl_id]].canSee && pl->lock.pl_id != p->id
-                    /*&& !TEAM_IMMUNE(ind, GetIndArray[pl->lock.pl_id])*/)
+                if (BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance < pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee && pl->lock.pl_id != p->id
+                    /*&& !TEAM_IMMUNE(ind, GetInd(pl->lock.pl_id))*/)
                 {
 
                     /*
@@ -1230,6 +1223,53 @@ void Fire_ecm(player_t *pl)
     if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
         return;
 
-    int ind = GetInd(pl->id);
-    Fire_general_ecm(ind, pl->team, pl->pos);
+    Fire_general_ecm(pl->id, pl->team, pl->pos);
+}
+
+Item_t Item_by_option_name(const char *name)
+{
+    if (!strcasecmp(name, "initialfuel"))
+        return ITEM_FUEL;
+    if (!strcasecmp(name, "initialwideangles"))
+        return ITEM_WIDEANGLE;
+    if (!strcasecmp(name, "initialrearshots"))
+        return ITEM_REARSHOT;
+    if (!strcasecmp(name, "initialafterburners"))
+        return ITEM_AFTERBURNER;
+    if (!strcasecmp(name, "initialcloaks"))
+        return ITEM_CLOAK;
+    if (!strcasecmp(name, "initialsensors"))
+        return ITEM_SENSOR;
+    if (!strcasecmp(name, "initialtransporters"))
+        return ITEM_TRANSPORTER;
+    if (!strcasecmp(name, "initialtanks"))
+        return ITEM_TANK;
+    if (!strcasecmp(name, "initialmines"))
+        return ITEM_MINE;
+    if (!strcasecmp(name, "initialmissiles"))
+        return ITEM_MISSILE;
+    if (!strcasecmp(name, "initialecms"))
+        return ITEM_ECM;
+    if (!strcasecmp(name, "initiallasers"))
+        return ITEM_LASER;
+    if (!strcasecmp(name, "initialemergencythrusts"))
+        return ITEM_EMERGENCY_THRUST;
+    if (!strcasecmp(name, "initialtractorbeams"))
+        return ITEM_TRACTOR_BEAM;
+    if (!strcasecmp(name, "initialautopilots"))
+        return ITEM_AUTOPILOT;
+    if (!strcasecmp(name, "initialemergencyshields"))
+        return ITEM_EMERGENCY_SHIELD;
+    if (!strcasecmp(name, "initialdeflectors"))
+        return ITEM_DEFLECTOR;
+    if (!strcasecmp(name, "initialhyperjumps"))
+        return ITEM_HYPERJUMP;
+    if (!strcasecmp(name, "initialphasings"))
+        return ITEM_PHASING;
+    if (!strcasecmp(name, "initialmirrors"))
+        return ITEM_MIRROR;
+    if (!strcasecmp(name, "initialarmor") || !strcasecmp(name, "initialarmors"))
+        return ITEM_ARMOR;
+
+    return NO_ITEM;
 }

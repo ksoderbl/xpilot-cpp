@@ -1207,17 +1207,20 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
     Send_player(pl->conn, pl->id);
     Send_score(pl->conn, pl->id, pl->score,
                pl->life, pl->mychar, pl->alliance);
-    Send_base(pl->conn, pl->id, pl->home_base);
+    if (pl->home_base)
+        Send_base(pl->conn, pl->id, pl->home_base->ind);
     /*
      * And tell him about all the others.
      */
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        Send_player(pl->conn, Player_by_index(i)->id);
-        Send_score(pl->conn, Player_by_index(i)->id, Player_by_index(i)->score,
-                   Player_by_index(i)->life, Player_by_index(i)->mychar, Player_by_index(i)->alliance);
-        if (!Player_is_tank(Player_by_index(i)))
-            Send_base(pl->conn, Player_by_index(i)->id, Player_by_index(i)->home_base);
+        player_t *pl_i = Player_by_index(i);
+
+        Send_player(pl->conn, pl_i->id);
+        Send_score(pl->conn, pl_i->id, pl_i->score,
+                   pl_i->life, pl_i->mychar, pl_i->alliance);
+        if (!Player_is_tank(pl_i))
+            Send_base(pl->conn, pl_i->id, pl_i->home_base->ind);
     }
     /*
      * And tell all the others about him.
@@ -1231,7 +1234,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
             Send_player(pl_i->conn, pl->id);
             Send_score(pl_i->conn, pl->id, pl->score,
                        pl->life, pl->mychar, pl->alliance);
-            Send_base(pl_i->conn, pl->id, pl->home_base);
+            Send_base(pl_i->conn, pl->id, pl->home_base->ind);
         }
     }
 

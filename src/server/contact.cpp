@@ -285,7 +285,7 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
         player_t *pl_i = Player_by_index(i);
         if (strcasecmp(pl_i->name, nick_name) == 0)
         {
-            D(printf("%s %s\n", pl_i->name, nick_name);)
+            D(printf("%s %s\n", pl_i->name, nick_name));
             return E_IN_USE;
         }
     }
@@ -358,7 +358,7 @@ void Contact(int fd, void *arg)
      */
     if (Packet_scanf(&ibuf, "%u", &magic) <= 0 || (magic & 0xFFFF) != (MAGIC & 0xFFFF))
     {
-        D(printf("Incompatible packet from %s (0x%08x)", host_addr, magic);)
+        D(printf("Incompatible packet from %s (0x%08x)", host_addr, magic));
         return;
     }
     version = MAGIC2VERSION(magic);
@@ -368,7 +368,7 @@ void Contact(int fd, void *arg)
      */
     if (Packet_scanf(&ibuf, "%s%hu%c", user_name, &port, &ch) <= 0)
     {
-        D(printf("Incomplete packet from %s", host_addr);)
+        D(printf("Incomplete packet from %s", host_addr));
         return;
     }
     Fix_user_name(user_name);
@@ -387,7 +387,7 @@ void Contact(int fd, void *arg)
     if (version < MIN_CLIENT_VERSION || (version > MAX_CLIENT_VERSION && reply_to != CONTACT_pack))
     {
         D(error("Incompatible version with %s@%s (%04x,%04x)",
-                user_name, host_addr, MY_VERSION, version);)
+                user_name, host_addr, MY_VERSION, version));
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", MAGIC, reply_to, E_VERSION);
         Reply(host_addr, port);
@@ -445,7 +445,7 @@ void Contact(int fd, void *arg)
         if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
                          &team) <= 0)
         {
-            D(printf("Incomplete enter queue from %s@%s", user_name, host_addr);)
+            D(printf("Incomplete enter queue from %s@%s", user_name, host_addr));
             return;
         }
         Fix_nick_name(nick_name);
@@ -478,7 +478,7 @@ void Contact(int fd, void *arg)
         if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
                          &team) <= 0)
         {
-            D(printf("Incomplete login from %s@%s", user_name, host_addr);)
+            D(printf("Incomplete login from %s@%s", user_name, host_addr));
             return;
         }
         Fix_nick_name(nick_name);
@@ -556,7 +556,7 @@ void Contact(int fd, void *arg)
          * Got contact message from client.
          */
 
-        D(printf("Got CONTACT from %s.\n", host_addr);)
+        D(printf("Got CONTACT from %s.\n", host_addr));
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, status);
     }
@@ -789,7 +789,7 @@ void Contact(int fd, void *arg)
          * Incorrect packet type.
          */
         D(printf("Unknown packet type (%d) from %s@%s.\n",
-                 reply_to, user_name, host_addr);)
+                 reply_to, user_name, host_addr));
 
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, E_VERSION);
@@ -1264,33 +1264,33 @@ int Queue_advance_player(char *name, char *msg)
     return 0;
 }
 
-int Queue_show_list(char *msg)
+int Queue_show_list(char *qmsg, size_t size)
 {
-    int len, count;
+    int count = 1;
+    size_t len;
     struct queued_player *qp = qp_list;
 
     if (!qp)
     {
-        strcpy(msg, "The queue is empty.");
+        strlcpy(qmsg, "The queue is empty.", size);
         return 0;
     }
 
-    strcpy(msg, "Queue: ");
-    len = strlen(msg);
-    count = 1;
+    strlcpy(qmsg, "Queue: ", size);
+    len = strlen(qmsg);
+    assert(size - len > 0);
     do
     {
-        sprintf(msg + len, "%d. %s  ", count++, qp->nick_name);
-        len += strlen(msg + len);
+        snprintf(qmsg + len, size - len, "%d. %s  ", count++, qp->nick_name);
+        len = strlen(qmsg);
         qp = qp->next;
-    } while (qp != NULL && len + 32 < MSG_LEN);
+    } while (qp != NULL && len + 32 < size);
 
     /* strip last 2 spaces. */
-    msg[len - 2] = '\0';
+    qmsg[len - 2] = '\0';
 
     return 0;
 }
-
 /*
  * Returns true if <name> has owner status of this server.
  */

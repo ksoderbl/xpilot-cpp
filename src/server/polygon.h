@@ -117,36 +117,4 @@ static inline group_t *groupptr_by_id(int group)
 
 extern int num_polys, num_pstyles, num_estyles, num_bstyles;
 
-/*
- * Prototypes for polygon.c
- */
-void P_edgestyle(const char *id, int width, int color, int style);
-void P_polystyle(const char *id, int color, int texture_id, int defedge_id,
-                 int flags);
-void P_bmpstyle(const char *id, const char *filename, int flags);
-void P_start_polygon(clpos_t pos, int style);
-void P_offset(clpos_t offset, int edgestyle);
-void P_vertex(clpos_t pos, int edgestyle);
-void P_style(const char *state, int style);
-void P_end_polygon(void);
-int P_start_ballarea(void);
-void P_end_ballarea(void);
-int P_start_balltarget(int team, int treasure_ind);
-void P_end_balltarget(void);
-int P_start_target(int target_ind);
-void P_end_target(void);
-int P_start_cannon(int cannon_ind);
-void P_end_cannon(void);
-int P_start_wormhole(int wormhole_ind);
-void P_end_wormhole(void);
-void P_start_decor(void);
-void P_end_decor(void);
-int P_start_friction_area(int fa_ind);
-void P_end_friction_area(void);
-int P_get_bmp_id(const char *s);
-int P_get_edge_id(const char *s);
-int P_get_poly_id(const char *s);
-/*void P_grouphack(int type, void (*f)(int group, void *mapobj));*/
-void P_set_hitmask(int group, hitmask_t hitmask);
-
 #endif

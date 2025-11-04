@@ -83,8 +83,7 @@ static void Laser_pulse_destroy_one(int pulse_index)
     pulse_ptr = Pulses[pulse_index];
     if (pulse_ptr->id != NO_ID)
     {
-        ind = GetIndArray[pulse_ptr->id];
-        pl = PlayersArray[ind];
+        pl = Player_by_id(pulse_ptr->id);
         pl->num_pulses--;
     }
 
@@ -197,15 +196,9 @@ static void Laser_pulse_hits_player(
     char msg[MSG_LEN];
 
     if (pulse->id != NO_ID)
-    {
-        ind = GetIndArray[pulse->id];
-        pl = PlayersArray[ind];
-    }
+        pl = Player_by_id(pulse->id);
     else
-    {
-        ind = -1;
         pl = NULL;
-    }
 
     vicpl = PlayersArray[victim->ind];
     vicpl->forceVisible++;
@@ -456,15 +449,9 @@ void Laser_pulse_collision(void)
         }
 
         if (pulse->id != NO_ID)
-        {
-            ind = GetIndArray[pulse->id];
-            pl = PlayersArray[ind];
-        }
+            pl = Player_by_id(pulse->id);
         else
-        {
-            ind = -1;
-            pl = nullptr;
-        }
+            pl = NULL;
 
         pulse->pix_pos.x += tcos(pulse->dir) * PULSE_SPEED;
         pulse->pix_pos.y += tsin(pulse->dir) * PULSE_SPEED;

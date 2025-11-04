@@ -117,7 +117,7 @@ int Cancel_invitation(player_t *pl)
         /* we have not invited anyone */
         return 0;
     }
-    ally = PlayersArray[GetIndArray[pl->invite]];
+    ally = Player_by_id(pl->invite);
     pl->invite = NO_ID;
     if (Player_is_human(ally))
     {
@@ -403,11 +403,9 @@ static void Alliance_add_player(alliance_t *alliance, player_t *pl)
         player_t *pl2 = Player_by_index(i);
 
         if (pl2->invite == pl->id)
-        {
             Cancel_invitation(pl2);
-        }
     }
-    pl->alliance = alliance->id;
+    Player_set_alliance(pl, alliance->id);
     alliance->NumMembers++;
     updateScores = true;
 }
@@ -456,7 +454,7 @@ static int Alliance_remove_player(alliance_t *alliance, player_t *pl)
 {
     if (pl->alliance == alliance->id)
     {
-        pl->alliance = ALLIANCE_NOT_SET;
+        Player_set_alliance(pl, ALLIANCE_NOT_SET);
         alliance->NumMembers--;
         updateScores = true;
         return 1;

@@ -62,7 +62,7 @@ extern int login_in_progress;
 // extern world_t World;
 extern server_t Server;
 extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
-extern int GetIndArray[];
+// extern int GetIndArray[];
 extern int ShutdownServer;
 extern int ShutdownDelay;
 extern long main_loops;

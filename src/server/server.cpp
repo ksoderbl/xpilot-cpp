@@ -75,7 +75,7 @@ char server_version[] = VERSION;
  */
 int NumPlayers = 0;
 int NumAlliances = 0;
-int GetInd_1;
+int NumOperators = 0;
 server_t Server;
 char *serverAddr;
 int ShutdownServer = -1;
@@ -787,7 +787,23 @@ void Game_Over(void)
     }
 }
 
-void Server_log_admin_message(int ind, const char *str)
+void Server_shutdown(const char *user_name, int delay, const char *reason)
+{
+    Set_message_f("|*******| %s (%s) |*******| \"%s\" [*Server notice*]",
+                  (delay > 0) ? "SHUTTING DOWN" : "SHUTDOWN STOPPED",
+                  user_name, reason);
+    strlcpy(ShutdownReason, reason, sizeof(ShutdownReason));
+    if (delay > 0)
+    {
+        /* delay is in seconds */;
+        ShutdownServer = delay * FPS;
+        ShutdownDelay = ShutdownServer;
+    }
+    else
+        ShutdownServer = -1;
+}
+
+void Server_log_admin_message(player_t *pl, const char *str)
 {
     /*
      * Only log the message if logfile already exists,
@@ -797,7 +813,6 @@ void Server_log_admin_message(int ind, const char *str)
     const int logfile_size_limit = options.adminMessageFileSizeLimit;
     FILE *fp;
     struct stat st;
-    player_t *pl = PlayersArray[ind];
     char msg[MSG_LEN * 2];
 
     if ((logfilename != NULL) &&

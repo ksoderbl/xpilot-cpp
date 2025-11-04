@@ -394,19 +394,9 @@ struct robot_data;
 
 #define NumObjs (ObjCount + 0)
 
-extern object_t *Obj[];
 extern pulse_t *Pulses[];
-// extern ecm_t *Ecms[];
-// extern transporter_t *Transporters[];
 
-extern int NumPlayers;
-extern int NumPseudoPlayers;
-extern int ObjCount;
 extern int NumPulses;
-// extern int NumEcms;
-// extern int NumTransporters;
-extern int NumAlliances;
-extern int NumRobots;
 
 void Object_position_set_clpos(object_t *obj, clpos_t pos);
 void Object_position_init_clpos(object_t *obj, clpos_t pos);

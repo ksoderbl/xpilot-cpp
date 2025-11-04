@@ -122,12 +122,13 @@ typedef struct grav
     double force;
 } grav_t;
 
-typedef struct base
+typedef struct
 {
     ipos_t blk_pos;
     clpos_t pos;
     int dir;
-    uint16_t team;
+    int ind;
+    int team;
 } base_t;
 
 typedef struct baseorder
@@ -150,10 +151,11 @@ typedef struct cannon
     int tractor_target;
     int tractor_count;
     bool tractor_is_pressor;
-    uint16_t team;
+    int team;
     long used;
     int emergency_shield_left;
     int phasing_left;
+    short id;
 } cannon_t;
 
 typedef struct check
@@ -208,7 +210,7 @@ typedef struct treasure
     ipos_t blk_pos;
     clpos_t pos;
     bool have;     /* true if this treasure has ball in it */
-    uint16_t team; /* team of this treasure */
+    int team;      /* team of this treasure */
     int destroyed; /* how often this treasure destroyed */
     bool empty;    /* true if this treasure never had a ball in it */
 } treasure_t;
@@ -217,7 +219,7 @@ typedef struct target
 {
     ipos_t blk_pos;
     clpos_t pos;
-    uint16_t team;
+    int team;
     int dead_time;
     int damage;
     unsigned conn_mask;
@@ -234,6 +236,7 @@ typedef struct team
     int NumEmptyTreasures;  /* Number of empty treasures owned */
     int TreasuresDestroyed; /* Number of destroyed treasures */
     int TreasuresLeft;      /* Number of treasures left */
+    int SwapperId;          /* Player swapping to this full team */
 } team_t;
 
 typedef struct item_concentrator

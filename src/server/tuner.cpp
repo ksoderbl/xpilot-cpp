@@ -332,8 +332,3 @@ void tuner_announcealliances(void)
 {
     updateScores = true;
 }
-
-void tuner_fps(void)
-{
-    install_timer_tick(nullptr, FPS);
-}

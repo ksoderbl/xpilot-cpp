@@ -41,10 +41,12 @@
 #include "checknames.h"
 #include "tuner.h"
 #include "walls.h"
-
-options_t options;
+#include "sched.h"
 
 extern char conf_logfile_string[]; /* Default name of log file */
+
+double timePerFrame; /* Real time elapsed per frame */
+options_t options;
 
 /*
 ** Two functions which can be used if an option
@@ -1220,7 +1222,7 @@ static option_desc opts[] = {
      "14",
      &options.framesPerSecond,
      valInt,
-     tuner_fps,
+     Timing_setup,
      "The number of frames per second the server should strive for.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"allowSmartMissiles",
@@ -2432,7 +2434,7 @@ static option_desc opts[] = {
      "0",
      &options.timerResolution,
      valInt,
-     tuner_none,
+     Timing_setup,
      "If set to nonzero xpilots will requests signals from the OS at\n"
      "1/timerResolution second intervals.  The server will then compute\n"
      "a new frame FPS times out of every timerResolution signals.\n",
@@ -2607,4 +2609,14 @@ option_desc *Find_option_by_name(const char *name)
         }
     }
     return NULL;
+}
+
+void Timing_setup(void)
+{
+    /*
+     * Calculate amount of real time that elapses per frame.
+     */
+    timePerFrame = 1.0 / FPS;
+
+    install_timer_tick(nullptr, FPS);
 }

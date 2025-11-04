@@ -44,6 +44,5 @@ void tuner_gameduration(void);
 void tuner_racelaps(void);
 void tuner_allowalliances(void);
 void tuner_announcealliances(void);
-void tuner_fps(void);
 
 #endif

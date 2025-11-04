@@ -51,7 +51,7 @@ bool updateScores = true;
 int playerArrayNumber;
 player_t **PlayersArray;
 #define MAX_SPECTATORS 0
-int GetIndArray[NUM_IDS + MAX_SPECTATORS + 1];
+static int GetIndArray[NUM_IDS + MAX_SPECTATORS + 1];
 
 /*
  * Get index in Players array for player with id 'id'.
@@ -81,10 +81,7 @@ int GetInd(int id)
 
 void Pick_startpos(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
-    int ind = GetInd(pl->id);
-    int i, num_free;
-    int pick = 0, seen = 0;
+    int ind = GetInd(pl->id), i, num_free, pick = 0, seen = 0;
     static int prev_num_bases = 0;
     static char *free_bases = NULL;
 
@@ -98,7 +95,7 @@ void Pick_startpos(player_t *pl)
     {
         prev_num_bases = Num_bases();
         XFREE(free_bases);
-        free_bases = (char *)malloc(Num_bases() * sizeof(*free_bases));
+        free_bases = XMALLOC(char, Num_bases());
         if (free_bases == NULL)
         {
             error("Can't allocate memory for free_bases");
@@ -1908,12 +1905,11 @@ void Delete_player(player_t *pl)
     release_ID(id);
 }
 
-void Detach_ball(player_t *pl, int obj)
+void Detach_ball(player_t *pl, ballobject_t *ball)
 {
     int i, cnt;
-    // player_t *pl = PlayersArray[ind];
 
-    if (obj == -1 || BALL_PTR(Obj[obj]) == pl->ball)
+    if (ball == NULL || ball == pl->ball)
     {
         pl->ball = NULL;
         CLR_BIT(pl->used, USES_CONNECTOR);
@@ -1923,32 +1919,26 @@ void Detach_ball(player_t *pl, int obj)
     {
         for (cnt = i = 0; i < NumObjs; i++)
         {
-            if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
+            object_t *obj = Obj[i];
+
+            if (obj->type == OBJ_BALL && obj->id == pl->id)
             {
-                if (obj == -1 || obj == i)
-                {
-                    Obj[i]->id = NO_ID;
-                    /* Don't reset owner so you can throw balls */
-                }
+                if (ball == NULL || ball == BALL_PTR(obj))
+                    obj->id = NO_ID;
+                /* Don't reset owner so you can throw balls */
                 else
-                {
                     cnt++;
-                }
             }
         }
         if (cnt == 0)
             CLR_BIT(pl->have, HAS_BALL);
         else
-        {
             sound_play_sensors(pl->pos, DROP_BALL_SOUND);
-        }
     }
 }
 
-void Kill_player(player_t *pl)
+void Kill_player(player_t *pl, bool add_rank_death)
 {
-    // player_t *pl = PlayersArray[ind];
-
     Explode_fighter(pl);
     Player_death_reset(pl);
 }

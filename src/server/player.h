@@ -219,7 +219,7 @@ typedef struct
     int last_check_dir;                /* player dir at last checkpoint */
     long last_wall_touch;              /* last time player touched a wall */
 
-    int home_base; /* Num of home base */
+    base_t *home_base;
     struct
     {
         int tagged;      /* Flag, what is tagged? */
@@ -278,10 +278,16 @@ typedef struct
 
     int player_fps; /* FPS that this player can do */
 
-    int isowner;    /* If player started this server. */
-    int isoperator; /* If player has operator privileges. */
+    bool isowner;    /* If player started this server. */
+    bool isoperator; /* If player has operator privileges. */
 
     int ind; /* Index in PlayersArray[] */
+
+    int privs; /* Player privileges */
+
+#define PRIV_NOAUTOKICK 1
+#define PRIV_AUTOKICKLAST 2
+
 } player_t;
 
 void Player_position_set_clicks(player_t *pl, clpos_t pos);
@@ -699,8 +705,8 @@ void Reset_all_players(void);
 void Check_team_members(int);
 void Compute_game_status(void);
 void Delete_player(player_t *pl);
-void Detach_ball(player_t *pl, int ball);
-void Kill_player(player_t *pl);
+void Detach_ball(player_t *pl, ballobject_t *ball);
+void Kill_player(player_t *pl, bool add_rank_death);
 void Player_death_reset(player_t *pl);
 void Team_game_over(int winning_team, const char *reason);
 void Individual_game_over(int winner);

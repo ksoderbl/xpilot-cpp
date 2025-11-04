@@ -286,7 +286,7 @@ void Player_crash(player_t *pl, int crashtype, int mapobj_ind, int pt)
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos, PLAYER_HIT_CANNON_SOUND);
         }
-        if (!BIT(cannon->used, USES_EMERGENCY_SHIELD))
+        if (!BIT(cannon->used, HAS_EMERGENCY_SHIELD))
         {
             /* pl gets points if the cannon is rammed with shields up */
             if (Player_uses_emergency_shield(pl))
