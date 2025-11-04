@@ -801,7 +801,7 @@ void Do_general_transporter(player_t *pl, clpos_t pos, int target,
             if (!BIT(DEF_HAVE, HAS_SHIELD))
             {
                 CLR_BIT(victim->have, HAS_SHIELD);
-                CLR_BIT(victim->used, USES_SHIELD);
+                CLR_BIT(victim->used, HAS_SHIELD);
             }
         }
         break;

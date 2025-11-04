@@ -1169,7 +1169,7 @@ static void Robot_suibot_play(player_t *pl)
          * while some other player is really really close
          */
 
-        if ((ship->id != pl->id) && Player_is_alive(ship) && ship_dist < ship_dist_closest && (pl->team != ship->team) && ((!BIT(ship->used, USES_SHIELD)) || Wrap_length(ship->pos.cx - pl->pos.cx, ship->pos.cy - pl->pos.cy) < 8000))
+        if ((ship->id != pl->id) && Player_is_alive(ship) && ship_dist < ship_dist_closest && (pl->team != ship->team) && ((!BIT(ship->used, HAS_SHIELD)) || Wrap_length(ship->pos.cx - pl->pos.cx, ship->pos.cy - pl->pos.cy) < 8000))
         {
             ship_dist_closest = ship_dist;
             closest_opponent = ship;
@@ -1186,7 +1186,7 @@ static void Robot_suibot_play(player_t *pl)
         return;
     }
 
-    if (ship_dist_closest < maxdist && BIT(closest_opponent->used, USES_SHIELD))
+    if (ship_dist_closest < maxdist && BIT(closest_opponent->used, HAS_SHIELD))
     {
         direction = Wrap_cfindDir(-closest_opponent->pos.cx + pl->pos.cx,
                                   -closest_opponent->pos.cy + pl->pos.cy);

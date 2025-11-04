@@ -405,10 +405,10 @@ static int num2str(int num, char *str, int i)
     return i + digits;
 }
 
-static int Frame_status(connection_t *conn, int ind)
+static int Frame_status(connection_t *conn, player_t *pl)
 {
     static char mods[MAX_CHARS];
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     int n,
         lock_ind,
         lock_id = NO_ID,
@@ -741,9 +741,9 @@ static void Frame_shuffle(void)
     }
 }
 
-static void Frame_shots(connection_t *conn, int ind)
+static void Frame_shots(connection_t *conn, player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     int x, y, cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
@@ -929,10 +929,9 @@ static void Frame_shots(connection_t *conn, int ind)
     }
 }
 
-static void Frame_ships(connection_t *conn, int ind)
+static void Frame_ships(connection_t *conn, player_t *pl)
 {
-    player_t *pl = PlayersArray[ind],
-             *pl_i;
+    player_t *pl_i;
     pulse_t *pulse;
     int i, j, k, color, dir;
     int cx, cy;
@@ -1046,7 +1045,7 @@ static void Frame_ships(connection_t *conn, int ind)
         }
 
         /* Don't transmit information if fighter is invisible */
-        if (pl->visibility[i].canSee || i == ind || Players_are_teammates(pl_i, pl) || Players_are_allies(pl_i, pl))
+        if (pl->visibility[i].canSee || pl_i->id == pl->id || Players_are_teammates(pl_i, pl) || Players_are_allies(pl_i, pl))
         {
             /*
              * Transmit ship information
@@ -1056,7 +1055,7 @@ static void Frame_ships(connection_t *conn, int ind)
                       pl_i->pix_pos.y,
                       pl_i->id,
                       pl_i->dir,
-                      BIT(pl_i->used, USES_SHIELD) != 0,
+                      BIT(pl_i->used, HAS_SHIELD) != 0,
                       BIT(pl_i->used, USES_CLOAKING_DEVICE) != 0,
                       BIT(pl_i->used, USES_EMERGENCY_SHIELD) != 0,
                       BIT(pl_i->used, USES_PHASING_DEVICE) != 0,
@@ -1107,10 +1106,10 @@ static void Frame_ships(connection_t *conn, int ind)
     }
 }
 
-static void Frame_radar(connection_t *conn, int ind)
+static void Frame_radar(connection_t *conn, player_t *pl)
 {
     int i, k, mask, shownuke, size;
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     object_t *shot;
     int cx, cy;
 
@@ -1363,17 +1362,17 @@ void Frame_update(void)
         else
         {
             Frame_parameters(conn, pl2);
-            if (Frame_status(conn, ind) <= 0)
+            if (Frame_status(conn, pl2) <= 0)
                 continue;
             Frame_map(conn, pl2);
-            Frame_ships(conn, ind);
-            Frame_shots(conn, ind);
-            Frame_radar(conn, ind);
+            Frame_ships(conn, pl2);
+            Frame_shots(conn, pl2);
+            Frame_radar(conn, pl2);
             Frame_lose_item_state(pl);
             debris_end(conn);
             fastshot_end(conn);
         }
-        sound_play_queued(PlayersArray[ind]);
+        sound_play_queued(pl2);
         Send_end_of_frame(conn);
     }
     oldTimeLeft = newTimeLeft;
