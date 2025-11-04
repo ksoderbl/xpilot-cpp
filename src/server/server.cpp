@@ -547,7 +547,7 @@ void Server_info(char *str, unsigned max_size)
     }
     strlcat(str, msg, max_size);
 
-    if ((order = (player **)malloc(NumPlayers * sizeof(player *))) == NULL)
+    if ((order = (player_t **)malloc(NumPlayers * sizeof(player_t *))) == NULL)
     {
         error("No memory for order");
         return;

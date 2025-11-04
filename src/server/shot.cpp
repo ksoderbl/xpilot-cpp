@@ -1318,14 +1318,13 @@ void Delete_shot(int ind)
     case OBJ_SHOT:
         if (shot->id == NO_ID || BIT(shot->obj_status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
             break;
-        pl = PlayersArray[GetIndArray[shot->id]];
+        pl = Player_by_id(shot->id);
         if (--pl->shots <= 0)
             pl->shots = 0;
         break;
 
         /* Special items. */
     case OBJ_ITEM:
-
         switch (shot->info)
         {
 
@@ -1612,7 +1611,7 @@ void Update_missile(missileobject_t *missile)
             pl = 0;
             missile->count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
         }
-        if (pl && BIT(pl->obj_status, THRUSTING))
+        if (pl && Player_is_thrusting(pl))
         {
             /*
              * Target is thrusting,
@@ -1637,22 +1636,22 @@ void Update_missile(missileobject_t *missile)
                 range = HEAT_RANGE * (missile->count / HEAT_CLOSE_TIMEOUT);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player *p = Player_by_index(i);
+                    player_t *pl_i = Player_by_index(i);
 
-                    if (!BIT(p->obj_status, THRUSTING))
+                    if (!BIT(pl_i->obj_status, THRUSTING))
                         continue;
 
-                    l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(missile->pos.cx),
-                                    CLICK_TO_FLOAT(p->pos.cy) + p->ship->engine[p->dir].y - CLICK_TO_FLOAT(missile->pos.cy)) /
+                    l = Wrap_length(CLICK_TO_FLOAT(pl_i->pos.cx) + pl_i->ship->engine[pl_i->dir].x - CLICK_TO_FLOAT(missile->pos.cx),
+                                    CLICK_TO_FLOAT(pl_i->pos.cy) + pl_i->ship->engine[pl_i->dir].y - CLICK_TO_FLOAT(missile->pos.cy)) /
                         CLICK;
                     /*
                      * After burners can be detected easier;
                      * so scale the length:
                      */
-                    l *= MAX_AFTERBURNER + 1 - p->item[ITEM_AFTERBURNER];
+                    l *= MAX_AFTERBURNER + 1 - pl_i->item[ITEM_AFTERBURNER];
                     l /= MAX_AFTERBURNER + 1;
-                    if (BIT(p->have, HAS_AFTERBURNER))
-                        l *= 16 - p->item[ITEM_AFTERBURNER];
+                    if (BIT(pl_i->have, HAS_AFTERBURNER))
+                        l *= 16 - pl_i->item[ITEM_AFTERBURNER];
                     if (l < range)
                     {
                         missile->info = Player_by_index(i)->id;
@@ -1660,7 +1659,7 @@ void Update_missile(missileobject_t *missile)
                         missile->count =
                             l < HEAT_CLOSE_RANGE ? HEAT_CLOSE_ERROR : l < HEAT_MID_RANGE ? HEAT_MID_ERROR
                                                                                          : HEAT_WIDE_ERROR;
-                        pl = p;
+                        pl = pl_i;
                     }
                 }
             }

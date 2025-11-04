@@ -86,7 +86,7 @@ static int Get_player_index_by_name(char *name)
     return j;
 }
 
-static void Send_info_about_player(player *pl)
+static void Send_info_about_player(player_t *pl)
 {
     int i;
 

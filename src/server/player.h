@@ -137,7 +137,7 @@ typedef struct
  * this makes it possible to use the same basic operations on both of them
  * (mainly used in update.c).
  */
-typedef struct player
+typedef struct
 {
     OBJECT_BASE
 

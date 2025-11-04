@@ -200,7 +200,7 @@ void Make_wreckage(
     int min_life, int max_life);
 void Make_item(clpos_t pos,
                vector_t vel,
-               int item, int num_per_pack,
+               int item_type, int num_per_pack,
                long status);
 void Explode_fighter(player_t *pl);
 void Throw_items(player_t *pl);

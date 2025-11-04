@@ -603,7 +603,7 @@ void Alloc_players(int number)
     int i;
 
     /* Allocate space for pointers */
-    PlayersArray = (player **)calloc(number + 1, sizeof(player *));
+    PlayersArray = (player_t **)calloc(number + 1, sizeof(player_t *));
 
     /* Allocate space for all entries, all player structs */
     p = playerArray = XCALLOC(player_t, n);
@@ -902,7 +902,7 @@ static void Give_best_player_bonus(double average_score,
     }
     else if (num_best_players == 1)
     {
-        player *bp = PlayersArray[best_players[0]];
+        player_t *bp = PlayersArray[best_players[0]];
 
         sprintf(msg,
                 "%s is the Deadliest Player with a kill ratio of %d/%d.",
@@ -916,7 +916,7 @@ static void Give_best_player_bonus(double average_score,
         msg[0] = '\0';
         for (i = 0; i < num_best_players; i++)
         {
-            player *bp = PlayersArray[best_players[i]];
+            player_t *bp = PlayersArray[best_players[i]];
             double ratio = Rate(bp->score, average_score);
             double score = (ratio + num_best_players) / num_best_players;
 
@@ -1310,7 +1310,7 @@ void Compute_game_status(void)
          * fastest lap get points.
          */
 
-        player *alive = NULL;
+        player_t *alive = NULL;
         int num_alive_players = 0,
             num_active_players = 0,
             num_finished_players = 0,

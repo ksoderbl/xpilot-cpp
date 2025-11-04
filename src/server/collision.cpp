@@ -1604,7 +1604,7 @@ static void BallCollision(void)
         if (BIT(world->rules->mode, TIMING) && options.ballrace && ball->ball_owner != NO_ID)
         {
             int owner_ind = GetIndArray[ball->ball_owner];
-            player *owner = PlayersArray[owner_ind];
+            player_t *owner = PlayersArray[owner_ind];
 
             if (!options.ballrace_connect || ball->id == owner->id)
             {

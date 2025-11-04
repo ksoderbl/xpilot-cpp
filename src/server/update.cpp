@@ -827,7 +827,7 @@ void Update_objects(void)
 
         if (Player_uses_emergency_thrust(pl))
         {
-            if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
+            if (pl->fuel.sum > 0 && Player_is_thrusting(pl) && --pl->emergency_thrust_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_THRUST])
                     Emergency_thrust(pl, true);
@@ -1021,7 +1021,7 @@ void Update_objects(void)
         /*
          * Update acceleration vector etc.
          */
-        if (BIT(pl->obj_status, THRUSTING))
+        if (Player_is_thrusting(pl))
         {
             double power = pl->power;
             double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
@@ -1237,7 +1237,7 @@ void Update_objects(void)
 
         if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !Player_is_phasing(pl))
         {
-            if (BIT(pl->obj_status, THRUSTING))
+            if (Player_is_thrusting(pl))
                 Thrust(pl);
         }
 

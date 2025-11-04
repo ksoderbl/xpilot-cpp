@@ -2085,7 +2085,7 @@ static void Robot_default_play(player_t *pl)
     /* KK: it seems that this 'Check_robot_navigate' function caused
         the infamous 'robot stuck under wall' bug, so I commented it out */
     /* KK: ps. I tried to change that function, but I don't grok it */
-    /*if (!(BIT(pl->used, HAS_SHIELD) && BIT(pl->obj_status, THRUSTING))
+    /*if (!(BIT(pl->used, HAS_SHIELD) && Player_is_thrusting(pl))
         && Check_robot_navigate(ind, &evade_checked)) {
         if (playerShielding == 0
             && playerStartsShielded != 0

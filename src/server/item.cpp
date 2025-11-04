@@ -344,37 +344,38 @@ void Place_item(int item, player_t *pl)
     Make_item(pos, vel, item, num_per_pack, grav | rand);
 }
 
-void Make_item(clpos_t pos,
-               vector_t vel,
-               int item, int num_per_pack,
-               long status)
+void Make_item(clpos_t pos, vector_t vel,
+               int type, int num_per_pack, long status)
 {
-    object_t *obj;
+    object_t *item;
 
-    if (world->items[item].num >= world->items[item].max)
+    if (!World_contains_clpos(pos))
         return;
 
-    if ((obj = Object_allocate()) == NULL)
+    if (world->items[type].num >= world->items[type].max)
         return;
 
-    obj->type = OBJ_ITEM;
-    obj->info = item;
-    obj->color = RED;
-    obj->obj_status = status;
-    obj->id = NO_ID;
-    obj->team = TEAM_NOT_SET;
-    Object_position_init_clpos(obj, pos);
-    obj->vel = vel;
-    obj->acc.x =
-        obj->acc.y = 0.0;
-    obj->mass = 10.0;
-    obj->life = 1500 + (int)(rfrac() * 512);
-    obj->count = num_per_pack;
-    obj->pl_range = ITEM_SIZE / 2;
-    obj->pl_radius = ITEM_SIZE / 2;
+    if ((item = Object_allocate()) == NULL)
+        return;
 
-    world->items[item].num++;
-    Cell_add_object(obj);
+    item->type = OBJ_ITEM;
+    item->info = type;
+    item->color = RED;
+    item->obj_status = status;
+    item->id = NO_ID;
+    item->team = TEAM_NOT_SET;
+    Object_position_init_clpos(OBJ_PTR(item), pos);
+    item->vel = vel;
+    item->acc.x =
+        item->acc.y = 0.0;
+    item->mass = 10.0;
+    item->life = 1500 + (int)(rfrac() * 512);
+    item->count = num_per_pack;
+    item->pl_range = ITEM_SIZE / 2;
+    item->pl_radius = ITEM_SIZE / 2;
+
+    world->items[type].num++;
+    Cell_add_object(OBJ_PTR(item));
 }
 
 void Throw_items(player_t *pl)

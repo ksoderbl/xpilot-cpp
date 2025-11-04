@@ -121,7 +121,7 @@ void Break_asteroid(int ind)
         mass = asteroid->mass / 2;
         Make_wreckage(asteroid->pos,
                       asteroid->vel,
-                      -1,
+                      NO_ID,
                       TEAM_NOT_SET,
                       mass / 20, mass / 3,
                       mass,
@@ -133,7 +133,7 @@ void Break_asteroid(int ind)
                       3, 10);
         Make_debris(asteroid->pos,
                     asteroid->vel,
-                    -1,
+                    NO_ID,
                     TEAM_NOT_SET,
                     OBJ_DEBRIS,
                     mass,
@@ -176,7 +176,7 @@ void Break_asteroid(int ind)
         Make_asteroid(pos2, asteroid->wire_size - 1, dir2, speed2);
         Make_wreckage(asteroid->pos,
                       asteroid->vel,
-                      -1,
+                      NO_ID,
                       TEAM_NOT_SET,
                       mass3 / 20, mass3 / 3,
                       mass3 / 2,
@@ -188,7 +188,7 @@ void Break_asteroid(int ind)
                       3, 10);
         Make_debris(asteroid->pos,
                     asteroid->vel,
-                    -1,
+                    NO_ID,
                     TEAM_NOT_SET,
                     OBJ_DEBRIS,
                     mass3 / 2,
@@ -227,7 +227,9 @@ void Break_asteroid(int ind)
             else
                 num_per_pack = world->items[item].min_per_pack + (int)(rfrac() * (1 + world->items[item].max_per_pack - world->items[item].min_per_pack));
 
-            Make_item(asteroid->pos, vel, item, num_per_pack, status);
+            Make_item(asteroid->pos, vel,
+                      item, num_per_pack,
+                      status);
         }
     }
 
@@ -241,9 +243,7 @@ void Break_asteroid(int ind)
 /*
  * Creates an asteroid with the given characteristics.
  */
-static void Make_asteroid(clpos_t pos,
-                          int size, int dir,
-                          double speed)
+static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
 {
     wireobject_t *asteroid;
     double radius;
