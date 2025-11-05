@@ -85,8 +85,8 @@ static void Transport_to_home(player_t *pl)
     }
     else
     {
-        bx = (world->bases[pl->home_base].blk_pos.x + 0.5) * BLOCK_SZ;
-        by = (world->bases[pl->home_base].blk_pos.y + 0.5) * BLOCK_SZ;
+        bx = (pl->home_base->blk_pos.x + 0.5) * BLOCK_SZ;
+        by = (pl->home_base->blk_pos.y + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pix_pos.x);
     dy = WRAP_DY(by - pl->pix_pos.y);
@@ -783,7 +783,7 @@ void Update_objects(void)
                 sprintf(msg, "%s has committed suicide.", pl->name);
                 Set_message(msg);
                 Throw_items(pl);
-                Kill_player(pl);
+                Kill_player(pl, true);
                 updateScores = true;
             }
         }
@@ -1274,8 +1274,8 @@ void Update_objects(void)
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             pl->lock.distance =
-                Wrap_length(pl->pos.cx - PlayersArray[GetIndArray[pl->lock.pl_id]]->pos.cx,
-                            pl->pos.cy - PlayersArray[GetIndArray[pl->lock.pl_id]]->pos.cy) /
+                Wrap_length(pl->pos.cx - Player_by_id(pl->lock.pl_id)->pos.cx,
+                            pl->pos.cy - Player_by_id(pl->lock.pl_id)->pos.cy) /
                 CLICK;
         }
     }
@@ -1292,15 +1292,14 @@ void Update_objects(void)
     {
         player_t *pl = PlayersArray[ind];
 
-        if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+        if (Player_is_alive(pl))
             Update_tanks(&(pl->fuel));
+
         if (Player_is_killed(pl))
         {
             Throw_items(pl);
-
             Detonate_items(pl);
-
-            Kill_player(pl);
+            Kill_player(pl, true);
 
             if (Player_is_human(pl))
             {

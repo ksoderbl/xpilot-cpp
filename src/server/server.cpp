@@ -589,7 +589,7 @@ void Server_info(char *str, unsigned max_size)
         {
             if ((k = Robot_war_on_player(Player_by_id(pl->id))) != NO_ID)
             {
-                sprintf(name + strlen(name), " (%s)", PlayersArray[GetIndArray[k]]->name);
+                sprintf(name + strlen(name), " (%s)", Player_by_id(k)->name);
                 if (strlen(name) >= 19)
                 {
                     strcpy(&name[17], ")");

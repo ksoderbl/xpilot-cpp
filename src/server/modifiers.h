@@ -24,4 +24,20 @@
 #ifndef MODIFIERS_H
 #define MODIFIERS_H
 
+#include <cstddef>
+
+typedef struct
+{
+    unsigned int nuclear : 2;  /* N  modifier */
+    unsigned int warhead : 2;  /* CI modifier */
+    unsigned int velocity : 2; /* V# modifier */
+    unsigned int mini : 2;     /* X# modifier */
+    unsigned int spread : 2;   /* Z# modifier */
+    unsigned int power : 2;    /* B# modifier */
+    unsigned int laser : 2;    /* LS LB modifier */
+    unsigned int spare : 2;    /* padding for alignment */
+} modifiers_t;
+
+void Mods_to_string(modifiers_t mods, char *dst, size_t size);
+
 #endif

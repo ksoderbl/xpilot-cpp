@@ -38,6 +38,7 @@
 #include "strlcpy.h"
 
 #include "server.h"
+#include "modifiers.h"
 
 #define SERVER
 #include "map.h"
@@ -377,45 +378,11 @@ static void Frame_radar_buffer_free(void)
     max_radar = 0;
 }
 
-/*
- * Fast conversion of `num' into `str' starting at position `i', returns
- * index of character after converted number.
- */
-static int num2str(int num, char *str, int i)
-{
-    int digits, t;
-
-    if (num < 0)
-    {
-        str[i++] = '-';
-        num = -num;
-    }
-    if (num < 10)
-    {
-        str[i++] = '0' + num;
-        return i;
-    }
-    for (t = num, digits = 0; t; t /= 10, digits++)
-        ;
-    for (t = i + digits - 1; t >= 0; t--)
-    {
-        str[t] = num % 10;
-        num /= 10;
-    }
-    return i + digits;
-}
-
 static int Frame_status(connection_t *conn, player_t *pl)
 {
-    static char mods[MAX_CHARS];
-    // player_t *pl = PlayersArray[ind];
-    int n,
-        lock_ind,
-        lock_id = NO_ID,
-        lock_dist = 0,
-        lock_dir = 0,
-        i,
-        showautopilot;
+    static char modsstr[MAX_CHARS];
+    int n, lock_ind, lock_id = NO_ID, lock_dist = 0, lock_dir = 0;
+    int showautopilot;
 
     /*
      * Don't make lock visible during this frame if;
@@ -463,51 +430,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
     /*
      * Don't forget to modify Receive_modifier_bank() in netserver.c
      */
-    i = 0;
-    if (BIT(pl->mods.nuclear, FULLNUCLEAR))
-        mods[i++] = 'F';
-    if (BIT(pl->mods.nuclear, NUCLEAR))
-        mods[i++] = 'N';
-    if (BIT(pl->mods.warhead, CLUSTER))
-        mods[i++] = 'C';
-    if (BIT(pl->mods.warhead, IMPLOSION))
-        mods[i++] = 'I';
-    if (pl->mods.velocity)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'V';
-        i = num2str(pl->mods.velocity, mods, i);
-    }
-    if (pl->mods.mini)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'X';
-        i = num2str(pl->mods.mini + 1, mods, i);
-    }
-    if (pl->mods.spread)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'Z';
-        i = num2str(pl->mods.spread, mods, i);
-    }
-    if (pl->mods.power)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'B';
-        i = num2str(pl->mods.power, mods, i);
-    }
-    if (pl->mods.laser)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'L';
-        mods[i++] = (BIT(pl->mods.laser, STUN) ? 'S' : 'B');
-    }
-    mods[i] = '\0';
+    Mods_to_string(pl->mods, modsstr, sizeof(modsstr));
     n = Send_self(conn,
                   pl,
                   lock_id,
@@ -515,7 +438,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
                   lock_dir,
                   showautopilot,
                   Player_by_id(Get_player_id(conn))->obj_status,
-                  mods);
+                  modsstr);
     if (n <= 0)
     {
         return 0;

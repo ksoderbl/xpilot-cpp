@@ -151,7 +151,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
-        player_t *pusher = PlayersArray[GetIndArray[obj->id]];
+        player_t *pusher = Player_by_id(obj->id);
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -184,7 +184,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
-        player_t *pusher = PlayersArray[GetIndArray[obj2->id]];
+        player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -221,7 +221,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
-        player_t *pusher = PlayersArray[GetIndArray[obj2->id]];
+        player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -231,7 +231,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
-        player_t *pusher = PlayersArray[GetIndArray[obj1->id]];
+        player_t *pusher = Player_by_id(obj1->id);
         if (pusher != pl)
         {
             Record_shove(pl, pusher, frame_loops);
@@ -475,7 +475,7 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && PlayersArray[GetIndArray[Obj[i]->info]] == pl)
+        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && Player_by_id(Obj[i]->info) == pl)
         {
             Obj[i]->info = NumPlayers - 1;
         }
@@ -493,6 +493,111 @@ void Tank_handle_detach(player_t *pl)
                        tank->score, tank->life,
                        tank->mychar, tank->alliance);
         }
+    }
+}
+
+/****************************
+ * Functions for explosions.
+ */
+
+/* Create debris particles */
+void Make_debris(clpos_t pos,
+                 vector_t vel,
+                 int id,
+                 int team,
+                 int type,
+                 double mass,
+                 long status,
+                 int color,
+                 int radius,
+                 int min_debris, int max_debris,
+                 int min_dir, int max_dir,
+                 double min_speed, double max_speed,
+                 int min_life, int max_life)
+{
+    object_t *debris;
+    int i, num_debris, life;
+    modifiers_t mods;
+
+    if (BIT(world->rules->mode, WRAP_PLAY))
+        pos = World_wrap_clpos(pos);
+
+    if (!World_contains_clpos(pos))
+        return;
+
+    if (max_life < min_life)
+        max_life = min_life;
+    if (options.shotLife >= FPS)
+    {
+        if (min_life > options.shotLife)
+        {
+            min_life = options.shotLife;
+            max_life = options.shotLife;
+        }
+        else if (max_life > options.shotLife)
+        {
+            max_life = options.shotLife;
+        }
+    }
+    if (min_speed * max_life > world->hypotenuse)
+        min_speed = world->hypotenuse / max_life;
+    if (max_speed * min_life > world->hypotenuse)
+        max_speed = world->hypotenuse / min_life;
+    if (max_speed < min_speed)
+        max_speed = min_speed;
+
+    CLEAR_MODS(mods);
+
+    if (type == OBJ_SHOT)
+    {
+        SET_BIT(mods.warhead, CLUSTER);
+        if (!options.shotsGravity)
+        {
+            CLR_BIT(status, GRAVITY);
+        }
+    }
+
+    num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
+    if (num_debris > MAX_TOTAL_SHOTS - NumObjs)
+    {
+        num_debris = MAX_TOTAL_SHOTS - NumObjs;
+    }
+    for (i = 0; i < num_debris; i++)
+    {
+        double speed, dx, dy, diroff;
+        int dir, dirplus;
+
+        if ((debris = Object_allocate()) == NULL)
+            break;
+
+        debris->color = color;
+        debris->id = id;
+        debris->team = team;
+        Object_position_init_clpos(debris, pos);
+        dir = MOD2(min_dir + (int)(rfrac() * (max_dir - min_dir)), RES);
+        dirplus = MOD2(dir + 1, RES);
+        diroff = rfrac();
+        dx = tcos(dir) + (tcos(dirplus) - tcos(dir)) * diroff;
+        dy = tsin(dir) + (tsin(dirplus) - tsin(dir)) * diroff;
+        speed = min_speed + rfrac() * (max_speed - min_speed);
+        debris->vel.x = vel.x + dx * speed;
+        debris->vel.y = vel.y + dy * speed;
+        debris->acc.x = 0;
+        debris->acc.y = 0;
+        debris->mass = mass;
+        debris->type = type;
+        life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
+        if (life * speed > world->hypotenuse)
+        {
+            life = (long)(world->hypotenuse / speed);
+        }
+        debris->life = life;
+        debris->fuselife = life;
+        debris->pl_range = radius;
+        debris->pl_radius = radius;
+        debris->obj_status = status;
+        debris->mods = mods;
+        Cell_add_object(debris);
     }
 }
 

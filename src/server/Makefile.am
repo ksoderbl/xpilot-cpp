@@ -19,6 +19,7 @@ xpilot_cpp_server_SOURCES = \
     fileparser.cpp \
     frame.cpp \
     global.h \
+    gravity.cpp \
     id.cpp \
     item.cpp \
     laser.cpp \
@@ -35,7 +36,6 @@ xpilot_cpp_server_SOURCES = \
     option.cpp \
     option.h \
     parser.cpp \
-    play.cpp \
     player.cpp \
     player.h \
     polygon.cpp \
@@ -45,6 +45,9 @@ xpilot_cpp_server_SOURCES = \
     robotdef.cpp \
     robot.h \
     rules.cpp \
+    target.cpp \
+    target.h \
+    treasure.cpp \
     saudio.cpp \
     saudio.h \
     sched.cpp \

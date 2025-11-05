@@ -201,8 +201,8 @@ void Place_general_mine(int id, int team, long status,
 
                 if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
-                    int dx = CLICK_TO_PIXEL(pos.cx - world->bases[Player_by_index(i)->home_base].pos.cx);
-                    int dy = CLICK_TO_PIXEL(pos.cy - world->bases[Player_by_index(i)->home_base].pos.cy);
+                    int dx = CLICK_TO_PIXEL(pos.cx - pl_i->home_base->pos.cx);
+                    int dy = CLICK_TO_PIXEL(pos.cy - pl_i->home_base->pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -686,7 +686,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                 lock = target;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetIndArray[pl->lock.pl_id]].canSee)
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                     return;
                 lock = pl->lock.pl_id;
             }
@@ -1165,7 +1165,7 @@ void Delete_shot(int ind)
     case OBJ_BALL:
         ball = BALL_PTR(shot);
         if (ball->id != NO_ID)
-            Detach_ball(Player_by_id(ball->id), ind);
+            Detach_ball(Player_by_id(ball->id), ball);
         else
         {
             /*
@@ -1239,7 +1239,7 @@ void Delete_shot(int ind)
             type = OBJ_SHOT;
             if (shot->id != NO_ID)
             {
-                player_t *pl = PlayersArray[GetIndArray[shot->id]];
+                player_t *pl = Player_by_id(shot->id);
                 color = pl->color;
             }
             else
@@ -1600,7 +1600,7 @@ void Update_missile(missileobject_t *missile)
         if (missile->info >= 0)
         {
             /* Get player and set min to distance */
-            pl = PlayersArray[GetIndArray[missile->info]];
+            pl = Player_by_id(missile->info);
             range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(missile->pos.cx),
                                 CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(missile->pos.cy)) /
                     CLICK;
@@ -1705,7 +1705,7 @@ void Update_missile(missileobject_t *missile)
                 }
             }
         }
-        pl = PlayersArray[GetIndArray[missile->info]];
+        pl = Player_by_id(missile->info);
     }
     else
     {

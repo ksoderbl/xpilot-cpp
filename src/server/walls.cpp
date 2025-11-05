@@ -1144,7 +1144,7 @@ void Move_segment(move_state_t *ms)
                         treasure_t *tt = &world->treasures[ms->treasure];
 
                         if (ball->ball_owner != NO_ID)
-                            pl = PlayersArray[GetIndArray[ball->ball_owner]];
+                            pl = Player_by_id(ball->ball_owner);
 
                         if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
                         {
@@ -1168,7 +1168,7 @@ void Move_segment(move_state_t *ms)
                         return;
                     }
                     if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team ==
-                                                                  PlayersArray[GetIndArray[ball->ball_owner]]->team)
+                                                                  Player_by_id(ball->ball_owner)->team)
                     {
                         /*
                          * Ball has been brought back to home treasure.
@@ -1182,7 +1182,7 @@ void Move_segment(move_state_t *ms)
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(PlayersArray[GetIndArray[ball->ball_owner]], msg);
                         }
-                        else if (Punish_team(GetIndArray[ball->ball_owner],
+                        else if (Punish_team(GetInd(ball->ball_owner),
                                              ball->treasure, ms->treasure))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
@@ -1862,14 +1862,14 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (ms->mip->obj->id != NO_ID)
         {
-            killer = GetIndArray[ms->mip->obj->id];
+            killer = GetInd(ms->mip->obj->id);
             pl = PlayersArray[killer];
         }
     }
     else if (BIT(ms->mip->pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
         pl = ms->mip->pl;
-        killer = GetIndArray[pl->id];
+        killer = GetInd(pl->id);
     }
     if (pl)
     {
@@ -1911,7 +1911,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         return;
     }
-    killer = GetIndArray[obj->id];
+    killer = GetInd(obj->id);
     if (targ->team == obj->team)
     {
         return;
@@ -2302,7 +2302,7 @@ void Move_object(object_t *obj)
 static void Player_crash(move_state_t *ms, int pt, bool turning)
 {
     player_t *pl = ms->mip->pl;
-    int ind = GetIndArray[pl->id];
+    int ind = GetInd(pl->id);
     const char *howfmt = NULL;
     const char *hudmsg = NULL;
 
@@ -2313,8 +2313,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
 
     default:
     case NotACrash:
-        errno = 0;
-        error("Player_crash not a crash %d", ms->crash);
+        warn("Player_crash not a crash %d", ms->crash);
         break;
 
     case CrashWormHole:
@@ -2415,7 +2414,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
             }
             if (j == num_pushers)
             {
-                pushers[num_pushers++] = PlayersArray[GetIndArray[shove->pusher_id]];
+                pushers[num_pushers++] = Player_by_id(shove->pusher_id);
                 cnt[j] = 1;
             }
             total_pusher_count++;
