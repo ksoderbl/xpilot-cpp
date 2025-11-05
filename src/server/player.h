@@ -316,7 +316,9 @@ static inline player_t *Player_by_index(int ind)
 
 static inline player_t *Player_by_id(int id)
 {
-    return Player_by_index(GetInd(id));
+    int ind = GetInd(id);
+    player_t *pl = Player_by_index(ind);
+    return pl;
 }
 
 static inline bool Player_uses_emergency_thrust(player_t *pl)
