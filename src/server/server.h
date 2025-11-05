@@ -247,6 +247,15 @@ void Send_info_about_player(player_t *pl);
 void Set_swapper_state(player_t *pl);
 
 /*
+ * Prototypes for race.c
+ */
+void Race_compute_game_status(void);
+void Race_game_over(void);
+void Player_reset_timing(player_t *pl);
+void Player_pass_checkpoint(player_t *pl);
+void PlayerCheckpointCollision(player_t *pl);
+
+/*
  * Prototypes for rules.c
  */
 void Tune_item_probs(void);

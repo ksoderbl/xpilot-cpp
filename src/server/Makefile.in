@@ -105,14 +105,15 @@ am_xpilot_cpp_server_OBJECTS = alliance.$(OBJEXT) asteroid.$(OBJEXT) \
 	collision.$(OBJEXT) command.$(OBJEXT) contact.$(OBJEXT) \
 	event.$(OBJEXT) fileparser.$(OBJEXT) frame.$(OBJEXT) \
 	id.$(OBJEXT) item.$(OBJEXT) laser.$(OBJEXT) map.$(OBJEXT) \
-	metaserver.$(OBJEXT) netserver.$(OBJEXT) object.$(OBJEXT) \
-	option.$(OBJEXT) parser.$(OBJEXT) play.$(OBJEXT) \
-	player.$(OBJEXT) polygon.$(OBJEXT) robot.$(OBJEXT) \
-	robotdef.$(OBJEXT) rules.$(OBJEXT) saudio.$(OBJEXT) \
-	sched.$(OBJEXT) score.$(OBJEXT) server.$(OBJEXT) \
-	ship.$(OBJEXT) shot.$(OBJEXT) showtime.$(OBJEXT) \
-	stratbot.$(OBJEXT) tuner.$(OBJEXT) update.$(OBJEXT) \
-	walls.$(OBJEXT) wildmap.$(OBJEXT) xpmap.$(OBJEXT)
+	metaserver.$(OBJEXT) modifiers.$(OBJEXT) netserver.$(OBJEXT) \
+	object.$(OBJEXT) option.$(OBJEXT) parser.$(OBJEXT) \
+	play.$(OBJEXT) player.$(OBJEXT) polygon.$(OBJEXT) \
+	race.$(OBJEXT) robot.$(OBJEXT) robotdef.$(OBJEXT) \
+	rules.$(OBJEXT) saudio.$(OBJEXT) sched.$(OBJEXT) \
+	score.$(OBJEXT) server.$(OBJEXT) ship.$(OBJEXT) shot.$(OBJEXT) \
+	showtime.$(OBJEXT) stratbot.$(OBJEXT) tuner.$(OBJEXT) \
+	update.$(OBJEXT) walls.$(OBJEXT) wildmap.$(OBJEXT) \
+	xpmap.$(OBJEXT)
 xpilot_cpp_server_OBJECTS = $(am_xpilot_cpp_server_OBJECTS)
 xpilot_cpp_server_DEPENDENCIES = ../common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -137,10 +138,11 @@ am__depfiles_remade = ./$(DEPDIR)/alliance.Po ./$(DEPDIR)/asteroid.Po \
 	./$(DEPDIR)/event.Po ./$(DEPDIR)/fileparser.Po \
 	./$(DEPDIR)/frame.Po ./$(DEPDIR)/id.Po ./$(DEPDIR)/item.Po \
 	./$(DEPDIR)/laser.Po ./$(DEPDIR)/map.Po \
-	./$(DEPDIR)/metaserver.Po ./$(DEPDIR)/netserver.Po \
-	./$(DEPDIR)/object.Po ./$(DEPDIR)/option.Po \
-	./$(DEPDIR)/parser.Po ./$(DEPDIR)/play.Po \
-	./$(DEPDIR)/player.Po ./$(DEPDIR)/polygon.Po \
+	./$(DEPDIR)/metaserver.Po ./$(DEPDIR)/modifiers.Po \
+	./$(DEPDIR)/netserver.Po ./$(DEPDIR)/object.Po \
+	./$(DEPDIR)/option.Po ./$(DEPDIR)/parser.Po \
+	./$(DEPDIR)/play.Po ./$(DEPDIR)/player.Po \
+	./$(DEPDIR)/polygon.Po ./$(DEPDIR)/race.Po \
 	./$(DEPDIR)/robot.Po ./$(DEPDIR)/robotdef.Po \
 	./$(DEPDIR)/rules.Po ./$(DEPDIR)/saudio.Po \
 	./$(DEPDIR)/sched.Po ./$(DEPDIR)/score.Po \
@@ -317,6 +319,8 @@ xpilot_cpp_server_SOURCES = \
     map.h \
     metaserver.cpp \
     metaserver.h \
+    modifiers.cpp \
+    modifiers.h \
     netserver.cpp \
     netserver.h \
     object.cpp \
@@ -329,6 +333,7 @@ xpilot_cpp_server_SOURCES = \
     player.h \
     polygon.cpp \
     polygon.h \
+    race.cpp \
     robot.cpp \
     robotdef.cpp \
     robot.h \
@@ -458,6 +463,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/laser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/map.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/metaserver.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/modifiers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netserver.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/object.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/option.Po@am__quote@ # am--include-marker
@@ -465,6 +471,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/play.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/polygon.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/race.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotdef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rules.Po@am__quote@ # am--include-marker
@@ -644,6 +651,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/laser.Po
 	-rm -f ./$(DEPDIR)/map.Po
 	-rm -f ./$(DEPDIR)/metaserver.Po
+	-rm -f ./$(DEPDIR)/modifiers.Po
 	-rm -f ./$(DEPDIR)/netserver.Po
 	-rm -f ./$(DEPDIR)/object.Po
 	-rm -f ./$(DEPDIR)/option.Po
@@ -651,6 +659,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/play.Po
 	-rm -f ./$(DEPDIR)/player.Po
 	-rm -f ./$(DEPDIR)/polygon.Po
+	-rm -f ./$(DEPDIR)/race.Po
 	-rm -f ./$(DEPDIR)/robot.Po
 	-rm -f ./$(DEPDIR)/robotdef.Po
 	-rm -f ./$(DEPDIR)/rules.Po
@@ -728,6 +737,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/laser.Po
 	-rm -f ./$(DEPDIR)/map.Po
 	-rm -f ./$(DEPDIR)/metaserver.Po
+	-rm -f ./$(DEPDIR)/modifiers.Po
 	-rm -f ./$(DEPDIR)/netserver.Po
 	-rm -f ./$(DEPDIR)/object.Po
 	-rm -f ./$(DEPDIR)/option.Po
@@ -735,6 +745,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/play.Po
 	-rm -f ./$(DEPDIR)/player.Po
 	-rm -f ./$(DEPDIR)/polygon.Po
+	-rm -f ./$(DEPDIR)/race.Po
 	-rm -f ./$(DEPDIR)/robot.Po
 	-rm -f ./$(DEPDIR)/robotdef.Po
 	-rm -f ./$(DEPDIR)/rules.Po

@@ -252,7 +252,6 @@ static void Player_collides_with_mine(player_t *pl, mineobject_t *mine);
 static void Player_collides_with_debris(player_t *pl, object_t *obj);
 static void Player_collides_with_asteroid(player_t *pl, wireobject_t *obj);
 static void Player_collides_with_killing_shot(player_t *pl, object_t *obj);
-static void Player_pass_checkpoint(player_t *pl);
 
 void Check_collision(void)
 {
@@ -1345,71 +1344,6 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             break;
         }
     }
-}
-
-static void Player_pass_checkpoint(player_t *pl)
-{
-    // player_t *pl = PlayersArray[ind];
-    int j;
-
-    if (pl->check == 0)
-    {
-        pl->round++;
-        pl->last_lap_time = pl->time - pl->last_lap;
-        if ((pl->best_lap > pl->last_lap_time || pl->best_lap == 0) && pl->time != 0 && pl->round != 1)
-        {
-            pl->best_lap = pl->last_lap_time;
-        }
-        pl->last_lap = pl->time;
-        if (pl->round > options.raceLaps)
-        {
-            if (options.ballrace)
-            {
-                /* Balls are made unowned when their owner finishes the race
-                   This way, they can be reused by other players */
-                for (j = 0; j < NumObjs; j++)
-                {
-                    if (Obj[j]->type == OBJ_BALL)
-                    {
-                        ballobject_t *ball = BALL_PTR(Obj[j]);
-
-                        if (ball->ball_owner == pl->id)
-                            ball->ball_owner = NO_ID;
-                    }
-                }
-            }
-            Player_death_reset(pl);
-            pl->mychar = 'D';
-            SET_BIT(pl->obj_status, GAME_OVER | FINISH);
-            sprintf(msg,
-                    "%s finished the race. Last lap time: %.2fs. "
-                    "Personal race best lap time: %.2fs.",
-                    pl->name,
-                    (double)pl->last_lap_time / FPS,
-                    (double)pl->best_lap / FPS);
-        }
-        else if (pl->round > 1)
-        {
-            sprintf(msg,
-                    "%s completes lap %d in %.2fs. "
-                    "Personal race best lap time: %.2fs.",
-                    pl->name,
-                    pl->round - 1,
-                    (double)pl->last_lap_time / FPS,
-                    (double)pl->best_lap / FPS);
-        }
-        else
-        {
-            sprintf(msg, "%s starts lap 1 of %d", pl->name, options.raceLaps);
-        }
-        Set_message(msg);
-    }
-
-    if (++pl->check == world->NumChecks)
-        pl->check = 0;
-    pl->last_check_dir = pl->dir;
-
-    updateScores = true;
 }
 
 static void AsteroidCollision(void)

@@ -328,7 +328,11 @@ static inline bool Player_uses_emergency_thrust(player_t *pl)
 
 static inline bool Player_is_waiting(player_t *pl)
 {
-    return pl->pl_state == PL_STATE_WAITING ? true : false;
+    if (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W')
+        return true;
+    return false;
+    // TODO
+    // return pl->pl_state == PL_STATE_WAITING ? true : false;
 }
 
 static inline bool Player_is_appearing(player_t *pl)
@@ -365,7 +369,11 @@ static inline bool Player_is_dead(player_t *pl)
 
 static inline bool Player_is_paused(player_t *pl)
 {
-    return pl->pl_state == PL_STATE_PAUSED ? true : false;
+    // TODO
+    // return pl->pl_state == PL_STATE_PAUSED ? true : false;
+    if (BIT(pl->obj_status, PAUSE))
+        return true;
+    return false;
 }
 
 // static inline bool Player_is_hoverpaused(player_t *pl)
@@ -707,7 +715,8 @@ void Compute_game_status(void);
 void Delete_player(player_t *pl);
 void Detach_ball(player_t *pl, ballobject_t *ball);
 void Kill_player(player_t *pl, bool add_rank_death);
-void Player_death_reset(player_t *pl);
+void Player_death_reset(player_t *pl, bool add_rank_death);
+void Count_rounds(void);
 void Team_game_over(int winning_team, const char *reason);
 void Individual_game_over(int winner);
 void Race_game_over(void);

@@ -26,6 +26,8 @@ xpilot_cpp_server_SOURCES = \
     map.h \
     metaserver.cpp \
     metaserver.h \
+    modifiers.cpp \
+    modifiers.h \
     netserver.cpp \
     netserver.h \
     object.cpp \
@@ -38,6 +40,7 @@ xpilot_cpp_server_SOURCES = \
     player.h \
     polygon.cpp \
     polygon.h \
+    race.cpp \
     robot.cpp \
     robotdef.cpp \
     robot.h \

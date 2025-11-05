@@ -1622,7 +1622,7 @@ int Send_leave(connection_t *connp, int id)
  */
 int Send_player(connection_t *connp, int id)
 {
-    player_t *pl = PlayersArray[GetIndArray[id]];
+    player_t *pl = Player_by_id(id);
     int n;
     char buf[MSG_LEN], ext[MSG_LEN];
     int sbuf_len = connp->c.len;
@@ -2143,7 +2143,6 @@ int Send_end_of_frame(connection_t *connp)
 
 static int Receive_keyboard(connection_t *connp)
 {
-    player_t *pl;
     long change;
     uint8_t ch;
     size_t size = KEYBOARD_SIZE;
@@ -2164,7 +2163,7 @@ static int Receive_keyboard(connection_t *connp)
     else
     {
         connp->last_key_change = change;
-        pl = PlayersArray[GetIndArray[connp->id]];
+        player_t *pl = Player_by_id(connp->id);
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
         Handle_keyboard(Player_by_id(connp->id));
@@ -2233,7 +2232,6 @@ static int Receive_play(connection_t *connp)
 
 static int Receive_power(connection_t *connp)
 {
-    player_t *pl;
     uint8_t ch;
     short tmp;
     int n;
@@ -2247,7 +2245,7 @@ static int Receive_power(connection_t *connp)
         return n;
     }
     power = (double)tmp / 256.0F;
-    pl = PlayersArray[GetIndArray[connp->id]];
+    player_t *pl = Player_by_id(connp->id);
     autopilot = Player_uses_autopilot(pl);
     /* old client are going to send autopilot-mangled data, ignore it */
     if (autopilot && pl->version < 0x4200)
@@ -2666,7 +2664,7 @@ static int Receive_ack_polystyle(connection_t *connp)
  */
 static void Handle_talk(connection_t *connp, char *str)
 {
-    player_t *pl = PlayersArray[GetIndArray[connp->id]];
+    player_t *pl = Player_by_id(connp->id);
     int i, sent, team;
     unsigned int len;
     char *cp,
@@ -2709,7 +2707,7 @@ static void Handle_talk(connection_t *connp, char *str)
     }
     else if (strcasecmp(str, "god") == 0)
     {
-        Server_log_admin_message(GetIndArray[connp->id], cp);
+        Server_log_admin_message(Player_by_id(connp->id), cp);
     }
     else
     { /* Player message */
@@ -2826,7 +2824,6 @@ static int str2num(char **strp, int min, int max)
 
 static int Receive_modifier_bank(connection_t *connp)
 {
-    player_t *pl;
     uint8_t bank;
     char str[MAX_CHARS];
     uint8_t ch;
@@ -2840,7 +2837,7 @@ static int Receive_modifier_bank(connection_t *connp)
             Destroy_connection(connp, "read modbank");
         return n;
     }
-    pl = PlayersArray[GetIndArray[connp->id]];
+    player_t *pl = Player_by_id(connp->id);
     if (bank < NUM_MODBANKS)
     {
         CLEAR_MODS(mods);
@@ -3121,7 +3118,6 @@ static int Send_motd(connection_t *connp)
 
 static int Receive_pointer_move(connection_t *connp)
 {
-    player_t *pl;
     uint8_t ch;
     short movement;
     int n;
@@ -3133,7 +3129,7 @@ static int Receive_pointer_move(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    pl = PlayersArray[GetIndArray[connp->id]];
+    player_t *pl = Player_by_id(connp->id);
     if (BIT(pl->obj_status, HOVERPAUSE))
         return 1;
 
@@ -3168,7 +3164,6 @@ static int Receive_pointer_move(connection_t *connp)
 
 static int Receive_fps_request(connection_t *connp)
 {
-    player_t *pl;
     int n;
     uint8_t ch;
     uint8_t fps;
@@ -3181,7 +3176,7 @@ static int Receive_fps_request(connection_t *connp)
     }
     if (connp->id != NO_ID)
     {
-        pl = PlayersArray[GetIndArray[connp->id]];
+        player_t *pl = Player_by_id(connp->id);
         pl->player_fps = fps;
         // TODO: Fix this stuff
         if (fps > FPS)
@@ -3199,7 +3194,6 @@ static int Receive_fps_request(connection_t *connp)
 
 static int Receive_audio_request(connection_t *connp)
 {
-    player_t *pl;
     int n;
     uint8_t ch;
     uint8_t onoff;
@@ -3212,7 +3206,7 @@ static int Receive_audio_request(connection_t *connp)
     }
     if (connp->id != NO_ID)
     {
-        pl = PlayersArray[GetIndArray[connp->id]];
+        player_t *pl = Player_by_id(connp->id);
         sound_player_onoff(pl, onoff);
     }
 

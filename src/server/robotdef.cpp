@@ -1233,13 +1233,9 @@ static bool Check_robot_hunt(player_t *pl)
     }
 
     if (delta_dir < RES / 8 || delta_dir > 7 * RES / 8)
-    {
         Thrust(pl, true);
-    }
     else
-    {
         Thrust(pl, false);
-    }
 
     my_data->robot_mode = RM_ROBOT_IDLE;
     return true;
