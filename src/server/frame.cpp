@@ -547,8 +547,8 @@ static void Frame_map(connection_t *conn, player_t *pl)
             i = 0;
         if (BIT(world->fuels[i].conn_mask, conn_bit) == 0)
         {
-            if (world->block[world->fuels[i].blk_pos.x]
-                            [world->fuels[i].blk_pos.y] == FUEL)
+            if (world->block[world->fuels[i].blk_pos.bx]
+                            [world->fuels[i].blk_pos.by] == FUEL)
             {
                 if (click_inview(cv,
                                  world->fuels[i].pos.cx,
@@ -998,8 +998,8 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         }
         if (BIT(pl_i->used, USES_REPAIR))
         {
-            double x = (double)(world->targets[pl_i->repair_target].blk_pos.x + 0.5) * BLOCK_SZ;
-            double y = (double)(world->targets[pl_i->repair_target].blk_pos.y + 0.5) * BLOCK_SZ;
+            double x = (double)(world->targets[pl_i->repair_target].blk_pos.bx + 0.5) * BLOCK_SZ;
+            double y = (double)(world->targets[pl_i->repair_target].blk_pos.by + 0.5) * BLOCK_SZ;
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
             if (click_inview(cv, cx, cy))

@@ -340,8 +340,8 @@ void Make_treasure_ball(int treasure)
 {
     ballobject_t *ball;
     treasure_t *t = &(world->treasures[treasure]);
-    // double x = (t->blk_pos.x + 0.5) * BLOCK_SZ,
-    //        y = (t->blk_pos.y * BLOCK_SZ) + 10;
+    // double x = (t->blk_pos.bx + 0.5) * BLOCK_SZ,
+    //        y = (t->blk_pos.by * BLOCK_SZ) + 10;
     if (t->empty)
         return;
     if (t->have)

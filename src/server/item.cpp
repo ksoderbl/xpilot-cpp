@@ -263,8 +263,8 @@ void Place_item(int item, player_t *pl)
             {
                 dir = (int)(rfrac() * RES);
                 dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_SZ) + 1));
-                px = (int)((con->blk_pos.x + 0.5) * BLOCK_SZ + dist * tcos(dir));
-                py = (int)((con->blk_pos.y + 0.5) * BLOCK_SZ + dist * tsin(dir));
+                px = (int)((con->blk_pos.bx + 0.5) * BLOCK_SZ + dist * tcos(dir));
+                py = (int)((con->blk_pos.by + 0.5) * BLOCK_SZ + dist * tsin(dir));
                 if (BIT(world->rules->mode, WRAP_PLAY))
                 {
                     if (px < 0)

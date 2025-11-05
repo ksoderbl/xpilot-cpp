@@ -85,6 +85,15 @@ static void Print_map(void) /* Debugging only. */
 
 int World_place_cannon(clpos_t pos, int dir, int team)
 {
+    cannon_t *c = Cannon_by_index(world->NumCannons);
+    c->dir = dir;
+    c->blk_pos = Clpos_to_blkpos(pos);
+    c->pix_pos = Clpos_to_position(pos);
+    c->pos = pos;
+    c->dead_time = 0;
+    c->conn_mask = (unsigned)-1;
+    c->team = team;
+    Cannon_init(c);
     return -1;
 }
 
@@ -804,73 +813,97 @@ bool Grok_map(void)
                 case 'r':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_UP;
-                    world->cannons[world->NumCannons].blk_pos.x = x;
-                    world->cannons[world->NumCannons].blk_pos.y = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = cx;
-                    world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].dead_time = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->cannons[world->NumCannons].dir = DIR_UP;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = cx;
+                    // world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].dead_time = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    {
+                        clpos_t pos;
+                        pos.cx = cx;
+                        pos.cy = (y + 0.333) * BLOCK_CLICKS;
+                        World_place_cannon(pos, DIR_UP, TEAM_NOT_SET);
+                    }
                     world->NumCannons++;
                     break;
                 case 'd':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_LEFT;
-                    world->cannons[world->NumCannons].blk_pos.x = x;
-                    world->cannons[world->NumCannons].blk_pos.y = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = (x + 0.667) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].pos.cy = cy;
-                    world->cannons[world->NumCannons].dead_time = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->cannons[world->NumCannons].dir = DIR_LEFT;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = (x + 0.667) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].pos.cy = cy;
+                    // world->cannons[world->NumCannons].dead_time = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    {
+                        clpos_t pos;
+                        pos.cx = (x + 0.667) * BLOCK_CLICKS;
+                        pos.cy = cy;
+                        World_place_cannon(pos, DIR_LEFT, TEAM_NOT_SET);
+                    }
                     world->NumCannons++;
                     break;
                 case 'f':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_RIGHT;
-                    world->cannons[world->NumCannons].blk_pos.x = x;
-                    world->cannons[world->NumCannons].blk_pos.y = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].pos.cy = cy;
-                    world->cannons[world->NumCannons].dead_time = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->cannons[world->NumCannons].dir = DIR_RIGHT;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].pos.cy = cy;
+                    // world->cannons[world->NumCannons].dead_time = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    {
+                        clpos_t pos;
+                        pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                        pos.cy = cy;
+                        World_place_cannon(pos, DIR_RIGHT, TEAM_NOT_SET);
+                    }
                     world->NumCannons++;
                     break;
                 case 'c':
                     line[y] = CANNON;
                     itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_DOWN;
-                    world->cannons[world->NumCannons].blk_pos.x = x;
-                    world->cannons[world->NumCannons].blk_pos.y = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = cx;
-                    world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].dead_time = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->cannons[world->NumCannons].dir = DIR_DOWN;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = cx;
+                    // world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].dead_time = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    {
+                        clpos_t pos;
+                        pos.cx = cx;
+                        pos.cy = (y + 0.667) * BLOCK_CLICKS;
+                        World_place_cannon(pos, DIR_DOWN, TEAM_NOT_SET);
+                    }
                     world->NumCannons++;
                     break;
 
                 case '#':
                     line[y] = FUEL;
                     itemID[y] = world->NumFuels;
-                    world->fuels[world->NumFuels].blk_pos.x = x;
-                    world->fuels[world->NumFuels].blk_pos.y = y;
+                    world->fuels[world->NumFuels].blk_pos.bx = x;
+                    world->fuels[world->NumFuels].blk_pos.by = y;
                     world->fuels[world->NumFuels].pix_pos.x = (x + 0.5) * BLOCK_SZ;
                     world->fuels[world->NumFuels].pix_pos.y = (y + 0.5) * BLOCK_SZ;
                     world->fuels[world->NumFuels].pos.cx = cx;
@@ -886,8 +919,8 @@ bool Grok_map(void)
                 case '^':
                     line[y] = TREASURE;
                     itemID[y] = world->NumTreasures;
-                    world->treasures[world->NumTreasures].blk_pos.x = x;
-                    world->treasures[world->NumTreasures].blk_pos.y = y;
+                    world->treasures[world->NumTreasures].blk_pos.bx = x;
+                    world->treasures[world->NumTreasures].blk_pos.by = y;
                     world->treasures[world->NumTreasures].pos.cx = cx;
                     world->treasures[world->NumTreasures].pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
                     world->treasures[world->NumTreasures].have = false;
@@ -903,8 +936,8 @@ bool Grok_map(void)
                 case '!':
                     line[y] = TARGET;
                     itemID[y] = world->NumTargets;
-                    world->targets[world->NumTargets].blk_pos.x = x;
-                    world->targets[world->NumTargets].blk_pos.y = y;
+                    world->targets[world->NumTargets].blk_pos.bx = x;
+                    world->targets[world->NumTargets].blk_pos.by = y;
                     world->targets[world->NumTargets].pos.cx = cx;
                     world->targets[world->NumTargets].pos.cy = cy;
                     /*
@@ -922,8 +955,8 @@ bool Grok_map(void)
                 case '%':
                     line[y] = ITEM_CONCENTRATOR;
                     itemID[y] = world->NumItemConcentrators;
-                    world->itemConcentrators[world->NumItemConcentrators].blk_pos.x = x;
-                    world->itemConcentrators[world->NumItemConcentrators].blk_pos.y = y;
+                    world->itemConcentrators[world->NumItemConcentrators].blk_pos.bx = x;
+                    world->itemConcentrators[world->NumItemConcentrators].blk_pos.by = y;
                     world->itemConcentrators[world->NumItemConcentrators].pos.cx = cx;
                     world->itemConcentrators[world->NumItemConcentrators].pos.cy = cy;
                     world->NumItemConcentrators++;
@@ -931,8 +964,8 @@ bool Grok_map(void)
                 case '&':
                     line[y] = ASTEROID_CONCENTRATOR;
                     itemID[y] = world->NumAsteroidConcs;
-                    world->asteroidConcs[world->NumAsteroidConcs].blk_pos.x = x;
-                    world->asteroidConcs[world->NumAsteroidConcs].blk_pos.y = y;
+                    world->asteroidConcs[world->NumAsteroidConcs].blk_pos.bx = x;
+                    world->asteroidConcs[world->NumAsteroidConcs].blk_pos.by = y;
                     world->asteroidConcs[world->NumAsteroidConcs].pos.cx = cx;
                     world->asteroidConcs[world->NumAsteroidConcs].pos.cy = cy;
                     world->NumAsteroidConcs++;
@@ -953,8 +986,8 @@ bool Grok_map(void)
                 case '9':
                     line[y] = BASE;
                     itemID[y] = world->NumBases;
-                    world->bases[world->NumBases].blk_pos.x = x;
-                    world->bases[world->NumBases].blk_pos.y = y;
+                    world->bases[world->NumBases].blk_pos.bx = x;
+                    world->bases[world->NumBases].blk_pos.by = y;
                     world->bases[world->NumBases].pos.cx = cx;
                     world->bases[world->NumBases].pos.cy = cy;
                     /*
@@ -982,14 +1015,15 @@ bool Grok_map(void)
                     {
                         world->bases[world->NumBases].team = TEAM_NOT_SET;
                     }
+                    world->bases[world->NumBases].ind = world->NumBases;
                     world->NumBases++;
                     break;
 
                 case '+':
                     line[y] = POS_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
@@ -998,8 +1032,8 @@ bool Grok_map(void)
                 case '-':
                     line[y] = NEG_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
@@ -1008,8 +1042,8 @@ bool Grok_map(void)
                 case '>':
                     line[y] = CWISE_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
@@ -1018,8 +1052,8 @@ bool Grok_map(void)
                 case '<':
                     line[y] = ACWISE_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
@@ -1028,8 +1062,8 @@ bool Grok_map(void)
                 case 'i':
                     line[y] = UP_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
@@ -1038,8 +1072,8 @@ bool Grok_map(void)
                 case 'm':
                     line[y] = DOWN_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
@@ -1048,8 +1082,8 @@ bool Grok_map(void)
                 case 'k':
                     line[y] = RIGHT_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = GRAVS_POWER;
@@ -1058,8 +1092,8 @@ bool Grok_map(void)
                 case 'j':
                     line[y] = LEFT_GRAV;
                     itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.x = x;
-                    world->gravs[world->NumGravs].blk_pos.y = y;
+                    world->gravs[world->NumGravs].blk_pos.bx = x;
+                    world->gravs[world->NumGravs].blk_pos.by = y;
                     world->gravs[world->NumGravs].pos.cx = cx;
                     world->gravs[world->NumGravs].pos.cy = cy;
                     world->gravs[world->NumGravs].force = -GRAVS_POWER;
@@ -1069,8 +1103,8 @@ bool Grok_map(void)
                 case '@':
                 case '(':
                 case ')':
-                    world->wormholes[world->NumWormholes].blk_pos.x = x;
-                    world->wormholes[world->NumWormholes].blk_pos.y = y;
+                    world->wormholes[world->NumWormholes].blk_pos.bx = x;
+                    world->wormholes[world->NumWormholes].blk_pos.by = y;
                     world->wormholes[world->NumWormholes].pos.cx = cx;
                     world->wormholes[world->NumWormholes].pos.cy = cy;
                     world->wormholes[world->NumWormholes].countdown = 0;
@@ -1176,11 +1210,11 @@ bool Grok_map(void)
             for (i = 0; i < world->NumWormholes; i++)
             {
                 world->block
-                    [world->wormholes[i].blk_pos.x]
-                    [world->wormholes[i].blk_pos.y] = SPACE;
+                    [world->wormholes[i].blk_pos.bx]
+                    [world->wormholes[i].blk_pos.by] = SPACE;
                 world->itemID
-                    [world->wormholes[i].blk_pos.x]
-                    [world->wormholes[i].blk_pos.y] = (uint16_t)-1;
+                    [world->wormholes[i].blk_pos.bx]
+                    [world->wormholes[i].blk_pos.by] = (uint16_t)-1;
             }
             world->NumWormholes = 0;
         }
@@ -1322,8 +1356,8 @@ void Find_base_direction(void)
 
     for (i = 0; i < world->NumBases; i++)
     {
-        int x = world->bases[i].blk_pos.x,
-            y = world->bases[i].blk_pos.y,
+        int x = world->bases[i].blk_pos.bx,
+            y = world->bases[i].blk_pos.by,
             dir,
             att;
         double dx = world->gravity[x][y].x,
@@ -1596,8 +1630,8 @@ static void Compute_local_gravity(void)
     }
     for (g = 0; g < world->NumGravs; g++)
     {
-        gx = world->gravs[g].blk_pos.x;
-        gy = world->gravs[g].blk_pos.y;
+        gx = world->gravs[g].blk_pos.bx;
+        gy = world->gravs[g].blk_pos.by;
         force = world->gravs[g].force;
 
         if ((first_xi = gx - GRAV_RANGE) < min_xi)
@@ -1714,10 +1748,10 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     }
     world->wormholes = wwhtemp;
 
-    inhole.blk_pos.x = xin;
-    inhole.blk_pos.y = yin;
-    outhole.blk_pos.x = xout;
-    outhole.blk_pos.y = yout;
+    inhole.blk_pos.bx = xin;
+    inhole.blk_pos.by = yin;
+    outhole.blk_pos.bx = xout;
+    outhole.blk_pos.by = yout;
     inhole.countdown = outhole.countdown = options.wormTime;
     inhole.lastdest = world->NumWormholes + 1;
     inhole.temporary = outhole.temporary = 1;
@@ -1740,8 +1774,8 @@ void remove_temp_wormhole(int ind)
     wormhole_t hole;
 
     hole = world->wormholes[ind];
-    world->block[hole.blk_pos.x][hole.blk_pos.y] = hole.lastblock;
-    world->itemID[hole.blk_pos.x][hole.blk_pos.y] = hole.lastID;
+    world->block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
+    world->itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
     world->NumWormholes--;
     if (ind != world->NumWormholes)
     {

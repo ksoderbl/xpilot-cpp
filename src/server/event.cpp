@@ -203,8 +203,8 @@ static void Player_refuel(player_t *pl)
     CLR_BIT(pl->used, USES_REFUEL);
     for (i = 0; i < world->NumFuels; i++)
     {
-        if (world->block[world->fuels[i].blk_pos.x]
-                        [world->fuels[i].blk_pos.y] == FUEL)
+        if (world->block[world->fuels[i].blk_pos.bx]
+                        [world->fuels[i].blk_pos.by] == FUEL)
         {
             l = Wrap_length(pl->pos.cx - world->fuels[i].pos.cx,
                             pl->pos.cy - world->fuels[i].pos.cy) /
@@ -530,7 +530,7 @@ int Handle_keyboard(player_t *pl)
                     for (i = 0; i < Num_bases(); i++)
                     {
                         base_t *base = Base_by_index(i);
-                        if (base->blk_pos.x == xi && base->blk_pos.y == yi)
+                        if (base->blk_pos.bx == xi && base->blk_pos.by == yi)
                         {
                             if (base == pl->home_base)
                                 break;
@@ -799,8 +799,8 @@ int Handle_keyboard(player_t *pl)
                 {
                     xi = OBJ_X_IN_BLOCKS(pl);
                     yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = pl->home_base->blk_pos.x;
-                    k = pl->home_base->blk_pos.y;
+                    j = pl->home_base->blk_pos.bx;
+                    k = pl->home_base->blk_pos.by;
                     if (j == xi && k == yi)
                     {
                         minv = 3.0f;

@@ -106,7 +106,7 @@
 
 typedef struct fuel
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     position_t pix_pos;
     clpos_t pos;
     long fuel;
@@ -117,14 +117,14 @@ typedef struct fuel
 
 typedef struct grav
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
     double force;
 } grav_t;
 
 typedef struct
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
     int dir;
     int ind;
@@ -139,7 +139,7 @@ typedef struct baseorder
 
 typedef struct cannon
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     position_t pix_pos;
     clpos_t pos;
     int dir;
@@ -194,7 +194,7 @@ typedef enum
 
 typedef struct
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
     int lastdest,   /* last destination wormhole */
         countdown;  /* if >0 warp to lastdest else random */
@@ -207,7 +207,7 @@ typedef struct
 
 typedef struct treasure
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
     bool have;     /* true if this treasure has ball in it */
     int team;      /* team of this treasure */
@@ -217,7 +217,7 @@ typedef struct treasure
 
 typedef struct target
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
     int team;
     int dead_time;
@@ -241,13 +241,13 @@ typedef struct team
 
 typedef struct item_concentrator
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
 } item_concentrator_t;
 
 typedef struct asteroid_concentrator
 {
-    ipos_t blk_pos;
+    blkpos_t blk_pos;
     clpos_t pos;
 } asteroid_concentrator_t;
 

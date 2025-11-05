@@ -224,8 +224,8 @@ void Go_home(player_t *pl)
     }
     else if (pl->home_base != NULL)
     {
-        x = pl->home_base->blk_pos.x;
-        y = pl->home_base->blk_pos.y;
+        x = pl->home_base->blk_pos.bx;
+        y = pl->home_base->blk_pos.by;
         dir = pl->home_base->dir;
         vx = vy = velo = 0;
     }
@@ -796,7 +796,7 @@ void Reset_all_players(void)
             {
                 if (world->targets[i].damage != TARGET_DAMAGE || world->targets[i].dead_time != 0)
                 {
-                    world->block[world->targets[i].blk_pos.x][world->targets[i].blk_pos.y] = TARGET;
+                    world->block[world->targets[i].blk_pos.bx][world->targets[i].blk_pos.by] = TARGET;
                     world->targets[i].dead_time = 0;
                     world->targets[i].damage = TARGET_DAMAGE;
                     world->targets[i].conn_mask = 0;

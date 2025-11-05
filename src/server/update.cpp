@@ -25,6 +25,8 @@
 #include <cstdio>
 #include <cmath>
 
+#include "xperror.h"
+
 #include "server.h"
 #include "robot.h"
 
@@ -85,8 +87,8 @@ static void Transport_to_home(player_t *pl)
     }
     else
     {
-        bx = (pl->home_base->blk_pos.x + 0.5) * BLOCK_SZ;
-        by = (pl->home_base->blk_pos.y + 0.5) * BLOCK_SZ;
+        bx = (pl->home_base->blk_pos.bx + 0.5) * BLOCK_SZ;
+        by = (pl->home_base->blk_pos.by + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pix_pos.x);
     dy = WRAP_DY(by - pl->pix_pos.y);
@@ -692,7 +694,7 @@ void Update_objects(void)
         {
             if (!--world->targets[i].dead_time)
             {
-                world->block[world->targets[i].blk_pos.x][world->targets[i].blk_pos.y] = TARGET;
+                world->block[world->targets[i].blk_pos.bx][world->targets[i].blk_pos.by] = TARGET;
                 world->targets[i].conn_mask = 0;
                 world->targets[i].update_mask = (unsigned)-1;
                 world->targets[i].last_change = frame_loops;
@@ -705,8 +707,8 @@ void Update_objects(void)
                     {
                         if (world->targets[j].team == team)
                         {
-                            world->block[world->targets[j].blk_pos.x]
-                                        [world->targets[j].blk_pos.y] = TARGET;
+                            world->block[world->targets[j].blk_pos.bx]
+                                        [world->targets[j].blk_pos.by] = TARGET;
                             world->targets[j].conn_mask = 0;
                             world->targets[j].update_mask = (unsigned)-1;
                             world->targets[j].last_change = frame_loops;
@@ -931,7 +933,7 @@ void Update_objects(void)
                      CLICK >
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
-                (world->block[world->fuels[pl->fs].blk_pos.x][world->fuels[pl->fs].blk_pos.y] != FUEL) ||
+                (world->block[world->fuels[pl->fs].blk_pos.bx][world->fuels[pl->fs].blk_pos.by] != FUEL) ||
                 Player_is_phasing(pl) ||
                 (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[pl->fs].team != pl->team))
             {
@@ -1083,11 +1085,11 @@ void Update_objects(void)
                         if (j == pl->wormHoleHit || world->wormholes[j].type == WORM_IN || world->wormholes[j].temporary)
                             continue;
 
-                        wx = (world->wormholes[j].blk_pos.x -
-                              world->wormholes[pl->wormHoleHit].blk_pos.x) *
+                        wx = (world->wormholes[j].blk_pos.bx -
+                              world->wormholes[pl->wormHoleHit].blk_pos.bx) *
                              BLOCK_SZ;
-                        wy = (world->wormholes[j].blk_pos.y -
-                              world->wormholes[pl->wormHoleHit].blk_pos.y) *
+                        wy = (world->wormholes[j].blk_pos.by -
+                              world->wormholes[pl->wormHoleHit].blk_pos.by) *
                              BLOCK_SZ;
                         wx = WRAP_DX(wx);
                         wy = WRAP_DX(wy);
@@ -1129,8 +1131,8 @@ void Update_objects(void)
 
                 sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 
-                w.x = (world->wormholes[j].blk_pos.x + 0.5) * BLOCK_SZ;
-                w.y = (world->wormholes[j].blk_pos.y + 0.5) * BLOCK_SZ;
+                w.x = (world->wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
+                w.y = (world->wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
             }
             else
             { /* wormHoleHit == -1 */
@@ -1273,10 +1275,15 @@ void Update_objects(void)
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
-            pl->lock.distance =
-                Wrap_length(pl->pos.cx - Player_by_id(pl->lock.pl_id)->pos.cx,
-                            pl->pos.cy - Player_by_id(pl->lock.pl_id)->pos.cy) /
-                CLICK;
+            player_t *ship = Player_by_id(pl->lock.pl_id);
+            // Guard against ship = (nil)
+            if (!pl || !ship)
+                warn("update: pl = %p, ship = %p", pl, ship);
+            else
+                pl->lock.distance =
+                    Wrap_length(pl->pos.cx - ship->pos.cx,
+                                pl->pos.cy - ship->pos.cy) /
+                    CLICK;
         }
     }
 

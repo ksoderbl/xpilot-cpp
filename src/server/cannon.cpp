@@ -77,7 +77,7 @@ void Cannon_update(bool tick)
         {
             if (!--c->dead_time)
             {
-                world->block[c->blk_pos.x][c->blk_pos.y] = CANNON;
+                world->block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
                 c->conn_mask = 0;
                 c->last_change = frame_loops;
             }

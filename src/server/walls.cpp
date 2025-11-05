@@ -878,8 +878,8 @@ void Move_segment(move_state_t *ms)
                 int last = world->wormholes[hole].lastdest;
                 if (last >= 0 && (world->wormholes[hole].countdown > 0 || !options.wormTime) && last < world->NumWormholes && world->wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.cx += (world->wormholes[last].blk_pos.x - world->wormholes[hole].blk_pos.x) * BLOCK_CLICKS;
-                    ms->done.cy += (world->wormholes[last].blk_pos.y - world->wormholes[hole].blk_pos.y) * BLOCK_CLICKS;
+                    ms->done.cx += (world->wormholes[last].blk_pos.bx - world->wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
+                    ms->done.cy += (world->wormholes[last].blk_pos.by - world->wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
                     break;
                 }
             }
@@ -896,7 +896,7 @@ void Move_segment(move_state_t *ms)
             }
             for (i = 0;; i++)
             {
-                if (world->cannons[i].blk_pos.x == block.x && world->cannons[i].blk_pos.y == block.y)
+                if (world->cannons[i].blk_pos.bx == block.x && world->cannons[i].blk_pos.by == block.y)
                 {
                     break;
                 }
@@ -1112,7 +1112,7 @@ void Move_segment(move_state_t *ms)
 
                     for (i = 0;; i++)
                     {
-                        if (world->treasures[i].blk_pos.x == block.x && world->treasures[i].blk_pos.y == block.y)
+                        if (world->treasures[i].blk_pos.bx == block.x && world->treasures[i].blk_pos.by == block.y)
                         {
                             break;
                         }
@@ -1819,7 +1819,7 @@ static void Cannon_dies(move_state_t *ms)
 
     cannon->dead_time = options.cannonDeadTime;
     cannon->conn_mask = 0;
-    world->block[cannon->blk_pos.x][cannon->blk_pos.y] = SPACE;
+    world->block[cannon->blk_pos.bx][cannon->blk_pos.by] = SPACE;
     Cannon_throw_items(Cannon_by_index(ms->cannon));
     Cannon_init(Cannon_by_index(ms->cannon));
     sound_play_sensors(cannon->pos, CANNON_EXPLOSION_SOUND);
@@ -1966,8 +1966,8 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
      * Destroy target.
      * Turn it into a space to simplify other calculations.
      */
-    bx = targ->blk_pos.x;
-    by = targ->blk_pos.y;
+    bx = targ->blk_pos.bx;
+    by = targ->blk_pos.by;
     world->block[bx][by] = SPACE;
 
     Make_debris(targ->pos,

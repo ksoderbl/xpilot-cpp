@@ -96,6 +96,19 @@ static inline blkpos_t Clpos_to_blkpos(clpos_t pos)
     return bpos;
 }
 
+/*
+ * Return the pixel position this click position is in.
+ */
+static inline position_t Clpos_to_position(clpos_t pos)
+{
+    position_t ppos;
+
+    ppos.x = CLICK_TO_FLOAT(pos.cx);
+    ppos.y = CLICK_TO_FLOAT(pos.cy);
+
+    return ppos;
+}
+
 // static inline blkpos_t Clicks_to_blkpos(int cx, int cy)
 // {
 //     blkpos_t bpos;
