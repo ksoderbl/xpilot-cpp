@@ -85,170 +85,32 @@ static void Print_map(void) /* Debugging only. */
 
 int World_place_cannon(clpos_t pos, int dir, int team)
 {
-    // cannon_t t, *cannon;
-    // int ind = Num_cannons(), i;
-
-    // t.pos = pos;
-    // t.dir = dir;
-    // t.team = team;
-    // t.dead_ticks = 0;
-    // t.conn_mask = ~0;
-    // t.group = NO_GROUP;
-    // t.score = CANNON_SCORE;
-    // t.id = ind + MIN_CANNON_ID;
-    // assert(Is_cannon_id(t.id));
-    // if (t.id > MAX_CANNON_ID)
-    // {
-    //     warn("The server supports only %d cannons per map.", NUM_CANNON_IDS);
-    //     exit(1);
-    // }
-    // for (i = 0; i < NUM_ITEMS; i++)
-    //     t.initial_items[i] = -1;
-    // t.shot_speed = -1;
-    // t.smartness = -1;
-    // Arraylist_add(world->cannons, &t);
-    // cannon = Cannon_by_index(ind);
-    // assert(Cannon_by_id(t.id) == cannon);
-
-    // return ind;
-
-    // TODO
     return -1;
 }
 
 int World_place_fuel(clpos_t pos, int team)
 {
-    // fuel_t t;
-    // int ind = Num_fuels();
-
-    // t.pos = pos;
-    // t.fuel = START_STATION_FUEL;
-    // t.conn_mask = ~0;
-    // t.last_change = frame_loops;
-    // t.team = team;
-    // Arraylist_add(world->fuels, &t);
-
-    // return ind;
-
-    // TODO
     return -1;
 }
 
 int World_place_base(clpos_t pos, int dir, int team, int order)
 {
-    // base_t t;
-    // int ind = Num_bases(), i;
-
-    // t.pos = pos;
-    // t.order = order;
-    // /*
-    //  * The direction of the base should be so that it points
-    //  * up with respect to the gravity in the region.  This
-    //  * is fixed in Find_base_direction() when the gravity has
-    //  * been computed.
-    //  */
-    // if (dir < 0 || dir >= RES)
-    // {
-    //     warn("Base with direction %d in map.", dir);
-    //     warn("Valid base directions are from 0 to %d.", RES - 1);
-    //     while (dir < 0)
-    //         dir += RES;
-    //     while (dir >= RES)
-    //         dir -= RES;
-    //     warn("Using direction %d for this base.", dir);
-    // }
-
-    // t.dir = dir;
-    // if (BIT(world->rules->mode, TEAM_PLAY))
-    // {
-    //     if (team < 0 || team >= MAX_TEAMS)
-    //         team = 0;
-    //     t.team = team;
-    //     world->teams[team].NumBases++;
-    //     if (world->teams[team].NumBases == 1)
-    //         world->NumTeamBases++;
-    // }
-    // else
-    //     t.team = TEAM_NOT_SET;
-    // t.ind = Num_bases();
-
-    // for (i = 0; i < NUM_ITEMS; i++)
-    //     t.initial_items[i] = -1;
-    // Arraylist_add(world->bases, &t);
-
-    // return ind;
-
-    // TODO
     return -1;
 }
 
 int World_place_treasure(clpos_t pos, int team, bool empty,
                          int ball_style)
 {
-    // treasure_t t;
-    // int ind = Num_treasures();
-
-    // t.pos = pos;
-    // t.have = false;
-    // t.destroyed = 0;
-    // t.team = team;
-    // t.empty = empty;
-    // t.ball_style = ball_style;
-    // if (team != TEAM_NOT_SET)
-    // {
-    //     world->teams[team].NumTreasures++;
-    //     world->teams[team].TreasuresLeft++;
-    // }
-    // Arraylist_add(world->treasures, &t);
-
-    // return ind;
-
-    // TODO
     return -1;
 }
 
 int World_place_target(clpos_t pos, int team)
 {
-    // target_t t;
-    // int ind = Num_targets();
-
-    // t.pos = pos;
-    // /*
-    //  * If we have a block based map, the team is determined in
-    //  * in Xpmap_find_map_object_teams().
-    //  */
-    // t.team = team;
-    // t.dead_ticks = 0;
-    // t.damage = TARGET_DAMAGE;
-    // t.conn_mask = ~0;
-    // t.update_mask = 0;
-    // t.last_change = frame_loops;
-    // t.group = NO_GROUP;
-    // Arraylist_add(world->targets, &t);
-
-    // return ind;
-
-    // TODO
     return -1;
 }
 
 int World_place_wormhole(clpos_t pos, wormtype_t type)
 {
-    // wormhole_t t;
-    // int ind = Num_wormholes();
-
-    // t.pos = pos;
-    // t.countdown = 0;
-    // t.lastdest = NO_IND;
-    // t.type = type;
-    // t.lastblock = SPACE;
-    // t.lastID = NO_ID;
-    // t.group = NO_GROUP;
-    // Arraylist_add(world->wormholes, &t);
-
-    // return ind;
-
-    // TODO
     return -1;
 }
 

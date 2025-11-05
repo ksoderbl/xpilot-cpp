@@ -51,8 +51,6 @@
 #include "player.h"
 #include "robot.h"
 
-double timePerFrame; /* Real time elapsed per frame */
-
 /*
  * The very first "analytical" collision patch, XPilot 3.6.2
  * Faster than other patches and accurate below half warp-speed

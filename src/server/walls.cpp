@@ -1180,7 +1180,7 @@ void Move_segment(move_state_t *ms)
                         if (options.captureTheFlag && !world->treasures[ms->treasure].have && !world->treasures[ms->treasure].empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
-                            Set_player_message(PlayersArray[GetIndArray[ball->ball_owner]], msg);
+                            Set_player_message(Player_by_id(ball->ball_owner), msg);
                         }
                         else if (Punish_team(GetInd(ball->ball_owner),
                                              ball->treasure, ms->treasure))
@@ -1215,29 +1215,20 @@ void Move_segment(move_state_t *ms)
                     {
                         int team;
                         if (mi->pl)
-                        {
                             team = mi->pl->team;
-                        }
                         else if (BIT(mi->obj->type, OBJ_BALL))
                         {
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->ball_owner != NO_ID)
-                            {
-                                team = PlayersArray[GetIndArray[ball->ball_owner]]->team;
-                            }
+                                team = Player_by_id(ball->ball_owner)->team;
                             else
-                            {
                                 team = TEAM_NOT_SET;
-                            }
                         }
                         else
-                        {
                             team = mi->obj->team;
-                        }
+
                         if (team == world->targets[i].team)
-                        {
                             break;
-                        }
                     }
                     if (!mi->pl)
                     {
@@ -2205,7 +2196,7 @@ void Move_object(object_t *obj)
     mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
     if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
-        mi.phased = BIT(PlayersArray[GetIndArray[obj->id]]->used, USES_PHASING_DEVICE);
+        mi.phased = BIT(Player_by_id(obj->id)->used, USES_PHASING_DEVICE);
     else
         mi.phased = 0;
 
