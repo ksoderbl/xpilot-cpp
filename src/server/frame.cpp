@@ -399,10 +399,15 @@ static int Frame_status(connection_t *conn, player_t *pl)
     {
         player_t *lock_pl = Player_by_id(pl->lock.pl_id);
 
-        lock_id = pl->lock.pl_id;
-        lock_ind = GetInd(lock_id);
+        if (!lock_pl)
+            warn("frame_status, lock_pl: %p", lock_pl);
+        // lock_id = pl->lock.pl_id;
+        // warn("frame_status, lock_id: %d", lock_id);
+        // lock_ind = GetInd(lock_id);
+        // warn("frame_status, lock_ind: %d", lock_ind);
 
-        if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
+        if (lock_pl &&
+            (!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
             && (pl->visibility[lock_ind].canSee ||
                 Player_owns_tank(pl, PlayersArray[lock_ind]) ||
@@ -934,7 +939,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         cannon_t *cannon = world->cannons + i;
         if (cannon->tractor_count > 0)
         {
-            player_t *t = Player_by_id(cannon->tractor_target);
+            player_t *t = Player_by_id(cannon->tractor_target_id);
             if (click_inview(cv, t->pos.cx, t->pos.cy))
             {
                 int j;

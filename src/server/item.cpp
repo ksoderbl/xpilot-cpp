@@ -488,8 +488,8 @@ void Detonate_items(player_t *pl)
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
                 CLR_BIT(mods.nuclear, NUCLEAR);
-            Fire_general_shot(owner_pl->id, 0, pl->team, pl->pos,
-                              type, (int)(rfrac() * RES), mods, -1);
+            Fire_general_shot(owner_pl->id, pl->team, pl->pos,
+                              type, (int)(rfrac() * RES), mods, NO_ID);
         }
     }
 }
@@ -619,8 +619,8 @@ void Do_deflector(player_t *pl)
 
 void Do_transporter(player_t *pl)
 {
-    player_t *p;
-    int i, target = -1;
+    player_t *victim = NULL;
+    int i;
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
@@ -630,23 +630,20 @@ void Do_transporter(player_t *pl)
     /* find victim */
     for (i = 0; i < NumPlayers; i++)
     {
-        p = Player_by_index(i);
-        if (p == pl ||
-            BIT(p->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-            Team_immune(pl->id, p->id) ||
-            Player_is_tank(p) ||
-            BIT(p->used, USES_PHASING_DEVICE))
+        player_t *pl_i = Player_by_index(i);
+        if (pl_i == pl || !Player_is_active(pl_i) || Team_immune(pl->id, pl_i->id) || Player_is_tank(pl_i) || Player_is_phasing(pl_i))
             continue;
-        dist = Wrap_length(pl->pos.cx - p->pos.cx, pl->pos.cy - p->pos.cy) / CLICK;
+        dist = Wrap_length(pl->pos.cx - pl_i->pos.cx,
+                           pl->pos.cy - pl_i->pos.cy);
         if (dist < closest)
         {
             closest = dist;
-            target = i;
+            victim = pl_i;
         }
     }
 
     /* no victims in range */
-    if (target == -1)
+    if (!victim)
     {
         sound_play_sensors(pl->pos, TRANSPORTER_FAIL_SOUND);
         Add_fuel(&(pl->fuel), ED_TRANSPORTER);
@@ -655,18 +652,18 @@ void Do_transporter(player_t *pl)
     }
 
     /* victim found */
-    Do_general_transporter(pl, pl->pos, target, NULL, NULL);
+    Do_general_transporter(pl->id, pl->pos, victim, NULL, NULL);
 }
 
-void Do_general_transporter(player_t *pl, clpos_t pos, int target,
-                            int *itemp, long *amountp)
+void Do_general_transporter(int id, clpos_t pos,
+                            player_t *victim, int *itemp, long *amountp)
 {
-    player_t *victim = PlayersArray[target];
     char msg[MSG_LEN];
     const char *what = NULL;
-    int i;
-    int item = ITEM_FUEL;
+    int i, item = ITEM_FUEL;
     long amount;
+    player_t *pl = Player_by_id(id);
+    /*cannon_t *cannon = Cannon_by_id(id);*/
 
     /* choose item type to steal */
     for (i = 0; i < 50; i++)

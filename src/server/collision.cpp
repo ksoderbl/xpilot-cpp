@@ -764,7 +764,6 @@ static void PlayerObjectCollision(player_t *pl)
 
 static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
 {
-    // player_t *pl = PlayersArray[ind];
     int sc;
     int killer;
     player_t *kp = nullptr;
@@ -828,7 +827,6 @@ static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
 
 static void Player_collides_with_item(player_t *pl, object_t *obj)
 {
-    // player_t *pl = PlayersArray[ind];
     int old_have;
     enum Item item_index;
 
@@ -1077,7 +1075,6 @@ static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
 
 static void Player_collides_with_debris(player_t *pl, object_t *obj)
 {
-    // player_t *pl = PlayersArray[ind];
     double v = VECTOR_LENGTH(obj->vel);
     long tmp = (long)(2 * obj->mass * v);
     long cost = ABS(tmp);
@@ -1128,7 +1125,6 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
 
 static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
 {
-    // player_t *pl = PlayersArray[ind];
     double v = VECTOR_LENGTH(ast->vel);
     long tmp = (long)(2 * ast->mass * v);
     long cost = ABS(tmp);
@@ -1172,7 +1168,6 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
 
 static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
 {
-    // player_t *pl = PlayersArray[ind];
     int sc;
     int drainfactor;
     long drain;

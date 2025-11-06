@@ -148,7 +148,7 @@ typedef struct cannon
     long last_change;
     int item[NUM_ITEMS];
     int damaged;
-    int tractor_target;
+    int tractor_target_id;
     int tractor_count;
     bool tractor_is_pressor;
     int team;

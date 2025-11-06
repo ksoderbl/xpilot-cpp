@@ -464,7 +464,8 @@ void Fire_main_shot(player_t *pl, int type, int dir)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
 
-    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, pos, type,
+                      dir, pl->mods, NO_ID);
 }
 
 void Fire_shot(player_t *pl, int type, int dir)
@@ -472,7 +473,8 @@ void Fire_shot(player_t *pl, int type, int dir)
     if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
         return;
 
-    Fire_general_shot(pl->id, pl->team, 0, pl->pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, pl->pos, type,
+                      dir, pl->mods, NO_ID);
 }
 
 void Fire_left_shot(player_t *pl, int type, int dir, int gun)
@@ -484,7 +486,8 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].y);
 
-    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, pos, type,
+                      dir, pl->mods, NO_ID);
 }
 
 void Fire_right_shot(player_t *pl, int type, int dir, int gun)
@@ -496,7 +499,8 @@ void Fire_right_shot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].y);
 
-    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, pos, type,
+                      dir, pl->mods, NO_ID);
 }
 
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
@@ -508,7 +512,8 @@ void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, pos, type,
+                      dir, pl->mods, NO_ID);
 }
 
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
@@ -520,12 +525,13 @@ void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
     pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].x);
     pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].y);
 
-    Fire_general_shot(pl->id, pl->team, 0, pos, type, dir, pl->mods, -1);
+    Fire_general_shot(pl->id, pl->team, pos, type,
+                      dir, pl->mods, NO_ID);
 }
 
-void Fire_general_shot(int id, int team, bool cannon,
+void Fire_general_shot(int id, int team,
                        clpos_t pos, int type, int dir,
-                       modifiers_t mods, int target)
+                       modifiers_t mods, int target_id)
 {
     char msg[MSG_LEN];
     int used, fuse = 0, lock = 0, status = GRAVITY, i, ldir, minis;
@@ -543,6 +549,7 @@ void Fire_general_shot(int id, int team, bool cannon,
     clpos_t shotpos;
     object_t *mini_objs[MODS_MINI_MAX + 1];
     player_t *pl = Player_by_id(id);
+    cannon_t *cannon = Cannon_by_id(id);
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
         return;
@@ -657,25 +664,19 @@ void Fire_general_shot(int id, int team, bool cannon,
             lock = -1;
 #else  /* HEAT_LOCK */
             if (pl == NULL)
-            {
-                lock = target;
-            }
+                lock = target_id;
             else
             {
                 if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)))
                 {
-                    lock = -1;
+                    lock = NO_ID;
                 }
                 else
-                {
                     lock = pl->lock.pl_id;
-                }
             }
 #endif /* HEAT_LOCK */
             if (pl)
-            {
                 sound_play_sensors(pl->pos, FIRE_HEAT_SHOT_SOUND);
-            }
             max_speed = SMART_SHOT_MAX_SPEED * HEAT_SPEED_FACT;
             turnspeed = SMART_TURNSPEED * HEAT_SPEED_FACT;
             speed *= HEAT_SPEED_FACT;
@@ -683,7 +684,7 @@ void Fire_general_shot(int id, int team, bool cannon,
 
         case OBJ_SMART_SHOT:
             if (pl == NULL)
-                lock = target;
+                lock = target_id;
             else
             {
                 if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
@@ -695,8 +696,11 @@ void Fire_general_shot(int id, int team, bool cannon,
             break;
 
         case OBJ_TORPEDO:
-            lock = -1;
+            lock = NO_ID;
             fuse = 8;
+            break;
+
+        default:
             break;
         }
 
@@ -704,10 +708,10 @@ void Fire_general_shot(int id, int team, bool cannon,
         {
             if (pl->fuel.sum < -drain)
             {
-                sprintf(msg, "You need at least %ld fuel units to fire %s!",
-                        (-drain) >> FUEL_SCALE_BITS,
-                        Describe_shot(type, status, mods, 0));
-                Set_player_message(pl, msg);
+                Set_player_message_f(pl,
+                                     "You need at least %ld fuel units to fire %s!",
+                                     (-drain) >> FUEL_SCALE_BITS,
+                                     Describe_shot(type, status, mods, 0));
                 return;
             }
             Add_fuel(&(pl->fuel), drain);
@@ -715,9 +719,8 @@ void Fire_general_shot(int id, int team, bool cannon,
 
             if (used > 1)
             {
-                sprintf(msg, "%s has launched %s!", pl->name,
-                        Describe_shot(type, status, mods, 0));
-                Set_message(msg);
+                Set_message_f("%s has launched %s!", pl->name,
+                              Describe_shot(type, status, mods, 0));
                 sound_play_all(NUKE_LAUNCH_SOUND);
             }
             else if (type == OBJ_SMART_SHOT)
@@ -1388,12 +1391,13 @@ void Delete_shot(int ind)
         if (addMine)
         {
             long gravity_status = ((rfrac() < 0.5) ? GRAVITY : 0);
+            vector_t zero_vel = {0.0, 0.0};
             Place_general_mine(NO_ID, TEAM_NOT_SET, gravity_status,
                                shot->pos, zero_vel, mods);
         }
         else if (addHeat)
-            Fire_general_shot(NO_ID, TEAM_NOT_SET, 0,
-                              shot->pos, OBJ_HEAT_SHOT, (int)(rfrac() * RES),
+            Fire_general_shot(NO_ID, TEAM_NOT_SET, shot->pos,
+                              OBJ_HEAT_SHOT, (int)(rfrac() * RES),
                               mods, NO_ID);
     }
     else if (addBall)
@@ -1417,14 +1421,15 @@ void Fire_laser(player_t *pl)
             pos.cx = WRAP_XCLICK(pos.cx);
             pos.cy = WRAP_YCLICK(pos.cy);
             if (World_contains_clpos(pos))
-                Fire_general_laser(pl, pl->team, pos, pl->dir, pl->mods);
+                Fire_general_laser(pl->id, pl->team, pos, pl->dir, pl->mods);
         }
     }
 }
 
-void Fire_general_laser(player_t *pl, int team, clpos_t pos,
+void Fire_general_laser(int id, int team, clpos_t pos,
                         int dir, modifiers_t mods)
 {
+    player_t *pl = Player_by_id(id);
     pulse_t *pulse;
     int life;
 

@@ -168,9 +168,9 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(player_t *pl);
 void Fire_general_ecm(int id, int team, clpos_t pos);
 void Move_ball(int ind);
-void Fire_general_shot(int id, int team, bool cannon,
+void Fire_general_shot(int id, int team,
                        clpos_t pos, int type, int dir,
-                       modifiers_t mods, int target);
+                       modifiers_t mods, int target_id);
 void Fire_normal_shots(player_t *pl);
 void Fire_main_shot(player_t *pl, int type, int dir);
 void Fire_shot(player_t *pl, int type, int dir);
@@ -182,10 +182,10 @@ void Make_treasure_ball(int treasure);
 int Punish_team(int ind, int t_destroyed, int t_target);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
-void Fire_general_laser(player_t *pl, int team, clpos_t pos, int dir, modifiers_t mods);
+void Fire_general_laser(int id, int team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(player_t *pl);
 void Do_transporter(player_t *pl);
-void Do_general_transporter(player_t *pl, clpos_t pos, int target, int *item, long *amount);
+void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *item, long *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
 void Update_torpedo(torpobject_t *torp);
