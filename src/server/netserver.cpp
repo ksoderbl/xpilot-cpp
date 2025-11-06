@@ -1739,7 +1739,7 @@ int Send_fuel(connection_t *connp, int num, double fuel)
                          num, (int)(fuel + 0.5));
 }
 
-int Send_score_object(connection_t *connp, int score, int x, int y, const char *string)
+int Send_score_object(connection_t *connp, int score, clpos_t pos, const char *string)
 {
     if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
     {
@@ -1821,14 +1821,8 @@ int Send_debris(connection_t *connp, int type, uint8_t *p, int n)
     return n;
 }
 
-int Send_wreckage(connection_t *connp, int x, int y, uint8_t wrtype, uint8_t size, uint8_t rot)
+int Send_wreckage(connection_t *connp, clpos_t pos, uint8_t wrtype, uint8_t size, uint8_t rot)
 {
-    if (connp->version < 0x3800)
-    {
-        printf("THIS NEVER HAPPENS: 3kljto3iwjo3iju493\n");
-        return 1;
-    }
-
     if (options.wreckageCollisionMayKill && connp->version > 0x4201)
     {
         /* Set the highest bit when wreckage is deadly. */
@@ -1843,7 +1837,7 @@ int Send_wreckage(connection_t *connp, int x, int y, uint8_t wrtype, uint8_t siz
                          x, y, wrtype, size, rot);
 }
 
-int Send_asteroid(connection_t *connp, int x, int y, uint8_t type, uint8_t size, uint8_t rot)
+int Send_asteroid(connection_t *connp, clpos_t pos, uint8_t type, uint8_t size, uint8_t rot)
 {
     uint8_t type_size;
 
@@ -1886,18 +1880,18 @@ int Send_fastshot(connection_t *connp, int type, uint8_t *p, int n)
     return n;
 }
 
-int Send_missile(connection_t *connp, int x, int y, int len, int dir)
+int Send_missile(connection_t *connp, clpos_t pos, int len, int dir)
 {
     return Packet_printf(&connp->w, "%c%hd%hd%c%c",
                          PKT_MISSILE, x, y, len, dir);
 }
 
-int Send_ball(connection_t *connp, int x, int y, int id)
+int Send_ball(connection_t *connp, clpos_t pos, int id)
 {
     return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_BALL, x, y, id);
 }
 
-int Send_mine(connection_t *connp, int x, int y, int teammine, int id)
+int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id)
 {
     return Packet_printf(&connp->w, "%c%hd%hd%c%hd", PKT_MINE, x, y,
                          teammine, id);
@@ -1909,7 +1903,7 @@ int Send_target(connection_t *connp, int num, int dead_time, int damage)
                          num, dead_time, damage);
 }
 
-int Send_wormhole(connection_t *connp, int x, int y)
+int Send_wormhole(connection_t *connp, clpos_t pos)
 {
     if (connp->version < 0x4501)
     {
@@ -1933,7 +1927,7 @@ int Send_wormhole(connection_t *connp, int x, int y)
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_WORMHOLE, x, y);
 }
 
-int Send_item(connection_t *connp, int x, int y, int type)
+int Send_item(connection_t *connp, clpos_t pos, int type)
 {
     if (type >= ITEM_EMERGENCY_SHIELD)
     {
@@ -1946,23 +1940,23 @@ int Send_item(connection_t *connp, int x, int y, int type)
     return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_ITEM, x, y, type);
 }
 
-int Send_paused(connection_t *connp, int x, int y, int count)
+int Send_paused(connection_t *connp, clpos_t pos, int count)
 {
     return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_PAUSED, x, y, count);
 }
 
-int Send_ecm(connection_t *connp, int x, int y, int size)
+int Send_ecm(connection_t *connp, clpos_t pos, int size)
 {
     return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_ECM, x, y, size);
 }
 
-int Send_trans(connection_t *connp, int x1, int y1, int x2, int y2)
+int Send_trans(connection_t *connp, clpos_t pos1, clpos_t pos2)
 {
     return Packet_printf(&connp->w, "%c%hd%hd%hd%hd",
                          PKT_TRANS, x1, y1, x2, y2);
 }
 
-int Send_ship(connection_t *connp, int x, int y, int id, int dir,
+int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
               bool shield, bool cloak, bool emergency_shield, bool phased, bool deflector)
 {
     uint8_t flags =
@@ -1981,27 +1975,27 @@ int Send_ship(connection_t *connp, int x, int y, int id, int dir,
                          flags);
 }
 
-int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1)
+int Send_refuel(connection_t *connp, clpos_t pos0, clpos_t pos1)
 {
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd%hd",
                          PKT_REFUEL, x0, y0, x1, y1);
 }
 
-int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor)
+int Send_connector(connection_t *connp, clpos_t pos0, clpos_t pos1, int tractor)
 {
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd%hd%c",
                          PKT_CONNECTOR, x0, y0, x1, y1, tractor);
 }
 
-int Send_laser(connection_t *connp, int color, int x, int y, int len, int dir)
+int Send_laser(connection_t *connp, int color, clpos_t pos, int len, int dir)
 {
     return Packet_printf(&connp->w, "%c%c%hd%hd%hd%c", PKT_LASER,
                          color, x, y, len, dir);
 }
 
-int Send_radar(connection_t *connp, int x, int y, int size)
+int Send_radar(connection_t *connp, clpos_t pos, int size)
 {
     /* Only since 4.2.1 can clients correctly handle teammates in green. */
     /* Except the original patch from kth.se was 4.1.0 "experimental 1" */
