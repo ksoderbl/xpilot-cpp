@@ -1147,26 +1147,27 @@ void Compute_game_status(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_is_tank(Player_by_index(i)))
+            player_t *pl_i = Player_by_index(i);
+
+            if (Player_is_tank(pl_i))
                 /* Ignore tanks. */
                 continue;
-            else if (BIT(Player_by_index(i)->obj_status, PAUSE))
+            else if (Player_is_paused(pl_i))
                 /* Ignore paused players. */
                 continue;
 #if 0
             /* not all teammode maps have treasures. */
-            else if (world->teams[Player_by_index(i)->team].NumTreasures == 0) {
+            else if (world->teams[pl_i->team].NumTreasures == 0)
                 /* Ignore players with no treasure troves */
                 continue;
-            }
 #endif
-            else if (BIT(Player_by_index(i)->obj_status, GAME_OVER))
+            else if (BIT(pl_i->obj_status, GAME_OVER))
             {
-                if (team_state[Player_by_index(i)->team] == TeamEmpty)
+                if (team_state[pl_i->team] == TeamEmpty)
                 {
                     /* Assume all teammembers are dead. */
                     num_dead_teams++;
-                    team_state[Player_by_index(i)->team] = TeamDead;
+                    team_state[pl_i->team] = TeamDead;
                 }
             }
             /*
@@ -1177,28 +1178,24 @@ void Compute_game_status(void)
              * was genocided very quickly after game reset, while this
              * player was still being transported back to his homebase.
              */
-            else if (team_state[Player_by_index(i)->team] != TeamAlive)
+            else if (team_state[pl_i->team] != TeamAlive)
             {
-                if (team_state[Player_by_index(i)->team] == TeamDead)
+                if (team_state[pl_i->team] == TeamDead)
                     /* Oops!  Not all teammembers are dead yet. */
                     num_dead_teams--;
-                team_state[Player_by_index(i)->team] = TeamAlive;
+                team_state[pl_i->team] = TeamAlive;
                 ++num_alive_teams;
                 /* Remember a team which was alive. */
-                winning_team = Player_by_index(i)->team;
+                winning_team = pl_i->team;
             }
         }
 
         if (num_alive_teams > 1)
         {
             char *bp;
-            int teams_with_treasure = 0;
-            int team_win[MAX_TEAMS];
-            double team_score[MAX_TEAMS];
-            int winners;
-            int max_destroyed = 0;
-            int max_left = 0;
-            double max_score = 0;
+            int teams_with_treasure = 0, team_win[MAX_TEAMS];
+            double team_score[MAX_TEAMS], max_score = 0;
+            int winners, max_destroyed = 0, max_left = 0;
             team_t *team_ptr;
 
             /*
@@ -1369,7 +1366,7 @@ void Compute_game_status(void)
         {
             player_t *pl_i = Player_by_index(i);
 
-            if (BIT(pl_i->obj_status, PAUSE) || Player_is_tank(pl_i))
+            if (Player_is_paused(pl_i) || Player_is_tank(pl_i))
                 continue;
             if (!BIT(pl_i->obj_status, GAME_OVER))
             {
@@ -1399,32 +1396,30 @@ void Compute_game_status(void)
 
 void Delete_player(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
-    // Hack to get ind
-    int ind = -1;
-    for (int k = 0; k < NumPlayers; k++)
-    {
-        if (pl == PlayersArray[k])
-        {
-            ind = k;
-            break;
-        }
-    }
-
-    warn("Delete_player: ind = %d", ind);
-    warn("Delete_player: getindarray's pl id = %d", GetIndArray[pl->id]);
-
+    int ind = GetInd(pl->id), i, j, id = pl->id;
     object_t *obj;
-    int i, j,
-        id = pl->id;
+    team_t *teamp = Team_by_index(pl->team);
 
     /* call before important player structures are destroyed */
     Leave_alliance(pl);
 
     if (Player_is_robot(pl))
-    {
         Robot_destroy(pl);
+
+    if (pl->isoperator)
+    {
+        if (!--NumOperators && game_lock)
+        {
+            game_lock = false;
+            Set_message(" < The game has been unlocked as "
+                        "the last operator left! >");
+        }
     }
+
+    /* Won't be swapping anywhere */
+    for (i = MAX_TEAMS - 1; i >= 0; i--)
+        if (world->teams[i].SwapperId == id)
+            world->teams[i].SwapperId = -1;
 
     /* Delete remaining shots */
     for (i = NumObjs - 1; i >= 0; i--)
@@ -1487,9 +1482,7 @@ void Delete_player(player_t *pl)
             {
                 ballobject_t *ball = BALL_PTR(obj);
                 if (ball->ball_owner == id)
-                {
                     ball->ball_owner = NO_ID;
-                }
             }
         }
     }
@@ -1516,9 +1509,7 @@ void Delete_player(player_t *pl)
 
     NumPlayers--;
     if (Player_is_tank(pl))
-    {
         NumPseudoPlayers--;
-    }
 
     if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl))
     {
@@ -1548,7 +1539,7 @@ void Delete_player(player_t *pl)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl_i = PlayersArray[i];
+        player_t *pl_i = Player_by_index(i);
 
         if (Player_is_tank(pl_i) && pl_i->lock.pl_id == id)
         {
@@ -1565,9 +1556,8 @@ void Delete_player(player_t *pl)
             CLR_BIT(pl_i->used, USES_TRACTOR_BEAM);
         }
         if (Player_is_robot(pl_i) && Robot_war_on_player(pl_i) == id)
-        {
             Robot_reset_war(pl_i);
-        }
+
         for (j = 0; j < LOCKBANK_MAX; j++)
         {
             if (pl_i->lockbank[j] == id)
@@ -1582,7 +1572,7 @@ void Delete_player(player_t *pl)
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl_i = PlayersArray[i];
+        player_t *pl_i = Player_by_index(i);
 
         if (pl_i->conn != NULL)
             Send_leave(pl_i->conn, id);
@@ -1646,9 +1636,9 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     }
 
     Detach_ball(pl, NULL);
-    if (Player_uses_autopilot(pl) || BIT(pl->obj_status, HOVERPAUSE))
+    if (Player_uses_autopilot(pl) || Player_is_hoverpaused(pl))
     {
-        CLR_BIT(pl->obj_status, HOVERPAUSE);
+        CLR_BIT(pl->pl_status, HOVERPAUSE);
         Autopilot(pl, false);
     }
 
@@ -1683,19 +1673,6 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(pl, pl->fuel.sum);
-
-    /*-BA Handle the combination of limited life games and
-     *-BA robotLeaveLife by making a robot leave iff it gets
-     *-BA eliminated in any round.  Means that robotLeaveLife
-     *-BA is ignored, but that robotsLeave is still respected.
-     *-KK Added check on race mode. Since in race mode everyone
-     *-KK gets killed at the end of the round, all robots would
-     *-KK be replaced in the next round. I don't think that's
-     *-KK the Right Thing to do.
-     *-KK Also, only check a robot's score at the end of the round.
-     *-KK 27-2-98 Check on team mode too. It's very confusing to
-     *-KK have different robots in your team every round.
-     */
 
     if (!BIT(pl->obj_status, PAUSE))
     {
@@ -1758,4 +1735,87 @@ bool Team_immune(int id1, int id2)
         return true;
 
     return false;
+}
+
+static char *old_status2str(int old_status)
+{
+    static char buf[256];
+
+    buf[0] = '\0';
+
+    if (old_status & OLD_PLAYING)
+        strlcat(buf, "OLD_PLAYING ", sizeof(buf));
+    if (old_status & OLD_PAUSE)
+        strlcat(buf, "OLD_PAUSE ", sizeof(buf));
+    if (old_status & OLD_GAME_OVER)
+        strlcat(buf, "OLD_GAME_OVER ", sizeof(buf));
+
+    return buf;
+}
+
+static char *state2str(int state)
+{
+    static char buf[256];
+
+    buf[0] = '\0';
+
+    if (state == PL_STATE_UNDEFINED)
+        strlcat(buf, "PL_STATE_UNDEFINED", sizeof(buf));
+    if (state == PL_STATE_WAITING)
+        strlcat(buf, "PL_STATE_WAITING", sizeof(buf));
+    if (state == PL_STATE_APPEARING)
+        strlcat(buf, "PL_STATE_APPEARING", sizeof(buf));
+    if (state == PL_STATE_ALIVE)
+        strlcat(buf, "PL_STATE_ALIVE", sizeof(buf));
+    if (state == PL_STATE_KILLED)
+        strlcat(buf, "PL_STATE_KILLED", sizeof(buf));
+    if (state == PL_STATE_DEAD)
+        strlcat(buf, "PL_STATE_DEAD", sizeof(buf));
+    if (state == PL_STATE_PAUSED)
+        strlcat(buf, "PL_STATE_PAUSED", sizeof(buf));
+
+    return buf;
+}
+
+void Player_print_state(player_t *pl, const char *funcname)
+{
+    warn("%-20s: %-16s (%c): %-20s %s ", funcname, pl->name, pl->mychar,
+         state2str(pl->pl_state), old_status2str(pl->pl_old_status));
+}
+
+void Player_set_state(player_t *pl, int state)
+{
+    pl->pl_state = state;
+
+    switch (state)
+    {
+    case PL_STATE_WAITING:
+        Player_set_mychar(pl, 'W');
+        Player_set_life(pl, 0);
+        pl->pl_old_status = OLD_GAME_OVER;
+        break;
+    case PL_STATE_APPEARING:
+        Player_set_mychar(pl, pl->pl_type_mychar);
+        /*Player_set_mychar(pl, 'A');*/
+        pl->pl_old_status = 0;
+        pl->recovery_count = RECOVERY_DELAY;
+        break;
+    case PL_STATE_ALIVE:
+        Player_set_mychar(pl, pl->pl_type_mychar);
+        pl->pl_old_status = OLD_PLAYING;
+        break;
+    case PL_STATE_KILLED:
+        break;
+    case PL_STATE_DEAD:
+        Player_set_mychar(pl, 'D');
+        pl->pl_old_status = OLD_GAME_OVER;
+        break;
+    case PL_STATE_PAUSED:
+        Player_set_mychar(pl, 'P');
+        Player_set_life(pl, 0);
+        pl->pl_old_status = OLD_PAUSE;
+        break;
+    default:
+        break;
+    }
 }

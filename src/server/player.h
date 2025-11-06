@@ -194,9 +194,14 @@ typedef struct
     int phasing_left;          /* how much time left */
     int phasing_max;           /* maximum time left */
 
-    int item[NUM_ITEMS]; /* for each item type how many */
-    int lose_item;       /* which item to drop */
-    int lose_item_state; /* lose item key state, 2=up,1=down */
+    double pause_count;         /* ticks until unpause possible */
+    double recovery_count;      /* ticks to recovery */
+    double self_destruct_count; /* if > 0, ticks before boom */
+
+    int item[NUM_ITEMS];         /* for each item type how many */
+    int initial_item[NUM_ITEMS]; /* items player had initially */
+    int lose_item;               /* which item to drop */
+    int lose_item_state;         /* lose item key state, 2=up,1=down */
 
     double auto_power_s;               /* autopilot saves of current */
                                        /* power, turnspeed and */
@@ -218,6 +223,7 @@ typedef struct
     int last_lap_time;                 /* What was your last pass? */
     int last_check_dir;                /* player dir at last checkpoint */
     long last_wall_touch;              /* last time player touched a wall */
+    double survival_time;              /* time player has survived unshielded*/
 
     base_t *home_base;
     struct
@@ -261,10 +267,11 @@ typedef struct
     int wormDrawCount, wormHoleHit, wormHoleDest;
     int stunned;
 
-    int last_target_update;   /* index of last updated target */
-    int last_cannon_update;   /* index of last updated cannon */
-    int last_fuel_update;     /* index of last updated fuel */
-    int last_wormhole_update; /* index of last updated wormhole */
+    int last_target_update;    /* index of last updated target */
+    int last_cannon_update;    /* index of last updated cannon */
+    int last_fuel_update;      /* index of last updated fuel */
+    int last_wormhole_update;  /* index of last updated wormhole */
+    int last_polystyle_update; /* index of last updated polygon */
 
     int ecmcount; /* number of active ecms */
 
@@ -380,12 +387,12 @@ static inline bool Player_is_paused(player_t *pl)
     return false;
 }
 
-// static inline bool Player_is_hoverpaused(player_t *pl)
-// {
-//     if (BIT(pl->pl_status, HOVERPAUSE))
-//         return true;
-//     return false;
-// }
+static inline bool Player_is_hoverpaused(player_t *pl)
+{
+    if (BIT(pl->pl_status, HOVERPAUSE))
+        return true;
+    return false;
+}
 
 // extern void Set_Score(player_t *pl, double score);
 // extern void Add_Score(player_t *pl, double score);
