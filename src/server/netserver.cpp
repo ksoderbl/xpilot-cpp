@@ -2303,11 +2303,7 @@ static int Receive_power(connection_t *connp)
 int Send_reliable(connection_t *connp)
 {
     char *read_buf;
-    int i,
-        n,
-        len,
-        todo,
-        max_todo;
+    int i, n, len, todo, max_todo;
     long rel_off;
     const int max_packet_size = MAX_RELIABLE_DATA_PACKET_SIZE,
               min_send_size = 1; /* was 4 in 3.0.7, 1 in 3.1.0 */
@@ -2418,11 +2414,8 @@ static int Receive_ack(connection_t *connp)
 {
     int n;
     uint8_t ch;
-    long rel,
-        rtt, /* RoundTrip Time */
-        diff,
-        delta,
-        rel_loops;
+    long rel, rtt; /* RoundTrip Time */
+    long diff, delta, rel_loops;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%ld",
                           &ch, &rel, &rel_loops)) <= 0)
@@ -2492,20 +2485,16 @@ static int Receive_ack(connection_t *connp)
         return -1;
     }
     else if (diff <= 0)
-    {
         /* Late or duplicate ack of old data.  Discard. */
         return 1;
-    }
+
     Sockbuf_advance(&connp->c, (int)diff);
     connp->reliable_offset += diff;
     if ((n = ((diff + 512 - 1) / 512)) > connp->acks)
-    {
         connp->acks = n;
-    }
     else
-    {
         connp->acks++;
-    }
+
     if (connp->reliable_offset >= connp->reliable_unsent)
     {
         /*
@@ -2513,14 +2502,11 @@ static int Receive_ack(connection_t *connp)
          */
         connp->retransmit_at_loop = 0;
         if (connp->state == CONN_DRAIN)
-        {
             Conn_set_state(connp, connp->drain_state, connp->drain_state);
-        }
     }
     if (connp->state == CONN_READY && (connp->c.len <= 0 || (connp->c.buf[0] != PKT_REPLY && connp->c.buf[0] != PKT_PLAY && connp->c.buf[0] != PKT_SUCCESS && connp->c.buf[0] != PKT_FAILURE)))
-    {
         Conn_set_state(connp, connp->drain_state, connp->drain_state);
-    }
+
     connp->rtt_timeouts = 0;
 
     return 1;
@@ -2548,6 +2534,7 @@ static int Receive_ack_cannon(connection_t *connp)
     uint8_t ch;
     int n;
     uint16_t num;
+    cannon_t *cannon;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2556,13 +2543,14 @@ static int Receive_ack_cannon(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    if (num >= world->NumCannons)
+    if (num >= Num_cannons())
     {
         Destroy_connection(connp, "bad cannon ack");
         return -1;
     }
-    if (loops_ack > world->cannons[num].last_change)
-        SET_BIT(world->cannons[num].conn_mask, 1 << connp->conn_index);
+    cannon = Cannon_by_index(num);
+    if (loops_ack > cannon->last_change)
+        SET_BIT(cannon->conn_mask, 1 << connp->conn_index);
 
     return 1;
 }
@@ -2573,6 +2561,7 @@ static int Receive_ack_fuel(connection_t *connp)
     uint8_t ch;
     int n;
     uint16_t num;
+    fuel_t *fs;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2581,13 +2570,14 @@ static int Receive_ack_fuel(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    if (num >= world->NumFuels)
+    if (num >= Num_fuels())
     {
         Destroy_connection(connp, "bad fuel ack");
         return -1;
     }
-    if (loops_ack > world->fuels[num].last_change)
-        SET_BIT(world->fuels[num].conn_mask, 1 << connp->conn_index);
+    fs = Fuel_by_index(num);
+    if (loops_ack > fs->last_change)
+        SET_BIT(fs->conn_mask, 1 << connp->conn_index);
     return 1;
 }
 
@@ -2597,6 +2587,7 @@ static int Receive_ack_target(connection_t *connp)
     uint8_t ch;
     int n;
     uint16_t num;
+    target_t *targ;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2622,10 +2613,11 @@ static int Receive_ack_target(connection_t *connp)
      * destroyed targets could have been displayed with
      * a diagonal cross through them.
      */
-    if (loops_ack > world->targets[num].last_change)
+    targ = Target_by_index(num);
+    if (loops_ack > targ->last_change)
     {
-        SET_BIT(world->targets[num].conn_mask, 1 << connp->conn_index);
-        CLR_BIT(world->targets[num].update_mask, 1 << connp->conn_index);
+        SET_BIT(targ->conn_mask, 1 << connp->conn_index);
+        CLR_BIT(targ->update_mask, 1 << connp->conn_index);
     }
     return 1;
 }
@@ -2667,8 +2659,8 @@ static void Handle_talk(connection_t *connp, char *str)
     player_t *pl = Player_by_id(connp->id);
     int i, sent, team;
     unsigned int len;
-    char *cp,
-        msg[MSG_LEN * 2];
+    char *cp, msg[MSG_LEN * 2];
+    const char *sender = " [*Server reply*]";
 
     if ((cp = strchr(str, ':')) == NULL || cp == str || strchr("-_~)(/\\}{[]", cp[1]) /* smileys are smileys */
     )
@@ -2707,7 +2699,7 @@ static void Handle_talk(connection_t *connp, char *str)
     }
     else if (strcasecmp(str, "god") == 0)
     {
-        Server_log_admin_message(Player_by_id(connp->id), cp);
+        Server_log_admin_message(pl, cp);
     }
     else
     { /* Player message */
