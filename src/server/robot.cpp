@@ -745,9 +745,9 @@ static void Robot_create(void)
     if (robot->mychar != 'W')
         robot->mychar = 'R';
 
-    robot->fuel.l1 = 100 * FUEL_SCALE_FACT;
-    robot->fuel.l2 = 200 * FUEL_SCALE_FACT;
-    robot->fuel.l3 = 500 * FUEL_SCALE_FACT;
+    robot->fuel.l1 = 100;
+    robot->fuel.l2 = 200;
+    robot->fuel.l3 = 500;
 
     Pick_startpos(robot);
 

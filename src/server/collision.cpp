@@ -327,14 +327,14 @@ static void PlayerCollision(void)
                     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) !=
                         (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
                     {
-                        Add_fuel(&(pl->fuel), (long)ED_PL_CRASH);
+                        Player_add_fuel(pl, ED_PL_CRASH);
                         Item_damage(pl, options.destroyItemInCollisionProb);
                     }
                     if (BIT(pl_j->used, (HAS_SHIELD |
                                          HAS_EMERGENCY_SHIELD)) !=
                         (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
                     {
-                        Add_fuel(&(pl_j->fuel), (long)ED_PL_CRASH);
+                        Player_add_fuel(pl, ED_PL_CRASH);
                         Item_damage(pl_j, options.destroyItemInCollisionProb);
                     }
                     pl->forceVisible = 20;
@@ -777,7 +777,7 @@ static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
     Obj_repel((object_t *)pl, obj, radius);
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
-        Add_fuel(&(pl->fuel), (long)ED_BALL_HIT);
+        Player_add_fuel(pl, ED_BALL_HIT);
         if (options.treasureCollisionDestroys)
         {
             ball->life = 0;
@@ -914,7 +914,7 @@ static void Player_collides_with_item(player_t *pl, object_t *obj)
     case ITEM_SENSOR:
         pl->item[item_index] += obj->count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         sound_play_sensors(pl->pos, SENSOR_PACK_PICKUP_SOUND);
         break;
     case ITEM_AFTERBURNER:
@@ -939,11 +939,11 @@ static void Player_collides_with_item(player_t *pl, object_t *obj)
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         sound_play_sensors(pl->pos, CLOAKING_DEVICE_PICKUP_SOUND);
         break;
     case ITEM_FUEL:
-        Add_fuel(&(pl->fuel), ENERGY_PACK_FUEL);
+        Player_add_fuel(pl, ENERGY_PACK_FUEL);
         sound_play_sensors(pl->pos, ENERGY_PACK_PICKUP_SOUND);
         break;
     case ITEM_MINE:
@@ -998,7 +998,7 @@ static void Player_collides_with_item(player_t *pl, object_t *obj)
         if (pl->fuel.num_tanks < world->items[ITEM_TANK].limit)
             Player_add_tank(pl, TANK_FUEL(pl->fuel.num_tanks + 1));
         else
-            Add_fuel(&(pl->fuel), TANK_FUEL(MAX_TANKS));
+            Player_add_fuel(pl, TANK_FUEL(MAX_TANKS));
         sound_play_sensors(pl->pos, TANK_PICKUP_SOUND);
         break;
     case NUM_ITEMS:
@@ -1083,7 +1083,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
     int sc;
 
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
-        Add_fuel(&pl->fuel, -cost);
+        Player_add_fuel(pl, -cost);
     if (pl->fuel.sum == 0 || (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
     {
         SET_BIT(pl->obj_status, KILLED);
@@ -1138,7 +1138,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     }
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
-        Add_fuel(&pl->fuel, -cost);
+        Player_add_fuel(pl, -cost);
     }
     if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
     {
@@ -1220,7 +1220,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             drain = (long)(ED_SMART_SHOT_HIT /
                            ((obj->mods.mini + 1) * (obj->mods.power + 1)));
             if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
-                Add_fuel(&(pl->fuel), drain);
+                Player_add_fuel(pl, drain);
             pl->forceVisible += 2;
             Set_message(msg);
             break;
@@ -1236,7 +1236,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                 // causing the ship to float, dead in space.
                 drainfactor = 1;
                 drain = (long)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
-                Add_fuel(&(pl->fuel), drain);
+                Player_add_fuel(pl, drain);
             }
             pl->forceVisible = (int)(pl->forceVisible + SHOT_MULT(obj));
             break;

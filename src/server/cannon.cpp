@@ -83,21 +83,17 @@ void Cannon_update(bool tick)
             /* don't check too often, because this gets quite expensive
                on maps with many cannons with defensive items */
             if (options.cannonsUseItems && options.cannonsDefend && rfrac() < 0.65)
-            {
                 Cannon_check_defense(c);
-            }
+
             if (!BIT(c->used, HAS_EMERGENCY_SHIELD) && !BIT(c->used, USES_PHASING_DEVICE) && !c->damaged && !c->tractor_count && rfrac() * 16 < 1)
-            {
                 Cannon_check_fire(c);
-            }
+
             else if (options.cannonsUseItems && options.itemProbMult > 0 && options.cannonItemProbMult > 0)
             {
                 int item = (int)(rfrac() * NUM_ITEMS);
                 /* this gives the cannon an item about once every minute */
                 if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * world->items[item].cannonprob))
-                {
-                    Cannon_add_item(c, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
-                }
+                    Cannon_add_item(c, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL : 1));
             }
         }
         if (c->damaged > 0)
@@ -151,24 +147,37 @@ void Cannon_update(bool tick)
 /* adds the given amount of an item to the cannon's inventory. the number of
    tanks is taken to be 1. amount is then the amount of fuel in that tank.
    fuel is given in 'units', but is stored in fuelpacks. */
-void Cannon_add_item(cannon_t *c, int item, int amount)
+void Cannon_add_item(cannon_t *c, int item_type, int amount)
 {
-    switch (item)
+    switch (item_type)
     {
     case ITEM_TANK:
-        c->item[ITEM_TANK]++;
+        c->item[ITEM_TANK] += amount;
         LIMIT(c->item[ITEM_TANK], 0, world->items[ITEM_TANK].limit);
         /* FALLTHROUGH */
     case ITEM_FUEL:
-        c->item[ITEM_FUEL] += (int)(amount / (ENERGY_PACK_FUEL >> FUEL_SCALE_BITS) + 0.5);
-        LIMIT(c->item[ITEM_FUEL], 0, (int)(world->items[ITEM_FUEL].limit / (ENERGY_PACK_FUEL >> FUEL_SCALE_BITS) + 0.5));
+        c->item[ITEM_FUEL] += (int)(amount / ENERGY_PACK_FUEL + 0.5);
+        LIMIT(c->item[ITEM_FUEL],
+              0,
+              (int)(world->items[ITEM_FUEL].limit / ENERGY_PACK_FUEL + 0.5));
         break;
     default:
-        c->item[item] += amount;
-        LIMIT(c->item[item], 0, world->items[item].limit);
+        c->item[item_type] += amount;
+        LIMIT(c->item[item_type], 0, world->items[item_type].limit);
         break;
     }
 }
+
+// static inline int Cannon_get_initial_item(cannon_t *c, Item_t i)
+// {
+//     int init_amount;
+
+//     init_amount = c->initial_items[i];
+//     if (init_amount < 0)
+//         init_amount = world->items[i].cannon_initial;
+
+//     return init_amount;
+// }
 
 void Cannon_throw_items(cannon_t *c)
 {
@@ -668,7 +677,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         if (Wrap_length(pl->pos.cx - c->pos.cx, pl->pos.cy - c->pos.cy) < TRANSPORTER_DISTANCE * CLICK)
         {
             int item = -1;
-            long amount = 0;
+            double amount = 0.0;
             Do_general_transporter(c->id, c->pos, pl, &item, &amount);
             if (item != -1)
                 Cannon_add_item(c, item, amount);

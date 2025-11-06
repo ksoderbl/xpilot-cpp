@@ -48,7 +48,7 @@
 #define ASTEROID_HITS(size) (1 << ((size) - 1))
 /* fuel cost to lifetime reduction conversion */
 #define ASTEROID_FUEL_HIT(fuel, size) (((fuel) * ASTEROID_LIFE) / \
-                                       (FUEL_SCALE_FACT * 25 * ASTEROID_HITS(size)))
+                                       (25.0 * ASTEROID_HITS(size)))
 /* initial speed of asteroid */
 #define ASTEROID_START_SPEED (8 + rfrac() * 10)
 /* minimum distance asteroids start away from any player */

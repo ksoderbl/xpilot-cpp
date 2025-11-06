@@ -1585,8 +1585,8 @@ int Send_self(connection_t *connp,
                       pl->check,
 
                       pl->fuel.current,
-                      pl->fuel.sum >> FUEL_SCALE_BITS,
-                      pl->fuel.max >> FUEL_SCALE_BITS,
+                      (int)(pl->fuel.sum + 0.5),
+                      (int)(pl->fuel.max + 0.5),
 
                       connp->view_width, connp->view_height,
                       connp->debris_colors,
@@ -1702,14 +1702,18 @@ int Send_score(connection_t *connp, int id, int score,
  */
 int Send_timing(connection_t *connp, int id, int check, int round)
 {
+    int num_checks = OLD_MAX_CHECKS;
+
     if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
     {
         warn("Connection not ready for timing(%d,%d)",
              connp->state, connp->id);
         return 0;
     }
+    if (is_polygon_map)
+        num_checks = world->NumChecks;
     return Packet_printf(&connp->c, "%c%hd%hu", PKT_TIMING,
-                         id, round * OLD_MAX_CHECKS + check);
+                         id, round * num_checks + check);
 }
 
 /*
@@ -1729,10 +1733,10 @@ int Send_base(connection_t *connp, int id, int num)
 /*
  * Send the amount of fuel in a fuelstation.
  */
-int Send_fuel(connection_t *connp, int num, int fuel)
+int Send_fuel(connection_t *connp, int num, double fuel)
 {
     return Packet_printf(&connp->w, "%c%hu%hu", PKT_FUEL,
-                         num, fuel >> FUEL_SCALE_BITS);
+                         num, (int)(fuel + 0.5));
 }
 
 int Send_score_object(connection_t *connp, int score, int x, int y, const char *string)

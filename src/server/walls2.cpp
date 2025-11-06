@@ -3078,7 +3078,7 @@ void Turn_player(player_t *pl, bool push)
             double pdc, pds; /* cosine and sine of the points direction  */
             double x, y, l /*, v*/;
             double power = pl->power;
-            int a = (BIT(pl->used, USES_EMERGENCY_THRUST)
+            int a = (BIT(pl->used, HAS_EMERGENCY_THRUST)
                          ? MAX_AFTERBURNER
                          : pl->item[ITEM_AFTERBURNER]);
             double inert = pl->mass;

@@ -162,7 +162,7 @@ void Cloak(player_t *pl, bool on)
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
             sound_play_player(pl, CLOAK_SOUND);
-            pl->updateVisibility = 1;
+            pl->updateVisibility = true;
             SET_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
     }
@@ -171,7 +171,7 @@ void Cloak(player_t *pl, bool on)
         if (BIT(pl->used, USES_CLOAKING_DEVICE))
         {
             sound_play_player(pl, CLOAK_SOUND);
-            pl->updateVisibility = 1;
+            pl->updateVisibility = true;
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
         if (!pl->item[ITEM_CLOAK])
@@ -235,9 +235,9 @@ void Emergency_thrust(player_t *pl, bool on)
             pl->emergency_thrust_max = emergency_thrust_time;
             pl->item[ITEM_EMERGENCY_THRUST]--;
         }
-        if (!BIT(pl->used, USES_EMERGENCY_THRUST))
+        if (!BIT(pl->used, HAS_EMERGENCY_THRUST))
         {
-            SET_BIT(pl->used, USES_EMERGENCY_THRUST);
+            SET_BIT(pl->used, HAS_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_ON_SOUND);
         }
     }
@@ -245,7 +245,7 @@ void Emergency_thrust(player_t *pl, bool on)
     {
         if (Player_uses_emergency_thrust(pl))
         {
-            CLR_BIT(pl->used, USES_EMERGENCY_THRUST);
+            CLR_BIT(pl->used, HAS_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_OFF_SOUND);
         }
         if (pl->emergency_thrust_left <= 0)
@@ -901,13 +901,13 @@ void Update_objects(void)
          * Compute energy drainage
          */
         if (BIT(pl->used, HAS_SHIELD))
-            Add_fuel(&(pl->fuel), (long)ED_SHIELD);
+            Player_add_fuel(pl, ED_SHIELD);
 
         if (Player_is_phasing(pl))
-            Add_fuel(&(pl->fuel), (long)ED_PHASING_DEVICE);
+            Player_add_fuel(pl, ED_PHASING_DEVICE);
 
         if (BIT(pl->used, USES_CLOAKING_DEVICE))
-            Add_fuel(&(pl->fuel), (long)ED_CLOAKING_DEVICE);
+            Player_add_fuel(pl, ED_CLOAKING_DEVICE);
 
 #define UPDATE_RATE 100
 
@@ -951,11 +951,11 @@ void Update_objects(void)
                         world->fuels[pl->fs].fuel -= REFUEL_RATE;
                         world->fuels[pl->fs].conn_mask = 0;
                         world->fuels[pl->fs].last_change = frame_loops;
-                        Add_fuel(&(pl->fuel), REFUEL_RATE);
+                        Player_add_fuel(pl, REFUEL_RATE);
                     }
                     else
                     {
-                        Add_fuel(&(pl->fuel), world->fuels[pl->fs].fuel);
+                        Player_add_fuel(pl, world->fuels[pl->fs].fuel);
                         world->fuels[pl->fs].fuel = 0;
                         world->fuels[pl->fs].conn_mask = 0;
                         world->fuels[pl->fs].last_change = frame_loops;
@@ -992,7 +992,7 @@ void Update_objects(void)
                         targ->damage += TARGET_FUEL_REPAIR_PER_FRAME;
                         targ->conn_mask = 0;
                         targ->last_change = frame_loops;
-                        Add_fuel(&(pl->fuel), -REFUEL_RATE);
+                        Player_add_fuel(pl, -REFUEL_RATE);
                         if (targ->damage > TARGET_DAMAGE)
                         {
                             targ->damage = TARGET_DAMAGE;
@@ -1027,7 +1027,7 @@ void Update_objects(void)
         {
             double power = pl->power;
             double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
-            int a = (BIT(pl->used, USES_EMERGENCY_THRUST)
+            int a = (BIT(pl->used, HAS_EMERGENCY_THRUST)
                          ? MAX_AFTERBURNER
                          : pl->item[ITEM_AFTERBURNER]);
             double inert = pl->mass;
@@ -1039,7 +1039,7 @@ void Update_objects(void)
             }
             pl->acc.x = power * tcos(pl->dir) / inert;
             pl->acc.y = power * tsin(pl->dir) / inert;
-            Add_fuel(&(pl->fuel), (long)(-f * FUEL_SCALE_FACT)); /* Decrement fuel */
+            Player_add_fuel(pl, -f); /* Decrement fuel */
         }
         else
         {
@@ -1267,7 +1267,7 @@ void Update_objects(void)
             pl->forceVisible--;
 
             if (!pl->forceVisible)
-                pl->updateVisibility = 1;
+                pl->updateVisibility = true;
         }
 
         if (BIT(pl->used, USES_TRACTOR_BEAM))

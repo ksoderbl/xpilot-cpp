@@ -50,7 +50,7 @@ int Send_score_object(connection_t *connp, int score, int x, int y, const char *
 int Send_team_score(connection_t *connp, int team, int score);
 int Send_timing(connection_t *connp, int id, int check, int round);
 int Send_base(connection_t *connp, int id, int num);
-int Send_fuel(connection_t *connp, int num, int fuel);
+int Send_fuel(connection_t *connp, int num, double fuel);
 int Send_cannon(connection_t *connp, int num, int dead_time);
 int Send_destruct(connection_t *connp, int count);
 int Send_shutdown(connection_t *connp, int count, int delay);

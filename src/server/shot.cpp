@@ -116,12 +116,10 @@ void Place_general_mine(int id, int team, long status,
 {
     int used, i, minis;
     char msg[MSG_LEN];
-    int life;
-    long drain;
-    double mass;
+    double life, drain, mass;
     vector_t mv;
     player_t *pl = Player_by_id(id);
-    // cannon_t *cannon = Cannon_by_id(id);
+    cannon_t *cannon = Cannon_by_id(id);
 
     if (NumObjs + mods.mini >= MAX_TOTAL_SHOTS)
         return;
@@ -133,7 +131,7 @@ void Place_general_mine(int id, int team, long status,
         return;
 
     if (pl && BIT(pl->obj_status, KILLED))
-        life = (int)(rfrac() * FPS);
+        life = rfrac() * FPS;
     else if (BIT(status, FROMCANNON))
         life = CANNON_SHOT_LIFE;
     else
@@ -145,9 +143,7 @@ void Place_general_mine(int id, int team, long status,
         mods.spread = 0;
 
     if (options.nukeMinSmarts <= 0)
-    {
         CLR_BIT(mods.nuclear, NUCLEAR);
-    }
     if (BIT(mods.nuclear, NUCLEAR))
     {
         if (pl)
@@ -166,9 +162,7 @@ void Place_general_mine(int id, int team, long status,
             }
         }
         else
-        {
             used = options.nukeMinMines;
-        }
         mass = MINE_MASS * used * NUKE_MASS_MULT;
     }
     else
@@ -186,11 +180,10 @@ void Place_general_mine(int id, int team, long status,
         }
         if (pl->fuel.sum < -drain)
         {
-            sprintf(msg, "You need at least %ld fuel units to %s %s!",
-                    (-drain) >> FUEL_SCALE_BITS,
-                    (BIT(status, GRAVITY) ? "throw" : "drop"),
-                    Describe_shot(OBJ_MINE, status, mods, 0));
-            Set_player_message(pl, msg);
+            Set_player_message_f(pl,
+                                 "You need at least %.1f fuel units to %s %s!",
+                                 -drain, (BIT(status, GRAVITY) ? "throw" : "drop"),
+                                 Describe_shot(OBJ_MINE, status, mods, 0));
             return;
         }
         if (options.baseMineRange)
@@ -199,6 +192,8 @@ void Place_general_mine(int id, int team, long status,
             {
                 player_t *pl_i = Player_by_index(i);
 
+                if (pl_i->home_base == NULL)
+                    continue;
                 if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
                     int dx = CLICK_TO_PIXEL(pos.cx - pl_i->home_base->pos.cx);
@@ -211,7 +206,7 @@ void Place_general_mine(int id, int team, long status,
                 }
             }
         }
-        Add_fuel(&(pl->fuel), drain);
+        Player_add_fuel(pl, drain);
         pl->item[ITEM_MINE] -= used;
 
         if (used > 1)
@@ -580,7 +575,7 @@ void Fire_general_shot(int id, int team,
         {
             if (pl->fuel.sum < -ED_SHOT)
                 return;
-            Add_fuel(&(pl->fuel), (long)(ED_SHOT));
+            Player_add_fuel(pl, ED_SHOT);
             sound_play_sensors(pl->pos, FIRE_SHOT_SOUND);
             pl->shots++;
         }
@@ -661,7 +656,7 @@ void Fire_general_shot(int id, int team,
         {
         case OBJ_HEAT_SHOT:
 #ifndef HEAT_LOCK
-            lock = -1;
+            lock = NO_ID;
 #else  /* HEAT_LOCK */
             if (pl == NULL)
                 lock = target_id;
@@ -709,12 +704,11 @@ void Fire_general_shot(int id, int team,
             if (pl->fuel.sum < -drain)
             {
                 Set_player_message_f(pl,
-                                     "You need at least %ld fuel units to fire %s!",
-                                     (-drain) >> FUEL_SCALE_BITS,
-                                     Describe_shot(type, status, mods, 0));
+                                     "You need at least %.1f fuel units to fire %s!",
+                                     -drain, Describe_shot(type, status, mods, 0));
                 return;
             }
-            Add_fuel(&(pl->fuel), drain);
+            Player_add_fuel(pl, drain);
             pl->item[ITEM_MISSILE] -= used;
 
             if (used > 1)
@@ -1106,29 +1100,45 @@ void Fire_normal_shots(player_t *pl)
     for (i = 0; i < pl->item[ITEM_WIDEANGLE]; i++)
     {
         if (pl->ship->num_l_gun > 0)
+        {
             Fire_left_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
+        }
         else
+        {
             Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
+        }
         if (pl->ship->num_r_gun > 0)
+        {
             Fire_right_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
+        }
         else
+        {
             Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
+        }
     }
     for (i = 0; i < pl->item[ITEM_REARSHOT]; i++)
     {
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) < 0)
         {
             if (pl->ship->num_l_rgun > 0)
+            {
                 Fire_left_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
+            }
             else
+            {
                 Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            }
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) > 0)
         {
             if (pl->ship->num_r_rgun > 0)
+            {
                 Fire_right_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
+            }
             else
+            {
                 Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            }
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) == 0)
             Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
@@ -1435,7 +1445,7 @@ void Fire_general_laser(int id, int team, clpos_t pos,
 
     if (pl)
     {
-        Add_fuel(&(pl->fuel), (long)ED_LASER);
+        Player_add_fuel(pl, ED_LASER);
         sound_play_sensors(pos, FIRE_LASER_SOUND);
         life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
     }

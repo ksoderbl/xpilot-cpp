@@ -143,7 +143,7 @@ bool Init_options(void);
 void Free_options(void);
 
 /*
- * Prototypes for play.c
+ * Prototypes for player.c
  */
 void Thrust(player_t *pl);
 void Recoil(object_t *ship, object_t *shot);
@@ -153,8 +153,15 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2);
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
 void Item_damage(player_t *pl, double prob);
 void Tank_handle_detach(player_t *pl);
-void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
+
+void Add_fuel(pl_fuel_t *ft, double fuel);
+
+static inline void Player_add_fuel(player_t *pl, double amount)
+{
+    Add_fuel(&(pl->fuel), amount);
+}
+
 void Place_item(int type, player_t *pl);
 int Choose_random_item(void);
 void Tractor_beam(player_t *pl);
@@ -185,7 +192,7 @@ void Fire_laser(player_t *pl);
 void Fire_general_laser(int id, int team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(player_t *pl);
 void Do_transporter(player_t *pl);
-void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *item, long *amount);
+void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *item, double *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
 void Update_torpedo(torpobject_t *torp);

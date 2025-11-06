@@ -2806,7 +2806,7 @@ void Move_player(player_t *pl)
                 cost = (cost * (RES / 2 + abs_delta_dir)) / RES;
                 if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
                 {
-                    Add_fuel(&pl->fuel, (long)(-((cost << FUEL_SCALE_BITS) * options.wallBounceFuelDrainMult)));
+                    Player_add_fuel(pl, (-((cost)*options.wallBounceFuelDrainMult)));
                     Item_damage(pl, options.wallBounceDestroyItemProb);
                 }
                 if (!pl->fuel.sum && options.wallBounceFuelDrainMult != 0)
@@ -2834,7 +2834,6 @@ void Move_player(player_t *pl)
                     sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
                     if (ms[worst].target >= 0)
                     {
-                        cost <<= FUEL_SCALE_BITS;
                         cost = (long)(cost * (options.wallBounceFuelDrainMult / 4.0));
                         Object_hits_target(&ms[worst], cost);
                     }

@@ -66,7 +66,7 @@ void Thrust(player_t *pl)
 
     sound_play_sensors(pl->pos, THRUST_SOUND);
 
-    afterburners = (BIT(pl->used, USES_EMERGENCY_THRUST)
+    afterburners = (BIT(pl->used, HAS_EMERGENCY_THRUST)
                         ? MAX_AFTERBURNER
                         : pl->item[ITEM_AFTERBURNER]);
     alt_sparks = afterburners
@@ -153,9 +153,7 @@ void Delta_mv(object_t *ship, object_t *obj)
         player_t *pl = (player_t *)ship;
         player_t *pusher = Player_by_id(obj->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
     ship->vel.x = vx;
     ship->vel.y = vy;
@@ -186,9 +184,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
 }
 
@@ -223,9 +219,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
 
     if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
@@ -233,9 +227,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         player_t *pl = (player_t *)obj2;
         player_t *pusher = Player_by_id(obj1->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
 
     obj1->vel.x += dvx1;
@@ -249,7 +241,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
  * Add fuel to fighter's tanks.
  * Maybe use more than one of tank to store the fuel.
  */
-void Add_fuel(pl_fuel_t *ft, long fuel)
+void Add_fuel(pl_fuel_t *ft, double fuel)
 {
     if (ft->sum + fuel > ft->max)
         fuel = ft->max - ft->sum;
@@ -269,7 +261,7 @@ void Update_tanks(pl_fuel_t *ft)
     {
         int t, check;
         long low_level;
-        long fuel;
+        double fuel;
         long *f;
 
         /* Set low_level to minimum fuel in each tank */
@@ -729,40 +721,38 @@ void Explode_fighter(player_t *pl)
 
     sound_play_sensors(pl->pos, PLAYER_EXPLOSION_SOUND);
 
-    min_debris = (int)(1 + (pl->fuel.sum / (8.0 * FUEL_SCALE_FACT)));
+    min_debris = (int)(1 + (pl->fuel.sum / 8.0));
     max_debris = (int)(min_debris + (pl->mass * 2.0));
     /* reduce debris since we also create wreckage objects */
     min_debris >>= 1;
     max_debris >>= 1;
 
-    Make_debris(
-        pl->pos,
-        pl->vel,
-        pl->id,
-        pl->team,
-        OBJ_DEBRIS,
-        3.5,
-        GRAVITY,
-        RED,
-        8,
-        min_debris, max_debris,
-        0, RES - 1,
-        20.0, 20 + (((int)(pl->mass)) >> 1),
-        5, (int)(5 + (pl->mass * 1.5)));
+    Make_debris(pl->pos,
+                pl->vel,
+                pl->id,
+                pl->team,
+                OBJ_DEBRIS,
+                3.5,
+                GRAVITY,
+                RED,
+                8,
+                min_debris, max_debris,
+                0, RES - 1,
+                20.0, 20 + (((int)(pl->mass)) >> 1),
+                5, (int)(5 + (pl->mass * 1.5)));
 
     if (!BIT(pl->obj_status, KILLED))
         return;
-    Make_wreckage(
-        pl->pos,
-        pl->vel,
-        pl->id,
-        pl->team,
-        MAX(pl->mass / 8.0, 0.33), pl->mass,
-        2.0 * pl->mass,
-        GRAVITY,
-        WHITE,
-        10,
-        0, RES - 1,
-        10.0, 10 + (((int)(pl->mass)) >> 1),
-        5, (int)(5 + (pl->mass * 1.5)));
+    Make_wreckage(pl->pos,
+                  pl->vel,
+                  pl->id,
+                  pl->team,
+                  MAX(pl->mass / 8.0, 0.33), pl->mass,
+                  2.0 * pl->mass,
+                  GRAVITY,
+                  WHITE,
+                  10,
+                  0, RES - 1,
+                  10.0, 10 + (((int)(pl->mass)) >> 1),
+                  5, (int)(5 + (pl->mass * 1.5)));
 }

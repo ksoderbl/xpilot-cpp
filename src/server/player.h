@@ -115,14 +115,14 @@
  */
 typedef struct
 {
-    long sum;                 /* Sum of fuel in all tanks */
-    long max;                 /* How much fuel can you take? */
+    double sum;               /* Sum of fuel in all tanks */
+    double max;               /* How much fuel can you take? */
     int current;              /* Number of currently used tank */
     int num_tanks;            /* Number of tanks */
     long tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
-    long l1;                  /* Fuel critical level */
-    long l2;                  /* Fuel warning level */
-    long l3;                  /* Fuel notify level */
+    double l1;                /* Fuel critical level */
+    double l2;                /* Fuel warning level */
+    double l3;                /* Fuel notify level */
 } pl_fuel_t;
 
 typedef struct
@@ -255,7 +255,9 @@ typedef struct
 
     visibility_t *visibility;
 
-    int updateVisibility, forceVisible, damaged;
+    bool updateVisibility;
+    int forceVisible;
+    int damaged;
     int wormDrawCount, wormHoleHit, wormHoleDest;
     int stunned;
 
@@ -323,7 +325,7 @@ static inline player_t *Player_by_id(int id)
 
 static inline bool Player_uses_emergency_thrust(player_t *pl)
 {
-    if (BIT(pl->used, USES_EMERGENCY_THRUST))
+    if (BIT(pl->used, HAS_EMERGENCY_THRUST))
         return true;
     return false;
 }
@@ -633,7 +635,7 @@ static inline bool Player_has_emergency_thrust(player_t *pl)
 
 // static inline bool Player_uses_emergency_thrust(player_t *pl)
 // {
-//     if (BIT(pl->used, USES_EMERGENCY_THRUST))
+//     if (BIT(pl->used, HAS_EMERGENCY_THRUST))
 //         return true;
 //     return false;
 // }

@@ -109,7 +109,7 @@ typedef struct fuel
     blkpos_t blk_pos;
     position_t pix_pos;
     clpos_t pos;
-    long fuel;
+    double fuel;
     unsigned conn_mask;
     long last_change;
     int team;

@@ -1588,21 +1588,22 @@ static int Robot_default_play_check_map(player_t *pl)
 
     for (j = 0; j < Num_fuels(); j++)
     {
+        fuel_t *fs = Fuel_by_index(j);
 
-        if (world->fuels[j].fuel < 100 * FUEL_SCALE_FACT)
+        if (fs->fuel < 100.0)
             continue;
 
-        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[j].team != pl->team)
+        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team)
             continue;
 
-        if ((dx = (world->fuels[j].pix_pos.x - pl->pix_pos.x),
+        if ((dx = (fs->pix_pos.x - pl->pix_pos.x),
              dx = WRAP_DX(dx), ABS(dx)) < fuel_dist &&
-            (dy = (world->fuels[j].pix_pos.y - pl->pix_pos.y),
+            (dy = (fs->pix_pos.y - pl->pix_pos.y),
              dy = WRAP_DY(dy), ABS(dy)) < fuel_dist &&
             (distance = (int)LENGTH(dx, dy)) < fuel_dist)
         {
-            if (world->block[world->fuels[j].blk_pos.bx]
-                            [world->fuels[j].blk_pos.by] == FUEL)
+            if (world->block[fs->blk_pos.bx]
+                            [fs->blk_pos.by] == FUEL)
             {
                 fuel_i = j;
                 fuel_dist = distance;
@@ -1851,7 +1852,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                 if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
                     pl->item[ITEM_HYPERJUMP]--;
-                    Add_fuel(&(pl->fuel), ED_HYPERJUMP);
+                    Player_add_fuel(pl, ED_HYPERJUMP);
                     do_hyperjump(pl);
                     break;
                 }
@@ -2174,7 +2175,7 @@ static void Robot_default_play(player_t *pl)
         if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
         {
             pl->item[ITEM_HYPERJUMP]--;
-            Add_fuel(&(pl->fuel), ED_HYPERJUMP);
+            Player_add_fuel(pl, ED_HYPERJUMP);
             do_hyperjump(pl);
             return;
         }

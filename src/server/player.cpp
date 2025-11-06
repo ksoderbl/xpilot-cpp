@@ -265,7 +265,7 @@ void Go_home(player_t *pl)
             Deflector(pl, true);
     }
     Thrust(pl, false);
-    pl->updateVisibility = 1;
+    pl->updateVisibility = true;
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl_i = PlayersArray[i];
@@ -305,12 +305,9 @@ void Compute_sensor_range(player_t *pl)
         {
             EnergyRangeFactor = options.minVisibilityDistance /
                                 (world->items[ITEM_FUEL].initial * (1.0 + ((double)world->items[ITEM_SENSOR].initial * 0.25)));
-            EnergyRangeFactor /= FUEL_SCALE_FACT;
         }
         else
-        {
             EnergyRangeFactor = ENERGY_RANGE_FACTOR;
-        }
         init = 1;
     }
 
@@ -402,10 +399,9 @@ void Player_set_mass(player_t *pl)
  * Give player the initial number of tanks and amount of fuel.
  * Upto the maximum allowed.
  */
-static void Player_init_fuel(player_t *pl, long total_fuel)
+static void Player_init_fuel(player_t *pl, double total_fuel)
 {
-    // player_t *pl = PlayersArray[ind];
-    long fuel = total_fuel;
+    double fuel = total_fuel;
     int i;
 
     pl->fuel.num_tanks = 0;
@@ -446,8 +442,7 @@ int Init_player(int ind, shipshape_t *ship)
             pl->item[i] = world->items[i].initial;
     }
 
-    pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
-    Player_init_fuel(pl, pl->fuel.sum);
+    Player_init_fuel(pl, (double)world->items[ITEM_FUEL].initial);
 
     if (options.allowShipShapes == true && ship)
         pl->ship = ship;
@@ -1641,7 +1636,7 @@ void Kill_player(player_t *pl, bool add_rank_death)
 
 void Player_death_reset(player_t *pl, bool add_rank_death)
 {
-    long minfuel;
+    double minfuel;
     int i;
 
     if (Player_is_tank(pl))
@@ -1684,7 +1679,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->lock.distance = 0;
 
     pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
-    minfuel = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
+    minfuel = (world->items[ITEM_FUEL].initial);
     minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(pl, pl->fuel.sum);

@@ -296,7 +296,7 @@ void Pause_player(player_t *pl, bool on)
     {
         /* Turn pause mode on */
         pl->count = 10 * FPS;
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         CLR_BIT(pl->obj_status, SELF_DESTRUCT | PLAYING);
         SET_BIT(pl->obj_status, PAUSE);
         pl->mychar = 'P';
@@ -948,7 +948,7 @@ int Handle_keyboard(player_t *pl)
                 if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
                     pl->item[ITEM_HYPERJUMP]--;
-                    Add_fuel(&(pl->fuel), ED_HYPERJUMP);
+                    Player_add_fuel(pl, ED_HYPERJUMP);
                     do_hyperjump(pl);
                 }
                 break;

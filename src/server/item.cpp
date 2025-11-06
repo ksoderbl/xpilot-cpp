@@ -52,7 +52,7 @@ static void Item_update_flags(player_t *pl)
     if (pl->item[ITEM_CLOAK] <= 0 && Player_has_cloaking_device(pl))
     {
         CLR_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
     }
     if (pl->item[ITEM_MIRROR] <= 0)
         CLR_BIT(pl->have, HAS_MIRROR);
@@ -62,7 +62,7 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_AFTERBURNER);
     if (pl->item[ITEM_PHASING] <= 0 && !Player_is_phasing(pl) && pl->phasing_left == 0)
         CLR_BIT(pl->have, HAS_PHASING_DEVICE);
-    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, USES_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
+    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, HAS_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
         CLR_BIT(pl->have, HAS_EMERGENCY_THRUST);
     if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, HAS_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
     {
@@ -536,7 +536,7 @@ void General_tractor_beam(int id, clpos_t pos, int items, player_t *victim, bool
     sound_play_sensors(pos, (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
 
     if (pl)
-        Add_fuel(&(pl->fuel), cost);
+        Player_add_fuel(pl, cost);
 
     // TODO
     theta = (int)Wrap_findDir(CLICK_TO_PIXEL(pos.cx - victim->pos.cx), CLICK_TO_PIXEL(pos.cy - victim->pos.cy));
@@ -566,7 +566,7 @@ void Do_deflector(player_t *pl)
             Deflector(pl, false);
         return;
     }
-    Add_fuel(&(pl->fuel), (long)ED_DEFLECTOR);
+    Player_add_fuel(pl, ED_DEFLECTOR);
 
     Cell_get_objects(pl->pos,
                      (int)(range / BLOCK_SZ + 1), 200,
@@ -646,7 +646,7 @@ void Do_transporter(player_t *pl)
     if (!victim)
     {
         sound_play_sensors(pl->pos, TRANSPORTER_FAIL_SOUND);
-        Add_fuel(&(pl->fuel), ED_TRANSPORTER);
+        Player_add_fuel(pl, ED_TRANSPORTER);
         pl->item[ITEM_TRANSPORTER]--;
         return;
     }
@@ -656,12 +656,12 @@ void Do_transporter(player_t *pl)
 }
 
 void Do_general_transporter(int id, clpos_t pos,
-                            player_t *victim, int *itemp, long *amountp)
+                            player_t *victim, int *itemp, double *amountp)
 {
     char msg[MSG_LEN];
     const char *what = NULL;
     int i, item = ITEM_FUEL;
-    long amount;
+    double amount;
     player_t *pl = Player_by_id(id);
     /*cannon_t *cannon = Cannon_by_id(id);*/
 
@@ -679,7 +679,7 @@ void Do_general_transporter(int id, clpos_t pos,
         sound_play_sensors(pos, TRANSPORTER_FAIL_SOUND);
         if (!pl)
         {
-            *amountp = 0;
+            *amountp = 0.0;
             *itemp = -1;
         }
         return;
@@ -698,7 +698,7 @@ void Do_general_transporter(int id, clpos_t pos,
     }
 
     /* remove loot from victim */
-    amount = 1;
+    amount = 1.0;
     if (!(item == ITEM_MISSILE || item == ITEM_FUEL || item == ITEM_TANK))
         victim->item[item]--;
 
@@ -708,26 +708,22 @@ void Do_general_transporter(int id, clpos_t pos,
     {
     case ITEM_AFTERBURNER:
         what = "an afterburner";
-        if (victim->item[item] == 0)
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_AFTERBURNER);
         break;
     case ITEM_MISSILE:
-        amount = MIN(victim->item[item], 3);
-        if (amount == 1)
-        {
+        amount = (double)MIN(victim->item[item], 3);
+        if (amount == 1.0)
             sprintf(msg, "%s stole a missile from %s.",
                     (pl ? pl->name : "A cannon"), victim->name);
-        }
         else
-        {
-            sprintf(msg, "%s stole %ld missiles from %s",
-                    (pl ? pl->name : "A cannon"), amount, victim->name);
-        }
+            sprintf(msg, "%s stole %d missiles from %s",
+                    (pl ? pl->name : "A cannon"), (int)amount, victim->name);
         break;
     case ITEM_CLOAK:
         what = "a cloaking device";
-        victim->updateVisibility = 1;
-        if (!victim->item[item])
+        victim->updateVisibility = true;
+        if (victim->item[item] <= 0)
             Cloak(victim, false);
         break;
     case ITEM_WIDEANGLE:
@@ -741,14 +737,14 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_SENSOR:
         what = "a sensor";
-        victim->updateVisibility = 1;
+        victim->updateVisibility = true;
         break;
     case ITEM_ECM:
         what = "an ECM";
         break;
     case ITEM_ARMOR:
         what = "an armor";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_ARMOR);
         break;
     case ITEM_TRANSPORTER:
@@ -756,12 +752,12 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_MIRROR:
         what = "a mirror";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_MIRROR);
         break;
     case ITEM_DEFLECTOR:
         what = "a deflector";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             Deflector(victim, false);
         break;
     case ITEM_HYPERJUMP:
@@ -769,9 +765,9 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_PHASING:
         what = "a phasing device";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_PHASING_DEVICE))
+            if (Player_is_phasing(victim))
                 Phasing(victim, false);
             CLR_BIT(victim->have, HAS_PHASING_DEVICE);
         }
@@ -781,16 +777,16 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_EMERGENCY_THRUST:
         what = "an emergency thrust";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_EMERGENCY_THRUST))
+            if (BIT(victim->used, HAS_EMERGENCY_THRUST))
                 Emergency_thrust(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_THRUST);
         }
         break;
     case ITEM_EMERGENCY_SHIELD:
         what = "an emergency shield";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
             if (BIT(victim->used, HAS_EMERGENCY_SHIELD))
                 Emergency_shield(victim, false);
@@ -804,14 +800,14 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_TRACTOR_BEAM:
         what = "a tractor beam";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_TRACTOR_BEAM);
         break;
     case ITEM_AUTOPILOT:
         what = "an autopilot";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_AUTOPILOT))
+            if (Player_uses_autopilot(victim))
                 Autopilot(victim, false);
             CLR_BIT(victim->have, HAS_AUTOPILOT);
         }
@@ -826,24 +822,23 @@ void Do_general_transporter(int id, clpos_t pos,
     case ITEM_FUEL:
     {
         /* choose percantage between 10 and 50. */
-        double percent = 10.0f + 40.0f * rfrac();
-        amount = (long)(victim->fuel.sum * percent / 100);
-        sprintf(msg, "%s stole %ld units (%d%%) of fuel from %s.",
+        double percent = 10.0 + 40.0 * rfrac();
+        amount = victim->fuel.sum * percent / 100.0;
+        sprintf(msg, "%s stole %.1f units (%.1f%%) of fuel from %s.",
                 (pl ? pl->name : "A cannon"),
-                amount >> FUEL_SCALE_BITS,
-                (int)(percent + 0.5),
-                victim->name);
+                amount, percent, victim->name);
     }
-        Add_fuel(&(victim->fuel), -amount);
+        Player_add_fuel(victim, -amount);
+        break;
+    default:
+        warn("Do_general_transporter: unknown item type.");
         break;
     }
 
     /* inform the world about the robbery */
     if (!msg[0])
-    {
         sprintf(msg, "%s stole %s from %s.", (pl ? pl->name : "A cannon"),
                 what, victim->name);
-    }
     Set_message(msg);
 
     /* cannons take care of themselves */
@@ -851,14 +846,12 @@ void Do_general_transporter(int id, clpos_t pos,
     {
         *itemp = item;
         *amountp = amount;
-        if (item == ITEM_FUEL || item == ITEM_TANK)
-            *amountp >>= FUEL_SCALE_BITS;
         return;
     }
 
     /* don't forget the penalty for robbery */
     pl->item[ITEM_TRANSPORTER]--;
-    Add_fuel(&(pl->fuel), ED_TRANSPORTER);
+    Player_add_fuel(pl, ED_TRANSPORTER);
 
     /* update thief */
     if (!(item == ITEM_FUEL || item == ITEM_TANK))
@@ -871,10 +864,10 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_CLOAK:
         SET_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         break;
     case ITEM_SENSOR:
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         break;
     case ITEM_MIRROR:
         SET_BIT(pl->have, HAS_MIRROR);
@@ -906,7 +899,7 @@ void Do_general_transporter(int id, clpos_t pos,
             Player_add_tank(pl, amount);
         break;
     case ITEM_FUEL:
-        Add_fuel(&(pl->fuel), amount);
+        Player_add_fuel(pl, amount);
         break;
     default:
         break;
@@ -979,7 +972,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     {
         pl->ecmcount++;
         pl->item[ITEM_ECM]--;
-        Add_fuel(&(pl->fuel), ED_ECM);
+        Player_add_fuel(pl, ED_ECM);
         sound_play_sensors(pos, ECM_SOUND);
     }
 
