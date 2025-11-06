@@ -63,6 +63,7 @@ extern int NumRobots;
 extern char ShutdownReason[];
 
 extern double timePerFrame;
+extern const double timeStep;
 
 /*
  * Prototypes for cell.c

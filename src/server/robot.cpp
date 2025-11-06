@@ -954,9 +954,14 @@ static void Robot_play(player_t *pl)
  */
 static bool Robot_check_leave(player_t *pl)
 {
+    bool leave = false;
+
+    if (!options.robotsLeave)
+        return false;
+
     char msg[MSG_LEN];
 
-    if (options.robotsLeave && pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
+    if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
     {
         msg[0] = '\0';
         if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
@@ -1000,9 +1005,8 @@ static void Robot_round_tick(void)
 /*
  * Update tanks here.
  */
-static void Tank_play(int ind)
+static void Tank_play(player_t *pl)
 {
-    player_t *pl = PlayersArray[ind];
     int t = frame_loops % (TANK_NOTHRUST_TIME + TANK_THRUST_TIME);
 
     if (t == 0)
@@ -1011,22 +1015,22 @@ static void Tank_play(int ind)
         Thrust(pl, false);
 }
 
+/*
+ * Update robots. If 'tick' is true, robot AI routines will be called.
+ */
 void Robot_update(bool tick)
 {
     player_t *pl;
     int i;
-    static int new_robot_delay;
-    int num_playing_ships;
-    int num_any_ships;
+    static double new_robot_delay;
+    int num_playing_ships, num_any_ships;
 
     num_any_ships = NumPlayers + login_in_progress;
     num_playing_ships = num_any_ships - NumPseudoPlayers;
-    if ((num_playing_ships < options.maxRobots ||
-         NumRobots < options.minRobots) &&
-        num_playing_ships < world->NumBases && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
+    if ((num_playing_ships < options.maxRobots || NumRobots < options.minRobots) && num_playing_ships < world->NumBases && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
     {
-
-        if (++new_robot_delay >= ROBOT_CREATE_DELAY)
+        new_robot_delay += timeStep;
+        if (new_robot_delay >= ROBOT_CREATE_DELAY)
         {
             Robot_create();
             new_robot_delay = 0;
@@ -1038,26 +1042,25 @@ void Robot_update(bool tick)
         if (NumRobots > 0)
         {
             if ((num_playing_ships > world->NumBases) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
-            {
                 Robot_delete(NULL, false);
-            }
         }
     }
 
-    if (NumRobots <= 0 && NumPseudoPlayers <= 0)
-    {
+    if (!tick)
         return;
-    }
+
+    if (NumRobots <= 0 && NumPseudoPlayers <= 0)
+        return;
 
     Robot_round_tick();
 
     for (i = 0; i < NumPlayers; i++)
     {
-        pl = Player_by_index(i);
+        player_t *pl = Player_by_index(i);
 
         if (Player_is_tank(pl))
         {
-            Tank_play(i);
+            Tank_play(pl);
             continue;
         }
 

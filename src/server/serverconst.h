@@ -131,9 +131,16 @@
 #define RECOVERY_DELAY (FPS * 3)
 #define ROBOT_CREATE_DELAY (FPS * 2)
 
+/*
+ * ID values: In the network protocol these are 16 bit signed values.
+ */
 #define NO_ID (-1)
+
+/* Currently there is 256 possible player IDs. */
 #define NUM_IDS 256
 #define MAX_PSEUDO_PLAYERS 16
+
+/* Expired mines have id EXPIRED_MINE_ID, defined in common/const.h */
 
 /* Cannon IDs. */
 #define NUM_CANNON_IDS 10000

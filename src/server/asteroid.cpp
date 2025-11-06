@@ -428,7 +428,7 @@ static void Asteroid_move(wireobject_t *wireobj)
 static void Asteroid_rotate(wireobject_t *wireobj)
 {
     wireobj->wire_rotation =
-        (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
+        (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * timeStep * RES)) % RES;
 }
 
 /*

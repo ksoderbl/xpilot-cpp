@@ -45,7 +45,8 @@
 
 extern char conf_logfile_string[]; /* Default name of log file */
 
-double timePerFrame; /* Real time elapsed per frame */
+double timePerFrame;         /* Real time elapsed per frame */
+const double timeStep = 1.0; /* Game time step per frame */
 options_t options;
 
 /*
