@@ -267,6 +267,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
             text_is_bigger = (text_width + 4 > WINSCALE(BLOCK_SZ) + 1) || (gameFont->ascent + gameFont->descent) > WINSCALE(BLOCK_SZ) + 2;
         }
         SET_FG(colors[fuelColor].pixel);
+        LIMIT(fuel, 0, MAX_STATION_FUEL);
         size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          SCALEX(x + FUEL_BORDER),
