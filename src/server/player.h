@@ -332,7 +332,7 @@ static inline player_t *Player_by_id(int id)
 
 static inline bool Player_uses_emergency_thrust(player_t *pl)
 {
-    if (BIT(pl->used, HAS_EMERGENCY_THRUST))
+    if (BIT(pl->used, USES_EMERGENCY_THRUST))
         return true;
     return false;
 }
@@ -642,7 +642,7 @@ static inline bool Player_has_emergency_thrust(player_t *pl)
 
 // static inline bool Player_uses_emergency_thrust(player_t *pl)
 // {
-//     if (BIT(pl->used, HAS_EMERGENCY_THRUST))
+//     if (BIT(pl->used, USES_EMERGENCY_THRUST))
 //         return true;
 //     return false;
 // }

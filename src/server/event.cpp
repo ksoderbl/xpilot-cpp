@@ -758,7 +758,7 @@ int Handle_keyboard(player_t *pl)
             case KEY_EMERGENCY_SHIELD:
                 if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
                     Emergency_shield(pl,
-                                     !BIT(pl->used, HAS_EMERGENCY_SHIELD));
+                                     !BIT(pl->used, USES_EMERGENCY_SHIELD));
                 break;
 
             case KEY_DROP_MINE:

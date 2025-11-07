@@ -446,7 +446,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
         Send_thrusttime(conn,
                         pl->emergency_thrust_left,
                         pl->emergency_thrust_max);
-    if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
@@ -987,7 +987,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
                       pl_i->dir,
                       BIT(pl_i->used, HAS_SHIELD) != 0,
                       Player_is_cloaked(pl_i) ? 1 : 0,
-                      BIT(pl_i->used, HAS_EMERGENCY_SHIELD) != 0,
+                      BIT(pl_i->used, USES_EMERGENCY_SHIELD) != 0,
                       Player_is_phasing(pl_i) ? 1 : 0,
                       BIT(pl_i->used, USES_DEFLECTOR) != 0);
         }

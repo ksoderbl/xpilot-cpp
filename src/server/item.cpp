@@ -62,9 +62,9 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_AFTERBURNER);
     if (pl->item[ITEM_PHASING] <= 0 && !Player_is_phasing(pl) && pl->phasing_left == 0)
         CLR_BIT(pl->have, HAS_PHASING_DEVICE);
-    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, HAS_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
+    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, USES_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
         CLR_BIT(pl->have, HAS_EMERGENCY_THRUST);
-    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, HAS_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
+    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, USES_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
     {
         if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
         {
@@ -779,7 +779,7 @@ void Do_general_transporter(int id, clpos_t pos,
         what = "an emergency thrust";
         if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, HAS_EMERGENCY_THRUST))
+            if (BIT(victim->used, USES_EMERGENCY_THRUST))
                 Emergency_thrust(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_THRUST);
         }
@@ -788,7 +788,7 @@ void Do_general_transporter(int id, clpos_t pos,
         what = "an emergency shield";
         if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, HAS_EMERGENCY_SHIELD))
+            if (BIT(victim->used, USES_EMERGENCY_SHIELD))
                 Emergency_shield(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_SHIELD);
             if (!BIT(DEF_HAVE, HAS_SHIELD))

@@ -85,7 +85,7 @@ void Cannon_update(bool tick)
             if (options.cannonsUseItems && options.cannonsDefend && rfrac() < 0.65)
                 Cannon_check_defense(c);
 
-            if (!BIT(c->used, HAS_EMERGENCY_SHIELD) && !BIT(c->used, USES_PHASING_DEVICE) && !c->damaged && !c->tractor_count && rfrac() * 16 < 1)
+            if (!BIT(c->used, USES_EMERGENCY_SHIELD) && !BIT(c->used, USES_PHASING_DEVICE) && !c->damaged && !c->tractor_count && rfrac() * 16 < 1)
                 Cannon_check_fire(c);
 
             else if (options.cannonsUseItems && options.itemProbMult > 0 && options.cannonItemProbMult > 0)
@@ -129,7 +129,7 @@ void Cannon_update(bool tick)
         {
             if (--c->emergency_shield_left <= 0)
             {
-                CLR_BIT(c->used, HAS_EMERGENCY_SHIELD);
+                CLR_BIT(c->used, USES_EMERGENCY_SHIELD);
                 sound_play_sensors(c->pos, EMERGENCY_SHIELD_OFF_SOUND);
             }
         }
@@ -274,7 +274,7 @@ static int Cannon_select_defense(cannon_t *c)
         return -1;
 
     /* still protected */
-    if (BIT(c->used, HAS_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
+    if (BIT(c->used, USES_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
         return -1;
 
     if (c->item[ITEM_EMERGENCY_SHIELD])
@@ -351,7 +351,7 @@ static void Cannon_defend(cannon_t *c, int defense)
     {
     case CD_EM_SHIELD:
         c->emergency_shield_left += 4 * FPS;
-        SET_BIT(c->used, HAS_EMERGENCY_SHIELD);
+        SET_BIT(c->used, USES_EMERGENCY_SHIELD);
         c->item[ITEM_EMERGENCY_SHIELD]--;
         sound_play_sensors(c->pos, EMERGENCY_SHIELD_ON_SOUND);
         break;

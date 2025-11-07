@@ -66,7 +66,7 @@ void Thrust(player_t *pl)
 
     sound_play_sensors(pl->pos, THRUST_SOUND);
 
-    afterburners = (BIT(pl->used, HAS_EMERGENCY_THRUST)
+    afterburners = (BIT(pl->used, USES_EMERGENCY_THRUST)
                         ? MAX_AFTERBURNER
                         : pl->item[ITEM_AFTERBURNER]);
     alt_sparks = afterburners

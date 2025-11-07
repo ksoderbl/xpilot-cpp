@@ -154,7 +154,7 @@ void Cloak(player_t *pl, bool on)
         {
             if (!options.cloakedShield)
             {
-                if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (BIT(pl->used, USES_EMERGENCY_SHIELD))
                     Emergency_shield(pl, false);
                 if (BIT(pl->used, USES_DEFLECTOR))
                     Deflector(pl, false);
@@ -235,9 +235,9 @@ void Emergency_thrust(player_t *pl, bool on)
             pl->emergency_thrust_max = emergency_thrust_time;
             pl->item[ITEM_EMERGENCY_THRUST]--;
         }
-        if (!BIT(pl->used, HAS_EMERGENCY_THRUST))
+        if (!BIT(pl->used, USES_EMERGENCY_THRUST))
         {
-            SET_BIT(pl->used, HAS_EMERGENCY_THRUST);
+            SET_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_ON_SOUND);
         }
     }
@@ -245,7 +245,7 @@ void Emergency_thrust(player_t *pl, bool on)
     {
         if (Player_uses_emergency_thrust(pl))
         {
-            CLR_BIT(pl->used, HAS_EMERGENCY_THRUST);
+            CLR_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_OFF_SOUND);
         }
         if (pl->emergency_thrust_left <= 0)
@@ -276,9 +276,9 @@ void Emergency_shield(player_t *pl, bool on)
             if (options.cloakedShield || !BIT(pl->used, USES_CLOAKING_DEVICE))
             {
                 SET_BIT(pl->have, HAS_SHIELD);
-                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                 {
-                    SET_BIT(pl->used, HAS_EMERGENCY_SHIELD);
+                    SET_BIT(pl->used, USES_EMERGENCY_SHIELD);
                     sound_play_sensors(pl->pos, EMERGENCY_SHIELD_ON_SOUND);
                 }
             }
@@ -296,9 +296,9 @@ void Emergency_shield(player_t *pl, bool on)
             CLR_BIT(pl->have, HAS_SHIELD);
             CLR_BIT(pl->used, HAS_SHIELD);
         }
-        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
-            CLR_BIT(pl->used, HAS_EMERGENCY_SHIELD);
+            CLR_BIT(pl->used, USES_EMERGENCY_SHIELD);
             sound_play_sensors(pl->pos, EMERGENCY_SHIELD_OFF_SOUND);
         }
     }
@@ -804,13 +804,13 @@ void Update_objects(void)
         {
             if (--pl->shield_time == 0)
             {
-                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                     CLR_BIT(pl->used, HAS_SHIELD);
             }
             if (BIT(pl->used, HAS_SHIELD) == 0)
             {
                 /* BG 95/06/03: change test on "have" to "used". */
-                if (!BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                     CLR_BIT(pl->have, HAS_SHIELD);
                 pl->shield_time = 0;
             }
@@ -838,7 +838,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
             if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
@@ -1027,7 +1027,7 @@ void Update_objects(void)
         {
             double power = pl->power;
             double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
-            int a = (BIT(pl->used, HAS_EMERGENCY_THRUST)
+            int a = (BIT(pl->used, USES_EMERGENCY_THRUST)
                          ? MAX_AFTERBURNER
                          : pl->item[ITEM_AFTERBURNER]);
             double inert = pl->mass;

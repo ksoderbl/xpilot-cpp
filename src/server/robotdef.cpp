@@ -1957,7 +1957,7 @@ static void Robot_default_play(player_t *pl)
     my_data->robot_count--;
 
     CLR_BIT(pl->used, USES_SHOT | USES_SHIELD | USES_CLOAKING_DEVICE | USES_LASER);
-    if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, HAS_EMERGENCY_SHIELD))
+    if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, USES_EMERGENCY_SHIELD))
         Emergency_shield(pl, true);
     harvest_checked = false;
     evade_checked = false;

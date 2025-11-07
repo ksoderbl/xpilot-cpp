@@ -61,7 +61,7 @@ extern long frame_loops;
 extern int login_in_progress;
 // extern world_t World;
 extern server_t Server;
-extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
+extern uint32_t DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
 // extern int GetIndArray[];
 extern int ShutdownServer;
 extern int ShutdownDelay;
@@ -72,7 +72,7 @@ extern bool updateScores;
 extern int game_lock;
 extern int roundtime;
 extern int roundsPlayed;
-extern long KILLING_SHOTS;
+extern uint32_t KILLING_SHOTS;
 // extern unsigned SPACE_BLOCKS;
 
 #endif /* GLOBAL_H */
