@@ -311,9 +311,11 @@ void Walls_init(void)
 void Treasure_init(void)
 {
     int i;
-    for (i = 0; i < world->NumTreasures; i++)
+    for (i = 0; i < Num_treasures(); i++)
     {
-        Make_treasure_ball(i);
+        treasure_t *treasure = Treasure_by_index(i);
+
+        Make_treasure_ball(treasure);
     }
 }
 
@@ -1101,7 +1103,7 @@ void Move_segment(move_state_t *ms)
                             break;
                         }
                     }
-                    ms->treasure = i;
+                    ms->treasure_ptr = Treasure_by_index(i);
                     ms->crash = CrashTreasure;
 
                     /*
@@ -1113,7 +1115,7 @@ void Move_segment(move_state_t *ms)
                         return;
 
                     ball = BALL_PTR(mi->obj);
-                    if (ms->treasure == ball->treasure)
+                    if (ms->treasure_ptr == ball->ball_treasure)
                     {
                         /*
                          * Ball has been replaced back in the hoop from whence
@@ -1123,12 +1125,12 @@ void Move_segment(move_state_t *ms)
                          * nothing interesting happens.
                          */
                         player_t *pl = NULL;
-                        treasure_t *tt = &world->treasures[ms->treasure];
+                        treasure_t *tt = ball->ball_treasure;
 
                         if (ball->ball_owner != NO_ID)
                             pl = Player_by_id(ball->ball_owner);
 
-                        if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
+                        if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != tt->team))
                         {
                             ball->life = LONG_MAX;
                             ms->crash = NotACrash;
@@ -1149,7 +1151,7 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         return;
                     }
-                    if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team ==
+                    if (BIT(world->rules->mode, TEAM_PLAY) && ms->treasure_ptr->team ==
                                                                   Player_by_id(ball->ball_owner)->team)
                     {
                         /*
@@ -1159,13 +1161,13 @@ void Move_segment(move_state_t *ms)
                         sprintf(msg, " < The ball was loose for %ld frames >",
                                 LONG_MAX - ball->life);
                         Set_message(msg);
-                        if (options.captureTheFlag && !world->treasures[ms->treasure].have && !world->treasures[ms->treasure].empty)
+                        if (options.captureTheFlag && !ms->treasure_ptr->have && !ms->treasure_ptr->empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(Player_by_id(ball->ball_owner), msg);
                         }
-                        else if (Punish_team(GetInd(ball->ball_owner),
-                                             ball->treasure, ms->treasure))
+                        else if (Punish_team(Player_by_id(ball->ball_owner),
+                                             ball->ball_treasure, ms->treasure_ptr))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
                     ball->life = 0;

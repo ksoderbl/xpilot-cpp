@@ -108,9 +108,8 @@ static bool Asteroid_remove_from_list(wireobject_t *ast)
  * the wreckage and the debris should be about equal to the mass
  * of the original asteroid.
  */
-void Break_asteroid(int ind)
+void Break_asteroid(wireobject_t *asteroid)
 {
-    wireobject_t *asteroid = WIRE_IND(ind);
     double mass, mass3;
     double speed, speed1, speed2, radius;
     int dir, dir1, dir2, split_dir;

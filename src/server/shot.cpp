@@ -320,18 +320,16 @@ void Detonate_mines(player_t *pl)
         Obj[closest]->life = 0;
 }
 
-void Make_treasure_ball(int treasure)
+void Make_treasure_ball(treasure_t *t)
 {
     ballobject_t *ball;
-    treasure_t *t = &(world->treasures[treasure]);
-    // double x = (t->blk_pos.bx + 0.5) * BLOCK_SZ,
-    //        y = (t->blk_pos.by * BLOCK_SZ) + 10;
+
     if (t->empty)
         return;
     if (t->have)
     {
-        xpprintf("%s Failed Make_treasure_ball(treasure=%d):\n",
-                 showtime(), treasure);
+        // xpprintf("%s Failed Make_treasure_ball(treasure=%d):\n",
+        //          showtime(), treasure);
         xpprintf("\ttreasure: destroyed = %d, team = %d, have = %d\n",
                  t->destroyed, t->team, t->have);
         return;
@@ -358,7 +356,7 @@ void Make_treasure_ball(int treasure)
     ball->pl_radius = BALL_RADIUS;
     CLEAR_MODS(ball->mods);
     ball->obj_status = RECREATE;
-    ball->treasure = treasure;
+    ball->ball_treasure = t;
     Cell_add_object(OBJ_PTR(ball));
 
     t->have = true;
@@ -1139,18 +1137,12 @@ void Delete_shot(int ind)
 {
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
+    itemobject_t *item;
     player_t *pl;
-    bool addMine = false;
-    bool addHeat = false;
-    bool addBall = false;
+    bool addMine = false, addHeat = false, addBall = false;
     modifiers_t mods;
-    long status;
-    int i;
-    int intensity;
-    int type, color;
-    double modv, speed_modv, life_modv, num_modv;
-    double mass;
-    vector_t zero_vel = {0.0, 0.0};
+    int i, intensity, type, color, num_debris, status;
+    double modv, speed_modv, life_modv, num_modv, mass, min_life, max_life;
 
     switch (shot->type)
     {
@@ -1161,7 +1153,7 @@ void Delete_shot(int ind)
         break;
 
     case OBJ_ASTEROID:
-        Break_asteroid(ind);
+        Break_asteroid(WIRE_PTR(shot));
         break;
 
     case OBJ_BALL:
@@ -1175,8 +1167,10 @@ void Delete_shot(int ind)
              */
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Player_by_index(i)->ball == ball)
-                    Player_by_index(i)->ball = NULL;
+                player_t *pl_i = Player_by_index(i);
+
+                if (pl_i->ball == ball)
+                    pl_i->ball = NULL;
             }
         }
         if (ball->ball_owner == NO_ID)
@@ -1186,7 +1180,7 @@ void Delete_shot(int ind)
              * have been destroyed is by being knocked out of the goal.
              * Therefore we force the ball to be recreated.
              */
-            world->treasures[ball->treasure].have = false;
+            ball->ball_treasure->have = false;
             SET_BIT(ball->obj_status, RECREATE);
         }
         if (BIT(ball->obj_status, RECREATE))
@@ -1402,7 +1396,7 @@ void Delete_shot(int ind)
     else if (addBall)
     {
         ball = BALL_PTR(shot);
-        Make_treasure_ball(ball->treasure);
+        Make_treasure_ball(ball->ball_treasure);
     }
 }
 

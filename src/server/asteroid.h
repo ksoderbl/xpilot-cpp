@@ -59,7 +59,7 @@
 /*
  * Prototypes for asteroid.c
  */
-void Break_asteroid(int ind);
+void Break_asteroid(wireobject_t *asteroid);
 void Asteroid_update(void);
 std::vector<wireobject_t *> &Asteroid_get_list(void);
 

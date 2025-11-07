@@ -753,7 +753,6 @@ void Reset_all_players(void)
     }
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
-
         /* Detach any balls and kill ball */
         /* We are starting all over again */
         for (j = NumObjs - 1; j >= 0; j--)
@@ -761,20 +760,27 @@ void Reset_all_players(void)
             if (Obj[j]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(j);
+
                 ball->id = NO_ID;
                 ball->life = 0;
-                ball->ball_owner = 0; /* why not -1 ??? */
+                /*
+                 * why not -1 ???
+                 * naive question, obviously yet another dirty hack
+                 */
+                ball->ball_owner = 0;
                 CLR_BIT(ball->obj_status, RECREATE);
                 Delete_shot(j);
             }
         }
 
         /* Reset the treasures */
-        for (i = 0; i < world->NumTreasures; i++)
+        for (i = 0; i < Num_treasures(); i++)
         {
-            world->treasures[i].destroyed = 0;
-            world->treasures[i].have = false;
-            Make_treasure_ball(i);
+            treasure_t *treasure = Treasure_by_index(i);
+
+            treasure->destroyed = 0;
+            treasure->have = false;
+            Make_treasure_ball(treasure);
         }
 
         /* Reset the teams */
@@ -807,10 +813,13 @@ void Reset_all_players(void)
         for (i = 0; i < NumObjs; i++)
         {
             object_t *obj = Obj[i];
-            if (BIT(OBJ_TYPEBIT(obj->type), OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ITEM_BIT))
+
+            if (BIT(OBJ_TYPEBIT(obj->type),
+                    OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_PULSE_BIT | OBJ_ITEM_BIT))
             {
                 obj->life = 0;
-                if (BIT(obj->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
+                if (BIT(OBJ_TYPEBIT(obj->type),
+                        OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
                 {
                     /* Take care that no new explosions are made. */
                     obj->mass = 0;
