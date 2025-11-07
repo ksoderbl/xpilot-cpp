@@ -1493,9 +1493,9 @@ static void BallCollision(void)
      * some are handled by other code,
      * some don't interact.
      */
-    ignored_object_types = OBJ_PLAYER | OBJ_ASTEROID | OBJ_MINE | OBJ_ITEM;
+    ignored_object_types = OBJ_PLAYER_BIT | OBJ_ASTEROID_BIT | OBJ_MINE_BIT | OBJ_ITEM_BIT;
     if (!options.ballSparkCollisions)
-        ignored_object_types |= OBJ_SPARK;
+        ignored_object_types |= OBJ_SPARK_BIT;
 
     for (i = 0; i < NumObjs; i++)
     {

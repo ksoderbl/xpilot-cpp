@@ -93,12 +93,12 @@ void World_restore_cannon(cannon_t *cannon);
 void World_remove_cannon(cannon_t *cannon);
 void Cannon_set_option(cannon_t *cannon, const char *name, const char *value);
 
-// static inline int Cannon_get_smartness(cannon_t *c)
-// {
-//    if (c->smartness != -1)
-//       return c->smartness;
-//    return options.cannonSmartness;
-// }
+static inline int Cannon_get_smartness(cannon_t *c)
+{
+   //    if (c->smartness != -1)
+   //       return c->smartness;
+   return options.cannonSmartness;
+}
 
 // static inline double Cannon_get_min_shot_life(cannon_t *c)
 // {

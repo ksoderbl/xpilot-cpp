@@ -346,7 +346,7 @@ void Convert_string_to_list(const char *value, list_t *list_ptr);
 int Parser_list_option(int *index, char *buf);
 bool Parser(int argc, char **argv);
 int Tune_option(char *name, char *val);
-int Get_option_value(const char *name, char *value, unsigned size);
+int Get_option_value(const char *name, char *value, size_t size);
 
 /*
  * Prototypes for fileparser.c

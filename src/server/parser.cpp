@@ -181,29 +181,17 @@ static void Parser_dump_flags(char *progname)
         int len = strlen(option_descs[j].name);
         strlcpy(msg, "{", sizeof(msg));
         if ((option_descs[j].flags & OPT_COMMAND) != 0)
-        {
             strlcat(msg, "command, ", sizeof(msg));
-        }
         if ((option_descs[j].flags & OPT_PASSWORD) != 0)
-        {
             strlcat(msg, "passwordfile, ", sizeof(msg));
-        }
         if ((option_descs[j].flags & OPT_DEFAULTS) != 0)
-        {
             strlcat(msg, "defaults, ", sizeof(msg));
-        }
         if ((option_descs[j].flags & OPT_MAP) != 0)
-        {
             strlcat(msg, "map, ", sizeof(msg));
-        }
         if ((option_descs[j].flags & OPT_VISIBLE) != 0)
-        {
             strlcat(msg, "visible, ", sizeof(msg));
-        }
         if ((strlen(msg) >= 2))
-        {
             msg[strlen(msg) - 2] = '\0';
-        }
         strlcat(msg, "}", sizeof(msg));
         xpprintf("%s:%*s%s\n", option_descs[j].name,
                  (len < 40) ? (40 - len) : 1, "", msg);
@@ -301,6 +289,7 @@ int Parser_list_option(int *index, char *buf)
         if (list)
         {
             list_iter_t iter;
+
             for (iter = List_begin(list);
                  iter != List_end(list);
                  LI_FORWARD(iter))
@@ -308,13 +297,9 @@ int Parser_list_option(int *index, char *buf)
                 char *str = (char *)LI_DATA(iter);
                 printf("parser: str : %s\n", str);
                 if (iter != List_begin(list))
-                {
                     strlcat(buf, ",", MSG_LEN);
-                }
                 if (strlcat(buf, str, MSG_LEN) >= MSG_LEN)
-                {
                     break;
-                }
             }
         }
     }
@@ -334,10 +319,9 @@ static bool Parse_check_info_request(char **argv, int i)
     char *arg = argv[i];
 
     if (arg[0] == '-' && arg[1] == '-')
-    {
         /* when arg starts with two dashes skip first one */
         arg++;
-    }
+
     if (strcmp(arg, "-help") == 0 || strcmp(arg, "-h") == 0)
     {
         Parse_help(*argv);
@@ -385,16 +369,12 @@ bool Parser(int argc, char **argv)
     option_desc *desc;
 
     if (Init_options() == false)
-    {
         return false;
-    }
 
     for (i = 1; i < argc; i++)
     {
         if (Parse_check_info_request(argv, i) == true)
-        {
             return false;
-        }
 
         if (argv[i][0] == '-' || argv[i][0] == '+')
         {
@@ -405,13 +385,10 @@ bool Parser(int argc, char **argv)
                 {
                     const char *bool_value;
                     if (argv[i][0] == '-')
-                    {
                         bool_value = "true";
-                    }
                     else
-                    {
                         bool_value = "false";
-                    }
+
                     Option_set_value(desc->name, bool_value, 1, OPT_COMMAND);
                 }
                 else if (desc->type == valVoid)
@@ -420,9 +397,7 @@ bool Parser(int argc, char **argv)
                 else
                 {
                     if (i + 1 == argc)
-                    {
                         warn("Option '%s' needs an argument", argv[i]);
-                    }
                     else
                     {
                         i++;
@@ -431,39 +406,27 @@ bool Parser(int argc, char **argv)
                 }
             }
             else
-            {
                 warn("Unknown option '%s'", argv[i]);
-            }
         }
         else
-        {
             warn("Unknown option '%s'", argv[i]);
-        }
     }
 
     /*
      * Read local defaults file
      */
     if ((fname = Option_get_value("defaultsFileName", NULL)) != NULL)
-    {
         parseDefaultsFile(fname);
-    }
     else
-    {
         parseDefaultsFile(Conf_defaults_file_name());
-    }
 
     /*
      * Read local password file
      */
     if ((fname = Option_get_value("passwordFileName", NULL)) != NULL)
-    {
         parsePasswordFile(fname);
-    }
     else
-    {
         parsePasswordFile(Conf_password_file_name());
-    }
 
     /*
      * Read map file if map data not found yet.
@@ -480,9 +443,7 @@ bool Parser(int argc, char **argv)
                 xpprintf("Unable to read %s, trying to open %s\n",
                          fname, Conf_default_map());
                 if (!parseMapFile(Conf_default_map()))
-                {
                     xpprintf("Unable to read %s\n", Conf_default_map());
-                }
             }
         }
         else
@@ -490,14 +451,12 @@ bool Parser(int argc, char **argv)
             xpprintf("Map not specified, trying to open %s\n",
                      Conf_default_map());
             if (!parseMapFile(Conf_default_map()))
-            {
                 xpprintf("Unable to read %s\n", Conf_default_map());
-            }
         }
     }
 
     /*
-     * Parse the options database and `internalise' it.
+     * Parse the options database and 'internalise' it.
      */
     Options_parse();
 
@@ -517,8 +476,8 @@ bool Parser(int argc, char **argv)
  * Options which can be modified have a so called tuner function,
  * which checks the validity of the new option value, and possibly
  * does something extra depending upon the option in question.
- * Options which don't need such a tuner function set it to `tuner_dummy'.
- * Options which cannot be modified have the tuner set to `tuner_none'.
+ * Options which don't need such a tuner function set it to 'tuner_dummy'.
+ * Options which cannot be modified have the tuner set to 'tuner_none'.
  */
 int Tune_option(char *name, char *val)
 {
@@ -527,67 +486,50 @@ int Tune_option(char *name, char *val)
     option_desc *opt;
 
     if (!(opt = Find_option_by_name(name)))
-    {
         return -2; /* Variable not found */
-    }
 
     if (opt->tuner == tuner_none)
-    {
         return -1; /* Operation undefined */
-    }
 
     switch (opt->type)
     {
     case valInt:
         if (Convert_string_to_int(val, &ival) != true)
-        {
             return 0;
-        }
+
         *(int *)opt->variable = ival;
         (*opt->tuner)();
         return 1;
     case valBool:
         if (ON(val))
-        {
             *(bool *)opt->variable = true;
-        }
         else if (OFF(val))
-        {
             *(bool *)opt->variable = false;
-        }
         else
-        {
             return 0;
-        }
+
         (*opt->tuner)();
         return 1;
     case valReal:
         if (Convert_string_to_float(val, &fval) != true)
-        {
             return 0;
-        }
         *(double *)opt->variable = fval;
         (*opt->tuner)();
         return 1;
     case valSec:
         if (Convert_string_to_int(val, &ival) != true)
-        {
             return 0;
-        }
         *(int *)opt->variable = ival * FPS;
         (*opt->tuner)();
         return 1;
     case valString:
     {
         char *s = xp_strdup(val);
+
         if (!s)
-        {
             return 0;
-        }
         if (*(char **)(opt->variable) != opt->defaultValue)
-        {
             free(*(char **)opt->variable);
-        }
         *(char **)opt->variable = s;
         (*opt->tuner)();
         return 1;
@@ -597,19 +539,15 @@ int Tune_option(char *name, char *val)
     }
 }
 
-int Get_option_value(const char *name, char *value, unsigned size)
+int Get_option_value(const char *name, char *value, size_t size)
 {
     option_desc *opt;
 
     if (size < 12)
-    {
         return -1; /* Generic error. */
-    }
 
     if (!(opt = Find_option_by_name(name)))
-    {
         return -2; /* Variable not found */
-    }
 
     if ((opt->flags & OPT_VISIBLE) == 0)
         return -3;

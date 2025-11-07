@@ -148,7 +148,7 @@ void Move_init(void)
 
     mp.obj_bounce_mask = 0;
     if (options.sparksWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK);
+        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT);
     if (options.debrisWallBounce)
         SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS);
     if (options.shotsWallBounce)
