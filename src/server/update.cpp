@@ -604,25 +604,25 @@ void Update_objects(void)
     {
         obj = Obj[i];
 
-        if (BIT(obj->type, OBJ_MINE))
+        if (obj->objtype == OBJTYPE_MINE)
             Update_mine(MINE_PTR(obj));
 
-        else if (BIT(obj->type, OBJ_TORPEDO))
+        else if (obj->objtype == OBJTYPE_TORPEDO)
             Update_torpedo(TORP_PTR(obj));
 
-        else if (BIT(obj->type, OBJ_HEAT_SHOT))
+        else if (obj->objtype == OBJTYPE_HEAT_SHOT)
             Update_missile(MISSILE_PTR(obj));
 
-        else if (BIT(obj->type, OBJ_SMART_SHOT))
+        else if (obj->objtype == OBJTYPE_SMART_SHOT)
             Update_missile(MISSILE_PTR(obj));
 
-        else if (BIT(obj->type, OBJ_BALL))
+        else if (obj->objtype == OBJTYPE_BALL)
         {
             if (obj->id != NO_ID)
                 Move_ball(i);
         }
 
-        else if (BIT(obj->type, OBJ_WRECKAGE))
+        else if (obj->objtype == OBJTYPE_WRECKAGE)
         {
             wireobject_t *wireobj = WIRE_PTR(obj);
             wireobj->wire_rotation =
@@ -631,10 +631,8 @@ void Update_objects(void)
 
         update_object_speed(obj);
 
-        if (!BIT(obj->type, OBJ_ASTEROID))
-        {
+        if (obj->objtype == OBJTYPE_ASTEROID)
             Move_object(obj);
-        }
     }
 
     /*
@@ -1181,7 +1179,7 @@ void Update_objects(void)
                 for (k = 0; k < NumObjs; k++)
                 {
                     object_t *b = Obj[k];
-                    if (BIT(b->type, OBJ_BALL) && b->id == pl->id)
+                    if (b->objtype == OBJTYPE_BALL && b->id == pl->id)
                     {
                         position_t ballpos;
                         ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);

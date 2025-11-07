@@ -700,13 +700,13 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         if ((color = shot->color) == BLACK)
         {
-            xpprintf("black %d,%d\n", shot->type, shot->id);
+            xpprintf("black %d,%d\n", shot->objtype, shot->id);
             color = WHITE;
         }
-        switch (shot->type)
+        switch (shot->objtype)
         {
-        case OBJ_SPARK:
-        case OBJ_DEBRIS:
+        case OBJTYPE_SPARK:
+        case OBJTYPE_DEBRIS:
             if ((fuzz >>= 7) < 0x40)
                 fuzz = randomMT();
             if ((fuzz & 0x7F) >= spark_rand)
@@ -747,7 +747,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                          color);
             break;
 
-        case OBJ_WRECKAGE:
+        case OBJTYPE_WRECKAGE:
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
@@ -756,7 +756,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             }
             break;
 
-        case OBJ_ASTEROID:
+        case OBJTYPE_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(conn, pos,
@@ -764,8 +764,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         }
         break;
 
-        case OBJ_SHOT:
-        case OBJ_CANNON_SHOT:
+        case OBJTYPE_SHOT:
+        case OBJTYPE_CANNON_SHOT:
             if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && BIT(Player_by_id(shot->id)->obj_status, PAUSE)) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
@@ -789,22 +789,22 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                            color, teamshot);
             break;
 
-        case OBJ_TORPEDO:
+        case OBJTYPE_TORPEDO:
             len = options.distinguishMissiles ? TORPEDO_LEN : MISSILE_LEN;
             Send_missile(conn, pos, len, shot->missile_dir);
             break;
-        case OBJ_SMART_SHOT:
+        case OBJTYPE_SMART_SHOT:
             len = options.distinguishMissiles ? SMART_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, pos, len, shot->missile_dir);
             break;
-        case OBJ_HEAT_SHOT:
+        case OBJTYPE_HEAT_SHOT:
             len = options.distinguishMissiles ? HEAT_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, pos, len, shot->missile_dir);
             break;
-        case OBJ_BALL:
+        case OBJTYPE_BALL:
             Send_ball(conn, pos, shot->id, 0xff);
             break;
-        case OBJ_MINE:
+        case OBJTYPE_MINE:
         {
             int id = 0;
             int laid_by_team = 0;
@@ -840,7 +840,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         }
         break;
 
-        case OBJ_ITEM:
+        case OBJTYPE_ITEM:
         {
             object_t *item = shot;
             int item_type = shot->info;
@@ -1041,23 +1041,23 @@ static void Frame_radar(connection_t *conn, player_t *pl)
 
 #ifndef NO_SMART_MIS_RADAR
     if (options.nukesOnRadar)
-        mask = OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT | OBJ_MINE;
+        mask = OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT;
     else
     {
-        mask = (options.missilesOnRadar ? (OBJ_SMART_SHOT | OBJ_TORPEDO | OBJ_HEAT_SHOT) : 0);
-        mask |= (options.minesOnRadar) ? OBJ_MINE : 0;
+        mask = (options.missilesOnRadar ? (OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT) : 0);
+        mask |= (options.minesOnRadar) ? OBJ_MINE_BIT : 0;
     }
     if (options.treasuresOnRadar)
-        mask |= OBJ_BALL;
+        mask |= OBJ_BALL_BIT;
     if (options.asteroidsOnRadar)
-        mask |= OBJ_ASTEROID;
+        mask |= OBJ_ASTEROID_BIT;
 
     if (mask)
     {
         for (i = 0; i < NumObjs; i++)
         {
             shot = Obj[i];
-            if (!BIT(shot->type, mask))
+            if (!BIT(OBJ_TYPEBIT(shot->objtype), mask))
                 continue;
 
             shownuke = (options.nukesOnRadar && (shot)->mods.nuclear);
@@ -1066,16 +1066,16 @@ static void Frame_radar(connection_t *conn, player_t *pl)
             else
                 size = 0;
 
-            if (BIT(shot->type, OBJ_MINE))
+            if (shot->objtype == OBJTYPE_MINE)
             {
                 if (!options.minesOnRadar && !shownuke)
                     continue;
                 if (frame_loops % 8 >= 6)
                     continue;
             }
-            else if (BIT(shot->type, OBJ_BALL))
+            else if (shot->objtype == OBJTYPE_BALL)
                 size = 2;
-            else if (BIT(shot->type, OBJ_ASTEROID))
+            else if (shot->objtype == OBJTYPE_ASTEROID)
             {
                 size = WIRE_PTR(shot)->wire_size + 1;
                 size |= 0x80;

@@ -1109,10 +1109,8 @@ void Move_segment(move_state_t *ms)
                      * depends on which team the treasure and the ball
                      * belong to.
                      */
-                    if (mi->obj->type != OBJ_BALL)
-                    {
+                    if (mi->obj->objtype != OBJTYPE_BALL)
                         return;
-                    }
 
                     ball = BALL_PTR(mi->obj);
                     if (ms->treasure == ball->treasure)
@@ -1200,7 +1198,7 @@ void Move_segment(move_state_t *ms)
                         int team;
                         if (mi->pl)
                             team = mi->pl->team;
-                        else if (BIT(mi->obj->type, OBJ_BALL))
+                        else if (mi->obj->objtype == OBJTYPE_BALL)
                         {
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->ball_owner != NO_ID)
@@ -1811,7 +1809,7 @@ static void Cannon_dies(move_state_t *ms)
                 zero_vel,
                 NO_ID,
                 cannon->team,
-                OBJ_DEBRIS,
+                OBJTYPE_DEBRIS,
                 4.5,
                 GRAVITY,
                 RED,
@@ -1878,7 +1876,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     /* a normal shot or a direct mine hit work, cannons don't */
     /* KK: should shots/mines by cannons of opposing teams work? */
     /* also players suiciding on target will cause damage */
-    if (!BIT(obj->type, KILLING_SHOTS | OBJ_MINE | OBJ_PULSE | OBJ_PLAYER))
+    if (!BIT(OBJ_TYPEBIT(obj->objtype), KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
     {
         return;
     }
@@ -1892,18 +1890,18 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         return;
     }
 
-    switch (obj->type)
+    switch (obj->objtype)
     {
-    case OBJ_SHOT:
+    case OBJTYPE_SHOT:
         drainfactor = 1;
         targ->damage += (int)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
         break;
-    case OBJ_PULSE:
+    case OBJTYPE_PULSE:
         targ->damage += (int)(ED_LASER_HIT);
         break;
-    case OBJ_SMART_SHOT:
-    case OBJ_TORPEDO:
-    case OBJ_HEAT_SHOT:
+    case OBJTYPE_SMART_SHOT:
+    case OBJTYPE_TORPEDO:
+    case OBJTYPE_HEAT_SHOT:
         if (!obj->mass)
         {
             /* happens at end of round reset. */
@@ -1918,7 +1916,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
         }
         break;
-    case OBJ_MINE:
+    case OBJTYPE_MINE:
         if (!obj->mass)
         {
             /* happens at end of round reset. */
@@ -1926,7 +1924,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         }
         targ->damage -= TARGET_DAMAGE / (obj->mods.mini + 1);
         break;
-    case OBJ_PLAYER:
+    case OBJTYPE_PLAYER:
         if (player_cost <= 0 || player_cost > TARGET_DAMAGE / 4)
             player_cost = TARGET_DAMAGE / 4;
         targ->damage -= player_cost;
@@ -1958,7 +1956,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
                 zero_vel,
                 NO_ID,
                 targ->team,
-                OBJ_DEBRIS,
+                OBJTYPE_DEBRIS,
                 4.5,
                 GRAVITY,
                 RED,
@@ -2077,7 +2075,7 @@ static void Object_crash(move_state_t *ms)
         /*
          * Ball type has already been handled.
          */
-        if (obj->type == OBJ_BALL)
+        if (obj->objtype == OBJTYPE_BALL)
         {
             break;
         }
@@ -2120,7 +2118,7 @@ static void Object_crash(move_state_t *ms)
 
     case CrashCannon:
         obj->life = 0;
-        if (BIT(obj->type, OBJ_ITEM))
+        if (obj->objtype == OBJTYPE_ITEM)
         {
             Cannon_add_item(Cannon_by_index(ms->cannon), obj->info, obj->count);
         }
@@ -2174,12 +2172,12 @@ void Move_object(object_t *obj)
     mi.obj = obj;
     mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
-    mi.wall_bounce = BIT(mp.obj_bounce_mask, obj->type);
-    mi.cannon_crashes = BIT(mp.obj_cannon_mask, obj->type);
-    mi.target_crashes = BIT(mp.obj_target_mask, obj->type);
-    mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
+    mi.wall_bounce = BIT(mp.obj_bounce_mask, OBJ_TYPEBIT(obj->objtype));
+    mi.cannon_crashes = BIT(mp.obj_cannon_mask, OBJ_TYPEBIT(obj->objtype));
+    mi.target_crashes = BIT(mp.obj_target_mask, OBJ_TYPEBIT(obj->objtype));
+    mi.treasure_crashes = BIT(mp.obj_treasure_mask, OBJ_TYPEBIT(obj->objtype));
     mi.wormhole_warps = true;
-    if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID)
+    if (obj->objtype == OBJTYPE_BALL && obj->id != NO_ID)
         mi.phased = BIT(Player_by_id(obj->id)->used, USES_PHASING_DEVICE);
     else
         mi.phased = 0;
@@ -2204,7 +2202,7 @@ void Move_object(object_t *obj)
             }
             if (ms.bounce && ms.bounce != BounceEdge)
             {
-                if (obj->type != OBJ_BALL)
+                if (obj->objtype != OBJTYPE_BALL)
                     obj->life = (long)(obj->life * options.objectWallBounceLifeFactor);
                 if (obj->life <= 0)
                 {
@@ -2220,7 +2218,7 @@ void Move_object(object_t *obj)
                  * should bounce, it is not reactive thrust otherwise wall
                  * bouncing would cause acceleration of the player.
                  */
-                if (!BIT(obj->obj_status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK))
+                if (!BIT(obj->obj_status, FROMBOUNCE) && obj->objtype == OBJTYPE_SPARK)
                     CLR_BIT(obj->obj_status, OWNERIMMUNE);
                 if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(options.maxObjectWallBounceSpeed))
                 {
@@ -2806,7 +2804,7 @@ void Move_player(player_t *pl)
                                 pl->vel,
                                 pl->id,
                                 pl->team,
-                                OBJ_SPARK,
+                                OBJTYPE_SPARK,
                                 3.5,
                                 GRAVITY | OWNERIMMUNE | FROMBOUNCE,
                                 RED,

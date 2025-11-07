@@ -135,7 +135,7 @@ void Break_asteroid(int ind)
                     asteroid->vel,
                     NO_ID,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS,
+                    OBJTYPE_DEBRIS,
                     mass,
                     GRAVITY,
                     RED,
@@ -190,7 +190,7 @@ void Break_asteroid(int ind)
                     asteroid->vel,
                     NO_ID,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS,
+                    OBJTYPE_DEBRIS,
                     mass3 / 2,
                     GRAVITY,
                     RED,
@@ -300,7 +300,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     asteroid->color = WHITE;
     asteroid->id = NO_ID;
     asteroid->team = TEAM_NOT_SET;
-    asteroid->type = OBJ_ASTEROID;
+    asteroid->objtype = OBJTYPE_ASTEROID;
 
     /* Position */
     Object_position_init_clpos(OBJ_PTR(asteroid), pos);

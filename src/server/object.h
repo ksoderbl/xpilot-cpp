@@ -48,21 +48,22 @@
  * Smart missile, heatseeker and torpedoe can be merged into missile.
  * ECM doesn't really need an object type.
  */
-#define OBJ_PLAYER (1U << 0)
-#define OBJ_DEBRIS (1U << 1)
-#define OBJ_SPARK (1U << 2)
-#define OBJ_BALL (1U << 3)
-#define OBJ_SHOT (1U << 4)
-#define OBJ_SMART_SHOT (1U << 5)
-#define OBJ_MINE (1U << 6)
-#define OBJ_TORPEDO (1U << 7)
-#define OBJ_HEAT_SHOT (1U << 8)
-#define OBJ_PULSE (1U << 9)
-#define OBJ_ITEM (1U << 10)
-#define OBJ_WRECKAGE (1U << 11)
-#define OBJ_ASTEROID (1U << 12)
-#define OBJ_CANNON_SHOT (1U << 13)
+#define OBJTYPE_PLAYER 0
+#define OBJTYPE_DEBRIS 1
+#define OBJTYPE_SPARK 2
+#define OBJTYPE_BALL 3
+#define OBJTYPE_SHOT 4
+#define OBJTYPE_SMART_SHOT 5
+#define OBJTYPE_MINE 6
+#define OBJTYPE_TORPEDO 7
+#define OBJTYPE_HEAT_SHOT 8
+#define OBJTYPE_PULSE 9
+#define OBJTYPE_ITEM 10
+#define OBJTYPE_WRECKAGE 11
+#define OBJTYPE_ASTEROID 12
+#define OBJTYPE_CANNON_SHOT 13
 
+// In xpilot 4.5.5, these did not have the _BIT suffix
 #define OBJ_PLAYER_BIT (1U << 0)
 #define OBJ_DEBRIS_BIT (1U << 1)
 #define OBJ_SPARK_BIT (1U << 2)
@@ -139,7 +140,7 @@ struct cell_node
     float mass;          /* mass in unigrams */          \
     modifiers_t mods;    /* Modifiers to this object */  \
     long life;           /* No of ticks left to live */  \
-    int type;            /* one bit of OBJ_XXX */        \
+    int objtype;         /* one bit of OBJTYPE_XXX */    \
     int count;           /* Misc timings */              \
     uint8_t color;       /* Color of object */           \
     uint8_t missile_dir; /* missile direction */         \

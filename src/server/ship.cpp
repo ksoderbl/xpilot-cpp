@@ -78,7 +78,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK,
+        OBJTYPE_SPARK,
         THRUST_MASS,
         GRAVITY | OWNERIMMUNE,
         RED,
@@ -93,7 +93,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK,
+        OBJTYPE_SPARK,
         THRUST_MASS * ALT_SPARK_MASS_FACT,
         GRAVITY | OWNERIMMUNE,
         BLUE,
@@ -148,7 +148,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
     vy = (ship->vel.y * ship->mass + obj->vel.y * obj->mass) / m;
-    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
+    if (ship->objtype == OBJTYPE_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
         player_t *pusher = Player_by_id(obj->id);
@@ -179,7 +179,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
+    if (obj1->objtype == OBJTYPE_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
@@ -214,7 +214,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     dvx1 = -(tcos(obj_theta) * force / dm);
     dvy1 = -(tsin(obj_theta) * force / dm);
 
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
+    if (obj1->objtype == OBJTYPE_PLAYER && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
@@ -222,7 +222,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
             Record_shove(pl, pusher, frame_loops);
     }
 
-    if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
+    if (obj2->objtype == OBJTYPE_PLAYER && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
         player_t *pusher = Player_by_id(obj1->id);
@@ -467,7 +467,7 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && Player_by_id(Obj[i]->info) == pl)
+        if (Obj[i]->objtype == OBJTYPE_HEAT_SHOT && Obj[i]->info > 0 && Player_by_id(Obj[i]->info) == pl)
         {
             Obj[i]->info = NumPlayers - 1;
         }
@@ -540,7 +540,7 @@ void Make_debris(clpos_t pos,
 
     CLEAR_MODS(mods);
 
-    if (type == OBJ_SHOT)
+    if (type == OBJTYPE_SHOT)
     {
         SET_BIT(mods.warhead, CLUSTER);
         if (!options.shotsGravity)
@@ -577,7 +577,7 @@ void Make_debris(clpos_t pos,
         debris->acc.x = 0;
         debris->acc.y = 0;
         debris->mass = mass;
-        debris->type = type;
+        debris->objtype = type;
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
         if (life * speed > world->hypotenuse)
         {
@@ -665,7 +665,7 @@ void Make_wreckage(clpos_t pos,
         wreckage->color = color;
         wreckage->id = id;
         wreckage->team = team;
-        wreckage->type = OBJ_WRECKAGE;
+        wreckage->objtype = OBJTYPE_WRECKAGE;
 
         /* Position */
         Object_position_init_clpos(OBJ_PTR(wreckage), pos);
@@ -731,7 +731,7 @@ void Explode_fighter(player_t *pl)
                 pl->vel,
                 pl->id,
                 pl->team,
-                OBJ_DEBRIS,
+                OBJTYPE_DEBRIS,
                 3.5,
                 GRAVITY,
                 RED,

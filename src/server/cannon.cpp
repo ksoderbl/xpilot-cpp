@@ -196,7 +196,7 @@ void Cannon_throw_items(cannon_t *c)
             LIMIT(amount, 0, c->item[i]);
             if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (obj = Object_allocate()) != NULL)
             {
-                obj->type = OBJ_ITEM;
+                obj->objtype = OBJTYPE_ITEM;
                 obj->info = i;
                 obj->color = RED;
                 obj->obj_status = GRAVITY;
@@ -313,7 +313,8 @@ static int Cannon_in_danger(cannon_t *c)
 
         if (shot->life <= 0)
             continue;
-        if (!BIT(shot->type, kill_shots))
+        uint32_t typebit = OBJ_TYPEBIT(shot->objtype);
+        if (!BIT(typebit, kill_shots))
             continue;
         if (BIT(shot->obj_status, FROMCANNON))
             continue;
@@ -627,7 +628,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
             if (options.allowSmartMissiles)
             {
                 Fire_general_shot(c->id, c->team, c->pos,
-                                  OBJ_SMART_SHOT, dir, mods, pl->id);
+                                  OBJTYPE_SMART_SHOT, dir, mods, pl->id);
                 sound_play_sensors(c->pos, FIRE_SMART_SHOT_SOUND);
                 played = true;
                 break;
@@ -637,7 +638,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
             if (options.allowHeatSeekers && Player_is_thrusting(pl))
             {
                 Fire_general_shot(c->id, c->team, c->pos,
-                                  OBJ_HEAT_SHOT, dir, mods, pl->id);
+                                  OBJTYPE_HEAT_SHOT, dir, mods, pl->id);
                 sound_play_sensors(c->pos, FIRE_HEAT_SHOT_SOUND);
                 played = true;
                 break;
@@ -645,7 +646,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
             /* FALLTHROUGH */
         case 0:
             Fire_general_shot(c->id, c->team, c->pos,
-                              OBJ_TORPEDO, dir, mods, NO_ID);
+                              OBJTYPE_TORPEDO, dir, mods, NO_ID);
             sound_play_sensors(c->pos, FIRE_TORPEDO_SOUND);
             played = true;
             break;
@@ -700,7 +701,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
                         zero_vel,
                         NO_ID,
                         c->team,
-                        OBJ_SPARK,
+                        OBJTYPE_SPARK,
                         THRUST_MASS,
                         GRAVITY | FROMCANNON,
                         RED,
@@ -718,7 +719,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
                         zero_vel,
                         NO_ID,
                         c->team,
-                        OBJ_SPARK,
+                        OBJTYPE_SPARK,
                         THRUST_MASS,
                         GRAVITY | FROMCANNON,
                         RED,
@@ -744,7 +745,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
             int a_dir = dir + (4 - smartness) * (-c->item[ITEM_WIDEANGLE] + i);
             a_dir = MOD2(a_dir, RES);
             Fire_general_shot(c->id, c->team, c->pos,
-                              OBJ_CANNON_SHOT, a_dir, mods, NO_ID);
+                              OBJTYPE_CANNON_SHOT, a_dir, mods, NO_ID);
         }
         /* I'm not sure cannons should use rearshots.
            After all, they are restricted to 60 degrees when picking their
@@ -754,7 +755,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
             int a_dir = (int)(dir + (RES / 2) + (4 - smartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
             a_dir = MOD2(a_dir, RES);
             Fire_general_shot(c->id, c->team, c->pos,
-                              OBJ_CANNON_SHOT, a_dir, mods, NO_ID);
+                              OBJTYPE_CANNON_SHOT, a_dir, mods, NO_ID);
         }
     }
 
