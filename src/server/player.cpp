@@ -476,7 +476,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->shield_time = 0;
     pl->last_wall_touch = 0;
 
-    pl->objtype = OBJTYPE_PLAYER;
+    pl->type = OBJ_PLAYER;
     pl->type_ext = 0; /* assume human player */
     pl->shots = 0;
     pl->missile_rack = 0;
@@ -758,7 +758,7 @@ void Reset_all_players(void)
         /* We are starting all over again */
         for (j = NumObjs - 1; j >= 0; j--)
         {
-            if (Obj[j]->objtype == OBJTYPE_BALL)
+            if (Obj[j]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(j);
                 ball->id = NO_ID;
@@ -807,10 +807,10 @@ void Reset_all_players(void)
         for (i = 0; i < NumObjs; i++)
         {
             object_t *obj = Obj[i];
-            if (BIT(OBJ_TYPEBIT(obj->objtype), OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ITEM_BIT))
+            if (BIT(OBJ_TYPEBIT(obj->type), OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ITEM_BIT))
             {
                 obj->life = 0;
-                if (BIT(obj->objtype, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
+                if (BIT(obj->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
                 {
                     /* Take care that no new explosions are made. */
                     obj->mass = 0;
@@ -1427,36 +1427,32 @@ void Delete_player(player_t *pl)
         obj = Obj[i];
         if (obj->id == id)
         {
-            if (obj->objtype == OBJTYPE_BALL)
+            if (obj->type == OBJ_BALL)
             {
                 Delete_shot(i);
                 BALL_PTR(obj)->ball_owner = NO_ID;
             }
-            else if (BIT(OBJ_TYPEBIT(obj->objtype), OBJ_DEBRIS_BIT | OBJ_SPARK_BIT))
-            {
+            else if (obj->type == OBJ_DEBRIS || obj->type == OBJ_SPARK)
                 /* Okay, so you want robot explosions to exist,
                  * even if the robot left the game. */
                 obj->id = NO_ID;
-            }
             else
             {
                 if (!options.keepShots)
                 {
                     obj->life = 0;
-                    if (BIT(obj->objtype,
+                    if (BIT(OBJ_TYPEBIT(obj->type),
                             OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT))
-                    {
                         obj->mass = 0;
-                    }
                 }
                 obj->id = NO_ID;
-                if (obj->objtype == OBJTYPE_MINE)
+                if (obj->type == OBJ_MINE)
                     MINE_PTR(obj)->mine_owner = NO_ID;
             }
         }
         else
         {
-            if (obj->objtype == OBJTYPE_MINE)
+            if (obj->type == OBJ_MINE)
             {
                 mineobject_t *mine = MINE_PTR(obj);
 
@@ -1470,7 +1466,7 @@ void Delete_player(player_t *pl)
                     }
                 }
             }
-            else if (obj->objtype == OBJTYPE_CANNON_SHOT)
+            else if (obj->type == OBJ_CANNON_SHOT)
             {
                 if (!options.keepShots)
                 {
@@ -1478,9 +1474,10 @@ void Delete_player(player_t *pl)
                     obj->mass = 0;
                 }
             }
-            else if (obj->objtype == OBJTYPE_BALL)
+            else if (obj->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_PTR(obj);
+
                 if (ball->ball_owner == id)
                     ball->ball_owner = NO_ID;
             }
@@ -1602,7 +1599,7 @@ void Detach_ball(player_t *pl, ballobject_t *ball)
         {
             object_t *obj = Obj[i];
 
-            if (obj->objtype == OBJTYPE_BALL && obj->id == pl->id)
+            if (obj->type == OBJ_BALL && obj->id == pl->id)
             {
                 if (ball == NULL || ball == BALL_PTR(obj))
                     obj->id = NO_ID;

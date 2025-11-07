@@ -129,7 +129,7 @@ void Tune_item_probs(void)
             for (j = 0; j < NumObjs; j++)
             {
                 object_t *obj = Obj[j];
-                if (obj->objtype == OBJTYPE_ITEM)
+                if (obj->type == OBJ_ITEM)
                 {
                     if (obj->info == i)
                     {

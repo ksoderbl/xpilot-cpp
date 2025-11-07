@@ -221,7 +221,7 @@ static void Laser_pulse_hits_player(
     sound_play_sensors(vicpl->pos, PLAYER_EAT_LASER_SOUND);
     if (BIT(vicpl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         return;
-    if (!BIT(OBJ_TYPEBIT(obj->objtype), KILLING_SHOTS))
+    if (!BIT(OBJ_TYPEBIT(obj->type), KILLING_SHOTS))
         return;
     if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
@@ -545,7 +545,7 @@ void Laser_pulse_collision(void)
             }
         }
 
-        obj->objtype = OBJTYPE_PULSE;
+        obj->type = OBJ_PULSE;
         obj->life = 1;
         obj->id = pulse->id;
         obj->team = pulse->team;
@@ -640,7 +640,7 @@ void Laser_pulse_collision(void)
     if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
         free(vicbuf.vic_ptr);
 
-    obj->objtype = OBJTYPE_DEBRIS;
+    obj->type = OBJ_DEBRIS;
     obj->life = 0;
     Cell_add_object(obj);
 }

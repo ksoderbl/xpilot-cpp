@@ -738,7 +738,7 @@ static void Robot_create(void)
     robot->check = 0;
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
-        robot->team = Pick_team(PickForRobot);
+        robot->team = Pick_team(PL_TYPE_ROBOT);
         world->teams[robot->team].NumMembers++;
         world->teams[robot->team].NumRobots++;
     }

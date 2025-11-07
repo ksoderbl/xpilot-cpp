@@ -724,7 +724,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         Robot_check_new_modifiers(pl, mods);
         return;
 
-    case OBJTYPE_SHOT:
+    case OBJ_SHOT:
         /*
          * Robots usually use wide beam shots, however they may narrow
          * the beam occasionally.
@@ -735,14 +735,14 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         Robot_check_new_modifiers(pl, mods);
         return;
 
-    case OBJTYPE_MINE:
+    case OBJ_MINE:
         stock = pl->item[ITEM_MINE];
         min = options.nukeMinMines;
         break;
 
-    case OBJTYPE_SMART_SHOT:
-    case OBJTYPE_HEAT_SHOT:
-    case OBJTYPE_TORPEDO:
+    case OBJ_SMART_SHOT:
+    case OBJ_HEAT_SHOT:
+    case OBJ_TORPEDO:
         stock = pl->item[ITEM_MISSILE];
         min = options.nukeMinSmarts;
         if ((my_data->robot_count % 4) == 0)
@@ -995,7 +995,7 @@ static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mod
 
         if (pl->item[ITEM_MINE] && item_dist < 8 * BLOCK_SZ)
         {
-            Choose_weapon_modifier(pl, OBJTYPE_MINE);
+            Choose_weapon_modifier(pl, OBJ_MINE);
             if (BIT(world->rules->mode, TIMING))
                 Place_mine(pl);
             else
@@ -1108,22 +1108,22 @@ static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mod
             case 0:
             case 1:
             case 2:
-                type = OBJTYPE_SMART_SHOT;
+                type = OBJ_SMART_SHOT;
                 break;
             case 3:
-                type = OBJTYPE_HEAT_SHOT;
+                type = OBJ_HEAT_SHOT;
                 break;
             default:
-                type = OBJTYPE_TORPEDO;
+                type = OBJ_TORPEDO;
                 break;
             }
             if (Detect_ship(pl, Player_by_id(pl->lock.pl_id)) && !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
-                type = OBJTYPE_HEAT_SHOT;
-            if (type == OBJTYPE_SMART_SHOT && !options.allowSmartMissiles)
-                type = OBJTYPE_HEAT_SHOT;
+                type = OBJ_HEAT_SHOT;
+            if (type == OBJ_SMART_SHOT && !options.allowSmartMissiles)
+                type = OBJ_HEAT_SHOT;
             Choose_weapon_modifier(pl, type);
             Fire_shot(pl, type, pl->dir);
-            if (type == OBJTYPE_HEAT_SHOT)
+            if (type == OBJ_HEAT_SHOT)
                 Thrust(pl, false);
             my_data->last_fired_missile = my_data->robot_count;
         }
@@ -1132,15 +1132,15 @@ static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mod
         {
             if ((int)(rfrac() * 64) < pl->item[ITEM_MISSILE])
             {
-                Choose_weapon_modifier(pl, OBJTYPE_SMART_SHOT);
-                Fire_shot(pl, OBJTYPE_SMART_SHOT, pl->dir);
+                Choose_weapon_modifier(pl, OBJ_SMART_SHOT);
+                Fire_shot(pl, OBJ_SMART_SHOT, pl->dir);
                 my_data->last_fired_missile = my_data->robot_count;
             }
             else
             {
                 if ((new_mode == RM_ATTACK && clear_path) || (my_data->robot_count % 50) == 0)
                 {
-                    Choose_weapon_modifier(pl, OBJTYPE_SHOT);
+                    Choose_weapon_modifier(pl, OBJ_SHOT);
                     Fire_normal_shots(pl);
                 }
             }
@@ -1152,7 +1152,7 @@ static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mod
         {
             if (pl->fuel.sum > pl->fuel.l3)
             {
-                Choose_weapon_modifier(pl, OBJTYPE_MINE);
+                Choose_weapon_modifier(pl, OBJ_MINE);
                 Place_mine(pl);
             }
             else /*if (pl->fuel.sum < pl->fuel.l2)*/
@@ -1167,7 +1167,7 @@ static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mod
     {
         if ((my_data->robot_count % 2) == 0 && item_dist < Visibility_distance && clear_path)
         {
-            Choose_weapon_modifier(pl, OBJTYPE_SHOT);
+            Choose_weapon_modifier(pl, OBJ_SHOT);
             Fire_normal_shots(pl);
         }
     }
@@ -1459,7 +1459,7 @@ static bool Ball_handler(player_t *pl)
         {
             for (i = 0; i < NumObjs; i++)
             {
-                if (Obj[i]->objtype == OBJTYPE_BALL && Obj[i]->id == pl->id)
+                if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
                 {
                     ball = BALL_PTR(Obj[i]);
                     break;
@@ -1531,7 +1531,7 @@ static bool Ball_handler(player_t *pl)
 
         for (i = 0; i < NumObjs; i++)
         {
-            if (Obj[i]->objtype == OBJTYPE_BALL)
+            if (Obj[i]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(i);
                 if ((ball->id == NO_ID)
@@ -1758,29 +1758,29 @@ static void Robot_default_play_check_objects(player_t *pl,
         shot = obj_list[j];
 
         /* Get rid of the most common object types first for speed. */
-        if (BIT(OBJ_TYPEBIT(shot->objtype), OBJ_DEBRIS_BIT | OBJ_SPARK_BIT))
+        if (shot->type == OBJ_SPARK || shot->type == OBJ_DEBRIS)
             continue;
 
         dx = WRAP_DX(shot->pix_pos.x - pl->pix_pos.x);
         dy = WRAP_DY(shot->pix_pos.y - pl->pix_pos.y);
 
-        if (shot->objtype == OBJTYPE_BALL && !WITHIN(my_data->last_thrown_ball,
-                                                     my_data->robot_count,
-                                                     3 * FPS))
+        if (shot->type == OBJ_BALL && !WITHIN(my_data->last_thrown_ball,
+                                              my_data->robot_count,
+                                              3 * FPS))
             SET_BIT(pl->used, USES_CONNECTOR);
 
         /* Ignore shots if shields already up - nothing else to do anyway */
-        if (BIT(OBJ_TYPEBIT(shot->objtype), OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT) && BIT(pl->used, HAS_SHIELD))
+        if ((shot->type == OBJ_SHOT || shot->type == OBJ_CANNON_SHOT) && BIT(pl->used, HAS_SHIELD))
             continue;
 
         /*
          * The only thing left to do regarding objects is to check if
          * this robot needs to put up shields to protect against objects.
          */
-        if (!BIT(OBJ_TYPEBIT(shot->objtype), killing_shots))
+        if (!BIT(OBJ_TYPEBIT(shot->type), killing_shots))
         {
             /* Find closest item */
-            if (shot->objtype == OBJTYPE_ITEM)
+            if (shot->type == OBJ_ITEM)
             {
                 object_t *item = shot;
 
@@ -1814,7 +1814,7 @@ static void Robot_default_play_check_objects(player_t *pl,
             continue;
 
         /* Find nearest missile/mine */
-        if (BIT(OBJ_TYPEBIT(shot->objtype), OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_BALL_BIT | OBJ_CANNON_SHOT_BIT) || (shot->objtype == OBJTYPE_SHOT && !BIT(world->rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) || (shot->objtype == OBJTYPE_MINE && shot->id != pl->id) || (shot->objtype == OBJTYPE_WRECKAGE && !BIT(world->rules->mode, TIMING)))
+        if (BIT(OBJ_TYPEBIT(shot->type), OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_BALL_BIT | OBJ_CANNON_SHOT_BIT) || (shot->type == OBJ_SHOT && !BIT(world->rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) || (shot->type == OBJ_MINE && shot->id != pl->id) || (shot->type == OBJ_WRECKAGE && !BIT(world->rules->mode, TIMING)))
         {
             if (ABS(dx) < *mine_dist && ABS(dy) < *mine_dist && (distance = LENGTH(dx, dy)) < *mine_dist)
             {
@@ -1847,7 +1847,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             Thrust(pl, true);
 
-            if (BIT(OBJ_TYPEBIT(shot->objtype), OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < pl->fuel.l3 || !BIT(pl->have, HAS_SHIELD)))
+            if (BIT(OBJ_TYPEBIT(shot->type), OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < pl->fuel.l3 || !BIT(pl->have, HAS_SHIELD)))
             {
                 if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
@@ -1858,17 +1858,17 @@ static void Robot_default_play_check_objects(player_t *pl,
                 }
             }
         }
-        if (shot->objtype == OBJTYPE_SMART_SHOT)
+        if (shot->type == OBJ_SMART_SHOT)
         {
             if (*mine_dist < ECM_DISTANCE / 4)
                 Fire_ecm(pl);
         }
-        if (shot->objtype == OBJTYPE_MINE)
+        if (shot->type == OBJ_MINE)
         {
             if (*mine_dist < ECM_DISTANCE / 2)
                 Fire_ecm(pl);
         }
-        if (shot->objtype, OBJTYPE_HEAT_SHOT)
+        if (shot->type, OBJ_HEAT_SHOT)
         {
             Thrust(pl, false);
             if (pl->fuel.sum < pl->fuel.l3 && pl->fuel.sum > pl->fuel.l1 && pl->fuel.num_tanks > 0)
@@ -1876,7 +1876,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                 Tank_handle_detach(pl);
             }
         }
-        if (shot->objtype == OBJTYPE_ASTEROID)
+        if (shot->type == OBJ_ASTEROID)
         {
             int delta_dir = 0;
             if (*mine_dist > (WIRE_PTR(shot)->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < WIRE_PTR(shot)->wire_size * (RES / 10) || delta_dir > RES - WIRE_PTR(shot)->wire_size * (RES / 10)))

@@ -75,9 +75,6 @@ extern char ShutdownReason[];
 
 static bool Owner(char request, char *user_name, char *host_addr,
                   int host_port, int pass);
-static int Enter_player(char *real, char *nick, char *disp, int team,
-                        char *addr, char *host, unsigned version, int port,
-                        int *login_port);
 void Queue_loop(void);
 static int Queue_player(char *real, char *nick, char *disp, int team,
                         char *addr, char *host, unsigned version, int port,
@@ -452,9 +449,7 @@ void Contact(int fd, void *arg)
         Fix_disp_name(disp_name);
         Fix_host_name(host_name);
         if (team < 0 || team >= MAX_TEAMS)
-        {
             team = TEAM_NOT_SET;
-        }
 
         status = Queue_player(user_name, nick_name,
                               disp_name, team,
@@ -462,40 +457,10 @@ void Contact(int fd, void *arg)
                               version, port,
                               &qpos);
         if (status < 0)
-        {
             return;
-        }
+
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c%hu", my_magic, reply_to, status, qpos);
-    }
-    break;
-
-    case ENTER_GAME_pack:
-    {
-        /*
-         * Someone wants to enter the game.
-         */
-        if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
-                         &team) <= 0)
-        {
-            D(printf("Incomplete login from %s@%s", user_name, host_addr));
-            return;
-        }
-        Fix_nick_name(nick_name);
-        Fix_disp_name(disp_name);
-        Fix_host_name(host_name);
-        if (team < 0 || team >= MAX_TEAMS)
-        {
-            team = TEAM_NOT_SET;
-        }
-
-        status = Enter_player(user_name, nick_name,
-                              disp_name, team,
-                              host_addr, host_name,
-                              version, port,
-                              &login_port);
-        Sockbuf_clear(&ibuf);
-        Packet_printf(&ibuf, "%u%c%c%hu", my_magic, reply_to, status, login_port);
     }
     break;
 
@@ -524,15 +489,10 @@ void Contact(int fd, void *arg)
          */
 
         if (Packet_scanf(&ibuf, "%s", str) <= 0)
-        {
             status = E_INVAL;
-        }
         else
-        {
-            sprintf(msg, "%s [%s SPEAKING FROM ABOVE]",
-                    str, user_name);
-            Set_message(msg);
-        }
+            Set_message_f("%s [%s SPEAKING FROM ABOVE]", str, user_name);
+
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, status);
     }
@@ -662,9 +622,7 @@ void Contact(int fd, void *arg)
         char *opt, *val;
 
         if (Packet_scanf(&ibuf, "%S", str) <= 0 || (opt = strtok(str, ":")) == NULL || (val = strtok(NULL, "")) == NULL)
-        {
             status = E_INVAL;
-        }
         else
         {
             i = Tune_option(opt, val);
@@ -676,27 +634,18 @@ void Contact(int fd, void *arg)
                     char value[MAX_CHARS];
 
                     Get_option_value(opt, value, sizeof(value));
-                    sprintf(msg, " < Option %s set to %s by %s FROM ABOVE. >",
-                            opt, value, user_name);
-                    Set_message(msg);
+                    Set_message_f(" < Option %s set to %s by %s FROM ABOVE. >",
+                                  opt, value, user_name);
                 }
             }
             else if (i == 0)
-            {
                 status = E_INVAL;
-            }
             else if (i == -1)
-            {
                 status = E_UNDEFINED;
-            }
             else if (i == -2)
-            {
                 status = E_NOENT;
-            }
             else
-            {
                 status = E_INVAL;
-            }
         }
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, status);
@@ -749,40 +698,10 @@ void Contact(int fd, void *arg)
                 }
             }
             if (change && Reply(host_addr, port) == -1)
-            {
                 bad = true;
-            }
         } while (!bad);
     }
         return;
-
-    case MAX_ROBOT_pack:
-    {
-        /*
-         * Set the maximum of robots wanted in the server
-         */
-        int max_robots;
-        if (Packet_scanf(&ibuf, "%d", &max_robots) <= 0 || max_robots < 0)
-        {
-            status = E_INVAL;
-        }
-        else
-        {
-            options.maxRobots = max_robots;
-            if (options.maxRobots < options.minRobots)
-            {
-                options.minRobots = options.maxRobots;
-            }
-            while (options.maxRobots < NumRobots)
-            {
-                Robot_delete(NULL, true);
-            }
-        }
-
-        Sockbuf_clear(&ibuf);
-        Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, status);
-    }
-    break;
 
     default:
         /*
@@ -796,130 +715,6 @@ void Contact(int fd, void *arg)
     }
 
     Reply(host_addr, port);
-}
-
-static int Enter_player(char *real, char *nick, char *disp, int team,
-                        char *addr, char *host, unsigned version, int port,
-                        int *login_port)
-{
-    int status;
-
-    *login_port = 0;
-
-    /*
-     * Game locked?
-     */
-    if (game_lock)
-    {
-        return E_GAME_LOCKED;
-    }
-
-    /*
-     * Already too many clients logged in from that IP
-     */
-    if (Check_max_clients_per_IP(addr))
-    {
-        return E_GAME_LOCKED;
-    }
-
-    /*
-     * Is the game full?
-     */
-    if (NumPlayers - NumPseudoPlayers + login_in_progress + NumQueuedPlayers >= world->NumBases)
-    {
-
-        if (NumQueuedPlayers > 0)
-        {
-            return E_GAME_FULL;
-        }
-        if (!Kick_robot_players(TEAM_NOT_SET))
-        {
-            if (!Kick_paused_players(TEAM_NOT_SET))
-            {
-                return E_GAME_FULL;
-            }
-        }
-        if (NumPlayers - NumPseudoPlayers + login_in_progress + NumQueuedPlayers >= world->NumBases)
-        {
-
-            return E_GAME_FULL;
-        }
-    }
-
-    if ((status = Check_names(nick, real, host)) != SUCCESS)
-    {
-        return status;
-    }
-
-    /*
-     * Maybe don't have enough room for player on that team?
-     */
-    if (BIT(world->rules->mode, TEAM_PLAY))
-    {
-        if ((team < 0 || team >= MAX_TEAMS) || (team == options.robotTeam && options.reserveRobotTeam))
-        {
-            if (!options.teamAssign)
-            {
-                if (team == options.robotTeam && options.reserveRobotTeam)
-                {
-                    return E_TEAM_FULL;
-                }
-                else
-                {
-                    return E_TEAM_NOT_SET;
-                }
-            }
-            team = Pick_team(PickForHuman);
-            if (team == TEAM_NOT_SET || (team == options.robotTeam && options.reserveRobotTeam))
-            {
-                if (NumRobots > world->teams[options.robotTeam].NumRobots)
-                {
-                    if (!Kick_robot_players(TEAM_NOT_SET))
-                    {
-                        return E_TEAM_NOT_SET;
-                    }
-                    team = Pick_team(PickForHuman);
-                    if (team == TEAM_NOT_SET)
-                    {
-                        return E_TEAM_NOT_SET;
-                    }
-                }
-                else
-                {
-                    return E_TEAM_NOT_SET;
-                }
-            }
-        }
-        else if (world->teams[team].NumMembers >= world->teams[team].NumBases)
-        {
-            if (!Kick_robot_players(team))
-            {
-                if (!Kick_paused_players(team))
-                {
-                    return E_TEAM_FULL;
-                }
-            }
-            team = Pick_team(PickForHuman);
-            if (team == TEAM_NOT_SET)
-            {
-                return E_TEAM_NOT_SET;
-            }
-        }
-    }
-
-    /*
-     * Find a port for the client to connect to.
-     */
-    *login_port = Setup_connection(real, nick,
-                                   disp, team,
-                                   host, host,
-                                   version);
-    if (*login_port == -1)
-    {
-        return E_SOCKET;
-    }
-
-    return SUCCESS;
 }
 
 struct queued_player
@@ -993,8 +788,7 @@ static void Queue_ack(struct queued_player *qp, int qpos)
 void Queue_loop(void)
 {
     struct queued_player *qp, *prev = 0, *next = 0;
-    int qpos = 0;
-    int login_port;
+    int qpos = 0, login_port;
     static long last_unqueued_loops;
 
     for (qp = qp_list; qp && qp->login_port > 0;)
@@ -1067,13 +861,13 @@ void Queue_loop(void)
                     }
                     if (qp->team == TEAM_NOT_SET)
                     {
-                        qp->team = Pick_team(PickForHuman);
+                        qp->team = Pick_team(PL_TYPE_HUMAN);
                         if (qp->team == TEAM_NOT_SET || (qp->team == options.robotTeam && options.reserveRobotTeam))
                         {
                             if (NumRobots > world->teams[options.robotTeam].NumRobots)
                             {
                                 Kick_robot_players(TEAM_NOT_SET);
-                                qp->team = Pick_team(PickForHuman);
+                                qp->team = Pick_team(PL_TYPE_HUMAN);
                             }
                         }
                     }

@@ -1139,7 +1139,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         }
         if (connp->team == TEAM_NOT_SET)
         {
-            connp->team = Pick_team(PickForHuman);
+            connp->team = Pick_team(PL_TYPE_HUMAN);
             if (connp->team == TEAM_NOT_SET ||
                 (connp->team == options.robotTeam && options.reserveRobotTeam))
             {

@@ -380,24 +380,18 @@ int Pick_team(int pick_for_type)
     }
     if (options.restrictRobots)
     {
-        if (pick_for_type == PickForRobot)
+        if (pick_for_type == PL_TYPE_ROBOT)
         {
             if (free_bases[options.robotTeam] > 0)
-            {
                 return options.robotTeam;
-            }
             else
-            {
                 return TEAM_NOT_SET;
-            }
         }
     }
     if (options.reserveRobotTeam)
     {
-        if (pick_for_type != PickForRobot)
-        {
+        if (pick_for_type != PL_TYPE_ROBOT)
             free_bases[options.robotTeam] = 0;
-        }
     }
 
     /*
@@ -409,30 +403,20 @@ int Pick_team(int pick_for_type)
     {
         pl = Player_by_index(i);
         if (Player_is_tank(pl))
-        {
             continue;
-        }
-        if (BIT(pl->obj_status, PAUSE))
-        {
+        if (Player_is_paused(pl))
             continue;
-        }
         if (!playing[pl->team]++)
-        {
             playing_teams++;
-        }
         if (Player_is_human(pl) || Player_is_robot(pl))
-        {
             team_score[pl->team] += pl->score;
-        }
     }
     if (playing_teams <= 1)
     {
         for (i = 0; i < MAX_TEAMS; i++)
         {
             if (!playing[i] && free_bases[i] > 0)
-            {
                 available_teams[num_available_teams++] = i;
-            }
         }
     }
     else
@@ -444,9 +428,7 @@ int Pick_team(int pick_for_type)
             if (playing[i] > 0 && free_bases[i] > 0)
             {
                 if (playing[i] < least_players)
-                {
                     least_players = playing[i];
-                }
             }
         }
 
@@ -455,9 +437,7 @@ int Pick_team(int pick_for_type)
             if (free_bases[i] > 0)
             {
                 if (least_players == NumPlayers || playing[i] == least_players)
-                {
                     available_teams[num_available_teams++] = i;
-                }
             }
         }
     }
@@ -467,16 +447,12 @@ int Pick_team(int pick_for_type)
         for (i = 0; i < MAX_TEAMS; i++)
         {
             if (free_bases[i] > 0)
-            {
                 available_teams[num_available_teams++] = i;
-            }
         }
     }
 
     if (num_available_teams == 1)
-    {
         return available_teams[0];
-    }
 
     if (num_available_teams > 1)
     {
@@ -497,12 +473,20 @@ int Pick_team(int pick_for_type)
     return TEAM_NOT_SET;
 }
 
+const char *Describe_game_status(void)
+{
+    return (game_lock && ShutdownServer == -1)    ? "locked"
+           : (!game_lock && ShutdownServer != -1) ? "shutting down"
+           : (game_lock && ShutdownServer != -1)  ? "locked and shutting down"
+                                                  : "ok";
+}
+
 /*
  * Return status for server
  *
  * TODO
  */
-void Server_info(char *str, unsigned max_size)
+void Server_info(char *str, size_t max_size)
 {
     int i, j, k;
     player_t *pl, **order, *best = NULL;
@@ -838,9 +822,7 @@ void Server_log_admin_message(player_t *pl, const char *str)
         Set_player_message(pl, msg);
     }
     else
-    {
         Set_player_message(pl, " < GOD doesn't seem to be listening>");
-    }
 }
 
 #if defined(PLOCKSERVER) && defined(__linux__)
@@ -874,29 +856,22 @@ int plock_server(bool on)
 #ifdef PLOCKSERVER
     int op;
 
-    if (onoff)
-    {
+    if (on)
         op = PROCLOCK;
-    }
     else
-    {
         op = UNLOCK;
-    }
+
     if (plock(op) == -1)
     {
         static int num_plock_errors;
         if (++num_plock_errors <= 3)
-        {
             error("Can't plock(%d)", op);
-        }
         return -1;
     }
-    return onoff;
+    return on ? 1 : 0;
 #else
     if (on)
-    {
         xpprintf("Can't plock: Server was not compiled with plock support\n");
-    }
     return 0;
 #endif
 }

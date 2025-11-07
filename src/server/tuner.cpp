@@ -68,7 +68,7 @@ void tuner_ballmass(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->objtype == OBJTYPE_BALL)
+        if (Obj[i]->type == OBJ_BALL)
             Obj[i]->mass = options.ballMass;
     }
 }
@@ -248,7 +248,7 @@ void tuner_minelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->objtype != OBJTYPE_MINE)
+        if (Obj[i]->type != OBJ_MINE)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
@@ -275,8 +275,8 @@ void tuner_missilelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->objtype != OBJTYPE_SMART_SHOT &&
-            Obj[i]->objtype != OBJTYPE_HEAT_SHOT && Obj[i]->objtype != OBJTYPE_TORPEDO)
+        if (Obj[i]->type != OBJ_SMART_SHOT &&
+            Obj[i]->type != OBJ_HEAT_SHOT && Obj[i]->type != OBJ_TORPEDO)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))

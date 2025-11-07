@@ -42,12 +42,6 @@ static inline vector_t World_gravity(clpos_t pos)
     return world->gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
 }
 
-enum TeamPickType
-{
-    PickForHuman = 1,
-    PickForRobot = 2
-};
-
 #define APPNAME "xpilot-cpp-server"
 
 extern object_t *Obj[];
@@ -280,7 +274,7 @@ void Tune_asteroid_prob(void);
  */
 void End_game(void);
 int Pick_team(int pick_for_type);
-void Server_info(char *str, unsigned max_size);
+void Server_info(char *str, size_t max_size);
 void Log_game(const char *heading);
 void Game_Over(void);
 void Server_shutdown(const char *user_name, int delay, const char *reason);
