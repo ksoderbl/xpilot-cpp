@@ -34,7 +34,7 @@
 
 /* score.c */
 
-void SCORE(player_t *pl, int points, clpos_t pos, const char *msg);
+void Score(player_t *pl, int points, clpos_t pos, const char *msg);
 int Rate(int winner, int loser);
 
 /*

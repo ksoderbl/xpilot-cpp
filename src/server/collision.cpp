@@ -278,7 +278,7 @@ static void PlayerCollision(void)
             SET_BIT(pl->obj_status, KILLED);
             Set_message_f("%s left the known universe.", pl->name);
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(pl, -sc, pl->pos, pl->name);
+            Score(pl, -sc, pl->pos, pl->name);
             continue;
         }
 
@@ -442,17 +442,13 @@ static void PlayerCollision(void)
                 if (Player_is_killed(pl_j))
                 {
                     if (Player_is_robot(pl_j) && Robot_war_on_player(pl_j) == pl->id)
-                    {
                         Robot_reset_war(pl_j);
-                    }
                 }
 
                 if (Player_is_killed(pl))
                 {
                     if (Player_is_robot(pl) && Robot_war_on_player(pl) == pl_j->id)
-                    {
                         Robot_reset_war(pl);
-                    }
                     /* cannot crash with more than one player at the same time? */
                     /* hmm, if 3 players meet at the same point at the same time? */
                     /* break; */
@@ -768,7 +764,6 @@ static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
 {
     int sc;
     int killer;
-    player_t *kp = nullptr;
     ballobject_t *ball = BALL_PTR(obj);
 
     /*
@@ -797,22 +792,22 @@ static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
     }
     if (ball->ball_owner == NO_ID)
     {
-        sprintf(msg, "%s was killed by a ball.", pl->name);
+        Set_message_f("%s was killed by a ball.", pl->name);
         sc = (int)floor(Rate(0, pl->score) * options.ballKillScoreMult * options.unownedKillScoreMult);
-        SCORE(pl, -sc, pl->pos, "Ball");
+        Score(pl, -sc, pl->pos, "Ball");
     }
     else
     {
-        kp = Player_by_id(ball->ball_owner);
+        player_t *kp = Player_by_id(ball->ball_owner);
 
-        sprintf(msg, "%s was killed by a ball owned by %s.",
-                pl->name, kp->name);
+        Set_message_f("%s was killed by a ball owned by %s.%s",
+                      pl->name, kp->name,
+                      kp->id == pl->id ? "  How strange!" : "");
 
         if (kp->id == pl->id)
         {
-            strcat(msg, "  How strange!");
             sc = (int)floor(Rate(0, pl->score) * options.ballKillScoreMult * options.selfKillScoreMult);
-            SCORE(pl, -sc, pl->pos, kp->name);
+            Score(pl, -sc, pl->pos, kp->name);
         }
         else
         {
@@ -823,7 +818,6 @@ static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
             Robot_war(pl, kp);
         }
     }
-    Set_message(msg);
     SET_BIT(pl->obj_status, KILLED);
 }
 
@@ -1106,7 +1100,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
         if (kp == nullptr || kp->id == pl->id)
         {
             sc = (int)floor(Rate(0, pl->score) * options.explosionKillScoreMult * options.selfKillScoreMult);
-            SCORE(pl, -sc, pl->pos,
+            Score(pl, -sc, pl->pos,
                   (killer == -1) ? "[Explosion]" : pl->name);
         }
         else
@@ -1136,7 +1130,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
         ast->life = 0;
     if (ast->life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
     {
-        SCORE(pl, options.asteroidPoints, ast->pos, "");
+        Score(pl, options.asteroidPoints, ast->pos, "");
     }
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
@@ -1153,12 +1147,12 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
             Set_message_f("%s was hit by an asteroid.", pl->name);
 
         sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
-        SCORE(pl, -sc, pl->pos, "[Asteroid]");
+        Score(pl, -sc, pl->pos, "[Asteroid]");
         if (Player_is_tank(pl) && options.asteroidPoints > 0)
         {
             player_t *owner_pl = Player_by_id(pl->lock.pl_id);
             if (owner_pl->score <= options.asteroidMaxScore)
-                SCORE(owner_pl, options.asteroidPoints, ast->pos, "");
+                Score(owner_pl, options.asteroidPoints, ast->pos, "");
         }
         return;
     }
@@ -1274,22 +1268,22 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             }
             else if (obj->id == NO_ID)
             {
-                sprintf(msg, "%s was killed by %s.", pl->name,
-                        Describe_shot(obj->type, obj->obj_status,
-                                      obj->mods, 1));
+                Set_message_f("%s was killed by %s.", pl->name,
+                              Describe_shot(obj->type, obj->obj_status,
+                                            obj->mods, 1));
                 sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
             }
             else
             {
                 kp = Player_by_id(obj->id);
-                sprintf(msg, "%s was killed by %s from %s.", pl->name,
-                        Describe_shot(obj->type, obj->obj_status,
-                                      obj->mods, 1),
-                        kp->name);
+                Set_message_f("%s was killed by %s from %s.%s", pl->name,
+                              Describe_shot(obj->type, obj->obj_status,
+                                            obj->mods, 1),
+                              kp->name,
+                              kp->id == pl->id ? "  How strange!" : "");
                 if (kp->id == pl->id)
                 {
                     sound_play_sensors(pl->pos, PLAYER_SHOT_THEMSELF_SOUND);
-                    strcat(msg, "  How strange!");
                     sc = (int)floor(Rate(0, pl->score) * options.selfKillScoreMult);
                 }
                 else
@@ -1321,9 +1315,9 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             }
             sc *= factor;
             if (BIT(obj->obj_status, FROMCANNON))
-                SCORE(pl, -sc, pl->pos, "Cannon");
+                Score(pl, -sc, pl->pos, "Cannon");
             else if (obj->id == NO_ID || (kp != nullptr && kp->id == pl->id))
-                SCORE(pl, -sc, pl->pos,
+                Score(pl, -sc, pl->pos,
                       (obj->id == NO_ID ? "" : pl->name));
             else
             {
@@ -1471,7 +1465,7 @@ static void AsteroidCollision(void)
                                             : obj->id);
                         player_t *pl = Player_by_id(owner_id);
                         if (pl->score <= options.asteroidMaxScore)
-                            SCORE(pl, options.asteroidPoints, ast->pos, "");
+                            Score(pl, options.asteroidPoints, ast->pos, "");
                     }
 
                     /* break; */

@@ -40,7 +40,7 @@
 #include "netserver.h"
 #include "player.h"
 
-void SCORE(player_t *pl, int points, clpos_t pos, const char *msg)
+void Score(player_t *pl, int points, clpos_t pos, const char *msg)
 {
     pl->score += (points);
 
@@ -86,6 +86,6 @@ void Score_players(player_t *winner_pl, int winner_score, char *winner_msg,
         if (loser_score > 0)
             loser_score = -loser_score;
     }
-    SCORE(winner_pl, winner_score, loser_pl->pos, winner_msg);
-    SCORE(loser_pl, loser_score, loser_pl->pos, loser_msg);
+    Score(winner_pl, winner_score, loser_pl->pos, winner_msg);
+    Score(loser_pl, loser_score, loser_pl->pos, loser_msg);
 }

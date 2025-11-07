@@ -82,7 +82,7 @@ int Punish_team(int ind, int t_destroyed, int t_target)
 
     if (!somebody_flag)
     {
-        SCORE(pl, Rate(pl->score, CANNON_SCORE) / 2,
+        Score(pl, Rate(pl->score, CANNON_SCORE) / 2,
               tt->pos, "Treasure:");
         return 0;
     }
@@ -102,13 +102,13 @@ int Punish_team(int ind, int t_destroyed, int t_target)
             continue;
         if (Player_by_index(i)->team == td->team)
         {
-            SCORE(Player_by_index(i), -sc, tt->pos, "Treasure: ");
+            Score(Player_by_index(i), -sc, tt->pos, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(Player_by_index(i)->obj_status, KILLED);
         }
         else if (Player_by_index(i)->team == tt->team &&
                  (Player_by_index(i)->team != TEAM_NOT_SET || i == ind))
-            SCORE(Player_by_index(i), (i == ind ? 3 * por : 2 * por), tt->pos, "Treasure: ");
+            Score(Player_by_index(i), (i == ind ? 3 * por : 2 * por), tt->pos, "Treasure: ");
     }
 
     if (options.treasureKillTeam)

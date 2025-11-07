@@ -204,7 +204,7 @@ void Go_home(player_t *pl)
     {
         /*NOTREACHED*/
         /* Tanks have no homebase. */
-        error("BUG: gohome tank");
+        warn("BUG: gohome tank");
         return;
     }
 
@@ -313,25 +313,23 @@ void Compute_sensor_range(player_t *pl)
 
     pl->sensor_range = pl->fuel.sum * EnergyRangeFactor;
     pl->sensor_range *= (1.0 + ((double)pl->item[ITEM_SENSOR] * 0.25));
-    if (pl->sensor_range < options.minVisibilityDistance)
-        pl->sensor_range = options.minVisibilityDistance;
-    if (pl->sensor_range > options.maxVisibilityDistance)
-        pl->sensor_range = options.maxVisibilityDistance;
+    LIMIT(pl->sensor_range,
+          options.minVisibilityDistance, options.maxVisibilityDistance);
 }
 
 /*
  * Give ship one more tank, if possible.
  */
-void Player_add_tank(player_t *pl, long tank_fuel)
+void Player_add_tank(player_t *pl, double tank_fuel)
 {
-    long tank_cap, add_fuel;
+    double tank_cap, add_fuel;
 
     if (pl->fuel.num_tanks < MAX_TANKS)
     {
         pl->fuel.num_tanks++;
         tank_cap = TANK_CAP(pl->fuel.num_tanks);
         add_fuel = tank_fuel;
-        LIMIT(add_fuel, 0, tank_cap);
+        LIMIT(add_fuel, 0.0, tank_cap);
         pl->fuel.sum += add_fuel;
         pl->fuel.max += tank_cap;
         pl->fuel.tank[pl->fuel.num_tanks] = add_fuel;
@@ -345,9 +343,8 @@ void Player_add_tank(player_t *pl, long tank_fuel)
  */
 void Player_remove_tank(player_t *pl, int which_tank)
 {
-    // player_t *pl = PlayersArray[ind];
     int i, tank_ind;
-    long tank_fuel, tank_cap;
+    double tank_fuel, tank_cap;
 
     if (pl->fuel.num_tanks > 0)
     {
@@ -376,6 +373,9 @@ void Player_hit_armor(player_t *pl)
         CLR_BIT(pl->have, HAS_ARMOR);
 }
 
+/*
+ * Clear used bits.
+ */
 void Player_used_kill(player_t *pl)
 {
     pl->used &= ~USED_KILL;
@@ -908,7 +908,7 @@ static void Give_best_player_bonus(double average_score,
                 bp->name,
                 bp->kills, bp->deaths);
         points = best_ratio * Rate(bp->score, average_score);
-        SCORE(bp, points, bp->pos, "[Deadliest]");
+        Score(bp, points, bp->pos, "[Deadliest]");
     }
     else
     {
@@ -933,7 +933,7 @@ static void Give_best_player_bonus(double average_score,
             }
             strcat(msg, bp->name);
             points = (int)(best_ratio * score);
-            SCORE(bp, points, bp->pos, "[Deadly]");
+            Score(bp, points, bp->pos, "[Deadly]");
         }
         if (strlen(msg) + 64 >= sizeof(msg))
         {
@@ -955,7 +955,7 @@ static void Give_individual_bonus(player_t *pl, double average_score)
 
     ratio = (double)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(pl->score, average_score);
-    SCORE(pl, points, pl->pos, "[Winner]");
+    Score(pl, points, pl->pos, "[Winner]");
 }
 
 void Count_rounds(void)

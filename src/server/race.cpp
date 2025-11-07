@@ -243,7 +243,7 @@ void Race_compute_game_status(void)
                     Set_message(msg);
                     sprintf(msg, "[Position %d%s]", pos,
                             (num_finished_players == 1) ? "" : " (jointly)");
-                    SCORE(pl, pts, pl->pos, msg);
+                    Score(pl, pts, pl->pos, msg);
                 }
                 else
                 {
@@ -388,7 +388,7 @@ void Race_game_over(void)
                               pl->name,
                               (num_best_players == 1) ? "had" : "shares",
                               (double)bestlap / FPS);
-                SCORE(pl, 5 + num_active_players, pl->pos,
+                Score(pl, 5 + num_active_players, pl->pos,
                       (num_best_players == 1) ? "[Fastest lap]" : "[Joint fastest lap]");
             }
         }

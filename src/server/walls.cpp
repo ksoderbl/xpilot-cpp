@@ -1138,7 +1138,7 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
-                        SCORE(pl, 5, tt->pos, "Treasure: ");
+                        Score(pl, 5, tt->pos, "Treasure: ");
                         sprintf(msg, " < %s (team %d) has replaced the treasure >",
                                 pl->name, pl->team);
                         Set_message(msg);
@@ -1850,7 +1850,7 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                SCORE(PlayersArray[killer], options.cannonPoints, cannon->pos, "");
+                Score(PlayersArray[killer], options.cannonPoints, cannon->pos, "");
             }
         }
     }
@@ -2011,7 +2011,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            SCORE(PlayersArray[killer], sc, targ->pos, "Target: ");
+            Score(PlayersArray[killer], sc, targ->pos, "Target: ");
         }
         /*
          * If players can't collide with their own targets, we
@@ -2052,11 +2052,11 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         {
             if (options.targetKillTeam && targets_remaining == 0 && !BIT(PlayersArray[j]->obj_status, KILLED | PAUSE | GAME_OVER))
                 SET_BIT(PlayersArray[j]->obj_status, KILLED);
-            SCORE(PlayersArray[j], -sc, targ->pos, "Target: ");
+            Score(PlayersArray[j], -sc, targ->pos, "Target: ");
         }
         else if (PlayersArray[j]->team == PlayersArray[killer]->team &&
                  (PlayersArray[j]->team != TEAM_NOT_SET || j == killer))
-            SCORE(PlayersArray[j], por, targ->pos, "Target: ");
+            Score(PlayersArray[j], por, targ->pos, "Target: ");
     }
 }
 
@@ -2396,7 +2396,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         if (num_pushers == 0)
         {
             sc = Rate(WALL_SCORE, pl->score);
-            SCORE(pl, -sc, pl->pos, hudmsg);
+            Score(pl, -sc, pl->pos, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
         }
@@ -2425,14 +2425,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_ptr += name_len;
                 }
                 sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
-                SCORE(pusher, sc, pl->pos, pl->name);
+                Score(pusher, sc, pl->pos, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
             sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
-            SCORE(pl, -sc, pl->pos, "[Shove]");
+            Score(pl, -sc, pl->pos, "[Shove]");
 
             strcpy(msg_ptr, ".");
             Set_message(msg);
