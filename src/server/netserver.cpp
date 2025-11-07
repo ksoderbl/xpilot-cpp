@@ -1739,28 +1739,27 @@ int Send_fuel(connection_t *connp, int num, double fuel)
                          num, (int)(fuel + 0.5));
 }
 
-int Send_score_object(connection_t *connp, int score, clpos_t pos, const char *string)
+int Send_score_object(connection_t *connp, int score, clpos_t pos,
+                      const char *string)
 {
+    blkpos_t bpos = Clpos_to_blkpos(pos);
+
     if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
     {
         warn("Connection not ready for base info (%d,%d)",
              connp->state, connp->id);
         return 0;
     }
-    if (connp->version < 0x4500)
-    {
-        printf("THIS NEVER HAPPENS: vgklaj4u20\n");
+
+    if (!FEATURE(connp, F_FLOATSCORE))
         /* older clients don't get decimals of the score */
         return Packet_printf(&connp->c, "%c%hd%hu%hu%s", PKT_SCORE_OBJECT,
                              (int)(score + (score > 0 ? 0.5 : -0.5)),
-                             x, y, string);
-    }
+                             bpos.bx, bpos.by, string);
     else
-    {
         return Packet_printf(&connp->c, "%c%d%hu%hu%s", PKT_SCORE_OBJECT,
                              (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
-                             x, y, string);
-    }
+                             bpos.bx, bpos.by, string);
 }
 
 int Send_cannon(connection_t *connp, int num, int dead_time)
@@ -1821,31 +1820,28 @@ int Send_debris(connection_t *connp, int type, uint8_t *p, int n)
     return n;
 }
 
-int Send_wreckage(connection_t *connp, clpos_t pos, uint8_t wrtype, uint8_t size, uint8_t rot)
+int Send_wreckage(connection_t *connp, clpos_t pos,
+                  int wrtype, int size, int rot)
 {
-    if (options.wreckageCollisionMayKill && connp->version > 0x4201)
-    {
+    if (options.wreckageCollisionMayKill)
         /* Set the highest bit when wreckage is deadly. */
         wrtype |= 0x80;
-    }
     else
-    {
         wrtype &= ~0x80;
-    }
 
     return Packet_printf(&connp->w, "%c%hd%hd%c%c%c", PKT_WRECKAGE,
-                         x, y, wrtype, size, rot);
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
+                         wrtype, size, rot);
 }
 
-int Send_asteroid(connection_t *connp, clpos_t pos, uint8_t type, uint8_t size, uint8_t rot)
+int Send_asteroid(connection_t *connp, clpos_t pos,
+                  int type, int size, int rot)
 {
     uint8_t type_size;
+    int x = CLICK_TO_PIXEL(pos.cx), y = CLICK_TO_PIXEL(pos.cy);
 
-    if (connp->version < 0x4400)
-    {
-        printf("THIS NEVER HAPPENS: 2kjrk32jkr43j\n");
-        return Send_ecm(connp, x, y, 2 * (int)ASTEROID_RADIUS(size));
-    }
+    if (!FEATURE(connp, F_ASTEROID))
+        return Send_ecm(connp, pos, 2 * (int)ASTEROID_RADIUS(size) / CLICK);
 
     type_size = ((type & 0x0F) << 4) | (size & 0x0F);
 
@@ -1882,18 +1878,26 @@ int Send_fastshot(connection_t *connp, int type, uint8_t *p, int n)
 
 int Send_missile(connection_t *connp, clpos_t pos, int len, int dir)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%c%c",
-                         PKT_MISSILE, x, y, len, dir);
+    return Packet_printf(&connp->w, "%c%hd%hd%c%c", PKT_MISSILE,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
+                         len, dir);
 }
 
-int Send_ball(connection_t *connp, clpos_t pos, int id)
+int Send_ball(connection_t *connp, clpos_t pos, int id, int style)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_BALL, x, y, id);
+    if (FEATURE(connp, F_BALLSTYLE))
+        return Packet_printf(&connp->w, "%c%hd%hd%hd%c", PKT_BALL,
+                             CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
+                             id, style);
+
+    return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_BALL,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), id);
 }
 
 int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%c%hd", PKT_MINE, x, y,
+    return Packet_printf(&connp->w, "%c%hd%hd%c%hd", PKT_MINE,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
                          teammine, id);
 }
 
@@ -1903,57 +1907,57 @@ int Send_target(connection_t *connp, int num, int dead_time, int damage)
                          num, dead_time, damage);
 }
 
+int Send_polystyle(connection_t *connp, int polyind, int newstyle)
+{
+    if (!FEATURE(connp, F_POLYSTYLE))
+        return 0;
+    return Packet_printf(&connp->w, "%c%hu%hu", PKT_POLYSTYLE,
+                         polyind, newstyle);
+}
+
 int Send_wormhole(connection_t *connp, clpos_t pos)
 {
-    if (connp->version < 0x4501)
-    {
-        printf("THIS NEVER HAPPENS: my3jklqj34j3\n");
-        const int wormStep = 5;
-        int wormAngle = (frame_loops & 7) * (RES / 8);
+    int x = CLICK_TO_PIXEL(pos.cx), y = CLICK_TO_PIXEL(pos.cy);
 
-        return Send_ecm(connp,
-                        x,
-                        y,
-                        BLOCK_SZ - 2) +
-               Send_ecm(connp,
-                        (int)(x + wormStep * tcos(wormAngle)),
-                        (int)(y + wormStep * tsin(wormAngle)),
-                        BLOCK_SZ - 2 - 2 * wormStep) +
-               Send_ecm(connp,
-                        (int)(x + 2 * wormStep * tcos(wormAngle)),
-                        (int)(y + 2 * wormStep * tsin(wormAngle)),
-                        BLOCK_SZ - 2 - 4 * wormStep);
-    }
+    if (!FEATURE(connp, F_TEMPWORM))
+        return Send_ecm(connp, pos, BLOCK_SZ - 2);
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_WORMHOLE, x, y);
 }
 
 int Send_item(connection_t *connp, clpos_t pos, int type)
 {
-    if (type >= ITEM_EMERGENCY_SHIELD)
-    {
-        if (connp->version < 0x3200)
-        {
-            printf("THIS NEVER HAPPENS: bvkjoij23oij32\n");
-            return 1;
-        }
-    }
-    return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_ITEM, x, y, type);
+    return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_ITEM,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), type);
 }
 
 int Send_paused(connection_t *connp, clpos_t pos, int count)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_PAUSED, x, y, count);
+    return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_PAUSED,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
+                         count);
+}
+
+int Send_appearing(connection_t *connp, clpos_t pos, int id, int count)
+{
+    if (!FEATURE(connp, F_SHOW_APPEARING))
+        return 0;
+
+    return Packet_printf(&connp->w, "%c%hd%hd%hd%hd", PKT_APPEARING,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
+                         id, count);
 }
 
 int Send_ecm(connection_t *connp, clpos_t pos, int size)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_ECM, x, y, size);
+    return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_ECM,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), size);
 }
 
 int Send_trans(connection_t *connp, clpos_t pos1, clpos_t pos2)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%hd%hd",
-                         PKT_TRANS, x1, y1, x2, y2);
+    return Packet_printf(&connp->w, "%c%hd%hd%hd%hd", PKT_TRANS,
+                         CLICK_TO_PIXEL(pos1.cx), CLICK_TO_PIXEL(pos1.cy),
+                         CLICK_TO_PIXEL(pos2.cx), CLICK_TO_PIXEL(pos2.cy));
 }
 
 int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
@@ -1970,42 +1974,49 @@ int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
                          "%c%hd%hd%hd"
                          "%c"
                          "%c",
-                         PKT_SHIP, x, y, id,
+                         PKT_SHIP,
+                         CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), id,
                          dir,
                          flags);
 }
 
-int Send_refuel(connection_t *connp, clpos_t pos0, clpos_t pos1)
+int Send_refuel(connection_t *connp, clpos_t pos1, clpos_t pos2)
 {
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd%hd",
-                         PKT_REFUEL, x0, y0, x1, y1);
+                         PKT_REFUEL,
+                         CLICK_TO_PIXEL(pos1.cx), CLICK_TO_PIXEL(pos1.cy),
+                         CLICK_TO_PIXEL(pos2.cx), CLICK_TO_PIXEL(pos2.cy));
 }
 
-int Send_connector(connection_t *connp, clpos_t pos0, clpos_t pos1, int tractor)
+int Send_connector(connection_t *connp, clpos_t pos1, clpos_t pos2,
+                   int tractor)
 {
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd%hd%c",
-                         PKT_CONNECTOR, x0, y0, x1, y1, tractor);
+                         PKT_CONNECTOR,
+                         CLICK_TO_PIXEL(pos1.cx), CLICK_TO_PIXEL(pos1.cy),
+                         CLICK_TO_PIXEL(pos2.cx), CLICK_TO_PIXEL(pos2.cy),
+                         tractor);
 }
 
 int Send_laser(connection_t *connp, int color, clpos_t pos, int len, int dir)
 {
     return Packet_printf(&connp->w, "%c%c%hd%hd%hd%c", PKT_LASER,
-                         color, x, y, len, dir);
+                         color, CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
+                         len, dir);
 }
 
-int Send_radar(connection_t *connp, clpos_t pos, int size)
-{
-    /* Only since 4.2.1 can clients correctly handle teammates in green. */
-    /* Except the original patch from kth.se was 4.1.0 "experimental 1" */
-    if (connp->version < 0x4210 && connp->version != 0x4101)
-    {
-        printf("THIS NEVER HAPPENS: jtj4kj3kl4j3k4j\n");
-        size &= ~0x80;
-    }
-    return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_RADAR, x, y, size);
-}
+// int Send_radar(connection_t *connp, clpos_t pos, int size)
+// {
+//     /* Only since 4.2.1 can clients correctly handle teammates in green. */
+//     /* Except the original patch from kth.se was 4.1.0 "experimental 1" */
+//     if (connp->version < 0x4210 && connp->version != 0x4101)
+//     {
+//         size &= ~0x80;
+//     }
+//     return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_RADAR, x, y, size);
+// }
 
 int Send_fastradar(connection_t *connp, uint8_t *buf, int n)
 {
@@ -2041,9 +2052,7 @@ int Send_damaged(connection_t *connp, int damaged)
 int Send_audio(connection_t *connp, int type, int vol)
 {
     if (connp->w.size - connp->w.len <= 32)
-    {
         return 0;
-    }
     return Packet_printf(&connp->w, "%c%c%c", PKT_AUDIO, type, vol);
 }
 

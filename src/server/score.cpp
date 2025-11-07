@@ -42,14 +42,10 @@
 
 void SCORE(player_t *pl, int points, clpos_t pos, const char *msg)
 {
-    int x = CLICK_TO_BLOCK(pos.cx);
-    int y = CLICK_TO_BLOCK(pos.cy);
-
     pl->score += (points);
 
     if (pl->conn != NULL)
-        Send_score_object(pl->conn, points, x, y, msg);
-
+        Send_score_object(pl->conn, points, pos, msg);
     updateScores = true;
 }
 
@@ -60,12 +56,12 @@ int Rate(int winner, int loser)
     t = ((RATE_SIZE / 2) * RATE_RANGE) / (ABS(loser - winner) + RATE_RANGE);
     if (loser > winner)
         t = RATE_SIZE - t;
-    return (t);
+    return t;
 }
 
 /*
- * Cause `winner' to get `winner_score' points added with message
- * `winner_msg', and similarly with the `loser' and equivalent
+ * Cause 'winner' to get 'winner_score' points added with message
+ * 'winner_msg', and similarly with the 'loser' and equivalent
  * variables.
  *
  * In general the winner_score should be positive, and the loser_score

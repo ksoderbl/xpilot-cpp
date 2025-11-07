@@ -802,7 +802,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             Send_missile(conn, pos, len, shot->missile_dir);
             break;
         case OBJ_BALL:
-            Send_ball(conn, pos, shot->id);
+            Send_ball(conn, pos, shot->id, 0xff);
             break;
         case OBJ_MINE:
         {
