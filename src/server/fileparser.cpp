@@ -31,6 +31,7 @@
 
 #include <unistd.h>
 
+#include "commonmacros.h"
 #include "strdup.h"
 
 #include "server.h"
@@ -93,9 +94,8 @@ static int skipspace(char **map_ptr)
  */
 static char *getMultilineValue(char **map_ptr, char *delimiter)
 {
-    char *s = (char *)malloc(32768);
-    int i = 0;
-    int slen = 32768;
+    char *s = XMALLOC(char, 32768);
+    size_t i = 0, slen = 32768;
     char *bol;
     int ich;
 
@@ -125,7 +125,7 @@ static char *getMultilineValue(char **map_ptr, char *delimiter)
             {
                 char *t = s;
 
-                s = (char *)realloc(s, bol - s + 1);
+                s = (char *)realloc(s, (size_t)(bol - s + 1));
                 s[bol - t] = '\0';
                 return s;
             }
@@ -161,37 +161,31 @@ static char *getMultilineValue(char **map_ptr, char *delimiter)
  * expand: name
  *
  */
-#define EXPAND                             \
-    if (i == slen)                         \
-    {                                      \
-        s = (char *)realloc(s, slen *= 2); \
-    }
+#define EXPAND     \
+    if (i == slen) \
+        s = (char *)realloc(s, slen *= 2);
+
 static void parseLine(char **map_ptr, optOrigin opt_origin)
 {
-    printf("parseLine!\n");
-
-    int ich;
-    char *value,
-        *head,
-        *name,
-        *s = (char *)malloc(128);
-    char *p;
-    int slen = 128;
-    int i = 0;
-    int override = 0;
-    int multiline = 0;
+    int ich, override = 0, multiline = 0;
+    char *value, *head, *name, *s = XMALLOC(char, 128), *p;
+    size_t slen = 128, i = 0;
 
     ich = **map_ptr;
     (*map_ptr)++;
 
-    /* Skip blank lines... */
+    /*
+     * Skip blank lines...
+     */
     if (ich == '\n')
     {
         ++LineNumber;
         free(s);
         return;
     }
-    /* Skip leading space... */
+    /*
+     * Skip leading space...
+     */
     if (isascii(ich) && isspace(ich))
     {
         ich = skipspace(map_ptr);
@@ -201,20 +195,25 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
             return;
         }
     }
-    /* Skip lines that start with comment character... */
+    /*
+     * Skip lines that start with comment character...
+     */
     if (ich == '#')
     {
         toeol(map_ptr);
         free(s);
         return;
     }
-    /* Skip lines that start with the end of the file... :') */
+    /*
+     *Skip lines that start with the end of the file... :')
+     */
     if (ich == '\0')
     {
         free(s);
         return;
     }
-    /* *** I18nize? *** */
+    /*
+     *** I18nize? *** */
     if (!isascii(ich) || !isalpha(ich))
     {
         error("%s line %d: Names must start with an alphabetic.\n",
@@ -254,7 +253,8 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
     s[i++] = '\0';
     name = s;
 
-    s = (char *)malloc(slen = 128);
+    slen = 128;
+    s = XMALLOC(char, slen);
     i = 0;
     do
     {
@@ -278,27 +278,29 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
         --s;
     *++s = 0;
 
-    /* Deal with `define: MACRO \multiline: TAG'. */
+    /*
+     * Deal with 'define: MACRO \multiline: TAG'.
+     */
     if (strcmp(name, "define") == 0)
     {
         p = value;
         while (*p && isascii(*p) && !isspace(*p))
-        {
             p++;
-        }
         *p++ = '\0';
 
-        /* name becomes value */
+        /*
+         * name becomes value
+         */
         free(name);
-        name = (char *)malloc(p - value + 1);
-        memcpy(name, value, p - value);
+        name = XMALLOC(char, (size_t)(p - value + 1));
+        memcpy(name, value, (size_t)(p - value));
         name[p - value] = '\0';
 
-        /* Move value to \multiline */
+        /*
+         * Move value to \multiline
+         */
         while (*p && isspace(*p))
-        {
             p++;
-        }
         value = p;
     }
 
@@ -318,38 +320,36 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
         ++value;
     if (!*value)
     {
-        error("%s line %d: no value specified.\n",
-              FileName, LineNumber);
+        error("%s line %d: no value specified.\n", FileName, LineNumber);
         free(name);
         free(head);
         return;
     }
     if (multiline)
-    {
         value = getMultilineValue(map_ptr, value);
-    }
 
-    /* Deal with `expand: MACRO'. */
+    /*
+     * Deal with 'expand: MACRO'.
+     */
     if (strcmp(name, "expand") == 0)
-    {
         expandKeyword(value);
-    }
+
 #ifdef REGIONS /* not yet */
-    /* Deal with `region: \multiline: TAG'. */
+    /*
+     * Deal with 'region: \multiline: TAG'.
+     */
     else if (strcmp(name, "region") == 0)
     {
         if (!multiline)
         { /* Must be multiline. */
-            error("regions must use `\\multiline:'.\n");
+            error("regions must use '\\multiline:'.\n");
             free(name);
             free(head);
             return;
         }
         p = value;
         while (*p)
-        {
             parseLine(&p, opt_origin);
-        }
     }
 #endif
     else
@@ -358,9 +358,6 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
         Option_set_value(name, value, override, opt_origin);
     }
 
-    /*
-     * if (multiline) free (value);
-     */
     if (multiline)
         free(value);
     free(name);
@@ -374,21 +371,35 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
  */
 static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
 {
-    int fd, map_offset, map_size, n;
+    int n;
+    size_t map_offset, map_size;
     char *map_buf;
 
     LineNumber = 1;
 
-    fd = fileno(ifile);
+    /*
+     * In case first map fails and this is another
+     */
+    is_polygon_map = false;
 
-    /* Using a 200 map sample, the average map size is 37k.
-       This chunk size could be increased to avoid lots of
-       reallocs. */
+    /*
+     * First try the xp2 map format
+     */
+    // if (isXp2MapFile(ifile))
+    // {
+    //     is_polygon_map = true;
+    //     return parseXp2MapFile(FileName, opt_origin);
+    // }
+
+    /*
+     * Using a 200 map sample, the average map size is 37k. This chunk
+     * size could be increased to avoid lots of    reallocs.
+     */
 #define MAP_CHUNK_SIZE 8192
 
     map_offset = 0;
     map_size = 2 * MAP_CHUNK_SIZE;
-    map_buf = (char *)malloc(map_size + 1);
+    map_buf = XMALLOC(char, map_size + 1);
     if (!map_buf)
     {
         error("Not enough memory to read the map!");
@@ -397,7 +408,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
 
     for (;;)
     {
-        n = read(fd, &map_buf[map_offset], map_size - map_offset);
+        n = fread(&map_buf[map_offset], 1, map_size - map_offset, ifile);
         if (n < 0)
         {
             error("Error reading map!");
@@ -405,9 +416,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
             return false;
         }
         if (n == 0)
-        {
             break;
-        }
         map_offset += n;
 
         if (map_size - map_offset < MAP_CHUNK_SIZE)
@@ -427,20 +436,19 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
 
     if (isdigit(*map_buf))
     {
-        errno = 0;
-        error("%s is in old (v1.x) format, please convert it with mapmapper",
-              FileName);
+        warn("%s is in old (v1.x) format, please convert it with mapmapper",
+             FileName);
         free(map_buf);
         return false;
     }
     else
     {
-        /* Parse all the lines in the file. */
+        /*
+         * Parse all the lines in the file.
+         */
         char *map_ptr = map_buf;
         while (*map_ptr)
-        {
             parseLine(&map_ptr, opt_origin);
-        }
     }
 
     free(map_buf);
@@ -450,10 +458,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
 
 static int copyFilename(const char *file)
 {
-    if (FileName)
-    {
-        free(FileName);
-    }
+    XFREE(FileName);
     FileName = xp_strdup(file);
     return (FileName != 0);
 }
@@ -475,37 +480,31 @@ static FILE *fileOpen(const char *file)
 static void fileClose(FILE *fp)
 {
     fclose(fp);
-    if (FileName)
-    {
-        free(FileName);
-        FileName = NULL;
-    }
+    XFREE(FileName);
 }
 
 /*
  * Test if filename has the XPilot map extension.
  */
-static int hasMapExtension(const char *filename)
+static bool hasMapExtension(const char *filename)
 {
     int fnlen = strlen(filename);
+    if (fnlen > 4 && !strcmp(&filename[fnlen - 4], ".xp2"))
+        return true;
     if (fnlen > 3 && !strcmp(&filename[fnlen - 3], ".xp"))
-    {
-        return 1;
-    }
-    if (fnlen > 4 && !strcmp(&filename[fnlen - 3], ".map"))
-    {
-        return 1;
-    }
-    return 0;
+        return true;
+    if (fnlen > 4 && !strcmp(&filename[fnlen - 4], ".map"))
+        return true;
+    return false;
 }
 
 /*
  * Test if filename has a directory component.
  */
-static int hasDirectoryPrefix(const char *filename)
+static bool hasDirectoryPrefix(const char *filename)
 {
     static const char sep = '/';
-    return (strchr(filename, sep) != NULL);
+    return (strchr(filename, sep) != NULL ? true : false);
 }
 
 /*
@@ -517,11 +516,9 @@ static char *fileJoin(const char *dir, const char *file)
     static const char sep = '/';
     char *path;
 
-    path = (char *)malloc(strlen(dir) + 1 + strlen(file) + 1);
+    path = XMALLOC(char, strlen(dir) + 1 + strlen(file) + 1);
     if (path)
-    {
         sprintf(path, "%s%c%s", dir, sep, file);
-    }
     return path;
 }
 
@@ -533,26 +530,23 @@ static char *fileAddExtension(const char *file, const char *ext)
 {
     char *path;
 
-    path = (char *)malloc(strlen(file) + strlen(ext) + 1);
+    path = XMALLOC(char, strlen(file) + strlen(ext) + 1);
     if (path)
-    {
         sprintf(path, "%s%s", file, ext);
-    }
     return path;
 }
 
-#if defined(COMPRESSED_MAPS)
-static int usePclose;
+#ifdef CONF_COMPRESSED_MAPS
+static bool usePclose = false;
 
-static int isCompressed(const char *filename)
+static bool isCompressed(const char *filename)
 {
     int fnlen = strlen(filename);
     int celen = strlen(Conf_zcat_ext());
+
     if (fnlen > celen && !strcmp(&filename[fnlen - celen], Conf_zcat_ext()))
-    {
-        return 1;
-    }
-    return 0;
+        return true;
+    return false;
 }
 
 static void closeCompressedFile(FILE *fp)
@@ -560,17 +554,11 @@ static void closeCompressedFile(FILE *fp)
     if (usePclose)
     {
         pclose(fp);
-        usePclose = 0;
-        if (FileName)
-        {
-            free(FileName);
-            FileName = NULL;
-        }
+        usePclose = false;
+        XFREE(FileName);
     }
     else
-    {
         fileClose(fp);
-    }
 }
 
 static FILE *openCompressedFile(const char *filename)
@@ -579,30 +567,27 @@ static FILE *openCompressedFile(const char *filename)
     char *cmdline = NULL;
     char *newname = NULL;
 
-    usePclose = 0;
+    usePclose = false;
     if (!isCompressed(filename))
     {
         if (access(filename, 4) == 0)
-        {
             return fileOpen(filename);
-        }
         newname = fileAddExtension(filename, Conf_zcat_ext());
         if (!newname)
-        {
             return NULL;
-        }
         filename = newname;
     }
     if (access(filename, 4) == 0)
     {
-        cmdline = (char *)malloc(strlen(Conf_zcat_format()) + strlen(filename) + 1);
+        cmdline = XMALLOC(char,
+                          strlen(CONF_ZCAT_FORMAT) + strlen(filename) + 1);
         if (cmdline)
         {
-            sprintf(cmdline, Conf_zcat_format(), filename);
+            sprintf(cmdline, CONF_ZCAT_FORMAT, filename);
             fp = popen(cmdline, "r");
             if (fp)
             {
-                usePclose = 1;
+                usePclose = true;
                 if (!copyFilename(filename))
                 {
                     closeCompressedFile(fp);
@@ -611,18 +596,16 @@ static FILE *openCompressedFile(const char *filename)
             }
         }
     }
-    if (newname)
-        free(newname);
-    if (cmdline)
-        free(cmdline);
+    XFREE(newname);
+    XFREE(cmdline);
     return fp;
 }
 
 #else
 
-static int isCompressed(const char *filename)
+static bool isCompressed(const char *filename)
 {
-    return 0;
+    return false;
 }
 
 static void closeCompressedFile(FILE *fp)
@@ -657,51 +640,45 @@ static FILE *openCompressedFile(const char *filename)
 static FILE *openMapFile(const char *filename)
 {
     FILE *fp = NULL;
-    char *newname;
-    char *newpath;
+    char *newname, *newpath;
 
     fp = openCompressedFile(filename);
     if (fp)
-    {
         return fp;
-    }
     if (!isCompressed(filename))
     {
         if (!hasMapExtension(filename))
         {
+            newname = fileAddExtension(filename, ".xp2");
+            fp = openCompressedFile(newname);
+            free(newname);
+            if (fp)
+                return fp;
             newname = fileAddExtension(filename, ".xp");
             fp = openCompressedFile(newname);
             free(newname);
             if (fp)
-            {
                 return fp;
-            }
             newname = fileAddExtension(filename, ".map");
             fp = openCompressedFile(newname);
             free(newname);
             if (fp)
-            {
                 return fp;
-            }
         }
     }
     if (!hasDirectoryPrefix(filename))
     {
         newpath = fileJoin(Conf_mapdir(), filename);
         if (!newpath)
-        {
             return NULL;
-        }
         if (hasDirectoryPrefix(newpath))
-        {
-            /* call recursively. */
+            /*
+             * call recursively.
+             */
             fp = openMapFile(newpath);
-        }
         free(newpath);
         if (fp)
-        {
             return fp;
-        }
     }
     return NULL;
 }
@@ -727,14 +704,12 @@ static void closeDefaultsFile(FILE *fp)
 bool parseDefaultsFile(const char *filename)
 {
     FILE *ifile;
-    /* bool        result; */
+    bool result;
 
     if ((ifile = openDefaultsFile(filename)) == NULL)
-    {
         return false;
-    }
-    /* result = */
-    parseOpenFile(ifile, OPT_DEFAULTS);
+
+    result = parseOpenFile(ifile, OPT_DEFAULTS);
     closeDefaultsFile(ifile);
 
     return true;
@@ -746,14 +721,12 @@ bool parseDefaultsFile(const char *filename)
 bool parsePasswordFile(const char *filename)
 {
     FILE *ifile;
-    /* bool        result; */
+    bool result;
 
     if ((ifile = openDefaultsFile(filename)) == NULL)
-    {
         return false;
-    }
-    /* result = */
-    parseOpenFile(ifile, OPT_PASSWORD);
+
+    result = parseOpenFile(ifile, OPT_PASSWORD);
     closeDefaultsFile(ifile);
 
     return true;
@@ -765,17 +738,15 @@ bool parsePasswordFile(const char *filename)
 bool parseMapFile(const char *filename)
 {
     FILE *ifile;
-    /* bool        result; */
+    bool result;
 
     if ((ifile = openMapFile(filename)) == NULL)
-    {
         return false;
-    }
-    /* result = */
-    parseOpenFile(ifile, OPT_MAP);
+
+    result = parseOpenFile(ifile, OPT_MAP);
     closeMapFile(ifile);
 
-    return true;
+    return result;
 }
 
 void expandKeyword(const char *keyword)
@@ -787,15 +758,11 @@ void expandKeyword(const char *keyword)
 
     p = Option_get_value(keyword, &expand_origin);
     if (p == NULL)
-    {
-        warn("Can't expand `%s' because it has not been defined.\n",
+        warn("Can't expand '%s' because it has not been defined.\n",
              keyword);
-    }
     else
     {
         while (*p)
-        {
             parseLine(&p, expand_origin);
-        }
     }
 }

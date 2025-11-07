@@ -604,7 +604,7 @@ void Alloc_players(int number)
     int i;
 
     /* Allocate space for pointers */
-    PlayersArray = (player_t **)calloc(number + 1, sizeof(player_t *));
+    PlayersArray = XCALLOC(player_t *, n);
 
     /* Allocate space for all entries, all player structs */
     p = playerArray = XCALLOC(player_t, n);
@@ -617,9 +617,6 @@ void Alloc_players(int number)
         error("Not enough memory for Players.");
         exit(1);
     }
-
-    /* PlayersArray[-1] should evaluate to NULL. */
-    PlayersArray++;
 
     for (i = 0; i < number; i++)
     {
@@ -638,15 +635,9 @@ void Alloc_players(int number)
 
 void Free_players(void)
 {
-    if (PlayersArray)
-    {
-        --PlayersArray;
-        free(PlayersArray);
-        PlayersArray = NULL;
-
-        free(playerArray);
-        free(visibilityArray);
-    }
+    XFREE(PlayersArray);
+    XFREE(playerArray);
+    XFREE(visibilityArray);
 }
 
 void Update_score_table(void)
@@ -656,21 +647,21 @@ void Update_score_table(void)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        pl = PlayersArray[j];
+        pl = Player_by_index(j);
         if (pl->score != pl->prev_score || pl->life != pl->prev_life || pl->mychar != pl->prev_mychar || pl->alliance != pl->prev_alliance)
         {
             pl->prev_score = pl->score;
             pl->prev_life = pl->life;
             pl->prev_mychar = pl->mychar;
             pl->prev_alliance = pl->alliance;
+
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = PlayersArray[i];
+                player_t *pl_i = Player_by_index(i);
 
                 if (pl_i->conn != NULL)
                 {
-                    Send_score(pl_i->conn, pl->id,
-                               pl->score, pl->life,
+                    Send_score(pl_i->conn, pl->id, pl->score, pl->life,
                                pl->mychar, pl->alliance);
                 }
             }
@@ -688,11 +679,10 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player_t *pl_i = PlayersArray[i];
+                    player_t *pl_i = Player_by_index(i);
+
                     if (pl_i->conn != NULL)
-                    {
                         Send_timing(pl_i->conn, pl->id, check, pl->round);
-                    }
                 }
             }
         }
