@@ -31,7 +31,6 @@
 
 #define SERVER
 #include "serverconst.h"
-#include "global.h"
 #include "xperror.h"
 
 static int ID_queue[NUM_IDS];

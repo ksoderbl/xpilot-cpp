@@ -44,7 +44,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "proto.h"
 #include "map.h"
 #include "score.h"

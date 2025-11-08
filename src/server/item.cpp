@@ -37,7 +37,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "saudio.h"
 #include "score.h"
 #include "netserver.h"
@@ -169,7 +168,7 @@ void Place_item(int item, player_t *pl)
     {
         if (Player_is_killed(pl))
         {
-            num_lose = pl->item[item] - world->items[item].initial;
+            num_lose = pl->item[item] - pl->initial_item[item];
             if (num_lose <= 0)
                 return;
             pl->item[item] -= num_lose;
@@ -345,9 +344,9 @@ void Place_item(int item, player_t *pl)
 }
 
 void Make_item(clpos_t pos, vector_t vel,
-               int type, int num_per_pack, long status)
+               int type, int num_per_pack, int status)
 {
-    object_t *item;
+    itemobject_t *item;
 
     if (!World_contains_clpos(pos))
         return;
@@ -355,11 +354,11 @@ void Make_item(clpos_t pos, vector_t vel,
     if (world->items[type].num >= world->items[type].max)
         return;
 
-    if ((item = Object_allocate()) == NULL)
+    if ((item = ITEM_PTR(Object_allocate())) == NULL)
         return;
 
     item->type = OBJ_ITEM;
-    item->info = type;
+    item->item_type = type;
     item->color = RED;
     item->obj_status = status;
     item->id = NO_ID;
@@ -369,8 +368,8 @@ void Make_item(clpos_t pos, vector_t vel,
     item->acc.x =
         item->acc.y = 0.0;
     item->mass = 10.0;
-    item->life = 1500 + (int)(rfrac() * 512);
-    item->count = num_per_pack;
+    item->life = 1500 + rfrac() * 512;
+    item->item_count = num_per_pack;
     item->pl_range = ITEM_SIZE / 2;
     item->pl_radius = ITEM_SIZE / 2;
 
@@ -387,17 +386,16 @@ void Throw_items(player_t *pl)
 
     for (item = 0; item < NUM_ITEMS; item++)
     {
-        if (!BIT(1U << item, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+        if (item == ITEM_FUEL || item == ITEM_TANK)
+            continue;
+        do
         {
-            do
-            {
-                num_items_to_throw = pl->item[item] - world->items[item].initial;
-                if (num_items_to_throw <= 0)
-                    break;
-                Place_item(item, pl);
-                remain = pl->item[item] - world->items[item].initial;
-            } while (remain > 0 && remain < num_items_to_throw);
-        }
+            num_items_to_throw = pl->item[item] - pl->initial_item[item];
+            if (num_items_to_throw <= 0)
+                break;
+            Place_item(item, pl);
+            remain = pl->item[item] - pl->initial_item[item];
+        } while (remain > 0 && remain < num_items_to_throw);
     }
 
     Item_update_flags(pl);
@@ -424,11 +422,11 @@ void Detonate_items(player_t *pl)
         owner_pl = pl;
 
     /*
-     * These are always immune to detonation.
+     * Initial items are immune to detonation.
      */
-    if ((pl->item[ITEM_MINE] -= world->items[ITEM_MINE].initial) < 0)
+    if ((pl->item[ITEM_MINE] -= pl->initial_item[ITEM_MINE]) < 0)
         pl->item[ITEM_MINE] = 0;
-    if ((pl->item[ITEM_MISSILE] -= world->items[ITEM_MISSILE].initial) < 0)
+    if ((pl->item[ITEM_MISSILE] -= pl->initial_item[ITEM_MISSILE]) < 0)
         pl->item[ITEM_MISSILE] = 0;
 
     /*
@@ -453,7 +451,8 @@ void Detonate_items(player_t *pl)
             vector_t vel;
             vel.x = pl->vel.x + speed * tcos(dir);
             vel.y = pl->vel.y + speed * tsin(dir);
-            Place_general_mine(owner_pl->id, pl->team, GRAVITY, pl->pos, vel, mods);
+            Place_general_mine(owner_pl->id, pl->team, GRAVITY,
+                               pl->pos, vel, mods);
         }
     }
     for (i = 0; i < pl->item[ITEM_MISSILE]; i++)
@@ -470,7 +469,7 @@ void Detonate_items(player_t *pl)
              * mean a misfire.
              */
             SET_BIT(pl->lock.tagged, LOCK_PLAYER);
-            pl->lock.pl_id = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
+            pl->lock.pl_id = Player_by_index((int)(rfrac() * NumPlayers))->id;
 
             switch ((int)(rfrac() * 3))
             {
@@ -516,24 +515,25 @@ void Tractor_beam(player_t *pl)
                          Player_by_id(pl->lock.pl_id), pl->tractor_is_pressor);
 }
 
-void General_tractor_beam(int id, clpos_t pos, int items, player_t *victim, bool pressor)
+void General_tractor_beam(int id, clpos_t pos,
+                          int items, player_t *victim, bool pressor)
 {
-    player_t *pl = Player_by_id(id);
-    double maxdist = TRACTOR_MAX_RANGE(items),
-           maxforce = TRACTOR_MAX_FORCE(items),
-           percent, force, dist;
-    long cost;
+    double maxdist = TRACTOR_MAX_RANGE(items);
+    double maxforce = TRACTOR_MAX_FORCE(items), percent, force, dist, cost, a;
     int theta;
+    player_t *pl = Player_by_id(id);
+    /*cannon_t *cannon = Cannon_by_id(id);*/
 
-    // TODO
-    dist = Wrap_length(CLICK_TO_PIXEL(pos.cx - victim->pos.cx), CLICK_TO_PIXEL(pos.cy - victim->pos.cy));
+    dist = Wrap_length(pos.cx - victim->pos.cx,
+                       pos.cy - victim->pos.cy) /
+           CLICK;
     if (dist > maxdist)
         return;
     percent = TRACTOR_PERCENT(dist, maxdist);
-    cost = (long)TRACTOR_COST(percent);
+    cost = TRACTOR_COST(percent);
     force = TRACTOR_FORCE(pressor, percent, maxforce);
 
-    sound_play_sensors(pos, (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
+    sound_play_sensors(pos, pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND);
 
     if (pl)
         Player_add_fuel(pl, cost);
@@ -1006,7 +1006,10 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
                 }
                 if (shot->type == OBJ_SMART_SHOT)
                 {
-                    if (shot->info != owner)
+                    // if (shot->info != owner)
+                    //     continue;
+                    smart = SMART_PTR(shot);
+                    if (smart->smart_lock_id != owner_pl->id)
                         continue;
                 }
             }
@@ -1023,17 +1026,17 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
              */
             smart = SMART_PTR(shot);
             SET_BIT(smart->obj_status, CONFUSED);
-            smart->ecm_range = range;
-            smart->count = CONFUSED_TIME;
+            smart->smart_ecm_range = range;
+            smart->smart_count = CONFUSED_TIME;
             if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee)
-                smart->new_info = pl->lock.pl_id;
+                smart->smart_relock_id = pl->lock.pl_id;
             else
-                smart->new_info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
+                smart->smart_relock_id = Player_by_index((int)(rfrac() * NumPlayers))->id;
             /* Can't redirect missiles to team mates. */
             /* So let the missile keep on following this unlucky player. */
             /*-BA Why not redirect missiles to team mates?
              *-BA It's not ideal, but better them than me...
-             *if (TEAM_IMMUNE(ind, GetIndArray[smart->new_info])) {
+             *if (TEAM_IMMUNE(ind, GetInd(smart->new_info))) {
              *        smart->new_info = ind;
              * }
              */
@@ -1041,7 +1044,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
         case OBJ_MINE:
             mine = MINE_PTR(shot);
-            mine->ecm_range = range;
+            mine->mine_ecm_range = range;
 
             /*
              * perim is distance from the mine to its detonation perimeter
@@ -1066,15 +1069,17 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
                 mine->life = 0;
                 break;
             }
-            mine->count = ((int)(8 * (1 - range)) + 2) * FPS;
+            mine->mine_count = ((8 * (1 - range)) + 2) * FPS;
             if (!BIT(mine->obj_status, CONFUSED) && (closest_mine == NULL || range < closest_mine_range))
             {
                 closest_mine = mine;
                 closest_mine_range = range;
             }
             SET_BIT(mine->obj_status, CONFUSED);
-            if (mine->count <= 0)
+            if (mine->mine_count <= 0)
                 CLR_BIT(mine->obj_status, CONFUSED);
+            break;
+        default:
             break;
         }
     }
@@ -1101,9 +1106,12 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
         for (i = 0; i < Num_cannons(); i++)
         {
             cannon_t *c = Cannon_by_index(i);
+
             if (BIT(world->rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
-            range = Wrap_length(CLICK_TO_FLOAT(pos.cx - c->pos.cx), CLICK_TO_FLOAT(pos.cy - c->pos.cy));
+            range = Wrap_length(pos.cx - c->pos.cx,
+                                pos.cy - c->pos.cy) /
+                    CLICK;
             if (range > ECM_DISTANCE)
                 continue;
             damage = (ECM_DISTANCE - range) / ECM_DISTANCE;

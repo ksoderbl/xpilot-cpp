@@ -39,7 +39,6 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -1748,10 +1747,11 @@ static void Robot_default_play_check_objects(player_t *pl,
          */
         if (!BIT(OBJ_TYPEBIT(shot->type), killing_shots))
         {
+
             /* Find closest item */
             if (shot->type == OBJ_ITEM)
             {
-                object_t *item = shot;
+                itemobject_t *item = ITEM_PTR(shot);
 
                 if (ABS(dx) < *item_dist && ABS(dy) < *item_dist)
                 {
@@ -1761,7 +1761,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                         /* It doesn't know what it is, so get it if it can */
                         imp = ROBOT_HANDY_ITEM;
                     else
-                        imp = Rank_item_value(pl, (Item_t)obj_list[j]->info);
+                        imp = Rank_item_value(pl, (enum Item)item->item_type);
                     if (imp > ROBOT_IGNORE_ITEM && imp >= *item_imp)
                     {
                         *item_imp = imp;
@@ -1952,7 +1952,7 @@ static void Robot_default_play(player_t *pl)
         if (!BIT(pl->obj_status, SELF_DESTRUCT))
         {
             SET_BIT(pl->obj_status, SELF_DESTRUCT);
-            pl->count = 150;
+            pl->recovery_count = 150;
         }
     }
     else
@@ -2232,7 +2232,7 @@ static void Robot_default_play(player_t *pl)
                 return;
         }
     }
-    if (item != NULL && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || Obj[item_i]->info == ITEM_FUEL || Obj[item_i]->info == ITEM_TANK))
+    if (item != NULL && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || item->item_type == ITEM_FUEL || item->item_type == ITEM_TANK))
     {
 
         if (item_imp != ROBOT_IGNORE_ITEM)

@@ -33,7 +33,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "score.h"
 #include "map.h"
 #include "saudio.h"
@@ -295,7 +294,7 @@ void Pause_player(player_t *pl, bool on)
     if (on && !BIT(pl->obj_status, PAUSE))
     {
         /* Turn pause mode on */
-        pl->count = 10 * FPS;
+        pl->pause_count = 10 * FPS;
         pl->updateVisibility = true;
         CLR_BIT(pl->obj_status, SELF_DESTRUCT | PLAYING);
         SET_BIT(pl->obj_status, PAUSE);
@@ -307,7 +306,7 @@ void Pause_player(player_t *pl, bool on)
     else if (!on && BIT(pl->obj_status, PAUSE))
     {
         /* Turn pause mode off */
-        if (pl->count <= 0)
+        if (pl->pause_count <= 0)
         {
             bool toolate = false;
 
@@ -787,7 +786,7 @@ int Handle_keyboard(player_t *pl)
             case KEY_SELF_DESTRUCT:
                 TOGGLE_BIT(pl->obj_status, SELF_DESTRUCT);
                 if (BIT(pl->obj_status, SELF_DESTRUCT))
-                    pl->count = 150;
+                    pl->self_destruct_count = SELF_DESTRUCT_DELAY;
                 break;
 
             case KEY_PAUSE:
@@ -850,9 +849,9 @@ int Handle_keyboard(player_t *pl)
                         /*
                          * Turn hover pause on, together with shields.
                          */
-                        pl->count = 5 * FPS;
+                        pl->pause_count = 5 * FPS;
                         CLR_BIT(pl->obj_status, SELF_DESTRUCT);
-                        SET_BIT(pl->obj_status, HOVERPAUSE);
+                        SET_BIT(pl->pl_status, HOVERPAUSE);
 
                         if (Player_uses_emergency_thrust(pl))
                             Emergency_thrust(pl, false);
@@ -876,10 +875,10 @@ int Handle_keyboard(player_t *pl)
                         if (BIT(pl->have, HAS_SHIELD))
                             SET_BIT(pl->used, HAS_SHIELD);
                     }
-                    else if (pl->count <= 0)
+                    else if (pl->pause_count <= 0)
                     {
                         Autopilot(pl, false);
-                        CLR_BIT(pl->obj_status, HOVERPAUSE);
+                        CLR_BIT(pl->pl_status, HOVERPAUSE);
                         if (!BIT(pl->have, HAS_SHIELD))
                             CLR_BIT(pl->used, HAS_SHIELD);
                     }

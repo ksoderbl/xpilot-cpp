@@ -139,10 +139,10 @@ struct cell_node
     vector_t vel;        /* speed in x,y */              \
     vector_t acc;        /* acceleration in x,y */       \
     float mass;          /* mass in unigrams */          \
+    float life;          /* No of ticks left to live */  \
     modifiers_t mods;    /* Modifiers to this object */  \
-    long life;           /* No of ticks left to live */  \
     int type;            /* one bit of OBJ_XXX */        \
-    int count;           /* Misc timings */              \
+    int obj_count;       /* Misc timings */              \
     uint8_t color;       /* Color of object */           \
     uint8_t missile_dir; /* missile direction */         \
     uint32_t obj_status; /* gravity, etc. */
@@ -151,7 +151,7 @@ struct cell_node
 
 #define OBJECT_EXTEND                              \
     cell_node cell; /* node in cell linked list */ \
-    long info;      /* Miscellaneous info */       \
+    long obj_info;  /* Miscellaneous info */       \
     long fuselife;  /* fuse duration ticks */      \
     int pl_range;   /* distance for collision */   \
     int pl_radius;  /* distance for hit */         \
@@ -183,9 +183,13 @@ struct xp_mineobject
 
     OBJECT_EXTEND
 
-    int mine_owner;   /* Who's object is this ? */
-    DFLOAT ecm_range; /* Range from last ecm center */
-    int spread_left;  /* how much spread time left */
+    // int mine_owner;   /* Who's object is this ? */
+    // DFLOAT ecm_range; /* Range from last ecm center */
+    // int spread_left;  /* how much spread time left */
+    float mine_count;       /* Misc snafus */
+    float mine_ecm_range;   /* Range from last ecm center */
+    float mine_spread_left; /* how much spread time left */
+    short mine_owner;       /* Who's object is this ? */
 
 #define MINE_IND(ind) ((mineobject_t *)Obj[(ind)])
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
@@ -226,8 +230,12 @@ struct xp_smartobject
 
     MISSILE_EXTEND
 
-    int new_info;    /* smart re-lock id */
-    float ecm_range; /* Range from last ecm center */
+    // int new_info;    /* smart re-lock id */
+    // float ecm_range; /* Range from last ecm center */
+    float smart_ecm_range; /* Range from last ecm center*/
+    float smart_count;     /* Misc snafus */
+    short smart_lock_id;   /* snafu */
+    short smart_relock_id; /* smart re-lock id */
 
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
@@ -246,7 +254,9 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    int torp_spread_left; /* how much spread time left */
+    // int torp_spread_left; /* how much spread time left */
+    float torp_spread_left; /* how much spread time left */
+    float torp_count;       /* Misc snafus */
 
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))
@@ -266,7 +276,7 @@ struct xp_heatobject
     MISSILE_EXTEND
 
     float heat_count;   /* Misc snafus */
-    short heat_lock_id; /* snafu */
+    short heat_lock_id; /* instead of missile->info */
 
 #define HEAT_IND(ind) ((heatobject_t *)Obj[(ind)])
 #define HEAT_PTR(ptr) ((heatobject_t *)(ptr))
@@ -344,7 +354,7 @@ struct xp_itemobject
 
     OBJECT_EXTEND
 
-    int item_type;  /* One of ITEM_* */
+    int item_type;  /* instead of shot->info, One of ITEM_* */
     int item_count; /* Misc snafus */
 
 #define ITEM_IND(ind) ((itemobject_t *)Obj[(ind)])

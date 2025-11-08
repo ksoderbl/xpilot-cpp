@@ -35,7 +35,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"

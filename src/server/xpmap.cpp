@@ -45,7 +45,6 @@
 #include "wormhole.h"
 
 // #include "serverconst.h"
-// #include "global.h"
 // #include "score.h"
 // #include "netserver.h"
 // #include "object.h"

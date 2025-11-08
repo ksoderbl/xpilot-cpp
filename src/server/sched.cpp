@@ -39,7 +39,7 @@
 #include "xperror.h"
 #include "types.h"
 #include "sched.h"
-#include "global.h"
+#include "server.h"
 
 #include "portability.h"
 

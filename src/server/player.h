@@ -717,6 +717,7 @@ void Player_hit_armor(player_t *pl);
 void Player_used_kill(player_t *pl);
 void Player_set_mass(player_t *pl);
 int Init_player(int ind, shipshape_t *ship);
+void Player_init_items(player_t *pl);
 void Alloc_players(int number);
 void Free_players(void);
 void Update_score_table(void);

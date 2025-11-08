@@ -35,7 +35,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "xperror.h"
 #include "object.h"
 

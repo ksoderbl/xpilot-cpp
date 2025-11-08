@@ -38,7 +38,6 @@
 #define SERVER
 #include "version.h"
 #include "serverconst.h"
-#include "global.h"
 #include "xperror.h"
 #include "netserver.h"
 #include "score.h"

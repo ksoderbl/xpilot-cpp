@@ -29,7 +29,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "rules.h"
 #include "bit.h"
@@ -129,9 +128,12 @@ void Tune_item_probs(void)
             for (j = 0; j < NumObjs; j++)
             {
                 object_t *obj = Obj[j];
+
                 if (obj->type == OBJ_ITEM)
                 {
-                    if (obj->info == i)
+                    itemobject_t *item = ITEM_PTR(obj);
+
+                    if (item->item_type == i)
                     {
                         Delete_shot(j);
                         j--;
@@ -169,7 +171,7 @@ void Tune_asteroid_prob(void)
     /* superfluous asteroids are handled by Asteroid_update() */
 
     /* Tune asteroid concentrator parameters */
-    LIMIT(options.asteroidConcentratorRadius, 1, world->diagonal);
+    LIMIT(options.asteroidConcentratorRadius, 1.0, world->diagonal);
     LIMIT(options.asteroidConcentratorProb, 0.0, 1.0);
 }
 

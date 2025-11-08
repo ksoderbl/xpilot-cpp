@@ -38,7 +38,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "bit.h"
 #include "object.h"
 #include "cannon.h"
@@ -182,7 +181,7 @@ void Cannon_add_item(cannon_t *c, int item_type, int amount)
 void Cannon_throw_items(cannon_t *c)
 {
     int i, dir;
-    object_t *obj;
+    itemobject_t *item;
     double velocity;
 
     for (i = 0; i < NUM_ITEMS; i++)
@@ -194,29 +193,29 @@ void Cannon_throw_items(cannon_t *c)
         {
             int amount = world->items[i].max_per_pack - (int)(rfrac() * (1 + world->items[i].max_per_pack - world->items[i].min_per_pack));
             LIMIT(amount, 0, c->item[i]);
-            if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (obj = Object_allocate()) != NULL)
+            if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (item = ITEM_PTR(Object_allocate())) != NULL)
             {
-                obj->type = OBJ_ITEM;
-                obj->info = i;
-                obj->color = RED;
-                obj->obj_status = GRAVITY;
+                item->type = OBJ_ITEM;
+                item->item_type = i;
+                item->color = RED;
+                item->obj_status = GRAVITY;
                 dir = (int)(c->dir - (CANNON_SPREAD * 0.5) + (rfrac() * CANNON_SPREAD));
                 dir = MOD2(dir, RES);
-                obj->id = NO_ID;
-                obj->team = TEAM_NOT_SET;
-                Object_position_init_clpos(obj, c->pos);
+                item->id = NO_ID;
+                item->team = TEAM_NOT_SET;
+                Object_position_init_clpos(OBJ_PTR(item), c->pos);
                 velocity = rfrac() * 6;
-                obj->vel.x = tcos(dir) * velocity;
-                obj->vel.y = tsin(dir) * velocity;
-                obj->acc.x = 0;
-                obj->acc.y = 0;
-                obj->mass = 10;
-                obj->life = 1500 + (int)(rfrac() * 512);
-                obj->count = amount;
-                obj->pl_range = ITEM_SIZE / 2;
-                obj->pl_radius = ITEM_SIZE / 2;
+                item->vel.x = tcos(dir) * velocity;
+                item->vel.y = tsin(dir) * velocity;
+                item->acc.x = 0;
+                item->acc.y = 0;
+                item->mass = 10;
+                item->life = 1500 + rfrac() * 512;
+                item->item_count = amount;
+                item->pl_range = ITEM_SIZE / 2;
+                item->pl_radius = ITEM_SIZE / 2;
                 world->items[i].num++;
-                Cell_add_object(obj);
+                Cell_add_object(OBJ_PTR(item));
             }
             c->item[i] -= amount;
         }
@@ -274,7 +273,7 @@ static int Cannon_select_defense(cannon_t *c)
         return -1;
 
     /* still protected */
-    if (BIT(c->used, USES_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
+    if (BIT(c->used, HAS_EMERGENCY_SHIELD) || BIT(c->used, USES_PHASING_DEVICE))
         return -1;
 
     if (c->item[ITEM_EMERGENCY_SHIELD])
@@ -351,7 +350,7 @@ static void Cannon_defend(cannon_t *c, int defense)
     {
     case CD_EM_SHIELD:
         c->emergency_shield_left += 4 * FPS;
-        SET_BIT(c->used, USES_EMERGENCY_SHIELD);
+        SET_BIT(c->used, HAS_EMERGENCY_SHIELD);
         c->item[ITEM_EMERGENCY_SHIELD]--;
         sound_play_sensors(c->pos, EMERGENCY_SHIELD_ON_SOUND);
         break;

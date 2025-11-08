@@ -35,7 +35,6 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "score.h"
 #include "netserver.h"
 #include "player.h"

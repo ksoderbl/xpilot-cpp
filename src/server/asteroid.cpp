@@ -54,7 +54,6 @@
 // #include "xpconfig.h"
 // #include "serverconst.h"
 // #include "list.h"
-// #include "global.h"
 // #include "proto.h"
 // #include "saudio.h"
 // #include "bit.h"
@@ -312,7 +311,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     asteroid->wire_turnspeed = 0.02 + rfrac() * 0.05;
     asteroid->wire_rotation = (int)(rfrac() * RES);
     asteroid->wire_size = size;
-    asteroid->info = (int)(rfrac() * 256);
+    asteroid->wire_type = (uint8_t)(rfrac() * 256);
     radius = ASTEROID_RADIUS(size);
     asteroid->pl_range = radius;
     asteroid->pl_radius = radius;
@@ -320,7 +319,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     asteroid->obj_status = GRAVITY;
     CLEAR_MODS(asteroid->mods);
 
-    if (Asteroid_add_to_list(asteroid) == true)
+    if (Asteroid_add_to_list(asteroid))
     {
         world->asteroids.num += 1 << (size - 1);
         Cell_add_object(OBJ_PTR(asteroid));

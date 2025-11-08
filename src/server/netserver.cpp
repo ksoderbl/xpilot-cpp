@@ -116,7 +116,6 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "pack.h"
 #include "bit.h"

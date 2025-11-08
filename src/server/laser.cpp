@@ -37,7 +37,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "score.h"
 #include "saudio.h"
@@ -549,7 +548,7 @@ void Laser_pulse_collision(void)
         obj->life = 1;
         obj->id = pulse->id;
         obj->team = pulse->team;
-        obj->count = 0;
+        // obj->count = 0; // TODO: What was this count used for?
         obj->obj_status = 0;
         if (pulse->id == NO_ID)
             obj->obj_status = FROMCANNON;

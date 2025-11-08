@@ -39,7 +39,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "defaults.h"
 #include "map.h"
 #include "xperror.h"
@@ -161,6 +160,9 @@ static char *getMultilineValue(char **map_ptr, char *delimiter)
  * expand: name
  *
  */
+// in commonmacros
+#undef EXPAND
+
 #define EXPAND     \
     if (i == slen) \
         s = (char *)realloc(s, slen *= 2);

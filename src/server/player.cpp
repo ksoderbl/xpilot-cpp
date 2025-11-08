@@ -35,7 +35,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -177,7 +176,7 @@ void Pick_startpos(player_t *pl)
                 }
             }
             if (BIT(pl->obj_status, PLAYING) == 0)
-                pl->count = RECOVERY_DELAY;
+                pl->recovery_count = RECOVERY_DELAY;
             else if (BIT(pl->obj_status, PAUSE | GAME_OVER))
                 Go_home(pl);
         }
@@ -421,6 +420,31 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
     }
 }
 
+void Player_init_items(player_t *pl)
+{
+    int i;
+
+    /*
+     * Give player an initial set of items.
+     */
+    for (i = 0; i < NUM_ITEMS; i++)
+    {
+        if (i == ITEM_FUEL || i == ITEM_TANK)
+            pl->item[i] = 0;
+        else
+            pl->item[i] = world->items[i].initial;
+    }
+
+    Player_init_fuel(pl, (double)world->items[ITEM_FUEL].initial);
+
+    /*
+     * Remember the amount of initial items. This way we can
+     * later figure out what items the player has picked up.
+     */
+    for (i = 0; i < NUM_ITEMS; i++)
+        pl->initial_item[i] = pl->item[i];
+}
+
 int Init_player(int ind, shipshape_t *ship)
 {
     player_t *pl = PlayersArray[ind];
@@ -436,13 +460,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->mass = options.shipMass;
     pl->emptymass = options.shipMass;
 
-    for (i = 0; i < NUM_ITEMS; i++)
-    {
-        if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = world->items[i].initial;
-    }
-
-    Player_init_fuel(pl, (double)world->items[ITEM_FUEL].initial);
+    Player_init_items(pl);
 
     if (options.allowShipShapes == true && ship)
         pl->ship = ship;
@@ -472,7 +490,7 @@ int Init_player(int ind, shipshape_t *ship)
     pl->last_lap_time = 0;
     pl->last_lap = 0;
     pl->best_lap = 0;
-    pl->count = -1;
+    // pl->count = -1; // TODO: what is this count?
     pl->shield_time = 0;
     pl->last_wall_touch = 0;
 
@@ -733,7 +751,7 @@ void Reset_all_players(void)
             pl->life = world->rules->lives;
             if (BIT(world->rules->mode, TIMING))
             {
-                pl->count = RECOVERY_DELAY;
+                pl->recovery_count = RECOVERY_DELAY;
             }
         }
         if (Player_is_tank(pl))
@@ -857,7 +875,7 @@ static void Compute_end_of_round_values(double *average_score,
                                         double *best_ratio,
                                         int best_players[])
 {
-    int i;
+    int i, n = 0;
     double ratio;
 
     /* Initialize everything */
@@ -869,10 +887,14 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Player_by_index(i)) || (BIT(Player_by_index(i)->obj_status, PAUSE) && Player_by_index(i)->count <= 0))
+        player_t *pl = Player_by_index(i);
+
+        if (Player_is_tank(pl) || (Player_is_paused(pl) && pl->pause_count <= 0) || Player_is_waiting(pl))
             continue;
-        *average_score += Player_by_index(i)->score;
-        ratio = (double)Player_by_index(i)->kills / (Player_by_index(i)->deaths + 1);
+
+        n++;
+        *average_score += pl->score;
+        ratio = (double)pl->kills / (pl->deaths + 1);
         if (ratio > *best_ratio)
         {
             *best_ratio = ratio;
@@ -882,7 +904,8 @@ static void Compute_end_of_round_values(double *average_score,
         else if (ratio == *best_ratio)
             best_players[(*num_best_players)++] = i;
     }
-    *average_score /= NumPlayers;
+    if (n != 0) /* Can this be 0? */
+        *average_score /= n;
 }
 
 static void Give_best_player_bonus(double average_score,
@@ -1018,7 +1041,7 @@ void Team_game_over(int winning_team, const char *reason)
             if (pl_i->team != winning_team)
                 continue;
 
-            if (Player_is_tank(pl_i) || (Player_is_paused(pl_i) && pl_i->count <= 0) || (Player_is_waiting(pl_i) && pl_i->score == 0))
+            if (Player_is_tank(pl_i) || (Player_is_paused(pl_i) && pl_i->pause_count <= 0) || (Player_is_waiting(pl_i) && pl_i->score == 0))
                 continue;
 
             for (j = 0; j < num_best_players; j++)
@@ -1644,15 +1667,12 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->obj_status |= DEF_BITS;
     pl->obj_status &= ~(KILL_BITS);
 
-    for (i = 0; i < NUM_ITEMS; i++)
-    {
-        if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = world->items[i].initial;
-    }
+    Player_init_items(pl);
 
     pl->forceVisible = 0;
+    // pl->count = MAX(RECOVERY_DELAY, pl->count); // TODO: what is this?
+    assert(pl->recovery_count == RECOVERY_DELAY);
     pl->shot_max = options.maxPlayerShots;
-    pl->count = MAX(RECOVERY_DELAY, pl->count);
     pl->ecmcount = 0;
     pl->emergency_thrust_left = 0;
     pl->emergency_thrust_max = 0;
@@ -1660,15 +1680,16 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->emergency_shield_max = 0;
     pl->phasing_left = 0;
     pl->phasing_max = 0;
+    pl->self_destruct_count = 0;
     pl->damaged = 0;
     pl->stunned = 0;
     pl->lock.distance = 0;
 
-    pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
-    minfuel = (world->items[ITEM_FUEL].initial);
-    minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
-    pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
-    Player_init_fuel(pl, pl->fuel.sum);
+    // pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
+    // minfuel = (world->items[ITEM_FUEL].initial);
+    // minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
+    // pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
+    // Player_init_fuel(pl, pl->fuel.sum);
 
     if (!BIT(pl->obj_status, PAUSE))
     {

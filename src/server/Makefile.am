@@ -18,7 +18,6 @@ xpilot_cpp_server_SOURCES = \
     event.cpp \
     fileparser.cpp \
     frame.cpp \
-    global.h \
     gravity.cpp \
     id.cpp \
     item.cpp \

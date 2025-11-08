@@ -28,12 +28,10 @@
 
 #include "strlcpy.h"
 
-#include "server.h"
-
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
+#include "server.h"
 #include "map.h"
 #include "bit.h"
 #include "netserver.h"

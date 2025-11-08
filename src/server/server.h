@@ -35,6 +35,25 @@
 #include "player.h"
 #include "polygon.h"
 
+#include "object.h"
+#include "map.h"
+#include "list.h"
+
+#include "option.h"
+
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#define STR80 (80)
+
+typedef struct
+{
+    char owner[STR80];
+    char host[STR80];
+} server_t;
+
 extern shape_t ball_wire, wormhole_wire, filled_wire;
 
 static inline vector_t World_gravity(clpos_t pos)
@@ -45,7 +64,8 @@ static inline vector_t World_gravity(clpos_t pos)
 #define APPNAME "xpilot-cpp-server"
 
 extern object_t *Obj[];
-
+extern long frame_loops;
+extern long frame_loops_slow;
 extern int NumPlayers;
 extern int NumOperators;
 extern int NumPseudoPlayers;
@@ -58,6 +78,38 @@ extern char ShutdownReason[];
 
 extern double timePerFrame;
 extern const double timeStep;
+
+/*
+ * Global data.
+ */
+#define FPS options.framesPerSecond
+// #define NumObjs (ObjCount + 0)
+
+extern long frame_loops;
+// extern int NumPlayers;
+// extern int NumPseudoPlayers;
+// extern int ObjCount;
+// extern int NumPulses;
+// extern int NumEcms;
+// extern int NumTransporters;
+// extern int NumAlliances;
+// extern int NumRobots;
+extern int login_in_progress;
+// extern world_t World;
+extern server_t Server;
+extern uint32_t DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
+// extern int GetIndArray[];
+extern int ShutdownServer;
+extern int ShutdownDelay;
+extern long main_loops;
+extern int mainLoopTime;
+extern char *serverAddr;
+extern bool updateScores;
+extern int game_lock;
+extern int roundtime;
+extern int roundsPlayed;
+extern uint32_t KILLING_SHOTS;
+// extern unsigned SPACE_BLOCKS;
 
 /*
  * Prototypes for cell.c

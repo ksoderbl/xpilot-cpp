@@ -44,7 +44,6 @@
 #include "map.h"
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "bit.h"
 #include "netserver.h"
 #include "saudio.h"
@@ -418,10 +417,10 @@ static int Frame_status(connection_t *conn, player_t *pl)
         }
     }
 
-    if (BIT(pl->obj_status, HOVERPAUSE))
-        showautopilot = (pl->count <= 0 || (frame_loops % 8) < 4);
+    if (BIT(pl->pl_status, HOVERPAUSE))
+        showautopilot = (pl->pause_count <= 0 || (frame_loops_slow % 8) < 4);
     else if (Player_uses_autopilot(pl))
-        showautopilot = (frame_loops % 8) < 4;
+        showautopilot = (frame_loops_slow % 8) < 4;
     else
         showautopilot = 0;
 
@@ -450,8 +449,8 @@ static int Frame_status(connection_t *conn, player_t *pl)
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
-    if (BIT(pl->obj_status, SELF_DESTRUCT) && pl->count > 0)
-        Send_destruct(conn, pl->count);
+    if (BIT(pl->obj_status, SELF_DESTRUCT) && pl->self_destruct_count > 0)
+        Send_destruct(conn, pl->self_destruct_count);
     if (Player_is_phasing(pl))
         Send_phasingtime(conn,
                          pl->phasing_left,
@@ -727,16 +726,16 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                 if (debris_colors > 4)
                 {
                     if (color == BLUE)
-                        color = (shot->life >> 1);
+                        color = (int)shot->life / 2;
                     else
-                        color = (shot->life >> 2);
+                        color = (int)shot->life / 4;
                 }
                 else
                 {
                     if (color == BLUE)
-                        color = (shot->life >> 2);
+                        color = (int)shot->life / 4;
                     else
-                        color = (shot->life >> 3);
+                        color = (int)shot->life / 8;
                 }
                 if (color >= debris_colors)
                     color = debris_colors - 1;
@@ -751,7 +750,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
-                Send_wreckage(conn, pos, (uint8_t)wreck->info,
+                Send_wreckage(conn, pos, wreck->wire_type,
                               wreck->wire_size, wreck->wire_rotation);
             }
             break;
@@ -759,8 +758,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         case OBJ_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
-            Send_asteroid(conn, pos,
-                          (uint8_t)ast->info, ast->wire_size, ast->wire_rotation);
+            Send_asteroid(conn, pos, ast->wire_type,
+                          ast->wire_size, ast->wire_rotation);
         }
         break;
 
@@ -842,8 +841,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_ITEM:
         {
-            object_t *item = shot;
-            int item_type = shot->info;
+            itemobject_t *item = ITEM_PTR(shot);
+            int item_type = item->item_type;
 
             if (BIT(item->obj_status, RANDOM_ITEM))
                 item_type = Choose_random_item();
@@ -971,7 +970,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             continue;
         if (BIT(pl_i->obj_status, PAUSE))
         {
-            Send_paused(conn, pl_i->pos, pl_i->count);
+            Send_paused(conn, pl_i->pos, pl_i->pause_count);
             continue;
         }
 

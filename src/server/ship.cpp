@@ -36,7 +36,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "saudio.h"
 #include "xperror.h"
 #include "object.h"
@@ -467,9 +466,16 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && Player_by_id(Obj[i]->info) == pl)
+        object_t *obj = Obj[i];
+
+        if (obj->type == OBJ_HEAT_SHOT)
         {
-            Obj[i]->info = NumPlayers - 1;
+            heatobject_t *heat = HEAT_PTR(obj);
+            if (heat->heat_lock_id > 0 && Player_by_id(heat->heat_lock_id) == pl)
+                /* kps - is this right ? */
+                // The purpose of this seems to be to put the lock on the tank.
+                // heat->heat_lock_id = NumPlayers - 1; <- ng had this, it's probably wrong?
+                heat->heat_lock_id = tank->id;
         }
     }
 
@@ -700,8 +706,7 @@ void Make_wreckage(clpos_t pos,
         if (size > 255)
             size = 255;
         wreckage->wire_size = size;
-        wreckage->info = (int)(rfrac() * 256);
-        // wreckage->wire_type = (uint8_t)(rfrac() * 256);
+        wreckage->wire_type = (uint8_t)(rfrac() * 256);
 
         radius = wreckage->wire_size * 16 / 256;
         if (radius < 8)

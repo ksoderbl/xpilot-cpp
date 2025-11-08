@@ -36,7 +36,6 @@
 #include "xpconfig.h"
 #include "types.h"
 #include "serverconst.h"
-#include "global.h"
 #include "xperror.h"
 #include "portability.h"
 

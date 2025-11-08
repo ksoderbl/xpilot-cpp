@@ -29,7 +29,6 @@
 
 #define SERVER
 #include "serverconst.h"
-#include "global.h"
 #include "xperror.h"
 #include "xpmath.h"
 #include "sched.h"

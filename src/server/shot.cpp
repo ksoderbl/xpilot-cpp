@@ -35,7 +35,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "score.h"
 #include "saudio.h"
 #include "cannon.h"
@@ -245,9 +244,9 @@ void Place_general_mine(int id, int team, int status,
             /*
              * Dir gives (S is ship upwards);
              *
-             *                              o                    o   o
-             *        X2: o S        o        X3:   S                X4:   S
-             *                            o   o            o   o
+             *	                      o             o   o
+             *	X2: o S	o       X3:   S         X4:   S
+             *	                      o             o   o
              */
             dir = (i * space) + space / 2 + (minis - 2) * (RES / 2) + (pl ? pl->dir : 0);
             dir += (int)((rfrac() - 0.5) * space * 0.5);
@@ -258,14 +257,14 @@ void Place_general_mine(int id, int team, int status,
              * This causes the added initial velocity to reduce to
              * zero over the MINI_MINE_SPREAD_TIME.
              */
-            mine->spread_left = MINI_MINE_SPREAD_TIME;
+            mine->mine_spread_left = MINI_MINE_SPREAD_TIME;
             mine->acc.x = -mv.x / MINI_MINE_SPREAD_TIME;
             mine->acc.y = -mv.y / MINI_MINE_SPREAD_TIME;
         }
         else
         {
             mv.x = mv.y = mine->acc.x = mine->acc.y = 0.0;
-            mine->spread_left = 0;
+            mine->mine_spread_left = 0;
         }
         mine->vel = mv;
         mine->vel.x += vel.x * MINE_SPEED_FACT;
@@ -1321,7 +1320,10 @@ void Delete_shot(int ind)
 
         /* Special items. */
     case OBJ_ITEM:
-        switch (shot->info)
+        item = ITEM_PTR(shot);
+
+        // switch (shot->info)
+        switch (item->item_type)
         {
 
         case ITEM_MISSILE:
@@ -1584,18 +1586,15 @@ void Update_missile(missileobject_t *missile)
 {
     player_t *pl;
     int angle, theta;
-    double range = 0.0;
-    double acc;
-    double x_dif = 0.0;
-    double y_dif = 0.0;
-    double shot_speed;
-
-    acc = SMART_SHOT_ACC;
+    double range = 0.0, acc = SMART_SHOT_ACC;
+    double x_dif = 0.0, y_dif = 0.0, shot_speed, a;
 
     if (missile->type == OBJ_HEAT_SHOT)
     {
+        heatobject_t *heat = HEAT_PTR(missile);
+
         acc = SMART_SHOT_ACC * HEAT_SPEED_FACT;
-        if (missile->info >= 0)
+        if (heat->heat_lock_id >= 0)
         {
             /* Get player and set min to distance */
             pl = Player_by_id(missile->info);
@@ -1733,6 +1732,7 @@ void Update_missile(missileobject_t *missile)
             int dx, dy;
         } sur[8] = {
             {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+        blkpos_t sbpos;
 
 #define BLOCK_PARTS 2
         vx = missile->vel.x;
@@ -1762,6 +1762,11 @@ void Update_missile(missileobject_t *missile)
             if (xi < 0 || xi >= world->x || yi < 0 || yi >= world->y)
                 break;
 
+            /*
+             * kps -
+             * Someone please write polygon based missile navigation code.
+             */
+
             switch (world->block[xi][yi])
             {
             case TARGET:
@@ -1779,12 +1784,16 @@ void Update_missile(missileobject_t *missile)
                         shot_speed -= acc * (SMART_SHOT_DECFACT + 1);
                 }
                 foundw = 1;
+                break;
+            default:
+                break;
             }
         }
 
         i = ((int)(missile->missile_dir * 8 / RES) & 7) + 8;
-        xi = OBJ_X_IN_BLOCKS(missile);
-        yi = OBJ_Y_IN_BLOCKS(missile);
+        sbpos = Clpos_to_blkpos(missile->pos);
+        xi = sbpos.bx;
+        yi = sbpos.by;
 
         for (j = 2, angle = -1, freemax = 0; j >= -2; --j)
         {
@@ -1796,6 +1805,7 @@ void Update_missile(missileobject_t *missile)
                 yt = yi + sur[(i + j + si) & 7].dy;
 
                 if (xt >= 0 && xt < world->x && yt >= 0 && yt < world->y)
+                {
                     switch (world->block[xt][yt])
                     {
                     case TARGET:
@@ -1814,6 +1824,7 @@ void Update_missile(missileobject_t *missile)
                         ++k;
                         break;
                     }
+                }
             }
             if (k > freemax || (k == freemax && ((j == -1 && (rfrac() < 0.5)) || j == 0 || j == 1)))
             {
@@ -1831,8 +1842,10 @@ void Update_missile(missileobject_t *missile)
         if (angle >= 0)
         {
             i = angle & 7;
-            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (missile->pix_pos.y + 2 * missile->vel.y),
-                                      (xi + sur[i].dx) * BLOCK_SZ - (missile->pix_pos.x - 2 * missile->vel.x));
+            a = Wrap_findDir(
+                (yi + sur[i].dy) * BLOCK_SZ - (missile->pix_pos.y + 2 * missile->vel.y),
+                (xi + sur[i].dx) * BLOCK_SZ - (missile->pix_pos.x - 2 * missile->vel.x));
+
 #ifdef SHOT_EXTRA_SLOWDOWN
             if (!foundw && range > (SHOT_LOOK_AH - i) * BLOCK_SZ)
             {
@@ -1885,9 +1898,13 @@ void Update_mine(mineobject_t *mine)
             CLR_BIT(mine->obj_status, OWNERIMMUNE);
     }
 
-    if (mine->mods.mini && mine->spread_left-- <= 0)
+    if (mine->mods.mini)
     {
-        mine->acc.x = 0;
-        mine->acc.y = 0;
+        if ((mine->mine_spread_left -= timeStep) <= 0)
+        {
+            mine->acc.x = 0;
+            mine->acc.y = 0;
+            mine->mine_spread_left = 0;
+        }
     }
 }

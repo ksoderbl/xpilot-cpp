@@ -28,8 +28,7 @@
 #include "bit.h"
 #include "const.h"
 
-// #include "xpserver.h"
-#include "global.h"
+#include "server.h"
 #include "object.h"
 #include "option.h"
 #include "polygon.h"

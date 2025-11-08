@@ -44,7 +44,6 @@
 #include "xpconfig.h"
 #include "types.h"
 #include "serverconst.h"
-#include "global.h"
 #include "socklib.h"
 #include "map.h"
 #include "pack.h"

@@ -41,7 +41,6 @@
 #include "version.h"
 #include "serverconst.h"
 #include "types.h"
-#include "global.h"
 #include "socklib.h"
 #include "map.h"
 #include "pack.h"

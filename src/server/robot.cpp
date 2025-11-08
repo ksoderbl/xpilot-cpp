@@ -38,7 +38,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -961,7 +960,9 @@ static bool Robot_check_leave(player_t *pl)
 
     char msg[MSG_LEN];
 
-    if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
+    // What did pl->count do here?
+    // if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
+    if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING)))
     {
         msg[0] = '\0';
         if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
@@ -1071,7 +1072,9 @@ void Robot_update(bool tick)
         if (BIT(pl->obj_status, PLAYING | GAME_OVER) != PLAYING)
         {
             /* Only check for leave if not being transported to homebase. */
-            if (!pl->count)
+            // TODO
+            // if (pl->recovery_count == 0)
+            // if (!pl->count)
             {
                 if (Robot_check_leave(pl))
                     i--;

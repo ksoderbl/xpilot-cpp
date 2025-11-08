@@ -32,7 +32,6 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
-#include "global.h"
 #include "saudio.h"
 #include "score.h"
 #include "object.h"
@@ -60,7 +59,9 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
         {
             player_t *pl_i = Player_by_index(i);
 
-            if (Player_is_tank(pl_i) || (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) || (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && pl_i->score == 0))
+            if (Player_is_tank(pl_i) ||
+                (Player_is_paused(pl_i) && pl_i->pause_count <= 0) ||
+                Player_is_waiting(pl_i))
                 continue;
             if (pl_i->team == td->team)
             {
@@ -78,9 +79,8 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
     }
 
     sound_play_all(DESTROY_BALL_SOUND);
-    sprintf(msg, " < %s's (%d) team has destroyed team %d treasure >",
-            pl->name, pl->team, td->team);
-    Set_message(msg);
+    Set_message_f(" < %s's (%d) team has destroyed team %d treasure >",
+                  pl->name, pl->team, td->team);
 
     if (!somebody_flag)
     {
@@ -101,8 +101,8 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
         player_t *pl_i = Player_by_index(i);
 
         if (Player_is_tank(pl_i) ||
-            (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) ||
-            (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && pl_i->score == 0))
+            (Player_is_paused(pl_i) && pl_i->pause_count <= 0) ||
+            Player_is_waiting(pl_i))
             continue;
         if (pl_i->team == td->team)
         {
