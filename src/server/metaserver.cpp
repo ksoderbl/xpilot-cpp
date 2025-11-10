@@ -41,6 +41,7 @@
 #include "version.h"
 #include "serverconst.h"
 #include "types.h"
+
 #include "socklib.h"
 #include "map.h"
 #include "pack.h"
@@ -199,9 +200,9 @@ void Meta_update(int change)
     memset(active_per_team, 0, sizeof active_per_team);
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        player_t *pl = Player_by_index(i);
 
-        if (Player_is_human(pl_i) && !BIT(pl_i->obj_status, PAUSE))
+        if (Player_is_human(pl) && !Player_is_paused(pl))
         {
             num_active_players++;
             if (BIT(world->rules->mode, TEAM_PLAY))
@@ -243,7 +244,7 @@ void Meta_update(int change)
     else
     {
         sprintf(freebases, "=%d",
-                world->NumBases - num_active_players - login_in_progress);
+                Num_bases() - num_active_players - login_in_progress);
     }
 
     sprintf(string,
@@ -265,7 +266,7 @@ void Meta_update(int change)
             "add sound " SOUND_SUPPORT_STR "\n",
             Server.host, num_active_players,
             META_VERSION, world->name, world->x, world->y, world->author,
-            world->NumBases, FPS, options.contactPort,
+            Num_bases(), FPS, options.contactPort,
             game_mode, world->NumTeamBases, freebases,
             BIT(world->rules->mode, TIMING) ? 1 : 0,
             (long)(time(NULL) - serverTime),
@@ -279,23 +280,23 @@ void Meta_update(int change)
 
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = Player_by_index(i);
+        player_t *pl = Player_by_index(i);
 
-        if (Player_is_human(pl_i) && !BIT(Player_by_index(i)->obj_status, PAUSE))
+        if (Player_is_human(pl) && !Player_is_paused(pl))
         {
             if ((len + (4 * MAX_CHARS)) < sizeof(string))
             {
                 sprintf(string + len,
                         "%s%s=%s@%s",
                         (first) ? "add players " : ",",
-                        pl_i->name,
-                        pl_i->username,
-                        pl_i->hostname);
+                        pl->name,
+                        pl->username,
+                        pl->hostname);
                 len += strlen(&string[len]);
 
                 if (BIT(world->rules->mode, TEAM_PLAY))
                 {
-                    sprintf(string + len, "{%d}", pl_i->team);
+                    sprintf(string + len, "{%d}", pl->team);
                     len += strlen(&string[len]);
                 }
 

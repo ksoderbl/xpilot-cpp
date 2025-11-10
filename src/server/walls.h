@@ -25,8 +25,6 @@
 #define WALLS_H
 
 #include "click.h"
-
-#include "map.h"
 #include "player.h"
 
 /*
@@ -100,7 +98,7 @@ typedef struct
     int cannon;
     int wormhole;
     int target;
-    treasure_t *treasure_ptr;
+    int treasure;
 } move_state_t;
 
 struct move_parameters

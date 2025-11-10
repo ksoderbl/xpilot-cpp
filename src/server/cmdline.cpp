@@ -34,19 +34,17 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "defaults.h"
 #include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
 #include "tuner.h"
 #include "walls.h"
-#include "sched.h"
+
+options_t options;
 
 extern char conf_logfile_string[]; /* Default name of log file */
-
-double timePerFrame;         /* Real time elapsed per frame */
-const double timeStep = 1.0; /* Game time step per frame */
-options_t options;
 
 /*
 ** Two functions which can be used if an option
@@ -446,7 +444,7 @@ static option_desc opts[] = {
     {"allowPlayerKilling",
      "killings",
      "true",
-     &options.allowPlayerKilling,
+     &options.playerKillings,
      valBool,
      Set_world_rules,
      "Should players be allowed to kill one other?\n",
@@ -1222,7 +1220,7 @@ static option_desc opts[] = {
      "14",
      &options.framesPerSecond,
      valInt,
-     Timing_setup,
+     tuner_fps,
      "The number of frames per second the server should strive for.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"allowSmartMissiles",
@@ -2434,7 +2432,7 @@ static option_desc opts[] = {
      "0",
      &options.timerResolution,
      valInt,
-     Timing_setup,
+     tuner_none,
      "If set to nonzero xpilots will requests signals from the OS at\n"
      "1/timerResolution second intervals.  The server will then compute\n"
      "a new frame FPS times out of every timerResolution signals.\n",
@@ -2609,14 +2607,4 @@ option_desc *Find_option_by_name(const char *name)
         }
     }
     return NULL;
-}
-
-void Timing_setup(void)
-{
-    /*
-     * Calculate amount of real time that elapses per frame.
-     */
-    timePerFrame = 1.0 / FPS;
-
-    install_timer_tick(nullptr, FPS);
 }

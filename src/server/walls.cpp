@@ -29,21 +29,21 @@
 #include <climits>
 
 #include "const.h"
-
-#include "robot.h"
+#include "xpmath.h"
+#include "xperror.h"
 #include "server.h"
 
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "score.h"
 #include "saudio.h"
 #include "item.h"
-#include "xperror.h"
 #include "walls.h"
 #include "click.h"
 #include "object.h"
-#include "xpmath.h"
+#include "robot.h"
 
 #define WALLDIST_MASK \
     (FILLED_BIT | REC_LU_BIT | REC_LD_BIT | REC_RU_BIT | REC_RD_BIT | FUEL_BIT | CANNON_BIT | TREASURE_BIT | TARGET_BIT | CHECK_BIT | WORMHOLE_BIT)
@@ -312,9 +312,7 @@ void Treasure_init(void)
     int i;
     for (i = 0; i < Num_treasures(); i++)
     {
-        treasure_t *treasure = Treasure_by_index(i);
-
-        Make_treasure_ball(treasure);
+        Make_treasure_ball(i);
     }
 }
 
@@ -1102,7 +1100,7 @@ void Move_segment(move_state_t *ms)
                             break;
                         }
                     }
-                    ms->treasure_ptr = Treasure_by_index(i);
+                    ms->treasure = i;
                     ms->crash = CrashTreasure;
 
                     /*
@@ -1110,11 +1108,13 @@ void Move_segment(move_state_t *ms)
                      * depends on which team the treasure and the ball
                      * belong to.
                      */
-                    if (mi->obj->type != OBJ_BALL)
+                    if (mi->obj->type != OBJ_BALL_BIT)
+                    {
                         return;
+                    }
 
                     ball = BALL_PTR(mi->obj);
-                    if (ms->treasure_ptr == ball->ball_treasure)
+                    if (ms->treasure == ball->treasure)
                     {
                         /*
                          * Ball has been replaced back in the hoop from whence
@@ -1124,12 +1124,12 @@ void Move_segment(move_state_t *ms)
                          * nothing interesting happens.
                          */
                         player_t *pl = NULL;
-                        treasure_t *tt = ball->ball_treasure;
+                        treasure_t *tt = &world->treasures[ms->treasure];
 
                         if (ball->ball_owner != NO_ID)
                             pl = Player_by_id(ball->ball_owner);
 
-                        if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != tt->team))
+                        if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
                         {
                             ball->life = LONG_MAX;
                             ms->crash = NotACrash;
@@ -1150,23 +1150,21 @@ void Move_segment(move_state_t *ms)
                         ball->life = 0;
                         return;
                     }
-                    if (BIT(world->rules->mode, TEAM_PLAY) && ms->treasure_ptr->team ==
+                    if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team ==
                                                                   Player_by_id(ball->ball_owner)->team)
                     {
                         /*
                          * Ball has been brought back to home treasure.
                          * The team should be punished.
                          */
-                        sprintf(msg, " < The ball was loose for %ld frames >",
-                                LONG_MAX - ball->life);
-                        Set_message(msg);
-                        if (options.captureTheFlag && !ms->treasure_ptr->have && !ms->treasure_ptr->empty)
+                        Set_message_f(" < The ball was loose for %ld frames >", LONG_MAX - ball->life);
+                        if (options.captureTheFlag && !Treasure_by_index(ms->treasure)->have && !Treasure_by_index(ms->treasure)->empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(Player_by_id(ball->ball_owner), msg);
                         }
                         else if (Punish_team(Player_by_id(ball->ball_owner),
-                                             ball->ball_treasure, ms->treasure_ptr))
+                                             Treasure_by_index(ball->treasure), Treasure_by_index(ms->treasure)))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
                     ball->life = 0;
@@ -1198,20 +1196,29 @@ void Move_segment(move_state_t *ms)
                     {
                         int team;
                         if (mi->pl)
+                        {
                             team = mi->pl->team;
-                        else if (mi->obj->type == OBJ_BALL)
+                        }
+                        else if (BIT(mi->obj->type, OBJ_BALL_BIT))
                         {
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->ball_owner != NO_ID)
+                            {
                                 team = Player_by_id(ball->ball_owner)->team;
+                            }
                             else
+                            {
                                 team = TEAM_NOT_SET;
+                            }
                         }
                         else
+                        {
                             team = mi->obj->team;
-
+                        }
                         if (team == world->targets[i].team)
+                        {
                             break;
+                        }
                     }
                     if (!mi->pl)
                     {
@@ -1798,6 +1805,7 @@ static void Cannon_dies(move_state_t *ms)
     int cy = cannon->pos.cy;
     int killer = -1;
     player_t *pl = NULL;
+    player_t *kp = NULL;
     vector_t zero_vel = {0.0, 0.0};
 
     cannon->dead_time = options.cannonDeadTime;
@@ -1810,7 +1818,7 @@ static void Cannon_dies(move_state_t *ms)
                 zero_vel,
                 NO_ID,
                 cannon->team,
-                OBJ_DEBRIS,
+                OBJ_DEBRIS_BIT,
                 4.5,
                 GRAVITY,
                 RED,
@@ -1836,14 +1844,13 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (ms->mip->obj->id != NO_ID)
         {
-            killer = GetInd(ms->mip->obj->id);
-            pl = PlayersArray[killer];
+            pl = Player_by_id(ms->mip->obj->id);
         }
     }
     else if (BIT(ms->mip->pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
         pl = ms->mip->pl;
-        killer = GetInd(pl->id);
+        // kp = Player_by_id(pl->id);
     }
     if (pl)
     {
@@ -1851,7 +1858,7 @@ static void Cannon_dies(move_state_t *ms)
         {
             if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
-                Score(PlayersArray[killer], options.cannonPoints, cannon->pos, "");
+                Score(pl, options.cannonPoints, cannon->pos, "");
             }
         }
     }
@@ -1861,9 +1868,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 {
     target_t *targ = &world->targets[ms->target];
     object_t *obj = ms->mip->obj;
-    int j, sc, por,
-        bx, by,
-        killer;
+    int j, sc, por, bx, by;
     int win_score = 0,
         lose_score = 0;
     int win_team_members = 0,
@@ -1873,11 +1878,12 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         targets_total = 0;
     int drainfactor;
     vector_t zero_vel = {0.0, 0.0};
+    player_t *kp;
 
     /* a normal shot or a direct mine hit work, cannons don't */
     /* KK: should shots/mines by cannons of opposing teams work? */
     /* also players suiciding on target will cause damage */
-    if (!BIT(OBJ_TYPEBIT(obj->type), KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
+    if (!BIT(obj->type, KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
     {
         return;
     }
@@ -1885,7 +1891,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         return;
     }
-    killer = GetInd(obj->id);
+    kp = Player_by_id(obj->id);
     if (targ->team == obj->team)
     {
         return;
@@ -1957,7 +1963,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
                 zero_vel,
                 NO_ID,
                 targ->team,
-                OBJ_DEBRIS,
+                OBJ_DEBRIS_BIT,
                 4.5,
                 GRAVITY,
                 RED,
@@ -1971,27 +1977,29 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
     {
         for (j = 0; j < NumPlayers; j++)
         {
-            if (Player_is_tank(PlayersArray[j]) ||
-                (BIT(PlayersArray[j]->obj_status, PAUSE) && PlayersArray[j]->count <= 0) ||
-                (BIT(PlayersArray[j]->obj_status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
+            player_t *pl_j = Player_by_index(j);
+
+            if (Player_is_tank(pl_j) ||
+                (BIT(pl_j->obj_status, PAUSE) && pl_j->count <= 0) ||
+                (BIT(pl_j->obj_status, GAME_OVER) && pl_j->mychar == 'W' && pl_j->score == 0))
                 continue;
-            if (PlayersArray[j]->team == targ->team)
+            if (pl_j->team == targ->team)
             {
-                lose_score += PlayersArray[j]->score;
+                lose_score += pl_j->score;
                 lose_team_members++;
-                if (BIT(PlayersArray[j]->obj_status, GAME_OVER) == 0)
+                if (BIT(pl_j->obj_status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
-            else if (PlayersArray[j]->team == PlayersArray[killer]->team)
+            else if (pl_j->team == kp->team)
             {
-                win_score += PlayersArray[j]->score;
+                win_score += pl_j->score;
                 win_team_members++;
             }
         }
     }
     if (somebody_flag)
     {
-        for (j = 0; j < world->NumTargets; j++)
+        for (j = 0; j < Num_targets(); j++)
         {
             if (world->targets[j].team == targ->team)
             {
@@ -2008,11 +2016,11 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     if (targets_remaining > 0)
     {
-        sc = Rate(PlayersArray[killer]->score, CANNON_SCORE) / 4;
+        sc = Rate(kp->score, CANNON_SCORE) / 4;
         sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
         if (sc > 0)
         {
-            Score(PlayersArray[killer], sc, targ->pos, "Target: ");
+            Score(kp, sc, targ->pos, "Target: ");
         }
         /*
          * If players can't collide with their own targets, we
@@ -2022,21 +2030,21 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
         if (options.targetTeamCollision && targets_total < 10)
         {
             sprintf(msg, "%s blew up one of team %d's targets.",
-                    PlayersArray[killer]->name, (int)targ->team);
+                    kp->name, (int)targ->team);
             Set_message(msg);
         }
         return;
     }
 
     sprintf(msg, "%s blew up team %d's %starget.",
-            PlayersArray[killer]->name,
+            kp->name,
             (int)targ->team,
             (targets_total > 1) ? "last " : "");
     Set_message(msg);
 
     if (options.targetKillTeam)
     {
-        PlayersArray[killer]->kills++;
+        kp->kills++;
     }
 
     sc = Rate(win_score, lose_score);
@@ -2044,20 +2052,22 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        if (Player_is_tank(PlayersArray[j]) ||
-            (BIT(PlayersArray[j]->obj_status, PAUSE) && PlayersArray[j]->count <= 0) ||
-            (BIT(PlayersArray[j]->obj_status, GAME_OVER) && PlayersArray[j]->mychar == 'W' && PlayersArray[j]->score == 0))
+        player_t *pl_j = Player_by_index(j);
+
+        if (Player_is_tank(pl_j) ||
+            (BIT(pl_j->obj_status, PAUSE) && pl_j->count <= 0) ||
+            (BIT(pl_j->obj_status, GAME_OVER) && pl_j->mychar == 'W' && pl_j->score == 0))
             continue;
 
-        if (PlayersArray[j]->team == targ->team)
+        if (pl_j->team == targ->team)
         {
-            if (options.targetKillTeam && targets_remaining == 0 && !BIT(PlayersArray[j]->obj_status, KILLED | PAUSE | GAME_OVER))
-                SET_BIT(PlayersArray[j]->obj_status, KILLED);
-            Score(PlayersArray[j], -sc, targ->pos, "Target: ");
+            if (options.targetKillTeam && targets_remaining == 0 && !BIT(pl_j->obj_status, KILLED | PAUSE | GAME_OVER))
+                SET_BIT(pl_j->obj_status, KILLED);
+            Score(pl_j, -sc, targ->pos, "Target: ");
         }
-        else if (PlayersArray[j]->team == PlayersArray[killer]->team &&
-                 (PlayersArray[j]->team != TEAM_NOT_SET || j == killer))
-            Score(PlayersArray[j], por, targ->pos, "Target: ");
+        else if (pl_j->team == kp->team &&
+                 (pl_j->team != TEAM_NOT_SET || pl_j->id == kp->id))
+            Score(pl_j, por, targ->pos, "Target: ");
     }
 }
 
@@ -2076,7 +2086,7 @@ static void Object_crash(move_state_t *ms)
         /*
          * Ball type has already been handled.
          */
-        if (obj->type == OBJ_BALL)
+        if (obj->type == OBJ_BALL_BIT)
         {
             break;
         }
@@ -2091,16 +2101,16 @@ static void Object_crash(move_state_t *ms)
     case CrashWall:
         obj->life = 0;
 #if 0
-/* KK: - Added sparks to wallcrashes for objects != OBJ_SPARK|OBJ_DEBRIS.
+/* KK: - Added sparks to wallcrashes for objects != OBJ_SPARK_BIT|OBJ_DEBRIS_BIT.
 **       I'm not sure of the amount of sparks or the direction.
 */
-        if (!BIT(obj->type, OBJ_SPARK | OBJ_DEBRIS)) {
+        if (!BIT(obj->type, OBJ_SPARK_BIT | OBJ_DEBRIS_BIT)) {
             Make_debris(CLICK_TO_FLOAT(ms->pos.x),
                         CLICK_TO_FLOAT(ms->pos.y),
                         0, 0,
                         obj->owner,
                         obj->team,
-                        OBJ_SPARK,
+                        OBJ_SPARK_BIT,
                         (obj->mass * VECTOR_LENGTH(obj->vel)) / 3,
                         GRAVITY,
                         RED,
@@ -2119,7 +2129,7 @@ static void Object_crash(move_state_t *ms)
 
     case CrashCannon:
         obj->life = 0;
-        if (obj->type == OBJ_ITEM)
+        if (BIT(obj->type, OBJ_ITEM_BIT))
         {
             Cannon_add_item(Cannon_by_index(ms->cannon), obj->info, obj->count);
         }
@@ -2173,12 +2183,12 @@ void Move_object(object_t *obj)
     mi.obj = obj;
     mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
-    mi.wall_bounce = BIT(mp.obj_bounce_mask, OBJ_TYPEBIT(obj->type));
-    mi.cannon_crashes = BIT(mp.obj_cannon_mask, OBJ_TYPEBIT(obj->type));
-    mi.target_crashes = BIT(mp.obj_target_mask, OBJ_TYPEBIT(obj->type));
-    mi.treasure_crashes = BIT(mp.obj_treasure_mask, OBJ_TYPEBIT(obj->type));
+    mi.wall_bounce = BIT(mp.obj_bounce_mask, obj->type);
+    mi.cannon_crashes = BIT(mp.obj_cannon_mask, obj->type);
+    mi.target_crashes = BIT(mp.obj_target_mask, obj->type);
+    mi.treasure_crashes = BIT(mp.obj_treasure_mask, obj->type);
     mi.wormhole_warps = true;
-    if (obj->type == OBJ_BALL && obj->id != NO_ID)
+    if (BIT(obj->type, OBJ_BALL_BIT) && obj->id != NO_ID)
         mi.phased = BIT(Player_by_id(obj->id)->used, USES_PHASING_DEVICE);
     else
         mi.phased = 0;
@@ -2203,7 +2213,7 @@ void Move_object(object_t *obj)
             }
             if (ms.bounce && ms.bounce != BounceEdge)
             {
-                if (obj->type != OBJ_BALL)
+                if (obj->type != OBJ_BALL_BIT)
                     obj->life = (long)(obj->life * options.objectWallBounceLifeFactor);
                 if (obj->life <= 0)
                 {
@@ -2219,7 +2229,7 @@ void Move_object(object_t *obj)
                  * should bounce, it is not reactive thrust otherwise wall
                  * bouncing would cause acceleration of the player.
                  */
-                if (!BIT(obj->obj_status, FROMBOUNCE) && obj->type == OBJ_SPARK)
+                if (!BIT(obj->obj_status, FROMBOUNCE) && BIT(obj->type, OBJ_SPARK_BIT))
                     CLR_BIT(obj->obj_status, OWNERIMMUNE);
                 if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(options.maxObjectWallBounceSpeed))
                 {
@@ -2444,7 +2454,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (Player_is_killed(pl) && pl->score < 0 && Player_is_robot(pl))
+    if (BIT(pl->obj_status, KILLED) && pl->score < 0 && Player_is_robot(pl))
     {
         pl->home_base = 0;
         Pick_startpos(pl);
@@ -2544,7 +2554,7 @@ void Move_player(player_t *pl)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = true;
-    mi.phased = Player_is_phasing(pl);
+    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
 
     vel = pl->vel;
     todo.cx = FLOAT_TO_CLICK(vel.x);
@@ -2789,7 +2799,7 @@ void Move_player(player_t *pl)
                 cost = (cost * (RES / 2 + abs_delta_dir)) / RES;
                 if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
                 {
-                    Player_add_fuel(pl, (-((cost)*options.wallBounceFuelDrainMult)));
+                    Add_fuel(&pl->fuel, (long)(-((cost << FUEL_SCALE_BITS) * options.wallBounceFuelDrainMult)));
                     Item_damage(pl, options.wallBounceDestroyItemProb);
                 }
                 if (!pl->fuel.sum && options.wallBounceFuelDrainMult != 0)
@@ -2817,6 +2827,7 @@ void Move_player(player_t *pl)
                     sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
                     if (ms[worst].target >= 0)
                     {
+                        cost <<= FUEL_SCALE_BITS;
                         cost = (long)(cost * (options.wallBounceFuelDrainMult / 4.0));
                         Object_hits_target(&ms[worst], cost);
                     }
@@ -2933,7 +2944,7 @@ void Turn_player(player_t *pl)
     mi.treasure_crashes = true;
     mi.target_crashes = true;
     mi.wormhole_warps = false;
-    mi.phased = Player_is_phasing(pl);
+    mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
 
     if (new_dir > pl->dir)
     {

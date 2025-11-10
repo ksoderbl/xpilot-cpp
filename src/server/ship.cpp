@@ -36,6 +36,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "saudio.h"
 #include "xperror.h"
 #include "object.h"
@@ -77,7 +78,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK,
+        OBJ_SPARK_BIT,
         THRUST_MASS,
         GRAVITY | OWNERIMMUNE,
         RED,
@@ -92,7 +93,7 @@ void Thrust(player_t *pl)
         pl->vel,
         pl->id,
         pl->team,
-        OBJ_SPARK,
+        OBJ_SPARK_BIT,
         THRUST_MASS * ALT_SPARK_MASS_FACT,
         GRAVITY | OWNERIMMUNE,
         BLUE,
@@ -147,12 +148,14 @@ void Delta_mv(object_t *ship, object_t *obj)
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
     vy = (ship->vel.y * ship->mass + obj->vel.y * obj->mass) / m;
-    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
+    if (ship->type == OBJ_PLAYER_BIT && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
         player_t *pusher = Player_by_id(obj->id);
         if (pusher != pl)
+        {
             Record_shove(pl, pusher, frame_loops);
+        }
     }
     ship->vel.x = vx;
     ship->vel.y = vy;
@@ -178,12 +181,14 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
+    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
+        {
             Record_shove(pl, pusher, frame_loops);
+        }
     }
 }
 
@@ -213,20 +218,24 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     dvx1 = -(tcos(obj_theta) * force / dm);
     dvy1 = -(tsin(obj_theta) * force / dm);
 
-    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
+    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
+        {
             Record_shove(pl, pusher, frame_loops);
+        }
     }
 
-    if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
+    if (obj2->type == OBJ_PLAYER_BIT && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
         player_t *pusher = Player_by_id(obj1->id);
         if (pusher != pl)
+        {
             Record_shove(pl, pusher, frame_loops);
+        }
     }
 
     obj1->vel.x += dvx1;
@@ -240,7 +249,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
  * Add fuel to fighter's tanks.
  * Maybe use more than one of tank to store the fuel.
  */
-void Add_fuel(pl_fuel_t *ft, double fuel)
+void Add_fuel(pl_fuel_t *ft, long fuel)
 {
     if (ft->sum + fuel > ft->max)
         fuel = ft->max - ft->sum;
@@ -260,7 +269,7 @@ void Update_tanks(pl_fuel_t *ft)
     {
         int t, check;
         long low_level;
-        double fuel;
+        long fuel;
         long *f;
 
         /* Set low_level to minimum fuel in each tank */
@@ -367,15 +376,16 @@ void Tank_handle_detach(player_t *pl)
 
     /* Return, if no more players or no tanks */
     if (pl->fuel.num_tanks == 0 || NumPseudoPlayers == MAX_PSEUDO_PLAYERS || peek_ID() == 0)
+    {
         return;
+    }
 
     /* If current tank is main, use another one */
     if ((ct = pl->fuel.current) == 0)
         ct = pl->fuel.num_tanks;
 
     Update_tanks(&(pl->fuel));
-
-    /* Fork the current player */
+    /* Fork the current player_t */
     tank = Player_by_index(NumPlayers);
 
     /*
@@ -384,15 +394,17 @@ void Tank_handle_detach(player_t *pl)
      * Player structures contain pointers to dynamic memory...
      */
 
-    Init_player(NumPlayers, (options.allowShipShapes)
-                                ? Parse_shape_str(options.tankShipShape)
-                                : NULL);
+    Init_player(NumPlayers,
+                options.allowShipShapes
+                    ? Parse_shape_str(options.tankShipShape)
+                    : NULL,
+                PL_TYPE_TANK);
+
     /* Released tanks don't have tanks... */
     while (tank->fuel.num_tanks > 0)
         Player_remove_tank(tank, tank->fuel.num_tanks);
-
     SET_BIT(tank->type_ext, OBJ_EXT_TANK);
-    Player_position_init_clpos(tank, pl->pos);
+    Object_position_init_clpos(OBJ_PTR(tank), pl->pos);
     tank->vel = pl->vel;
     tank->acc = pl->acc;
     tank->dir = pl->dir;
@@ -418,7 +430,7 @@ void Tank_handle_detach(player_t *pl)
     tank->score = pl->score - options.tankScoreDecrement;
     updateScores = true;
 
-    /* Fuel is the one from choosen tank */
+    /* Fuel is the one from chosen tank */
     tank->fuel.sum =
         tank->fuel.tank[0] = pl->fuel.tank[ct];
     tank->fuel.max = TANK_CAP(ct);
@@ -447,9 +459,7 @@ void Tank_handle_detach(player_t *pl)
 
     /* Possibly join alliance. */
     if (pl->alliance != ALLIANCE_NOT_SET)
-    {
         Player_join_alliance(tank, pl);
-    }
 
     sound_play_sensors(pl->pos, TANK_DETACH_SOUND);
 
@@ -466,16 +476,9 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        object_t *obj = Obj[i];
-
-        if (obj->type == OBJ_HEAT_SHOT)
+        if (Obj[i]->type == OBJ_HEAT_SHOT_BIT && Obj[i]->info > 0 && Player_by_id(Obj[i]->info) == pl)
         {
-            heatobject_t *heat = HEAT_PTR(obj);
-            if (heat->heat_lock_id > 0 && Player_by_id(heat->heat_lock_id) == pl)
-                /* kps - is this right ? */
-                // The purpose of this seems to be to put the lock on the tank.
-                // heat->heat_lock_id = NumPlayers - 1; <- ng had this, it's probably wrong?
-                heat->heat_lock_id = tank->id;
+            Obj[i]->info = NumPlayers - 1;
         }
     }
 
@@ -484,10 +487,12 @@ void Tank_handle_detach(player_t *pl)
 
     for (i = 0; i < NumPlayers - 1; i++)
     {
-        if (Player_by_index(i)->conn != NULL)
+        player_t *pl_i = Player_by_index(i);
+
+        if (pl_i->conn != NULL)
         {
-            Send_player(Player_by_index(i)->conn, tank->id);
-            Send_score(Player_by_index(i)->conn, tank->id,
+            Send_player(pl_i->conn, tank->id);
+            Send_score(pl_i->conn, tank->id,
                        tank->score, tank->life,
                        tank->mychar, tank->alliance);
         }
@@ -499,19 +504,20 @@ void Tank_handle_detach(player_t *pl)
  */
 
 /* Create debris particles */
-void Make_debris(clpos_t pos,
-                 vector_t vel,
-                 int id,
-                 int team,
-                 int type,
-                 double mass,
-                 long status,
-                 int color,
-                 int radius,
-                 int min_debris, int max_debris,
-                 int min_dir, int max_dir,
-                 double min_speed, double max_speed,
-                 int min_life, int max_life)
+void Make_debris(
+    clpos_t pos,
+    vector_t vel,
+    int id,
+    uint16_t team,
+    int type,
+    double mass,
+    long status,
+    int color,
+    int radius,
+    int min_debris, int max_debris,
+    int min_dir, int max_dir,
+    double min_speed, double max_speed,
+    int min_life, int max_life)
 {
     object_t *debris;
     int i, num_debris, life;
@@ -599,18 +605,19 @@ void Make_debris(clpos_t pos,
     }
 }
 
-void Make_wreckage(clpos_t pos,
-                   vector_t vel,
-                   int id,
-                   int team,
-                   double min_mass, double max_mass,
-                   double total_mass,
-                   long status,
-                   int color,
-                   int max_wreckage,
-                   int min_dir, int max_dir,
-                   double min_speed, double max_speed,
-                   int min_life, int max_life)
+void Make_wreckage(
+    clpos_t pos,
+    vector_t vel,
+    int id,
+    uint16_t team,
+    double min_mass, double max_mass,
+    double total_mass,
+    long status,
+    int color,
+    int max_wreckage,
+    int min_dir, int max_dir,
+    double min_speed, double max_speed,
+    int min_life, int max_life)
 {
     wireobject_t *wreckage;
     int i, life, size;
@@ -659,19 +666,25 @@ void Make_wreckage(clpos_t pos,
         /* Calculate mass */
         mass = min_mass + rfrac() * (max_mass - min_mass);
         if (sum_mass + mass > total_mass)
+        {
             mass = total_mass - sum_mass;
+        }
         if (mass < min_mass)
+        {
             /* not enough mass available. */
             break;
+        }
 
         /* Allocate object */
         if ((wreckage = WIRE_PTR(Object_allocate())) == NULL)
+        {
             break;
+        }
 
         wreckage->color = color;
         wreckage->id = id;
         wreckage->team = team;
-        wreckage->type = OBJ_WRECKAGE;
+        wreckage->type = OBJ_WRECKAGE_BIT;
 
         /* Position */
         Object_position_init_clpos(OBJ_PTR(wreckage), pos);
@@ -700,15 +713,15 @@ void Make_wreckage(clpos_t pos,
         wreckage->fuselife = wreckage->life;
 
         /* Wreckage type, rotation, and size */
-        wreckage->wire_turnspeed = 0.02 + rfrac() * 0.35;
-        wreckage->wire_rotation = (int)(rfrac() * RES);
+        wreckage->turnspeed = 0.02 + rfrac() * 0.35;
+        wreckage->rotation = (int)(rfrac() * RES);
         size = (int)(256.0 * 1.5 * mass / total_mass);
         if (size > 255)
             size = 255;
-        wreckage->wire_size = size;
-        wreckage->wire_type = (uint8_t)(rfrac() * 256);
+        wreckage->size = size;
+        wreckage->info = (int)(rfrac() * 256);
 
-        radius = wreckage->wire_size * 16 / 256;
+        radius = wreckage->size * 16 / 256;
         if (radius < 8)
             radius = 8;
 
@@ -716,48 +729,51 @@ void Make_wreckage(clpos_t pos,
         wreckage->pl_radius = radius;
         wreckage->obj_status = status;
         wreckage->mods = mods;
-        Cell_add_object(OBJ_PTR(wreckage));
+        Cell_add_object((object_t *)wreckage);
     }
 }
 
+/* Explode a fighter */
 void Explode_fighter(player_t *pl)
 {
     int min_debris, max_debris;
 
     sound_play_sensors(pl->pos, PLAYER_EXPLOSION_SOUND);
 
-    min_debris = (int)(1 + (pl->fuel.sum / 8.0));
+    min_debris = (int)(1 + (pl->fuel.sum / (8.0 * FUEL_SCALE_FACT)));
     max_debris = (int)(min_debris + (pl->mass * 2.0));
     /* reduce debris since we also create wreckage objects */
     min_debris >>= 1;
     max_debris >>= 1;
 
-    Make_debris(pl->pos,
-                pl->vel,
-                pl->id,
-                pl->team,
-                OBJ_DEBRIS,
-                3.5,
-                GRAVITY,
-                RED,
-                8,
-                min_debris, max_debris,
-                0, RES - 1,
-                20.0, 20 + (((int)(pl->mass)) >> 1),
-                5, (int)(5 + (pl->mass * 1.5)));
+    Make_debris(
+        pl->pos,
+        pl->vel,
+        pl->id,
+        pl->team,
+        OBJ_DEBRIS_BIT,
+        3.5,
+        GRAVITY,
+        RED,
+        8,
+        min_debris, max_debris,
+        0, RES - 1,
+        20.0, 20 + (((int)(pl->mass)) >> 1),
+        5, (int)(5 + (pl->mass * 1.5)));
 
     if (!BIT(pl->obj_status, KILLED))
         return;
-    Make_wreckage(pl->pos,
-                  pl->vel,
-                  pl->id,
-                  pl->team,
-                  MAX(pl->mass / 8.0, 0.33), pl->mass,
-                  2.0 * pl->mass,
-                  GRAVITY,
-                  WHITE,
-                  10,
-                  0, RES - 1,
-                  10.0, 10 + (((int)(pl->mass)) >> 1),
-                  5, (int)(5 + (pl->mass * 1.5)));
+    Make_wreckage(
+        pl->pos,
+        pl->vel,
+        pl->id,
+        pl->team,
+        MAX(pl->mass / 8.0, 0.33), pl->mass,
+        2.0 * pl->mass,
+        GRAVITY,
+        WHITE,
+        10,
+        0, RES - 1,
+        10.0, 10 + (((int)(pl->mass)) >> 1),
+        5, (int)(5 + (pl->mass * 1.5)));
 }

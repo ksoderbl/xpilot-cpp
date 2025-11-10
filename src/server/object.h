@@ -33,7 +33,6 @@
 #include "keys.h"
 #include "shipshape.h"
 
-#include "map.h"
 #include "serverconst.h"
 
 /*
@@ -49,22 +48,22 @@
  * Smart missile, heatseeker and torpedoe can be merged into missile.
  * ECM doesn't really need an object type.
  */
-#define OBJ_PLAYER 0
-#define OBJ_DEBRIS 1
-#define OBJ_SPARK 2
-#define OBJ_BALL 3
-#define OBJ_SHOT 4
-#define OBJ_SMART_SHOT 5
-#define OBJ_MINE 6
-#define OBJ_TORPEDO 7
-#define OBJ_HEAT_SHOT 8
-#define OBJ_PULSE 9
-#define OBJ_ITEM 10
-#define OBJ_WRECKAGE 11
-#define OBJ_ASTEROID 12
-#define OBJ_CANNON_SHOT 13
+#define OBJ_PLAYER (1U << 0)
+#define OBJ_DEBRIS (1U << 1)
+#define OBJ_SPARK (1U << 2)
+#define OBJ_BALL (1U << 3)
+#define OBJ_SHOT (1U << 4)
+#define OBJ_SMART_SHOT (1U << 5)
+#define OBJ_MINE (1U << 6)
+#define OBJ_TORPEDO (1U << 7)
+#define OBJ_HEAT_SHOT (1U << 8)
+#define OBJ_PULSE (1U << 9)
+#define OBJ_ITEM (1U << 10)
+#define OBJ_WRECKAGE (1U << 11)
+#define OBJ_ASTEROID (1U << 12)
+#define OBJ_CANNON_SHOT (1U << 13)
 
-// In xpilot 4.5.5, these did not have the _BIT suffix
+/* BITS */
 #define OBJ_PLAYER_BIT (1U << 0)
 #define OBJ_DEBRIS_BIT (1U << 1)
 #define OBJ_SPARK_BIT (1U << 2)
@@ -83,7 +82,17 @@
 /*
  * Weapons modifiers.
  */
-#include "modifiers.h"
+typedef struct
+{
+    unsigned int nuclear : 2;  /* N  modifier */
+    unsigned int warhead : 2;  /* CI modifier */
+    unsigned int velocity : 2; /* V# modifier */
+    unsigned int mini : 2;     /* X# modifier */
+    unsigned int spread : 2;   /* Z# modifier */
+    unsigned int power : 2;    /* B# modifier */
+    unsigned int laser : 2;    /* LS LB modifier */
+    unsigned int spare : 2;    /* padding for alignment */
+} modifiers_t;
 
 #define CLEAR_MODS(mods) memset(&(mods), 0, sizeof(modifiers_t))
 
@@ -139,10 +148,10 @@ struct cell_node
     vector_t vel;        /* speed in x,y */              \
     vector_t acc;        /* acceleration in x,y */       \
     float mass;          /* mass in unigrams */          \
-    float life;          /* No of ticks left to live */  \
     modifiers_t mods;    /* Modifiers to this object */  \
+    long life;           /* No of ticks left to live */  \
     int type;            /* one bit of OBJ_XXX */        \
-    int obj_count;       /* Misc timings */              \
+    int count;           /* Misc timings */              \
     uint8_t color;       /* Color of object */           \
     uint8_t missile_dir; /* missile direction */         \
     uint32_t obj_status; /* gravity, etc. */
@@ -151,7 +160,7 @@ struct cell_node
 
 #define OBJECT_EXTEND                              \
     cell_node cell; /* node in cell linked list */ \
-    long obj_info;  /* Miscellaneous info */       \
+    long info;      /* Miscellaneous info */       \
     long fuselife;  /* fuse duration ticks */      \
     int pl_range;   /* distance for collision */   \
     int pl_radius;  /* distance for hit */         \
@@ -183,21 +192,17 @@ struct xp_mineobject
 
     OBJECT_EXTEND
 
-    // int mine_owner;   /* Who's object is this ? */
-    // DFLOAT ecm_range; /* Range from last ecm center */
-    // int spread_left;  /* how much spread time left */
-    float mine_count;       /* Misc snafus */
-    float mine_ecm_range;   /* Range from last ecm center */
-    float mine_spread_left; /* how much spread time left */
-    short mine_owner;       /* Who's object is this ? */
+    int mine_owner;   /* Who's object is this ? */
+    DFLOAT ecm_range; /* Range from last ecm center */
+    int spread_left;  /* how much spread time left */
 
 #define MINE_IND(ind) ((mineobject_t *)Obj[(ind)])
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
 };
 
-#define MISSILE_EXTEND                              \
-    float missile_max_speed; /* speed limitation */ \
-    float missile_turnspeed; /* how fast to turn */
+#define MISSILE_EXTEND                       \
+    DFLOAT max_speed; /* speed limitation */ \
+    DFLOAT turnspeed; /* how fast to turn */
 /* up to here all missiles types are the same. */
 
 /*
@@ -230,12 +235,8 @@ struct xp_smartobject
 
     MISSILE_EXTEND
 
-    // int new_info;    /* smart re-lock id */
-    // float ecm_range; /* Range from last ecm center */
-    float smart_ecm_range; /* Range from last ecm center*/
-    float smart_count;     /* Misc snafus */
-    short smart_lock_id;   /* snafu */
-    short smart_relock_id; /* smart re-lock id */
+    int new_info;     /* smart re-lock id */
+    DFLOAT ecm_range; /* Range from last ecm center */
 
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
@@ -254,32 +255,10 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    // int torp_spread_left; /* how much spread time left */
-    float torp_spread_left; /* how much spread time left */
-    float torp_count;       /* Misc snafus */
+    int spread_left; /* how much spread time left */
 
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))
-};
-
-/*
- * Heat-seeker is a generic missile with extras
- */
-typedef struct xp_heatobject heatobject_t;
-struct xp_heatobject
-{
-
-    OBJECT_BASE
-
-    OBJECT_EXTEND
-
-    MISSILE_EXTEND
-
-    float heat_count;   /* Misc snafus */
-    short heat_lock_id; /* instead of missile->info */
-
-#define HEAT_IND(ind) ((heatobject_t *)Obj[(ind)])
-#define HEAT_PTR(ptr) ((heatobject_t *)(ptr))
 };
 
 /*
@@ -293,11 +272,9 @@ struct xp_ballobject
 
     OBJECT_EXTEND
 
-    double ball_loose_ticks;
-    treasure_t *ball_treasure; /* treasure for ball */
-    short ball_owner;          /* Who's object is this ? */
-    DFLOAT length;             /* distance ball to player */
-    short ball_style;          /* What polystyle to use */
+    int ball_owner; /* Who's object is this ? */
+    int treasure;   /* treasure for ball */
+    DFLOAT length;  /* distance ball to player */
 
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))
@@ -314,58 +291,20 @@ struct xp_wireobject
 
     OBJECT_EXTEND
 
-    float wire_turnspeed; /* how fast to turn */
+    DFLOAT turnspeed; /* how fast to turn */
 
-    uint8_t wire_type;     /* Type of object */
-    uint8_t wire_size;     /* Size of object */
-    uint8_t wire_rotation; /* Rotation direction */
+    uint8_t size;     /* Size of object (wreckage) */
+    uint8_t rotation; /* Rotation direction */
 
 #define WIRE_IND(ind) ((wireobject_t *)Obj[(ind)])
 #define WIRE_PTR(obj) ((wireobject_t *)(obj))
 };
 
 /*
- * Pulse object used for laser pulses.
- */
-typedef struct xp_pulseobject pulseobject_t;
-struct xp_pulseobject
-{
-
-    OBJECT_BASE
-
-    OBJECT_EXTEND
-
-    float pulse_len;   /* Length of the pulse */
-    uint8_t pulse_dir; /* Direction of the pulse */
-    bool pulse_refl;   /* Pulse was reflected ? */
-
-#define PULSE_IND(ind) ((pulseobject_t *)Obj[(ind)])
-#define PULSE_PTR(obj) ((pulseobject_t *)(obj))
-};
-
-/*
- * Item object.
- */
-typedef struct xp_itemobject itemobject_t;
-struct xp_itemobject
-{
-
-    OBJECT_BASE
-
-    OBJECT_EXTEND
-
-    int item_type;  /* instead of shot->info, One of ITEM_* */
-    int item_count; /* Misc snafus */
-
-#define ITEM_IND(ind) ((itemobject_t *)Obj[(ind)])
-#define ITEM_PTR(obj) ((itemobject_t *)(obj))
-};
-
-/*
  * Any object type should be part of this union.
  */
-typedef union xp_anyobject anyobject_t;
-union xp_anyobject
+typedef union _anyobject anyobject_t;
+union _anyobject
 {
     object_t obj;
     ballobject_t ball;
@@ -373,10 +312,7 @@ union xp_anyobject
     missileobject_t missile;
     smartobject_t smart;
     torpobject_t torp;
-    heatobject_t heat;
     wireobject_t wireobj;
-    pulseobject_t pulse;
-    itemobject_t item;
 };
 
 /*
@@ -413,9 +349,19 @@ struct robot_data;
 
 #define NumObjs (ObjCount + 0)
 
+extern object_t *Obj[];
 extern pulse_t *Pulses[];
+// extern ecm_t *Ecms[];
+// extern transporter_t *Transporters[];
 
+extern int NumPlayers;
+extern int NumPseudoPlayers;
+extern int ObjCount;
 extern int NumPulses;
+// extern int NumEcms;
+// extern int NumTransporters;
+extern int NumAlliances;
+extern int NumRobots;
 
 void Object_position_set_clpos(object_t *obj, clpos_t pos);
 void Object_position_init_clpos(object_t *obj, clpos_t pos);

@@ -105,7 +105,9 @@
 #define OBJ_EXT_TANK (1U << 1)
 #define OBJ_EXT_ROBOT (1U << 2)
 
-/* macros to query the type of player. */
+/*
+ * Macros to query the type of player.
+ */
 #define Player_is_tank(pl) (BIT((pl)->type_ext, OBJ_EXT_TANK) == OBJ_EXT_TANK)
 #define Player_is_robot(pl) (BIT((pl)->type_ext, OBJ_EXT_ROBOT) == OBJ_EXT_ROBOT)
 #define Player_is_human(pl) (!BIT((pl)->type_ext, OBJ_EXT_TANK | OBJ_EXT_ROBOT))
@@ -115,14 +117,14 @@
  */
 typedef struct
 {
-    double sum;               /* Sum of fuel in all tanks */
-    double max;               /* How much fuel can you take? */
+    long sum;                 /* Sum of fuel in all tanks */
+    long max;                 /* How much fuel can you take? */
     int current;              /* Number of currently used tank */
     int num_tanks;            /* Number of tanks */
     long tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
-    double l1;                /* Fuel critical level */
-    double l2;                /* Fuel warning level */
-    double l3;                /* Fuel notify level */
+    long l1;                  /* Fuel critical level */
+    long l2;                  /* Fuel warning level */
+    long l3;                  /* Fuel notify level */
 } pl_fuel_t;
 
 typedef struct
@@ -194,14 +196,9 @@ typedef struct
     int phasing_left;          /* how much time left */
     int phasing_max;           /* maximum time left */
 
-    double pause_count;         /* ticks until unpause possible */
-    double recovery_count;      /* ticks to recovery */
-    double self_destruct_count; /* if > 0, ticks before boom */
-
-    int item[NUM_ITEMS];         /* for each item type how many */
-    int initial_item[NUM_ITEMS]; /* items player had initially */
-    int lose_item;               /* which item to drop */
-    int lose_item_state;         /* lose item key state, 2=up,1=down */
+    int item[NUM_ITEMS]; /* for each item type how many */
+    int lose_item;       /* which item to drop */
+    int lose_item_state; /* lose item key state, 2=up,1=down */
 
     double auto_power_s;               /* autopilot saves of current */
                                        /* power, turnspeed and */
@@ -223,9 +220,9 @@ typedef struct
     int last_lap_time;                 /* What was your last pass? */
     int last_check_dir;                /* player dir at last checkpoint */
     long last_wall_touch;              /* last time player touched a wall */
-    double survival_time;              /* time player has survived unshielded*/
 
-    base_t *home_base;
+    int home_base; /* Num of home base */
+    base_t *home_base_ptr;
     struct
     {
         int tagged;      /* Flag, what is tagged? */
@@ -261,17 +258,14 @@ typedef struct
 
     visibility_t *visibility;
 
-    bool updateVisibility;
-    int forceVisible;
-    int damaged;
+    int updateVisibility, forceVisible, damaged;
     int wormDrawCount, wormHoleHit, wormHoleDest;
     int stunned;
 
-    int last_target_update;    /* index of last updated target */
-    int last_cannon_update;    /* index of last updated cannon */
-    int last_fuel_update;      /* index of last updated fuel */
-    int last_wormhole_update;  /* index of last updated wormhole */
-    int last_polystyle_update; /* index of last updated polygon */
+    int last_target_update;   /* index of last updated target */
+    int last_cannon_update;   /* index of last updated cannon */
+    int last_fuel_update;     /* index of last updated fuel */
+    int last_wormhole_update; /* index of last updated wormhole */
 
     int ecmcount; /* number of active ecms */
 
@@ -287,8 +281,8 @@ typedef struct
 
     int player_fps; /* FPS that this player can do */
 
-    bool isowner;    /* If player started this server. */
-    bool isoperator; /* If player has operator privileges. */
+    int isowner;    /* If player started this server. */
+    int isoperator; /* If player has operator privileges. */
 
     int ind; /* Index in PlayersArray[] */
 
@@ -711,12 +705,12 @@ static inline bool Is_cannon_id(int id)
 void Pick_startpos(player_t *pl);
 void Go_home(player_t *pl);
 void Compute_sensor_range(player_t *pl);
-void Player_add_tank(player_t *pl, double tank_fuel);
+void Player_add_tank(player_t *pl, long tank_fuel);
 void Player_remove_tank(player_t *pl, int which_tank);
 void Player_hit_armor(player_t *pl);
 void Player_used_kill(player_t *pl);
 void Player_set_mass(player_t *pl);
-int Init_player(int ind, shipshape_t *ship);
+int Init_player(int ind, shipshape_t *ship, int type);
 void Player_init_items(player_t *pl);
 void Alloc_players(int number);
 void Free_players(void);

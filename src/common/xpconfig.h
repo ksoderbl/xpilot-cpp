@@ -103,7 +103,7 @@
  * ZCAT_EXT should define the proper compressed file extension.
  */
 
-#define CONF_COMPRESSED_MAPS
+#define COMPRESSED_MAPS
 
 #ifdef DEBUG
 #define D(x)            \

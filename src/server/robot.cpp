@@ -38,6 +38,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -658,10 +659,7 @@ static void Robot_create(void)
 {
     player_t *robot;
     robot_t *rob;
-    int i,
-        num;
-    int most_used,
-        least_used;
+    int i, num, most_used, least_used;
     robot_data_t *data, *new_data;
     robot_type_t *rob_type;
     char msg[MSG_LEN];
@@ -669,7 +667,7 @@ static void Robot_create(void)
     if (peek_ID() == 0)
         return;
 
-    if ((new_data = (robot_data_t *)malloc(sizeof(robot_data_t))) == NULL)
+    if ((new_data = XMALLOC(robot_data_t, 1)) == NULL)
     {
         error("malloc robot_data");
         return;
@@ -684,7 +682,7 @@ static void Robot_create(void)
     }
     for (i = 0; i < NumPlayers; i++)
     {
-        player_t *pl_i = PlayersArray[i];
+        player_t *pl_i = Player_by_index(i);
 
         if (Player_is_robot(pl_i))
         {
@@ -716,10 +714,10 @@ static void Robot_create(void)
     }
     rob_type = &robot_types[new_data->robot_types_ind];
 
-    Init_player(NumPlayers, (options.allowShipShapes)
-                                ? Parse_shape_str(rob->shape)
-                                : (shipshape_t *)NULL);
-    robot = PlayersArray[NumPlayers];
+    Init_player(NumPlayers,
+                options.allowShipShapes ? Parse_shape_str(rob->shape) : NULL,
+                PL_TYPE_ROBOT);
+    robot = Player_by_index(NumPlayers);
     SET_BIT(robot->type_ext, OBJ_EXT_ROBOT);
     robot->robot_data_ptr = new_data;
 
@@ -737,16 +735,16 @@ static void Robot_create(void)
     robot->check = 0;
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
-        robot->team = Pick_team(PL_TYPE_ROBOT);
+        robot->team = Pick_team(PickForRobot);
         world->teams[robot->team].NumMembers++;
         world->teams[robot->team].NumRobots++;
     }
     if (robot->mychar != 'W')
         robot->mychar = 'R';
 
-    robot->fuel.l1 = 100;
-    robot->fuel.l2 = 200;
-    robot->fuel.l3 = 500;
+    robot->fuel.l1 = 100 * FUEL_SCALE_FACT;
+    robot->fuel.l2 = 200 * FUEL_SCALE_FACT;
+    robot->fuel.l3 = 500 * FUEL_SCALE_FACT;
 
     Pick_startpos(robot);
 
@@ -765,7 +763,7 @@ static void Robot_create(void)
         if (pl_i->conn != NULL)
         {
             Send_player(pl_i->conn, robot->id);
-            Send_base(pl_i->conn, robot->id, robot->home_base->ind);
+            Send_base(pl_i->conn, robot->id, robot->home_base);
         }
     }
 
@@ -773,8 +771,7 @@ static void Robot_create(void)
 
     if (options.logRobots)
         xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
-                 showtime(), robot->name, NumPlayers, robot->username,
-                 robot->home_base->ind);
+                 showtime(), robot->name, NumPlayers, robot->username, robot->home_base);
 
     if (NumPlayers == 1)
     {
@@ -782,8 +779,9 @@ static void Robot_create(void)
             roundtime = options.maxRoundTime * FPS;
         else
             roundtime = -1;
-        Set_message_f("Player entered. Delaying 0 seconds until next %s.",
-                      (BIT(world->rules->mode, TIMING) ? "race" : "round"));
+        sprintf(msg, "Player entered. Delaying 0 seconds until next %s.",
+                (BIT(world->rules->mode, TIMING) ? "race" : "round"));
+        Set_message(msg);
     }
 
     updateScores = true;
@@ -799,27 +797,27 @@ void Robot_destroy(player_t *pl)
 
 void Robot_delete(player_t *pl, bool kicked)
 {
-    long i;
-    player_t *low_pl = NULL;
-    double low_score = (double)LONG_MAX;
-    char msg[MSG_LEN];
+    int i;
 
-    if (pl)
+    if (pl == NULL)
     {
+        player_t *low_pl = NULL;
+        double low_score = (double)LONG_MAX;
+
         /*
          * Find the robot with the lowest score.
          */
-
         for (i = 0; i < NumPlayers; i++)
         {
             player_t *pl_i = Player_by_index(i);
+
             if (!Player_is_robot(pl_i))
                 continue;
 
-            if (pl_i->score < low_score)
+            if (Player_by_index(i)->score < low_score)
             {
                 low_pl = pl_i;
-                low_score = pl_i->score;
+                low_score = Get_Score(low_pl);
             }
         }
         if (low_pl)
@@ -829,12 +827,8 @@ void Robot_delete(player_t *pl, bool kicked)
     if (pl)
     {
         if (kicked)
-        {
-            sprintf(msg, "\"%s\" upset the gods and was kicked out "
-                         "of the game.",
-                    pl->name);
-            Set_message(msg);
-        }
+            Set_message_f("%s upset the gods and was kicked out of the game.",
+                          pl->name);
         Delete_player(pl);
     }
 }
@@ -905,7 +899,7 @@ void Robot_war(player_t *pl, player_t *kp)
         Robot_set_war(kp, NO_ID);
     }
 
-    if (Player_is_robot(pl) && (int)(rfrac() * 100) < kp->score - pl->score && !Players_are_teammates(pl, kp) && !Players_are_allies(pl, kp))
+    if (Player_is_robot(pl) && rfrac() * 100.0 < Get_Score(kp) - Get_Score(pl) && !Players_are_teammates(pl, kp) && !Players_are_allies(pl, kp))
     {
         Robot_talks(ROBOT_TALK_WAR, pl->name, kp->name);
 
@@ -922,7 +916,9 @@ void Robot_war(player_t *pl, player_t *kp)
  */
 void Robot_go_home(player_t *pl)
 {
-    (*robot_types[pl->robot_data_ptr->robot_types_ind].robot_go_home)(pl);
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
+
+    (*rob_type->robot_go_home)(pl);
 }
 
 /*
@@ -931,9 +927,7 @@ void Robot_go_home(player_t *pl)
  */
 void Robot_message(player_t *pl, const char *message)
 {
-    // player_t *pl = PlayersArray[ind];
-    robot_type_t *rob_type =
-        &robot_types[pl->robot_data_ptr->robot_types_ind];
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
 
     (*rob_type->robot_message)(pl, message);
 }
@@ -943,7 +937,9 @@ void Robot_message(player_t *pl, const char *message)
  */
 static void Robot_play(player_t *pl)
 {
-    (*robot_types[pl->robot_data_ptr->robot_types_ind].robot_play)(pl);
+    robot_type_t *rob_type = &robot_types[pl->robot_data_ptr->robot_types_ind];
+
+    (*rob_type->robot_play)(pl);
 }
 
 /*
@@ -958,29 +954,26 @@ static bool Robot_check_leave(player_t *pl)
     if (!options.robotsLeave)
         return false;
 
-    char msg[MSG_LEN];
-
-    // What did pl->count do here?
-    // if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
-    if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING)))
+    if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
     {
-        msg[0] = '\0';
         if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
         {
-            sprintf(msg, "%s retired.", pl->name);
+            Set_message_f("%s retired.", pl->name);
+            leave = true;
         }
         else if (options.robotLeaveScore != 0 && pl->score < options.robotLeaveScore)
         {
-            sprintf(msg, "%s left out of disappointment.", pl->name);
+            Set_message_f("%s left out of disappointment.", pl->name);
+            leave = true;
         }
         else if (options.robotLeaveRatio != 0 && pl->score / (pl->life + 1) < options.robotLeaveRatio)
         {
-            sprintf(msg, "%s played too badly.", pl->name);
+            Set_message_f("%s played too badly.", pl->name);
+            leave = true;
         }
-        if (msg[0] != '\0')
+        if (leave)
         {
             Robot_talks(ROBOT_TALK_LEAVE, pl->name, "");
-            Set_message(msg);
             Robot_delete(pl, false);
             return true;
         }
@@ -1023,15 +1016,18 @@ void Robot_update(bool tick)
 {
     player_t *pl;
     int i;
-    static double new_robot_delay;
-    int num_playing_ships, num_any_ships;
+    static int new_robot_delay;
+    int num_playing_ships;
+    int num_any_ships;
 
     num_any_ships = NumPlayers + login_in_progress;
     num_playing_ships = num_any_ships - NumPseudoPlayers;
-    if ((num_playing_ships < options.maxRobots || NumRobots < options.minRobots) && num_playing_ships < world->NumBases && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
+    if ((num_playing_ships < options.maxRobots ||
+         NumRobots < options.minRobots) &&
+        num_playing_ships < Num_bases() && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
     {
-        new_robot_delay += timeStep;
-        if (new_robot_delay >= ROBOT_CREATE_DELAY)
+
+        if (++new_robot_delay >= ROBOT_CREATE_DELAY)
         {
             Robot_create();
             new_robot_delay = 0;
@@ -1042,7 +1038,7 @@ void Robot_update(bool tick)
         new_robot_delay = 0;
         if (NumRobots > 0)
         {
-            if ((num_playing_ships > world->NumBases) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
+            if ((num_playing_ships > Num_bases()) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
                 Robot_delete(NULL, false);
         }
     }
@@ -1072,9 +1068,7 @@ void Robot_update(bool tick)
         if (BIT(pl->obj_status, PLAYING | GAME_OVER) != PLAYING)
         {
             /* Only check for leave if not being transported to homebase. */
-            // TODO
-            // if (pl->recovery_count == 0)
-            // if (!pl->count)
+            if (!pl->count)
             {
                 if (Robot_check_leave(pl))
                     i--;

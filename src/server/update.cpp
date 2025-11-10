@@ -25,14 +25,15 @@
 #include <cstdio>
 #include <cmath>
 
+#include "xpmath.h"
 #include "xperror.h"
 
 #include "server.h"
-#include "robot.h"
 
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -41,8 +42,8 @@
 #include "cannon.h"
 #include "asteroid.h"
 #include "netserver.h"
-#include "xpmath.h"
 #include "walls.h"
+#include "robot.h"
 
 #define update_object_speed(o_)                                                                  \
     if (BIT((o_)->obj_status, GRAVITY))                                                          \
@@ -86,8 +87,8 @@ static void Transport_to_home(player_t *pl)
     }
     else
     {
-        bx = (pl->home_base->blk_pos.bx + 0.5) * BLOCK_SZ;
-        by = (pl->home_base->blk_pos.by + 0.5) * BLOCK_SZ;
+        bx = (world->bases[pl->home_base].blk_pos.bx + 0.5) * BLOCK_SZ;
+        by = (world->bases[pl->home_base].blk_pos.by + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pix_pos.x);
     dy = WRAP_DY(by - pl->pix_pos.y);
@@ -161,7 +162,7 @@ void Cloak(player_t *pl, bool on)
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
             sound_play_player(pl, CLOAK_SOUND);
-            pl->updateVisibility = true;
+            pl->updateVisibility = 1;
             SET_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
     }
@@ -170,7 +171,7 @@ void Cloak(player_t *pl, bool on)
         if (BIT(pl->used, USES_CLOAKING_DEVICE))
         {
             sound_play_player(pl, CLOAK_SOUND);
-            pl->updateVisibility = true;
+            pl->updateVisibility = 1;
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
         if (!pl->item[ITEM_CLOAK])
@@ -321,9 +322,9 @@ void Thrust(player_t *pl, bool on)
  */
 void Autopilot(player_t *pl, bool on)
 {
+    CLR_BIT(pl->obj_status, THRUSTING);
     if (on)
     {
-        Thrust(pl, false);
         pl->auto_power_s = pl->power;
         pl->auto_turnspeed_s = pl->turnspeed;
         pl->auto_turnresistance_s = pl->turnresistance;
@@ -335,7 +336,6 @@ void Autopilot(player_t *pl, bool on)
     }
     else
     {
-        Thrust(pl, false);
         pl->power = pl->auto_power_s;
         pl->turnacc = 0.0;
         pl->turnspeed = pl->auto_turnspeed_s;
@@ -518,7 +518,7 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->turnspeed != turnspeed && vad > RES / 32)
     {
-        Thrust(pl, false);
+        CLR_BIT(pl->obj_status, THRUSTING);
         return;
     }
 
@@ -528,11 +528,11 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->power > power)
     {
-        Thrust(pl, false);
+        CLR_BIT(pl->obj_status, THRUSTING);
     }
     else
     {
-        Thrust(pl, true);
+        SET_BIT(pl->obj_status, THRUSTING);
     }
 }
 
@@ -541,13 +541,18 @@ static void do_Autopilot(player_t *pl)
  */
 void Update_objects(void)
 {
+    xpinfo("in update_objects");
+
+    int i;
+    player_t *pl;
     object_t *obj;
-    bool tick = true;
+
+    xpinfo("update robots");
 
     /*
      * Update robots.
      */
-    Robot_update(tick);
+    Robot_update(true);
 
     /*
      * Autorepeat fire, must unfortunately be done here, not in
@@ -580,21 +585,25 @@ void Update_objects(void)
         int frames_per_update = MAX_STATION_FUEL / (fuel * BLOCK_SZ);
         for (int i = 0; i < world->NumFuels; i++)
         {
-            if (world->fuels[i].fuel == MAX_STATION_FUEL)
+            fuel_t *fs = Fuel_by_index(i);
+
+            if (fs->fuel == MAX_STATION_FUEL)
                 continue;
-            if ((world->fuels[i].fuel += fuel) >= MAX_STATION_FUEL)
-                world->fuels[i].fuel = MAX_STATION_FUEL;
-            else if (world->fuels[i].last_change + frames_per_update > frame_loops)
+            if ((fs->fuel += fuel) >= MAX_STATION_FUEL)
+                fs->fuel = MAX_STATION_FUEL;
+            else if (fs->last_change + frames_per_update > frame_loops)
                 /*
                  * We don't send fuelstation info to the clients every frame
                  * if it wouldn't change their display.
                  */
                 continue;
 
-            world->fuels[i].conn_mask = 0;
-            world->fuels[i].last_change = frame_loops;
+            fs->conn_mask = 0;
+            fs->last_change = frame_loops;
         }
     }
+
+    xpinfo("update shots");
 
     /*
      * Update shots.
@@ -606,32 +615,38 @@ void Update_objects(void)
         if (obj->type == OBJ_MINE)
             Update_mine(MINE_PTR(obj));
 
-        else if (obj->type == OBJ_TORPEDO)
-            Update_torpedo(TORP_PTR(obj));
+        else if (obj->type == OBJ_SMART_SHOT)
+            Move_smart_shot(MISSILE_PTR(obj));
 
         else if (obj->type == OBJ_HEAT_SHOT)
-            Update_missile(MISSILE_PTR(obj));
+            Move_smart_shot(MISSILE_PTR(obj));
 
-        else if (obj->type == OBJ_SMART_SHOT)
-            Update_missile(MISSILE_PTR(obj));
+        else if (obj->type == OBJ_TORPEDO)
+            Move_smart_shot(MISSILE_PTR(obj));
 
-        else if (obj->type == OBJ_BALL)
+        else if (obj->type == OBJ_BALL_BIT)
         {
             if (obj->id != NO_ID)
-                Move_ball(i);
+            {
+                ballobject_t *ball = BALL_PTR(obj);
+
+                Update_connector_force(ball);
+            }
         }
 
-        else if (obj->type == OBJ_WRECKAGE)
+        else if (BIT(obj->type, OBJ_WRECKAGE_BIT))
         {
             wireobject_t *wireobj = WIRE_PTR(obj);
-            wireobj->wire_rotation =
-                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
+            wireobj->rotation =
+                (wireobj->rotation + (int)(wireobj->turnspeed * RES)) % RES;
         }
 
         update_object_speed(obj);
 
-        if (obj->type == OBJ_ASTEROID)
+        if (!BIT(obj->type, OBJ_ASTEROID_BIT))
+        {
             Move_object(obj);
+        }
     }
 
     /*
@@ -643,7 +658,7 @@ void Update_objects(void)
     /*
      * Update ECM blasts
      */
-    for (int i = 0; i < world->NumEcms; i++)
+    for (i = 0; i < Num_ecms(); i++)
     {
         ecm_t *ecm = Ecm_by_index(i);
 
@@ -679,13 +694,14 @@ void Update_objects(void)
         }
     }
 
+    bool tick = true;
     if (Num_cannons() > 0)
         Cannon_update(tick);
 
     /*
      * Update targets
      */
-    for (int i = 0; i < world->NumTargets; i++)
+    for (int i = 0; i < Num_targets(); i++)
     {
         if (world->targets[i].dead_time > 0)
         {
@@ -700,7 +716,7 @@ void Update_objects(void)
                 {
                     uint16_t team = world->targets[i].team;
 
-                    for (int j = 0; j < world->NumTargets; j++)
+                    for (int j = 0; j < Num_targets(); j++)
                     {
                         if (world->targets[j].team == team)
                         {
@@ -737,6 +753,8 @@ void Update_objects(void)
         world->targets[i].conn_mask = 0;
         world->targets[i].last_change = frame_loops;
     }
+
+    xpinfo("player loop");
 
     /* * * * * *
      *
@@ -779,8 +797,7 @@ void Update_objects(void)
             if (BIT(pl->obj_status, SELF_DESTRUCT))
             {
                 SET_BIT(pl->obj_status, KILLED);
-                sprintf(msg, "%s has committed suicide.", pl->name);
-                Set_message(msg);
+                Set_message_f("%s has committed suicide.", pl->name);
                 Throw_items(pl);
                 Kill_player(pl, true);
                 updateScores = true;
@@ -794,7 +811,7 @@ void Update_objects(void)
         {
             pl->stunned--;
             CLR_BIT(pl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT);
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
         }
 
         if (pl->shield_time > 0)
@@ -826,7 +843,7 @@ void Update_objects(void)
 
         if (Player_uses_emergency_thrust(pl))
         {
-            if (pl->fuel.sum > 0 && Player_is_thrusting(pl) && --pl->emergency_thrust_left <= 0)
+            if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_THRUST])
                     Emergency_thrust(pl, true);
@@ -848,7 +865,7 @@ void Update_objects(void)
 
         if (BIT(pl->used, HAS_LASER))
         {
-            if (pl->item[ITEM_LASER] <= 0 || Player_is_phasing(pl))
+            if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, USES_PHASING_DEVICE))
                 CLR_BIT(pl->used, HAS_LASER);
             else
                 Fire_laser(pl);
@@ -861,7 +878,7 @@ void Update_objects(void)
          * Only do autopilot code if switched on and player is not
          * damaged (ie. can see).
          */
-        if ((Player_uses_autopilot(pl)) || (BIT(pl->obj_status, HOVERPAUSE) && !pl->damaged))
+        if ((BIT(pl->used, USES_AUTOPILOT)) || (BIT(pl->obj_status, HOVERPAUSE) && !pl->damaged))
             do_Autopilot(pl);
 
         /*
@@ -898,13 +915,13 @@ void Update_objects(void)
          * Compute energy drainage
          */
         if (BIT(pl->used, HAS_SHIELD))
-            Player_add_fuel(pl, ED_SHIELD);
+            Add_fuel(&(pl->fuel), (long)ED_SHIELD);
 
         if (Player_is_phasing(pl))
-            Player_add_fuel(pl, ED_PHASING_DEVICE);
+            Add_fuel(&(pl->fuel), (long)ED_PHASING_DEVICE);
 
         if (BIT(pl->used, USES_CLOAKING_DEVICE))
-            Player_add_fuel(pl, ED_CLOAKING_DEVICE);
+            Add_fuel(&(pl->fuel), (long)ED_CLOAKING_DEVICE);
 
 #define UPDATE_RATE 100
 
@@ -923,7 +940,7 @@ void Update_objects(void)
             }
         }
 
-        if (Player_is_refueling(pl))
+        if (BIT(pl->used, USES_REFUEL))
         {
             if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].pos.cx,
                              pl->pos.cy - world->fuels[pl->fs].pos.cy) /
@@ -931,7 +948,7 @@ void Update_objects(void)
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
                 (world->block[world->fuels[pl->fs].blk_pos.bx][world->fuels[pl->fs].blk_pos.by] != FUEL) ||
-                Player_is_phasing(pl) ||
+                BIT(pl->used, USES_PHASING_DEVICE) ||
                 (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[pl->fs].team != pl->team))
             {
                 CLR_BIT(pl->used, USES_REFUEL);
@@ -948,11 +965,11 @@ void Update_objects(void)
                         world->fuels[pl->fs].fuel -= REFUEL_RATE;
                         world->fuels[pl->fs].conn_mask = 0;
                         world->fuels[pl->fs].last_change = frame_loops;
-                        Player_add_fuel(pl, REFUEL_RATE);
+                        Add_fuel(&(pl->fuel), REFUEL_RATE);
                     }
                     else
                     {
-                        Player_add_fuel(pl, world->fuels[pl->fs].fuel);
+                        Add_fuel(&(pl->fuel), world->fuels[pl->fs].fuel);
                         world->fuels[pl->fs].fuel = 0;
                         world->fuels[pl->fs].conn_mask = 0;
                         world->fuels[pl->fs].last_change = frame_loops;
@@ -975,7 +992,7 @@ void Update_objects(void)
             if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
                 targ->damage >= TARGET_DAMAGE ||
                 targ->dead_time > 0 ||
-                Player_is_phasing(pl))
+                BIT(pl->used, USES_PHASING_DEVICE))
                 CLR_BIT(pl->used, USES_REPAIR);
             else
             {
@@ -989,7 +1006,7 @@ void Update_objects(void)
                         targ->damage += TARGET_FUEL_REPAIR_PER_FRAME;
                         targ->conn_mask = 0;
                         targ->last_change = frame_loops;
-                        Player_add_fuel(pl, -REFUEL_RATE);
+                        Add_fuel(&(pl->fuel), -REFUEL_RATE);
                         if (targ->damage > TARGET_DAMAGE)
                         {
                             targ->damage = TARGET_DAMAGE;
@@ -1012,7 +1029,7 @@ void Update_objects(void)
         if (pl->fuel.sum <= 0)
         {
             CLR_BIT(pl->used, HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
         }
         if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
             CLR_BIT(pl->used, USES_REFUEL);
@@ -1020,7 +1037,7 @@ void Update_objects(void)
         /*
          * Update acceleration vector etc.
          */
-        if (Player_is_thrusting(pl))
+        if (BIT(pl->obj_status, THRUSTING))
         {
             double power = pl->power;
             double f = pl->power * 0.0008; /* 1/(FUEL_SCALE*MIN_POWER) */
@@ -1036,7 +1053,7 @@ void Update_objects(void)
             }
             pl->acc.x = power * tcos(pl->dir) / inert;
             pl->acc.y = power * tsin(pl->dir) / inert;
-            Player_add_fuel(pl, -f); /* Decrement fuel */
+            Add_fuel(&(pl->fuel), (long)(-f * FUEL_SCALE_FACT)); /* Decrement fuel */
         }
         else
         {
@@ -1178,7 +1195,7 @@ void Update_objects(void)
                 for (k = 0; k < NumObjs; k++)
                 {
                     object_t *b = Obj[k];
-                    if (b->type == OBJ_BALL && b->id == pl->id)
+                    if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
                     {
                         position_t ballpos;
                         ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
@@ -1234,9 +1251,9 @@ void Update_objects(void)
             Move_player(pl);
         }
 
-        if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !Player_is_phasing(pl))
+        if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
         {
-            if (Player_is_thrusting(pl))
+            if (BIT(pl->obj_status, THRUSTING))
                 Thrust(pl);
         }
 
@@ -1253,6 +1270,8 @@ void Update_objects(void)
             remove_temp_wormhole(i);
     }
 
+    xpinfo("visibility");
+
     for (int ind = 0; ind < NumPlayers; ind++)
     {
         player_t *pl = PlayersArray[ind];
@@ -1264,7 +1283,7 @@ void Update_objects(void)
             pl->forceVisible--;
 
             if (!pl->forceVisible)
-                pl->updateVisibility = true;
+                pl->updateVisibility = 1;
         }
 
         if (BIT(pl->used, USES_TRACTOR_BEAM))
@@ -1272,29 +1291,29 @@ void Update_objects(void)
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
-            player_t *ship = Player_by_id(pl->lock.pl_id);
-            // Guard against ship = (nil)
-            if (!pl || !ship)
-                warn("update: pl = %p, ship = %p", pl, ship);
-            else
-                pl->lock.distance =
-                    Wrap_length(pl->pos.cx - ship->pos.cx,
-                                pl->pos.cy - ship->pos.cy) /
-                    CLICK;
+            player_t *lock_pl = Player_by_id(pl->lock.pl_id);
+            pl->lock.distance =
+                Wrap_length(pl->pos.cx - lock_pl->pos.cx,
+                            pl->pos.cy - lock_pl->pos.cy) /
+                CLICK;
         }
     }
+
+    xpinfo("check collision");
 
     /*
      * Checking for collision, updating score etc. (see collision.c)
      */
     Check_collision();
 
+    xpinfo("kill players");
+
     /*
      * Update tanks, Kill players that ought to be killed.
      */
-    for (int ind = NumPlayers - 1; ind >= 0; ind--)
+    for (i = NumPlayers - 1; i >= 0; i--)
     {
-        player_t *pl = PlayersArray[ind];
+        pl = Player_by_index(i);
 
         if (Player_is_alive(pl))
             Update_tanks(&(pl->fuel));
@@ -1326,6 +1345,8 @@ void Update_objects(void)
         }
     }
 
+    xpinfo("kill shots");
+
     /*
      * Kill shots that ought to be dead.
      */
@@ -1348,4 +1369,6 @@ void Update_objects(void)
 #define UPDATE_SCORE_DELAY (FPS)
     if (updateScores && frame_loops % UPDATE_SCORE_DELAY == 0)
         Update_score_table();
+
+    xpinfo("end of update");
 }

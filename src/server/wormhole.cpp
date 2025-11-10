@@ -159,7 +159,7 @@ static void Warp_balls(player_t *pl, clpos_t dest)
         {
             object_t *b = Obj[k];
 
-            if (b->type == OBJ_BALL && b->id == pl->id)
+            if (b->type == OBJ_BALL_BIT && b->id == pl->id)
             {
                 clpos_t ballpos;
                 hitmask_t hitmask = BALL_BIT | HITMASK(pl->team);

@@ -131,12 +131,7 @@
 #define RECOVERY_DELAY (FPS * 3)
 #define ROBOT_CREATE_DELAY (FPS * 2)
 
-/*
- * ID values: In the network protocol these are 16 bit signed values.
- */
 #define NO_ID (-1)
-
-/* Currently there is 256 possible player IDs. */
 #define NUM_IDS 256
 #define MAX_PSEUDO_PLAYERS 16
 
@@ -155,23 +150,6 @@
 // TODO: Remove later
 #define MAX_TOTAL_FRICTIONAREAS (2 * 64)
 
-#define ED_SHOT (-0.2)
-#define ED_SMART_SHOT (-30.0)
-#define ED_MINE (-60.0)
-#define ED_ECM (-60.0)
-#define ED_TRANSPORTER (-60.0)
-#define ED_HYPERJUMP (-60.0)
-#define ED_SHIELD (-0.20)
-#define ED_PHASING_DEVICE (-0.40)
-#define ED_CLOAKING_DEVICE (-0.07)
-#define ED_DEFLECTOR (-0.15)
-#define ED_SHOT_HIT (-25.0)
-#define ED_SMART_SHOT_HIT (-120.0)
-#define ED_PL_CRASH (-100.0)
-#define ED_BALL_HIT (-50.0)
-#define ED_LASER (-10.0)
-#define ED_LASER_HIT (-100.0)
-
 #define LG2_MAX_AFTERBURNER 4
 #define ALT_SPARK_MASS_FACT 4.2
 #define ALT_FUEL_FACT 3
@@ -184,14 +162,18 @@
 #define AFTER_BURN_FUEL(f, n) \
     (((f) * ((MAX_AFTERBURNER + 1) + (n) * (ALT_FUEL_FACT - 1))) / (MAX_AFTERBURNER + 1.0))
 
+#define TURN_FUEL(acc) (0.005 * FUEL_SCALE_FACT * ABS(acc))
+#define TURN_SPARKS(tf) (5 + ((tf) >> ((FUEL_SCALE_BITS) - 6)))
+
 #define THRUST_MASS 0.7
+
 #define ARMOR_MASS (options.shipMass / 14)
 
 #define MAX_TANKS 8
 #define TANK_MASS (options.shipMass / 10)
 #define TANK_CAP(n) (!(n) ? MAX_PLAYER_FUEL : (MAX_PLAYER_FUEL / 3))
 #define TANK_FUEL(n) ((TANK_CAP(n) * (5 + (randomMT() & 3))) / 32)
-#define TANK_REFILL_LIMIT (350.0 / 8.0)
+#define TANK_REFILL_LIMIT (MIN_PLAYER_FUEL / 8)
 #define TANK_THRUST_FACT 0.7
 #define TANK_NOTHRUST_TIME (HEAT_CLOSE_TIMEOUT / 2 + 2)
 #define TANK_THRUST_TIME (TANK_NOTHRUST_TIME / 2 + 1)
@@ -262,7 +244,7 @@
 #define TRACTOR_MAX_FORCE(items) (-40 + (items) * -20)
 #define TRACTOR_PERCENT(dist, maxdist) \
     (1.0 - (0.5 * (dist) / (maxdist)))
-#define TRACTOR_COST(percent) (-1.5 * (percent))
+#define TRACTOR_COST(percent) (-1.5 * FUEL_SCALE_FACT * (percent))
 #define TRACTOR_FORCE(tr_pr, percent, maxforce) \
     ((percent) * (maxforce) * ((tr_pr) ? -1 : 1))
 
@@ -272,7 +254,7 @@
 
 #define DEBRIS_MASS 4.5
 
-#define ENERGY_RANGE_FACTOR 2.5
+#define ENERGY_RANGE_FACTOR (2.5 / FUEL_SCALE_FACT)
 
 /* map dimension limitation: ((0x7FFF - 1280) / 35) */
 #define MAX_MAP_SIZE 900

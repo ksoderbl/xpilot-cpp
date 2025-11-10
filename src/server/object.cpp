@@ -36,6 +36,7 @@
 #include "xpconfig.h"
 #include "types.h"
 #include "serverconst.h"
+
 #include "xperror.h"
 #include "portability.h"
 
@@ -70,7 +71,7 @@ object_t *Object_allocate(void)
         obj = Obj[ObjCount];
         Object_incr_count();
 
-        obj->type = OBJ_DEBRIS;
+        obj->type = OBJ_DEBRIS_BIT;
         obj->life = 0;
     }
     else

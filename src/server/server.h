@@ -61,23 +61,11 @@ static inline vector_t World_gravity(clpos_t pos)
     return world->gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
 }
 
-#define APPNAME "xpilot-cpp-server"
-
-extern object_t *Obj[];
-extern long frame_loops;
-extern long frame_loops_slow;
-extern int NumPlayers;
-extern int NumOperators;
-extern int NumPseudoPlayers;
-extern int NumQueuedPlayers;
-extern int ObjCount;
-extern int NumAlliances;
-extern int NumRobots;
-
-extern char ShutdownReason[];
-
-extern double timePerFrame;
-extern const double timeStep;
+enum TeamPickType
+{
+    PickForHuman = 1,
+    PickForRobot = 2
+};
 
 /*
  * Global data.
@@ -86,19 +74,19 @@ extern const double timeStep;
 // #define NumObjs (ObjCount + 0)
 
 extern long frame_loops;
-// extern int NumPlayers;
-// extern int NumPseudoPlayers;
-// extern int ObjCount;
-// extern int NumPulses;
-// extern int NumEcms;
-// extern int NumTransporters;
-// extern int NumAlliances;
-// extern int NumRobots;
+extern int NumPlayers;
+extern int NumSpectators;
+extern int NumOperators;
+extern int NumPseudoPlayers;
+extern int NumQueuedPlayers;
+extern int ObjCount;
+extern int NumAlliances;
+extern int NumRobots;
 extern int login_in_progress;
 // extern world_t World;
 extern server_t Server;
-extern uint32_t DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
-// extern int GetIndArray[];
+extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
+// extern int GetInd[];
 extern int ShutdownServer;
 extern int ShutdownDelay;
 extern long main_loops;
@@ -108,8 +96,14 @@ extern bool updateScores;
 extern int game_lock;
 extern int roundtime;
 extern int roundsPlayed;
-extern uint32_t KILLING_SHOTS;
+extern long KILLING_SHOTS;
 // extern unsigned SPACE_BLOCKS;
+
+extern char ShutdownReason[];
+
+extern double timePerFrame;
+
+#define APPNAME "xpilot-cpp-server"
 
 /*
  * Prototypes for cell.c
@@ -185,12 +179,11 @@ int Wildmap(
  */
 void tuner_none(void);
 void tuner_dummy(void);
-void Timing_setup(void);
 bool Init_options(void);
 void Free_options(void);
 
 /*
- * Prototypes for player.c
+ * Prototypes for play.c
  */
 void Thrust(player_t *pl);
 void Recoil(object_t *ship, object_t *shot);
@@ -200,15 +193,8 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2);
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist);
 void Item_damage(player_t *pl, double prob);
 void Tank_handle_detach(player_t *pl);
+void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
-
-void Add_fuel(pl_fuel_t *ft, double fuel);
-
-static inline void Player_add_fuel(player_t *pl, double amount)
-{
-    Add_fuel(&(pl->fuel), amount);
-}
-
 void Place_item(int type, player_t *pl);
 int Choose_random_item(void);
 void Tractor_beam(player_t *pl);
@@ -221,7 +207,7 @@ void Detonate_mines(player_t *pl);
 char *Describe_shot(int type, long status, modifiers_t mods, int hit);
 void Fire_ecm(player_t *pl);
 void Fire_general_ecm(int id, int team, clpos_t pos);
-void Move_ball(int ind);
+void Update_connector_force(ballobject_t *ball);
 void Fire_general_shot(int id, int team,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target_id);
@@ -232,16 +218,17 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun);
 void Fire_right_shot(player_t *pl, int type, int dir, int gun);
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
-void Make_treasure_ball(treasure_t *t);
+void Make_treasure_ball(int treasure);
 int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
 void Fire_general_laser(int id, int team, clpos_t pos, int dir, modifiers_t mods);
 void Do_deflector(player_t *pl);
 void Do_transporter(player_t *pl);
-void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *item, double *amount);
+void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *itemp, long *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
+void Move_smart_shot(missileobject_t *shot);
 void Update_torpedo(torpobject_t *torp);
 void Update_missile(missileobject_t *missile);
 void Update_mine(mineobject_t *mine);
@@ -249,7 +236,7 @@ void Make_debris(
     clpos_t pos,
     vector_t vel,
     int id,
-    int team,
+    uint16_t team,
     int type,
     double mass,
     long status,
@@ -263,7 +250,7 @@ void Make_wreckage(
     clpos_t pos,
     vector_t vel,
     int id,
-    int team,
+    uint16_t team,
     double min_mass, double max_mass,
     double total_mass,
     long status,
@@ -274,7 +261,7 @@ void Make_wreckage(
     int min_life, int max_life);
 void Make_item(clpos_t pos,
                vector_t vel,
-               int item_type, int num_per_pack,
+               int item, int num_per_pack,
                long status);
 void Explode_fighter(player_t *pl);
 void Throw_items(player_t *pl);

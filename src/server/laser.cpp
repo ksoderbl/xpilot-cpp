@@ -37,6 +37,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "map.h"
 #include "score.h"
 #include "saudio.h"
@@ -75,7 +76,7 @@ typedef struct vicbuf
  */
 static void Laser_pulse_destroy_one(int pulse_index)
 {
-    int ind;
+    // int ind;
     player_t *pl;
     pulse_t *pulse_ptr;
 
@@ -190,14 +191,18 @@ static void Laser_pulse_hits_player(
 {
     player_t *pl;
     player_t *vicpl;
-    int ind;
+    // int ind;
     int sc;
     char msg[MSG_LEN];
 
     if (pulse->id != NO_ID)
+    {
         pl = Player_by_id(pulse->id);
+    }
     else
+    {
         pl = NULL;
+    }
 
     vicpl = PlayersArray[victim->ind];
     vicpl->forceVisible++;
@@ -220,7 +225,7 @@ static void Laser_pulse_hits_player(
     sound_play_sensors(vicpl->pos, PLAYER_EAT_LASER_SOUND);
     if (BIT(vicpl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         return;
-    if (!BIT(OBJ_TYPEBIT(obj->type), KILLING_SHOTS))
+    if (!BIT(obj->type, KILLING_SHOTS))
         return;
     if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
@@ -256,7 +261,7 @@ static void Laser_pulse_hits_player(
     }
     else
     {
-        Player_add_fuel(vicpl, ED_LASER_HIT);
+        Add_fuel(&(vicpl->fuel), (long)ED_LASER_HIT);
         if (!BIT(vicpl->used, HAS_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
             SET_BIT(vicpl->obj_status, KILLED);
@@ -277,8 +282,7 @@ static void Laser_pulse_hits_player(
                               vicpl->score) *
                          options.laserKillScoreMult;
                     Score_players(pl, sc, vicpl->name,
-                                  vicpl, -sc,
-                                  pl->name);
+                                  vicpl, -sc, pl->name);
                 }
             }
             else
@@ -298,9 +302,7 @@ static void Laser_pulse_hits_player(
             }
         }
         if (!BIT(vicpl->used, HAS_SHIELD) && BIT(vicpl->have, HAS_ARMOR))
-        {
             Player_hit_armor(vicpl);
-        }
     }
 }
 
@@ -330,7 +332,7 @@ static int Laser_pulse_check_player_hits(
 
     /*
     if (pulse->id != NO_ID) {
-        ind = GetIndArray[pulse->id];
+        ind = GetInd[pulse->id];
         pl = PlayersArray[ind];
     } else {
         ind = -1;
@@ -407,7 +409,7 @@ static void Laser_pulse_get_object_list(
  */
 void Laser_pulse_collision(void)
 {
-    int ind, i;
+    int i;
     int p;
     int max, hits;
     bool refl;
@@ -448,9 +450,13 @@ void Laser_pulse_collision(void)
         }
 
         if (pulse->id != NO_ID)
+        {
             pl = Player_by_id(pulse->id);
+        }
         else
-            pl = NULL;
+        {
+            pl = nullptr;
+        }
 
         pulse->pix_pos.x += tcos(pulse->dir) * PULSE_SPEED;
         pulse->pix_pos.y += tsin(pulse->dir) * PULSE_SPEED;
@@ -537,18 +543,15 @@ void Laser_pulse_collision(void)
         if (obj_list.size() > 0)
         {
             printf("Laser_pulse_collision: pulse %d, obj_list.size() = %d\n", p, obj_list.size());
-            if (ind >= 0)
-            {
-                player_t *pl = PlayersArray[ind];
-                printf("Laser_pulse_collision: Player %d: %s\n", ind, pl->name);
-            }
+            if (pl)
+                printf("Laser_pulse_collision: Player %d: %s\n", GetInd(pl->id), pl->name);
         }
 
-        obj->type = OBJ_PULSE;
+        obj->type = OBJ_PULSE_BIT;
         obj->life = 1;
         obj->id = pulse->id;
         obj->team = pulse->team;
-        // obj->count = 0; // TODO: What was this count used for?
+        obj->count = 0;
         obj->obj_status = 0;
         if (pulse->id == NO_ID)
             obj->obj_status = FROMCANNON;
@@ -609,10 +612,10 @@ void Laser_pulse_collision(void)
                     {
                         obj->life = 0;
                         ast->life += ASTEROID_FUEL_HIT(ED_LASER_HIT,
-                                                       WIRE_PTR(ast)->wire_size);
+                                                       WIRE_PTR(ast)->size);
                         if (ast->life < 0)
                             ast->life = 0;
-                        if (ast->life == 0 && ind != -1 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
+                        if (ast->life == 0 && pl && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
                             Score(pl, options.asteroidPoints, ast->pos, "");
                         break;
                     }
@@ -639,7 +642,7 @@ void Laser_pulse_collision(void)
     if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
         free(vicbuf.vic_ptr);
 
-    obj->type = OBJ_DEBRIS;
+    obj->type = OBJ_DEBRIS_BIT;
     obj->life = 0;
     Cell_add_object(obj);
 }

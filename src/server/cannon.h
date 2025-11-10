@@ -25,6 +25,8 @@
 #ifndef CANNON_H
 #define CANNON_H
 
+#include "map.h"
+
 extern long CANNON_USE_ITEM;
 
 /* the different weapons a cannon can use.
@@ -44,7 +46,7 @@ extern long CANNON_USE_ITEM;
 #define CW_TRACTORBEAM 5
 /* uses one transporter */
 #define CW_TRANSPORTER 6
-/* a big stream of exhaust particles (OBJ_SPARK). needs an afterburner and
+/* a big stream of exhaust particles (OBJ_SPARK_BIT). needs an afterburner and
    uses one fuel pack. even bigger with emergency thrust. more afterburners
    only increase probability of use */
 #define CW_GASJET 7
@@ -74,59 +76,7 @@ extern long CANNON_USE_ITEM;
 /* sector in which cannonfire is possible */
 #define CANNON_SPREAD (RES / 3)
 
-/* cannon smartness is 0 to this value */
-#define CANNON_SMARTNESS_MAX 3
-
 void Cannon_update(bool tick);
-void Cannon_init(cannon_t *cannon);
-void Cannon_init_items(cannon_t *cannon);
-void Cannon_add_item(cannon_t *cannon, int type, int amount);
-void Cannon_throw_items(cannon_t *cannon);
-void Cannon_check_defense(cannon_t *cannon);
-void Cannon_check_fire(cannon_t *cannon);
-void Object_hits_cannon(object_t *obj, cannon_t *c);
-void Cannon_dies(cannon_t *cannon, player_t *pl);
-hitmask_t Cannon_hitmask(cannon_t *cannon);
-void Cannon_set_hitmask(int group, cannon_t *cannon);
-bool Cannon_hitfunc(group_t *groupptr, const move_t *move);
-void World_restore_cannon(cannon_t *cannon);
-void World_remove_cannon(cannon_t *cannon);
-void Cannon_set_option(cannon_t *cannon, const char *name, const char *value);
-
-static inline int Cannon_get_smartness(cannon_t *c)
-{
-   //    if (c->smartness != -1)
-   //       return c->smartness;
-   return options.cannonSmartness;
-}
-
-// static inline double Cannon_get_min_shot_life(cannon_t *c)
-// {
-//    return options.minCannonShotLife;
-// }
-
-// static inline double Cannon_get_max_shot_life(cannon_t *c)
-// {
-//    return options.maxCannonShotLife;
-// }
-
-// static inline double Cannon_get_shot_life(cannon_t *cannon)
-// {
-//    double minlife, maxlife, d;
-
-//    minlife = Cannon_get_min_shot_life(cannon);
-//    maxlife = Cannon_get_max_shot_life(cannon);
-//    d = maxlife - minlife;
-
-//    return minlife + rfrac() * d;
-// }
-
-// static inline double Cannon_get_shot_speed(cannon_t *cannon)
-// {
-//    if (cannon->shot_speed > 0)
-//       return cannon->shot_speed;
-//    return options.cannonShotSpeed;
-// }
 
 static inline cannon_t *Cannon_by_id(int id)
 {

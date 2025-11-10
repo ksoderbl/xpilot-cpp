@@ -40,6 +40,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "defaults.h"
 #include "xperror.h"
 #include "types.h"

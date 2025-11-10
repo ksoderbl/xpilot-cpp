@@ -109,7 +109,7 @@ typedef struct fuel
     blkpos_t blk_pos;
     position_t pix_pos;
     clpos_t pos;
-    double fuel;
+    long fuel;
     unsigned conn_mask;
     long last_change;
     int team;
@@ -122,13 +122,12 @@ typedef struct grav
     double force;
 } grav_t;
 
-typedef struct
+typedef struct base
 {
     blkpos_t blk_pos;
     clpos_t pos;
     int dir;
-    int ind;
-    int team;
+    uint16_t team;
 } base_t;
 
 typedef struct baseorder
@@ -151,7 +150,7 @@ typedef struct cannon
     int tractor_target_id;
     int tractor_count;
     bool tractor_is_pressor;
-    int team;
+    uint16_t team;
     long used;
     int emergency_shield_left;
     int phasing_left;
@@ -210,7 +209,7 @@ typedef struct treasure
     blkpos_t blk_pos;
     clpos_t pos;
     bool have;     /* true if this treasure has ball in it */
-    int team;      /* team of this treasure */
+    uint16_t team; /* team of this treasure */
     int destroyed; /* how often this treasure destroyed */
     bool empty;    /* true if this treasure never had a ball in it */
 } treasure_t;
@@ -219,7 +218,7 @@ typedef struct target
 {
     blkpos_t blk_pos;
     clpos_t pos;
-    int team;
+    uint16_t team;
     int dead_time;
     int damage;
     unsigned conn_mask;

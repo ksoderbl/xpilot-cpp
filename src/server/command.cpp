@@ -1042,11 +1042,11 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
                 t->SwapperId = NO_ID;
         }
 
-        if (game_lock && pl->home_base == NULL)
+        if (game_lock && pl->home_base_ptr == NULL)
             snprintf(msg, size, "Playing teams are locked.");
         else if (team < 0 || team >= MAX_TEAMS)
             snprintf(msg, size, "Team %d is not a valid team.", team);
-        else if (team == pl->team && pl->home_base != NULL)
+        else if (team == pl->team && pl->home_base_ptr != NULL)
             snprintf(msg, size, "You already are on team %d.", team);
         else if (world->teams[team].NumBases == 0)
             snprintf(msg, size,
@@ -1064,12 +1064,12 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     {
         snprintf(msg, size, "%s has swapped to team %d.", pl->name, team);
         Set_message(msg);
-        if (pl->home_base)
+        if (pl->home_base_ptr)
             world->teams[pl->team].NumMembers--;
         pl->team = team;
         world->teams[pl->team].NumMembers++;
         Set_swapper_state(pl);
-        if (pl->home_base == NULL)
+        if (pl->home_base_ptr == NULL)
         {
             Pick_startpos(pl);
             Pause_player(pl, false);
@@ -1083,14 +1083,14 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     }
 
     i = world->teams[pl->team].SwapperId;
-    while (i != -1 && pl->home_base != NULL)
+    while (i != -1 && pl->home_base_ptr != NULL)
     {
         if ((i = Player_by_id(i)->team) != team)
             i = world->teams[i].SwapperId;
         else
         {
             /* Found a cycle, now change the teams */
-            base_t *xbase = pl->home_base, *xbase2;
+            base_t *xbase = pl->home_base_ptr, *xbase2;
             int xteam = pl->team, xteam2;
             player_t *pl2 = pl;
 
@@ -1098,10 +1098,10 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
             {
                 pl2 = Player_by_id(world->teams[xteam].SwapperId);
                 world->teams[xteam].SwapperId = -1;
-                xbase2 = pl2->home_base;
+                xbase2 = pl2->home_base_ptr;
                 xteam2 = pl2->team;
                 pl2->team = xteam;
-                pl2->home_base = xbase;
+                pl2->home_base_ptr = xbase;
                 Set_swapper_state(pl2);
                 Send_info_about_player(pl2);
                 /* This can send a huge amount of data if several
@@ -1114,7 +1114,7 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
             } while (xteam != team);
             xteam = pl->team;
             pl->team = team;
-            pl->home_base = xbase;
+            pl->home_base_ptr = xbase;
             Set_swapper_state(pl);
             Send_info_about_player(pl);
             snprintf(msg, size, "Some players swapped teams.");
@@ -1128,15 +1128,15 @@ static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     {
         player_t *pl2 = Player_by_index(i);
 
-        if (pl2->conn != NULL && Player_is_paused(pl2) && (pl2->team == team) && pl2->home_base != NULL)
+        if (pl2->conn != NULL && Player_is_paused(pl2) && (pl2->team == team) && pl2->home_base_ptr != NULL)
         {
             base_t *temp;
 
             pl2->team = pl->team;
             pl->team = team;
-            temp = pl2->home_base;
-            pl2->home_base = pl->home_base;
-            pl->home_base = temp;
+            temp = pl2->home_base_ptr;
+            pl2->home_base_ptr = pl->home_base_ptr;
+            pl->home_base_ptr = temp;
             Set_swapper_state(pl2);
             Set_swapper_state(pl);
             Send_info_about_player(pl2);

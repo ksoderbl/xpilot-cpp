@@ -25,14 +25,15 @@
 #include <ctime>
 
 #include "server.h"
-#include "robot.h"
 
 #define SERVER
 #include "serverconst.h"
+
 #include "xperror.h"
 #include "xpmath.h"
 #include "sched.h"
 #include "walls.h"
+#include "robot.h"
 
 extern time_t gameOverTime;
 
@@ -67,30 +68,42 @@ void tuner_ballmass(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_BALL)
+        if (BIT(Obj[i]->type, OBJ_BALL_BIT))
+        {
             Obj[i]->mass = options.ballMass;
+        }
     }
 }
 
 void tuner_maxrobots(void)
 {
     if (options.maxRobots < 0)
+    {
         options.maxRobots = Num_bases();
+    }
 
     if (options.maxRobots < options.minRobots)
+    {
         options.minRobots = options.maxRobots;
+    }
 
     while (options.maxRobots < NumRobots)
+    {
         Robot_delete(NULL, true);
+    }
 }
 
 void tuner_minrobots(void)
 {
     if (options.minRobots < 0)
+    {
         options.minRobots = options.maxRobots;
+    }
 
     if (options.maxRobots < options.minRobots)
+    {
         options.maxRobots = options.minRobots;
+    }
 }
 
 void tuner_playershielding(void)
@@ -130,8 +143,11 @@ void tuner_playershielding(void)
 void tuner_playerstartsshielded(void)
 {
     if (options.playerShielding)
-        /* Doesn't make sense to turn off when shields are on. */
-        options.playerStartsShielded = true;
+    {
+        options.playerStartsShielded = true; /* Doesn't make sense
+                                    to turn off when
+                                    shields are on. */
+    }
 }
 
 void tuner_worldlives(void)
@@ -185,7 +201,7 @@ void tuner_cannonsuseitems(void)
 
     Move_init();
 
-    for (i = 0; i < world->NumCannons; i++)
+    for (i = 0; i < Num_cannons(); i++)
     {
         c = world->cannons + i;
         for (j = 0; j < NUM_ITEMS; j++)
@@ -247,7 +263,7 @@ void tuner_minelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type != OBJ_MINE)
+        if (Obj[i]->type != OBJ_MINE_BIT)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
@@ -274,8 +290,8 @@ void tuner_missilelife(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type != OBJ_SMART_SHOT &&
-            Obj[i]->type != OBJ_HEAT_SHOT && Obj[i]->type != OBJ_TORPEDO)
+        if (Obj[i]->type != OBJ_SMART_SHOT_BIT &&
+            Obj[i]->type != OBJ_HEAT_SHOT_BIT && Obj[i]->type != OBJ_TORPEDO_BIT)
             continue;
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
@@ -328,4 +344,9 @@ void tuner_allowalliances(void)
 void tuner_announcealliances(void)
 {
     updateScores = true;
+}
+
+void tuner_fps(void)
+{
+    install_timer_tick(nullptr, FPS);
 }

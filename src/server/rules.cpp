@@ -29,6 +29,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "map.h"
 #include "rules.h"
 #include "bit.h"
@@ -54,13 +55,13 @@
 #define MAX_LASER 99
 #define MAX_TRACTOR_BEAM 99
 
-uint32_t KILLING_SHOTS = (OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_PULSE_BIT);
-uint32_t DEF_BITS = 0;
-uint32_t KILL_BITS = (THRUSTING | PLAYING | KILLED | SELF_DESTRUCT | WARPING | WARPED);
-uint32_t DEF_HAVE =
+long KILLING_SHOTS = (OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_PULSE_BIT);
+long DEF_BITS = 0;
+long KILL_BITS = (THRUSTING | PLAYING | KILLED | SELF_DESTRUCT | WARPING | WARPED);
+long DEF_HAVE =
     (HAS_SHIELD | HAS_COMPASS | HAS_REFUEL | HAS_REPAIR | HAS_CONNECTOR | HAS_SHOT | HAS_LASER);
-uint32_t DEF_USED = (HAS_SHIELD | HAS_COMPASS);
-uint32_t USED_KILL =
+long DEF_USED = (HAS_SHIELD | HAS_COMPASS);
+long USED_KILL =
     (HAS_REFUEL | HAS_REPAIR | HAS_CONNECTOR | HAS_SHOT | HAS_LASER | HAS_ARMOR | HAS_TRACTOR_BEAM | HAS_CLOAKING_DEVICE | HAS_PHASING_DEVICE | HAS_DEFLECTOR | HAS_MIRROR | HAS_EMERGENCY_SHIELD | HAS_EMERGENCY_THRUST);
 
 /*
@@ -128,12 +129,9 @@ void Tune_item_probs(void)
             for (j = 0; j < NumObjs; j++)
             {
                 object_t *obj = Obj[j];
-
-                if (obj->type == OBJ_ITEM)
+                if (obj->type == OBJ_ITEM_BIT)
                 {
-                    itemobject_t *item = ITEM_PTR(obj);
-
-                    if (item->item_type == i)
+                    if (obj->info == i)
                     {
                         Delete_shot(j);
                         j--;
@@ -171,7 +169,7 @@ void Tune_asteroid_prob(void)
     /* superfluous asteroids are handled by Asteroid_update() */
 
     /* Tune asteroid concentrator parameters */
-    LIMIT(options.asteroidConcentratorRadius, 1.0, world->diagonal);
+    LIMIT(options.asteroidConcentratorRadius, 1, world->diagonal);
     LIMIT(options.asteroidConcentratorProb, 0.0, 1.0);
 }
 
@@ -321,7 +319,7 @@ void Set_world_rules(void)
     static rules_t rules;
 
     rules.mode =
-        ((options.crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (options.bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (options.allowPlayerKilling ? PLAYER_KILLINGS : 0) | (options.playerShielding ? PLAYER_SHIELDING : 0) | (options.limitedVisibility ? LIMITED_VISIBILITY : 0) | (options.limitedLives ? LIMITED_LIVES : 0) | (options.teamPlay ? TEAM_PLAY : 0) | (options.allowAlliances ? ALLIANCES : 0) | (options.timing ? TIMING : 0) | (options.allowNukes ? ALLOW_NUKES : 0) | (options.allowClusters ? ALLOW_CLUSTERS : 0) | (options.allowModifiers ? ALLOW_MODIFIERS : 0) | (options.allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (options.edgeWrap ? WRAP_PLAY : 0));
+        ((options.crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (options.bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (options.playerKillings ? PLAYER_KILLINGS : 0) | (options.playerShielding ? PLAYER_SHIELDING : 0) | (options.limitedVisibility ? LIMITED_VISIBILITY : 0) | (options.limitedLives ? LIMITED_LIVES : 0) | (options.teamPlay ? TEAM_PLAY : 0) | (options.allowAlliances ? ALLIANCES : 0) | (options.timing ? TIMING : 0) | (options.allowNukes ? ALLOW_NUKES : 0) | (options.allowClusters ? ALLOW_CLUSTERS : 0) | (options.allowModifiers ? ALLOW_MODIFIERS : 0) | (options.allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (options.edgeWrap ? WRAP_PLAY : 0));
     rules.lives = options.worldLives;
     world->rules = &rules;
 

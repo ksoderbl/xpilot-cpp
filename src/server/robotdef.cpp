@@ -31,14 +31,13 @@
 
 #include <unistd.h>
 
-#include "commonmacros.h"
-
 #include "server.h"
 
 #define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "map.h"
 #include "score.h"
 #include "bit.h"
@@ -135,10 +134,11 @@ int Robot_default_setup(robot_type_t *type_ptr)
 /*
  * Private functions.
  */
+/*static bool Check_robot_navigate(player_t *pl, bool * num_evade);*/
 static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i);
-static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode);
+static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mode);
 static bool Detect_ship(player_t *pl, player_t *ship);
-static int Rank_item_value(player_t *pl, enum Item itemtype);
+static int Rank_item_value(player_t *pl, Item_t itemtype);
 static bool Ball_handler(player_t *pl);
 
 /*
@@ -155,9 +155,10 @@ static robot_default_data_t *Robot_default_get_data(player_t *pl)
  */
 static void Robot_default_create(player_t *pl, char *str)
 {
+    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data;
 
-    if (!(my_data = XMALLOC(robot_default_data_t, 1)))
+    if (!(my_data = (robot_default_data_t *)malloc(sizeof(*my_data))))
     {
         error("no mem for default robot");
         End_game();
@@ -182,7 +183,7 @@ static void Robot_default_create(player_t *pl, char *str)
     }
     /*
      * some parameters which may be changed to be dependent upon
-     * the 'attack' and 'defense' settings of this robot.
+     * the `attack' and `defense' settings of this robot.
      */
     if (BIT(world->rules->mode, TIMING))
     {
@@ -216,6 +217,7 @@ static void Robot_default_create(player_t *pl, char *str)
  */
 static void Robot_default_go_home(player_t *pl)
 {
+    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     my_data->robot_mode = RM_TAKE_OFF;
@@ -227,10 +229,13 @@ static void Robot_default_go_home(player_t *pl)
  */
 static void Robot_default_set_war(player_t *pl, int victim_id)
 {
+    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (victim_id == NO_ID)
+    {
         CLR_BIT(my_data->robot_lock, LOCK_PLAYER);
+    }
     else
     {
         my_data->robot_lock_id = victim_id;
@@ -243,12 +248,17 @@ static void Robot_default_set_war(player_t *pl, int victim_id)
  */
 static int Robot_default_war_on_player(player_t *pl)
 {
+    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (BIT(my_data->robot_lock, LOCK_PLAYER))
+    {
         return my_data->robot_lock_id;
+    }
     else
+    {
         return NO_ID;
+    }
 }
 
 /*
@@ -256,6 +266,35 @@ static int Robot_default_war_on_player(player_t *pl)
  */
 static void Robot_default_message(player_t *pl, const char *message)
 {
+#if 0
+    player                        *pl = PlayersArray[ind];
+    robot_default_data_t        *my_data = Robot_default_get_data(pl);
+    int                                len;
+    char                        *ptr;
+    char                        sender_name[MAX_NAME_LEN];
+    char                        msg[MSG_LEN];
+
+    /*
+     * Extract the message body and the sender name from the message string.
+     */
+
+    ptr = strrchr(message, ']');/* get end of message */
+    if (!ptr) {
+        return;                /* Make sure to ignore server messages, oops! */
+    }
+    while (*--ptr != '[');        /* skip back over receiver name */
+    while (*--ptr != '[');        /* skip back over sender name */
+    strlcpy(sender_name, ptr + 1, sizeof sender_name);        /* copy sender */
+    len = ptr - message;        /* find read message length */
+    if (message[len] == ' ') {        /* ignore the readability space */
+        len--;
+    }
+    strlcpy(msg, message, len);        /* copy real message */
+    if ((ptr = strchr(sender_name, ']')) != NULL) {
+        *ptr = '\0';        /* remove the ']' separator */
+    }
+    printf("%s got message \"%s\" from \"%s\"\n", pl->name, msg, sender_name);
+#endif
 }
 
 /*
@@ -263,7 +302,10 @@ static void Robot_default_message(player_t *pl, const char *message)
  */
 static void Robot_default_destroy(player_t *pl)
 {
-    XFREE(pl->robot_data_ptr->private_data);
+    // player_t *pl = PlayersArray[ind];
+
+    free(pl->robot_data_ptr->private_data);
+    pl->robot_data_ptr->private_data = NULL;
 }
 
 /*
@@ -271,10 +313,12 @@ static void Robot_default_destroy(player_t *pl)
  */
 static void Robot_default_invite(player_t *pl, player_t *inviter)
 {
-    int war_id = Robot_default_war_on_player(pl), i;
+    // player_t  *inviter = PlayersArray[inv_ind];
+    int war_id = Robot_default_war_on_player(pl);
     robot_default_data_t *my_data = Robot_default_get_data(pl);
+    int i;
     double limit;
-    bool we_accept = true;
+    int we_accept = 1; /* accept by default */
 
     if (pl->alliance != ALLIANCE_NOT_SET)
     {
@@ -283,10 +327,9 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
         for (i = 0; i < NumPlayers; i++)
         {
             player_t *pl_i = Player_by_index(i);
-
             if (Player_is_human(pl_i) && Players_are_allies(pl, pl_i))
             {
-                we_accept = false;
+                we_accept = 0;
                 break;
             }
         }
@@ -302,13 +345,13 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
     {
         /* don't accept players we are at war with */
         if (inviter->id == war_id)
-            we_accept = false;
+            we_accept = 0;
         /* don't accept players who are not active */
         if (BIT(inviter->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
-            we_accept = false;
+            we_accept = 0;
         /* don't accept players with scores substantially lower than ours */
         else if (inviter->score < (pl->score - limit))
-            we_accept = false;
+            we_accept = 0;
     }
     else
     {
@@ -321,7 +364,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
             {
                 if (Player_by_index(i)->id == war_id)
                 {
-                    we_accept = false;
+                    we_accept = 0;
                     break;
                 }
                 avg_score += Player_by_index(i)->score;
@@ -331,7 +374,9 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
         {
             avg_score = avg_score / member_count;
             if (avg_score < (pl->score - limit))
-                we_accept = false;
+            {
+                we_accept = 0;
+            }
         }
     }
     if (we_accept)
@@ -397,6 +442,7 @@ static bool Really_empty_space(player_t *pl, int x, int y)
 static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
 {
     int i;
+    // player_t *pl = PlayersArray[ind];
     object_t *shot;
     player_t *ship;
     long stop_dist;
@@ -417,14 +463,16 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     safe_width = (my_data->defense / 200) * SHIP_SZ;
     /* Prevent overflow. */
     velocity = (pl->velocity <= SPEED_LIMIT) ? pl->velocity : SPEED_LIMIT;
-    stop_dist = (long)((RES * velocity) / (MAX_PLAYER_TURNSPEED * pl->turnresistance) + (velocity * velocity * pl->mass) / (2 * MAX_PLAYER_POWER) + safe_width);
+    stop_dist =
+        (long)((RES * velocity) / (MAX_PLAYER_TURNSPEED * pl->turnresistance) + (velocity * velocity * pl->mass) / (2 * MAX_PLAYER_POWER) + safe_width);
     /*
      * Limit the look ahead.  For very high speeds the current code
      * is ineffective and much too inefficient.
      */
     if (stop_dist > 10 * BLOCK_SZ)
+    {
         stop_dist = 10 * BLOCK_SZ;
-
+    }
     evade = false;
 
     if (pl->velocity <= 0.2)
@@ -439,8 +487,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     }
 
     aux_dir = MOD2(travel_dir + RES / 4, RES);
-    px[0] = CLICK_TO_PIXEL(pl->pos.cx);                /* ship center x */
-    py[0] = CLICK_TO_PIXEL(pl->pos.cy);                /* ship center y */
+    px[0] = pl->pix_pos.x;                             /* ship center x */
+    py[0] = pl->pix_pos.y;                             /* ship center y */
     px[1] = (int)(px[0] + safe_width * tcos(aux_dir)); /* ship left side x */
     py[1] = (int)(py[0] + safe_width * tsin(aux_dir)); /* ship left side y */
     px[2] = 2 * px[0] - px[1];                         /* ship right side x */
@@ -661,17 +709,17 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     if (delta_dir < RES / 4 || delta_dir > 3 * RES / 4)
     {
         pl->turnacc = (my_data->robot_mode == RM_EVADE_LEFT ? pl->turnspeed : (-pl->turnspeed));
-        Thrust(pl, false);
+        CLR_BIT(pl->obj_status, THRUSTING);
     }
     else if (delta_dir < 3 * RES / 8 || delta_dir > 5 * RES / 8)
+    {
         pl->turnacc = (my_data->robot_mode == RM_EVADE_LEFT ? pl->turnspeed : (-pl->turnspeed));
+    }
     else
     {
         pl->turnacc = 0;
-        Thrust(pl, true);
-        my_data->robot_mode = (delta_dir < RES / 2
-                                   ? RM_EVADE_LEFT
-                                   : RM_EVADE_RIGHT);
+        SET_BIT(pl->obj_status, THRUSTING);
+        my_data->robot_mode = (delta_dir < RES / 2 ? RM_EVADE_LEFT : RM_EVADE_RIGHT);
     }
 
     return true;
@@ -719,7 +767,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         Robot_check_new_modifiers(pl, mods);
         return;
 
-    case OBJ_SHOT:
+    case OBJ_SHOT_BIT:
         /*
          * Robots usually use wide beam shots, however they may narrow
          * the beam occasionally.
@@ -730,14 +778,14 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         Robot_check_new_modifiers(pl, mods);
         return;
 
-    case OBJ_MINE:
+    case OBJ_MINE_BIT:
         stock = pl->item[ITEM_MINE];
         min = options.nukeMinMines;
         break;
 
-    case OBJ_SMART_SHOT:
-    case OBJ_HEAT_SHOT:
-    case OBJ_TORPEDO:
+    case OBJ_SMART_SHOT_BIT:
+    case OBJ_HEAT_SHOT_BIT:
+    case OBJ_TORPEDO_BIT:
         stock = pl->item[ITEM_MISSILE];
         min = options.nukeMinSmarts;
         if ((my_data->robot_count % 4) == 0)
@@ -788,130 +836,36 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
     Robot_check_new_modifiers(pl, mods);
 }
 
-static void Robotdef_fire_laser(player_t *pl)
+static bool Check_robot_target(player_t *pl,
+                               int item_x, int item_y,
+                               int new_mode)
 {
+    player_t *ship;
     long item_dist;
     int item_dir;
     int travel_dir;
     int delta_dir;
     long dx, dy;
     long dist;
-    bool clear_path, slowing;
-    robot_default_data_t *my_data = Robot_default_get_data(pl);
-    player_t *ship;
-
-    if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
-                                                     PLAYING | PAUSE | GAME_OVER) == PLAYING)
-        ship = Player_by_id(my_data->robot_lock_id);
-    else if (BIT(pl->lock.tagged, LOCK_PLAYER))
-        ship = Player_by_id(pl->lock.pl_id);
-    else
-        ship = NULL;
-    if (ship && BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
-    {
-        double x1, y1, x3, y3, x4, y4, x5, y5;
-        double ship_dist, dir3, dir4, dir5;
-
-        x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + pl->ship->m_gun[pl->dir].x;
-        y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + pl->ship->m_gun[pl->dir].y;
-        x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
-        y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
-
-        ship_dist = Wrap_length(x3 - x1, y3 - y1);
-
-        if (ship_dist < PULSE_SPEED * PULSE_LIFE(pl->item[ITEM_LASER]) + SHIP_SZ)
-        {
-            dir3 = Wrap_findDir(x3 - x1, y3 - y1);
-            x4 = x3 + tcos(MOD2((int)(dir3 - RES / 4), RES)) * SHIP_SZ;
-            y4 = y3 + tsin(MOD2((int)(dir3 - RES / 4), RES)) * SHIP_SZ;
-            x5 = x3 + tcos(MOD2((int)(dir3 + RES / 4), RES)) * SHIP_SZ;
-            y5 = y3 + tsin(MOD2((int)(dir3 + RES / 4), RES)) * SHIP_SZ;
-            dir4 = Wrap_findDir(x4 - x1, y4 - y1);
-            dir5 = Wrap_findDir(x5 - x1, y5 - y1);
-            if ((dir4 > dir5)
-                    ? (pl->dir >= dir4 || pl->dir <= dir5)
-                    : (pl->dir >= dir4 && pl->dir <= dir5))
-                SET_BIT(pl->used, HAS_LASER);
-        }
-    }
-}
-
-static void Robotdef_do_tractor_beam(player_t *pl)
-{
-    long item_dist;
-    int item_dir;
-    int travel_dir;
-    int delta_dir;
-    long dx, dy;
-    long dist;
-    bool clear_path, slowing;
-    robot_default_data_t *my_data = Robot_default_get_data(pl);
-    player_t *ship;
-
-    CLR_BIT(pl->used, USES_TRACTOR_BEAM);
-    pl->tractor_is_pressor = false;
-
-    if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > pl->fuel.l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
-    {
-        double xvd, yvd, vel;
-        long dir;
-        int away;
-
-        ship = Player_by_id(pl->lock.pl_id);
-        xvd = ship->vel.x - pl->vel.x;
-        yvd = ship->vel.y - pl->vel.y;
-        vel = LENGTH(xvd, yvd);
-        dir = (long)(findDir(pl->pix_pos.x - ship->pix_pos.x,
-                             pl->pix_pos.y - ship->pix_pos.y) -
-                     findDir(xvd, yvd));
-        dir = MOD2(dir, RES);
-        away = (dir >= RES / 4 && dir <= 3 * RES / 4);
-
-        /*
-         * vel  - The relative velocity of ship to us.
-         * away - Heading away from us?
-         */
-        if (pl->velocity <= my_data->robot_normal_speed)
-        {
-            if (pl->lock.distance < (SHIP_SZ * 4) || (!away && vel > my_data->robot_attack_speed))
-            {
-                SET_BIT(pl->used, USES_TRACTOR_BEAM);
-                pl->tractor_is_pressor = true;
-            }
-            else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
-                SET_BIT(pl->used, USES_TRACTOR_BEAM);
-        }
-        if (Player_uses_tractor_beam(pl))
-            SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
-    }
-}
-
-static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
-{
-    int item_dir, travel_dir, delta_dir;
-    int dx, dy;
-    double dist, item_dist, idir;
-    bool clear_path, slowing;
+    bool clear_path;
+    bool slowing;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
-    dx = CLICK_TO_PIXEL(item_pos.cx - pl->pos.cx), dx = WRAP_DX(dx);
-    dy = CLICK_TO_PIXEL(item_pos.cy - pl->pos.cy), dy = WRAP_DY(dy);
+    dx = item_x - pl->pix_pos.x, dx = WRAP_DX(dx);
+    dy = item_y - pl->pix_pos.y, dy = WRAP_DY(dy);
 
-    item_dist = LENGTH(dy, dx);
+    item_dist = (long)(LENGTH(dy, dx));
 
     if (dx == 0 && dy == 0)
     {
         vector_t *grav = &world->gravity
                               [OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
-        idir = findDir(grav->x, grav->y);
-        item_dir = (int)(idir + 0.5);
+        item_dir = (int)findDir(grav->x, grav->y);
         item_dir = MOD2(item_dir + RES / 2, RES);
     }
     else
     {
-        idir = findDir((double)dx, (double)dy);
-        item_dir = (int)(idir + 0.5);
-        item_dir = MOD2(item_dir, RES);
+        item_dir = (int)findDir(dx, dy);
     }
 
     if (new_mode == RM_REFUEL)
@@ -921,11 +875,21 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
 
     for (dist = 0; clear_path && dist < item_dist; dist += BLOCK_SZ / 2)
     {
-        dx = (int)((CLICK_TO_PIXEL(pl->pos.cx) + dist * tcos(item_dir)) / BLOCK_SZ);
-        dy = (int)((CLICK_TO_PIXEL(pl->pos.cy) + dist * tsin(item_dir)) / BLOCK_SZ);
 
-        dx = WRAP_XBLOCK(dx);
-        dy = WRAP_YBLOCK(dy);
+        dx = (long)((pl->pix_pos.x + dist * tcos(item_dir)) / BLOCK_SZ);
+        dy = (long)((pl->pix_pos.y + dist * tsin(item_dir)) / BLOCK_SZ);
+
+        if (BIT(world->rules->mode, WRAP_PLAY))
+        {
+            if (dx < 0)
+                dx += world->x;
+            else if (dx >= world->x)
+                dx -= world->x;
+            if (dy < 0)
+                dy += world->y;
+            else if (dy >= world->y)
+                dy -= world->y;
+        }
         if (dx < 0 || dx >= world->x || dy < 0 || dy >= world->y)
         {
             clear_path = false;
@@ -965,22 +929,28 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         if (new_mode == RM_HARVEST ||
             (new_mode == RM_NAVIGATE &&
              (clear_path || dist > 8 * BLOCK_SZ)))
+        {
             /* reverse direction of travel */
             item_dir = MOD2(travel_dir + (delta_dir > RES / 2
                                               ? -5 * RES / 8
                                               : 5 * RES / 8),
                             RES);
+        }
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
         slowing = true;
 
         if (pl->item[ITEM_MINE] && item_dist < 8 * BLOCK_SZ)
         {
-            Choose_weapon_modifier(pl, OBJ_MINE);
+            Choose_weapon_modifier(pl, OBJ_MINE_BIT);
             if (BIT(world->rules->mode, TIMING))
+            {
                 Place_mine(pl);
+            }
             else
+            {
                 Place_moving_mine(pl);
-            new_mode = (rfrac() < 0.5) ? RM_EVADE_RIGHT : RM_EVADE_LEFT;
+            }
+            new_mode = (rfrac() < 0.5f) ? RM_EVADE_RIGHT : RM_EVADE_LEFT;
         }
     }
     else if (new_mode == RM_CANNON_KILL && item_dist <= 0)
@@ -992,17 +962,20 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         slowing = true;
     }
     else
-        slowing = false;
+    {
 
+        slowing = false;
+    }
     if (new_mode == RM_NAVIGATE && !clear_path)
     {
         if (dist <= 8 * BLOCK_SZ && dist > 4 * BLOCK_SZ)
-            item_dir = MOD2(item_dir + (delta_dir > RES / 2
-                                            ? -3 * RES / 4
-                                            : 3 * RES / 4),
-                            RES);
+        {
+            item_dir = MOD2(item_dir + (delta_dir > RES / 2 ? -3 * RES / 4 : 3 * RES / 4), RES);
+        }
         else if (dist <= 4 * BLOCK_SZ)
+        {
             item_dir = MOD2(item_dir + RES / 2, RES);
+        }
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
         slowing = true;
     }
@@ -1010,54 +983,70 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
     delta_dir = MOD2(item_dir - pl->dir, RES);
 
     if (delta_dir > RES / 8 && delta_dir < 7 * RES / 8)
+    {
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
+    }
     else if (delta_dir > RES / 16 && delta_dir < 15 * RES / 16)
+    {
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
+    }
     else if (delta_dir > RES / 64 && delta_dir < 63 * RES / 64)
+    {
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
+    }
     else
+    {
         pl->turnspeed = 0.0;
-
+    }
     pl->turnacc = (delta_dir < RES / 2 ? pl->turnspeed : (-pl->turnspeed));
 
     if (slowing || BIT(pl->used, HAS_SHIELD))
-        Thrust(pl, true);
+    {
+
+        SET_BIT(pl->obj_status, THRUSTING);
+    }
     else if (item_dist < 0)
-        Thrust(pl, false);
+    {
+
+        CLR_BIT(pl->obj_status, THRUSTING);
+    }
     else if (item_dist < 3 * BLOCK_SZ && new_mode != RM_HARVEST)
     {
+
         if (pl->velocity < my_data->robot_normal_speed / 2)
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > my_data->robot_normal_speed)
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
     }
     else if ((new_mode != RM_ATTACK && new_mode != RM_NAVIGATE) || item_dist < 8 * BLOCK_SZ || (new_mode == RM_NAVIGATE && delta_dir > 3 * RES / 8 && delta_dir < 5 * RES / 8))
     {
+
         if (pl->velocity < 2 * my_data->robot_normal_speed)
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > 3 * my_data->robot_normal_speed)
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
     }
     else if (new_mode == RM_ATTACK || (new_mode == RM_NAVIGATE && (dist < 12 * BLOCK_SZ || (delta_dir > RES / 8 && delta_dir < 7 * RES / 8))))
     {
+
         if (pl->velocity < my_data->robot_attack_speed / 2)
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > my_data->robot_attack_speed)
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
     }
     else if (clear_path && (delta_dir < RES / 8 || delta_dir > 7 * RES / 8) && item_dist > 18 * BLOCK_SZ)
     {
         if (pl->velocity < my_data->robot_max_speed - my_data->robot_normal_speed)
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > my_data->robot_max_speed)
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
     }
     else
     {
         if (pl->velocity < my_data->robot_attack_speed)
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > my_data->robot_max_speed - my_data->robot_normal_speed)
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
     }
 
     if (new_mode == RM_ATTACK || (BIT(world->rules->mode, TIMING) && new_mode == RM_NAVIGATE))
@@ -1067,21 +1056,92 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         else if (pl->item[ITEM_TRANSPORTER] > 0 && item_dist < TRANSPORTER_DISTANCE && pl->fuel.sum > -ED_TRANSPORTER)
             Do_transporter(pl);
         else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER > pl->fuel.l3 && new_mode == RM_ATTACK)
-            Robotdef_fire_laser(pl);
-        else if (Player_has_tractor_beam(pl))
-            Robotdef_do_tractor_beam(pl);
+        {
+            if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
+                                                             PLAYING | PAUSE | GAME_OVER) == PLAYING)
+                ship = Player_by_id(my_data->robot_lock_id);
+            else if (BIT(pl->lock.tagged, LOCK_PLAYER))
+                ship = Player_by_id(pl->lock.pl_id);
+            else
+                ship = NULL;
+            if (ship && BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
+            {
 
+                double x1, y1, x3, y3, x4, y4, x5, y5;
+                double ship_dist, dir3, dir4, dir5;
+
+                x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + pl->ship->m_gun[pl->dir].x;
+                y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + pl->ship->m_gun[pl->dir].y;
+                x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
+                y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
+
+                ship_dist = Wrap_length(x3 - x1, y3 - y1);
+
+                if (ship_dist < PULSE_SPEED * PULSE_LIFE(pl->item[ITEM_LASER]) + SHIP_SZ)
+                {
+                    dir3 = Wrap_findDir(x3 - x1, y3 - y1);
+                    x4 = x3 + tcos(MOD2((int)(dir3 - RES / 4), RES)) * SHIP_SZ;
+                    y4 = y3 + tsin(MOD2((int)(dir3 - RES / 4), RES)) * SHIP_SZ;
+                    x5 = x3 + tcos(MOD2((int)(dir3 + RES / 4), RES)) * SHIP_SZ;
+                    y5 = y3 + tsin(MOD2((int)(dir3 + RES / 4), RES)) * SHIP_SZ;
+                    dir4 = Wrap_findDir(x4 - x1, y4 - y1);
+                    dir5 = Wrap_findDir(x5 - x1, y5 - y1);
+                    if ((dir4 > dir5)
+                            ? (pl->dir >= dir4 || pl->dir <= dir5)
+                            : (pl->dir >= dir4 && pl->dir <= dir5))
+                        SET_BIT(pl->used, HAS_LASER);
+                }
+            }
+        }
+        else if (BIT(pl->have, HAS_TRACTOR_BEAM))
+        {
+            CLR_BIT(pl->used, USES_TRACTOR_BEAM);
+            pl->tractor_is_pressor = false;
+
+            if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > pl->fuel.l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
+            {
+
+                double xvd, yvd, vel;
+                long dir;
+                int away;
+
+                ship = Player_by_id(pl->lock.pl_id);
+                xvd = ship->vel.x - pl->vel.x;
+                yvd = ship->vel.y - pl->vel.y;
+                vel = LENGTH(xvd, yvd);
+                dir = (long)(findDir(pl->pix_pos.x - ship->pix_pos.x,
+                                     pl->pix_pos.y - ship->pix_pos.y) -
+                             findDir(xvd, yvd));
+                dir = MOD2(dir, RES);
+                away = (dir >= RES / 4 && dir <= 3 * RES / 4);
+
+                /*
+                 * vel  - The relative velocity of ship to us.
+                 * away - Heading away from us?
+                 */
+                if (pl->velocity <= my_data->robot_normal_speed)
+                {
+                    if (pl->lock.distance < (SHIP_SZ * 4) || (!away && vel > my_data->robot_attack_speed))
+                    {
+                        SET_BIT(pl->used, USES_TRACTOR_BEAM);
+                        pl->tractor_is_pressor = true;
+                    }
+                    else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
+                        SET_BIT(pl->used, USES_TRACTOR_BEAM);
+                }
+                if (BIT(pl->used, USES_TRACTOR_BEAM))
+                    SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
+            }
+        }
         if (BIT(pl->used, HAS_LASER))
         {
             pl->turnacc = 0.0;
             Choose_weapon_modifier(pl, HAS_LASER);
         }
         /*-BA Be more agressive, esp if lots of ammo
-         * else if ((my_data->robot_count % 10) == 0
-         * && pl->item[ITEM_MISSILE] > 0)
+         * else if ((my_data->robot_count % 10) == 0 && pl->item[ITEM_MISSILE] > 0)
          */
-        else if ((my_data->robot_count % 10) < pl->item[ITEM_MISSILE] && !WITHIN(my_data->robot_count,
-                                                                                 my_data->last_fired_missile, 10))
+        else if ((my_data->robot_count % 10) < pl->item[ITEM_MISSILE] && !WITHIN(my_data->robot_count, my_data->last_fired_missile, 10))
         {
             int type;
 
@@ -1106,7 +1166,7 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
             Choose_weapon_modifier(pl, type);
             Fire_shot(pl, type, pl->dir);
             if (type == OBJ_HEAT_SHOT)
-                Thrust(pl, false);
+                CLR_BIT(pl->obj_status, THRUSTING);
             my_data->last_fired_missile = my_data->robot_count;
         }
         else if ((my_data->robot_count % 2) == 0 && item_dist < Visibility_distance
@@ -1114,8 +1174,8 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         {
             if ((int)(rfrac() * 64) < pl->item[ITEM_MISSILE])
             {
-                Choose_weapon_modifier(pl, OBJ_SMART_SHOT);
-                Fire_shot(pl, OBJ_SMART_SHOT, pl->dir);
+                Choose_weapon_modifier(pl, OBJ_SMART_SHOT_BIT);
+                Fire_shot(pl, OBJ_SMART_SHOT_BIT, pl->dir);
                 my_data->last_fired_missile = my_data->robot_count;
             }
             else
@@ -1130,12 +1190,11 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         /*-BA Be more agressive, esp if lots of ammo
          * if ((my_data->robot_count % 32) == 0)
          */
-        else if ((my_data->robot_count % 32) < pl->item[ITEM_MINE] && !WITHIN(my_data->robot_count,
-                                                                              my_data->last_dropped_mine, 10))
+        else if ((my_data->robot_count % 32) < pl->item[ITEM_MINE] && !WITHIN(my_data->robot_count, my_data->last_dropped_mine, 10))
         {
             if (pl->fuel.sum > pl->fuel.l3)
             {
-                Choose_weapon_modifier(pl, OBJ_MINE);
+                Choose_weapon_modifier(pl, OBJ_MINE_BIT);
                 Place_mine(pl);
             }
             else /*if (pl->fuel.sum < pl->fuel.l2)*/
@@ -1150,7 +1209,7 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
     {
         if ((my_data->robot_count % 2) == 0 && item_dist < Visibility_distance && clear_path)
         {
-            Choose_weapon_modifier(pl, OBJ_SHOT);
+            Choose_weapon_modifier(pl, OBJ_SHOT_BIT);
             Fire_normal_shots(pl);
         }
     }
@@ -1160,6 +1219,7 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
 
 static bool Check_robot_hunt(player_t *pl)
 {
+    // player_t *pl = PlayersArray[ind];
     player_t *ship;
     int ship_dir;
     int travel_dir;
@@ -1172,6 +1232,7 @@ static bool Check_robot_hunt(player_t *pl)
         return false;
     if (pl->fuel.sum < pl->fuel.l3 /*MAX_PLAYER_FUEL/2*/)
         return false;
+
     ship = Player_by_id(my_data->robot_lock_id);
     if (!Detect_ship(pl, ship))
         return false;
@@ -1197,7 +1258,7 @@ static bool Check_robot_hunt(player_t *pl)
     {
 
         pl->turnacc = 0;
-        Thrust(pl, false);
+        CLR_BIT(pl->obj_status, THRUSTING);
         my_data->robot_mode = RM_ROBOT_IDLE;
         return true;
     }
@@ -1219,9 +1280,13 @@ static bool Check_robot_hunt(player_t *pl)
     }
 
     if (delta_dir < RES / 8 || delta_dir > 7 * RES / 8)
-        Thrust(pl, true);
+    {
+        SET_BIT(pl->obj_status, THRUSTING);
+    }
     else
-        Thrust(pl, false);
+    {
+        CLR_BIT(pl->obj_status, THRUSTING);
+    }
 
     my_data->robot_mode = RM_ROBOT_IDLE;
     return true;
@@ -1229,12 +1294,9 @@ static bool Check_robot_hunt(player_t *pl)
 
 static bool Detect_ship(player_t *pl, player_t *ship)
 {
+    // player_t *ship = PlayersArray[j];
+    int j = GetInd(ship->id);
     int dx, dy;
-    double distance;
-
-    /* can't go after non-existing ships */
-    if (!ship)
-        return false;
 
     /* can't go after non-playing ships */
     if (!Player_is_alive(ship))
@@ -1252,10 +1314,13 @@ static bool Detect_ship(player_t *pl, player_t *ship)
      * can't see it, so it must be cloaked
      * maybe we can detect it's presence from other clues?
      */
+
     dx = ship->pix_pos.x - pl->pix_pos.x, dx = WRAP_DX(dx);
     dy = ship->pix_pos.y - pl->pix_pos.y, dy = WRAP_DY(dy);
+
+    /* can't detect ships beyond visual range */
     if (sqr(dx) + sqr(dy) > sqr(Visibility_distance))
-        return false; /* can't detect ships beyond visual range */
+        return false;
 
     if (BIT(ship->obj_status, THRUSTING) && options.cloakedExhaust)
         return true;
@@ -1271,8 +1336,7 @@ static bool Detect_ship(player_t *pl, player_t *ship)
     if (BIT(ship->have, HAS_BALL))
         return true;
 
-    /* the sky seems clear.. */
-    return false;
+    return false; /* the sky seems clear.. */
 }
 
 /*
@@ -1306,33 +1370,30 @@ static int Rank_item_value(player_t *pl, Item_t itemtype)
             return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
         }
         else
+        {
             return ROBOT_HANDY_ITEM;
+        }
     }
     if (BIT(world->rules->mode, TIMING))
     {
         switch (itemtype)
         {
-        case ITEM_FUEL:             /* less refuel stops */
-        case ITEM_REARSHOT:         /* shoot competitors behind you */
         case ITEM_AFTERBURNER:      /* the more speed the better */
+        case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
         case ITEM_TRANSPORTER:      /* steal fuel when you overtake someone */
+        case ITEM_REARSHOT:         /* shoot competitors behind you */
         case ITEM_MINE:             /* blows others off the track */
         case ITEM_ECM:              /* blinded players smash into walls */
-        case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
-        case ITEM_EMERGENCY_SHIELD: /* could be useful when ramming */
             return ROBOT_MUST_HAVE_ITEM;
-        case ITEM_WIDEANGLE:    /* not important in racemode */
         case ITEM_CLOAK:        /* not important in racemode */
+        case ITEM_LASER:        /* cost too much fuel */
+        case ITEM_MISSILE:      /* likely to hit self */
         case ITEM_SENSOR:       /* who cares about seeing others? */
         case ITEM_TANK:         /* makes you heavier */
-        case ITEM_MISSILE:      /* likely to hit self */
-        case ITEM_LASER:        /* cost too much fuel */
         case ITEM_TRACTOR_BEAM: /* pushes/pulls owner off the track too */
-        case ITEM_AUTOPILOT:    /* probably not useful */
-        case ITEM_DEFLECTOR:    /* cost too much fuel */
         case ITEM_HYPERJUMP:    /* likely to end up in wrong place */
         case ITEM_PHASING:      /* robots don't know how to use them yet */
-        case ITEM_MIRROR:       /* not important in racemode */
+        case ITEM_DEFLECTOR:    /* cost too much fuel */
         case ITEM_ARMOR:        /* makes you heavier */
             return ROBOT_IGNORE_ITEM;
         default:
@@ -1347,32 +1408,48 @@ static int Rank_item_value(player_t *pl, Item_t itemtype)
         case ITEM_DEFLECTOR:
         case ITEM_ARMOR:
             if (BIT(pl->have, HAS_SHIELD))
+            {
                 return ROBOT_HANDY_ITEM;
+            }
             else
+            {
                 return ROBOT_MUST_HAVE_ITEM;
+            }
 
         case ITEM_REARSHOT:
         case ITEM_WIDEANGLE:
-            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.playerKillings)
+            {
                 return ROBOT_HANDY_ITEM;
+            }
             else
+            {
                 return ROBOT_MUST_HAVE_ITEM;
+            }
 
         case ITEM_MISSILE:
-            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.playerKillings)
+            {
                 return ROBOT_IGNORE_ITEM;
+            }
             else
+            {
                 return ROBOT_MUST_HAVE_ITEM;
+            }
 
         case ITEM_MINE:
         case ITEM_CLOAK:
             return ROBOT_MUST_HAVE_ITEM;
 
         case ITEM_LASER:
-            if (options.allowPlayerKilling)
+            if (options.playerKillings)
+            {
                 return ROBOT_MUST_HAVE_ITEM;
+            }
             else
+            {
                 return ROBOT_HANDY_ITEM;
+            }
 
         case ITEM_PHASING: /* robots don't know how to use them yet */
             return ROBOT_IGNORE_ITEM;
@@ -1386,20 +1463,25 @@ static int Rank_item_value(player_t *pl, Item_t itemtype)
 
 static bool Ball_handler(player_t *pl)
 {
-    int i, closest_tr = NO_IND, closest_ntr = NO_IND;
-    double closest_tr_dist = 1e19, closest_ntr_dist = 1e19, dist, dbdir, dtdir;
-    int bdir, tdir;
+    // player_t *pl = PlayersArray[ind];
+    int i,
+        closest_tr = -1,
+        closest_ntr = -1,
+        dist,
+        closest_tr_dist = INT_MAX,
+        closest_ntr_dist = INT_MAX,
+        bdir,
+        tdir;
     bool clear_path = true;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     for (i = 0; i < Num_treasures(); i++)
     {
-        treasure_t *treasure = Treasure_by_index(i);
-
-        if ((BIT(pl->have, HAS_BALL) || pl->ball) && treasure->team == pl->team)
+        if ((BIT(pl->have, HAS_BALL) || pl->ball) &&
+            world->treasures[i].team == pl->team)
         {
-            dist = Wrap_length(treasure->pos.cx - pl->pos.cx,
-                               treasure->pos.cy - pl->pos.cy) /
+            dist = Wrap_length(world->treasures[i].pos.cx - pl->pos.cx,
+                               world->treasures[i].pos.cy - pl->pos.cy) /
                    CLICK;
             if (dist < closest_tr_dist)
             {
@@ -1407,10 +1489,13 @@ static bool Ball_handler(player_t *pl)
                 closest_tr_dist = dist;
             }
         }
-        else if (treasure->team != pl->team && Team_by_index(treasure->team)->NumMembers > 0 && !BIT(pl->have, HAS_BALL) && !pl->ball && treasure->have)
+        else if (world->treasures[i].team != pl->team &&
+                 world->teams[world->treasures[i].team].NumMembers > 0 &&
+                 !BIT(pl->have, HAS_BALL) && !pl->ball &&
+                 world->treasures[i].have)
         {
-            dist = Wrap_length(treasure->pos.cx - pl->pos.cx,
-                               treasure->pos.cy - pl->pos.cy) /
+            dist = Wrap_length(world->treasures[i].pos.cx - pl->pos.cx,
+                               world->treasures[i].pos.cy - pl->pos.cy) /
                    CLICK;
             if (dist < closest_ntr_dist)
             {
@@ -1425,14 +1510,15 @@ static bool Ball_handler(player_t *pl)
         int dist_np = INT_MAX;
         int xdist, ydist;
         int dx, dy;
-
         if (pl->ball)
+        {
             ball = pl->ball;
+        }
         else
         {
             for (i = 0; i < NumObjs; i++)
             {
-                if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
+                if (BIT(Obj[i]->type, OBJ_BALL_BIT) && Obj[i]->id == pl->id)
                 {
                     ball = BALL_PTR(Obj[i]);
                     break;
@@ -1490,29 +1576,29 @@ static bool Ball_handler(player_t *pl)
         else
         {
             SET_BIT(my_data->longterm_mode, FETCH_TREASURE);
-            return Check_robot_target(pl,
-                                      Treasure_by_index(closest_tr)->pos,
-                                      RM_NAVIGATE);
+            return (Check_robot_target(pl,
+                                       ((int)(world->treasures[closest_tr].blk_pos.bx + 0.5) * BLOCK_SZ),
+                                       ((int)(world->treasures[closest_tr].blk_pos.by + 0.5) * BLOCK_SZ),
+                                       RM_NAVIGATE));
         }
     }
     else
     {
-        double ball_dist, closest_ball_dist = closest_ntr_dist;
-        int closest_ball = NO_IND;
+        int ball_dist;
+        int closest_ball_dist = closest_ntr_dist;
+        int closest_ball = -1;
 
         for (i = 0; i < NumObjs; i++)
         {
             if (Obj[i]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(i);
-
                 if ((ball->id == NO_ID)
                         ? (ball->ball_owner != NO_ID)
                         : (Player_by_id(ball->id)->team != pl->team))
                 {
-                    ball_dist = LENGTH(pl->pos.cx - ball->pos.cx,
-                                       pl->pos.cy - ball->pos.cy) /
-                                CLICK;
+                    ball_dist = (int)LENGTH(pl->pix_pos.x - ball->pix_pos.x,
+                                            pl->pix_pos.y - ball->pix_pos.y);
                     if (ball_dist < closest_ball_dist)
                     {
                         closest_ball_dist = ball_dist;
@@ -1525,14 +1611,15 @@ static bool Ball_handler(player_t *pl)
         {
             SET_BIT(my_data->longterm_mode, FETCH_TREASURE);
             return Check_robot_target(pl,
-                                      Treasure_by_index(closest_ntr)->pos,
+                                      ((int)(world->treasures[closest_ntr].blk_pos.bx + 0.5) * BLOCK_SZ),
+                                      ((int)(world->treasures[closest_ntr].blk_pos.by + 0.5) * BLOCK_SZ),
                                       RM_NAVIGATE);
         }
         else if (closest_ball_dist < (my_data->robot_count / 10) * BLOCK_SZ && closest_ball_dist > options.ballConnectorLength)
         {
             SET_BIT(my_data->longterm_mode, FETCH_TREASURE);
-            return Check_robot_target(pl,
-                                      Obj[closest_ball]->pos,
+            return Check_robot_target(pl, Obj[closest_ball]->pix_pos.x,
+                                      Obj[closest_ball]->pix_pos.y,
                                       RM_NAVIGATE);
         }
     }
@@ -1541,7 +1628,6 @@ static bool Ball_handler(player_t *pl)
 
 static int Robot_default_play_check_map(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     int j;
     int cannon_i, fuel_i, target_i;
     int dx, dy;
@@ -1558,24 +1644,23 @@ static int Robot_default_play_check_map(player_t *pl)
     target_i = -1;
     target_dist = Visibility_distance;
 
-    for (j = 0; j < Num_fuels(); j++)
+    for (j = 0; j < world->NumFuels; j++)
     {
-        fuel_t *fs = Fuel_by_index(j);
 
-        if (fs->fuel < 100.0)
+        if (world->fuels[j].fuel < 100 * FUEL_SCALE_FACT)
             continue;
 
-        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team)
+        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[j].team != pl->team)
             continue;
 
-        if ((dx = (fs->pix_pos.x - pl->pix_pos.x),
+        if ((dx = (world->fuels[j].pix_pos.x - pl->pix_pos.x),
              dx = WRAP_DX(dx), ABS(dx)) < fuel_dist &&
-            (dy = (fs->pix_pos.y - pl->pix_pos.y),
+            (dy = (world->fuels[j].pix_pos.y - pl->pix_pos.y),
              dy = WRAP_DY(dy), ABS(dy)) < fuel_dist &&
             (distance = (int)LENGTH(dx, dy)) < fuel_dist)
         {
-            if (world->block[fs->blk_pos.bx]
-                            [fs->blk_pos.by] == FUEL)
+            if (world->block[world->fuels[j].blk_pos.bx]
+                            [world->fuels[j].blk_pos.by] == FUEL)
             {
                 fuel_i = j;
                 fuel_dist = distance;
@@ -1585,15 +1670,14 @@ static int Robot_default_play_check_map(player_t *pl)
 
     for (j = 0; j < Num_targets(); j++)
     {
-        target_t *targ = Target_by_index(j);
 
         /* Ignore dead or owned targets */
-        if (targ->dead_time > 0 || pl->team == targ->team || Team_by_index(targ->team)->NumMembers == 0)
+        if (world->targets[j].dead_time > 0 || pl->team == world->targets[j].team || world->teams[world->targets[j].team].NumMembers == 0)
             continue;
 
-        if ((dx = targ->blk_pos.bx * BLOCK_SZ + BLOCK_SZ / 2 - pl->pix_pos.x,
+        if ((dx = world->targets[j].blk_pos.bx * BLOCK_SZ + BLOCK_SZ / 2 - pl->pix_pos.x,
              dx = WRAP_DX(dx), ABS(dx)) < target_dist &&
-            (dy = targ->blk_pos.by * BLOCK_SZ + BLOCK_SZ / 2 - pl->pix_pos.y,
+            (dy = world->targets[j].blk_pos.by * BLOCK_SZ + BLOCK_SZ / 2 - pl->pix_pos.y,
              dy = WRAP_DY(dy), ABS(dy)) < target_dist &&
             (distance = (int)LENGTH(dx, dy)) < target_dist)
         {
@@ -1602,46 +1686,46 @@ static int Robot_default_play_check_map(player_t *pl)
         }
     }
 
-#if 0
-    if (fuel_i != NO_IND)
-    warn("Closest fuel   = %d, distance = %.2f", fuel_i, fuel_dist);
-    if (target_i != NO_IND)
-    warn("Closest target = %d, distance = %.2f", target_i, target_dist);
-#endif
-
-    if (fuel_i != NO_IND && (target_dist > fuel_dist || !BIT(world->rules->mode, TEAM_PLAY)) && BIT(my_data->longterm_mode, NEED_FUEL))
+    if (fuel_i >= 0 && (target_dist > fuel_dist || !BIT(world->rules->mode, TEAM_PLAY)) && BIT(my_data->longterm_mode, NEED_FUEL))
     {
+
         fuel_checked = true;
+        dx = world->fuels[fuel_i].pix_pos.x;
+        dy = world->fuels[fuel_i].pix_pos.y;
+
         SET_BIT(pl->used, USES_REFUEL);
         pl->fs = fuel_i;
 
-        if (Check_robot_target(pl, Fuel_by_index(fuel_i)->pos,
-                               RM_REFUEL))
+        if (Check_robot_target(pl, dx, dy, RM_REFUEL))
+        {
             return 1;
+        }
     }
-    if (target_i != NO_IND)
+    if (target_i >= 0)
     {
-        SET_BIT(my_data->longterm_mode, TARGET_KILL);
-        if (Check_robot_target(pl, Target_by_index(target_i)->pos,
-                               RM_CANNON_KILL))
-            return 1;
+        dx = ((world->targets[target_i].blk_pos.bx + 0.5) * BLOCK_SZ);
+        dy = ((world->targets[target_i].blk_pos.by + 0.5) * BLOCK_SZ);
 
+        SET_BIT(my_data->longterm_mode, TARGET_KILL);
+        if (Check_robot_target(pl, dx, dy, RM_CANNON_KILL))
+        {
+            return 1;
+        }
         CLR_BIT(my_data->longterm_mode, TARGET_KILL);
     }
 
     for (j = 0; j < Num_cannons(); j++)
     {
-        cannon_t *cannon = Cannon_by_index(j);
 
-        if (cannon->dead_time > 0)
+        if (world->cannons[j].dead_time > 0)
             continue;
 
-        if (BIT(world->rules->mode, TEAM_PLAY) && cannon->team == pl->team)
+        if (BIT(world->rules->mode, TEAM_PLAY) && world->cannons[j].team == pl->team)
             continue;
 
-        if ((dx = cannon->pix_pos.x - pl->pix_pos.x,
+        if ((dx = world->cannons[j].pix_pos.x - pl->pix_pos.x,
              dx = WRAP_DX(dx), ABS(dx)) < cannon_dist &&
-            (dy = cannon->pix_pos.y - pl->pix_pos.y,
+            (dy = world->cannons[j].pix_pos.y - pl->pix_pos.y,
              dy = WRAP_DY(dy), ABS(dy)) < cannon_dist &&
             (distance = (int)LENGTH(dx, dy)) < cannon_dist)
         {
@@ -1650,44 +1734,47 @@ static int Robot_default_play_check_map(player_t *pl)
         }
     }
 
-#if 0
-    if (cannon_i != NO_IND)
-    warn("Closest cannon = %d, distance = %.2f", cannon_i, cannon_dist);
-#endif
-
-    if (cannon_i != NO_IND)
+    if (cannon_i >= 0)
     {
-        cannon_t *cannon = Cannon_by_index(cannon_i);
-        clpos_t d = cannon->pos;
 
-        d.cx += (click_t)(BLOCK_CLICKS * 0.1 * tcos(cannon->dir));
-        d.cy += (click_t)(BLOCK_CLICKS * 0.1 * tsin(cannon->dir));
+        dx = world->cannons[cannon_i].pix_pos.x;
+        dx += (BLOCK_SZ * 0.1 * tcos(world->cannons[cannon_i].dir));
+        dy = world->cannons[cannon_i].pix_pos.y;
+        dy += (BLOCK_SZ * 0.1 * tsin(world->cannons[cannon_i].dir));
 
-        if (Check_robot_target(pl, d, RM_CANNON_KILL))
+        if (Check_robot_target(pl, dx, dy, RM_CANNON_KILL))
+        {
             return 1;
+        }
     }
 
-    if (fuel_i != NO_IND && !fuel_checked && BIT(my_data->longterm_mode, NEED_FUEL))
+    if (fuel_i >= 0 && !fuel_checked && BIT(my_data->longterm_mode, NEED_FUEL))
     {
+
+        dx = world->fuels[fuel_i].pix_pos.x;
+        dy = world->fuels[fuel_i].pix_pos.y;
+
         SET_BIT(pl->used, USES_REFUEL);
         pl->fs = fuel_i;
 
-        if (Check_robot_target(pl, Fuel_by_index(fuel_i)->pos,
-                               RM_REFUEL))
+        if (Check_robot_target(pl, dx, dy, RM_REFUEL))
+        {
             return 1;
+        }
     }
 
     return 0;
 }
 
 static void Robot_default_play_check_objects(player_t *pl,
-                                             int *item_i, double *item_dist,
+                                             int *item_i, int *item_dist,
                                              int *item_imp,
-                                             int *mine_i, double *mine_dist)
+                                             int *mine_i, int *mine_dist)
 {
-    int j, obj_count;
+    // player_t *pl = PlayersArray[ind];
+    int j;
     object_t *shot, **obj_list;
-    int distance;
+    int distance, obj_count;
     int dx, dy;
     int shield_range;
     long killing_shots;
@@ -1726,42 +1813,65 @@ static void Robot_default_play_check_objects(player_t *pl,
         shot = obj_list[j];
 
         /* Get rid of the most common object types first for speed. */
-        if (shot->type == OBJ_SPARK || shot->type == OBJ_DEBRIS)
+        if (BIT(shot->type, OBJ_DEBRIS_BIT | OBJ_SPARK_BIT))
             continue;
 
         dx = WRAP_DX(shot->pix_pos.x - pl->pix_pos.x);
         dy = WRAP_DY(shot->pix_pos.y - pl->pix_pos.y);
 
-        if (shot->type == OBJ_BALL && !WITHIN(my_data->last_thrown_ball,
-                                              my_data->robot_count,
-                                              3 * FPS))
+        if (BIT(shot->type, OBJ_BALL_BIT) && !WITHIN(my_data->last_thrown_ball,
+                                                     my_data->robot_count,
+                                                     3 * FPS))
             SET_BIT(pl->used, USES_CONNECTOR);
 
         /* Ignore shots if shields already up - nothing else to do anyway */
-        if ((shot->type == OBJ_SHOT || shot->type == OBJ_CANNON_SHOT) && BIT(pl->used, HAS_SHIELD))
+        if (BIT(shot->type, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT) && BIT(pl->used, HAS_SHIELD))
             continue;
+
+        /*-BA This code shouldn't be executed for `friendly` shots
+         *-BA Moved down 2 paragraphs
+         *        if (BIT(shot->type, OBJ_SMART_SHOT_BIT|OBJ_HEAT_SHOT_BIT|OBJ_MINE_BIT)) {
+         *            fx = shot->pos.x - pl->pos.x;
+         *            fy = shot->pos.y - pl->pos.y;
+         *            if ((dx = fx, dx = WRAP_DX(dx), ABS(dx)) < mine_dist
+         *                && (dy = fy, dy = WRAP_DY(dy), ABS(dy)) < mine_dist
+         *                && (distance = LENGTH(dx, dy)) < mine_dist) {
+         *                mine_i = j;
+         *                mine_dist = distance;
+         *            }
+         *            if ((dx = fx + (shot->vel.x - pl->vel.x) * ROB_LOOK_AH,
+         *                    dx = WRAP_DX(dx), ABS(dx)) < mine_dist
+         *                && (dy = fy + (shot->vel.y - pl->vel.y) * ROB_LOOK_AH,
+         *                    dy = WRAP_DY(dy), ABS(dy)) < mine_dist
+         *                && (distance = LENGTH(dx, dy)) < mine_dist) {
+         *                mine_i = j;
+         *                mine_dist = distance;
+         *            }
+         *        }
+         */
 
         /*
          * The only thing left to do regarding objects is to check if
          * this robot needs to put up shields to protect against objects.
          */
-        if (!BIT(OBJ_TYPEBIT(shot->type), killing_shots))
+        if (!BIT(shot->type, killing_shots))
         {
 
             /* Find closest item */
-            if (shot->type == OBJ_ITEM)
+            if (BIT(shot->type, OBJ_ITEM_BIT))
             {
-                itemobject_t *item = ITEM_PTR(shot);
-
                 if (ABS(dx) < *item_dist && ABS(dy) < *item_dist)
                 {
                     int imp;
 
-                    if (BIT(item->obj_status, RANDOM_ITEM))
-                        /* It doesn't know what it is, so get it if it can */
-                        imp = ROBOT_HANDY_ITEM;
+                    if (BIT(shot->obj_status, RANDOM_ITEM))
+                    {
+                        imp = ROBOT_HANDY_ITEM; /* It doesn't know what it is, so get it if it can */
+                    }
                     else
-                        imp = Rank_item_value(pl, (enum Item)item->item_type);
+                    {
+                        imp = Rank_item_value(pl, (Item_t)obj_list[j]->info);
+                    }
                     if (imp > ROBOT_IGNORE_ITEM && imp >= *item_imp)
                     {
                         *item_imp = imp;
@@ -1774,16 +1884,24 @@ static void Robot_default_play_check_objects(player_t *pl,
             continue;
         }
 
-        /* Any shot of team members excluding self are passive. */
+        /*
+         * Any shot of team members excluding self are passive.
+         */
         if (Team_immune(shot->id, pl->id))
+        {
             continue;
+        }
 
-        /* Self shots may be passive too... */
+        /*
+         * Self shots may be passive too...
+         */
         if (shot->id == pl->id && options.selfImmunity)
+        {
             continue;
+        }
 
         /* Find nearest missile/mine */
-        if (BIT(OBJ_TYPEBIT(shot->type), OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_BALL_BIT | OBJ_CANNON_SHOT_BIT) || (shot->type == OBJ_SHOT && !BIT(world->rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) || (shot->type == OBJ_MINE && shot->id != pl->id) || (shot->type == OBJ_WRECKAGE && !BIT(world->rules->mode, TIMING)))
+        if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_BALL_BIT | OBJ_CANNON_SHOT_BIT) || (BIT(shot->type, OBJ_SHOT_BIT) && !BIT(world->rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) || (BIT(shot->type, OBJ_MINE_BIT) && shot->id != pl->id) || (BIT(shot->type, OBJ_WRECKAGE_BIT) && !BIT(world->rules->mode, TIMING)))
         {
             if (ABS(dx) < *mine_dist && ABS(dy) < *mine_dist && (distance = LENGTH(dx, dy)) < *mine_dist)
             {
@@ -1814,41 +1932,41 @@ static void Robot_default_play_check_objects(player_t *pl,
             SET_BIT(pl->used, HAS_SHIELD);
             if (!options.cloakedShield)
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
 
-            if (BIT(OBJ_TYPEBIT(shot->type), OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < pl->fuel.l3 || !BIT(pl->have, HAS_SHIELD)))
+            if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < pl->fuel.l3 || !BIT(pl->have, HAS_SHIELD)))
             {
                 if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
                     pl->item[ITEM_HYPERJUMP]--;
-                    Player_add_fuel(pl, ED_HYPERJUMP);
+                    Add_fuel(&(pl->fuel), ED_HYPERJUMP);
                     do_hyperjump(pl);
                     break;
                 }
             }
         }
-        if (shot->type == OBJ_SMART_SHOT)
+        if (BIT(shot->type, OBJ_SMART_SHOT_BIT))
         {
             if (*mine_dist < ECM_DISTANCE / 4)
                 Fire_ecm(pl);
         }
-        if (shot->type == OBJ_MINE)
+        if (BIT(shot->type, OBJ_MINE_BIT))
         {
             if (*mine_dist < ECM_DISTANCE / 2)
                 Fire_ecm(pl);
         }
-        if (shot->type, OBJ_HEAT_SHOT)
+        if (BIT(shot->type, OBJ_HEAT_SHOT_BIT))
         {
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
             if (pl->fuel.sum < pl->fuel.l3 && pl->fuel.sum > pl->fuel.l1 && pl->fuel.num_tanks > 0)
             {
                 Tank_handle_detach(pl);
             }
         }
-        if (shot->type == OBJ_ASTEROID)
+        if (BIT(shot->type, OBJ_ASTEROID_BIT))
         {
             int delta_dir = 0;
-            if (*mine_dist > (WIRE_PTR(shot)->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < WIRE_PTR(shot)->wire_size * (RES / 10) || delta_dir > RES - WIRE_PTR(shot)->wire_size * (RES / 10)))
+            if (*mine_dist > (WIRE_PTR(shot)->size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < WIRE_PTR(shot)->size * (RES / 10) || delta_dir > RES - WIRE_PTR(shot)->size * (RES / 10)))
             {
                 SET_BIT(pl->used, HAS_SHOT);
             }
@@ -1858,15 +1976,16 @@ static void Robot_default_play_check_objects(player_t *pl,
     /* Convert *item_i from index in local obj_list[] to index in Obj[] */
     if (*item_i >= 0)
     {
-        for (j = 0;
-             (j < NumObjs) && (Obj[j]->id != obj_list[*item_i]->id);
-             j++)
+        for (j = 0; (j < NumObjs) && (Obj[j]->id != obj_list[*item_i]->id); j++)
             ;
         if (j >= NumObjs)
-            /* Perhaps an error should be printed, too? */
-            *item_i = NO_IND;
+        {
+            *item_i = -1; /* Perhaps an error should be printed, too? */
+        }
         else
+        {
             *item_i = j;
+        }
     }
 }
 
@@ -1913,38 +2032,45 @@ static void Robot_default_play_check_lasers(player_t *pl)
 static void Robot_default_play(player_t *pl)
 {
     player_t *ship;
-    double distance, ship_dist, enemy_dist, speed, x_speed, y_speed;
-    double item_dist, mine_dist, shoot_time;
-    int j, ship_i, item_imp, enemy_i, item_i, mine_i;
-    bool harvest_checked, evade_checked, navigate_checked;
+    double distance, ship_dist,
+        enemy_dist,
+        speed, x_speed, y_speed;
+    int item_dist, mine_dist;
+    int item_i, mine_i;
+    int j, ship_i, item_imp,
+        enemy_i;
+    int dx, dy, x, y;
+    bool harvest_checked;
+    bool evade_checked;
+    bool navigate_checked;
+    int shoot_time;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
-    itemobject_t *item = NULL;
 
     if (my_data->robot_count <= 0)
         my_data->robot_count = 1000 + (int)(rfrac() * 32);
 
     my_data->robot_count--;
 
-    CLR_BIT(pl->used, USES_SHOT | USES_SHIELD | USES_CLOAKING_DEVICE | USES_LASER);
-    if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, HAS_EMERGENCY_SHIELD))
+    CLR_BIT(pl->used, HAS_SHOT | HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_LASER);
+    if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, USES_EMERGENCY_SHIELD))
         Emergency_shield(pl, true);
     harvest_checked = false;
     evade_checked = false;
     navigate_checked = false;
 
-    mine_i = NO_IND;
+    mine_i = -1;
     mine_dist = SHIP_SZ + 200;
-    item_i = NO_IND;
-    item_dist = Visibility_distance;
+    item_i = -1;
+    item_dist = (int)Visibility_distance;
     item_imp = ROBOT_IGNORE_ITEM;
 
-    if (Player_has_cloaking_device(pl) && pl->fuel.sum > pl->fuel.l2)
+    if (BIT(pl->have, HAS_CLOAKING_DEVICE) && pl->fuel.sum > pl->fuel.l2)
         SET_BIT(pl->used, USES_CLOAKING_DEVICE);
 
-    if (Player_has_emergency_thrust(pl) && !Player_uses_emergency_thrust(pl))
+    if (BIT(pl->have, HAS_EMERGENCY_THRUST) && !BIT(pl->used, USES_EMERGENCY_THRUST))
         Emergency_thrust(pl, true);
 
-    if (Player_has_deflector(pl) && !BIT(world->rules->mode, TIMING))
+    if (BIT(pl->have, HAS_DEFLECTOR) && !BIT(world->rules->mode, TIMING))
         Deflector(pl, true);
 
     if (pl->fuel.sum <= (BIT(world->rules->mode, TIMING) ? 0 : pl->fuel.l1))
@@ -1952,7 +2078,7 @@ static void Robot_default_play(player_t *pl)
         if (!BIT(pl->obj_status, SELF_DESTRUCT))
         {
             SET_BIT(pl->obj_status, SELF_DESTRUCT);
-            pl->recovery_count = 150;
+            pl->count = 150;
         }
     }
     else
@@ -1971,7 +2097,7 @@ static void Robot_default_play(player_t *pl)
     }
 
     if (pl->fuel.sum < pl->fuel.max * 0.80)
-        for (j = 0; j < Num_fuels(); j++)
+        for (j = 0; j < world->NumFuels; j++)
         {
             int dx, dy;
             if (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[j].team != pl->team)
@@ -1989,14 +2115,20 @@ static void Robot_default_play(player_t *pl)
                 break;
             }
             else
+            {
                 CLR_BIT(pl->used, USES_REFUEL);
+            }
         }
 
     /* don't turn NEED_FUEL off until refueling stops */
     if (pl->fuel.sum < (BIT(world->rules->mode, TIMING) ? pl->fuel.l1 : pl->fuel.l3))
+    {
         SET_BIT(my_data->longterm_mode, NEED_FUEL);
-    else if (!Player_is_refueling(pl))
+    }
+    else if (!BIT(pl->used, USES_REFUEL))
+    {
         CLR_BIT(my_data->longterm_mode, NEED_FUEL);
+    }
 
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
@@ -2024,13 +2156,27 @@ static void Robot_default_play(player_t *pl)
 
     Robot_default_play_check_lasers(pl);
 
-    if (item_i >= 0)
-        item = ITEM_PTR(Obj[item_i]);
-
-    /* make sure robots take off from their bases */
-    if (QUICK_LENGTH(pl->pos.cx - pl->home_base->pos.cx,
-                     pl->pos.cy - pl->home_base->pos.cy) < BLOCK_CLICKS)
-        Thrust(pl, true);
+    /* Note: Only take time to navigate if not being shot at */
+    /* KK: it seems that this 'Check_robot_navigate' function caused
+        the infamous 'robot stuck under wall' bug, so I commented it out */
+    /* KK: ps. I tried to change that function, but I don't grok it */
+    /*if (!(BIT(pl->used, HAS_SHIELD) && BIT(pl->obj_status, THRUSTING))
+        && Check_robot_navigate(pl, &evade_checked)) {
+        if (playerShielding == 0
+            && playerStartsShielded != 0
+            && BIT(pl->have, HAS_SHIELD)) {
+            SET_BIT(pl->used, HAS_SHIELD);
+        }
+        return;
+    }*/
+    /* KK: unfortunately, this introduced a new bug. robots with large
+        shipshapes don't take off from their bases. here's an attempt to
+        fix it */
+    if (QUICK_LENGTH(pl->pix_pos.x - (world->bases[pl->home_base].blk_pos.bx * BLOCK_SZ),
+                     pl->pix_pos.y - (world->bases[pl->home_base].blk_pos.by * BLOCK_SZ)) < BLOCK_SZ)
+    {
+        SET_BIT(pl->obj_status, THRUSTING);
+    }
 
     ship_i = -1;
     ship_dist = SHIP_SZ * 6;
@@ -2042,7 +2188,9 @@ static void Robot_default_play(player_t *pl)
                                                                   : Max_enemy_distance);
     }
     else
+    {
         enemy_dist = Visibility_distance;
+    }
 
     if (BIT(pl->used, HAS_SHIELD))
         ship_dist = 0;
@@ -2050,12 +2198,14 @@ static void Robot_default_play(player_t *pl)
     if (BIT(my_data->robot_lock, LOCK_PLAYER))
     {
         ship = Player_by_id(my_data->robot_lock_id);
+        j = GetInd(ship->id);
 
         if (BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
                 PLAYING | GAME_OVER | PAUSE) == PLAYING)
         {
             if (Detect_ship(pl, ship))
             {
+
                 if (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id == ship->id)
                 {
                     my_data->lock_last_seen = my_data->robot_count;
@@ -2063,9 +2213,9 @@ static void Robot_default_play(player_t *pl)
                     my_data->lock_last_pos.y = ship->pix_pos.y;
                 }
 
-                distance = Wrap_length(ship->pos.cx - pl->pos.cx,
-                                       ship->pos.cy - pl->pos.cy) /
-                           CLICK;
+                dx = ship->pix_pos.x - pl->pix_pos.x, dx = WRAP_DX(dx);
+                dy = ship->pix_pos.y - pl->pix_pos.y, dy = WRAP_DY(dy);
+                distance = LENGTH(dx, dy);
 
                 if (distance < ship_dist)
                 {
@@ -2087,17 +2237,16 @@ static void Robot_default_play(player_t *pl)
 
         for (j = 0; j < NumPlayers; j++)
         {
-
             ship = Player_by_index(j);
-            if (ship->id == pl->id || BIT(ship->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING || Team_immune(pl->id, ship->id))
+            if (j == GetInd(pl->id) || !Player_is_active(ship) || Team_immune(pl->id, ship->id))
                 continue;
 
             if (!Detect_ship(pl, ship))
                 continue;
 
-            distance = Wrap_length(ship->pos.cx - pl->pos.cx,
-                                   ship->pos.cy - pl->pos.cy) /
-                       CLICK;
+            dx = ship->pix_pos.x - pl->pix_pos.x, dx = WRAP_DX(dx);
+            dy = ship->pix_pos.y - pl->pix_pos.y, dy = WRAP_DY(dy);
+            distance = LENGTH(dx, dy);
 
             if (distance < ship_dist)
             {
@@ -2130,32 +2279,21 @@ static void Robot_default_play(player_t *pl)
         if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
         {
             pl->item[ITEM_HYPERJUMP]--;
-            Player_add_fuel(pl, ED_HYPERJUMP);
+            Add_fuel(&(pl->fuel), ED_HYPERJUMP);
             do_hyperjump(pl);
             return;
         }
     }
 
-    if (ship_i != NO_IND && BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id == Player_by_index(ship_i)->id)
-        ship_i = NO_IND; /* don't avoid target */
+    if (ship_i != -1 && BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id == PlayersArray[ship_i]->id)
+    {
+        ship_i = -1; /* don't avoid target */
+    }
 
     if (enemy_i >= 0)
     {
         ship = Player_by_index(enemy_i);
-        // Guard against ship = (nil)
-        if (!pl)
-            warn("enemy: pl = %p", pl);
-        if (!ship)
-            warn("enemy: ship = %p", ship);
-
-        player_t *locked_pl = Player_by_id(pl->lock.pl_id);
-        if (!locked_pl)
-            warn("enemy: locked_pl = %p", locked_pl);
-
-        if (!BIT(pl->lock.tagged, LOCK_PLAYER) ||
-            (enemy_dist < pl->lock.distance / 2 && (BIT(world->rules->mode, TIMING) ? (ship->check >= pl->check && ship->round >= pl->round) : 1)) ||
-            (enemy_dist < pl->lock.distance * 2 && BIT(world->rules->mode, TEAM_PLAY) && BIT(ship->have, HAS_BALL)) ||
-            (locked_pl != NULL && ship->score > Player_by_id(pl->lock.pl_id)->score))
+        if (!BIT(pl->lock.tagged, LOCK_PLAYER) || (enemy_dist < pl->lock.distance / 2 && (BIT(world->rules->mode, TIMING) ? (ship->check >= pl->check && ship->round >= pl->round) : 1)) || (enemy_dist < pl->lock.distance * 2 && BIT(world->rules->mode, TEAM_PLAY) && BIT(ship->have, HAS_BALL)) || ship->score > Player_by_id(pl->lock.pl_id)->score)
         {
             pl->lock.pl_id = ship->id;
             SET_BIT(pl->lock.tagged, LOCK_PLAYER);
@@ -2167,24 +2305,16 @@ static void Robot_default_play(player_t *pl)
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         int delta_dir;
-
         ship = Player_by_id(pl->lock.pl_id);
-        // Guard against ship = (nil)
-        if (!pl || !ship)
-            warn("pl = %p, ship = %p", pl, ship);
-        if (ship)
+        delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
+                                                 ship->pix_pos.y - pl->pix_pos.y));
+        delta_dir = MOD2(delta_dir, RES);
+        if (BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING || (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) || !Detect_ship(pl, ship) || (pl->fuel.sum <= pl->fuel.l3 && !BIT(world->rules->mode, TIMING)) || (BIT(world->rules->mode, TIMING) && (delta_dir < 3 * RES / 4 || delta_dir > RES / 4)) || Team_immune(pl->id, ship->id))
         {
-            delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
-                                                     ship->pix_pos.y - pl->pix_pos.y));
-            delta_dir = MOD2(delta_dir, RES);
-            if (BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-                (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) || !Detect_ship(pl, ship) || (pl->fuel.sum <= pl->fuel.l3 && !BIT(world->rules->mode, TIMING)) || (BIT(world->rules->mode, TIMING) && (delta_dir < 3 * RES / 4 || delta_dir > RES / 4)) || Team_immune(pl->id, ship->id))
-            {
-                /* unset the player lock */
-                CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
-                pl->lock.pl_id = 1;
-                pl->lock.distance = 0;
-            }
+            /* unset the player lock */
+            CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
+            pl->lock.pl_id = 1;
+            pl->lock.distance = 0;
         }
     }
     if (!evade_checked)
@@ -2227,50 +2357,52 @@ static void Robot_default_play(player_t *pl)
         if ((item_imp == ROBOT_MUST_HAVE_ITEM && item_dist > 4 * BLOCK_SZ) || (item_imp == ROBOT_HANDY_ITEM && item_dist > 2 * BLOCK_SZ) || (item_imp == ROBOT_IGNORE_ITEM) || (delta_dir < 3 * RES / 4 && delta_dir > RES / 4))
         {
             navigate_checked = true;
-            if (Check_robot_target(pl, Check_by_index(pl->check)->pos,
+            if (Check_robot_target(pl,
+                                   world->checks[pl->check].x * BLOCK_SZ,
+                                   world->checks[pl->check].y * BLOCK_SZ,
                                    RM_NAVIGATE))
+            {
                 return;
+            }
         }
     }
-    if (item != NULL && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || item->item_type == ITEM_FUEL || item->item_type == ITEM_TANK))
+    if (item_i >= 0 && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || Obj[item_i]->info == ITEM_FUEL || Obj[item_i]->info == ITEM_TANK))
     {
 
         if (item_imp != ROBOT_IGNORE_ITEM)
         {
-            clpos_t d = item->pos;
-
             harvest_checked = true;
-            d.cx += (int)(item->vel.x * (ABS(d.cx - pl->pos.cx) /
-                                         my_data->robot_normal_speed));
-            d.cy += (int)(item->vel.y * (ABS(d.cy - pl->pos.cy) /
-                                         my_data->robot_normal_speed));
-            if (Check_robot_target(pl, d, RM_HARVEST))
+            dx = Obj[item_i]->pix_pos.x;
+            dx += (long)(Obj[item_i]->vel.x * (ABS(dx - pl->pix_pos.x) /
+                                               my_data->robot_normal_speed));
+            dy = Obj[item_i]->pix_pos.y;
+            dy += (long)(Obj[item_i]->vel.y * (ABS(dy - pl->pix_pos.y) /
+                                               my_data->robot_normal_speed));
+
+            if (Check_robot_target(pl, dx, dy, RM_HARVEST))
+            {
                 return;
+            }
         }
     }
-
-    player_t *locked_pl = Player_by_id(pl->lock.pl_id);
-    if (!locked_pl)
-        warn("robot: locked_pl = %p", locked_pl);
-
     if (BIT(pl->lock.tagged, LOCK_PLAYER) &&
-        locked_pl != NULL &&
-        Detect_ship(pl, locked_pl))
+        Detect_ship(pl, Player_by_id(pl->lock.pl_id)))
     {
-        clpos_t d;
 
-        ship = locked_pl;
+        ship = Player_by_id(pl->lock.pl_id);
         shoot_time = (int)(pl->lock.distance / (options.shotSpeed + 1));
-        d.cx = (int)(ship->pos.cx + ship->vel.x * shoot_time * CLICK);
-        d.cy = (int)(ship->pos.cy + ship->vel.y * shoot_time * CLICK);
+        dx = (long)(ship->pix_pos.x + ship->vel.x * shoot_time);
+        dy = (long)(ship->pix_pos.y + ship->vel.y * shoot_time);
         /*-BA Also allow for our own momentum. */
-        d.cx -= (int)(pl->vel.x * shoot_time * CLICK);
-        d.cy -= (int)(pl->vel.y * shoot_time * CLICK);
+        dx -= (long)(pl->vel.x * shoot_time);
+        dy -= (long)(pl->vel.y * shoot_time);
 
-        if (Check_robot_target(pl, d, RM_ATTACK) && !BIT(my_data->longterm_mode, FETCH_TREASURE | TARGET_KILL | NEED_FUEL))
+        if (Check_robot_target(pl, dx, dy, RM_ATTACK) && !BIT(my_data->longterm_mode, FETCH_TREASURE | TARGET_KILL | NEED_FUEL))
+        {
             return;
+        }
     }
-    if (BIT(world->rules->mode, TEAM_PLAY) && Num_treasures() > 0 && world->teams[pl->team].NumTreasures > 0 && !navigate_checked && !BIT(my_data->longterm_mode, TARGET_KILL | NEED_FUEL))
+    if (BIT(world->rules->mode, TEAM_PLAY) && world->NumTreasures > 0 && world->teams[pl->team].NumTreasures > 0 && !navigate_checked && !BIT(my_data->longterm_mode, TARGET_KILL | NEED_FUEL))
     {
         navigate_checked = true;
         if (Ball_handler(pl))
@@ -2281,15 +2413,17 @@ static void Robot_default_play(player_t *pl)
 
         if (item_imp != ROBOT_IGNORE_ITEM)
         {
-            clpos_t d = Obj[item_i]->pos;
+            dx = Obj[item_i]->pix_pos.x;
+            dx += (long)(Obj[item_i]->vel.x * (ABS(dx - pl->pix_pos.x) /
+                                               my_data->robot_normal_speed));
+            dy = Obj[item_i]->pix_pos.y;
+            dy += (long)(Obj[item_i]->vel.y * (ABS(dy - pl->pix_pos.y) /
+                                               my_data->robot_normal_speed));
 
-            d.cx += (int)(Obj[item_i]->vel.x * (ABS(d.cx - pl->pos.cx) /
-                                                my_data->robot_normal_speed));
-            d.cy += (int)(Obj[item_i]->vel.y * (ABS(d.cy - pl->pos.cy) /
-                                                my_data->robot_normal_speed));
-
-            if (Check_robot_target(pl, d, RM_HARVEST))
+            if (Check_robot_target(pl, dx, dy, RM_HARVEST))
+            {
                 return;
+            }
         }
     }
 
@@ -2305,7 +2439,9 @@ static void Robot_default_play(player_t *pl)
     }
 
     if (Robot_default_play_check_map(pl) == 1)
+    {
         return;
+    }
 
     if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
     {
@@ -2314,39 +2450,43 @@ static void Robot_default_play(player_t *pl)
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
     }
 
-    int x = OBJ_X_IN_BLOCKS(pl);
-    int y = OBJ_Y_IN_BLOCKS(pl);
+    x = OBJ_X_IN_BLOCKS(pl);
+    y = OBJ_Y_IN_BLOCKS(pl);
     x_speed = pl->vel.x - 2 * world->gravity[x][y].x;
     y_speed = pl->vel.y - 2 * world->gravity[x][y].y;
 
     if (y_speed < (-my_data->robot_normal_speed) || (my_data->robot_count % 64) < 32)
     {
+
         my_data->robot_mode = RM_ROBOT_CLIMB;
         pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
         pl->power = MAX_PLAYER_POWER / 2;
         if (ABS(pl->dir - RES / 4) > RES / 16)
+        {
             pl->turnacc = (pl->dir < RES / 4 || pl->dir >= 3 * RES / 4
                                ? pl->turnspeed
                                : (-pl->turnspeed));
+        }
         else
+        {
             pl->turnacc = 0.0;
-
+        }
         if (y_speed < my_data->robot_normal_speed / 2 && pl->velocity < my_data->robot_attack_speed)
-            Thrust(pl, true);
+            SET_BIT(pl->obj_status, THRUSTING);
         else if (y_speed > my_data->robot_normal_speed)
-            Thrust(pl, false);
+            CLR_BIT(pl->obj_status, THRUSTING);
         return;
     }
     my_data->robot_mode = RM_ROBOT_IDLE;
     pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
     pl->turnacc = 0;
     pl->power = MAX_PLAYER_POWER / 2;
-    Thrust(pl, false);
+    CLR_BIT(pl->obj_status, THRUSTING);
     speed = LENGTH(x_speed, y_speed);
     if (speed < my_data->robot_normal_speed / 2)
-        Thrust(pl, true);
+        SET_BIT(pl->obj_status, THRUSTING);
     else if (speed > my_data->robot_normal_speed)
-        Thrust(pl, false);
+        CLR_BIT(pl->obj_status, THRUSTING);
 }
 
 /*
@@ -2364,5 +2504,7 @@ static void Robot_default_round_tick(void)
     /* limit distance to allowable enemies. */
     Max_enemy_distance = world->hypotenuse;
     if (world->hypotenuse > Visibility_distance)
+    {
         Max_enemy_distance = min_enemy_distance + (((world->hypotenuse - min_enemy_distance) * (NUM_IDS - NumRobots)) / NUM_IDS);
+    }
 }

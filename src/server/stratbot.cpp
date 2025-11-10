@@ -44,6 +44,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "proto.h"
 #include "map.h"
 #include "score.h"
@@ -138,7 +139,7 @@ static void Stratbot_round_tick(void)
  */
 static void Stratbot_create(int ind, char *str)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
     stratbot_data_t *my_data;
 
     if (!(my_data = (stratbot_data_t *)malloc(sizeof(*my_data))))
@@ -240,7 +241,7 @@ static void Stratbot_message(int ind, const char *message)
  */
 static void Stratbot_destroy(int ind)
 {
-    player_t *pl = PlayersArray[ind];
+    // player_t *pl = PlayersArray[ind];
 
     free(pl->robot_data_ptr->private_data);
     pl->robot_data_ptr->private_data = NULL;

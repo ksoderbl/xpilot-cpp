@@ -32,6 +32,7 @@
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
+
 #include "netserver.h"
 #include "saudio.h"
 

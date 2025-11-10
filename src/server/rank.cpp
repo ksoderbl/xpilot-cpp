@@ -809,6 +809,8 @@ static void tagstart(void *data, const char *el, const char **attr)
 {
     static bool xptag = false;
 
+    UNUSED_PARAM(data);
+
     if (!strcasecmp(el, "XPilotNGRank"))
     {
         double version = -1;
@@ -898,6 +900,8 @@ static void tagstart(void *data, const char *el, const char **attr)
 
 static void tagend(void *data, const char *el)
 {
+    UNUSED_PARAM(data);
+
     if (!strcasecmp(el, "Players"))
         playerstag = false;
 

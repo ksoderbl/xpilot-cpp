@@ -27,9 +27,9 @@
 #include "commonmacros.h"
 #include "strlcpy.h"
 
+#include "server.h"
 #include "map.h"
 #include "polygon.h"
-#include "server.h"
 
 /* polygon map format related stuff */
 int num_edges, max_edges;
