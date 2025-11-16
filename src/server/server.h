@@ -212,7 +212,7 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun);
 void Fire_right_shot(player_t *pl, int type, int dir, int gun);
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
-void Make_treasure_ball(int treasure);
+void Make_treasure_ball(treasure_t *t);
 int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);

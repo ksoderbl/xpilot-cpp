@@ -376,16 +376,14 @@ void Tank_handle_detach(player_t *pl)
 
     /* Return, if no more players or no tanks */
     if (pl->fuel.num_tanks == 0 || NumPseudoPlayers == MAX_PSEUDO_PLAYERS || peek_ID() == 0)
-    {
         return;
-    }
 
     /* If current tank is main, use another one */
     if ((ct = pl->fuel.current) == 0)
         ct = pl->fuel.num_tanks;
 
     Update_tanks(&(pl->fuel));
-    /* Fork the current player_t */
+    /* Fork the current player */
     tank = Player_by_index(NumPlayers);
 
     /*

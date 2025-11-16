@@ -444,7 +444,7 @@ static option_desc opts[] = {
     {"allowPlayerKilling",
      "killings",
      "true",
-     &options.playerKillings,
+     &options.allowPlayerKilling,
      valBool,
      Set_world_rules,
      "Should players be allowed to kill one other?\n",

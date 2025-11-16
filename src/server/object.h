@@ -33,6 +33,7 @@
 #include "keys.h"
 #include "shipshape.h"
 
+#include "map.h"
 #include "serverconst.h"
 
 /*
@@ -272,9 +273,9 @@ struct xp_ballobject
 
     OBJECT_EXTEND
 
-    int ball_owner; /* Who's object is this ? */
-    int treasure;   /* treasure for ball */
-    DFLOAT length;  /* distance ball to player */
+    int ball_owner;            /* Who's object is this ? */
+    treasure_t *ball_treasure; /* treasure for ball */
+    DFLOAT length;             /* distance ball to player */
 
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))

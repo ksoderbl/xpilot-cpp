@@ -1408,48 +1408,32 @@ static int Rank_item_value(player_t *pl, Item_t itemtype)
         case ITEM_DEFLECTOR:
         case ITEM_ARMOR:
             if (BIT(pl->have, HAS_SHIELD))
-            {
                 return ROBOT_HANDY_ITEM;
-            }
             else
-            {
                 return ROBOT_MUST_HAVE_ITEM;
-            }
 
         case ITEM_REARSHOT:
         case ITEM_WIDEANGLE:
-            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.playerKillings)
-            {
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
                 return ROBOT_HANDY_ITEM;
-            }
             else
-            {
                 return ROBOT_MUST_HAVE_ITEM;
-            }
 
         case ITEM_MISSILE:
-            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.playerKillings)
-            {
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
                 return ROBOT_IGNORE_ITEM;
-            }
             else
-            {
                 return ROBOT_MUST_HAVE_ITEM;
-            }
 
         case ITEM_MINE:
         case ITEM_CLOAK:
             return ROBOT_MUST_HAVE_ITEM;
 
         case ITEM_LASER:
-            if (options.playerKillings)
-            {
+            if (options.allowPlayerKilling)
                 return ROBOT_MUST_HAVE_ITEM;
-            }
             else
-            {
                 return ROBOT_HANDY_ITEM;
-            }
 
         case ITEM_PHASING: /* robots don't know how to use them yet */
             return ROBOT_IGNORE_ITEM;

@@ -764,7 +764,7 @@ void Reset_all_players(void)
         {
             world->treasures[i].destroyed = 0;
             world->treasures[i].have = false;
-            Make_treasure_ball(i);
+            Make_treasure_ball(Treasure_by_index(i));
         }
 
         /* Reset the teams */

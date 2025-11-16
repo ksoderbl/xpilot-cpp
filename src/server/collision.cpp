@@ -480,7 +480,8 @@ static void PlayerCollision(void)
                     ball->ball_owner = pl->id;
                     ball->length = distance;
                     SET_BIT(ball->obj_status, GRAVITY);
-                    world->treasures[ball->treasure].have = false;
+                    // world->treasures[ball->treasure].have = false;
+                    ball->ball_treasure->have = false;
                     SET_BIT(pl->have, HAS_BALL);
                     pl->ball = NULL;
                     sound_play_sensors(pl->pos, CONNECT_BALL_SOUND);
@@ -493,18 +494,20 @@ static void PlayerCollision(void)
              * We want a separate list of balls to avoid searching
              * the object list for balls.
              */
-            int dist, mindist = options.ballConnectorLength;
+            double dist, mindist = options.ballConnectorLength * CLICK;
             for (j = 0; j < NumObjs; j++)
             {
-                if (BIT(Obj[j]->type, OBJ_BALL_BIT) && Obj[j]->id == NO_ID)
+                object_t *obj = Obj[j];
+
+                if (obj->type == OBJ_BALL && obj->id == NO_ID)
                 {
-                    dist = Wrap_length(pl->pos.cx - Obj[j]->pos.cx,
-                                       pl->pos.cy - Obj[j]->pos.cy) /
-                           CLICK;
+                    dist = Wrap_length(pl->pos.cx - obj->pos.cx,
+                                       pl->pos.cy - obj->pos.cy);
                     if (dist < mindist)
                     {
-                        ballobject_t *ball = BALL_PTR(Obj[j]);
-                        int bteam = world->treasures[ball->treasure].team;
+                        ballobject_t *ball = BALL_PTR(obj);
+                        // int bteam = world->treasures[ball->treasure].team;
+                        int bteam = ball->ball_treasure->team;
 
                         /*
                          * The treasure's team cannot connect before
@@ -515,7 +518,7 @@ static void PlayerCollision(void)
                          */
                         if (!BIT(world->rules->mode, TEAM_PLAY) || ball->ball_owner != NO_ID || pl->team != bteam)
                         {
-                            pl->ball = BALL_PTR(Obj[j]);
+                            pl->ball = ball;
                             mindist = dist;
                         }
                     }
@@ -1492,10 +1495,9 @@ static void BallCollision(void)
         /* ignore if: */
         if (ball->type != OBJ_BALL_BIT || /* not a ball */
             ball->life <= 0 ||            /* dying ball */
-            (ball->id != NO_ID && BIT(Player_by_id(ball->id)->used, USES_PHASING_DEVICE)) ||
+            (ball->id != NO_ID && Player_is_phasing(Player_by_id(ball->id))) ||
             /* phased ball */
-            world->treasures[ball->treasure].have)
-            /* safe in a treasure */
+            ball->ball_treasure->have) /* safe in a treasure */
             continue;
 
         /* Ball - checkpoint */
@@ -1553,14 +1555,12 @@ static void BallCollision(void)
                  * the treasure: */
                 {
                     ballobject_t *b2 = BALL_PTR(obj);
-                    if (world->treasures[b2->treasure].have)
-                    {
+                    // if (world->treasures[b2->treasure].have)
+                    if (b2->ball_treasure->have)
                         break;
-                    }
-                    if (b2->id != NO_ID && BIT(Player_by_id(b2->id)->used, USES_PHASING_DEVICE))
-                    {
+
+                    if (b2->id != NO_ID && Player_is_phasing(Player_by_id(b2->id)))
                         break;
-                    }
                 }
 
                 /* if the collision was too violent, destroy ball and object */
