@@ -335,48 +335,6 @@ void Detonate_mines(player_t *pl)
     return;
 }
 
-void Make_treasure_ball(treasure_t *t)
-{
-    ballobject_t *ball;
-    // treasure_t *t = &(world->treasures[treasure]);
-    if (t->empty)
-        return;
-    if (t->have)
-    {
-        xpprintf("%s Failed Make_treasure_ball(treasure=%p):\n",
-                 showtime(), t);
-        xpprintf("\ttreasure: destroyed = %d, team = %d, have = %d\n",
-                 t->destroyed, t->team, t->have);
-        return;
-    }
-
-    if ((ball = BALL_PTR(Object_allocate())) == NULL)
-        return;
-
-    ball->length = options.ballConnectorLength;
-    ball->life = LONG_MAX;
-    ball->mass = options.ballMass;
-    ball->vel.x = 0; /* make the ball stuck a little */
-    ball->vel.y = 0; /* longer to the ground */
-    ball->acc.x = 0;
-    ball->acc.y = 0;
-    Object_position_init_clpos(OBJ_PTR(ball), t->pos);
-    ball->id = NO_ID;
-    ball->ball_owner = NO_ID;
-    ball->team = t->team;
-    ball->type = OBJ_BALL_BIT;
-    ball->color = WHITE;
-    ball->count = 0;
-    ball->pl_range = BALL_RADIUS;
-    ball->pl_radius = BALL_RADIUS;
-    CLEAR_MODS(ball->mods);
-    ball->obj_status = RECREATE;
-    ball->ball_treasure = t;
-    Cell_add_object(OBJ_PTR(ball));
-
-    t->have = true;
-}
-
 /*
  * Describes shot of 'type' which has 'status' and 'mods'.  If 'hit' is
  * non-zero this description is part of a collision, otherwise its part

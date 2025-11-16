@@ -30,6 +30,7 @@
 
 #include "click.h"
 #include "object.h"
+#include "player.h"
 #include "polygon.h"
 
 /*

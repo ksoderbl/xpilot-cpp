@@ -31,6 +31,8 @@
 
 #include <unistd.h>
 
+#include "commonmacros.h"
+
 #include "server.h"
 
 #define SERVER
@@ -217,7 +219,6 @@ static void Robot_default_create(player_t *pl, char *str)
  */
 static void Robot_default_go_home(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     my_data->robot_mode = RM_TAKE_OFF;
@@ -229,13 +230,10 @@ static void Robot_default_go_home(player_t *pl)
  */
 static void Robot_default_set_war(player_t *pl, int victim_id)
 {
-    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (victim_id == NO_ID)
-    {
         CLR_BIT(my_data->robot_lock, LOCK_PLAYER);
-    }
     else
     {
         my_data->robot_lock_id = victim_id;
@@ -248,17 +246,12 @@ static void Robot_default_set_war(player_t *pl, int victim_id)
  */
 static int Robot_default_war_on_player(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (BIT(my_data->robot_lock, LOCK_PLAYER))
-    {
         return my_data->robot_lock_id;
-    }
     else
-    {
         return NO_ID;
-    }
 }
 
 /*
@@ -266,35 +259,6 @@ static int Robot_default_war_on_player(player_t *pl)
  */
 static void Robot_default_message(player_t *pl, const char *message)
 {
-#if 0
-    player                        *pl = PlayersArray[ind];
-    robot_default_data_t        *my_data = Robot_default_get_data(pl);
-    int                                len;
-    char                        *ptr;
-    char                        sender_name[MAX_NAME_LEN];
-    char                        msg[MSG_LEN];
-
-    /*
-     * Extract the message body and the sender name from the message string.
-     */
-
-    ptr = strrchr(message, ']');/* get end of message */
-    if (!ptr) {
-        return;                /* Make sure to ignore server messages, oops! */
-    }
-    while (*--ptr != '[');        /* skip back over receiver name */
-    while (*--ptr != '[');        /* skip back over sender name */
-    strlcpy(sender_name, ptr + 1, sizeof sender_name);        /* copy sender */
-    len = ptr - message;        /* find read message length */
-    if (message[len] == ' ') {        /* ignore the readability space */
-        len--;
-    }
-    strlcpy(msg, message, len);        /* copy real message */
-    if ((ptr = strchr(sender_name, ']')) != NULL) {
-        *ptr = '\0';        /* remove the ']' separator */
-    }
-    printf("%s got message \"%s\" from \"%s\"\n", pl->name, msg, sender_name);
-#endif
 }
 
 /*
@@ -302,10 +266,7 @@ static void Robot_default_message(player_t *pl, const char *message)
  */
 static void Robot_default_destroy(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
-
-    free(pl->robot_data_ptr->private_data);
-    pl->robot_data_ptr->private_data = NULL;
+    XFREE(pl->robot_data_ptr->private_data);
 }
 
 /*
@@ -313,12 +274,10 @@ static void Robot_default_destroy(player_t *pl)
  */
 static void Robot_default_invite(player_t *pl, player_t *inviter)
 {
-    // player_t  *inviter = PlayersArray[inv_ind];
-    int war_id = Robot_default_war_on_player(pl);
+    int war_id = Robot_default_war_on_player(pl), i;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
-    int i;
     double limit;
-    int we_accept = 1; /* accept by default */
+    bool we_accept = true;
 
     if (pl->alliance != ALLIANCE_NOT_SET)
     {
@@ -329,7 +288,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
             player_t *pl_i = Player_by_index(i);
             if (Player_is_human(pl_i) && Players_are_allies(pl, pl_i))
             {
-                we_accept = 0;
+                we_accept = false;
                 break;
             }
         }
@@ -345,13 +304,13 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
     {
         /* don't accept players we are at war with */
         if (inviter->id == war_id)
-            we_accept = 0;
+            we_accept = false;
         /* don't accept players who are not active */
         if (BIT(inviter->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
-            we_accept = 0;
+            we_accept = false;
         /* don't accept players with scores substantially lower than ours */
         else if (inviter->score < (pl->score - limit))
-            we_accept = 0;
+            we_accept = false;
     }
     else
     {
@@ -364,7 +323,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
             {
                 if (Player_by_index(i)->id == war_id)
                 {
-                    we_accept = 0;
+                    we_accept = false;
                     break;
                 }
                 avg_score += Player_by_index(i)->score;
@@ -375,7 +334,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
             avg_score = avg_score / member_count;
             if (avg_score < (pl->score - limit))
             {
-                we_accept = 0;
+                we_accept = false;
             }
         }
     }
@@ -463,16 +422,14 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     safe_width = (my_data->defense / 200) * SHIP_SZ;
     /* Prevent overflow. */
     velocity = (pl->velocity <= SPEED_LIMIT) ? pl->velocity : SPEED_LIMIT;
-    stop_dist =
-        (long)((RES * velocity) / (MAX_PLAYER_TURNSPEED * pl->turnresistance) + (velocity * velocity * pl->mass) / (2 * MAX_PLAYER_POWER) + safe_width);
+    stop_dist = (long)((RES * velocity) / (MAX_PLAYER_TURNSPEED * pl->turnresistance) + (velocity * velocity * pl->mass) / (2 * MAX_PLAYER_POWER) + safe_width);
     /*
      * Limit the look ahead.  For very high speeds the current code
      * is ineffective and much too inefficient.
      */
     if (stop_dist > 10 * BLOCK_SZ)
-    {
         stop_dist = 10 * BLOCK_SZ;
-    }
+
     evade = false;
 
     if (pl->velocity <= 0.2)
@@ -487,8 +444,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     }
 
     aux_dir = MOD2(travel_dir + RES / 4, RES);
-    px[0] = pl->pix_pos.x;                             /* ship center x */
-    py[0] = pl->pix_pos.y;                             /* ship center y */
+    px[0] = CLICK_TO_PIXEL(pl->pos.cx);                /* ship center x */
+    py[0] = CLICK_TO_PIXEL(pl->pos.cy);                /* ship center y */
     px[1] = (int)(px[0] + safe_width * tcos(aux_dir)); /* ship left side x */
     py[1] = (int)(py[0] + safe_width * tsin(aux_dir)); /* ship left side y */
     px[2] = 2 * px[0] - px[1];                         /* ship right side x */
@@ -767,7 +724,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         Robot_check_new_modifiers(pl, mods);
         return;
 
-    case OBJ_SHOT_BIT:
+    case OBJ_SHOT:
         /*
          * Robots usually use wide beam shots, however they may narrow
          * the beam occasionally.
@@ -778,14 +735,14 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         Robot_check_new_modifiers(pl, mods);
         return;
 
-    case OBJ_MINE_BIT:
+    case OBJ_MINE:
         stock = pl->item[ITEM_MINE];
         min = options.nukeMinMines;
         break;
 
-    case OBJ_SMART_SHOT_BIT:
-    case OBJ_HEAT_SHOT_BIT:
-    case OBJ_TORPEDO_BIT:
+    case OBJ_SMART_SHOT:
+    case OBJ_HEAT_SHOT:
+    case OBJ_TORPEDO:
         stock = pl->item[ITEM_MISSILE];
         min = options.nukeMinSmarts;
         if ((my_data->robot_count % 4) == 0)
@@ -820,9 +777,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         }
     }
     else if ((my_data->robot_count % 3) == 0)
-    {
         SET_BIT(mods.warhead, IMPLOSION);
-    }
 
     /*
      * Robot may change to use mini device setting occasionally.
@@ -929,28 +884,22 @@ static bool Check_robot_target(player_t *pl,
         if (new_mode == RM_HARVEST ||
             (new_mode == RM_NAVIGATE &&
              (clear_path || dist > 8 * BLOCK_SZ)))
-        {
             /* reverse direction of travel */
             item_dir = MOD2(travel_dir + (delta_dir > RES / 2
                                               ? -5 * RES / 8
                                               : 5 * RES / 8),
                             RES);
-        }
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
         slowing = true;
 
         if (pl->item[ITEM_MINE] && item_dist < 8 * BLOCK_SZ)
         {
-            Choose_weapon_modifier(pl, OBJ_MINE_BIT);
+            Choose_weapon_modifier(pl, OBJ_MINE);
             if (BIT(world->rules->mode, TIMING))
-            {
                 Place_mine(pl);
-            }
             else
-            {
                 Place_moving_mine(pl);
-            }
-            new_mode = (rfrac() < 0.5f) ? RM_EVADE_RIGHT : RM_EVADE_LEFT;
+            new_mode = (rfrac() < 0.5) ? RM_EVADE_RIGHT : RM_EVADE_LEFT;
         }
     }
     else if (new_mode == RM_CANNON_KILL && item_dist <= 0)
@@ -962,20 +911,17 @@ static bool Check_robot_target(player_t *pl,
         slowing = true;
     }
     else
-    {
-
         slowing = false;
-    }
+
     if (new_mode == RM_NAVIGATE && !clear_path)
     {
         if (dist <= 8 * BLOCK_SZ && dist > 4 * BLOCK_SZ)
-        {
-            item_dir = MOD2(item_dir + (delta_dir > RES / 2 ? -3 * RES / 4 : 3 * RES / 4), RES);
-        }
+            item_dir = MOD2(item_dir + (delta_dir > RES / 2
+                                            ? -3 * RES / 4
+                                            : 3 * RES / 4),
+                            RES);
         else if (dist <= 4 * BLOCK_SZ)
-        {
             item_dir = MOD2(item_dir + RES / 2, RES);
-        }
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
         slowing = true;
     }
@@ -983,36 +929,22 @@ static bool Check_robot_target(player_t *pl,
     delta_dir = MOD2(item_dir - pl->dir, RES);
 
     if (delta_dir > RES / 8 && delta_dir < 7 * RES / 8)
-    {
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
-    }
     else if (delta_dir > RES / 16 && delta_dir < 15 * RES / 16)
-    {
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
-    }
     else if (delta_dir > RES / 64 && delta_dir < 63 * RES / 64)
-    {
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
-    }
     else
-    {
         pl->turnspeed = 0.0;
-    }
+
     pl->turnacc = (delta_dir < RES / 2 ? pl->turnspeed : (-pl->turnspeed));
 
     if (slowing || BIT(pl->used, HAS_SHIELD))
-    {
-
         SET_BIT(pl->obj_status, THRUSTING);
-    }
     else if (item_dist < 0)
-    {
-
         CLR_BIT(pl->obj_status, THRUSTING);
-    }
     else if (item_dist < 3 * BLOCK_SZ && new_mode != RM_HARVEST)
     {
-
         if (pl->velocity < my_data->robot_normal_speed / 2)
             SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > my_data->robot_normal_speed)
@@ -1020,7 +952,6 @@ static bool Check_robot_target(player_t *pl,
     }
     else if ((new_mode != RM_ATTACK && new_mode != RM_NAVIGATE) || item_dist < 8 * BLOCK_SZ || (new_mode == RM_NAVIGATE && delta_dir > 3 * RES / 8 && delta_dir < 5 * RES / 8))
     {
-
         if (pl->velocity < 2 * my_data->robot_normal_speed)
             SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > 3 * my_data->robot_normal_speed)
@@ -1028,7 +959,6 @@ static bool Check_robot_target(player_t *pl,
     }
     else if (new_mode == RM_ATTACK || (new_mode == RM_NAVIGATE && (dist < 12 * BLOCK_SZ || (delta_dir > RES / 8 && delta_dir < 7 * RES / 8))))
     {
-
         if (pl->velocity < my_data->robot_attack_speed / 2)
             SET_BIT(pl->obj_status, THRUSTING);
         if (pl->velocity > my_data->robot_attack_speed)
@@ -1139,7 +1069,8 @@ static bool Check_robot_target(player_t *pl,
             Choose_weapon_modifier(pl, HAS_LASER);
         }
         /*-BA Be more agressive, esp if lots of ammo
-         * else if ((my_data->robot_count % 10) == 0 && pl->item[ITEM_MISSILE] > 0)
+         * else if ((my_data->robot_count % 10) == 0
+         * && pl->item[ITEM_MISSILE] > 0)
          */
         else if ((my_data->robot_count % 10) < pl->item[ITEM_MISSILE] && !WITHIN(my_data->robot_count, my_data->last_fired_missile, 10))
         {
@@ -1221,11 +1152,7 @@ static bool Check_robot_hunt(player_t *pl)
 {
     // player_t *pl = PlayersArray[ind];
     player_t *ship;
-    int ship_dir;
-    int travel_dir;
-    int delta_dir;
-    int adj_dir;
-    int toofast, tooslow;
+    int ship_dir, travel_dir, delta_dir, adj_dir, toofast, tooslow;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (!BIT(my_data->robot_lock, LOCK_PLAYER) || my_data->robot_lock_id == pl->id)
@@ -1280,13 +1207,9 @@ static bool Check_robot_hunt(player_t *pl)
     }
 
     if (delta_dir < RES / 8 || delta_dir > 7 * RES / 8)
-    {
         SET_BIT(pl->obj_status, THRUSTING);
-    }
     else
-    {
         CLR_BIT(pl->obj_status, THRUSTING);
-    }
 
     my_data->robot_mode = RM_ROBOT_IDLE;
     return true;
@@ -1336,7 +1259,8 @@ static bool Detect_ship(player_t *pl, player_t *ship)
     if (BIT(ship->have, HAS_BALL))
         return true;
 
-    return false; /* the sky seems clear.. */
+    /* the sky seems clear.. */
+    return false;
 }
 
 /*
@@ -1361,18 +1285,13 @@ static int Rank_item_value(player_t *pl, Item_t itemtype)
     if (itemtype == ITEM_FUEL)
     {
         if (pl->fuel.sum >= pl->fuel.max * 0.90)
-        {
             return ROBOT_IGNORE_ITEM; /* already (almost) full */
-        }
-        else if (pl->fuel.sum <
-                 (BIT(world->rules->mode, TIMING) ? pl->fuel.l1 : pl->fuel.l2))
-        {
+        else if (pl->fuel.sum < (BIT(world->rules->mode, TIMING)
+                                     ? pl->fuel.l1
+                                     : pl->fuel.l2))
             return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
-        }
         else
-        {
             return ROBOT_HANDY_ITEM;
-        }
     }
     if (BIT(world->rules->mode, TIMING))
     {

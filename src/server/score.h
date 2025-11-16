@@ -74,7 +74,7 @@ int Rate(int winner, int loser);
 void Score_players(player_t *winner_pl, int winner_score, char *winner_msg,
                    player_t *loser_pl, int loser_score, char *loser_msg);
 
-double Get_Score(player_t *pl);
+int Get_Score(player_t *pl);
 
 typedef enum
 {

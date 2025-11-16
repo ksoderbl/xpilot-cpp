@@ -1,159 +1,159 @@
-// /*
-//  * XPilot, a multiplayer gravity war game.
-//  *
-//  * Copyright (C) 1991-2001 by
-//  *
-//  *      Bjørn Stabell
-//  *      Ken Ronny Schouten
-//  *      Bert Gijsbers
-//  *      Dick Balaska
-//  *
-//  * Copyright (C) 2000-2004 Uoti Urpala
-//  *
-//  * This program is free software; you can redistribute it and/or modify
-//  * it under the terms of the GNU General Public License as published by
-//  * the Free Software Foundation; either version 2 of the License, or
-//  * (at your option) any later version.
-//  *
-//  * This program is distributed in the hope that it will be useful,
-//  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  * GNU General Public License for more details.
-//  *
-//  * You should have received a copy of the GNU General Public License
-//  * along with this program; if not, see
-//  * <https://www.gnu.org/licenses/>.
-//  */
+/*
+ * XPilot, a multiplayer gravity war game.
+ *
+ * Copyright (C) 1991-2001 by
+ *
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
+ *
+ * Copyright (C) 2000-2004 Uoti Urpala
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ */
 
-// #include <cstdlib>
-// #include <cstring>
-// #include <cstdio>
-// #include <cerrno>
-// #include <cmath>
-// #include <climits>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <cmath>
+#include <climits>
 
-// #include "const.h"
-// #include "xpmath.h"
-// #include "xperror.h"
-// #include "server.h"
+#include "const.h"
+#include "xpmath.h"
+#include "xperror.h"
+#include "server.h"
 
-// #define SERVER
-// #include "xpconfig.h"
-// #include "serverconst.h"
+#define SERVER
+#include "xpconfig.h"
+#include "serverconst.h"
 
-// #include "score.h"
-// #include "saudio.h"
-// #include "item.h"
-// #include "walls2.h"
-// #include "click.h"
-// #include "object.h"
-// #include "robot.h"
+#include "score.h"
+#include "saudio.h"
+#include "item.h"
+#include "walls2.h"
+#include "click.h"
+#include "object.h"
+#include "robot.h"
 
-// struct move_parameters mp;
-// static char msg[MSG_LEN];
+struct move_parameters mp;
+static char msg[MSG_LEN];
 
-// /* polygon map related stuff */
+/* polygon map related stuff */
 
-// /* start */
+/* start */
 
-// /* Maximum line length 32767-B_CLICKS, 30000 used in checks
-//  * There's a minimum map size to avoid "too much wrapping". A bit smaller
-//  * than that would cause rare errors for fast-moving things. I haven't
-//  * bothered to figure out what the limit is. 80k x 80k clicks should
-//  * be more than enough (probably...). */
-// #define B_SHIFT 11
-// #define B_CLICKS (1 << B_SHIFT)
-// #define B_MASK (B_CLICKS - 1)
-// #define CUTOFF (2 * BLOCK_CLICKS) /* Not sure about the optimum value */
-// #define MAX_MOVE 32000
-// #define SEPARATION_DIST 64
-// /* This must be increased if the ship corners are allowed to go farther
-//  * when turning! */
-// /* this is big enough for asteroids of size 4 */
-// #define MAX_SHAPE_OFFSET (52 * CLICK)
+/* Maximum line length 32767-B_CLICKS, 30000 used in checks
+ * There's a minimum map size to avoid "too much wrapping". A bit smaller
+ * than that would cause rare errors for fast-moving things. I haven't
+ * bothered to figure out what the limit is. 80k x 80k clicks should
+ * be more than enough (probably...). */
+#define B_SHIFT 11
+#define B_CLICKS (1 << B_SHIFT)
+#define B_MASK (B_CLICKS - 1)
+#define CUTOFF (2 * BLOCK_CLICKS) /* Not sure about the optimum value */
+#define MAX_MOVE 32000
+#define SEPARATION_DIST 64
+/* This must be increased if the ship corners are allowed to go farther
+ * when turning! */
+/* this is big enough for asteroids of size 4 */
+#define MAX_SHAPE_OFFSET (52 * CLICK)
 
-// #if ((-3) / 2 != -1) || ((-3) % 2 != -1)
-// #error "This code assumes that negative numbers round upwards."
-// #endif
+#if ((-3) / 2 != -1) || ((-3) % 2 != -1)
+#error "This code assumes that negative numbers round upwards."
+#endif
 
-// struct collans
-// {
-//     int line;
-//     int point;
-//     clvec_t moved;
-// };
+struct collans
+{
+    int line;
+    int point;
+    clvec_t moved;
+};
 
-// struct tl2
-// {
-//     int base;
-//     int x;
-//     int y;
-// };
+struct tl2
+{
+    int base;
+    int x;
+    int y;
+};
 
-// struct bline
-// {
-//     clvec_t start;
-//     clvec_t delta;
-//     double c;
-//     double s;
-//     short group;
-// };
+struct bline
+{
+    clvec_t start;
+    clvec_t delta;
+    double c;
+    double s;
+    short group;
+};
 
-// struct blockinfo
-// {
-//     uint16_t distance;
-//     uint16_t *lines;
-//     uint16_t *points;
-// };
+struct blockinfo
+{
+    uint16_t distance;
+    uint16_t *lines;
+    uint16_t *points;
+};
 
-// struct inside_block
-// {
-//     short *y;
-//     short *lines;
-//     struct inside_block *next;
-//     short group;
-//     char base_value;
-// };
+struct inside_block
+{
+    short *y;
+    short *lines;
+    struct inside_block *next;
+    short group;
+    char base_value;
+};
 
-// struct inside_block *inside_table;
+struct inside_block *inside_table;
 
-// struct test
-// {
-//     double distance;
-//     int inside;
-//     struct tempy *y;
-//     struct templine *lines;
-// };
+struct test
+{
+    double distance;
+    int inside;
+    struct tempy *y;
+    struct templine *lines;
+};
 
-// struct test *temparray;
+struct test *temparray;
 
-// shape_t ball_wire;
+shape_t ball_wire;
 
-// #define LINEY(X, Y, BASE, ARG) (((Y) * (ARG) + (BASE)) / (X))
-// #define SIDE(X, Y, LINE) (linet[(LINE)].delta.cy * (X) - linet[(LINE)].delta.cx * (Y))
-// #define SIGN(X) ((X) >= 0 ? 1 : -1)
+#define LINEY(X, Y, BASE, ARG) (((Y) * (ARG) + (BASE)) / (X))
+#define SIDE(X, Y, LINE) (linet[(LINE)].delta.cy * (X) - linet[(LINE)].delta.cx * (Y))
+#define SIGN(X) ((X) >= 0 ? 1 : -1)
 
-// struct bline *linet;
-// #define S_LINES 100 /* stupid hack */
+struct bline *linet;
+#define S_LINES 100 /* stupid hack */
 
-// // struct group *groups = NULL;
-// // int num_groups = 0, max_groups = 0;
+// struct group *groups = NULL;
+// int num_groups = 0, max_groups = 0;
 
-// struct blockinfo *blockline;
-// uint16_t *llist;
-// uint16_t *plist;
-// // int num_lines = 0;
-// // int num_polys = 0;
-// int mapx, mapy;
+struct blockinfo *blockline;
+uint16_t *llist;
+uint16_t *plist;
+// int num_lines = 0;
+// int num_polys = 0;
+int mapx, mapy;
 
-// static inline bool can_hit(group_t *gp, const move_t *move)
-// {
-//     if (gp->hitmask & move->hitmask)
-//         return false;
-//     if (gp->hitfunc == NULL)
-//         return true;
-//     return gp->hitfunc(gp, move);
-// }
+static inline bool can_hit(group_t *gp, const move_t *move)
+{
+    if (gp->hitmask & move->hitmask)
+        return false;
+    if (gp->hitfunc == NULL)
+        return true;
+    return gp->hitfunc(gp, move);
+}
 
 // void Move_init(void)
 // {
@@ -449,15 +449,15 @@
 //     }
 // }
 
-// static void *ralloc(void *ptr, size_t size)
-// {
-//     if (!(ptr = realloc(ptr, size)))
-//     {
-//         warn("Realloc failed.");
-//         exit(1);
-//     }
-//     return ptr;
-// }
+static void *ralloc(void *ptr, size_t size)
+{
+    if (!(ptr = realloc(ptr, size)))
+    {
+        warn("Realloc failed.");
+        exit(1);
+    }
+    return ptr;
+}
 
 // static uint16_t *Shape_lines(shape_t *s, int dir)
 // {
@@ -1417,57 +1417,57 @@
 //     return NO_GROUP;
 // }
 
-// /* Try to move one click away from a line after a collision. Needed because
-//  * otherwise we could keep hitting it even though direction of movement
-//  * was away from the line. Example case:
-//  * XXX
-//  *   1*XX
-//  *     34XXX
-//  *       56 XXX
-//  *         78  XXX
-//  * Line (marked with 'X') and path of object (marked with numbers) collide
-//  * at '*' because of discreteness even though the object is moving away
-//  * from the line.
-//  * Return -1 if successful, number of another line blocking movement
-//  * otherwise (the number of the line is not used when writing this). */
-// static int Away(move_t *move, int line)
-// {
-//     int dx, dy, lsx, lsy;
-//     clvec_t delta_saved;
-//     struct collans ans;
+/* Try to move one click away from a line after a collision. Needed because
+ * otherwise we could keep hitting it even though direction of movement
+ * was away from the line. Example case:
+ * XXX
+ *   1*XX
+ *     34XXX
+ *       56 XXX
+ *         78  XXX
+ * Line (marked with 'X') and path of object (marked with numbers) collide
+ * at '*' because of discreteness even though the object is moving away
+ * from the line.
+ * Return -1 if successful, number of another line blocking movement
+ * otherwise (the number of the line is not used when writing this). */
+static int Away(move_t *move, int line)
+{
+    int dx, dy, lsx, lsy;
+    clvec_t delta_saved;
+    struct collans ans;
 
-//     lsx = linet[line].start.cx - move->start.cx;
-//     lsy = linet[line].start.cy - move->start.cy;
-//     lsx = CENTER_XCLICK(lsx);
-//     lsy = CENTER_YCLICK(lsy);
+    lsx = linet[line].start.cx - move->start.cx;
+    lsy = linet[line].start.cy - move->start.cy;
+    lsx = CENTER_XCLICK(lsx);
+    lsy = CENTER_YCLICK(lsy);
 
-//     if (ABS(linet[line].delta.cx) >= ABS(linet[line].delta.cy))
-//     {
-//         dx = 0;
-//         dy = -SIGN(linet[line].delta.cx);
-//     }
-//     else
-//     {
-//         dy = 0;
-//         dx = SIGN(linet[line].delta.cy);
-//     }
+    if (ABS(linet[line].delta.cx) >= ABS(linet[line].delta.cy))
+    {
+        dx = 0;
+        dy = -SIGN(linet[line].delta.cx);
+    }
+    else
+    {
+        dy = 0;
+        dx = SIGN(linet[line].delta.cy);
+    }
 
-//     if ((ABS(lsx) > SEPARATION_DIST || ABS(lsy) > SEPARATION_DIST) && (ABS(lsx + linet[line].delta.cx) > SEPARATION_DIST || ABS(lsy + linet[line].delta.cy) > SEPARATION_DIST))
-//     {
-//         move->start.cx = WRAP_XCLICK(move->start.cx + dx);
-//         move->start.cy = WRAP_YCLICK(move->start.cy + dy);
-//         return -1;
-//     }
+    if ((ABS(lsx) > SEPARATION_DIST || ABS(lsy) > SEPARATION_DIST) && (ABS(lsx + linet[line].delta.cx) > SEPARATION_DIST || ABS(lsy + linet[line].delta.cy) > SEPARATION_DIST))
+    {
+        move->start.cx = WRAP_XCLICK(move->start.cx + dx);
+        move->start.cy = WRAP_YCLICK(move->start.cy + dy);
+        return -1;
+    }
 
-//     delta_saved = move->delta;
-//     move->delta.cx = dx;
-//     move->delta.cy = dy;
-//     Move_point(move, &ans);
-//     move->start.cx = WRAP_XCLICK(move->start.cx + ans.moved.cx);
-//     move->start.cy = WRAP_YCLICK(move->start.cy + ans.moved.cy);
-//     move->delta = delta_saved;
-//     return ans.line;
-// }
+    delta_saved = move->delta;
+    move->delta.cx = dx;
+    move->delta.cy = dy;
+    Move_point(move, &ans);
+    move->start.cx = WRAP_XCLICK(move->start.cx + ans.moved.cx);
+    move->start.cy = WRAP_YCLICK(move->start.cy + ans.moved.cy);
+    move->delta = delta_saved;
+    return ans.line;
+}
 
 // /* Used internally to get a point out of a tight corner where there is
 //  * no room to move it. Situation like this:

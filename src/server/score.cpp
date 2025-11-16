@@ -94,17 +94,17 @@ void Score_players(player_t *winner_pl, int winner_score, char *winner_msg,
 }
 
 // xpilot-cpp uses int scoring
-double Get_Score(player_t *pl)
+int Get_Score(player_t *pl)
 {
-    return (double)pl->score;
+    return (int)pl->score;
 }
 
-void Set_Score(player_t *pl, double score)
+void Set_Score(player_t *pl, int score)
 {
     pl->score = (int)score;
 }
 
-void Add_Score(player_t *pl, double score)
+void Add_Score(player_t *pl, int score)
 {
     pl->score += (int)score;
 }

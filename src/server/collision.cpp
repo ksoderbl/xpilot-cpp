@@ -491,6 +491,7 @@ static void PlayerCollision(void)
         else
         {
             /*
+             * TODO:
              * We want a separate list of balls to avoid searching
              * the object list for balls.
              */
