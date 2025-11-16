@@ -718,10 +718,10 @@ void Make_wreckage(
         size = (int)(256.0 * 1.5 * mass / total_mass);
         if (size > 255)
             size = 255;
-        wreckage->size = size;
+        wreckage->wire_size = size;
         wreckage->info = (int)(rfrac() * 256);
 
-        radius = wreckage->size * 16 / 256;
+        radius = wreckage->wire_size * 16 / 256;
         if (radius < 8)
             radius = 8;
 

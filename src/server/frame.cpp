@@ -830,7 +830,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
                 Send_wreckage(conn, x, y, (uint8_t)wreck->info,
-                              wreck->size, wreck->rotation);
+                              wreck->wire_size, wreck->rotation);
             }
             break;
 
@@ -838,7 +838,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(conn, x, y,
-                          (uint8_t)ast->info, ast->size, ast->rotation);
+                          (uint8_t)ast->info, ast->wire_size, ast->rotation);
         }
         break;
 
@@ -1160,7 +1160,7 @@ static void Frame_radar(connection_t *conn, player_t *pl)
                 size = 2;
             else if (BIT(shot->type, OBJ_ASTEROID_BIT))
             {
-                size = WIRE_PTR(shot)->size + 1;
+                size = WIRE_PTR(shot)->wire_size + 1;
                 size |= 0x80;
             }
             else

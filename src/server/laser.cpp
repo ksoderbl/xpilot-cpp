@@ -612,7 +612,7 @@ void Laser_pulse_collision(void)
                     {
                         obj->life = 0;
                         ast->life += ASTEROID_FUEL_HIT(ED_LASER_HIT,
-                                                       WIRE_PTR(ast)->size);
+                                                       WIRE_PTR(ast)->wire_size);
                         if (ast->life < 0)
                             ast->life = 0;
                         if (ast->life == 0 && pl && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)

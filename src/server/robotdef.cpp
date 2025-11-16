@@ -1966,7 +1966,7 @@ static void Robot_default_play_check_objects(player_t *pl,
         if (BIT(shot->type, OBJ_ASTEROID_BIT))
         {
             int delta_dir = 0;
-            if (*mine_dist > (WIRE_PTR(shot)->size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < WIRE_PTR(shot)->size * (RES / 10) || delta_dir > RES - WIRE_PTR(shot)->size * (RES / 10)))
+            if (*mine_dist > (WIRE_PTR(shot)->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < WIRE_PTR(shot)->wire_size * (RES / 10) || delta_dir > RES - WIRE_PTR(shot)->wire_size * (RES / 10)))
             {
                 SET_BIT(pl->used, HAS_SHOT);
             }
