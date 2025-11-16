@@ -61,12 +61,6 @@ static inline vector_t World_gravity(clpos_t pos)
     return world->gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
 }
 
-enum TeamPickType
-{
-    PickForHuman = 1,
-    PickForRobot = 2
-};
-
 /*
  * Global data.
  */

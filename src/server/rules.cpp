@@ -319,7 +319,7 @@ void Set_world_rules(void)
     static rules_t rules;
 
     rules.mode =
-        ((options.crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (options.bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (options.playerKillings ? PLAYER_KILLINGS : 0) | (options.playerShielding ? PLAYER_SHIELDING : 0) | (options.limitedVisibility ? LIMITED_VISIBILITY : 0) | (options.limitedLives ? LIMITED_LIVES : 0) | (options.teamPlay ? TEAM_PLAY : 0) | (options.allowAlliances ? ALLIANCES : 0) | (options.timing ? TIMING : 0) | (options.allowNukes ? ALLOW_NUKES : 0) | (options.allowClusters ? ALLOW_CLUSTERS : 0) | (options.allowModifiers ? ALLOW_MODIFIERS : 0) | (options.allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (options.edgeWrap ? WRAP_PLAY : 0));
+        ((options.crashWithPlayer ? CRASH_WITH_PLAYER : 0) | (options.bounceWithPlayer ? BOUNCE_WITH_PLAYER : 0) | (options.playerKillings ? PLAYER_KILLINGS : 0) | (options.allowShields ? PLAYER_SHIELDING : 0) | (options.limitedVisibility ? LIMITED_VISIBILITY : 0) | (options.limitedLives ? LIMITED_LIVES : 0) | (options.teamPlay ? TEAM_PLAY : 0) | (options.allowAlliances ? ALLIANCES : 0) | (options.timing ? TIMING : 0) | (options.allowNukes ? ALLOW_NUKES : 0) | (options.allowClusters ? ALLOW_CLUSTERS : 0) | (options.allowModifiers ? ALLOW_MODIFIERS : 0) | (options.allowLaserModifiers ? ALLOW_LASER_MODIFIERS : 0) | (options.edgeWrap ? WRAP_PLAY : 0));
     rules.lives = options.worldLives;
     world->rules = &rules;
 

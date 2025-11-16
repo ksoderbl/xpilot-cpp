@@ -137,7 +137,7 @@ int World_place_fuel(clpos_t pos, int team)
 int World_place_base(clpos_t pos, int dir, int team, int order)
 {
     // base_t t;
-    // int ind = Num_bases(), i;
+    // int ind = world->NumBases, i;
 
     // t.pos = pos;
     // t.order = order;
@@ -170,7 +170,7 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
     // }
     // else
     //     t.team = TEAM_NOT_SET;
-    // t.ind = Num_bases();
+    // t.ind = world->NumBases;
 
     // for (i = 0; i < NUM_ITEMS; i++)
     //     t.initial_items[i] = -1;
@@ -422,7 +422,7 @@ static void Init_map(void)
     world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 
     world->NumAsteroidConcs = 0;
-    Num_bases() = 0;
+    world->NumBases = 0;
     world->NumCannons = 0;
     world->NumEcms = 0;
     world->NumFuels = 0;
@@ -724,7 +724,7 @@ bool Grok_map(void)
         case '7':
         case '8':
         case '9':
-            Num_bases()++;
+            world->NumBases++;
             break;
         case '+':
         case '-':
@@ -829,10 +829,10 @@ bool Grok_map(void)
         error("Out of memory - asteroid concentrators");
         exit(-1);
     }
-    if (Num_bases() > 0)
+    if (world->NumBases > 0)
     {
         if ((world->bases = (base_t *)
-                 malloc(Num_bases() * sizeof(base_t))) == NULL)
+                 malloc(world->NumBases * sizeof(base_t))) == NULL)
         {
             error("Out of memory - bases");
             exit(-1);
@@ -871,7 +871,7 @@ bool Grok_map(void)
      * into structures.
      */
     world->NumAsteroidConcs = 0;
-    Num_bases() = 0;
+    world->NumBases = 0;
     world->NumCannons = 0;
     world->NumEcms = 0;
     world->NumFuels = 0;
@@ -1090,37 +1090,37 @@ bool Grok_map(void)
                 case '8':
                 case '9':
                     line[y] = BASE;
-                    itemID[y] = Num_bases();
-                    world->bases[Num_bases()].blk_pos.bx = x;
-                    world->bases[Num_bases()].blk_pos.by = y;
-                    world->bases[Num_bases()].pos.cx = cx;
-                    world->bases[Num_bases()].pos.cy = cy;
+                    itemID[y] = world->NumBases;
+                    world->bases[world->NumBases].blk_pos.bx = x;
+                    world->bases[world->NumBases].blk_pos.by = y;
+                    world->bases[world->NumBases].pos.cx = cx;
+                    world->bases[world->NumBases].pos.cy = cy;
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
                      * is fixed in Find_base_dir() when the gravity has
                      * been computed.
                      */
-                    world->bases[Num_bases()].dir = DIR_UP;
+                    world->bases[world->NumBases].dir = DIR_UP;
                     if (BIT(world->rules->mode, TEAM_PLAY))
                     {
                         if (c >= '0' && c <= '9')
                         {
-                            world->bases[Num_bases()].team = c - '0';
+                            world->bases[world->NumBases].team = c - '0';
                         }
                         else
                         {
-                            world->bases[Num_bases()].team = 0;
+                            world->bases[world->NumBases].team = 0;
                         }
-                        world->teams[world->bases[Num_bases()].team].NumBases++;
-                        if (world->teams[world->bases[Num_bases()].team].NumBases == 1)
+                        world->teams[world->bases[world->NumBases].team].NumBases++;
+                        if (world->teams[world->bases[world->NumBases].team].NumBases == 1)
                             world->NumTeamBases++;
                     }
                     else
                     {
-                        world->bases[Num_bases()].team = TEAM_NOT_SET;
+                        world->bases[world->NumBases].team = TEAM_NOT_SET;
                     }
-                    Num_bases()++;
+                    world->NumBases++;
                     break;
 
                 case '+':
@@ -1399,7 +1399,7 @@ bool Grok_map(void)
 
     if (options.maxRobots == -1)
     {
-        options.maxRobots = Num_bases();
+        options.maxRobots = world->NumBases;
     }
     if (options.minRobots == -1)
     {
@@ -1412,7 +1412,7 @@ bool Grok_map(void)
 
 #ifndef SILENT
     xpprintf("world->...: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
-             world->name, Num_bases(), world->x, world->y,
+             world->name, world->NumBases, world->x, world->y,
              BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
 #endif
 
@@ -1458,7 +1458,7 @@ void Find_base_direction(void)
 {
     int i;
 
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < world->NumBases; i++)
     {
         int x = world->bases[i].blk_pos.bx,
             y = world->bases[i].blk_pos.by,
@@ -1565,7 +1565,7 @@ int Find_closest_team(clpos_t pos)
     int team = TEAM_NOT_SET, i;
     double closest = FLT_MAX, l;
 
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < world->NumBases; i++)
     {
         base_t *base = Base_by_index(i);
 
@@ -1598,7 +1598,7 @@ static void Find_base_order(void)
         world->baseorder = NULL;
         return;
     }
-    if ((n = Num_bases()) <= 0)
+    if ((n = world->NumBases) <= 0)
     {
         error("Cannot support race mode in a map without bases");
         exit(-1);

@@ -2162,7 +2162,7 @@ static void Robot_default_play(player_t *pl)
     /* KK: ps. I tried to change that function, but I don't grok it */
     /*if (!(BIT(pl->used, HAS_SHIELD) && BIT(pl->obj_status, THRUSTING))
         && Check_robot_navigate(pl, &evade_checked)) {
-        if (playerShielding == 0
+        if (allowShields == 0
             && playerStartsShielded != 0
             && BIT(pl->have, HAS_SHIELD)) {
             SET_BIT(pl->used, HAS_SHIELD);
@@ -2321,7 +2321,7 @@ static void Robot_default_play(player_t *pl)
     {
         if (Check_robot_evade(pl, mine_i, ship_i))
         {
-            if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
+            if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
             {
                 SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
@@ -2429,7 +2429,7 @@ static void Robot_default_play(player_t *pl)
 
     if (Check_robot_hunt(pl))
     {
-        if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
+        if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
         {
             SET_BIT(pl->used, HAS_SHIELD);
             if (!options.cloakedShield)
@@ -2443,7 +2443,7 @@ static void Robot_default_play(player_t *pl)
         return;
     }
 
-    if (options.playerShielding == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
+    if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
     {
         SET_BIT(pl->used, HAS_SHIELD);
         if (!options.cloakedShield)

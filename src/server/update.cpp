@@ -541,13 +541,13 @@ static void do_Autopilot(player_t *pl)
  */
 void Update_objects(void)
 {
-    xpinfo("in update_objects");
+    // xpinfo("in update_objects");
 
     int i;
     player_t *pl;
     object_t *obj;
 
-    xpinfo("update robots");
+    // xpinfo("update robots");
 
     /*
      * Update robots.
@@ -603,7 +603,7 @@ void Update_objects(void)
         }
     }
 
-    xpinfo("update shots");
+    // xpinfo("update shots");
 
     /*
      * Update shots.
@@ -754,7 +754,7 @@ void Update_objects(void)
         world->targets[i].last_change = frame_loops;
     }
 
-    xpinfo("player loop");
+    // xpinfo("player loop");
 
     /* * * * * *
      *
@@ -1270,7 +1270,7 @@ void Update_objects(void)
             remove_temp_wormhole(i);
     }
 
-    xpinfo("visibility");
+    // xpinfo("visibility");
 
     for (int ind = 0; ind < NumPlayers; ind++)
     {
@@ -1299,14 +1299,14 @@ void Update_objects(void)
         }
     }
 
-    xpinfo("check collision");
+    // xpinfo("check collision");
 
     /*
      * Checking for collision, updating score etc. (see collision.c)
      */
     Check_collision();
 
-    xpinfo("kill players");
+    // xpinfo("kill players");
 
     /*
      * Update tanks, Kill players that ought to be killed.
@@ -1345,7 +1345,7 @@ void Update_objects(void)
         }
     }
 
-    xpinfo("kill shots");
+    // xpinfo("kill shots");
 
     /*
      * Kill shots that ought to be dead.
@@ -1370,5 +1370,5 @@ void Update_objects(void)
     if (updateScores && frame_loops % UPDATE_SCORE_DELAY == 0)
         Update_score_table();
 
-    xpinfo("end of update");
+    // xpinfo("end of update");
 }

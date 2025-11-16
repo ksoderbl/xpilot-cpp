@@ -193,4 +193,6 @@ struct move_parameters
 
 // extern int num_polys, num_pstyles, num_estyles, num_bstyles;
 
+void Move_point(const move_t *move, struct collans *answer);
+
 #endif

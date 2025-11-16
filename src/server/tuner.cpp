@@ -79,7 +79,7 @@ void tuner_maxrobots(void)
 {
     if (options.maxRobots < 0)
     {
-        options.maxRobots = Num_bases();
+        options.maxRobots = world->NumBases;
     }
 
     if (options.maxRobots < options.minRobots)
@@ -106,13 +106,13 @@ void tuner_minrobots(void)
     }
 }
 
-void tuner_playershielding(void)
+void tuner_allowshields(void)
 {
     int i;
 
     Set_world_rules();
 
-    if (options.playerShielding)
+    if (options.allowShields)
     {
         SET_BIT(DEF_HAVE, HAS_SHIELD);
 
@@ -142,7 +142,7 @@ void tuner_playershielding(void)
 
 void tuner_playerstartsshielded(void)
 {
-    if (options.playerShielding)
+    if (options.allowShields)
     {
         options.playerStartsShielded = true; /* Doesn't make sense
                                     to turn off when

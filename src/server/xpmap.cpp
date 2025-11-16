@@ -339,7 +339,7 @@ void Create_blockmap_from_polygons(void)
      * First mark all blocks having a base.
      * We use a base attractor for this.
      */
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < world->NumBases; i++)
     {
         base_t *base = Base_by_index(i);
 
@@ -356,7 +356,7 @@ void Create_blockmap_from_polygons(void)
      * Put bases where there are base attractors or somewhere else
      * if the block already has some other important type.
      */
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < world->NumBases; i++)
     {
         base_t *base = Base_by_index(i);
         bool done;
@@ -596,7 +596,7 @@ setup_t *Xpmap_init_setup(void)
                 break;
 
             case BASE:
-                if (base_i >= Num_bases())
+                if (base_i >= world->NumBases)
                 {
                     warn("Too many bases in block mapdata.");
                     *mapptr = SETUP_SPACE;
@@ -1192,7 +1192,7 @@ void Xpmap_find_base_direction(void)
     int i;
     blkpos_t blk;
 
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < world->NumBases; i++)
     {
         base_t *base = Base_by_index(i);
         int x, y, dir, att;

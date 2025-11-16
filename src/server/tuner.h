@@ -30,7 +30,7 @@ void tuner_shipmass(void);
 void tuner_ballmass(void);
 void tuner_maxrobots(void);
 void tuner_minrobots(void);
-void tuner_playershielding(void);
+void tuner_allowshields(void);
 void tuner_playerstartsshielded(void);
 void tuner_worldlives(void);
 void tuner_cannonsmartness(void);

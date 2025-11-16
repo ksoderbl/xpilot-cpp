@@ -69,7 +69,7 @@ int GetInd(int id)
     {
         result = GetIndArray[id];
     }
-    xpinfo("GetInd: id = %d, result = %d\n", id, result);
+    // xpinfo("GetInd: id = %d, result = %d\n", id, result);
 
     return result;
 }
@@ -90,11 +90,11 @@ void Pick_startpos(player_t *pl)
         return;
     }
 
-    if (prev_num_bases != Num_bases())
+    if (prev_num_bases != world->NumBases)
     {
-        prev_num_bases = Num_bases();
+        prev_num_bases = world->NumBases;
         XFREE(free_bases);
-        free_bases = XMALLOC(char, Num_bases());
+        free_bases = XMALLOC(char, world->NumBases);
         if (free_bases == NULL)
         {
             error("Can't allocate memory for free_bases");
@@ -103,7 +103,7 @@ void Pick_startpos(player_t *pl)
     }
 
     num_free = 0;
-    for (i = 0; i < Num_bases(); i++)
+    for (i = 0; i < world->NumBases; i++)
     {
         if (Base_by_index(i)->team == pl->team)
         {
@@ -129,7 +129,7 @@ void Pick_startpos(player_t *pl)
 
     if (BIT(world->rules->mode, TIMING))
     { /* pick first free base */
-        for (i = 0; i < Num_bases(); i++)
+        for (i = 0; i < world->NumBases; i++)
         {
             if (free_bases[world->baseorder[i].base_idx])
                 break;
@@ -139,7 +139,7 @@ void Pick_startpos(player_t *pl)
     {
         pick = (int)(rfrac() * num_free);
         seen = 0;
-        for (i = 0; i < Num_bases(); i++)
+        for (i = 0; i < world->NumBases; i++)
         {
             if (free_bases[i] != 0)
             {
@@ -151,10 +151,10 @@ void Pick_startpos(player_t *pl)
         }
     }
 
-    if (i == Num_bases())
+    if (i == world->NumBases)
     {
         error("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
-              ind, Num_bases(), num_free, pick, seen);
+              ind, world->NumBases, num_free, pick, seen);
         End_game();
     }
     else
@@ -185,7 +185,7 @@ void Pick_startpos(player_t *pl)
 void Go_home(player_t *pl)
 {
     int ind = GetInd(pl->id);
-    printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
+    // printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
     if (ind != pl->ind)
     {
         player_t *pl1 = PlayersArray[ind];
@@ -245,7 +245,7 @@ void Go_home(player_t *pl)
     if (options.playerStartsShielded != 0)
     {
         SET_BIT(pl->used, HAS_SHIELD);
-        if (options.playerShielding == 0)
+        if (options.allowShields == 0)
         {
             pl->shield_time = 2 * FPS;
             SET_BIT(pl->have, HAS_SHIELD);

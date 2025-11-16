@@ -72,6 +72,8 @@ xpilot_cpp_server_SOURCES = \
     update.cpp \
     walls.cpp \
     walls.h \
+    walls2.cpp \
+    walls2.h \
     wildmap.cpp \
     wormhole.cpp \
     wormhole.h \

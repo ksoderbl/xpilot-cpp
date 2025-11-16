@@ -467,7 +467,7 @@ void Tank_handle_detach(player_t *pl)
     tank->obj_status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
     tank->have = DEF_HAVE;
     tank->used = (DEF_USED & ~USED_KILL & pl->have) | HAS_SHIELD;
-    if (options.playerShielding == 0)
+    if (options.allowShields == 0)
     {
         tank->shield_time = 30 * FPS;
         tank->have |= HAS_SHIELD;

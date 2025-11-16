@@ -167,7 +167,7 @@ typedef struct
     long used; /* Items you use */
     long have; /* Items you have */
 
-    int shield_time;         /* Shields if no playerShielding */
+    int shield_time;         /* Shields if no allowShields */
     pl_fuel_t fuel;          /* ship tanks and the stored fuel */
     double emptymass;        /* Mass of empty ship */
     double float_dir;        /* Direction, in float var */

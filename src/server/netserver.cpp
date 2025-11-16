@@ -634,7 +634,7 @@ int Setup_net_server(void)
      * the select(2) call minus those for stdin, stdout, stderr,
      * the contact socket, and the socket for the resolver library routines.
      */
-    max_connections = MIN(MAX_SELECT_FD - 5, Num_bases());
+    max_connections = MIN(MAX_SELECT_FD - 5, world->NumBases);
     size = max_connections * sizeof(*Conn);
     if ((Conn = (connection_t *)malloc(size)) == NULL)
     {
@@ -1119,7 +1119,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         conn_bit;
     char msg[MSG_LEN];
 
-    if (NumPlayers - NumPseudoPlayers >= Num_bases())
+    if (NumPlayers - NumPseudoPlayers >= world->NumBases)
     {
         strlcpy(errmsg, "Not enough bases for players", errsize);
         warn("%s", errmsg);
@@ -1139,7 +1139,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         }
         if (connp->team == TEAM_NOT_SET)
         {
-            connp->team = Pick_team(PickForHuman);
+            connp->team = Pick_team(PL_TYPE_HUMAN);
             if (connp->team == TEAM_NOT_SET ||
                 (connp->team == options.robotTeam && options.reserveRobotTeam))
             {
