@@ -40,13 +40,14 @@ xpilot_cpp_server_SOURCES = \
     polygon.cpp \
     polygon.h \
     race.cpp \
+    rank.cpp \
+    rank.h \
+    recwrap.cpp \
+    recwrap.h \
     robot.cpp \
     robotdef.cpp \
     robot.h \
     rules.cpp \
-    target.cpp \
-    target.h \
-    treasure.cpp \
     saudio.cpp \
     saudio.h \
     sched.cpp \
@@ -60,13 +61,21 @@ xpilot_cpp_server_SOURCES = \
     shot.cpp \
     showtime.cpp \
     stratbot.cpp \
+    suibotdef.cpp \
+    target.cpp \
+    target.h \
+    teamcup.cpp \
+    teamcup.h \
+    treasure.cpp \
     tuner.cpp \
     tuner.h \
     update.cpp \
     walls.cpp \
     walls.h \
     wildmap.cpp \
+    wormhole.cpp \
     wormhole.h \
+    xp2map.cpp \
     xpmap.cpp
 
 xpilot_cpp_server_LDADD = -lm ../common/libxpcommon.a

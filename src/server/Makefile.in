@@ -108,12 +108,14 @@ am_xpilot_cpp_server_OBJECTS = alliance.$(OBJEXT) asteroid.$(OBJEXT) \
 	map.$(OBJEXT) metaserver.$(OBJEXT) modifiers.$(OBJEXT) \
 	netserver.$(OBJEXT) object.$(OBJEXT) option.$(OBJEXT) \
 	parser.$(OBJEXT) player.$(OBJEXT) polygon.$(OBJEXT) \
-	race.$(OBJEXT) robot.$(OBJEXT) robotdef.$(OBJEXT) \
-	rules.$(OBJEXT) target.$(OBJEXT) treasure.$(OBJEXT) \
+	race.$(OBJEXT) rank.$(OBJEXT) recwrap.$(OBJEXT) \
+	robot.$(OBJEXT) robotdef.$(OBJEXT) rules.$(OBJEXT) \
 	saudio.$(OBJEXT) sched.$(OBJEXT) score.$(OBJEXT) \
 	server.$(OBJEXT) ship.$(OBJEXT) shot.$(OBJEXT) \
-	showtime.$(OBJEXT) stratbot.$(OBJEXT) tuner.$(OBJEXT) \
-	update.$(OBJEXT) walls.$(OBJEXT) wildmap.$(OBJEXT) \
+	showtime.$(OBJEXT) stratbot.$(OBJEXT) suibotdef.$(OBJEXT) \
+	target.$(OBJEXT) teamcup.$(OBJEXT) treasure.$(OBJEXT) \
+	tuner.$(OBJEXT) update.$(OBJEXT) walls.$(OBJEXT) \
+	wildmap.$(OBJEXT) wormhole.$(OBJEXT) xp2map.$(OBJEXT) \
 	xpmap.$(OBJEXT)
 xpilot_cpp_server_OBJECTS = $(am_xpilot_cpp_server_OBJECTS)
 xpilot_cpp_server_DEPENDENCIES = ../common/libxpcommon.a
@@ -143,15 +145,18 @@ am__depfiles_remade = ./$(DEPDIR)/alliance.Po ./$(DEPDIR)/asteroid.Po \
 	./$(DEPDIR)/netserver.Po ./$(DEPDIR)/object.Po \
 	./$(DEPDIR)/option.Po ./$(DEPDIR)/parser.Po \
 	./$(DEPDIR)/player.Po ./$(DEPDIR)/polygon.Po \
-	./$(DEPDIR)/race.Po ./$(DEPDIR)/robot.Po \
-	./$(DEPDIR)/robotdef.Po ./$(DEPDIR)/rules.Po \
-	./$(DEPDIR)/saudio.Po ./$(DEPDIR)/sched.Po \
-	./$(DEPDIR)/score.Po ./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po \
-	./$(DEPDIR)/shot.Po ./$(DEPDIR)/showtime.Po \
-	./$(DEPDIR)/stratbot.Po ./$(DEPDIR)/target.Po \
-	./$(DEPDIR)/treasure.Po ./$(DEPDIR)/tuner.Po \
-	./$(DEPDIR)/update.Po ./$(DEPDIR)/walls.Po \
-	./$(DEPDIR)/wildmap.Po ./$(DEPDIR)/xpmap.Po
+	./$(DEPDIR)/race.Po ./$(DEPDIR)/rank.Po ./$(DEPDIR)/recwrap.Po \
+	./$(DEPDIR)/robot.Po ./$(DEPDIR)/robotdef.Po \
+	./$(DEPDIR)/rules.Po ./$(DEPDIR)/saudio.Po \
+	./$(DEPDIR)/sched.Po ./$(DEPDIR)/score.Po \
+	./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po ./$(DEPDIR)/shot.Po \
+	./$(DEPDIR)/showtime.Po ./$(DEPDIR)/stratbot.Po \
+	./$(DEPDIR)/suibotdef.Po ./$(DEPDIR)/target.Po \
+	./$(DEPDIR)/teamcup.Po ./$(DEPDIR)/treasure.Po \
+	./$(DEPDIR)/tuner.Po ./$(DEPDIR)/update.Po \
+	./$(DEPDIR)/walls.Po ./$(DEPDIR)/wildmap.Po \
+	./$(DEPDIR)/wormhole.Po ./$(DEPDIR)/xp2map.Po \
+	./$(DEPDIR)/xpmap.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -334,13 +339,14 @@ xpilot_cpp_server_SOURCES = \
     polygon.cpp \
     polygon.h \
     race.cpp \
+    rank.cpp \
+    rank.h \
+    recwrap.cpp \
+    recwrap.h \
     robot.cpp \
     robotdef.cpp \
     robot.h \
     rules.cpp \
-    target.cpp \
-    target.h \
-    treasure.cpp \
     saudio.cpp \
     saudio.h \
     sched.cpp \
@@ -354,13 +360,21 @@ xpilot_cpp_server_SOURCES = \
     shot.cpp \
     showtime.cpp \
     stratbot.cpp \
+    suibotdef.cpp \
+    target.cpp \
+    target.h \
+    teamcup.cpp \
+    teamcup.h \
+    treasure.cpp \
     tuner.cpp \
     tuner.h \
     update.cpp \
     walls.cpp \
     walls.h \
     wildmap.cpp \
+    wormhole.cpp \
     wormhole.h \
+    xp2map.cpp \
     xpmap.cpp
 
 xpilot_cpp_server_LDADD = -lm ../common/libxpcommon.a
@@ -475,6 +489,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/polygon.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/race.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rank.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/recwrap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/robotdef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rules.Po@am__quote@ # am--include-marker
@@ -486,12 +502,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showtime.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stratbot.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/suibotdef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/target.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/teamcup.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treasure.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tuner.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/update.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/walls.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wildmap.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wormhole.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xp2map.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpmap.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -665,6 +685,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/player.Po
 	-rm -f ./$(DEPDIR)/polygon.Po
 	-rm -f ./$(DEPDIR)/race.Po
+	-rm -f ./$(DEPDIR)/rank.Po
+	-rm -f ./$(DEPDIR)/recwrap.Po
 	-rm -f ./$(DEPDIR)/robot.Po
 	-rm -f ./$(DEPDIR)/robotdef.Po
 	-rm -f ./$(DEPDIR)/rules.Po
@@ -676,12 +698,16 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/shot.Po
 	-rm -f ./$(DEPDIR)/showtime.Po
 	-rm -f ./$(DEPDIR)/stratbot.Po
+	-rm -f ./$(DEPDIR)/suibotdef.Po
 	-rm -f ./$(DEPDIR)/target.Po
+	-rm -f ./$(DEPDIR)/teamcup.Po
 	-rm -f ./$(DEPDIR)/treasure.Po
 	-rm -f ./$(DEPDIR)/tuner.Po
 	-rm -f ./$(DEPDIR)/update.Po
 	-rm -f ./$(DEPDIR)/walls.Po
 	-rm -f ./$(DEPDIR)/wildmap.Po
+	-rm -f ./$(DEPDIR)/wormhole.Po
+	-rm -f ./$(DEPDIR)/xp2map.Po
 	-rm -f ./$(DEPDIR)/xpmap.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -753,6 +779,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/player.Po
 	-rm -f ./$(DEPDIR)/polygon.Po
 	-rm -f ./$(DEPDIR)/race.Po
+	-rm -f ./$(DEPDIR)/rank.Po
+	-rm -f ./$(DEPDIR)/recwrap.Po
 	-rm -f ./$(DEPDIR)/robot.Po
 	-rm -f ./$(DEPDIR)/robotdef.Po
 	-rm -f ./$(DEPDIR)/rules.Po
@@ -764,12 +792,16 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/shot.Po
 	-rm -f ./$(DEPDIR)/showtime.Po
 	-rm -f ./$(DEPDIR)/stratbot.Po
+	-rm -f ./$(DEPDIR)/suibotdef.Po
 	-rm -f ./$(DEPDIR)/target.Po
+	-rm -f ./$(DEPDIR)/teamcup.Po
 	-rm -f ./$(DEPDIR)/treasure.Po
 	-rm -f ./$(DEPDIR)/tuner.Po
 	-rm -f ./$(DEPDIR)/update.Po
 	-rm -f ./$(DEPDIR)/walls.Po
 	-rm -f ./$(DEPDIR)/wildmap.Po
+	-rm -f ./$(DEPDIR)/wormhole.Po
+	-rm -f ./$(DEPDIR)/xp2map.Po
 	-rm -f ./$(DEPDIR)/xpmap.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
