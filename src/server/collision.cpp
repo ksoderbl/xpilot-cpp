@@ -696,7 +696,7 @@ static void PlayerObjectCollision(player_t *pl)
          */
         switch (obj->type)
         {
-        case OBJ_BALL_BIT:
+        case OBJ_BALL:
             if (!hit)
                 continue;
             Player_collides_with_ball(pl, obj, radius);
@@ -711,7 +711,7 @@ static void PlayerObjectCollision(player_t *pl)
                 continue;
             break;
 
-        case OBJ_MINE_BIT:
+        case OBJ_MINE:
             Player_collides_with_mine(pl, obj);
             break;
 
@@ -732,7 +732,7 @@ static void PlayerObjectCollision(player_t *pl)
                 return;
             continue;
 
-        case OBJ_CANNON_SHOT_BIT:
+        case OBJ_CANNON_SHOT:
             /* don't explode cannon flak if it hits directly*/
             CLR_BIT(obj->mods.warhead, CLUSTER);
             break;
@@ -1176,26 +1176,26 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
      * Sound effects are missing when shot is deadly.
      */
 
-    if (BIT(pl->used, HAS_SHIELD) || BIT(pl->have, HAS_ARMOR) || (obj->type == OBJ_TORPEDO_BIT && BIT(obj->mods.nuclear, NUCLEAR) && (int)(rfrac() >= 0.25f)))
+    if (BIT(pl->used, HAS_SHIELD) || BIT(pl->have, HAS_ARMOR) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, NUCLEAR) && (int)(rfrac() >= 0.25f)))
     {
         switch (obj->type)
         {
-        case OBJ_TORPEDO_BIT:
+        case OBJ_TORPEDO:
             sound_play_sensors(pl->pos, PLAYER_EAT_TORPEDO_SHOT_SOUND);
             break;
-        case OBJ_HEAT_SHOT_BIT:
+        case OBJ_HEAT_SHOT:
             sound_play_sensors(pl->pos, PLAYER_EAT_HEAT_SHOT_SOUND);
             break;
-        case OBJ_SMART_SHOT_BIT:
+        case OBJ_SMART_SHOT:
             sound_play_sensors(pl->pos, PLAYER_EAT_SMART_SHOT_SOUND);
             break;
         }
 
         switch (obj->type)
         {
-        case OBJ_TORPEDO_BIT:
-        case OBJ_HEAT_SHOT_BIT:
-        case OBJ_SMART_SHOT_BIT:
+        case OBJ_TORPEDO:
+        case OBJ_HEAT_SHOT:
+        case OBJ_SMART_SHOT:
             if (obj->id == NO_ID)
                 Set_message_f("%s ate %s.", pl->name,
                               Describe_shot(obj->type, obj->obj_status,
@@ -1216,8 +1216,8 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             Set_message(msg);
             break;
 
-        case OBJ_SHOT_BIT:
-        case OBJ_CANNON_SHOT_BIT:
+        case OBJ_SHOT:
+        case OBJ_CANNON_SHOT:
             sound_play_sensors(pl->pos, PLAYER_EAT_SHOT_SOUND);
             if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
             {
@@ -1250,11 +1250,11 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
         double factor;
         switch (obj->type)
         {
-        case OBJ_TORPEDO_BIT:
-        case OBJ_SMART_SHOT_BIT:
-        case OBJ_HEAT_SHOT_BIT:
-        case OBJ_SHOT_BIT:
-        case OBJ_CANNON_SHOT_BIT:
+        case OBJ_TORPEDO:
+        case OBJ_SMART_SHOT:
+        case OBJ_HEAT_SHOT:
+        case OBJ_SHOT:
+        case OBJ_CANNON_SHOT:
             if (BIT(obj->obj_status, FROMCANNON))
             {
                 sound_play_sensors(pl->pos, PLAYER_HIT_CANNONFIRE_SOUND);
@@ -1290,19 +1290,19 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             }
             switch (obj->type)
             {
-            case OBJ_SHOT_BIT:
+            case OBJ_SHOT:
                 if (BIT(obj->mods.warhead, CLUSTER))
                     factor = options.clusterKillScoreMult;
                 else
                     factor = options.shotKillScoreMult;
                 break;
-            case OBJ_TORPEDO_BIT:
+            case OBJ_TORPEDO:
                 factor = options.torpedoKillScoreMult;
                 break;
-            case OBJ_SMART_SHOT_BIT:
+            case OBJ_SMART_SHOT:
                 factor = options.smartKillScoreMult;
                 break;
-            case OBJ_HEAT_SHOT_BIT:
+            case OBJ_HEAT_SHOT:
                 factor = options.heatKillScoreMult;
                 break;
             default:
@@ -1392,7 +1392,7 @@ static void AsteroidCollision(void)
 
             switch (obj->type)
             {
-            case OBJ_BALL_BIT:
+            case OBJ_BALL:
                 Obj_repel(ast, obj, radius);
                 if (options.treasureCollisionDestroys)
                     obj->life = 0;
@@ -1419,20 +1419,20 @@ static void AsteroidCollision(void)
                 damage = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
                 Delta_mv(ast, obj);
                 break;
-            case OBJ_MINE_BIT:
+            case OBJ_MINE:
                 if (!BIT(obj->obj_status, CONFUSED))
                     obj->life = 0;
                 break;
-            case OBJ_SHOT_BIT:
-            case OBJ_CANNON_SHOT_BIT:
+            case OBJ_SHOT:
+            case OBJ_CANNON_SHOT:
                 obj->life = 0;
                 Delta_mv(ast, obj);
                 damage = ED_SHOT_HIT;
                 sound = true;
                 break;
-            case OBJ_SMART_SHOT_BIT:
-            case OBJ_TORPEDO_BIT:
-            case OBJ_HEAT_SHOT_BIT:
+            case OBJ_SMART_SHOT:
+            case OBJ_TORPEDO:
+            case OBJ_HEAT_SHOT:
                 obj->life = 0;
                 Delta_mv(ast, obj);
                 damage = ED_SMART_SHOT_HIT / ((obj->mods.mini + 1) * (obj->mods.power + 1));
@@ -1551,7 +1551,7 @@ static void BallCollision(void)
 
             switch (obj->type)
             {
-            case OBJ_BALL_BIT:
+            case OBJ_BALL:
                 /* Balls bounce off other balls that aren't safe in
                  * the treasure: */
                 {
@@ -1582,11 +1582,11 @@ static void BallCollision(void)
 
             /* balls absorb and destroy all other objects: */
             case OBJ_SPARK_BIT:
-            case OBJ_TORPEDO_BIT:
-            case OBJ_SMART_SHOT_BIT:
-            case OBJ_HEAT_SHOT_BIT:
-            case OBJ_SHOT_BIT:
-            case OBJ_CANNON_SHOT_BIT:
+            case OBJ_TORPEDO:
+            case OBJ_SMART_SHOT:
+            case OBJ_HEAT_SHOT:
+            case OBJ_SHOT:
+            case OBJ_CANNON_SHOT:
             case OBJ_DEBRIS_BIT:
             case OBJ_WRECKAGE_BIT:
                 Delta_mv(OBJ_PTR(ball), obj);

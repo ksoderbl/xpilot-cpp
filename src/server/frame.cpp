@@ -842,8 +842,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         }
         break;
 
-        case OBJ_SHOT_BIT:
-        case OBJ_CANNON_SHOT_BIT:
+        case OBJ_SHOT:
+        case OBJ_CANNON_SHOT:
             if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
@@ -867,22 +867,22 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                            color, teamshot);
             break;
 
-        case OBJ_TORPEDO_BIT:
+        case OBJ_TORPEDO:
             len = options.distinguishMissiles ? TORPEDO_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_SMART_SHOT_BIT:
+        case OBJ_SMART_SHOT:
             len = options.distinguishMissiles ? SMART_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_HEAT_SHOT_BIT:
+        case OBJ_HEAT_SHOT:
             len = options.distinguishMissiles ? HEAT_SHOT_LEN : MISSILE_LEN;
             Send_missile(conn, x, y, len, shot->missile_dir);
             break;
-        case OBJ_BALL_BIT:
+        case OBJ_BALL:
             Send_ball(conn, x, y, shot->id);
             break;
-        case OBJ_MINE_BIT:
+        case OBJ_MINE:
         {
             int id = 0;
             int laid_by_team = 0;
