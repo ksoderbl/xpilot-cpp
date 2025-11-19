@@ -162,7 +162,7 @@ void Cloak(player_t *pl, bool on)
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
             sound_play_player(pl, CLOAK_SOUND);
-            pl->updateVisibility = 1;
+            pl->updateVisibility = true;
             SET_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
     }
@@ -171,7 +171,7 @@ void Cloak(player_t *pl, bool on)
         if (BIT(pl->used, USES_CLOAKING_DEVICE))
         {
             sound_play_player(pl, CLOAK_SOUND);
-            pl->updateVisibility = 1;
+            pl->updateVisibility = true;
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         }
         if (!pl->item[ITEM_CLOAK])
@@ -1276,14 +1276,14 @@ void Update_objects(void)
     {
         player_t *pl = PlayersArray[ind];
 
-        pl->updateVisibility = 0;
+        pl->updateVisibility = false;
 
         if (pl->forceVisible)
         {
             pl->forceVisible--;
 
             if (!pl->forceVisible)
-                pl->updateVisibility = 1;
+                pl->updateVisibility = true;
         }
 
         if (BIT(pl->used, USES_TRACTOR_BEAM))

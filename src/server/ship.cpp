@@ -440,7 +440,7 @@ void Tank_handle_detach(player_t *pl)
     tank->power *= TANK_THRUST_FACT;
 
     /* Reset visibility. */
-    tank->updateVisibility = 1;
+    tank->updateVisibility = true;
     for (i = 0; i <= NumPlayers; i++)
     {
         tank->visibility[i].lastChange = 0;

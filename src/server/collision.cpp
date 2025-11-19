@@ -827,46 +827,53 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
     enum Item item_index;
     object_t *obj = OBJ_PTR(item);
 
+    item->item_count = obj->count; // TODO: REMOVE
+
     if (IsOffensiveItem((enum Item)obj->info))
     {
         int off_items = CountOffensiveItems(pl);
+
         if (off_items >= options.maxOffensiveItems)
         {
             /* Set_player_message(pl, "No space left for offensive items."); */
-            Delta_mv((object_t *)pl, obj);
+            Delta_mv(OBJ_PTR(pl), OBJ_PTR(item));
             return;
         }
-        else if (obj->count > 1 && off_items + obj->count > options.maxOffensiveItems)
-        {
-            obj->count = options.maxOffensiveItems - off_items;
-        }
+        else if (item->item_count > 1 && off_items + item->item_count > options.maxOffensiveItems)
+            item->item_count = options.maxOffensiveItems - off_items;
     }
     else if (IsDefensiveItem((enum Item)obj->info))
     {
         int def_items = CountDefensiveItems(pl);
+
         if (def_items >= options.maxDefensiveItems)
         {
-            /* Set_player_message(pl, "No space for left for defensive items."); */
-            Delta_mv((object_t *)pl, obj);
+            /* Set_player_message(pl,
+               "No space for left for defensive items."); */
+            Delta_mv(OBJ_PTR(pl), OBJ_PTR(item));
             return;
         }
-        else if (obj->count > 1 && def_items + obj->count > options.maxDefensiveItems)
-        {
-            obj->count = options.maxDefensiveItems - def_items;
-        }
+        else if (item->item_count > 1 && def_items + item->item_count > options.maxDefensiveItems)
+            item->item_count = options.maxDefensiveItems - def_items;
     }
 
     item_index = (enum Item)obj->info;
 
+    if (obj->count != item->item_count)
+    {
+        warn("item_index: obj->count != item->item_count, obj->count = %d, item->item_count = %d, item_index = %d",
+             obj->count, item->item_count, item_index);
+    }
+
     switch (item_index)
     {
     case ITEM_WIDEANGLE:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, WIDEANGLE_SHOT_PICKUP_SOUND);
         break;
     case ITEM_ECM:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, ECM_PICKUP_SOUND);
         break;
@@ -878,65 +885,65 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         sound_play_sensors(pl->pos, ARMOR_PICKUP_SOUND);
         break;
     case ITEM_TRANSPORTER:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, TRANSPORTER_PICKUP_SOUND);
         break;
     case ITEM_MIRROR:
-        pl->item[ITEM_MIRROR] += obj->count;
+        pl->item[ITEM_MIRROR] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_MIRROR);
         sound_play_sensors(pl->pos, MIRROR_PICKUP_SOUND);
         break;
     case ITEM_DEFLECTOR:
-        pl->item[ITEM_DEFLECTOR] += obj->count;
+        pl->item[ITEM_DEFLECTOR] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_DEFLECTOR);
         sound_play_sensors(pl->pos, DEFLECTOR_PICKUP_SOUND);
         break;
     case ITEM_HYPERJUMP:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, HYPERJUMP_PICKUP_SOUND);
         break;
     case ITEM_PHASING:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_PHASING_DEVICE);
         sound_play_sensors(pl->pos, PHASING_DEVICE_PICKUP_SOUND);
         break;
     case ITEM_SENSOR:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         sound_play_sensors(pl->pos, SENSOR_PACK_PICKUP_SOUND);
         break;
     case ITEM_AFTERBURNER:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_AFTERBURNER);
         sound_play_sensors(pl->pos, AFTERBURNER_PICKUP_SOUND);
         break;
     case ITEM_REARSHOT:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, BACK_SHOT_PICKUP_SOUND);
         break;
     case ITEM_MISSILE:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, ROCKET_PACK_PICKUP_SOUND);
         break;
     case ITEM_CLOAK:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         sound_play_sensors(pl->pos, CLOAKING_DEVICE_PICKUP_SOUND);
         break;
     case ITEM_FUEL:
@@ -944,17 +951,17 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         sound_play_sensors(pl->pos, ENERGY_PACK_PICKUP_SOUND);
         break;
     case ITEM_MINE:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, MINE_PACK_PICKUP_SOUND);
         break;
     case ITEM_LASER:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         sound_play_sensors(pl->pos, LASER_PICKUP_SOUND);
         break;
     case ITEM_EMERGENCY_THRUST:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_EMERGENCY_THRUST);
@@ -962,7 +969,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         break;
     case ITEM_EMERGENCY_SHIELD:
         old_have = pl->have;
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_EMERGENCY_SHIELD);
@@ -977,14 +984,14 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
             Emergency_shield(pl, true);
         break;
     case ITEM_TRACTOR_BEAM:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_TRACTOR_BEAM);
         sound_play_sensors(pl->pos, TRACTOR_BEAM_PICKUP_SOUND);
         break;
     case ITEM_AUTOPILOT:
-        pl->item[item_index] += obj->count;
+        pl->item[item_index] += item->item_count;
         LIMIT(pl->item[item_index], 0, world->items[item_index].limit);
         if (pl->item[item_index] > 0)
             SET_BIT(pl->have, HAS_AUTOPILOT);
@@ -1164,13 +1171,13 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
     int sc;
     int drainfactor;
     long drain;
-    player_t *kp = nullptr;
+    player_t *kp = NULL;
 
     /*
      * Player got hit by a potentially deadly object.
      *
      * When a player has shields up, and not enough fuel
-     * to `absorb' the shot then shields are lowered.
+     * to 'absorb' the shot then shields are lowered.
      * This is not very logical, rather in this case
      * the shot should be considered to be deadly too.
      *

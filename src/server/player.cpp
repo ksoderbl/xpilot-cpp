@@ -254,7 +254,7 @@ void Go_home(player_t *pl)
             Deflector(pl, true);
     }
     CLR_BIT(pl->obj_status, THRUSTING);
-    pl->updateVisibility = 1;
+    pl->updateVisibility = true;
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl_i = Player_by_index(i);

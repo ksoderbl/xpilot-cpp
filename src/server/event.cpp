@@ -297,7 +297,7 @@ void Pause_player(player_t *pl, bool on)
     {
         /* Turn pause mode on */
         pl->count = 10 * FPS;
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         CLR_BIT(pl->obj_status, SELF_DESTRUCT | PLAYING);
         SET_BIT(pl->obj_status, PAUSE);
         pl->mychar = 'P';

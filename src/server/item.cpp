@@ -52,7 +52,7 @@ static void Item_update_flags(player_t *pl)
     if (pl->item[ITEM_CLOAK] <= 0 && BIT(pl->have, HAS_CLOAKING_DEVICE))
     {
         CLR_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
     }
     if (pl->item[ITEM_MIRROR] <= 0)
         CLR_BIT(pl->have, HAS_MIRROR);
@@ -736,7 +736,7 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_CLOAK:
         what = "a cloaking device";
-        victim->updateVisibility = 1;
+        victim->updateVisibility = true;
         if (!victim->item[item])
             Cloak(victim, false);
         break;
@@ -751,7 +751,7 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_SENSOR:
         what = "a sensor";
-        victim->updateVisibility = 1;
+        victim->updateVisibility = true;
         break;
     case ITEM_ECM:
         what = "an ECM";
@@ -881,10 +881,10 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_CLOAK:
         SET_BIT(pl->have, HAS_CLOAKING_DEVICE);
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         break;
     case ITEM_SENSOR:
-        pl->updateVisibility = 1;
+        pl->updateVisibility = true;
         break;
     case ITEM_MIRROR:
         SET_BIT(pl->have, HAS_MIRROR);

@@ -258,7 +258,9 @@ typedef struct
 
     visibility_t *visibility;
 
-    int updateVisibility, forceVisible, damaged;
+    bool updateVisibility;
+    int forceVisible;
+    int damaged;
     int wormDrawCount, wormHoleHit, wormHoleDest;
     int stunned;
 
