@@ -1469,28 +1469,28 @@ static int Away(move_t *move, int line)
     return ans.line;
 }
 
-// /* Used internally to get a point out of a tight corner where there is
-//  * no room to move it. Situation like this:
-//  * E***X
-//  *     Y***XX
-//  *         YY**XXX
-//  *             YYY*XXXX
-//  *                 YYYYXXXXX
-//  *                     YYYY XXXXX
-//  *                         YYYY  XXXXX
-//  *                             YYYY   XXXXX
-//  *                                 YYYY !  XXXXX
-//  *                                     YYYY     XXXXX
-//  *                                         YYYY      XXXXX
-//  *                                             YYYY       XXXXX
-//  * X and Y are lines meeting at E. '*' is where lines overlap. An object
-//  * can get to position !, but is hard to move out of there (and the situation
-//  * can be worse than shown here - the angles of the lines don't need to
-//  * differ so much that the gap would get 1 click bigger for each step of
-//  * the y coordinate). This function is used to move the object a bit
-//  * outwards from the corner so discreteness doesn't make moving it so hard. */
-// /* This function should get called only rarely, so it doesn't need to
-//  * be too efficient. */
+/* Used internally to get a point out of a tight corner where there is
+ * no room to move it. Situation like this:
+ * E***X
+ *     Y***XX
+ *         YY**XXX
+ *             YYY*XXXX
+ *                 YYYYXXXXX
+ *                     YYYY XXXXX
+ *                         YYYY  XXXXX
+ *                             YYYY   XXXXX
+ *                                 YYYY !  XXXXX
+ *                                     YYYY     XXXXX
+ *                                         YYYY      XXXXX
+ *                                             YYYY       XXXXX
+ * X and Y are lines meeting at E. '*' is where lines overlap. An object
+ * can get to position !, but is hard to move out of there (and the situation
+ * can be worse than shown here - the angles of the lines don't need to
+ * differ so much that the gap would get 1 click bigger for each step of
+ * the y coordinate). This function is used to move the object a bit
+ * outwards from the corner so discreteness doesn't make moving it so hard. */
+/* This function should get called only rarely, so it doesn't need to
+ * be too efficient. */
 // static int Clear_corner(move_t *move, object_t *obj, int l1, int l2)
 // {
 //     int x, y, xm, ym;
@@ -1623,27 +1623,27 @@ static int Away(move_t *move, int line)
 //     return ans->line == -1 && ans->point == -1;
 // }
 
-// static void store_byte(int value, uint8_t **start, int *offset, int *sz)
-// {
-//     (*start)[(*offset)++] = value;
-//     if (*offset == *sz)
-//     {
-//         *sz *= 2;
-//         *start = (uint8_t *)ralloc(*start, *sz);
-//     }
-// }
+static void store_byte(int value, uint8_t **start, int *offset, int *sz)
+{
+    (*start)[(*offset)++] = value;
+    if (*offset == *sz)
+    {
+        *sz *= 2;
+        *start = (uint8_t *)ralloc(*start, *sz);
+    }
+}
 
-// static void store_2byte(int value, uint8_t **start, int *offset, int *sz)
-// {
-//     store_byte(value >> 8, start, offset, sz);
-//     store_byte(value & 0xff, start, offset, sz);
-// }
+static void store_2byte(int value, uint8_t **start, int *offset, int *sz)
+{
+    store_byte(value >> 8, start, offset, sz);
+    store_byte(value & 0xff, start, offset, sz);
+}
 
-// static void store_4byte(int value, uint8_t **start, int *offset, int *sz)
-// {
-//     store_2byte(value >> 16, start, offset, sz);
-//     store_2byte(value & 0xffff, start, offset, sz);
-// }
+static void store_4byte(int value, uint8_t **start, int *offset, int *sz)
+{
+    store_2byte(value >> 16, start, offset, sz);
+    store_2byte(value & 0xffff, start, offset, sz);
+}
 
 // int Polys_to_client(uint8_t **start)
 // {
@@ -1745,22 +1745,22 @@ static int Away(move_t *move, int line)
 //     return offset;
 // }
 
-// struct tempy
-// {
-//     short y;
-//     struct tempy *next;
-// };
+struct tempy
+{
+    short y;
+    struct tempy *next;
+};
 
-// struct templine
-// {
-//     short x1, x2, y1, y2;
-//     struct templine *next;
-// };
+struct templine
+{
+    short x1, x2, y1, y2;
+    struct templine *next;
+};
 
-// /* Check whether the given position (cx, cy) is such that it is inside
-//  * a polygon belonging to a group that could be hit by the given
-//  * hitmask/object.
-//  * Return the number of a group that would be hit or NO_GROUP. */
+/* Check whether the given position (cx, cy) is such that it is inside
+ * a polygon belonging to a group that could be hit by the given
+ * hitmask/object.
+ * Return the number of a group that would be hit or NO_GROUP. */
 // int is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj)
 // {
 //     short *ptr;
@@ -2237,17 +2237,17 @@ static int Away(move_t *move, int line)
 //     return;
 // }
 
-// /* Include NCLLIN - 1 closest lines or all closer than CUTOFF (whichever
-//  * is less) in the line table for this block.
-//  * Include all lines closer than DICLOSE, however many there are.
-//  * LINSIZE tells the amout of temporary memory to reserve for the algorithm.
-//  * If it is not large enough to hold the required lines, print error and
-//  * exit.
-//  */
+/* Include NCLLIN - 1 closest lines or all closer than CUTOFF (whichever
+ * is less) in the line table for this block.
+ * Include all lines closer than DICLOSE, however many there are.
+ * LINSIZE tells the amout of temporary memory to reserve for the algorithm.
+ * If it is not large enough to hold the required lines, print error and
+ * exit.
+ */
 
-// #define DICLOSE (5 * CLICK)
-// #define LINSIZE 100
-// #define NCLLIN (10 + 1)
+#define DICLOSE (5 * CLICK)
+#define LINSIZE 100
+#define NCLLIN (10 + 1)
 // static void Distance_init(void)
 // {
 //     int cx, cy;
@@ -2426,51 +2426,51 @@ static int Away(move_t *move, int line)
 //     free(dis);
 // }
 
-// /*
-//   cut and paste from #xpilot irc channel:
+/*
+  cut and paste from #xpilot irc channel:
 
-// <uau> the current values used for creating the wall tables are unoptimal
-// <kps> what wall tables ?
-// <kps> corners, etc ?
-// <uau> especially after you made the "ship size" value bigger
-//       (for asteroids IIRC?) it can be bad
-// <kps> do i make that ship size smaller or what do you suggest ?
-// <kps> or how should this be done if one wanted to make it right ?
-// <uau> the server creates a table for "nearby" lines for each 32x32 pixel block
-// <uau> where "nearby" depends on how close closest lines are
-// <uau> and then later creates a table of corners for the same distance+shipsize
-// <kps> is it struct blockinfo *blockline; ?
-// <uau> if shipsize is big then the latter can include lots of corners
-// <uau> blockline.distance is the distance for which features are listed for
-//       that block
-// <uau> blockline.lines contains all lines that are within that distance of
-//       the block (away from the block edges, whole inside has value 0)
-// <uau> distance is measured as MIN of x,y distance
-// <uau> blockline.points contains all corners (identified as a line starting
-//       from that point) within distance blockline.distance+C from that block
-// <uau> where C was some constant which depends on ship size
-// <uau> the heuristic for choosing a suitable blockline.distance could be
-//       improved
-// <kps> that would help how ?
-// <uau> now it always includes some lines IIRC; it would probably be better
-//       to choose the maximum distance such that no lines are included instead
-//       if that is big enough
-// <uau> MAX_SHAPE_OFFSET being big is a separate problem
-// <uau> now blockline.distance is chosen based on the lines only,
-//       blockline.points is then calculated afterwards to allow shapes to be
-//       moved "compatibly"
-// <uau> if MAX_SHAPE_OFFSET is big that means a value for blockline.distance
-//       which is good for moving objects can create inefficiently big corner
-//       lists for in blockline.points
-// <kps> maybe it says there is not enough corner space since my xp map to
-//       polygon conversion function creates many polygons where one could
-//       have only one
-// <kps> so there is a lot of corners close to each other
-// <uau> the problem place is one where there is a lot of free space around,
-//       so that blockline.distance can be chosen large
-// <uau> but then there are suddenly a lot of corners inside
-//       distance+MAX_SHAPE_OFFSET
-//  */
+<uau> the current values used for creating the wall tables are unoptimal
+<kps> what wall tables ?
+<kps> corners, etc ?
+<uau> especially after you made the "ship size" value bigger
+      (for asteroids IIRC?) it can be bad
+<kps> do i make that ship size smaller or what do you suggest ?
+<kps> or how should this be done if one wanted to make it right ?
+<uau> the server creates a table for "nearby" lines for each 32x32 pixel block
+<uau> where "nearby" depends on how close closest lines are
+<uau> and then later creates a table of corners for the same distance+shipsize
+<kps> is it struct blockinfo *blockline; ?
+<uau> if shipsize is big then the latter can include lots of corners
+<uau> blockline.distance is the distance for which features are listed for
+      that block
+<uau> blockline.lines contains all lines that are within that distance of
+      the block (away from the block edges, whole inside has value 0)
+<uau> distance is measured as MIN of x,y distance
+<uau> blockline.points contains all corners (identified as a line starting
+      from that point) within distance blockline.distance+C from that block
+<uau> where C was some constant which depends on ship size
+<uau> the heuristic for choosing a suitable blockline.distance could be
+      improved
+<kps> that would help how ?
+<uau> now it always includes some lines IIRC; it would probably be better
+      to choose the maximum distance such that no lines are included instead
+      if that is big enough
+<uau> MAX_SHAPE_OFFSET being big is a separate problem
+<uau> now blockline.distance is chosen based on the lines only,
+      blockline.points is then calculated afterwards to allow shapes to be
+      moved "compatibly"
+<uau> if MAX_SHAPE_OFFSET is big that means a value for blockline.distance
+      which is good for moving objects can create inefficiently big corner
+      lists for in blockline.points
+<kps> maybe it says there is not enough corner space since my xp map to
+      polygon conversion function creates many polygons where one could
+      have only one
+<kps> so there is a lot of corners close to each other
+<uau> the problem place is one where there is a lot of free space around,
+      so that blockline.distance can be chosen large
+<uau> but then there are suddenly a lot of corners inside
+      distance+MAX_SHAPE_OFFSET
+ */
 
 // static void Corner_init(void)
 // {

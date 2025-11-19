@@ -201,9 +201,14 @@ struct xp_mineobject
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
 };
 
-#define MISSILE_EXTEND                       \
-    DFLOAT max_speed; /* speed limitation */ \
-    DFLOAT turnspeed; /* how fast to turn */
+// #define MISSILE_EXTEND                       \
+//     DFLOAT max_speed; /* speed limitation */ \
+//     DFLOAT turnspeed; /* how fast to turn */
+
+#define MISSILE_EXTEND                              \
+    float missile_max_speed; /* speed limitation */ \
+    float missile_turnspeed; /* how fast to turn */
+
 /* up to here all missiles types are the same. */
 
 /*
@@ -236,8 +241,14 @@ struct xp_smartobject
 
     MISSILE_EXTEND
 
+    // TODO: Remove these
     int new_info;     /* smart re-lock id */
     DFLOAT ecm_range; /* Range from last ecm center */
+
+    float smart_ecm_range; /* Range from last ecm center*/
+    float smart_count;     /* Misc snafus */
+    short smart_lock_id;   /* snafu */
+    short smart_relock_id; /* smart re-lock id */
 
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
@@ -256,10 +267,33 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    int spread_left; /* how much spread time left */
+    int spread_left; /* how much spread time left */ // TODO: Remove
+
+    float torp_spread_left; /* how much spread time left */
+    float torp_count;       /* Misc snafus */
 
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))
+};
+
+/*
+ * Heat-seeker is a generic missile with extras
+ */
+typedef struct xp_heatobject heatobject_t;
+struct xp_heatobject
+{
+
+    OBJECT_BASE
+
+    OBJECT_EXTEND
+
+    MISSILE_EXTEND
+
+    float heat_count;   /* Misc snafus */
+    short heat_lock_id; /* snafu */
+
+#define HEAT_IND(ind) ((heatobject_t *)Obj[(ind)])
+#define HEAT_PTR(ptr) ((heatobject_t *)(ptr))
 };
 
 /*
@@ -302,6 +336,43 @@ struct xp_wireobject
 };
 
 /*
+ * Pulse object used for laser pulses.
+ */
+typedef struct xp_pulseobject pulseobject_t;
+struct xp_pulseobject
+{
+
+    OBJECT_BASE
+
+    OBJECT_EXTEND
+
+    float pulse_len;   /* Length of the pulse */
+    uint8_t pulse_dir; /* Direction of the pulse */
+    bool pulse_refl;   /* Pulse was reflected ? */
+
+#define PULSE_IND(ind) ((pulseobject_t *)Obj[(ind)])
+#define PULSE_PTR(obj) ((pulseobject_t *)(obj))
+};
+
+/*
+ * Item object.
+ */
+typedef struct xp_itemobject itemobject_t;
+struct xp_itemobject
+{
+
+    OBJECT_BASE
+
+    OBJECT_EXTEND
+
+    int item_type;  /* One of ITEM_* */
+    int item_count; /* Misc snafus */
+
+#define ITEM_IND(ind) ((itemobject_t *)Obj[(ind)])
+#define ITEM_PTR(obj) ((itemobject_t *)(obj))
+};
+
+/*
  * Any object type should be part of this union.
  */
 typedef union _anyobject anyobject_t;
@@ -313,7 +384,10 @@ union _anyobject
     missileobject_t missile;
     smartobject_t smart;
     torpobject_t torp;
+    heatobject_t heat;
     wireobject_t wireobj;
+    pulseobject_t pulse;
+    itemobject_t item;
 };
 
 /*

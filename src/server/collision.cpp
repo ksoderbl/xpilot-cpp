@@ -244,9 +244,9 @@ static void PlayerObjectCollision(player_t *pl);
 static void AsteroidCollision(void);
 static void BallCollision(void);
 static void MineCollision(void);
-static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius);
-static void Player_collides_with_item(player_t *pl, object_t *obj);
-static void Player_collides_with_mine(player_t *pl, object_t *obj);
+static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radius);
+static void Player_collides_with_item(player_t *pl, itemobject_t *item);
+static void Player_collides_with_mine(player_t *pl, mineobject_t *mine);
 static void Player_collides_with_debris(player_t *pl, object_t *obj);
 static void Player_collides_with_asteroid(player_t *pl, wireobject_t *obj);
 static void Player_collides_with_killing_shot(player_t *pl, object_t *obj);
@@ -699,30 +699,30 @@ static void PlayerObjectCollision(player_t *pl)
         case OBJ_BALL:
             if (!hit)
                 continue;
-            Player_collides_with_ball(pl, obj, radius);
+            Player_collides_with_ball(pl, BALL_PTR(obj), radius);
             if (BIT(pl->obj_status, KILLED))
                 return;
             continue;
 
-        case OBJ_ITEM_BIT:
-            Player_collides_with_item(pl, obj);
+        case OBJ_ITEM:
+            Player_collides_with_item(pl, ITEM_PTR(obj));
             /* if life is non-zero then no collision occurred */
             if (obj->life != 0)
                 continue;
             break;
 
         case OBJ_MINE:
-            Player_collides_with_mine(pl, obj);
+            Player_collides_with_mine(pl, MINE_PTR(obj));
             break;
 
-        case OBJ_WRECKAGE_BIT:
-        case OBJ_DEBRIS_BIT:
+        case OBJ_WRECKAGE:
+        case OBJ_DEBRIS:
             Player_collides_with_debris(pl, obj);
             if (BIT(pl->obj_status, KILLED))
                 return;
             break;
 
-        case OBJ_ASTEROID_BIT:
+        case OBJ_ASTEROID:
             if (hit)
             {
                 Player_collides_with_asteroid(pl, WIRE_PTR(obj));
@@ -759,18 +759,18 @@ static void PlayerObjectCollision(player_t *pl)
     }
 }
 
-static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
+static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radius)
 {
     int sc;
     int killer;
-    ballobject_t *ball = BALL_PTR(obj);
+    // ballobject_t *ball = BALL_PTR(obj);
 
     /*
      * The ball is special, usually players bounce off of it with
      * shields up, or die with shields down.  The treasure may
      * be destroyed.
      */
-    Obj_repel((object_t *)pl, obj, radius);
+    Obj_repel(OBJ_PTR(pl), OBJ_PTR(ball), radius);
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
     {
         Add_fuel(&(pl->fuel), (long)ED_BALL_HIT);
@@ -821,10 +821,11 @@ static void Player_collides_with_ball(player_t *pl, object_t *obj, int radius)
     SET_BIT(pl->obj_status, KILLED);
 }
 
-static void Player_collides_with_item(player_t *pl, object_t *obj)
+static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 {
     int old_have;
     enum Item item_index;
+    object_t *obj = OBJ_PTR(item);
 
     if (IsOffensiveItem((enum Item)obj->info))
     {
@@ -1005,11 +1006,11 @@ static void Player_collides_with_item(player_t *pl, object_t *obj)
     obj->life = 0;
 }
 
-static void Player_collides_with_mine(player_t *pl, object_t *obj)
+static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
 {
     int sc;
     int killer;
-    mineobject_t *mine = MINE_PTR(obj);
+    // mineobject_t *mine = MINE_PTR(obj);
     player_t *kp = NULL;
 
     sound_play_sensors(pl->pos, PLAYER_HIT_MINE_SOUND);
@@ -1399,7 +1400,7 @@ static void AsteroidCollision(void)
                 damage = ED_BALL_HIT;
                 sound = true;
                 break;
-            case OBJ_ASTEROID_BIT:
+            case OBJ_ASTEROID:
                 obj->life -= ASTEROID_FUEL_HIT(ABS(2 * ast->mass * VECTOR_LENGTH(ast->vel)),
                                                WIRE_PTR(obj)->wire_size);
                 damage = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
@@ -1413,8 +1414,8 @@ static void AsteroidCollision(void)
                 Delta_mv(ast, obj);
                 damage = 0;
                 break;
-            case OBJ_DEBRIS_BIT:
-            case OBJ_WRECKAGE_BIT:
+            case OBJ_DEBRIS:
+            case OBJ_WRECKAGE:
                 obj->life = 0;
                 damage = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
                 Delta_mv(ast, obj);
@@ -1587,8 +1588,8 @@ static void BallCollision(void)
             case OBJ_HEAT_SHOT:
             case OBJ_SHOT:
             case OBJ_CANNON_SHOT:
-            case OBJ_DEBRIS_BIT:
-            case OBJ_WRECKAGE_BIT:
+            case OBJ_DEBRIS:
+            case OBJ_WRECKAGE:
                 Delta_mv(OBJ_PTR(ball), obj);
                 obj->life = 0;
                 break;

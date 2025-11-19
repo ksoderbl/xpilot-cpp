@@ -784,7 +784,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         switch (shot->type)
         {
         case OBJ_SPARK_BIT:
-        case OBJ_DEBRIS_BIT:
+        case OBJ_DEBRIS:
             if ((fuzz >>= 7) < 0x40)
                 fuzz = randomMT();
             if ((fuzz & 0x7F) >= spark_rand)
@@ -825,7 +825,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                          color);
             break;
 
-        case OBJ_WRECKAGE_BIT:
+        case OBJ_WRECKAGE:
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
@@ -834,7 +834,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             }
             break;
 
-        case OBJ_ASTEROID_BIT:
+        case OBJ_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(conn, x, y,
@@ -916,7 +916,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         }
         break;
 
-        case OBJ_ITEM_BIT:
+        case OBJ_ITEM:
         {
             int item_type = shot->info;
 

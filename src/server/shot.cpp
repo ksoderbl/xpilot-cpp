@@ -942,8 +942,8 @@ void Fire_general_shot(int id, int team,
 
         if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT))
         {
-            MISSILE_PTR(shot)->turnspeed = turnspeed;
-            MISSILE_PTR(shot)->max_speed = max_speed;
+            MISSILE_PTR(shot)->missile_turnspeed = turnspeed;
+            MISSILE_PTR(shot)->missile_max_speed = max_speed;
         }
 
         shotpos = pos;
@@ -1113,11 +1113,11 @@ void Delete_shot(int ind)
     {
 
     case OBJ_SPARK_BIT:
-    case OBJ_DEBRIS_BIT:
-    case OBJ_WRECKAGE_BIT:
+    case OBJ_DEBRIS:
+    case OBJ_WRECKAGE:
         break;
 
-    case OBJ_ASTEROID_BIT:
+    case OBJ_ASTEROID:
         Break_asteroid(WIRE_PTR(shot));
         break;
 
@@ -1284,7 +1284,7 @@ void Delete_shot(int ind)
         break;
 
         /* Special items. */
-    case OBJ_ITEM_BIT:
+    case OBJ_ITEM:
 
         switch (shot->info)
         {
@@ -1818,17 +1818,17 @@ void Move_smart_shot(missileobject_t *shot)
     angle = angle - shot->missile_dir - RES / 2;
 
     if (angle < 0)
-        shot->missile_dir += (uint8_t)(((-angle < shot->turnspeed)
+        shot->missile_dir += (uint8_t)(((-angle < shot->missile_turnspeed)
                                             ? -angle
-                                            : shot->turnspeed));
+                                            : shot->missile_turnspeed));
     else
-        shot->missile_dir -= (uint8_t)(((angle < shot->turnspeed)
+        shot->missile_dir -= (uint8_t)(((angle < shot->missile_turnspeed)
                                             ? angle
-                                            : shot->turnspeed));
+                                            : shot->missile_turnspeed));
 
     shot->missile_dir = MOD2(shot->missile_dir, RES); /* NOTE!!!! */
 
-    if (shot_speed < shot->max_speed)
+    if (shot_speed < shot->missile_max_speed)
         shot_speed += acc;
 
     /*  shot->velocity = MIN(shot->velocity, shot->max_speed);  */
