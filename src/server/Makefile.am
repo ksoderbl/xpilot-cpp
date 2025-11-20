@@ -60,6 +60,8 @@ xpilot_cpp_server_SOURCES = \
     ship.cpp \
     shot.cpp \
     showtime.cpp \
+    srecord.cpp \
+    srecord.h \
     stratbot.cpp \
     suibotdef.cpp \
     target.cpp \

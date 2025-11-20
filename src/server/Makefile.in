@@ -112,11 +112,11 @@ am_xpilot_cpp_server_OBJECTS = alliance.$(OBJEXT) asteroid.$(OBJEXT) \
 	robot.$(OBJEXT) robotdef.$(OBJEXT) rules.$(OBJEXT) \
 	saudio.$(OBJEXT) sched.$(OBJEXT) score.$(OBJEXT) \
 	server.$(OBJEXT) ship.$(OBJEXT) shot.$(OBJEXT) \
-	showtime.$(OBJEXT) stratbot.$(OBJEXT) suibotdef.$(OBJEXT) \
-	target.$(OBJEXT) teamcup.$(OBJEXT) treasure.$(OBJEXT) \
-	tuner.$(OBJEXT) update.$(OBJEXT) walls.$(OBJEXT) \
-	walls2.$(OBJEXT) wildmap.$(OBJEXT) wormhole.$(OBJEXT) \
-	xp2map.$(OBJEXT) xpmap.$(OBJEXT)
+	showtime.$(OBJEXT) srecord.$(OBJEXT) stratbot.$(OBJEXT) \
+	suibotdef.$(OBJEXT) target.$(OBJEXT) teamcup.$(OBJEXT) \
+	treasure.$(OBJEXT) tuner.$(OBJEXT) update.$(OBJEXT) \
+	walls.$(OBJEXT) walls2.$(OBJEXT) wildmap.$(OBJEXT) \
+	wormhole.$(OBJEXT) xp2map.$(OBJEXT) xpmap.$(OBJEXT)
 xpilot_cpp_server_OBJECTS = $(am_xpilot_cpp_server_OBJECTS)
 xpilot_cpp_server_DEPENDENCIES = ../common/libxpcommon.a
 AM_V_P = $(am__v_P_@AM_V@)
@@ -150,13 +150,14 @@ am__depfiles_remade = ./$(DEPDIR)/alliance.Po ./$(DEPDIR)/asteroid.Po \
 	./$(DEPDIR)/rules.Po ./$(DEPDIR)/saudio.Po \
 	./$(DEPDIR)/sched.Po ./$(DEPDIR)/score.Po \
 	./$(DEPDIR)/server.Po ./$(DEPDIR)/ship.Po ./$(DEPDIR)/shot.Po \
-	./$(DEPDIR)/showtime.Po ./$(DEPDIR)/stratbot.Po \
-	./$(DEPDIR)/suibotdef.Po ./$(DEPDIR)/target.Po \
-	./$(DEPDIR)/teamcup.Po ./$(DEPDIR)/treasure.Po \
-	./$(DEPDIR)/tuner.Po ./$(DEPDIR)/update.Po \
-	./$(DEPDIR)/walls.Po ./$(DEPDIR)/walls2.Po \
-	./$(DEPDIR)/wildmap.Po ./$(DEPDIR)/wormhole.Po \
-	./$(DEPDIR)/xp2map.Po ./$(DEPDIR)/xpmap.Po
+	./$(DEPDIR)/showtime.Po ./$(DEPDIR)/srecord.Po \
+	./$(DEPDIR)/stratbot.Po ./$(DEPDIR)/suibotdef.Po \
+	./$(DEPDIR)/target.Po ./$(DEPDIR)/teamcup.Po \
+	./$(DEPDIR)/treasure.Po ./$(DEPDIR)/tuner.Po \
+	./$(DEPDIR)/update.Po ./$(DEPDIR)/walls.Po \
+	./$(DEPDIR)/walls2.Po ./$(DEPDIR)/wildmap.Po \
+	./$(DEPDIR)/wormhole.Po ./$(DEPDIR)/xp2map.Po \
+	./$(DEPDIR)/xpmap.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -359,6 +360,8 @@ xpilot_cpp_server_SOURCES = \
     ship.cpp \
     shot.cpp \
     showtime.cpp \
+    srecord.cpp \
+    srecord.h \
     stratbot.cpp \
     suibotdef.cpp \
     target.cpp \
@@ -503,6 +506,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ship.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showtime.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/srecord.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stratbot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/suibotdef.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/target.Po@am__quote@ # am--include-marker
@@ -700,6 +704,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/ship.Po
 	-rm -f ./$(DEPDIR)/shot.Po
 	-rm -f ./$(DEPDIR)/showtime.Po
+	-rm -f ./$(DEPDIR)/srecord.Po
 	-rm -f ./$(DEPDIR)/stratbot.Po
 	-rm -f ./$(DEPDIR)/suibotdef.Po
 	-rm -f ./$(DEPDIR)/target.Po
@@ -795,6 +800,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/ship.Po
 	-rm -f ./$(DEPDIR)/shot.Po
 	-rm -f ./$(DEPDIR)/showtime.Po
+	-rm -f ./$(DEPDIR)/srecord.Po
 	-rm -f ./$(DEPDIR)/stratbot.Po
 	-rm -f ./$(DEPDIR)/suibotdef.Po
 	-rm -f ./$(DEPDIR)/target.Po

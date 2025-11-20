@@ -1,7 +1,7 @@
 /*
- * XPilot NG, a multiplayer space war game.
+ * XPilot, a multiplayer gravity war game.
  *
- * Copyright (C) 2000-2002 Uoti Urpala <uau@users.sourceforge.net>
+ * Copyright (C) 2000-2002 Uoti Urpala
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,19 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "xpserver.h"
+#include "srecord.h"
+
+#include "xperror.h"
+
+#include "option.h"
+#include "server.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstddef>
+#include <cstring>
+#include <ctime>
+#include <netinet/in.h>
 
 int playback = 0;
 int record = 0;

@@ -1,7 +1,7 @@
 /*
- * XPilot NG, a multiplayer space war game.
+ * XPilot, a multiplayer gravity war game.
  *
- * Copyright (C) 2000-2001 Uoti Urpala <uau@users.sourceforge.net>
+ * Copyright (C) 2000-2001 Uoti Urpala
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
