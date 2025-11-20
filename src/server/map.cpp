@@ -1458,7 +1458,7 @@ void Find_base_direction(void)
 {
     int i;
 
-    for (i = 0; i < world->NumBases; i++)
+    for (i = 0; i < Num_bases(); i++)
     {
         int x = world->bases[i].blk_pos.bx,
             y = world->bases[i].blk_pos.by,
@@ -1565,7 +1565,7 @@ int Find_closest_team(clpos_t pos)
     int team = TEAM_NOT_SET, i;
     double closest = FLT_MAX, l;
 
-    for (i = 0; i < world->NumBases; i++)
+    for (i = 0; i < Num_bases(); i++)
     {
         base_t *base = Base_by_index(i);
 

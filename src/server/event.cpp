@@ -516,7 +516,7 @@ int Handle_keyboard(player_t *pl)
                 if (world->block[xi][yi] == BASE)
                 {
                     msg[0] = '\0';
-                    for (i = 0; i < world->NumBases; i++)
+                    for (i = 0; i < Num_bases(); i++)
                     {
                         if (world->bases[i].blk_pos.bx == xi && world->bases[i].blk_pos.by == yi)
                         {

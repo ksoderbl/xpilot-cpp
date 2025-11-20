@@ -1,5 +1,4 @@
-/* $Id: error.h,v 5.3 2001/05/30 18:34:15 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -34,6 +33,7 @@
 #ifndef XPERROR_H
 #define XPERROR_H
 
+#include <cerrno>
 #include <cstdarg>
 
 extern void xpinfo(const char *fmt, ...);

@@ -1060,36 +1060,36 @@ void Fire_normal_shots(player_t *pl)
 
     shot_angle = MODS_SPREAD_MAX - pl->mods.spread;
 
-    Fire_main_shot(pl, OBJ_SHOT_BIT, pl->dir);
+    Fire_main_shot(pl, OBJ_SHOT, pl->dir);
     for (i = 0; i < pl->item[ITEM_WIDEANGLE]; i++)
     {
         if (pl->ship->num_l_gun > 0)
-            Fire_left_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
+            Fire_left_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
         else
-            Fire_main_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
+            Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
         if (pl->ship->num_r_gun > 0)
-            Fire_right_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
+            Fire_right_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
         else
-            Fire_main_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
+            Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
     }
     for (i = 0; i < pl->item[ITEM_REARSHOT]; i++)
     {
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) < 0)
         {
             if (pl->ship->num_l_rgun > 0)
-                Fire_left_rshot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
+                Fire_left_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
             else
-                Fire_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+                Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) > 0)
         {
             if (pl->ship->num_r_rgun > 0)
-                Fire_right_rshot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
+                Fire_right_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
             else
-                Fire_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+                Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) == 0)
-            Fire_shot(pl, OBJ_SHOT_BIT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
     }
 }
 
@@ -1112,7 +1112,7 @@ void Delete_shot(int ind)
     switch (shot->type)
     {
 
-    case OBJ_SPARK_BIT:
+    case OBJ_SPARK:
     case OBJ_DEBRIS:
     case OBJ_WRECKAGE:
         break;
@@ -1180,7 +1180,7 @@ void Delete_shot(int ind)
             break;
 
         status = GRAVITY;
-        if (shot->type == OBJ_MINE_BIT)
+        if (shot->type == OBJ_MINE)
             status |= COLLISIONSHOVE;
 
         if (BIT(shot->obj_status, FROMCANNON))
@@ -1227,7 +1227,7 @@ void Delete_shot(int ind)
             num_modv = 1;
             life_modv = modv;
             speed_modv = modv;
-            if (shot->type == OBJ_MINE_BIT)
+            if (shot->type == OBJ_MINE)
                 intensity = 512;
             else
                 intensity = 32;
@@ -1242,7 +1242,7 @@ void Delete_shot(int ind)
         if (BIT(shot->mods.nuclear, NUCLEAR))
         {
             double nuke_factor;
-            if (shot->type == OBJ_MINE_BIT)
+            if (shot->type == OBJ_MINE)
                 nuke_factor = NUKE_MINE_EXPL_MULT * shot->mass / MINE_MASS;
             else
                 nuke_factor = NUKE_SMART_EXPL_MULT * shot->mass / MISSILE_MASS;

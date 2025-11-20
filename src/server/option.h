@@ -279,6 +279,11 @@ typedef struct options
     int maxPauseTime;       /* Max. time you can stay paused for */
     int maxClientsPerIP;    /* Max. number of clients that can login from the same IP */
 
+    int recordMode;
+    int recordFlushInterval;
+
+    char *recordFileName;
+
     bool polygonMode;
 } options_t;
 

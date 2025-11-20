@@ -1140,7 +1140,7 @@ static bool Check_robot_target(player_t *pl,
     {
         if ((my_data->robot_count % 2) == 0 && item_dist < Visibility_distance && clear_path)
         {
-            Choose_weapon_modifier(pl, OBJ_SHOT_BIT);
+            Choose_weapon_modifier(pl, OBJ_SHOT);
             Fire_normal_shots(pl);
         }
     }

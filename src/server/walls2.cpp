@@ -1717,7 +1717,7 @@ static void store_4byte(int value, uint8_t **start, int *offset, int *sz)
 //         }
 //     }
 //     STORE1(world->NumBases);
-//     for (i = 0; i < world->NumBases; i++)
+//     for (i = 0; i < Num_bases(); i++)
 //     {
 //         base_t *base = Base_by_index(i);
 //         if (base->team == TEAM_NOT_SET)

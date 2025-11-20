@@ -783,7 +783,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         }
         switch (shot->type)
         {
-        case OBJ_SPARK_BIT:
+        case OBJ_SPARK:
         case OBJ_DEBRIS:
             if ((fuzz >>= 7) < 0x40)
                 fuzz = randomMT();

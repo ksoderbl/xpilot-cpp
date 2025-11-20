@@ -103,7 +103,7 @@ void Pick_startpos(player_t *pl)
     }
 
     num_free = 0;
-    for (i = 0; i < world->NumBases; i++)
+    for (i = 0; i < Num_bases(); i++)
     {
         if (Base_by_index(i)->team == pl->team)
         {
@@ -129,7 +129,7 @@ void Pick_startpos(player_t *pl)
 
     if (BIT(world->rules->mode, TIMING))
     { /* pick first free base */
-        for (i = 0; i < world->NumBases; i++)
+        for (i = 0; i < Num_bases(); i++)
         {
             if (free_bases[world->baseorder[i].base_idx])
                 break;
@@ -139,7 +139,7 @@ void Pick_startpos(player_t *pl)
     {
         pick = (int)(rfrac() * num_free);
         seen = 0;
-        for (i = 0; i < world->NumBases; i++)
+        for (i = 0; i < Num_bases(); i++)
         {
             if (free_bases[i] != 0)
             {

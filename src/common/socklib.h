@@ -24,6 +24,8 @@
 #ifndef SOCKLIB_H
 #define SOCKLIB_H
 
+#include <cstdlib>
+
 #define SOCK_HOSTNAME_LENGTH 256
 #define SOCK_FD_INVALID (-1)
 #define SOCK_IS_ERROR (-1)

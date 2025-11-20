@@ -1416,7 +1416,7 @@ static void AsteroidCollision(void)
                 obj->fuselife = obj->life - 1;
                 sound = true;
                 break;
-            case OBJ_SPARK_BIT:
+            case OBJ_SPARK:
                 obj->life = 0;
                 Delta_mv(ast, obj);
                 damage = 0;
@@ -1589,7 +1589,7 @@ static void BallCollision(void)
                 break;
 
             /* balls absorb and destroy all other objects: */
-            case OBJ_SPARK_BIT:
+            case OBJ_SPARK:
             case OBJ_TORPEDO:
             case OBJ_SMART_SHOT:
             case OBJ_HEAT_SHOT:
