@@ -574,7 +574,7 @@ void Update_objects(void)
      */
     for (int i = 0; i < NUM_ITEMS; i++)
         if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0f)
-            Place_item(i, nullptr);
+            Place_item(NULL, i);
 
     /*
      * Let the fuel stations regenerate some fuel.

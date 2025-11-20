@@ -189,7 +189,7 @@ void Item_damage(player_t *pl, double prob);
 void Tank_handle_detach(player_t *pl);
 void Add_fuel(pl_fuel_t *, long);
 void Update_tanks(pl_fuel_t *);
-void Place_item(int type, player_t *pl);
+void Place_item(player_t *pl, int type);
 int Choose_random_item(void);
 void Tractor_beam(player_t *pl);
 void General_tractor_beam(int id, clpos_t pos, int items, player_t *victim, bool pressor);
@@ -255,8 +255,8 @@ void Make_wreckage(
     int min_life, int max_life);
 void Make_item(clpos_t pos,
                vector_t vel,
-               int item, int num_per_pack,
-               long status);
+               int type, int num_per_pack,
+               int status);
 void Explode_fighter(player_t *pl);
 void Throw_items(player_t *pl);
 void Detonate_items(player_t *pl);

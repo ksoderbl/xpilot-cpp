@@ -1744,6 +1744,37 @@ void Delete_player(player_t *pl)
     release_ID(id);
 }
 
+/*
+void Add_spectator(player_t *pl)
+{
+    pl->home_base = NULL;
+    pl->team = 0;
+    GetIndArray[pl->id] = spectatorStart + NumSpectators;
+    Player_set_score(pl, -6666);
+    Player_set_mychar(pl, 'S');
+    NumSpectators++;
+}
+
+void Delete_spectator(player_t *pl)
+{
+    int i, ind = GetInd(pl->id);
+
+    NumSpectators--;
+    // Swap leaver last
+    pl = Player_by_index(spectatorStart + NumSpectators);
+    PlayersArray[spectatorStart + NumSpectators] = Player_by_index(ind);
+    PlayersArray[ind] = pl;
+    pl = Player_by_index(spectatorStart + NumSpectators);
+
+    GetIndArray[Player_by_index(ind)->id] = ind;
+    GetIndArray[pl->id] = spectatorStart + NumSpectators;
+
+    Free_ship_shape(pl->ship);
+    for (i = NumSpectators - 1; i >= 0; i--)
+        Send_leave(Player_by_index(i + spectatorStart)->conn, pl->id);
+}
+*/
+
 void Detach_ball(player_t *pl, ballobject_t *ball)
 {
     int i, cnt;
@@ -1833,19 +1864,6 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(pl, pl->fuel.sum);
 
-    /*-BA Handle the combination of limited life games and
-     *-BA robotLeaveLife by making a robot leave iff it gets
-     *-BA eliminated in any round.  Means that robotLeaveLife
-     *-BA is ignored, but that robotsLeave is still respected.
-     *-KK Added check on race mode. Since in race mode everyone
-     *-KK gets killed at the end of the round, all robots would
-     *-KK be replaced in the next round. I don't think that's
-     *-KK the Right Thing to do.
-     *-KK Also, only check a robot's score at the end of the round.
-     *-KK 27-2-98 Check on team mode too. It's very confusing to
-     *-KK have different robots in your team every round.
-     */
-
     if (!BIT(pl->obj_status, PAUSE))
     {
         pl->deaths++;
@@ -1886,8 +1904,8 @@ bool Team_immune(int id1, int id2)
 {
     player_t *pl1, *pl2;
 
+    /* owned stuff is never team immune */
     if (id1 == id2)
-        /* owned stuff is never team immune */
         return false;
     if (!options.teamImmunity)
         return false;
@@ -1905,4 +1923,87 @@ bool Team_immune(int id1, int id2)
         return true;
 
     return false;
+}
+
+static char *old_status2str(int old_status)
+{
+    static char buf[256];
+
+    buf[0] = '\0';
+
+    if (old_status & OLD_PLAYING)
+        strlcat(buf, "OLD_PLAYING ", sizeof(buf));
+    if (old_status & OLD_PAUSE)
+        strlcat(buf, "OLD_PAUSE ", sizeof(buf));
+    if (old_status & OLD_GAME_OVER)
+        strlcat(buf, "OLD_GAME_OVER ", sizeof(buf));
+
+    return buf;
+}
+
+static char *state2str(int state)
+{
+    static char buf[256];
+
+    buf[0] = '\0';
+
+    if (state == PL_STATE_UNDEFINED)
+        strlcat(buf, "PL_STATE_UNDEFINED", sizeof(buf));
+    if (state == PL_STATE_WAITING)
+        strlcat(buf, "PL_STATE_WAITING", sizeof(buf));
+    if (state == PL_STATE_APPEARING)
+        strlcat(buf, "PL_STATE_APPEARING", sizeof(buf));
+    if (state == PL_STATE_ALIVE)
+        strlcat(buf, "PL_STATE_ALIVE", sizeof(buf));
+    if (state == PL_STATE_KILLED)
+        strlcat(buf, "PL_STATE_KILLED", sizeof(buf));
+    if (state == PL_STATE_DEAD)
+        strlcat(buf, "PL_STATE_DEAD", sizeof(buf));
+    if (state == PL_STATE_PAUSED)
+        strlcat(buf, "PL_STATE_PAUSED", sizeof(buf));
+
+    return buf;
+}
+
+void Player_print_state(player_t *pl, const char *funcname)
+{
+    warn("%-20s: %-16s (%c): %-20s %s ", funcname, pl->name, pl->mychar,
+         state2str(pl->pl_state), old_status2str(pl->pl_old_status));
+}
+
+void Player_set_state(player_t *pl, int state)
+{
+    pl->pl_state = state;
+
+    switch (state)
+    {
+    case PL_STATE_WAITING:
+        Player_set_mychar(pl, 'W');
+        Player_set_life(pl, 0);
+        pl->pl_old_status = OLD_GAME_OVER;
+        break;
+    case PL_STATE_APPEARING:
+        Player_set_mychar(pl, pl->pl_type_mychar);
+        /*Player_set_mychar(pl, 'A');*/
+        pl->pl_old_status = 0;
+        // pl->recovery_count = RECOVERY_DELAY; // TODO
+        break;
+    case PL_STATE_ALIVE:
+        Player_set_mychar(pl, pl->pl_type_mychar);
+        pl->pl_old_status = OLD_PLAYING;
+        break;
+    case PL_STATE_KILLED:
+        break;
+    case PL_STATE_DEAD:
+        Player_set_mychar(pl, 'D');
+        pl->pl_old_status = OLD_GAME_OVER;
+        break;
+    case PL_STATE_PAUSED:
+        Player_set_mychar(pl, 'P');
+        Player_set_life(pl, 0);
+        pl->pl_old_status = OLD_PAUSE;
+        break;
+    default:
+        break;
+    }
 }

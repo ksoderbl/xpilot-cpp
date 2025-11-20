@@ -561,7 +561,7 @@ void Fire_general_shot(int id, int team,
         if ((type == OBJ_HEAT_SHOT) ? !options.allowHeatSeekers : !options.allowSmartMissiles)
         {
             if (options.allowTorpedoes)
-                type = OBJ_TORPEDO_BIT;
+                type = OBJ_TORPEDO;
             else
                 return;
         }

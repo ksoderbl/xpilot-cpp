@@ -148,13 +148,10 @@ int Choose_random_item(void)
     return i;
 }
 
-void Place_item(int item, player_t *pl)
+void Place_item(player_t *pl, int item)
 {
-    int num_lose, num_per_pack,
-        bx, by,
-        place_count,
-        dir, dist;
-    long grav, rand;
+    int num_lose, num_per_pack, bx, by, place_count, dir, dist;
+    long grav, rand_item;
     int px, py;
     vector_t vel;
     item_concentrator_t *con;
@@ -205,7 +202,7 @@ void Place_item(int item, player_t *pl)
     if (pl)
     {
         grav = GRAVITY;
-        rand = 0;
+        rand_item = 0;
         px = CLICK_TO_PIXEL(pl->prevpos.cx);
         py = CLICK_TO_PIXEL(pl->prevpos.cy);
         if (!BIT(pl->obj_status, KILLED))
@@ -244,9 +241,9 @@ void Place_item(int item, player_t *pl)
         else
             grav = 0;
         if (rfrac() < options.randomItemProb)
-            rand = RANDOM_ITEM;
+            rand_item = RANDOM_ITEM;
         else
-            rand = 0;
+            rand_item = 0;
         if (world->NumItemConcentrators > 0 && rfrac() < options.itemConcentratorProb)
             con = &world->itemConcentrators[(int)(rfrac() * world->NumItemConcentrators)];
         else
@@ -295,14 +292,14 @@ void Place_item(int item, player_t *pl)
                 break;
         }
     }
-    vel.x = vel.y = 0.0;
+    vel.x = vel.y = 0;
     if (grav)
     {
         if (pl)
         {
             vel.x += pl->vel.x;
             vel.y += pl->vel.y;
-            if (!BIT(pl->obj_status, KILLED))
+            if (!Player_is_killed(pl))
             {
                 double vl = LENGTH(vel.x, vel.y);
                 int dvx = (int)(rfrac() * 8);
@@ -325,6 +322,7 @@ void Place_item(int item, player_t *pl)
             {
                 double v = rfrac() * 6;
                 int dir = (int)(rfrac() * RES);
+
                 vel.x += tcos(dir) * v;
                 vel.y += tsin(dir) * v;
             }
@@ -333,6 +331,10 @@ void Place_item(int item, player_t *pl)
         {
             vel.x -= options.gravity * world->gravity[bx][by].x;
             vel.y -= options.gravity * world->gravity[bx][by].y;
+            // vector_t gravity = World_gravity(pos);
+
+            // vel.x -= options.gravity * gravity.x;
+            // vel.y -= options.gravity * gravity.y;
             vel.x += (int)(rfrac() * 8) - 3;
             vel.y += (int)(rfrac() * 8) - 3;
         }
@@ -342,40 +344,43 @@ void Place_item(int item, player_t *pl)
     pos.cx = PIXEL_TO_CLICK(px);
     pos.cy = PIXEL_TO_CLICK(py);
 
-    Make_item(pos, vel, item, num_per_pack, grav | rand);
+    Make_item(pos, vel, item, num_per_pack, grav | rand_item);
 }
 
-void Make_item(clpos_t pos,
-               vector_t vel,
-               int item, int num_per_pack,
-               long status)
+void Make_item(clpos_t pos, vector_t vel,
+               int type, int num_per_pack, int status)
 {
-    object_t *obj;
+    itemobject_t *item;
 
-    if (world->items[item].num >= world->items[item].max)
+    if (!World_contains_clpos(pos))
         return;
 
-    if ((obj = Object_allocate()) == NULL)
+    if (world->items[type].num >= world->items[type].max)
         return;
 
-    obj->type = OBJ_ITEM_BIT;
-    obj->info = item;
-    obj->color = RED;
-    obj->obj_status = status;
-    obj->id = NO_ID;
-    obj->team = TEAM_NOT_SET;
-    Object_position_init_clpos(obj, pos);
-    obj->vel = vel;
-    obj->acc.x =
-        obj->acc.y = 0.0;
-    obj->mass = 10.0;
-    obj->life = 1500 + (int)(rfrac() * 512);
-    obj->count = num_per_pack;
-    obj->pl_range = ITEM_SIZE / 2;
-    obj->pl_radius = ITEM_SIZE / 2;
+    if ((item = ITEM_PTR(Object_allocate())) == NULL)
+        return;
 
-    world->items[item].num++;
-    Cell_add_object(obj);
+    item->type = OBJ_ITEM;
+    item->info = type; // TODO: remove
+    item->item_type = type;
+    item->color = RED;
+    item->obj_status = status;
+    item->id = NO_ID;
+    item->team = TEAM_NOT_SET;
+    Object_position_init_clpos(OBJ_PTR(item), pos);
+    item->vel = vel;
+    item->acc.x =
+        item->acc.y = 0.0;
+    item->mass = 10.0;
+    item->life = 1500 + (int)(rfrac() * 512);
+    item->count = num_per_pack; // TODO: remove
+    item->item_count = num_per_pack;
+    item->pl_range = ITEM_SIZE / 2;
+    item->pl_radius = ITEM_SIZE / 2;
+
+    world->items[type].num++;
+    Cell_add_object(OBJ_PTR(item));
 }
 
 void Throw_items(player_t *pl)
@@ -394,7 +399,7 @@ void Throw_items(player_t *pl)
                 num_items_to_throw = pl->item[item] - world->items[item].initial;
                 if (num_items_to_throw <= 0)
                     break;
-                Place_item(item, pl);
+                Place_item(pl, item);
                 remain = pl->item[item] - world->items[item].initial;
             } while (remain > 0 && remain < num_items_to_throw);
         }
@@ -424,7 +429,7 @@ void Detonate_items(player_t *pl)
         owner_pl = pl;
 
     /*
-     * These are always immune to detonation.
+     * Initial items are immune to detonation.
      */
     if ((pl->item[ITEM_MINE] -= world->items[ITEM_MINE].initial) < 0)
         pl->item[ITEM_MINE] = 0;
@@ -445,14 +450,15 @@ void Detonate_items(player_t *pl)
         if (rfrac() < options.detonateItemOnKillProb)
         {
             int dir = (int)(rfrac() * RES);
-            double v = rfrac() * 4.0f;
+            double speed = rfrac() * 4.0;
+            vector_t vel;
 
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MINE] < options.nukeMinMines)
                 CLR_BIT(mods.nuclear, NUCLEAR);
-            vector_t vel;
-            vel.x = pl->vel.x + v * tcos(dir);
-            vel.y = pl->vel.y + v * tsin(dir);
+
+            vel.x = pl->vel.x + speed * tcos(dir);
+            vel.y = pl->vel.y + speed * tsin(dir);
             Place_general_mine(owner_pl->id, pl->team, GRAVITY,
                                pl->pos, vel, mods);
         }
@@ -471,18 +477,18 @@ void Detonate_items(player_t *pl)
              * mean a misfire.
              */
             SET_BIT(pl->lock.tagged, LOCK_PLAYER);
-            pl->lock.pl_id = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
+            pl->lock.pl_id = Player_by_index((int)(rfrac() * NumPlayers))->id;
 
             switch ((int)(rfrac() * 3))
             {
             case 0:
-                type = OBJ_TORPEDO_BIT;
+                type = OBJ_TORPEDO;
                 break;
             case 1:
-                type = OBJ_HEAT_SHOT_BIT;
+                type = OBJ_HEAT_SHOT;
                 break;
             default:
-                type = OBJ_SMART_SHOT_BIT;
+                type = OBJ_SMART_SHOT;
                 break;
             }
 
@@ -933,32 +939,26 @@ void do_hyperjump(player_t *pl)
 
 void do_lose_item(player_t *pl)
 {
+    int item;
+
     if (!pl)
         return;
 
-    int item = pl->lose_item;
+    item = pl->lose_item;
     if (item < 0 || item >= NUM_ITEMS)
     {
         error("BUG: do_lose_item %d", item);
         return;
     }
     if (BIT(1U << pl->lose_item, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-    {
         return;
-    }
     if (pl->item[item] <= 0)
-    {
         return;
-    }
 
-    if (options.loseItemDestroys == false && !BIT(pl->used, USES_PHASING_DEVICE))
-    {
-        Place_item(item, pl);
-    }
+    if (!options.loseItemDestroys && !Player_is_phasing(pl))
+        Place_item(pl, item);
     else
-    {
         pl->item[item]--;
-    }
 
     Item_update_flags(pl);
 }
@@ -1050,7 +1050,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             /* So let the missile keep on following this unlucky player. */
             /*-BA Why not redirect missiles to team mates?
              *-BA It's not ideal, but better them than me...
-             *if (TEAM_IMMUNE(ind, GetInd[smart->new_info])) {
+             *if (TEAM_IMMUNE(ind, GetInd(smart->new_info))) {
              *        smart->new_info = ind;
              * }
              */
@@ -1063,7 +1063,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             /*
              * perim is distance from the mine to its detonation perimeter
              *
-             * range is the proportion from the mine detontation perimeter
+             * range is the proportion from the mine detotation perimeter
              * to the maximum ecm range.
              * low values of range mean the mine is close
              *
@@ -1117,10 +1117,12 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     {
         for (i = 0; i < Num_cannons(); i++)
         {
-            cannon_t *c = world->cannons + i;
+            cannon_t *c = Cannon_by_index(i);
             if (BIT(world->rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
-            range = Wrap_length(CLICK_TO_FLOAT(pos.cx - c->pos.cx), CLICK_TO_FLOAT(pos.cy - c->pos.cy));
+            range = Wrap_length(pos.cx - c->pos.cx,
+                                pos.cy - c->pos.cy) /
+                    CLICK;
             if (range > ECM_DISTANCE)
                 continue;
             damage = (ECM_DISTANCE - range) / ECM_DISTANCE;
@@ -1134,7 +1136,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     {
         p = Player_by_index(i);
 
-        if (p->id == pl->id)
+        if (p == pl)
             continue;
 
         /*
@@ -1147,7 +1149,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
         if (pl && Players_are_allies(pl, p))
             continue;
 
-        if (BIT(p->used, USES_PHASING_DEVICE))
+        if (Player_is_phasing(p))
             continue;
 
         if (BIT(p->obj_status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
@@ -1171,16 +1173,12 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
              * should this be FPS dependant: damage = 4.0f * FPS * range; ?
              * No, i think.
              */
-            damage = 24.0f * range;
+            damage = 24.0 * range;
 
             if (p->item[ITEM_CLOAK] <= 1)
-            {
                 p->forceVisible += (int)damage;
-            }
             else
-            {
                 p->forceVisible += (int)(damage * pow(0.75, (p->item[ITEM_CLOAK] - 1)));
-            }
 
             /* ECM may cause balls to detach. */
             if (BIT(p->have, HAS_BALL))
