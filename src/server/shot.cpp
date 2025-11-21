@@ -236,7 +236,7 @@ void Place_general_mine(int id, int team, int status,
         if ((mine = MINE_PTR(Object_allocate())) == NULL)
             break;
 
-        mine->type = OBJ_MINE_BIT;
+        mine->type = OBJ_MINE;
         mine->color = BLUE;
         mine->info = options.mineFuseTime;
         mine->obj_status = status;
@@ -1098,6 +1098,7 @@ void Delete_shot(int ind)
 {
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
+    itemobject_t *item;
     player_t *pl;
     bool addMine = false, addHeat = false, addBall = false;
     modifiers_t mods;
@@ -1149,24 +1150,23 @@ void Delete_shot(int ind)
         }
         if (BIT(ball->obj_status, RECREATE))
         {
-            addBall = 1;
+            addBall = true;
             if (BIT(ball->obj_status, NOEXPLOSION))
                 break;
             sound_play_sensors(ball->pos, EXPLODE_BALL_SOUND);
-            Make_debris(
-                ball->prevpos,
-                ball->vel,
-                ball->id,
-                ball->team,
-                OBJ_DEBRIS_BIT,
-                DEBRIS_MASS,
-                GRAVITY,
-                RED,
-                8,
-                10, 20,
-                0, RES - 1,
-                10, 50,
-                10, 2 * (FPS + 15));
+            Make_debris(ball->prevpos,
+                        ball->vel,
+                        ball->id,
+                        ball->team,
+                        OBJ_DEBRIS,
+                        DEBRIS_MASS,
+                        GRAVITY,
+                        RED,
+                        8,
+                        10, 20,
+                        0, RES - 1,
+                        10, 50,
+                        10, 2 * (FPS + 15));
         }
         break;
         /* Shots related to a player. */
@@ -1182,21 +1182,20 @@ void Delete_shot(int ind)
         status = GRAVITY;
         if (shot->type == OBJ_MINE)
             status |= COLLISIONSHOVE;
-
         if (BIT(shot->obj_status, FROMCANNON))
             status |= FROMCANNON;
 
         if (BIT(shot->mods.nuclear, NUCLEAR))
             sound_play_all(NUKE_EXPLOSION_SOUND);
 
-        else if (BIT(shot->type, OBJ_MINE_BIT))
+        else if (shot->type == OBJ_MINE)
             sound_play_sensors(shot->pos, MINE_EXPLOSION_SOUND);
         else
             sound_play_sensors(shot->pos, OBJECT_EXPLOSION_SOUND);
 
         if (BIT(shot->mods.warhead, CLUSTER))
         {
-            type = OBJ_SHOT_BIT;
+            type = OBJ_SHOT;
             if (shot->id != NO_ID)
             {
                 player_t *pl = Player_by_id(shot->id);
@@ -1205,22 +1204,21 @@ void Delete_shot(int ind)
             else
                 color = WHITE;
 
-            mass = options.shotMass;
-            mass *= 3;
+            mass = options.shotMass * 3;
             modv = 1 << shot->mods.velocity;
             num_modv = 4;
             if (BIT(shot->mods.nuclear, NUCLEAR))
             {
-                modv *= 4.0f;
+                modv *= 4.0;
                 num_modv = 1;
             }
-            life_modv = modv * 0.20f;
-            speed_modv = 1.0f / modv;
+            life_modv = modv * 0.20;
+            speed_modv = 1.0 / modv;
             intensity = (int)CLUSTER_MASS_SHOTS(shot->mass);
         }
         else
         {
-            type = OBJ_DEBRIS_BIT;
+            type = OBJ_DEBRIS;
             color = RED;
             mass = DEBRIS_MASS;
             modv = 1;
@@ -1285,8 +1283,14 @@ void Delete_shot(int ind)
 
         /* Special items. */
     case OBJ_ITEM:
+        item = ITEM_PTR(shot);
+        if (shot->info != item->item_type)
+        {
+            warn("Delete_shot: shot->info != item->item_type, shot->info = %ld, item->item_type = %d",
+                 shot->count, item->item_type);
+        }
 
-        switch (shot->info)
+        switch (item->item_type)
         {
         case ITEM_MISSILE:
             if (shot->life == 0 && shot->color != WHITE)

@@ -824,12 +824,21 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
 static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 {
     int old_have;
-    enum Item item_index;
+
     object_t *obj = OBJ_PTR(item);
 
-    item->item_count = obj->count; // TODO: REMOVE
+    if (obj->count != item->item_count)
+    {
+        warn("item_index: obj->count != item->item_count, obj->count = %d, item->item_count = %d",
+             obj->count, item->item_count);
+    }
 
-    if (IsOffensiveItem((enum Item)obj->info))
+    item->item_count = obj->count; // TODO: REMOVE
+    item->item_type = obj->info;   // TODO: REMOVE
+
+    enum Item item_index = (enum Item)item->item_type;
+
+    if (IsOffensiveItem(item_index))
     {
         int off_items = CountOffensiveItems(pl);
 
@@ -842,7 +851,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         else if (item->item_count > 1 && off_items + item->item_count > options.maxOffensiveItems)
             item->item_count = options.maxOffensiveItems - off_items;
     }
-    else if (IsDefensiveItem((enum Item)obj->info))
+    else if (IsDefensiveItem(item_index))
     {
         int def_items = CountDefensiveItems(pl);
 
@@ -855,14 +864,6 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         }
         else if (item->item_count > 1 && def_items + item->item_count > options.maxDefensiveItems)
             item->item_count = options.maxDefensiveItems - def_items;
-    }
-
-    item_index = (enum Item)obj->info;
-
-    if (obj->count != item->item_count)
-    {
-        warn("item_index: obj->count != item->item_count, obj->count = %d, item->item_count = %d, item_index = %d",
-             obj->count, item->item_count, item_index);
     }
 
     switch (item_index)

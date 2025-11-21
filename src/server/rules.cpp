@@ -129,9 +129,11 @@ void Tune_item_probs(void)
             for (j = 0; j < NumObjs; j++)
             {
                 object_t *obj = Obj[j];
-                if (obj->type == OBJ_ITEM_BIT)
+                if (obj->type == OBJ_ITEM)
                 {
-                    if (obj->info == i)
+                    itemobject_t *item = ITEM_PTR(obj);
+
+                    if (item->item_type == i)
                     {
                         Delete_shot(j);
                         j--;
@@ -230,9 +232,7 @@ void Set_initial_resources(void)
     LIMIT(world->items[ITEM_ARMOR].limit, 0, MAX_ARMOR);
 
     for (i = 0; i < NUM_ITEMS; i++)
-    {
         LIMIT(world->items[i].initial, 0, world->items[i].limit);
-    }
 
     CLR_BIT(DEF_HAVE,
             HAS_CLOAKING_DEVICE |

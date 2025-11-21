@@ -748,7 +748,6 @@ static void Frame_shuffle(void)
 
 static void Frame_shots(connection_t *conn, player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     int x, y, cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
@@ -918,7 +917,15 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_ITEM:
         {
-            int item_type = shot->info;
+            itemobject_t *item = ITEM_PTR(shot);
+
+            if (shot->info != item->item_type)
+            {
+                warn("Frame_shots: shot->info != item->item_type, shot->info = %ld, item->item_type = %d",
+                     shot->count, item->item_type);
+            }
+
+            int item_type = item->item_type;
 
             if (BIT(shot->obj_status, RANDOM_ITEM))
                 item_type = Choose_random_item();

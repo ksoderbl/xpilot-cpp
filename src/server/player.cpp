@@ -60,10 +60,15 @@ int GetInd(int id)
 {
     int result = NO_IND;
 
+    // A non-player id doesn't have an index in the Players array.
+    if (id == NO_ID)
+        return NO_IND;
+
     if (id < 0 || id >= NELEM(GetIndArray))
     {
-        warn("GetInd: id = %d, ind array size = %d\n",
-             id, NELEM(GetIndArray));
+        // warn("GetInd: id = %d, ind array size = %d\n",
+        //      id, NELEM(GetIndArray));
+        return NO_ID;
     }
     else
     {

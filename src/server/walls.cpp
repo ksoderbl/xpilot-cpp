@@ -2132,7 +2132,19 @@ static void Object_crash(move_state_t *ms)
         obj->life = 0;
         if (BIT(obj->type, OBJ_ITEM_BIT))
         {
-            Cannon_add_item(Cannon_by_index(ms->cannon), obj->info, obj->count);
+            itemobject_t *item = ITEM_PTR(obj);
+
+            if (obj->info != item->item_type)
+            {
+                warn("CrashCannon: obj->info != item->item_type, obj->info = %ld, item->item_type = %d",
+                     obj->count, item->item_type);
+            }
+            if (obj->count != item->item_count)
+            {
+                warn("CrashCannon: obj->count != item->item_count, obj->count = %d, item->item_count = %d",
+                     obj->count, item->item_count);
+            }
+            Cannon_add_item(Cannon_by_index(ms->cannon), item->item_type, item->item_count);
         }
         else
         {
