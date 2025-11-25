@@ -193,9 +193,9 @@ struct xp_mineobject
 
     OBJECT_EXTEND
 
-    int mine_owner;   /* Who's object is this ? */
-    DFLOAT ecm_range; /* Range from last ecm center */
-    int spread_left;  /* how much spread time left */
+    int mine_owner;       /* Who's object is this ? */
+    DFLOAT ecm_range;     /* Range from last ecm center */
+    int mine_spread_left; /* how much spread time left */
 
 #define MINE_IND(ind) ((mineobject_t *)Obj[(ind)])
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
@@ -267,10 +267,8 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    int spread_left; /* how much spread time left */ // TODO: Remove
-
-    float torp_spread_left; /* how much spread time left */
-    float torp_count;       /* Misc snafus */
+    int torp_spread_left; /* how much spread time left: TODO: float */
+    float torp_count;     /* Misc snafus */
 
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))

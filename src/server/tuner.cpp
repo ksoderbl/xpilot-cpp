@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "cannon.h"
 #include "server.h"
 
 #define SERVER
@@ -57,9 +58,7 @@ void tuner_shipmass(void)
     int i;
 
     for (i = 0; i < NumPlayers; i++)
-    {
         Player_by_index(i)->emptymass = options.shipMass;
-    }
 }
 
 void tuner_ballmass(void)
@@ -69,41 +68,29 @@ void tuner_ballmass(void)
     for (i = 0; i < NumObjs; i++)
     {
         if (BIT(Obj[i]->type, OBJ_BALL_BIT))
-        {
             Obj[i]->mass = options.ballMass;
-        }
     }
 }
 
 void tuner_maxrobots(void)
 {
     if (options.maxRobots < 0)
-    {
         options.maxRobots = world->NumBases;
-    }
 
     if (options.maxRobots < options.minRobots)
-    {
         options.minRobots = options.maxRobots;
-    }
 
     while (options.maxRobots < NumRobots)
-    {
         Robot_delete(NULL, true);
-    }
 }
 
 void tuner_minrobots(void)
 {
     if (options.minRobots < 0)
-    {
         options.minRobots = options.maxRobots;
-    }
 
     if (options.maxRobots < options.minRobots)
-    {
         options.maxRobots = options.minRobots;
-    }
 }
 
 void tuner_allowshields(void)
@@ -143,11 +130,8 @@ void tuner_allowshields(void)
 void tuner_playerstartsshielded(void)
 {
     if (options.allowShields)
-    {
-        options.playerStartsShielded = true; /* Doesn't make sense
-                                    to turn off when
-                                    shields are on. */
-    }
+        /* Doesn't make sense to turn off when shields are on. */
+        options.playerStartsShielded = true;
 }
 
 void tuner_worldlives(void)
@@ -167,7 +151,7 @@ void tuner_worldlives(void)
 
 void tuner_cannonsmartness(void)
 {
-    LIMIT(options.cannonSmartness, 0, 3);
+    LIMIT(options.cannonSmartness, 0, CANNON_SMARTNESS_MAX);
 }
 
 void tuner_teamcannons(void)

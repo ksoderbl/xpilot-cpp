@@ -502,20 +502,19 @@ void Tank_handle_detach(player_t *pl)
  */
 
 /* Create debris particles */
-void Make_debris(
-    clpos_t pos,
-    vector_t vel,
-    int id,
-    uint16_t team,
-    int type,
-    double mass,
-    long status,
-    int color,
-    int radius,
-    int min_debris, int max_debris,
-    int min_dir, int max_dir,
-    double min_speed, double max_speed,
-    int min_life, int max_life)
+void Make_debris(clpos_t pos,
+                 vector_t vel,
+                 int owner_id,
+                 int owner_team,
+                 int type,
+                 double mass,
+                 long status,
+                 int color,
+                 int radius,
+                 int min_debris, int max_debris,
+                 int min_dir, int max_dir,
+                 double min_speed, double max_speed,
+                 int min_life, int max_life)
 {
     object_t *debris;
     int i, num_debris, life;
@@ -554,16 +553,13 @@ void Make_debris(
     {
         SET_BIT(mods.warhead, CLUSTER);
         if (!options.shotsGravity)
-        {
             CLR_BIT(status, GRAVITY);
-        }
     }
 
     num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
     if (num_debris > MAX_TOTAL_SHOTS - NumObjs)
-    {
         num_debris = MAX_TOTAL_SHOTS - NumObjs;
-    }
+
     for (i = 0; i < num_debris; i++)
     {
         double speed, dx, dy, diroff;
@@ -573,8 +569,8 @@ void Make_debris(
             break;
 
         debris->color = color;
-        debris->id = id;
-        debris->team = team;
+        debris->id = owner_id;
+        debris->team = owner_team;
         Object_position_init_clpos(debris, pos);
         dir = MOD2(min_dir + (int)(rfrac() * (max_dir - min_dir)), RES);
         dirplus = MOD2(dir + 1, RES);
@@ -603,19 +599,18 @@ void Make_debris(
     }
 }
 
-void Make_wreckage(
-    clpos_t pos,
-    vector_t vel,
-    int id,
-    uint16_t team,
-    double min_mass, double max_mass,
-    double total_mass,
-    long status,
-    int color,
-    int max_wreckage,
-    int min_dir, int max_dir,
-    double min_speed, double max_speed,
-    int min_life, int max_life)
+void Make_wreckage(clpos_t pos,
+                   vector_t vel,
+                   int owner_id,
+                   int owner_team,
+                   double min_mass, double max_mass,
+                   double total_mass,
+                   long status,
+                   int color,
+                   int max_wreckage,
+                   int min_dir, int max_dir,
+                   double min_speed, double max_speed,
+                   int min_life, int max_life)
 {
     wireobject_t *wreckage;
     int i, life, size;
@@ -680,8 +675,8 @@ void Make_wreckage(
         }
 
         wreckage->color = color;
-        wreckage->id = id;
-        wreckage->team = team;
+        wreckage->id = owner_id;
+        wreckage->team = owner_team;
         wreckage->type = OBJ_WRECKAGE_BIT;
 
         /* Position */

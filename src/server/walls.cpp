@@ -33,6 +33,8 @@
 #include "xperror.h"
 #include "server.h"
 
+#include "cannon.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"

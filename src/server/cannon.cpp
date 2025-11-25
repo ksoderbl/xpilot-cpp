@@ -606,7 +606,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
             /* Because cannons don't have missile racks, all mini missiles
                would be fired from the same point and appear to the players
                as 1 missile (except heatseekers, which would appear to split
-               in midair because of navigation errors (see Move_smart_shot)).
+               in midair because of navigation errors (see Update_missile)).
                Therefore, we don't minify cannon missiles.
             mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
             mods.spread = (int)(rfrac() * (MODS_SPREAD_MAX + 1));

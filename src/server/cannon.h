@@ -26,6 +26,7 @@
 #define CANNON_H
 
 #include "map.h"
+#include "serverconst.h"
 
 extern long CANNON_USE_ITEM;
 
@@ -76,7 +77,15 @@ extern long CANNON_USE_ITEM;
 /* sector in which cannonfire is possible */
 #define CANNON_SPREAD (RES / 3)
 
+/* cannon smartness is 0 to this value */
+#define CANNON_SMARTNESS_MAX 3
+
 void Cannon_update(bool tick);
+void Cannon_init(cannon_t *cannon);
+void Cannon_add_item(cannon_t *cannon, int item, int amount);
+void Cannon_throw_items(cannon_t *cannon);
+void Cannon_check_defense(cannon_t *cannon);
+void Cannon_check_fire(cannon_t *cannon);
 
 static inline cannon_t *Cannon_by_id(int id)
 {

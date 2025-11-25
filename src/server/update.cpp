@@ -616,13 +616,13 @@ void Update_objects(void)
             Update_mine(MINE_PTR(obj));
 
         else if (obj->type == OBJ_SMART_SHOT)
-            Move_smart_shot(MISSILE_PTR(obj));
+            Update_missile(MISSILE_PTR(obj));
 
         else if (obj->type == OBJ_HEAT_SHOT)
-            Move_smart_shot(MISSILE_PTR(obj));
+            Update_missile(MISSILE_PTR(obj));
 
         else if (obj->type == OBJ_TORPEDO)
-            Move_smart_shot(MISSILE_PTR(obj));
+            Update_torpedo(TORP_PTR(obj));
 
         else if (obj->type == OBJ_BALL_BIT)
         {

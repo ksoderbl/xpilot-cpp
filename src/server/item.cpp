@@ -1035,7 +1035,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
         {
         case OBJ_SMART_SHOT:
             /*
-             * See Move_smart_shot() for re-lock probabilities after confusion
+             * See Update_missile() for re-lock probabilities after confusion
              * ends.
              */
             smart = SMART_PTR(shot);

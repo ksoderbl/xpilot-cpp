@@ -29,6 +29,8 @@
 #include <cstring>
 #include <cstdint>
 
+#include "cannon.h"
+
 #define SERVER
 #include "bit.h"
 #include "commonmacros.h"

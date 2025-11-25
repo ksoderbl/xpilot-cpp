@@ -222,37 +222,34 @@ void Do_transporter(player_t *pl);
 void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *itemp, long *amount);
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
-void Move_smart_shot(missileobject_t *shot);
 void Update_torpedo(torpobject_t *torp);
 void Update_missile(missileobject_t *missile);
 void Update_mine(mineobject_t *mine);
-void Make_debris(
-    clpos_t pos,
-    vector_t vel,
-    int id,
-    uint16_t team,
-    int type,
-    double mass,
-    long status,
-    int color,
-    int radius,
-    int min_debris, int max_debris,
-    int min_dir, int max_dir,
-    double min_speed, double max_speed,
-    int min_life, int max_life);
-void Make_wreckage(
-    clpos_t pos,
-    vector_t vel,
-    int id,
-    uint16_t team,
-    double min_mass, double max_mass,
-    double total_mass,
-    long status,
-    int color,
-    int max_wreckage,
-    int min_dir, int max_dir,
-    double min_speed, double max_speed,
-    int min_life, int max_life);
+void Make_debris(clpos_t pos,
+                 vector_t vel,
+                 int owner_id,
+                 int owner_team,
+                 int type,
+                 double mass,
+                 long status,
+                 int color,
+                 int radius,
+                 int min_debris, int max_debris,
+                 int min_dir, int max_dir,
+                 double min_speed, double max_speed,
+                 int min_life, int max_life);
+void Make_wreckage(clpos_t pos,
+                   vector_t vel,
+                   int oner_id,
+                   int owner_team,
+                   double min_mass, double max_mass,
+                   double total_mass,
+                   long status,
+                   int color,
+                   int max_wreckage,
+                   int min_dir, int max_dir,
+                   double min_speed, double max_speed,
+                   int min_life, int max_life);
 void Make_item(clpos_t pos,
                vector_t vel,
                int type, int num_per_pack,
@@ -262,15 +259,6 @@ void Throw_items(player_t *pl);
 void Detonate_items(player_t *pl);
 void add_temp_wormholes(int xin, int yin, int xout, int yout);
 void remove_temp_wormhole(int ind);
-
-/*
- * Prototypes for cannon.c
- */
-void Cannon_init(cannon_t *cannon);
-void Cannon_add_item(cannon_t *cannon, int item, int amount);
-void Cannon_throw_items(cannon_t *cannon);
-void Cannon_check_defense(cannon_t *cannon);
-void Cannon_check_fire(cannon_t *cannon);
 
 /*
  * Prototypes for command.c

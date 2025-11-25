@@ -33,6 +33,7 @@
 #include "commonmacros.h"
 #include "strlcpy.h"
 
+#include "cannon.h"
 #include "server.h"
 
 #define SERVER
