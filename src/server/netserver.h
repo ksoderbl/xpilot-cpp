@@ -90,8 +90,8 @@ void Get_display_parameters(connection_t *connp, int *width, int *height,
                             int *debris_colors, int *spark_rand);
 int Get_player_id(connection_t *connp);
 int Get_conn_version(connection_t *connp);
-const char *Get_player_addr(connection_t *connp);
-const char *Get_player_dpy(connection_t *connp);
+const char *Player_get_addr(player_t *pl);
+const char *Player_get_dpy(player_t *pl);
 int Send_shape(connection_t *connp, int shape);
 int Check_max_clients_per_IP(char *host_addr);
 

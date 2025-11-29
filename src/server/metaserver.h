@@ -1,5 +1,4 @@
-/* $Id: metaserver.h,v 5.2 2010/01/18 09:13:12 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -22,13 +21,10 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef METASERVER_H
-#define METASERVER_H
+#pragma once
 
 #define META_PORT 5500
 #define META_HOST "meta.xpilot.org"
 #define META_HOST_TWO "meta2.xpilot.org"
 #define META_IP "104.236.193.200"
 #define META_IP_TWO "194.28.50.74"
-
-#endif

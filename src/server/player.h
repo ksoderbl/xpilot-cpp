@@ -385,7 +385,7 @@ static inline bool Player_is_paused(player_t *pl)
 
 static inline bool Player_is_hoverpaused(player_t *pl)
 {
-    if (BIT(pl->pl_status, HOVERPAUSE))
+    if (BIT(pl->obj_status, HOVERPAUSE))
         return true;
     return false;
 }

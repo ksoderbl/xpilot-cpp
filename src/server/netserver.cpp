@@ -112,6 +112,8 @@
 #include "strdup.h"
 #include "strlcpy.h"
 
+#include "modifiers.h"
+
 #define SERVER
 #include "version.h"
 #include "xpconfig.h"
@@ -2816,27 +2818,12 @@ static int Receive_display(connection_t *connp)
     }
     LIMIT(width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
     LIMIT(height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+
     connp->view_width = width;
     connp->view_height = height;
     connp->debris_colors = debris_colors;
     connp->spark_rand = spark_rand;
     return 1;
-}
-
-static int str2num(char **strp, int min, int max)
-{
-    char *str = *strp;
-    int num = 0;
-
-    while (isdigit(*str))
-    {
-        num *= 10;
-        num += *str++ - '0';
-    }
-    *strp = str;
-    if (num < min || num > max)
-        return min;
-    return num;
 }
 
 static int Receive_modifier_bank(connection_t *connp)
@@ -2949,21 +2936,24 @@ int Get_conn_version(connection_t *connp)
     return connp->version;
 }
 
-const char *Get_player_addr(connection_t *connp)
+const char *Player_get_addr(player_t *pl)
 {
-    return connp->addr;
+    if (pl->conn != NULL)
+        return pl->conn->addr;
+    return NULL;
 }
 
-const char *Get_player_dpy(connection_t *connp)
+const char *Player_get_dpy(player_t *pl)
 {
-    return connp->dpy;
+    if (pl->conn != NULL)
+        return pl->conn->dpy;
+    return NULL;
 }
 
 static int Receive_shape(connection_t *connp)
 {
     int n;
-    char ch;
-    char str[2 * MSG_LEN];
+    char ch, str[2 * MSG_LEN];
 
     if ((n = Packet_scanf(&connp->r, "%c%S", &ch, str)) <= 0)
     {
@@ -2978,29 +2968,26 @@ static int Receive_shape(connection_t *connp)
         return n;
     }
     if (connp->state == CONN_LOGIN && connp->ship == NULL)
-    {
         connp->ship = Parse_shape_str(str);
-    }
     return 1;
 }
 
 static int Receive_motd(connection_t *connp)
 {
     uint8_t ch;
-    long offset;
+    long offset, nbytes;
     int n;
-    long bytes;
 
     if ((n = Packet_scanf(&connp->r,
                           "%c%ld%ld",
-                          &ch, &offset, &bytes)) <= 0)
+                          &ch, &offset, &nbytes)) <= 0)
     {
         if (n == -1)
             Destroy_connection(connp, "read error");
         return n;
     }
     connp->motd_offset = offset;
-    connp->motd_stop = offset + bytes;
+    connp->motd_stop = offset + nbytes;
 
     return 1;
 }
@@ -3018,20 +3005,22 @@ static int Receive_motd(connection_t *connp)
  */
 int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
 {
-    static int motd_size;
+    static size_t motd_size;
     static char *motd_buf;
     static long motd_loops;
     static time_t motd_mtime;
 
     if (size_ptr)
         *size_ptr = 0;
+
     if (offset < 0 || maxlen < 0)
         return -1;
 
     if (!motd_loops || (motd_loops + MAX_MOTD_LOOPS < main_loops && offset == 0))
     {
 
-        int fd, size;
+        int fd;
+        size_t size;
         struct stat st;
 
         motd_loops = main_loops;
@@ -3060,7 +3049,7 @@ int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
                 return 0;
             }
             XFREE(motd_buf);
-            if ((motd_buf = (char *)malloc(size)) == NULL)
+            if ((motd_buf = XMALLOC(char, size)) == NULL)
             {
                 close(fd);
                 return -1;
@@ -3085,12 +3074,14 @@ int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
 
     if (size_ptr)
         *size_ptr = motd_size;
-    if (offset + maxlen > motd_size)
+
+    if (offset + maxlen > (int)motd_size)
         maxlen = motd_size - offset;
+
     if (maxlen <= 0)
         return 0;
 
-    memcpy(buf, motd_buf + offset, maxlen);
+    memcpy(buf, motd_buf + offset, (size_t)maxlen);
     return maxlen;
 }
 
@@ -3101,9 +3092,7 @@ int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
  */
 static int Send_motd(connection_t *connp)
 {
-    int len;
-    int off = connp->motd_offset,
-        size = 0;
+    int len, off = connp->motd_offset, size = 0;
     char buf[MAX_MOTD_CHUNK];
 
     len = MIN(MAX_MOTD_CHUNK, MAX_RELIABLE_DATA_PACKET_SIZE - connp->c.len - 10);
@@ -3152,7 +3141,9 @@ static int Receive_pointer_move(connection_t *connp)
         return n;
     }
     pl = Player_by_id(connp->id);
-    if (BIT(pl->obj_status, HOVERPAUSE))
+
+    /* kps - ??? */
+    if (Player_is_hoverpaused(pl))
         return 1;
 
     if (BIT(pl->used, USES_AUTOPILOT))
@@ -3169,13 +3160,13 @@ static int Receive_pointer_move(connection_t *connp)
     if (pl->turnresistance)
         LIMIT(turnspeed, MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED);
     /* Minimum amount of turning if you want to turn at all?
-      And the only effect of that maximum is making
-      finding the correct settings harder for new mouse players,
-      because the limit is checked BEFORE multiplying by turnres!
-      Kept here to avoid changing the feeling for old players who
-      are already used to this odd behavior. New players should set
-      turnresistance to 0.
-    */
+     * And the only effect of that maximum is making
+     * finding the correct settings harder for new mouse players,
+     * because the limit is checked BEFORE multiplying by turnres!
+     * Kept here to avoid changing the feeling for old players who
+     * are already used to this odd behavior. New players should set
+     * turnresistance to 0.
+     */
     else
         LIMIT(turnspeed, 0, 5 * RES);
 
@@ -3188,8 +3179,7 @@ static int Receive_fps_request(connection_t *connp)
 {
     player_t *pl;
     int n;
-    uint8_t ch;
-    uint8_t fps;
+    uint8_t ch, fps;
 
     if ((n = Packet_scanf(&connp->r, "%c%c", &ch, &fps)) <= 0)
     {

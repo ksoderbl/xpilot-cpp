@@ -813,8 +813,8 @@ void Server_log_admin_message(player_t *pl, const char *str)
                 showtime(),
                 pl->name,
                 pl->username, pl->hostname,
-                Get_player_addr(pl->conn),
-                Get_player_dpy(pl->conn),
+                Player_get_addr(pl),
+                Player_get_dpy(pl),
                 str);
         fclose(fp);
         sprintf(msg, "%s [%s]:[%s]", str, pl->name, "GOD");
