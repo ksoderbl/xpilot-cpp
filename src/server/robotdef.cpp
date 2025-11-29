@@ -1105,8 +1105,8 @@ static bool Check_robot_target(player_t *pl,
         {
             if ((int)(rfrac() * 64) < pl->item[ITEM_MISSILE])
             {
-                Choose_weapon_modifier(pl, OBJ_SMART_SHOT_BIT);
-                Fire_shot(pl, OBJ_SMART_SHOT_BIT, pl->dir);
+                Choose_weapon_modifier(pl, OBJ_SMART_SHOT);
+                Fire_shot(pl, OBJ_SMART_SHOT, pl->dir);
                 my_data->last_fired_missile = my_data->robot_count;
             }
             else
@@ -1125,7 +1125,7 @@ static bool Check_robot_target(player_t *pl,
         {
             if (pl->fuel.sum > pl->fuel.l3)
             {
-                Choose_weapon_modifier(pl, OBJ_MINE_BIT);
+                Choose_weapon_modifier(pl, OBJ_MINE);
                 Place_mine(pl);
             }
             else /*if (pl->fuel.sum < pl->fuel.l2)*/
@@ -1768,13 +1768,11 @@ static void Robot_default_play_check_objects(player_t *pl,
                     int imp;
 
                     if (BIT(shot->obj_status, RANDOM_ITEM))
-                    {
-                        imp = ROBOT_HANDY_ITEM; /* It doesn't know what it is, so get it if it can */
-                    }
+                        /* It doesn't know what it is, so get it if it can */
+                        imp = ROBOT_HANDY_ITEM;
                     else
-                    {
                         imp = Rank_item_value(pl, (Item_t)obj_list[j]->info);
-                    }
+
                     if (imp > ROBOT_IGNORE_ITEM && imp >= *item_imp)
                     {
                         *item_imp = imp;
@@ -1787,17 +1785,11 @@ static void Robot_default_play_check_objects(player_t *pl,
             continue;
         }
 
-        /*
-         * Any shot of team members excluding self are passive.
-         */
+        /* Any shot of team members excluding self are passive. */
         if (Team_immune(shot->id, pl->id))
-        {
             continue;
-        }
 
-        /*
-         * Self shots may be passive too...
-         */
+        /* Self shots may be passive too... */
         if (shot->id == pl->id && options.selfImmunity)
         {
             continue;
@@ -2305,7 +2297,7 @@ static void Robot_default_play(player_t *pl)
             return;
         }
     }
-    if (BIT(world->rules->mode, TEAM_PLAY) && world->NumTreasures > 0 && world->teams[pl->team].NumTreasures > 0 && !navigate_checked && !BIT(my_data->longterm_mode, TARGET_KILL | NEED_FUEL))
+    if (BIT(world->rules->mode, TEAM_PLAY) && Num_treasures() > 0 && world->teams[pl->team].NumTreasures > 0 && !navigate_checked && !BIT(my_data->longterm_mode, TARGET_KILL | NEED_FUEL))
     {
         navigate_checked = true;
         if (Ball_handler(pl))
@@ -2342,9 +2334,7 @@ static void Robot_default_play(player_t *pl)
     }
 
     if (Robot_default_play_check_map(pl) == 1)
-    {
         return;
-    }
 
     if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
     {
@@ -2365,15 +2355,12 @@ static void Robot_default_play(player_t *pl)
         pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
         pl->power = MAX_PLAYER_POWER / 2;
         if (ABS(pl->dir - RES / 4) > RES / 16)
-        {
             pl->turnacc = (pl->dir < RES / 4 || pl->dir >= 3 * RES / 4
                                ? pl->turnspeed
                                : (-pl->turnspeed));
-        }
         else
-        {
             pl->turnacc = 0.0;
-        }
+
         if (y_speed < my_data->robot_normal_speed / 2 && pl->velocity < my_data->robot_attack_speed)
             SET_BIT(pl->obj_status, THRUSTING);
         else if (y_speed > my_data->robot_normal_speed)
@@ -2407,7 +2394,5 @@ static void Robot_default_round_tick(void)
     /* limit distance to allowable enemies. */
     Max_enemy_distance = world->hypotenuse;
     if (world->hypotenuse > Visibility_distance)
-    {
         Max_enemy_distance = min_enemy_distance + (((world->hypotenuse - min_enemy_distance) * (NUM_IDS - NumRobots)) / NUM_IDS);
-    }
 }
