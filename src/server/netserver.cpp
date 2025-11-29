@@ -831,7 +831,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
         return -1;
     }
     connp = &Conn[free_conn_index];
-    connp->conn_index = free_conn_index;
+    connp->ind = free_conn_index;
     if (options.clientPortStart && (!options.clientPortEnd || options.clientPortEnd > 65535))
         options.clientPortEnd = 65535;
     if (options.clientPortEnd && (!options.clientPortStart || options.clientPortStart < 1024))
@@ -1268,7 +1268,7 @@ static int Handle_login(connection_t *connp, char *errmsg, int errsize)
         // }
     }
 
-    conn_bit = (1 << connp->conn_index);
+    conn_bit = (1 << connp->ind);
     for (i = 0; i < Num_cannons(); i++)
     {
         /*
@@ -2426,14 +2426,10 @@ int Send_reliable(connection_t *connp)
         connp->rtt_timeouts++;
     }
     else
-    {
         connp->retransmit_at_loop = main_loops + connp->rtt_retransmit;
-    }
 
     if (rel_off > connp->reliable_unsent)
-    {
         connp->reliable_unsent = rel_off;
-    }
 
     return (max_todo - todo);
 }
@@ -2469,13 +2465,11 @@ static int Receive_ack(connection_t *connp)
          * books "Internetworking with TCP/IP" parts I & II.
          */
         if (connp->rtt_smoothed == 0)
-        {
             /*
              * Initialize the rtt estimator by this first measurement.
              * The estimator is scaled by 3 bits.
              */
             connp->rtt_smoothed = rtt << 3;
-        }
         /*
          * Scale the estimator back by 3 bits before calculating the error.
          */
@@ -2488,9 +2482,7 @@ static int Receive_ack(connection_t *connp)
          * Now we need the absolute value of the error.
          */
         if (delta < 0)
-        {
             delta = -delta;
-        }
         /*
          * The rtt deviation is scaled by 2 bits.
          * Now we add one fourth of the difference between the
@@ -2508,9 +2500,7 @@ static int Receive_ack(connection_t *connp)
          * Now keep it within reasonable bounds.
          */
         if (connp->rtt_retransmit < MIN_RETRANSMIT)
-        {
             connp->rtt_retransmit = MIN_RETRANSMIT;
-        }
     }
     diff = rel - connp->reliable_offset;
     if (diff > connp->c.len)
@@ -2522,20 +2512,16 @@ static int Receive_ack(connection_t *connp)
         return -1;
     }
     else if (diff <= 0)
-    {
         /* Late or duplicate ack of old data.  Discard. */
         return 1;
-    }
+
     Sockbuf_advance(&connp->c, (int)diff);
     connp->reliable_offset += diff;
     if ((n = ((diff + 512 - 1) / 512)) > connp->acks)
-    {
         connp->acks = n;
-    }
     else
-    {
         connp->acks++;
-    }
+
     if (connp->reliable_offset >= connp->reliable_unsent)
     {
         /*
@@ -2543,14 +2529,11 @@ static int Receive_ack(connection_t *connp)
          */
         connp->retransmit_at_loop = 0;
         if (connp->state == CONN_DRAIN)
-        {
             Conn_set_state(connp, connp->drain_state, connp->drain_state);
-        }
     }
     if (connp->state == CONN_READY && (connp->c.len <= 0 || (connp->c.buf[0] != PKT_REPLY && connp->c.buf[0] != PKT_PLAY && connp->c.buf[0] != PKT_SUCCESS && connp->c.buf[0] != PKT_FAILURE)))
-    {
         Conn_set_state(connp, connp->drain_state, connp->drain_state);
-    }
+
     connp->rtt_timeouts = 0;
 
     return 1;
@@ -2578,6 +2561,7 @@ static int Receive_ack_cannon(connection_t *connp)
     uint8_t ch;
     int n;
     uint16_t num;
+    cannon_t *cannon;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2586,13 +2570,14 @@ static int Receive_ack_cannon(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    if (num >= world->NumCannons)
+    if (num >= Num_cannons())
     {
         Destroy_connection(connp, "bad cannon ack");
         return -1;
     }
-    if (loops_ack > world->cannons[num].last_change)
-        SET_BIT(world->cannons[num].conn_mask, 1 << connp->conn_index);
+    cannon = Cannon_by_index(num);
+    if (loops_ack > cannon->last_change)
+        SET_BIT(cannon->conn_mask, 1 << connp->ind);
 
     return 1;
 }
@@ -2603,6 +2588,7 @@ static int Receive_ack_fuel(connection_t *connp)
     uint8_t ch;
     int n;
     uint16_t num;
+    fuel_t *fs;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
@@ -2611,13 +2597,14 @@ static int Receive_ack_fuel(connection_t *connp)
             Destroy_connection(connp, "read error");
         return n;
     }
-    if (num >= world->NumFuels)
+    if (num >= Num_fuels())
     {
         Destroy_connection(connp, "bad fuel ack");
         return -1;
     }
-    if (loops_ack > world->fuels[num].last_change)
-        SET_BIT(world->fuels[num].conn_mask, 1 << connp->conn_index);
+    fs = Fuel_by_index(num);
+    if (loops_ack > fs->last_change)
+        SET_BIT(fs->conn_mask, 1 << connp->ind);
     return 1;
 }
 
@@ -2627,17 +2614,16 @@ static int Receive_ack_target(connection_t *connp)
     uint8_t ch;
     int n;
     uint16_t num;
+    target_t *targ;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%hu",
                           &ch, &loops_ack, &num)) <= 0)
     {
         if (n == -1)
-        {
             Destroy_connection(connp, "read error");
-        }
         return n;
     }
-    if (num >= world->NumTargets)
+    if (num >= Num_targets())
     {
         Destroy_connection(connp, "bad target ack");
         return -1;
@@ -2654,10 +2640,11 @@ static int Receive_ack_target(connection_t *connp)
      * destroyed targets could have been displayed with
      * a diagonal cross through them.
      */
-    if (loops_ack > world->targets[num].last_change)
+    targ = Target_by_index(num);
+    if (loops_ack > targ->last_change)
     {
-        SET_BIT(world->targets[num].conn_mask, 1 << connp->conn_index);
-        CLR_BIT(world->targets[num].update_mask, 1 << connp->conn_index);
+        SET_BIT(targ->conn_mask, 1 << connp->ind);
+        CLR_BIT(targ->update_mask, 1 << connp->ind);
     }
     return 1;
 }

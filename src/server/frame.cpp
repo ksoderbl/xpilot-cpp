@@ -548,7 +548,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
 {
     int i, k;
     // int bx, by;
-    int conn_bit = (1 << conn->conn_index);
+    int conn_bit = (1 << conn->ind);
     // block_visibility_t bv;
     const int fuel_packet_size = 5;
     const int cannon_packet_size = 5;

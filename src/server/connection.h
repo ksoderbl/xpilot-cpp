@@ -75,9 +75,7 @@
  */
 typedef struct
 {
-    // TODO: should ind == conn_index?
-    int ind;                     /* index of connection */
-    int conn_index;              /* index of connection in Conn[] */
+    int ind;                     /* index of connection, was conn_index */
     int state;                   /* state of connection */
     int drain_state;             /* state after draining done */
     unsigned magic;              /* magic cookie */
