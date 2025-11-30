@@ -83,7 +83,7 @@ void Thrust(player_t *pl)
                 RED,
                 8,
                 tot_sparks - alt_sparks, tot_sparks - alt_sparks,
-                0, // TODO
+                tot_sparks - alt_sparks,
                 min_dir, max_dir,
                 1.0, max_speed,
                 3.0, max_life);
@@ -98,7 +98,7 @@ void Thrust(player_t *pl)
                 BLUE,
                 8,
                 alt_sparks, alt_sparks,
-                0, // TODO
+                alt_sparks,
                 min_dir, max_dir,
                 1.0, max_speed,
                 3.0, max_life);
@@ -559,11 +559,29 @@ void Make_debris(clpos_t pos,
 
     num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
 
-    xpinfo("Make_debris: ============");
-    xpinfo("Make_debris: min =%d", min_debris);
-    xpinfo("Make_debris: num =%d", num_debris);
-    xpinfo("Make_debris: max =%d", max_debris);
-    xpinfo("Make_debris: todo=%d", num_debris_todo);
+    // if (num_debris_todo != num_debris)
+    // {
+    //     xpinfo("Make_debris: === NOT EQUAL! ====");
+    //     xpinfo("Make_debris: min  = %d", min_debris);
+    //     xpinfo("Make_debris: todo = %d", num_debris_todo);
+    //     xpinfo("Make_debris: num  = %d", num_debris);
+    //     xpinfo("Make_debris: max  = %d", max_debris);
+    // }
+
+    if (num_debris < min_debris || num_debris > max_debris)
+    {
+        xpinfo("Make_debris: === BUG ====");
+        xpinfo("Make_debris: min = %d", min_debris);
+        xpinfo("Make_debris: num = %d", num_debris);
+        xpinfo("Make_debris: max = %d", max_debris);
+    }
+    if (num_debris_todo < min_debris || num_debris_todo > max_debris)
+    {
+        xpinfo("Make_debris: === TODO ===");
+        xpinfo("Make_debris: min = %d", min_debris);
+        xpinfo("Make_debris: todo= %d", num_debris_todo);
+        xpinfo("Make_debris: max = %d", max_debris);
+    }
 
     if (num_debris > MAX_TOTAL_SHOTS - NumObjs)
         num_debris = MAX_TOTAL_SHOTS - NumObjs;
@@ -746,17 +764,21 @@ void Explode_fighter(player_t *pl)
     min_debris >>= 1;
     max_debris >>= 1;
 
+    int debris_range = (max_debris - min_debris);
+
+    warn("Explode_fighter: debris_range=%d, mass=%f", debris_range, pl->mass);
+
     Make_debris(pl->pos,
                 pl->vel,
                 pl->id,
                 pl->team,
-                OBJ_DEBRIS_BIT,
+                OBJ_DEBRIS,
                 3.5,
                 GRAVITY,
                 RED,
                 8,
                 min_debris, max_debris,
-                0, // TODO
+                (int)(min_debris + debris_range * rfrac()),
                 0, RES - 1,
                 20.0, 20 + (((int)(pl->mass)) >> 1),
                 5, (int)(5 + (pl->mass * 1.5)));

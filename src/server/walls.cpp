@@ -2828,7 +2828,10 @@ void Move_player(player_t *pl)
                 if (cost)
                 {
                     int intensity = (int)(cost * wallBounceExplosionMult);
-                    int num_debris = 0; // TODO
+                    int min_debris = intensity >> 1;
+                    int max_debris = intensity;
+                    int debris_range = max_debris - min_debris;
+                    int num_debris = min_debris + (int)(rfrac() * debris_range);
                     Make_debris(pl->pos,
                                 pl->vel,
                                 pl->id,
@@ -2838,7 +2841,7 @@ void Move_player(player_t *pl)
                                 GRAVITY | OWNERIMMUNE | FROMBOUNCE,
                                 RED,
                                 1,
-                                intensity >> 1, intensity,
+                                min_debris, max_debris,
                                 num_debris,
                                 wall_dir - (RES / 4), wall_dir + (RES / 4),
                                 20.0, 20 + (intensity >> 2),
