@@ -199,8 +199,8 @@ void Place_general_mine(int id, int team, int status,
 
                 if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
-                    int dx = CLICK_TO_PIXEL(pos.cx - world->bases[pl_i->home_base].pos.cx);
-                    int dy = CLICK_TO_PIXEL(pos.cy - world->bases[pl_i->home_base].pos.cy);
+                    int dx = CLICK_TO_PIXEL(pos.cx - world->bases[pl_i->home_base_ind].pos.cx);
+                    int dy = CLICK_TO_PIXEL(pos.cy - world->bases[pl_i->home_base_ind].pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");

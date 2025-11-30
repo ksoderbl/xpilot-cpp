@@ -85,21 +85,21 @@ int GetInd(int id)
 
 void Pick_startpos(player_t *pl)
 {
-    int ind = GetInd(pl->id), i, num_free, pick = 0, seen = 0;
+    int ind = GetInd(pl->id), i, num_free, pick = 0, seen = 0, order, min_order = INT_MAX;
     static int prev_num_bases = 0;
     static char *free_bases = NULL;
 
     if (Player_is_tank(pl))
     {
-        pl->home_base = 0;
+        pl->home_base_ind = 0;
         return;
     }
 
-    if (prev_num_bases != world->NumBases)
+    if (prev_num_bases != Num_bases())
     {
-        prev_num_bases = world->NumBases;
+        prev_num_bases = Num_bases();
         XFREE(free_bases);
-        free_bases = XMALLOC(char, world->NumBases);
+        free_bases = XMALLOC(char, Num_bases());
         if (free_bases == NULL)
         {
             error("Can't allocate memory for free_bases");
@@ -125,9 +125,9 @@ void Pick_startpos(player_t *pl)
     {
         player_t *pl_i = Player_by_index(i);
 
-        if (pl_i->id != pl->id && !Player_is_tank(pl_i) && free_bases[pl_i->home_base])
+        if (pl_i->id != pl->id && !Player_is_tank(pl_i) && free_bases[pl_i->home_base_ind])
         {
-            free_bases[pl_i->home_base] = 0; /* occupado */
+            free_bases[pl_i->home_base_ind] = 0; /* occupado */
             num_free--;
         }
     }
@@ -164,7 +164,7 @@ void Pick_startpos(player_t *pl)
     }
     else
     {
-        pl->home_base = BIT(world->rules->mode, TIMING) ? world->baseorder[i].base_idx : i;
+        pl->home_base_ind = BIT(world->rules->mode, TIMING) ? world->baseorder[i].base_idx : i;
         if (ind < NumPlayers)
         {
             for (i = 0; i < NumPlayers; i++)
@@ -176,7 +176,7 @@ void Pick_startpos(player_t *pl)
                 {
                     Send_base(pl_i->conn,
                               pl->id,
-                              pl->home_base);
+                              pl->home_base_ind);
                 }
             }
             if (BIT(pl->obj_status, PLAYING) == 0)
@@ -226,9 +226,9 @@ void Go_home(player_t *pl)
     }
     else
     {
-        x = world->bases[pl->home_base].blk_pos.bx;
-        y = world->bases[pl->home_base].blk_pos.by;
-        dir = world->bases[pl->home_base].dir;
+        x = world->bases[pl->home_base_ind].blk_pos.bx;
+        y = world->bases[pl->home_base_ind].blk_pos.by;
+        dir = world->bases[pl->home_base_ind].dir;
         vx = vy = velo = 0;
     }
 

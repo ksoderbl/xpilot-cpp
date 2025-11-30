@@ -221,7 +221,7 @@ typedef struct
     int last_check_dir;                /* player dir at last checkpoint */
     long last_wall_touch;              /* last time player touched a wall */
 
-    int home_base; /* Num of home base */
+    int home_base_ind; /* Num of home base */
     base_t *home_base_ptr;
     struct
     {

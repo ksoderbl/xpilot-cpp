@@ -74,6 +74,15 @@ static void Transport_to_home(player_t *pl)
     double bx, by, dx, dy, t, m;
     const int T = RECOVERY_DELAY;
 
+    /*
+    if (pl->home_base_ptr == NULL)
+    {
+        pl->vel.x = 0;
+        pl->vel.y = 0;
+        return;
+    }
+        */
+
     if (BIT(world->rules->mode, TIMING) && pl->round)
     {
         int check;
@@ -87,16 +96,14 @@ static void Transport_to_home(player_t *pl)
     }
     else
     {
-        bx = (world->bases[pl->home_base].blk_pos.bx + 0.5) * BLOCK_SZ;
-        by = (world->bases[pl->home_base].blk_pos.by + 0.5) * BLOCK_SZ;
+        bx = (world->bases[pl->home_base_ind].blk_pos.bx + 0.5) * BLOCK_SZ;
+        by = (world->bases[pl->home_base_ind].blk_pos.by + 0.5) * BLOCK_SZ;
     }
     dx = WRAP_DX(bx - pl->pix_pos.x);
     dy = WRAP_DY(by - pl->pix_pos.y);
     t = pl->count + 0.5f;
     if (2 * t <= T)
-    {
         m = 2 / t;
-    }
     else
     {
         t = T - t;
@@ -168,7 +175,7 @@ void Cloak(player_t *pl, bool on)
     }
     else
     {
-        if (BIT(pl->used, USES_CLOAKING_DEVICE))
+        if (Player_is_cloaked(pl))
         {
             sound_play_player(pl, CLOAK_SOUND);
             pl->updateVisibility = true;
@@ -920,7 +927,7 @@ void Update_objects(void)
         if (Player_is_phasing(pl))
             Add_fuel(&(pl->fuel), (long)ED_PHASING_DEVICE);
 
-        if (BIT(pl->used, USES_CLOAKING_DEVICE))
+        if (Player_is_cloaked(pl))
             Add_fuel(&(pl->fuel), (long)ED_CLOAKING_DEVICE);
 
 #define UPDATE_RATE 100

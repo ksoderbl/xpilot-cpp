@@ -99,16 +99,16 @@ void Race_game_over(void)
         for (i = 0; i < num_ordered_players; i++)
         {
             pl = PlayersArray[order[i]];
-            if (pl->home_base != world->baseorder[i].base_idx)
+            if (pl->home_base_ind != world->baseorder[i].base_idx)
             {
-                pl->home_base = world->baseorder[i].base_idx;
+                pl->home_base_ind = world->baseorder[i].base_idx;
                 for (j = 0; j < NumPlayers; j++)
                 {
                     if (PlayersArray[j]->conn != NULL)
                     {
                         Send_base(PlayersArray[j]->conn,
                                   pl->id,
-                                  pl->home_base);
+                                  pl->home_base_ind);
                     }
                 }
                 if (Player_is_paused(pl))

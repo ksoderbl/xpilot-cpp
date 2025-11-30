@@ -764,7 +764,7 @@ static void Robot_create(void)
         if (pl_i->conn != NULL)
         {
             Send_player(pl_i->conn, robot->id);
-            Send_base(pl_i->conn, robot->id, robot->home_base);
+            Send_base(pl_i->conn, robot->id, robot->home_base_ind);
         }
     }
 
@@ -772,7 +772,7 @@ static void Robot_create(void)
 
     if (options.logRobots)
         xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
-                 showtime(), robot->name, NumPlayers, robot->username, robot->home_base);
+                 showtime(), robot->name, NumPlayers, robot->username, robot->home_base_ind);
 
     if (NumPlayers == 1)
     {

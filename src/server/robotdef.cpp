@@ -2067,8 +2067,8 @@ static void Robot_default_play(player_t *pl)
     /* KK: unfortunately, this introduced a new bug. robots with large
         shipshapes don't take off from their bases. here's an attempt to
         fix it */
-    if (QUICK_LENGTH(pl->pix_pos.x - (world->bases[pl->home_base].blk_pos.bx * BLOCK_SZ),
-                     pl->pix_pos.y - (world->bases[pl->home_base].blk_pos.by * BLOCK_SZ)) < BLOCK_SZ)
+    if (QUICK_LENGTH(pl->pix_pos.x - (world->bases[pl->home_base_ind].blk_pos.bx * BLOCK_SZ),
+                     pl->pix_pos.y - (world->bases[pl->home_base_ind].blk_pos.by * BLOCK_SZ)) < BLOCK_SZ)
     {
         SET_BIT(pl->obj_status, THRUSTING);
     }

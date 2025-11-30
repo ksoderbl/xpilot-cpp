@@ -192,6 +192,59 @@ int Player_lock_closest(player_t *pl, bool next)
     return 1;
 }
 
+static void Player_change_home(player_t *pl)
+{
+    int i;
+
+    int xi = OBJ_X_IN_BLOCKS(pl);
+    int yi = OBJ_Y_IN_BLOCKS(pl);
+
+    if (world->block[xi][yi] == BASE)
+    {
+        msg[0] = '\0';
+        for (i = 0; i < Num_bases(); i++)
+        {
+            if (world->bases[i].blk_pos.bx == xi && world->bases[i].blk_pos.by == yi)
+            {
+
+                if (i == pl->home_base_ind)
+                {
+                    break;
+                }
+                if (world->bases[i].team != TEAM_NOT_SET && world->bases[i].team != pl->team)
+                    break;
+                pl->home_base_ind = i;
+                sprintf(msg, "%s has changed home base.",
+                        pl->name);
+                break;
+            }
+        }
+        for (i = 0; i < NumPlayers; i++)
+        {
+            player_t *pl_i = Player_by_index(i);
+
+            if (pl_i->id != pl->id && !Player_is_tank(pl_i) && pl->home_base_ind == pl_i->home_base_ind)
+            {
+                Pick_startpos(pl_i);
+                sprintf(msg, "%s has taken over %s's home base.",
+                        pl->name, pl_i->name);
+            }
+        }
+        if (msg[0])
+        {
+            sound_play_all(CHANGE_HOME_SOUND);
+            Set_message(msg);
+        }
+        for (i = 0; i < NumPlayers; i++)
+        {
+            if (Player_by_index(i)->conn != NULL)
+                Send_base(Player_by_index(i)->conn,
+                          pl->id,
+                          pl->home_base_ind);
+        }
+    }
+}
+
 static void Player_refuel(player_t *pl)
 {
     int i;
@@ -511,52 +564,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_CHANGE_HOME:
-                xi = OBJ_X_IN_BLOCKS(pl);
-                yi = OBJ_Y_IN_BLOCKS(pl);
-                if (world->block[xi][yi] == BASE)
-                {
-                    msg[0] = '\0';
-                    for (i = 0; i < Num_bases(); i++)
-                    {
-                        if (world->bases[i].blk_pos.bx == xi && world->bases[i].blk_pos.by == yi)
-                        {
-
-                            if (i == pl->home_base)
-                            {
-                                break;
-                            }
-                            if (world->bases[i].team != TEAM_NOT_SET && world->bases[i].team != pl->team)
-                                break;
-                            pl->home_base = i;
-                            sprintf(msg, "%s has changed home base.",
-                                    pl->name);
-                            break;
-                        }
-                    }
-                    for (i = 0; i < NumPlayers; i++)
-                    {
-                        player_t *pl_i = Player_by_index(i);
-
-                        if (pl_i->id != pl->id && !Player_is_tank(pl_i) && pl->home_base == pl_i->home_base)
-                        {
-                            Pick_startpos(pl_i);
-                            sprintf(msg, "%s has taken over %s's home base.",
-                                    pl->name, pl_i->name);
-                        }
-                    }
-                    if (msg[0])
-                    {
-                        sound_play_all(CHANGE_HOME_SOUND);
-                        Set_message(msg);
-                    }
-                    for (i = 0; i < NumPlayers; i++)
-                    {
-                        if (Player_by_index(i)->conn != NULL)
-                            Send_base(Player_by_index(i)->conn,
-                                      pl->id,
-                                      pl->home_base);
-                    }
-                }
+                Player_change_home(pl);
                 break;
 
             case KEY_SHIELD:
@@ -791,8 +799,8 @@ int Handle_keyboard(player_t *pl)
                 {
                     xi = OBJ_X_IN_BLOCKS(pl);
                     yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = world->bases[pl->home_base].blk_pos.bx;
-                    k = world->bases[pl->home_base].blk_pos.by;
+                    j = world->bases[pl->home_base_ind].blk_pos.bx;
+                    k = world->bases[pl->home_base_ind].blk_pos.by;
                     if (j == xi && k == yi)
                     {
                         minv = 3.0f;
