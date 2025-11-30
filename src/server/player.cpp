@@ -258,7 +258,7 @@ void Go_home(player_t *pl)
         if (BIT(pl->have, HAS_DEFLECTOR))
             Deflector(pl, true);
     }
-    CLR_BIT(pl->obj_status, THRUSTING);
+    Thrust(pl, false);
     pl->updateVisibility = true;
     for (i = 0; i < NumPlayers; i++)
     {

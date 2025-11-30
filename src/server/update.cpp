@@ -162,7 +162,7 @@ void Cloak(player_t *pl, bool on)
         {
             if (!options.cloakedShield)
             {
-                if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+                if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
                     Emergency_shield(pl, false);
                 if (BIT(pl->used, USES_DEFLECTOR))
                     Deflector(pl, false);
@@ -304,7 +304,7 @@ void Emergency_shield(player_t *pl, bool on)
             CLR_BIT(pl->have, HAS_SHIELD);
             CLR_BIT(pl->used, HAS_SHIELD);
         }
-        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         {
             CLR_BIT(pl->used, USES_EMERGENCY_SHIELD);
             sound_play_sensors(pl->pos, EMERGENCY_SHIELD_OFF_SOUND);
@@ -330,7 +330,7 @@ void Thrust(player_t *pl, bool on)
  */
 void Autopilot(player_t *pl, bool on)
 {
-    CLR_BIT(pl->obj_status, THRUSTING);
+    Thrust(pl, false);
     if (on)
     {
         pl->auto_power_s = pl->power;
@@ -526,7 +526,7 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->turnspeed != turnspeed && vad > RES / 32)
     {
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
         return;
     }
 
@@ -536,11 +536,11 @@ static void do_Autopilot(player_t *pl)
      */
     if (pl->power > power)
     {
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
     }
     else
     {
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
     }
 }
 
@@ -766,7 +766,7 @@ void Update_objects(void)
         {
             pl->stunned--;
             CLR_BIT(pl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT);
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
         }
 
         if (pl->shield_time > 0)
@@ -807,7 +807,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         {
             if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
@@ -983,7 +983,7 @@ void Update_objects(void)
         if (pl->fuel.sum <= 0)
         {
             CLR_BIT(pl->used, HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
         }
         if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
             CLR_BIT(pl->used, USES_REFUEL);

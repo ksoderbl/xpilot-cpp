@@ -383,14 +383,9 @@ static void Frame_radar_buffer_free(void)
 
 static int Frame_status(connection_t *conn, player_t *pl)
 {
-    static char mods[MAX_CHARS];
-    int n,
-        lock_ind,
-        lock_id = NO_ID,
-        lock_dist = 0,
-        lock_dir = 0,
-        i,
-        showautopilot;
+    static char modsstr[MAX_CHARS];
+    int n, lock_ind, lock_id = NO_ID, lock_dist = 0, lock_dir = 0;
+    int showautopilot;
 
     /*
      * Don't make lock visible during this frame if;
@@ -437,51 +432,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
     /*
      * Don't forget to modify Receive_modifier_bank() in netserver.c
      */
-    i = 0;
-    if (BIT(pl->mods.nuclear, FULLNUCLEAR))
-        mods[i++] = 'F';
-    if (BIT(pl->mods.nuclear, NUCLEAR))
-        mods[i++] = 'N';
-    if (BIT(pl->mods.warhead, CLUSTER))
-        mods[i++] = 'C';
-    if (BIT(pl->mods.warhead, IMPLOSION))
-        mods[i++] = 'I';
-    if (pl->mods.velocity)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'V';
-        i = num2str(pl->mods.velocity, mods, i);
-    }
-    if (pl->mods.mini)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'X';
-        i = num2str(pl->mods.mini + 1, mods, i);
-    }
-    if (pl->mods.spread)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'Z';
-        i = num2str(pl->mods.spread, mods, i);
-    }
-    if (pl->mods.power)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'B';
-        i = num2str(pl->mods.power, mods, i);
-    }
-    if (pl->mods.laser)
-    {
-        if (i)
-            mods[i++] = ' ';
-        mods[i++] = 'L';
-        mods[i++] = (BIT(pl->mods.laser, STUN) ? 'S' : 'B');
-    }
-    mods[i] = '\0';
+    Mods_to_string(pl->mods, modsstr, sizeof(modsstr));
     n = Send_self(conn,
                   pl,
                   lock_id,
@@ -489,17 +440,15 @@ static int Frame_status(connection_t *conn, player_t *pl)
                   lock_dir,
                   showautopilot,
                   Player_by_id(Get_player_id(conn))->obj_status,
-                  mods);
+                  modsstr);
     if (n <= 0)
-    {
         return 0;
-    }
 
     if (Player_uses_emergency_thrust(pl))
         Send_thrusttime(conn,
                         pl->emergency_thrust_left,
                         pl->emergency_thrust_max);
-    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+    if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);

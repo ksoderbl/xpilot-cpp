@@ -666,7 +666,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     if (delta_dir < RES / 4 || delta_dir > 3 * RES / 4)
     {
         pl->turnacc = (my_data->robot_mode == RM_EVADE_LEFT ? pl->turnspeed : (-pl->turnspeed));
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
     }
     else if (delta_dir < 3 * RES / 8 || delta_dir > 5 * RES / 8)
     {
@@ -675,7 +675,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     else
     {
         pl->turnacc = 0;
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
         my_data->robot_mode = (delta_dir < RES / 2 ? RM_EVADE_LEFT : RM_EVADE_RIGHT);
     }
 
@@ -940,43 +940,43 @@ static bool Check_robot_target(player_t *pl,
     pl->turnacc = (delta_dir < RES / 2 ? pl->turnspeed : (-pl->turnspeed));
 
     if (slowing || BIT(pl->used, HAS_SHIELD))
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
     else if (item_dist < 0)
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
     else if (item_dist < 3 * BLOCK_SZ && new_mode != RM_HARVEST)
     {
         if (pl->velocity < my_data->robot_normal_speed / 2)
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
         if (pl->velocity > my_data->robot_normal_speed)
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
     }
     else if ((new_mode != RM_ATTACK && new_mode != RM_NAVIGATE) || item_dist < 8 * BLOCK_SZ || (new_mode == RM_NAVIGATE && delta_dir > 3 * RES / 8 && delta_dir < 5 * RES / 8))
     {
         if (pl->velocity < 2 * my_data->robot_normal_speed)
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
         if (pl->velocity > 3 * my_data->robot_normal_speed)
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
     }
     else if (new_mode == RM_ATTACK || (new_mode == RM_NAVIGATE && (dist < 12 * BLOCK_SZ || (delta_dir > RES / 8 && delta_dir < 7 * RES / 8))))
     {
         if (pl->velocity < my_data->robot_attack_speed / 2)
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
         if (pl->velocity > my_data->robot_attack_speed)
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
     }
     else if (clear_path && (delta_dir < RES / 8 || delta_dir > 7 * RES / 8) && item_dist > 18 * BLOCK_SZ)
     {
         if (pl->velocity < my_data->robot_max_speed - my_data->robot_normal_speed)
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
         if (pl->velocity > my_data->robot_max_speed)
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
     }
     else
     {
         if (pl->velocity < my_data->robot_attack_speed)
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
         if (pl->velocity > my_data->robot_max_speed - my_data->robot_normal_speed)
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
     }
 
     if (new_mode == RM_ATTACK || (BIT(world->rules->mode, TIMING) && new_mode == RM_NAVIGATE))
@@ -1097,7 +1097,7 @@ static bool Check_robot_target(player_t *pl,
             Choose_weapon_modifier(pl, type);
             Fire_shot(pl, type, pl->dir);
             if (type == OBJ_HEAT_SHOT)
-                CLR_BIT(pl->obj_status, THRUSTING);
+                Thrust(pl, false);
             my_data->last_fired_missile = my_data->robot_count;
         }
         else if ((my_data->robot_count % 2) == 0 && item_dist < Visibility_distance
@@ -1150,7 +1150,6 @@ static bool Check_robot_target(player_t *pl,
 
 static bool Check_robot_hunt(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     player_t *ship;
     int ship_dir, travel_dir, delta_dir, adj_dir, toofast, tooslow;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
@@ -1185,7 +1184,7 @@ static bool Check_robot_hunt(player_t *pl)
     {
 
         pl->turnacc = 0;
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
         my_data->robot_mode = RM_ROBOT_IDLE;
         return true;
     }
@@ -1207,9 +1206,9 @@ static bool Check_robot_hunt(player_t *pl)
     }
 
     if (delta_dir < RES / 8 || delta_dir > 7 * RES / 8)
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
     else
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
 
     my_data->robot_mode = RM_ROBOT_IDLE;
     return true;
@@ -1827,7 +1826,7 @@ static void Robot_default_play_check_objects(player_t *pl,
             SET_BIT(pl->used, HAS_SHIELD);
             if (!options.cloakedShield)
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
 
             if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < pl->fuel.l3 || !BIT(pl->have, HAS_SHIELD)))
             {
@@ -1852,7 +1851,7 @@ static void Robot_default_play_check_objects(player_t *pl,
         }
         if (BIT(shot->type, OBJ_HEAT_SHOT_BIT))
         {
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
             if (pl->fuel.sum < pl->fuel.l3 && pl->fuel.sum > pl->fuel.l1 && pl->fuel.num_tanks > 0)
             {
                 Tank_handle_detach(pl);
@@ -2070,7 +2069,7 @@ static void Robot_default_play(player_t *pl)
     if (QUICK_LENGTH(pl->pix_pos.x - (world->bases[pl->home_base_ind].blk_pos.bx * BLOCK_SZ),
                      pl->pix_pos.y - (world->bases[pl->home_base_ind].blk_pos.by * BLOCK_SZ)) < BLOCK_SZ)
     {
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
     }
 
     ship_i = -1;
@@ -2362,21 +2361,21 @@ static void Robot_default_play(player_t *pl)
             pl->turnacc = 0.0;
 
         if (y_speed < my_data->robot_normal_speed / 2 && pl->velocity < my_data->robot_attack_speed)
-            SET_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, true);
         else if (y_speed > my_data->robot_normal_speed)
-            CLR_BIT(pl->obj_status, THRUSTING);
+            Thrust(pl, false);
         return;
     }
     my_data->robot_mode = RM_ROBOT_IDLE;
     pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
     pl->turnacc = 0;
     pl->power = MAX_PLAYER_POWER / 2;
-    CLR_BIT(pl->obj_status, THRUSTING);
+    Thrust(pl, false);
     speed = LENGTH(x_speed, y_speed);
     if (speed < my_data->robot_normal_speed / 2)
-        SET_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, true);
     else if (speed > my_data->robot_normal_speed)
-        CLR_BIT(pl->obj_status, THRUSTING);
+        Thrust(pl, false);
 }
 
 /*

@@ -34,6 +34,7 @@
 #include "shipshape.h"
 
 #include "map.h"
+#include "modifiers.h"
 #include "serverconst.h"
 
 /*
@@ -79,40 +80,6 @@
 #define OBJ_WRECKAGE_BIT (1U << 11)
 #define OBJ_ASTEROID_BIT (1U << 12)
 #define OBJ_CANNON_SHOT_BIT (1U << 13)
-
-/*
- * Weapons modifiers.
- */
-typedef struct
-{
-    unsigned int nuclear : 2;  /* N  modifier */
-    unsigned int warhead : 2;  /* CI modifier */
-    unsigned int velocity : 2; /* V# modifier */
-    unsigned int mini : 2;     /* X# modifier */
-    unsigned int spread : 2;   /* Z# modifier */
-    unsigned int power : 2;    /* B# modifier */
-    unsigned int laser : 2;    /* LS LB modifier */
-    unsigned int spare : 2;    /* padding for alignment */
-} modifiers_t;
-
-#define CLEAR_MODS(mods) memset(&(mods), 0, sizeof(modifiers_t))
-
-#define MODS_NUCLEAR_MAX 2 /* - N FN */
-#define NUCLEAR (1U << 0)
-#define FULLNUCLEAR (1U << 1)
-
-#define MODS_WARHEAD_MAX 3 /* - C I CI */
-#define CLUSTER (1U << 0)
-#define IMPLOSION (1U << 1)
-
-#define MODS_VELOCITY_MAX 3 /* - V1 V2 V3 */
-#define MODS_MINI_MAX 3     /* - X2 X3 X4 */
-#define MODS_SPREAD_MAX 3   /* - Z1 Z2 Z3 */
-#define MODS_POWER_MAX 3    /* - B1 B2 B3 */
-
-#define MODS_LASER_MAX 2 /* - LS LB */
-#define STUN (1U << 0)
-#define BLIND (1U << 1)
 
 #define LOCK_NONE 0x00    /* No lock */
 #define LOCK_PLAYER 0x01  /* Locked on player */

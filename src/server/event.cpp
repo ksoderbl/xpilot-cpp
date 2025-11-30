@@ -857,7 +857,7 @@ int Handle_keyboard(player_t *pl)
                         if (Player_uses_emergency_thrust(pl))
                             Emergency_thrust(pl, false);
 
-                        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+                        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
                             Emergency_shield(pl, false);
 
                         if (!BIT(pl->used, USES_AUTOPILOT))
@@ -930,7 +930,7 @@ int Handle_keyboard(player_t *pl)
             case KEY_THRUST:
                 if (BIT(pl->used, USES_AUTOPILOT))
                     Autopilot(pl, false);
-                SET_BIT(pl->obj_status, THRUSTING);
+                Thrust(pl, true);
                 break;
 
             case KEY_CLOAK:
@@ -1046,7 +1046,7 @@ int Handle_keyboard(player_t *pl)
             case KEY_THRUST:
                 if (BIT(pl->used, USES_AUTOPILOT))
                     Autopilot(pl, false);
-                CLR_BIT(pl->obj_status, THRUSTING);
+                Thrust(pl, false);
                 break;
 
             case KEY_REPROGRAM:

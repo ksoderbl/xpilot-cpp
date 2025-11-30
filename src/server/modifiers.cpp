@@ -21,7 +21,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "modifiers.h"
+
 #include <cctype>
+
+#include "bit.h"
 
 /*
  * Fast conversion of 'num' into 'str' starting at position 'i', returns
@@ -65,4 +69,56 @@ int str2num(char **strp, int min, int max)
     if (num < min || num > max)
         return min;
     return num;
+}
+
+/*
+ * modstr must be able to hold at least MAX_CHARS chars.
+ */
+void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
+{
+    int i = 0;
+    if (BIT(mods.nuclear, FULLNUCLEAR))
+        modstr[i++] = 'F';
+    if (BIT(mods.nuclear, NUCLEAR))
+        modstr[i++] = 'N';
+    if (BIT(mods.warhead, CLUSTER))
+        modstr[i++] = 'C';
+    if (BIT(mods.warhead, IMPLOSION))
+        modstr[i++] = 'I';
+    if (mods.velocity)
+    {
+        if (i)
+            modstr[i++] = ' ';
+        modstr[i++] = 'V';
+        i = num2str(mods.velocity, modstr, i);
+    }
+    if (mods.mini)
+    {
+        if (i)
+            modstr[i++] = ' ';
+        modstr[i++] = 'X';
+        i = num2str(mods.mini + 1, modstr, i);
+    }
+    if (mods.spread)
+    {
+        if (i)
+            modstr[i++] = ' ';
+        modstr[i++] = 'Z';
+        i = num2str(mods.spread, modstr, i);
+    }
+    if (mods.power)
+    {
+        if (i)
+            modstr[i++] = ' ';
+        modstr[i++] = 'B';
+        i = num2str(mods.power, modstr, i);
+    }
+    if (mods.laser)
+    {
+        if (i)
+            modstr[i++] = ' ';
+        modstr[i++] = 'L';
+        modstr[i++] = (BIT(mods.laser, STUN) ? 'S' : 'B');
+    }
+    modstr[i] = '\0';
 }

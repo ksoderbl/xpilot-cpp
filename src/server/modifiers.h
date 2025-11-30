@@ -22,5 +22,43 @@
  */
 #pragma once
 
+#include <cstring>
+
+/*
+ * Weapons modifiers.
+ */
+typedef struct
+{
+    unsigned int nuclear : 2;  /* N  modifier */
+    unsigned int warhead : 2;  /* CI modifier */
+    unsigned int velocity : 2; /* V# modifier */
+    unsigned int mini : 2;     /* X# modifier */
+    unsigned int spread : 2;   /* Z# modifier */
+    unsigned int power : 2;    /* B# modifier */
+    unsigned int laser : 2;    /* LS LB modifier */
+    unsigned int spare : 2;    /* padding for alignment */
+} modifiers_t;
+
+#define CLEAR_MODS(mods) memset(&(mods), 0, sizeof(modifiers_t))
+
+#define MODS_NUCLEAR_MAX 2 /* - N FN */
+#define NUCLEAR (1U << 0)
+#define FULLNUCLEAR (1U << 1)
+
+#define MODS_WARHEAD_MAX 3 /* - C I CI */
+#define CLUSTER (1U << 0)
+#define IMPLOSION (1U << 1)
+
+#define MODS_VELOCITY_MAX 3 /* - V1 V2 V3 */
+#define MODS_MINI_MAX 3     /* - X2 X3 X4 */
+#define MODS_SPREAD_MAX 3   /* - Z1 Z2 Z3 */
+#define MODS_POWER_MAX 3    /* - B1 B2 B3 */
+
+#define MODS_LASER_MAX 2 /* - LS LB */
+#define STUN (1U << 0)
+#define BLIND (1U << 1)
+
 int num2str(int num, char *str, int i);
 int str2num(char **strp, int min, int max);
+
+void Mods_to_string(modifiers_t mods, char *modstr, size_t size);
