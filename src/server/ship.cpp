@@ -73,35 +73,35 @@ void Thrust(player_t *pl)
                      ? AFTER_BURN_SPARKS(tot_sparks - 1, afterburners) + 1
                      : 0;
 
-    Make_debris(
-        pos,
-        pl->vel,
-        pl->id,
-        pl->team,
-        OBJ_SPARK_BIT,
-        THRUST_MASS,
-        GRAVITY | OWNERIMMUNE,
-        RED,
-        8,
-        tot_sparks - alt_sparks, tot_sparks - alt_sparks,
-        min_dir, max_dir,
-        1.0, max_speed,
-        3, max_life);
+    Make_debris(pos,
+                pl->vel,
+                pl->id,
+                pl->team,
+                OBJ_SPARK,
+                THRUST_MASS,
+                GRAVITY | OWNERIMMUNE,
+                RED,
+                8,
+                tot_sparks - alt_sparks, tot_sparks - alt_sparks,
+                0, // TODO
+                min_dir, max_dir,
+                1.0, max_speed,
+                3.0, max_life);
 
-    Make_debris(
-        pos,
-        pl->vel,
-        pl->id,
-        pl->team,
-        OBJ_SPARK_BIT,
-        THRUST_MASS * ALT_SPARK_MASS_FACT,
-        GRAVITY | OWNERIMMUNE,
-        BLUE,
-        8,
-        alt_sparks, alt_sparks,
-        min_dir, max_dir,
-        1.0, max_speed,
-        3, max_life);
+    Make_debris(pos,
+                pl->vel,
+                pl->id,
+                pl->team,
+                OBJ_SPARK,
+                THRUST_MASS * ALT_SPARK_MASS_FACT,
+                GRAVITY | OWNERIMMUNE,
+                BLUE,
+                8,
+                alt_sparks, alt_sparks,
+                0, // TODO
+                min_dir, max_dir,
+                1.0, max_speed,
+                3.0, max_life);
 }
 
 /* Calculates the recoil if a ship fires a shot */
@@ -148,7 +148,7 @@ void Delta_mv(object_t *ship, object_t *obj)
     m = ship->mass + ABS(obj->mass);
     vx = (ship->vel.x * ship->mass + obj->vel.x * obj->mass) / m;
     vy = (ship->vel.y * ship->mass + obj->vel.y * obj->mass) / m;
-    if (ship->type == OBJ_PLAYER_BIT && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
+    if (ship->type == OBJ_PLAYER && obj->id != NO_ID && BIT(obj->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)ship;
         player_t *pusher = Player_by_id(obj->id);
@@ -181,7 +181,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
     obj1->vel.y = (m1 - m2) / ms * v1y + 2 * m2 / ms * v2y;
     obj2->vel.x = 2 * m1 / ms * v1x + (m2 - m1) / ms * v2x;
     obj2->vel.y = 2 * m1 / ms * v1y + (m2 - m1) / ms * v2y;
-    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
+    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID && BIT(obj2->obj_status, COLLISIONSHOVE))
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
@@ -218,7 +218,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
     dvx1 = -(tcos(obj_theta) * force / dm);
     dvy1 = -(tsin(obj_theta) * force / dm);
 
-    if (obj1->type == OBJ_PLAYER_BIT && obj2->id != NO_ID)
+    if (obj1->type == OBJ_PLAYER && obj2->id != NO_ID)
     {
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
@@ -228,7 +228,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         }
     }
 
-    if (obj2->type == OBJ_PLAYER_BIT && obj1->id != NO_ID)
+    if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
     {
         player_t *pl = (player_t *)obj2;
         player_t *pusher = Player_by_id(obj1->id);
@@ -508,13 +508,14 @@ void Make_debris(clpos_t pos,
                  int owner_team,
                  int type,
                  double mass,
-                 long status,
+                 int status,
                  int color,
                  int radius,
-                 int min_debris, int max_debris,
+                 int min_debris, int max_debris, // these will be removed
+                 int num_debris_todo,
                  int min_dir, int max_dir,
                  double min_speed, double max_speed,
-                 int min_life, int max_life)
+                 double min_life, double max_life)
 {
     object_t *debris;
     int i, num_debris, life;
@@ -557,6 +558,13 @@ void Make_debris(clpos_t pos,
     }
 
     num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
+
+    xpinfo("Make_debris: ============");
+    xpinfo("Make_debris: min =%d", min_debris);
+    xpinfo("Make_debris: num =%d", num_debris);
+    xpinfo("Make_debris: max =%d", max_debris);
+    xpinfo("Make_debris: todo=%d", num_debris_todo);
+
     if (num_debris > MAX_TOTAL_SHOTS - NumObjs)
         num_debris = MAX_TOTAL_SHOTS - NumObjs;
 
@@ -605,12 +613,12 @@ void Make_wreckage(clpos_t pos,
                    int owner_team,
                    double min_mass, double max_mass,
                    double total_mass,
-                   long status,
+                   int status,
                    int color,
                    int max_wreckage,
                    int min_dir, int max_dir,
                    double min_speed, double max_speed,
-                   int min_life, int max_life)
+                   double min_life, double max_life)
 {
     wireobject_t *wreckage;
     int i, life, size;
@@ -726,7 +734,6 @@ void Make_wreckage(clpos_t pos,
     }
 }
 
-/* Explode a fighter */
 void Explode_fighter(player_t *pl)
 {
     int min_debris, max_debris;
@@ -739,34 +746,31 @@ void Explode_fighter(player_t *pl)
     min_debris >>= 1;
     max_debris >>= 1;
 
-    Make_debris(
-        pl->pos,
-        pl->vel,
-        pl->id,
-        pl->team,
-        OBJ_DEBRIS_BIT,
-        3.5,
-        GRAVITY,
-        RED,
-        8,
-        min_debris, max_debris,
-        0, RES - 1,
-        20.0, 20 + (((int)(pl->mass)) >> 1),
-        5, (int)(5 + (pl->mass * 1.5)));
+    Make_debris(pl->pos,
+                pl->vel,
+                pl->id,
+                pl->team,
+                OBJ_DEBRIS_BIT,
+                3.5,
+                GRAVITY,
+                RED,
+                8,
+                min_debris, max_debris,
+                0, // TODO
+                0, RES - 1,
+                20.0, 20 + (((int)(pl->mass)) >> 1),
+                5, (int)(5 + (pl->mass * 1.5)));
 
-    if (!BIT(pl->obj_status, KILLED))
-        return;
-    Make_wreckage(
-        pl->pos,
-        pl->vel,
-        pl->id,
-        pl->team,
-        MAX(pl->mass / 8.0, 0.33), pl->mass,
-        2.0 * pl->mass,
-        GRAVITY,
-        WHITE,
-        10,
-        0, RES - 1,
-        10.0, 10 + (((int)(pl->mass)) >> 1),
-        5, (int)(5 + (pl->mass * 1.5)));
+    Make_wreckage(pl->pos,
+                  pl->vel,
+                  pl->id,
+                  pl->team,
+                  MAX(pl->mass / 8.0, 0.33), pl->mass,
+                  2.0 * pl->mass,
+                  GRAVITY,
+                  WHITE,
+                  10,
+                  0, RES - 1,
+                  10.0, 10 + (((int)(pl->mass)) >> 1),
+                  5, (int)(5 + (pl->mass * 1.5)));
 }

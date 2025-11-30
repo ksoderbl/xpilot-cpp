@@ -685,16 +685,17 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
                         zero_vel,
                         NO_ID,
                         c->team,
-                        OBJ_SPARK_BIT,
+                        OBJ_SPARK,
                         THRUST_MASS,
                         GRAVITY | FROMCANNON,
                         RED,
                         8,
                         300, 700,
+                        (int)(300 + 400 * rfrac()),
                         dir - 4 * (4 - options.cannonSmartness),
                         dir + 4 * (4 - options.cannonSmartness),
                         0.1, speed * 4,
-                        3, 20);
+                        3.0, 20.0);
             c->item[ITEM_EMERGENCY_THRUST]--;
         }
         else
@@ -703,16 +704,17 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
                         zero_vel,
                         NO_ID,
                         c->team,
-                        OBJ_SPARK_BIT,
+                        OBJ_SPARK,
                         THRUST_MASS,
                         GRAVITY | FROMCANNON,
                         RED,
                         8,
                         150, 350,
+                        (int)(150 + 200 * rfrac()),
                         dir - 3 * (4 - options.cannonSmartness),
                         dir + 3 * (4 - options.cannonSmartness),
                         0.1, speed * 2,
-                        3, 20);
+                        3.0, 20.0);
         }
         c->item[ITEM_FUEL]--;
         IFSOUND(sound = THRUST_SOUND);

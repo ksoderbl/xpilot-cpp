@@ -259,7 +259,7 @@ void Place_general_mine(int id, int team, int status,
              *                            o   o            o   o
              */
             dir = (i * space) + space / 2 + (minis - 2) * (RES / 2) + (pl ? pl->dir : 0);
-            dir += (int)((rfrac() - 0.5f) * space * 0.5f);
+            dir += (int)((rfrac() - 0.5) * space * 0.5f);
             dir = MOD2(dir, RES);
             mv.x = MINI_MINE_SPREAD_SPEED * tcos(dir) / spread;
             mv.y = MINI_MINE_SPREAD_SPEED * tsin(dir) / spread;
@@ -1064,29 +1064,45 @@ void Fire_normal_shots(player_t *pl)
     for (i = 0; i < pl->item[ITEM_WIDEANGLE]; i++)
     {
         if (pl->ship->num_l_gun > 0)
+        {
             Fire_left_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES), i % pl->ship->num_l_gun);
+        }
         else
+        {
             Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir + (1 + i) * shot_angle, RES));
+        }
         if (pl->ship->num_r_gun > 0)
+        {
             Fire_right_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES), i % pl->ship->num_r_gun);
+        }
         else
+        {
             Fire_main_shot(pl, OBJ_SHOT, MOD2(pl->dir - (1 + i) * shot_angle, RES));
+        }
     }
     for (i = 0; i < pl->item[ITEM_REARSHOT]; i++)
     {
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) < 0)
         {
             if (pl->ship->num_l_rgun > 0)
+            {
                 Fire_left_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (i - (pl->item[ITEM_REARSHOT] + 1) / 2) % pl->ship->num_l_rgun);
+            }
             else
+            {
                 Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            }
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) > 0)
         {
             if (pl->ship->num_r_rgun > 0)
+            {
                 Fire_right_rshot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES), (pl->item[ITEM_REARSHOT] / 2 - i - 1) % pl->ship->num_r_rgun);
+            }
             else
+            {
                 Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
+            }
         }
         if ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) == 0)
             Fire_shot(pl, OBJ_SHOT, MOD2(pl->dir + RES / 2 + ((pl->item[ITEM_REARSHOT] - 1 - 2 * i) * shot_angle) / 2, RES));
@@ -1102,12 +1118,8 @@ void Delete_shot(int ind)
     player_t *pl;
     bool addMine = false, addHeat = false, addBall = false;
     modifiers_t mods;
-    long status;
-    int i;
-    int intensity;
-    int type, color;
-    double modv, speed_modv, life_modv, num_modv;
-    double mass;
+    int i, intensity, type, color, num_debris, status;
+    double modv, speed_modv, life_modv, num_modv, mass, min_life, max_life;
     vector_t zero_vel = {0.0, 0.0};
 
     switch (shot->type)
@@ -1133,8 +1145,10 @@ void Delete_shot(int ind)
              */
             for (i = 0; i < NumPlayers; i++)
             {
-                if (Player_by_index(i)->ball == ball)
-                    Player_by_index(i)->ball = NULL;
+                player_t *pl_i = Player_by_index(i);
+
+                if (pl_i->ball == ball)
+                    pl_i->ball = NULL;
             }
         }
         if (ball->ball_owner == NO_ID)
@@ -1144,7 +1158,6 @@ void Delete_shot(int ind)
              * have been destroyed is by being knocked out of the goal.
              * Therefore we force the ball to be recreated.
              */
-            // world->treasures[ball->treasure].have = false;
             ball->ball_treasure->have = false;
             SET_BIT(ball->obj_status, RECREATE);
         }
@@ -1164,9 +1177,10 @@ void Delete_shot(int ind)
                         RED,
                         8,
                         10, 20,
+                        (int)(10 + 10 * rfrac()),
                         0, RES - 1,
-                        10, 50,
-                        10, 2 * (FPS + 15));
+                        10.0, 50.0,
+                        10.0, 54.0);
         }
         break;
         /* Shots related to a player. */
@@ -1255,6 +1269,18 @@ void Delete_shot(int ind)
         if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT))
             intensity /= (1 + shot->mods.power);
 
+        num_debris = (int)(intensity * num_modv * (0.20 + (0.10 * rfrac())));
+        min_life = 8 * life_modv;
+        max_life = (intensity >> 1) * life_modv;
+
+#if 0
+    warn("type = %16s (%c%c) inten = %-6d num = %-6d life: %.1f - %.1f",
+         Object_typename(shot),
+         (Mods_get(shot->mods, ModsNuclear) ? 'N' : '-'),
+         (Mods_get(shot->mods, ModsCluster) ? 'C' : '-'),
+         intensity, num_debris, min_life, max_life);
+#endif
+
         Make_debris(shot->prevpos,
                     shot->vel,
                     shot->id,
@@ -1266,11 +1292,11 @@ void Delete_shot(int ind)
                     6,
                     (int)(0.20f * intensity * num_modv),
                     (int)(0.30f * intensity * num_modv),
+                    num_debris,
                     0, RES - 1,
-                    20 * speed_modv,
-                    (intensity >> 2) * speed_modv,
-                    (int)(8 * life_modv),
-                    (int)((intensity >> 1) * life_modv));
+                    20 * speed_modv, (intensity >> 2) * speed_modv,
+                    (int)min_life,
+                    (int)max_life);
         break;
 
     case OBJ_SHOT:
@@ -1337,10 +1363,10 @@ void Delete_shot(int ind)
     if (addMine | addHeat)
     {
         CLEAR_MODS(mods);
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333f))
+        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333))
             SET_BIT(mods.warhead, CLUSTER);
 
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333f))
+        if (BIT(world->rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333))
             SET_BIT(mods.warhead, IMPLOSION);
 
         if (BIT(world->rules->mode, ALLOW_MODIFIERS))
@@ -1351,13 +1377,13 @@ void Delete_shot(int ind)
 
         if (addMine)
         {
-            long gravity_status = ((rfrac() < 0.5f) ? GRAVITY : 0);
+            long gravity_status = ((rfrac() < 0.5) ? GRAVITY : 0);
             Place_general_mine(NO_ID, TEAM_NOT_SET, gravity_status,
                                shot->pos, zero_vel, mods);
         }
         else if (addHeat)
-            Fire_general_shot(NO_ID, TEAM_NOT_SET,
-                              shot->pos, OBJ_HEAT_SHOT_BIT, (int)(rfrac() * RES),
+            Fire_general_shot(NO_ID, TEAM_NOT_SET, shot->pos,
+                              OBJ_HEAT_SHOT, (int)(rfrac() * RES),
                               mods, NO_ID);
     }
     else if (addBall)
@@ -1785,7 +1811,7 @@ void Update_missile(missileobject_t *missile)
                         break;
                     }
             }
-            if (k > freemax || (k == freemax && ((j == -1 && (rfrac() < 0.5f)) || j == 0 || j == 1)))
+            if (k > freemax || (k == freemax && ((j == -1 && (rfrac() < 0.5)) || j == 0 || j == 1)))
             {
                 freemax = k > 2 ? 2 : k;
                 angle = i + j;

@@ -120,7 +120,7 @@ void Break_asteroid(wireobject_t *asteroid)
         mass = asteroid->mass / 2;
         Make_wreckage(asteroid->pos,
                       asteroid->vel,
-                      -1,
+                      NO_ID,
                       TEAM_NOT_SET,
                       mass / 20, mass / 3,
                       mass,
@@ -128,21 +128,22 @@ void Break_asteroid(wireobject_t *asteroid)
                       WHITE,
                       10,
                       0, RES - 1,
-                      5, 10,
-                      3, 10);
+                      5.0, 10.0,
+                      3.0, 10.0);
         Make_debris(asteroid->pos,
                     asteroid->vel,
-                    -1,
+                    NO_ID,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS_BIT,
+                    OBJ_DEBRIS,
                     mass,
                     GRAVITY,
                     RED,
                     8,
                     20, 50,
+                    (int)(20 + 30 * rfrac()),
                     0, RES - 1,
-                    5, 10,
-                    3, 10);
+                    5.0, 10.0,
+                    3.0, 10.0);
     }
     else
     {
@@ -175,7 +176,7 @@ void Break_asteroid(wireobject_t *asteroid)
         Make_asteroid(pos2, asteroid->wire_size - 1, dir2, speed2);
         Make_wreckage(asteroid->pos,
                       asteroid->vel,
-                      -1,
+                      NO_ID,
                       TEAM_NOT_SET,
                       mass3 / 20, mass3 / 3,
                       mass3 / 2,
@@ -183,21 +184,22 @@ void Break_asteroid(wireobject_t *asteroid)
                       WHITE,
                       10,
                       0, RES - 1,
-                      5, 10,
-                      3, 10);
+                      5.0, 10.0,
+                      3.0, 10.0);
         Make_debris(asteroid->pos,
                     asteroid->vel,
-                    -1,
+                    NO_ID,
                     TEAM_NOT_SET,
-                    OBJ_DEBRIS_BIT,
+                    OBJ_DEBRIS,
                     mass3 / 2,
                     GRAVITY,
                     RED,
                     8,
                     20, 50,
+                    (int)(20 + 30 * rfrac()),
                     0, RES - 1,
-                    5, 10,
-                    3, 10);
+                    5.0, 10.0,
+                    3.0, 10.0);
     }
 
     if ((options.asteroidMaxItems > 0) && (rfrac() < options.asteroidItemProb))

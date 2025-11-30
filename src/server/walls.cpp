@@ -1821,12 +1821,13 @@ static void Cannon_dies(move_state_t *ms)
                 zero_vel,
                 NO_ID,
                 cannon->team,
-                OBJ_DEBRIS_BIT,
+                OBJ_DEBRIS,
                 4.5,
                 GRAVITY,
                 RED,
                 6,
                 20, 40,
+                (int)(20 + 20 * rfrac()),
                 (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
                 20, 50,
                 8, 68);
@@ -1966,15 +1967,16 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
                 zero_vel,
                 NO_ID,
                 targ->team,
-                OBJ_DEBRIS_BIT,
+                OBJ_DEBRIS,
                 4.5,
                 GRAVITY,
                 RED,
                 6,
                 75, 150,
+                (int)(75 + 75 * rfrac()),
                 0, RES - 1,
-                20, 70,
-                10, 100);
+                20.0, 70.0,
+                10.0, 100.0);
 
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
@@ -2826,6 +2828,7 @@ void Move_player(player_t *pl)
                 if (cost)
                 {
                     int intensity = (int)(cost * wallBounceExplosionMult);
+                    int num_debris = 0; // TODO
                     Make_debris(pl->pos,
                                 pl->vel,
                                 pl->id,
@@ -2836,9 +2839,10 @@ void Move_player(player_t *pl)
                                 RED,
                                 1,
                                 intensity >> 1, intensity,
+                                num_debris,
                                 wall_dir - (RES / 4), wall_dir + (RES / 4),
-                                20, 20 + (intensity >> 2),
-                                10, 10 + (intensity >> 1));
+                                20.0, 20 + (intensity >> 2),
+                                10.0, 10 + (intensity >> 1));
                     sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
                     if (ms[worst].target >= 0)
                     {
