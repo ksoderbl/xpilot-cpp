@@ -150,8 +150,6 @@ void Cannon_update(bool tick)
    fuel is given in 'units', but is stored in fuelpacks. */
 void Cannon_add_item(cannon_t *c, int item, int amount)
 {
-    // cannon_t *c = world->cannons + ind;
-
     switch (item)
     {
     case ITEM_TANK:
@@ -219,7 +217,6 @@ void Cannon_throw_items(cannon_t *c)
    items. */
 void Cannon_init(cannon_t *c)
 {
-    // cannon_t *c = world->cannons + ind;
     int i;
 
     c->last_change = frame_loops;
@@ -280,7 +277,6 @@ static int Cannon_select_defense(cannon_t *c)
    modes 1 - 3 use progressively more accurate detection. */
 static int Cannon_in_danger(cannon_t *c)
 {
-    // cannon_t *c = world->cannons + ind;
     const int range = 4 * BLOCK_SZ;
     const long kill_shots = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_ASTEROID_BIT;
     object_t *shot, **obj_list;
@@ -336,7 +332,6 @@ static int Cannon_in_danger(cannon_t *c)
 /* activates the selected defense. */
 static void Cannon_defend(cannon_t *c, int defense)
 {
-    // cannon_t *c = world->cannons + ind;
     IFSOUND(int sound = -1);
 
     switch (defense)
@@ -362,19 +357,17 @@ static void Cannon_defend(cannon_t *c, int defense)
 /* selects one of the available weapons. see cannon.h for descriptions. */
 static int Cannon_select_weapon(cannon_t *c)
 {
-    // cannon_t *c = world->cannons + ind;
-
-    if (c->item[ITEM_MINE] && rfrac() < 0.5f)
+    if (c->item[ITEM_MINE] && rfrac() < 0.5)
         return CW_MINE;
-    if (c->item[ITEM_MISSILE] && rfrac() < 0.5f)
+    if (c->item[ITEM_MISSILE] && rfrac() < 0.5)
         return CW_MISSILE;
     if (c->item[ITEM_LASER] && (int)(rfrac() * (c->item[ITEM_LASER] + 1)))
         return CW_LASER;
-    if (c->item[ITEM_ECM] && rfrac() < 0.333f)
+    if (c->item[ITEM_ECM] && rfrac() < 0.333)
         return CW_ECM;
-    if (c->item[ITEM_TRACTOR_BEAM] && rfrac() < 0.5f)
+    if (c->item[ITEM_TRACTOR_BEAM] && rfrac() < 0.5)
         return CW_TRACTORBEAM;
-    if (c->item[ITEM_TRANSPORTER] && rfrac() < 0.333f)
+    if (c->item[ITEM_TRANSPORTER] && rfrac() < 0.333)
         return CW_TRANSPORTER;
     if ((c->item[ITEM_AFTERBURNER] || c->item[ITEM_EMERGENCY_THRUST]) && c->item[ITEM_FUEL] && (int)(rfrac() * ((c->item[ITEM_EMERGENCY_THRUST] ? MAX_AFTERBURNER : c->item[ITEM_AFTERBURNER]) + 3)) > 2)
         return CW_GASJET;
@@ -397,7 +390,6 @@ static int Cannon_select_weapon(cannon_t *c)
  */
 static void Cannon_aim(cannon_t *c, int weapon, int *target, int *dir)
 {
-    // cannon_t *c = world->cannons + ind;
     int speed = options.shotSpeed;
     int range = CANNON_SHOT_LIFE_MAX * speed;
     int cpx = (int)c->pix_pos.x;
@@ -525,7 +517,7 @@ static void Cannon_aim(cannon_t *c, int weapon, int *target, int *dir)
     default:
     case 1:
         *dir = c->dir;
-        *dir += (int)((rfrac() - 0.5f) * CANNON_SPREAD);
+        *dir += (int)((rfrac() - 0.5) * CANNON_SPREAD);
         break;
     case 2:
         ddir = MOD2(*dir - c->dir, RES);
@@ -550,7 +542,6 @@ static void Cannon_aim(cannon_t *c, int weapon, int *target, int *dir)
    have more than one possible use. */
 static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
 {
-    // cannon_t *c = world->cannons + ind;
     player_t *pl = PlayersArray[target];
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;
@@ -564,7 +555,7 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
     switch (weapon)
     {
     case CW_MINE:
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.25f))
+        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.25))
             SET_BIT(mods.warhead, CLUSTER);
         if (BIT(world->rules->mode, ALLOW_MODIFIERS))
         {
@@ -595,11 +586,11 @@ static void Cannon_fire(cannon_t *c, int weapon, int target, int dir)
         c->item[ITEM_MINE]--;
         break;
     case CW_MISSILE:
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.333f))
+        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.333))
             SET_BIT(mods.warhead, CLUSTER);
         if (BIT(world->rules->mode, ALLOW_MODIFIERS))
         {
-            if (rfrac() >= 0.25f)
+            if (rfrac() >= 0.25)
                 SET_BIT(mods.warhead, IMPLOSION);
             mods.power = (int)(rfrac() * (MODS_POWER_MAX + 1));
             mods.velocity = (int)(rfrac() * (MODS_VELOCITY_MAX + 1));

@@ -76,6 +76,11 @@ void Place_mine(player_t *pl)
         return;
     }
 
+    /*
+     * Dropped mines are immune to gravity. The latest theory is that mines
+     * contain some sort of anti-gravity device. An even later theory
+     * claims that they are anchored to space the same way as the walls are.
+     */
     Place_general_mine(pl->id, pl->team, 0, pl->pos, zero_vel, pl->mods);
 }
 
@@ -155,18 +160,16 @@ void Place_general_mine(int id, int team, int status,
                         : options.nukeMinMines);
             if (pl->item[ITEM_MINE] < options.nukeMinMines)
             {
-                sprintf(msg, "You need at least %d mines to %s %s!",
-                        options.nukeMinMines,
-                        (BIT(status, GRAVITY) ? "throw" : "drop"),
-                        Describe_shot(OBJ_MINE_BIT, status, mods, 0));
-                Set_player_message(pl, msg);
+                Set_player_message_f(pl,
+                                     "You need at least %d mines to %s %s!",
+                                     options.nukeMinMines,
+                                     (BIT(status, GRAVITY) ? "throw" : "drop"),
+                                     Describe_shot(OBJ_MINE, status, mods, 0));
                 return;
             }
         }
         else
-        {
             used = options.nukeMinMines;
-        }
         mass = MINE_MASS * used * NUKE_MASS_MULT;
     }
     else
@@ -184,11 +187,11 @@ void Place_general_mine(int id, int team, int status,
         }
         if (pl->fuel.sum < -drain)
         {
-            sprintf(msg, "You need at least %ld fuel units to %s %s!",
-                    (-drain) >> FUEL_SCALE_BITS,
-                    (BIT(status, GRAVITY) ? "throw" : "drop"),
-                    Describe_shot(OBJ_MINE_BIT, status, mods, 0));
-            Set_player_message(pl, msg);
+            Set_player_message_f(pl,
+                                 "You need at least %ld fuel units to %s %s!",
+                                 (-drain) >> FUEL_SCALE_BITS,
+                                 (BIT(status, GRAVITY) ? "throw" : "drop"),
+                                 Describe_shot(OBJ_MINE, status, mods, 0));
             return;
         }
         if (options.baseMineRange)
@@ -214,16 +217,16 @@ void Place_general_mine(int id, int team, int status,
 
         if (used > 1)
         {
-            sprintf(msg, "%s has %s %s!", pl->name,
-                    (BIT(status, GRAVITY) ? "thrown" : "dropped"),
-                    Describe_shot(OBJ_MINE_BIT, status, mods, 0));
-            Set_message(msg);
+            Set_message_f("%s has %s %s!", pl->name,
+                          (BIT(status, GRAVITY) ? "thrown" : "dropped"),
+                          Describe_shot(OBJ_MINE, status, mods, 0));
             sound_play_all(NUKE_LAUNCH_SOUND);
         }
         else
-        {
-            sound_play_sensors(pl->pos, BIT(status, GRAVITY) ? DROP_MOVING_MINE_SOUND : DROP_MINE_SOUND);
-        }
+            sound_play_sensors(pl->pos,
+                               BIT(status, GRAVITY)
+                                   ? DROP_MOVING_MINE_SOUND
+                                   : DROP_MINE_SOUND);
     }
 
     minis = (mods.mini + 1);
@@ -259,7 +262,7 @@ void Place_general_mine(int id, int team, int status,
              *                            o   o            o   o
              */
             dir = (i * space) + space / 2 + (minis - 2) * (RES / 2) + (pl ? pl->dir : 0);
-            dir += (int)((rfrac() - 0.5) * space * 0.5f);
+            dir += (int)((rfrac() - 0.5) * space * 0.5);
             dir = MOD2(dir, RES);
             mv.x = MINI_MINE_SPREAD_SPEED * tcos(dir) / spread;
             mv.y = MINI_MINE_SPREAD_SPEED * tsin(dir) / spread;
@@ -298,9 +301,7 @@ void Place_general_mine(int id, int team, int status,
  */
 void Detonate_mines(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
-    int i;
-    int closest = -1;
+    int i, closest = -1;
     double dist;
     double min_dist = world->hypotenuse + 1;
 
@@ -311,7 +312,7 @@ void Detonate_mines(player_t *pl)
     {
         object_t *mine = Obj[i];
 
-        if (!BIT(mine->type, OBJ_MINE_BIT))
+        if (!(mine->type == OBJ_MINE))
             continue;
         /*
          * Mines which have been ECM reprogrammed should only be detonatable
@@ -319,7 +320,9 @@ void Detonate_mines(player_t *pl)
          */
         if (mine->id == pl->id)
         {
-            dist = Wrap_length(pl->pos.cx - mine->pos.cx, pl->pos.cy - mine->pos.cy) / CLICK;
+            dist = Wrap_length(pl->pos.cx - mine->pos.cx,
+                               pl->pos.cy - mine->pos.cy) /
+                   CLICK;
             if (dist < min_dist)
             {
                 min_dist = dist;
@@ -328,9 +331,7 @@ void Detonate_mines(player_t *pl)
         }
     }
     if (closest != -1)
-    {
         Obj[closest]->life = 0;
-    }
 
     return;
 }
@@ -340,7 +341,7 @@ void Detonate_mines(player_t *pl)
  * non-zero this description is part of a collision, otherwise its part
  * of a launch message.
  */
-char *Describe_shot(int type, long status, modifiers_t mods, int hit)
+char *Describe_shot(int type, int status, modifiers_t mods, int hit)
 {
     const char *name, *howmany = "a ", *plural = "";
     static char msg[MSG_LEN];
@@ -369,9 +370,7 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit)
             name = "flak";
         }
         else
-        {
             name = "shot";
-        }
         break;
     default:
         /*
@@ -384,9 +383,7 @@ char *Describe_shot(int type, long status, modifiers_t mods, int hit)
             name = "debris";
         }
         else
-        {
             name = "shot";
-        }
         break;
     }
 
@@ -486,23 +483,13 @@ void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
 
 void Fire_general_shot(int id, int team,
                        clpos_t pos, int type, int dir,
-                       modifiers_t mods, int target)
+                       modifiers_t mods, int target_id)
 {
     char msg[MSG_LEN];
-    int used,
-        life = options.shotLife,
-        fuse = 0,
-        lock = 0,
-        status = GRAVITY,
-        i, ldir, minis,
-        pl_range,
-        pl_radius,
-        rack_no = 0,
-        racks_left = 0,
-        r,
-        on_this_rack = 0,
-        side = 0,
-        fired = 0;
+    int used, fuse = 0, lock = 0, status = GRAVITY, i, ldir, minis;
+    int pl_range, pl_radius, rack_no = 0, racks_left = 0, r, on_this_rack = 0;
+    int side = 0, fired = 0;
+    int life = options.shotLife;
     long drain;
     double mass = options.shotMass,
            speed = options.shotSpeed,
@@ -630,25 +617,19 @@ void Fire_general_shot(int id, int team,
             lock = -1;
 #else  /* HEAT_LOCK */
             if (pl == NULL)
-            {
-                lock = target;
-            }
+                lock = target_id;
             else
             {
                 if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)))
                 {
-                    lock = -1;
+                    lock = NO_ID;
                 }
                 else
-                {
                     lock = pl->lock.pl_id;
-                }
             }
 #endif /* HEAT_LOCK */
             if (pl)
-            {
                 sound_play_sensors(pl->pos, FIRE_HEAT_SHOT_SOUND);
-            }
             max_speed = SMART_SHOT_MAX_SPEED * HEAT_SPEED_FACT;
             turnspeed = SMART_TURNSPEED * HEAT_SPEED_FACT;
             speed *= HEAT_SPEED_FACT;
@@ -656,7 +637,7 @@ void Fire_general_shot(int id, int team,
 
         case OBJ_SMART_SHOT:
             if (pl == NULL)
-                lock = target;
+                lock = target_id;
             else
             {
                 if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
@@ -668,7 +649,7 @@ void Fire_general_shot(int id, int team,
             break;
 
         case OBJ_TORPEDO:
-            lock = -1;
+            lock = NO_ID;
             fuse = 8;
             break;
         }
@@ -677,10 +658,10 @@ void Fire_general_shot(int id, int team,
         {
             if (pl->fuel.sum < -drain)
             {
-                sprintf(msg, "You need at least %ld fuel units to fire %s!",
-                        (-drain) >> FUEL_SCALE_BITS,
-                        Describe_shot(type, status, mods, 0));
-                Set_player_message(pl, msg);
+                Set_player_message_f(pl,
+                                     "You need at least %ld fuel units to fire %s!",
+                                     (-drain) >> FUEL_SCALE_BITS,
+                                     Describe_shot(type, status, mods, 0));
                 return;
             }
             Add_fuel(&(pl->fuel), drain);
@@ -688,12 +669,11 @@ void Fire_general_shot(int id, int team,
 
             if (used > 1)
             {
-                sprintf(msg, "%s has launched %s!", pl->name,
-                        Describe_shot(type, status, mods, 0));
-                Set_message(msg);
+                Set_message_f("%s has launched %s!", pl->name,
+                              Describe_shot(type, status, mods, 0));
                 sound_play_all(NUKE_LAUNCH_SOUND);
             }
-            else if (type == OBJ_SMART_SHOT_BIT)
+            else if (type == OBJ_SMART_SHOT)
                 sound_play_sensors(pl->pos, FIRE_SMART_SHOT_SOUND);
             else if (type == OBJ_TORPEDO)
                 sound_play_sensors(pl->pos, FIRE_TORPEDO_SOUND);
@@ -911,7 +891,7 @@ void Fire_general_shot(int id, int team,
      * Contact: harveyt@sco.com
      */
 
-    if (pl && type != OBJ_SHOT_BIT)
+    if (pl && type != OBJ_SHOT)
     {
         /*
          * Initialise missile rack spread variables. (See Comment Point 1)
@@ -1248,7 +1228,7 @@ void Delete_shot(int ind)
              *   num_modv /= (shot->mods.mini + 1);
              * triggers a bug in HP C A.09.19.
              */
-            num_modv = num_modv / ((double)(unsigned)shot->mods.mini + 1.0f);
+            num_modv = num_modv / ((double)(unsigned)shot->mods.mini + 1.0);
         }
 
         if (BIT(shot->mods.nuclear, NUCLEAR))

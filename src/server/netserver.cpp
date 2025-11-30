@@ -2252,30 +2252,36 @@ static int Receive_power(connection_t *connp)
     switch (ch)
     {
     case PKT_POWER:
+        LIMIT(power, MIN_PLAYER_POWER, MAX_PLAYER_POWER);
         if (autopilot)
             pl->auto_power_s = power;
         else
             pl->power = power;
         break;
     case PKT_POWER_S:
+        LIMIT(power, MIN_PLAYER_POWER, MAX_PLAYER_POWER);
         pl->power_s = power;
         break;
     case PKT_TURNSPEED:
+        LIMIT(power, MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED);
         if (autopilot)
             pl->auto_turnspeed_s = power;
         else
             pl->turnspeed = power;
         break;
     case PKT_TURNSPEED_S:
+        LIMIT(power, MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED);
         pl->turnspeed_s = power;
         break;
     case PKT_TURNRESISTANCE:
+        LIMIT(power, MIN_PLAYER_TURNRESISTANCE, MAX_PLAYER_TURNRESISTANCE);
         if (autopilot)
             pl->auto_turnresistance_s = power;
         else
             pl->turnresistance = power;
         break;
     case PKT_TURNRESISTANCE_S:
+        LIMIT(power, MIN_PLAYER_TURNRESISTANCE, MAX_PLAYER_TURNRESISTANCE);
         pl->turnresistance_s = power;
         break;
     default:
@@ -2301,11 +2307,7 @@ static int Receive_power(connection_t *connp)
 int Send_reliable(connection_t *connp)
 {
     char *read_buf;
-    int i,
-        n,
-        len,
-        todo,
-        max_todo;
+    int i, n, len, todo, max_todo;
     long rel_off;
     const int max_packet_size = MAX_RELIABLE_DATA_PACKET_SIZE,
               min_send_size = 1; /* was 4 in 3.0.7, 1 in 3.1.0 */
@@ -2322,15 +2324,13 @@ int Send_reliable(connection_t *connp)
     {
         /* We are piggybacking on a frame update. */
         if (connp->w.len >= max_packet_size - min_send_size)
-        {
             /* Frame already too big */
             return 0;
-        }
+
         if (max_todo > max_packet_size - connp->w.len)
-        {
+
             /* Do not exceed minimum fragment size. */
             max_todo = max_packet_size - connp->w.len;
-        }
     }
     if (connp->retransmit_at_loop > main_loops)
     {
@@ -2338,23 +2338,19 @@ int Send_reliable(connection_t *connp)
          * It is no time to retransmit yet.
          */
         if (max_todo <= connp->reliable_unsent - connp->reliable_offset + min_send_size || connp->w.len == 0)
-        {
             /*
              * And we cannot send anything new either
              * and we do not want to introduce a new packet.
              */
             return 0;
-        }
     }
     else if (connp->retransmit_at_loop != 0)
-    {
         /*
          * Timeout.
          * Either our packet or the acknowledgement got lost,
          * so retransmit.
          */
         connp->acks >>= 1;
-    }
 
     todo = max_todo;
     for (i = 0; i <= connp->acks && todo > 0; i++)
@@ -2395,20 +2391,16 @@ int Send_reliable(connection_t *connp)
     connp->last_send_loops = main_loops;
 
     if (max_todo - todo <= 0)
-    {
         /*
          * We have not transmitted anything at all.
          */
         return 0;
-    }
 
     /*
      * Retransmission timer with exponential backoff.
      */
     if (connp->rtt_retransmit > MAX_RETRANSMIT)
-    {
         connp->rtt_retransmit = MAX_RETRANSMIT;
-    }
     if (connp->retransmit_at_loop <= main_loops)
     {
         connp->retransmit_at_loop = main_loops + connp->rtt_retransmit;

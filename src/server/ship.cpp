@@ -685,31 +685,27 @@ void Make_wreckage(clpos_t pos,
         /* Calculate mass */
         mass = min_mass + rfrac() * (max_mass - min_mass);
         if (sum_mass + mass > total_mass)
-        {
             mass = total_mass - sum_mass;
-        }
+
         if (mass < min_mass)
-        {
             /* not enough mass available. */
             break;
-        }
 
         /* Allocate object */
         if ((wreckage = WIRE_PTR(Object_allocate())) == NULL)
-        {
             break;
-        }
 
         wreckage->color = color;
         wreckage->id = owner_id;
         wreckage->team = owner_team;
-        wreckage->type = OBJ_WRECKAGE_BIT;
+        wreckage->type = OBJ_WRECKAGE;
 
         /* Position */
         Object_position_init_clpos(OBJ_PTR(wreckage), pos);
 
         /* Direction */
-        dir = MOD2(min_dir + (int)(rfrac() * MOD2(max_dir - min_dir, RES)), RES);
+        dir = MOD2(min_dir + (int)(rfrac() * MOD2(max_dir - min_dir, RES)),
+                   RES);
 
         /* Velocity and acceleration */
         speed = min_speed + rfrac() * (max_speed - min_speed);

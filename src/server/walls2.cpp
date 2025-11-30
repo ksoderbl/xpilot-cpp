@@ -967,31 +967,31 @@ static void *ralloc(void *ptr, size_t size)
 //     return hit;
 // }
 
-// /* Try to move a pointlike object along the path determined by *move.
-//  * The amount moved is returned in *answer. If the movement hits a line
-//  * the number of that line is included. The 'point' parameter in
-//  * struct collans is not relevant to this function. Even if the movement
-//  * doesn't hit a line, the amount moved can be less than the requested
-//  * amount (so that this function needs to be called again for the rest).
-//  * If the movement hits several lines at the same click, the line returned
-//  * in collans will be such that it is hit "from the outside" if possible.
-//  * Example:
-//  * X
-//  * X inside of polygon
-//  * X
-//  * *YYYYYYYYYY
-//  *  3
-//  *   2
-//  *    1
-//  * Here the lines X and Y meet at click *, and the movement marked with
-//  * numbers hits the common point. The function will return line Y as the
-//  * one that was hit, because it was hit "from the outside" as opposed to
-//  * line X which was hit from the side facing the inside of the polygon.
-//  * See  the comments for function 'Away' to see how the trajectory can
-//  * hit a line even though it is moving away from the line. */
-// /* Do not call this with no movement. */
-// /* May not be called with point already on top of line.
-//  * Maybe I should change that to allow lines that could be crossed. */
+/* Try to move a pointlike object along the path determined by *move.
+ * The amount moved is returned in *answer. If the movement hits a line
+ * the number of that line is included. The 'point' parameter in
+ * struct collans is not relevant to this function. Even if the movement
+ * doesn't hit a line, the amount moved can be less than the requested
+ * amount (so that this function needs to be called again for the rest).
+ * If the movement hits several lines at the same click, the line returned
+ * in collans will be such that it is hit "from the outside" if possible.
+ * Example:
+ * X
+ * X inside of polygon
+ * X
+ * *YYYYYYYYYY
+ *  3
+ *   2
+ *    1
+ * Here the lines X and Y meet at click *, and the movement marked with
+ * numbers hits the common point. The function will return line Y as the
+ * one that was hit, because it was hit "from the outside" as opposed to
+ * line X which was hit from the side facing the inside of the polygon.
+ * See  the comments for function 'Away' to see how the trajectory can
+ * hit a line even though it is moving away from the line. */
+/* Do not call this with no movement. */
+/* May not be called with point already on top of line.
+ * Maybe I should change that to allow lines that could be crossed. */
 // void Move_point(const move_t *move, struct collans *answer)
 // {
 //     int minline, mindone, minheight;
@@ -1084,22 +1084,22 @@ static void *ralloc(void *ptr, size_t size)
 //     return;
 // }
 
-// /* Similar to Move_point above, except that it gets the shape parameter
-//  * (and direction of that shape), and in case of collision, the 'point'
-//  * field in struct collans is used. A corner in the shape can hit a map
-//  * line, or a corner in the map can hit a shape line. The 'line' field
-//  * will contain the line, the 'point' field the corner (given as a line
-//  * whose first point is that corner - that is always possible because
-//  * polygons are closed and there is at least one line ending at and one
-//  * line starting from a given point). */
-// /* Do not call this with no movement. */
-// /* May not be called with point already on top of line.
-//    maybe I should change that to allow lines which could be
-//    crossed. */
-// /* This could be sped up by a lot in several ways if needed.
-//  * For example, there's no need to consider all the points
-//  * separately if the shape is not close to a wall.
-//  */
+/* Similar to Move_point above, except that it gets the shape parameter
+ * (and direction of that shape), and in case of collision, the 'point'
+ * field in struct collans is used. A corner in the shape can hit a map
+ * line, or a corner in the map can hit a shape line. The 'line' field
+ * will contain the line, the 'point' field the corner (given as a line
+ * whose first point is that corner - that is always possible because
+ * polygons are closed and there is at least one line ending at and one
+ * line starting from a given point). */
+/* Do not call this with no movement. */
+/* May not be called with point already on top of line.
+   maybe I should change that to allow lines which could be
+   crossed. */
+/* This could be sped up by a lot in several ways if needed.
+ * For example, there's no need to consider all the points
+ * separately if the shape is not close to a wall.
+ */
 // static void Shape_move(const move_t *move, shape_t *s,
 //                        int dir, struct collans *answer)
 // {
@@ -1238,14 +1238,14 @@ static void *ralloc(void *ptr, size_t size)
 //     return;
 // }
 
-// /* Check whether there is room at the given position (x, y) to change
-//  * from the shape shape1/dir1 to shape shape2/dir2. The shapes must have
-//  * the same number of points. The morphing of the shapes happens linearly
-//  * for each point. This should work correctly even if the intermediate
-//  * shapes are degenerate or illegal shapes (the intermediate stages are
-//  * not explicitly constructed in the algorithm). Return the number of a group
-//  * that would be hit during morphing or NO_GROUP if there is enough room. */
-// /* This might be useful elsewhere in the code, need not be kept static */
+/* Check whether there is room at the given position (x, y) to change
+ * from the shape shape1/dir1 to shape shape2/dir2. The shapes must have
+ * the same number of points. The morphing of the shapes happens linearly
+ * for each point. This should work correctly even if the intermediate
+ * shapes are degenerate or illegal shapes (the intermediate stages are
+ * not explicitly constructed in the algorithm). Return the number of a group
+ * that would be hit during morphing or NO_GROUP if there is enough room. */
+/* This might be useful elsewhere in the code, need not be kept static */
 // static int Shape_morph(shape_t *shape1, int dir1,
 //                        shape_t *shape2, int dir2,
 //                        hitmask_t hitmask, const object_t *obj,

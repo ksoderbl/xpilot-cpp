@@ -21,7 +21,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TARGET_H
-#define TARGET_H
+#pragma once
 
-#endif
+void Target_update(void);

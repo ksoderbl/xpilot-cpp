@@ -67,7 +67,7 @@ void tuner_ballmass(void)
 
     for (i = 0; i < NumObjs; i++)
     {
-        if (BIT(Obj[i]->type, OBJ_BALL_BIT))
+        if (Obj[i]->type == OBJ_BALL)
             Obj[i]->mass = options.ballMass;
     }
 }
@@ -75,7 +75,7 @@ void tuner_ballmass(void)
 void tuner_maxrobots(void)
 {
     if (options.maxRobots < 0)
-        options.maxRobots = world->NumBases;
+        options.maxRobots = Num_bases();
 
     if (options.maxRobots < options.minRobots)
         options.minRobots = options.maxRobots;
@@ -105,13 +105,15 @@ void tuner_allowshields(void)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (!Player_is_tank(Player_by_index(i)))
-            {
-                if (!BIT(Player_by_index(i)->used, HAS_SHOT))
-                    SET_BIT(Player_by_index(i)->used, HAS_SHIELD);
+            player_t *pl_i = Player_by_index(i);
 
-                SET_BIT(Player_by_index(i)->have, HAS_SHIELD);
-                Player_by_index(i)->shield_time = 0;
+            if (!Player_is_tank(pl_i))
+            {
+                if (!BIT(pl_i->used, HAS_SHOT))
+                    SET_BIT(pl_i->used, HAS_SHIELD);
+
+                SET_BIT(pl_i->have, HAS_SHIELD);
+                pl_i->shield_time = 0;
             }
         }
     }
@@ -163,18 +165,18 @@ void tuner_teamcannons(void)
     {
         for (i = 0; i < Num_cannons(); i++)
         {
-            team = Find_closest_team(world->cannons[i].pos);
+            cannon_t *cannon = Cannon_by_index(i);
+
+            team = Find_closest_team(cannon->pos);
             if (team == TEAM_NOT_SET)
-            {
-                error("Couldn't find a matching team for the cannon.");
-            }
-            world->cannons[i].team = team;
+                warn("Couldn't find a matching team for the cannon.");
+            cannon->team = team;
         }
     }
     else
     {
         for (i = 0; i < Num_cannons(); i++)
-            world->cannons[i].team = TEAM_NOT_SET;
+            Cannon_by_index(i)->team = TEAM_NOT_SET;
     }
 }
 
@@ -316,13 +318,10 @@ void tuner_racelaps(void)
 void tuner_allowalliances(void)
 {
     if (BIT(world->rules->mode, TEAM_PLAY))
-    {
         CLR_BIT(world->rules->mode, ALLIANCES);
-    }
+
     if (!BIT(world->rules->mode, ALLIANCES) && NumAlliances > 0)
-    {
         Dissolve_all_alliances();
-    }
 }
 
 void tuner_announcealliances(void)

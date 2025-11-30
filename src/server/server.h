@@ -198,7 +198,7 @@ void Place_moving_mine(player_t *pl);
 void Place_general_mine(int id, int team, int status,
                         clpos_t pos, vector_t vel, modifiers_t mods);
 void Detonate_mines(player_t *pl);
-char *Describe_shot(int type, long status, modifiers_t mods, int hit);
+char *Describe_shot(int type, int status, modifiers_t mods, int hit);
 void Fire_ecm(player_t *pl);
 void Fire_general_ecm(int id, int team, clpos_t pos);
 void Update_connector_force(ballobject_t *ball);

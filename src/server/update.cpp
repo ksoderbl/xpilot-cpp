@@ -29,6 +29,7 @@
 #include "xperror.h"
 
 #include "server.h"
+#include "target.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -705,61 +706,8 @@ void Update_objects(void)
     if (Num_cannons() > 0)
         Cannon_update(tick);
 
-    /*
-     * Update targets
-     */
-    for (int i = 0; i < Num_targets(); i++)
-    {
-        if (world->targets[i].dead_time > 0)
-        {
-            if (!--world->targets[i].dead_time)
-            {
-                world->block[world->targets[i].blk_pos.bx][world->targets[i].blk_pos.by] = TARGET;
-                world->targets[i].conn_mask = 0;
-                world->targets[i].update_mask = (unsigned)-1;
-                world->targets[i].last_change = frame_loops;
-
-                if (options.targetSync)
-                {
-                    uint16_t team = world->targets[i].team;
-
-                    for (int j = 0; j < Num_targets(); j++)
-                    {
-                        if (world->targets[j].team == team)
-                        {
-                            world->block[world->targets[j].blk_pos.bx]
-                                        [world->targets[j].blk_pos.by] = TARGET;
-                            world->targets[j].conn_mask = 0;
-                            world->targets[j].update_mask = (unsigned)-1;
-                            world->targets[j].last_change = frame_loops;
-                            world->targets[j].dead_time = 0;
-                            world->targets[j].damage = TARGET_DAMAGE;
-                        }
-                    }
-                }
-            }
-            continue;
-        }
-        else if (world->targets[i].damage == TARGET_DAMAGE)
-        {
-            continue;
-        }
-        world->targets[i].damage += TARGET_REPAIR_PER_FRAME;
-        if (world->targets[i].damage >= TARGET_DAMAGE)
-        {
-            world->targets[i].damage = TARGET_DAMAGE;
-        }
-        else if (world->targets[i].last_change + TARGET_UPDATE_DELAY < frame_loops)
-        {
-            /*
-             * We don't send target info to the clients every frame
-             * if the latest repair wouldn't change their display.
-             */
-            continue;
-        }
-        world->targets[i].conn_mask = 0;
-        world->targets[i].last_change = frame_loops;
-    }
+    if (Num_targets() > 0)
+        Target_update();
 
     // xpinfo("player loop");
 
@@ -1021,9 +969,8 @@ void Update_objects(void)
                         }
                     }
                     else
-                    {
                         CLR_BIT(pl->used, USES_REPAIR);
-                    }
+
                     if (pl->fuel.current == pl->fuel.num_tanks)
                         pl->fuel.current = 0;
                     else
