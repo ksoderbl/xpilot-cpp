@@ -23,6 +23,34 @@
 
 #include <cctype>
 
+/*
+ * Fast conversion of 'num' into 'str' starting at position 'i', returns
+ * index of character after converted number.
+ */
+int num2str(int num, char *str, int i)
+{
+    int digits, t;
+
+    if (num < 0)
+    {
+        str[i++] = '-';
+        num = -num;
+    }
+    if (num < 10)
+    {
+        str[i++] = '0' + num;
+        return i;
+    }
+    for (t = num, digits = 0; t; t /= 10, digits++)
+        ;
+    for (t = i + digits - 1; t >= 0; t--)
+    {
+        str[t] = num % 10;
+        num /= 10;
+    }
+    return i + digits;
+}
+
 int str2num(char **strp, int min, int max)
 {
     char *str = *strp;

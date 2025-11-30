@@ -37,6 +37,7 @@
 #include "const.h"
 #include "strlcpy.h"
 
+#include "modifiers.h"
 #include "server.h"
 
 #define SERVER
@@ -302,18 +303,14 @@ static void Frame_radar_buffer_add(clpos_t pos, int s)
 
 static void Frame_radar_buffer_send(connection_t *conn)
 {
-    int i;
-    int dest;
-    int tmp;
+    int i, dest, tmp;
     radar_t *p;
     const int radar_width = 256;
-    int radar_height = (radar_width * world->y) / world->x;
-    int radar_x;
-    int radar_y;
-    int send_x;
-    int send_y;
+    int radar_height, radar_x, radar_y, send_x, send_y;
     shuffle_t *radar_shuffle;
     size_t shuffle_bufsize;
+
+    radar_height = (radar_width * world->y) / world->x;
 
     if (num_radar > MIN(256, MAX_SHUFFLE_INDEX))
         num_radar = MIN(256, MAX_SHUFFLE_INDEX);
@@ -332,7 +329,9 @@ static void Frame_radar_buffer_send(connection_t *conn)
         radar_shuffle[dest] = tmp;
     }
 
-    if (Get_conn_version(conn) <= 0x4400)
+    // if (Get_conn_version(conn) <= 0x4400)
+    // if (!FEATURE(conn, F_FASTRADAR))
+    if (false)
     {
         for (i = 0; i < num_radar; i++)
         {
@@ -346,9 +345,10 @@ static void Frame_radar_buffer_send(connection_t *conn)
     }
     else
     {
+
         uint8_t buf[3 * 256];
         int buf_index = 0;
-        int fast_count = 0;
+        unsigned fast_count = 0;
 
         if (num_radar > 256)
             num_radar = 256;
@@ -371,7 +371,6 @@ static void Frame_radar_buffer_send(connection_t *conn)
         if (fast_count > 0)
             Send_fastradar(conn, buf, fast_count);
     }
-
     free(radar_shuffle);
 }
 
@@ -380,34 +379,6 @@ static void Frame_radar_buffer_free(void)
     XFREE(radar_ptr);
     num_radar = 0;
     max_radar = 0;
-}
-
-/*
- * Fast conversion of `num' into `str' starting at position `i', returns
- * index of character after converted number.
- */
-static int num2str(int num, char *str, int i)
-{
-    int digits, t;
-
-    if (num < 0)
-    {
-        str[i++] = '-';
-        num = -num;
-    }
-    if (num < 10)
-    {
-        str[i++] = '0' + num;
-        return i;
-    }
-    for (t = num, digits = 0; t; t /= 10, digits++)
-        ;
-    for (t = i + digits - 1; t >= 0; t--)
-    {
-        str[t] = num % 10;
-        num /= 10;
-    }
-    return i + digits;
 }
 
 static int Frame_status(connection_t *conn, player_t *pl)
@@ -660,9 +631,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
             (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
             click_inview(cv, worm->pos.cx, worm->pos.cy))
         {
-            int cx = worm->pos.cx;
-            int cy = worm->pos.cy;
-            Send_wormhole(conn, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
+            Send_wormhole(conn, worm->pos);
             pl->last_wormhole_update = i;
             bytes_left -= max_packet * wormhole_packet_size;
             if (++packet_count >= max_packet)
@@ -754,6 +723,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
     int obj_count;
     object_t *shot;
     object_t **obj_list;
+    clpos_t pos;
     int hori_blocks, vert_blocks;
 
     hori_blocks = (view_width + (BLOCK_SZ - 1)) / (2 * BLOCK_SZ);
@@ -772,6 +742,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         y = shot->pix_pos.y;
         cx = shot->pos.cx;
         cy = shot->pos.cy;
+        pos = shot->pos;
+
         if (!click_inview(cv, cx, cy))
             continue;
 
@@ -828,7 +800,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
-                Send_wreckage(conn, x, y, (uint8_t)wreck->info,
+                Send_wreckage(conn, pos, (uint8_t)wreck->info,
                               wreck->wire_size, wreck->rotation);
             }
             break;
@@ -836,8 +808,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         case OBJ_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
-            Send_asteroid(conn, x, y,
-                          (uint8_t)ast->info, ast->wire_size, ast->rotation);
+            Send_asteroid(conn, pos, (uint8_t)ast->info,
+                          ast->wire_size, ast->rotation);
         }
         break;
 
@@ -868,19 +840,26 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_TORPEDO:
             len = options.distinguishMissiles ? TORPEDO_LEN : MISSILE_LEN;
-            Send_missile(conn, x, y, len, shot->missile_dir);
+            Send_missile(conn, pos, len, shot->missile_dir);
             break;
         case OBJ_SMART_SHOT:
             len = options.distinguishMissiles ? SMART_SHOT_LEN : MISSILE_LEN;
-            Send_missile(conn, x, y, len, shot->missile_dir);
+            Send_missile(conn, pos, len, shot->missile_dir);
             break;
         case OBJ_HEAT_SHOT:
             len = options.distinguishMissiles ? HEAT_SHOT_LEN : MISSILE_LEN;
-            Send_missile(conn, x, y, len, shot->missile_dir);
+            Send_missile(conn, pos, len, shot->missile_dir);
             break;
         case OBJ_BALL:
-            Send_ball(conn, x, y, shot->id);
+        {
+            ballobject_t *ball = BALL_PTR(shot);
+
+            Send_ball(conn, pos, ball->id,
+                      0xff);
+            //   options.ballStyles ? ball->ball_style : 0xff);
+
             break;
+        }
         case OBJ_MINE:
         {
             int id = 0;
@@ -901,17 +880,19 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                     confused = 1;
             }
             if (mine->id != NO_ID && Player_is_paused(Player_by_id(mine->id)))
+            {
                 laid_by_team = 1;
+            }
             else
             {
                 laid_by_team = (Team_immune(mine->id, pl->id) || (BIT(mine->obj_status, OWNERIMMUNE) && mine->mine_owner == pl->id));
                 if (confused)
                 {
                     id = 0;
-                    laid_by_team = (rfrac() < 0.5f);
+                    laid_by_team = (rfrac() < 0.5);
                 }
             }
-            Send_mine(conn, x, y, laid_by_team, id);
+            Send_mine(conn, pos, laid_by_team, id);
         }
         break;
 
@@ -927,23 +908,18 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
             int item_type = item->item_type;
 
-            if (BIT(shot->obj_status, RANDOM_ITEM))
+            if (BIT(item->obj_status, RANDOM_ITEM))
                 item_type = Choose_random_item();
 
-            Send_item(conn, x, y, item_type);
+            Send_item(conn, pos, item_type);
         }
         break;
-
-        default:
-            error("Frame_shots: Shot type %d not defined.", shot->type);
-            break;
         }
     }
 }
 
 static void Frame_ships(connection_t *conn, player_t *pl)
 {
-    player_t *pl_i;
     pulse_t *pulse;
     int i, j, k, color, dir;
     int cx, cy;
@@ -1000,16 +976,24 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             color = BLUE;
         else
             color = RED;
-        Send_laser(conn, color, (int)x, (int)y, pulse->len, dir);
+
+        clpos_t pos;
+        pos.cx = cx;
+        pos.cy = cy;
+        Send_laser(conn, color, pos, pulse->len, dir);
     }
     for (i = 0; i < Num_ecms(); i++)
     {
         ecm_t *ecm = Ecm_by_index(i);
-        Send_ecm(conn, CLICK_TO_PIXEL(ecm->pos.cx), CLICK_TO_PIXEL(ecm->pos.cy), ecm->size);
+
+        if (clpos_inview(&cv, ecm->pos))
+            Send_ecm(conn, ecm->pos, (int)ecm->size);
     }
+
     for (i = 0; i < Num_transporters(); i++)
     {
         transporter_t *trans = Transporter_by_index(i);
+
         player_t *victim = Player_by_id(trans->target),
                  *pl = (trans->id == NO_ID ? NULL : Player_by_id(trans->id));
         int cx = (pl ? pl->pos.cx : trans->pos.cx);
@@ -1018,7 +1002,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
     }
     for (i = 0; i < Num_cannons(); i++)
     {
-        cannon_t *cannon = world->cannons + i;
+        cannon_t *cannon = Cannon_by_index(i);
         if (cannon->tractor_count > 0)
         {
             player_t *t = Player_by_id(cannon->tractor_target_id);
@@ -1039,6 +1023,8 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
     for (k = 0; k < num_player_shuffle; k++)
     {
+        player_t *pl_i;
+
         i = player_shuffle_ptr[k];
         pl_i = Player_by_index(i);
         if (!BIT(pl_i->obj_status, PLAYING | PAUSE))
@@ -1047,12 +1033,9 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             continue;
         if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
             continue;
-        if (BIT(pl_i->obj_status, PAUSE))
+        if (Player_is_paused(pl_i))
         {
-            Send_paused(conn,
-                        pl_i->pix_pos.x,
-                        pl_i->pix_pos.y,
-                        pl_i->count);
+            Send_paused(conn, pl_i->pos, pl_i->count);
             continue;
         }
 
@@ -1063,13 +1046,12 @@ static void Frame_ships(connection_t *conn, player_t *pl)
              * Transmit ship information
              */
             Send_ship(conn,
-                      pl_i->pix_pos.x,
-                      pl_i->pix_pos.y,
+                      pl_i->pos,
                       pl_i->id,
                       pl_i->dir,
                       BIT(pl_i->used, HAS_SHIELD) != 0,
                       Player_is_cloaked(pl_i) ? 1 : 0,
-                      BIT(pl_i->used, USES_EMERGENCY_SHIELD) != 0,
+                      BIT(pl_i->used, HAS_EMERGENCY_SHIELD) != 0,
                       Player_is_phasing(pl_i) ? 1 : 0,
                       BIT(pl_i->used, USES_DEFLECTOR) != 0);
         }

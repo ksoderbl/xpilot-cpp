@@ -42,13 +42,10 @@
 
 void Score(player_t *pl, int points, clpos_t pos, const char *msg)
 {
-    int x = CLICK_TO_BLOCK(pos.cx);
-    int y = CLICK_TO_BLOCK(pos.cy);
-
     pl->score += (points);
 
     if (pl->conn != NULL)
-        Send_score_object(pl->conn, points, x, y, msg);
+        Send_score_object(pl->conn, points, pos, msg);
 
     updateScores = true;
 }

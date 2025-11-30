@@ -581,24 +581,22 @@ int Handle_keyboard(player_t *pl)
 
             case KEY_FIRE_MISSILE:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(pl, OBJ_SMART_SHOT_BIT, pl->dir);
+                    Fire_shot(pl, OBJ_SMART_SHOT, pl->dir);
                 break;
 
             case KEY_FIRE_HEAT:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(pl, OBJ_HEAT_SHOT_BIT, pl->dir);
+                    Fire_shot(pl, OBJ_HEAT_SHOT, pl->dir);
                 break;
 
             case KEY_FIRE_TORPEDO:
                 if (pl->item[ITEM_MISSILE] > 0)
-                    Fire_shot(pl, OBJ_TORPEDO_BIT, pl->dir);
+                    Fire_shot(pl, OBJ_TORPEDO, pl->dir);
                 break;
 
             case KEY_FIRE_LASER:
                 if (pl->item[ITEM_LASER] > 0 && BIT(pl->used, HAS_SHIELD) == 0)
-                {
                     SET_BIT(pl->used, HAS_LASER);
-                }
                 break;
 
             case KEY_TOGGLE_NUCLEAR:

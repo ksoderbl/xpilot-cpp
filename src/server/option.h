@@ -65,6 +65,7 @@ typedef struct options
     char *mapAuthor;   /* Name of the creator */
     int contactPort;   /* Contact port number */
     char *serverHost;  /* Host name (for multihomed hosts) */
+    char *greeting;
 
     bool crashWithPlayer;                /* Can players overrun other players? */
     bool bounceWithPlayer;               /* Can players bounce other players? */

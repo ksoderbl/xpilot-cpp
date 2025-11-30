@@ -22,4 +22,5 @@
  */
 #pragma once
 
+int num2str(int num, char *str, int i);
 int str2num(char **strp, int min, int max);

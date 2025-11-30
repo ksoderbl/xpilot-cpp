@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef NETSERVER_H
-#define NETSERVER_H
+#pragma once
 
 #include "connection.h"
 #include "player.h"
@@ -40,13 +39,13 @@ int Send_self(connection_t *connp, player_t *pl,
               int lock_dist,
               int lock_dir,
               int autopilotlight,
-              long status,
+              int status,
               char *mods);
 int Send_leave(connection_t *connp, int id);
 int Send_player(connection_t *connp, int id);
 int Send_score(connection_t *connp, int id, int score,
                int life, int mychar, int alliance);
-int Send_score_object(connection_t *connp, int score, int x, int y, const char *string);
+int Send_score_object(connection_t *connp, int score, clpos_t pos, const char *string);
 int Send_team_score(connection_t *connp, int team, int score);
 int Send_timing(connection_t *connp, int id, int check, int round);
 int Send_base(connection_t *connp, int id, int num);
@@ -57,26 +56,28 @@ int Send_shutdown(connection_t *connp, int count, int delay);
 int Send_thrusttime(connection_t *connp, int count, int max);
 int Send_shieldtime(connection_t *connp, int count, int max);
 int Send_phasingtime(connection_t *connp, int count, int max);
-int Send_debris(connection_t *connp, int type, uint8_t *p, int n);
-int Send_wreckage(connection_t *connp, int x, int y, uint8_t wrtype, uint8_t size, uint8_t rot);
-int Send_asteroid(connection_t *connp, int x, int y, uint8_t type, uint8_t size, uint8_t rot);
-int Send_fastshot(connection_t *connp, int type, uint8_t *p, int n);
-int Send_missile(connection_t *connp, int x, int y, int len, int dir);
-int Send_ball(connection_t *connp, int x, int y, int id);
-int Send_mine(connection_t *connp, int x, int y, int teammine, int id);
+int Send_debris(connection_t *connp, int type, uint8_t *p, unsigned n);
+int Send_wreckage(connection_t *connp, clpos_t pos, int wrtype, int size, int rot);
+int Send_asteroid(connection_t *connp, clpos_t pos, int type, int size, int rot);
+int Send_fastshot(connection_t *connp, int type, uint8_t *p, unsigned n);
+int Send_missile(connection_t *connp, clpos_t pos, int len, int dir);
+int Send_ball(connection_t *connp, clpos_t pos, int id, int style);
+int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id);
 int Send_target(connection_t *connp, int num, int dead_time, int damage);
-int Send_wormhole(connection_t *connp, int x, int y);
+int Send_wormhole(connection_t *connp, clpos_t pos);
+int Send_polystyle(connection_t *connp, int polyind, int newstyle);
 int Send_audio(connection_t *connp, int type, int vol);
-int Send_item(connection_t *connp, int x, int y, int type);
-int Send_paused(connection_t *connp, int x, int y, int count);
-int Send_ecm(connection_t *connp, int x, int y, int size);
-int Send_ship(connection_t *connp, int x, int y, int id, int dir, bool shield, bool cloak, bool eshield,
+int Send_item(connection_t *connp, clpos_t pos, int type);
+int Send_paused(connection_t *connp, clpos_t pos, int count);
+int Send_appearing(connection_t *connp, clpos_t pos, int id, int count);
+int Send_ecm(connection_t *connp, clpos_t pos, int size);
+int Send_ship(connection_t *connp, clpos_t pos, int id, int dir, bool shield, bool cloak, bool eshield,
               bool phased, bool deflector);
 int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1);
 int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor);
-int Send_laser(connection_t *connp, int color, int x, int y, int len, int dir);
+int Send_laser(connection_t *connp, int color, clpos_t pos, int len, int dir);
 int Send_radar(connection_t *connp, int x, int y, int size);
-int Send_fastradar(connection_t *connp, uint8_t *buf, int n);
+int Send_fastradar(connection_t *connp, uint8_t *buf, unsigned n);
 int Send_damaged(connection_t *connp, int damaged);
 int Send_message(connection_t *connp, const char *msg);
 int Send_loseitem(int lose_item_index, connection_t *connp);
@@ -89,7 +90,6 @@ int Send_trans(connection_t *connp, int x1, int y1, int x2, int y2);
 void Get_display_parameters(connection_t *connp, int *width, int *height,
                             int *debris_colors, int *spark_rand);
 int Get_player_id(connection_t *connp);
-int Get_conn_version(connection_t *connp);
 const char *Player_get_addr(player_t *pl);
 const char *Player_get_dpy(player_t *pl);
 int Send_shape(connection_t *connp, int shape);
@@ -109,5 +109,3 @@ int Check_max_clients_per_IP(char *host_addr);
 #define F_CUMULATIVETURN (1 << 9)
 #define F_BALLSTYLE (1 << 10)
 #define F_POLYSTYLE (1 << 11)
-
-#endif
