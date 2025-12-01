@@ -1237,7 +1237,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                 // a fast shot hitting a shielded ship may drain all fuel,
                 // causing the ship to float, dead in space.
                 drainfactor = 1;
-                drain = (long)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
+                drain = ED_SHOT_HIT * drainfactor * SHOT_MULT(obj);
                 Player_add_fuel(pl, drain);
             }
             pl->forceVisible = (int)(pl->forceVisible + SHOT_MULT(obj));
@@ -1248,13 +1248,9 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             break;
         }
         if (pl->fuel.sum <= 0)
-        {
-            CLR_BIT(pl->used, HAS_SHIELD);
-        }
+            CLR_BIT(pl->used, USES_SHIELD);
         if (!BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
-        {
             Player_hit_armor(pl);
-        }
     }
     else
     {
@@ -1347,7 +1343,7 @@ static void AsteroidCollision(void)
     int j, radius, obj_count;
     object_t *ast;
     object_t *obj = NULL, **obj_list;
-    double damage = 0;
+    double damage = 0.0;
     bool sound = false;
 
     std::vector<wireobject_t *> &asteroids = Asteroid_get_list();
@@ -1357,15 +1353,17 @@ static void AsteroidCollision(void)
     for (wireobject_t *wireobject : asteroids)
     {
         ast = OBJ_PTR(wireobject);
-        assert(BIT(ast->type, OBJ_ASTEROID_BIT));
 
         if (ast->life <= 0)
             continue;
 
-        assert(OBJ_X_IN_BLOCKS(ast) >= 0);
-        assert(OBJ_X_IN_BLOCKS(ast) < world->x);
-        assert(OBJ_Y_IN_BLOCKS(ast) >= 0);
-        assert(OBJ_Y_IN_BLOCKS(ast) < world->y);
+        // TODO: rather do some wrap thing than using assert
+        /*
+     assert(OBJ_X_IN_BLOCKS(ast) >= 0);
+     assert(OBJ_X_IN_BLOCKS(ast) < world->x);
+     assert(OBJ_Y_IN_BLOCKS(ast) >= 0);
+     assert(OBJ_Y_IN_BLOCKS(ast) < world->y);
+     */
 
         Cell_get_objects(ast->pos,
                          ast->pl_radius / BLOCK_SZ + 1, 300,
@@ -1382,13 +1380,13 @@ static void AsteroidCollision(void)
             if (BIT(obj->type, OBJ_ITEM_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_WRECKAGE_BIT) && obj->id == NO_ID && !BIT(obj->obj_status, FROMCANNON))
                 continue;
             /* don't collide while still overlapping  after breaking */
-            if (obj->type == OBJ_ASTEROID_BIT && ast->life > ast->fuselife)
+            if (obj->type == OBJ_ASTEROID && ast->life > ast->fuselife)
                 continue;
             /* don't collide with self */
             if (obj == ast)
                 continue;
             /* don't collide with phased balls */
-            if (BIT(obj->type, OBJ_BALL_BIT) && obj->id != NO_ID && BIT(PlayersArray[GetInd(obj->id)]->used, USES_PHASING_DEVICE))
+            if (BIT(obj->type, OBJ_BALL) && obj->id != NO_ID && BIT(PlayersArray[GetInd(obj->id)]->used, USES_PHASING_DEVICE))
                 continue;
 
             radius = ast->pl_radius + obj->pl_radius;
@@ -1546,7 +1544,7 @@ static void BallCollision(void)
                 continue;
 
             /* have we already done this ball pair? */
-            if (obj->type == OBJ_BALL_BIT && obj <= OBJ_PTR(ball))
+            if (obj->type == OBJ_BALL && obj <= OBJ_PTR(ball))
                 continue;
 
             if (!in_range_acd(ball->prevpos.cx, ball->prevpos.cy,

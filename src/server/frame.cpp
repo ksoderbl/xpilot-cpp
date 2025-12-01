@@ -448,7 +448,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
         Send_thrusttime(conn,
                         pl->emergency_thrust_left,
                         pl->emergency_thrust_max);
-    if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
@@ -750,7 +750,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
                 Send_wreckage(conn, pos, (uint8_t)wreck->info,
-                              wreck->wire_size, wreck->rotation);
+                              wreck->wire_size, wreck->wire_rotation);
             }
             break;
 
@@ -758,7 +758,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         {
             wireobject_t *ast = WIRE_PTR(shot);
             Send_asteroid(conn, pos, (uint8_t)ast->info,
-                          ast->wire_size, ast->rotation);
+                          ast->wire_size, ast->wire_rotation);
         }
         break;
 

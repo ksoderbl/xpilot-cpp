@@ -1321,7 +1321,9 @@ void Delete_shot(int ind)
             break;
         }
 
-        world->items[shot->info].num--;
+        if (shot->info != item->item_type)
+            warn("shot->info != item->item_type");
+        world->items[item->item_type].num--;
 
         break;
 

@@ -291,10 +291,10 @@ struct xp_wireobject
 
     OBJECT_EXTEND
 
-    DFLOAT turnspeed; /* how fast to turn */
+    DFLOAT wire_turnspeed; /* how fast to turn */
 
-    uint8_t wire_size; /* Size of object (wreckage) */
-    uint8_t rotation;  /* Rotation direction */
+    uint8_t wire_size;     /* Size of object (wreckage) */
+    uint8_t wire_rotation; /* Rotation direction */
 
 #define WIRE_IND(ind) ((wireobject_t *)Obj[(ind)])
 #define WIRE_PTR(obj) ((wireobject_t *)(obj))

@@ -1059,7 +1059,7 @@ static bool Check_robot_target(player_t *pl,
                     else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
                         SET_BIT(pl->used, USES_TRACTOR_BEAM);
                 }
-                if (BIT(pl->used, USES_TRACTOR_BEAM))
+                if (Player_uses_tractor_beam(pl))
                     SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
             }
         }

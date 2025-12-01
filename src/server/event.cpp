@@ -857,7 +857,7 @@ int Handle_keyboard(player_t *pl)
                         if (Player_uses_emergency_thrust(pl))
                             Emergency_thrust(pl, false);
 
-                        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
                             Emergency_shield(pl, false);
 
                         if (!BIT(pl->used, USES_AUTOPILOT))
@@ -881,7 +881,7 @@ int Handle_keyboard(player_t *pl)
                         Autopilot(pl, false);
                         CLR_BIT(pl->obj_status, HOVERPAUSE);
                         if (!BIT(pl->have, HAS_SHIELD))
-                            CLR_BIT(pl->used, HAS_SHIELD);
+                            CLR_BIT(pl->used, USES_SHIELD);
                     }
                     break;
                 }

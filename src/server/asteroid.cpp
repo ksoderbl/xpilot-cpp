@@ -301,7 +301,7 @@ static void Make_asteroid(clpos_t pos,
     asteroid->color = WHITE;
     asteroid->id = NO_ID;
     asteroid->team = TEAM_NOT_SET;
-    asteroid->type = OBJ_ASTEROID_BIT;
+    asteroid->type = OBJ_ASTEROID;
 
     /* Position */
     Object_position_init_clpos(OBJ_PTR(asteroid), pos);
@@ -311,8 +311,8 @@ static void Make_asteroid(clpos_t pos,
     asteroid->acc.x = asteroid->acc.y = 0;
     asteroid->mass = ASTEROID_MASS(size);
     asteroid->life = ASTEROID_LIFE;
-    asteroid->turnspeed = 0.02 + rfrac() * 0.05;
-    asteroid->rotation = (int)(rfrac() * RES);
+    asteroid->wire_turnspeed = 0.02 + rfrac() * 0.05;
+    asteroid->wire_rotation = (int)(rfrac() * RES);
     asteroid->wire_size = size;
     asteroid->info = (int)(rfrac() * 256);
     radius = ASTEROID_RADIUS(size);
@@ -339,11 +339,10 @@ static void Make_asteroid(clpos_t pos,
  */
 static void Place_asteroid(void)
 {
-    int place_count;
+    int place_count, dir, dist, i;
     int bx, by;
-    int dir, dist;
     unsigned space;
-    int okay;
+    bool okay = false;
     asteroid_concentrator_t *con;
     clpos_t pos;
 
@@ -352,15 +351,17 @@ static void Place_asteroid(void)
     space |= FRICTION_BIT;
     /* would be dubious: space |= CANNON_BIT; */
 
-    if (world->NumAsteroidConcs > 0 && rfrac() < options.asteroidConcentratorProb)
-        con = &world->asteroidConcs[(int)(rfrac() * world->NumAsteroidConcs)];
+    if (Num_asteroidConcs() > 0 && rfrac() < options.asteroidConcentratorProb)
+        con = AsteroidConc_by_index((int)(rfrac() * Num_asteroidConcs()));
     else
         con = NULL;
 
-    /* we bail out after 8 unsuccessful attempts to avoid wasting
-     * too much time on crowded maps */
+    /*
+     * We bail out after some unsuccessful attempts to avoid wasting
+     * too much time on crowded maps.
+     */
     okay = false;
-    for (place_count = 0; okay != true; place_count++)
+    for (place_count = 0; !okay; place_count++)
     {
         if (place_count >= 10)
             return;
@@ -379,9 +380,8 @@ static void Place_asteroid(void)
                 continue;
         }
         else
-        {
             pos = World_get_random_clpos();
-        }
+
         bx = CLICK_TO_BLOCK(pos.cx);
         by = CLICK_TO_BLOCK(pos.cy);
 
@@ -413,13 +413,11 @@ static void Place_asteroid(void)
             }
         }
     }
-    if (okay == true)
-    {
+    if (okay)
         Make_asteroid(pos,
                       (int)(1 + rfrac() * ASTEROID_MAX_SIZE),
                       (int)(rfrac() * RES),
                       (double)ASTEROID_START_SPEED);
-    }
 }
 
 static void Asteroid_move(wireobject_t *wireobj)
@@ -429,8 +427,8 @@ static void Asteroid_move(wireobject_t *wireobj)
 
 static void Asteroid_rotate(wireobject_t *wireobj)
 {
-    wireobj->rotation =
-        (wireobj->rotation + (int)(wireobj->turnspeed * RES)) % RES;
+    wireobj->wire_rotation =
+        (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
 }
 
 /*

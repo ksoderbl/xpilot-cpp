@@ -162,11 +162,11 @@ void Cloak(player_t *pl, bool on)
         {
             if (!options.cloakedShield)
             {
-                if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                if (BIT(pl->used, USES_EMERGENCY_SHIELD))
                     Emergency_shield(pl, false);
                 if (BIT(pl->used, USES_DEFLECTOR))
                     Deflector(pl, false);
-                CLR_BIT(pl->used, HAS_SHIELD);
+                CLR_BIT(pl->used, USES_SHIELD);
                 CLR_BIT(pl->have, HAS_SHIELD);
             }
             sound_play_player(pl, CLOAK_SOUND);
@@ -302,9 +302,9 @@ void Emergency_shield(player_t *pl, bool on)
         if (!BIT(DEF_HAVE, HAS_SHIELD))
         {
             CLR_BIT(pl->have, HAS_SHIELD);
-            CLR_BIT(pl->used, HAS_SHIELD);
+            CLR_BIT(pl->used, USES_SHIELD);
         }
-        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
             CLR_BIT(pl->used, USES_EMERGENCY_SHIELD);
             sound_play_sensors(pl->pos, EMERGENCY_SHIELD_OFF_SOUND);
@@ -451,9 +451,7 @@ static void do_Autopilot(player_t *pl)
         dir = -1;
     }
     else
-    {
         dir = 1;
-    }
 
     /*
      * Calculate turnspeed needed to change direction instantaneously by
@@ -494,9 +492,7 @@ static void do_Autopilot(player_t *pl)
         pl->turnvel = 0.0;
     }
     else
-    {
         pl->turnacc = dir * pl->turnspeed;
-    }
 
     /*
      * Change the power setting towards the perfect value, and limit
@@ -535,13 +531,9 @@ static void do_Autopilot(player_t *pl)
      * we don't want to over thrust.
      */
     if (pl->power > power)
-    {
         Thrust(pl, false);
-    }
     else
-    {
         Thrust(pl, true);
-    }
 }
 
 /********** **********
@@ -642,19 +634,17 @@ void Update_objects(void)
             }
         }
 
-        else if (BIT(obj->type, OBJ_WRECKAGE_BIT))
+        else if (obj->type == OBJ_WRECKAGE)
         {
             wireobject_t *wireobj = WIRE_PTR(obj);
-            wireobj->rotation =
-                (wireobj->rotation + (int)(wireobj->turnspeed * RES)) % RES;
+            wireobj->wire_rotation =
+                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
         }
 
         update_object_speed(obj);
 
-        if (!BIT(obj->type, OBJ_ASTEROID_BIT))
-        {
+        if (!(obj->type == OBJ_ASTEROID))
             Move_object(obj);
-        }
     }
 
     /*
@@ -774,9 +764,9 @@ void Update_objects(void)
             if (--pl->shield_time == 0)
             {
                 if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
-                    CLR_BIT(pl->used, HAS_SHIELD);
+                    CLR_BIT(pl->used, USES_SHIELD);
             }
-            if (BIT(pl->used, HAS_SHIELD) == 0)
+            if (BIT(pl->used, USES_SHIELD) == 0)
             {
                 /* BG 95/06/03: change test on "have" to "used". */
                 if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
@@ -789,7 +779,7 @@ void Update_objects(void)
         {
             if (--pl->phasing_left <= 0)
             {
-                if (pl->item[ITEM_PHASING])
+                if (pl->item[ITEM_PHASING] > 0)
                     Phasing(pl, true);
                 else
                     Phasing(pl, false);
@@ -807,7 +797,7 @@ void Update_objects(void)
             }
         }
 
-        if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
             if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
@@ -953,7 +943,7 @@ void Update_objects(void)
                 CLR_BIT(pl->used, USES_REPAIR);
             else
             {
-                int i = pl->fuel.num_tanks;
+                int n = pl->fuel.num_tanks;
                 int ct = pl->fuel.current;
 
                 do
@@ -977,7 +967,7 @@ void Update_objects(void)
                         pl->fuel.current = 0;
                     else
                         pl->fuel.current += 1;
-                } while (i--);
+                } while (n--);
                 pl->fuel.current = ct;
             }
         }
@@ -1242,7 +1232,7 @@ void Update_objects(void)
                 pl->updateVisibility = true;
         }
 
-        if (BIT(pl->used, USES_TRACTOR_BEAM))
+        if (Player_uses_tractor_beam(pl))
             Tractor_beam(pl);
 
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
@@ -1255,14 +1245,10 @@ void Update_objects(void)
         }
     }
 
-    // xpinfo("check collision");
-
     /*
      * Checking for collision, updating score etc. (see collision.c)
      */
     Check_collision();
-
-    // xpinfo("kill players");
 
     /*
      * Update tanks, Kill players that ought to be killed.
@@ -1301,8 +1287,6 @@ void Update_objects(void)
         }
     }
 
-    // xpinfo("kill shots");
-
     /*
      * Kill shots that ought to be dead.
      */
@@ -1315,16 +1299,12 @@ void Update_objects(void)
      * (not called after Game_Over() )
      */
     if (options.gameDuration >= 0.0 || options.maxRoundTime > 0)
-    {
         Compute_game_status();
-    }
 
     /*
      * Now update labels if need be.
      */
 #define UPDATE_SCORE_DELAY (FPS)
-    if (updateScores && frame_loops % UPDATE_SCORE_DELAY == 0)
+    if (updateScores && ((frame_loops % UPDATE_SCORE_DELAY) == 0))
         Update_score_table();
-
-    // xpinfo("end of update");
 }

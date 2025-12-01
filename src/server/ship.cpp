@@ -729,8 +729,8 @@ void Make_wreckage(clpos_t pos,
         wreckage->fuselife = wreckage->life;
 
         /* Wreckage type, rotation, and size */
-        wreckage->turnspeed = 0.02 + rfrac() * 0.35;
-        wreckage->rotation = (int)(rfrac() * RES);
+        wreckage->wire_turnspeed = 0.02 + rfrac() * 0.35;
+        wreckage->wire_rotation = (int)(rfrac() * RES);
         size = (int)(256.0 * 1.5 * mass / total_mass);
         if (size > 255)
             size = 255;

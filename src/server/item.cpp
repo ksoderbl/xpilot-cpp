@@ -72,7 +72,7 @@ static void Item_update_flags(player_t *pl)
             if (!BIT(DEF_HAVE, HAS_SHIELD) && pl->shield_time <= 0)
             {
                 CLR_BIT(pl->have, HAS_SHIELD);
-                CLR_BIT(pl->used, HAS_SHIELD);
+                CLR_BIT(pl->used, USES_SHIELD);
             }
         }
     }
