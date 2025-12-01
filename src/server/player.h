@@ -106,13 +106,6 @@
 #define OBJ_EXT_ROBOT (1U << 2)
 
 /*
- * Macros to query the type of player.
- */
-#define Player_is_tank(pl) (BIT((pl)->type_ext, OBJ_EXT_TANK) == OBJ_EXT_TANK)
-#define Player_is_robot(pl) (BIT((pl)->type_ext, OBJ_EXT_ROBOT) == OBJ_EXT_ROBOT)
-#define Player_is_human(pl) (!BIT((pl)->type_ext, OBJ_EXT_TANK | OBJ_EXT_ROBOT))
-
-/*
  * Fuel structure, used by player
  */
 typedef struct
@@ -144,8 +137,6 @@ typedef struct
     OBJECT_BASE
 
     /* up to here the player type should be the same as an object. */
-
-    int type_ext; /* extended type info (tank, robot) */
 
     int pl_type;           /* extended type info (tank, robot) */
     char pl_type_mychar;   /* Special char for player type */
@@ -543,20 +534,20 @@ static inline bool Player_is_repairing(player_t *pl)
 //         pl->self_destruct_count = 0.0;
 // }
 
-// static inline bool Player_is_human(player_t *pl)
-// {
-//     return pl->pl_type == PL_TYPE_HUMAN ? true : false;
-// }
+static inline bool Player_is_human(player_t *pl)
+{
+    return pl->pl_type == PL_TYPE_HUMAN ? true : false;
+}
 
-// static inline bool Player_is_robot(player_t *pl)
-// {
-//     return pl->pl_type == PL_TYPE_ROBOT ? true : false;
-// }
+static inline bool Player_is_robot(player_t *pl)
+{
+    return pl->pl_type == PL_TYPE_ROBOT ? true : false;
+}
 
-// static inline bool Player_is_tank(player_t *pl)
-// {
-//     return pl->pl_type == PL_TYPE_TANK ? true : false;
-// }
+static inline bool Player_is_tank(player_t *pl)
+{
+    return pl->pl_type == PL_TYPE_TANK ? true : false;
+}
 
 // static inline bool Player_owns_tank(player_t *pl, player_t *tank)
 // {

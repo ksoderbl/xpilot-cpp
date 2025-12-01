@@ -153,9 +153,7 @@ void Delta_mv(object_t *ship, object_t *obj)
         player_t *pl = (player_t *)ship;
         player_t *pusher = Player_by_id(obj->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
     ship->vel.x = vx;
     ship->vel.y = vy;
@@ -186,9 +184,7 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
 }
 
@@ -223,9 +219,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         player_t *pl = (player_t *)obj1;
         player_t *pusher = Player_by_id(obj2->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
 
     if (obj2->type == OBJ_PLAYER && obj1->id != NO_ID)
@@ -233,9 +227,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
         player_t *pl = (player_t *)obj2;
         player_t *pusher = Player_by_id(obj1->id);
         if (pusher != pl)
-        {
             Record_shove(pl, pusher, frame_loops);
-        }
     }
 
     obj1->vel.x += dvx1;
@@ -401,7 +393,7 @@ void Tank_handle_detach(player_t *pl)
     /* Released tanks don't have tanks... */
     while (tank->fuel.num_tanks > 0)
         Player_remove_tank(tank, tank->fuel.num_tanks);
-    SET_BIT(tank->type_ext, OBJ_EXT_TANK);
+
     Object_position_init_clpos(OBJ_PTR(tank), pl->pos);
     tank->vel = pl->vel;
     tank->acc = pl->acc;

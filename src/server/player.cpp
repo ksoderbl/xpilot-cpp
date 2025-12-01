@@ -478,8 +478,14 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->shield_time = 0;
     pl->last_wall_touch = 0;
 
-    pl->type = OBJ_PLAYER;
-    pl->type_ext = 0; /* assume human player */
+    /*
+    pl->power = pl->power_s = MAX_PLAYER_POWER;
+    pl->turnspeed = pl->turnspeed_s = MIN_PLAYER_TURNSPEED;
+    */
+
+    pl->type = OBJ_PLAYER; // TODO: obj_type ?
+    pl->pl_type = type;
+
     pl->shots = 0;
     pl->missile_rack = 0;
     pl->forceVisible = 0;
