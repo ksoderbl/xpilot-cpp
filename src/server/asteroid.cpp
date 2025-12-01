@@ -489,7 +489,7 @@ void Asteroid_update(void)
         int incr = (1 << (ASTEROID_MAX_SIZE - 1));
         if (world->asteroids.num + incr < world->asteroids.max)
         {
-            if ((rfrac() * world->asteroids.chance) < 1.0f)
+            if ((rfrac() * world->asteroids.chance) < 1.0)
                 Place_asteroid();
         }
     }

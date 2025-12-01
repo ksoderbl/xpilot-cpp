@@ -208,7 +208,7 @@
 #define SHOT_MULT(o)                                                      \
     ((BIT((o)->mods.nuclear, NUCLEAR) && BIT((o)->mods.warhead, CLUSTER)) \
          ? options.nukeClusterDamage                                      \
-         : 1.0f)
+         : 1.0)
 
 #define MINE_RADIUS 8
 #define MINE_RANGE (VISIBILITY_DISTANCE * 0.1)

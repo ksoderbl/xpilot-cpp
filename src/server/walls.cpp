@@ -2698,7 +2698,7 @@ void Move_player(player_t *pl)
             {
                 double speed = VECTOR_LENGTH(ms[worst].vel);
                 int v = (int)speed >> 2;
-                int m = (int)(pl->mass - pl->emptymass * 0.75f);
+                int m = (int)(pl->mass - pl->emptymass * 0.75);
                 double b = 1 - 0.5f * options.playerWallBrakeFactor;
                 long cost = (long)(b * m * v);
                 int delta_dir,
@@ -2932,7 +2932,7 @@ void Turn_player(player_t *pl)
     move_info_t mi;
     move_state_t ms[RES];
     int dir;
-    int new_dir = MOD2((int)(pl->float_dir + 0.5f), RES);
+    int new_dir = MOD2((int)(pl->float_dir + 0.5), RES);
     int sign;
     int crash = -1;
     int nothing_done = 0;

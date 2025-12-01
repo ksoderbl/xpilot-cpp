@@ -95,14 +95,14 @@ static void Item_update_flags(player_t *pl)
  */
 void Item_damage(player_t *pl, double prob)
 {
-    if (prob < 1.0f)
+    if (prob < 1.0)
     {
         // player_t *pl = PlayersArray[ind];
         int i;
         double loss;
 
         loss = prob;
-        LIMIT(loss, 0.0f, 1.0f);
+        LIMIT(loss, 0.0f, 1.0);
 
         for (i = 0; i < NUM_ITEMS; i++)
         {
@@ -113,7 +113,7 @@ void Item_damage(player_t *pl, double prob)
                     double f = rfrac();
                     if (f < loss)
                     {
-                        pl->item[i] = (int)(pl->item[i] * loss + 0.5f);
+                        pl->item[i] = (int)(pl->item[i] * loss + 0.5);
                     }
                 }
             }
@@ -307,7 +307,7 @@ void Place_item(player_t *pl, int item)
                 const float drop_speed_factor = 0.75f;
                 vel.x *= drop_speed_factor;
                 vel.y *= drop_speed_factor;
-                if (vl < 1.0f)
+                if (vl < 1.0)
                 {
                     vel.x -= (pl->vel.x >= 0) ? dvx : -dvx;
                     vel.y -= (pl->vel.y >= 0) ? dvy : -dvy;
@@ -1077,7 +1077,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
              *  50                10                6
              *         0 (closest)        15                10
              */
-            if (range <= 0 || (int)(rfrac() * 100.0f) < ((int)(10 * (1 - range)) + 5))
+            if (range <= 0 || (int)(rfrac() * 100.0) < ((int)(10 * (1 - range)) + 5))
             {
                 mine->life = 0;
                 break;
@@ -1104,7 +1104,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     if (options.ecmsReprogramMines && closest_mine != NULL)
     {
         range = closest_mine_range;
-        if (range <= 0 || (int)(rfrac() * 100.0f) < (100 - (int)(50 * range)))
+        if (range <= 0 || (int)(rfrac() * 100.0) < (100 - (int)(50 * range)))
         {
             closest_mine->id = (pl ? pl->id : NO_ID);
             closest_mine->team = team;

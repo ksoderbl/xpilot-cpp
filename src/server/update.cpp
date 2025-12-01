@@ -573,7 +573,7 @@ void Update_objects(void)
      * Special items.
      */
     for (int i = 0; i < NUM_ITEMS; i++)
-        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0f)
+        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0)
             Place_item(NULL, i);
 
     /*
@@ -1029,7 +1029,7 @@ void Update_objects(void)
                 {
                     j = world->wormholes[pl->wormHoleHit].lastdest;
                 }
-                else if (rfrac() < 0.10f)
+                else if (rfrac() < 0.10)
                 {
                     do
                         j = (int)(rfrac() * world->NumWormholes);

@@ -1871,7 +1871,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     // Weird old code, that you lose 10% of fuel when you die.
     pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
     minfuel = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
-    minfuel += (int)(rfrac() * (1 + minfuel) * 0.2f);
+    minfuel += (int)(rfrac() * (1 + minfuel) * 0.2);
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(pl, pl->fuel.sum);
 

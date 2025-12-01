@@ -1187,7 +1187,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
      * Sound effects are missing when shot is deadly.
      */
 
-    if (BIT(pl->used, HAS_SHIELD) || BIT(pl->have, HAS_ARMOR) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, NUCLEAR) && (int)(rfrac() >= 0.25f)))
+    if (BIT(pl->used, HAS_SHIELD) || BIT(pl->have, HAS_ARMOR) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, NUCLEAR) && (int)(rfrac() >= 0.25)))
     {
         switch (obj->type)
         {

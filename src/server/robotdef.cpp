@@ -177,7 +177,7 @@ static void Robot_default_create(player_t *pl, char *str)
         if (str && *str)
         {
             xpprintf("%s invalid parameters for default robot: \"%s\"\n", showtime(), str);
-            my_data->attack = (int)(rfrac() * 99.5f);
+            my_data->attack = (int)(rfrac() * 99.5);
             my_data->defense = 100 - my_data->attack;
         }
         LIMIT(my_data->attack, 1, 99);
@@ -200,9 +200,9 @@ static void Robot_default_create(player_t *pl, char *str)
         my_data->robot_max_speed = 30.0 + (my_data->attack / 50) - (my_data->defense / 50);
     }
 
-    pl->fuel.l3 += my_data->defense - my_data->attack + (int)((rfrac() - 0.5f) * 20);
-    pl->fuel.l2 += 2 * (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5f) * 8);
-    pl->fuel.l1 += (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5f) * 4);
+    pl->fuel.l3 += my_data->defense - my_data->attack + (int)((rfrac() - 0.5) * 20);
+    pl->fuel.l2 += 2 * (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 8);
+    pl->fuel.l1 += (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 4);
 
     my_data->last_used_ecm = 0;
     my_data->last_dropped_mine = 0;

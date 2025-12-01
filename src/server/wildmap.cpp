@@ -254,7 +254,7 @@ static void Option_map(int argc, char **argv)
             }
             else
             {
-                fprintf(stderr, "(= %-6.4f, min: %-6.4f, max: %-6.4f)",
+                fprintf(stderr, "(= %-6.4f, min: %-6.4f, max: %-6.4)",
                         (double)*mapopts[i].dblp,
                         (double)mapopts[i].min, (double)mapopts[i].max);
             }
