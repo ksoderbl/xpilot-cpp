@@ -1833,7 +1833,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                 if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
                     pl->item[ITEM_HYPERJUMP]--;
-                    Add_fuel(&(pl->fuel), ED_HYPERJUMP);
+                    Player_add_fuel(pl, ED_HYPERJUMP);
                     do_hyperjump(pl);
                     break;
                 }
@@ -2173,7 +2173,7 @@ static void Robot_default_play(player_t *pl)
         if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
         {
             pl->item[ITEM_HYPERJUMP]--;
-            Add_fuel(&(pl->fuel), ED_HYPERJUMP);
+            Player_add_fuel(pl, ED_HYPERJUMP);
             do_hyperjump(pl);
             return;
         }

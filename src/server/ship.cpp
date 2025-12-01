@@ -241,14 +241,23 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
  * Add fuel to fighter's tanks.
  * Maybe use more than one of tank to store the fuel.
  */
-void Add_fuel(pl_fuel_t *ft, long fuel)
+static void Add_fuel(pl_fuel_t *ft, long fuel)
 {
+    warn("Add_fuel: amount: %ld", fuel);
+
     if (ft->sum + fuel > ft->max)
         fuel = ft->max - ft->sum;
     else if (ft->sum + fuel < 0)
         fuel = -ft->sum;
     ft->sum += fuel;
     ft->tank[ft->current] += fuel;
+}
+
+void Player_add_fuel(player_t *pl, double amount)
+{
+    warn("Player_add_fuel: amount: %f", amount);
+
+    Add_fuel(&(pl->fuel), (long)amount);
 }
 
 /*

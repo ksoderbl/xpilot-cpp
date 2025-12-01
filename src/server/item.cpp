@@ -550,7 +550,7 @@ void General_tractor_beam(int id, clpos_t pos,
     sound_play_sensors(pos, (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
 
     if (pl)
-        Add_fuel(&(pl->fuel), cost);
+        Player_add_fuel(pl, cost);
 
     // TODO
     theta = (int)Wrap_findDir(CLICK_TO_PIXEL(pos.cx - victim->pos.cx), CLICK_TO_PIXEL(pos.cy - victim->pos.cy));
@@ -580,7 +580,7 @@ void Do_deflector(player_t *pl)
             Deflector(pl, false);
         return;
     }
-    Add_fuel(&(pl->fuel), (long)ED_DEFLECTOR);
+    Player_add_fuel(pl, ED_DEFLECTOR);
 
     Cell_get_objects(pl->pos,
                      (int)(range / BLOCK_SZ + 1), 200,
@@ -660,7 +660,7 @@ void Do_transporter(player_t *pl)
     if (!victim)
     {
         sound_play_sensors(pl->pos, TRANSPORTER_FAIL_SOUND);
-        Add_fuel(&(pl->fuel), ED_TRANSPORTER);
+        Player_add_fuel(pl, ED_TRANSPORTER);
         pl->item[ITEM_TRANSPORTER]--;
         return;
     }
@@ -672,7 +672,6 @@ void Do_transporter(player_t *pl)
 void Do_general_transporter(int id, clpos_t pos,
                             player_t *victim, int *itemp, long *amountp)
 {
-    // player_t *victim = PlayersArray[target];
     char msg[MSG_LEN];
     const char *what = NULL;
     int i;
@@ -850,7 +849,7 @@ void Do_general_transporter(int id, clpos_t pos,
                 (int)(percent + 0.5),
                 victim->name);
     }
-        Add_fuel(&(victim->fuel), -amount);
+        Player_add_fuel(victim, -amount);
         break;
     }
 
@@ -874,7 +873,7 @@ void Do_general_transporter(int id, clpos_t pos,
 
     /* don't forget the penalty for robbery */
     pl->item[ITEM_TRANSPORTER]--;
-    Add_fuel(&(pl->fuel), ED_TRANSPORTER);
+    Player_add_fuel(pl, ED_TRANSPORTER);
 
     /* update thief */
     if (!(item == ITEM_FUEL || item == ITEM_TANK))
@@ -922,7 +921,7 @@ void Do_general_transporter(int id, clpos_t pos,
             Player_add_tank(pl, amount);
         break;
     case ITEM_FUEL:
-        Add_fuel(&(pl->fuel), amount);
+        Player_add_fuel(pl, amount);
         break;
     default:
         break;
@@ -989,7 +988,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     {
         pl->ecmcount++;
         pl->item[ITEM_ECM]--;
-        Add_fuel(&(pl->fuel), ED_ECM);
+        Player_add_fuel(pl, ED_ECM);
         sound_play_sensors(pos, ECM_SOUND);
     }
 

@@ -212,7 +212,7 @@ void Place_general_mine(int id, int team, int status,
                 }
             }
         }
-        Add_fuel(&(pl->fuel), drain);
+        Player_add_fuel(pl, drain);
         pl->item[ITEM_MINE] -= used;
 
         if (used > 1)
@@ -533,7 +533,7 @@ void Fire_general_shot(int id, int team,
         {
             if (pl->fuel.sum < -ED_SHOT)
                 return;
-            Add_fuel(&(pl->fuel), (long)(ED_SHOT));
+            Player_add_fuel(pl, ED_SHOT);
             sound_play_sensors(pl->pos, FIRE_SHOT_SOUND);
             pl->shots++;
         }
@@ -664,7 +664,7 @@ void Fire_general_shot(int id, int team,
                                      Describe_shot(type, status, mods, 0));
                 return;
             }
-            Add_fuel(&(pl->fuel), drain);
+            Player_add_fuel(pl, drain);
             pl->item[ITEM_MISSILE] -= used;
 
             if (used > 1)
@@ -1402,7 +1402,7 @@ void Fire_general_laser(int id, int team, clpos_t pos, int dir,
 
     if (pl)
     {
-        Add_fuel(&(pl->fuel), (long)ED_LASER);
+        Player_add_fuel(pl, ED_LASER);
         sound_play_sensors(pos, FIRE_LASER_SOUND);
         life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
     }

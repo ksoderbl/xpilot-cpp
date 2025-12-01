@@ -870,13 +870,13 @@ void Update_objects(void)
          * Compute energy drainage
          */
         if (BIT(pl->used, HAS_SHIELD))
-            Add_fuel(&(pl->fuel), (long)ED_SHIELD);
+            Player_add_fuel(pl, ED_SHIELD);
 
         if (Player_is_phasing(pl))
-            Add_fuel(&(pl->fuel), (long)ED_PHASING_DEVICE);
+            Player_add_fuel(pl, ED_PHASING_DEVICE);
 
         if (Player_is_cloaked(pl))
-            Add_fuel(&(pl->fuel), (long)ED_CLOAKING_DEVICE);
+            Player_add_fuel(pl, ED_CLOAKING_DEVICE);
 
 #define UPDATE_RATE 100
 
@@ -897,37 +897,39 @@ void Update_objects(void)
 
         if (BIT(pl->used, USES_REFUEL))
         {
-            if ((Wrap_length(pl->pos.cx - world->fuels[pl->fs].pos.cx,
-                             pl->pos.cy - world->fuels[pl->fs].pos.cy) /
+            fuel_t *fs = Fuel_by_index(pl->fs);
+
+            if ((Wrap_length(pl->pos.cx - fs->pos.cx,
+                             pl->pos.cy - fs->pos.cy) /
                      CLICK >
                  90.0) ||
                 (pl->fuel.sum >= pl->fuel.max) ||
-                (world->block[world->fuels[pl->fs].blk_pos.bx][world->fuels[pl->fs].blk_pos.by] != FUEL) ||
+                (world->block[fs->blk_pos.bx][fs->blk_pos.by] != FUEL) ||
                 BIT(pl->used, USES_PHASING_DEVICE) ||
-                (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && world->fuels[pl->fs].team != pl->team))
+                (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
             {
                 CLR_BIT(pl->used, USES_REFUEL);
             }
             else
             {
-                int i = pl->fuel.num_tanks;
+                int n = pl->fuel.num_tanks;
                 int ct = pl->fuel.current;
 
                 do
                 {
-                    if (world->fuels[pl->fs].fuel > REFUEL_RATE)
+                    if (fs->fuel > REFUEL_RATE)
                     {
-                        world->fuels[pl->fs].fuel -= REFUEL_RATE;
-                        world->fuels[pl->fs].conn_mask = 0;
-                        world->fuels[pl->fs].last_change = frame_loops;
-                        Add_fuel(&(pl->fuel), REFUEL_RATE);
+                        fs->fuel -= REFUEL_RATE;
+                        fs->conn_mask = 0;
+                        fs->last_change = frame_loops;
+                        Player_add_fuel(pl, REFUEL_RATE);
                     }
                     else
                     {
-                        Add_fuel(&(pl->fuel), world->fuels[pl->fs].fuel);
-                        world->fuels[pl->fs].fuel = 0;
-                        world->fuels[pl->fs].conn_mask = 0;
-                        world->fuels[pl->fs].last_change = frame_loops;
+                        Player_add_fuel(pl, fs->fuel);
+                        fs->fuel = 0;
+                        fs->conn_mask = 0;
+                        fs->last_change = frame_loops;
                         CLR_BIT(pl->used, USES_REFUEL);
                         break;
                     }
@@ -935,7 +937,7 @@ void Update_objects(void)
                         pl->fuel.current = 0;
                     else
                         pl->fuel.current += 1;
-                } while (i--);
+                } while (n--);
                 pl->fuel.current = ct;
             }
         }
@@ -961,7 +963,7 @@ void Update_objects(void)
                         targ->damage += TARGET_FUEL_REPAIR_PER_FRAME;
                         targ->conn_mask = 0;
                         targ->last_change = frame_loops;
-                        Add_fuel(&(pl->fuel), -REFUEL_RATE);
+                        Player_add_fuel(pl, -REFUEL_RATE);
                         if (targ->damage > TARGET_DAMAGE)
                         {
                             targ->damage = TARGET_DAMAGE;
@@ -1007,7 +1009,7 @@ void Update_objects(void)
             }
             pl->acc.x = power * tcos(pl->dir) / inert;
             pl->acc.y = power * tsin(pl->dir) / inert;
-            Add_fuel(&(pl->fuel), (long)(-f * FUEL_SCALE_FACT)); /* Decrement fuel */
+            Player_add_fuel(pl, -f * FUEL_SCALE_FACT); /* Decrement fuel */
         }
         else
         {
