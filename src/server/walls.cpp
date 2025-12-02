@@ -1813,36 +1813,7 @@ static void Cannon_dies(move_state_t *ms)
 
     cannon->dead_time = options.cannonDeadTime;
     cannon->conn_mask = 0;
-    world->block[cannon->blk_pos.bx][cannon->blk_pos.by] = SPACE;
-    Cannon_throw_items(Cannon_by_index(ms->cannon));
-    Cannon_init(Cannon_by_index(ms->cannon));
-    sound_play_sensors(cannon->pos, CANNON_EXPLOSION_SOUND);
-    Make_debris(cannon->pos,
-                zero_vel,
-                NO_ID,
-                cannon->team,
-                OBJ_DEBRIS,
-                4.5,
-                GRAVITY,
-                RED,
-                6,
-                20, 40,
-                (int)(20 + 20 * rfrac()),
-                (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
-                20, 50,
-                8, 68);
-    Make_wreckage(cannon->pos,
-                  zero_vel,
-                  NO_ID,
-                  cannon->team,
-                  3.5, 23,
-                  28,
-                  GRAVITY,
-                  WHITE,
-                  10,
-                  (int)(cannon->dir - (RES * 0.2)), (int)(cannon->dir + (RES * 0.2)),
-                  10, 25,
-                  8, 68);
+    Cannon_dies(cannon, NULL);
 
     if (!ms->mip->pl)
     {

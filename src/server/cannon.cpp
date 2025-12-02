@@ -439,7 +439,6 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         }
         break;
     default:
-        /* no need to do anything specail for this weapon. */
         break;
     }
 
@@ -543,11 +542,9 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
    have more than one possible use. */
 static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
 {
-    // player_t *pl = PlayersArray[target];
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;
     modifiers_t mods;
-    IFSOUND(int sound = CANNON_FIRE_SOUND);
     int i, smartness = options.cannonSmartness;
     int speed = options.shotSpeed;
     bool played = false;
@@ -718,7 +715,8 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
                         3.0, 20.0);
         }
         c->item[ITEM_FUEL]--;
-        IFSOUND(sound = THRUST_SOUND);
+        sound_play_sensors(c->pos, THRUST_SOUND);
+        played = true;
         break;
     case CW_SHOT:
     default:
@@ -750,4 +748,40 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     {
         sound_play_sensors(c->pos, CANNON_FIRE_SOUND);
     }
+}
+
+void Cannon_dies(cannon_t *c, player_t *pl)
+{
+    vector_t zero_vel = {0.0, 0.0};
+
+    world->block[c->blk_pos.bx][c->blk_pos.by] = SPACE;
+    Cannon_throw_items(c);
+    Cannon_init(c);
+    sound_play_sensors(c->pos, CANNON_EXPLOSION_SOUND);
+    Make_debris(c->pos,
+                zero_vel,
+                NO_ID,
+                c->team,
+                OBJ_DEBRIS,
+                4.5,
+                GRAVITY,
+                RED,
+                6,
+                20, 40,
+                (int)(20 + 20 * rfrac()),
+                (int)(c->dir - (RES * 0.2)), (int)(c->dir + (RES * 0.2)),
+                20.0, 50.0,
+                8.0, 68.0);
+    Make_wreckage(c->pos,
+                  zero_vel,
+                  NO_ID,
+                  c->team,
+                  3.5, 23.0,
+                  28.0,
+                  GRAVITY,
+                  WHITE,
+                  10,
+                  (int)(c->dir - (RES * 0.2)), (int)(c->dir + (RES * 0.2)),
+                  10.0, 25.0,
+                  8.0, 68.0);
 }

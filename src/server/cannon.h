@@ -26,6 +26,7 @@
 #define CANNON_H
 
 #include "map.h"
+#include "player.h"
 #include "serverconst.h"
 
 extern long CANNON_USE_ITEM;
@@ -47,7 +48,7 @@ extern long CANNON_USE_ITEM;
 #define CW_TRACTORBEAM 5
 /* uses one transporter */
 #define CW_TRANSPORTER 6
-/* a big stream of exhaust particles (OBJ_SPARK_BIT). needs an afterburner and
+/* a big stream of exhaust particles (OBJ_SPARK). needs an afterburner and
    uses one fuel pack. even bigger with emergency thrust. more afterburners
    only increase probability of use */
 #define CW_GASJET 7
@@ -86,6 +87,8 @@ void Cannon_add_item(cannon_t *cannon, int item, int amount);
 void Cannon_throw_items(cannon_t *cannon);
 void Cannon_check_defense(cannon_t *cannon);
 void Cannon_check_fire(cannon_t *cannon);
+
+void Cannon_dies(cannon_t *cannon, player_t *pl);
 
 static inline cannon_t *Cannon_by_id(int id)
 {
