@@ -1137,158 +1137,7 @@ void Compute_game_status(void)
         roundtime--;
 
     if (BIT(world->rules->mode, TIMING))
-    {
-        /*
-         * We need a completely separate scoring system for race mode.
-         * I'm not sure how race mode should interact with team mode,
-         * so for the moment race mode takes priority.
-         *
-         * Race mode and limited lives mode interact. With limited lives on,
-         * race ends after all players have completed the course, or have died.
-         * With limited lives mode off, the race ends when the first player
-         * completes the course - all remaining players are then killed to
-         * reset them.
-         *
-         * In limited lives mode, where the race can be run to completion,
-         * points are awarded not just to the winner but to everyone who
-         * completes the course (with more going to the winner). These
-         * points are awarded as the player crosses the line. At the end
-         * of the race, a bonus is awarded to the player with the fastest lap.
-         *
-         * In unlimited lives mode, just the winner and the holder of the
-         * fastest lap get points.
-         */
-
-        player_t *alive = NULL;
-        int num_alive_players = 0,
-            num_active_players = 0,
-            num_finished_players = 0,
-            num_race_over_players = 0,
-            num_waiting_players = 0,
-            position = 1,
-            total_pts;
-        double pts;
-
-        /* First count the players */
-        for (i = 0; i < NumPlayers; i++)
-        {
-            pl = Player_by_index(i);
-            if (BIT(pl->obj_status, PAUSE) || Player_is_tank(pl))
-                continue;
-            if (!BIT(pl->obj_status, GAME_OVER))
-                num_alive_players++;
-            else if (pl->mychar == 'W')
-            {
-                num_waiting_players++;
-                continue;
-            }
-
-            if (BIT(pl->obj_status, RACE_OVER))
-            {
-                num_race_over_players++;
-                position++;
-            }
-            else if (BIT(pl->obj_status, FINISH))
-                num_finished_players++;
-            else if (!BIT(pl->obj_status, GAME_OVER))
-                alive = pl;
-
-            /*
-             * An active player is one who is:
-             *   still in the race.
-             *   reached the finish line just now.
-             *   has finished the race in a previous frame.
-             *   died too often.
-             */
-            num_active_players++;
-        }
-        if (num_active_players == 0 && num_waiting_players == 0)
-            return;
-
-        /* Now if any players are unaccounted for */
-        if (num_finished_players > 0)
-        {
-            /*
-             * Ok, update positions. Everyone who finished the race in the last
-             * frame gets the current position.
-             */
-
-            /* Only play the sound for the first person to cross the finish */
-            if (position == 1)
-                sound_play_all(PLAYER_WIN_SOUND);
-
-            total_pts = 0;
-            for (i = 0; i < num_finished_players; i++)
-                total_pts += (10 + 2 * num_active_players) >> (position - 1 + i);
-            pts = total_pts / num_finished_players;
-
-            for (i = 0; i < NumPlayers; i++)
-            {
-                pl = Player_by_index(i);
-                if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
-                    continue;
-                if (BIT(pl->obj_status, FINISH))
-                {
-                    CLR_BIT(pl->obj_status, FINISH);
-                    SET_BIT(pl->obj_status, RACE_OVER);
-                    if (pts > 0)
-                    {
-                        sprintf(msg,
-                                "%s finishes %sin position %d "
-                                "scoring %.2f point%s.",
-                                pl->name,
-                                (num_finished_players == 1) ? "" : "jointly ",
-                                position, pts,
-                                (pts == 1) ? "" : "s");
-                        Set_message(msg);
-                        sprintf(msg, "[Position %d%s]", position,
-                                (num_finished_players == 1) ? "" : " (jointly)");
-                        Score(pl, pts, pl->pos, msg);
-                    }
-                    else
-                    {
-                        sprintf(msg,
-                                "%s finishes %sin position %d.",
-                                pl->name,
-                                (num_finished_players == 1) ? "" : "jointly ",
-                                position);
-                        Set_message(msg);
-                    }
-                }
-            }
-        }
-
-        /*
-         * If the maximum allowed time for this race is over, end it.
-         */
-        if (options.maxRoundTime > 0 && roundtime == 0)
-        {
-            Set_message("Timer expired. Race ends now.");
-            Race_game_over();
-            return;
-        }
-
-        /*
-         * In limited lives mode, wait for everyone to die, except
-         * for the last player.
-         */
-        if (BIT(world->rules->mode, LIMITED_LIVES))
-        {
-            if (num_alive_players > 1)
-                return;
-            if (num_alive_players == 1)
-            {
-                if (num_finished_players + num_race_over_players == 0)
-                    return;
-                if (!alive || alive->round == 0)
-                    return;
-            }
-        }
-        else if (num_finished_players == 0)
-            return;
-
-        Race_game_over();
-    }
+        Race_compute_game_status();
     else if (BIT(world->rules->mode, TEAM_PLAY))
     {
         /* Do we have a winning team ? */
@@ -1313,15 +1162,14 @@ void Compute_game_status(void)
             if (Player_is_tank(pl_i))
                 /* Ignore tanks. */
                 continue;
-            else if (BIT(pl_i->obj_status, PAUSE))
+            else if (Player_is_paused(pl_i))
                 /* Ignore paused players. */
                 continue;
 #if 0
             /* not all teammode maps have treasures. */
-            else if (world->teams[pl_i->team].NumTreasures == 0) {
+            else if (world->teams[pl_i->team].NumTreasures == 0)
                 /* Ignore players with no treasure troves */
                 continue;
-            }
 #endif
             else if (BIT(pl_i->obj_status, GAME_OVER))
             {
@@ -1355,8 +1203,7 @@ void Compute_game_status(void)
         if (num_alive_teams > 1)
         {
             char *bp;
-            int teams_with_treasure = 0;
-            int team_win[MAX_TEAMS];
+            int teams_with_treasure = 0, team_win[MAX_TEAMS];
             double team_score[MAX_TEAMS];
             int winners;
             int max_destroyed = 0;
@@ -1428,9 +1275,9 @@ void Compute_game_status(void)
             for (i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
-                if (BIT(pl_i->obj_status, PAUSE) || Player_is_tank(pl_i))
+                if (Player_is_paused(pl_i) || Player_is_tank(pl_i))
                     continue;
-                team_score[pl_i->team] += pl_i->score;
+                team_score[pl_i->team] += Get_Score(pl_i);
             }
 
             for (winners = i = 0; i < MAX_TEAMS; i++)
@@ -1511,10 +1358,10 @@ void Compute_game_status(void)
              * must count how many treasures are missing, if there are any
              * the playing team (if any) wins.
              */
-            int i, treasures_destroyed;
+            int j, treasures_destroyed;
 
-            for (treasures_destroyed = i = 0; i < MAX_TEAMS; i++)
-                treasures_destroyed += (world->teams[i].NumTreasures - world->teams[i].NumEmptyTreasures - world->teams[i].TreasuresLeft);
+            for (treasures_destroyed = j = 0; j < MAX_TEAMS; j++)
+                treasures_destroyed += (world->teams[j].NumTreasures - world->teams[j].NumEmptyTreasures - world->teams[j].TreasuresLeft);
             if (treasures_destroyed)
                 Team_game_over(winning_team, " by staying in the game");
         }
@@ -1695,8 +1542,9 @@ void Delete_player(player_t *pl)
      * Player_by_index(ind) point to a valid player and move our leaving
      * player to PlayersArray[NumPlayers].
      */
-    pl = PlayersArray[NumPlayers]; /* Swap pointers... */
-    PlayersArray[NumPlayers] = PlayersArray[ind];
+    /* Swap pointers... */
+    pl = Player_by_index(NumPlayers);
+    PlayersArray[NumPlayers] = Player_by_index(ind);
     PlayersArray[ind] = pl;
     /* Restore pointer. */
     pl = Player_by_index(NumPlayers);

@@ -45,6 +45,157 @@
 #include "xpmath.h"
 #include "robot.h"
 
+void Race_compute_game_status(void)
+{
+    /*
+     * We need a completely separate scoring system for race mode.
+     * I'm not sure how race mode should interact with team mode,
+     * so for the moment race mode takes priority.
+     *
+     * Race mode and limited lives mode interact. With limited lives on,
+     * race ends after all players have completed the course, or have died.
+     * With limited lives mode off, the race ends when the first player
+     * completes the course - all remaining players are then killed to
+     * reset them.
+     *
+     * In limited lives mode, where the race can be run to completion,
+     * points are awarded not just to the winner but to everyone who
+     * completes the course (with more going to the winner). These
+     * points are awarded as the player crosses the line. At the end
+     * of the race, a bonus is awarded to the player with the fastest lap.
+     *
+     * In unlimited lives mode, just the winner and the holder of the
+     * fastest lap get points.
+     */
+
+    player_t *alive = NULL, *pl;
+    int num_alive_players = 0, num_active_players = 0,
+        num_finished_players = 0, num_race_over_players = 0,
+        num_waiting_players = 0, pos = 1, total_pts, i;
+    double pts;
+    char msg[MSG_LEN];
+
+    /* First count the players */
+    for (i = 0; i < NumPlayers; i++)
+    {
+        pl = Player_by_index(i);
+        if (BIT(pl->obj_status, PAUSE) || Player_is_tank(pl))
+            continue;
+        if (!BIT(pl->obj_status, GAME_OVER))
+            num_alive_players++;
+        else if (pl->mychar == 'W')
+        {
+            num_waiting_players++;
+            continue;
+        }
+
+        if (BIT(pl->obj_status, RACE_OVER))
+        {
+            num_race_over_players++;
+            pos++;
+        }
+        else if (BIT(pl->obj_status, FINISH))
+            num_finished_players++;
+        else if (!BIT(pl->obj_status, GAME_OVER))
+            alive = pl;
+
+        /*
+         * An active player is one who is:
+         *   still in the race.
+         *   reached the finish line just now.
+         *   has finished the race in a previous frame.
+         *   died too often.
+         */
+        num_active_players++;
+    }
+    if (num_active_players == 0 && num_waiting_players == 0)
+        return;
+
+    /* Now if any players are unaccounted for */
+    if (num_finished_players > 0)
+    {
+        /*
+         * Ok, update positions. Everyone who finished the race in the last
+         * frame gets the current position.
+         */
+
+        /* Only play the sound for the first person to cross the finish */
+        if (pos == 1)
+            sound_play_all(PLAYER_WIN_SOUND);
+
+        total_pts = 0;
+        for (i = 0; i < num_finished_players; i++)
+            total_pts += (10 + 2 * num_active_players) >> (pos - 1 + i);
+        pts = total_pts / num_finished_players;
+
+        for (i = 0; i < NumPlayers; i++)
+        {
+            pl = Player_by_index(i);
+            if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+                continue;
+            if (BIT(pl->obj_status, FINISH))
+            {
+                CLR_BIT(pl->obj_status, FINISH);
+                SET_BIT(pl->obj_status, RACE_OVER);
+                if (pts > 0)
+                {
+                    sprintf(msg,
+                            "%s finishes %sin position %d "
+                            "scoring %.2f point%s.",
+                            pl->name,
+                            (num_finished_players == 1) ? "" : "jointly ",
+                            pos, pts,
+                            (pts == 1) ? "" : "s");
+                    Set_message(msg);
+                    sprintf(msg, "[Position %d%s]", pos,
+                            (num_finished_players == 1) ? "" : " (jointly)");
+                    Score(pl, pts, pl->pos, msg);
+                }
+                else
+                {
+                    sprintf(msg,
+                            "%s finishes %sin position %d.",
+                            pl->name,
+                            (num_finished_players == 1) ? "" : "jointly ",
+                            pos);
+                    Set_message(msg);
+                }
+            }
+        }
+    }
+
+    /*
+     * If the maximum allowed time for this race is over, end it.
+     */
+    if (options.maxRoundTime > 0 && roundtime == 0)
+    {
+        Set_message("Timer expired. Race ends now.");
+        Race_game_over();
+        return;
+    }
+
+    /*
+     * In limited lives mode, wait for everyone to die, except
+     * for the last player.
+     */
+    if (BIT(world->rules->mode, LIMITED_LIVES))
+    {
+        if (num_alive_players > 1)
+            return;
+        if (num_alive_players == 1)
+        {
+            if (num_finished_players + num_race_over_players == 0)
+                return;
+            if (!alive || alive->round == 0)
+                return;
+        }
+    }
+    else if (num_finished_players == 0)
+        return;
+
+    Race_game_over();
+}
+
 void Race_game_over(void)
 {
     player_t *pl;
