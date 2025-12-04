@@ -67,8 +67,8 @@ typedef struct options
     char *serverHost;  /* Host name (for multihomed hosts) */
     char *greeting;
 
-    bool crashWithPlayer;                /* Can players overrun other players? */
-    bool bounceWithPlayer;               /* Can players bounce other players? */
+    bool allowPlayerCrashes;             /* Can players overrun other players? */
+    bool allowPlayerBounces;             /* Can players bounce other players? */
     bool allowPlayerKilling;             /* Can players kill each other? */
     bool allowShields;                   /* Can players use shields? */
     bool playerStartsShielded;           /* Players start with shields up? */
