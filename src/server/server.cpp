@@ -48,6 +48,7 @@
 #endif
 #endif
 
+#include "score.h"
 #include "server.h"
 #include "robot.h"
 
@@ -408,7 +409,7 @@ int Pick_team(int pick_for_type)
         if (!playing[pl->team]++)
             playing_teams++;
         if (Player_is_human(pl) || Player_is_robot(pl))
-            team_score[pl->team] += pl->score;
+            team_score[pl->team] += Get_Score(pl);
     }
     if (playing_teams <= 1)
     {
@@ -540,11 +541,11 @@ void Server_info(char *str, size_t max_size)
         pl = Player_by_index(i);
         if (BIT(world->rules->mode, LIMITED_LIVES))
         {
-            ratio = (double)pl->score;
+            ratio = (double)Get_Score(pl);
         }
         else
         {
-            ratio = (double)pl->score / (pl->life + 1);
+            ratio = (double)Get_Score(pl) / (pl->life + 1);
         }
         if ((best == NULL || ratio > best_ratio) && !BIT(pl->obj_status, PAUSE))
         {
@@ -553,7 +554,7 @@ void Server_info(char *str, size_t max_size)
         }
         for (j = 0; j < i; j++)
         {
-            if (order[j]->score < pl->score)
+            if (order[j]->score < Get_Score(pl))
             {
                 for (k = i; k > j; k--)
                 {
@@ -582,7 +583,7 @@ void Server_info(char *str, size_t max_size)
         sprintf(lblstr, "%c%c %-19s%03d%6d",
                 (pl == best) ? '*' : pl->mychar,
                 (pl->team == TEAM_NOT_SET) ? ' ' : (pl->team + '0'),
-                name, (int)pl->life, (int)pl->score);
+                name, (int)pl->life, (int)Get_Score(pl));
         sprintf(msg, "%2d... %-36s%s@%s\n",
                 i + 1, lblstr, pl->username,
                 Player_is_human(pl)
@@ -698,7 +699,7 @@ void Game_Over(void)
                 {
                     teamscore[team] = 0;
                 }
-                teamscore[team] += pl_i->score;
+                teamscore[team] += Get_Score(pl_i);
             }
         }
 
@@ -744,14 +745,14 @@ void Game_Over(void)
         SET_BIT(pl_i->obj_status, GAME_OVER);
         if (Player_is_human(pl_i))
         {
-            if (pl_i->score > maxsc)
+            if (Get_Score(pl_i) > maxsc)
             {
-                maxsc = pl_i->score;
+                maxsc = Get_Score(pl_i);
                 win = i;
             }
-            if (pl_i->score < minsc)
+            if (Get_Score(pl_i) < minsc)
             {
-                minsc = pl_i->score;
+                minsc = Get_Score(pl_i);
                 loose = i;
             }
         }

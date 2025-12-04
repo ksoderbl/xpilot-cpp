@@ -1831,7 +1831,7 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (options.cannonPoints > 0)
         {
-            if (pl->score <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
+            if (Get_Score(pl) <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
                 Score(pl, options.cannonPoints, cannon->pos, "");
             }
@@ -2394,7 +2394,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
         if (num_pushers == 0)
         {
-            sc = Rate(WALL_SCORE, pl->score);
+            sc = Rate(WALL_SCORE, Get_Score(pl));
             Score(pl, -sc, pl->pos, hudmsg);
             strcat(msg, ".");
             Set_message(msg);
@@ -2423,14 +2423,14 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
                     msg_len += name_len;
                     msg_ptr += name_len;
                 }
-                sc = cnt[i] * (int)floor(Rate(pusher->score, pl->score) * options.shoveKillScoreMult) / total_pusher_count;
+                sc = cnt[i] * (int)floor(Rate(pusher->score, Get_Score(pl)) * options.shoveKillScoreMult) / total_pusher_count;
                 Score(pusher, sc, pl->pos, pl->name);
                 if (i >= num_pushers - 1)
                 {
                     pusher->kills++;
                 }
             }
-            sc = (int)floor(Rate(average_pusher_score, pl->score) * options.shoveKillScoreMult);
+            sc = (int)floor(Rate(average_pusher_score, Get_Score(pl)) * options.shoveKillScoreMult);
             Score(pl, -sc, pl->pos, "[Shove]");
 
             strcpy(msg_ptr, ".");
@@ -2442,7 +2442,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->obj_status, KILLED) && pl->score < 0 && Player_is_robot(pl))
+    if (BIT(pl->obj_status, KILLED) && Get_Score(pl) < 0 && Player_is_robot(pl))
     {
         pl->home_base_ind = 0;
         Pick_startpos(pl);

@@ -1204,7 +1204,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
      * Tell him about himself first.
      */
     Send_player(pl->conn, pl->id);
-    Send_score(pl->conn, pl->id, pl->score,
+    Send_score(pl->conn, pl->id, Get_Score(pl),
                pl->life, pl->mychar, pl->alliance);
     Send_base(pl->conn, pl->id, pl->home_base_ind);
     /*
@@ -1216,7 +1216,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
         pl_i = Player_by_index(i);
         Send_player(pl->conn, pl_i->id);
-        Send_score(pl->conn, pl_i->id, pl_i->score,
+        Send_score(pl->conn, pl_i->id, Get_Score(pl_i),
                    pl_i->life, pl_i->mychar, pl_i->alliance);
         if (!Player_is_tank(pl_i))
             Send_base(pl->conn, pl_i->id, pl_i->home_base_ind);
@@ -1231,7 +1231,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         if (pl_i->conn != NULL)
         {
             Send_player(pl_i->conn, pl->id);
-            Send_score(pl_i->conn, pl->id, pl->score,
+            Send_score(pl_i->conn, pl->id, Get_Score(pl),
                        pl->life, pl->mychar, pl->alliance);
             Send_base(pl_i->conn, pl->id, pl->home_base_ind);
         }
@@ -2016,7 +2016,7 @@ int Send_fastradar(connection_t *connp, uint8_t *buf, unsigned n)
         return 0;
     }
     avail = w->size - w->len - SOCKBUF_WRITE_SPARE - 3;
-    if (n * 3 >= avail)
+    if ((int)n * 3 >= avail)
     {
         if (avail > 3)
             n = (avail - 2) / 3;
@@ -2025,7 +2025,7 @@ int Send_fastradar(connection_t *connp, uint8_t *buf, unsigned n)
     }
     w->buf[w->len++] = PKT_FASTRADAR;
     w->buf[w->len++] = (uint8_t)(n & 0xFF);
-    memcpy(&w->buf[w->len], buf, n * 3);
+    memcpy(&w->buf[w->len], buf, (size_t)n * 3);
     w->len += n * 3;
 
     return (2 + (n * 3));
@@ -2039,9 +2039,7 @@ int Send_damaged(connection_t *connp, int damaged)
 int Send_audio(connection_t *connp, int type, int vol)
 {
     if (connp->w.size - connp->w.len <= 32)
-    {
         return 0;
-    }
     return Packet_printf(&connp->w, "%c%c%c", PKT_AUDIO, type, vol);
 }
 

@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SCORE_H
-#define SCORE_H
+#pragma once
 
 #include "player.h"
 
@@ -79,5 +78,3 @@ typedef enum
 
 void Handle_Scoring(scoretype_t st, player_t *killer, player_t *victim,
                     void *extra, const char *somemsg);
-
-#endif

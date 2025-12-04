@@ -665,9 +665,9 @@ void Update_score_table(void)
     for (j = 0; j < NumPlayers; j++)
     {
         pl = PlayersArray[j];
-        if (pl->score != pl->prev_score || pl->life != pl->prev_life || pl->mychar != pl->prev_mychar || pl->alliance != pl->prev_alliance)
+        if (Get_Score(pl) != pl->prev_score || pl->life != pl->prev_life || pl->mychar != pl->prev_mychar || pl->alliance != pl->prev_alliance)
         {
-            pl->prev_score = pl->score;
+            pl->prev_score = Get_Score(pl);
             pl->prev_life = pl->life;
             pl->prev_mychar = pl->mychar;
             pl->prev_alliance = pl->alliance;
@@ -676,7 +676,7 @@ void Update_score_table(void)
                 if (pl->conn != NULL)
                 {
                     Send_score(pl->conn, pl->id,
-                               pl->score, pl->life,
+                               Get_Score(pl), pl->life,
                                pl->mychar, pl->alliance);
                 }
             }
@@ -694,7 +694,7 @@ void Update_score_table(void)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player_t *pl_i = Player_by_id(i);
+                    player_t *pl_i = Player_by_index(i);
 
                     if (pl_i->conn != NULL)
                         Send_timing(pl_i->conn, pl->id, check, pl->round);
@@ -955,7 +955,7 @@ static void Give_individual_bonus(player_t *pl, double average_score)
     double points;
 
     ratio = (double)pl->kills / (pl->deaths + 1);
-    points = ratio * Rate(pl->score, average_score);
+    points = ratio * Rate(Get_Score(pl), average_score);
     Score(pl, points, pl->pos, "[Winner]");
 }
 
@@ -1032,7 +1032,7 @@ void Team_game_over(int winning_team, const char *reason)
                 continue;
             if (Player_is_tank(pl_i) ||
                 (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) ||
-                (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && pl_i->score == 0))
+                (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
                 continue;
             for (j = 0; j < num_best_players; j++)
             {
@@ -1734,7 +1734,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
             {
                 if (Player_is_robot(pl))
                 {
-                    if (!BIT(world->rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && pl->score < options.robotLeaveScore))
+                    if (!BIT(world->rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
                     {
                         Robot_delete(pl, false);
                         return;

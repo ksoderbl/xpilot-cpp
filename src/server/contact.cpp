@@ -38,6 +38,7 @@
 #include "strlcpy.h"
 #include "xpmemory.h"
 
+#include "score.h"
 #include "server.h"
 
 #define SERVER
@@ -139,10 +140,10 @@ static int Kick_robot_players(int team)
                 player_t *pl_i = Player_by_index(i);
                 if (!Player_is_robot(pl_i) || pl_i->team == options.robotTeam)
                     continue;
-                if (pl_i->score < low_score)
+                if (Get_Score(pl_i) < low_score)
                 {
                     low_pl = pl_i;
-                    low_score = pl_i->score;
+                    low_score = Get_Score(pl_i);
                 }
             }
             if (low_pl)
@@ -172,10 +173,10 @@ static int Kick_robot_players(int team)
                 player_t *pl_i = Player_by_index(i);
                 if (!Player_is_robot(pl_i) || pl_i->team != team)
                     continue;
-                if (pl_i->score < low_score)
+                if (Get_Score(pl_i) < low_score)
                 {
                     low_pl = pl_i;
-                    low_score = pl_i->score;
+                    low_score = Get_Score(pl_i);
                 }
             }
             if (low_pl)
@@ -186,9 +187,7 @@ static int Kick_robot_players(int team)
             return 0;
         }
         else
-        {
             return 0; /* no robots in this team */
-        }
     }
 }
 

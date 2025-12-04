@@ -961,12 +961,12 @@ static bool Robot_check_leave(player_t *pl)
             Set_message_f("%s retired.", pl->name);
             leave = true;
         }
-        else if (options.robotLeaveScore != 0 && pl->score < options.robotLeaveScore)
+        else if (options.robotLeaveScore != 0 && Get_Score(pl) < options.robotLeaveScore)
         {
             Set_message_f("%s left out of disappointment.", pl->name);
             leave = true;
         }
-        else if (options.robotLeaveRatio != 0 && pl->score / (pl->life + 1) < options.robotLeaveRatio)
+        else if (options.robotLeaveRatio != 0 && Get_Score(pl) / (pl->life + 1) < options.robotLeaveRatio)
         {
             Set_message_f("%s played too badly.", pl->name);
             leave = true;

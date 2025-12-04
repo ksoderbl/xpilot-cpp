@@ -298,7 +298,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
             return;
         }
     }
-    limit = MAX(ABS(pl->score / MAX((my_data->attack / 10), 10)),
+    limit = MAX(ABS(Get_Score(pl) / MAX((my_data->attack / 10), 10)),
                 my_data->defense);
     if (inviter->alliance == ALLIANCE_NOT_SET)
     {
@@ -309,7 +309,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
         if (BIT(inviter->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
             we_accept = false;
         /* don't accept players with scores substantially lower than ours */
-        else if (inviter->score < (pl->score - limit))
+        else if (inviter->score < (Get_Score(pl) - limit))
             we_accept = false;
     }
     else
@@ -332,7 +332,7 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
         if (we_accept)
         {
             avg_score = avg_score / member_count;
-            if (avg_score < (pl->score - limit))
+            if (avg_score < (Get_Score(pl) - limit))
             {
                 we_accept = false;
             }
@@ -1839,47 +1839,44 @@ static void Robot_default_play_check_objects(player_t *pl,
                 }
             }
         }
-        if (BIT(shot->type, OBJ_SMART_SHOT_BIT))
+        if (shot->type == OBJ_SMART_SHOT)
         {
             if (*mine_dist < ECM_DISTANCE / 4)
                 Fire_ecm(pl);
         }
-        if (BIT(shot->type, OBJ_MINE_BIT))
+        if (shot->type == OBJ_MINE)
         {
             if (*mine_dist < ECM_DISTANCE / 2)
                 Fire_ecm(pl);
         }
-        if (BIT(shot->type, OBJ_HEAT_SHOT_BIT))
+        if (shot->type == OBJ_HEAT_SHOT)
         {
             Thrust(pl, false);
             if (pl->fuel.sum < pl->fuel.l3 && pl->fuel.sum > pl->fuel.l1 && pl->fuel.num_tanks > 0)
-            {
                 Tank_handle_detach(pl);
-            }
         }
-        if (BIT(shot->type, OBJ_ASTEROID_BIT))
+        if (shot->type == OBJ_ASTEROID)
         {
             int delta_dir = 0;
-            if (*mine_dist > (WIRE_PTR(shot)->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < WIRE_PTR(shot)->wire_size * (RES / 10) || delta_dir > RES - WIRE_PTR(shot)->wire_size * (RES / 10)))
-            {
+            wireobject_t *wire = WIRE_PTR(shot);
+
+            if (*mine_dist > (wire->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_findDir(shot->pix_pos.x - pl->pix_pos.x, shot->pix_pos.y - pl->pix_pos.y)) < wire->wire_size * (RES / 10) || delta_dir > RES - wire->wire_size * (RES / 10)))
                 SET_BIT(pl->used, HAS_SHOT);
-            }
         }
     }
 
     /* Convert *item_i from index in local obj_list[] to index in Obj[] */
     if (*item_i >= 0)
     {
-        for (j = 0; (j < NumObjs) && (Obj[j]->id != obj_list[*item_i]->id); j++)
+        for (j = 0;
+             (j < NumObjs) && (Obj[j]->id != obj_list[*item_i]->id);
+             j++)
             ;
         if (j >= NumObjs)
-        {
-            *item_i = -1; /* Perhaps an error should be printed, too? */
-        }
+            /* Perhaps an error should be printed, too? */
+            *item_i = NO_IND;
         else
-        {
             *item_i = j;
-        }
     }
 }
 

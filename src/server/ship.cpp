@@ -31,6 +31,7 @@
 #include "const.h"
 #include "strlcpy.h"
 
+#include "score.h"
 #include "server.h"
 
 #define SERVER
@@ -426,7 +427,7 @@ void Tank_handle_detach(player_t *pl)
     tank->alliance = ALLIANCE_NOT_SET;
     tank->invite = NO_ID;
     tank->mychar = 'T';
-    tank->score = pl->score - options.tankScoreDecrement;
+    tank->score = Get_Score(pl) - options.tankScoreDecrement;
     updateScores = true;
 
     /* Fuel is the one from chosen tank */

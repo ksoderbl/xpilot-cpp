@@ -103,18 +103,18 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
         {
             player_t *pl_i = Player_by_index(i);
 
-            if (Player_is_tank(pl_i) || (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) || (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && pl_i->score == 0))
+            if (Player_is_tank(pl_i) || (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) || (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
                 continue;
             if (pl_i->team == td->team)
             {
-                lose_score += pl_i->score;
+                lose_score += Get_Score(pl_i);
                 lose_team_members++;
                 if (BIT(pl_i->obj_status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
             else if (pl_i->team == tt->team)
             {
-                win_score += pl_i->score;
+                win_score += Get_Score(pl_i);
                 win_team_members++;
             }
         }
@@ -127,7 +127,7 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
 
     if (!somebody_flag)
     {
-        Score(pl, Rate(pl->score, CANNON_SCORE) / 2,
+        Score(pl, Rate(Get_Score(pl), CANNON_SCORE) / 2,
               tt->pos, "Treasure:");
         return 0;
     }
@@ -145,7 +145,7 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
 
         if (Player_is_tank(pl_i) ||
             (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) ||
-            (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && pl_i->score == 0))
+            (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
             continue;
         if (pl_i->team == td->team)
         {
