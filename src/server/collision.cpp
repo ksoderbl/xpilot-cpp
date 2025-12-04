@@ -552,9 +552,7 @@ int IsOffensiveItem(enum Item i)
                 ITEM_BIT_MINE |
                 ITEM_BIT_MISSILE |
                 ITEM_BIT_LASER))
-    {
         return true;
-    }
     return false;
 }
 
@@ -572,9 +570,7 @@ int IsDefensiveItem(enum Item i)
                 ITEM_BIT_PHASING |
                 ITEM_BIT_TANK |
                 ITEM_BIT_ARMOR))
-    {
         return true;
-    }
     return false;
 }
 
@@ -594,9 +590,9 @@ int CountDefensiveItems(player_t *pl)
             pl->item[ITEM_EMERGENCY_SHIELD] + pl->fuel.num_tanks +
             pl->item[ITEM_DEFLECTOR] + pl->item[ITEM_HYPERJUMP] +
             pl->item[ITEM_PHASING] + pl->item[ITEM_MIRROR];
-    if (pl->emergency_shield_left)
+    if (pl->emergency_shield_left > 0)
         count++;
-    if (pl->phasing_left)
+    if (pl->phasing_left > 0)
         count++;
     return count;
 }
@@ -632,7 +628,7 @@ static void PlayerObjectCollision(player_t *pl)
         {
             if (obj->id == pl->id)
             {
-                if (BIT(obj->type, OBJ_SPARK_BIT | OBJ_MINE_BIT) && BIT(obj->obj_status, OWNERIMMUNE))
+                if ((obj->type == OBJ_SPARK || obj->type == OBJ_MINE) && BIT(obj->obj_status, OWNERIMMUNE))
                     continue;
                 else if (options.selfImmunity)
                     continue;
@@ -648,29 +644,29 @@ static void PlayerObjectCollision(player_t *pl)
         }
         else if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity && obj->team == pl->team
                  /* allow players to destroy their team's unowned balls */
-                 && obj->type != OBJ_BALL_BIT)
+                 && obj->type != OBJ_BALL)
             continue;
 
-        if (obj->type == OBJ_ITEM_BIT)
+        if (obj->type == OBJ_ITEM)
         {
             if (BIT(pl->used, HAS_SHIELD) && !options.shieldedItemPickup)
             {
                 SET_BIT(obj->obj_status, GRAVITY);
-                Delta_mv((object_t *)pl, obj);
+                Delta_mv(OBJ_PTR(pl), obj);
                 continue;
             }
         }
-        else if (BIT(obj->type, OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT))
+        else if (obj->type == OBJ_HEAT_SHOT || obj->type == OBJ_SMART_SHOT || obj->type == OBJ_TORPEDO || obj->type == OBJ_SHOT || obj->type == OBJ_CANNON_SHOT)
         {
             if (pl->id == obj->id && obj->life > obj->fuselife)
                 continue;
         }
-        else if (BIT(obj->type, OBJ_MINE_BIT))
+        else if (obj->type == OBJ_MINE)
         {
             if (BIT(obj->obj_status, CONFUSED))
                 continue;
         }
-        else if (BIT(obj->type, OBJ_BALL_BIT) && obj->id != NO_ID)
+        else if (obj->type == OBJ_BALL && obj->id != NO_ID)
         {
             if (Player_is_phasing(Player_by_id(obj->id)))
                 continue;
