@@ -244,7 +244,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
  */
 static void Add_fuel(pl_fuel_t *ft, long fuel)
 {
-    warn("Add_fuel: amount: %ld", fuel);
+    // warn("Add_fuel: amount: %ld", fuel);
 
     if (ft->sum + fuel > ft->max)
         fuel = ft->max - ft->sum;
@@ -256,7 +256,7 @@ static void Add_fuel(pl_fuel_t *ft, long fuel)
 
 void Player_add_fuel(player_t *pl, double amount)
 {
-    warn("Player_add_fuel: amount: %f", amount);
+    // warn("Player_add_fuel: amount: %f", amount);
 
     Add_fuel(&(pl->fuel), (long)amount);
 }
