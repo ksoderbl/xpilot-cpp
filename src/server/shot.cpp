@@ -185,7 +185,7 @@ void Place_general_mine(int id, int team, int status,
         {
             drain += (long)(CLUSTER_MASS_DRAIN(mass));
         }
-        if (pl->fuel.oldSum < -drain)
+        if (pl->fuel.sum < -drain)
         {
             Set_player_message_f(pl,
                                  "You need at least %ld fuel units to %s %s!",
@@ -531,7 +531,7 @@ void Fire_general_shot(int id, int team,
         pl_range = pl_radius = 0;
         if (pl)
         {
-            if (pl->fuel.oldSum < -ED_SHOT)
+            if (pl->fuel.sum < -ED_SHOT)
                 return;
             Player_add_fuel(pl, ED_SHOT);
             sound_play_sensors(pl->pos, FIRE_SHOT_SOUND);
@@ -656,7 +656,7 @@ void Fire_general_shot(int id, int team,
 
         if (pl)
         {
-            if (pl->fuel.oldSum < -drain)
+            if (pl->fuel.sum < -drain)
             {
                 Set_player_message_f(pl,
                                      "You need at least %ld fuel units to fire %s!",
@@ -1379,7 +1379,7 @@ void Fire_laser(player_t *pl)
 {
     if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
     {
-        if (pl->fuel.oldSum <= -ED_LASER)
+        if (pl->fuel.sum <= -ED_LASER)
             CLR_BIT(pl->used, HAS_LASER);
         else
         {

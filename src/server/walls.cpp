@@ -2790,7 +2790,7 @@ void Move_player(player_t *pl)
                     Player_add_fuel(pl, -((cost << FUEL_SCALE_BITS) * options.wallBounceFuelDrainMult));
                     Item_damage(pl, options.wallBounceDestroyItemProb);
                 }
-                if (!pl->fuel.oldSum && options.wallBounceFuelDrainMult != 0)
+                if (!pl->fuel.sum && options.wallBounceFuelDrainMult != 0)
                 {
                     crash = worst;
                     ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallNoFuel);

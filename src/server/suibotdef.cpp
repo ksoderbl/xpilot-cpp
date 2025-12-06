@@ -1031,9 +1031,9 @@ void Robot_attack_player(player_t *pl, player_t *opponent)
 //         return ROBOT_IGNORE_ITEM;
 //     if (itemtype == ITEM_FUEL)
 //     {
-//         if (pl->fuel.oldSum >= pl->fuel.oldMax * 0.90)
+//         if (pl->fuel.sum >= pl->fuel.max * 0.90)
 //             return ROBOT_IGNORE_ITEM; /* already (almost) full */
-//         else if ((pl->fuel.oldSum < (BIT(world->rules->mode, TIMING))
+//         else if ((pl->fuel.sum < (BIT(world->rules->mode, TIMING))
 //                       ? my_data->fuel_l1
 //                       : my_data->fuel_l2))
 //             return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */

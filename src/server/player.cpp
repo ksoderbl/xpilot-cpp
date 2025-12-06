@@ -306,7 +306,7 @@ void Compute_sensor_range(player_t *pl)
         init = 1;
     }
 
-    pl->sensor_range = pl->fuel.oldSum * EnergyRangeFactor;
+    pl->sensor_range = pl->fuel.sum * EnergyRangeFactor;
     pl->sensor_range *= (1.0 + ((double)pl->item[ITEM_SENSOR] * 0.25));
     if (pl->sensor_range < options.minVisibilityDistance)
         pl->sensor_range = options.minVisibilityDistance;
@@ -329,9 +329,9 @@ void Player_add_tank(player_t *pl, double tank_fuel)
         tank_cap = TANK_CAP(pl->fuel.num_tanks);
         add_fuel = tank_fuel;
         LIMIT(add_fuel, 0.0, tank_cap);
-        pl->fuel.oldSum += (long)add_fuel;
-        pl->fuel.oldMax += tank_cap;
-        pl->fuel.oldTank[pl->fuel.num_tanks] = (long)add_fuel;
+        pl->fuel.sum += (long)add_fuel;
+        pl->fuel.max += tank_cap;
+        pl->fuel.tank[pl->fuel.num_tanks] = (long)add_fuel;
         pl->emptymass += TANK_MASS;
         pl->item[ITEM_TANK] = pl->fuel.num_tanks;
     }
@@ -350,17 +350,17 @@ void Player_remove_tank(player_t *pl, int which_tank)
         tank_ind = which_tank;
         LIMIT(tank_ind, 1, pl->fuel.num_tanks);
         pl->emptymass -= TANK_MASS;
-        tank_fuel = pl->fuel.oldTank[tank_ind];
+        tank_fuel = pl->fuel.tank[tank_ind];
         tank_cap = TANK_CAP(tank_ind);
-        pl->fuel.oldMax -= tank_cap;
-        pl->fuel.oldSum -= tank_fuel;
+        pl->fuel.max -= tank_cap;
+        pl->fuel.sum -= tank_fuel;
         pl->fuel.num_tanks--;
         if (pl->fuel.current > pl->fuel.num_tanks)
             pl->fuel.current = 0;
         else
         {
             for (i = tank_ind; i <= pl->fuel.num_tanks; i++)
-                pl->fuel.oldTank[i] = pl->fuel.oldTank[i + 1];
+                pl->fuel.tank[i] = pl->fuel.tank[i + 1];
         }
         pl->item[ITEM_TANK] = pl->fuel.num_tanks;
     }
@@ -389,7 +389,7 @@ void Player_set_mass(player_t *pl)
     //  BUGFIX: xpilot 4.5.5beta has option minItemMass,
     //  making the ship 3 units too heavy on blood's music.
     //  Fixed by removing minItemMass option.
-    pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.oldSum) + pl->item[ITEM_ARMOR] * ARMOR_MASS;
+    pl->mass = pl->emptymass + FUEL_MASS(pl->fuel.sum) + pl->item[ITEM_ARMOR] * ARMOR_MASS;
     // printf("Player %d mass is %f\n", ind, pl->mass);
 }
 
@@ -406,24 +406,24 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
 
     pl->fuel.num_tanks = 0;
     pl->fuel.current = 0;
-    pl->fuel.oldMax = TANK_CAP(0);
+    pl->fuel.max = TANK_CAP(0);
 
-    xpinfo("Player_init_fuel: pl->fuel.oldMax: %f", pl->fuel.oldMax);
+    xpinfo("Player_init_fuel: pl->fuel.max: %f", pl->fuel.max);
 
-    pl->fuel.oldSum = MIN(fuel, pl->fuel.oldMax);
+    pl->fuel.sum = MIN(fuel, pl->fuel.max);
 
-    xpinfo("Player_init_fuel: pl->fuel.oldSum: %f", pl->fuel.oldSum);
+    xpinfo("Player_init_fuel: pl->fuel.sum: %f", pl->fuel.sum);
 
-    pl->fuel.oldTank[0] = pl->fuel.oldSum;
+    pl->fuel.tank[0] = pl->fuel.sum;
     pl->emptymass = options.shipMass;
     pl->item[ITEM_TANK] = pl->fuel.num_tanks;
 
-    fuel -= pl->fuel.oldSum;
+    fuel -= pl->fuel.sum;
 
     for (i = 1; i <= world->items[ITEM_TANK].initial; i++)
     {
         Player_add_tank(pl, fuel);
-        fuel -= pl->fuel.oldTank[i];
+        fuel -= pl->fuel.tank[i];
     }
 }
 
@@ -449,8 +449,8 @@ int Init_player(int ind, shipshape_t *ship, int type)
             pl->item[i] = world->items[i].initial;
     }
 
-    pl->fuel.oldSum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
-    Player_init_fuel(pl, pl->fuel.oldSum);
+    pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
+    Player_init_fuel(pl, pl->fuel.sum);
 
     if (options.allowShipShapes == true && ship)
         pl->ship = ship;
@@ -1723,11 +1723,11 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->lock.distance = 0;
 
     // Weird old code, that you lose 10% of fuel when you die.
-    pl->fuel.oldSum = (long)(pl->fuel.oldSum * 0.90); /* Loose 10% of fuel */
+    pl->fuel.sum = (long)(pl->fuel.sum * 0.90); /* Loose 10% of fuel */
     minfuel = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
     minfuel += (int)(rfrac() * (1 + minfuel) * 0.2);
-    pl->fuel.oldSum = MAX(pl->fuel.oldSum, minfuel);
-    Player_init_fuel(pl, pl->fuel.oldSum);
+    pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
+    Player_init_fuel(pl, pl->fuel.sum);
 
     if (!BIT(pl->obj_status, PAUSE))
     {

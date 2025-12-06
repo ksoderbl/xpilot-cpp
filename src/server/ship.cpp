@@ -246,12 +246,12 @@ static void Add_fuel(pl_fuel_t *ft, long fuel)
 {
     // warn("Add_fuel: amount: %ld", fuel);
 
-    if (ft->oldSum + fuel > ft->oldMax)
-        fuel = ft->oldMax - ft->oldSum;
-    else if (ft->oldSum + fuel < 0)
-        fuel = -ft->oldSum;
-    ft->oldSum += fuel;
-    ft->oldTank[ft->current] += fuel;
+    if (ft->sum + fuel > ft->max)
+        fuel = ft->max - ft->sum;
+    else if (ft->sum + fuel < 0)
+        fuel = -ft->sum;
+    ft->sum += fuel;
+    ft->tank[ft->current] += fuel;
 }
 
 void Player_add_fuel(player_t *pl, double amount)
@@ -275,7 +275,7 @@ void Update_tanks(pl_fuel_t *ft)
         long *f;
 
         /* Set low_level to minimum fuel in each tank */
-        low_level = ft->oldSum / (ft->num_tanks + 1) - 1;
+        low_level = ft->sum / (ft->num_tanks + 1) - 1;
         if (low_level < 0)
             low_level = 0;
         if (TANK_REFILL_LIMIT < low_level)
@@ -284,7 +284,7 @@ void Update_tanks(pl_fuel_t *ft)
         t = ft->num_tanks;
         check = MAX_TANKS << 2;
         fuel = 0;
-        f = ft->oldTank + t;
+        f = ft->tank + t;
 
         while (t >= 0 && check--)
         {
@@ -323,7 +323,7 @@ void Update_tanks(pl_fuel_t *ft)
             if (fuel && t == 0)
             {
                 t = ft->num_tanks;
-                f = ft->oldTank + t;
+                f = ft->tank + t;
             }
             else
             {
@@ -334,9 +334,9 @@ void Update_tanks(pl_fuel_t *ft)
         if (!check)
         {
             error("fuel problem");
-            fuel = ft->oldSum;
-            ft->oldSum =
-                ft->oldMax = 0;
+            fuel = ft->sum;
+            ft->sum =
+                ft->max = 0;
             t = 0;
             while (t <= ft->num_tanks)
             {
@@ -344,25 +344,25 @@ void Update_tanks(pl_fuel_t *ft)
                 {
                     if (fuel > TANK_CAP(t))
                     {
-                        ft->oldTank[t] = TANK_CAP(t);
+                        ft->tank[t] = TANK_CAP(t);
                         fuel -= TANK_CAP(t);
                     }
                     else
                     {
-                        ft->oldTank[t] = fuel;
+                        ft->tank[t] = fuel;
                         fuel = 0;
                     }
-                    ft->oldSum += ft->oldTank[t];
+                    ft->sum += ft->tank[t];
                 }
                 else
-                    ft->oldTank[t] = 0;
-                ft->oldMax += TANK_CAP(t);
+                    ft->tank[t] = 0;
+                ft->max += TANK_CAP(t);
                 t++;
             }
         }
     }
     else
-        ft->oldTank[0] = ft->oldSum;
+        ft->tank[0] = ft->sum;
 }
 
 /*
@@ -431,14 +431,14 @@ void Tank_handle_detach(player_t *pl)
     updateScores = true;
 
     /* Fuel is the one from chosen tank */
-    tank->fuel.oldSum =
-        tank->fuel.oldTank[0] = pl->fuel.oldTank[ct];
-    tank->fuel.oldMax = TANK_CAP(ct);
+    tank->fuel.sum =
+        tank->fuel.tank[0] = pl->fuel.tank[ct];
+    tank->fuel.max = TANK_CAP(ct);
     tank->fuel.current = 0;
     tank->fuel.num_tanks = 0;
 
     /* Mass is only tank + fuel */
-    tank->mass = (tank->emptymass = options.shipMass) + FUEL_MASS(tank->fuel.oldSum);
+    tank->mass = (tank->emptymass = options.shipMass) + FUEL_MASS(tank->fuel.sum);
     tank->power *= TANK_THRUST_FACT;
 
     /* Reset visibility. */
@@ -756,7 +756,7 @@ void Explode_fighter(player_t *pl)
 
     sound_play_sensors(pl->pos, PLAYER_EXPLOSION_SOUND);
 
-    min_debris = (int)(1 + (pl->fuel.oldSum / (8.0 * FUEL_SCALE_FACT)));
+    min_debris = (int)(1 + (pl->fuel.sum / (8.0 * FUEL_SCALE_FACT)));
     max_debris = (int)(min_debris + (pl->mass * 2.0));
     /* reduce debris since we also create wreckage objects */
     min_debris >>= 1;
