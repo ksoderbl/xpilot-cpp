@@ -48,7 +48,7 @@ void Score(player_t *pl, double points, clpos_t pos, const char *msg)
 
     pl->score += (intPoints);
 
-    xpinfo("Player %s score changed by %f and is now %d", pl->name, points, pl->score);
+    // xpinfo("Player %s score changed by %f and is now %d", pl->name, points, pl->score);
 
     if (pl->conn != NULL)
         Send_score_object(pl->conn, intPoints, pos, msg);

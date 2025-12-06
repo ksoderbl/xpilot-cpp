@@ -517,7 +517,7 @@ void Tractor_beam(player_t *pl)
     }
     percent = TRACTOR_PERCENT(pl->lock.distance, maxdist);
     cost = (long)TRACTOR_COST(percent);
-    if (pl->fuel.sum < -cost)
+    if (pl->fuel.oldSum < -cost)
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -574,7 +574,7 @@ void Do_deflector(player_t *pl)
     int i, obj_count;
     long dist, dx, dy;
 
-    if (pl->fuel.sum < -ED_DEFLECTOR)
+    if (pl->fuel.oldSum < -ED_DEFLECTOR)
     {
         if (BIT(pl->used, USES_DEFLECTOR))
             Deflector(pl, false);
@@ -638,7 +638,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.oldSum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     /* find victim */
@@ -684,7 +684,7 @@ void Do_general_transporter(int id, clpos_t pos,
     for (i = 0; i < 50; i++)
     {
         item = (int)(rfrac() * NUM_ITEMS);
-        if (victim->item[item] || (item == ITEM_TANK && victim->fuel.num_tanks) || (item == ITEM_FUEL && victim->fuel.sum))
+        if (victim->item[item] || (item == ITEM_TANK && victim->fuel.num_tanks) || (item == ITEM_FUEL && victim->fuel.oldSum))
             break;
     }
 
@@ -835,14 +835,14 @@ void Do_general_transporter(int id, clpos_t pos,
         /* for tanks, amount is the amount of fuel in the stolen tank */
         what = "a tank";
         i = (int)(rfrac() * victim->fuel.num_tanks) + 1;
-        amount = victim->fuel.tank[i];
+        amount = victim->fuel.oldTank[i];
         Player_remove_tank(victim, i);
         break;
     case ITEM_FUEL:
     {
         /* choose percantage between 10 and 50. */
         double percent = 10.0f + 40.0f * rfrac();
-        amount = (long)(victim->fuel.sum * percent / 100);
+        amount = (long)(victim->fuel.oldSum * percent / 100);
         sprintf(msg, "%s stole %ld units (%d%%) of fuel from %s.",
                 (pl ? pl->name : "A cannon"),
                 amount >> FUEL_SCALE_BITS,
@@ -1228,7 +1228,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
 void Fire_ecm(player_t *pl)
 {
-    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, USES_PHASING_DEVICE))
+    if (pl->item[ITEM_ECM] == 0 || pl->fuel.oldSum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     Fire_general_ecm(pl->id, pl->team, pl->pos);

@@ -110,14 +110,14 @@
  */
 typedef struct
 {
-    long sum;                 /* Sum of fuel in all tanks */
-    long max;                 /* How much fuel can you take? */
-    int current;              /* Number of currently used tank */
-    int num_tanks;            /* Number of tanks */
-    long tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
-    long l1;                  /* Fuel critical level */
-    long l2;                  /* Fuel warning level */
-    long l3;                  /* Fuel notify level */
+    long oldSum;                 /* Sum of fuel in all tanks */
+    long oldMax;                 /* How much fuel can you take? */
+    int current;                 /* Number of currently used tank */
+    int num_tanks;               /* Number of tanks */
+    long oldTank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
+    long oldL1;                  /* Fuel critical level */
+    long oldL2;                  /* Fuel warning level */
+    long oldL3;                  /* Fuel notify level */
 } pl_fuel_t;
 
 typedef struct
@@ -698,13 +698,13 @@ static inline bool Is_cannon_id(int id)
 void Pick_startpos(player_t *pl);
 void Go_home(player_t *pl);
 void Compute_sensor_range(player_t *pl);
-void Player_add_tank(player_t *pl, long tank_fuel);
+void Player_add_tank(player_t *pl, double tank_fuel);
 void Player_remove_tank(player_t *pl, int which_tank);
 void Player_hit_armor(player_t *pl);
 void Player_used_kill(player_t *pl);
 void Player_set_mass(player_t *pl);
-int Init_player(int ind, shipshape_t *ship, int type);
 void Player_init_items(player_t *pl);
+int Init_player(int ind, shipshape_t *ship, int type);
 void Alloc_players(int number);
 void Free_players(void);
 void Update_score_table(void);

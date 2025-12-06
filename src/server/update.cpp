@@ -788,7 +788,7 @@ void Update_objects(void)
 
         if (Player_uses_emergency_thrust(pl))
         {
-            if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
+            if (pl->fuel.oldSum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_THRUST])
                     Emergency_thrust(pl, true);
@@ -799,7 +799,7 @@ void Update_objects(void)
 
         if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         {
-            if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
+            if (pl->fuel.oldSum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
             {
                 if (pl->item[ITEM_EMERGENCY_SHIELD])
                     Emergency_shield(pl, true);
@@ -893,7 +893,7 @@ void Update_objects(void)
                              pl->pos.cy - fs->pos.cy) /
                      CLICK >
                  90.0) ||
-                (pl->fuel.sum >= pl->fuel.max) ||
+                (pl->fuel.oldSum >= pl->fuel.oldMax) ||
                 (world->block[fs->blk_pos.bx][fs->blk_pos.by] != FUEL) ||
                 BIT(pl->used, USES_PHASING_DEVICE) ||
                 (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
@@ -948,7 +948,7 @@ void Update_objects(void)
 
                 do
                 {
-                    if (pl->fuel.tank[pl->fuel.current] > REFUEL_RATE)
+                    if (pl->fuel.oldTank[pl->fuel.current] > REFUEL_RATE)
                     {
                         targ->damage += TARGET_FUEL_REPAIR_PER_FRAME;
                         targ->conn_mask = 0;
@@ -972,12 +972,12 @@ void Update_objects(void)
             }
         }
 
-        if (pl->fuel.sum <= 0)
+        if (pl->fuel.oldSum <= 0)
         {
             CLR_BIT(pl->used, HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_DEFLECTOR);
             Thrust(pl, false);
         }
-        if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE))
+        if (pl->fuel.oldSum > (pl->fuel.oldMax - REFUEL_RATE))
             CLR_BIT(pl->used, USES_REFUEL);
 
         /*
