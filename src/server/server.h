@@ -438,4 +438,7 @@ void P_set_hitmask(int group, hitmask_t hitmask);
  */
 char *showtime(void);
 
+// Prototypes for xpmap.cpp
+int Compress_map(uint8_t *map, size_t size);
+
 #endif

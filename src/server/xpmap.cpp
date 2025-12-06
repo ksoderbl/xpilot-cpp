@@ -46,13 +46,6 @@
 #include "server.h"
 #include "wormhole.h"
 
-// #include "serverconst.h"
-// #include "score.h"
-// #include "netserver.h"
-// #include "object.h"
-
-static int Compress_map(uint8_t *map, size_t size);
-
 static void Xpmap_treasure_to_polygon(int treasure_ind);
 static void Xpmap_target_to_polygon(int target_ind);
 static void Xpmap_cannon_to_polygon(int cannon_ind);
@@ -100,7 +93,7 @@ static void Xpmap_missing_error(int line_num)
  * This works well for most maps which have lots of series of the
  * same map object and is simple enough to got implemented quickly.
  */
-static int Compress_map(uint8_t *map, size_t size)
+int Compress_map(uint8_t *map, size_t size)
 {
     int i, j, k;
 

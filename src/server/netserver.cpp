@@ -156,11 +156,10 @@ int compress_maps = 1;
 int login_in_progress;
 static int num_logins, num_logouts;
 
-static int Compress_map(uint8_t *map, int size);
 static int Init_setup(void);
 static int Handle_listening(connection_t *connp);
 static int Handle_setup(connection_t *connp);
-static int Handle_login(connection_t *connp, char *errmsg, int errsize);
+static int Handle_login(connection_t *connp, char *errmsg, size_t errsize);
 static void Handle_input(int fd, void *arg);
 
 static int Receive_keyboard(connection_t *connp);
@@ -184,45 +183,6 @@ static int Receive_audio_request(connection_t *connp);
 static int Receive_fps_request(connection_t *connp);
 
 static int Send_motd(connection_t *connp);
-
-/*
- * Compress the map data using a simple Run Length Encoding algorithm.
- * If there is more than one consecutive byte with the same type
- * then we set the high bit of the byte and then the next byte
- * gives the number of repetitions.
- * This works well for most maps which have lots of series of the
- * same map object and is simple enough to got implemented quickly.
- */
-static int Compress_map(uint8_t *map, int size)
-{
-    int i, j, k;
-
-    for (i = j = 0; i < size; i++, j++)
-    {
-        if (i + 1 < size && map[i] == map[i + 1])
-        {
-            for (k = 2; i + k < size; k++)
-            {
-                if (map[i] != map[i + k])
-                {
-                    break;
-                }
-                if (k == 255)
-                {
-                    break;
-                }
-            }
-            map[j] = (map[i] | SETUP_COMPRESSED);
-            map[++j] = k;
-            i += k - 1;
-        }
-        else
-        {
-            map[j] = map[i];
-        }
-    }
-    return j;
-}
 
 static void Feature_init(connection_t *connp)
 {

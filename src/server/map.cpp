@@ -621,7 +621,7 @@ bool Grok_map(void)
 
     if (BIT(world->rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
     {
-        error("Cannot teamplay while in race mode -- ignoring teamplay");
+        warn("Cannot teamplay while in race mode -- ignoring teamplay");
         CLR_BIT(world->rules->mode, TEAM_PLAY);
     }
 
