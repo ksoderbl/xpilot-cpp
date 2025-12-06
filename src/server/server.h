@@ -24,12 +24,15 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <cstdio>
 #include <cstdint>
 
 #include "click.h"
 #include "list.h"
+#include "setup.h"
 #include "shipshape.h"
 
+#include "defaults.h"
 #include "map.h"
 #include "object.h"
 #include "player.h"
@@ -167,6 +170,25 @@ int Wildmap(
     char **data,
     int *width_ptr,
     int *height_ptr);
+
+/*
+ * Prototypes for xpmap.c
+ */
+void Create_blockmap_from_polygons(void);
+setup_t *Xpmap_init_setup(void);
+void Xpmap_print(void);
+void Xpmap_grok_map_data(void);
+void Xpmap_allocate_checks(void);
+void Xpmap_tags_to_internal_data(void);
+void Xpmap_find_map_object_teams(void);
+void Xpmap_find_base_direction(void);
+void Xpmap_blocks_to_polygons(void);
+
+/*
+ * Prototypes for xp2map.c
+ */
+bool isXp2MapFile(FILE *ifile);
+bool parseXp2MapFile(char *fname, optOrigin opt_origin);
 
 /*
  * Prototypes for cmdline.c
@@ -437,8 +459,5 @@ void P_set_hitmask(int group, hitmask_t hitmask);
  * Prototypes for showtime.c
  */
 char *showtime(void);
-
-// Prototypes for xpmap.cpp
-int Compress_map(uint8_t *map, size_t size);
 
 #endif

@@ -46,6 +46,8 @@
 #include "server.h"
 #include "wormhole.h"
 
+static int Compress_map(uint8_t *map, size_t size);
+
 static void Xpmap_treasure_to_polygon(int treasure_ind);
 static void Xpmap_target_to_polygon(int target_ind);
 static void Xpmap_cannon_to_polygon(int cannon_ind);
@@ -93,7 +95,7 @@ static void Xpmap_missing_error(int line_num)
  * This works well for most maps which have lots of series of the
  * same map object and is simple enough to got implemented quickly.
  */
-int Compress_map(uint8_t *map, size_t size)
+static int Compress_map(uint8_t *map, size_t size)
 {
     int i, j, k;
 
@@ -591,7 +593,7 @@ setup_t *Xpmap_init_setup(void)
                 break;
 
             case BASE:
-                if (base_i >= world->NumBases)
+                if (base_i >= Num_bases())
                 {
                     warn("Too many bases in block mapdata.");
                     *mapptr = SETUP_SPACE;
@@ -724,6 +726,7 @@ setup_t *Xpmap_init_setup(void)
     setup->setup_size = ((char *)&setup->map_data[0] - (char *)setup) + size;
     setup->map_data_len = size;
     setup->map_order = type;
+    setup->frames_per_second = FPS; // TODO: Remove?
     setup->lives = world->rules->lives;
     setup->mode = world->rules->mode;
     setup->x = world->x;

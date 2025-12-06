@@ -241,279 +241,24 @@ static void Feature_init(connection_t *connp)
  * We only setup this structure once to save time when new
  * players log in during play.
  */
+
 static int Init_setup(void)
 {
-    int i, x, y, team, type, size,
-        wormhole = 0,
-        treasure = 0,
-        target = 0,
-        base = 0,
-        cannon = 0;
-    uint8_t *mapdata, *mapptr;
+    size_t size;
+    uint8_t *mapdata;
 
-    if ((mapdata = (uint8_t *)malloc(world->x * world->y)) == NULL)
+    Oldsetup = Xpmap_init_setup();
+
+    if (!is_polygon_map)
     {
-        error("No memory for mapdata");
-        return -1;
-    }
-    memset(mapdata, SETUP_SPACE, world->x * world->y);
-    mapptr = mapdata;
-    errno = 0;
-    for (x = 0; x < world->x; x++)
-    {
-        for (y = 0; y < world->y; y++, mapptr++)
-        {
-            type = world->block[x][y];
-            switch (type)
-            {
-            case ACWISE_GRAV:
-            case CWISE_GRAV:
-            case POS_GRAV:
-            case NEG_GRAV:
-            case UP_GRAV:
-            case DOWN_GRAV:
-            case RIGHT_GRAV:
-            case LEFT_GRAV:
-                if (!options.gravityVisible)
-                    type = SPACE;
-                break;
-            case WORMHOLE:
-                if (!options.wormholeVisible)
-                    type = SPACE;
-                break;
-            case ITEM_CONCENTRATOR:
-                if (!options.itemConcentratorVisible)
-                    type = SPACE;
-                break;
-            case ASTEROID_CONCENTRATOR:
-                if (!options.asteroidConcentratorVisible)
-                    type = SPACE;
-                break;
-            case FRICTION:
-                if (!options.blockFrictionVisible)
-                    type = SPACE;
-                else
-                    type = DECOR_FILLED;
-                break;
-            default:
-                break;
-            }
-            switch (type)
-            {
-            case SPACE:
-                *mapptr = SETUP_SPACE;
-                break;
-            case FILLED:
-                *mapptr = SETUP_FILLED;
-                break;
-            case REC_RU:
-                *mapptr = SETUP_REC_RU;
-                break;
-            case REC_RD:
-                *mapptr = SETUP_REC_RD;
-                break;
-            case REC_LU:
-                *mapptr = SETUP_REC_LU;
-                break;
-            case REC_LD:
-                *mapptr = SETUP_REC_LD;
-                break;
-            case FUEL:
-                *mapptr = SETUP_FUEL;
-                break;
-            case ACWISE_GRAV:
-                *mapptr = SETUP_ACWISE_GRAV;
-                break;
-            case CWISE_GRAV:
-                *mapptr = SETUP_CWISE_GRAV;
-                break;
-            case POS_GRAV:
-                *mapptr = SETUP_POS_GRAV;
-                break;
-            case NEG_GRAV:
-                *mapptr = SETUP_NEG_GRAV;
-                break;
-            case UP_GRAV:
-                *mapptr = SETUP_UP_GRAV;
-                break;
-            case DOWN_GRAV:
-                *mapptr = SETUP_DOWN_GRAV;
-                break;
-            case RIGHT_GRAV:
-                *mapptr = SETUP_RIGHT_GRAV;
-                break;
-            case LEFT_GRAV:
-                *mapptr = SETUP_LEFT_GRAV;
-                break;
-            case ITEM_CONCENTRATOR:
-                *mapptr = SETUP_ITEM_CONCENTRATOR;
-                break;
-            case ASTEROID_CONCENTRATOR:
-                *mapptr = SETUP_ASTEROID_CONCENTRATOR;
-                break;
-            case DECOR_FILLED:
-                *mapptr = SETUP_DECOR_FILLED;
-                break;
-            case DECOR_RU:
-                *mapptr = SETUP_DECOR_RU;
-                break;
-            case DECOR_RD:
-                *mapptr = SETUP_DECOR_RD;
-                break;
-            case DECOR_LU:
-                *mapptr = SETUP_DECOR_LU;
-                break;
-            case DECOR_LD:
-                *mapptr = SETUP_DECOR_LD;
-                break;
-            case WORMHOLE:
-                switch (world->wormholes[wormhole++].type)
-                {
-                case WORM_NORMAL:
-                    *mapptr = SETUP_WORM_NORMAL;
-                    break;
-                case WORM_IN:
-                    *mapptr = SETUP_WORM_IN;
-                    break;
-                case WORM_OUT:
-                    *mapptr = SETUP_WORM_OUT;
-                    break;
-                default:
-                    error("Bad wormhole (%d,%d).", x, y);
-                    free(mapdata);
-                    return -1;
-                }
-                break;
-            case TREASURE:
-                *mapptr = SETUP_TREASURE + world->treasures[treasure++].team;
-                break;
-            case TARGET:
-                *mapptr = SETUP_TARGET + world->targets[target++].team;
-                break;
-            case BASE:
-                if (world->bases[base].team == TEAM_NOT_SET)
-                {
-                    team = 0;
-                }
-                else
-                {
-                    team = world->bases[base].team;
-                }
-                switch (world->bases[base++].dir)
-                {
-                case DIR_UP:
-                    *mapptr = SETUP_BASE_UP + team;
-                    break;
-                case DIR_RIGHT:
-                    *mapptr = SETUP_BASE_RIGHT + team;
-                    break;
-                case DIR_DOWN:
-                    *mapptr = SETUP_BASE_DOWN + team;
-                    break;
-                case DIR_LEFT:
-                    *mapptr = SETUP_BASE_LEFT + team;
-                    break;
-                default:
-                    error("Bad base at (%d,%d).", x, y);
-                    free(mapdata);
-                    return -1;
-                }
-                break;
-            case CANNON:
-                switch (world->cannons[cannon++].dir)
-                {
-                case DIR_UP:
-                    *mapptr = SETUP_CANNON_UP;
-                    break;
-                case DIR_RIGHT:
-                    *mapptr = SETUP_CANNON_RIGHT;
-                    break;
-                case DIR_DOWN:
-                    *mapptr = SETUP_CANNON_DOWN;
-                    break;
-                case DIR_LEFT:
-                    *mapptr = SETUP_CANNON_LEFT;
-                    break;
-                default:
-                    error("Bad cannon at (%d,%d).", x, y);
-                    free(mapdata);
-                    return -1;
-                }
-                break;
-            case CHECK:
-                for (i = 0; i < world->NumChecks; i++)
-                {
-                    if (x != world->checks[i].x || y != world->checks[i].y)
-                    {
-                        continue;
-                    }
-                    *mapptr = SETUP_CHECK + i;
-                    break;
-                }
-                if (i >= world->NumChecks)
-                {
-                    error("Bad checkpoint at (%d,%d).", x, y);
-                    free(mapdata);
-                    return -1;
-                }
-                break;
-            default:
-                error("Unknown map type (%d) at (%d,%d).", type, x, y);
-                *mapptr = SETUP_SPACE;
-                break;
-            }
-        }
-    }
-    if (compress_maps == 0)
-    {
-        type = SETUP_MAP_UNCOMPRESSED;
-        size = world->x * world->y;
-    }
-    else
-    {
-        type = SETUP_MAP_ORDER_XY;
-        size = Compress_map(mapdata, world->x * world->y);
-        if (size <= 0 || size > world->x * world->y)
-        {
-            warn("Map compression error (%d)", size);
-            free(mapdata);
+        if (Oldsetup)
+            return 0;
+        else
             return -1;
-        }
-        if ((mapdata = (uint8_t *)realloc(mapdata, size)) == NULL)
-        {
-            error("Cannot reallocate mapdata");
-            return -1;
-        }
     }
 
-#ifndef SILENT
-    if (type != SETUP_MAP_UNCOMPRESSED)
-    {
-        xpprintf("%s Map compression ratio is %-4.2f%%\n", showtime(),
-                 100.0 * size / (world->x * world->y));
-    }
-#endif
-    if ((Setup = (setup_t *)malloc(sizeof(setup_t) + size)) == NULL)
-    {
-        error("No memory to hold setup");
-        free(mapdata);
-        return -1;
-    }
-    memset(Setup, 0, sizeof(setup_t) + size);
-    memcpy(Setup->map_data, mapdata, size);
-    free(mapdata);
-    Setup->setup_size = ((char *)&Setup->map_data[0] - (char *)Setup) + size;
-    Setup->map_data_len = size;
-    Setup->map_order = type;
-    Setup->frames_per_second = FPS;
-    Setup->lives = world->rules->lives;
-    Setup->mode = world->rules->mode;
-    Setup->x = world->x;
-    Setup->y = world->y;
-    strlcpy(Setup->name, world->name, sizeof(Setup->name));
-    strlcpy(Setup->author, world->author, sizeof(Setup->author));
-
-    return 0;
+    // TODO: support for xpilot-ng polygon maps.
+    return -1;
 }
 
 /*
@@ -1008,7 +753,7 @@ static int Handle_setup(connection_t *connp)
         return -1;
     }
 
-    S = Setup;
+    S = Oldsetup;
 
     if (connp->setup == 0)
     {
