@@ -69,7 +69,7 @@ static char msg[MSG_LEN];
 
 extern int NumPlayers, NumRobots, NumPseudoPlayers, NumQueuedPlayers;
 extern int login_in_progress;
-extern time_t serverTime;
+extern time_t serverStartTime;
 
 void Meta_send(char *mesg, int len)
 {
@@ -269,7 +269,7 @@ void Meta_update(int change)
             world->NumBases, FPS, options.contactPort,
             game_mode, world->NumTeamBases, freebases,
             BIT(world->rules->mode, TIMING) ? 1 : 0,
-            (long)(time(NULL) - serverTime),
+            (long)(time(NULL) - serverStartTime),
             queue_length);
 
     /*

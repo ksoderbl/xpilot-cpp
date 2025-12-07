@@ -634,7 +634,6 @@ void Make_wreckage(clpos_t pos,
                    double min_mass, double max_mass,
                    double total_mass,
                    int status,
-                   int color,
                    int max_wreckage,
                    int min_dir, int max_dir,
                    double min_speed, double max_speed,
@@ -697,7 +696,7 @@ void Make_wreckage(clpos_t pos,
         if ((wreckage = WIRE_PTR(Object_allocate())) == NULL)
             break;
 
-        wreckage->color = color;
+        wreckage->color = WHITE;
         wreckage->id = owner_id;
         wreckage->team = owner_team;
         wreckage->type = OBJ_WRECKAGE;
@@ -746,7 +745,7 @@ void Make_wreckage(clpos_t pos,
         wreckage->pl_radius = radius;
         wreckage->obj_status = status;
         wreckage->mods = mods;
-        Cell_add_object((object_t *)wreckage);
+        Cell_add_object(OBJ_PTR(wreckage));
     }
 }
 
@@ -788,7 +787,6 @@ void Explode_fighter(player_t *pl)
                   MAX(pl->mass / 8.0, 0.33), pl->mass,
                   2.0 * pl->mass,
                   GRAVITY,
-                  WHITE,
                   10,
                   0, RES - 1,
                   10.0, 10 + (((int)(pl->mass)) >> 1),

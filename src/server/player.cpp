@@ -156,10 +156,10 @@ void Pick_startpos(player_t *pl)
         }
     }
 
-    if (i == world->NumBases)
+    if (i == Num_bases())
     {
         error("Can't pick startpos (ind=%d,num=%d,free=%d,pick=%d,seen=%d)",
-              ind, world->NumBases, num_free, pick, seen);
+              ind, Num_bases(), num_free, pick, seen);
         End_game();
     }
     else
@@ -206,7 +206,7 @@ void Go_home(player_t *pl)
     {
         /*NOTREACHED*/
         /* Tanks have no homebase. */
-        error("BUG: gohome tank");
+        warn("BUG: gohome tank");
         return;
     }
 
@@ -247,15 +247,15 @@ void Go_home(player_t *pl)
     memset(pl->prev_keyv, 0, sizeof(pl->prev_keyv));
     Player_used_kill(pl);
 
-    if (options.playerStartsShielded != 0)
+    if (options.playerStartsShielded)
     {
         SET_BIT(pl->used, HAS_SHIELD);
-        if (options.allowShields == 0)
+        if (!options.allowShields)
         {
-            pl->shield_time = 2 * FPS;
+            pl->shield_time = SHIELD_TIME;
             SET_BIT(pl->have, HAS_SHIELD);
         }
-        if (BIT(pl->have, HAS_DEFLECTOR))
+        if (Player_has_deflector(pl))
             Deflector(pl, true);
     }
     Thrust(pl, false);

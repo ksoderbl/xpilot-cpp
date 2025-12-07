@@ -272,6 +272,8 @@
 
 #define WARN_TIME 2
 
+#define SHIELD_TIME (2 * 12)
+
 #define ALLIANCE_NOT_SET (-1)
 
 #define DEBRIS_MASS 4.5

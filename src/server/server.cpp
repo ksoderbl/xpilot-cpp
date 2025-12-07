@@ -91,7 +91,7 @@ static bool Log = true;
 static bool NoPlayersEnteredYet = true;
 int game_lock = false;
 time_t gameOverTime = 0;
-time_t serverTime = 0;
+time_t serverStartTime = 0;
 
 int roundsPlayed; /* # of rounds played sofar. */
 
@@ -155,29 +155,24 @@ int main(int argc, char **argv)
         addr = sock_get_addr_by_name(options.serverHost);
         if (addr == NULL)
         {
-            errno = 0;
-            error("Failed name lookup on: %s", options.serverHost);
+            warn("Failed name lookup on: %s", options.serverHost);
             return 1;
         }
         serverAddr = xp_strdup(addr);
         strlcpy(Server.host, options.serverHost, sizeof(Server.host));
     }
     else
-    {
         sock_get_local_hostname(Server.host, sizeof Server.host,
                                 (options.reportToMetaServer != 0 &&
                                  options.searchDomainForXPilot != 0));
-    }
 
     Get_login_name(Server.owner, sizeof Server.owner);
 
-    /*
-     * Log, if enabled.
-     */
+    /* Log, if enabled. */
     Log_game("START");
 
     if (!Contact_init())
-        return 0;
+        End_game();
 
     Meta_init();
 
@@ -188,7 +183,6 @@ int main(int argc, char **argv)
         signal(SIGHUP, SIG_IGN);
     else
         signal(SIGHUP, Handle_signal);
-
     signal(SIGTERM, Handle_signal);
     signal(SIGINT, Handle_signal);
     signal(SIGPIPE, SIG_IGN);
@@ -198,7 +192,7 @@ int main(int argc, char **argv)
     /*
      * Set the time the server started
      */
-    serverTime = time(NULL);
+    serverStartTime = time(NULL);
 
 #ifndef SILENT
     xpprintf("%s Server runs at %d frames per second\n", showtime(), options.framesPerSecond);
@@ -274,7 +268,7 @@ void Main_loop(void)
 
         if (!NoPlayersEnteredYet)
             End_game();
-        if (serverTime + 5 * 60 < time(NULL))
+        if (serverStartTime + 5 * 60 < time(NULL))
         {
             error("First player has yet to show his butt, I'm bored... Bye!");
             Log_game("NOSHOW");
@@ -333,7 +327,7 @@ void End_game(void)
     World_free();
     Free_cells();
     Free_options();
-    Log_game("END"); /* Log end */
+    Log_game("END");
 
     exit(0);
 }

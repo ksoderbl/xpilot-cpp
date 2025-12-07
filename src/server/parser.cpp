@@ -48,11 +48,9 @@
  */
 static void Parse_help(char *progname)
 {
-    int j;
-    int flags, all_flags;
+    int j, flags, all_flags, option_count;
     const char *str;
     option_desc *option_descs;
-    int option_count;
     char msg[MSG_LEN];
 
     option_descs = Get_option_descs(&option_count);
@@ -79,7 +77,8 @@ static void Parse_help(char *progname)
         printf("    %s%s",
                option_descs[j].type == valBool ? "-/+" : "-",
                option_descs[j].name);
-        if (strcasecmp(option_descs[j].commandLineOption, option_descs[j].name))
+        if (strcasecmp(option_descs[j].commandLineOption,
+                       option_descs[j].name))
             xpprintf(" or %s", option_descs[j].commandLineOption);
         printf(" %s\n",
                option_descs[j].type == valInt ? "<integer>" : option_descs[j].type == valReal ? "<real>"
@@ -91,36 +90,24 @@ static void Parse_help(char *progname)
         for (str = option_descs[j].helpLine; *str; str++)
         {
             if (str == option_descs[j].helpLine || str[-1] == '\n')
-            {
                 putchar('\t');
-            }
             putchar(*str);
         }
         if (str > option_descs[j].helpLine && str[-1] != '\n')
-        {
             putchar('\n');
-        }
         flags = option_descs[j].flags;
         all_flags = (OPT_ORIGIN_ANY | OPT_VISIBLE);
         if ((flags & all_flags) != all_flags && flags != 0)
         {
             strlcpy(msg, "[ Flags: command, ", sizeof(msg));
             if ((flags & OPT_PASSWORD) != 0)
-            {
                 strlcat(msg, "passwordfile, ", sizeof(msg));
-            }
             if ((flags & (OPT_DEFAULTS | OPT_MAP)) == OPT_DEFAULTS)
-            {
                 strlcat(msg, "defaults, ", sizeof(msg));
-            }
             if ((flags & OPT_MAP) != 0)
-            {
                 strlcat(msg, "any, ", sizeof(msg));
-            }
             if ((flags & OPT_VISIBLE) == 0)
-            {
                 strlcat(msg, "invisible, ", sizeof(msg));
-            }
             msg[strlen(msg) - 2] = '\0';
             strlcat(msg, " ]", sizeof(msg));
             printf("\t%s\n", msg);
@@ -142,9 +129,8 @@ static void Parse_help(char *progname)
  */
 static void Parser_dump_options(char *progname)
 {
-    int j;
+    int j, option_count;
     option_desc *option_descs;
-    int option_count;
 
     option_descs = Get_option_descs(&option_count);
 
@@ -168,9 +154,8 @@ static void Parser_dump_options(char *progname)
  */
 static void Parser_dump_flags(char *progname)
 {
-    int j;
+    int j, option_count;
     option_desc *option_descs;
-    int option_count;
     char msg[MSG_LEN];
 
     option_descs = Get_option_descs(&option_count);
@@ -464,9 +449,7 @@ bool Parser(int argc, char **argv)
     /*
      * Construct the World structure from the options.
      */
-    status = Grok_map();
-
-    return status;
+    return Grok_map();
 }
 
 /*
