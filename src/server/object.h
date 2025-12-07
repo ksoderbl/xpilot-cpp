@@ -291,9 +291,10 @@ struct xp_wireobject
 
     OBJECT_EXTEND
 
-    DFLOAT wire_turnspeed; /* how fast to turn */
+    float wire_turnspeed; /* how fast to turn */
 
-    uint8_t wire_size;     /* Size of object (wreckage) */
+    uint8_t wire_type;     /* Type of object */
+    uint8_t wire_size;     /* Size of object */
     uint8_t wire_rotation; /* Rotation direction */
 
 #define WIRE_IND(ind) ((wireobject_t *)Obj[(ind)])
@@ -340,8 +341,8 @@ struct xp_itemobject
 /*
  * Any object type should be part of this union.
  */
-typedef union _anyobject anyobject_t;
-union _anyobject
+typedef union xp_anyobject anyobject_t;
+union xp_anyobject
 {
     object_t obj;
     ballobject_t ball;

@@ -749,7 +749,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             if (spark_rand != 0 || options.wreckageCollisionMayKill)
             {
                 wireobject_t *wreck = WIRE_PTR(shot);
-                Send_wreckage(conn, pos, (uint8_t)wreck->info,
+                Send_wreckage(conn, pos, wreck->wire_type,
                               wreck->wire_size, wreck->wire_rotation);
             }
             break;
@@ -757,7 +757,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         case OBJ_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
-            Send_asteroid(conn, pos, (uint8_t)ast->info,
+            Send_asteroid(conn, pos, ast->wire_type,
                           ast->wire_size, ast->wire_rotation);
         }
         break;
@@ -789,15 +789,15 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_TORPEDO:
             len = options.distinguishMissiles ? TORPEDO_LEN : MISSILE_LEN;
-            Send_missile(conn, pos, len, shot->missile_dir);
+            Send_missile(conn, pos, len, MISSILE_PTR(shot)->missile_dir);
             break;
         case OBJ_SMART_SHOT:
             len = options.distinguishMissiles ? SMART_SHOT_LEN : MISSILE_LEN;
-            Send_missile(conn, pos, len, shot->missile_dir);
+            Send_missile(conn, pos, len, MISSILE_PTR(shot)->missile_dir);
             break;
         case OBJ_HEAT_SHOT:
             len = options.distinguishMissiles ? HEAT_SHOT_LEN : MISSILE_LEN;
-            Send_missile(conn, pos, len, shot->missile_dir);
+            Send_missile(conn, pos, len, MISSILE_PTR(shot)->missile_dir);
             break;
         case OBJ_BALL:
         {
@@ -952,6 +952,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
     for (i = 0; i < Num_cannons(); i++)
     {
         cannon_t *cannon = Cannon_by_index(i);
+
         if (cannon->tractor_count > 0)
         {
             player_t *t = Player_by_id(cannon->tractor_target_id);

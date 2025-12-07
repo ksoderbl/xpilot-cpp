@@ -671,9 +671,7 @@ void Make_wreckage(clpos_t pos,
         max_speed = min_speed;
 
     if (max_wreckage > MAX_TOTAL_SHOTS - NumObjs)
-    {
         max_wreckage = MAX_TOTAL_SHOTS - NumObjs;
-    }
 
     CLEAR_MODS(mods);
 
@@ -735,7 +733,7 @@ void Make_wreckage(clpos_t pos,
         if (size > 255)
             size = 255;
         wreckage->wire_size = size;
-        wreckage->info = (int)(rfrac() * 256);
+        wreckage->wire_type = (uint8_t)(rfrac() * 256);
 
         radius = wreckage->wire_size * 16 / 256;
         if (radius < 8)

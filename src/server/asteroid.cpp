@@ -226,7 +226,9 @@ void Break_asteroid(wireobject_t *asteroid)
             else
                 num_per_pack = world->items[item].min_per_pack + (int)(rfrac() * (1 + world->items[item].max_per_pack - world->items[item].min_per_pack));
 
-            Make_item(asteroid->pos, vel, item, num_per_pack, status);
+            Make_item(asteroid->pos, vel,
+                      item, num_per_pack,
+                      status);
         }
     }
 
@@ -240,9 +242,7 @@ void Break_asteroid(wireobject_t *asteroid)
 /*
  * Creates an asteroid with the given characteristics.
  */
-static void Make_asteroid(clpos_t pos,
-                          int size, int dir,
-                          double speed)
+static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
 {
     wireobject_t *asteroid;
     double radius;
@@ -312,7 +312,7 @@ static void Make_asteroid(clpos_t pos,
     asteroid->wire_turnspeed = 0.02 + rfrac() * 0.05;
     asteroid->wire_rotation = (int)(rfrac() * RES);
     asteroid->wire_size = size;
-    asteroid->info = (int)(rfrac() * 256);
+    asteroid->wire_type = (uint8_t)(rfrac() * 256);
     radius = ASTEROID_RADIUS(size);
     asteroid->pl_range = radius;
     asteroid->pl_radius = radius;
@@ -320,15 +320,13 @@ static void Make_asteroid(clpos_t pos,
     asteroid->obj_status = GRAVITY;
     CLEAR_MODS(asteroid->mods);
 
-    if (Asteroid_add_to_list(asteroid) == true)
+    if (Asteroid_add_to_list(asteroid))
     {
         world->asteroids.num += 1 << (size - 1);
         Cell_add_object(OBJ_PTR(asteroid));
     }
     else
-    {
         Object_free_ptr(OBJ_PTR(asteroid));
-    }
 }
 
 /*
@@ -391,12 +389,12 @@ static void Place_asteroid(void)
 
             for (i = 0; i < NumPlayers; i++)
             {
-                player_t *pl_i = Player_by_index(i);
+                player_t *pl = Player_by_index(i);
 
-                if (Player_is_human(pl_i))
+                if (Player_is_human(pl))
                 {
-                    ocx = OBJ_X_IN_CLICKS(pl_i);
-                    ocy = OBJ_Y_IN_CLICKS(pl_i);
+                    ocx = OBJ_X_IN_CLICKS(pl);
+                    ocy = OBJ_Y_IN_CLICKS(pl);
                     dcx = WRAP_XCLICK(pos.cx - ocx);
                     dcy = WRAP_YCLICK(pos.cy - ocy);
                     int dpx = CLICK_TO_PIXEL(dcx);
