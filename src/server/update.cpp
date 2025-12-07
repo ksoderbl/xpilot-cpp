@@ -658,6 +658,65 @@ static void Players_turn(void)
 
 static void Use_items(player_t *pl)
 {
+    if (pl->shield_time > 0)
+    {
+        if (--pl->shield_time == 0)
+        {
+            if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
+                CLR_BIT(pl->used, USES_SHIELD);
+        }
+        if (BIT(pl->used, USES_SHIELD) == 0)
+        {
+            /* BG 95/06/03: change test on "have" to "used". */
+            if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
+                CLR_BIT(pl->have, HAS_SHIELD);
+            pl->shield_time = 0;
+        }
+    }
+
+    if (Player_is_phasing(pl))
+    {
+        if (--pl->phasing_left <= 0)
+        {
+            if (pl->item[ITEM_PHASING] > 0)
+                Phasing(pl, true);
+            else
+                Phasing(pl, false);
+        }
+    }
+
+    if (Player_uses_emergency_thrust(pl))
+    {
+        if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
+        {
+            if (pl->item[ITEM_EMERGENCY_THRUST])
+                Emergency_thrust(pl, true);
+            else
+                Emergency_thrust(pl, false);
+        }
+    }
+
+    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+    {
+        if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
+        {
+            if (pl->item[ITEM_EMERGENCY_SHIELD])
+                Emergency_shield(pl, true);
+            else
+                Emergency_shield(pl, false);
+        }
+    }
+
+    if (BIT(pl->used, HAS_LASER))
+    {
+        if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, USES_PHASING_DEVICE))
+            CLR_BIT(pl->used, HAS_LASER);
+        else
+            Fire_laser(pl);
+    }
+
+    if (BIT(pl->used, USES_DEFLECTOR))
+        Do_deflector(pl);
 }
 
 /*
@@ -685,12 +744,12 @@ static void Do_refuel(player_t *pl)
 
         do
         {
-            if (fs->fuel > REFUEL_RATE)
+            if (fs->fuel > REFUEL_RATE * timeStep)
             {
-                fs->fuel -= REFUEL_RATE;
+                fs->fuel -= REFUEL_RATE * timeStep;
                 fs->conn_mask = 0;
                 fs->last_change = frame_loops;
-                Player_add_fuel(pl, REFUEL_RATE);
+                Player_add_fuel(pl, REFUEL_RATE * timeStep);
             }
             else
             {
@@ -728,12 +787,12 @@ static void Do_repair(player_t *pl)
 
         do
         {
-            if (pl->fuel.tank[pl->fuel.current] > REFUEL_RATE)
+            if (pl->fuel.tank[pl->fuel.current] > REFUEL_RATE * timeStep)
             {
-                targ->damage += TARGET_FUEL_REPAIR_PER_FRAME;
+                targ->damage += TARGET_FUEL_REPAIR_PER_FRAME * timeStep;
                 targ->conn_mask = 0;
                 targ->last_change = frame_loops;
-                Player_add_fuel(pl, -REFUEL_RATE);
+                Player_add_fuel(pl, -REFUEL_RATE * timeStep);
                 if (targ->damage > TARGET_DAMAGE)
                 {
                     targ->damage = TARGET_DAMAGE;
@@ -752,9 +811,33 @@ static void Do_repair(player_t *pl)
     }
 }
 
+/* kps - UPDATE_RATE should depend on gamespeed */
+#define UPDATE_RATE 100
 static void Update_visibility(player_t *pl, int ind)
 {
+    int j;
+
+    for (j = 0; j < NumPlayers; j++)
+    {
+        player_t *pl_j = Player_by_index(j);
+
+        if (pl->forceVisible > 0)
+            pl_j->visibility[ind].canSee = true;
+
+        if (ind == j || !Player_is_cloaked(pl_j))
+            pl->visibility[j].canSee = true;
+        else if (pl->updateVisibility || pl_j->updateVisibility || (int)(rfrac() * UPDATE_RATE) < ABS(frame_loops - pl->visibility[j].lastChange))
+        {
+
+            pl->visibility[j].lastChange = frame_loops;
+            if ((rfrac() * (pl->item[ITEM_SENSOR] + 1)) > (rfrac() * (pl_j->item[ITEM_CLOAK] + 1)))
+                pl->visibility[j].canSee = true;
+            else
+                pl->visibility[j].canSee = false;
+        }
+    }
 }
+#undef UPDATE_RATE
 
 /* * * * * *
  *
@@ -763,77 +846,12 @@ static void Update_visibility(player_t *pl, int ind)
  */
 static void Update_players(void)
 {
-}
-
-/********** **********
- * Updating objects and the like.
- */
-void Update_objects(void)
-{
-    // xpinfo("in update_objects");
-
     int i;
     player_t *pl;
-    object_t *obj;
 
-    // xpinfo("update robots");
-
-    /*
-     * Update robots.
-     */
-    Robot_update(true);
-
-    /*
-     * Autorepeat fire, must unfortunately be done here, not in
-     * the player loop below, because of collisions between the shots
-     * and the auto-firing player that would otherwise occur.
-     */
-    if (options.fireRepeatRate > 0)
+    for (i = 0; i < NumPlayers; i++)
     {
-        for (int i = 0; i < NumPlayers; i++)
-        {
-            player_t *pl = Player_by_index(i);
-            if (BIT(pl->used, HAS_SHOT))
-                Fire_normal_shots(pl);
-        }
-    }
-
-    /*
-     * Special items.
-     */
-    for (int i = 0; i < NUM_ITEMS; i++)
-        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0)
-            Place_item(NULL, i);
-
-    Fuel_update();
-    Misc_object_update();
-
-    /*
-     * Asteroids.
-     */
-    Asteroid_update();
-    if (Num_ecms() > 0)
-        Ecm_update();
-    if (Num_transporters() > 0)
-        Transporter_update();
-
-    bool tick = true;
-    if (Num_cannons() > 0)
-        Cannon_update(tick);
-
-    if (Num_targets() > 0)
-        Target_update();
-
-    // xpinfo("player loop");
-
-    /* * * * * *
-     *
-     * Player loop. Computes miscellaneous updates.
-     *
-     */
-    for (int ind = 0; ind < NumPlayers; ind++)
-    {
-        player_t *pl = PlayersArray[ind];
+        pl = Player_by_index(i);
 
         /* Limits. */
         LIMIT(pl->power, MIN_PLAYER_POWER, MAX_PLAYER_POWER);
@@ -884,65 +902,7 @@ void Update_objects(void)
             Thrust(pl, false);
         }
 
-        if (pl->shield_time > 0)
-        {
-            if (--pl->shield_time == 0)
-            {
-                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
-                    CLR_BIT(pl->used, USES_SHIELD);
-            }
-            if (BIT(pl->used, USES_SHIELD) == 0)
-            {
-                /* BG 95/06/03: change test on "have" to "used". */
-                if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
-                    CLR_BIT(pl->have, HAS_SHIELD);
-                pl->shield_time = 0;
-            }
-        }
-
-        if (Player_is_phasing(pl))
-        {
-            if (--pl->phasing_left <= 0)
-            {
-                if (pl->item[ITEM_PHASING] > 0)
-                    Phasing(pl, true);
-                else
-                    Phasing(pl, false);
-            }
-        }
-
-        if (Player_uses_emergency_thrust(pl))
-        {
-            if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
-            {
-                if (pl->item[ITEM_EMERGENCY_THRUST])
-                    Emergency_thrust(pl, true);
-                else
-                    Emergency_thrust(pl, false);
-            }
-        }
-
-        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
-        {
-            if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
-            {
-                if (pl->item[ITEM_EMERGENCY_SHIELD])
-                    Emergency_shield(pl, true);
-                else
-                    Emergency_shield(pl, false);
-            }
-        }
-
-        if (BIT(pl->used, HAS_LASER))
-        {
-            if (pl->item[ITEM_LASER] <= 0 || BIT(pl->used, USES_PHASING_DEVICE))
-                CLR_BIT(pl->used, HAS_LASER);
-            else
-                Fire_laser(pl);
-        }
-
-        if (BIT(pl->used, USES_DEFLECTOR))
-            Do_deflector(pl);
+        Use_items(pl);
 
         /*
          * Only do autopilot code if switched on and player is not
@@ -993,22 +953,7 @@ void Update_objects(void)
         if (Player_is_cloaked(pl))
             Player_add_fuel(pl, ED_CLOAKING_DEVICE);
 
-#define UPDATE_RATE 100
-
-        for (int j = 0; j < NumPlayers; j++)
-        {
-            if (pl->forceVisible)
-                PlayersArray[j]->visibility[ind].canSee = 1;
-
-            if (ind == j || !BIT(PlayersArray[j]->used, USES_CLOAKING_DEVICE))
-                pl->visibility[j].canSee = 1;
-            else if (pl->updateVisibility || PlayersArray[j]->updateVisibility || (int)(rfrac() * UPDATE_RATE) < ABS(frame_loops - pl->visibility[j].lastChange))
-            {
-
-                pl->visibility[j].lastChange = frame_loops;
-                pl->visibility[j].canSee = (rfrac() * (pl->item[ITEM_SENSOR] + 1)) > (rfrac() * (PlayersArray[j]->item[ITEM_CLOAK] + 1));
-            }
-        }
+        Update_visibility(pl, i);
 
         if (Player_is_refueling(pl))
             Do_refuel(pl);
@@ -1253,6 +1198,75 @@ void Update_objects(void)
 
         pl->used &= pl->have;
     }
+}
+
+/********** **********
+ * Updating objects and the like.
+ */
+void Update_objects(void)
+{
+    // xpinfo("in update_objects");
+
+    int i;
+    player_t *pl;
+    object_t *obj;
+
+    // xpinfo("update robots");
+
+    /*
+     * Update robots.
+     */
+    Robot_update(true);
+
+    /*
+     * Autorepeat fire, must unfortunately be done here, not in
+     * the player loop below, because of collisions between the shots
+     * and the auto-firing player that would otherwise occur.
+     */
+    if (options.fireRepeatRate > 0)
+    {
+        for (int i = 0; i < NumPlayers; i++)
+        {
+            player_t *pl = Player_by_index(i);
+            if (BIT(pl->used, HAS_SHOT))
+                Fire_normal_shots(pl);
+        }
+    }
+
+    /*
+     * Special items.
+     */
+    for (int i = 0; i < NUM_ITEMS; i++)
+        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0)
+            Place_item(NULL, i);
+
+    Fuel_update();
+    Misc_object_update();
+
+    /*
+     * Asteroids.
+     */
+    Asteroid_update();
+    if (Num_ecms() > 0)
+        Ecm_update();
+    if (Num_transporters() > 0)
+        Transporter_update();
+
+    bool tick = true;
+    if (Num_cannons() > 0)
+        Cannon_update(tick);
+
+    if (Num_targets() > 0)
+        Target_update();
+
+    // xpinfo("player loop");
+
+    /* * * * * *
+     *
+     * Player loop. Computes miscellaneous updates.
+     *
+     */
+    Update_players();
 
     for (int i = world->NumWormholes - 1; i >= 0; i--)
     {
