@@ -157,10 +157,9 @@ static robot_default_data_t *Robot_default_get_data(player_t *pl)
  */
 static void Robot_default_create(player_t *pl, char *str)
 {
-    // player_t *pl = PlayersArray[ind];
     robot_default_data_t *my_data;
 
-    if (!(my_data = (robot_default_data_t *)malloc(sizeof(*my_data))))
+    if (!(my_data = XMALLOC(robot_default_data_t, 1)))
     {
         error("no mem for default robot");
         End_game();
@@ -176,7 +175,8 @@ static void Robot_default_create(player_t *pl, char *str)
     {
         if (str && *str)
         {
-            xpprintf("%s invalid parameters for default robot: \"%s\"\n", showtime(), str);
+            warn("invalid parameters for default robot %s: \"%s\"",
+                 pl->name, str);
             my_data->attack = (int)(rfrac() * 99.5);
             my_data->defense = 100 - my_data->attack;
         }
@@ -185,7 +185,7 @@ static void Robot_default_create(player_t *pl, char *str)
     }
     /*
      * some parameters which may be changed to be dependent upon
-     * the `attack' and `defense' settings of this robot.
+     * the 'attack' and 'defense' settings of this robot.
      */
     if (BIT(world->rules->mode, TIMING))
     {
@@ -306,10 +306,10 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
         if (inviter->id == war_id)
             we_accept = false;
         /* don't accept players who are not active */
-        if (BIT(inviter->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
+        if (!Player_is_active(inviter))
             we_accept = false;
         /* don't accept players with scores substantially lower than ours */
-        else if (inviter->score < (Get_Score(pl) - limit))
+        else if (Get_Score(inviter) < (Get_Score(pl) - limit))
             we_accept = false;
     }
     else
@@ -319,23 +319,23 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
 
         for (i = 0; i < NumPlayers; i++)
         {
-            if (Player_by_index(i)->alliance == inviter->alliance)
+            player_t *pl_i = Player_by_index(i);
+
+            if (pl_i->alliance == inviter->alliance)
             {
-                if (Player_by_index(i)->id == war_id)
+                if (pl_i->id == war_id)
                 {
                     we_accept = false;
                     break;
                 }
-                avg_score += Player_by_index(i)->score;
+                avg_score += Get_Score(pl_i);
             }
         }
         if (we_accept)
         {
             avg_score = avg_score / member_count;
             if (avg_score < (Get_Score(pl) - limit))
-            {
                 we_accept = false;
-            }
         }
     }
     if (we_accept)
@@ -1429,9 +1429,11 @@ static bool Ball_handler(player_t *pl)
         }
         for (i = 0; i < NumPlayers; i++)
         {
-            dist = (int)(LENGTH(ball->pix_pos.x - Player_by_index(i)->pix_pos.x,
-                                ball->pix_pos.y - Player_by_index(i)->pix_pos.y));
-            if (Player_by_index(i)->id != pl->id && (BIT(Player_by_index(i)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) && dist < dist_np)
+            player_t *pl_i = Player_by_index(i);
+
+            dist = (int)(LENGTH(ball->pix_pos.x - pl_i->pix_pos.x,
+                                ball->pix_pos.y - pl_i->pix_pos.y));
+            if (pl_i->id != pl->id && (BIT(pl_i->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) && dist < dist_np)
                 dist_np = dist;
         }
         bdir = (int)findDir(ball->vel.x, ball->vel.y);
@@ -1730,7 +1732,7 @@ static void Robot_default_play_check_objects(player_t *pl,
         if (BIT(shot->type, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT) && BIT(pl->used, HAS_SHIELD))
             continue;
 
-        /*-BA This code shouldn't be executed for `friendly` shots
+        /*-BA This code shouldn't be executed for 'friendly' shots
          *-BA Moved down 2 paragraphs
          *        if (BIT(shot->type, OBJ_SMART_SHOT_BIT|OBJ_HEAT_SHOT_BIT|OBJ_MINE_BIT)) {
          *            fx = shot->pos.x - pl->pos.x;

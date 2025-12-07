@@ -779,9 +779,8 @@ static void Robot_create(void)
             roundtime = options.maxRoundTime * FPS;
         else
             roundtime = -1;
-        sprintf(msg, "Player entered. Delaying 0 seconds until next %s.",
-                (BIT(world->rules->mode, TIMING) ? "race" : "round"));
-        Set_message(msg);
+        Set_message_f("Player entered. Delaying 0 seconds until next %s.",
+                      (BIT(world->rules->mode, TIMING) ? "race" : "round"));
     }
 
     updateScores = true;
@@ -814,7 +813,7 @@ void Robot_delete(player_t *pl, bool kicked)
             if (!Player_is_robot(pl_i))
                 continue;
 
-            if (Player_by_index(i)->score < low_score)
+            if (Get_Score(pl_i) < low_score)
             {
                 low_pl = pl_i;
                 low_score = Get_Score(low_pl);
