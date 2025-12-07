@@ -100,6 +100,8 @@ extern char ShutdownReason[];
 
 extern double timePerFrame;
 
+extern double timeStep;
+
 #define APPNAME "xpilot-cpp-server"
 
 /*

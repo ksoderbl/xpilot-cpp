@@ -330,9 +330,9 @@ void Thrust(player_t *pl, bool on)
  */
 void Autopilot(player_t *pl, bool on)
 {
-    Thrust(pl, false);
     if (on)
     {
+        Thrust(pl, false);
         pl->auto_power_s = pl->power;
         pl->auto_turnspeed_s = pl->turnspeed;
         pl->auto_turnresistance_s = pl->turnresistance;
@@ -344,6 +344,7 @@ void Autopilot(player_t *pl, bool on)
     }
     else
     {
+        Thrust(pl, false);
         pl->power = pl->auto_power_s;
         pl->turnacc = 0.0;
         pl->turnspeed = pl->auto_turnspeed_s;
@@ -379,9 +380,7 @@ static void do_Autopilot(player_t *pl)
      * mess with the position (speed too?) settings.
      */
     if (pl->last_wall_touch + 1 >= frame_loops)
-    {
         return;
-    }
 
     /*
      * Having more autopilot items or using emergency thrust causes a much
@@ -400,9 +399,7 @@ static void do_Autopilot(player_t *pl)
             delta = emergency_thrust_settings_delta;
     }
     else
-    {
         afterburners = pl->item[ITEM_AFTERBURNER];
-    }
 
     ix = OBJ_X_IN_BLOCKS(pl);
     iy = OBJ_Y_IN_BLOCKS(pl);
@@ -570,6 +567,10 @@ static void Fuel_update(void)
     }
 }
 
+/*
+static void legacy_mode_ball_hack(ballobject_t *ball)
+*/
+
 static void Misc_object_update(void)
 {
     int i;
@@ -582,16 +583,13 @@ static void Misc_object_update(void)
         if (obj->type == OBJ_MINE)
             Update_mine(MINE_PTR(obj));
 
-        else if (obj->type == OBJ_SMART_SHOT)
-            Update_missile(MISSILE_PTR(obj));
-
-        else if (obj->type == OBJ_HEAT_SHOT)
-            Update_missile(MISSILE_PTR(obj));
-
         else if (obj->type == OBJ_TORPEDO)
             Update_torpedo(TORP_PTR(obj));
 
-        else if (obj->type == OBJ_BALL_BIT)
+        else if (obj->type == OBJ_SMART_SHOT || obj->type == OBJ_HEAT_SHOT)
+            Update_missile(MISSILE_PTR(obj));
+
+        else if (obj->type == OBJ_BALL)
         {
             if (obj->id != NO_ID)
             {
@@ -604,8 +602,9 @@ static void Misc_object_update(void)
         else if (obj->type == OBJ_WRECKAGE)
         {
             wireobject_t *wireobj = WIRE_PTR(obj);
+
             wireobj->wire_rotation =
-                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
+                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * timeStep * RES)) % RES;
         }
 
         update_object_speed(obj);

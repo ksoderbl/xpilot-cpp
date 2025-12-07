@@ -95,8 +95,7 @@ time_t serverTime = 0;
 
 int roundsPlayed; /* # of rounds played sofar. */
 
-extern int login_in_progress;
-extern int NumQueuedPlayers;
+double timeStep = 1.0; /* Game time step per frame */
 
 extern void Main_loop(void);
 static void Handle_signal(int sig_no);
