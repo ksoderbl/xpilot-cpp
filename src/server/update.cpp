@@ -536,6 +536,85 @@ static void do_Autopilot(player_t *pl)
         Thrust(pl, true);
 }
 
+static void Fuel_update(void)
+{
+    int i;
+    int fuel;
+    int frames_per_update;
+
+    if (NumPlayers == 0)
+        return;
+
+    /*
+     * Let the fuel stations regenerate some fuel.
+     */
+    fuel = (int)(NumPlayers * STATION_REGENERATION);
+    frames_per_update = MAX_STATION_FUEL / (fuel * BLOCK_SZ);
+    for (i = 0; i < Num_fuels(); i++)
+    {
+        fuel_t *fs = Fuel_by_index(i);
+
+        if (fs->fuel == MAX_STATION_FUEL)
+            continue;
+        if ((fs->fuel += fuel) >= MAX_STATION_FUEL)
+            fs->fuel = MAX_STATION_FUEL;
+        else if (fs->last_change + frames_per_update > frame_loops)
+            /*
+             * We don't send fuelstation info to the clients every frame
+             * if it wouldn't change their display.
+             */
+            continue;
+
+        fs->conn_mask = 0;
+        fs->last_change = frame_loops;
+    }
+}
+
+static void Misc_object_update(void)
+{
+    int i;
+    object_t *obj;
+
+    for (i = 0; i < NumObjs; i++)
+    {
+        obj = Obj[i];
+
+        if (obj->type == OBJ_MINE)
+            Update_mine(MINE_PTR(obj));
+
+        else if (obj->type == OBJ_SMART_SHOT)
+            Update_missile(MISSILE_PTR(obj));
+
+        else if (obj->type == OBJ_HEAT_SHOT)
+            Update_missile(MISSILE_PTR(obj));
+
+        else if (obj->type == OBJ_TORPEDO)
+            Update_torpedo(TORP_PTR(obj));
+
+        else if (obj->type == OBJ_BALL_BIT)
+        {
+            if (obj->id != NO_ID)
+            {
+                ballobject_t *ball = BALL_PTR(obj);
+
+                Update_connector_force(ball);
+            }
+        }
+
+        else if (obj->type == OBJ_WRECKAGE)
+        {
+            wireobject_t *wireobj = WIRE_PTR(obj);
+            wireobj->wire_rotation =
+                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
+        }
+
+        update_object_speed(obj);
+
+        if (!(obj->type == OBJ_ASTEROID))
+            Move_object(obj);
+    }
+}
+
 /********** **********
  * Updating objects and the like.
  */
@@ -576,76 +655,8 @@ void Update_objects(void)
         if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0)
             Place_item(NULL, i);
 
-    /*
-     * Let the fuel stations regenerate some fuel.
-     */
-    if (NumPlayers > 0)
-    {
-        int fuel = (int)(NumPlayers * STATION_REGENERATION);
-        int frames_per_update = MAX_STATION_FUEL / (fuel * BLOCK_SZ);
-        for (int i = 0; i < world->NumFuels; i++)
-        {
-            fuel_t *fs = Fuel_by_index(i);
-
-            if (fs->fuel == MAX_STATION_FUEL)
-                continue;
-            if ((fs->fuel += fuel) >= MAX_STATION_FUEL)
-                fs->fuel = MAX_STATION_FUEL;
-            else if (fs->last_change + frames_per_update > frame_loops)
-                /*
-                 * We don't send fuelstation info to the clients every frame
-                 * if it wouldn't change their display.
-                 */
-                continue;
-
-            fs->conn_mask = 0;
-            fs->last_change = frame_loops;
-        }
-    }
-
-    // xpinfo("update shots");
-
-    /*
-     * Update shots.
-     */
-    for (int i = 0; i < NumObjs; i++)
-    {
-        obj = Obj[i];
-
-        if (obj->type == OBJ_MINE)
-            Update_mine(MINE_PTR(obj));
-
-        else if (obj->type == OBJ_SMART_SHOT)
-            Update_missile(MISSILE_PTR(obj));
-
-        else if (obj->type == OBJ_HEAT_SHOT)
-            Update_missile(MISSILE_PTR(obj));
-
-        else if (obj->type == OBJ_TORPEDO)
-            Update_torpedo(TORP_PTR(obj));
-
-        else if (obj->type == OBJ_BALL_BIT)
-        {
-            if (obj->id != NO_ID)
-            {
-                ballobject_t *ball = BALL_PTR(obj);
-
-                Update_connector_force(ball);
-            }
-        }
-
-        else if (obj->type == OBJ_WRECKAGE)
-        {
-            wireobject_t *wireobj = WIRE_PTR(obj);
-            wireobj->wire_rotation =
-                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * RES)) % RES;
-        }
-
-        update_object_speed(obj);
-
-        if (!(obj->type == OBJ_ASTEROID))
-            Move_object(obj);
-    }
+    Fuel_update();
+    Misc_object_update();
 
     /*
      * Asteroids.
