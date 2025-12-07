@@ -270,9 +270,9 @@ void Update_tanks(pl_fuel_t *ft)
     if (ft->num_tanks)
     {
         int t, check;
-        long low_level;
-        long fuel;
-        long *f;
+        double low_level;
+        double fuel;
+        double *f;
 
         /* Set low_level to minimum fuel in each tank */
         low_level = ft->sum / (ft->num_tanks + 1) - 1;
@@ -288,7 +288,7 @@ void Update_tanks(pl_fuel_t *ft)
 
         while (t >= 0 && check--)
         {
-            long m = TANK_CAP(t);
+            double m = TANK_CAP(t);
 
             /* Add the previous over/underflow and do a new cut */
             *f += fuel;

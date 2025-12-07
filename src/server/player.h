@@ -110,14 +110,14 @@
  */
 typedef struct
 {
-    long sum;                 /* Sum of fuel in all tanks */
-    long max;                 /* How much fuel can you take? */
-    int current;              /* Number of currently used tank */
-    int num_tanks;            /* Number of tanks */
-    long tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
-    long l1;                  /* Fuel critical level */
-    long l2;                  /* Fuel warning level */
-    long l3;                  /* Fuel notify level */
+    double sum;                 /* Sum of fuel in all tanks */
+    double max;                 /* How much fuel can you take? */
+    int current;                /* Number of currently used tank */
+    int num_tanks;              /* Number of tanks */
+    double tank[1 + MAX_TANKS]; /* main fixed tank + extra tanks. */
+    double l1;                  /* Fuel critical level */
+    double l2;                  /* Fuel warning level */
+    double l3;                  /* Fuel notify level */
 } pl_fuel_t;
 
 typedef struct
