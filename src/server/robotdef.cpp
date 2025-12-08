@@ -140,7 +140,7 @@ int Robot_default_setup(robot_type_t *type_ptr)
 static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i);
 static bool Check_robot_target(player_t *pl, int item_x, int item_y, int new_mode);
 static bool Detect_ship(player_t *pl, player_t *ship);
-static int Rank_item_value(player_t *pl, Item_t itemtype);
+static int Rank_item_value(player_t *pl, enum Item itemtype);
 static bool Ball_handler(player_t *pl);
 
 /*
@@ -669,14 +669,14 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         Thrust(pl, false);
     }
     else if (delta_dir < 3 * RES / 8 || delta_dir > 5 * RES / 8)
-    {
         pl->turnacc = (my_data->robot_mode == RM_EVADE_LEFT ? pl->turnspeed : (-pl->turnspeed));
-    }
     else
     {
         pl->turnacc = 0;
         Thrust(pl, true);
-        my_data->robot_mode = (delta_dir < RES / 2 ? RM_EVADE_LEFT : RM_EVADE_RIGHT);
+        my_data->robot_mode = (delta_dir < RES / 2
+                                   ? RM_EVADE_LEFT
+                                   : RM_EVADE_RIGHT);
     }
 
     return true;
@@ -711,7 +711,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
 
     switch (weapon_type)
     {
-    case HAS_TRACTOR_BEAM:
+    case USES_TRACTOR_BEAM:
         Robot_check_new_modifiers(pl, mods);
         return;
 
@@ -1072,7 +1072,8 @@ static bool Check_robot_target(player_t *pl,
          * else if ((my_data->robot_count % 10) == 0
          * && pl->item[ITEM_MISSILE] > 0)
          */
-        else if ((my_data->robot_count % 10) < pl->item[ITEM_MISSILE] && !WITHIN(my_data->robot_count, my_data->last_fired_missile, 10))
+        else if ((my_data->robot_count % 10) < pl->item[ITEM_MISSILE] && !WITHIN(my_data->robot_count,
+                                                                                 my_data->last_fired_missile, 10))
         {
             int type;
 
@@ -1121,7 +1122,8 @@ static bool Check_robot_target(player_t *pl,
         /*-BA Be more agressive, esp if lots of ammo
          * if ((my_data->robot_count % 32) == 0)
          */
-        else if ((my_data->robot_count % 32) < pl->item[ITEM_MINE] && !WITHIN(my_data->robot_count, my_data->last_dropped_mine, 10))
+        else if ((my_data->robot_count % 32) < pl->item[ITEM_MINE] && !WITHIN(my_data->robot_count,
+                                                                              my_data->last_dropped_mine, 10))
         {
             if (pl->fuel.sum > pl->fuel.l3)
             {
@@ -1271,7 +1273,7 @@ static bool Detect_ship(player_t *pl, player_t *ship)
 #define ROBOT_IGNORE_ITEM 0    /* ignore */
 /*
  */
-static int Rank_item_value(player_t *pl, Item_t itemtype)
+static int Rank_item_value(player_t *pl, enum Item itemtype)
 {
     // player_t *pl = PlayersArray[ind];
 
@@ -1548,8 +1550,9 @@ static int Robot_default_play_check_map(player_t *pl)
     target_i = -1;
     target_dist = Visibility_distance;
 
-    for (j = 0; j < world->NumFuels; j++)
+    for (j = 0; j < Num_fuels(); j++)
     {
+        fuel_t *fs = Fuel_by_index(j);
 
         if (world->fuels[j].fuel < 100 * FUEL_SCALE_FACT)
             continue;
@@ -1944,26 +1947,26 @@ static void Robot_default_play(player_t *pl)
 
     my_data->robot_count--;
 
-    CLR_BIT(pl->used, HAS_SHOT | HAS_SHIELD | HAS_CLOAKING_DEVICE | HAS_LASER);
-    if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, USES_EMERGENCY_SHIELD))
+    CLR_BIT(pl->used, USES_SHOT | USES_SHIELD | USES_CLOAKING_DEVICE | USES_LASER);
+    if (BIT(pl->have, HAS_EMERGENCY_SHIELD) && !BIT(pl->used, HAS_EMERGENCY_SHIELD))
         Emergency_shield(pl, true);
     harvest_checked = false;
     evade_checked = false;
     navigate_checked = false;
 
-    mine_i = -1;
+    mine_i = NO_IND;
     mine_dist = SHIP_SZ + 200;
-    item_i = -1;
+    item_i = NO_IND;
     item_dist = (int)Visibility_distance;
     item_imp = ROBOT_IGNORE_ITEM;
 
-    if (BIT(pl->have, HAS_CLOAKING_DEVICE) && pl->fuel.sum > pl->fuel.l2)
+    if (Player_has_cloaking_device(pl) && pl->fuel.sum > pl->fuel.l2)
         SET_BIT(pl->used, USES_CLOAKING_DEVICE);
 
-    if (BIT(pl->have, HAS_EMERGENCY_THRUST) && !BIT(pl->used, USES_EMERGENCY_THRUST))
+    if (Player_has_emergency_thrust(pl) && !BIT(pl->used, USES_EMERGENCY_THRUST))
         Emergency_thrust(pl, true);
 
-    if (BIT(pl->have, HAS_DEFLECTOR) && !BIT(world->rules->mode, TIMING))
+    if (Player_has_deflector(pl) && !BIT(world->rules->mode, TIMING))
         Deflector(pl, true);
 
     if (pl->fuel.sum <= (BIT(world->rules->mode, TIMING) ? 0 : pl->fuel.l1))

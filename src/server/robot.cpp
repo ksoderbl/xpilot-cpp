@@ -378,9 +378,9 @@ void Parse_robot_file(void)
             /*
              * Fill in some default values.
              */
-            strcpy(ship_buf, "(15,0)(-9,8)(-9,-8)");
-            strcpy(type_buf, DEFAULT_ROBOT_TYPE);
-            strcpy(para_buf, "");
+            strlcpy(ship_buf, "(15,0)(-9,8)(-9,-8)", sizeof ship_buf);
+            strlcpy(type_buf, DEFAULT_ROBOT_TYPE, sizeof type_buf);
+            strlcpy(para_buf, "", sizeof para_buf);
 
             while (fp)
             {
@@ -393,12 +393,10 @@ void Parse_robot_file(void)
                     fp = NULL;
                 }
                 else if (*buf == '\n')
-                {
                     end_of_record = 1;
-                }
                 else
                 {
-                    int size = 0;
+                    size_t size = 0;
                     int key = 0;
                     char *dst = 0;
 
@@ -431,15 +429,11 @@ void Parse_robot_file(void)
                     {
                         char *ptr = strchr(buf, ':') + 1;
                         while (isspace(*ptr))
-                        {
                             ptr++;
-                        }
                         strlcpy(dst, ptr, size);
                         ptr = &dst[strlen(dst)];
                         while (--ptr >= dst && isspace(*ptr))
-                        {
                             *ptr = '\0';
-                        }
                     }
                 }
                 if (end_of_record && got_name)
@@ -450,13 +444,12 @@ void Parse_robot_file(void)
                         if (max_robs == 0)
                         {
                             max_robs = 10;
-                            robs = (robot_t *)malloc(max_robs * sizeof(robot_t));
+                            robs = XMALLOC(robot_t, max_robs);
                         }
                         else
                         {
                             max_robs += 10;
-                            robs = (robot_t *)realloc(robs,
-                                                      max_robs * sizeof(robot_t));
+                            robs = XREALLOC(robot_t, robs, max_robs);
                         }
                         if (!robs)
                         {
@@ -465,10 +458,14 @@ void Parse_robot_file(void)
                             break;
                         }
                     }
-                    strcpy(robs[num_robs].driver, type_buf);
-                    strcpy(robs[num_robs].name, name_buf);
-                    strcpy(robs[num_robs].config, para_buf);
-                    strcpy(robs[num_robs].shape, ship_buf);
+                    strlcpy(robs[num_robs].driver, type_buf,
+                            sizeof robs[num_robs].driver);
+                    strlcpy(robs[num_robs].name, name_buf,
+                            sizeof robs[num_robs].name);
+                    strlcpy(robs[num_robs].config, para_buf,
+                            sizeof robs[num_robs].config);
+                    strlcpy(robs[num_robs].shape, ship_buf,
+                            sizeof robs[num_robs].shape);
                     robs[num_robs].used = 0;
                     num_robs++;
                 }
@@ -520,8 +517,7 @@ void Parse_robot_file(void)
  */
 void Robot_init(void)
 {
-    int i, result;
-    int n;
+    int i, result, n;
 
     /*
      * For each robot driver call its initialization function.
@@ -534,9 +530,7 @@ void Robot_init(void)
         memset(&robot_types[n], 0, sizeof(robot_type_t));
         result = (*robot_type_setups[i].setup_func)(&robot_types[n]);
         if (result == 0)
-        {
             n++;
-        }
     }
     num_robot_types = n;
 
@@ -613,9 +607,7 @@ static void Robot_talks(enum robot_talk_t says_what,
     char msg[MSG_LEN];
 
     if (options.robotsTalk != true && says_what != ROBOT_TALK_ENTER)
-    {
         return;
-    }
 
     switch (says_what)
     {
@@ -649,10 +641,9 @@ static void Robot_talks(enum robot_talk_t says_what,
         next_msg = 0;
     i = next_msg % n;
     if (two == 2)
-        sprintf(msg, msgsp[i], other_name, robot_name);
+        Set_message_f(msgsp[i], other_name, robot_name);
     else
-        sprintf(msg, msgsp[i], robot_name);
-    Set_message(msg);
+        Set_message_f(msgsp[i], robot_name);
 }
 
 static void Robot_create(void)

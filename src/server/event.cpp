@@ -752,7 +752,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_EMERGENCY_THRUST:
-                if (BIT(pl->have, HAS_EMERGENCY_THRUST))
+                if (Player_has_emergency_thrust(pl))
                     Emergency_thrust(pl, !BIT(pl->used, USES_EMERGENCY_THRUST));
                 break;
 
