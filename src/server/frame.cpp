@@ -725,16 +725,16 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                 if (debris_colors > 4)
                 {
                     if (color == BLUE)
-                        color = (shot->life >> 1);
+                        color = (int)shot->life / 2;
                     else
-                        color = (shot->life >> 2);
+                        color = (int)shot->life / 4;
                 }
                 else
                 {
                     if (color == BLUE)
-                        color = (shot->life >> 2);
+                        color = (int)shot->life / 4;
                     else
-                        color = (shot->life >> 3);
+                        color = (int)shot->life / 8;
                 }
                 if (color >= debris_colors)
                     color = debris_colors - 1;
@@ -956,16 +956,17 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         if (cannon->tractor_count > 0)
         {
             player_t *t = Player_by_id(cannon->tractor_target_id);
-            if (click_inview(cv, t->pos.cx, t->pos.cy))
+            if (clpos_inview(&cv, t->pos))
             {
                 int j;
                 for (j = 0; j < 3; j++)
                 {
-                    Send_connector(conn,
-                                   (int)(t->pix_pos.x + t->ship->pts[j][t->dir].x),
-                                   (int)(t->pix_pos.y + t->ship->pts[j][t->dir].y),
-                                   CLICK_TO_PIXEL(cannon->pos.cx),
-                                   CLICK_TO_PIXEL(cannon->pos.cy), 1);
+                    clpos_t pts, pos;
+
+                    pts = Ship_get_point_clpos(t->ship, j, t->dir);
+                    pos.cx = t->pos.cx + pts.cx;
+                    pos.cy = t->pos.cy + pts.cy;
+                    Send_connector(conn, pos, cannon->pos, 1);
                 }
             }
         }
@@ -1007,49 +1008,41 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         }
         if (Player_is_refueling(pl_i))
         {
-            if (click_inview(cv, world->fuels[pl_i->fs].pos.cx,
-                             world->fuels[pl_i->fs].pos.cy))
-                Send_refuel(conn,
-                            (int)world->fuels[pl_i->fs].pix_pos.x,
-                            (int)world->fuels[pl_i->fs].pix_pos.y,
-                            pl_i->pix_pos.x,
-                            pl_i->pix_pos.y);
+            fuel_t *fs = Fuel_by_index(pl_i->fs);
+
+            if (clpos_inview(&cv, fs->pos))
+                Send_refuel(conn, fs->pos, pl_i->pos);
         }
         if (Player_is_repairing(pl_i))
         {
             target_t *targ = Target_by_index(pl_i->repair_target);
 
-            double x = (double)(world->targets[pl_i->repair_target].blk_pos.bx + 0.5) * BLOCK_SZ;
-            double y = (double)(world->targets[pl_i->repair_target].blk_pos.by + 0.5) * BLOCK_SZ;
-            cx = FLOAT_TO_CLICK(x);
-            cy = FLOAT_TO_CLICK(y);
-            if (click_inview(cv, cx, cy))
+            if (clpos_inview(&cv, targ->pos))
                 /* same packet as refuel */
-                Send_refuel(conn, pl_i->pix_pos.x, pl_i->pix_pos.y, (int)x, (int)y);
+                Send_refuel(conn, pl_i->pos, targ->pos);
         }
         if (Player_uses_tractor_beam(pl_i))
         {
             player_t *t = Player_by_id(pl_i->lock.pl_id);
 
-            if (click_inview(cv, t->pos.cx, t->pos.cy))
+            if (clpos_inview(&cv, t->pos))
             {
                 int j;
 
                 for (j = 0; j < 3; j++)
-                    Send_connector(conn,
-                                   (int)(t->pix_pos.x + t->ship->pts[j][t->dir].x),
-                                   (int)(t->pix_pos.y + t->ship->pts[j][t->dir].y),
-                                   pl_i->pix_pos.x,
-                                   pl_i->pix_pos.y, 1);
+                {
+                    clpos_t pts, pos;
+
+                    pts = Ship_get_point_clpos(t->ship, j, t->dir);
+                    pos.cx = t->pos.cx + pts.cx;
+                    pos.cy = t->pos.cy + pts.cy;
+                    Send_connector(conn, pos, pl_i->pos, 1);
+                }
             }
         }
 
-        if (pl_i->ball != NULL && click_inview(cv, pl_i->ball->pos.cx, pl_i->ball->pos.cy))
-            Send_connector(conn,
-                           pl_i->ball->pix_pos.x,
-                           pl_i->ball->pix_pos.y,
-                           pl_i->pix_pos.x,
-                           pl_i->pix_pos.y, 0);
+        if (pl_i->ball != NULL && clpos_inview(&cv, pl_i->ball->pos))
+            Send_connector(conn, pl_i->ball->pos, pl_i->pos, 0);
     }
 }
 

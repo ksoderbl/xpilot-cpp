@@ -1677,18 +1677,24 @@ int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
                          flags);
 }
 
-int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1)
+int Send_refuel(connection_t *connp, clpos_t pos1, clpos_t pos2)
 {
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd%hd",
-                         PKT_REFUEL, x0, y0, x1, y1);
+                         PKT_REFUEL,
+                         CLICK_TO_PIXEL(pos1.cx), CLICK_TO_PIXEL(pos1.cy),
+                         CLICK_TO_PIXEL(pos2.cx), CLICK_TO_PIXEL(pos2.cy));
 }
 
-int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor)
+int Send_connector(connection_t *connp, clpos_t pos1, clpos_t pos2,
+                   int tractor)
 {
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd%hd%c",
-                         PKT_CONNECTOR, x0, y0, x1, y1, tractor);
+                         PKT_CONNECTOR,
+                         CLICK_TO_PIXEL(pos1.cx), CLICK_TO_PIXEL(pos1.cy),
+                         CLICK_TO_PIXEL(pos2.cx), CLICK_TO_PIXEL(pos2.cy),
+                         tractor);
 }
 
 int Send_laser(connection_t *connp, int color, clpos_t pos, int len, int dir)

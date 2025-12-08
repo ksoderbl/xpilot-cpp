@@ -73,8 +73,8 @@ int Send_appearing(connection_t *connp, clpos_t pos, int id, int count);
 int Send_ecm(connection_t *connp, clpos_t pos, int size);
 int Send_ship(connection_t *connp, clpos_t pos, int id, int dir, bool shield, bool cloak, bool eshield,
               bool phased, bool deflector);
-int Send_refuel(connection_t *connp, int x0, int y0, int x1, int y1);
-int Send_connector(connection_t *connp, int x0, int y0, int x1, int y1, int tractor);
+int Send_refuel(connection_t *connp, clpos_t pos1, clpos_t pos2);
+int Send_connector(connection_t *connp, clpos_t pos1, clpos_t pos2, int tractor);
 int Send_laser(connection_t *connp, int color, clpos_t pos, int len, int dir);
 int Send_radar(connection_t *connp, int x, int y, int size);
 int Send_fastradar(connection_t *connp, uint8_t *buf, unsigned n);
