@@ -276,8 +276,8 @@ void Update_tanks(pl_fuel_t *ft)
 
         /* Set low_level to minimum fuel in each tank */
         low_level = ft->sum / (ft->num_tanks + 1) - 1;
-        if (low_level < 0)
-            low_level = 0;
+        if (low_level < 0.0)
+            low_level = 0.0;
         if (TANK_REFILL_LIMIT < low_level)
             low_level = TANK_REFILL_LIMIT;
 
@@ -438,7 +438,8 @@ void Tank_handle_detach(player_t *pl)
     tank->fuel.num_tanks = 0;
 
     /* Mass is only tank + fuel */
-    tank->mass = (tank->emptymass = options.shipMass) + FUEL_MASS(tank->fuel.sum);
+    tank->emptymass = options.shipMass;
+    tank->mass = tank->emptymass + FUEL_MASS(tank->fuel.sum);
     tank->power *= TANK_THRUST_FACT;
 
     /* Reset visibility. */
@@ -467,9 +468,10 @@ void Tank_handle_detach(player_t *pl)
     tank->obj_status = (DEF_BITS & ~KILL_BITS) | PLAYING | GRAVITY | THRUSTING;
     tank->have = DEF_HAVE;
     tank->used = (DEF_USED & ~USED_KILL & pl->have) | HAS_SHIELD;
-    if (options.allowShields == 0)
+
+    if (!options.allowShields)
     {
-        tank->shield_time = 30 * FPS;
+        tank->shield_time = 30 * 12;
         tank->have |= HAS_SHIELD;
     }
 
@@ -493,7 +495,7 @@ void Tank_handle_detach(player_t *pl)
         {
             Send_player(pl_i->conn, tank->id);
             Send_score(pl_i->conn, tank->id,
-                       tank->score, tank->life,
+                       tank->score, (int)tank->life,
                        tank->mychar, tank->alliance);
         }
     }
