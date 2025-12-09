@@ -121,9 +121,9 @@ static struct rgb_cube_size
  */
 #define RGB2COLOR(c) RGB(((c) >> 16) & 255, ((c) >> 8) & 255, ((c) & 255))
 
-unsigned long (*RGB)(uint8_t r, uint8_t g, uint8_t b);
-static unsigned long RGB_PC(uint8_t r, uint8_t g, uint8_t b);
-static unsigned long RGB_TC(uint8_t r, uint8_t g, uint8_t b);
+unsigned long (*RGB)(int r, int g, int b) = NULL;
+static unsigned long RGB_PC(int r, int g, int b);
+static unsigned long RGB_TC(int r, int g, int b);
 
 /*
  * Visual names.
@@ -188,9 +188,7 @@ static const char *Visual_class_name(int visual_class)
     for (i = 0; i < MAX_VISUAL_CLASS; i++)
     {
         if (visual_class_names[i].visual_class == visual_class)
-        {
             return visual_class_names[i].visual_name;
-        }
     }
     return "UnknownVisual";
 }
@@ -200,17 +198,22 @@ static const char *Visual_class_name(int visual_class)
  */
 void List_visuals(void)
 {
-    int i, num = 0;
-    XVisualInfo *vinfo_ptr, my_vinfo;
-    long mask = 0;
+    int i,
+        num;
+    XVisualInfo *vinfo_ptr,
+        my_vinfo;
+    long mask;
 
+    num = 0;
+    mask = 0;
     my_vinfo.screen = DefaultScreen(dpy);
     mask |= VisualScreenMask;
     vinfo_ptr = XGetVisualInfo(dpy, mask, &my_vinfo, &num);
     printf("Listing all visuals:\n");
     for (i = 0; i < num; i++)
     {
-        printf("Visual class    %12s\n", Visual_class_name(vinfo_ptr[i].c_class));
+        printf("Visual class    %12s\n",
+               Visual_class_name(vinfo_ptr[i].c_class));
         printf("    id                  0x%02x\n", (unsigned)vinfo_ptr[i].visualid);
         printf("    screen          %8d\n", vinfo_ptr[i].screen);
         printf("    depth           %8d\n", vinfo_ptr[i].depth);
@@ -246,11 +249,15 @@ static void Choose_visual(void)
     {
         if (strncmp(visualName, "0x", 2) == 0)
         {
-            if (sscanf(visualName, "%x", &visual_id) < 1)
+            unsigned int vid;
+
+            if (sscanf(visualName, "%x", &vid) < 1)
             {
                 warn("Bad visual id \"%s\", using default\n", visualName);
                 visual_id = -1;
             }
+            else
+                visual_id = vid;
         }
         else
         {
@@ -281,9 +288,8 @@ static void Choose_visual(void)
         using_default = true;
     }
     else
-    {
         using_default = false;
-    }
+
     if (visual_class >= 0 || visual_id >= 0)
     {
         mask = 0;
@@ -303,10 +309,9 @@ static void Choose_visual(void)
         if ((vinfo_ptr = XGetVisualInfo(dpy, mask, &my_vinfo, &num)) == NULL || num <= 0)
         {
             if (using_default == false)
-            {
-                warn("No visuals available with class name \"%s\", using default",
+                warn("No visuals available with class name \"%s\", "
+                     "using default",
                      visualName);
-            }
             visual_class = -1;
         }
         else
@@ -319,14 +324,10 @@ static void Choose_visual(void)
                 if (cmap_size > best_size)
                 {
                     if (best_size < 256)
-                    {
                         best_vinfo = &vinfo_ptr[i];
-                    }
                 }
                 else if (cmap_size >= 256)
-                {
                     best_vinfo = &vinfo_ptr[i];
-                }
             }
             visual = best_vinfo->visual;
             visual_class = best_vinfo->c_class;
@@ -357,33 +358,24 @@ static int Parse_colors(Colormap cmap)
     /*
      * Get the color definitions.
      */
-
     for (i = 0; i < maxColors; i++)
     {
-        if (color_names[i][0] != '\0')
+        if (strlen(color_names[i]) > 0)
         {
             if (XParseColor(dpy, cmap, color_names[i], &colors[i]))
-            {
                 continue;
-            }
-            printf("Can't parse color %d \"%s\"\n", i, color_names[i]);
+            warn("Can't parse color %d \"%s\".", i, color_names[i]);
         }
-        if (def[i] != NULL && def[i][0] != '\0')
+        if (def[i] != NULL && strlen(def[i]) > 0)
         {
             if (XParseColor(dpy, cmap, def[i], &colors[i]))
-            {
                 continue;
-            }
-            printf("Can't parse default color %d \"%s\"\n", i, def[i]);
+            warn("Can't parse default color %d \"%s\"\n", i, def[i]);
         }
         if (i < NUM_COLORS)
-        {
             return -1;
-        }
         else
-        {
             colors[i] = colors[i % NUM_COLORS];
-        }
     }
     return 0;
 }
@@ -411,16 +403,13 @@ static void Fill_colormap(void)
                                       : 16;
     max_fill = MAX(256, visual->map_entries) - cells_needed;
     if (max_fill <= 0)
-    {
         return;
-    }
 
     if (XAllocColorCells(dpy, colormap,
                          False, NULL,
-                         0, pixels, max_fill) == False)
+                         0, pixels, (unsigned)max_fill) == False)
     {
-        errno = 0;
-        error("Can't pre-alloc color cells");
+        warn("Can't pre-alloc color cells");
         return;
     }
 
@@ -430,18 +419,15 @@ static void Fill_colormap(void)
         if (i != (int)pixels[i])
         {
 #ifdef DEVELOPMENT
-            errno = 0;
-            error("Can't pre-fill color map, got %d'th pixel %lu",
-                  i, pixels[i]);
+            warn("Can't pre-fill color map, got %d'th pixel %lu",
+                 i, pixels[i]);
 #endif
             XFreeColors(dpy, colormap, pixels, max_fill, 0);
             return;
         }
     }
     for (i = 0; i < max_fill; i++)
-    {
         mycolors[i].pixel = pixels[i];
-    }
     XQueryColors(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
                  mycolors, max_fill);
     XStoreColors(dpy, colormap, mycolors, max_fill);
@@ -454,7 +440,8 @@ static void Fill_colormap(void)
  */
 int Colors_init(void)
 {
-    int i, num_planes;
+    int i;
+    unsigned num_planes;
 
     colormap = 0;
 
@@ -478,16 +465,14 @@ int Colors_init(void)
 
     if (Parse_colors(DefaultColormap(dpy, DefaultScreen(dpy))) == -1)
     {
-        printf("Color parsing failed\n");
+        warn("Color parsing failed.");
         return -1;
     }
 
     printf("Colors_init: colormap: %d\n", colormap);
 
     if (colormap != 0)
-    {
         Fill_colormap();
-    }
 
     {
         dbuf_state = start_dbuff(dpy,
@@ -520,9 +505,8 @@ int Colors_init(void)
     if (dbuf_state == NULL)
     {
         /* Can't setup double buffering */
-        errno = 0;
-        error("Can't setup colors with visual %s and %d colormap entries",
-              Visual_class_name(visual->c_class), visual->map_entries);
+        warn("Can't setup colors with visual %s and %d colormap entries",
+             Visual_class_name(visual->c_class), visual->map_entries);
         return -1;
     }
 
@@ -533,14 +517,11 @@ int Colors_init(void)
         break;
 
     default:
-        printf("Unknown dbuf state %d\n", dbuf_state->type);
-        exit(1);
+        fatal("Unknown dbuf state %d.", dbuf_state->type);
     }
 
     for (i = maxColors; i < MAX_COLORS; i++)
-    {
         colors[i] = colors[i % maxColors];
-    }
 
     Colors_init_radar_hack();
 
@@ -569,13 +550,9 @@ static void Colors_init_radar_hack(void)
             {
                 num++;
                 if (num == 1 || num == 3)
-                {
                     dpl_1[p] |= 1 << i; /* planes with moving radar objects */
-                }
                 else
-                {
                     dpl_2[p] |= 1 << i; /* constant map part of radar */
-                }
             }
         }
     }
@@ -611,8 +588,8 @@ static int Colors_init_bitmap_colors(void)
         break;
 
     default:
-        printf("texturedObjects not implemented for visual \"%s\"\n",
-               Visual_class_name(visual->c_class));
+        warn("fullColor not implemented for visual \"%s\"",
+             Visual_class_name(visual->c_class));
         texturedObjects = false;
         break;
     }
@@ -634,7 +611,7 @@ void Colors_init_style_colors(void)
 }
 
 /*
- * See if we can use block bitmaps.
+ * See if we can use bitmaps.
  * If we can then setup the colors
  * and allocate the bitmaps.
  *
@@ -664,7 +641,7 @@ int Colors_init_bitmaps(void)
 /*
  * Calculate a pixel from a RGB triplet for a PseudoColor visual.
  */
-static unsigned long RGB_PC(uint8_t r, uint8_t g, uint8_t b)
+static unsigned long RGB_PC(int r, int g, int b)
 {
     int i;
 
@@ -679,7 +656,7 @@ static unsigned long RGB_PC(uint8_t r, uint8_t g, uint8_t b)
 /*
  * Calculate a pixel from a RGB triplet for a TrueColor visual.
  */
-static unsigned long RGB_TC(uint8_t r, uint8_t g, uint8_t b)
+static unsigned long RGB_TC(int r, int g, int b)
 {
     unsigned long pixel = 0;
 
@@ -705,7 +682,7 @@ static unsigned long RGB_TC(uint8_t r, uint8_t g, uint8_t b)
  * less color distance.
  */
 static void Fill_color_cube(int reds, int greens, int blues,
-                            XColor colors[256])
+                            XColor colorarray[256])
 {
     int i, r, g, b;
 
@@ -716,11 +693,11 @@ static void Fill_color_cube(int reds, int greens, int blues,
         {
             for (b = 0; b < blues; b++, i++)
             {
-                colors[i].pixel = color_cube->pixels[i];
-                colors[i].flags = DoRed | DoGreen | DoBlue;
-                colors[i].red = (((r * 256) + 128) / reds) * 0x101;
-                colors[i].green = (((g * 256) + 128) / greens) * 0x101;
-                colors[i].blue = (((b * 256) + 128) / blues) * 0x101;
+                colorarray[i].pixel = color_cube->pixels[i];
+                colorarray[i].flags = DoRed | DoGreen | DoBlue;
+                colorarray[i].red = (((r * 256) + 128) / reds) * 0x101;
+                colorarray[i].green = (((g * 256) + 128) / greens) * 0x101;
+                colorarray[i].blue = (((b * 256) + 128) / blues) * 0x101;
             }
         }
     }
@@ -739,7 +716,7 @@ static void Fill_color_cube(int reds, int greens, int blues,
 static int Colors_init_color_cube(void)
 {
     int i, n, r, g, b;
-    XColor colors[256];
+    XColor colorarray[256];
 
     if (color_cube != NULL)
     {
@@ -768,7 +745,7 @@ static int Colors_init_color_cube(void)
                                                    DefaultScreen(dpy)),
                              False, NULL, 0,
                              &color_cube->pixels[0],
-                             n) == False)
+                             (unsigned)n) == False)
         {
             /*printf("Could not alloc %d colors for RGB cube\n", n);*/
             continue;
@@ -779,14 +756,14 @@ static int Colors_init_color_cube(void)
 
         color_cube->mustfree = 1;
 
-        Fill_color_cube(r, g, b, &colors[0]);
+        Fill_color_cube(r, g, b, &colorarray[0]);
 
         XStoreColors(dpy,
                      (colormap != 0)
                          ? colormap
                          : DefaultColormap(dpy,
                                            DefaultScreen(dpy)),
-                     colors,
+                     colorarray,
                      n);
 
         RGB = RGB_PC;
@@ -794,7 +771,7 @@ static int Colors_init_color_cube(void)
         return 0;
     }
 
-    printf("Could not alloc colors for RGB cube\n");
+    warn("Could not alloc colors for RGB cube.");
 
     return -1;
 }
@@ -808,14 +785,15 @@ static void Colors_free_color_cube(void)
     {
         if (color_cube->mustfree)
         {
-            XFreeColors(dpy,
-                        (colormap != 0)
-                            ? colormap
-                            : DefaultColormap(dpy,
-                                              DefaultScreen(dpy)),
-                        &color_cube->pixels[0],
-                        color_cube->reds * color_cube->greens * color_cube->blues,
-                        0);
+            XFreeColors(
+                dpy,
+                (colormap != 0)
+                    ? colormap
+                    : DefaultColormap(dpy,
+                                      DefaultScreen(dpy)),
+                &color_cube->pixels[0],
+                color_cube->reds * color_cube->greens * color_cube->blues,
+                0);
             color_cube->mustfree = 0;
         }
         free(color_cube);
@@ -839,9 +817,12 @@ static int Colors_init_true_color(void)
           visual->blue_mask) != 0))
     {
 
-        printf("Your visual \"%s\" has weird characteristics:\n", Visual_class_name(visual->c_class));
-        printf("\tred mask 0x%06lx, green mask 0x%06lx, blue mask 0x%06lx,\n", visual->red_mask, visual->green_mask, visual->blue_mask);
-        printf("\toverlap mask 0x%06lx\n", visual->red_mask & visual->green_mask & visual->blue_mask);
+        printf("Your visual \"%s\" has weird characteristics:\n",
+               Visual_class_name(visual->c_class));
+        printf("\tred mask 0x%06lx, green mask 0x%06lx, blue mask 0x%06lx,\n",
+               visual->red_mask, visual->green_mask, visual->blue_mask);
+        printf("\toverlap mask 0x%06lx\n",
+               visual->red_mask & visual->green_mask & visual->blue_mask);
         return -1;
     }
 
@@ -870,9 +851,7 @@ static int Colors_init_true_color(void)
                 for (j = 0; j < 256; j++)
                 {
                     if (j & (1 << r))
-                    {
                         true_color->red_bits[j] |= (1UL << i);
-                    }
                 }
                 r--;
             }
@@ -884,9 +863,7 @@ static int Colors_init_true_color(void)
                 for (j = 0; j < 256; j++)
                 {
                     if (j & (1 << g))
-                    {
                         true_color->green_bits[j] |= (1UL << i);
-                    }
                 }
                 g--;
             }
@@ -898,9 +875,7 @@ static int Colors_init_true_color(void)
                 for (j = 0; j < 256; j++)
                 {
                     if (j & (1 << b))
-                    {
                         true_color->blue_bits[j] |= (1UL << i);
-                    }
                 }
                 b--;
             }
@@ -935,7 +910,6 @@ void Colors_free_bitmaps(void)
 
     if (texturedObjects)
     {
-
         texturedObjects = false;
     }
 }
@@ -963,7 +937,7 @@ void Colors_cleanup(void)
 void Colors_debug(void)
 {
     int i, n, r, g, b;
-    XColor colors[256];
+    XColor cols[256];
     FILE *fp = fopen("rgb", "w");
 
     if (!color_cube)
@@ -971,9 +945,7 @@ void Colors_debug(void)
         static struct Color_cube cc;
         color_cube = &cc;
         for (i = 0; i < 256; i++)
-        {
             cc.pixels[i] = i;
-        }
     }
 
     for (i = 0; i < NELEM(rgb_cube_sizes); i++)
@@ -984,7 +956,7 @@ void Colors_debug(void)
         b = rgb_cube_sizes[i].b;
         n = r * g * b;
 
-        Fill_color_cube(r, g, b, colors);
+        Fill_color_cube(r, g, b, cols);
 
         fprintf(fp, "\n\n  RGB  %d %d %d\n\n", r, g, b);
         i = 0;
@@ -993,13 +965,13 @@ void Colors_debug(void)
             for (g = 0; g < color_cube->greens; g++)
             {
                 for (b = 0; b < color_cube->blues; b++, i++)
-                {
                     fprintf(fp, "color %4d    %04X  %04X  %04X\n",
-                            i, colors[i].red, colors[i].green, colors[i].blue);
-                }
+                            i, cols[i].red, cols[i].green, cols[i].blue);
             }
         }
-        fprintf(fp, "\nblack %3lu\nwhite %3lu\nred   %3lu\ngreen %3lu\nblue  %3lu\n",
+        fprintf(fp,
+                "\nblack %3lu\nwhite %3lu\nred   %3lu"
+                "\ngreen %3lu\nblue  %3lu\n",
                 RGB_PC(0, 0, 0),
                 RGB_PC(255, 255, 255),
                 RGB_PC(255, 0, 0),
