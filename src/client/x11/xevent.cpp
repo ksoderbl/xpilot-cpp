@@ -422,7 +422,7 @@ bool Key_press_decrease_turnspeed(keys_t key)
 
 bool Key_press_talk(keys_t key)
 {
-    Talk_set_state((talk_mapped == false) ? true : false);
+    Talk_set_state((clData.talking == false) ? true : false);
     return false; /* server doesn't need to know */
 }
 
@@ -750,7 +750,7 @@ void xevent_keyboard(int queued)
         if (++talk_key_repeat_count >= FPS && (talk_key_repeat_count - FPS) % ((FPS + 2) / 3) == 0)
         {
             Talk_event(&talk_key_repeat_event);
-            if (!talk_mapped)
+            if (!clData.talking)
                 talk_key_repeat_count = 0;
         }
     }
@@ -799,7 +799,7 @@ void xevent_pointer(void)
 
     if (pointerControl)
     {
-        if (!talk_mapped)
+        if (!clData.talking)
         {
             if (movement != 0)
             {

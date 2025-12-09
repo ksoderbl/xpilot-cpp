@@ -94,7 +94,6 @@ extern int decorColor;            /* Color index for decoration drawing */
 extern int decorRadarColor;       /* Color index for decorations on radar */
 extern int oldMessagesColor;      /* Color index for old message strings */
 extern bool gotFocus;             /* Do we have the mouse pointer */
-extern bool talk_mapped;          /* Is talk window visible */
 // extern short        ext_view_width;                /* Width of extended visible area */
 // extern short        ext_view_height;        /* Height of extended visible area */
 // extern int        active_view_width;        /* Width of active map area displayed. */

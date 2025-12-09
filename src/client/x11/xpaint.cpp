@@ -338,7 +338,7 @@ void Paint_frame(void)
         XFillRectangle(dpy, drawPixmap, gameGC, 0, 0, draw_width, draw_height);
     }
 
-    if (talk_mapped == true)
+    if (clData.talking == true)
     {
         static bool toggle;
         static long last_toggled;
