@@ -106,14 +106,16 @@ short shieldtimemax;
 short phasingtime;
 short phasingtimemax;
 
+int roundDelay;    /* != 0 means we're in a delay */
+int roundDelayMax; /* (not yet) used for graph of time
+                      remaining in delay */
+
 int backgroundPointDist; /* spacing of navigation points */
 int backgroundPointSize; /* size of navigation points */
-int spark_size;          /* size of debris and spark */
-int shot_size;           /* size of shot */
-int teamshot_size;       /* size of team shot */
+int sparkSize;           /* size of debris and spark */
+int shotSize;            /* size of shot */
+int teamShotSize;        /* size of team shot */
 long control_count;      /* Display control for how long? */
-int roundDelay;          /* != 0 means we're in a delay */
-int roundDelayMax;       /* (not yet) used for graph of time remaining in delay */
 
 double controlTime;     /* Display control for how long? */
 uint8_t spark_rand;     /* Sparkling effect */
@@ -138,7 +140,7 @@ double turnresistance_s;        /* Saved (see above) */
 double displayedPower;          /* What the server is sending us */
 double displayedTurnspeed;      /* What the server is sending us */
 double displayedTurnresistance; /* What the server is sending us */
-double spark_prob;              /* Sparkling effect user configurable */
+double sparkProb;               /* Sparkling effect user configurable */
 int charsPerSecond;             /* Message output speed (configurable) */
 
 double hud_move_fact;      /* scale the hud-movement (speed) */
@@ -152,7 +154,7 @@ int packet_lag;            /* approximate lag in frames */
 char *packet_measure;      /* packet measurement in a second */
 long packet_loop;          /* start of measurement */
 
-bool showUserName = false;  /* Show realname instead of nick name */
+bool showUserName = false;  /* Show username instead of nick name */
 char name[MAX_CHARS];       /* Nick-name of player */
 char realname[MAX_CHARS];   /* Real name of player */
 char servername[MAX_CHARS]; /* Name of server connecting to */

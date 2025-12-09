@@ -809,7 +809,7 @@ static int Config_create_backgroundPointSize(int widget_desc, int *height)
 static int Config_create_sparkSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "sparkSize", &spark_size,
+                             "sparkSize", &sparkSize,
                              MIN_SPARK_SIZE, MAX_SPARK_SIZE,
                              NULL, NULL);
 }
@@ -817,7 +817,7 @@ static int Config_create_sparkSize(int widget_desc, int *height)
 static int Config_create_sparkProb(int widget_desc, int *height)
 {
     return Config_create_double(widget_desc, height,
-                                "sparkProb", &spark_prob,
+                                "sparkProb", &sparkProb,
                                 0.0, 1.0,
                                 Config_update_sparkProb, NULL);
 }
@@ -847,7 +847,7 @@ static int Config_create_autoShield(int widget_desc, int *height)
 static int Config_create_shotSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "shotSize", &shot_size,
+                             "shotSize", &shotSize,
                              MIN_SHOT_SIZE, MAX_SHOT_SIZE,
                              NULL, NULL);
 }
@@ -855,7 +855,7 @@ static int Config_create_shotSize(int widget_desc, int *height)
 static int Config_create_teamShotSize(int widget_desc, int *height)
 {
     return Config_create_int(widget_desc, height,
-                             "teamShotSize", &teamshot_size,
+                             "teamShotSize", &teamShotSize,
                              MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE,
                              NULL, NULL);
 }
@@ -1190,7 +1190,7 @@ static int Config_update_altTurnResistance(int widget_desc, void *data, double *
 
 static int Config_update_sparkProb(int widget_desc, void *data, double *val)
 {
-    spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
+    spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
     Send_display();
     return 0;
 }
@@ -1256,14 +1256,12 @@ static int Config_update_scaleFactor(int widget_desc, void *data, double *val)
 static void Config_save_failed(const char *reason, const char **strptr)
 {
     if (config_save_confirm_desc != NO_WIDGET)
-    {
         Widget_destroy(config_save_confirm_desc);
-    }
     config_save_confirm_desc = Widget_create_confirm(reason, Config_save_confirm_callback);
+
     if (config_save_confirm_desc != NO_WIDGET)
-    {
         Widget_raise(config_save_confirm_desc);
-    }
+
     *strptr = "Saving failed...";
 }
 
@@ -1525,10 +1523,10 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
     Config_save_int(fp, "backgroundPointDist", backgroundPointDist);
     Config_save_int(fp, "backgroundPointSize", backgroundPointSize);
-    Config_save_int(fp, "sparkSize", spark_size);
-    Config_save_double(fp, "sparkProb", spark_prob);
-    Config_save_int(fp, "shotSize", shot_size);
-    Config_save_int(fp, "teamShotSize", teamshot_size);
+    Config_save_int(fp, "sparkSize", sparkSize);
+    Config_save_double(fp, "sparkProb", sparkProb);
+    Config_save_int(fp, "shotSize", shotSize);
+    Config_save_int(fp, "teamShotSize", teamShotSize);
     Config_save_int(fp, "hudColor", hudColor);
     Config_save_int(fp, "hudLockColor", hudLockColor);
     Config_save_int(fp, "wallColor", wallColor);

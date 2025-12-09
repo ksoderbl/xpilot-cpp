@@ -279,7 +279,7 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
 {
     if (!texturedObjects)
     {
-        static DFLOAT lastScaleFactor;
+        static double lastScaleFactor;
         static XPoint mine_points[21];
         static XPoint world_mine_points[21] = {
             {0, 0},
@@ -304,10 +304,10 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
             {-1, 0},
             {0, -2}};
 
-        if (lastScaleFactor != scaleFactor)
+        if (lastScaleFactor != clData.scaleFactor)
         {
             int i;
-            lastScaleFactor = scaleFactor;
+            lastScaleFactor = clData.scaleFactor;
             for (i = 1; i < 21; ++i)
             {
                 mine_points[i].x = WINSCALE(world_mine_points[i].x);
@@ -324,7 +324,7 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
             SET_FG(colors[BLUE].pixel);
             rd.fillRectangle(dpy, drawPixmap, gameGC,
                              WINSCALE(x - 7), WINSCALE(y - 2),
-                             WINSCALE(15), WINSCALE(5));
+                             UWINSCALE(15), UWINSCALE(5));
         }
 
         SET_FG(colors[WHITE].pixel);
@@ -341,18 +341,18 @@ void Gui_paint_mine(int x, int y, int teammine, char *name)
         if (teammine == 0)
         {
             SET_FG(colors[BLUE].pixel);
-            Bitmap_paint(drawPixmap, BM_MINE_OTHER, WINSCALE(x - 10), WINSCALE(y - 7), 0);
+            Bitmap_paint(drawPixmap, BM_MINE_OTHER, WINSCALE(x - 10),
+                         WINSCALE(y - 7), 0);
         }
         else
         {
             SET_FG(colors[WHITE].pixel);
-            Bitmap_paint(drawPixmap, BM_MINE_TEAM, WINSCALE(x - 10), WINSCALE(y - 7), 0);
+            Bitmap_paint(drawPixmap, BM_MINE_TEAM, WINSCALE(x - 10),
+                         WINSCALE(y - 7), 0);
         }
 
         if (name)
-        {
             Gui_paint_mine_name(x, y, name);
-        }
     }
 }
 
@@ -361,9 +361,9 @@ void Gui_paint_spark(int color, int x, int y)
     color = spark_color[color];
 
     Rectangle_add(color,
-                  x - spark_size / 2,
-                  y - spark_size / 2,
-                  spark_size, spark_size);
+                  x - sparkSize / 2,
+                  y - sparkSize / 2,
+                  sparkSize, sparkSize);
 }
 
 void Gui_paint_wreck(int x, int y, bool deadly, int wtype, int rot, int size)
@@ -433,15 +433,15 @@ void Gui_paint_fastshot(int color, int x, int y)
 {
     if (!texturedObjects)
     {
-        int z = shot_size / 2;
+        int z = shotSize / 2;
         Rectangle_add(color,
                       x - z,
                       y - z,
-                      shot_size, shot_size);
+                      shotSize, shotSize);
     }
     else
     {
-        int s_size = (shot_size > 8) ? 8 : shot_size;
+        int s_size = (shotSize > 8) ? 8 : shotSize;
         int z = s_size / 2;
         Bitmap_paint(drawPixmap, BM_BULLET, WINSCALE(x) - z, WINSCALE(y) - z, s_size - 1);
     }
@@ -451,11 +451,11 @@ void Gui_paint_teamshot(int color, int x, int y)
 {
     if (!texturedObjects)
     {
-        Gui_paint_nastyshot(color, x, y, shot_size / 2);
+        Gui_paint_nastyshot(color, x, y, shotSize / 2);
     }
     else
     {
-        int s_size = (teamshot_size > 8) ? 8 : shot_size;
+        int s_size = (teamShotSize > 8) ? 8 : shotSize;
         int z = s_size / 2;
         Bitmap_paint(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z, WINSCALE(y) - z, s_size - 1);
     }

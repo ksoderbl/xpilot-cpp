@@ -476,9 +476,9 @@ extern unsigned RadarWidth;
 extern unsigned RadarHeight;
 extern int backgroundPointDist; /* spacing of navigation points */
 extern int backgroundPointSize; /* size of navigation points */
-extern int spark_size;          /* size of sparks and debris */
-extern int shot_size;           /* size of shot */
-extern int teamshot_size;       /* size of team shot */
+extern int sparkSize;           /* size of sparks and debris */
+extern int shotSize;            /* size of shot */
+extern int teamShotSize;        /* size of team shot */
 
 extern long control_count; /* Display control for how long? */
 
@@ -505,7 +505,7 @@ extern double turnresistance_s;        /* Saved (see above) */
 extern double displayedPower;          /* What the server is sending us */
 extern double displayedTurnspeed;      /* What the server is sending us */
 extern double displayedTurnresistance; /* What the server is sending us */
-extern double spark_prob;              /* Sparkling effect configurable */
+extern double sparkProb;               /* Sparkling effect configurable */
 extern int charsPerSecond;             /* Message output speed (config) */
 
 extern double hud_move_fact;      /* scale the hud-movement (speed) */
@@ -519,7 +519,7 @@ extern int packet_lag;            /* approximate lag in frames */
 extern char *packet_measure;      /* packet measurement in a second */
 extern long packet_loop;          /* start of measurement */
 
-extern bool showUserName;          /* Show realname instead of nickname */
+extern bool showUserName;          /* Show username instead of nickname */
 extern char name[MAX_CHARS];       /* Nick-name of player */
 extern char realname[MAX_CHARS];   /* Real name of player */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */
@@ -598,6 +598,8 @@ extern trans_t *trans_ptr;
 extern int num_trans, max_trans;
 extern paused_t *paused_ptr;
 extern int num_paused, max_paused;
+extern appearing_t *appearing_ptr;
+extern int num_appearing, max_appearing;
 extern radar_t *radar_ptr;
 extern int num_radar, max_radar;
 extern vcannon_t *vcannon_ptr;

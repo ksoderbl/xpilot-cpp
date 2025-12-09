@@ -2107,20 +2107,20 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_double_resource(rDB, "altTurnSpeed", &turnspeed_s);
     Get_double_resource(rDB, "altTurnResistance", &turnresistance_s);
 
-    Get_double_resource(rDB, "sparkProb", &spark_prob);
-    spark_rand = (int)(spark_prob * MAX_SPARK_RAND + 0.5f);
+    Get_double_resource(rDB, "sparkProb", &sparkProb);
+    spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
     Get_int_resource(rDB, "charsPerSecond", &charsPerSecond);
     Get_bool_resource(rDB, "markingLights", &markingLights);
 
     Get_int_resource(rDB, "backgroundPointDist", &backgroundPointDist);
     Get_int_resource(rDB, "backgroundPointSize", &backgroundPointSize);
     LIMIT(backgroundPointSize, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
-    Get_int_resource(rDB, "sparkSize", &spark_size);
-    LIMIT(spark_size, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
-    Get_int_resource(rDB, "shotSize", &shot_size);
-    LIMIT(shot_size, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
-    Get_int_resource(rDB, "teamShotSize", &teamshot_size);
-    LIMIT(teamshot_size, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
+    Get_int_resource(rDB, "sparkSize", &sparkSize);
+    LIMIT(sparkSize, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
+    Get_int_resource(rDB, "shotSize", &shotSize);
+    LIMIT(shotSize, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
+    Get_int_resource(rDB, "teamShotSize", &teamShotSize);
+    LIMIT(teamShotSize, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
     /*
      * This is a special value; default or not defined means choose depending
      * on the display, otherwise its a boolean value.
