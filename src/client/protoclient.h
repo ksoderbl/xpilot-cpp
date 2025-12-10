@@ -62,7 +62,7 @@ extern int Init_asteroids(void);
  * query.c
  */
 #ifdef SOCKLIB_H
-extern int Query_all(sock_t *sockfd, int port, char *msg, int msglen);
+extern int Query_all(sock_t *sockfd, int port, char *msg, size_t msglen);
 #endif
 
 #ifdef LIMIT_ACCESS

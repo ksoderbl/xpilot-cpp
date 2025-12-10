@@ -1934,12 +1934,10 @@ static int Welcome_create_windows(Connect_param_t *conpar)
     form_widget =
         Widget_create_form(0, topWindow,
                            form_x, form_y,
-                           form_width, form_height,
-                           form_border);
+                           form_width, form_height, form_border);
     if (form_widget == NO_WIDGET)
-    {
         return -1;
-    }
+
     Widget_set_background(form_widget, BLACK);
 
     max_width = 0;
@@ -1947,11 +1945,9 @@ static int Welcome_create_windows(Connect_param_t *conpar)
     {
         text_width = XTextWidth(buttonFont,
                                 my_buttons[i].text,
-                                strlen(my_buttons[i].text));
+                                (int)strlen(my_buttons[i].text));
         if (text_width > max_width)
-        {
             max_width = text_width;
-        }
     }
     max_width += 20;
 
@@ -1972,16 +1968,15 @@ static int Welcome_create_windows(Connect_param_t *conpar)
                                    my_buttons[i].callback,
                                    (void *)conpar);
         if (button == NO_WIDGET)
-        {
             return -1;
-        }
         button_y += height_per_button;
     }
 
     subform_x = 2 * button_x + max_width;
     subform_y = button_x;
     subform_border = 1;
-    subform_width = form_width - subform_x - subform_y - 2 * subform_border;
+    subform_width =
+        form_width - subform_x - subform_y - 2 * subform_border;
     subform_height = form_height - 2 * subform_y - 2 * subform_border;
     subform_widget =
         Widget_create_form(form_widget, 0,
@@ -2042,9 +2037,7 @@ static void Welcome_set_mode(enum Welcome_mode new_welcome_mode)
         break;
     case ModeInternet:
         if (new_welcome_mode != old_welcome_mode)
-        {
             Internet_cleanup();
-        }
         break;
     case ModeServer:
         break;
@@ -2118,6 +2111,7 @@ static int Welcome_process_one_event(XEvent *event)
         break;
 
     case ConfigureNotify:
+
         conf = &event->xconfigure;
         if (conf->window == topWindow)
         {
@@ -2144,13 +2138,11 @@ static int Welcome_process_one_event(XEvent *event)
     }
     if (quitting)
     {
-        quitting = 0;
+        quitting = false;
         return -1;
     }
     if (joining)
-    {
         return 1;
-    }
 
     return 0;
 }
@@ -2168,9 +2160,7 @@ static int Welcome_process_pending_events(Connect_param_t *conpar)
         XNextEvent(dpy, &event);
         result = Welcome_process_one_event(&event);
         if (result != 0)
-        {
             return result;
-        }
     }
     return 0;
 }
@@ -2188,9 +2178,7 @@ static int Welcome_input_loop(Connect_param_t *conpar)
         XNextEvent(dpy, &event);
         result = Welcome_process_one_event(&event);
         if (result != 0)
-        {
             return result;
-        }
     }
 
     return -1;
@@ -2207,29 +2195,21 @@ static int Welcome_doit(Connect_param_t *conpar)
     XSynchronize(dpy, True);
 #endif
     if (Init_top() == -1)
-    {
         return -1;
-    }
     XMapSubwindows(dpy, topWindow);
     XMapWindow(dpy, topWindow);
     XSync(dpy, False);
 
     result = Welcome_process_pending_events(conpar);
     if (result)
-    {
         return result;
-    }
 
     if (Welcome_create_windows(conpar) == -1)
-    {
         return -1;
-    }
 
     result = Welcome_process_pending_events(conpar);
     if (result)
-    {
         return result;
-    }
 
     result = Welcome_input_loop(conpar);
     return result;

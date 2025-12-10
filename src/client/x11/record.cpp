@@ -141,16 +141,12 @@ static int RGetPixelIndex(unsigned long pixel)
     for (i = 0; i < maxColors; i++)
     {
         if (pixel == colors[i].pixel)
-        {
             return i;
-        }
     }
     for (i = 1; i < maxColors; i++)
     {
         if (pixel == (colors[BLACK].pixel ^ colors[i].pixel))
-        {
             return i + maxColors;
-        }
     }
 
     return WHITE;
@@ -257,79 +253,51 @@ static void RWriteGC(GC gc, unsigned long req_mask)
         if ((write_mask & prev_mask & GCForeground) != 0)
         {
             if (prev_values.foreground == values.foreground)
-            {
                 write_mask &= ~GCForeground;
-            }
             else
-            {
                 prev_values.foreground = values.foreground;
-            }
         }
         if ((write_mask & prev_mask & GCBackground) != 0)
         {
             if (prev_values.background == values.background)
-            {
                 write_mask &= ~GCBackground;
-            }
             else
-            {
                 prev_values.background = values.background;
-            }
         }
         if ((write_mask & prev_mask & GCLineWidth) != 0)
         {
             if (prev_values.line_width == values.line_width)
-            {
                 write_mask &= ~GCLineWidth;
-            }
             else
-            {
                 prev_values.line_width = values.line_width;
-            }
         }
         if ((write_mask & prev_mask & GCLineStyle) != 0)
         {
             if (prev_values.line_style == values.line_style)
-            {
                 write_mask &= ~GCLineStyle;
-            }
             else
-            {
                 prev_values.line_style = values.line_style;
-            }
         }
         if ((write_mask & prev_mask & GCDashOffset) != 0)
         {
             if (prev_values.dash_offset == values.dash_offset)
-            {
                 write_mask &= ~GCDashOffset;
-            }
             else
-            {
                 prev_values.dash_offset = values.dash_offset;
-            }
         }
         if ((write_mask & prev_mask & GCFunction) != 0)
         {
             if (prev_values.function == values.function)
-            {
                 write_mask &= ~GCFunction;
-            }
             else
-            {
                 prev_values.function = values.function;
-            }
         }
         if ((write_mask & prev_mask & GCFillStyle) != 0)
         {
             if (prev_values.fill_style == values.fill_style)
-            {
                 write_mask &= ~GCFillStyle;
-            }
             else
-            {
                 prev_values.fill_style = values.fill_style;
-            }
             /*
              * We only update some values if they
              * are going to be used.
@@ -341,35 +309,23 @@ static void RWriteGC(GC gc, unsigned long req_mask)
                 if ((write_mask & prev_mask & GCTileStipXOrigin) != 0)
                 {
                     if (prev_values.ts_x_origin == values.ts_x_origin)
-                    {
                         write_mask &= ~GCTileStipXOrigin;
-                    }
                     else
-                    {
                         prev_values.ts_x_origin = values.ts_x_origin;
-                    }
                 }
                 if ((write_mask & prev_mask & GCTileStipYOrigin) != 0)
                 {
                     if (prev_values.ts_y_origin == values.ts_y_origin)
-                    {
                         write_mask &= ~GCTileStipYOrigin;
-                    }
                     else
-                    {
                         prev_values.ts_y_origin = values.ts_y_origin;
-                    }
                 }
                 if ((write_mask & prev_mask & GCTile) != 0)
                 {
                     if (prev_values.tile == values.tile)
-                    {
                         write_mask &= ~GCTile;
-                    }
                     else
-                    {
                         prev_values.tile = values.tile;
-                    }
                 }
             }
             else
