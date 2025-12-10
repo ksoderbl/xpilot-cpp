@@ -227,7 +227,7 @@ static void Welcome_process_exposure_events(void)
  * 1 means middle
  * 2 means bottom.
  */
-static int Welcome_create_label(int position, const char *label_text)
+static int Welcome_create_label(int pos, const char *label_text)
 {
     int label_x, label_y, label_width, label_height;
     int subform_width = 0;
@@ -244,7 +244,7 @@ static int Welcome_create_label(int position, const char *label_text)
     {
         label_x = 0;
     }
-    switch (position)
+    switch (pos)
     {
     default:
     case 0:
@@ -256,21 +256,22 @@ static int Welcome_create_label(int position, const char *label_text)
         label_height += 20;
         break;
     case 2:
-        label_y = subform_height - 10 - textFont->ascent - textFont->descent;
+        label_y =
+            subform_height - 10 - textFont->ascent - textFont->descent;
         label_height += 10;
         break;
     }
     subform_label_widget =
         Widget_create_label(subform_widget,
                             label_x, label_y,
-                            label_width, label_height, true,
-                            0, label_text);
+                            label_width, label_height, true, 0,
+                            label_text);
     if (subform_label_widget != NO_WIDGET)
     {
         /* map children */
-        Widget_map_sub(subform_widget);
+        (void)Widget_map_sub(subform_widget);
         /* wait until mapped */
-        XSync(dpy, False);
+        (void)XSync(dpy, False);
         /* draw widgets */
         Welcome_process_exposure_events();
     }
@@ -289,7 +290,7 @@ static int Local_join_cb(int widget, void *user_data, const char **text)
     result = Connect_to_server(1, 0, 0, NULL, conpar);
     if (result)
     {
-        joining = 1;
+        joining = true;
         /* structure copy. */
         *global_conpar = *conpar;
     }
@@ -1981,12 +1982,9 @@ static int Welcome_create_windows(Connect_param_t *conpar)
     subform_widget =
         Widget_create_form(form_widget, 0,
                            subform_x, subform_y,
-                           subform_width, subform_height,
-                           subform_border);
+                           subform_width, subform_height, subform_border);
     if (subform_widget == NO_WIDGET)
-    {
         return -1;
-    }
     Widget_set_background(subform_widget, BLACK);
 
     Welcome_create_label(1, "Welcome to XPilot!");

@@ -736,20 +736,28 @@ void Paint_HUD(void)
     if (instruments.horizontalHUDLine)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x - hudSize), WINSCALE(hud_pos_y - hudSize + HUD_OFFSET),
-                    WINSCALE(hud_pos_x + hudSize), WINSCALE(hud_pos_y - hudSize + HUD_OFFSET));
+                    WINSCALE(hud_pos_x - hudSize),
+                    WINSCALE(hud_pos_y - hudSize + HUD_OFFSET),
+                    WINSCALE(hud_pos_x + hudSize),
+                    WINSCALE(hud_pos_y - hudSize + HUD_OFFSET));
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x - hudSize), WINSCALE(hud_pos_y + hudSize - HUD_OFFSET),
-                    WINSCALE(hud_pos_x + hudSize), WINSCALE(hud_pos_y + hudSize - HUD_OFFSET));
+                    WINSCALE(hud_pos_x - hudSize),
+                    WINSCALE(hud_pos_y + hudSize - HUD_OFFSET),
+                    WINSCALE(hud_pos_x + hudSize),
+                    WINSCALE(hud_pos_y + hudSize - HUD_OFFSET));
     }
     if (instruments.verticalHUDLine)
     {
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x - hudSize + HUD_OFFSET), WINSCALE(hud_pos_y - hudSize),
-                    WINSCALE(hud_pos_x - hudSize + HUD_OFFSET), WINSCALE(hud_pos_y + hudSize));
+                    WINSCALE(hud_pos_x - hudSize + HUD_OFFSET),
+                    WINSCALE(hud_pos_y - hudSize),
+                    WINSCALE(hud_pos_x - hudSize + HUD_OFFSET),
+                    WINSCALE(hud_pos_y + hudSize));
         rd.drawLine(dpy, drawPixmap, gameGC,
-                    WINSCALE(hud_pos_x + hudSize - HUD_OFFSET), WINSCALE(hud_pos_y - hudSize),
-                    WINSCALE(hud_pos_x + hudSize - HUD_OFFSET), WINSCALE(hud_pos_y + hudSize));
+                    WINSCALE(hud_pos_x + hudSize - HUD_OFFSET),
+                    WINSCALE(hud_pos_y - hudSize),
+                    WINSCALE(hud_pos_x + hudSize - HUD_OFFSET),
+                    WINSCALE(hud_pos_y + hudSize));
     }
     gcv.line_style = LineSolid;
     XChangeGC(dpy, gameGC, GCLineStyle, &gcv);
@@ -897,12 +905,13 @@ void Paint_HUD(void)
 
     if (time_left > 0)
     {
-        sprintf(str, "%3d:%02d", (int)(time_left / 60), (int)(time_left % 60));
-        size = XTextWidth(gameFont, str, strlen(str));
+        sprintf(str, "%3d:%02d",
+                (int)(time_left / 60), (int)(time_left % 60));
+        size = XTextWidth(gameFont, str, (int)strlen(str));
         rd.drawString(dpy, drawPixmap, gameGC,
                       WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER) - size,
                       WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent,
-                      str, strlen(str));
+                      str, (int)strlen(str));
     }
 
     /* Update the modifiers */
@@ -910,11 +919,12 @@ void Paint_HUD(void)
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER) - XTextWidth(gameFont, mods, modlen),
                   WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->ascent,
-                  mods, strlen(mods));
+                  mods, (int)strlen(mods));
 
     if (autopilotLight)
     {
-        int text_width = XTextWidth(gameFont, autopilot, sizeof(autopilot) - 1);
+        int text_width = XTextWidth(gameFont, autopilot,
+                                    sizeof(autopilot) - 1);
         rd.drawString(dpy, drawPixmap, gameGC,
                       WINSCALE(hud_pos_x) - text_width / 2,
                       WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent * 2 - gameFont->ascent,

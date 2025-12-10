@@ -34,6 +34,7 @@
 #include <X11/Xos.h>
 #include <X11/Xutil.h>
 
+#include "commonmacros.h"
 #include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
@@ -254,6 +255,11 @@ static int (*config_creator[])(int widget_desc, int *height) = {
 };
 static int config_widget_ids[NELEM(config_creator)];
 
+static int Nelem_config_creator(void)
+{
+    return NELEM(config_creator);
+}
+
 static void Create_config(void)
 {
     int i,
@@ -304,11 +310,11 @@ static void Create_config(void)
     config_bool_height = config_button_height;
     config_arrow_height = config_text_height;
     config_arrow_width = config_text_height;
-    config_int_width = 4 + XTextWidth(buttonFont, "1000", 4);
-    config_double_width = 4 + XTextWidth(buttonFont, "0.22", 4);
+    config_int_width = 4 + XTextWidth(buttonFont, "10000", 5);
+    config_double_width = 4 + XTextWidth(buttonFont, "0.222", 5);
 
-    config_max = NELEM(config_creator);
-    config_widget_desc = (int *)malloc(config_max * sizeof(int));
+    config_max = Nelem_config_creator();
+    config_widget_desc = XMALLOC(int, config_max);
     if (config_widget_desc == NULL)
     {
         error("No memory for config");
@@ -317,7 +323,7 @@ static void Create_config(void)
 
     num = -1;
     full = true;
-    for (i = 0; i < NELEM(config_creator); i++)
+    for (i = 0; i < Nelem_config_creator(); i++)
     {
         if (full == true)
         {
@@ -328,9 +334,8 @@ static void Create_config(void)
                                                          config_width, config_height,
                                                          0);
             if (config_widget_desc[num] == 0)
-            {
                 break;
-            }
+
             height = config_height - config_space - config_button_height;
             width = 2 * config_button_space + XTextWidth(buttonFont,
                                                          "PREV", 4);
@@ -342,9 +347,8 @@ static void Create_config(void)
                                        0, "PREV", Config_prev,
                                        (void *)(long)num);
             if (widget_desc == 0)
-            {
                 break;
-            }
+
             width = 2 * config_button_space + XTextWidth(buttonFont,
                                                          "NEXT", 4);
             offset = (config_width - width) / 2;
@@ -355,9 +359,8 @@ static void Create_config(void)
                                        0, "NEXT", Config_next,
                                        (void *)(long)num);
             if (widget_desc == 0)
-            {
                 break;
-            }
+
             width = 2 * config_button_space + XTextWidth(buttonFont,
                                                          "CLOSE", 5);
             offset = config_space;
@@ -368,9 +371,8 @@ static void Create_config(void)
                                        0, "CLOSE", Config_close,
                                        (void *)(long)num);
             if (widget_desc == 0)
-            {
                 break;
-            }
+
             height = config_space;
         }
         if ((config_widget_ids[i] =
@@ -379,20 +381,16 @@ static void Create_config(void)
             i--;
             full = true;
             if (height == config_space)
-            {
                 break;
-            }
             continue;
         }
     }
-    if (i < NELEM(config_creator))
+    if (i < Nelem_config_creator())
     {
         for (; num >= 0; num--)
         {
             if (config_widget_desc[num] != 0)
-            {
                 Widget_destroy(config_widget_desc[num]);
-            }
         }
         config_created = false;
         config_mapped = false;
@@ -400,13 +398,10 @@ static void Create_config(void)
     else
     {
         config_max = num + 1;
-        config_widget_desc = (int *)realloc(config_widget_desc,
-                                            config_max * sizeof(int));
+        config_widget_desc = XREALLOC(int, config_widget_desc, config_max);
         config_page = 0;
         for (i = 0; i < config_max; i++)
-        {
             Widget_map_sub(config_widget_desc[i]);
-        }
         config_created = true;
         config_mapped = false;
     }
@@ -457,26 +452,20 @@ static int Config_create_bool(int widget_desc, int *height,
         boolw;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
-    {
         return 0;
-    }
-    label_width = XTextWidth(textFont, str, strlen(str)) + 2 * config_text_space;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
     offset = config_width - (config_space + config_bool_width);
     if (config_space + label_width > offset)
     {
         if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
-        {
             return 0;
-        }
     }
 
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
                         label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
-    {
         *height += config_entry_height;
-    }
     boolw = Widget_create_bool(widget_desc,
                                offset, *height + (config_entry_height - config_bool_height) / 2,
                                config_bool_width,
@@ -496,25 +485,19 @@ static int Config_create_int(int widget_desc, int *height,
         intw;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
-    {
         return 0;
-    }
-    label_width = XTextWidth(textFont, str, strlen(str)) + 2 * config_text_space;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
     offset = config_width - (config_space + 2 * config_arrow_width + config_int_width);
     if (config_space + label_width > offset)
     {
         if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
-        {
             return 0;
-        }
     }
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
                         label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
-    {
         *height += config_entry_height;
-    }
     intw = Widget_create_int(widget_desc, offset, *height + (config_entry_height - config_text_height) / 2,
                              config_int_width, config_text_height,
                              0, val, min, max, callback, data);
@@ -531,8 +514,45 @@ static int Config_create_int(int widget_desc, int *height,
     return intw;
 }
 
+static int Config_create_color(int widget_desc, int *height, int color,
+                               const char *str, int *val, int min, int max,
+                               int (*callback)(int, void *, int *), void *data)
+{
+    int offset, label_width, colw;
+
+    if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
+        return 0;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
+    offset = config_width - (config_space + 2 * config_arrow_width + config_int_width);
+    if (config_space + label_width > offset)
+    {
+        if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
+            return 0;
+    }
+    Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
+                        label_width, config_text_height, true,
+                        0, str);
+    if (config_space + label_width > offset)
+        *height += config_entry_height;
+    colw = Widget_create_color(widget_desc, color, offset, *height + (config_entry_height - config_text_height) / 2,
+                               config_int_width, config_text_height,
+                               0, val, min, max, callback, data);
+    offset += config_int_width;
+    Widget_create_arrow_left(widget_desc, offset, *height + (config_entry_height - config_arrow_height) / 2,
+                             config_arrow_width, config_arrow_height,
+                             0, colw);
+    offset += config_arrow_width;
+    Widget_create_arrow_right(widget_desc, offset, *height + (config_entry_height - config_arrow_height) / 2,
+                              config_arrow_width, config_arrow_height,
+                              0, colw);
+    *height += config_entry_height + config_space;
+
+    return colw;
+}
+
 static int Config_create_double(int widget_desc, int *height,
-                                const char *str, double *val, double min, double max,
+                                const char *str, double *val,
+                                double min, double max,
                                 int (*callback)(int, void *, double *),
                                 void *data)
 {
@@ -541,25 +561,19 @@ static int Config_create_double(int widget_desc, int *height,
         doublew;
 
     if (*height + 2 * config_entry_height + 2 * config_space >= config_height)
-    {
         return 0;
-    }
-    label_width = XTextWidth(textFont, str, strlen(str)) + 2 * config_text_space;
+    label_width = XTextWidth(textFont, str, (int)strlen(str)) + 2 * config_text_space;
     offset = config_width - (config_space + 2 * config_arrow_width + config_double_width);
     if (config_space + label_width > offset)
     {
         if (*height + 3 * config_entry_height + 2 * config_space >= config_height)
-        {
             return 0;
-        }
     }
     Widget_create_label(widget_desc, config_space, *height + (config_entry_height - config_text_height) / 2,
                         label_width, config_text_height, true,
                         0, str);
     if (config_space + label_width > offset)
-    {
         *height += config_entry_height;
-    }
     doublew = Widget_create_double(widget_desc, offset, *height + (config_entry_height - config_text_height) / 2,
                                    config_double_width, config_text_height,
                                    0, val, min, max, callback, data);
