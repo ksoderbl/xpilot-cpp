@@ -832,10 +832,8 @@ void Gui_paint_setup_pos_grav(int x, int y)
                     Y(y + BLOCK_SZ / 2));
     }
     else
-    {
-        Bitmap_paint(drawPixmap, BM_PLUSGRAVITY, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                     0);
-    }
+        Bitmap_paint(drawPixmap, BM_PLUSGRAVITY, WINSCALE(X(x)),
+                     WINSCALE(Y(y + BLOCK_SZ)), 0);
 }
 
 void Gui_paint_setup_neg_grav(int x, int y)
@@ -855,10 +853,8 @@ void Gui_paint_setup_neg_grav(int x, int y)
                     Y(y + BLOCK_SZ / 2));
     }
     else
-    {
-        Bitmap_paint(drawPixmap, BM_MINUSGRAVITY, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                     0);
-    }
+        Bitmap_paint(drawPixmap, BM_MINUSGRAVITY, WINSCALE(X(x)),
+                     WINSCALE(Y(y + BLOCK_SZ)), 0);
 }
 
 void Gui_paint_setup_up_grav(int x, int y)
@@ -1005,9 +1001,7 @@ void Gui_paint_setup_item_concentrator(int x, int y)
             concentratorloop = loops;
             rot_dir += 5;
             for (i = 0; i < NELEM(tris); i++)
-            {
                 tris[i].rot_dir += tris[i].rot_speed;
-            }
         }
         for (i = 0; i < NELEM(tris); i++)
         {
@@ -1026,7 +1020,8 @@ void Gui_paint_setup_item_concentrator(int x, int y)
             pts[2].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + 2 * RES / 3, RES))));
             /* Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
                     i, cx, cy, pts[0].x, pts[0].y,
-                    pts[1].x, pts[1].y, pts[2].x, pts[2].y, pts[3].x, pts[3].y); */
+                    pts[1].x, pts[1].y, pts[2].x, pts[2].y,
+                    pts[3].x, pts[3].y); */
 
             pts[3] = pts[0];
             rd.drawLines(dpy, drawPixmap, gameGC,
@@ -1034,10 +1029,8 @@ void Gui_paint_setup_item_concentrator(int x, int y)
         }
     }
     else
-    {
-        Bitmap_paint(drawPixmap, BM_CONCENTRATOR, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                     (loops + (x + x * y)) % 32);
-    }
+        Bitmap_paint(drawPixmap, BM_CONCENTRATOR, WINSCALE(X(x)),
+                     WINSCALE(Y(y + BLOCK_SZ)), (loopsSlow + (x + x * y)) % 32);
 }
 
 void Gui_paint_setup_asteroid_concentrator(int x, int y)
@@ -1073,9 +1066,7 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
             concentratorloop = loops;
             rot_dir += 5;
             for (i = 0; i < NELEM(sqrs); i++)
-            {
                 sqrs[i].rot_dir += sqrs[i].rot_speed;
-            }
         }
         for (i = 0; i < NELEM(sqrs); i++)
         {
@@ -1096,7 +1087,8 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
             pts[3].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 3 * RES / 4, RES))));
             /* Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
                     i, cx, cy, pts[0].x, pts[0].y,
-                    pts[1].x, pts[1].y, pts[2].x, pts[2].y, pts[3].x, pts[3].y); */
+                    pts[1].x, pts[1].y, pts[2].x, pts[2].y,
+                    pts[3].x, pts[3].y); */
 
             pts[4] = pts[0];
             rd.drawLines(dpy, drawPixmap, gameGC,
@@ -1104,10 +1096,8 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
         }
     }
     else
-    {
-        Bitmap_paint(drawPixmap, BM_ASTEROIDCONC, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                     (loops + (x + x * y)) % 32);
-    }
+        Bitmap_paint(drawPixmap, BM_ASTEROIDCONC, WINSCALE(X(x)),
+                     WINSCALE(Y(y + BLOCK_SZ)), (loopsSlow + (x + x * y)) % 32);
 }
 
 void Gui_paint_decor_dot(int x, int y, int size)
@@ -1138,8 +1128,8 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
     rd.drawRectangle(dpy, drawPixmap, gameGC,
                      WINSCALE(X(x + (BLOCK_SZ + 2) / 4)),
                      WINSCALE(Y(y + 3 * BLOCK_SZ / 4)),
-                     WINSCALE(BLOCK_SZ / 2),
-                     WINSCALE(BLOCK_SZ / 2));
+                     UWINSCALE(BLOCK_SZ / 2),
+                     UWINSCALE(BLOCK_SZ / 2));
 
     if (BIT(Setup->mode, TEAM_PLAY))
     {
@@ -1207,15 +1197,13 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
     else
     {
         char s[2];
-        int size;
-
-        int type;
+        int size, type;
         int color;
 
         type = own ? BM_HOLDER_FRIEND : BM_HOLDER_ENEMY;
 
-        Bitmap_paint(drawPixmap, type, WINSCALE(X(x)), WINSCALE(Y(y + BLOCK_SZ)),
-                     0);
+        Bitmap_paint(drawPixmap, type, WINSCALE(X(x)),
+                     WINSCALE(Y(y + BLOCK_SZ)), 0);
 
         if (BIT(Setup->mode, TEAM_PLAY))
         {

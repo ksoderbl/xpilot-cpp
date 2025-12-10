@@ -409,7 +409,7 @@ static void Gui_paint_nastyshot(int color, int x, int y, int size)
 {
     int z = size;
 
-    if (rfrac() < 0.5f)
+    if (rfrac() < 0.5)
     {
         Segment_add(color,
                     x - z, y - z,
@@ -457,7 +457,8 @@ void Gui_paint_teamshot(int color, int x, int y)
     {
         int s_size = (teamShotSize > 8) ? 8 : shotSize;
         int z = s_size / 2;
-        Bitmap_paint(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z, WINSCALE(y) - z, s_size - 1);
+        Bitmap_paint(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z,
+                     WINSCALE(y) - z, s_size - 1);
     }
 }
 
@@ -505,9 +506,7 @@ void Gui_paint_laser(int color, int x1, int y1, int len, int dir)
     x2 = (int)(x1 + len * tcos(dir));
     y2 = (int)(y1 + len * tsin(dir));
     if ((unsigned)(color) >= NUM_COLORS)
-    {
         color = WHITE;
-    }
     SET_FG(colors[color].pixel);
     rd.drawLine(dpy, drawPixmap, gameGC,
                 WINSCALE(X(x1)), WINSCALE(Y(y1)),
@@ -518,30 +517,29 @@ void Gui_paint_paused(int x, int y, int count)
 {
     if (!texturedObjects)
     {
-
         int x0, y0;
         static int pauseCharWidth = -1;
 
-        const int half_pause_size = 3 * BLOCK_SZ / 7;
+        const unsigned half_pause_size = 3 * BLOCK_SZ / 7;
 
         if (pauseCharWidth < 0)
-        {
             pauseCharWidth = XTextWidth(gameFont, "P", 1);
-        }
+
         SET_FG(colors[BLUE].pixel);
         x0 = X(x - half_pause_size);
         y0 = Y(y + half_pause_size);
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(x0), WINSCALE(y0),
-                         WINSCALE(2 * half_pause_size + 1), WINSCALE(2 * half_pause_size + 1));
+                         UWINSCALE(2 * half_pause_size + 1),
+                         UWINSCALE(2 * half_pause_size + 1));
         if (count <= 0 || loopsSlow % 10 >= 5)
         {
             SET_FG(colors[WHITE].pixel);
             rd.drawRectangle(dpy, drawPixmap, gameGC,
                              WINSCALE(x0 - 1),
                              WINSCALE(y0 - 1),
-                             WINSCALE(2 * (half_pause_size + 1)),
-                             WINSCALE(2 * (half_pause_size + 1)));
+                             UWINSCALE(2 * (half_pause_size + 1)),
+                             UWINSCALE(2 * (half_pause_size + 1)));
             rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(X(x)) - pauseCharWidth / 2,
                           WINSCALE(Y(y - 1)) + gameFont->ascent / 2,
@@ -549,11 +547,35 @@ void Gui_paint_paused(int x, int y, int count)
         }
     }
     else
-    {
         Bitmap_paint(drawPixmap, BM_PAUSED, WINSCALE(X(x - BLOCK_SZ / 2)),
                      WINSCALE(Y(y + BLOCK_SZ / 2)),
                      (count <= 0 || loopsSlow % 10 >= 5) ? 1 : 0);
+}
+
+/* Create better graphics for this. */
+void Gui_paint_appearing(int x, int y, int id, int count)
+{
+    const unsigned hsize = 3 * BLOCK_SZ / 7;
+    other_t *other = Other_by_id(id);
+    int color = other ? Life_color(other) : 0;
+
+    if (!color)
+        color = WHITE;
+
+    /* Make a note we are doing the base warning */
+    if (version >= 0x4F12)
+    {
+        homebase_t *base = Homebase_by_id(id);
+        if (base != NULL)
+            base->appeartime = (long)(loops + (count * clientFPS) / 120);
     }
+
+    SET_FG(colors[color].pixel);
+    rd.fillRectangle(dpy, drawPixmap, gameGC,
+                     SCALEX(x - (int)hsize),
+                     SCALEY(y - (int)hsize + (int)(count / 180. * hsize + 1)),
+                     UWINSCALE(2 * hsize + 1),
+                     UWINSCALE((unsigned)(count / 180. * hsize + 1)));
 }
 
 void Gui_paint_ecm(int x, int y, int size)
@@ -587,9 +609,10 @@ void Gui_paint_refuel(int x0, int y0, int x1, int y1)
         dy = (double)(y1 - y0) / 16;
         for (i = 0; i < 16; i++)
         {
-            Bitmap_paint(drawPixmap, BM_REFUEL, (int)(x0 + (dx * i) - size / 2),
+            Bitmap_paint(drawPixmap, BM_REFUEL,
+                         (int)(x0 + (dx * i) - size / 2),
                          (int)(y0 + (dy * i) - size / 2),
-                         fuel[(loopsSlow + 16 - i) % 16]);
+                         fuel[(loops + 16 - i) % 16]);
         }
     }
 }
@@ -632,7 +655,7 @@ void Gui_paint_all_connectors_begin(void)
 
 void Gui_paint_ships_begin(void)
 {
-    gcv.dash_offset = WINSCALE(DASHES_LENGTH - (loopsSlow % DASHES_LENGTH));
+    gcv.dash_offset = WINSCALE(DASHES_LENGTH - (loops % DASHES_LENGTH));
 }
 
 void Gui_paint_ships_end(void)
@@ -679,7 +702,9 @@ static int Gui_is_my_tank(other_t *other)
     char tank_name[MAX_NAME_LEN];
 
     if (self == NULL || other == NULL || other->mychar != 'T' || (BIT(Setup->mode, TEAM_PLAY) && self->team != other->team))
+    {
         return 0;
+    }
 
     if (strlcpy(tank_name, self->nick_name, MAX_NAME_LEN) < MAX_NAME_LEN)
         strlcat(tank_name, "'s tank", MAX_NAME_LEN);
@@ -816,14 +841,16 @@ static void Gui_paint_ship_cloaked(int ship_color, XPoint *points, int point_cou
     rd.drawLines(dpy, drawPixmap, gameGC, points, point_count, 0);
 }
 
-static void Gui_paint_ship_phased(int ship_color, XPoint *points, int point_count)
+static void Gui_paint_ship_phased(int ship_color, XPoint *points,
+                                  int point_count)
 {
     Gui_paint_ship_cloaked(ship_color, points, point_count);
 }
 
 static void generic_paint_ship(int x, int y, int ang, int ship)
 {
-    Bitmap_paint(drawPixmap, ship, WINSCALE(X(x) - 16), WINSCALE(Y(y) - 16), ang);
+    Bitmap_paint(drawPixmap, ship,
+                 WINSCALE(X(x) - 16), WINSCALE(Y(y) - 16), ang);
 }
 
 static void Gui_paint_ship_uncloaked(int id, XPoint *points,
