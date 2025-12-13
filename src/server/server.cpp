@@ -540,7 +540,7 @@ void Server_info(char *str, size_t max_size)
         {
             ratio = (double)Get_Score(pl) / (pl->life + 1);
         }
-        if ((best == NULL || ratio > best_ratio) && !BIT(pl->obj_status, PAUSE))
+        if ((best == NULL || ratio > best_ratio) && !Player_is_paused(pl))
         {
             best_ratio = ratio;
             best = pl;

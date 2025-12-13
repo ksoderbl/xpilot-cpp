@@ -1182,7 +1182,7 @@ static void Update_players(void)
             sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
         }
 
-        if (!BIT(pl->obj_status, PAUSE))
+        if (!Player_is_paused(pl))
         {
             update_object_speed(pl); /* New position */
             Move_player(pl);
@@ -1337,7 +1337,7 @@ void Update_objects(void)
         }
 
         if (options.maxPauseTime > 0 &&
-            Player_is_human(pl) && BIT(pl->obj_status, PAUSE) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
+            Player_is_human(pl) && Player_is_paused(pl) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
             sprintf(msg,
                     "%s was auto-kicked for pausing too long [*Server notice*]",

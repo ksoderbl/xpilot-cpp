@@ -62,9 +62,7 @@ static void printfile(const char *filename)
     int c;
 
     if ((fp = fopen(filename, "r")) == NULL)
-    {
         return;
-    }
 
     while ((c = fgetc(fp)) != EOF)
         putchar(c);

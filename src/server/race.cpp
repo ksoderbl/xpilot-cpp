@@ -79,7 +79,7 @@ void Race_compute_game_status(void)
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
-        if (BIT(pl->obj_status, PAUSE) || Player_is_tank(pl))
+        if (Player_is_paused(pl) || Player_is_tank(pl))
             continue;
         if (!BIT(pl->obj_status, GAME_OVER))
             num_alive_players++;
@@ -131,7 +131,7 @@ void Race_compute_game_status(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Player_by_index(i);
-            if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+            if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
                 continue;
             if (BIT(pl->obj_status, FINISH))
             {
@@ -222,7 +222,7 @@ void Race_game_over(void)
             {
                 continue;
             }
-            if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || pl->best_lap <= 0)
+            if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || pl->best_lap <= 0)
             {
                 j = i;
             }
@@ -273,7 +273,7 @@ void Race_game_over(void)
     {
         pl = Player_by_index(i);
         CLR_BIT(pl->obj_status, RACE_OVER | FINISH);
-        if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+        if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
         {
             continue;
         }
@@ -303,7 +303,7 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Player_by_index(i);
-            if (BIT(pl->obj_status, PAUSE) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+            if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
             {
                 continue;
             }

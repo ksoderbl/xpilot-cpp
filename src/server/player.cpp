@@ -743,7 +743,7 @@ void Reset_all_players(void)
         pl->kills = 0;
         pl->deaths = 0;
         Player_reset_timing(pl);
-        if (!BIT(pl->obj_status, PAUSE))
+        if (!Player_is_paused(pl))
         {
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
@@ -1729,7 +1729,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel);
     Player_init_fuel(pl, pl->fuel.sum);
 
-    if (!BIT(pl->obj_status, PAUSE))
+    if (!Player_is_paused(pl))
     {
         pl->deaths++;
 

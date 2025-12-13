@@ -40,7 +40,7 @@
  * Define like this to avoid having to put #ifdef SOUND all over the place.
  */
 #define sound_player_init(pl) ((pl)->audio = NULL)
-#define sound_player_onoff(pl, onoff)
+#define sound_player_on(pl, on)
 #define sound_play_player(pl, index)
 #define sound_play_all(index)
 #define sound_play_sensors(pos, index)
@@ -52,7 +52,7 @@
 #include "audio.h"
 
 int sound_player_init(player_t *pl);
-void sound_player_onoff(player_t *pl, bool on);
+void sound_player_on(player_t *pl, bool on);
 void sound_play_player(player_t *pl, int index);
 void sound_play_all(int index);
 void sound_play_sensors(clpos_t pos, int index);

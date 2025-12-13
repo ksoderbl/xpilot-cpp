@@ -360,7 +360,7 @@ static void PlayerCollision(void)
 
                 if (BIT(pl_j->obj_status, KILLED))
                 {
-                    if (BIT(pl->obj_status, KILLED))
+                    if (Player_is_killed(pl))
                     {
                         sprintf(msg, "%s and %s crashed.",
                                 pl->name, pl_j->name);
@@ -415,7 +415,7 @@ static void PlayerCollision(void)
                 }
                 else
                 {
-                    if (BIT(pl->obj_status, KILLED))
+                    if (Player_is_killed(pl))
                     {
                         player_t *j_tank_owner_pl = pl_j;
                         if (Player_is_tank(pl_j))
@@ -696,7 +696,7 @@ static void PlayerObjectCollision(player_t *pl)
             if (!hit)
                 continue;
             Player_collides_with_ball(pl, BALL_PTR(obj), radius);
-            if (BIT(pl->obj_status, KILLED))
+            if (Player_is_killed(pl))
                 return;
             continue;
 
@@ -714,7 +714,7 @@ static void PlayerObjectCollision(player_t *pl)
         case OBJ_WRECKAGE:
         case OBJ_DEBRIS:
             Player_collides_with_debris(pl, obj);
-            if (BIT(pl->obj_status, KILLED))
+            if (Player_is_killed(pl))
                 return;
             break;
 
@@ -724,7 +724,7 @@ static void PlayerObjectCollision(player_t *pl)
                 Player_collides_with_asteroid(pl, WIRE_PTR(obj));
                 Delta_mv_elastic((object_t *)pl, (object_t *)obj);
             }
-            if (BIT(pl->obj_status, KILLED))
+            if (Player_is_killed(pl))
                 return;
             continue;
 
@@ -742,7 +742,7 @@ static void PlayerObjectCollision(player_t *pl)
         if (BIT(obj->type, KILLING_SHOTS))
         {
             Player_collides_with_killing_shot(pl, obj);
-            if (BIT(pl->obj_status, KILLED))
+            if (Player_is_killed(pl))
             {
                 return;
             }

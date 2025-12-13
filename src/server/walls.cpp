@@ -2442,7 +2442,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         }
     }
 
-    if (BIT(pl->obj_status, KILLED) && Get_Score(pl) < 0 && Player_is_robot(pl))
+    if (Player_is_killed(pl) && Get_Score(pl) < 0 && Player_is_robot(pl))
     {
         pl->home_base_ind = 0;
         Pick_startpos(pl);

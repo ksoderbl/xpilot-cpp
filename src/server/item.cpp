@@ -80,7 +80,7 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_TRACTOR_BEAM);
     if (pl->item[ITEM_AUTOPILOT] <= 0)
     {
-        if (BIT(pl->used, USES_AUTOPILOT))
+        if (Player_uses_autopilot(pl))
             Autopilot(pl, false);
         CLR_BIT(pl->have, HAS_AUTOPILOT);
     }
@@ -90,31 +90,29 @@ static void Item_update_flags(player_t *pl)
 
 /*
  * Player loses some items after some event (collision, bounce).
- * The `prob' parameter gives the chance that items are lost
+ * The 'prob' parameter gives the chance that items are lost
  * and, if they are lost, what percentage.
  */
 void Item_damage(player_t *pl, double prob)
 {
     if (prob < 1.0)
     {
-        // player_t *pl = PlayersArray[ind];
         int i;
         double loss;
 
         loss = prob;
-        LIMIT(loss, 0.0f, 1.0);
+        LIMIT(loss, 0.0, 1.0);
 
         for (i = 0; i < NUM_ITEMS; i++)
         {
-            if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+            if (!(i == ITEM_FUEL || i == ITEM_TANK))
             {
                 if (pl->item[i])
                 {
                     double f = rfrac();
+
                     if (f < loss)
-                    {
                         pl->item[i] = (int)(pl->item[i] * loss + 0.5);
-                    }
                 }
             }
         }
@@ -158,14 +156,14 @@ void Place_item(player_t *pl, int item)
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
     {
-        if (pl && !BIT(pl->obj_status, KILLED))
+        if (pl && !Player_is_killed(pl))
             pl->item[item]--;
         return;
     }
 
     if (pl)
     {
-        if (BIT(pl->obj_status, KILLED))
+        if (Player_is_killed(pl))
         {
             num_lose = pl->item[item] - world->items[item].initial;
             if (num_lose <= 0)
@@ -205,7 +203,7 @@ void Place_item(player_t *pl, int item)
         rand_item = 0;
         px = CLICK_TO_PIXEL(pl->prevpos.cx);
         py = CLICK_TO_PIXEL(pl->prevpos.cy);
-        if (!BIT(pl->obj_status, KILLED))
+        if (!Player_is_killed(pl))
         {
             /*
              * Player is dropping an item on purpose.

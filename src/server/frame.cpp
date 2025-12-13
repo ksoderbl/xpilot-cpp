@@ -424,7 +424,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
 
     if (BIT(pl->obj_status, HOVERPAUSE))
         showautopilot = (pl->count <= 0 || (frame_loops % 8) < 4);
-    else if (BIT(pl->used, USES_AUTOPILOT))
+    else if (Player_uses_autopilot(pl))
         showautopilot = (frame_loops % 8) < 4;
     else
         showautopilot = 0;
@@ -1249,7 +1249,7 @@ void Frame_update(void)
              * Owner always gets full framerate even if paused.
              * With allowViewing on, everyone gets full framerate.
              */
-            if (BIT(pl->obj_status, PAUSE))
+            if (Player_is_paused(pl))
             {
                 if (frame_loops & 0x03)
                     continue;
@@ -1288,7 +1288,7 @@ void Frame_update(void)
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
             if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
-                (BIT(pl->obj_status, PAUSE) &&
+                (Player_is_paused(pl) &&
                  ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
                   pl->isowner ||
                   options.allowViewing)))

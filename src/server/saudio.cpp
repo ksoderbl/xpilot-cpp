@@ -101,9 +101,9 @@ int sound_player_init(player_t *pl)
  * Set (or reset) a player status flag indicating
  * that a player wants (or doesn't want) sound.
  */
-void sound_player_onoff(player_t *pl, bool on)
+void sound_player_on(player_t *pl, bool on)
 {
-    SDBG(printf("sound_player_onoff %p, %d\n", pl, on));
+    SDBG(printf("sound_player_on %p, %d\n", pl, on));
 
     if (on)
     {

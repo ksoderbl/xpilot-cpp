@@ -2830,7 +2830,7 @@ static int Receive_pointer_move(connection_t *connp)
     if (Player_is_hoverpaused(pl))
         return 1;
 
-    if (BIT(pl->used, USES_AUTOPILOT))
+    if (Player_uses_autopilot(pl))
         Autopilot(pl, false);
     turnspeed = movement * pl->turnspeed / MAX_PLAYER_TURNSPEED;
     if (turnspeed < 0)
@@ -2893,10 +2893,9 @@ static int Receive_audio_request(connection_t *connp)
 {
     player_t *pl;
     int n;
-    uint8_t ch;
-    uint8_t onoff;
+    uint8_t ch, on;
 
-    if ((n = Packet_scanf(&connp->r, "%c%c", &ch, &onoff)) <= 0)
+    if ((n = Packet_scanf(&connp->r, "%c%c", &ch, &on)) <= 0)
     {
         if (n == -1)
             Destroy_connection(connp, "read error");
@@ -2905,7 +2904,7 @@ static int Receive_audio_request(connection_t *connp)
     if (connp->id != NO_ID)
     {
         pl = Player_by_id(connp->id);
-        sound_player_onoff(pl, onoff);
+        sound_player_on(pl, on);
     }
 
     return 1;

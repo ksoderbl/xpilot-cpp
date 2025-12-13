@@ -306,7 +306,7 @@ static void Player_repair(player_t *pl)
 
 static void Player_swap_settings(player_t *pl)
 {
-    if (BIT(pl->obj_status, HOVERPAUSE) || Player_uses_autopilot(pl))
+    if (Player_is_hoverpaused(pl) || Player_uses_autopilot(pl))
         return;
 
     /* kps - turnacc == 0.0 ? */
@@ -343,10 +343,9 @@ static void Player_toggle_compass(player_t *pl)
 
 void Pause_player(player_t *pl, bool on)
 {
-    // // player_t *pl = PlayersArray[ind];
     int i;
 
-    if (on && !BIT(pl->obj_status, PAUSE))
+    if (on && !Player_is_paused(pl))
     {
         /* Turn pause mode on */
         pl->count = 10 * FPS;
@@ -358,7 +357,7 @@ void Pause_player(player_t *pl, bool on)
         if (BIT(pl->have, HAS_BALL))
             Detach_ball(pl, NULL);
     }
-    else if (!on && BIT(pl->obj_status, PAUSE))
+    else if (!on && Player_is_paused(pl))
     {
         /* Turn pause mode off */
         if (pl->count <= 0)
@@ -775,7 +774,7 @@ int Handle_keyboard(player_t *pl)
 
             case KEY_TURN_LEFT:
             case KEY_TURN_RIGHT:
-                if (BIT(pl->used, USES_AUTOPILOT))
+                if (Player_uses_autopilot(pl))
                     Autopilot(pl, false);
                 pl->turnacc = 0;
                 if (BITV_ISSET(pl->last_keyv, KEY_TURN_LEFT))
@@ -828,11 +827,11 @@ int Handle_keyboard(player_t *pl)
                     if (BIT(pl->obj_status, HOVERPAUSE))
                         break;
 
-                    if (BIT(pl->used, USES_AUTOPILOT))
+                    if (Player_uses_autopilot(pl))
                         Autopilot(pl, false);
 
                     /* toggle pause mode */
-                    Pause_player(pl, !BIT(pl->obj_status, PAUSE));
+                    Pause_player(pl, !Player_is_paused(pl));
                     if (BIT(pl->obj_status, PLAYING))
                     {
                         BITV_SET(pl->last_keyv, key);
@@ -842,7 +841,7 @@ int Handle_keyboard(player_t *pl)
                     break;
 
                 case HOVERPAUSE:
-                    if (BIT(pl->obj_status, PAUSE))
+                    if (Player_is_paused(pl))
                         break;
 
                     if (!BIT(pl->obj_status, HOVERPAUSE))
@@ -888,14 +887,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_SWAP_SETTINGS:
-                if (BIT(pl->obj_status, HOVERPAUSE) || BIT(pl->used, USES_AUTOPILOT))
-                    break;
-                if (pl->turnacc == 0.0)
-                {
-                    SWAP(pl->power, pl->power_s);
-                    SWAP(pl->turnspeed, pl->turnspeed_s);
-                    SWAP(pl->turnresistance, pl->turnresistance_s);
-                }
+                Player_swap_settings(pl);
                 break;
 
             case KEY_REFUEL:
@@ -928,7 +920,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_THRUST:
-                if (BIT(pl->used, USES_AUTOPILOT))
+                if (Player_uses_autopilot(pl))
                     Autopilot(pl, false);
                 Thrust(pl, true);
                 break;
@@ -996,7 +988,7 @@ int Handle_keyboard(player_t *pl)
             {
             case KEY_TURN_LEFT:
             case KEY_TURN_RIGHT:
-                if (BIT(pl->used, USES_AUTOPILOT))
+                if (Player_uses_autopilot(pl))
                     Autopilot(pl, false);
                 pl->turnacc = 0;
                 if (BITV_ISSET(pl->last_keyv, KEY_TURN_LEFT))
@@ -1044,7 +1036,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_THRUST:
-                if (BIT(pl->used, USES_AUTOPILOT))
+                if (Player_uses_autopilot(pl))
                     Autopilot(pl, false);
                 Thrust(pl, false);
                 break;
