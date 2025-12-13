@@ -282,7 +282,7 @@ static fuelstation_t *Fuelstation_by_pos(int x, int y)
     return NULL;
 }
 
-int Fuel_by_pos(int x, int y)
+double Fuel_by_pos(int x, int y)
 {
     fuelstation_t *fuelp;
 
@@ -326,14 +326,16 @@ int Target_alive(int x, int y, int *damage)
     return -1;
 }
 
-int Handle_fuel(int ind, int fuel)
+int Handle_fuel(int ind, double fuel)
 {
+    warn("Handle_fuel, ind = %d, fuel = %f", ind, fuel);
+
     if (ind < 0 || ind >= num_fuels)
     {
         warn("Bad fuelstation index (%d)", ind);
         return -1;
     }
-    fuels[ind].fuel = fuel;
+    fuels[ind].fuel = fuel * FUEL_SCALE_FACT;
     return 0;
 }
 
@@ -714,7 +716,7 @@ void Map_blue(int startx, int starty, int width, int height)
             blue[BLUE_BIT | BLUE_CLOSED | BLUE_BELOW | BLUE_DOWN] =
                 blue[BLUE_BIT | BLUE_CLOSED | BLUE_BELOW | BLUE_LEFT | BLUE_DOWN] =
                     blue[SETUP_REC_LD];
-    for (i = BLUE_BIT; i < sizeof blue; i++)
+    for (i = BLUE_BIT; i < (int)(sizeof blue); i++)
     {
         if ((i & BLUE_FUEL) == BLUE_FUEL || (i & (BLUE_OPEN | BLUE_CLOSED)) == 0)
             blue[i] = blue[SETUP_FILLED];
@@ -747,7 +749,9 @@ void Map_blue(int startx, int starty, int width, int height)
             case SETUP_FUEL:
                 newtype = BLUE_BIT;
                 if (type == SETUP_FUEL)
+                {
                     newtype |= BLUE_FUEL;
+                }
                 if ((x == 0)
                         ? (!BIT(Setup->mode, WRAP_PLAY) ||
                            !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
@@ -1105,7 +1109,6 @@ static int init_polymap(void)
     return 0;
 }
 
-// static int Map_init(void)
 static int init_blockmap(void)
 {
     int i,
@@ -1447,15 +1450,10 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
             else
                 Others = XREALLOC(other_t, Others, max_others);
             if (Others == NULL)
-            {
                 fatal("Not enough memory for player info");
-                // return -1;
-            }
             if (self != NULL)
-            {
                 /* We've made 'self' the first member of Others[]. */
                 self = &Others[0];
-            }
         }
         other = &Others[num_others++];
     }
@@ -2084,7 +2082,7 @@ int Handle_vcannon(int x, int y, int type)
     return 0;
 }
 
-int Handle_vfuel(int x, int y, long fuel)
+int Handle_vfuel(int x, int y, double fuel)
 {
     vfuel_t t;
 

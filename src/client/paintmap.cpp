@@ -69,7 +69,7 @@ void Paint_vfuel(void)
     if (num_vfuel > 0)
     {
         for (i = 0; i < num_vfuel; i++)
-            Gui_paint_fuel(vfuel_ptr[i].x, vfuel_ptr[i].y, (double)vfuel_ptr[i].fuel);
+            Gui_paint_fuel(vfuel_ptr[i].x, vfuel_ptr[i].y, vfuel_ptr[i].fuel);
         RELEASE(vfuel_ptr, num_vfuel, max_vfuel);
     }
 }
@@ -267,7 +267,8 @@ void Paint_objects(void)
  */
 void Paint_world(void)
 {
-    int xi, yi, xb, yb, xe, ye, fuel;
+    int xi, yi, xb, yb, xe, ye;
+    double fuel;
     int rxb, ryb;
     int x, y;
     int type;

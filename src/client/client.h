@@ -155,7 +155,7 @@ typedef struct
 typedef struct
 {
     int pos;       /* Block index */
-    long fuel;     /* Amount of fuel available */
+    double fuel;   /* Amount of fuel available */
     irec_t bounds; /* Location on map */
 } fuelstation_t;
 
@@ -216,7 +216,7 @@ typedef struct
 } xp_polygon_t;
 
 /*
- * Local types and data for painting.
+ * Types for dynamic game data
  */
 
 typedef struct
@@ -245,6 +245,7 @@ typedef struct
 typedef struct
 {
     short x, y, id;
+    uint8_t style;
 } ball_t;
 
 typedef struct
@@ -304,7 +305,7 @@ typedef struct
 typedef struct
 {
     short x, y;
-    long fuel;
+    double fuel;
 } vfuel_t;
 
 typedef struct
@@ -342,8 +343,9 @@ typedef struct
 #define SCORE_OBJECT_COUNT 100
 typedef struct
 {
-    int score,
-        x,
+    double score,
+        life_time;
+    int x,
         y,
         count,
         hud_msg_len,
@@ -636,10 +638,10 @@ extern int protocolVersion;
 const char *Program_name(void);
 int Bitmap_add(const char *filename, int count, bool scalable);
 
-int Fuel_by_pos(int x, int y);
+double Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, int *damage);
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage);
-int Handle_fuel(int ind, int fuel);
+int Handle_fuel(int ind, double fuel);
 int Cannon_dead_time_by_pos(int x, int y, int *dot);
 int Handle_cannon(int ind, int dead_time);
 int Handle_target(int num, int dead_time, int damage);
@@ -697,7 +699,7 @@ int Handle_paused(int x, int y, int count);
 int Handle_appearing(int x, int y, int id, int count);
 int Handle_radar(int x, int y, int size);
 int Handle_vcannon(int x, int y, int type);
-int Handle_vfuel(int x, int y, long fuel);
+int Handle_vfuel(int x, int y, double fuel);
 int Handle_vbase(int x, int y, int xi, int yi, int type);
 int Handle_vdecor(int x, int y, int xi, int yi, int type);
 int Handle_message(char *msg);

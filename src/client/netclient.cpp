@@ -1497,7 +1497,8 @@ int Receive_time_left(void)
  */
 int Receive_eyes(void)
 {
-    int n, id;
+    int n,
+        id;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd", &ch, &id)) <= 0)
@@ -1513,13 +1514,13 @@ int Receive_eyes(void)
 int Receive_motd(void)
 {
     uint8_t ch;
-    long off, size;
+    long off,
+        size;
     short len;
     int n;
     char *cbuf_ptr = cbuf.ptr;
 
-    if ((n = Packet_scanf(&cbuf,
-                          "%c%ld%hd%ld",
+    if ((n = Packet_scanf(&cbuf, "%c%ld%hd%ld",
                           &ch, &off, &len, &size)) <= 0)
         return n;
     if (cbuf.ptr + len > &cbuf.buf[cbuf.len])
@@ -1596,9 +1597,10 @@ int Receive_self(void)
 {
     int n;
     short x, y, vx, vy, lockId, lockDist,
-        fuelSum, fuelMax;
-    uint8_t ch, heading, power, turnspeed, turnresistance,
-        nextCheckPoint, lockDir, autopilotLight, currentTank, stat;
+        sFuelSum, sFuelMax, sViewWidth, sViewHeight;
+    uint8_t ch, sNumSparkColors, sHeading, sPower, sTurnSpeed,
+        sTurnResistance, sNextCheckPoint, lockDir, sAutopilotLight,
+        currentTank, sStat;
     uint8_t num_items[NUM_ITEMS];
 
     n = Packet_scanf(&rbuf,
@@ -1607,38 +1609,44 @@ int Receive_self(void)
                      "%c%c%c"
                      "%hd%hd%c%c",
                      &ch,
-                     &x, &y, &vx, &vy, &heading,
-                     &power, &turnspeed, &turnresistance,
-                     &lockId, &lockDist, &lockDir, &nextCheckPoint);
+                     &x, &y, &vx, &vy, &sHeading,
+                     &sPower, &sTurnSpeed, &sTurnResistance,
+                     &lockId, &lockDist, &lockDir, &sNextCheckPoint);
     if (n <= 0)
         return n;
 
     memset(num_items, 0, sizeof num_items);
+
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
-                     &currentTank, &fuelSum, &fuelMax,
-                     &ext_view_width, &ext_view_height, &debris_colors,
-                     &stat, &autopilotLight);
+                     &currentTank, &sFuelSum, &sFuelMax,
+                     &sViewWidth, &sViewHeight, &sNumSparkColors,
+                     //  &ext_view_width, &ext_view_height, &debris_colors,
+                     &sStat, &autopilotLight);
     if (n <= 0)
         return n;
+
+    ext_view_width = sViewWidth;
+    ext_view_height = sViewHeight;
+    debris_colors = sNumSparkColors;
 
     if (debris_colors > num_spark_colors)
         debris_colors = num_spark_colors;
 
     Check_view_dimensions();
 
-    Game_over_action(stat);
-    Handle_self(x, y, vx, vy, heading,
-                (double)power,
-                (double)turnspeed,
-                (double)turnresistance / 255.0,
+    Game_over_action(sStat);
+    Handle_self(x, y, vx, vy, sHeading,
+                (double)sPower,
+                (double)sTurnSpeed,
+                (double)sTurnResistance / 255.0,
                 lockId, lockDist, lockDir,
-                nextCheckPoint, autopilotLight,
+                sNextCheckPoint, sAutopilotLight,
                 num_items,
-                currentTank, (double)fuelSum, (double)fuelMax, rbuf.len,
-                (int)stat);
+                currentTank, (double)sFuelSum, (double)sFuelMax, rbuf.len,
+                (int)sStat);
 
     return 1;
 }
@@ -1646,12 +1654,12 @@ int Receive_self(void)
 int Receive_modifiers(void)
 {
     int n;
-    char mods[MAX_CHARS];
+    char sMods[MAX_CHARS];
     uint8_t ch;
 
-    if ((n = Packet_scanf(&rbuf, "%c%s", &ch, mods)) <= 0)
+    if ((n = Packet_scanf(&rbuf, "%c%s", &ch, sMods)) <= 0)
         return n;
-    if ((n = Handle_modifiers(mods)) == -1)
+    if ((n = Handle_modifiers(sMods)) == -1)
         return -1;
     return 1;
 }
@@ -1744,7 +1752,8 @@ int Receive_ship(void)
     phased = ((flags & 8) != 0);
     deflector = ((flags & 0x10) != 0);
 
-    if ((n = Handle_ship(x, y, id, dir, shield, cloak, eshield, phased, deflector)) == -1)
+    if ((n = Handle_ship(x, y, id, dir, shield,
+                         cloak, eshield, phased, deflector)) == -1)
         return -1;
     return 1;
 }
@@ -2041,11 +2050,11 @@ int Receive_fastradar(void)
 int Receive_damaged(void)
 {
     int n;
-    uint8_t ch, damaged;
+    uint8_t ch, dmgd;
 
-    if ((n = Packet_scanf(&rbuf, "%c%c", &ch, &damaged)) <= 0)
+    if ((n = Packet_scanf(&rbuf, "%c%c", &ch, &dmgd)) <= 0)
         return n;
-    if ((n = Handle_damaged(damaged)) == -1)
+    if ((n = Handle_damaged(dmgd)) == -1)
         return -1;
     return 1;
 }
@@ -2197,7 +2206,9 @@ int Receive_team_score(void)
 
 int Receive_timing(void)
 {
-    int n, check, round;
+    int n,
+        check,
+        round;
     short id;
     uint16_t timing;
     uint8_t ch;
@@ -2220,7 +2231,7 @@ int Receive_fuel(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu", &ch, &num, &fuel)) <= 0)
         return n;
-    if ((n = Handle_fuel(num, fuel << FUEL_SCALE_BITS)) == -1)
+    if ((n = Handle_fuel(num, (double)fuel)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_FUEL, last_loops, num);
@@ -2245,7 +2256,9 @@ int Receive_cannon(void)
 int Receive_target(void)
 {
     int n;
-    uint16_t num, dead_time, damage;
+    uint16_t num,
+        dead_time,
+        damage;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
@@ -2300,11 +2313,12 @@ int Receive_magic(void)
 int Receive_string(void)
 {
     int n;
-    uint8_t ch, type;
-    uint16_t arg1, arg2;
+    uint8_t ch,
+        type;
+    uint16_t arg1,
+        arg2;
 
-    if ((n = Packet_scanf(&cbuf, "%c%c%hu%hu",
-                          &ch, &type, &arg1, &arg2)) <= 0)
+    if ((n = Packet_scanf(&cbuf, "%c%c%hu%hu", &ch, &type, &arg1, &arg2)) <= 0)
         return n;
     /*
      * Not implemented yet.
@@ -2344,7 +2358,8 @@ int Receive_reliable(void)
     int n;
     short len;
     uint8_t ch;
-    long rel, rel_loops;
+    long rel,
+        rel_loops;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%ld%ld",
                           &ch, &len, &rel, &rel_loops)) == -1)
@@ -2448,7 +2463,7 @@ int Send_keyboard(uint8_t *keyboard_vector)
         return 0;
 
     Packet_printf(&wbuf, "%c%ld", PKT_KEYBOARD, last_keyboard_change);
-    memcpy(&wbuf.buf[wbuf.len], keyboard_vector, size);
+    memcpy(&wbuf.buf[wbuf.len], keyboard_vector, (size_t)size);
     wbuf.len += size;
     last_keyboard_update = last_loops;
     Net_keyboard_track();
@@ -2478,50 +2493,50 @@ int Send_shape(char *str)
     return 0;
 }
 
-int Send_power(double power)
+int Send_power(double pwr)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POWER,
-                      (int)(power * 256.0)) == -1)
+                      (int)(pwr * 256.0)) == -1)
         return -1;
     return 0;
 }
 
-int Send_power_s(double power_s)
+int Send_power_s(double pwr_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_POWER_S,
-                      (int)(power_s * 256.0)) == -1)
+                      (int)(pwr_s * 256.0)) == -1)
         return -1;
     return 0;
 }
 
-int Send_turnspeed(double turnspeed)
+int Send_turnspeed(double turnspd)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNSPEED,
-                      (int)(turnspeed * 256.0)) == -1)
+                      (int)(turnspd * 256.0)) == -1)
         return -1;
     return 0;
 }
 
-int Send_turnspeed_s(double turnspeed_s)
+int Send_turnspeed_s(double turnspd_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNSPEED_S,
-                      (int)(turnspeed_s * 256.0)) == -1)
+                      (int)(turnspd_s * 256.0)) == -1)
         return -1;
     return 0;
 }
 
-int Send_turnresistance(double turnresistance)
+int Send_turnresistance(double turnres)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNRESISTANCE,
-                      (int)(turnresistance * 256.0)) == -1)
+                      (int)(turnres * 256.0)) == -1)
         return -1;
     return 0;
 }
 
-int Send_turnresistance_s(double turnresistance_s)
+int Send_turnresistance_s(double turnres_s)
 {
     if (Packet_printf(&wbuf, "%c%hd", PKT_TURNRESISTANCE_S,
-                      (int)(turnresistance_s * 256.0)) == -1)
+                      (int)(turnres_s * 256.0)) == -1)
         return -1;
     return 0;
 }
@@ -2588,8 +2603,7 @@ int Send_talk(void)
         return 0;
     if (last_loops - talk_last_send < TALK_RETRY)
         return 0;
-    if (Packet_printf(&wbuf, "%c%ld%s", PKT_TALK,
-                      talk_pending, talk_str) == -1)
+    if (Packet_printf(&wbuf, "%c%ld%s", PKT_TALK, talk_pending, talk_str) == -1)
         return -1;
     talk_last_send = last_loops;
     return 0;
