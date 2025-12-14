@@ -1364,7 +1364,7 @@ int Send_player(connection_t *connp, int id)
 /*
  * Send the new score for some player to a client.
  */
-int Send_score(connection_t *connp, int id, int score,
+int Send_score(connection_t *connp, int id, double score,
                int life, int mychar, int alliance)
 {
     if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
@@ -1373,32 +1373,22 @@ int Send_score(connection_t *connp, int id, int score,
              connp->state, connp->id);
         return 0;
     }
-    if (connp->version < 0x4500)
-    {
-        printf("THIS NEVER HAPPENS: 2tkjgfkljadfjsjafj\n");
-        /* older clients don't get alliance info or decimals of the score */
-        return Packet_printf(&connp->c, "%c%hd%hd%hd%c", PKT_SCORE,
-                             id, (int)(score + (score > 0 ? 0.5 : -0.5)),
-                             life, mychar);
-    }
-    else
-    {
-        int allchar = ' ';
 
-        if (alliance != ALLIANCE_NOT_SET)
+    int allchar = ' ';
+
+    if (alliance != ALLIANCE_NOT_SET)
+    {
+        if (options.announceAlliances)
+            allchar = alliance + '0';
+        else
         {
-            if (options.announceAlliances)
-                allchar = alliance + '0';
-            else
-            {
-                if (Player_by_id(connp->id)->alliance == alliance)
-                    allchar = '+';
-            }
+            if (Player_by_id(connp->id)->alliance == alliance)
+                allchar = '+';
         }
-        return Packet_printf(&connp->c, "%c%hd%d%hd%c%c", PKT_SCORE, id,
-                             (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
-                             life, mychar, allchar);
     }
+    return Packet_printf(&connp->c, "%c%hd%d%hd%c%c", PKT_SCORE, id,
+                         (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
+                         life, mychar, allchar);
 }
 
 /*
@@ -1437,13 +1427,14 @@ int Send_base(connection_t *connp, int id, int num)
 /*
  * Send the amount of fuel in a fuelstation.
  */
-int Send_fuel(connection_t *connp, int num, int fuel)
+int Send_fuel(connection_t *connp, int num, double fuel)
 {
     return Packet_printf(&connp->w, "%c%hu%hu", PKT_FUEL,
-                         num, fuel >> FUEL_SCALE_BITS);
+                         num, (int)(fuel + 0.5));
 }
 
-int Send_score_object(connection_t *connp, int score, clpos_t pos, const char *string)
+int Send_score_object(connection_t *connp, double score, clpos_t pos,
+                      const char *string)
 {
     blkpos_t bpos = Clpos_to_blkpos(pos);
 
@@ -1464,10 +1455,9 @@ int Send_score_object(connection_t *connp, int score, clpos_t pos, const char *s
                          bpos.bx, bpos.by, string);
 }
 
-int Send_cannon(connection_t *connp, int num, int dead_time)
+int Send_cannon(connection_t *connp, int num, int dead_ticks)
 {
-    return Packet_printf(&connp->w, "%c%hu%hu", PKT_CANNON,
-                         num, dead_time);
+    return Packet_printf(&connp->w, "%c%hu%hu", PKT_CANNON, num, dead_ticks);
 }
 
 int Send_destruct(connection_t *connp, int count)
@@ -1651,10 +1641,11 @@ int Send_ecm(connection_t *connp, clpos_t pos, int size)
                          CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), size);
 }
 
-int Send_trans(connection_t *connp, int x1, int y1, int x2, int y2)
+int Send_trans(connection_t *connp, clpos_t pos1, clpos_t pos2)
 {
-    return Packet_printf(&connp->w, "%c%hd%hd%hd%hd",
-                         PKT_TRANS, x1, y1, x2, y2);
+    return Packet_printf(&connp->w, "%c%hd%hd%hd%hd", PKT_TRANS,
+                         CLICK_TO_PIXEL(pos1.cx), CLICK_TO_PIXEL(pos1.cy),
+                         CLICK_TO_PIXEL(pos2.cx), CLICK_TO_PIXEL(pos2.cy));
 }
 
 int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
@@ -1941,9 +1932,8 @@ static int Receive_power(connection_t *connp)
     player_t *pl;
     uint8_t ch;
     short tmp;
-    int n;
+    int n, autopilot;
     double power;
-    int autopilot;
 
     if ((n = Packet_scanf(&connp->r, "%c%hd", &ch, &tmp)) <= 0)
     {
@@ -1953,10 +1943,7 @@ static int Receive_power(connection_t *connp)
     }
     power = (double)tmp / 256.0F;
     pl = Player_by_id(connp->id);
-    autopilot = BIT(pl->used, USES_AUTOPILOT);
-    /* old client are going to send autopilot-mangled data, ignore it */
-    if (autopilot && pl->version < 0x4200)
-        return 1;
+    autopilot = Player_uses_autopilot(pl) ? 1 : 0;
 
     switch (ch)
     {
@@ -2129,11 +2116,8 @@ static int Receive_ack(connection_t *connp)
 {
     int n;
     uint8_t ch;
-    long rel,
-        rtt, /* RoundTrip Time */
-        diff,
-        delta,
-        rel_loops;
+    long rel, rtt; /* RoundTrip Time */
+    long diff, delta, rel_loops;
 
     if ((n = Packet_scanf(&connp->r, "%c%ld%ld",
                           &ch, &rel, &rel_loops)) <= 0)
@@ -2377,8 +2361,10 @@ static void Handle_talk(connection_t *connp, char *str)
     player_t *pl = Player_by_id(connp->id);
     int i, sent, team;
     unsigned int len;
-    char *cp,
-        msg[MSG_LEN * 2];
+    char *cp, msg[MSG_LEN * 2];
+    const char *sender = " [*Server reply*]";
+
+    pl->flooding += FPS / 3;
 
     if ((cp = strchr(str, ':')) == NULL || cp == str || strchr("-_~)(/\\}{[]", cp[1]) /* smileys are smileys */
     )

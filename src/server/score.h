@@ -55,7 +55,7 @@ void Score_players(player_t *winner_pl, double winner_score,
                    char *winner_msg, player_t *loser_pl,
                    double loser_score, char *loser_msg);
 
-int Get_Score(player_t *pl);
+double Get_Score(player_t *pl);
 
 typedef enum
 {

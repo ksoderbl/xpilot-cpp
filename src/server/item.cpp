@@ -703,7 +703,7 @@ void Do_general_transporter(int id, clpos_t pos,
         if (world->NumTransporters < MAX_TOTAL_TRANSPORTERS)
         {
             world->transporters[world->NumTransporters].pos = pos;
-            world->transporters[world->NumTransporters].target = victim->id;
+            world->transporters[world->NumTransporters].victim_id = victim->id;
             world->transporters[world->NumTransporters].id = (pl ? pl->id : NO_ID);
             world->transporters[world->NumTransporters].count = 5;
             world->NumTransporters++;
@@ -721,26 +721,22 @@ void Do_general_transporter(int id, clpos_t pos,
     {
     case ITEM_AFTERBURNER:
         what = "an afterburner";
-        if (victim->item[item] == 0)
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_AFTERBURNER);
         break;
     case ITEM_MISSILE:
         amount = MIN(victim->item[item], 3);
         if (amount == 1)
-        {
             sprintf(msg, "%s stole a missile from %s.",
                     (pl ? pl->name : "A cannon"), victim->name);
-        }
         else
-        {
             sprintf(msg, "%s stole %ld missiles from %s",
                     (pl ? pl->name : "A cannon"), amount, victim->name);
-        }
         break;
     case ITEM_CLOAK:
         what = "a cloaking device";
         victim->updateVisibility = true;
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             Cloak(victim, false);
         break;
     case ITEM_WIDEANGLE:
@@ -761,7 +757,7 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_ARMOR:
         what = "an armor";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_ARMOR);
         break;
     case ITEM_TRANSPORTER:
@@ -769,12 +765,12 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_MIRROR:
         what = "a mirror";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_MIRROR);
         break;
     case ITEM_DEFLECTOR:
         what = "a deflector";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             Deflector(victim, false);
         break;
     case ITEM_HYPERJUMP:
@@ -782,9 +778,9 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_PHASING:
         what = "a phasing device";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_PHASING_DEVICE))
+            if (Player_is_phasing(victim))
                 Phasing(victim, false);
             CLR_BIT(victim->have, HAS_PHASING_DEVICE);
         }
@@ -794,18 +790,18 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_EMERGENCY_THRUST:
         what = "an emergency thrust";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_EMERGENCY_THRUST))
+            if (BIT(victim->used, HAS_EMERGENCY_THRUST))
                 Emergency_thrust(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_THRUST);
         }
         break;
     case ITEM_EMERGENCY_SHIELD:
         what = "an emergency shield";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_EMERGENCY_SHIELD))
+            if (BIT(victim->used, HAS_EMERGENCY_SHIELD))
                 Emergency_shield(victim, false);
             CLR_BIT(victim->have, HAS_EMERGENCY_SHIELD);
             if (!BIT(DEF_HAVE, HAS_SHIELD))
@@ -817,14 +813,14 @@ void Do_general_transporter(int id, clpos_t pos,
         break;
     case ITEM_TRACTOR_BEAM:
         what = "a tractor beam";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
             CLR_BIT(victim->have, HAS_TRACTOR_BEAM);
         break;
     case ITEM_AUTOPILOT:
         what = "an autopilot";
-        if (!victim->item[item])
+        if (victim->item[item] <= 0)
         {
-            if (BIT(victim->used, USES_AUTOPILOT))
+            if (Player_uses_autopilot(victim))
                 Autopilot(victim, false);
             CLR_BIT(victim->have, HAS_AUTOPILOT);
         }
@@ -853,10 +849,8 @@ void Do_general_transporter(int id, clpos_t pos,
 
     /* inform the world about the robbery */
     if (!msg[0])
-    {
         sprintf(msg, "%s stole %s from %s.", (pl ? pl->name : "A cannon"),
                 what, victim->name);
-    }
     Set_message(msg);
 
     /* cannons take care of themselves */

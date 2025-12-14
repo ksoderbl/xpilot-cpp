@@ -98,19 +98,19 @@ void Score_players(player_t *winner_pl, double winner_score,
 }
 
 // xpilot-cpp uses int scoring
-int Get_Score(player_t *pl)
+double Get_Score(player_t *pl)
 {
-    return (int)pl->score;
+    return pl->score;
 }
 
-void Set_Score(player_t *pl, int score)
+void Set_Score(player_t *pl, double score)
 {
-    pl->score = (int)score;
+    pl->score = score;
 }
 
-void Add_Score(player_t *pl, int score)
+void Add_Score(player_t *pl, double score)
 {
-    pl->score += (int)score;
+    pl->score += score;
 }
 
 void Handle_Scoring(scoretype_t st, player_t *killer, player_t *victim,

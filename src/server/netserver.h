@@ -43,14 +43,13 @@ int Send_self(connection_t *connp, player_t *pl,
               char *mods);
 int Send_leave(connection_t *connp, int id);
 int Send_player(connection_t *connp, int id);
-int Send_score(connection_t *connp, int id, int score,
+int Send_score(connection_t *connp, int id, double score,
                int life, int mychar, int alliance);
-int Send_score_object(connection_t *connp, int score, clpos_t pos, const char *string);
-int Send_team_score(connection_t *connp, int team, int score);
+int Send_score_object(connection_t *connp, double score, clpos_t pos, const char *string);
 int Send_timing(connection_t *connp, int id, int check, int round);
 int Send_base(connection_t *connp, int id, int num);
-int Send_fuel(connection_t *connp, int num, int fuel);
-int Send_cannon(connection_t *connp, int num, int dead_time);
+int Send_fuel(connection_t *connp, int num, double fuel);
+int Send_cannon(connection_t *connp, int num, int dead_ticks);
 int Send_destruct(connection_t *connp, int count);
 int Send_shutdown(connection_t *connp, int count, int delay);
 int Send_thrusttime(connection_t *connp, int count, int max);
@@ -86,7 +85,7 @@ int Send_end_of_frame(connection_t *connp);
 int Send_reliable(connection_t *connp);
 int Send_time_left(connection_t *connp, long sec);
 int Send_eyes(connection_t *connp, int id);
-int Send_trans(connection_t *connp, int x1, int y1, int x2, int y2);
+int Send_trans(connection_t *connp, clpos_t pos1, clpos_t pos2);
 void Get_display_parameters(connection_t *connp, int *width, int *height,
                             int *debris_colors, int *spark_rand);
 int Get_player_id(connection_t *connp);

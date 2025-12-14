@@ -529,6 +529,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         {
             if (BIT(world->cannons[i].conn_mask, conn_bit) == 0)
             {
+                // TODO: last argument is dead_ticks, use ticks instead of 'time'
                 Send_cannon(conn, i, world->cannons[i].dead_time);
                 pl->last_cannon_update = i;
                 bytes_left -= max_packet * cannon_packet_size;
@@ -554,7 +555,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
                                  world->fuels[i].pos.cx,
                                  world->fuels[i].pos.cy))
                 {
-                    Send_fuel(conn, i, (int)world->fuels[i].fuel);
+                    Send_fuel(conn, i, (int)world->fuels[i].fuel * (1.0 / FUEL_SCALE_FACT));
                     pl->last_fuel_update = i;
                     bytes_left -= max_packet * fuel_packet_size;
                     if (++packet_count >= max_packet)
@@ -942,12 +943,11 @@ static void Frame_ships(connection_t *conn, player_t *pl)
     for (i = 0; i < Num_transporters(); i++)
     {
         transporter_t *trans = Transporter_by_index(i);
+        player_t *victim = Player_by_id(trans->victim_id);
+        player_t *tpl = Player_by_id(trans->id);
 
-        player_t *victim = Player_by_id(trans->target),
-                 *pl = (trans->id == NO_ID ? NULL : Player_by_id(trans->id));
-        int cx = (pl ? pl->pos.cx : trans->pos.cx);
-        int cy = (pl ? pl->pos.cy : trans->pos.cy);
-        Send_trans(conn, victim->pix_pos.x, victim->pix_pos.y, CLICK_TO_PIXEL(cx), CLICK_TO_PIXEL(cy));
+        clpos_t pos = (tpl ? tpl->pos : trans->pos);
+        Send_trans(conn, victim->pos, pos);
     }
     for (i = 0; i < Num_cannons(); i++)
     {

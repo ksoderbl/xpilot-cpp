@@ -274,8 +274,13 @@ typedef struct
 
     int player_fps; /* FPS that this player can do */
 
-    int isowner;    /* If player started this server. */
-    int isoperator; /* If player has operator privileges. */
+    int isowner; /* If player started this server. */
+
+    int flooding;
+
+    bool muted;      /* player started is muted? */
+    bool isoperator; /* player has operator privileges? */
+    bool want_audio; /* player wants audio from server */
 
     int ind; /* Index in PlayersArray[] */
 

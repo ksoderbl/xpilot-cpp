@@ -272,7 +272,7 @@ typedef struct
 typedef struct
 {
     clpos_t pos;
-    int target;
+    int victim_id;
     int id;
     double count;
 } transporter_t;
