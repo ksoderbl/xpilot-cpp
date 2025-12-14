@@ -71,6 +71,8 @@ static inline vector_t World_gravity(clpos_t pos)
 // #define NumObjs (ObjCount + 0)
 
 extern long frame_loops;
+extern long frame_loops_slow;
+extern double frame_time;
 extern int NumPlayers;
 extern int NumSpectators;
 extern int NumOperators;

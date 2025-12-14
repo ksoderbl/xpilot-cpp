@@ -1807,10 +1807,10 @@ static void Robot_default_play_check_objects(player_t *pl,
                 *mine_i = j;
                 *mine_dist = distance;
             }
-            if ((dx = ((shot->pix_pos.x - pl->pix_pos.x) + (shot->vel.x - pl->vel.x)),
-                 dx = WRAP_DX(dx), ABS(dx)) < *mine_dist &&
-                (dy = ((shot->pix_pos.y - pl->pix_pos.y) + (shot->vel.y - pl->vel.y)),
-                 dy = WRAP_DY(dy), ABS(dy)) < *mine_dist &&
+            if ((dx = (int)((CLICK_TO_PIXEL(shot->pos.cx - pl->pos.cx)) + (shot->vel.x - pl->vel.x)),
+                 dx = (int)WRAP_DX(dx), ABS(dx)) < *mine_dist &&
+                (dy = (int)((CLICK_TO_PIXEL(shot->pos.cy - pl->pos.cy)) + (shot->vel.y - pl->vel.y)),
+                 dy = (int)WRAP_DY(dy), ABS(dy)) < *mine_dist &&
                 (distance = LENGTH(dx, dy)) < *mine_dist)
             {
                 *mine_i = j;
@@ -1820,10 +1820,10 @@ static void Robot_default_play_check_objects(player_t *pl,
 
         shield_range = 21 + SHIP_SZ + shot->pl_range;
 
-        if ((dx = (shot->pix_pos.x + shot->vel.x - (pl->pix_pos.x + pl->vel.x)),
+        if ((dx = (int)(CLICK_TO_PIXEL(shot->pos.cx) + shot->vel.x - (CLICK_TO_PIXEL(pl->pos.cx) + pl->vel.x)),
              dx = WRAP_DX(dx),
              ABS(dx)) < shield_range &&
-            (dy = (shot->pix_pos.y + shot->vel.y - (pl->pix_pos.y + pl->vel.y)),
+            (dy = (int)(CLICK_TO_PIXEL(shot->pos.cy) + shot->vel.y - (CLICK_TO_PIXEL(pl->pos.cy) + pl->vel.y)),
              dy = WRAP_DY(dy),
              ABS(dy)) < shield_range &&
             sqr(dx) + sqr(dy) <= sqr(shield_range) && (int)(rfrac() * 100) < (85 + (my_data->defense / 7) - (my_data->attack / 50)))

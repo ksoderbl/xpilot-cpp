@@ -98,6 +98,8 @@ typedef struct
 
 extern time_t gameOverTime;
 long frame_loops = 1;
+long frame_loops_slow = 1;
+double frame_time = 0;
 static long last_frame_shuffle;
 static shuffle_t *object_shuffle_ptr;
 static int num_object_shuffle;
@@ -301,7 +303,7 @@ static void Frame_radar_buffer_add(clpos_t pos, int s)
     p->size = s;
 }
 
-static void Frame_radar_buffer_send(connection_t *conn)
+static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
 {
     int i, dest, tmp;
     radar_t *p;
@@ -1050,7 +1052,7 @@ static void Frame_radar(connection_t *conn, player_t *pl)
 {
     int i, k, mask, shownuke, size;
     object_t *shot;
-    int cx, cy;
+    clpos_t pos;
 
     Frame_radar_buffer_reset();
 
@@ -1076,21 +1078,23 @@ static void Frame_radar(connection_t *conn, player_t *pl)
                 continue;
 
             shownuke = (options.nukesOnRadar && (shot)->mods.nuclear);
-            if (shownuke && (frame_loops & 2))
+            if (shownuke && (frame_loops_slow & 2))
                 size = 3;
             else
                 size = 0;
 
-            if (BIT(shot->type, OBJ_MINE_BIT))
+            if (shot->type == OBJ_MINE)
             {
                 if (!options.minesOnRadar && !shownuke)
                     continue;
-                if (frame_loops % 8 >= 6)
+                if (frame_loops_slow % 8 >= 6)
                     continue;
             }
-            else if (BIT(shot->type, OBJ_BALL_BIT))
+            else if (shot->type == OBJ_BALL)
+            {
                 size = 2;
-            else if (BIT(shot->type, OBJ_ASTEROID_BIT))
+            }
+            else if (shot->type == OBJ_ASTEROID)
             {
                 size = WIRE_PTR(shot)->wire_size + 1;
                 size |= 0x80;
@@ -1099,56 +1103,50 @@ static void Frame_radar(connection_t *conn, player_t *pl)
             {
                 if (!options.missilesOnRadar && !shownuke)
                     continue;
-                if (frame_loops & 1)
+                if (frame_loops_slow & 1)
                     continue;
             }
 
-            if (Wrap_length(pl->pos.cx - shot->pos.cx,
-                            pl->pos.cy - shot->pos.cy) /
-                    CLICK <=
-                pl->sensor_range)
-                Frame_radar_buffer_add(shot->pos, size);
+            pos = shot->pos;
+            if (Wrap_length(pl->pos.cx - pos.cx,
+                            pl->pos.cy - pos.cy) <= pl->sensor_range * CLICK)
+                Frame_radar_buffer_add(pos, size);
         }
     }
 #endif
 
-    if (options.playersOnRadar ||
-        BIT(world->rules->mode, TEAM_PLAY) ||
-        NumPseudoPlayers > 0 ||
-        NumAlliances > 0)
+    if (options.playersOnRadar || BIT(world->rules->mode, TEAM_PLAY) || NumPseudoPlayers > 0 || NumAlliances > 0)
     {
         for (k = 0; k < num_player_shuffle; k++)
         {
+            player_t *pl_i;
+
             i = player_shuffle_ptr[k];
-
-            player_t *pl_i = Player_by_index(i);
-
+            pl_i = Player_by_index(i);
             /*
              * Don't show on the radar:
              *                Ourselves (not necessarily same as who we watch).
              *                People who are not playing.
              *                People in other teams or alliances if;
-             *                        no playersOnRadar or if not visible
+             *                         no options.playersOnRadar or if not visible
              */
-            if (pl_i->conn == conn ||
-                BIT(pl_i->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-                (!Players_are_teammates(pl, pl_i) && !Players_are_allies(pl, pl_i) && !Player_owns_tank(pl, pl_i) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
+            if (pl_i->conn == conn || !Player_is_active(pl_i) /* kps - active / playing ??? */
+                || (!Players_are_teammates(pl_i, pl) && !Players_are_allies(pl, pl_i) && !Player_owns_tank(pl, pl_i) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
-            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - pl_i->pos.cx,
-                                                                           pl->pos.cy - pl_i->pos.cy) /
-                                                                       CLICK >
-                                                                   pl->sensor_range)
+            pos = pl_i->pos;
+            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - pos.cx,
+                                                                           pl->pos.cy - pos.cy) > pl->sensor_range * CLICK)
                 continue;
-            if (Player_uses_compass(pl) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd(pl->lock.pl_id) == i && frame_loops % 5 >= 3)
+            if (Player_uses_compass(pl) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd(pl->lock.pl_id) == i && frame_loops_slow % 5 >= 3)
                 continue;
             size = 3;
-            if (Players_are_teammates(pl, pl_i) || Players_are_allies(pl, pl_i) || Player_owns_tank(pl, pl_i))
+            if (Players_are_teammates(pl_i, pl) || Players_are_allies(pl, pl_i) || Player_owns_tank(pl, pl_i))
                 size |= 0x80;
-            Frame_radar_buffer_add(pl_i->pos, size);
+            Frame_radar_buffer_add(pos, size);
         }
     }
 
-    Frame_radar_buffer_send(conn);
+    Frame_radar_buffer_send(conn, pl);
 }
 
 static void Frame_lose_item_state(player_t *pl)
@@ -1209,16 +1207,23 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
 
 void Frame_update(void)
 {
-    int i,
-        ind;
+    int i, ind, player_fps;
     connection_t *conn;
     player_t *pl, *pl2;
     time_t newTimeLeft = 0;
     static time_t oldTimeLeft;
     static bool game_over_called = false;
+    static double frame_time2 = 0.0;
 
     if (++frame_loops >= LONG_MAX) /* Used for misc. timing purposes */
         frame_loops = 1;
+    frame_time += timeStep;
+    frame_time2 += timeStep;
+    if (frame_time2 >= 1.0)
+    {
+        frame_time2 -= 1.0;
+        frame_loops_slow++;
+    }
 
     Frame_shuffle();
 

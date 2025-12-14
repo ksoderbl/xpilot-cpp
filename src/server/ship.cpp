@@ -125,16 +125,14 @@ void Recoil(object_t *ship, object_t *shot)
 #endif
 }
 
-void Record_shove(player_t *pl, player_t *pusher, long time)
+void Record_shove(player_t *pl, player_t *pusher, long shove_time)
 {
     shove_t *shove = &pl->shove_record[pl->shove_next];
 
     if (++pl->shove_next == MAX_RECORDED_SHOVES)
-    {
         pl->shove_next = 0;
-    }
     shove->pusher_id = pusher->id;
-    shove->time = time;
+    shove->time = shove_time;
 }
 
 /* Calculates the effect of a collision between two objects */
@@ -248,7 +246,7 @@ static void Add_fuel(pl_fuel_t *ft, long fuel)
 
     if (ft->sum + fuel > ft->max)
         fuel = ft->max - ft->sum;
-    else if (ft->sum + fuel < 0)
+    else if (ft->sum + fuel < 0.0)
         fuel = -ft->sum;
     ft->sum += fuel;
     ft->tank[ft->current] += fuel;
