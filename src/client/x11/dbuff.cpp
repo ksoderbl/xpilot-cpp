@@ -29,6 +29,7 @@
 
 #include "version.h"
 #include "xpconfig.h"
+#include "commonmacros.h"
 #include "const.h"
 #include "bit.h"
 #include "dbuff.h"
@@ -39,21 +40,11 @@ static void dbuff_release(dbuff_state_t *state)
 {
     if (state != NULL)
     {
-        if (state->colormaps[0] != NULL)
-        {
-            free(state->colormaps[0]);
-        }
-        if (state->colormaps[1] != NULL)
-        {
-            free(state->colormaps[1]);
-        }
-        if (state->planes != NULL)
-        {
-            free(state->planes);
-        }
+        XFREE(state->colormaps[0]);
+        XFREE(state->colormaps[1]);
+        XFREE(state->planes);
 
-        free(state);
-        state = NULL;
+        XFREE(state);
     }
 }
 
@@ -77,21 +68,19 @@ static long dbuff_color(dbuff_state_t *state, long simple_color)
 
 dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
                            dbuff_t type,
-                           int num_planes, XColor *colors)
+                           int num_planes, XColor *colorarray)
 {
     dbuff_state_t *state;
     int i, high_mask, low_mask;
 
-    state = (dbuff_state_t *)calloc(1, sizeof(dbuff_state_t));
+    state = XCALLOC(dbuff_state_t, 1);
     if (state == NULL)
-    {
         return NULL;
-    }
 
     state->colormap_size = 1 << (2 * num_planes);
-    state->colormaps[0] = (XColor *)malloc(state->colormap_size * sizeof(XColor));
-    state->colormaps[1] = (XColor *)malloc(state->colormap_size * sizeof(XColor));
-    state->planes = (unsigned long *)calloc(2 * num_planes, sizeof(long));
+    state->colormaps[0] = XMALLOC(XColor, state->colormap_size);
+    state->colormaps[1] = XMALLOC(XColor, state->colormap_size);
+    state->planes = XCALLOC(unsigned long, 2 * num_planes);
     if (state->colormaps[1] == NULL ||
         state->colormaps[0] == NULL ||
         state->planes == NULL)
@@ -109,16 +98,15 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     case PIXMAP_COPY:
         state->colormap_index = 0;
         break;
-
     default:
-        fprintf(stderr, "Illegal dbuff_t %d\n", type);
+        warn("Illegal dbuff_t %d", type);
         exit(1);
     }
 
     state->drawing_plane_masks[0] = AllPlanes;
     state->drawing_plane_masks[1] = AllPlanes;
 
-    for (i = 0; i < num_planes; i++)
+    for (i = 0; i < (int)num_planes; i++)
     {
         state->drawing_plane_masks[0] &= ~state->planes[i];
         state->drawing_plane_masks[1] &= ~state->planes[num_planes + i];
@@ -128,12 +116,11 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     {
         for (i = 0; i < (1 << num_planes); i++)
         {
-            if (XAllocColor(display, xcolormap, &colors[i]) == False)
+            if (XAllocColor(display, xcolormap, &colorarray[i]) == False)
             {
                 while (--i >= 0)
-                {
-                    XFreeColors(display, xcolormap, &colors[i].pixel, 1, 0);
-                }
+                    XFreeColors(display, xcolormap, &colorarray[i].pixel,
+                                1, 0);
                 dbuff_release(state);
                 return NULL;
             }
@@ -141,19 +128,19 @@ dbuff_state_t *start_dbuff(Display *display, Colormap xcolormap,
     }
     else
     {
-        colors[WHITE].pixel = WhitePixel(display, DefaultScreen(display));
-        colors[BLACK].pixel = BlackPixel(display, DefaultScreen(display));
-        colors[BLUE].pixel = WhitePixel(display, DefaultScreen(display));
-        colors[RED].pixel = WhitePixel(display, DefaultScreen(display));
+        colorarray[WHITE].pixel = WhitePixel(display, DefaultScreen(display));
+        colorarray[BLACK].pixel = BlackPixel(display, DefaultScreen(display));
+        colorarray[BLUE].pixel = WhitePixel(display, DefaultScreen(display));
+        colorarray[RED].pixel = WhitePixel(display, DefaultScreen(display));
     }
 
     low_mask = (1 << num_planes) - 1;
     high_mask = low_mask << num_planes;
     for (i = state->colormap_size - 1; i >= 0; i--)
     {
-        state->colormaps[0][i] = colors[i & low_mask];
+        state->colormaps[0][i] = colorarray[i & low_mask];
         state->colormaps[0][i].pixel = dbuff_color(state, i);
-        state->colormaps[1][i] = colors[(i & high_mask) >> num_planes];
+        state->colormaps[1][i] = colorarray[(i & high_mask) >> num_planes];
         state->colormaps[1][i].pixel = dbuff_color(state, i);
     }
 
