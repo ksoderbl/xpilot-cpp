@@ -1897,15 +1897,14 @@ double Wrap_findDir(double dx, double dy)
     return findDir(dx, dy);
 }
 
-double Wrap_cfindDir(double dcx, double dcy)
+double Wrap_cfindDir(int dcx, int dcy)
 {
     dcx = WRAP_DCX(dcx);
     dcy = WRAP_DCY(dcy);
-    return findDir(dcx, dcy);
+    return findDir((double)dcx, (double)dcy);
 }
 
-// Returns length in clicks
-double Wrap_length(double dcx, double dcy)
+double Wrap_length(int dcx, int dcy)
 {
     dcx = WRAP_DCX(dcx);
     dcy = WRAP_DCY(dcy);

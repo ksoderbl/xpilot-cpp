@@ -200,9 +200,19 @@ static void Robot_default_create(player_t *pl, char *str)
         my_data->robot_max_speed = 30.0 + (my_data->attack / 50) - (my_data->defense / 50);
     }
 
-    pl->fuel.l3 += my_data->defense - my_data->attack + (int)((rfrac() - 0.5) * 20);
-    pl->fuel.l2 += 2 * (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 8);
-    pl->fuel.l1 += (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 4);
+    my_data->fuel_l1 = 100 * FUEL_SCALE_FACT;
+    my_data->fuel_l2 = 200 * FUEL_SCALE_FACT;
+    my_data->fuel_l3 = 500 * FUEL_SCALE_FACT;
+
+    warn("Robot_default_create 1: l3 / l2 / l1 = %f / %f / %f",
+         my_data->fuel_l3, my_data->fuel_l2, my_data->fuel_l1);
+
+    my_data->fuel_l3 += my_data->defense - my_data->attack + (int)((rfrac() - 0.5) * 20);
+    my_data->fuel_l2 += 2 * (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 8);
+    my_data->fuel_l1 += (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 4);
+
+    warn("Robot_default_create 2: l3 / l2 / l1 = %f / %f / %f",
+         my_data->fuel_l3, my_data->fuel_l2, my_data->fuel_l1);
 
     my_data->last_used_ecm = 0;
     my_data->last_dropped_mine = 0;
@@ -767,7 +777,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         }
     }
 
-    if (pl->fuel.sum > pl->fuel.l3)
+    if (pl->fuel.sum > my_data->fuel_l3)
     {
         if ((my_data->robot_count % 2) == 0)
         {
@@ -985,7 +995,7 @@ static bool Check_robot_target(player_t *pl,
             Fire_ecm(pl);
         else if (pl->item[ITEM_TRANSPORTER] > 0 && item_dist < TRANSPORTER_DISTANCE && pl->fuel.sum > -ED_TRANSPORTER)
             Do_transporter(pl);
-        else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER > pl->fuel.l3 && new_mode == RM_ATTACK)
+        else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER > my_data->fuel_l3 && new_mode == RM_ATTACK)
         {
             if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
                                                              PLAYING | PAUSE | GAME_OVER) == PLAYING)
@@ -1028,7 +1038,7 @@ static bool Check_robot_target(player_t *pl,
             CLR_BIT(pl->used, USES_TRACTOR_BEAM);
             pl->tractor_is_pressor = false;
 
-            if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > pl->fuel.l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
+            if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > my_data->fuel_l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
             {
 
                 double xvd, yvd, vel;
@@ -1125,12 +1135,12 @@ static bool Check_robot_target(player_t *pl,
         else if ((my_data->robot_count % 32) < pl->item[ITEM_MINE] && !WITHIN(my_data->robot_count,
                                                                               my_data->last_dropped_mine, 10))
         {
-            if (pl->fuel.sum > pl->fuel.l3)
+            if (pl->fuel.sum > my_data->fuel_l3)
             {
                 Choose_weapon_modifier(pl, OBJ_MINE);
                 Place_mine(pl);
             }
-            else /*if (pl->fuel.sum < pl->fuel.l2)*/
+            else /*if (pl->fuel.sum < my_data->fuel_l2)*/
             {
                 Place_mine(pl);
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
@@ -1158,7 +1168,7 @@ static bool Check_robot_hunt(player_t *pl)
 
     if (!BIT(my_data->robot_lock, LOCK_PLAYER) || my_data->robot_lock_id == pl->id)
         return false;
-    if (pl->fuel.sum < pl->fuel.l3 /*MAX_PLAYER_FUEL/2*/)
+    if (pl->fuel.sum < my_data->fuel_l3 /*MAX_PLAYER_FUEL/2*/)
         return false;
 
     ship = Player_by_id(my_data->robot_lock_id);
@@ -1275,7 +1285,7 @@ static bool Detect_ship(player_t *pl, player_t *ship)
  */
 static int Rank_item_value(player_t *pl, enum Item itemtype)
 {
-    // player_t *pl = PlayersArray[ind];
+    robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (itemtype == ITEM_AUTOPILOT)
         return ROBOT_IGNORE_ITEM; /* never useful for robots */
@@ -1287,9 +1297,9 @@ static int Rank_item_value(player_t *pl, enum Item itemtype)
     {
         if (pl->fuel.sum >= pl->fuel.max * 0.90)
             return ROBOT_IGNORE_ITEM; /* already (almost) full */
-        else if (pl->fuel.sum < (BIT(world->rules->mode, TIMING)
-                                     ? pl->fuel.l1
-                                     : pl->fuel.l2))
+        else if ((pl->fuel.sum < (BIT(world->rules->mode, TIMING))
+                      ? my_data->fuel_l1
+                      : my_data->fuel_l2))
             return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
         else
             return ROBOT_HANDY_ITEM;
@@ -1298,26 +1308,32 @@ static int Rank_item_value(player_t *pl, enum Item itemtype)
     {
         switch (itemtype)
         {
-        case ITEM_AFTERBURNER:      /* the more speed the better */
-        case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
-        case ITEM_TRANSPORTER:      /* steal fuel when you overtake someone */
+        case ITEM_FUEL:             /* less refuel stops */
         case ITEM_REARSHOT:         /* shoot competitors behind you */
+        case ITEM_AFTERBURNER:      /* the more speed the better */
+        case ITEM_TRANSPORTER:      /* steal fuel when you overtake someone */
         case ITEM_MINE:             /* blows others off the track */
         case ITEM_ECM:              /* blinded players smash into walls */
+        case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
+        case ITEM_EMERGENCY_SHIELD: /* could be useful when ramming */
             return ROBOT_MUST_HAVE_ITEM;
+        case ITEM_WIDEANGLE:    /* not important in racemode */
         case ITEM_CLOAK:        /* not important in racemode */
-        case ITEM_LASER:        /* cost too much fuel */
-        case ITEM_MISSILE:      /* likely to hit self */
         case ITEM_SENSOR:       /* who cares about seeing others? */
         case ITEM_TANK:         /* makes you heavier */
+        case ITEM_MISSILE:      /* likely to hit self */
+        case ITEM_LASER:        /* cost too much fuel */
         case ITEM_TRACTOR_BEAM: /* pushes/pulls owner off the track too */
+        case ITEM_AUTOPILOT:    /* probably not useful */
+        case ITEM_DEFLECTOR:    /* cost too much fuel */
         case ITEM_HYPERJUMP:    /* likely to end up in wrong place */
         case ITEM_PHASING:      /* robots don't know how to use them yet */
-        case ITEM_DEFLECTOR:    /* cost too much fuel */
+        case ITEM_MIRROR:       /* not important in racemode */
         case ITEM_ARMOR:        /* makes you heavier */
             return ROBOT_IGNORE_ITEM;
-        default:
-            break;
+        default: /* unknown */
+            warn("Rank_item_value: unknown item %ld.", itemtype);
+            return ROBOT_IGNORE_ITEM;
         }
     }
     else
@@ -1367,25 +1383,20 @@ static int Rank_item_value(player_t *pl, enum Item itemtype)
 
 static bool Ball_handler(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
-    int i,
-        closest_tr = -1,
-        closest_ntr = -1,
-        dist,
-        closest_tr_dist = INT_MAX,
-        closest_ntr_dist = INT_MAX,
-        bdir,
-        tdir;
+    int i, closest_tr = NO_IND, closest_ntr = NO_IND;
+    double closest_tr_dist = 1e19, closest_ntr_dist = 1e19, dist, dbdir, dtdir;
+    int bdir, tdir;
     bool clear_path = true;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     for (i = 0; i < Num_treasures(); i++)
     {
-        if ((BIT(pl->have, HAS_BALL) || pl->ball) &&
-            world->treasures[i].team == pl->team)
+        treasure_t *treasure = Treasure_by_index(i);
+
+        if ((BIT(pl->have, HAS_BALL) || pl->ball) && treasure->team == pl->team)
         {
-            dist = Wrap_length(world->treasures[i].pos.cx - pl->pos.cx,
-                               world->treasures[i].pos.cy - pl->pos.cy) /
+            dist = Wrap_length(treasure->pos.cx - pl->pos.cx,
+                               treasure->pos.cy - pl->pos.cy) /
                    CLICK;
             if (dist < closest_tr_dist)
             {
@@ -1393,13 +1404,10 @@ static bool Ball_handler(player_t *pl)
                 closest_tr_dist = dist;
             }
         }
-        else if (world->treasures[i].team != pl->team &&
-                 world->teams[world->treasures[i].team].NumMembers > 0 &&
-                 !BIT(pl->have, HAS_BALL) && !pl->ball &&
-                 world->treasures[i].have)
+        else if (treasure->team != pl->team && Team_by_index(treasure->team)->NumMembers > 0 && !BIT(pl->have, HAS_BALL) && !pl->ball && treasure->have)
         {
-            dist = Wrap_length(world->treasures[i].pos.cx - pl->pos.cx,
-                               world->treasures[i].pos.cy - pl->pos.cy) /
+            dist = Wrap_length(treasure->pos.cx - pl->pos.cx,
+                               treasure->pos.cy - pl->pos.cy) /
                    CLICK;
             if (dist < closest_ntr_dist)
             {
@@ -1411,18 +1419,18 @@ static bool Ball_handler(player_t *pl)
     if (BIT(pl->have, HAS_BALL) || pl->ball)
     {
         ballobject_t *ball = NULL;
-        int dist_np = INT_MAX;
-        int xdist, ydist;
-        int dx, dy;
+        blkpos_t bbpos;
+        double dist_np = 1e19;
+        int xdist, ydist, dx, dy;
+        treasure_t *closest_treasure;
+
         if (pl->ball)
-        {
             ball = pl->ball;
-        }
         else
         {
             for (i = 0; i < NumObjs; i++)
             {
-                if (BIT(Obj[i]->type, OBJ_BALL_BIT) && Obj[i]->id == pl->id)
+                if (Obj[i]->type == OBJ_BALL && Obj[i]->id == pl->id)
                 {
                     ball = BALL_PTR(Obj[i]);
                     break;
@@ -1433,35 +1441,33 @@ static bool Ball_handler(player_t *pl)
         {
             player_t *pl_i = Player_by_index(i);
 
-            dist = (int)(LENGTH(ball->pix_pos.x - pl_i->pix_pos.x,
-                                ball->pix_pos.y - pl_i->pix_pos.y));
-            if (pl_i->id != pl->id && (BIT(pl_i->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) && dist < dist_np)
+            dist = LENGTH(ball->pos.cx - pl_i->pos.cx,
+                          ball->pos.cy - pl_i->pos.cy) /
+                   CLICK;
+            if (pl_i->id != pl->id && Player_is_active(pl_i) && dist < dist_np)
                 dist_np = dist;
         }
-        bdir = (int)findDir(ball->vel.x, ball->vel.y);
-        tdir = (int)Wrap_findDir((world->treasures[closest_tr].blk_pos.bx + 0.5) * BLOCK_SZ - ball->pix_pos.x,
-                                 (world->treasures[closest_tr].blk_pos.by + 0.5) * BLOCK_SZ - ball->pix_pos.y);
-        xdist = (world->treasures[closest_tr].blk_pos.bx) - OBJ_X_IN_BLOCKS(ball);
-        ydist = (world->treasures[closest_tr].blk_pos.by) - OBJ_Y_IN_BLOCKS(ball);
+        closest_treasure = Treasure_by_index(closest_tr);
+        dbdir = findDir(ball->vel.x, ball->vel.y);
+        dtdir = Wrap_cfindDir(closest_treasure->pos.cx - ball->pos.cx,
+                              closest_treasure->pos.cy - ball->pos.cy);
+        bdir = MOD2((int)(dbdir + 0.5), RES);
+        tdir = MOD2((int)(dtdir + 0.5), RES);
+        bbpos = Clpos_to_blkpos(ball->pos);
+        xdist = (closest_treasure->pos.cx / BLOCK_CLICKS) - bbpos.bx;
+        ydist = (closest_treasure->pos.cy / BLOCK_CLICKS) - bbpos.by;
         for (dist = 0;
              clear_path && dist < (closest_tr_dist - BLOCK_SZ);
              dist += BLOCK_SZ / 2)
         {
             double fraction = (double)dist / closest_tr_dist;
-            dx = (int)((fraction * xdist) + OBJ_X_IN_BLOCKS(ball));
-            dy = (int)((fraction * ydist) + OBJ_Y_IN_BLOCKS(ball));
-            if (BIT(world->rules->mode, WRAP_PLAY))
-            {
-                if (dx < 0)
-                    dx += world->x;
-                else if (dx >= world->x)
-                    dx -= world->x;
-                if (dy < 0)
-                    dy += world->y;
-                else if (dy >= world->y)
-                    dy -= world->y;
-            }
-            if (dx < 0 || dx >= world->x || dy < 0 || dy >= world->y)
+
+            dx = (int)((fraction * xdist) + bbpos.bx);
+            dy = (int)((fraction * ydist) + bbpos.by);
+
+            dx = WRAP_XBLOCK(dx);
+            dy = WRAP_YBLOCK(dy);
+            if (dx < 0 || dx >= world->bwidth_floor || dy < 0 || dy >= world->bheight_floor)
             {
                 clear_path = false;
                 continue;
@@ -1490,21 +1496,22 @@ static bool Ball_handler(player_t *pl)
     }
     else
     {
-        int ball_dist;
-        int closest_ball_dist = closest_ntr_dist;
-        int closest_ball = -1;
+        double ball_dist, closest_ball_dist = closest_ntr_dist;
+        int closest_ball = NO_IND;
 
         for (i = 0; i < NumObjs; i++)
         {
             if (Obj[i]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(i);
+
                 if ((ball->id == NO_ID)
                         ? (ball->ball_owner != NO_ID)
                         : (Player_by_id(ball->id)->team != pl->team))
                 {
-                    ball_dist = (int)LENGTH(pl->pix_pos.x - ball->pix_pos.x,
-                                            pl->pix_pos.y - ball->pix_pos.y);
+                    ball_dist = LENGTH(pl->pos.cx - ball->pos.cx,
+                                       pl->pos.cy - ball->pos.cy) /
+                                CLICK;
                     if (ball_dist < closest_ball_dist)
                     {
                         closest_ball_dist = ball_dist;
@@ -1833,7 +1840,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                 CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             Thrust(pl, true);
 
-            if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < pl->fuel.l3 || !BIT(pl->have, HAS_SHIELD)))
+            if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_MINE_BIT) && (pl->fuel.sum < my_data->fuel_l3 || !BIT(pl->have, HAS_SHIELD)))
             {
                 if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
@@ -1857,7 +1864,7 @@ static void Robot_default_play_check_objects(player_t *pl,
         if (shot->type == OBJ_HEAT_SHOT)
         {
             Thrust(pl, false);
-            if (pl->fuel.sum < pl->fuel.l3 && pl->fuel.sum > pl->fuel.l1 && pl->fuel.num_tanks > 0)
+            if (pl->fuel.sum < my_data->fuel_l3 && pl->fuel.sum > my_data->fuel_l1 && pl->fuel.num_tanks > 0)
                 Tank_handle_detach(pl);
         }
         if (shot->type == OBJ_ASTEROID)
@@ -1960,7 +1967,7 @@ static void Robot_default_play(player_t *pl)
     item_dist = (int)Visibility_distance;
     item_imp = ROBOT_IGNORE_ITEM;
 
-    if (Player_has_cloaking_device(pl) && pl->fuel.sum > pl->fuel.l2)
+    if (Player_has_cloaking_device(pl) && pl->fuel.sum > my_data->fuel_l2)
         SET_BIT(pl->used, USES_CLOAKING_DEVICE);
 
     if (Player_has_emergency_thrust(pl) && !BIT(pl->used, USES_EMERGENCY_THRUST))
@@ -1969,7 +1976,7 @@ static void Robot_default_play(player_t *pl)
     if (Player_has_deflector(pl) && !BIT(world->rules->mode, TIMING))
         Deflector(pl, true);
 
-    if (pl->fuel.sum <= (BIT(world->rules->mode, TIMING) ? 0 : pl->fuel.l1))
+    if (pl->fuel.sum <= (BIT(world->rules->mode, TIMING) ? 0 : my_data->fuel_l1))
     {
         if (!BIT(pl->obj_status, SELF_DESTRUCT))
         {
@@ -2017,7 +2024,7 @@ static void Robot_default_play(player_t *pl)
         }
 
     /* don't turn NEED_FUEL off until refueling stops */
-    if (pl->fuel.sum < (BIT(world->rules->mode, TIMING) ? pl->fuel.l1 : pl->fuel.l3))
+    if (pl->fuel.sum < (BIT(world->rules->mode, TIMING) ? my_data->fuel_l1 : my_data->fuel_l3))
     {
         SET_BIT(my_data->longterm_mode, NEED_FUEL);
     }
@@ -2077,7 +2084,7 @@ static void Robot_default_play(player_t *pl)
     ship_i = -1;
     ship_dist = SHIP_SZ * 6;
     enemy_i = -1;
-    if (pl->fuel.sum > pl->fuel.l3)
+    if (pl->fuel.sum > my_data->fuel_l3)
     {
         enemy_dist = (BIT(world->rules->mode, LIMITED_VISIBILITY) ? MAX(pl->fuel.sum * ENERGY_RANGE_FACTOR,
                                                                         Visibility_distance)
@@ -2170,7 +2177,7 @@ static void Robot_default_play(player_t *pl)
         }
     }
 
-    if (ship_dist <= 10 * BLOCK_SZ && pl->fuel.sum <= pl->fuel.l3 && !BIT(world->rules->mode, TIMING))
+    if (ship_dist <= 10 * BLOCK_SZ && pl->fuel.sum <= my_data->fuel_l3 && !BIT(world->rules->mode, TIMING))
     {
         if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
         {
@@ -2205,7 +2212,7 @@ static void Robot_default_play(player_t *pl)
         delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
                                                  ship->pix_pos.y - pl->pix_pos.y));
         delta_dir = MOD2(delta_dir, RES);
-        if (BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING || (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) || !Detect_ship(pl, ship) || (pl->fuel.sum <= pl->fuel.l3 && !BIT(world->rules->mode, TIMING)) || (BIT(world->rules->mode, TIMING) && (delta_dir < 3 * RES / 4 || delta_dir > RES / 4)) || Team_immune(pl->id, ship->id))
+        if (BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING || (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) || !Detect_ship(pl, ship) || (pl->fuel.sum <= my_data->fuel_l3 && !BIT(world->rules->mode, TIMING)) || (BIT(world->rules->mode, TIMING) && (delta_dir < 3 * RES / 4 || delta_dir > RES / 4)) || Team_immune(pl->id, ship->id))
         {
             /* unset the player lock */
             CLR_BIT(pl->lock.tagged, LOCK_PLAYER);
