@@ -658,9 +658,10 @@ void Log_game(const char *heading)
 
 void Game_Over(void)
 {
-    long maxsc, minsc;
-    int i, win, loose;
-    char msg[128];
+    double maxsc, minsc;
+    int i, win_team = TEAM_NOT_SET, lose_team = TEAM_NOT_SET;
+    char msg[MSG_LEN];
+    player_t *win_pl = NULL, *lose_pl = NULL;
 
     Set_message("Game over...");
 
@@ -671,94 +672,99 @@ void Game_Over(void)
 
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
-        int teamscore[MAX_TEAMS];
-        maxsc = -32767;
-        minsc = 32767;
-        win = loose = -1;
+        double teamscore[MAX_TEAMS];
 
         for (i = 0; i < MAX_TEAMS; i++)
-        {
-            teamscore[i] = 1234567; /* These teams are not used... */
-        }
+            teamscore[i] = FLT_MAX; /* These teams are not used... */
+
         for (i = 0; i < NumPlayers; i++)
         {
-            player_t *pl_i = Player_by_index(i);
+            player_t *pl = Player_by_index(i);
             int team;
 
-            if (Player_is_human(pl_i))
+            if (Player_is_paused(pl))
+                continue;
+
+            if (Player_is_human(pl) || Player_is_robot(pl))
             {
-                team = pl_i->team;
-                if (teamscore[team] == 1234567)
-                {
+                team = pl->team;
+                if (teamscore[team] == FLT_MAX)
                     teamscore[team] = 0;
-                }
-                teamscore[team] += Get_Score(pl_i);
+                teamscore[team] += Get_Score(pl);
             }
         }
 
+        maxsc = -FLT_MAX;
+        minsc = FLT_MAX;
+
         for (i = 0; i < MAX_TEAMS; i++)
         {
-            if (teamscore[i] != 1234567)
+            if (teamscore[i] != FLT_MAX)
             {
                 if (teamscore[i] > maxsc)
                 {
                     maxsc = teamscore[i];
-                    win = i;
+                    win_team = i;
                 }
                 if (teamscore[i] < minsc)
                 {
                     minsc = teamscore[i];
-                    loose = i;
+                    lose_team = i;
                 }
             }
         }
 
-        if (win != -1)
+        if (win_team != TEAM_NOT_SET)
         {
-            sprintf(msg, "Best team (%ld Pts): Team %d", maxsc, win);
+            snprintf(msg, sizeof(msg), "Best team (%.2f Pts): Team %d",
+                     maxsc, win_team);
             Set_message(msg);
             xpprintf("%s\n", msg);
         }
 
-        if (loose != -1 && loose != win)
+        if (lose_team != TEAM_NOT_SET && lose_team != win_team)
         {
-            sprintf(msg, "Worst team (%ld Pts): Team %d", minsc, loose);
+            snprintf(msg, sizeof(msg), "Worst team (%.2f Pts): Team %d",
+                     minsc, lose_team);
             Set_message(msg);
             xpprintf("%s\n", msg);
         }
     }
 
-    maxsc = -32767;
-    minsc = 32767;
-    win = loose = -1;
+    maxsc = -FLT_MAX;
+    minsc = FLT_MAX;
 
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl_i = Player_by_index(i);
+
+        if (Player_is_paused(pl_i))
+            continue;
+
         SET_BIT(pl_i->obj_status, GAME_OVER);
         if (Player_is_human(pl_i))
         {
             if (Get_Score(pl_i) > maxsc)
             {
                 maxsc = Get_Score(pl_i);
-                win = i;
+                win_pl = pl_i;
             }
             if (Get_Score(pl_i) < minsc)
             {
                 minsc = Get_Score(pl_i);
-                loose = i;
+                lose_pl = pl_i;
             }
         }
     }
-    if (win != -1)
+    if (win_pl)
     {
-        sprintf(msg, "Best human player: %s", PlayersArray[win]->name);
+        snprintf(msg, sizeof(msg), "Best human player: %s", win_pl->name);
         Set_message(msg);
         xpprintf("%s\n", msg);
     }
-    if (loose != -1 && loose != win)
+    if (lose_pl && lose_pl != win_pl)
     {
-        sprintf(msg, "Worst human player: %s", PlayersArray[loose]->name);
+        snprintf(msg, sizeof(msg), "Worst human player: %s", lose_pl->name);
         Set_message(msg);
         xpprintf("%s\n", msg);
     }
@@ -811,7 +817,7 @@ void Server_log_admin_message(player_t *pl, const char *str)
                 Player_get_dpy(pl),
                 str);
         fclose(fp);
-        sprintf(msg, "%s [%s]:[%s]", str, pl->name, "GOD");
+        snprintf(msg, sizeof(msg), "%s [%s]:[%s]", str, pl->name, "GOD");
         Set_player_message(pl, msg);
     }
     else

@@ -1266,9 +1266,8 @@ int Send_self(connection_t *connp,
               char *mods)
 {
     int n;
-    uint8_t stat = (uint8_t)status;
-    int sbuf_len = connp->w.len;
 
+    /* assumes connp->version >= 0x4203 */
     n = Packet_printf(&connp->w,
                       "%c"
                       "%hd%hd%hd%hd%c"
@@ -1295,10 +1294,8 @@ int Send_self(connection_t *connp,
                       connp->view_width, connp->view_height,
                       connp->debris_colors,
 
-                      stat,
-                      autopilotlight
-
-    );
+                      (uint8_t)status,
+                      autopilotlight);
     if (n <= 0)
         return n;
 
@@ -1347,16 +1344,11 @@ int Send_player(connection_t *connp, int id)
                       pl->team, pl->mychar,
                       pl->name, pl->username, pl->hostname,
                       buf);
-    if (connp->version > 0x3200)
+    if (n > 0)
     {
-        if (n > 0)
-        {
-            n = Packet_printf(&connp->c, "%S", ext);
-            if (n <= 0)
-            {
-                connp->c.len = sbuf_len;
-            }
-        }
+        n = Packet_printf(&connp->c, "%S", ext);
+        if (n <= 0)
+            connp->c.len = sbuf_len;
     }
     return n;
 }
