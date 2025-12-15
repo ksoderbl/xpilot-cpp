@@ -988,7 +988,7 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"ballConnectorLength",
      "ballConnectorLength",
-     "120",
+     "120.0",
      &options.ballConnectorLength,
      valReal,
      tuner_dummy,
@@ -1040,7 +1040,7 @@ static option_desc opts[] = {
      &options.timing,
      valBool,
      tuner_none,
-     "Is the map a race mode map?\n",
+     "Enable race mode?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"ballrace",
      "ballrace",
@@ -1066,7 +1066,7 @@ static option_desc opts[] = {
      &options.edgeWrap,
      valBool,
      tuner_none,
-     "Wrap around edges.\n",
+     "Do objects wrap when they cross the edge of the Universe?.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"edgeBounce",
      "edgeBounce",
@@ -1074,7 +1074,7 @@ static option_desc opts[] = {
      &options.edgeBounce,
      valBool,
      tuner_dummy,
-     "Players and bullets bounce when they hit the (non-wrapping) edge.\n",
+     "Do objects bounce when they hit the edge of the Universe?.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"extraBorder",
      "extraBorder",
@@ -1082,7 +1082,7 @@ static option_desc opts[] = {
      &options.extraBorder,
      valBool,
      tuner_none,
-     "Give map an extra border of solid rock.\n",
+     "Give map an extra border of wall blocks?.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"gravityPoint",
      "gravityPoint",
@@ -1095,7 +1095,7 @@ static option_desc opts[] = {
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"gravityAngle",
      "gravityAngle",
-     "90",
+     "90.0",
      &options.gravityAngle,
      valReal,
      Compute_gravity,
@@ -1217,7 +1217,7 @@ static option_desc opts[] = {
      OPT_COMMAND | OPT_DEFAULTS},
     {"adminMessageFileSizeLimit",
      "adminMessageLimit",
-     "20202",
+     "20202", /* kps - ??? */
      &options.adminMessageFileSizeLimit,
      valInt,
      tuner_none,
@@ -1780,7 +1780,7 @@ static option_desc opts[] = {
      &options.rogueHeatProb,
      valReal,
      tuner_dummy,
-     "Probability that unclaimed missile packs will go rogue.",
+     "Probability that unclaimed missile packs will go rogue.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"rogueMineProb",
      "rogueMineProb",
@@ -1788,7 +1788,7 @@ static option_desc opts[] = {
      &options.rogueMineProb,
      valReal,
      tuner_dummy,
-     "Probability that unclaimed mine items will activate.",
+     "Probability that unclaimed mine items will activate.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"itemEnergyPackProb",
      "itemEnergyPackProb",
@@ -2408,7 +2408,7 @@ static option_desc opts[] = {
      "The maximum duration of each round, in seconds.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"roundsToPlay",
-     "roundsToPlay",
+     "numRounds",
      "0",
      &options.roundsToPlay,
      valInt,
@@ -2474,9 +2474,9 @@ static option_desc opts[] = {
      OPT_COMMAND | OPT_DEFAULTS | OPT_VISIBLE},
     {"maxPauseTime",
      "maxPauseTime",
-     "3600", /* can pause 1 hour by default */
+     "14400", /* can pause 4 hours by default */
      &options.maxPauseTime,
-     valSec,
+     valInt,
      tuner_dummy,
      "The maximum time a player can stay paused for, in seconds.\n"
      "After being paused this long, the player will be kicked off.\n"
@@ -2509,10 +2509,8 @@ static bool options_inited = false;
 
 option_desc *Get_option_descs(int *count_ptr)
 {
-    if (options_inited != true)
-    {
+    if (!options_inited)
         dumpcore("options not initialized");
-    }
 
     *count_ptr = NELEM(opts);
     return &opts[0];
@@ -2523,54 +2521,40 @@ static void Init_default_options(void)
     option_desc *desc;
 
     if ((desc = Find_option_by_name("mapFileName")) == NULL)
-    {
         dumpcore("Could not find map file option");
-    }
+
     desc->defaultValue = Conf_default_map();
-
     if ((desc = Find_option_by_name("motdFileName")) == NULL)
-    {
         dumpcore("Could not find motd file option");
-    }
+
     desc->defaultValue = Conf_servermotdfile();
-
     if ((desc = Find_option_by_name("robotFile")) == NULL)
-    {
         dumpcore("Could not find robot file option");
-    }
+
     desc->defaultValue = Conf_robotfile();
-
     if ((desc = Find_option_by_name("defaultsFileName")) == NULL)
-    {
         dumpcore("Could not find defaults file option");
-    }
-    desc->defaultValue = Conf_defaults_file_name();
 
+    desc->defaultValue = Conf_defaults_file_name();
     if ((desc = Find_option_by_name("passwordFileName")) == NULL)
-    {
         dumpcore("Could not find password file option");
-    }
+
     desc->defaultValue = Conf_password_file_name();
 }
 
 bool Init_options(void)
 {
-    int i;
-    int option_count = NELEM(opts);
+    int i, option_count = NELEM(opts);
 
-    if (options_inited != false)
-    {
+    if (options_inited)
         dumpcore("Can't init options twice.");
-    }
 
     Init_default_options();
 
     for (i = 0; i < option_count; i++)
     {
         if (Option_add_desc(&opts[i]) == false)
-        {
             return false;
-        }
     }
 
     options_inited = true;
@@ -2580,10 +2564,9 @@ bool Init_options(void)
 
 void Free_options(void)
 {
-    int i;
-    int option_count = NELEM(opts);
+    int i, option_count = NELEM(opts);
 
-    if (options_inited == true)
+    if (options_inited)
     {
         options_inited = false;
         for (i = 0; i < option_count; i++)
@@ -2604,15 +2587,12 @@ void Free_options(void)
 
 option_desc *Find_option_by_name(const char *name)
 {
-    int j;
-    int option_count = NELEM(opts);
+    int j, option_count = NELEM(opts);
 
     for (j = 0; j < option_count; j++)
     {
         if (!strcasecmp(opts[j].commandLineOption, name) || !strcasecmp(opts[j].name, name))
-        {
             return (&opts[j]);
-        }
     }
     return NULL;
 }
