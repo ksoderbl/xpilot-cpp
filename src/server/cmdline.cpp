@@ -994,6 +994,8 @@ static option_desc opts[] = {
      tuner_dummy,
      "How long is a normal connector string?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
+
+    // TODO: Remove this setting, it's not used in any maps.
     {"connectorIsString",
      "connectorIsString",
      "false",

@@ -320,7 +320,7 @@ static void PlayerCollision(void)
                  * The choosing of the first line may not be easy however.
                  */
 
-                if (Team_immune(pl->id, pl_j->id) || PSEUDO_TEAM(i, j))
+                if (Team_immune(pl->id, pl_j->id) || PSEUDO_TEAM(pl, pl_j))
                     continue;
                 sound_play_sensors(pl->pos, PLAYER_HIT_PLAYER_SOUND);
                 if (BIT(world->rules->mode, BOUNCE_WITH_PLAYER))
@@ -358,7 +358,7 @@ static void PlayerCollision(void)
                 if (!BIT(pl_j->used, HAS_SHIELD) && Player_has_armor(pl_j))
                     Player_hit_armor(pl_j);
 
-                if (BIT(pl_j->obj_status, KILLED))
+                if (Player_is_killed(pl_j))
                 {
                     if (Player_is_killed(pl))
                     {

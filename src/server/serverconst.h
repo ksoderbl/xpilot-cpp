@@ -96,9 +96,8 @@
                        : (dy)))                \
          : (dy))
 
-#define PSEUDO_TEAM(i, j) \
-    (PlayersArray[(i)]->pseudo_team == PlayersArray[(j)]->pseudo_team)
-
+#define PSEUDO_TEAM(pl1, pl2) \
+    ((pl1)->pseudo_team == (pl2)->pseudo_team)
 /*
  * Used where we wish to know if a player is simply on the same team.
  */
@@ -128,10 +127,15 @@
  */
 #define NO_IND (-1)
 
-#define RECOVERY_DELAY (FPS * 3)
-#define ROBOT_CREATE_DELAY (FPS * 2)
+#define RECOVERY_DELAY (12 * 3)
+#define ROBOT_CREATE_DELAY (12 * 2)
 
+/*
+ * ID values: In the network protocol these are 16 bit signed values.
+ */
 #define NO_ID (-1)
+
+/* Currently there is 256 possible player IDs. */
 #define NUM_IDS 256
 #define MAX_PSEUDO_PLAYERS 16
 
