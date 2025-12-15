@@ -35,9 +35,9 @@ void Target_update(void)
 {
     for (int i = 0; i < Num_targets(); i++)
     {
-        if (world->targets[i].dead_time > 0)
+        if (world->targets[i].dead_ticks > 0)
         {
-            if (!--world->targets[i].dead_time)
+            if (!--world->targets[i].dead_ticks)
             {
                 world->block[world->targets[i].blk_pos.bx][world->targets[i].blk_pos.by] = TARGET;
                 world->targets[i].conn_mask = 0;
@@ -57,7 +57,7 @@ void Target_update(void)
                             world->targets[j].conn_mask = 0;
                             world->targets[j].update_mask = (unsigned)-1;
                             world->targets[j].last_change = frame_loops;
-                            world->targets[j].dead_time = 0;
+                            world->targets[j].dead_ticks = 0;
                             world->targets[j].damage = TARGET_DAMAGE;
                         }
                     }

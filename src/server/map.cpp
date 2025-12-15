@@ -950,7 +950,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pos.cx = cx;
                     world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].dead_ticks = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(Cannon_by_index(world->NumCannons));
@@ -966,7 +966,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pos.cx = (x + 0.667) * BLOCK_CLICKS;
                     world->cannons[world->NumCannons].pos.cy = cy;
-                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].dead_ticks = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(Cannon_by_index(world->NumCannons));
@@ -982,7 +982,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
                     world->cannons[world->NumCannons].pos.cy = cy;
-                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].dead_ticks = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(Cannon_by_index(world->NumCannons));
@@ -998,7 +998,7 @@ bool Grok_map(void)
                     world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
                     world->cannons[world->NumCannons].pos.cx = cx;
                     world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].dead_time = 0;
+                    world->cannons[world->NumCannons].dead_ticks = 0;
                     world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
                     world->cannons[world->NumCannons].team = TEAM_NOT_SET;
                     Cannon_init(Cannon_by_index(world->NumCannons));
@@ -1051,7 +1051,7 @@ bool Grok_map(void)
                      * in Find_closest_team().
                      */
                     world->targets[world->NumTargets].team = 0;
-                    world->targets[world->NumTargets].dead_time = 0;
+                    world->targets[world->NumTargets].dead_ticks = 0;
                     world->targets[world->NumTargets].damage = TARGET_DAMAGE;
                     world->targets[world->NumTargets].conn_mask = (unsigned)-1;
                     world->targets[world->NumTargets].update_mask = 0;

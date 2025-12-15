@@ -68,15 +68,15 @@ long CANNON_USE_ITEM = (ITEM_BIT_FUEL | ITEM_BIT_WIDEANGLE | ITEM_BIT_REARSHOT |
 
 void Cannon_update(bool tick)
 {
-    /*
-     * Updating cannons, maybe a little bit of fireworks too?
-     */
-    for (int i = 0; i < Num_cannons(); i++)
+    int i;
+
+    for (i = 0; i < Num_cannons(); i++)
     {
-        cannon_t *c = world->cannons + i;
-        if (c->dead_time > 0)
+        cannon_t *c = Cannon_by_index(i);
+
+        if (c->dead_ticks > 0)
         {
-            if (!--c->dead_time)
+            if ((c->dead_ticks -= timeStep) <= 0)
             {
                 world->block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
                 c->conn_mask = 0;
@@ -106,10 +106,8 @@ void Cannon_update(bool tick)
                 }
             }
         }
-        if (c->damaged > 0)
-        {
-            c->damaged--;
-        }
+        if ((c->damaged -= timeStep) <= 0)
+            c->damaged = 0;
         if (c->tractor_count > 0)
         {
             player_t *tpl = Player_by_id(c->tractor_target_id);
@@ -123,14 +121,15 @@ void Cannon_update(bool tick)
                 General_tractor_beam(c->id, c->pos,
                                      c->item[ITEM_TRACTOR_BEAM],
                                      tpl, c->tractor_is_pressor);
-                c->tractor_count--;
+                if ((c->tractor_count -= timeStep) <= 0)
+                    c->tractor_count = 0;
             }
             else
                 c->tractor_count = 0;
         }
         if (c->emergency_shield_left > 0)
         {
-            if (--c->emergency_shield_left <= 0)
+            if ((c->emergency_shield_left -= timeStep) <= 0)
             {
                 CLR_BIT(c->used, HAS_EMERGENCY_SHIELD);
                 sound_play_sensors(c->pos, EMERGENCY_SHIELD_OFF_SOUND);
@@ -138,7 +137,7 @@ void Cannon_update(bool tick)
         }
         if (c->phasing_left > 0)
         {
-            if (--c->phasing_left <= 0)
+            if ((c->phasing_left -= timeStep) <= 0)
             {
                 CLR_BIT(c->used, USES_PHASING_DEVICE);
                 sound_play_sensors(c->pos, PHASING_OFF_SOUND);

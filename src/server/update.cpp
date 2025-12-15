@@ -777,7 +777,7 @@ static void Do_repair(player_t *pl)
     target_t *targ = &world->targets[pl->repair_target];
     if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
         targ->damage >= TARGET_DAMAGE ||
-        targ->dead_time > 0 ||
+        targ->dead_ticks > 0 ||
         BIT(pl->used, USES_PHASING_DEVICE))
         CLR_BIT(pl->used, USES_REPAIR);
     else

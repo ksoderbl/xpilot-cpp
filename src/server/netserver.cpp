@@ -983,7 +983,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all cannons are active.
          */
-        if (cannon->dead_time == 0)
+        if (cannon->dead_ticks == 0)
             SET_BIT(cannon->conn_mask, conn_bit);
         else
             CLR_BIT(cannon->conn_mask, conn_bit);
@@ -1005,7 +1005,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all targets are not damaged.
          */
-        if (targ->dead_time == 0 && targ->damage == TARGET_DAMAGE)
+        if (targ->dead_ticks == 0 && targ->damage == TARGET_DAMAGE)
         {
             SET_BIT(targ->conn_mask, conn_bit);
             CLR_BIT(targ->update_mask, conn_bit);
@@ -1589,10 +1589,10 @@ int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id)
                          teammine, id);
 }
 
-int Send_target(connection_t *connp, int num, int dead_time, int damage)
+int Send_target(connection_t *connp, int num, int dead_ticks, double damage)
 {
     return Packet_printf(&connp->w, "%c%hu%hu%hu", PKT_TARGET,
-                         num, dead_time, damage);
+                         num, dead_ticks, (int)damage);
 }
 
 // version 0x4501

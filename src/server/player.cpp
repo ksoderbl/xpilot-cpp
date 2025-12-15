@@ -91,6 +91,7 @@ void Pick_startpos(player_t *pl)
 
     if (Player_is_tank(pl))
     {
+        pl->home_base_ptr = Base_by_index(0);
         pl->home_base_ind = 0;
         return;
     }
@@ -779,16 +780,20 @@ void Reset_all_players(void)
         /* Reset the treasures */
         for (i = 0; i < Num_treasures(); i++)
         {
-            world->treasures[i].destroyed = 0;
-            world->treasures[i].have = false;
-            Make_treasure_ball(Treasure_by_index(i));
+            treasure_t *treasure = Treasure_by_index(i);
+
+            treasure->destroyed = 0;
+            treasure->have = false;
+            Make_treasure_ball(treasure);
         }
 
         /* Reset the teams */
         for (i = 0; i < MAX_TEAMS; i++)
         {
-            world->teams[i].TreasuresDestroyed = 0;
-            world->teams[i].TreasuresLeft = world->teams[i].NumTreasures - world->teams[i].NumEmptyTreasures;
+            team_t *teamp = Team_by_index(i);
+
+            teamp->TreasuresDestroyed = 0;
+            teamp->TreasuresLeft = teamp->NumTreasures - teamp->NumEmptyTreasures;
         }
 
         if (options.endOfRoundReset)
@@ -796,14 +801,16 @@ void Reset_all_players(void)
             /* Reset the targets */
             for (i = 0; i < Num_targets(); i++)
             {
-                if (world->targets[i].damage != TARGET_DAMAGE || world->targets[i].dead_time != 0)
+                target_t *targ = Target_by_index(i);
+
+                if (targ->damage != TARGET_DAMAGE || targ->dead_ticks > 0)
                 {
-                    world->block[world->targets[i].blk_pos.bx][world->targets[i].blk_pos.by] = TARGET;
-                    world->targets[i].dead_time = 0;
-                    world->targets[i].damage = TARGET_DAMAGE;
-                    world->targets[i].conn_mask = 0;
-                    world->targets[i].update_mask = (unsigned)-1;
-                    world->targets[i].last_change = frame_loops;
+                    world->block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
+                    targ->dead_ticks = 0;
+                    targ->damage = TARGET_DAMAGE;
+                    targ->conn_mask = 0;
+                    targ->update_mask = (unsigned)-1;
+                    targ->last_change = frame_loops;
                 }
             }
         }

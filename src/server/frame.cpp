@@ -504,13 +504,13 @@ static void Frame_map(connection_t *conn, player_t *pl)
     for (k = 0; k < Num_targets(); k++)
     {
         target_t *targ;
-        if (++i >= world->NumTargets)
+
+        if (++i >= Num_targets())
             i = 0;
-        targ = &world->targets[i];
-        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 &&
-                                                 click_inview(cv, targ->pos.cx, targ->pos.cy)))
+        targ = Target_by_index(i);
+        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && clpos_inview(&cv, targ->pos)))
         {
-            Send_target(conn, i, targ->dead_time, targ->damage);
+            Send_target(conn, i, (int)targ->dead_ticks, targ->damage);
             pl->last_target_update = i;
             bytes_left -= target_packet_size;
             if (++packet_count >= max_packet)
@@ -523,16 +523,16 @@ static void Frame_map(connection_t *conn, player_t *pl)
     i = MAX(0, pl->last_cannon_update);
     for (k = 0; k < Num_cannons(); k++)
     {
-        if (++i >= world->NumCannons)
+        cannon_t *cannon;
+
+        if (++i >= Num_cannons())
             i = 0;
-        if (click_inview(cv,
-                         world->cannons[i].pos.cx,
-                         world->cannons[i].pos.cy))
+        cannon = Cannon_by_index(i);
+        if (clpos_inview(&cv, cannon->pos))
         {
-            if (BIT(world->cannons[i].conn_mask, conn_bit) == 0)
+            if (BIT(cannon->conn_mask, conn_bit) == 0)
             {
-                // TODO: last argument is dead_ticks, use ticks instead of 'time'
-                Send_cannon(conn, i, world->cannons[i].dead_time);
+                Send_cannon(conn, i, (int)cannon->dead_ticks);
                 pl->last_cannon_update = i;
                 bytes_left -= max_packet * cannon_packet_size;
                 if (++packet_count >= max_packet)
@@ -544,26 +544,28 @@ static void Frame_map(connection_t *conn, player_t *pl)
     packet_count = 0;
     max_packet = MAX(5, bytes_left / fuel_packet_size);
     i = MAX(0, pl->last_fuel_update);
-    for (k = 0; k < world->NumFuels; k++)
+    for (k = 0; k < Num_fuels(); k++)
     {
-        if (++i >= world->NumFuels)
+        fuel_t *fs;
+
+        if (++i >= Num_fuels())
             i = 0;
-        if (BIT(world->fuels[i].conn_mask, conn_bit) == 0)
+
+        fs = Fuel_by_index(i);
+        if (BIT(fs->conn_mask, conn_bit) == 0)
         {
-            if (world->block[world->fuels[i].blk_pos.bx]
-                            [world->fuels[i].blk_pos.by] == FUEL)
+            if (world->block[fs->blk_pos.bx]
+                            [fs->blk_pos.by] == FUEL)
             {
                 if (click_inview(cv,
-                                 world->fuels[i].pos.cx,
-                                 world->fuels[i].pos.cy))
+                                 fs->pos.cx,
+                                 fs->pos.cy))
                 {
-                    Send_fuel(conn, i, (int)world->fuels[i].fuel * (1.0 / FUEL_SCALE_FACT));
+                    Send_fuel(conn, i, (int)fs->fuel * (1.0 / FUEL_SCALE_FACT));
                     pl->last_fuel_update = i;
                     bytes_left -= max_packet * fuel_packet_size;
                     if (++packet_count >= max_packet)
-                    {
                         break;
-                    }
                 }
             }
         }

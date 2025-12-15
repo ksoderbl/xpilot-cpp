@@ -283,7 +283,7 @@ static void Player_repair(player_t *pl)
     {
         target_t *targ = Target_by_index(i);
 
-        if (targ->team == pl->team && targ->dead_time <= 0)
+        if (targ->team == pl->team && targ->dead_ticks <= 0)
         {
             l = Wrap_length(pl->pos.cx - targ->pos.cx,
                             pl->pos.cy - targ->pos.cy);

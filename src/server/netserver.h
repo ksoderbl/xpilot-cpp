@@ -62,7 +62,7 @@ int Send_fastshot(connection_t *connp, int type, uint8_t *p, unsigned n);
 int Send_missile(connection_t *connp, clpos_t pos, int len, int dir);
 int Send_ball(connection_t *connp, clpos_t pos, int id, int style);
 int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id);
-int Send_target(connection_t *connp, int num, int dead_time, int damage);
+int Send_target(connection_t *connp, int num, int dead_ticks, double damage);
 int Send_wormhole(connection_t *connp, clpos_t pos);
 int Send_polystyle(connection_t *connp, int polyind, int newstyle);
 int Send_audio(connection_t *connp, int type, int vol);

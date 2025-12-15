@@ -1811,7 +1811,7 @@ static void Cannon_dies(move_state_t *ms)
     player_t *kp = NULL;
     vector_t zero_vel = {0.0, 0.0};
 
-    cannon->dead_time = options.cannonDeadTime;
+    cannon->dead_ticks = options.cannonDeadTime;
     cannon->conn_mask = 0;
     Cannon_dies(cannon, NULL);
 
@@ -1924,7 +1924,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
 
     targ->update_mask = (unsigned)-1;
     targ->damage = TARGET_DAMAGE;
-    targ->dead_time = options.targetDeadTime;
+    targ->dead_ticks = options.targetDeadTime;
 
     /*
      * Destroy target.
@@ -1980,7 +1980,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             if (world->targets[j].team == targ->team)
             {
                 targets_total++;
-                if (world->targets[j].dead_time == 0)
+                if (world->targets[j].dead_ticks == 0)
                     targets_remaining++;
             }
         }
@@ -2444,6 +2444,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
 
     if (Player_is_killed(pl) && Get_Score(pl) < 0 && Player_is_robot(pl))
     {
+        pl->home_base_ptr = Base_by_index(0);
         pl->home_base_ind = 0;
         Pick_startpos(pl);
     }

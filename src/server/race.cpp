@@ -210,46 +210,40 @@ void Race_game_over(void)
     char msg[MSG_LEN];
 
     /*
-     * Reassign players's starting posisitions based upon
+     * Reassign players's starting positions based upon
      * personal best lap times.
      */
-    if ((order = (int *)malloc(NumPlayers * sizeof(int))) != NULL)
+    if ((order = XMALLOC(int, NumPlayers)) != NULL)
     {
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Player_by_index(i);
             if (Player_is_tank(pl))
-            {
                 continue;
-            }
+
             if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || pl->best_lap <= 0)
-            {
                 j = i;
-            }
             else
             {
                 for (j = 0; j < i; j++)
                 {
-                    if (pl->best_lap < PlayersArray[order[j]]->best_lap)
-                    {
+                    player_t *pl_j = Player_by_index(order[j]);
+
+                    if (pl->best_lap < pl_j->best_lap)
                         break;
-                    }
-                    if (BIT(PlayersArray[order[j]]->obj_status, PAUSE) || (BIT(PlayersArray[order[j]]->obj_status, GAME_OVER) && PlayersArray[order[j]]->mychar == 'W'))
-                    {
+
+                    if (Player_is_paused(pl_j) || (BIT(PlayersArray[order[j]]->obj_status, GAME_OVER) && PlayersArray[order[j]]->mychar == 'W'))
                         break;
-                    }
                 }
             }
             for (k = i - 1; k >= j; k--)
-            {
                 order[k + 1] = order[k];
-            }
             order[j] = i;
             num_ordered_players++;
         }
         for (i = 0; i < num_ordered_players; i++)
         {
-            pl = PlayersArray[order[i]];
+            pl = Player_by_index(order[i]);
             if (pl->home_base_ind != world->baseorder[i].base_idx)
             {
                 pl->home_base_ind = world->baseorder[i].base_idx;
@@ -257,9 +251,8 @@ void Race_game_over(void)
                 {
                     if (PlayersArray[j]->conn != NULL)
                     {
-                        Send_base(PlayersArray[j]->conn,
-                                  pl->id,
-                                  pl->home_base_ind);
+                        Send_base(Player_by_index(j)->conn,
+                                  pl->id, pl->home_base_ind);
                     }
                 }
                 if (Player_is_paused(pl))

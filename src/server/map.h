@@ -127,7 +127,8 @@ typedef struct base
     blkpos_t blk_pos;
     clpos_t pos;
     int dir;
-    uint16_t team;
+    int ind;
+    int team;
 } base_t;
 
 typedef struct baseorder
@@ -142,7 +143,7 @@ typedef struct cannon
     position_t pix_pos;
     clpos_t pos;
     int dir;
-    int dead_time;
+    int dead_ticks;
     unsigned conn_mask;
     long last_change;
     int item[NUM_ITEMS];
@@ -219,7 +220,7 @@ typedef struct target
     blkpos_t blk_pos;
     clpos_t pos;
     uint16_t team;
-    int dead_time;
+    int dead_ticks;
     int damage;
     unsigned conn_mask;
     unsigned update_mask;
