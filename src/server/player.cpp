@@ -330,9 +330,9 @@ void Player_add_tank(player_t *pl, double tank_fuel)
         tank_cap = TANK_CAP(pl->fuel.num_tanks);
         add_fuel = tank_fuel;
         LIMIT(add_fuel, 0.0, tank_cap);
-        pl->fuel.sum += (long)add_fuel;
+        pl->fuel.sum += add_fuel;
         pl->fuel.max += tank_cap;
-        pl->fuel.tank[pl->fuel.num_tanks] = (long)add_fuel;
+        pl->fuel.tank[pl->fuel.num_tanks] = add_fuel;
         pl->emptymass += TANK_MASS;
         pl->item[ITEM_TANK] = pl->fuel.num_tanks;
     }
@@ -373,13 +373,14 @@ void Player_hit_armor(player_t *pl)
         CLR_BIT(pl->have, HAS_ARMOR);
 }
 
+/*
+ * Clear used bits.
+ */
 void Player_used_kill(player_t *pl)
 {
     pl->used &= ~USED_KILL;
     if (!BIT(DEF_HAVE, HAS_SHIELD))
-    {
         CLR_BIT(pl->have, HAS_SHIELD);
-    }
 }
 
 /*
@@ -533,6 +534,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
 
     {
         static uint16_t pseudo_team_no = 0;
+
         pl->pseudo_team = pseudo_team_no++;
     }
     pl->mychar = ' ';
@@ -633,9 +635,6 @@ void Alloc_players(int number)
         exit(1);
     }
 
-    /* PlayersArray[-1] should evaluate to NULL. */
-    PlayersArray++;
-
     for (i = 0; i < number; i++)
     {
         PlayersArray[i] = p++;
@@ -653,15 +652,9 @@ void Alloc_players(int number)
 
 void Free_players(void)
 {
-    if (PlayersArray)
-    {
-        --PlayersArray;
-        free(PlayersArray);
-        PlayersArray = NULL;
-
-        free(playerArray);
-        free(visibilityArray);
-    }
+    XFREE(PlayersArray);
+    XFREE(playerArray);
+    XFREE(visibilityArray);
 }
 
 void Update_score_table(void)
