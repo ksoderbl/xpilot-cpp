@@ -125,15 +125,20 @@ int main(int argc, char **argv)
 
     seedMT((unsigned)time((time_t *)0) * Get_process_id());
 
-    if (Parser(argc, argv) == false)
-    {
+    xpprintf("parser\n");
+    if (!Parser(argc, argv))
         exit(1);
-    }
 
-    plock_server(options.pLockServer); /* Lock the server into memory */
-    Make_table();                      /* Make trigonometric tables */
+    /* Lock the server into memory */
+    plock_server(options.pLockServer);
+    /* Make trigonometric tables */
+    xpprintf("make table\n");
+    Make_table();
+    xpprintf("compute gravity\n");
     Compute_gravity();
+    xpprintf("find base direction\n");
     Find_base_direction();
+    xpprintf("walls init\n");
     Walls_init();
 
     /* Allocate memory for players, shots and messages */
@@ -141,10 +146,11 @@ int main(int argc, char **argv)
     Alloc_shots(MAX_TOTAL_SHOTS);
     Alloc_cells();
 
+    xpprintf("move init\n");
     Move_init();
-
+    xpprintf("robot init\n");
     Robot_init();
-
+    xpprintf("treasure init\n");
     Treasure_init();
 
     /*
@@ -194,9 +200,7 @@ int main(int argc, char **argv)
      */
     serverStartTime = time(NULL);
 
-#ifndef SILENT
     xpprintf("%s Server runs at %d frames per second\n", showtime(), options.framesPerSecond);
-#endif
 
     // printf("timerResolution: %d\n", options.timerResolution);
     if (options.timerResolution > 0)
@@ -205,8 +209,9 @@ int main(int argc, char **argv)
         timer_tick_rate = FPS;
     install_timer_tick(Main_loop, timer_tick_rate);
 
+    xpprintf("calling sched\n");
     sched();
-    xpprintf("sched returned!?");
+    xpprintf("sched returned!?\n");
     End_game();
 
     return 1;

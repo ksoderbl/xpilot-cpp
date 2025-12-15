@@ -565,14 +565,14 @@ bool Grok_map(void)
     int i, x, y, c;
     char *s;
 
+    xpprintf("grok map: init map\n");
     Init_map();
 
     if (options.mapWidth <= 0 || options.mapWidth > MAX_MAP_SIZE ||
         options.mapHeight <= 0 || options.mapHeight > MAX_MAP_SIZE)
     {
-        errno = 0;
-        error("mapWidth or mapHeight exceeds map size limit [1, %d]",
-              MAX_MAP_SIZE);
+        warn("mapWidth or mapHeight exceeds map size limit [1, %d]",
+             MAX_MAP_SIZE);
         free(options.mapData);
         options.mapData = NULL;
     }
@@ -601,22 +601,23 @@ bool Grok_map(void)
 
     if (!options.mapData)
     {
-        errno = 0;
-        error("Generating random map");
+        warn("Generating random map");
         Generate_random_map();
         if (!options.mapData)
-        {
             return false;
-        }
     }
 
+    xpprintf("grok map: alloc map\n");
     Alloc_map();
 
     x = -1;
     y = world->y - 1;
 
+    xpprintf("grok map: set world rules\n");
     Set_world_rules();
+    xpprintf("grok map: set world items\n");
     Set_world_items();
+    xpprintf("grok map: set world asteroids\n");
     Set_world_asteroids();
 
     if (BIT(world->rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
@@ -625,6 +626,7 @@ bool Grok_map(void)
         CLR_BIT(world->rules->mode, TEAM_PLAY);
     }
 
+    xpprintf("grok map: reading mapdata\n");
     s = options.mapData;
     while (y >= 0)
     {
@@ -779,6 +781,7 @@ bool Grok_map(void)
     free(options.mapData);
     options.mapData = NULL;
 
+    xpprintf("grok map: allocate objects\n");
     /*
      * Get space for special objects.
      */
@@ -844,6 +847,8 @@ bool Grok_map(void)
         error("WARNING: map has no bases!");
     }
 
+    xpprintf("grok map: allocate ecms, friction areas and transporters\n");
+
     // Allocate space for Ecms, FrictionAreas and Transporters
     // ecm_t *Ecms[MAX_TOTAL_ECMS];
     // transporter_t *Transporters[MAX_TOTAL_TRANSPORTERS];
@@ -895,6 +900,7 @@ bool Grok_map(void)
         world->teams[i].TreasuresLeft = 0;
     }
 
+    xpprintf("grok map: read tags to internal data, create objects\n");
     /*
      * Change read tags to internal data, create objects
      */
@@ -1298,6 +1304,7 @@ bool Grok_map(void)
             }
         }
 
+        xpprintf("grok map: wormhole hacks\n");
         /*
          * Verify that the wormholes are consistent, i.e. that if
          * we have no 'out' wormholes, make sure that we don't have
@@ -1332,6 +1339,7 @@ bool Grok_map(void)
                 while (world->wormholes[j].type == WORM_IN)
                     j = (int)(rfrac() * world->NumWormholes);
                 world->wormholes[i].lastdest = j;
+                // xpprintf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
             }
         }
 
@@ -1342,6 +1350,7 @@ bool Grok_map(void)
             CLR_BIT(world->rules->mode, TIMING);
         }
 
+        xpprintf("grok map: teamplay hacks\n");
         /*
          * Determine which team a treasure belongs to.
          */
@@ -1398,26 +1407,23 @@ bool Grok_map(void)
         }
     }
 
+    /* kps - what are these doing here ? */
     if (options.maxRobots == -1)
-    {
-        options.maxRobots = world->NumBases;
-    }
+        options.maxRobots = Num_bases();
     if (options.minRobots == -1)
-    {
         options.minRobots = options.maxRobots;
-    }
     if (BIT(world->rules->mode, TIMING))
-    {
         Find_base_order();
-    }
 
 #ifndef SILENT
-    xpprintf("world->...: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
+    xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
              world->name, world->NumBases, world->x, world->y,
              BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
 #endif
 
     D(Print_map());
+
+    xpprintf("grok map: returning true\n");
 
     return true;
 }

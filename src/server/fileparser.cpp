@@ -356,7 +356,7 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
 #endif
     else
     {
-        printf("parseLine! option: name %s, value %s\n", name, value);
+        // printf("parseLine! option: name %s, value %s\n", name, value);
         Option_set_value(name, value, override, opt_origin);
     }
 
