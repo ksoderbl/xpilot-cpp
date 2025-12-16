@@ -21,7 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
+#include <cstring>
+
+#include "bit.h"
 #include "const.h"
+#include "rules.h"
+#include "xperror.h"
 
 #include "netclient.h"
 #include "paint.h"
@@ -91,4 +97,210 @@ int Check_view_dimensions(void)
     }
 
     return 0;
+}
+
+void Paint_frame_start(void)
+{
+    if (start_loops != end_loops)
+        warn("Start neq. End (%ld,%ld,%ld)", start_loops, end_loops, loops);
+    loops = end_loops;
+}
+
+void Paint_score_table(void)
+{
+    struct team_score
+    {
+        int score;
+        int life;
+        int playing;
+    };
+    struct team_score team[MAX_TEAMS],
+        *team_order[MAX_TEAMS];
+    other_t *other,
+        **order;
+    int i, j, k, best = -1;
+    double ratio, best_ratio = -1e7;
+
+    xpinfo("Client_score_table");
+
+    if (scoresChanged == 0)
+    {
+        return;
+    }
+
+    if (players_exposed == false)
+    {
+        return;
+    }
+
+    if (num_others < 1)
+    {
+        Paint_score_start();
+        scoresChanged = 0;
+        return;
+    }
+
+    if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == NULL)
+    {
+        error("No memory for score");
+        return;
+    }
+    if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
+    {
+        memset(&team[0], 0, sizeof team);
+    }
+    for (i = 0; i < num_others; i++)
+    {
+        other = &Others[i];
+        if (BIT(Setup->mode, TIMING))
+        {
+            /*
+             * Sort the score table on position in race.
+             * Put paused and waiting players last as well as tanks.
+             */
+            if (strchr("PTW", other->mychar))
+            {
+                j = i;
+            }
+            else
+            {
+                for (j = 0; j < i; j++)
+                {
+                    if (order[j]->timing < other->timing)
+                    {
+                        break;
+                    }
+                    if (strchr("PTW", order[j]->mychar))
+                    {
+                        break;
+                    }
+                    if (order[j]->timing == other->timing)
+                    {
+                        if (order[j]->timing_loops > other->timing_loops)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (BIT(Setup->mode, LIMITED_LIVES))
+            {
+                ratio = (float)other->score;
+            }
+            else
+            {
+                ratio = (float)other->score / (other->life + 1);
+            }
+            if (best == -1 || ratio > best_ratio)
+            {
+                best_ratio = ratio;
+                best = i;
+            }
+            for (j = 0; j < i; j++)
+            {
+                if (order[j]->score < other->score)
+                {
+                    break;
+                }
+            }
+        }
+        for (k = i; k > j; k--)
+        {
+            order[k] = order[k - 1];
+        }
+        order[j] = other;
+
+        if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
+        {
+            switch (other->mychar)
+            {
+            case 'P':
+            case 'W':
+            case 'T':
+                break;
+            case ' ':
+            case 'R':
+                if (BIT(Setup->mode, LIMITED_LIVES))
+                {
+                    team[other->team].life += other->life + 1;
+                }
+                else
+                {
+                    team[other->team].life += other->life;
+                }
+                /*FALLTHROUGH*/
+            default:
+                team[other->team].playing++;
+                team[other->team].score += other->score;
+                break;
+            }
+        }
+    }
+    Paint_score_start();
+    if (BIT(Setup->mode, TIMING))
+    {
+        best = order[0] - Others;
+    }
+    for (i = 0; i < num_others; i++)
+    {
+        other = order[i];
+        j = other - Others;
+        Paint_score_entry(i, other, (j == best) ? true : false);
+    }
+    if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
+    {
+        int pos = num_others + 1;
+        int num_playing_teams = 0;
+        for (i = 0; i < MAX_TEAMS; i++)
+        {
+            if (team[i].playing)
+            {
+                for (j = 0; j < num_playing_teams; j++)
+                {
+                    if (team[i].score > team_order[j]->score || (team[i].score == team_order[j]->score && ((BIT(Setup->mode, LIMITED_LIVES))
+                                                                                                               ? (team[i].life > team_order[j]->life)
+                                                                                                               : (team[i].life < team_order[j]->life))))
+                    {
+                        for (k = i; k > j; k--)
+                        {
+                            team_order[k] = team_order[k - 1];
+                        }
+                        break;
+                    }
+                }
+                team_order[j] = &team[i];
+                num_playing_teams++;
+            }
+        }
+        for (i = 0; i < num_playing_teams; i++)
+        {
+            other_t tmp;
+            tmp.id = -1;
+            tmp.team = team_order[i] - &team[0];
+            tmp.war_id = -1;
+            tmp.name_width = 0;
+            tmp.ship = NULL;
+            sprintf(tmp.nick_name, "Team %d", tmp.team);
+            strcpy(tmp.user_name, tmp.nick_name);
+            strcpy(tmp.nick_name, "");
+            if (BIT(Setup->mode, LIMITED_LIVES) && team_order[i]->life == 0)
+            {
+                tmp.mychar = 'D';
+            }
+            else
+            {
+                tmp.mychar = ' ';
+            }
+            tmp.score = team_order[i]->score;
+            tmp.life = team_order[i]->life;
+            Paint_score_entry(pos++, &tmp, false);
+        }
+    }
+
+    free(order);
+
+    scoresChanged = 0;
 }

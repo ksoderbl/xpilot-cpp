@@ -166,12 +166,8 @@ void Paint_frame(void)
     static int prev_damaged = 0;
     static int prev_prev_damaged = 0;
 
-    if (start_loops != end_loops)
-    {
-        errno = 0;
-        error("Start neq. End (%ld,%ld,%ld)", start_loops, end_loops, loops);
-    }
-    loops = end_loops;
+    Paint_frame_start();
+    Paint_score_table();
 
     /*
      * Switch between two different window titles.
@@ -185,8 +181,6 @@ void Paint_frame(void)
         else
             XStoreName(dpy, topWindow, TITLE);
     }
-    /* This seems to have a bug (in Windows) 'cause last frame we ended
-       with an XSetForeground(white) confusing SET_FG */
     SET_FG(colors[BLACK].pixel);
 
     rd.newFrame();
@@ -200,7 +194,8 @@ void Paint_frame(void)
         {
             /* clean up ecm damage */
             SET_FG(colors[BLACK].pixel);
-            XFillRectangle(dpy, drawWindow, gameGC, 0, 0, draw_width, draw_height);
+            XFillRectangle(dpy, drawWindow, gameGC,
+                           0, 0, draw_width, draw_height);
         }
 
         Arc_start();
@@ -269,7 +264,7 @@ void Paint_frame(void)
      */
     if (radarPixmap != radarWindow && radar_exposures > 0)
     {
-        if (instruments.slidingRadar == 0 || BIT(Setup->mode, WRAP_PLAY) == 0)
+        if (!instruments.slidingRadar || BIT(Setup->mode, WRAP_PLAY) == 0)
         {
             XCopyArea(dpy, radarPixmap, radarWindow, gameGC,
                       0, 0, 256, RadarHeight, 0, 0);

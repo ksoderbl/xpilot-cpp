@@ -79,13 +79,11 @@ static void Input_loop(void)
         return;
     }
     if (Handle_input(2) == -1)
-    {
         return;
-    }
+
     if (Net_flush() == -1)
-    {
         return;
-    }
+
     if ((clientfd = ConnectionNumber(dpy)) == -1)
     {
         error("Bad client filedescriptor");
@@ -135,19 +133,17 @@ static void Input_loop(void)
                 }
                 continue;
             }
-            else if (result <= 1)
+            if (result <= 1)
             {
-                errno = 0;
-                error("No response from server");
+                warn("No response from server");
                 continue;
             }
         }
         if (FD_ISSET(clientfd, &rfds))
         {
             if (Handle_input(1) == -1)
-            {
                 return;
-            }
+
             if (Net_flush() == -1)
             {
                 error("Bad net flush after X input");
@@ -161,8 +157,7 @@ static void Input_loop(void)
             gettimeofday(&tv1, NULL);
             if ((result = Net_input()) == -1)
             {
-                errno = 0;
-                error("Bad net input.  Have a nice day!");
+                warn("Bad net input.  Have a nice day!");
                 return;
             }
             if (result > 0)
@@ -182,19 +177,18 @@ static void Input_loop(void)
                  * has finished the drawing of our current frame.
                  */
                 if (Handle_input(1) == -1)
-                {
                     return;
-                }
+
                 if (Net_flush() == -1)
                 {
                     error("Bad net flush before sync");
                     return;
                 }
+
                 XSync(dpy, False);
+
                 if (Handle_input(1) == -1)
-                {
                     return;
-                }
             }
 
             {

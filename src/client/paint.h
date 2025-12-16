@@ -137,6 +137,7 @@ void Paint_recording(void);
 void Paint_HUD_values(void);
 void Paint_frame(void);
 void Paint_frame_start(void);
+void Paint_score_table(void);
 int Team_color(int);
 int Life_color(other_t *other);
 int Life_color_by_life(int life);

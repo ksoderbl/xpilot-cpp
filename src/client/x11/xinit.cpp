@@ -761,7 +761,7 @@ void Resize(Window w, int width, int height)
         return;
     }
 
-    std::cout << "Resize: size: " << width << "x" << height << std::endl;
+    // std::cout << "Resize: size: " << width << "x" << height << std::endl;
 
     // Limits for resizing
     LIMIT(width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
