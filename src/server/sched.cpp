@@ -1,5 +1,4 @@
-/* $Id: sched.c,v 5.6 2001/11/29 14:48:12 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -448,7 +447,6 @@ void sched(void)
 
     while (sched_running)
     {
-
         tv.tv_sec = 0;
         tv.tv_usec = 0;
 

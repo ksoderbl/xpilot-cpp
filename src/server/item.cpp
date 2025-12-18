@@ -1026,12 +1026,12 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
         {
         case OBJ_SMART_SHOT:
             /*
-             * See Update_missile() for re-lock probabilities after confusion
+             * See Move_smart_shot() for re-lock probabilities after confusion
              * ends.
              */
             smart = SMART_PTR(shot);
             SET_BIT(smart->obj_status, CONFUSED);
-            smart->ecm_range = range;
+            smart->smart_ecm_range = range;
             smart->count = CONFUSED_TIME;
             if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(world->rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                 smart->new_info = pl->lock.pl_id;

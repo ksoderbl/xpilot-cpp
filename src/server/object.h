@@ -209,8 +209,7 @@ struct xp_smartobject
     MISSILE_EXTEND
 
     // TODO: Remove these
-    int new_info;     /* smart re-lock id */
-    DFLOAT ecm_range; /* Range from last ecm center */
+    int new_info; /* smart re-lock id */
 
     float smart_ecm_range; /* Range from last ecm center*/
     float smart_count;     /* Misc snafus */

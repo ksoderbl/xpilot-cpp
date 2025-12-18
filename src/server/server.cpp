@@ -227,7 +227,7 @@ void Main_loop(void)
 
     // if ((main_loops % 1000) == 0)
     // {
-    // printf("main_loops: %d\n", main_loops);
+    // xpinfo("Main_loop: main_loops: %d", main_loops);
     // }
 
     if ((main_loops & 0x3F) == 0)
@@ -246,7 +246,11 @@ void Main_loop(void)
             ShutdownServer--;
     }
 
+    // xpinfo("Main_loop: call Input");
+
     Input();
+
+    // xpinfo("Main_loop: update");
 
     if (NumPlayers > NumRobots + NumPseudoPlayers || options.RawMode)
     {
@@ -263,10 +267,16 @@ void Main_loop(void)
             }
         }
 
+        // xpinfo("Main_loop: update objects");
+
         Update_objects();
+
+        // xpinfo("Main_loop: update frame");
 
         Frame_update();
     }
+
+    // xpinfo("Main_loop: checking end game");
 
     if (!options.NoQuit && NumPlayers == NumRobots + NumPseudoPlayers && !login_in_progress && !NumQueuedPlayers)
     {
@@ -280,6 +290,8 @@ void Main_loop(void)
             End_game();
         }
     }
+
+    // xpinfo("Main_loop: queue loop");
 
     Queue_loop();
 
@@ -295,6 +307,8 @@ void Main_loop(void)
 
         mainLoopTime = us;
     }
+
+    // xpinfo("Main_loop: end");
 }
 
 /*

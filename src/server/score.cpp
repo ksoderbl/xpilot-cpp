@@ -64,6 +64,9 @@ int Rate(int winner, int loser)
                                           RATE_RANGE);
     if (loser > winner)
         t = RATE_SIZE - t;
+
+    // xpinfo("Rate: winner = %d, loser = %d, t = %d", winner, loser, t);
+
     return t;
 }
 
