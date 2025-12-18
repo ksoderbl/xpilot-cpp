@@ -96,7 +96,7 @@ extern Cursor pointerControlCursor;
 
 static int Key_set(int key, bool on)
 {
-    if (onoff)
+    if (on)
     {
         if (!BITV_ISSET(keyv, key))
         {
@@ -243,10 +243,10 @@ void Pointer_control_set_state(bool on)
     XFlush(dpy);
 }
 
-static void Talk_set_state(bool onoff)
+void Talk_set_state(bool on)
 {
 
-    if (onoff)
+    if (on)
     {
         /* Enable talking, disable pointer control if it is enabled. */
         if (pointerControl)
@@ -737,7 +737,7 @@ void Talk_event(XEvent *event)
     }
 }
 
-int talk_key_repeat_count;
+int talk_key_repeating;
 XEvent talk_key_repeat_event;
 
 void xevent_keyboard(int queued)
@@ -745,13 +745,13 @@ void xevent_keyboard(int queued)
     int i, n;
     XEvent event;
 
-    if (talk_key_repeat_count > 0)
+    if (talk_key_repeating > 0)
     {
-        if (++talk_key_repeat_count >= FPS && (talk_key_repeat_count - FPS) % ((FPS + 2) / 3) == 0)
+        if (++talk_key_repeating >= FPS && (talk_key_repeating - FPS) % ((FPS + 2) / 3) == 0)
         {
             Talk_event(&talk_key_repeat_event);
             if (!clData.talking)
-                talk_key_repeat_count = 0;
+                talk_key_repeating = 0;
         }
     }
 
@@ -914,7 +914,7 @@ int x_event(int new_input)
             break;
 
         case KeyPress:
-            talk_key_repeat_count = 0;
+            talk_key_repeating = 0;
             /* FALLTHROUGH */
         case KeyRelease:
             KeyChanged_event(&event);

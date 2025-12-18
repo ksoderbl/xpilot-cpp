@@ -24,9 +24,10 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "connectparam.h"
-#include "item.h"
 #include "shipshape.h"
+#include "item.h"
+#include "connectparam.h"
+#include "option.h"
 #include "types.h"
 
 typedef struct
@@ -99,13 +100,13 @@ typedef struct
 #define MIN_SPARK_SIZE 1
 #define MAX_MAP_POINT_SIZE 8
 #define MIN_MAP_POINT_SIZE 0
-#define MAX_SHOT_SIZE 8
+#define MAX_SHOT_SIZE 20
 #define MIN_SHOT_SIZE 1
-#define MAX_TEAMSHOT_SIZE 8
+#define MAX_TEAMSHOT_SIZE 20
 #define MIN_TEAMSHOT_SIZE 1
 
 #define MIN_SHOW_ITEMS_TIME 0.0
-#define MAX_SHOW_ITEMS_TIME 10.0
+#define MAX_SHOW_ITEMS_TIME 300.0
 
 #define MIN_SCALEFACTOR 0.1
 #define MAX_SCALEFACTOR 20.0
@@ -133,12 +134,12 @@ typedef struct
 {
     double ratio;
     short id;
-    short team;
+    uint16_t team;
     short score;
     short check;
     short round;
-    short timing;
     long timing_loops;
+    short timing;
     short life;
     short mychar;
     short alliance;
@@ -528,7 +529,7 @@ extern char servername[MAX_CHARS]; /* Name of server connecting to */
 extern unsigned version;           /* Version of the server */
 extern bool scoresChanged;
 extern bool toggle_shield;         /* Are shields toggled by a press? */
-extern int shields;                /* When shields are considered up */
+extern bool shields;               /* When shields are considered up */
 extern bool auto_shield;           /* drops shield for fire */
 extern bool initialPointerControl; /* Start by using mouse for control? */
 extern bool pointerControl;        /* current state of mouse ship flying */
@@ -638,6 +639,56 @@ extern int protocolVersion;
 const char *Program_name(void);
 int Bitmap_add(const char *filename, int count, bool scalable);
 
+void Pointer_control_newbie_message(void);
+
+/*
+ * Platform specific code needs to implement these.
+ */
+void Platform_specific_pointer_control_set_state(bool on);
+void Platform_specific_talk_set_state(bool on);
+void Record_toggle(void);
+void Toggle_fullscreen(void);
+void Toggle_radar_and_scorelist(void);
+
+/*
+ * event.c
+ */
+void Pointer_control_set_state(bool on);
+void Talk_set_state(bool on);
+
+void Pointer_button_pressed(int button);
+void Pointer_button_released(int button);
+void Keyboard_button_pressed(xp_keysym_t ks);
+void Keyboard_button_released(xp_keysym_t ks);
+
+int Key_init(void);
+int Key_update(void);
+void Key_clear_counts(void);
+bool Key_press(keys_t key);
+bool Key_release(keys_t key);
+void Set_auto_shield(bool on);
+void Set_toggle_shield(bool on);
+
+/*
+ * messages.c
+ */
+bool Bms_test_state(msg_bms_t bms);
+void Bms_set_state(msg_bms_t bms);
+int Alloc_msgs(void);
+void Free_msgs(void);
+int Alloc_history(void);
+void Free_selectionAndHistory(void);
+void Add_message(const char *message);
+void Add_newbie_message(const char *message);
+extern void Add_alert_message(const char *message, double timeout);
+extern void Clear_alert_messages(void);
+void Add_pending_messages(void);
+void Add_roundend_messages(other_t **order);
+void Print_messages_to_stdout(void);
+
+/*
+ * client.c
+ */
 double Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, int *damage);
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage);
@@ -672,7 +723,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 int status);
 int Handle_self_items(uint8_t *newNumItems);
 int Handle_modifiers(char *m);
-int Handle_damaged(int damaged);
+int Handle_damaged(int dam);
 int Handle_destruct(int count);
 int Handle_shutdown(int count, int delay);
 int Handle_thrusttime(int count, int max);
@@ -683,7 +734,7 @@ int Handle_refuel(int x0, int y0, int x1, int y1);
 int Handle_connector(int x0, int y0, int x1, int y1, int tractor);
 int Handle_laser(int color, int x, int y, int len, int dir);
 int Handle_missile(int x, int y, int dir, int len);
-int Handle_ball(int x, int y, int id);
+int Handle_ball(int x, int y, int id, int style);
 int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
 int Handle_mine(int x, int y, int teammine, int id);
 int Handle_item(int x, int y, int type);
@@ -716,13 +767,12 @@ int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
 int Client_wrap_mode(void);
+void Raise_window(void);
 void Reset_shields(void);
 void Set_toggle_shield(bool on);
 void Set_auto_shield(bool on);
+void Platform_specific_cleanup(void);
 
-#ifdef XlibSpecificationRelease
-void Key_event(XEvent *event);
-#endif
 int x_event(int);
 
 int Key_init(void);

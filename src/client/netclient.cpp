@@ -1624,7 +1624,7 @@ int Receive_self(void)
                      &currentTank, &sFuelSum, &sFuelMax,
                      &sViewWidth, &sViewHeight, &sNumSparkColors,
                      //  &ext_view_width, &ext_view_height, &debris_colors,
-                     &sStat, &autopilotLight);
+                     &sStat, &sAutopilotLight);
     if (n <= 0)
         return n;
 
@@ -1637,7 +1637,7 @@ int Receive_self(void)
 
     Check_view_dimensions();
 
-    Game_over_action(sStat);
+    // Game_over_action(sStat);
     Handle_self(x, y, vx, vy, sHeading,
                 (double)sPower,
                 (double)sTurnSpeed,
@@ -1724,11 +1724,11 @@ int Receive_ball(void)
 {
     int n;
     short x, y, id;
-    uint8_t ch;
+    uint8_t ch, style = 0xff /* no style */;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
         return n;
-    if ((n = Handle_ball(x, y, id)) == -1)
+    if ((n = Handle_ball(x, y, id, style)) == -1)
         return -1;
     return 1;
 }

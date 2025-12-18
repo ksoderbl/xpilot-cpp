@@ -23,6 +23,7 @@
 
 #include <iostream>
 
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cctype>
@@ -197,7 +198,7 @@ static int Colors_callback(int, void *, const char **);
 static int Score_callback(int, void *, const char **);
 static int Player_callback(int, void *, const char **);
 
-static int button_form;
+int button_form;
 static int menu_button;
 
 const char *Item_get_text(int i)
@@ -210,20 +211,20 @@ const char *Item_get_text(int i)
  * Return font that is used for this GC, even if setting a new
  * font failed (return default font in that case).
  */
-static XFontStruct *Set_font(Display *dpy, GC gc,
+static XFontStruct *Set_font(Display *display, GC gc,
                              const char *fontName,
                              const char *resName)
 {
     XFontStruct *font;
 
-    if ((font = XLoadQueryFont(dpy, fontName)) == NULL)
+    if ((font = XLoadQueryFont(display, fontName)) == NULL)
     {
         error("Couldn't find font '%s' for %s, using default font",
               fontName, resName);
-        font = XQueryFont(dpy, XGContextFromGC(gc));
+        font = XQueryFont(display, XGContextFromGC(gc));
     }
     else
-        XSetFont(dpy, gc, font->fid);
+        XSetFont(display, gc, font->fid);
 
     return font;
 }
@@ -414,13 +415,10 @@ int Init_top(void)
      */
     top_flags = 0;
     if (geometry != NULL && geometry[0] != '\0')
-    {
         mask = XParseGeometry(geometry, &x, &y, &w, &h);
-    }
     else
-    {
         mask = 0;
-    }
+
     if ((mask & WidthValue) != 0)
     {
         top_width = w;
@@ -498,12 +496,13 @@ int Init_top(void)
                               DefaultRootWindow(dpy),
                               top_x, top_y,
                               top_width, top_height,
-                              0, dispDepth,
+                              0, (int)dispDepth,
                               InputOutput, visual,
                               mask, &sattr);
     XSelectInput(dpy, topWindow,
                  KeyPressMask | KeyReleaseMask | FocusChangeMask | StructureNotifyMask);
-    Init_disp_prop(dpy, topWindow, top_width, top_height, top_x, top_y, top_flags);
+    Init_disp_prop(dpy, topWindow, top_width, top_height,
+                   top_x, top_y, top_flags);
     if (kdpy)
     {
         int scr = DefaultScreen(kdpy);
@@ -522,11 +521,9 @@ int Init_top(void)
      * Create item bitmaps
      */
     for (i = 0; i < NUM_ITEMS; i++)
-    {
         itemBitmaps[i] = XCreateBitmapFromData(dpy, topWindow,
                                                (char *)itemBitmapData[i].data,
                                                ITEM_SIZE, ITEM_SIZE);
-    }
 
     /*
      * Creates and initializes the graphic contexts.
@@ -619,7 +616,7 @@ int Init_playing_windows(void)
     ButtonHeight = buttonFont->ascent + buttonFont->descent + 2 * BTN_BORDER;
 
     button_form = Widget_create_form(0, topWindow,
-                                     0, RadarHeight,
+                                     0, (int)RadarHeight,
                                      256, ButtonHeight + 2,
                                      0);
     Widget_create_activate(button_form,
@@ -654,7 +651,7 @@ int Init_playing_windows(void)
     players_width = RadarWidth;
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
     playersWindow = XCreateSimpleWindow(dpy, topWindow,
-                                        0, RadarHeight + ButtonHeight + 2,
+                                        0, (int)RadarHeight + ButtonHeight + 2,
                                         players_width, players_height,
                                         0, 0,
                                         colors[windowColor].pixel);
@@ -672,10 +669,16 @@ int Init_playing_windows(void)
      */
     switch (dbuf_state->type)
     {
+
     case PIXMAP_COPY:
         radarPixmap = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
         radarPixmap2 = XCreatePixmap(dpy, radarWindow, 256, RadarHeight, dispDepth);
-        drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
+        drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height,
+                                   dispDepth);
+        break;
+
+    default:
+        assert(0 && "Init_playing_windows: unknown dbuf state type.");
         break;
     }
 
@@ -732,7 +735,7 @@ static int Score_callback(int widget_desc, void *data, const char **str)
     if (showUserName)
     {
         showUserName = false;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
     return 0;
 }
@@ -740,10 +743,10 @@ static int Score_callback(int widget_desc, void *data, const char **str)
 static int Player_callback(int widget_desc, void *data, const char **str)
 {
     Config(false, CONFIG_NONE);
-    if (showUserName != true)
+    if (!showUserName)
     {
         showUserName = true;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
     return 0;
 }
@@ -754,12 +757,15 @@ static int Quit_callback(int widget_desc, void *data, const char **str)
     return 0;
 }
 
-void Resize(Window w, int width, int height)
+void Raise_window(void)
+{
+    XMapRaised(dpy, topWindow);
+}
+
+void Resize(Window w, unsigned width, unsigned height)
 {
     if (w != topWindow)
-    {
         return;
-    }
 
     // std::cout << "Resize: size: " << width << "x" << height << std::endl;
 
@@ -790,7 +796,8 @@ void Resize(Window w, int width, int height)
     if (dbuf_state->type == PIXMAP_COPY)
     {
         XFreePixmap(dpy, drawPixmap);
-        drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height, dispDepth);
+        drawPixmap = XCreatePixmap(dpy, drawWindow, draw_width, draw_height,
+                                   dispDepth);
     }
     // Players window is the scorelist/config area below the radar.
     players_height = top_height - (RadarHeight + ButtonHeight + 2);
@@ -801,10 +808,14 @@ void Resize(Window w, int width, int height)
 }
 
 /*
- * Cleanup player structure, close the display etc.
+ * Close the display etc.
  */
 void Platform_specific_cleanup(void)
 {
+    /* Here we restore the mouse to its former self */
+    /* the option may have been toggled in game to  */
+    /* off so we cant trust that                    */
+
     if (dpy != NULL)
     {
         XAutoRepeatOn(dpy);
@@ -822,7 +833,7 @@ void Platform_specific_cleanup(void)
     Widget_cleanup();
 }
 
-int FatalError(Display *dpy)
+int FatalError(Display *display)
 {
     Net_cleanup();
     /*
@@ -830,16 +841,27 @@ int FatalError(Display *dpy)
      * It's already a fatal I/O error, nothing to cleanup.
      */
     exit(0);
-    return (0);
+    /* make complier not warn */
+    return 0;
 }
 
-void Scale_dashes()
+void Scale_dashes(void)
 {
-    dashes[0] = WINSCALE(8);
-    dashes[1] = WINSCALE(4);
+    if (dpy == NULL)
+        return;
 
+    dashes[0] = WINSCALE(8);
+    if (dashes[0] < 1)
+        dashes[0] = 1;
+    dashes[1] = WINSCALE(4);
+    if (dashes[1] < 1)
+        dashes[1] = 1;
     cdashes[0] = WINSCALE(3);
+    if (cdashes[0] < 1)
+        cdashes[0] = 1;
     cdashes[1] = WINSCALE(9);
+    if (cdashes[1] < 1)
+        cdashes[1] = 1;
 
     XSetDashes(dpy, gameGC, 0, dashes, NUM_DASHES);
 }

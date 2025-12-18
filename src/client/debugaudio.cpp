@@ -52,3 +52,13 @@ void audioDeviceEvents(void)
 {
     /* printf("debug audio: events\n"); */
 }
+
+void audioDeviceFree(void *private_data)
+{
+    printf("debug audio: audioDeviceFree\n");
+}
+
+void audioDeviceClose()
+{
+    printf("debug audio: audioDeviceClose\n");
+}

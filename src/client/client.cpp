@@ -160,9 +160,9 @@ char realname[MAX_CHARS];   /* Real name of player */
 char servername[MAX_CHARS]; /* Name of server connecting to */
 unsigned version;           /* Version of the server */
 bool toggle_shield;         /* Are shields toggled by a press? */
-int shields = 1;            /* When shields are considered up */
+bool shields = true;        /* When shields are considered up */
 
-bool auto_shield = 1; /* shield drops for fire */
+bool auto_shield = true; /* shield drops for fire */
 
 int maxFPS; /* Client's own FPS */
 int oldMaxFPS;
@@ -1669,6 +1669,24 @@ int Handle_end(long server_loops)
     return 0;
 }
 
+static void update_status(int status)
+{
+    static int old_status = 0;
+
+    if (BIT(old_status, OLD_GAME_OVER) && !BIT(status, OLD_GAME_OVER) && !BIT(status, OLD_PAUSE))
+        Raise_window();
+
+    /* GAME_OVER -> PLAYING */
+    /* Player appeared? */
+    if (BIT(old_status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) != OLD_PLAYING)
+    {
+        if (BIT(status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) == OLD_PLAYING)
+            Reset_shields();
+    }
+
+    old_status = status;
+}
+
 int Handle_self_items(uint8_t *newNumItems)
 {
     memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
@@ -1722,12 +1740,14 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
         else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
             realWorld.y -= Setup->height;
     }
+    update_status(status);
     return 0;
 }
 
 int Handle_eyes(int id)
 {
     eyesId = id;
+    eyes = Other_by_id(eyesId);
     return 0;
 }
 
@@ -1781,7 +1801,7 @@ int Handle_rounddelay(int count, int max)
 {
     roundDelay = count;
     roundDelayMax = max;
-    return (0);
+    return 0;
 }
 
 int Handle_refuel(int x0, int y0, int x1, int y1)
@@ -1834,13 +1854,14 @@ int Handle_missile(int x, int y, int len, int dir)
     return 0;
 }
 
-int Handle_ball(int x, int y, int id)
+int Handle_ball(int x, int y, int id, int style)
 {
     ball_t t;
 
     t.x = x;
     t.y = y;
     t.id = id;
+    t.style = style;
     STORE(ball_t, ball_ptr, num_ball, max_ball, t);
     return 0;
 }
@@ -1871,6 +1892,9 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshiel
     {
         int radarx, radary;
         eyesId = id;
+        eyes = Other_by_id(eyesId);
+        if (eyes != NULL)
+            eyeTeam = eyes->team;
         selfVisible = (self && (id == self->id));
         radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
         radary = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
@@ -1979,6 +2003,16 @@ int Handle_asteroid(int x, int y, int type, int size, int rotation)
     return 0;
 }
 
+int Handle_wormhole(int x, int y)
+{
+    wormhole_t t;
+
+    t.x = x - BLOCK_SZ / 2;
+    t.y = y - BLOCK_SZ / 2;
+    STORE(wormhole_t, wormhole_ptr, num_wormholes, max_wormholes, t);
+    return 0;
+}
+
 int Handle_polystyle(int polyind, int newstyle)
 {
     xp_polygon_t *poly;
@@ -1987,16 +2021,7 @@ int Handle_polystyle(int polyind, int newstyle)
     poly->style = newstyle;
     /*warn("polygon %d style set to %d", polyind, newstyle);*/
 
-    return 0;
-}
-
-int Handle_wormhole(int x, int y)
-{
-    wormhole_t t;
-
-    t.x = x - BLOCK_SZ / 2;
-    t.y = y - BLOCK_SZ / 2;
-    STORE(wormhole_t, wormhole_ptr, num_wormholes, max_wormholes, t);
+    UpdateRadar = true;
     return 0;
 }
 

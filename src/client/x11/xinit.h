@@ -77,12 +77,12 @@ extern void Talk_window_cut(XButtonEvent *xbutton);
 extern void Talk_cut_from_messages(XButtonEvent *xbutton);
 extern void Clear_selection(void);
 extern int FatalError(Display *dpy);
-extern void Resize(Window w, int width, int height);
+extern void Resize(Window w, unsigned width, unsigned height);
 
-extern int DrawShadowText(Display *, Window w, GC gc,
+extern int DrawShadowText(Display *, Window, GC,
                           int x_border, int start_y, const char *str,
                           unsigned long fg, unsigned long bg);
-extern void ShadowDrawString(Display *, Window w, GC gc,
+extern void ShadowDrawString(Display *, Window, GC,
                              int x, int start_y, const char *str,
                              unsigned long fg, unsigned long bg);
 /*

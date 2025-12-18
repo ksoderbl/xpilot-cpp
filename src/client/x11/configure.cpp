@@ -1262,7 +1262,7 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
 static int Config_update_scaleFactor(int widget_desc, void *data, double *val)
 {
     Init_scale_array();
-    Resize(topWindow, top_width, top_height);
+    Resize(topWindow, (unsigned)top_width, (unsigned)top_height);
     Scale_dashes();
     return 0;
 }
