@@ -126,7 +126,6 @@ static void Input_loop(void)
         {
             if (scoresChanged > SCORE_UPDATE_DELAY)
             {
-                Client_score_table();
                 if (Handle_input(2) == -1)
                 {
                     return;

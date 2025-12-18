@@ -121,8 +121,6 @@ void Paint_score_table(void)
     int i, j, k, best = -1;
     double ratio, best_ratio = -1e7;
 
-    xpinfo("Client_score_table");
-
     if (scoresChanged == 0)
     {
         return;

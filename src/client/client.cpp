@@ -2144,10 +2144,6 @@ int Handle_vdecor(int x, int y, int xi, int yi, int type)
     return 0;
 }
 
-void Client_score_table(void)
-{
-}
-
 int Client_init(char *server, unsigned server_version)
 {
     version = server_version;
@@ -2180,12 +2176,14 @@ int Client_setup(void)
     Map_restore(0, 0, Setup->x, Setup->y);
     Map_blue(0, 0, Setup->x, Setup->y);
 
-    RadarHeight = (RadarWidth * Setup->y) / Setup->x;
+    RadarHeight = (RadarWidth * Setup->height) / Setup->width;
 
     if (Init_playing_windows() == -1)
         return -1;
+
     if (Alloc_msgs() == -1)
         return -1;
+
     if (Alloc_history() == -1)
         return -1;
 
@@ -2219,9 +2217,7 @@ int Client_fps_request(void)
 int Check_client_fps(void)
 {
     if (oldMaxFPS != maxFPS)
-    {
         return Client_fps_request();
-    }
     return 0;
 }
 
@@ -2237,15 +2233,12 @@ int Client_power(void)
         Send_turnresistance_s(turnresistance_s) == -1 ||
         Send_display() == -1 ||
         Startup_server_motd() == -1)
-    {
         return -1;
-    }
+
     for (i = 0; i < NUM_MODBANKS; i++)
     {
         if (Send_modifier_bank(i) == -1)
-        {
             return -1;
-        }
     }
 
     return 0;
@@ -2309,6 +2302,11 @@ static void clientCleanup(void)
     {
         max_paused = 0;
         XFREE(paused_ptr);
+    }
+    if (max_appearing > 0 && appearing_ptr)
+    {
+        max_appearing = 0;
+        XFREE(appearing_ptr);
     }
     if (max_radar > 0 && radar_ptr)
     {
