@@ -405,7 +405,7 @@ static void Msg_scan_game_msg(const char *message)
 
     if (!self)
     {
-        warn("Variable 'self' is NULL!");
+        // warn("Variable 'self' is NULL!");
         return;
     }
 
