@@ -87,6 +87,49 @@ static void Xpmap_missing_error(int line_num)
     }
 }
 
+static void Map_extra_error(int line_num)
+{
+#ifndef SILENT
+    static int prev_line_num, error_count;
+    const int max_error = 5;
+
+    if (line_num > prev_line_num)
+    {
+        prev_line_num = line_num;
+        if (++error_count <= max_error)
+        {
+            xpprintf("Map file contains extranous characters on line %d\n",
+                     line_num);
+        }
+        else if (error_count - max_error == 1)
+        {
+            xpprintf("And so on...\n");
+        }
+    }
+#endif
+}
+
+static void Map_missing_error(int line_num)
+{
+#ifndef SILENT
+    static int prev_line_num, error_count;
+    const int max_error = 5;
+
+    if (line_num > prev_line_num)
+    {
+        prev_line_num = line_num;
+        if (++error_count <= max_error)
+        {
+            xpprintf("Not enough map data on map data line %d\n", line_num);
+        }
+        else if (error_count - max_error == 1)
+        {
+            xpprintf("And so on...\n");
+        }
+    }
+#endif
+}
+
 /*
  * Compress the map data using a simple Run Length Encoding algorithm.
  * If there is more than one consecutive byte with the same type
@@ -745,16 +788,13 @@ setup_t *Xpmap_init_setup(void)
  */
 void Xpmap_grok_map_data(void)
 {
-    int x = -1, y = world->y - 1, c;
-    char *s = options.mapData;
-    blkpos_t blk;
+    int i, x, y, c;
+    char *s;
 
-    if (options.mapData == NULL)
-    {
-        warn("Map didn't have any mapData.");
-        return;
-    }
+    x = -1;
+    y = world->y - 1;
 
+    s = options.mapData;
     while (y >= 0)
     {
 
@@ -769,8 +809,10 @@ void Xpmap_grok_map_data(void)
                 continue;
             }
             else
+            {
                 /* make extra border of solid rock */
-                c = XPMAP_FILLED;
+                c = 'x';
+            }
         }
         else
         {
@@ -780,22 +822,26 @@ void Xpmap_grok_map_data(void)
                 if (x < world->x)
                 {
                     /* not enough map data on this line */
-                    Xpmap_missing_error(world->y - y);
-                    c = XPMAP_SPACE;
+                    Map_missing_error(world->y - y);
+                    c = ' ';
                 }
                 else
+                {
                     c = '\n';
+                }
             }
             else
             {
                 if (c == '\n' && x < world->x)
                 {
                     /* not enough map data on this line */
-                    Xpmap_missing_error(world->y - y);
-                    c = XPMAP_SPACE;
+                    Map_missing_error(world->y - y);
+                    c = ' ';
                 }
                 else
+                {
                     s++;
+                }
             }
         }
         if (x >= world->x || c == '\n')
@@ -804,18 +850,103 @@ void Xpmap_grok_map_data(void)
             x = -1;
             if (c != '\n')
             { /* Get rest of line */
-                Xpmap_extra_error(world->y - y);
+                Map_extra_error(world->y - y);
                 while (c != '\n' && c != EOF)
+                {
                     c = *s++;
+                }
             }
             continue;
         }
-        blk.bx = x;
-        blk.by = y;
-        World_set_block(blk, c);
+
+        switch (world->block[x][y] = c)
+        {
+        case 'r':
+        case 'd':
+        case 'f':
+        case 'c':
+            world->NumCannons++;
+            break;
+        case '*':
+        case '^':
+            world->NumTreasures++;
+            break;
+        case '#':
+            world->NumFuels++;
+            break;
+        case '!':
+            world->NumTargets++;
+            break;
+        case '%':
+            world->NumItemConcentrators++;
+            break;
+        case '&':
+            world->NumAsteroidConcs++;
+            break;
+        case '_':
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            world->NumBases++;
+            break;
+        case '+':
+        case '-':
+        case '>':
+        case '<':
+        case 'i':
+        case 'm':
+        case 'j':
+        case 'k':
+            world->NumGravs++;
+            break;
+        case '@':
+        case '(':
+        case ')':
+            world->NumWormholes++;
+            break;
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'E':
+        case 'F':
+        case 'G':
+        case 'H':
+        case 'I':
+        case 'J':
+        case 'K':
+        case 'L':
+        case 'M':
+        case 'N':
+        case 'O':
+        case 'P':
+        case 'Q':
+        case 'R':
+        case 'S':
+        case 'T':
+        case 'U':
+        case 'V':
+        case 'W':
+        case 'X':
+        case 'Y':
+        case 'Z':
+            if (BIT(world->rules->mode, TIMING))
+                world->NumChecks++;
+            break;
+        default:
+            break;
+        }
     }
 
-    XFREE(options.mapData);
+    free(options.mapData);
+    options.mapData = NULL;
 }
 
 /*
