@@ -325,7 +325,7 @@ static void Create_config(void)
     full = true;
     for (i = 0; i < Nelem_config_creator(); i++)
     {
-        if (full == true)
+        if (full)
         {
             full = false;
             num++;
@@ -1590,7 +1590,8 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     return 1;
 }
 
-static int Config_save_confirm_callback(int widget_desc, void *popup_desc, const char **strptr)
+static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
+                                        const char **strptr)
 {
     if (config_save_confirm_desc != NO_WIDGET)
     {
@@ -1617,7 +1618,7 @@ int Config(bool doit, int what)
     }
     if (config_mapped == false)
     {
-        if (doit == true)
+        if (doit)
         {
             Widget_raise(config_widget_desc[config_page]);
             config_mapped = true;
@@ -1631,16 +1632,16 @@ int Config(bool doit, int what)
             config_mapped = false;
         }
     }
-    return (config_mapped == true);
+    return (config_mapped);
 }
 
 void Config_destroy(void)
 {
     int i;
 
-    if (config_created == true)
+    if (config_created)
     {
-        if (config_mapped == true)
+        if (config_mapped)
         {
             Widget_unmap(config_widget_desc[config_page]);
             config_mapped = false;
@@ -1659,10 +1660,10 @@ void Config_resize(void)
 {
     bool mapped = config_mapped;
 
-    if (config_created == true)
+    if (config_created)
     {
         Config_destroy();
-        if (mapped == true)
+        if (mapped)
             Config(mapped, config_what);
     }
 }

@@ -1195,20 +1195,16 @@ void Paint_messages(void)
 
 void Paint_recording(void)
 {
-    int w = -1;
-    int x, y;
+    int w, x, y, len;
     char buf[32];
-    int mb, ck, len;
-    long size;
+    double mb;
 
-    if (!recording || (loops % 16) < 8)
+    if (!recording || (loopsSlow % 16) < 8)
         return;
 
     SET_FG(colors[RED].pixel);
-    size = Record_size();
-    mb = size >> 20;
-    ck = (10 * (size - ((long)mb << 20))) >> 20;
-    sprintf(buf, "REC %d.%d", mb, ck);
+    mb = Record_size() / 1e6;
+    sprintf(buf, "REC %.1f MB", mb);
     len = strlen(buf);
     w = XTextWidth(gameFont, buf, len);
     x = WINSCALE(ext_view_width) - 10 - w;
