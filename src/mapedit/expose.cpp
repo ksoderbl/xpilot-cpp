@@ -32,7 +32,7 @@ int smlmap_x, smlmap_y, smlmap_width, smlmap_height;
 float smlmap_xscale, smlmap_yscale;
 
 segment_t mapicon_seg[35] = {
-    {0, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /*  0:x XPMAP_WALL */
+    {0, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /*  0:x MAP_WALL */
     {0, 4, {1.00, 1.00, 0.00, 1.00, 0.00}, {0.00, 1.00, 1.00, 0.00, 0.00}}, /*  1:q */
     {0, 4, {0.00, 0.00, 1.00, 0.00, 0.00}, {0.00, 1.00, 1.00, 0.00, 0.00}}, /*  2:w */
     {0, 4, {0.00, 1.00, 1.00, 0.00, 0.00}, {0.00, 0.00, 1.00, 0.00, 0.00}}, /*  3:a */
@@ -40,17 +40,17 @@ segment_t mapicon_seg[35] = {
 
     {0, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /*  5:# XPMAP_FUEL */
 
-    {1, 4, {0.70, 0.99, 0.99, 0.70, 0.00}, {0.50, 0.99, 0.01, 0.50, 0.00}}, /*  6:d XPMAP_CANNON*/
-    {1, 4, {0.01, 0.99, 0.50, 0.01, 0.00}, {0.99, 0.99, 0.70, 0.99, 0.00}}, /*  7:r XPMAP_CANNON*/
-    {1, 4, {0.50, 0.01, 0.99, 0.50, 0.00}, {0.30, 0.01, 0.01, 0.30, 0.00}}, /*  8:c XPMAP_CANNON*/
-    {1, 4, {0.30, 0.01, 0.01, 0.30, 0.00}, {0.50, 0.99, 0.01, 0.50, 0.00}}, /*  9:f XPMAP_CANNON*/
-    {1, 2, {0.01, 0.99, 0.00, 0.00, 0.00}, {0.99, 0.99, 0.00, 0.00, 0.00}}, /* 10:_ XPMAP_BASE*/
+    {1, 4, {0.70, 0.99, 0.99, 0.70, 0.00}, {0.50, 0.99, 0.01, 0.50, 0.00}}, /*  6:d MAP_CANNON*/
+    {1, 4, {0.01, 0.99, 0.50, 0.01, 0.00}, {0.99, 0.99, 0.70, 0.99, 0.00}}, /*  7:r MAP_CANNON*/
+    {1, 4, {0.50, 0.01, 0.99, 0.50, 0.00}, {0.30, 0.01, 0.01, 0.30, 0.00}}, /*  8:c MAP_CANNON*/
+    {1, 4, {0.30, 0.01, 0.01, 0.30, 0.00}, {0.50, 0.99, 0.01, 0.50, 0.00}}, /*  9:f MAP_CANNON*/
+    {1, 2, {0.01, 0.99, 0.00, 0.00, 0.00}, {0.99, 0.99, 0.00, 0.00, 0.00}}, /* 10:_ MAP_BASE*/
 
-    {2, 5, {0.50, 0.50, 0.50, 0.30, 0.70}, {0.30, 0.70, 0.50, 0.50, 0.50}}, /* 11:+ XPMAP_GRAV_POS*/
-    {2, 2, {0.30, 0.70, 0.00, 0.00, 0.00}, {0.50, 0.50, 0.00, 0.00, 0.00}}, /* 12:- XPMAP_GRAV_NET*/
-    {2, 0, {0.00, 0.00, 0.00, 0.00, 0.00}, {0.00, 0.00, 0.00, 0.00, 0.00}}, /* 13:@ XPMAP_WORM_BOTH */
-    {2, 5, {0.10, 0.70, 0.30, 0.70, 0.70}, {0.10, 0.70, 0.70, 0.70, 0.30}}, /* 14:) XPMAP_WORM_ */
-    {2, 5, {0.70, 0.10, 0.30, 0.10, 0.10}, {0.70, 0.10, 0.10, 0.10, 0.30}}, /* 15:( XPMAP_WORM_ */
+    {2, 5, {0.50, 0.50, 0.50, 0.30, 0.70}, {0.30, 0.70, 0.50, 0.50, 0.50}}, /* 11:+ XPMAP_POS_GRAV */
+    {2, 2, {0.30, 0.70, 0.00, 0.00, 0.00}, {0.50, 0.50, 0.00, 0.00, 0.00}}, /* 12:- MAP_GRAV_NET*/
+    {2, 0, {0.00, 0.00, 0.00, 0.00, 0.00}, {0.00, 0.00, 0.00, 0.00, 0.00}}, /* 13:@ XPMAP_WORMHOLE_BOTH */
+    {2, 5, {0.10, 0.70, 0.30, 0.70, 0.70}, {0.10, 0.70, 0.70, 0.70, 0.30}}, /* 14:) XPMAP_WORMHOLE_ */
+    {2, 5, {0.70, 0.10, 0.30, 0.10, 0.10}, {0.70, 0.10, 0.10, 0.10, 0.30}}, /* 15:( XPMAP_WORMHOLE_ */
     {2, 4, {0.05, 0.05, 0.95, 0.95, 0.00}, {0.50, 0.95, 0.95, 0.50, 0.00}}, /* 16:* XPMAP_TREASURE*/
     {2, 3, {0.60, 0.50, 0.60, 0.00, 0.00}, {0.05, 0.15, 0.30, 0.00, 0.00}}, /* 17:< */
     {2, 3, {0.40, 0.50, 0.40, 0.00, 0.00}, {0.05, 0.15, 0.30, 0.00, 0.00}}, /* 18:> */
@@ -58,7 +58,7 @@ segment_t mapicon_seg[35] = {
 
     {1, 0, {0.00, 0.00, 0.00, 0.00, 0.00}, {0.00, 0.00, 0.00, 0.00, 0.00}}, /* 20:  XPMAP_SPACE */
 
-    {3, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /* 21:b XPMAP_DECORATION */
+    {3, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /* 21:b MAP_DECORATION */
     {3, 4, {1.00, 1.00, 0.00, 1.00, 0.00}, {0.00, 1.00, 1.00, 0.00, 0.00}}, /* 22:t */
     {3, 4, {0.00, 0.00, 1.00, 0.00, 0.00}, {0.00, 1.00, 1.00, 0.00, 0.00}}, /* 23:y */
     {3, 4, {0.00, 1.00, 1.00, 0.00, 0.00}, {0.00, 0.00, 1.00, 0.00, 0.00}}, /* 24:g */
@@ -71,8 +71,8 @@ segment_t mapicon_seg[35] = {
     {2, 5, {0.01, 0.99, 0.50, 0.99, 0.50}, {0.50, 0.50, 0.75, 0.50, 0.25}}, /* 30:k CURRENT RIGHT*/
     {2, 5, {0.50, 0.50, 0.75, 0.50, 0.25}, {0.01, 0.99, 0.50, 0.99, 0.50}}, /* 31:m CURRENT DOWN*/
     {2, 4, {0.05, 0.05, 0.95, 0.95, 0.00}, {0.50, 0.95, 0.95, 0.50, 0.00}}, /* 32:^ XPMAP_EMPTY_TREASURE*/
-    {0, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /* 33:z XPMAP_FRICTION */
-    {0, 5, {0.10, 0.85, 0.85, 0.10, 0.10}, {0.85, 0.85, 0.10, 0.10, 0.85}}, /* 34:& XPMAP_FRICTION */
+    {0, 5, {0.00, 1.00, 1.00, 0.00, 0.00}, {1.00, 1.00, 0.00, 0.00, 1.00}}, /* 33:z XPMAP_FRICTION_AREA */
+    {0, 5, {0.10, 0.85, 0.85, 0.10, 0.10}, {0.85, 0.85, 0.10, 0.10, 0.85}}, /* 34:& XPMAP_FRICTION_AREA */
 };
 
 segment_t mapicondet_seg[4] = {
@@ -130,9 +130,11 @@ void DrawTools(void)
         {
             sel = i * 5 + j + 1;
             if (sel == drawicon)
-                DrawMapPic(mapwin, 14 + j * w, 9 + i * w, mapicon_ptr[iconmenu[sel] - 32], w - 7);
+                DrawMapPic(mapwin, 14 + j * w, 9 + i * w,
+                           mapicon_ptr[iconmenu[sel] - 32], w - 7);
             else
-                DrawMapPic(mapwin, 13 + j * w, 8 + i * w, mapicon_ptr[iconmenu[sel] - 32], w - 7);
+                DrawMapPic(mapwin, 13 + j * w, 8 + i * w,
+                           mapicon_ptr[iconmenu[sel] - 32], w - 7);
         }
 }
 
@@ -187,7 +189,8 @@ void DrawMap(int x, int y, int width, int height)
 /*   ypos                                                                  */
 /* Purpose :                                                               */
 /***************************************************************************/
-void DrawMapSection(int x, int y, int width, int height, int xpos, int ypos)
+void DrawMapSection(int x, int y, int width, int height, int xpos,
+                    int ypos)
 {
     int i, j, w, h, data;
     char strng[2];
@@ -195,13 +198,15 @@ void DrawMapSection(int x, int y, int width, int height, int xpos, int ypos)
     if (x < 0)
     {
         DrawMapSection(map.width + x, y, (0 - x), height, xpos, ypos);
-        DrawMapSection(0, y, width + x, height, xpos - (x * map.view_zoom), ypos);
+        DrawMapSection(0, y, width + x, height, xpos - (x * map.view_zoom),
+                       ypos);
         return;
     }
     if (y < 0)
     {
         DrawMapSection(x, map.height + y, width, (0 - y), xpos, ypos);
-        DrawMapSection(x, 0, width, height + y, xpos, ypos - (y * map.view_zoom));
+        DrawMapSection(x, 0, width, height + y, xpos,
+                       ypos - (y * map.view_zoom));
         return;
     }
     if ((x + width) > map.width)
@@ -228,15 +233,17 @@ void DrawMapSection(int x, int y, int width, int height, int xpos, int ypos)
             {
                 data = map.data[i][j];
                 DrawMapPic(mapwin, (i - x) * map.view_zoom + xpos,
-                           (j - y) * map.view_zoom + ypos, mapicon_ptr[data - 32],
-                           map.view_zoom);
+                           (j - y) * map.view_zoom + ypos,
+                           mapicon_ptr[data - 32], map.view_zoom);
                 if (((data > 47) && (data < 58)) || ((data > 64) && (data < 91)))
                 {
                     strng[0] = data;
                     strng[1] = '\0';
                     T_DrawString(mapwin, (i - x) * map.view_zoom + xpos,
-                                 (j - y) * map.view_zoom + 1 + ypos, map.view_zoom, map.view_zoom - 1,
-                                 White_GC, strng, JUSTIFY_CENTER, CROP_RIGHT, -1);
+                                 (j - y) * map.view_zoom + 1 + ypos,
+                                 map.view_zoom, map.view_zoom - 1,
+                                 White_GC, strng, JUSTIFY_CENTER,
+                                 CROP_RIGHT, -1);
                 }
             }
         }
@@ -285,7 +292,8 @@ void DrawMapPic(Window win, int x, int y, int picnum, int zoom)
     {
         XDrawLines(display, win, Wall_GC, points,
                    mapicon_seg[picnum].num_points, CoordModeOrigin);
-        XFillRectangle(display, win, Fuel_GC, x + 1, y + 1, zoom - 1, zoom - 1);
+        XFillRectangle(display, win, Fuel_GC, x + 1, y + 1, zoom - 1,
+                       zoom - 1);
         return;
     }
     else if ((picnum >= 6) && (picnum <= 9))
@@ -411,41 +419,50 @@ void DrawMapPic(Window win, int x, int y, int picnum, int zoom)
     { /* Wormhole */
         XDrawArc(display, win, Wormhole_GC, (int)(x + (zoom - arc) / 2),
                  (int)(y + (zoom - arc) / 2), arc, arc, 0, 23040);
-        XDrawArc(display, win, Wormhole_GC, (int)(x + .15 * zoom), (int)(y + .15 * zoom),
-                 (int)(.4 * zoom), (int)(.4 * zoom), 0, 23040);
+        XDrawArc(display, win, Wormhole_GC, (int)(x + .15 * zoom),
+                 (int)(y + .15 * zoom), (int)(.4 * zoom),
+                 (int)(.4 * zoom), 0, 23040);
         return;
     }
     else if ((picnum == 16) || (picnum == 32))
     { /* Treasure or empty treasure*/
-        XDrawArc(display, win, Treasure_GC, (int)(x + .05 * zoom), (int)(y + .05 * zoom),
-                 (int)(.9 * zoom), (int)(1 * zoom), 0, 11520);
+        XDrawArc(display, win, Treasure_GC, (int)(x + .05 * zoom),
+                 (int)(y + .05 * zoom), (int)(.9 * zoom),
+                 (int)(1 * zoom), 0, 11520);
         if (picnum == 16)
-            XDrawArc(display, win, White_GC, (int)(x + .15 * zoom), (int)(y + .4 * zoom),
-                     (int)(.5 * zoom), (int)(.5 * zoom), 0, 23040);
+            XDrawArc(display, win, White_GC, (int)(x + .15 * zoom),
+                     (int)(y + .4 * zoom), (int)(.5 * zoom),
+                     (int)(.5 * zoom), 0, 23040);
         return;
     }
     else if (picnum == 17)
     { /* Gravity */
-        XDrawArc(display, win, Gravity_GC, (int)(x + .15 * zoom), (int)(y + .15 * zoom),
-                 (int)(.7 * zoom), (int)(.7 * zoom), 5760, -18880);
+        XDrawArc(display, win, Gravity_GC, (int)(x + .15 * zoom),
+                 (int)(y + .15 * zoom), (int)(.7 * zoom),
+                 (int)(.7 * zoom), 5760, -18880);
         return;
     }
     else if (picnum == 18)
     { /* Gravity */
-        XDrawArc(display, win, Gravity_GC, (int)(x + .15 * zoom), (int)(y + .15 * zoom),
-                 (int)(.7 * zoom), (int)(.7 * zoom), 5760, 18880);
+        XDrawArc(display, win, Gravity_GC, (int)(x + .15 * zoom),
+                 (int)(y + .15 * zoom), (int)(.7 * zoom),
+                 (int)(.7 * zoom), 5760, 18880);
         return;
     }
     else if (picnum == 26)
     { /* Born Facing */
-        XDrawArc(display, win, Base_GC, (int)(x + .15 * zoom), (int)(y + .15 * zoom),
-                 (int)(.7 * zoom), (int)(.7 * zoom), 0, 23040);
-        XDrawArc(display, win, Base_GC, (int)(x + .35 * zoom), (int)(y + .35 * zoom),
-                 (int)(.05 * zoom), (int)(.05 * zoom), 0, 23040);
-        XDrawArc(display, win, Base_GC, (int)(x + .60 * zoom), (int)(y + .35 * zoom),
-                 (int)(.05 * zoom), (int)(.05 * zoom), 0, 23040);
-        XDrawArc(display, win, Base_GC, (int)(x + .25 * zoom), (int)(y + .15 * zoom),
-                 (int)(.5 * zoom), (int)(.5 * zoom), 0, -12000);
+        XDrawArc(display, win, Base_GC, (int)(x + .15 * zoom),
+                 (int)(y + .15 * zoom), (int)(.7 * zoom),
+                 (int)(.7 * zoom), 0, 23040);
+        XDrawArc(display, win, Base_GC, (int)(x + .35 * zoom),
+                 (int)(y + .35 * zoom), (int)(.05 * zoom),
+                 (int)(.05 * zoom), 0, 23040);
+        XDrawArc(display, win, Base_GC, (int)(x + .60 * zoom),
+                 (int)(y + .35 * zoom), (int)(.05 * zoom),
+                 (int)(.05 * zoom), 0, 23040);
+        XDrawArc(display, win, Base_GC, (int)(x + .25 * zoom),
+                 (int)(y + .15 * zoom), (int)(.5 * zoom),
+                 (int)(.5 * zoom), 0, -12000);
         return;
     }
 }
@@ -460,8 +477,8 @@ void DrawSmallMap(void)
     int i, j;
 
     T_ClearArea(smlmap_pixmap, 0, 0, TOOLSWIDTH, TOOLSWIDTH);
-    T_DrawButton(smlmap_pixmap, smlmap_x - 5, smlmap_y - 5, smlmap_width + 10,
-                 smlmap_height + 10, LOWERED, 0);
+    T_DrawButton(smlmap_pixmap, smlmap_x - 5, smlmap_y - 5,
+                 smlmap_width + 10, smlmap_height + 10, LOWERED, 0);
     XFillRectangle(display, smlmap_pixmap, Black_GC, smlmap_x, smlmap_y,
                    smlmap_width, smlmap_height);
     for (i = 0; i < smlmap_height; i++)
@@ -476,66 +493,80 @@ void DrawSmallMap(void)
             case 2:
             case 3:
             case 4:
-                XDrawPoint(display, smlmap_pixmap, Wall_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Wall_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 5:
-                XDrawPoint(display, smlmap_pixmap, Fuel_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Fuel_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 6:
             case 7:
             case 8:
             case 9:
-                XDrawPoint(display, smlmap_pixmap, Cannon_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Cannon_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 10:
-                XDrawPoint(display, smlmap_pixmap, Base_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Base_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 11:
             case 12:
-                XDrawPoint(display, smlmap_pixmap, Gravity_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Gravity_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             case 13:
             case 14:
             case 15:
-                XDrawPoint(display, smlmap_pixmap, Wormhole_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Wormhole_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             case 16:
             case 32:
-                XDrawPoint(display, smlmap_pixmap, Treasure_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Treasure_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             case 17:
             case 18:
-                XDrawPoint(display, smlmap_pixmap, Gravity_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Gravity_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             case 19:
-                XDrawPoint(display, smlmap_pixmap, Target_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Target_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 21:
             case 22:
             case 23:
             case 24:
             case 25:
-                XDrawPoint(display, smlmap_pixmap, Decor_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Decor_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 26:
-                XDrawPoint(display, smlmap_pixmap, Base_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Base_GC, j + smlmap_x,
+                           i + smlmap_y);
                 break;
             case 27:
-                XDrawPoint(display, smlmap_pixmap, Item_Conc_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Item_Conc_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             case 28:
             case 29:
             case 30:
             case 31:
-                XDrawPoint(display, smlmap_pixmap, Current_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Current_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             case 33:
-                XDrawPoint(display, smlmap_pixmap, Friction_GC, j + smlmap_x, i + smlmap_y);
+                XDrawPoint(display, smlmap_pixmap, Friction_GC,
+                           j + smlmap_x, i + smlmap_y);
                 break;
             }
 
-    XCopyArea(display, smlmap_pixmap, mapwin, White_GC, 1, 0, TOOLSWIDTH - 2,
-              TOOLSWIDTH, 1, TOOLSHEIGHT - TOOLSWIDTH);
+    XCopyArea(display, smlmap_pixmap, mapwin, White_GC, 1, 0,
+              TOOLSWIDTH - 2, TOOLSWIDTH, 1, TOOLSHEIGHT - TOOLSWIDTH);
     DrawViewBox();
 }
 
@@ -566,70 +597,86 @@ void UpdateSmallMap(int x, int y)
                                    32];
                 switch (data)
                 {
+
                 case 0:
                 case 1:
                 case 2:
                 case 3:
                 case 4:
-                    XDrawPoint(display, mapwin, Wall_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Wall_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 5:
-                    XDrawPoint(display, mapwin, Fuel_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Fuel_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 6:
                 case 7:
                 case 8:
                 case 9:
-                    XDrawPoint(display, mapwin, Cannon_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Cannon_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 10:
-                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 11:
                 case 12:
-                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 13:
                 case 14:
                 case 15:
-                    XDrawPoint(display, mapwin, Wormhole_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Wormhole_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 16:
                 case 32:
-                    XDrawPoint(display, mapwin, Treasure_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Treasure_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 17:
                 case 18:
-                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 19:
-                    XDrawPoint(display, mapwin, Target_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Target_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 21:
                 case 22:
                 case 23:
                 case 24:
                 case 25:
-                    XDrawPoint(display, mapwin, Decor_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Decor_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
 
                 case 26:
-                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 27:
-                    XDrawPoint(display, mapwin, Item_Conc_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Item_Conc_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 28:
                 case 29:
                 case 30:
                 case 31:
-                    XDrawPoint(display, mapwin, Current_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Current_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 33:
-                    XDrawPoint(display, mapwin, Friction_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Friction_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 default:
-                    XDrawPoint(display, mapwin, Black_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Black_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 }
             }
@@ -650,62 +697,76 @@ void UpdateSmallMap(int x, int y)
                 case 2:
                 case 3:
                 case 4:
-                    XDrawPoint(display, mapwin, Wall_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Wall_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 5:
-                    XDrawPoint(display, mapwin, Fuel_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Fuel_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 6:
                 case 7:
                 case 8:
                 case 9:
-                    XDrawPoint(display, mapwin, Cannon_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Cannon_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 10:
-                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 11:
                 case 12:
-                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 13:
                 case 14:
                 case 15:
-                    XDrawPoint(display, mapwin, Wormhole_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Wormhole_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 16:
                 case 32:
-                    XDrawPoint(display, mapwin, Treasure_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Treasure_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 17:
                 case 18:
-                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Gravity_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 21:
                 case 22:
                 case 23:
                 case 24:
                 case 25:
-                    XDrawPoint(display, mapwin, Decor_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Decor_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
 
                 case 26:
-                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Base_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 27:
-                    XDrawPoint(display, mapwin, Item_Conc_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Item_Conc_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 28:
                 case 29:
                 case 30:
                 case 31:
-                    XDrawPoint(display, mapwin, Current_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Current_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 case 33:
-                    XDrawPoint(display, mapwin, Friction_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Friction_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 default:
-                    XDrawPoint(display, mapwin, Black_GC, i + smlmap_x, j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
+                    XDrawPoint(display, mapwin, Black_GC, i + smlmap_x,
+                               j + smlmap_y + TOOLSHEIGHT - TOOLSWIDTH);
                     break;
                 }
             }
