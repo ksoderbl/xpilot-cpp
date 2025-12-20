@@ -534,14 +534,22 @@ extern bool auto_shield;           /* drops shield for fire */
 extern bool initialPointerControl; /* Start by using mouse for control? */
 extern bool pointerControl;        /* current state of mouse ship flying */
 
-extern int maxFPS; /* Client's own FPS */
+extern int maxFPS; /* Max FPS player wants from server */
 extern int oldMaxFPS;
 
 extern double clientFPS;    /* FPS client is drawing at */
 extern double timePerFrame; /* Time a frame is shown, unit s */
 extern int clientLag;       /* Time to draw a frame, unit us */
-extern bool newSecond;      /* Second changed this frame */
 extern long twelveHz;       /* Attempt to increment this at 12Hz */
+
+extern int recordFPS;      /* What FPS to record at */
+extern time_t currentTime; /* Current value of time() */
+extern bool newSecond;     /* Did time() increment this frame? */
+extern int maxMouseTurnsPS;
+extern int mouseMovementInterval;
+extern int cumulativeMouseMovement;
+
+extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
 extern int clientPortStart; /* First UDP port for clients */
 extern int clientPortEnd;   /* Last one (these are for firewalls) */

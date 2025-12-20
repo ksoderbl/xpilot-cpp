@@ -82,7 +82,11 @@ uint8_t numItems[NUM_ITEMS];     /* Count of currently owned items */
 uint8_t lastNumItems[NUM_ITEMS]; /* Last item count shown */
 int numItemsTime[NUM_ITEMS];     /* Number of frames to show this item count */
 double showItemsTime;            /* How long to show changed item count for */
+double scoreObjectTime;          /* How long to flash score objects */
+
 short autopilotLight;
+
+int showScoreDecimals;
 
 short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
@@ -164,13 +168,20 @@ bool shields = true;        /* When shields are considered up */
 
 bool auto_shield = true; /* shield drops for fire */
 
-int maxFPS; /* Client's own FPS */
-int oldMaxFPS;
+int maxFPS; /* Max FPS player wants from server */
+int oldMaxFPS = 0;
 double clientFPS = 1.0; /* FPS client is drawing at */
 // double timePerFrame = 0.0; /* Time a frame is shown, unit seconds */
 int clientLag = 0;
-bool newSecond = false; /* Second changed this frame */
-long twelveHz = 0;      /* We attempt to increment this at 12 Hz */
+long twelveHz = 0; /* We attempt to increment this at 12 Hz */
+
+int recordFPS = 0;      /* What FPS to record at */
+time_t currentTime = 0; /* Current value of time() */
+bool newSecond = false; /* Did time() increment this frame? */
+
+int maxMouseTurnsPS = 0;
+int mouseMovementInterval = 0;
+int cumulativeMouseMovement = 0;
 
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */

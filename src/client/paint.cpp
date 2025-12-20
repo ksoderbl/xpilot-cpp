@@ -104,6 +104,33 @@ void Paint_frame_start(void)
     if (start_loops != end_loops)
         warn("Start neq. End (%ld,%ld,%ld)", start_loops, end_loops, loops);
     loops = end_loops;
+
+    /*
+     * If time() changed from previous value, assume one second has passed.
+     */
+    if (newSecond)
+    {
+        /* kps - improve */
+        recordFPS = (int)(clientFPS + 0.5);
+        timePerFrame = 1.0 / recordFPS;
+
+        /* TODO: move this somewhere else */
+        /* check once per second if we are playing */
+        if (newSecond && self && !strchr("PW", self->mychar))
+            played_this_round = true;
+    }
+
+    /*
+     * Instead of using loops to determining if things are drawn this frame,
+     * loopsSlow should be used. We don't want things to be drawn too fast
+     * at high fps.
+     */
+    time_counter += timePerFrame;
+    if (time_counter >= (1.0 / 12))
+    {
+        loopsSlow++;
+        time_counter -= (1.0 / 12);
+    }
 }
 
 void Paint_score_table(void)
