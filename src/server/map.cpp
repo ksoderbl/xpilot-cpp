@@ -257,6 +257,21 @@ int World_place_target(clpos_t pos, int team)
 
 int World_place_wormhole(clpos_t pos, wormtype_t type)
 {
+    wormhole_t t;
+    int ind = Num_wormholes();
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.pos = pos;
+    t.countdown = 0;
+    t.lastdest = -1;
+    t.temporary = false;
+    t.lastblock = SPACE;
+    t.lastID = -1;
+
+    // Arraylist_add(world->wormholes, &t);
+    world->wormholes[ind] = t;
+    world->NumWormholes++;
+    return ind;
+
     // wormhole_t t;
     // int ind = Num_wormholes();
 
@@ -270,9 +285,6 @@ int World_place_wormhole(clpos_t pos, wormtype_t type)
     // Arraylist_add(world->wormholes, &t);
 
     // return ind;
-
-    // TODO
-    return -1;
 }
 
 /*

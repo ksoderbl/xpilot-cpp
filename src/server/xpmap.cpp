@@ -1700,6 +1700,8 @@ void Xpmap_tags_to_internal_data(void)
                 case '@':
                 case '(':
                 case ')':
+                    world->block[x][y] = WORMHOLE;
+                    world->itemID[x][y] = world->NumWormholes;
                     // world->wormholes[world->NumWormholes].blk_pos.bx = x;
                     // world->wormholes[world->NumWormholes].blk_pos.by = y;
                     // world->wormholes[world->NumWormholes].pos.cx = cx;
@@ -1727,6 +1729,23 @@ void Xpmap_tags_to_internal_data(void)
                     // line[y] = WORMHOLE;
                     // itemID[y] = world->NumWormholes;
                     // world->NumWormholes++;
+
+                    if (c == '@')
+                    {
+                        World_place_wormhole(pos, WORM_NORMAL);
+                        worm_norm++;
+                    }
+                    else if (c == '(')
+                    {
+                        World_place_wormhole(pos, WORM_IN);
+                        worm_in++;
+                    }
+                    else
+                    {
+                        World_place_wormhole(pos, WORM_OUT);
+                        worm_out++;
+                    }
+
                     break;
 
                 case 'A':
