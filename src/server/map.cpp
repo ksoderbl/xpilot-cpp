@@ -86,6 +86,20 @@ static void Print_map(void) /* Debugging only. */
 
 int World_place_cannon(clpos_t pos, int dir, int team)
 {
+    cannon_t t;
+    int ind = Num_cannons();
+    t.dir = dir;
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.pix_pos = Clpos_to_position(pos);
+    t.pos = pos;
+    t.dead_ticks = 0;
+    t.conn_mask = (unsigned)-1;
+    t.team = team;
+    world->cannons[ind] = t;
+    Cannon_init(Cannon_by_index(ind));
+    world->NumCannons++;
+    return ind;
+
     // cannon_t t, *cannon;
     // int ind = Num_cannons(), i;
 
@@ -112,27 +126,25 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     // assert(Cannon_by_id(t.id) == cannon);
 
     // return ind;
-
-    // TODO
-    return -1;
 }
 
 int World_place_fuel(clpos_t pos, int team)
 {
-    // fuel_t t;
-    // int ind = Num_fuels();
-
-    // t.pos = pos;
-    // t.fuel = START_STATION_FUEL;
+    fuel_t t;
+    int ind = Num_fuels();
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.pix_pos = Clpos_to_position(pos);
+    t.pos = pos;
+    t.fuel = START_STATION_FUEL;
     // t.conn_mask = ~0;
-    // t.last_change = frame_loops;
-    // t.team = team;
+    t.conn_mask = (unsigned)-1;
+    t.last_change = frame_loops;
+    t.team = team;
+
     // Arraylist_add(world->fuels, &t);
-
-    // return ind;
-
-    // TODO
-    return -1;
+    world->fuels[ind] = t;
+    world->NumFuels++;
+    return ind;
 }
 
 int World_place_base(clpos_t pos, int dir, int team, int order)
@@ -186,6 +198,19 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
 int World_place_treasure(clpos_t pos, int team, bool empty,
                          int ball_style)
 {
+    treasure_t t;
+    int ind = Num_treasures();
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.pos = pos;
+    t.have = false;
+    t.destroyed = 0;
+    t.empty = empty;
+
+    // Arraylist_add(world->treasures, &t);
+    world->treasures[ind] = t;
+    world->NumTreasures++;
+    return ind;
+
     // treasure_t t;
     // int ind = Num_treasures();
 
@@ -203,9 +228,6 @@ int World_place_treasure(clpos_t pos, int team, bool empty,
     // Arraylist_add(world->treasures, &t);
 
     // return ind;
-
-    // TODO
-    return -1;
 }
 
 int World_place_target(clpos_t pos, int team)

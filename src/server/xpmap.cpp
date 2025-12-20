@@ -1384,179 +1384,193 @@ void Xpmap_tags_to_internal_data(void)
 
         for (x = 0; x < world->x; x++)
         {
-            uint8_t *line = world->block[x];
-            uint16_t *itemID = world->itemID[x];
+            // uint8_t *line = world->block[x];
+            // uint16_t *itemID = world->itemID[x];
 
             for (y = 0; y < world->y; y++)
             {
-                char c = line[y];
-                int cx = (x + 0.5) * BLOCK_CLICKS;
-                int cy = (y + 0.5) * BLOCK_CLICKS;
+                // char c = line[y];
+                char c = world->block[x][y];
+                clpos_t pos;
+                pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                pos.cy = (y + 0.5) * BLOCK_CLICKS;
+                blkpos_t blk_pos = Clpos_to_blkpos(pos);
 
-                itemID[y] = (uint16_t)-1;
+                world->itemID[x][y] = (uint16_t)-1;
+
+                // Default: space
+                World_set_block(blk_pos, SPACE);
 
                 switch (c)
                 {
                 case ' ':
                 case '.':
                 default:
-                    line[y] = SPACE;
+                    World_set_block(blk_pos, SPACE);
                     break;
 
                 case 'x':
-                    line[y] = FILLED;
+                    World_set_block(blk_pos, FILLED);
                     break;
                 case 's':
-                    line[y] = REC_LU;
+                    World_set_block(blk_pos, REC_LU);
                     break;
                 case 'a':
-                    line[y] = REC_RU;
+                    World_set_block(blk_pos, REC_RU);
                     break;
                 case 'w':
-                    line[y] = REC_LD;
+                    World_set_block(blk_pos, REC_LD);
                     break;
                 case 'q':
-                    line[y] = REC_RD;
+                    World_set_block(blk_pos, REC_RD);
                     break;
 
                 case 'r':
-                    line[y] = CANNON;
-                    itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_UP;
-                    world->cannons[world->NumCannons].blk_pos.bx = x;
-                    world->cannons[world->NumCannons].blk_pos.by = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = cx;
-                    world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].dead_ticks = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
-                    world->NumCannons++;
+                    world->block[x][y] = CANNON;
+                    world->itemID[x][y] = world->NumCannons;
+                    // world->cannons[world->NumCannons].dir = DIR_UP;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = cx;
+                    // world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].dead_ticks = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->NumCannons++;
+                    pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    pos.cy = (y + 0.333) * BLOCK_CLICKS;
+                    World_place_cannon(pos, DIR_UP, TEAM_NOT_SET);
                     break;
                 case 'd':
-                    line[y] = CANNON;
-                    itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_LEFT;
-                    world->cannons[world->NumCannons].blk_pos.bx = x;
-                    world->cannons[world->NumCannons].blk_pos.by = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = (x + 0.667) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].pos.cy = cy;
-                    world->cannons[world->NumCannons].dead_ticks = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
-                    world->NumCannons++;
+                    world->block[x][y] = CANNON;
+                    world->itemID[x][y] = world->NumCannons;
+                    // world->cannons[world->NumCannons].dir = DIR_LEFT;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx =  * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].pos.cy = cy;
+                    // world->cannons[world->NumCannons].dead_ticks = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->NumCannons++;
+                    pos.cx = (x + 0.667) * BLOCK_CLICKS;
+                    pos.cy = (y + 0.5) * BLOCK_CLICKS;
+                    World_place_cannon(pos, DIR_LEFT, TEAM_NOT_SET);
                     break;
                 case 'f':
-                    line[y] = CANNON;
-                    itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_RIGHT;
-                    world->cannons[world->NumCannons].blk_pos.bx = x;
-                    world->cannons[world->NumCannons].blk_pos.by = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].pos.cy = cy;
-                    world->cannons[world->NumCannons].dead_ticks = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
-                    world->NumCannons++;
+                    world->block[x][y] = CANNON;
+                    world->itemID[x][y] = world->NumCannons;
+                    // world->cannons[world->NumCannons].dir = DIR_RIGHT;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].pos.cy = cy;
+                    // world->cannons[world->NumCannons].dead_ticks = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->NumCannons++;
+                    pos.cx = (x + 0.333) * BLOCK_CLICKS;
+                    pos.cy = (y + 0.5) * BLOCK_CLICKS;
+                    World_place_cannon(pos, DIR_RIGHT, TEAM_NOT_SET);
                     break;
                 case 'c':
-                    line[y] = CANNON;
-                    itemID[y] = world->NumCannons;
-                    world->cannons[world->NumCannons].dir = DIR_DOWN;
-                    world->cannons[world->NumCannons].blk_pos.bx = x;
-                    world->cannons[world->NumCannons].blk_pos.by = y;
-                    world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
-                    world->cannons[world->NumCannons].pos.cx = cx;
-                    world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
-                    world->cannons[world->NumCannons].dead_ticks = 0;
-                    world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    Cannon_init(Cannon_by_index(world->NumCannons));
-                    world->NumCannons++;
+                    world->block[x][y] = CANNON;
+                    world->itemID[x][y] = world->NumCannons;
+                    // world->cannons[world->NumCannons].dir = DIR_DOWN;
+                    // world->cannons[world->NumCannons].blk_pos.bx = x;
+                    // world->cannons[world->NumCannons].blk_pos.by = y;
+                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
+                    // world->cannons[world->NumCannons].pos.cx = cx;
+                    // world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
+                    // world->cannons[world->NumCannons].dead_ticks = 0;
+                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
+                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
+                    // Cannon_init(Cannon_by_index(world->NumCannons));
+                    // world->NumCannons++;
+                    pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    pos.cy = (y + 0.667) * BLOCK_CLICKS;
+                    World_place_cannon(pos, DIR_DOWN, TEAM_NOT_SET);
                     break;
 
                 case '#':
-                    line[y] = FUEL;
-                    itemID[y] = world->NumFuels;
-                    world->fuels[world->NumFuels].blk_pos.bx = x;
-                    world->fuels[world->NumFuels].blk_pos.by = y;
-                    world->fuels[world->NumFuels].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    world->fuels[world->NumFuels].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    world->fuels[world->NumFuels].pos.cx = cx;
-                    world->fuels[world->NumFuels].pos.cy = cy;
-                    world->fuels[world->NumFuels].fuel = START_STATION_FUEL;
-                    world->fuels[world->NumFuels].conn_mask = (unsigned)-1;
-                    world->fuels[world->NumFuels].last_change = frame_loops;
-                    world->fuels[world->NumFuels].team = TEAM_NOT_SET;
-                    world->NumFuels++;
+                    world->block[x][y] = FUEL;
+                    world->itemID[x][y] = world->NumFuels;
+                    World_place_fuel(pos, TEAM_NOT_SET);
                     break;
 
                 case '*':
                 case '^':
-                    line[y] = TREASURE;
-                    itemID[y] = world->NumTreasures;
-                    world->treasures[world->NumTreasures].blk_pos.bx = x;
-                    world->treasures[world->NumTreasures].blk_pos.by = y;
-                    world->treasures[world->NumTreasures].pos.cx = cx;
-                    world->treasures[world->NumTreasures].pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
-                    world->treasures[world->NumTreasures].have = false;
-                    world->treasures[world->NumTreasures].destroyed = 0;
-                    world->treasures[world->NumTreasures].empty = (c == '^');
-                    /*
-                     * Determining which team it belongs to is done later,
-                     * in Find_closest_team().
-                     */
-                    world->treasures[world->NumTreasures].team = 0;
-                    world->NumTreasures++;
+                    world->block[x][y] = TREASURE;
+                    world->itemID[x][y] = world->NumTreasures;
+                    // line[y] = TREASURE;
+                    // itemID[y] = world->NumTreasures;
+                    // world->treasures[world->NumTreasures].blk_pos.bx = x;
+                    // world->treasures[world->NumTreasures].blk_pos.by = y;
+                    // world->treasures[world->NumTreasures].pos.cx = cx;
+                    // world->treasures[world->NumTreasures].pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
+                    // world->treasures[world->NumTreasures].have = false;
+                    // world->treasures[world->NumTreasures].destroyed = 0;
+                    // world->treasures[world->NumTreasures].empty = (c == '^');
+                    // /*
+                    //  * Determining which team it belongs to is done later,
+                    //  * in Find_closest_team().
+                    //  */
+                    // world->treasures[world->NumTreasures].team = 0;
+                    // world->NumTreasures++;
+                    pos.cx = (x + 0.5) * BLOCK_CLICKS;
+                    pos.cy = (y * BLOCK_CLICKS) + 10 * PIXEL_CLICKS;
+                    // bool empty = (c == '^');
+                    World_place_treasure(pos, 0, (c == '^'), 0xff);
                     break;
                 case '!':
-                    line[y] = TARGET;
-                    itemID[y] = world->NumTargets;
-                    world->targets[world->NumTargets].blk_pos.bx = x;
-                    world->targets[world->NumTargets].blk_pos.by = y;
-                    world->targets[world->NumTargets].pos.cx = cx;
-                    world->targets[world->NumTargets].pos.cy = cy;
-                    /*
-                     * Determining which team it belongs to is done later,
-                     * in Find_closest_team().
-                     */
-                    world->targets[world->NumTargets].team = 0;
-                    world->targets[world->NumTargets].dead_ticks = 0;
-                    world->targets[world->NumTargets].damage = TARGET_DAMAGE;
-                    world->targets[world->NumTargets].conn_mask = (unsigned)-1;
-                    world->targets[world->NumTargets].update_mask = 0;
-                    world->targets[world->NumTargets].last_change = frame_loops;
-                    world->NumTargets++;
+                    // line[y] = TARGET;
+                    // itemID[y] = world->NumTargets;
+                    // world->targets[world->NumTargets].blk_pos.bx = x;
+                    // world->targets[world->NumTargets].blk_pos.by = y;
+                    // world->targets[world->NumTargets].pos.cx = cx;
+                    // world->targets[world->NumTargets].pos.cy = cy;
+                    // /*
+                    //  * Determining which team it belongs to is done later,
+                    //  * in Find_closest_team().
+                    //  */
+                    // world->targets[world->NumTargets].team = 0;
+                    // world->targets[world->NumTargets].dead_ticks = 0;
+                    // world->targets[world->NumTargets].damage = TARGET_DAMAGE;
+                    // world->targets[world->NumTargets].conn_mask = (unsigned)-1;
+                    // world->targets[world->NumTargets].update_mask = 0;
+                    // world->targets[world->NumTargets].last_change = frame_loops;
+                    // world->NumTargets++;
                     break;
                 case '%':
-                    line[y] = ITEM_CONCENTRATOR;
-                    itemID[y] = world->NumItemConcentrators;
-                    world->itemConcentrators[world->NumItemConcentrators].blk_pos.bx = x;
-                    world->itemConcentrators[world->NumItemConcentrators].blk_pos.by = y;
-                    world->itemConcentrators[world->NumItemConcentrators].pos.cx = cx;
-                    world->itemConcentrators[world->NumItemConcentrators].pos.cy = cy;
-                    world->NumItemConcentrators++;
+                    // line[y] = ITEM_CONCENTRATOR;
+                    // itemID[y] = world->NumItemConcentrators;
+                    // world->itemConcentrators[world->NumItemConcentrators].blk_pos.bx = x;
+                    // world->itemConcentrators[world->NumItemConcentrators].blk_pos.by = y;
+                    // world->itemConcentrators[world->NumItemConcentrators].pos.cx = cx;
+                    // world->itemConcentrators[world->NumItemConcentrators].pos.cy = cy;
+                    // world->NumItemConcentrators++;
                     break;
                 case '&':
-                    line[y] = ASTEROID_CONCENTRATOR;
-                    itemID[y] = world->NumAsteroidConcs;
-                    world->asteroidConcs[world->NumAsteroidConcs].blk_pos.bx = x;
-                    world->asteroidConcs[world->NumAsteroidConcs].blk_pos.by = y;
-                    world->asteroidConcs[world->NumAsteroidConcs].pos.cx = cx;
-                    world->asteroidConcs[world->NumAsteroidConcs].pos.cy = cy;
-                    world->NumAsteroidConcs++;
+                    // line[y] = ASTEROID_CONCENTRATOR;
+                    // itemID[y] = world->NumAsteroidConcs;
+                    // world->asteroidConcs[world->NumAsteroidConcs].blk_pos.bx = x;
+                    // world->asteroidConcs[world->NumAsteroidConcs].blk_pos.by = y;
+                    // world->asteroidConcs[world->NumAsteroidConcs].pos.cx = cx;
+                    // world->asteroidConcs[world->NumAsteroidConcs].pos.cy = cy;
+                    // world->NumAsteroidConcs++;
                     break;
                 case '$':
-                    line[y] = BASE_ATTRACTOR;
+                    world->block[x][y] = BASE_ATTRACTOR;
                     break;
                 case '_':
                 case '0':
@@ -1569,12 +1583,11 @@ void Xpmap_tags_to_internal_data(void)
                 case '7':
                 case '8':
                 case '9':
-                    line[y] = BASE;
-                    itemID[y] = world->NumBases;
-                    world->bases[world->NumBases].blk_pos.bx = x;
-                    world->bases[world->NumBases].blk_pos.by = y;
-                    world->bases[world->NumBases].pos.cx = cx;
-                    world->bases[world->NumBases].pos.cy = cy;
+                    world->block[x][y] = BASE;
+                    // line[y] = BASE;
+                    world->itemID[x][y] = world->NumBases;
+                    world->bases[world->NumBases].blk_pos = Clpos_to_blkpos(pos);
+                    world->bases[world->NumBases].pos = pos;
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
@@ -1604,116 +1617,116 @@ void Xpmap_tags_to_internal_data(void)
                     break;
 
                 case '+':
-                    line[y] = POS_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = POS_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case '-':
-                    line[y] = NEG_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = NEG_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case '>':
-                    line[y] = CWISE_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = CWISE_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case '<':
-                    line[y] = ACWISE_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = ACWISE_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case 'i':
-                    line[y] = UP_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = UP_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case 'm':
-                    line[y] = DOWN_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = DOWN_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case 'k':
-                    line[y] = RIGHT_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = RIGHT_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
                 case 'j':
-                    line[y] = LEFT_GRAV;
-                    itemID[y] = world->NumGravs;
-                    world->gravs[world->NumGravs].blk_pos.bx = x;
-                    world->gravs[world->NumGravs].blk_pos.by = y;
-                    world->gravs[world->NumGravs].pos.cx = cx;
-                    world->gravs[world->NumGravs].pos.cy = cy;
-                    world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    world->NumGravs++;
+                    // line[y] = LEFT_GRAV;
+                    // itemID[y] = world->NumGravs;
+                    // world->gravs[world->NumGravs].blk_pos.bx = x;
+                    // world->gravs[world->NumGravs].blk_pos.by = y;
+                    // world->gravs[world->NumGravs].pos.cx = cx;
+                    // world->gravs[world->NumGravs].pos.cy = cy;
+                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
+                    // world->NumGravs++;
                     break;
 
                 case '@':
                 case '(':
                 case ')':
-                    world->wormholes[world->NumWormholes].blk_pos.bx = x;
-                    world->wormholes[world->NumWormholes].blk_pos.by = y;
-                    world->wormholes[world->NumWormholes].pos.cx = cx;
-                    world->wormholes[world->NumWormholes].pos.cy = cy;
-                    world->wormholes[world->NumWormholes].countdown = 0;
-                    world->wormholes[world->NumWormholes].lastdest = -1;
-                    world->wormholes[world->NumWormholes].temporary = 0;
-                    world->wormholes[world->NumWormholes].lastblock = SPACE;
-                    world->wormholes[world->NumWormholes].lastID = -1;
-                    if (c == '@')
-                    {
-                        world->wormholes[world->NumWormholes].type = WORM_NORMAL;
-                        worm_norm++;
-                    }
-                    else if (c == '(')
-                    {
-                        world->wormholes[world->NumWormholes].type = WORM_IN;
-                        worm_in++;
-                    }
-                    else
-                    {
-                        world->wormholes[world->NumWormholes].type = WORM_OUT;
-                        worm_out++;
-                    }
-                    line[y] = WORMHOLE;
-                    itemID[y] = world->NumWormholes;
-                    world->NumWormholes++;
+                    // world->wormholes[world->NumWormholes].blk_pos.bx = x;
+                    // world->wormholes[world->NumWormholes].blk_pos.by = y;
+                    // world->wormholes[world->NumWormholes].pos.cx = cx;
+                    // world->wormholes[world->NumWormholes].pos.cy = cy;
+                    // world->wormholes[world->NumWormholes].countdown = 0;
+                    // world->wormholes[world->NumWormholes].lastdest = -1;
+                    // world->wormholes[world->NumWormholes].temporary = 0;
+                    // world->wormholes[world->NumWormholes].lastblock = SPACE;
+                    // world->wormholes[world->NumWormholes].lastID = -1;
+                    // if (c == '@')
+                    // {
+                    //     world->wormholes[world->NumWormholes].type = WORM_NORMAL;
+                    //     worm_norm++;
+                    // }
+                    // else if (c == '(')
+                    // {
+                    //     world->wormholes[world->NumWormholes].type = WORM_IN;
+                    //     worm_in++;
+                    // }
+                    // else
+                    // {
+                    //     world->wormholes[world->NumWormholes].type = WORM_OUT;
+                    //     worm_out++;
+                    // }
+                    // line[y] = WORMHOLE;
+                    // itemID[y] = world->NumWormholes;
+                    // world->NumWormholes++;
                     break;
 
                 case 'A':
@@ -1742,36 +1755,36 @@ void Xpmap_tags_to_internal_data(void)
                 case 'X':
                 case 'Y':
                 case 'Z':
-                    if (BIT(world->rules->mode, TIMING))
-                    {
-                        world->checks[c - 'A'].x = x;
-                        world->checks[c - 'A'].y = y;
-                        line[y] = CHECK;
-                    }
-                    else
-                    {
-                        line[y] = SPACE;
-                    }
+                    // if (BIT(world->rules->mode, TIMING))
+                    // {
+                    //     world->checks[c - 'A'].x = x;
+                    //     world->checks[c - 'A'].y = y;
+                    //     line[y] = CHECK;
+                    // }
+                    // else
+                    // {
+                    //     line[y] = SPACE;
+                    // }
                     break;
 
                 case 'z':
-                    line[y] = FRICTION;
+                    // line[y] = FRICTION;
                     break;
 
                 case 'b':
-                    line[y] = DECOR_FILLED;
+                    // line[y] = DECOR_FILLED;
                     break;
                 case 'h':
-                    line[y] = DECOR_LU;
+                    // line[y] = DECOR_LU;
                     break;
                 case 'g':
-                    line[y] = DECOR_RU;
+                    // line[y] = DECOR_RU;
                     break;
                 case 'y':
-                    line[y] = DECOR_LD;
+                    // line[y] = DECOR_LD;
                     break;
                 case 't':
-                    line[y] = DECOR_RD;
+                    // line[y] = DECOR_RD;
                     break;
                 }
             }
