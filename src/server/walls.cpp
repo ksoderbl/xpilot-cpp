@@ -1803,6 +1803,8 @@ void Move_segment(move_state_t *ms)
 
 static void Cannon_dies(move_state_t *ms)
 {
+    warn("walls: cannon dies!");
+
     cannon_t *cannon = world->cannons + ms->cannon;
     int cx = cannon->pos.cx;
     int cy = cannon->pos.cy;
@@ -2123,6 +2125,7 @@ static void Object_crash(move_state_t *ms)
         }
         else
         {
+            warn("walls: CrashCannon line 2128!");
             cannon_t *cannon = Cannon_by_index(ms->cannon);
             if (!BIT(cannon->used, USES_EMERGENCY_SHIELD))
             {
@@ -2331,6 +2334,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         break;
 
     case CrashCannon:
+        warn("walls: case CrashCannon line 2337");
         if (BIT(pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         {
             howfmt = "%s smashed%s against a cannon";

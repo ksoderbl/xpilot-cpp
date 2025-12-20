@@ -90,14 +90,14 @@ void Cannon_check_fire(cannon_t *cannon);
 
 void Cannon_dies(cannon_t *cannon, player_t *pl);
 
-static inline cannon_t *Cannon_by_id(int id)
-{
-   int ind;
+// static inline cannon_t *Cannon_by_id(int id)
+// {
+//    int ind;
 
-   if (id < MIN_CANNON_ID || id > MAX_CANNON_ID)
-      return NULL;
-   ind = id - MIN_CANNON_ID;
-   return Cannon_by_index(ind);
-}
+//    if (id < MIN_CANNON_ID || id > MAX_CANNON_ID)
+//       return NULL;
+//    ind = id - MIN_CANNON_ID;
+//    return Cannon_by_index(ind);
+// }
 
 #endif

@@ -493,7 +493,7 @@ void Detonate_items(player_t *pl)
             mods = pl->mods;
             if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
                 CLR_BIT(mods.nuclear, NUCLEAR);
-            Fire_general_shot(owner_pl->id, pl->team, pl->pos,
+            Fire_general_shot(owner_pl->id, pl->team, false, pl->pos,
                               type, (int)(rfrac() * RES), mods, NO_ID);
         }
     }

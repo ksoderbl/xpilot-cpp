@@ -155,7 +155,7 @@ typedef struct cannon
     long used;
     int emergency_shield_left;
     int phasing_left;
-    short id;
+    // short id;
 } cannon_t;
 
 typedef struct check

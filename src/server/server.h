@@ -228,7 +228,7 @@ char *Describe_shot(int type, int status, modifiers_t mods, int hit);
 void Fire_ecm(player_t *pl);
 void Fire_general_ecm(int id, int team, clpos_t pos);
 void Update_connector_force(ballobject_t *ball);
-void Fire_general_shot(int id, int team,
+void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target_id);
 void Fire_normal_shots(player_t *pl);
