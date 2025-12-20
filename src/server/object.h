@@ -90,10 +90,6 @@
 
 #define NOT_CONNECTED (-1)
 
-#define OBJ_X_IN_CLICKS(obj) ((obj)->pos.cx)
-#define OBJ_Y_IN_CLICKS(obj) ((obj)->pos.cy)
-#define OBJ_X_IN_PIXELS(obj) CLICK_TO_PIXEL((obj)->pos.cx)
-#define OBJ_Y_IN_PIXELS(obj) CLICK_TO_PIXEL((obj)->pos.cy)
 #define OBJ_X_IN_BLOCKS(obj) CLICK_TO_BLOCK((obj)->pos.cx)
 #define OBJ_Y_IN_BLOCKS(obj) CLICK_TO_BLOCK((obj)->pos.cy)
 
@@ -128,11 +124,9 @@ struct cell_node
 
 #define OBJECT_EXTEND                              \
     cell_node cell; /* node in cell linked list */ \
-    long info;      /* Miscellaneous info */       \
     long fuselife;  /* fuse duration ticks */      \
     int pl_range;   /* distance for collision */   \
-    int pl_radius;  /* distance for hit */         \
-/* up to here all object types are the same. */
+    int pl_radius;  /* distance for hit */
 
 /*
  * Generic object
@@ -159,6 +153,8 @@ struct xp_mineobject
     OBJECT_BASE
 
     OBJECT_EXTEND
+
+    long info; /* Miscellaneous info */ // TODO: REMOVE
 
     int mine_owner;       /* Who's object is this ? */
     DFLOAT ecm_range;     /* Range from last ecm center */
@@ -211,6 +207,8 @@ struct xp_smartobject
     // TODO: Remove these
     int new_info; /* smart re-lock id */
 
+    long info; /* Miscellaneous info */ // TODO: REMOVE
+
     float smart_ecm_range; /* Range from last ecm center*/
     float smart_count;     /* Misc snafus */
     short smart_lock_id;   /* snafu */
@@ -233,6 +231,8 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
+    long info; /* Miscellaneous info */ // TODO: REMOVE
+
     int torp_spread_left; /* how much spread time left: TODO: float */
     float torp_count;     /* Misc snafus */
 
@@ -252,6 +252,8 @@ struct xp_heatobject
     OBJECT_EXTEND
 
     MISSILE_EXTEND
+
+    long info; /* Miscellaneous info */ // TODO: REMOVE
 
     float heat_count;   /* Misc snafus */
     short heat_lock_id; /* snafu */
@@ -329,6 +331,8 @@ struct xp_itemobject
     OBJECT_BASE
 
     OBJECT_EXTEND
+
+    long info; /* Miscellaneous info */ // TODO: REMOVE
 
     int item_type;  /* One of ITEM_* */
     int item_count; /* Misc snafus */

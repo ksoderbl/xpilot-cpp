@@ -642,7 +642,7 @@ void Laser_pulse_collision(void)
     if (vicbuf.max_vic > 0 && vicbuf.vic_ptr != NULL)
         free(vicbuf.vic_ptr);
 
-    obj->type = OBJ_DEBRIS_BIT;
+    obj->type = OBJ_DEBRIS;
     obj->life = 0;
     Cell_add_object(obj);
 }

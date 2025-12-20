@@ -928,16 +928,33 @@ void Fire_general_shot(int id, int team, bool cannon,
         shot->fuselife = shot->life - fuse;
         shot->mass = mass / minis;
         shot->count = 0;
-        shot->info = lock;
         shot->type = type;
         shot->id = (pl ? pl->id : NO_ID);
         shot->team = team;
         shot->color = (pl ? pl->color : WHITE);
 
-        if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT))
+        if (shot->type == OBJ_TORPEDO)
         {
-            MISSILE_PTR(shot)->missile_turnspeed = turnspeed;
-            MISSILE_PTR(shot)->missile_max_speed = max_speed;
+            torpobject_t *torp = TORP_PTR(shot);
+            torp->missile_turnspeed = turnspeed;
+            torp->missile_max_speed = max_speed;
+            torp->info = lock;
+        }
+
+        if (shot->type == OBJ_HEAT_SHOT)
+        {
+            heatobject_t *heat = HEAT_PTR(shot);
+            heat->missile_turnspeed = turnspeed;
+            heat->missile_max_speed = max_speed;
+            heat->info = lock;
+        }
+
+        if (shot->type == OBJ_SMART_SHOT)
+        {
+            smartobject_t *smart = SMART_PTR(shot);
+            smart->missile_turnspeed = turnspeed;
+            smart->missile_max_speed = max_speed;
+            smart->info = lock;
         }
 
         shotpos = pos;
@@ -1305,10 +1322,10 @@ void Delete_shot(int ind)
         /* Special items. */
     case OBJ_ITEM:
         item = ITEM_PTR(shot);
-        if (shot->info != item->item_type)
+        if (item->info != item->item_type)
         {
-            warn("Delete_shot: shot->info != item->item_type, shot->info = %ld, item->item_type = %d",
-                 shot->count, item->item_type);
+            warn("Delete_shot: shot->info != item->item_type, item->info = %ld, item->item_type = %d",
+                 item->info, item->item_type);
         }
 
         switch (item->item_type)
@@ -1336,8 +1353,8 @@ void Delete_shot(int ind)
             break;
         }
 
-        if (shot->info != item->item_type)
-            warn("shot->info != item->item_type");
+        if (item->info != item->item_type)
+            warn("item->info != item->item_type");
         world->items[item->item_type].num--;
 
         break;

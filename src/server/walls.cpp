@@ -2111,10 +2111,10 @@ static void Object_crash(move_state_t *ms)
         {
             itemobject_t *item = ITEM_PTR(obj);
 
-            if (obj->info != item->item_type)
+            if (item->info != item->item_type)
             {
-                warn("CrashCannon: obj->info != item->item_type, obj->info = %ld, item->item_type = %d",
-                     obj->count, item->item_type);
+                warn("CrashCannon: item->info != item->item_type, item->info = %ld, item->item_type = %d",
+                     item->info, item->item_type);
             }
             if (obj->count != item->item_count)
             {

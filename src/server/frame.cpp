@@ -854,10 +854,10 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         {
             itemobject_t *item = ITEM_PTR(shot);
 
-            if (shot->info != item->item_type)
+            if (item->info != item->item_type)
             {
                 warn("Frame_shots: shot->info != item->item_type, shot->info = %ld, item->item_type = %d",
-                     shot->count, item->item_type);
+                     item->count, item->item_type);
             }
 
             int item_type = item->item_type;

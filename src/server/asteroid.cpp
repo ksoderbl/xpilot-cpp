@@ -393,8 +393,8 @@ static void Place_asteroid(void)
 
                 if (Player_is_human(pl))
                 {
-                    ocx = OBJ_X_IN_CLICKS(pl);
-                    ocy = OBJ_Y_IN_CLICKS(pl);
+                    ocx = pl->pos.cx;
+                    ocy = pl->pos.cy;
                     dcx = WRAP_XCLICK(pos.cx - ocx);
                     dcy = WRAP_YCLICK(pos.cy - ocy);
                     int dpx = CLICK_TO_PIXEL(dcx);

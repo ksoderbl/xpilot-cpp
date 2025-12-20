@@ -830,7 +830,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
     }
 
     item->item_count = obj->count; // TODO: REMOVE
-    item->item_type = obj->info;   // TODO: REMOVE
+    item->item_type = item->info;  // TODO: REMOVE
 
     enum Item item_index = (enum Item)item->item_type;
 

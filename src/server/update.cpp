@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <cmath>
 
+#include "click.h"
 #include "xpmath.h"
 #include "xperror.h"
 
@@ -1101,8 +1102,8 @@ static void Update_players(void)
                 }
                 if (!counter)
                 {
-                    w.x = OBJ_X_IN_PIXELS(pl);
-                    w.y = OBJ_Y_IN_PIXELS(pl);
+                    w.x = CLICK_TO_PIXEL(pl->pos.cx);
+                    w.y = CLICK_TO_PIXEL(pl->pos.cy);
                 }
                 if (counter && options.wormTime && BIT(1U << world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << world->block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
                 {

@@ -1014,7 +1014,9 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
                 }
                 if (shot->type == OBJ_SMART_SHOT)
                 {
-                    if (shot->info != owner_pl->id)
+                    smartobject_t *smart = SMART_PTR(shot);
+
+                    if (smart->info != owner_pl->id)
                         continue;
                 }
             }

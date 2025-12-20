@@ -1745,7 +1745,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                         /* It doesn't know what it is, so get it if it can */
                         imp = ROBOT_HANDY_ITEM;
                     else
-                        imp = Rank_item_value(pl, (Item_t)obj_list[j]->info);
+                        imp = Rank_item_value(pl, (Item_t)item->info);
 
                     if (imp > ROBOT_IGNORE_ITEM && imp >= *item_imp)
                     {

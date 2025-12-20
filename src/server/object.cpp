@@ -71,7 +71,7 @@ object_t *Object_allocate(void)
         obj = Obj[ObjCount];
         Object_incr_count();
 
-        obj->type = OBJ_DEBRIS_BIT;
+        obj->type = OBJ_DEBRIS;
         obj->life = 0;
     }
     else
@@ -92,10 +92,8 @@ void Object_free_ind(int ind)
         Obj[ObjCount] = obj;
     }
     else
-    {
         warn("Cannot free object %d, when count = %d, and total = %d !",
              ind, ObjCount, MAX_TOTAL_SHOTS);
-    }
 }
 
 void Object_free_ptr(object_t *obj)
@@ -111,9 +109,7 @@ void Object_free_ptr(object_t *obj)
         }
     }
     if (i < 0)
-    {
         warn("Could NOT free object!");
-    }
 }
 
 static anyobject_t *objArray;
@@ -134,10 +130,10 @@ void Alloc_shots(int number)
     SHOWTYPESIZE(missileobject_t);
     SHOWTYPESIZE(smartobject_t);
     SHOWTYPESIZE(torpobject_t);
-    // SHOWTYPESIZE(heatobject_t);
+    SHOWTYPESIZE(heatobject_t);
     SHOWTYPESIZE(wireobject_t);
-    // SHOWTYPESIZE(pulseobject_t);
-    // SHOWTYPESIZE(itemobject_t);
+    SHOWTYPESIZE(pulseobject_t);
+    SHOWTYPESIZE(itemobject_t);
     SHOWTYPESIZE(anyobject_t);
     SHOWTYPESIZE(player_t);
 #endif
@@ -145,8 +141,8 @@ void Alloc_shots(int number)
     xpinfo("Alloc_shots: sizeof(anyobject_t) = %d", sizeof(anyobject_t));
     xpinfo("Alloc_shots: total allocation = %d bytes", number * sizeof(anyobject_t));
 
-    // x = (anyobject_t *)calloc(number, sizeof(anyobject_t));
-    x = XCALLOC(anyobject_t, number);
+    x = (anyobject_t *)calloc(number, sizeof(anyobject_t));
+    // x = XCALLOC(anyobject_t, number);
     if (!x)
     {
         error("Not enough memory for shots.");
@@ -297,4 +293,44 @@ void Player_position_debug(player_t *pl, const char *msg)
                (int)(pl->prevpos.y + pl->ship->pts[i][pl->dir].y));
     }
 #endif
+}
+
+const char *Object_typename(object_t *obj)
+{
+    int type;
+
+    if (!obj)
+        return "none";
+
+    type = obj->type;
+
+    if (type == OBJ_PLAYER)
+        return "OBJ_PLAYER";
+    if (type == OBJ_DEBRIS)
+        return "OBJ_DEBRIS";
+    if (type == OBJ_SPARK)
+        return "OBJ_SPARK";
+    if (type == OBJ_BALL)
+        return "OBJ_BALL";
+    if (type == OBJ_SHOT)
+        return "OBJ_SHOT";
+    if (type == OBJ_SMART_SHOT)
+        return "OBJ_SMART_SHOT";
+    if (type == OBJ_MINE)
+        return "OBJ_MINE";
+    if (type == OBJ_TORPEDO)
+        return "OBJ_TORPEDO";
+    if (type == OBJ_HEAT_SHOT)
+        return "OBJ_HEAT_SHOT";
+    if (type == OBJ_PULSE)
+        return "OBJ_PULSE";
+    if (type == OBJ_ITEM)
+        return "OBJ_ITEM";
+    if (type == OBJ_WRECKAGE)
+        return "OBJ_WRECKAGE";
+    if (type == OBJ_ASTEROID)
+        return "OBJ_ASTEROID";
+    if (type == OBJ_CANNON_SHOT)
+        return "OBJ_CANNON_SHOT";
+    return "unknown type";
 }

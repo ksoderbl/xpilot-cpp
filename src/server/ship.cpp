@@ -476,9 +476,16 @@ void Tank_handle_detach(player_t *pl)
     /* Maybe heat-seekers to retarget? */
     for (i = 0; i < NumObjs; i++)
     {
-        if (Obj[i]->type == OBJ_HEAT_SHOT && Obj[i]->info > 0 && Player_by_id(Obj[i]->info) == pl)
+        object_t *obj = Obj[i];
+
+        if (obj->type == OBJ_HEAT_SHOT)
         {
-            Obj[i]->info = NumPlayers - 1;
+            heatobject_t *heat = HEAT_PTR(obj);
+
+            if (heat->info > 0 && Player_by_id(heat->info) == pl)
+            {
+                heat->info = NumPlayers - 1;
+            }
         }
     }
 
