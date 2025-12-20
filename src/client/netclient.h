@@ -46,10 +46,25 @@ extern int simulating;
 extern setup_t *Setup;
 extern int receive_window_size;
 extern long last_loops;
+extern bool packetMeasurement;
 extern display_t server_display; /* the servers idea about our display */
 
+typedef struct
+{
+        int movement;
+        double turnspeed;
+        int id;
+} pointer_move_t;
+
+#define MAX_POINTER_MOVES 128
+
+extern pointer_move_t pointer_moves[MAX_POINTER_MOVES];
+extern int pointer_move_next;
+extern long last_keyboard_ack;
+extern bool dirPrediction;
+
 int Net_setup(void);
-int Net_verify(char *user_name, char *nick_name, char *dpy);
+int Net_verify(char *real, char *nick, char *dpy);
 int Net_init(char *server, int port);
 void Net_cleanup(void);
 void Net_key_change(void);
@@ -113,12 +128,12 @@ int Receive_reply(int *replyto, int *result);
 int Send_ack(long rel_loops);
 int Send_keyboard(uint8_t *);
 int Send_shape(char *);
-int Send_power(double power);
-int Send_power_s(double power_s);
-int Send_turnspeed(double turnspeed);
-int Send_turnspeed_s(double turnspeed_s);
-int Send_turnresistance(double turnresistance);
-int Send_turnresistance_s(double turnresistance_s);
+int Send_power(double pwr);
+int Send_power_s(double pwr_s);
+int Send_turnspeed(double turnspd);
+int Send_turnspeed_s(double turnspd_s);
+int Send_turnresistance(double turnres);
+int Send_turnresistance_s(double turnres_s);
 int Send_pointer_move(int movement);
 int Receive_audio(void);
 int Receive_talk_ack(void);
@@ -131,7 +146,7 @@ int Receive_time_left(void);
 int Receive_eyes(void);
 int Receive_motd(void);
 int Receive_magic(void);
-int Send_audio_request(bool on);
+int Send_audio_request(int on);
 int Send_fps_request(int fps);
 int Receive_loseitem(void);
 

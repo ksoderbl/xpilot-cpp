@@ -79,9 +79,17 @@ typedef struct
  */
 setup_t *Setup = NULL;
 display_t server_display;
-int receive_window_size;
+int receive_window_size = 3;
 long last_loops;
 bool packetMeasurement;
+
+pointer_move_t pointer_moves[MAX_POINTER_MOVES];
+int pointer_move_next;
+long last_keyboard_ack;
+bool dirPrediction;
+#ifdef _WINDOWS
+int received_self = FALSE;
+#endif
 
 /*
  * Local variables.
@@ -94,10 +102,9 @@ static int (*receive_tbl[256])(void),
     (*reliable_tbl[256])(void);
 static int keyboard_delta;
 static unsigned magic;
+static time_t last_send_anything;
 static long last_keyboard_change,
-    last_keyboard_ack,
     last_keyboard_update,
-    last_send_anything,
     reliable_offset,
     talk_pending,
     talk_sequence_num,
@@ -201,7 +208,8 @@ static int Uncompress_map(void)
     uint8_t *cmp, /* compressed map pointer */
         *ump,     /* uncompressed map pointer */
         *p;       /* temporary search pointer */
-    int i, count;
+    int i,
+        count;
 
     if (Setup->map_order != SETUP_MAP_ORDER_XY)
     {
@@ -267,7 +275,11 @@ static int Uncompress_map(void)
  */
 int Net_setup(void)
 {
-    int n, len, size, done = 0, retries;
+    int n,
+        len,
+        done = 0,
+        retries;
+    size_t size;
     long todo = sizeof(setup_t);
     char *ptr;
 
@@ -302,8 +314,9 @@ int Net_setup(void)
                                      &Setup->map_data_len,
                                      &Setup->mode, &Setup->lives,
                                      &Setup->x, &Setup->y,
-                                     &Setup->frames_per_second, &Setup->map_order,
-                                     Setup->name, Setup->author);
+                                     &Setup->frames_per_second,
+                                     &Setup->map_order, Setup->name,
+                                     Setup->author);
                     Setup->width = Setup->x * BLOCK_SZ;
                     Setup->height = Setup->y * BLOCK_SZ;
                 }
@@ -327,13 +340,14 @@ int Net_setup(void)
                     warn("Can't read setup info from reliable data buffer");
                     return -1;
                 }
+
                 /*
                  * Do some consistency checks on the server setup structure.
                  */
                 if (Setup->map_data_len <= 0 || Setup->x <= 0 || Setup->y <= 0 || Setup->map_data_len > Setup->x * Setup->y)
                 {
                     warn("Got bad map specs from server (%d,%d,%d)",
-                         Setup->map_data_len, Setup->x, Setup->y);
+                         Setup->map_data_len, Setup->width, Setup->height);
                     return -1;
                 }
                 Setup->width = Setup->x * BLOCK_SZ;
@@ -355,7 +369,8 @@ int Net_setup(void)
             }
             else
             {
-                memcpy(&ptr[done], cbuf.ptr, len);
+                assert(len > 0);
+                memcpy(&ptr[done], cbuf.ptr, (size_t)len);
                 Sockbuf_advance(&cbuf, len + cbuf.ptr - cbuf.buf);
                 done += len;
                 todo -= len;
@@ -440,7 +455,10 @@ int Net_setup(void)
 #define MAX_VERIFY_RETRIES 5
 int Net_verify(char *user_name, char *nick_name, char *disp)
 {
-    int n, type, result, retries;
+    int n,
+        type,
+        result,
+        retries;
     time_t last;
 
     for (retries = 0;;)
@@ -453,17 +471,18 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
                 return -1;
             }
             Sockbuf_clear(&wbuf);
-            n = Packet_printf(&wbuf, "%c%s%s%s", PKT_VERIFY, user_name, nick_name, disp);
+            n = Packet_printf(&wbuf, "%c%s%s%s", PKT_VERIFY,
+                              user_name, nick_name, disp);
             if (n <= 0 || Sockbuf_flush(&wbuf) <= 0)
             {
                 error("Can't send verify packet");
                 return -1;
             }
             time(&last);
-#ifndef SILENT
             if (retries > 1)
+            {
                 printf("Waiting for verify response\n");
-#endif
+            }
         }
         sock_set_timeout(&rbuf.sock, 1, 0);
         if (sock_readable(&rbuf.sock) == 0)
@@ -543,13 +562,16 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
 int Net_init(char *server, int port)
 {
     int i;
-    unsigned size;
+    size_t size;
     sock_t sock;
+
+    assert(server != NULL);
 
     signal(SIGPIPE, SIG_IGN);
 
     Receive_init();
-    if (!clientPortStart || !clientPortEnd || (clientPortStart > clientPortEnd))
+    if (!clientPortStart || !clientPortEnd ||
+        (clientPortStart > clientPortEnd))
     {
         if (sock_open_udp(&sock, NULL, 0) == SOCK_IS_ERROR)
         {
@@ -2661,7 +2683,7 @@ int Send_pointer_move(int movement)
     return 0;
 }
 
-int Send_audio_request(bool on)
+int Send_audio_request(int on)
 {
 #ifdef DEBUG_SOUND
     printf("Send_audio_request %d\n", on);
