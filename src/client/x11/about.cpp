@@ -57,9 +57,9 @@
 #define ABOUT_WINDOW_WIDTH 600
 #define ABOUT_WINDOW_HEIGHT 700
 
-static bool about_created;
+static bool about_created = false;
 
-#define NUM_ABOUT_PAGES 4
+#define NUM_ABOUT_PAGES 5
 
 /*
  * This variable tells us what item comes last on page 0.  If -1 it hasn't
@@ -69,10 +69,6 @@ static bool about_created;
  */
 static int itemsplit = -1;
 
-/* extern int About_callback(int, void *, const char **);
-   extern int Keys_callback(int, void *, const char **);
-   extern int Motd_callback(int, void *, const char **);
-*/
 extern const char *Item_get_text(int i);
 
 /*
@@ -85,7 +81,8 @@ int DrawShadowText(Display *display, Window w, GC gc,
                    unsigned long fg, unsigned long bg)
 {
     XFontStruct *font = XQueryFont(display, XGContextFromGC(gc));
-    int y, x;
+    int y, x, tmp;
+    int count = 1;
     XWindowAttributes wattr;
 
     if (str == NULL || *str == '\0')
@@ -138,7 +135,11 @@ int DrawShadowText(Display *display, Window w, GC gc,
             }
     } while (*str != '\0');
 
-    return y + font->descent + 1;
+    tmp = font->descent + 1;
+
+    XFreeFontInfo(NULL, font, count);
+
+    return y + tmp;
 }
 
 void Expose_about_window(void)
@@ -200,9 +201,10 @@ void Expose_about_window(void)
             XSetForeground(dpy, textGC, colors[BLACK].pixel);
             XFillRectangle(dpy, aboutWindow, textGC,
                            BORDER, box_start,
-                           2 * ITEM_SIZE + 2 * BORDER, box_end - box_start);
+                           2 * ITEM_SIZE + 2 * BORDER,
+                           (unsigned)box_end - box_start);
             XSetForeground(dpy, textGC, colors[RED].pixel);
-            Gui_paint_item(i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
+            Gui_paint_item((uint8_t)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
                            old_y + ITEM_TRIANGLE_SIZE);
             XSetForeground(dpy, textGC, colors[WHITE].pixel);
 
@@ -218,7 +220,7 @@ void Expose_about_window(void)
                 XFillRectangle(dpy, aboutWindow, textGC,
                                BORDER, box_start,
                                ABOUT_WINDOW_WIDTH,
-                               box_end - box_start);
+                               (unsigned)box_end - box_start);
                 XSetForeground(dpy, textGC, colors[WHITE].pixel);
                 break;
             }
@@ -300,9 +302,9 @@ void Expose_about_window(void)
 
 static void About_create_window(void)
 {
-    const int windowWidth = ABOUT_WINDOW_WIDTH,
-              buttonWindowHeight = 2 * BTN_BORDER + buttonFont->ascent + buttonFont->descent,
-              windowHeight = ABOUT_WINDOW_HEIGHT;
+    const unsigned int windowWidth = ABOUT_WINDOW_WIDTH,
+                       buttonWindowHeight = 2 * BTN_BORDER + buttonFont->ascent + buttonFont->descent,
+                       windowHeight = ABOUT_WINDOW_HEIGHT;
     unsigned textWidth;
     XSetWindowAttributes sattr;
     unsigned long mask;
@@ -336,7 +338,8 @@ static void About_create_window(void)
 
     textWidth = XTextWidth(buttonFont, "CLOSE", 5);
     about_close_b = XCreateSimpleWindow(dpy, aboutWindow,
-                                        BORDER, (windowHeight - BORDER - buttonWindowHeight - 4),
+                                        BORDER,
+                                        (int)(windowHeight - BORDER - buttonWindowHeight - 4),
                                         2 * BTN_BORDER + textWidth,
                                         buttonWindowHeight,
                                         0, 0,
@@ -345,17 +348,17 @@ static void About_create_window(void)
     /*
      * Create 'buttons' in the window.
      */
-    textWidth = XTextWidth(buttonFont, "NEXT", 4);
-    about_next_b = XCreateSimpleWindow(dpy, aboutWindow,
-                                       windowWidth / 2 - BTN_BORDER - textWidth / 2,
-                                       windowHeight - BORDER - buttonWindowHeight - 4,
+    textWidth = XTextWidth(buttonFont, "PREV", 4);
+    about_prev_b = XCreateSimpleWindow(dpy, aboutWindow,
+                                       (int)(windowWidth / 2 - BTN_BORDER - textWidth / 2),
+                                       (int)(windowHeight - BORDER - buttonWindowHeight - 4),
                                        2 * BTN_BORDER + textWidth, buttonWindowHeight,
                                        0, 0,
                                        colors[buttonColor].pixel);
-    textWidth = XTextWidth(buttonFont, "PREV", 4);
-    about_prev_b = XCreateSimpleWindow(dpy, aboutWindow,
-                                       windowWidth - BORDER - 2 * BTN_BORDER - textWidth,
-                                       windowHeight - BORDER - buttonWindowHeight - 4,
+    textWidth = XTextWidth(buttonFont, "NEXT", 4);
+    about_next_b = XCreateSimpleWindow(dpy, aboutWindow,
+                                       (int)(windowWidth - BORDER - 2 * BTN_BORDER - textWidth),
+                                       (int)(windowHeight - BORDER - buttonWindowHeight - 4),
                                        2 * BTN_BORDER + textWidth, buttonWindowHeight,
                                        0, 0,
                                        colors[buttonColor].pixel);
@@ -380,27 +383,30 @@ void Expose_button_window(int color, Window w)
         return;
     }
 
-    XWindowAttributes wattr;              /* Get window height */
-    XGetWindowAttributes(dpy, w, &wattr); /* and width */
+    {
+        XWindowAttributes wattr;              /* Get window height */
+        XGetWindowAttributes(dpy, w, &wattr); /* and width */
 
-    XSetForeground(dpy, buttonGC, colors[color].pixel);
-    XFillRectangle(dpy, w, buttonGC, 0, 0, wattr.width, wattr.height);
-    XSetForeground(dpy, buttonGC, colors[WHITE].pixel);
+        XSetForeground(dpy, buttonGC, colors[color].pixel);
+        XFillRectangle(dpy, w, buttonGC, 0, 0,
+                       (unsigned)wattr.width, (unsigned)wattr.height);
+        XSetForeground(dpy, buttonGC, colors[WHITE].pixel);
+    }
 
     if (w == about_close_b)
         ShadowDrawString(dpy, w, buttonGC,
                          BTN_BORDER, buttonFont->ascent + BTN_BORDER,
                          "CLOSE",
                          colors[WHITE].pixel, colors[BLACK].pixel);
-    if (w == about_next_b)
-        ShadowDrawString(dpy, w, buttonGC,
-                         BTN_BORDER, buttonFont->ascent + BTN_BORDER,
-                         "NEXT",
-                         colors[WHITE].pixel, colors[BLACK].pixel);
     if (w == about_prev_b)
         ShadowDrawString(dpy, w, buttonGC,
                          BTN_BORDER, buttonFont->ascent + BTN_BORDER,
                          "PREV",
+                         colors[WHITE].pixel, colors[BLACK].pixel);
+    if (w == about_next_b)
+        ShadowDrawString(dpy, w, buttonGC,
+                         BTN_BORDER, buttonFont->ascent + BTN_BORDER,
+                         "NEXT",
                          colors[WHITE].pixel, colors[BLACK].pixel);
 }
 
@@ -453,18 +459,13 @@ static bool keys_created = false;
 
 int Keys_callback(int widget_desc, void *data, const char **unused)
 {
+    unsigned bufsize = (maxKeyDefs * 64);
+    char *buf = XCALLOC(char, bufsize), *end = buf, *str;
+    const char *help;
+    int i, len, maxkeylen = 0;
 
     if (keys_created == false)
     {
-        unsigned bufsize = (maxKeyDefs * 64);
-        char *buf = (char *)calloc(bufsize, 1),
-             *end = buf,
-             *help,
-             *str;
-        int i,
-            len,
-            maxkeylen = 0;
-
         for (i = 0; i < maxKeyDefs; i++)
         {
             if ((str = XKeysymToString(keyDefs[i].keysym)) != NULL && (len = strlen(str)) > maxkeylen)
@@ -482,7 +483,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
             {
                 bufsize += 4096;
                 xpprintf("realloc: %d\n", bufsize);
-                if (!(buf = (char *)realloc(buf, bufsize)))
+                if (!(buf = XREALLOC(char, buf, bufsize)))
                 {
                     error("No memory for key list");
                     return 0;
@@ -508,9 +509,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
         keys_created = true;
     }
     else if (keys_viewer != NO_WIDGET)
-    {
         Widget_map(keys_viewer);
-    }
     return 0;
 }
 
@@ -556,8 +555,8 @@ int Handle_motd(long off, char *buf, int len, long filesize)
     if (!motd_buf)
     {
         motd_size = MIN(filesize, MAX_MOTD_SIZE);
-        i = MAX(motd_size, sizeof no_motd_msg) + 1;
-        if (!(motd_buf = (char *)malloc(i)))
+        i = MAX(motd_size, (long)(sizeof no_motd_msg)) + 1;
+        if (!(motd_buf = XMALLOC(char, (size_t)i)))
         {
             error("No memory for MOTD");
             return -1;
