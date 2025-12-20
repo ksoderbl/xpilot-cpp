@@ -1,5 +1,4 @@
-/* $Id: checknames.h,v 5.0 2001/04/07 20:00:59 dik Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
@@ -27,6 +26,8 @@
 
 #define NAME_OK 1
 #define NAME_ERROR 0
+
+#define PROT_EXT '~'
 
 int Check_user_name(char *name);
 void Fix_user_name(char *name);

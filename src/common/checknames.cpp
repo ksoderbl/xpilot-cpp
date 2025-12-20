@@ -39,7 +39,8 @@ int Check_user_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_NAME_LEN - 1] = '\0';
+    if (strlen(name) > MAX_NAME_LEN - 1)
+        return NAME_ERROR;
     if (!*name)
         return NAME_ERROR;
 
@@ -57,7 +58,8 @@ void Fix_user_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_NAME_LEN - 1] = '\0';
+    if (strlen(name) > MAX_NAME_LEN - 1)
+        name[MAX_NAME_LEN - 1] = 0;
     if (!*name)
     {
         strlcpy(name, "X", sizeof(name));
@@ -67,9 +69,7 @@ void Fix_user_name(char *name)
     for (; *str; str++)
     {
         if (!isgraph(*str))
-        {
             *str = 'x';
-        }
     }
 }
 
@@ -77,7 +77,8 @@ int Check_nick_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_NAME_LEN - 1] = '\0';
+    if (strlen(name) > MAX_NAME_LEN - 1)
+        return NAME_ERROR;
     if (!*name)
         return NAME_ERROR;
 
@@ -87,7 +88,7 @@ int Check_nick_name(char *name)
 
     for (; *str; str++)
     {
-        if (!isprint(*str))
+        if (!isprint(*str) || *str == PROT_EXT)
             return NAME_ERROR;
     }
     --str;
@@ -101,7 +102,8 @@ void Fix_nick_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_NAME_LEN - 1] = '\0';
+    if (strlen(name) > MAX_NAME_LEN - 1)
+        name[MAX_NAME_LEN - 1] = 0;
     if (!*name)
     {
         static int n;
@@ -118,7 +120,7 @@ void Fix_nick_name(char *name)
     }
     for (; *str; str++)
     {
-        if (!isprint(*str))
+        if (!isprint(*str) || *str == PROT_EXT)
             *str = 'x';
     }
     --str;
@@ -127,7 +129,7 @@ void Fix_nick_name(char *name)
 }
 
 /* isalnum() depends on locale. */
-static bool is_alpha_numeric(uint8_t c)
+static bool is_alpha_numeric(int c)
 {
     if (c >= 'A' && c <= 'Z')
         return true;
@@ -142,11 +144,11 @@ int Check_host_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_HOST_LEN - 1] = '\0';
+    if (strlen(name) > MAX_HOST_LEN - 1)
+        return NAME_ERROR;
     str = (uint8_t *)name;
     if (!is_alpha_numeric(*str))
         return NAME_ERROR;
-
     for (; *str; str++)
     {
         if (!is_alpha_numeric(*str))
@@ -167,7 +169,8 @@ void Fix_host_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_HOST_LEN - 1] = '\0';
+    if (strlen(name) > MAX_HOST_LEN - 1)
+        name[MAX_HOST_LEN - 1] = 0;
     str = (uint8_t *)name;
     if (!is_alpha_numeric(*str))
     {
@@ -195,7 +198,8 @@ int Check_disp_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_NAME_LEN] = '\0';
+    if (strlen(name) > MAX_DISP_LEN - 1)
+        return NAME_ERROR;
     str = (uint8_t *)name;
     for (; *str; str++)
     {
@@ -209,7 +213,8 @@ void Fix_disp_name(char *name)
 {
     uint8_t *str;
 
-    name[MAX_NAME_LEN] = '\0';
+    if (strlen(name) > MAX_DISP_LEN - 1)
+        name[MAX_DISP_LEN - 1] = 0;
     str = (uint8_t *)name;
     for (; *str; str++)
     {
