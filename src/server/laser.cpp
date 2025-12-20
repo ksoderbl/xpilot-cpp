@@ -547,14 +547,15 @@ void Laser_pulse_collision(void)
                 printf("Laser_pulse_collision: Player %d: %s\n", GetInd(pl->id), pl->name);
         }
 
-        obj->type = OBJ_PULSE_BIT;
-        obj->life = 1;
-        obj->id = pulse->id;
-        obj->team = pulse->team;
-        obj->count = 0;
-        obj->obj_status = 0;
+        pulseobject_t *pulse_ptr = PULSE_PTR(obj);
+        pulse_ptr->type = OBJ_PULSE_BIT;
+        pulse_ptr->life = 1;
+        pulse_ptr->id = pulse->id;
+        pulse_ptr->team = pulse->team;
+        pulse_ptr->count = 0;
+        pulse_ptr->obj_status = 0;
         if (pulse->id == NO_ID)
-            obj->obj_status = FROMCANNON;
+            pulse_ptr->obj_status = FROMCANNON;
         clpos_t pos;
         pos.cx = FLOAT_TO_CLICK(x1);
         pos.cy = FLOAT_TO_CLICK(y1);

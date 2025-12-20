@@ -286,6 +286,8 @@ typedef struct
 
     int privs; /* Player privileges */
 
+    int count; // TODO: REMOVE
+
 #define PRIV_NOAUTOKICK 1
 #define PRIV_AUTOKICKLAST 2
 

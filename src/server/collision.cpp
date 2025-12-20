@@ -821,16 +821,14 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 {
     int old_have;
 
-    object_t *obj = OBJ_PTR(item);
-
-    if (obj->count != item->item_count)
+    if (item->count != item->item_count)
     {
-        warn("item_index: obj->count != item->item_count, obj->count = %d, item->item_count = %d",
-             obj->count, item->item_count);
+        warn("item_index: item->count != item->item_count, item->count = %d, item->item_count = %d",
+             item->count, item->item_count);
     }
 
-    item->item_count = obj->count; // TODO: REMOVE
-    item->item_type = item->info;  // TODO: REMOVE
+    item->item_count = item->count; // TODO: REMOVE
+    item->item_type = item->info;   // TODO: REMOVE
 
     enum Item item_index = (enum Item)item->item_type;
 

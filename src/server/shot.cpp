@@ -927,7 +927,6 @@ void Fire_general_shot(int id, int team, bool cannon,
         shot->life = life / minis;
         shot->fuselife = shot->life - fuse;
         shot->mass = mass / minis;
-        shot->count = 0;
         shot->type = type;
         shot->id = (pl ? pl->id : NO_ID);
         shot->team = team;
@@ -939,22 +938,32 @@ void Fire_general_shot(int id, int team, bool cannon,
             torp->missile_turnspeed = turnspeed;
             torp->missile_max_speed = max_speed;
             torp->info = lock;
+            torp->count = 0;
         }
 
-        if (shot->type == OBJ_HEAT_SHOT)
+        else if (shot->type == OBJ_HEAT_SHOT)
         {
             heatobject_t *heat = HEAT_PTR(shot);
             heat->missile_turnspeed = turnspeed;
             heat->missile_max_speed = max_speed;
             heat->info = lock;
+            heat->count = 0;
         }
 
-        if (shot->type == OBJ_SMART_SHOT)
+        else if (shot->type == OBJ_SMART_SHOT)
         {
             smartobject_t *smart = SMART_PTR(shot);
             smart->missile_turnspeed = turnspeed;
             smart->missile_max_speed = max_speed;
             smart->info = lock;
+            smart->count = 0;
+        }
+
+        else
+        {
+            warn("ERROR: minis: shot type %s", Object_typename(shot));
+            // shot->info = lock;
+            // shot->count = 0;
         }
 
         shotpos = pos;
@@ -1640,7 +1649,7 @@ void Update_missile(missileobject_t *missile)
         {
             heat->count++;
             /* Look for new target */
-            if ((range < HEAT_CLOSE_RANGE && heat->count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) || (range < HEAT_MID_RANGE && missile->count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) || missile->count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
+            if ((range < HEAT_CLOSE_RANGE && heat->count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) || (range < HEAT_MID_RANGE && heat->count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) || heat->count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
             {
                 double l;
                 int i;

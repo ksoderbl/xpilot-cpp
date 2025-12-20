@@ -2116,10 +2116,10 @@ static void Object_crash(move_state_t *ms)
                 warn("CrashCannon: item->info != item->item_type, item->info = %ld, item->item_type = %d",
                      item->info, item->item_type);
             }
-            if (obj->count != item->item_count)
+            if (item->count != item->item_count)
             {
-                warn("CrashCannon: obj->count != item->item_count, obj->count = %d, item->item_count = %d",
-                     obj->count, item->item_count);
+                warn("CrashCannon: item->count != item->item_count, item->count = %d, item->item_count = %d",
+                     item->count, item->item_count);
             }
             Cannon_add_item(Cannon_by_index(ms->cannon), item->item_type, item->item_count);
         }

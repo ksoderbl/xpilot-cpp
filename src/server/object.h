@@ -115,7 +115,6 @@ struct cell_node
     modifiers_t mods;    /* Modifiers to this object */  \
     long life;           /* No of ticks left to live */  \
     int type;            /* one bit of OBJ_XXX */        \
-    int count;           /* Misc timings */              \
     uint8_t color;       /* Color of object */           \
     uint8_t missile_dir; /* missile direction */         \
     uint32_t obj_status; /* gravity, etc. */
@@ -154,6 +153,7 @@ struct xp_mineobject
 
     OBJECT_EXTEND
 
+    int count;                          // TODO: REMOVE
     long info; /* Miscellaneous info */ // TODO: REMOVE
 
     int mine_owner;       /* Who's object is this ? */
@@ -208,6 +208,7 @@ struct xp_smartobject
     int new_info; /* smart re-lock id */
 
     long info; /* Miscellaneous info */ // TODO: REMOVE
+    int count;                          // TODO: REMOVE
 
     float smart_ecm_range; /* Range from last ecm center*/
     float smart_count;     /* Misc snafus */
@@ -231,6 +232,7 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
+    int count; /* Misc timings */       // TODO: REMOVE
     long info; /* Miscellaneous info */ // TODO: REMOVE
 
     int torp_spread_left; /* how much spread time left: TODO: float */
@@ -253,6 +255,7 @@ struct xp_heatobject
 
     MISSILE_EXTEND
 
+    int count; /* Misc timings */       // TODO: REMOVE
     long info; /* Miscellaneous info */ // TODO: REMOVE
 
     float heat_count;   /* Misc snafus */
@@ -272,6 +275,8 @@ struct xp_ballobject
     OBJECT_BASE
 
     OBJECT_EXTEND
+
+    int count; /* Misc timings */ // TODO: REMOVE
 
     int ball_owner;            /* Who's object is this ? */
     treasure_t *ball_treasure; /* treasure for ball */
@@ -313,6 +318,8 @@ struct xp_pulseobject
 
     OBJECT_EXTEND
 
+    int count; /* Misc timings */ // TODO: REMOVE
+
     float pulse_len;   /* Length of the pulse */
     uint8_t pulse_dir; /* Direction of the pulse */
     bool pulse_refl;   /* Pulse was reflected ? */
@@ -333,6 +340,7 @@ struct xp_itemobject
     OBJECT_EXTEND
 
     long info; /* Miscellaneous info */ // TODO: REMOVE
+    int count; /* Misc timings */       // TODO: REMOVE
 
     int item_type;  /* One of ITEM_* */
     int item_count; /* Misc snafus */
@@ -413,5 +421,7 @@ void Object_position_init_clpos(object_t *obj, clpos_t pos);
 #define Object_position_remember(o_)  \
     ((o_)->prevpos.cx = (o_)->pos.cx, \
      (o_)->prevpos.cy = (o_)->pos.cy)
+
+const char *Object_typename(object_t *obj);
 
 #endif
