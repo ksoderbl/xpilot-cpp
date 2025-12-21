@@ -716,7 +716,7 @@ void Net_cleanup(void)
 }
 
 /*
- * Calculate a new `keyboard-changed-id' which the server has to ack.
+ * Calculate a new 'keyboard-changed-id' which the server has to ack.
  */
 void Net_key_change(void)
 {
@@ -760,14 +760,16 @@ int Net_fd(void)
 }
 
 /*
- * Try to send a `start play' packet to the server and get an
+ * Try to send a 'start play' packet to the server and get an
  * acknowledgement from the server.  This is called after
  * we have initialized all our other stuff like the user interface
  * and we also have the map already.
  */
 int Net_start(void)
 {
-    int retries, type, result;
+    int retries,
+        type,
+        result;
     time_t last;
 
     for (retries = 0;;)
@@ -912,7 +914,7 @@ void Net_init_measurement(void)
                 memset(packet_measure, PACKET_DRAW, MAX_SUPPORTED_FPS);
         }
     }
-    else if (packet_measure != NULL)
+    else
         XFREE(packet_measure);
 }
 
@@ -936,7 +938,11 @@ void Net_init_lag_measurement(void)
  */
 static int Net_packet(void)
 {
-    int type, prev_type = 0, result, replyto, status;
+    int type,
+        prev_type = 0,
+        result,
+        replyto,
+        status;
 
     while (rbuf.buf + rbuf.len > rbuf.ptr)
     {
@@ -944,7 +950,9 @@ static int Net_packet(void)
 
         if (receive_tbl[type] == NULL)
         {
-            warn("Received unknown packet type (%d, %d), dropping frame.", type, prev_type);
+            warn("Received unknown packet type (%d, %d), "
+                 "dropping frame.",
+                 type, prev_type);
             Sockbuf_clear(&rbuf);
             break;
         }
@@ -953,7 +961,8 @@ static int Net_packet(void)
             if (result == -1)
             {
                 if (type != PKT_QUIT)
-                    warn("Processing packet type (%d, %d) failed", type, prev_type);
+                    warn("Processing packet type (%d, %d) failed",
+                         type, prev_type);
                 return -1;
             }
             /* Drop rest of incomplete packet */
@@ -974,15 +983,13 @@ static int Net_packet(void)
                 return -1;
             }
             /* should do something more appropriate than this with the reply */
-            errno = 0;
-            error("Got reply packet (%d,%d)", replyto, status);
+            warn("Got reply packet (%d,%d)", replyto, status);
         }
         else if (reliable_tbl[type] == NULL)
         {
             int i;
-            errno = 0;
-            error("Received unknown reliable data packet type (%d,%d,%d)",
-                  type, cbuf.ptr - cbuf.buf, cbuf.len);
+            warn("Received unknown reliable data packet type (%d,%d,%d)",
+                 type, cbuf.ptr - cbuf.buf, cbuf.len);
             printf("\tdumping buffer for debugging:\n");
             for (i = 0; i < cbuf.len; i++)
             {
@@ -1006,7 +1013,7 @@ static int Net_packet(void)
     return 0;
 }
 
-static void Net_keyboard_track()
+static void Net_keyboard_track(void)
 {
     int i, ind = -1;
     long maxtime = 0;
@@ -1068,13 +1075,13 @@ static void Net_measurement(long loop, int status)
 
     if (packet_measure == NULL)
         return;
-
     if ((delta = loop - packet_loop) < 0)
+    {
         /*
          * Duplicate or out of order.
          */
         return;
-
+    }
     if (delta >= FPS)
     {
         if (packet_loop == 0)
@@ -1094,6 +1101,9 @@ static void Net_measurement(long loop, int status)
                 continue;
             case PACKET_DROP:
                 packet_drop++;
+                break;
+            default:
+                /* no drop or loss */
                 break;
             }
             packet_measure[i] = PACKET_LOSS;
@@ -1119,16 +1129,16 @@ static void Net_lag_measurement(long key_ack)
         {
             keyboard_acktime[i] = loops;
 #if 0
-            printf("A;%d;%ld;%ld ", i, keyboard_change[i], keyboard_acktime[i]);
+            printf("A;%d;%ld;%ld ", 
+                i, keyboard_change[i], keyboard_acktime[i]);
 #endif
             break;
         }
     }
 
 #if 0
-    if (i == KEYBOARD_STORE) {
+    if (i == KEYBOARD_STORE)
         printf("N ");
-    }
 #endif
 
     num = 0;
@@ -1240,11 +1250,13 @@ int Net_input(void)
                 oldest_frame = frame;
         }
         else if (frame->sbuf.len > 0 && frame->sbuf.ptr == frame->sbuf.buf)
+        {
             /*
              * Contains an unidentifiable packet.
              * No more input until this one is processed.
              */
             break;
+        }
         else
         {
             /*
@@ -1254,13 +1266,9 @@ int Net_input(void)
             {
                 if (n == 0)
                 {
-                    /*
-                     * No more new packets available.
-                     */
+                    /* No more new packets available.                     */
                     if (i == 0)
-                        /*
-                         * No frames to be processed.
-                         */
+                        /* No frames to be processed. */
                         return 0;
                     break;
                 }
@@ -1268,11 +1276,13 @@ int Net_input(void)
                     return n;
             }
             else if (n == 1)
+            {
                 /*
                  * Contains an unidentifiable packet.
                  * No more input until this one is processed.
                  */
                 break;
+            }
             else
             {
                 /*
@@ -1402,14 +1412,12 @@ int Net_input(void)
         last_send_anything = last_loops;
     }
     else
-    {
         /*
          * 4.5.4a2: flush if non-empty
          * This should help speedup the map update speed
          * for maps with large number of targets or cannons.
          */
         Net_flush();
-    }
 
     return 1 + (last_frame->loops > oldest_frame->loops);
 }
@@ -1421,25 +1429,25 @@ int Net_input(void)
 int Receive_start(void)
 {
     int n;
-    long loops;
+    long loops_num;
     uint8_t ch;
     long key_ack;
 
     if ((n = Packet_scanf(&rbuf,
                           "%c%ld%ld",
-                          &ch, &loops, &key_ack)) <= 0)
+                          &ch, &loops_num, &key_ack)) <= 0)
         return n;
 
-    if (last_loops >= loops)
+    if (last_loops >= loops_num)
     {
         /*
          * Packet is duplicate or out of order.
          */
-        Net_measurement(loops, PACKET_DROP);
-        printf("ignoring frame (%ld)\n", last_loops - loops);
+        Net_measurement(loops_num, PACKET_DROP);
+        printf("ignoring frame (%ld)\n", last_loops - loops_num);
         return 0;
     }
-    last_loops = loops;
+    last_loops = loops_num;
     if (key_ack > last_keyboard_ack)
     {
         if (key_ack > last_keyboard_change)
@@ -1456,7 +1464,7 @@ int Receive_start(void)
             last_keyboard_ack = key_ack;
     }
     Net_lag_measurement(key_ack);
-    if ((n = Handle_start(loops)) == -1)
+    if ((n = Handle_start(loops_num)) == -1)
         return -1;
     return 1;
 }
@@ -1470,13 +1478,13 @@ int Receive_start(void)
 int Receive_end(void)
 {
     int n;
-    long loops;
+    long loops_num;
     uint8_t ch;
 
-    if ((n = Packet_scanf(&rbuf, "%c%ld", &ch, &loops)) <= 0)
+    if ((n = Packet_scanf(&rbuf, "%c%ld", &ch, &loops_num)) <= 0)
         return n;
-    Net_measurement(loops, PACKET_DRAW);
-    if ((n = Handle_end(loops)) == -1)
+    Net_measurement(loops_num, PACKET_DRAW);
+    if ((n = Handle_end(loops_num)) == -1)
         return -1;
     return 1;
 }
@@ -1643,6 +1651,7 @@ int Receive_self(void)
                      "%c%hd%hd"
                      "%hd%hd%c"
                      "%c%c",
+
                      &currentTank, &sFuelSum, &sFuelMax,
                      &sViewWidth, &sViewHeight, &sNumSparkColors,
                      //  &ext_view_width, &ext_view_height, &debris_colors,
@@ -1658,6 +1667,11 @@ int Receive_self(void)
         debris_colors = num_spark_colors;
 
     Check_view_dimensions();
+    /*
+     * These assignments are done here because the server_display
+     * structure members are not of the type that Packet_scanf()
+     * expects, which breaks things on big endian architectures.
+     */
 
     // Game_over_action(sStat);
     Handle_self(x, y, vx, vy, sHeading,
