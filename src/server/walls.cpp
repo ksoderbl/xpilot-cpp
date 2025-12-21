@@ -2554,10 +2554,13 @@ void Move_player(player_t *pl)
     todo.cy = FLOAT_TO_CLICK(vel.y);
     for (i = 0; i < pl->ship->num_points; i++)
     {
-        double x = pl->ship->pts[i][pl->dir].x;
-        double y = pl->ship->pts[i][pl->dir].y;
-        ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
-        ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
+        // double x = pl->ship->pts[i][pl->dir].x;
+        // double y = pl->ship->pts[i][pl->dir].y;
+        // ms[i].pos.cx = pl->pos.cx + FLOAT_TO_CLICK(x);
+        // ms[i].pos.cy = pl->pos.cy + FLOAT_TO_CLICK(y);
+        clpos_t p = Ship_get_point_clpos(pl->ship, i, pl->dir);
+        ms[i].pos.cx = pl->pos.cx + p.cx;
+        ms[i].pos.cy = pl->pos.cy + p.cy;
         ms[i].vel = vel;
         ms[i].todo = todo;
         ms[i].dir = pl->dir;
@@ -2567,8 +2570,11 @@ void Move_player(player_t *pl)
 
     for (;; moves_made++)
     {
-        pos.cx = ms[0].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].x);
-        pos.cy = ms[0].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].y);
+        // pos.cx = ms[0].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].x);
+        // pos.cy = ms[0].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[0][ms[0].dir].y);
+        clpos_t p = Ship_get_point_clpos(pl->ship, 0, ms[0].dir);
+        pos.cx = ms[0].pos.cx - p.cx;
+        pos.cy = ms[0].pos.cy - p.cy;
         pos.cx = WRAP_XCLICK(pos.cx);
         pos.cy = WRAP_YCLICK(pos.cy);
         block.x = pos.cx / BLOCK_CLICKS;
@@ -2884,8 +2890,11 @@ void Move_player(player_t *pl)
         }
     }
 
-    pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
-    pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
+    clpos_t p = Ship_get_point_clpos(pl->ship, worst, pl->dir);
+    // pos.cx = ms[worst].pos.cx - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].x);
+    // pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
+    pos.cx = ms[worst].pos.cx - p.cx;
+    pos.cy = ms[worst].pos.cy - p.cy;
     pos.cx = WRAP_XCLICK(pos.cx);
     pos.cy = WRAP_YCLICK(pos.cy);
     Player_position_set_clicks(pl, pos);
@@ -2974,40 +2983,52 @@ void Turn_player(player_t *pl)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) < 0)
-                    {
-                        pos.cx = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
-                    }
+                    // if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) < 0)
+                    // {
+                    //     pos.cx = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
+                    // }
+                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    if (pos.cx + p.cx < 0)
+                        pos.cx = -p.cx;
                 }
             }
             if (pos.cx >= mp.click_width - 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) >= mp.click_width)
-                    {
-                        pos.cx = mp.click_width - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
-                    }
+                    // if (pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) >= mp.click_width)
+                    // {
+                    //     pos.cx = mp.click_width - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].x);
+                    // }
+                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    if (pos.cx + p.cx >= mp.click_width)
+                        pos.cx = mp.click_width - 1 - p.cx;
                 }
             }
             if (pos.cy <= 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) < 0)
-                    {
-                        pos.cy = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
-                    }
+                    // if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) < 0)
+                    // {
+                    //     pos.cy = -FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
+                    // }
+                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    if (pos.cy + p.cy < 0)
+                        pos.cy = -p.cy;
                 }
             }
             if (pos.cy >= mp.click_height - 22 * CLICK)
             {
                 for (i = 0; i < pl->ship->num_points; i++)
                 {
-                    if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) >= mp.click_height)
-                    {
-                        pos.cy = mp.click_height - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
-                    }
+                    // if (pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) >= mp.click_height)
+                    // {
+                    //     pos.cy = mp.click_height - 1 - FLOAT_TO_CLICK(pl->ship->pts[i][dir].y);
+                    // }
+                    clpos_t p = Ship_get_point_clpos(pl->ship, i, dir);
+                    if (pos.cy + p.cy >= mp.click_height)
+                        pos.cy = mp.click_height - 1 - p.cy;
                 }
             }
             if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
@@ -3018,11 +3039,18 @@ void Turn_player(player_t *pl)
 
         for (i = 0; i < pl->ship->num_points; i++)
         {
+            clpos_t p1 = Ship_get_point_clpos(pl->ship, i, pl->dir);
+            clpos_t p2 = Ship_get_point_clpos(pl->ship, i, dir);
+
             ms[i].mip = &mi;
-            ms[i].pos.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
-            ms[i].pos.cy = pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].y);
-            ms[i].todo.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) - ms[i].pos.cx;
-            ms[i].todo.cy = pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) - ms[i].pos.cy;
+            // ms[i].pos.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].x);
+            // ms[i].pos.cy = pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][pl->dir].y);
+            // ms[i].todo.cx = pos.cx + FLOAT_TO_CLICK(pl->ship->pts[i][dir].x) - ms[i].pos.cx;
+            // ms[i].todo.cy = pos.cy + FLOAT_TO_CLICK(pl->ship->pts[i][dir].y) - ms[i].pos.cy;
+            ms[i].pos.cx = pos.cx + p1.cx;
+            ms[i].pos.cy = pos.cy + p1.cy;
+            ms[i].todo.cx = pos.cx + p2.cx - ms[i].pos.cx;
+            ms[i].todo.cy = pos.cy + p2.cy - ms[i].pos.cy;
             ms[i].vel.x = ms[i].todo.cx + salt.x;
             ms[i].vel.y = ms[i].todo.cy + salt.y;
             ms[i].target = -1;

@@ -419,12 +419,14 @@ static inline bool Player_can_fire_shot(player_t *pl)
 
 void Fire_main_shot(player_t *pl, int type, int dir)
 {
+    clpos_t m_gun, pos;
+
     if (!Player_can_fire_shot(pl))
         return;
 
-    clpos_t pos;
-    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x);
-    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y);
+    m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+    pos.cx = pl->pos.cx + m_gun.cx;
+    pos.cy = pl->pos.cy + m_gun.cy;
 
     Fire_general_shot(pl->id, pl->team, false, pos, type,
                       dir, pl->mods, NO_ID);
@@ -441,12 +443,14 @@ void Fire_shot(player_t *pl, int type, int dir)
 
 void Fire_left_shot(player_t *pl, int type, int dir, int gun)
 {
+    clpos_t l_gun, pos;
+
     if (!Player_can_fire_shot(pl))
         return;
 
-    clpos_t pos;
-    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].x);
-    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_gun[gun][pl->dir].y);
+    l_gun = Ship_get_l_gun_clpos(pl->ship, gun, pl->dir);
+    pos.cx = pl->pos.cx + l_gun.cx;
+    pos.cy = pl->pos.cy + l_gun.cy;
 
     Fire_general_shot(pl->id, pl->team, false, pos, type,
                       dir, pl->mods, NO_ID);
@@ -454,12 +458,14 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun)
 
 void Fire_right_shot(player_t *pl, int type, int dir, int gun)
 {
+    clpos_t r_gun, pos;
+
     if (!Player_can_fire_shot(pl))
         return;
 
-    clpos_t pos;
-    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].x);
-    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_gun[gun][pl->dir].y);
+    r_gun = Ship_get_r_gun_clpos(pl->ship, gun, pl->dir);
+    pos.cx = pl->pos.cx + r_gun.cx;
+    pos.cy = pl->pos.cy + r_gun.cy;
 
     Fire_general_shot(pl->id, pl->team, false, pos, type,
                       dir, pl->mods, NO_ID);
@@ -467,12 +473,14 @@ void Fire_right_shot(player_t *pl, int type, int dir, int gun)
 
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
 {
+    clpos_t l_rgun, pos;
+
     if (!Player_can_fire_shot(pl))
         return;
 
-    clpos_t pos;
-    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].x);
-    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->l_rgun[gun][pl->dir].y);
+    l_rgun = Ship_get_l_rgun_clpos(pl->ship, gun, pl->dir);
+    pos.cx = pl->pos.cx + l_rgun.cx;
+    pos.cy = pl->pos.cy + l_rgun.cy;
 
     Fire_general_shot(pl->id, pl->team, false, pos, type,
                       dir, pl->mods, NO_ID);
@@ -480,12 +488,14 @@ void Fire_left_rshot(player_t *pl, int type, int dir, int gun)
 
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun)
 {
+    clpos_t r_rgun, pos;
+
     if (!Player_can_fire_shot(pl))
         return;
 
-    clpos_t pos;
-    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].x);
-    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->r_rgun[gun][pl->dir].y);
+    r_rgun = Ship_get_r_rgun_clpos(pl->ship, gun, pl->dir);
+    pos.cx = pl->pos.cx + r_rgun.cx;
+    pos.cy = pl->pos.cy + r_rgun.cy;
 
     Fire_general_shot(pl->id, pl->team, false, pos, type,
                       dir, pl->mods, NO_ID);
@@ -982,12 +992,14 @@ void Fire_general_shot(int id, int team, bool cannon,
                     rack_no = 0;
                 r = 0;
             }
-            shotpos.cx += pl->ship->m_rack[rack_no][pl->dir].x * PIXEL_CLICKS;
-            shotpos.cy += pl->ship->m_rack[rack_no][pl->dir].y * PIXEL_CLICKS;
-            side = (int)(pl->ship->m_rack[rack_no][0].y);
+            clpos_t m_rack;
+            m_rack = Ship_get_m_rack_clpos(pl->ship, rack_no, pl->dir);
+            shotpos.cx += m_rack.cx;
+            shotpos.cy += m_rack.cy;
+            side = CLICK_TO_PIXEL(
+                Ship_get_m_rack_clpos(pl->ship, rack_no, 0).cy);
         }
-        shotpos.cx = WRAP_XCLICK(shotpos.cx);
-        shotpos.cy = WRAP_YCLICK(shotpos.cy);
+        shotpos = World_wrap_clpos(shotpos);
         if (shotpos.cx < 0 || shotpos.cx >= world->cwidth || shotpos.cy < 0 || shotpos.cy >= world->cheight)
             continue;
 
@@ -1427,8 +1439,9 @@ void Fire_laser(player_t *pl)
         else
         {
             clpos_t pos;
-            pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].x + pl->vel.x);
-            pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->m_gun[pl->dir].y + pl->vel.y);
+            clpos_t m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+            pos.cx = pl->pos.cx + m_gun.cx + FLOAT_TO_CLICK(pl->vel.x);
+            pos.cy = pl->pos.cy + m_gun.cy + FLOAT_TO_CLICK(pl->vel.y);
             pos.cx = WRAP_XCLICK(pos.cx);
             pos.cy = WRAP_YCLICK(pos.cy);
             if (World_contains_clpos(pos))
@@ -1620,10 +1633,15 @@ void Update_missile(missileobject_t *missile)
         acc = SMART_SHOT_ACC * HEAT_SPEED_FACT;
         if (heat->info >= 0)
         {
+            clpos_t engine;
+
             /* Get player and set min to distance */
             pl = Player_by_id(heat->info);
-            range = Wrap_length(CLICK_TO_FLOAT(pl->pos.cx) + pl->ship->engine[pl->dir].x - CLICK_TO_FLOAT(heat->pos.cx),
-                                CLICK_TO_FLOAT(pl->pos.cy) + pl->ship->engine[pl->dir].y - CLICK_TO_FLOAT(heat->pos.cy)) /
+            if (!pl)
+                return;
+            engine = Ship_get_engine_clpos(pl->ship, pl->dir);
+            range = Wrap_length(pl->pos.cx + engine.cx - heat->pos.cx,
+                                pl->pos.cy + engine.cy - heat->pos.cy) /
                     CLICK;
         }
         else
@@ -1657,22 +1675,24 @@ void Update_missile(missileobject_t *missile)
                 range = HEAT_RANGE * (heat->count / HEAT_CLOSE_TIMEOUT);
                 for (i = 0; i < NumPlayers; i++)
                 {
-                    player_t *p = Player_by_index(i);
+                    player_t *pl_i = Player_by_index(i);
+                    clpos_t engine;
 
-                    if (!BIT(p->obj_status, THRUSTING))
+                    if (!Player_is_thrusting(pl_i))
                         continue;
 
-                    l = Wrap_length(CLICK_TO_FLOAT(p->pos.cx) + p->ship->engine[p->dir].x - CLICK_TO_FLOAT(heat->pos.cx),
-                                    CLICK_TO_FLOAT(p->pos.cy) + p->ship->engine[p->dir].y - CLICK_TO_FLOAT(heat->pos.cy)) /
+                    engine = Ship_get_engine_clpos(pl_i->ship, pl_i->dir);
+                    l = Wrap_length(pl_i->pos.cx + engine.cx - heat->pos.cx,
+                                    pl_i->pos.cy + engine.cy - heat->pos.cy) /
                         CLICK;
                     /*
                      * After burners can be detected easier;
                      * so scale the length:
                      */
-                    l *= MAX_AFTERBURNER + 1 - p->item[ITEM_AFTERBURNER];
+                    l *= MAX_AFTERBURNER + 1 - pl_i->item[ITEM_AFTERBURNER];
                     l /= MAX_AFTERBURNER + 1;
-                    if (BIT(p->have, HAS_AFTERBURNER))
-                        l *= 16 - p->item[ITEM_AFTERBURNER];
+                    if (BIT(pl_i->have, HAS_AFTERBURNER))
+                        l *= 16 - pl_i->item[ITEM_AFTERBURNER];
                     if (l < range)
                     {
                         heat->info = Player_by_index(i)->id;
@@ -1680,7 +1700,7 @@ void Update_missile(missileobject_t *missile)
                         heat->count =
                             l < HEAT_CLOSE_RANGE ? HEAT_CLOSE_ERROR : l < HEAT_MID_RANGE ? HEAT_MID_ERROR
                                                                                          : HEAT_WIDE_ERROR;
-                        pl = p;
+                        pl = pl_i;
                     }
                 }
             }

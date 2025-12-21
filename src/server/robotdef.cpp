@@ -1017,9 +1017,10 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
 
                 double x1, y1, x3, y3, x4, y4, x5, y5;
                 double ship_dist, dir3, dir4, dir5;
+                clpos_t m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
 
-                x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + pl->ship->m_gun[pl->dir].x;
-                y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + pl->ship->m_gun[pl->dir].y;
+                x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + CLICK_TO_FLOAT(m_gun.cx);
+                y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + CLICK_TO_FLOAT(m_gun.cy);
                 x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
                 y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
 

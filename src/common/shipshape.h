@@ -50,25 +50,25 @@ typedef struct
 } shape_t;
 
 typedef struct
-{                                  /* Defines wire-obj, i.e. ship */
-    position_t *pts[MAX_SHIP_PTS]; /* the shape rotated many ways */
-    int num_points;                /* total points in object */
-    position_t engine[RES];        /* Engine position */
-    position_t m_gun[RES];         /* Main gun position */
+{                                   /* Defines wire-obj, i.e. ship */
+    clpos_t *pts_pos[MAX_SHIP_PTS]; /* the shape rotated many ways */
+    int num_points;                 /* total points in object */
+    clpos_t engine_pos[RES];        /* Engine position */
+    clpos_t m_gun_pos[RES];         /* Main gun position */
     int num_l_gun,
         num_r_gun,
         num_l_rgun,
-        num_r_rgun;                 /* number of additional cannons */
-    position_t *l_gun[MAX_GUN_PTS], /* Additional cannon positions, left*/
-        *r_gun[MAX_GUN_PTS],        /* Additional cannon positions, right*/
-        *l_rgun[MAX_GUN_PTS],       /* Additional rear cannon positions, left*/
-        *r_rgun[MAX_GUN_PTS];       /* Additional rear cannon positions, right*/
-    int num_l_light,                /* Number of lights */
+        num_r_rgun;                  /* number of additional cannons */
+    clpos_t *l_gun_pos[MAX_GUN_PTS], /* Additional cannon positions, left*/
+        *r_gun_pos[MAX_GUN_PTS],     /* Additional cannon positions, right*/
+        *l_rgun_pos[MAX_GUN_PTS],    /* Additional rear cannon positions, left*/
+        *r_rgun_pos[MAX_GUN_PTS];    /* Additional rear cannon positions, right*/
+    int num_l_light,                 /* Number of lights */
         num_r_light;
-    position_t *l_light[MAX_LIGHT_PTS], /* Left and right light positions */
-        *r_light[MAX_LIGHT_PTS];
+    clpos_t *l_light_pos[MAX_LIGHT_PTS], /* Left and right light positions */
+        *r_light_pos[MAX_LIGHT_PTS];
     int num_m_rack; /* Number of missile racks */
-    position_t *m_rack[MAX_RACK_PTS];
+    clpos_t *m_rack_pos[MAX_RACK_PTS];
     int shield_radius; /* Radius of shield used by client. */
 
 #ifdef _NAMEDSHIPS
@@ -76,36 +76,6 @@ typedef struct
     char *author;
 #endif
 } shipshape_t;
-
-static inline clpos_t ipos2clpos(ipos_t pos)
-{
-    clpos_t pt;
-
-    pt.cx = PIXEL_TO_CLICK(pos.x);
-    pt.cy = PIXEL_TO_CLICK(pos.y);
-
-    return pt;
-}
-
-static inline position_t clpos2position(clpos_t pt)
-{
-    position_t pos;
-
-    pos.x = CLICK_TO_FLOAT(pt.cx);
-    pos.y = CLICK_TO_FLOAT(pt.cy);
-
-    return pos;
-}
-
-static inline clpos_t position2clpos(position_t pt)
-{
-    clpos_t pos;
-
-    pos.cx = FLOAT_TO_CLICK(pt.x);
-    pos.cy = FLOAT_TO_CLICK(pt.y);
-
-    return pos;
-}
 
 extern shipshape_t *Default_ship(void);
 extern void Free_ship_shape(shipshape_t *ship);
@@ -115,58 +85,58 @@ extern void Calculate_shield_radius(shipshape_t *ship);
 extern int Validate_shape_str(char *str);
 extern void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext,
                                   unsigned shape_version);
-extern void Rotate_point(position_t pt[RES]);
+extern void Rotate_point(clpos_t pt[RES]);
 extern void Rotate_position(position_t pt[RES]);
 
 static inline clpos_t
 Ship_get_point_clpos(shipshape_t *ship, int i, int dir)
 {
-    return position2clpos(ship->pts[i][dir]);
+    return ship->pts_pos[i][dir];
 }
 static inline clpos_t
 Ship_get_engine_clpos(shipshape_t *ship, int dir)
 {
-    return position2clpos(ship->engine[dir]);
+    return ship->engine_pos[dir];
 }
 static inline clpos_t
 Ship_get_m_gun_clpos(shipshape_t *ship, int dir)
 {
-    return position2clpos(ship->m_gun[dir]);
+    return ship->m_gun_pos[dir];
 }
 static inline clpos_t
 Ship_get_l_gun_clpos(shipshape_t *ship, int gun, int dir)
 {
-    return position2clpos(ship->l_gun[gun][dir]);
+    return ship->l_gun_pos[gun][dir];
 }
 static inline clpos_t
 Ship_get_r_gun_clpos(shipshape_t *ship, int gun, int dir)
 {
-    return position2clpos(ship->r_gun[gun][dir]);
+    return ship->r_gun_pos[gun][dir];
 }
 static inline clpos_t
 Ship_get_l_rgun_clpos(shipshape_t *ship, int gun, int dir)
 {
-    return position2clpos(ship->l_rgun[gun][dir]);
+    return ship->l_rgun_pos[gun][dir];
 }
 static inline clpos_t
 Ship_get_r_rgun_clpos(shipshape_t *ship, int gun, int dir)
 {
-    return position2clpos(ship->r_rgun[gun][dir]);
+    return ship->r_rgun_pos[gun][dir];
 }
 static inline clpos_t
 Ship_get_l_light_clpos(shipshape_t *ship, int l, int dir)
 {
-    return position2clpos(ship->l_light[l][dir]);
+    return ship->l_light_pos[l][dir];
 }
 static inline clpos_t
 Ship_get_r_light_clpos(shipshape_t *ship, int l, int dir)
 {
-    return position2clpos(ship->r_light[l][dir]);
+    return ship->r_light_pos[l][dir];
 }
 static inline clpos_t
 Ship_get_m_rack_clpos(shipshape_t *ship, int rack, int dir)
 {
-    return position2clpos(ship->m_rack[rack][dir]);
+    return ship->m_rack_pos[rack][dir];
 }
 
 static inline position_t

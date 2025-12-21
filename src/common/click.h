@@ -132,4 +132,34 @@ static inline clpos_t Block_get_center_clpos(blkpos_t bpos)
     return pos;
 }
 
+static inline clpos_t ipos2clpos(ipos_t pos)
+{
+    clpos_t pt;
+
+    pt.cx = PIXEL_TO_CLICK(pos.x);
+    pt.cy = PIXEL_TO_CLICK(pos.y);
+
+    return pt;
+}
+
+static inline position_t clpos2position(clpos_t pt)
+{
+    position_t pos;
+
+    pos.x = CLICK_TO_FLOAT(pt.cx);
+    pos.y = CLICK_TO_FLOAT(pt.cy);
+
+    return pos;
+}
+
+static inline clpos_t position2clpos(position_t pt)
+{
+    clpos_t pos;
+
+    pos.cx = FLOAT_TO_CLICK(pt.x);
+    pos.cy = FLOAT_TO_CLICK(pt.y);
+
+    return pos;
+}
+
 #endif

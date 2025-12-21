@@ -743,8 +743,7 @@ static void Gui_paint_marking_lights(int id, int x, int y,
     {
         for (lcnt = 0; lcnt < ship->num_l_light; lcnt++)
         {
-            // position_t l_light = Ship_get_l_light_position(ship, lcnt, dir);
-            position_t l_light = ship->l_light[lcnt][dir];
+            position_t l_light = Ship_get_l_light_position(ship, lcnt, dir);
             Rectangle_add(RED,
                           X(x + l_light.x) - 2,
                           Y(y + l_light.y) - 2,
@@ -766,8 +765,7 @@ static void Gui_paint_marking_lights(int id, int x, int y,
         for (lcnt = 0; lcnt < ship->num_r_light; lcnt++)
         {
             int rightLightColor = maxColors > 4 ? 4 : BLUE;
-            // position_t r_light = Ship_get_r_light_position(ship, lcnt, dir);
-            position_t r_light = ship->r_light[lcnt][dir];
+            position_t r_light = Ship_get_r_light_position(ship, lcnt, dir);
             Rectangle_add(rightLightColor,
                           X(x + r_light.x) - 2,
                           Y(y + r_light.y) - 2,
@@ -889,16 +887,17 @@ static int set_shipshape(int world_x, int world_y,
                          int dir, shipshape_t *ship, XPoint *points)
 {
     int cnt;
-    position_t *ship_point_pos;
+    position_t ship_point_pos;
     XPoint *xpts = points;
     int window_x;
     int window_y;
+    double x, y;
 
     for (cnt = 0; cnt < ship->num_points; cnt++)
     {
-        ship_point_pos = &(ship->pts[cnt][dir]);
-        window_x = X(world_x + ship_point_pos->x);
-        window_y = Y(world_y + ship_point_pos->y);
+        ship_point_pos = Ship_get_point_position(ship, cnt, dir);
+        window_x = X(world_x + ship_point_pos.x);
+        window_y = Y(world_y + ship_point_pos.y);
         xpts->x = WINSCALE(window_x);
         xpts->y = WINSCALE(window_y);
         xpts++;

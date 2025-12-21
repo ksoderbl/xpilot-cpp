@@ -333,23 +333,23 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
                   WINSCALE(hud_pos_y - hudSize + HUD_OFFSET - BORDER) - gameFont->descent,
                   target->nick_name, target->name_len);
 
-    /* Only show the mini-ship for the locked player if it will be big enough
-     * to even tell what the heck it is!  I choose the arbitrary size of
-     * 10 pixels wide, which in practice is a scaleFactor <= 1.5.
-     */
-    if (
-        10 * scaleFactor <= 15)
-    {
-        ship = Ship_by_id(lock_id);
-        for (i = 0; i < ship->num_points; i++)
-        {
-            points[i].x = WINSCALE((int)(hud_pos_x + ship->pts[i][dir].x / 2 + 60));
-            points[i].y = WINSCALE((int)(hud_pos_y + ship->pts[i][dir].y / 2 - 80));
-        }
-        points[i++] = points[0];
-        SET_FG(colors[hudShipColor].pixel);
-        rd.fillPolygon(dpy, drawPixmap, gameGC, points, i, Complex, CoordModeOrigin);
-    }
+    // /* Only show the mini-ship for the locked player if it will be big enough
+    //  * to even tell what the heck it is!  I choose the arbitrary size of
+    //  * 10 pixels wide, which in practice is a scaleFactor <= 1.5.
+    //  */
+    // if (
+    //     10 * scaleFactor <= 15)
+    // {
+    //     ship = Ship_by_id(lock_id);
+    //     for (i = 0; i < ship->num_points; i++)
+    //     {
+    //         points[i].x = WINSCALE((int)(hud_pos_x + ship->pts[i][dir].x / 2 + 60));
+    //         points[i].y = WINSCALE((int)(hud_pos_y + ship->pts[i][dir].y / 2 - 80));
+    //     }
+    //     points[i++] = points[0];
+    //     SET_FG(colors[hudShipColor].pixel);
+    //     rd.fillPolygon(dpy, drawPixmap, gameGC, points, i, Complex, CoordModeOrigin);
+    // }
 
     if (BIT(Setup->mode, LIMITED_LIVES))
         /* lives left is a better info than distance in team games MM */

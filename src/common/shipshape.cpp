@@ -21,13 +21,14 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cctype>
+#include <cmath>
 
+#include "commonmacros.h"
 #include "shipshape.h"
 
 #include "version.h"
@@ -42,66 +43,70 @@ static int shapeLimits;
 static int Get_shape_keyword(char *keyw);
 extern void Make_table(void);
 
-/*
 static void Ship_set_point_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->pts[i][0] = ipos2clpos(pos);
+    ship->pts_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_engine_ipos(shipshape_t *ship, ipos_t pos)
 {
-    ship->engine[0] = ipos2clpos(pos);
+    ship->engine_pos[0] = ipos2clpos(pos);
 }
 
 static void Ship_set_m_gun_ipos(shipshape_t *ship, ipos_t pos)
 {
-    ship->m_gun[0] = ipos2clpos(pos);
+    ship->m_gun_pos[0] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_gun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->l_gun[i][0] = ipos2clpos(pos);
+    ship->l_gun_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_gun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->r_gun[i][0] = ipos2clpos(pos);
+    ship->r_gun_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_rgun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->l_rgun[i][0] = ipos2clpos(pos);
+    ship->l_rgun_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_rgun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->r_rgun[i][0] = ipos2clpos(pos);
+    ship->r_rgun_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_light_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->l_light[i][0] = ipos2clpos(pos);
+    ship->l_light_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_light_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->r_light[i][0] = ipos2clpos(pos);
+    ship->r_light_pos[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_m_rack_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->m_rack[i][0] = ipos2clpos(pos);
+    ship->m_rack_pos[i][0] = ipos2clpos(pos);
 }
-*/
 
-void Rotate_point(position_t pt[RES])
+// TODO: get rid of these precomputations
+void Rotate_point(clpos_t pt[RES])
 {
     int i;
+    double cx, cy;
 
     for (i = 1; i < RES; i++)
     {
-        pt[i].x = tcos(i) * pt[0].x - tsin(i) * pt[0].y;
-        pt[i].y = tsin(i) * pt[0].x + tcos(i) * pt[0].y;
+        // pt[i].x = tcos(i) * pt[0].x - tsin(i) * pt[0].y;
+        // pt[i].y = tsin(i) * pt[0].x + tcos(i) * pt[0].y;
+        double cx = tcos(i) * pt[0].cx - tsin(i) * pt[0].cy;
+        double cy = tsin(i) * pt[0].cx + tcos(i) * pt[0].cy;
+        pt[i].cx = round(cx);
+        pt[i].cy = round(cy);
     }
 }
 
@@ -121,23 +126,23 @@ static void Rotate_ship(shipshape_t *ship)
     int i;
 
     for (i = 0; i < ship->num_points; i++)
-        Rotate_point(&ship->pts[i][0]);
-    Rotate_point(&ship->engine[0]);
-    Rotate_point(&ship->m_gun[0]);
+        Rotate_point(&ship->pts_pos[i][0]);
+    Rotate_point(&ship->engine_pos[0]);
+    Rotate_point(&ship->m_gun_pos[0]);
     for (i = 0; i < ship->num_l_gun; i++)
-        Rotate_point(&ship->l_gun[i][0]);
+        Rotate_point(&ship->l_gun_pos[i][0]);
     for (i = 0; i < ship->num_r_gun; i++)
-        Rotate_point(&ship->r_gun[i][0]);
+        Rotate_point(&ship->r_gun_pos[i][0]);
     for (i = 0; i < ship->num_l_rgun; i++)
-        Rotate_point(&ship->l_rgun[i][0]);
+        Rotate_point(&ship->l_rgun_pos[i][0]);
     for (i = 0; i < ship->num_r_rgun; i++)
-        Rotate_point(&ship->r_rgun[i][0]);
+        Rotate_point(&ship->r_rgun_pos[i][0]);
     for (i = 0; i < ship->num_l_light; i++)
-        Rotate_point(&ship->l_light[i][0]);
+        Rotate_point(&ship->l_light_pos[i][0]);
     for (i = 0; i < ship->num_r_light; i++)
-        Rotate_point(&ship->r_light[i][0]);
+        Rotate_point(&ship->r_light_pos[i][0]);
     for (i = 0; i < ship->num_m_rack; i++)
-        Rotate_point(&ship->m_rack[i][0]);
+        Rotate_point(&ship->m_rack_pos[i][0]);
 }
 
 /*
@@ -148,41 +153,54 @@ static void Rotate_ship(shipshape_t *ship)
 shipshape_t *Default_ship(void)
 {
     static shipshape_t sh;
-    static position_t pts[6][RES];
+    static clpos_t pts[6][RES];
 
     if (!sh.num_points)
     {
+        ipos_t pos;
+
         sh.num_points = 3;
-        sh.pts[0] = &pts[0][0];
-        sh.pts[0][0].x = 15;
-        sh.pts[0][0].y = 0;
-        sh.pts[1] = &pts[1][0];
-        sh.pts[1][0].x = -9;
-        sh.pts[1][0].y = 8;
-        sh.pts[2] = &pts[2][0];
-        sh.pts[2][0].x = -9;
-        sh.pts[2][0].y = -8;
 
-        sh.engine[0].x = -9;
-        sh.engine[0].y = 0;
+        sh.pts_pos[0] = &pts[0][0];
+        pos.x = 15;
+        pos.y = 0;
+        Ship_set_point_ipos(&sh, 0, pos);
 
-        sh.m_gun[0].x = 15;
-        sh.m_gun[0].y = 0;
+        sh.pts_pos[1] = &pts[1][0];
+        pos.x = -9;
+        pos.y = 8;
+        Ship_set_point_ipos(&sh, 1, pos);
+
+        sh.pts_pos[2] = &pts[2][0];
+        pos.x = -9;
+        pos.y = -8;
+        Ship_set_point_ipos(&sh, 2, pos);
+
+        pos.x = -9;
+        pos.y = 0;
+        Ship_set_engine_ipos(&sh, pos);
+
+        pos.x = 15;
+        pos.y = 0;
+        Ship_set_m_gun_ipos(&sh, pos);
 
         sh.num_l_light = 1;
-        sh.l_light[0] = &pts[3][0];
-        sh.l_light[0][0].x = -9;
-        sh.l_light[0][0].y = 8;
+        sh.l_light_pos[0] = &pts[3][0];
+        pos.x = -9;
+        pos.y = 8;
+        Ship_set_l_light_ipos(&sh, 0, pos);
 
         sh.num_r_light = 1;
-        sh.r_light[0] = &pts[4][0];
-        sh.r_light[0][0].x = -9;
-        sh.r_light[0][0].y = -8;
+        sh.r_light_pos[0] = &pts[4][0];
+        pos.x = -9;
+        pos.y = -8;
+        Ship_set_r_light_ipos(&sh, 0, pos);
 
         sh.num_m_rack = 1;
-        sh.m_rack[0] = &pts[5][0];
-        sh.m_rack[0][0].x = 15;
-        sh.m_rack[0][0].y = 0;
+        sh.m_rack_pos[0] = &pts[5][0];
+        pos.x = 15;
+        pos.y = 0;
+        Ship_set_m_rack_ipos(&sh, 0, pos);
 
         sh.num_l_gun = sh.num_r_gun = sh.num_l_rgun = sh.num_r_rgun = 0;
 
@@ -1104,118 +1122,115 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     }
 
     i = sizeof(position_t) * RES;
-    if (!(ship->pts[0] = (position_t *)malloc(ship->num_points * i)) ||
-        (ship->num_l_gun && !(ship->l_gun[0] = (position_t *)malloc(ship->num_l_gun * i))) ||
-        (ship->num_r_gun && !(ship->r_gun[0] = (position_t *)malloc(ship->num_r_gun * i))) ||
-        (ship->num_l_rgun && !(ship->l_rgun[0] = (position_t *)malloc(ship->num_l_rgun * i))) ||
-        (ship->num_r_rgun && !(ship->r_rgun[0] = (position_t *)malloc(ship->num_r_rgun * i))) ||
-        (ship->num_l_light && !(ship->l_light[0] = (position_t *)malloc(ship->num_l_light * i))) ||
-        (ship->num_r_light && !(ship->r_light[0] = (position_t *)malloc(ship->num_r_light * i))) ||
-        (ship->num_m_rack && !(ship->m_rack[0] = (position_t *)malloc(ship->num_m_rack * i))))
+    ship->pts_pos[0] = (clpos_t *)malloc(ship->num_points * i);
+    if (ship->num_l_gun)
+    {
+        ship->l_gun_pos[0] = (clpos_t *)malloc(ship->num_l_gun * i);
+    }
+    if (ship->num_r_gun)
+    {
+        ship->r_gun_pos[0] = (clpos_t *)malloc(ship->num_r_gun * i);
+    }
+    if (ship->num_l_rgun)
+    {
+        ship->l_rgun_pos[0] = (clpos_t *)malloc(ship->num_l_rgun * i);
+    }
+    if (ship->num_r_rgun)
+    {
+        ship->r_rgun_pos[0] = (clpos_t *)malloc(ship->num_r_rgun * i);
+    }
+    if (ship->num_l_light)
+    {
+        ship->l_light_pos[0] = (clpos_t *)malloc(ship->num_l_light * i);
+    }
+    if (ship->num_r_light)
+    {
+        ship->r_light_pos[0] = (clpos_t *)malloc(ship->num_r_light * i);
+    }
+    if (ship->num_m_rack)
+    {
+        ship->m_rack_pos[0] = (clpos_t *)malloc(ship->num_m_rack * i);
+    }
+
+    // if (!(ship->pts_pos[0] = (position_t *)malloc(ship->num_points * i)) ||
+    //     (ship->num_l_gun && !(ship->l_gun[0] = (position_t *)malloc(ship->num_l_gun * i))) ||
+    //     (ship->num_r_gun && !(ship->r_gun[0] = (position_t *)malloc(ship->num_r_gun * i))) ||
+    //     (ship->num_l_rgun && !(ship->l_rgun[0] = (position_t *)malloc(ship->num_l_rgun * i))) ||
+    //     (ship->num_r_rgun && !(ship->r_rgun[0] = (position_t *)malloc(ship->num_r_rgun * i))) ||
+    //     (ship->num_l_light && !(ship->l_light[0] = (position_t *)malloc(ship->num_l_light * i))) ||
+    //     (ship->num_r_light && !(ship->r_light[0] = (position_t *)malloc(ship->num_r_light * i))) ||
+    //     (ship->num_m_rack && !(ship->m_rack[0] = (position_t *)malloc(ship->num_m_rack * i))))
+
+    // TODO: here we assume mallocs above succeed.
+    // This code will go away later, so let's not bother checking.
+    if (false)
     {
         error("Not enough memory for ship shape");
-        if (ship->pts[0])
-        {
-            free(ship->pts[0]);
-            if (ship->l_gun[0])
-            {
-                free(ship->l_gun[0]);
-                if (ship->r_gun[0])
-                {
-                    free(ship->r_gun[0]);
-                    if (ship->l_rgun[0])
-                    {
-                        free(ship->l_rgun[0]);
-                        if (ship->r_rgun[0])
-                        {
-                            free(ship->r_rgun[0]);
-                            if (ship->l_light[0])
-                            {
-                                free(ship->l_light[0]);
-                                if (ship->r_light[0])
-                                {
-                                    free(ship->r_light[0]);
-                                    if (ship->m_rack[0])
-                                    {
-                                        free(ship->m_rack[0]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        XFREE(ship->pts_pos[0]);
+        XFREE(ship->l_gun_pos[0]);
+        XFREE(ship->r_gun_pos[0]);
+        XFREE(ship->l_rgun_pos[0]);
+        XFREE(ship->r_rgun_pos[0]);
+        XFREE(ship->l_light_pos[0]);
+        XFREE(ship->r_light_pos[0]);
+        XFREE(ship->m_rack_pos[0]);
         return -1;
     }
 
     for (i = 1; i < ship->num_points; i++)
-        ship->pts[i] = &ship->pts[i - 1][RES];
+        ship->pts_pos[i] = &ship->pts_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_l_gun; i++)
-        ship->l_gun[i] = &ship->l_gun[i - 1][RES];
+        ship->l_gun_pos[i] = &ship->l_gun_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_r_gun; i++)
-        ship->r_gun[i] = &ship->r_gun[i - 1][RES];
+        ship->r_gun_pos[i] = &ship->r_gun_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_l_rgun; i++)
-        ship->l_rgun[i] = &ship->l_rgun[i - 1][RES];
+        ship->l_rgun_pos[i] = &ship->l_rgun_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_r_rgun; i++)
-        ship->r_rgun[i] = &ship->r_rgun[i - 1][RES];
+        ship->r_rgun_pos[i] = &ship->r_rgun_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_l_light; i++)
-        ship->l_light[i] = &ship->l_light[i - 1][RES];
+        ship->l_light_pos[i] = &ship->l_light_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_r_light; i++)
-        ship->r_light[i] = &ship->r_light[i - 1][RES];
+        ship->r_light_pos[i] = &ship->r_light_pos[i - 1][RES];
+
     for (i = 1; i < ship->num_m_rack; i++)
-        ship->m_rack[i] = &ship->m_rack[i - 1][RES];
+        ship->m_rack_pos[i] = &ship->m_rack_pos[i - 1][RES];
 
     for (i = 0; i < ship->num_points; i++)
-    {
-        ship->pts[i][0].x = pt[i].x;
-        ship->pts[i][0].y = pt[i].y;
-    }
+        Ship_set_point_ipos(ship, i, pt[i]);
+
     if (engineSet)
-    {
-        ship->engine[0].x = engine.x;
-        ship->engine[0].y = engine.y;
-    }
+        Ship_set_engine_ipos(ship, engine);
+
     if (mainGunSet)
-    {
-        ship->m_gun[0].x = m_gun.x;
-        ship->m_gun[0].y = m_gun.y;
-    }
+        Ship_set_m_gun_ipos(ship, m_gun);
+
     for (i = 0; i < ship->num_l_gun; i++)
-    {
-        ship->l_gun[i][0].x = l_gun[i].x;
-        ship->l_gun[i][0].y = l_gun[i].y;
-    }
+        Ship_set_l_gun_ipos(ship, i, l_gun[i]);
+
     for (i = 0; i < ship->num_r_gun; i++)
-    {
-        ship->r_gun[i][0].x = r_gun[i].x;
-        ship->r_gun[i][0].y = r_gun[i].y;
-    }
+        Ship_set_r_gun_ipos(ship, i, r_gun[i]);
+
     for (i = 0; i < ship->num_l_rgun; i++)
-    {
-        ship->l_rgun[i][0].x = l_rgun[i].x;
-        ship->l_rgun[i][0].y = l_rgun[i].y;
-    }
+        Ship_set_l_rgun_ipos(ship, i, l_rgun[i]);
+
     for (i = 0; i < ship->num_r_rgun; i++)
-    {
-        ship->r_rgun[i][0].x = r_rgun[i].x;
-        ship->r_rgun[i][0].y = r_rgun[i].y;
-    }
+        Ship_set_r_rgun_ipos(ship, i, r_rgun[i]);
+
     for (i = 0; i < ship->num_l_light; i++)
-    {
-        ship->l_light[i][0].x = l_light[i].x;
-        ship->l_light[i][0].y = l_light[i].y;
-    }
+        Ship_set_l_light_ipos(ship, i, l_light[i]);
+
     for (i = 0; i < ship->num_r_light; i++)
-    {
-        ship->r_light[i][0].x = r_light[i].x;
-        ship->r_light[i][0].y = r_light[i].y;
-    }
+        Ship_set_r_light_ipos(ship, i, r_light[i]);
+
     for (i = 0; i < ship->num_m_rack; i++)
-    {
-        ship->m_rack[i][0].x = m_rack[i].x;
-        ship->m_rack[i][0].y = m_rack[i].y;
-    }
+        Ship_set_m_rack_ipos(ship, i, m_rack[i]);
+
     Rotate_ship(ship);
 
     return 0;
@@ -1228,9 +1243,8 @@ static shipshape_t *do_parse_shape(char *str)
     if (!str || !*str)
     {
         if (debugShapeParsing)
-        {
-            warn("shape str not set\n");
-        }
+            warn("shape str not set");
+
         return Default_ship();
     }
     if (!(ship = (shipshape_t *)malloc(sizeof(*ship))))
@@ -1259,22 +1273,22 @@ void Free_ship_shape(shipshape_t *ship)
 {
     if (ship != NULL && ship != Default_ship())
     {
-        if (ship->num_points > 0 && ship->pts[0])
-            free(ship->pts[0]);
-        if (ship->num_l_gun > 0 && ship->l_gun[0])
-            free(ship->l_gun[0]);
-        if (ship->num_r_gun > 0 && ship->r_gun[0])
-            free(ship->r_gun[0]);
-        if (ship->num_l_rgun > 0 && ship->l_rgun[0])
-            free(ship->l_rgun[0]);
-        if (ship->num_r_rgun > 0 && ship->r_rgun[0])
-            free(ship->r_rgun[0]);
-        if (ship->num_l_light > 0 && ship->l_light[0])
-            free(ship->l_light[0]);
-        if (ship->num_r_light > 0 && ship->r_light[0])
-            free(ship->r_light[0]);
-        if (ship->num_m_rack > 0 && ship->m_rack[0])
-            free(ship->m_rack[0]);
+        if (ship->num_points > 0)
+            XFREE(ship->pts_pos[0]);
+        if (ship->num_l_gun > 0)
+            XFREE(ship->l_gun_pos[0]);
+        if (ship->num_r_gun > 0)
+            XFREE(ship->r_gun_pos[0]);
+        if (ship->num_l_rgun > 0)
+            XFREE(ship->l_rgun_pos[0]);
+        if (ship->num_r_rgun > 0)
+            XFREE(ship->r_rgun_pos[0]);
+        if (ship->num_l_light > 0)
+            XFREE(ship->l_light_pos[0]);
+        if (ship->num_r_light > 0)
+            XFREE(ship->r_light_pos[0]);
+        if (ship->num_m_rack > 0)
+            XFREE(ship->m_rack_pos[0]);
 #ifdef _NAMEDSHIPS
         if (ship->name)
             free(ship->name);
@@ -1313,28 +1327,29 @@ int Validate_shape_str(char *str)
 void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned shape_version)
 {
     char tmp[MSG_LEN];
-    int i,
-        buflen,
-        extlen,
-        tmplen,
-        ll,
-        rl;
+    int i, buflen = 0, extlen, tmplen;
+    int ll, rl;
 
     ext[extlen = 0] = '\0';
 
     if (shape_version >= 0x3200)
     {
+        position_t engine, m_gun;
+
         strcpy(buf, "(SH:");
         buflen = strlen(&buf[0]);
         for (i = 0; i < ship->num_points && i < MAX_SHIP_PTS; i++)
         {
-            sprintf(&buf[buflen], " %d,%d",
-                    (int)ship->pts[i][0].x, (int)ship->pts[i][0].y);
+            position_t pt = Ship_get_point_position(ship, i, 0);
+
+            sprintf(&buf[buflen], " %d,%d", (int)pt.x, (int)pt.y);
             buflen += strlen(&buf[buflen]);
         }
+        engine = Ship_get_engine_position(ship, 0);
+        m_gun = Ship_get_m_gun_position(ship, 0);
         sprintf(&buf[buflen], ")(EN: %d,%d)(MG: %d,%d)",
-                (int)ship->engine[0].x, (int)ship->engine[0].y,
-                (int)ship->m_gun[0].x, (int)ship->m_gun[0].y);
+                (int)engine.x, (int)engine.y,
+                (int)m_gun.x, (int)m_gun.y);
         buflen += strlen(&buf[buflen]);
 
         /*
@@ -1354,8 +1369,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_l_gun && i < MAX_GUN_PTS; i++)
             {
+                position_t l_gun = Ship_get_l_gun_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->l_gun[i][0].x, (int)ship->l_gun[i][0].y);
+                        (int)l_gun.x, (int)l_gun.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1377,8 +1394,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_r_gun && i < MAX_GUN_PTS; i++)
             {
+                position_t r_gun = Ship_get_r_gun_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->r_gun[i][0].x, (int)ship->r_gun[i][0].y);
+                        (int)r_gun.x, (int)r_gun.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1400,8 +1419,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_l_rgun && i < MAX_GUN_PTS; i++)
             {
+                position_t l_rgun = Ship_get_l_rgun_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->l_rgun[i][0].x, (int)ship->l_rgun[i][0].y);
+                        (int)l_rgun.x, (int)l_rgun.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1423,8 +1444,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_r_rgun && i < MAX_GUN_PTS; i++)
             {
+                position_t r_rgun = Ship_get_r_rgun_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->r_rgun[i][0].x, (int)ship->r_rgun[i][0].y);
+                        (int)r_rgun.x, (int)r_rgun.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1446,8 +1469,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_l_light && i < MAX_LIGHT_PTS; i++)
             {
+                position_t l_light = Ship_get_l_light_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->l_light[i][0].x, (int)ship->l_light[i][0].y);
+                        (int)l_light.x, (int)l_light.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1469,8 +1494,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_r_light && i < MAX_LIGHT_PTS; i++)
             {
+                position_t r_light = Ship_get_r_light_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->r_light[i][0].x, (int)ship->r_light[i][0].y);
+                        (int)r_light.x, (int)r_light.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1492,8 +1519,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
             tmplen = strlen(&tmp[0]);
             for (i = 0; i < ship->num_m_rack && i < MAX_RACK_PTS; i++)
             {
+                position_t m_rack = Ship_get_m_rack_position(ship, i, 0);
+
                 sprintf(&tmp[tmplen], " %d,%d",
-                        (int)ship->m_rack[i][0].x, (int)ship->m_rack[i][0].y);
+                        (int)m_rack.x, (int)m_rack.y);
                 tmplen += strlen(&tmp[tmplen]);
             }
             strcpy(&tmp[tmplen], ")");
@@ -1527,11 +1556,11 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
 
         for (i = 1, ll = rl = 0; i < num_points; i++)
         {
-            if (ship->pts[i][0].y > ship->pts[ll][0].y || (ship->pts[i][0].y == ship->pts[ll][0].y && ship->pts[i][0].x < ship->pts[ll][0].x))
+            if (ship->pts_pos[i][0].cy > ship->pts_pos[ll][0].cy || (ship->pts_pos[i][0].cy == ship->pts_pos[ll][0].cy && ship->pts_pos[i][0].cx < ship->pts_pos[ll][0].cx))
             {
                 ll = i;
             }
-            if (ship->pts[i][0].y < ship->pts[rl][0].y || (ship->pts[i][0].y == ship->pts[rl][0].y && ship->pts[i][0].x < ship->pts[rl][0].x))
+            if (ship->pts_pos[i][0].cy < ship->pts_pos[rl][0].cy || (ship->pts_pos[i][0].cy == ship->pts_pos[rl][0].cy && ship->pts_pos[i][0].cx < ship->pts_pos[rl][0].cx))
             {
                 rl = i;
             }
@@ -1541,7 +1570,7 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
         for (i = 0; i < num_points; i++)
         {
             sprintf(&buf[buflen], "(%d,%d)",
-                    (int)ship->pts[i][0].x, (int)ship->pts[i][0].y);
+                    (int)ship->pts_pos[i][0].cx, (int)ship->pts_pos[i][0].cy);
             buflen += strlen(&buf[buflen]);
         }
     }
@@ -1627,7 +1656,7 @@ void Calculate_shield_radius(shipshape_t *ship)
 
     for (i = 0; i < ship->num_points; i++)
     {
-        radius2 = (int)(sqr(ship->pts[i][0].x) + sqr(ship->pts[i][0].y));
+        radius2 = (int)(sqr(ship->pts_pos[i][0].cx) + sqr(ship->pts_pos[i][0].cy));
         if (radius2 > max_radius)
         {
             max_radius = radius2;

@@ -61,8 +61,9 @@ void Thrust(player_t *pl)
                      0x03);
     int tot_sparks = (int)((pl->power * 0.15) + this_rand + 1);
     clpos_t pos;
-    pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->ship->engine[pl->dir].x);
-    pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->ship->engine[pl->dir].y);
+    clpos_t engine_pos = Ship_get_engine_clpos(pl->ship, pl->dir);
+    pos.cx = pl->pos.cx + engine_pos.cx;
+    pos.cy = pl->pos.cy + engine_pos.cy;
     int afterburners, alt_sparks;
 
     sound_play_sensors(pl->pos, THRUST_SOUND);
