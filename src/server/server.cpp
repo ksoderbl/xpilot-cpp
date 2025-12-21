@@ -132,8 +132,8 @@ int main(int argc, char **argv)
     /* Lock the server into memory */
     plock_server(options.pLockServer);
     /* Make trigonometric tables */
-    xpprintf("make table\n");
-    Make_table();
+    // xpprintf("make table\n");
+    // Make_table();
     xpprintf("compute gravity\n");
     Compute_gravity();
     xpprintf("find base direction\n");

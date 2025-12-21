@@ -29,6 +29,7 @@
 #include <cmath>
 
 #include "commonmacros.h"
+#include "xpmath.h"
 #include "shipshape.h"
 
 #include "version.h"
@@ -41,7 +42,6 @@ static int verboseShapeParsing;
 static int shapeLimits;
 
 static int Get_shape_keyword(char *keyw);
-extern void Make_table(void);
 
 static void Ship_set_point_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
@@ -203,8 +203,6 @@ shipshape_t *Default_ship(void)
         Ship_set_m_rack_ipos(&sh, 0, pos);
 
         sh.num_l_gun = sh.num_r_gun = sh.num_l_rgun = sh.num_r_rgun = 0;
-
-        Make_table();
 
         Rotate_ship(&sh);
     }

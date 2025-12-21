@@ -34,8 +34,8 @@
 #include "const.h"
 #include "xperror.h"
 
-double tbl_sin[TABLE_SIZE];
-double tbl_cos[TABLE_SIZE];
+// double tbl_sin[TABLE_SIZE];
+// double tbl_cos[TABLE_SIZE];
 
 int ON(const char *optval)
 {
@@ -86,13 +86,24 @@ double rfrac(void)
     return (double)(randomMT() * 0.00000000023283064365386962890625);
 }
 
-void Make_table(void)
-{
-    int i;
+// void Make_table(void)
+// {
+//     int i;
 
-    for (i = 0; i < TABLE_SIZE; i++)
-    {
-        tbl_sin[i] = sin(i * (2.0 * PI / TABLE_SIZE));
-        tbl_cos[i] = cos(i * (2.0 * PI / TABLE_SIZE));
-    }
+//     for (i = 0; i < TABLE_SIZE; i++)
+//     {
+//         tbl_sin[i] = sin(i * (2.0 * PI / TABLE_SIZE));
+//         tbl_cos[i] = cos(i * (2.0 * PI / TABLE_SIZE));
+//     }
+// }
+
+// The angle x goes from 0 to RES for a full circle.
+double tcos(double x)
+{
+    return cos(x * (2.0 * PI / RES));
+}
+
+double tsin(double x)
+{
+    return sin(x * (2.0 * PI / RES));
 }

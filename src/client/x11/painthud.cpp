@@ -33,6 +33,7 @@
 #include <X11/Xos.h>
 
 #include "strlcpy.h"
+#include "xpmath.h"
 
 #include "client.h"
 #include "messages.h"

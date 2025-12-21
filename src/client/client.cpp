@@ -2159,7 +2159,7 @@ int Client_init(char *server, unsigned server_version)
 {
     version = server_version;
 
-    Make_table();
+    // Make_table();
     Init_scale_array();
 
     if (Init_wreckage() == -1)

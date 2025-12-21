@@ -37,6 +37,7 @@
 #include "strlcpy.h"
 #include "xpconfig.h"
 #include "xperror.h"
+#include "xpmath.h"
 
 #include "gfx2d.h"
 
