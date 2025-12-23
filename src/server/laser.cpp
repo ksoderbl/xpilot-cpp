@@ -540,12 +540,12 @@ void Laser_pulse_collision(void)
             pulse,
             midx, midy);
 
-        if (obj_list.size() > 0)
-        {
-            printf("Laser_pulse_collision: pulse %d, obj_list.size() = %d\n", p, obj_list.size());
-            if (pl)
-                printf("Laser_pulse_collision: Player %d: %s\n", GetInd(pl->id), pl->name);
-        }
+        // if (obj_list.size() > 0)
+        // {
+        //     printf("Laser_pulse_collision: pulse %d, obj_list.size() = %d\n", p, obj_list.size());
+        //     if (pl)
+        //         printf("Laser_pulse_collision: Player %d: %s\n", GetInd(pl->id), pl->name);
+        // }
 
         pulseobject_t *pulse_ptr = PULSE_PTR(obj);
         pulse_ptr->type = OBJ_PULSE_BIT;

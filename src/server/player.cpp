@@ -322,7 +322,7 @@ void Player_add_tank(player_t *pl, double tank_fuel)
 {
     double tank_cap, add_fuel;
 
-    xpinfo("Player_add_tank: tank_fuel: %f", tank_fuel);
+    // xpinfo("Player_add_tank: tank_fuel: %f", tank_fuel);
 
     if (pl->fuel.num_tanks < MAX_TANKS)
     {
@@ -401,7 +401,7 @@ void Player_set_mass(player_t *pl)
  */
 static void Player_init_fuel(player_t *pl, double total_fuel)
 {
-    xpinfo("Player_init_fuel: total_fuel: %f", total_fuel);
+    // xpinfo("Player_init_fuel: total_fuel: %f", total_fuel);
 
     double fuel = total_fuel;
     int i;
@@ -410,11 +410,11 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
     pl->fuel.current = 0;
     pl->fuel.max = TANK_CAP(0);
 
-    xpinfo("Player_init_fuel: pl->fuel.max: %f", pl->fuel.max);
+    // xpinfo("Player_init_fuel: pl->fuel.max: %f", pl->fuel.max);
 
     pl->fuel.sum = MIN(fuel, pl->fuel.max);
 
-    xpinfo("Player_init_fuel: pl->fuel.sum: %f", pl->fuel.sum);
+    // xpinfo("Player_init_fuel: pl->fuel.sum: %f", pl->fuel.sum);
 
     pl->fuel.tank[0] = pl->fuel.sum;
     pl->emptymass = options.shipMass;

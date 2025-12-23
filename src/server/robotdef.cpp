@@ -258,15 +258,15 @@ static void Robot_default_create(player_t *pl, char *str)
     my_data->fuel_l2 = 200 * FUEL_SCALE_FACT;
     my_data->fuel_l3 = 500 * FUEL_SCALE_FACT;
 
-    warn("Robot_default_create 1: l3 / l2 / l1 = %f / %f / %f",
-         my_data->fuel_l3, my_data->fuel_l2, my_data->fuel_l1);
+    // warn("Robot_default_create 1: l3 / l2 / l1 = %f / %f / %f",
+    //      my_data->fuel_l3, my_data->fuel_l2, my_data->fuel_l1);
 
     my_data->fuel_l3 += my_data->defense - my_data->attack + (int)((rfrac() - 0.5) * 20);
     my_data->fuel_l2 += 2 * (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 8);
     my_data->fuel_l1 += (my_data->defense - my_data->attack) / 5 + (int)((rfrac() - 0.5) * 4);
 
-    warn("Robot_default_create 2: l3 / l2 / l1 = %f / %f / %f",
-         my_data->fuel_l3, my_data->fuel_l2, my_data->fuel_l1);
+    // warn("Robot_default_create 2: l3 / l2 / l1 = %f / %f / %f",
+    //      my_data->fuel_l3, my_data->fuel_l2, my_data->fuel_l1);
 
     my_data->last_used_ecm = 0;
     my_data->last_dropped_mine = 0;

@@ -971,7 +971,8 @@ void Fire_general_shot(int id, int team, bool cannon,
 
         else
         {
-            warn("ERROR: minis: shot type %s", Object_typename(shot));
+            // TODO: do we need any of this?
+            // warn("ERROR: minis: shot type %s", Object_typename(shot));
             // shot->info = lock;
             // shot->count = 0;
         }
