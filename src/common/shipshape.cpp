@@ -210,39 +210,46 @@ shipshape_t *Default_ship(void)
     return &sh;
 }
 
+typedef struct
+{
+    int todo, done;
+    uint8_t pt[32][32];
+    ipos_t chk[32 * 32];
+} grid_t;
+
+grid_t grid;
+
 /*
  * Macros to simplify limit-checking for ship points.
  * Until XPilot goes C++.
  */
 #define GRID_PT(x, y) grid.pt[(x) + 15][(y) + 15]
-#define GRID_ADD(x, y) (GRID_PT(x, y) = 2,                 \
-                        grid.chk[grid.todo][0] = (x) + 15, \
-                        grid.chk[grid.todo][1] = (y) + 15, \
-                        grid.todo++)
-#define GRID_GET(x, y) ((x) = (int)grid.chk[grid.done][0] - 15, \
-                        (y) = (int)grid.chk[grid.done][1] - 15, \
-                        grid.done++)
-#define GRID_CHK(x, y) (GRID_PT(x, y) == 2)
+#define GRID_ADD(ax, ay) (GRID_PT(ax, ay) = 2,               \
+                          grid.chk[grid.todo].x = (ax) + 15, \
+                          grid.chk[grid.todo].y = (ay) + 15, \
+                          grid.todo++)
+#define GRID_GET(ax, ay) ((ax) = (int)grid.chk[grid.done].x - 15, \
+                          (ay) = (int)grid.chk[grid.done].y - 15, \
+                          grid.done++)
+#define GRID_CHK(ax, ay) (GRID_PT(ax, ay) == 2)
 #define GRID_READY() (grid.done >= grid.todo)
 #define GRID_RESET() (memset(grid.pt, 0, sizeof grid.pt), \
                       grid.done = 0,                      \
                       grid.todo = 0)
 
-struct grid_t
+static void Grid_set_value(grid_t *grid_p, int x, int y, int value)
 {
-    int todo, done;
-    uint8_t pt[32][32];
-    uint8_t chk[32 * 32][2];
-} grid;
-
-static int Grid_get_value(grid_t *grid, int x, int y)
-{
-    return grid->pt[(x) + 15][(y) + 15];
+    int ix = x + 15;
+    int iy = y + 15;
+    // TODO: check ix, iy is inside the grid
+    grid_p->pt[ix][iy] = value;
 }
-
-static void Grid_set_value(grid_t *grid, int x, int y, int value)
+static int Grid_get_value(grid_t *grid_p, int x, int y)
 {
-    grid->pt[(x) + 15][(y) + 15] = value;
+    int ix = x + 15;
+    int iy = y + 15;
+    // TODO: check ix, iy is inside the grid
+    return grid_p->pt[ix][iy];
 }
 
 static int shape2wire(char *ship_shape_str, shipshape_t *ship)
@@ -874,11 +881,10 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                     /*
                      * Check the line if the points are not the same ones
                      */
-                    if ((width = fabs(vec[0] * (double)(pt[i].x - pt[j].x) +
-                                      vec[1] * (double)(pt[i].y - pt[j].y))) > dTmp)
-                    {
+                    width = fabs(vec[0] * (double)(pt[i].x - pt[j].x) +
+                                 vec[1] * (double)(pt[i].y - pt[j].y));
+                    if (width > dTmp)
                         dTmp = width;
-                    }
                 }
             }
 
@@ -1120,10 +1126,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             }
         }
 
-        if (invalid != 0)
-        {
+        if (invalid)
             return -1;
-        }
     }
 
     i = sizeof(position_t) * RES;
@@ -1302,7 +1306,7 @@ void Free_ship_shape(shipshape_t *ship)
 shipshape_t *Parse_shape_str(char *str)
 {
     verboseShapeParsing = debugShapeParsing;
-    shapeLimits = 1;
+    shapeLimits = true;
     return do_parse_shape(str);
 }
 
@@ -1313,22 +1317,25 @@ shipshape_t *Convert_shape_str(char *str)
     return do_parse_shape(str);
 }
 
+/*
+ * Returns 0 if ships is not valid, 1 if valid.
+ */
 int Validate_shape_str(char *str)
 {
     shipshape_t *ship;
 
-    verboseShapeParsing = 1;
-    shapeLimits = 1;
+    verboseShapeParsing = true;
+    shapeLimits = true;
     ship = do_parse_shape(str);
     Free_ship_shape(ship);
     return (ship && ship != Default_ship());
 }
 
-void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned shape_version)
+void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext,
+                           unsigned shape_version)
 {
     char tmp[MSG_LEN];
     int i, buflen = 0, extlen, tmplen;
-    int ll, rl;
 
     ext[extlen = 0] = '\0';
 
@@ -1541,6 +1548,8 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
     }
     else
     {
+        int ll, rl;
+
         /* 3.1 version had 16 points maximum.  just ignore the excess. */
         int num_points = MIN(ship->num_points, 16);
 #if 0
@@ -1550,20 +1559,16 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
 #endif
         if (shape_version != 0x3100)
         {
-            errno = 0;
-            error("Unknown ship shape version: %x", shape_version);
+            warn("Unknown ship shape version: %x", shape_version);
         }
 
         for (i = 1, ll = rl = 0; i < num_points; i++)
         {
             if (ship->pts[i][0].cy > ship->pts[ll][0].cy || (ship->pts[i][0].cy == ship->pts[ll][0].cy && ship->pts[i][0].cx < ship->pts[ll][0].cx))
-            {
                 ll = i;
-            }
+
             if (ship->pts[i][0].cy < ship->pts[rl][0].cy || (ship->pts[i][0].cy == ship->pts[rl][0].cy && ship->pts[i][0].cx < ship->pts[rl][0].cx))
-            {
                 rl = i;
-            }
         }
         sprintf(buf, "(%d,%d,%d)", num_points, ll, rl);
         buflen = strlen(buf);
@@ -1575,14 +1580,10 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
         }
     }
     if (buflen >= MSG_LEN || extlen >= MSG_LEN)
-    {
-        errno = 0;
-        error("BUG: convert ship: buffer overflow (%d,%d)", buflen, extlen);
-    }
+        warn("BUG: convert ship: buffer overflow (%d,%d)", buflen, extlen);
+
     if (debugShapeParsing)
-    {
-        warn("ship 2 str: %s %s\n", buf, ext);
-    }
+        warn("ship 2 str: %s %s", buf, ext);
 }
 
 static int Get_shape_keyword(char *keyw)
@@ -1625,9 +1626,7 @@ static int Get_shape_keyword(char *keyw)
         for (i = 0; i < NUM_SHAPE_KEYS; i++)
         {
             if (!strcmp(keyw, shape_keys[i]))
-            {
                 break;
-            }
         }
     }
     /* abbreviated keywords start with an upper case letter. */
@@ -1636,16 +1635,13 @@ static int Get_shape_keyword(char *keyw)
         for (i = 0; i < NUM_SHAPE_KEYS; i++)
         {
             if (!strcmp(keyw, abbrev_keys[i]))
-            {
                 break;
-            }
         }
     }
     /* dunno what this is. */
     else
-    {
         i = -1;
-    }
+
     return (i);
 }
 
@@ -1658,11 +1654,9 @@ void Calculate_shield_radius(shipshape_t *ship)
     {
         radius2 = (int)(sqr(ship->pts[i][0].cx) + sqr(ship->pts[i][0].cy));
         if (radius2 > max_radius)
-        {
             max_radius = radius2;
-        }
     }
-    max_radius = (int)(2.0 * sqrt(max_radius));
+    max_radius = (int)(2.0 * sqrt((double)max_radius));
     ship->shield_radius = (max_radius + 2 <= 34)
                               ? 34
                               : (max_radius + 2 - (max_radius & 1));
