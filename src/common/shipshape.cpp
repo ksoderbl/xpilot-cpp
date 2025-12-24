@@ -261,27 +261,14 @@ static bool Grid_point_is_outside_ship(grid_t *grid_p, ipos_t pt)
 
 static int shape2wire(char *ship_shape_str, shipshape_t *ship)
 {
-    ipos_t in;
-    int i, j, x, y, dx, dy,
-        max,
-        ofNum, ofLeft, ofRight, /* old format */
-        shape_version = 0;
-    ipos_t pt[MAX_SHIP_PTS],
-        engine,
-        m_gun,
-        l_light[MAX_LIGHT_PTS],
-        r_light[MAX_LIGHT_PTS],
-        l_gun[MAX_GUN_PTS],
-        r_gun[MAX_GUN_PTS],
-        l_rgun[MAX_GUN_PTS],
-        r_rgun[MAX_GUN_PTS],
-        m_rack[MAX_RACK_PTS];
-    bool mainGunSet = false,
-         engineSet = false;
-    char *str,
-        *teststr;
-    char keyw[20],
-        buf[MSG_LEN];
+    int i, j, x, y, dx, dy, max, shape_version = 0;
+    ipos_t pt[MAX_SHIP_PTS], in, old_in, engine, m_gun;
+    ipos_t l_light[MAX_LIGHT_PTS], r_light[MAX_LIGHT_PTS];
+    ipos_t l_gun[MAX_GUN_PTS], r_gun[MAX_GUN_PTS];
+    ipos_t l_rgun[MAX_GUN_PTS], r_rgun[MAX_GUN_PTS], m_rack[MAX_RACK_PTS];
+    bool mainGunSet = false, engineSet = false;
+    char *str, *teststr;
+    char keyw[20], buf[MSG_LEN];
 
     ship->num_points = 0;
     ship->num_l_gun = 0;
@@ -641,6 +628,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
 
     if (shape_version == 0x3100)
     {
+        int ofNum, ofLeft, ofRight; /* old format */
+
         str = ship_shape_str;
 
         if (sscanf(str, "(%d,%d,%d)", &ofNum, &ofLeft, &ofRight) != 3 || ofNum < MIN_SHIP_PTS || ofNum > MAX_SHIP_PTS || ofLeft < 0 || ofLeft >= ofNum || ofRight < 0 || ofRight >= ofNum)
