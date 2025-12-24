@@ -37,60 +37,60 @@
 #include "const.h"
 #include "xperror.h"
 
-static int debugShapeParsing = 0;
-static int verboseShapeParsing;
-static int shapeLimits;
+static bool debugShapeParsing = true;
+static bool verboseShapeParsing = true;
+static bool shapeLimits = true;
 
 static int Get_shape_keyword(char *keyw);
 
 static void Ship_set_point_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->pts_pos[i][0] = ipos2clpos(pos);
+    ship->pts[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_engine_ipos(shipshape_t *ship, ipos_t pos)
 {
-    ship->engine_pos[0] = ipos2clpos(pos);
+    ship->engine[0] = ipos2clpos(pos);
 }
 
 static void Ship_set_m_gun_ipos(shipshape_t *ship, ipos_t pos)
 {
-    ship->m_gun_pos[0] = ipos2clpos(pos);
+    ship->m_gun[0] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_gun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->l_gun_pos[i][0] = ipos2clpos(pos);
+    ship->l_gun[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_gun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->r_gun_pos[i][0] = ipos2clpos(pos);
+    ship->r_gun[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_rgun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->l_rgun_pos[i][0] = ipos2clpos(pos);
+    ship->l_rgun[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_rgun_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->r_rgun_pos[i][0] = ipos2clpos(pos);
+    ship->r_rgun[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_l_light_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->l_light_pos[i][0] = ipos2clpos(pos);
+    ship->l_light[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_r_light_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->r_light_pos[i][0] = ipos2clpos(pos);
+    ship->r_light[i][0] = ipos2clpos(pos);
 }
 
 static void Ship_set_m_rack_ipos(shipshape_t *ship, int i, ipos_t pos)
 {
-    ship->m_rack_pos[i][0] = ipos2clpos(pos);
+    ship->m_rack[i][0] = ipos2clpos(pos);
 }
 
 // TODO: get rid of these precomputations
@@ -126,23 +126,23 @@ static void Rotate_ship(shipshape_t *ship)
     int i;
 
     for (i = 0; i < ship->num_points; i++)
-        Rotate_point(&ship->pts_pos[i][0]);
-    Rotate_point(&ship->engine_pos[0]);
-    Rotate_point(&ship->m_gun_pos[0]);
+        Rotate_point(&ship->pts[i][0]);
+    Rotate_point(&ship->engine[0]);
+    Rotate_point(&ship->m_gun[0]);
     for (i = 0; i < ship->num_l_gun; i++)
-        Rotate_point(&ship->l_gun_pos[i][0]);
+        Rotate_point(&ship->l_gun[i][0]);
     for (i = 0; i < ship->num_r_gun; i++)
-        Rotate_point(&ship->r_gun_pos[i][0]);
+        Rotate_point(&ship->r_gun[i][0]);
     for (i = 0; i < ship->num_l_rgun; i++)
-        Rotate_point(&ship->l_rgun_pos[i][0]);
+        Rotate_point(&ship->l_rgun[i][0]);
     for (i = 0; i < ship->num_r_rgun; i++)
-        Rotate_point(&ship->r_rgun_pos[i][0]);
+        Rotate_point(&ship->r_rgun[i][0]);
     for (i = 0; i < ship->num_l_light; i++)
-        Rotate_point(&ship->l_light_pos[i][0]);
+        Rotate_point(&ship->l_light[i][0]);
     for (i = 0; i < ship->num_r_light; i++)
-        Rotate_point(&ship->r_light_pos[i][0]);
+        Rotate_point(&ship->r_light[i][0]);
     for (i = 0; i < ship->num_m_rack; i++)
-        Rotate_point(&ship->m_rack_pos[i][0]);
+        Rotate_point(&ship->m_rack[i][0]);
 }
 
 /*
@@ -161,17 +161,17 @@ shipshape_t *Default_ship(void)
 
         sh.num_points = 3;
 
-        sh.pts_pos[0] = &pts[0][0];
+        sh.pts[0] = &pts[0][0];
         pos.x = 15;
         pos.y = 0;
         Ship_set_point_ipos(&sh, 0, pos);
 
-        sh.pts_pos[1] = &pts[1][0];
+        sh.pts[1] = &pts[1][0];
         pos.x = -9;
         pos.y = 8;
         Ship_set_point_ipos(&sh, 1, pos);
 
-        sh.pts_pos[2] = &pts[2][0];
+        sh.pts[2] = &pts[2][0];
         pos.x = -9;
         pos.y = -8;
         Ship_set_point_ipos(&sh, 2, pos);
@@ -185,19 +185,19 @@ shipshape_t *Default_ship(void)
         Ship_set_m_gun_ipos(&sh, pos);
 
         sh.num_l_light = 1;
-        sh.l_light_pos[0] = &pts[3][0];
+        sh.l_light[0] = &pts[3][0];
         pos.x = -9;
         pos.y = 8;
         Ship_set_l_light_ipos(&sh, 0, pos);
 
         sh.num_r_light = 1;
-        sh.r_light_pos[0] = &pts[4][0];
+        sh.r_light[0] = &pts[4][0];
         pos.x = -9;
         pos.y = -8;
         Ship_set_r_light_ipos(&sh, 0, pos);
 
         sh.num_m_rack = 1;
-        sh.m_rack_pos[0] = &pts[5][0];
+        sh.m_rack[0] = &pts[5][0];
         pos.x = 15;
         pos.y = 0;
         Ship_set_m_rack_ipos(&sh, 0, pos);
@@ -210,8 +210,6 @@ shipshape_t *Default_ship(void)
     return &sh;
 }
 
-static int shape2wire(char *ship_shape_str, shipshape_t *ship)
-{
 /*
  * Macros to simplify limit-checking for ship points.
  * Until XPilot goes C++.
@@ -230,13 +228,25 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                       grid.done = 0,                      \
                       grid.todo = 0)
 
-    struct grid_t
-    {
-        int todo, done;
-        uint8_t pt[32][32];
-        uint8_t chk[32 * 32][2];
-    } grid;
+struct grid_t
+{
+    int todo, done;
+    uint8_t pt[32][32];
+    uint8_t chk[32 * 32][2];
+} grid;
 
+static int Grid_get_value(grid_t *grid, int x, int y)
+{
+    return grid->pt[(x) + 15][(y) + 15];
+}
+
+static void Grid_set_value(grid_t *grid, int x, int y, int value)
+{
+    grid->pt[(x) + 15][(y) + 15] = value;
+}
+
+static int shape2wire(char *ship_shape_str, shipshape_t *ship)
+{
     ipos_t in;
     int i, j, x, y, dx, dy,
         max,
@@ -273,9 +283,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
 #endif
 
     if (debugShapeParsing)
-    {
-        warn("parsing shape: %s\n", ship_shape_str);
-    }
+        warn("parsing shape: %s", ship_shape_str);
 
     for (str = ship_shape_str; (str = strchr(str, '(')) != NULL;)
     {
@@ -288,7 +296,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             {
                 shape_version = 0x3100;
                 if (verboseShapeParsing)
-                    warn("Ship shape is in obsolete 3.1 format.");
+                    warn("===== Ship shape is in obsolete 3.1 format. =====");
                 break;
             }
             else
@@ -609,9 +617,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
 
         default:
             if (verboseShapeParsing)
-            {
-                warn("Invalid ship shape keyword: \"%s\"\n", keyw);
-            }
+                warn("Invalid ship shape keyword: \"%s\"", keyw);
             /* the good thing about this format is that we can just ignore
              * this.  it is likely to be a new extension we don't know
              * about yet. */
@@ -740,8 +746,10 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                   horMax = 15, verMax = 15, horMin = -15, verMin = -15,
                   minCount = 3, minSize = 22 + 16;
         int low = 0, hi = 0, left = 0, right = 0,
-            count = 0, change, max = 0,
-            lowest = 0, highest = 0, leftmost = 0, rightmost = 0;
+            count = 0, change,
+            max = 0,
+            lowest = 0, highest = 0,
+            leftmost = 0, rightmost = 0;
         int invalid = 0;
         const int checkWidthAgainstLongestAxis = 1;
 
@@ -814,7 +822,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             int pair[2] = {0, 0};
             int dist = 0, tmpDist = 0;
             double vec[2], width, dTmp;
-            const int minWidth = 12;
+            // const int minWidth = 12; // TODO: enable
+            const int minWidth = 1;
 
             /*
              * Loop over all the points and find the two furthest apart
@@ -903,7 +912,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (j == ship->num_points)
                 j = 0;
 
-            GRID_PT(pt[i].x, pt[i].y) = 1;
+            Grid_set_value(&grid, pt[i].x, pt[i].y, 1);
 
             dx = pt[j].x - pt[i].x;
             dy = pt[j].y - pt[i].y;
@@ -914,7 +923,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                     for (x = pt[i].x + 1; x < pt[j].x; x++)
                     {
                         y = pt[i].y + (dy * (x - pt[i].x)) / dx;
-                        GRID_PT(x, y) = 1;
+                        Grid_set_value(&grid, x, y, 1);
                     }
                 }
                 else
@@ -922,7 +931,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                     for (x = pt[j].x + 1; x < pt[i].x; x++)
                     {
                         y = pt[j].y + (dy * (x - pt[j].x)) / dx;
-                        GRID_PT(x, y) = 1;
+                        Grid_set_value(&grid, x, y, 1);
                     }
                 }
             }
@@ -933,7 +942,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                     for (y = pt[i].y + 1; y < pt[j].y; y++)
                     {
                         x = pt[i].x + (dx * (y - pt[i].y)) / dy;
-                        GRID_PT(x, y) = 1;
+                        Grid_set_value(&grid, x, y, 1);
                     }
                 }
                 else
@@ -941,7 +950,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
                     for (y = pt[j].y + 1; y < pt[i].y; y++)
                     {
                         x = pt[j].x + (dx * (y - pt[j].y)) / dy;
-                        GRID_PT(x, y) = 1;
+                        Grid_set_value(&grid, x, y, 1);
                     }
                 }
             }
@@ -952,10 +961,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         {
             for (x = -15; x <= 15; x += (y == -15 || y == 15) ? 1 : 2 * 15)
             {
-                if (GRID_PT(x, y) == 0)
-                {
+                if (Grid_get_value(&grid, x, y) == 0)
                     GRID_ADD(x, y);
-                }
             }
         }
 
@@ -1120,37 +1127,37 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     }
 
     i = sizeof(position_t) * RES;
-    ship->pts_pos[0] = (clpos_t *)malloc(ship->num_points * i);
+    ship->pts[0] = (clpos_t *)malloc(ship->num_points * i);
     if (ship->num_l_gun)
     {
-        ship->l_gun_pos[0] = (clpos_t *)malloc(ship->num_l_gun * i);
+        ship->l_gun[0] = (clpos_t *)malloc(ship->num_l_gun * i);
     }
     if (ship->num_r_gun)
     {
-        ship->r_gun_pos[0] = (clpos_t *)malloc(ship->num_r_gun * i);
+        ship->r_gun[0] = (clpos_t *)malloc(ship->num_r_gun * i);
     }
     if (ship->num_l_rgun)
     {
-        ship->l_rgun_pos[0] = (clpos_t *)malloc(ship->num_l_rgun * i);
+        ship->l_rgun[0] = (clpos_t *)malloc(ship->num_l_rgun * i);
     }
     if (ship->num_r_rgun)
     {
-        ship->r_rgun_pos[0] = (clpos_t *)malloc(ship->num_r_rgun * i);
+        ship->r_rgun[0] = (clpos_t *)malloc(ship->num_r_rgun * i);
     }
     if (ship->num_l_light)
     {
-        ship->l_light_pos[0] = (clpos_t *)malloc(ship->num_l_light * i);
+        ship->l_light[0] = (clpos_t *)malloc(ship->num_l_light * i);
     }
     if (ship->num_r_light)
     {
-        ship->r_light_pos[0] = (clpos_t *)malloc(ship->num_r_light * i);
+        ship->r_light[0] = (clpos_t *)malloc(ship->num_r_light * i);
     }
     if (ship->num_m_rack)
     {
-        ship->m_rack_pos[0] = (clpos_t *)malloc(ship->num_m_rack * i);
+        ship->m_rack[0] = (clpos_t *)malloc(ship->num_m_rack * i);
     }
 
-    // if (!(ship->pts_pos[0] = (position_t *)malloc(ship->num_points * i)) ||
+    // if (!(ship->pts[0] = (position_t *)malloc(ship->num_points * i)) ||
     //     (ship->num_l_gun && !(ship->l_gun[0] = (position_t *)malloc(ship->num_l_gun * i))) ||
     //     (ship->num_r_gun && !(ship->r_gun[0] = (position_t *)malloc(ship->num_r_gun * i))) ||
     //     (ship->num_l_rgun && !(ship->l_rgun[0] = (position_t *)malloc(ship->num_l_rgun * i))) ||
@@ -1164,40 +1171,40 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     if (false)
     {
         error("Not enough memory for ship shape");
-        XFREE(ship->pts_pos[0]);
-        XFREE(ship->l_gun_pos[0]);
-        XFREE(ship->r_gun_pos[0]);
-        XFREE(ship->l_rgun_pos[0]);
-        XFREE(ship->r_rgun_pos[0]);
-        XFREE(ship->l_light_pos[0]);
-        XFREE(ship->r_light_pos[0]);
-        XFREE(ship->m_rack_pos[0]);
+        XFREE(ship->pts[0]);
+        XFREE(ship->l_gun[0]);
+        XFREE(ship->r_gun[0]);
+        XFREE(ship->l_rgun[0]);
+        XFREE(ship->r_rgun[0]);
+        XFREE(ship->l_light[0]);
+        XFREE(ship->r_light[0]);
+        XFREE(ship->m_rack[0]);
         return -1;
     }
 
     for (i = 1; i < ship->num_points; i++)
-        ship->pts_pos[i] = &ship->pts_pos[i - 1][RES];
+        ship->pts[i] = &ship->pts[i - 1][RES];
 
     for (i = 1; i < ship->num_l_gun; i++)
-        ship->l_gun_pos[i] = &ship->l_gun_pos[i - 1][RES];
+        ship->l_gun[i] = &ship->l_gun[i - 1][RES];
 
     for (i = 1; i < ship->num_r_gun; i++)
-        ship->r_gun_pos[i] = &ship->r_gun_pos[i - 1][RES];
+        ship->r_gun[i] = &ship->r_gun[i - 1][RES];
 
     for (i = 1; i < ship->num_l_rgun; i++)
-        ship->l_rgun_pos[i] = &ship->l_rgun_pos[i - 1][RES];
+        ship->l_rgun[i] = &ship->l_rgun[i - 1][RES];
 
     for (i = 1; i < ship->num_r_rgun; i++)
-        ship->r_rgun_pos[i] = &ship->r_rgun_pos[i - 1][RES];
+        ship->r_rgun[i] = &ship->r_rgun[i - 1][RES];
 
     for (i = 1; i < ship->num_l_light; i++)
-        ship->l_light_pos[i] = &ship->l_light_pos[i - 1][RES];
+        ship->l_light[i] = &ship->l_light[i - 1][RES];
 
     for (i = 1; i < ship->num_r_light; i++)
-        ship->r_light_pos[i] = &ship->r_light_pos[i - 1][RES];
+        ship->r_light[i] = &ship->r_light[i - 1][RES];
 
     for (i = 1; i < ship->num_m_rack; i++)
-        ship->m_rack_pos[i] = &ship->m_rack_pos[i - 1][RES];
+        ship->m_rack[i] = &ship->m_rack[i - 1][RES];
 
     for (i = 0; i < ship->num_points; i++)
         Ship_set_point_ipos(ship, i, pt[i]);
@@ -1242,10 +1249,9 @@ static shipshape_t *do_parse_shape(char *str)
     {
         if (debugShapeParsing)
             warn("shape str not set");
-
         return Default_ship();
     }
-    if (!(ship = (shipshape_t *)malloc(sizeof(*ship))))
+    if (!(ship = XMALLOC(shipshape_t, 1)))
     {
         error("No mem for ship shape");
         return Default_ship();
@@ -1254,15 +1260,11 @@ static shipshape_t *do_parse_shape(char *str)
     {
         free(ship);
         if (debugShapeParsing)
-        {
-            warn("shape2wire failed\n");
-        }
+            warn("shape2wire failed");
         return Default_ship();
     }
     if (debugShapeParsing)
-    {
-        warn("shape2wire succeeded\n");
-    }
+        warn("shape2wire succeeded");
 
     return (ship);
 }
@@ -1272,21 +1274,21 @@ void Free_ship_shape(shipshape_t *ship)
     if (ship != NULL && ship != Default_ship())
     {
         if (ship->num_points > 0)
-            XFREE(ship->pts_pos[0]);
+            XFREE(ship->pts[0]);
         if (ship->num_l_gun > 0)
-            XFREE(ship->l_gun_pos[0]);
+            XFREE(ship->l_gun[0]);
         if (ship->num_r_gun > 0)
-            XFREE(ship->r_gun_pos[0]);
+            XFREE(ship->r_gun[0]);
         if (ship->num_l_rgun > 0)
-            XFREE(ship->l_rgun_pos[0]);
+            XFREE(ship->l_rgun[0]);
         if (ship->num_r_rgun > 0)
-            XFREE(ship->r_rgun_pos[0]);
+            XFREE(ship->r_rgun[0]);
         if (ship->num_l_light > 0)
-            XFREE(ship->l_light_pos[0]);
+            XFREE(ship->l_light[0]);
         if (ship->num_r_light > 0)
-            XFREE(ship->r_light_pos[0]);
+            XFREE(ship->r_light[0]);
         if (ship->num_m_rack > 0)
-            XFREE(ship->m_rack_pos[0]);
+            XFREE(ship->m_rack[0]);
 #ifdef _NAMEDSHIPS
         if (ship->name)
             free(ship->name);
@@ -1554,11 +1556,11 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
 
         for (i = 1, ll = rl = 0; i < num_points; i++)
         {
-            if (ship->pts_pos[i][0].cy > ship->pts_pos[ll][0].cy || (ship->pts_pos[i][0].cy == ship->pts_pos[ll][0].cy && ship->pts_pos[i][0].cx < ship->pts_pos[ll][0].cx))
+            if (ship->pts[i][0].cy > ship->pts[ll][0].cy || (ship->pts[i][0].cy == ship->pts[ll][0].cy && ship->pts[i][0].cx < ship->pts[ll][0].cx))
             {
                 ll = i;
             }
-            if (ship->pts_pos[i][0].cy < ship->pts_pos[rl][0].cy || (ship->pts_pos[i][0].cy == ship->pts_pos[rl][0].cy && ship->pts_pos[i][0].cx < ship->pts_pos[rl][0].cx))
+            if (ship->pts[i][0].cy < ship->pts[rl][0].cy || (ship->pts[i][0].cy == ship->pts[rl][0].cy && ship->pts[i][0].cx < ship->pts[rl][0].cx))
             {
                 rl = i;
             }
@@ -1568,7 +1570,7 @@ void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext, unsigned sha
         for (i = 0; i < num_points; i++)
         {
             sprintf(&buf[buflen], "(%d,%d)",
-                    (int)ship->pts_pos[i][0].cx, (int)ship->pts_pos[i][0].cy);
+                    (int)ship->pts[i][0].cx, (int)ship->pts[i][0].cy);
             buflen += strlen(&buf[buflen]);
         }
     }
@@ -1654,7 +1656,7 @@ void Calculate_shield_radius(shipshape_t *ship)
 
     for (i = 0; i < ship->num_points; i++)
     {
-        radius2 = (int)(sqr(ship->pts_pos[i][0].cx) + sqr(ship->pts_pos[i][0].cy));
+        radius2 = (int)(sqr(ship->pts[i][0].cx) + sqr(ship->pts[i][0].cy));
         if (radius2 > max_radius)
         {
             max_radius = radius2;
