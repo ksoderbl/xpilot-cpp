@@ -231,7 +231,7 @@ grid_t grid;
 #define GRID_GET(ax, ay) ((ax) = (int)grid.chk[grid.done].x - 15, \
                           (ay) = (int)grid.chk[grid.done].y - 15, \
                           grid.done++)
-#define GRID_CHK(ax, ay) (GRID_PT(ax, ay) == 2)
+// #define GRID_CHK(ax, ay) (GRID_PT(ax, ay) == 2)
 #define GRID_READY() (grid.done >= grid.todo)
 #define GRID_RESET() (memset(grid.pt, 0, sizeof grid.pt), \
                       grid.done = 0,                      \
@@ -250,6 +250,13 @@ static int Grid_get_value(grid_t *grid_p, int x, int y)
     int iy = y + 15;
     // TODO: check ix, iy is inside the grid
     return grid_p->pt[ix][iy];
+}
+
+static bool Grid_point_is_outside_ship(grid_t *grid_p, ipos_t pt)
+{
+    int value = Grid_get_value(grid_p, pt.x, pt.y);
+    warn("Grid_point_is_outside_ship: %d,%d = %d", pt.x, pt.y, value);
+    return value == 2;
 }
 
 static int shape2wire(char *ship_shape_str, shipshape_t *ship)
@@ -991,7 +998,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
          * engine position outside the ship, so this check not used for those.
          */
 
-        if (GRID_CHK(m_gun.x, m_gun.y))
+        if (Grid_point_is_outside_ship(&grid, m_gun))
         {
             if (verboseShapeParsing)
                 warn("Main gun outside ship\n");
@@ -999,7 +1006,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_l_gun; i++)
         {
-            if (GRID_CHK(l_gun[i].x, l_gun[i].y))
+            if (Grid_point_is_outside_ship(&grid, l_gun[i]))
             {
                 if (verboseShapeParsing)
                     warn("Left gun %d outside ship\n", i);
@@ -1008,7 +1015,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_r_gun; i++)
         {
-            if (GRID_CHK(r_gun[i].x, r_gun[i].y))
+            if (Grid_point_is_outside_ship(&grid, r_gun[i]))
             {
                 if (verboseShapeParsing)
                     warn("Right gun %d outside ship\n", i);
@@ -1017,7 +1024,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_l_rgun; i++)
         {
-            if (GRID_CHK(l_rgun[i].x, l_rgun[i].y))
+            if (Grid_point_is_outside_ship(&grid, l_rgun[i]))
             {
                 if (verboseShapeParsing)
                     warn("Left rear gun %d outside ship\n", i);
@@ -1026,7 +1033,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_r_rgun; i++)
         {
-            if (GRID_CHK(r_rgun[i].x, r_rgun[i].y))
+            if (Grid_point_is_outside_ship(&grid, r_rgun[i]))
             {
                 if (verboseShapeParsing)
                     warn("Right rear gun %d outside ship\n", i);
@@ -1035,7 +1042,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_m_rack; i++)
         {
-            if (GRID_CHK(m_rack[i].x, m_rack[i].y))
+            if (Grid_point_is_outside_ship(&grid, m_rack[i]))
             {
                 if (verboseShapeParsing)
                     warn("Missile rack %d outside ship\n", i);
@@ -1044,7 +1051,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_l_light; i++)
         {
-            if (GRID_CHK(l_light[i].x, l_light[i].y))
+            if (Grid_point_is_outside_ship(&grid, l_light[i]))
             {
                 if (verboseShapeParsing)
                     warn("Left light %d outside ship\n", i);
@@ -1053,14 +1060,14 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         }
         for (i = 0; i < ship->num_r_light; i++)
         {
-            if (GRID_CHK(r_light[i].x, r_light[i].y))
+            if (Grid_point_is_outside_ship(&grid, r_light[i]))
             {
                 if (verboseShapeParsing)
                     warn("Right light %d outside ship\n", i);
                 invalid++;
             }
         }
-        if (GRID_CHK(engine.x, engine.y))
+        if (Grid_point_is_outside_ship(&grid, engine))
         {
             if (verboseShapeParsing)
                 warn("Engine outside of ship\n");
@@ -1068,13 +1075,13 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             /* this could happen in case of an old format ship shape. */
             if (shape_version == 0x3100 && invalid == 1)
             {
+                ipos_t pt;
                 /* move engine until it is legal. */
-                for (x = -15, y = 0; x <= 15; x++)
+                for (pt.x = -15, pt.y = 0; pt.x <= 15; pt.x++)
                 {
-                    if (!GRID_CHK(x, y))
+                    if (!Grid_point_is_outside_ship(&grid, pt))
                     {
-                        engine.x = x;
-                        engine.y = y;
+                        engine = pt;
                         invalid--;
                         break;
                     }
@@ -1088,7 +1095,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             {
                 for (j = -15; j <= 15; j++)
                 {
-                    switch (GRID_PT(j, i))
+                    switch (Grid_get_value(&grid, j, i))
                     {
                     case 0:
                         putchar(' ');
@@ -1108,7 +1115,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             }
         }
 
-        if (invalid)
+        if (invalid > 0)
             return -1;
     }
 
