@@ -29,7 +29,6 @@
 
 #include "checknames.h"
 #include "commonmacros.h"
-#include "draw.h"
 #include "pack.h"
 #include "portability.h"
 #include "socklib.h"
@@ -700,25 +699,25 @@ xp_option_t default_options[] = {
         "This should always be 0, other values are for compatibility.\n"
         "See also turnSpeed.\n"),
 
-    XP_DOUBLE_OPTION(
-        "scaleFactor",
-        1.0,
-        MIN_SCALEFACTOR,
-        MAX_SCALEFACTOR,
-        &clData.scaleFactor,
-        Set_scaleFactor,
-        XP_OPTFLAG_CONFIG_DEFAULT,
-        "Specifies scaling factor for the drawing window.\n"),
+    // XP_DOUBLE_OPTION(
+    //     "scaleFactor",
+    //     1.0,
+    //     MIN_SCALEFACTOR,
+    //     MAX_SCALEFACTOR,
+    //     &clData.scaleFactor,
+    //     Set_scaleFactor,
+    //     XP_OPTFLAG_CONFIG_DEFAULT,
+    //     "Specifies scaling factor for the drawing window.\n"),
 
-    XP_DOUBLE_OPTION(
-        "altScaleFactor",
-        2.0,
-        MIN_SCALEFACTOR,
-        MAX_SCALEFACTOR,
-        &clData.altScaleFactor,
-        Set_altScaleFactor,
-        XP_OPTFLAG_CONFIG_DEFAULT,
-        "Specifies alternative scaling factor for the drawing window.\n"),
+    // XP_DOUBLE_OPTION(
+    //     "altScaleFactor",
+    //     2.0,
+    //     MIN_SCALEFACTOR,
+    //     MAX_SCALEFACTOR,
+    //     &clData.altScaleFactor,
+    //     Set_altScaleFactor,
+    //     XP_OPTFLAG_CONFIG_DEFAULT,
+    //     "Specifies alternative scaling factor for the drawing window.\n"),
 
     XP_INT_OPTION(
         "maxFPS",
@@ -1036,15 +1035,15 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Specifies the size of the background points.  0 means no points.\n"),
 
-    XP_DOUBLE_OPTION(
-        "scoreObjectTime",
-        4.0,
-        0.0,
-        10.0,
-        &scoreObjectTime,
-        NULL,
-        XP_OPTFLAG_CONFIG_DEFAULT,
-        "How many seconds score objects remain visible on the map.\n"),
+    // XP_DOUBLE_OPTION(
+    //     "scoreObjectTime",
+    //     4.0,
+    //     0.0,
+    //     10.0,
+    //     &scoreObjectTime,
+    //     NULL,
+    //     XP_OPTFLAG_CONFIG_DEFAULT,
+    //     "How many seconds score objects remain visible on the map.\n"),
 
     XP_INT_OPTION(
         "charsPerSecond",
@@ -1156,15 +1155,15 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Uses a red line to indicate the current velocity and direction.\n"),
 
-    XP_INT_OPTION(
-        "showScoreDecimals",
-        1,
-        0,
-        2,
-        &showScoreDecimals,
-        NULL,
-        XP_OPTFLAG_CONFIG_DEFAULT,
-        "The number of decimals to use when displaying scores.\n"),
+    // XP_INT_OPTION(
+    //     "showScoreDecimals",
+    //     1,
+    //     0,
+    //     2,
+    //     &showScoreDecimals,
+    //     NULL,
+    //     XP_OPTFLAG_CONFIG_DEFAULT,
+    //     "The number of decimals to use when displaying scores.\n"),
 
     XP_DOUBLE_OPTION(
         "altPower",
@@ -1212,13 +1211,13 @@ xp_option_t default_options[] = {
     "Too complicated.  Keep it on 3.\n"),
 #endif
 
-    XP_BOOL_OPTION(
-        "markingLights",
-        false,
-        &markingLights,
-        NULL,
-        XP_OPTFLAG_CONFIG_DEFAULT,
-        "Should the fighters have marking lights, just like airplanes?\n"),
+    // XP_BOOL_OPTION(
+    //     "markingLights",
+    //     false,
+    //     &markingLights,
+    //     NULL,
+    //     XP_OPTFLAG_CONFIG_DEFAULT,
+    //     "Should the fighters have marking lights, just like airplanes?\n"),
 
     XP_STRING_OPTION(
         "modifierBank1",
@@ -1267,33 +1266,33 @@ xp_option_t default_options[] = {
         "and Ship Shaper for Java.  See the XPilot FAQ for details.\n"
         "See also the \"shipShapeFile\" option below.\n"),
 
-    XP_STRING_OPTION(
-        "shipShapeFile",
-        CONF_SHIP_FILE,
-        NULL, 0,
-        Set_shipShapeFile, NULL, Get_shipShapeFile,
-        XP_OPTFLAG_DEFAULT,
-        "An optional file where shipshapes can be stored.\n"
-        "If this resource is defined and it refers to an existing file\n"
-        "then shipshapes can be referenced to by their name.\n"
-        "For instance if you define shipShapeFile to be\n"
-        "/home/myself/.shipshapes and this file contains one or more\n"
-        "shipshapes then you can select the shipshape by starting xpilot as:\n"
-        "    xpilot -shipShape myshipshapename\n"
-        "Where \"myshipshapename\" should be the \"name:\" or \"NM:\" of\n"
-        "one of the shipshapes defined in /home/myself/.shipshapes.\n"
-        "Each shipshape definition should be defined on only one line,\n"
-        "where all characters up to the first left parenthesis don't matter.\n"
-        /* shipshopshapshepshit getting nuts from all these shpshp-s. */),
+// XP_STRING_OPTION(
+//     "shipShapeFile",
+//     CONF_SHIP_FILE,
+//     NULL, 0,
+//     Set_shipShapeFile, NULL, Get_shipShapeFile,
+//     XP_OPTFLAG_DEFAULT,
+//     "An optional file where shipshapes can be stored.\n"
+//     "If this resource is defined and it refers to an existing file\n"
+//     "then shipshapes can be referenced to by their name.\n"
+//     "For instance if you define shipShapeFile to be\n"
+//     "/home/myself/.shipshapes and this file contains one or more\n"
+//     "shipshapes then you can select the shipshape by starting xpilot as:\n"
+//     "    xpilot -shipShape myshipshapename\n"
+//     "Where \"myshipshapename\" should be the \"name:\" or \"NM:\" of\n"
+//     "one of the shipshapes defined in /home/myself/.shipshapes.\n"
+//     "Each shipshape definition should be defined on only one line,\n"
+//     "where all characters up to the first left parenthesis don't matter.\n"
+//     /* shipshopshapshepshit getting nuts from all these shpshp-s. */),
 
-    XP_STRING_OPTION(
-        "texturePath",
-        CONF_TEXTUREDIR,
-        NULL, 0,
-        Set_texturePath, NULL, Get_texturePath,
-        XP_OPTFLAG_KEEP,
-        "Search path for texture files.\n"
-        "This is a list of one or more directories separated by colons.\n"),
+// XP_STRING_OPTION(
+//     "texturePath",
+//     CONF_TEXTUREDIR,
+//     NULL, 0,
+//     Set_texturePath, NULL, Get_texturePath,
+//     XP_OPTFLAG_KEEP,
+//     "Search path for texture files.\n"
+//     "This is a list of one or more directories separated by colons.\n"),
 
 /* kps - these should not be needed in the SDL windows client. */
 #if 0
