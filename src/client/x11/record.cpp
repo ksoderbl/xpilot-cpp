@@ -777,11 +777,12 @@ static struct recordable_drawing Rdrawing = {
     RSetDashes,
 };
 
-/*
- * Publicly accessible drawing routines.
- * This is either a copy of Xdrawing or of Rdrawing.
- */
-struct recordable_drawing rd;
+// Publicly accessible drawing routines.
+// This is either a copy of Xdrawing or of Rdrawing.
+//
+// This is initialized to Xdrawing, so we don't get a segmentation
+// fault if we never called Record_init.
+struct recordable_drawing rd = Xdrawing;
 
 /*
  * Return the number of bytes written sofar to

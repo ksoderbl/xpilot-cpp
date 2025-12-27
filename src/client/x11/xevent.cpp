@@ -64,36 +64,6 @@ bool initialPointerControl = false;
 bool pointerControl = false;
 extern Cursor pointerControlCursor;
 
-#if defined(JOYSTICK) && defined(__linux__)
-/*
- * Joystick support for Linux 1.0 by Eckard Kopatzki (eko@isar.muc.de).
- * Needs joystick-0.7 by Art Smith, Jeff Tranter, Carlos Puchol.
- * Which in turn requires Linux 1.0 or higher.
- */
-#include <linux/joystick.h>
-
-#define JS_DEVICE "/dev/js0"
-
-/*
- * center position of the joystick in X and Y, resp.
- * thresholds which lead to the emulation of the key action
- */
-#define JS_X0 630
-#define JS_Y0 630
-#define JS_DX 100
-#define JS_DY 100
-
-/*
- * Functions which are bound to the joystick actions.
- * These should be specified as defined in default.c.
- */
-#define JS_LEFT KEY_TURN_LEFT
-#define JS_RIGHT KEY_TURN_RIGHT
-#define JS_UP KEY_THRUST
-#define JS_DOWN KEY_SWAP_SETTINGS
-#define JS_BUTTON0 KEY_FIRE_SHOT
-#define JS_BUTTON1 KEY_SHIELD
-
 static int Key_set(int key, bool on)
 {
     if (on)
@@ -115,43 +85,10 @@ static int Key_set(int key, bool on)
     return false;
 }
 
-static void Joystick_event(void)
-{
-    static int js_fd = 0;
-    static bool js_avail = false;
-    struct JS_DATA_TYPE js;
-    int change = 0;
-
-    if (!draw)
-    {
-        return;
-    }
-    if (!js_fd && !js_avail)
-    {
-        if ((js_fd = open(JS_DEVICE, O_RDONLY)) == -1)
-        {
-            return;
-        }
-        js_avail = true;
-    }
-    if (js_avail && read(js_fd, &js, JS_RETURN) == JS_RETURN)
-    {
-        change |= Key_set(JS_BUTTON0, (js.buttons & 1));
-        change |= Key_set(JS_BUTTON1, (js.buttons & 2));
-        change |= Key_set(JS_LEFT, (js.x < JS_X0 - JS_DX));
-        change |= Key_set(JS_RIGHT, (js.x > JS_X0 + JS_DX));
-        change |= Key_set(JS_UP, (js.y < JS_Y0 - JS_DY));
-        change |= Key_set(JS_DOWN, (js.y > JS_Y0 + JS_DY));
-        if (change)
-        {
-            Net_key_change();
-        }
-    }
-}
-#endif
-
 keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
+    warn("Lookup_key: event type %d, keysym 0x%03lx, reset %d", event->type, ks, reset);
+
     keys_t ret = KEY_DUMMY;
     static int i = 0;
 
@@ -191,7 +128,7 @@ keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
         }
     }
 
-#ifdef DEVELOPMENT
+    // #ifdef DEVELOPMENT
     if (reset && ret == KEY_DUMMY)
     {
         static XComposeStatus compose;
@@ -201,22 +138,18 @@ keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
         memset(str, 0, sizeof str);
         count = XLookupString(&event->xkey, str, 1, &ks, &compose);
         if (count == NoSymbol)
-        {
-            printf("Unknown keysym: 0x%03lx", ks);
-        }
+            warn("Unknown keysym: 0x%03lx.", ks);
         else
         {
-            printf("No action bound to keysym 0x%03lx", ks);
             if (*str)
-            {
-                printf(", which is key \"%s\"", str);
-            }
+                warn("No action bound to keysym 0x%03lx, which is key \"%s\"", ks, str);
+            else
+                warn("No action bound to keysym 0x%03lx", ks);
         }
-        printf("\n");
     }
-#endif
+    // #endif
 
-    return (ret);
+    return ret;
 }
 
 void Pointer_control_set_state(bool on)
@@ -369,7 +302,6 @@ bool Key_press_swap_scalefactor(keys_t key)
     scaleFactor = scaleFactor_s;
     scaleFactor_s = tmp;
 
-    Init_scale_array();
     Scale_dashes();
     Config_redraw();
 
@@ -659,9 +591,11 @@ void Key_event(XEvent *event)
     {
     case KeyPress:
         key_do = Key_press;
+        // Keyboard_button_pressed((xp_keysym_t)ks);
         break;
     case KeyRelease:
         key_do = Key_release;
+        // Keyboard_button_released((xp_keysym_t)ks);
         break;
     default:
         return;
@@ -828,8 +762,7 @@ void xevent_pointer(void)
 
 int x_event(int new_input)
 {
-    int queued = 0;
-    int i, n;
+    int queued = 0, i, n;
     XEvent event;
 
 #ifdef SOUND
@@ -854,8 +787,7 @@ int x_event(int new_input)
         queued = QueuedAfterFlush;
         break;
     default:
-        errno = 0;
-        error("Bad input queue type (%d)", new_input);
+        warn("Bad input queue type (%d)", new_input);
         return -1;
     }
     n = XEventsQueued(dpy, queued);
@@ -889,9 +821,7 @@ int x_event(int new_input)
 
         case ClientMessage:
             if (ClientMessage_event(&event) == -1)
-            {
                 return -1;
-            }
             break;
 
             /* Back in play */

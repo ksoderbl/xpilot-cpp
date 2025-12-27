@@ -45,8 +45,6 @@
 #define FUEL_NOTIFY (3 * FPS)
 
 #define WARNING_DISTANCE (VISIBILITY_DISTANCE * 0.8)
-
-#define SCALE_ARRAY_SIZE 32768
 /* constants end */
 
 /* which index a message actually has (consider SHOW_REVERSE_SCROLL) */
@@ -95,10 +93,10 @@ extern double timePerFrame;
 
 extern double scaleFactor; /* scale the draw (main playfield) window */
 extern double scaleFactor_s;
-extern short scaleArray[SCALE_ARRAY_SIZE];
-extern void Init_scale_array(void);
+extern double scaleMultFactor;
 
-#define WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
+extern double WINSCALE(double x);
+
 #define UWINSCALE(x) ((unsigned)WINSCALE(x))
 
 #define SCALEX(co) ((int)(WINSCALE(co) - WINSCALE(world.x)))

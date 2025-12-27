@@ -814,6 +814,9 @@ int Net_start(void)
                 continue;
             if (rbuf.ptr[0] != PKT_RELIABLE)
             {
+                uint8_t pkt0 = rbuf.ptr[0];
+                warn("Sockbuf_read returned PKT type %02x", pkt0);
+
                 if (rbuf.ptr[0] == PKT_QUIT)
                 {
                     warn("Server closed connection");
@@ -890,6 +893,7 @@ int Net_start(void)
     Net_init_measurement();
     Net_init_lag_measurement();
     errno = 0;
+
     return 0;
 }
 

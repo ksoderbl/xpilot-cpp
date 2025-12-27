@@ -47,9 +47,30 @@
 #include "protoclient.h"
 #include "talk.h"
 
+// typedef struct
+// {
+//     bool talking;        /* Some talk window is open? */
+//     bool pointerControl; /* Pointer (mouse) control is on? */
+//     bool restorePointerControl;
+//     /* Pointer control should be restored later? */
+//     bool quitMode; /* Client is in quit mode? */
+//     double clientLag;
+//     double scaleFactor;
+//     double scale;
+//     float fscale;
+//     double altScaleFactor;
+// } client_data_t;
+
 client_data_t clData = {
+    false,
+    false,
+    false,
+    false,
     0,
-};
+    1.0,
+    1.0,
+    1.0,
+    1.0};
 
 char *geometry;
 xp_args_t xpArgs;
@@ -339,8 +360,6 @@ int Target_alive(int x, int y, int *damage)
 
 int Handle_fuel(int ind, double fuel)
 {
-    warn("Handle_fuel, ind = %d, fuel = %f", ind, fuel);
-
     if (ind < 0 || ind >= num_fuels)
     {
         warn("Bad fuelstation index (%d)", ind);
@@ -2159,9 +2178,6 @@ int Client_init(char *server, unsigned server_version)
 {
     version = server_version;
 
-    // Make_table();
-    Init_scale_array();
-
     if (Init_wreckage() == -1)
     {
         return -1;
@@ -2390,73 +2406,4 @@ void Client_cleanup(void)
 int Client_wrap_mode(void)
 {
     return (BIT(Setup->mode, WRAP_PLAY) != 0);
-}
-
-void Init_scale_array(void)
-{
-    int i, start, end, n;
-    double scaleMultFactor;
-
-    if (scaleFactor < MIN_SCALEFACTOR)
-        scaleFactor = MIN_SCALEFACTOR;
-    if (scaleFactor > MAX_SCALEFACTOR)
-        scaleFactor = MAX_SCALEFACTOR;
-    scaleMultFactor = 1.0 / scaleFactor;
-
-    scaleArray[0] = 0;
-
-    for (i = 1; i < NELEM(scaleArray); i++)
-    {
-        n = (int)floor(i * scaleMultFactor + 0.5);
-        if (n == 0)
-        {
-            /* keep values for non-zero indices at least 1. */
-            scaleArray[i] = 1;
-        }
-        else
-        {
-            break;
-        }
-    }
-    start = i;
-
-    for (i = NELEM(scaleArray) - 1; i >= 0; i--)
-    {
-        n = (int)floor(i * scaleMultFactor + 0.5);
-        if (n > 32767)
-        {
-            /* keep values lower or equal to max short. */
-            scaleArray[i] = 32767;
-        }
-        else
-        {
-            break;
-        }
-    }
-    end = i;
-
-    for (i = start; i <= end; i++)
-    {
-        scaleArray[i] = (int)floor(i * scaleMultFactor + 0.5);
-    }
-
-    /* verify correct calculations, because of reported gcc optimization bugs. */
-    for (i = 1; i < NELEM(scaleArray); i++)
-    {
-        if (scaleArray[i] < 1)
-        {
-            break;
-        }
-    }
-
-    if (i != SCALE_ARRAY_SIZE)
-    {
-        fprintf(stderr,
-                "Error: Illegal value %d in scaleArray[%d].\n"
-                "\tThis error may be due to a bug in your compiler.\n"
-                "\tEither try a lower optimization level,\n"
-                "\tor a different compiler version or vendor.\n",
-                scaleArray[i], i);
-        exit(1);
-    }
 }

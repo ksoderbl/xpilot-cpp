@@ -47,8 +47,8 @@
 #include "protoclient.h"
 #include "guimap.h"
 
-int wallColor;  /* Color index for wall drawing */
-int decorColor; /* Color index for decoration drawing */
+int wallColor = BLUE; /* Color index for wall drawing */
+int decorColor = 6;   /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
@@ -58,7 +58,8 @@ void Paint_vcannon(void)
     if (num_vcannon > 0)
     {
         for (i = 0; i < num_vcannon; i++)
-            Gui_paint_cannon(vcannon_ptr[i].x, vcannon_ptr[i].y, vcannon_ptr[i].type);
+            Gui_paint_cannon(vcannon_ptr[i].x, vcannon_ptr[i].y,
+                             vcannon_ptr[i].type);
         RELEASE(vcannon_ptr, num_vcannon, max_vcannon);
     }
 }
@@ -567,13 +568,11 @@ void Paint_world(void)
                         }
                     }
                     if (type & BLUE_RIGHT)
-                    {
                         fill_top_right = fill_bottom_right = x + BLOCK_SZ;
-                    }
+
                     if (fill_top_left == -1)
-                    {
                         fill_top_left = fill_bottom_left = x;
-                    }
+
                     if (fill_top_right != -1)
                     {
                         Gui_paint_filled_slice(fill_bottom_left,

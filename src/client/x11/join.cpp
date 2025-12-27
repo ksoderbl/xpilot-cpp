@@ -64,13 +64,8 @@ static int Handle_input(int new_input)
 
 static void Input_loop(void)
 {
-    fd_set rfds;
-    fd_set tfds;
-    int max,
-        n,
-        netfd,
-        result,
-        clientfd;
+    fd_set rfds, tfds;
+    int max, n, netfd, result, clientfd;
     struct timeval tv;
 
     if ((result = Net_input()) == -1)
@@ -266,22 +261,21 @@ int Join(char *server_addr, char *server_name, int port, char *user_name,
     }
     if (Net_start() == -1)
     {
-        errno = 0;
-        error("Network start failed");
+        warn("Network start failed");
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
     if (Client_start() == -1)
     {
-        errno = 0;
-        error("Window init failed");
+        warn("Window init failed");
         Net_cleanup();
         Client_cleanup();
         return -1;
     }
 
     Input_loop();
+
     xpilotShutdown();
 
     return 0;

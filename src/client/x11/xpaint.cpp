@@ -147,6 +147,7 @@ void Paint_frame(void)
     static int prev_prev_damaged = 0;
 
     Paint_frame_start();
+
     Paint_score_table();
 
     /*
@@ -435,9 +436,9 @@ void Paint_score_entry(int entry_num,
      */
     if (lineSpacing == -1)
     {
-        memset(raceStr, '\0', sizeof raceStr);
-        memset(teamStr, '\0', sizeof teamStr);
-        memset(lifeStr, '\0', sizeof lifeStr);
+        memset(raceStr, 0, sizeof raceStr);
+        memset(teamStr, 0, sizeof teamStr);
+        memset(lifeStr, 0, sizeof lifeStr);
         teamStr[1] = ' ';
         raceStr[2] = ' ';
 
@@ -450,9 +451,8 @@ void Paint_score_entry(int entry_num,
      * Setup the status line
      */
     if (showUserName)
-    {
-        sprintf(label, "%s=%s@%s", other->nick_name, other->user_name, other->host_name);
-    }
+        sprintf(label, "%s=%s@%s",
+                other->nick_name, other->user_name, other->host_name);
     else
     {
         other_t *war = Other_by_id(other->war_id);
@@ -478,13 +478,9 @@ void Paint_score_entry(int entry_num,
             }
         }
         if (BIT(Setup->mode, TEAM_PLAY))
-        {
             teamStr[0] = other->team + '0';
-        }
         else
-        {
             sprintf(teamStr, "%c", other->alliance);
-        }
 
         if (BIT(Setup->mode, LIMITED_LIVES))
             sprintf(lifeStr, " %3d", other->life);
@@ -494,13 +490,6 @@ void Paint_score_entry(int entry_num,
                 other->mychar, raceStr, teamStr,
                 scoreStr, lifeStr,
                 other->nick_name);
-        if (war)
-        {
-            if (strlen(label) + strlen(war->nick_name) + 5 < sizeof(label))
-            {
-                sprintf(label + strlen(label), " (%s)", war->nick_name);
-            }
-        }
     }
 
     /*
@@ -562,7 +551,7 @@ static void Paint_clock(int redraw)
         {
             XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
             XFillRectangle(dpy, playersWindow, scoreListGC,
-                           256 - (width + 2 * border), 0,
+                           256 - (int)(width + 2 * border), 0,
                            width + 2 * border, height);
             width = 0;
         }
@@ -605,7 +594,7 @@ static void Paint_clock(int redraw)
     width = XTextWidth(scoreListFont, buf, strlen(buf));
     XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
     XFillRectangle(dpy, playersWindow, scoreListGC,
-                   256 - (width + 2 * border), 0,
+                   256 - (int)(width + 2 * border), 0,
                    width + 2 * border, height);
     ShadowDrawString(dpy, playersWindow, scoreListGC,
                      256 - (width + border),

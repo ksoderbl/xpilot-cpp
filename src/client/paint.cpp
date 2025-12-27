@@ -63,10 +63,115 @@ int num_spark_colors;
 
 double scaleFactor;
 double scaleFactor_s;
+double scaleMultFactor; // 1.0 / scaleFactor;
+
+#define SCALE_ARRAY_SIZE 32768
 short scaleArray[SCALE_ARRAY_SIZE];
+
+#define OLD_WINSCALE(__n) ((__n) >= 0 ? scaleArray[(__n)] : -scaleArray[-(__n)])
+
+double WINSCALE(double x)
+{
+    int oldx = OLD_WINSCALE((int)x);
+    int retval = 1;
+
+    if (x < 0)
+        retval = -WINSCALE(-x);
+    else
+        retval = (int)floor(x * scaleMultFactor + 0.5);
+
+    if (oldx != retval)
+        warn("WINSCALE, x = %f, old = %d", x, oldx);
+
+    return retval; // TODO: apply scale factor
+}
+
+static void Init_scale_array(void)
+{
+    int i, start, end, n;
+
+    if (scaleFactor < MIN_SCALEFACTOR)
+        scaleFactor = MIN_SCALEFACTOR;
+    if (scaleFactor > MAX_SCALEFACTOR)
+        scaleFactor = MAX_SCALEFACTOR;
+    scaleMultFactor = 1.0 / scaleFactor;
+
+    scaleArray[0] = 0;
+
+    for (i = 1; i < NELEM(scaleArray); i++)
+    {
+        n = (int)floor(i * scaleMultFactor + 0.5);
+        if (n == 0)
+        {
+            /* keep values for non-zero indices at least 1. */
+            scaleArray[i] = 1;
+        }
+        else
+        {
+            break;
+        }
+    }
+    start = i;
+
+    for (i = NELEM(scaleArray) - 1; i >= 0; i--)
+    {
+        n = (int)floor(i * scaleMultFactor + 0.5);
+        if (n > 32767)
+        {
+            /* keep values lower or equal to max short. */
+            scaleArray[i] = 32767;
+        }
+        else
+        {
+            break;
+        }
+    }
+    end = i;
+
+    for (i = start; i <= end; i++)
+    {
+        scaleArray[i] = (int)floor(i * scaleMultFactor + 0.5);
+    }
+
+    /* verify correct calculations, because of reported gcc optimization bugs. */
+    for (i = 1; i < NELEM(scaleArray); i++)
+    {
+        if (scaleArray[i] < 1)
+        {
+            break;
+        }
+    }
+
+    if (i != SCALE_ARRAY_SIZE)
+    {
+        fprintf(stderr,
+                "Error: Illegal value %d in scaleArray[%d].\n"
+                "\tThis error may be due to a bug in your compiler.\n"
+                "\tEither try a lower optimization level,\n"
+                "\tor a different compiler version or vendor.\n",
+                scaleArray[i], i);
+        exit(1);
+    }
+}
+
+static bool scaleArrayInitialized = false;
 
 int Check_view_dimensions(void)
 {
+    // scaleFactor = 1.2;
+
+    if (scaleFactor < MIN_SCALEFACTOR)
+        scaleFactor = MIN_SCALEFACTOR;
+    if (scaleFactor > MAX_SCALEFACTOR)
+        scaleFactor = MAX_SCALEFACTOR;
+    scaleMultFactor = 1.0 / scaleFactor;
+
+    if (!scaleArrayInitialized)
+    {
+        Init_scale_array();
+        scaleArrayInitialized = true;
+    }
+
     int width_wanted = draw_width;
     int height_wanted = draw_height;
     int srv_width, srv_height;

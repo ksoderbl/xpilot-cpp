@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -1464,6 +1466,42 @@ old_option_t oldOptions[] = {
      "Talkmessage 20.\n"},
 };
 
+void Initialize_global_variables(void)
+{
+    instruments.blockProtocol = false;
+    instruments.clientRanker = false;
+    instruments.clock = false;
+    instruments.clockAMPM = false;
+    instruments.filledDecor = false;
+    instruments.filledWorld = false;
+    instruments.fuelGauge = false;
+    instruments.fuelMeter = false;
+    instruments.horizontalHUDLine = false;
+    instruments.outlineDecor = false;
+    instruments.outlineWorld = false;
+    instruments.packetDropMeter = false;
+    instruments.packetLagMeter = false;
+    instruments.packetLossMeter = false;
+    instruments.packetSizeMeter = false;
+    instruments.powerMeter = false;
+    instruments.showDecor = false;
+    instruments.showHUD = false;
+    instruments.showHUDRadar = false;
+    instruments.showItems = false;
+    instruments.showLivesByShip = false;
+    instruments.showMessages = true;
+    instruments.showMineName = false;
+    instruments.showMyShipShape = false;
+    instruments.showShipName = false;
+    instruments.showShipShapes = false;
+    instruments.showShipShapesHack = false;
+    instruments.slidingRadar = true;
+    instruments.texturedDecor = false;
+    instruments.texturedWalls = false;
+    instruments.turnSpeedMeter = false;
+    instruments.verticalHUDLine = false;
+}
+
 int optionsCount = NELEM(oldOptions);
 
 static unsigned String_hash(const char *s)
@@ -1570,6 +1608,8 @@ void Usage(void)
 static int Find_resource(XrmDatabase db, const char *resource,
                          char *result, unsigned size, int *index)
 {
+    warn("Find_resource: resource = %s", resource);
+
     int i;
     int len;
     char str_name[80],
@@ -1619,6 +1659,8 @@ static int Get_resource(XrmDatabase db,
                         const char *resource, char *result, unsigned size)
 {
     int index;
+
+    warn("Get_resource: resource = %s", resource);
 
     return Find_resource(db, resource, result, size, &index);
 }
@@ -1944,19 +1986,23 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         /* The rest of the arguments are hostnames of servers. */
     }
 
+    // TODO:
     if (Get_resource(argDB, "help", resValue, sizeof resValue) != 0)
     {
         Usage();
     }
 
+    // TODO:
     if (Get_resource(argDB, "version", resValue, sizeof resValue) != 0)
     {
         puts(TITLE);
         exit(0);
     }
 
+    // TODO:
     Get_resource(argDB, "shutdown", shut_msg, MAX_CHARS);
 
+    // TODO:
     if (Get_string_resource(argDB, "display", dispName, MAX_DISP_LEN) == 0 || dispName[0] == '\0')
     {
         if ((ptr = getenv(DISPLAY_ENV)) != NULL)
@@ -1968,6 +2014,8 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
             strlcpy(dispName, DISPLAY_DEF, MAX_DISP_LEN);
         }
     }
+    // strlcpy(dispName, DISPLAY_DEF, MAX_DISP_LEN);
+
     if ((dpy = XOpenDisplay(dispName)) == NULL)
     {
         error("Can't open display '%s'", dispName);
@@ -1988,6 +2036,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         exit(1);
     }
 
+    // TODO:
     if (Get_string_resource(argDB, "keyboard", resValue, MAX_DISP_LEN) == 0 || resValue[0] == '\0')
     {
         if ((ptr = getenv(KEYBOARD_ENV)) != NULL)
@@ -2004,7 +2053,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         error("Can't open keyboard '%s'", resValue);
         exit(1);
     }
+    // kdpy = NULL;
 
+    // TODO
     Get_resource(argDB, "visual", visualName, sizeof visualName);
     if (strncasecmp(visualName, "list", 4) == 0)
     {
@@ -2016,9 +2067,12 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     XrmMergeDatabases(argDB, &rDB);
 
+    // TODO
     Get_string_resource(rDB, "geometry", resValue, sizeof resValue);
     geometry = xp_strdup(resValue);
+    // geometry = xp_strdup("1922x1349");
 
+    // TODO
     if ((talk_fast_temp_buf_big = (char *)malloc(TALK_FAST_MSG_SIZE)) != NULL)
     {
         for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
@@ -2036,9 +2090,13 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
             talk_fast_msgs[i] = NULL;
         }
     }
+    // for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
+    //     talk_fast_msgs[i] = NULL;
 
+    // TODO
     Get_bool_resource(rDB, "ignoreWindowManager", &ignoreWindowManager);
 
+    // TODO
     Get_resource(rDB, "user", resValue, MAX_NAME_LEN);
     if (resValue[0])
     {
@@ -2058,12 +2116,15 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     {
         strlcpy(nickName, realName, MAX_NAME_LEN);
     }
+    // strlcpy(realName, "real", MAX_NAME_LEN);
+    // strlcpy(hostName, "host", MAX_HOST_LEN);
+    // strlcpy(nickName, "Nick", MAX_NAME_LEN);
+
     CAP_LETTER(nickName[0]);
     if (nickName[0] < 'A' || nickName[0] > 'Z')
     {
-        errno = 0;
-        error("Your player name \"%s\" should start with an uppercase letter",
-              nickName);
+        warn("Your player name \"%s\" should start with an uppercase letter",
+             nickName);
         exit(1);
     }
     /* strip trailing whitespace. */
@@ -2081,6 +2142,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     strlcpy(realname, realName, sizeof(realname));
     strlcpy(name, nickName, sizeof(name));
 
+    // TODO
     Get_int_resource(rDB, "team", my_team);
 
     if (*my_team < 0 || *my_team > 9)
@@ -2088,7 +2150,9 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
         *my_team = TEAM_NOT_SET;
     }
     team = *my_team;
+    // team = TEAM_NOT_SET;
 
+    // TODO
     Get_int_resource(rDB, "port", port);
     Get_bool_resource(rDB, "text", text);
     Get_bool_resource(rDB, "list", list);
@@ -2382,6 +2446,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
             }
         }
     }
+    // Record_init("");
 
     XrmDestroyDatabase(rDB);
 
@@ -2390,6 +2455,8 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 #ifdef SOUND
     audioInit(dispName);
 #endif /* SOUND */
+
+    warn("Parse_options end");
 }
 
 void defaultCleanup(void)

@@ -55,9 +55,9 @@ Pixmap radarPixmap, radarPixmap2; /* Pixmaps for the radar (implements */
                                   /* the planes hack on the radar for */
                                   /* monochromes) */
 long dpl_1[2], dpl_2[2];          /* Used by radar hack */
-int wallRadarColor;               /* Color index for walls on radar. */
-int targetRadarColor;             /* Color index for targets on radar. */
-int decorRadarColor;              /* Color index for decorations on radar. */
+int wallRadarColor = BLUE;        /* Color index for walls on radar. */
+int targetRadarColor = 4;         /* Color index for targets on radar. */
+int decorRadarColor = 6;          /* Color index for decorations on radar. */
 int radar_exposures;
 
 static int slidingradar_x; /* sliding radar offsets for windows */

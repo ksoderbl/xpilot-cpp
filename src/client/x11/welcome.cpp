@@ -139,6 +139,19 @@ static int form_widget = NO_WIDGET;
 static int subform_widget = NO_WIDGET;
 static int subform_label_widget = NO_WIDGET;
 
+/* Size hints for these widges */
+static int form_x = 0;
+static int form_y = 0;
+static int subform_x;
+static int subform_y;
+static int subform_width;
+static int subform_height;
+static int subform_border;
+
+static int next_page_widget = NO_WIDGET;
+static int first_page_widget = NO_WIDGET;
+static int ping_servers_widget = NO_WIDGET;
+
 /*
  * An array of structures with information to join a local server.
  */
@@ -1607,14 +1620,15 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
 
     Widget_destroy_children(subform_widget);
 
+    /* Players */
+
     w = Widget_create_label(subform_widget,
                             player_offset, yoff,
                             player_width, label_height, true,
                             border, player_header);
     if (!w)
-    {
         return -1;
-    }
+
     Widget_create_label(subform_widget,
                         queue_offset, yoff,
                         queue_width, label_height, true,
@@ -1631,6 +1645,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
                         fps_offset, yoff,
                         fps_width, label_height, true,
                         border, fps_header);
+
     Widget_create_label(subform_widget,
                         status_offset, yoff,
                         status_width, label_height, true,
@@ -1641,8 +1656,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
                         border, version_header);
     Widget_create_label(subform_widget,
                         map_offset, yoff,
-                        map_width, label_height, true,
-                        border, map_header);
+                        map_width, label_height, true, border, map_header);
     Widget_create_label(subform_widget,
                         server_offset, yoff,
                         /* server_width, label_height, */
@@ -1686,18 +1700,19 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
                             fps_width, label_height,
                             border, sip->fps_str);
         if (strlen(sip->status) > 4)
-        {
             sip->status[4] = '\0';
-        }
+
         Widget_create_label(subform_widget,
                             status_offset, yoff,
                             status_width, label_height, true,
                             border,
-                            strcmp(sip->status, "ok") ? sip->status : "");
+                            strcmp(sip->status,
+                                   "ok")
+                                ? sip->status
+                                : "");
         if (strlen(sip->version) > max_version_length)
-        {
             sip->version[max_version_length] = '\0';
-        }
+
         string_to_lower(sip->version);
         Widget_create_label(subform_widget,
                             version_offset, yoff,
@@ -1841,6 +1856,18 @@ static int Internet_cb(int widget, void *user_data, const char **text)
     return 0;
 }
 
+#if 0
+/*
+ * User pressed the Configure button.
+ */
+static int Configure_cb(int widget, void *user_data, const char **text)
+{
+    Config(true, CONFIG_DEFAULT);
+
+    return 0;
+}
+#endif
+
 /*
  * User pressed the Server button.
  */
@@ -1893,16 +1920,10 @@ static int Welcome_create_windows(Connect_param_t *conpar)
 {
     int i;
     int form_border = 0;
-    int form_x = 0;
-    int form_y = 0;
     int form_width = top_width - 2 * form_border;
     int form_height = top_height - 2 * form_border;
-    int subform_x;
-    int subform_y;
-    int subform_width;
-    int subform_height;
-    int subform_border;
-    int button_border = 4;
+
+    const int button_border = 4;
     int button_height = buttonFont->ascent + buttonFont->descent + 2 * button_border;
     int max_width;
     int text_width;
@@ -1921,6 +1942,7 @@ static int Welcome_create_windows(Connect_param_t *conpar)
     struct MyButton my_buttons[] = {
         {"Local", Localnet_cb},
         {"Internet", Internet_cb},
+    /*    {"Config", Configure_cb}, */
 #if 0
 /* XXX TODO add server page to select a map and start a server. */
         { "Server", Server_cb },
@@ -1930,8 +1952,12 @@ static int Welcome_create_windows(Connect_param_t *conpar)
         {"Quit", Quit_cb},
     };
 
-    LIMIT(form_width, 400, 1282);
-    LIMIT(form_height, 400, 1024);
+    /* set the size limitations on the window */
+    /* CB: I increased these as there is no reason for a limit */
+    /* also the game window now inherits the new size nicely */
+
+    LIMIT(form_width, 400, 1600);
+    LIMIT(form_height, 400, 1400);
     form_widget =
         Widget_create_form(0, topWindow,
                            form_x, form_y,
@@ -2004,6 +2030,9 @@ static void Welcome_destroy_windows(void)
     XFlush(dpy);
     form_widget = NO_WIDGET;
     subform_widget = NO_WIDGET;
+    next_page_widget = NO_WIDGET;
+    first_page_widget = NO_WIDGET;
+    ping_servers_widget = NO_WIDGET;
 }
 
 /*

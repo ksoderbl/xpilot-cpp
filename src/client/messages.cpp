@@ -62,9 +62,9 @@ char *HistoryMsg[MAX_HIST_MSGS];
 
 /* provide cut&paste and message history */
 static char *HistoryBlock = NULL;
-int maxLinesInHistory;
-int maxMessages;      /* Max. number of messages to display */
-int messagesToStdout; /* Send messages to standard output */
+int maxLinesInHistory = 32;
+int maxMessages = 8;      /* Max. number of messages to display */
+int messagesToStdout = 0; /* Send messages to standard output */
 
 static bool ball_shout = false;
 static bool need_cover = false;

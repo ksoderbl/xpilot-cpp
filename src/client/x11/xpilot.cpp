@@ -51,6 +51,9 @@
 #include "portability.h"
 #include "checknames.h"
 
+// In xdefault.cpp
+extern void Initialize_global_variables(void);
+
 char hostname[SOCK_HOSTNAME_LENGTH];
 
 char **Argv;
@@ -154,6 +157,23 @@ int main(int argc, char *argv[])
         xpprintf("to \"%s\"\n", conpar->user_name);
     }
 
+    Initialize_global_variables();
+
+    /*
+     * --- Create global option array ---
+     */
+    // Store_default_options();
+    // Store_X_options();
+    // Store_hud_options();
+    // Store_paintradar_options();
+    // Store_xpaint_options();
+    // Store_guimap_options();
+    // Store_guiobject_options();
+    // Store_talk_macro_options();
+    // Store_key_options();
+    // Store_record_options();
+    // Store_color_options();
+
     /*
      * --- Check commandline arguments and resource files ---
      */
@@ -163,6 +183,7 @@ int main(int argc, char *argv[])
                   &auto_connect, &noLocalMotd,
                   conpar->nick_name, conpar->disp_name,
                   hostname, shutdown_reason);
+
     if (Check_nick_name(conpar->nick_name) == NAME_ERROR)
     {
         xpprintf("fixing nick from \"%s\" ", conpar->nick_name);

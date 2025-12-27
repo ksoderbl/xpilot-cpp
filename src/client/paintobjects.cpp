@@ -289,7 +289,9 @@ static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
             color = COLOR(i);
             color = DEBRIS_COLOR(color);
             for (j = 0; j < num_debris[i]; j++)
-                Gui_paint_spark(color, x + debris_ptr[i][j].x, y - debris_ptr[i][j].y);
+                Gui_paint_spark(color,
+                                x + debris_ptr[i][j].x,
+                                y - debris_ptr[i][j].y);
             RELEASE(debris_ptr[i], num_debris[i], max_debris[i]);
         }
     }
@@ -426,7 +428,9 @@ static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
         if (color != WHITE && color != BLUE)
             color = WHITE;
         for (j = 0; j < num_fastshot[i]; j++)
-            Gui_paint_fastshot(color, x + fastshot_ptr[i][j].x, y - fastshot_ptr[i][j].y);
+            Gui_paint_fastshot(color,
+                               x + fastshot_ptr[i][j].x,
+                               y - fastshot_ptr[i][j].y);
         RELEASE(fastshot_ptr[i], num_fastshot[i], max_fastshot[i]);
     }
 }
@@ -444,7 +448,9 @@ static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
         y = BASE_Y(i);
         color = COLOR(i);
         for (j = 0; j < num_fastshot[t_]; j++)
-            Gui_paint_teamshot(color, x + fastshot_ptr[t_][j].x, y - fastshot_ptr[t_][j].y);
+            Gui_paint_teamshot(color,
+                               x + fastshot_ptr[t_][j].x,
+                               y - fastshot_ptr[t_][j].y);
         RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
     }
 }
@@ -495,6 +501,24 @@ static void Paint_paused(void)
         }
         RELEASE(paused_ptr, num_paused, max_paused);
     }
+}
+
+static void Paint_appearing(void)
+{
+    // int i, x, y;
+
+    // if (num_appearing > 0)
+    // {
+    //     for (i = 0; i < num_appearing; i++)
+    //     {
+    //         x = appearing_ptr[i].x;
+    //         y = appearing_ptr[i].y;
+    //         if (wrap(&x, &y))
+    //             Gui_paint_appearing(x, y, appearing_ptr[i].id,
+    //                                 appearing_ptr[i].count);
+    //     }
+    //     RELEASE(appearing_ptr, num_appearing, max_appearing);
+    // }
 }
 
 static void Paint_ecm(void)
@@ -584,7 +608,8 @@ static void Paint_connectors(void)
             x1 = connector_ptr[i].x1;
             y1 = connector_ptr[i].y1;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
-                Gui_paint_connector(x0, y0, x1, y1, connector_ptr[i].tractor);
+                Gui_paint_connector(x0, y0, x1, y1,
+                                    connector_ptr[i].tractor);
         }
         RELEASE(connector_ptr, num_connector, max_connector);
     }
@@ -616,12 +641,10 @@ static void Paint_all_connectors(void)
         num_connector > 0 ||
         num_trans > 0)
     {
+
         Gui_paint_all_connectors_begin();
-        // SET_FG(colors[3].pixel);
         Paint_refuel();
-        // SET_FG(colors[4].pixel);
         Paint_connectors();
-        // SET_FG(colors[11].pixel);
         Paint_transporters();
     }
 }
@@ -631,6 +654,7 @@ void Paint_ships(void)
     Gui_paint_ships_begin();
 
     Paint_paused();
+    Paint_appearing();
     Paint_ecm();
     Paint_all_ships();
     Paint_all_connectors();
