@@ -275,25 +275,25 @@ bool Key_press_shield(keys_t key)
     return false;
 }
 
-bool Key_press_fuel(keys_t key)
-{
-    fuelTime = FUEL_NOTIFY_TIME;
-    return false;
-}
+// bool Key_press_fuel(keys_t key)
+// {
+//     fuelTime = FUEL_NOTIFY_TIME;
+//     return false;
+// }
 
-bool Key_press_swap_settings(keys_t key)
-{
-    DFLOAT _tmp;
-#define SWAP(a, b) (_tmp = (a), (a) = (b), (b) = _tmp)
+// bool Key_press_swap_settings(keys_t key)
+// {
+//     DFLOAT _tmp;
+// #define SWAP(a, b) (_tmp = (a), (a) = (b), (b) = _tmp)
 
-    SWAP(power, power_s);
-    SWAP(turnspeed, turnspeed_s);
-    SWAP(turnresistance, turnresistance_s);
-    controlTime = CONTROL_TIME;
-    Config_redraw();
+//     SWAP(power, power_s);
+//     SWAP(turnspeed, turnspeed_s);
+//     SWAP(turnresistance, turnresistance_s);
+//     controlTime = CONTROL_TIME;
+//     Config_redraw();
 
-    return true;
-}
+//     return true;
+// }
 
 bool Key_press_swap_scalefactor(keys_t key)
 {
@@ -308,49 +308,49 @@ bool Key_press_swap_scalefactor(keys_t key)
     return false;
 }
 
-bool Key_press_increase_power(keys_t key)
-{
-    power = power * 1.10;
-    power = MIN(power, MAX_PLAYER_POWER);
-    Send_power(power);
+// bool Key_press_increase_power(keys_t key)
+// {
+//     power = power * 1.10;
+//     power = MIN(power, MAX_PLAYER_POWER);
+//     Send_power(power);
 
-    Config_redraw();
-    controlTime = CONTROL_TIME;
-    return false; /* server doesn't see these keypresses anymore */
-}
+//     Config_redraw();
+//     controlTime = CONTROL_TIME;
+//     return false; /* server doesn't see these keypresses anymore */
+// }
 
-bool Key_press_decrease_power(keys_t key)
-{
-    power = power * 0.90;
-    power = MAX(power, MIN_PLAYER_POWER);
-    Send_power(power);
+// bool Key_press_decrease_power(keys_t key)
+// {
+//     power = power * 0.90;
+//     power = MAX(power, MIN_PLAYER_POWER);
+//     Send_power(power);
 
-    Config_redraw();
-    controlTime = CONTROL_TIME;
-    return false; /* server doesn't see these keypresses anymore */
-}
+//     Config_redraw();
+//     controlTime = CONTROL_TIME;
+//     return false; /* server doesn't see these keypresses anymore */
+// }
 
-bool Key_press_increase_turnspeed(keys_t key)
-{
-    turnspeed = turnspeed * 1.05;
-    turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
-    Send_turnspeed(turnspeed);
+// bool Key_press_increase_turnspeed(keys_t key)
+// {
+//     turnspeed = turnspeed * 1.05;
+//     turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
+//     Send_turnspeed(turnspeed);
 
-    Config_redraw();
-    controlTime = CONTROL_TIME;
-    return false; /* server doesn't see these keypresses anymore */
-}
+//     Config_redraw();
+//     controlTime = CONTROL_TIME;
+//     return false; /* server doesn't see these keypresses anymore */
+// }
 
-bool Key_press_decrease_turnspeed(keys_t key)
-{
-    turnspeed = turnspeed * 0.95;
-    turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
-    Send_turnspeed(turnspeed);
+// bool Key_press_decrease_turnspeed(keys_t key)
+// {
+//     turnspeed = turnspeed * 0.95;
+//     turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
+//     Send_turnspeed(turnspeed);
 
-    Config_redraw();
-    controlTime = CONTROL_TIME;
-    return false; /* server doesn't see these keypresses anymore */
-}
+//     Config_redraw();
+//     controlTime = CONTROL_TIME;
+//     return false; /* server doesn't see these keypresses anymore */
+// }
 
 bool Key_press_talk(keys_t key)
 {

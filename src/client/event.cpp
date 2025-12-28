@@ -23,29 +23,29 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-// #include <cstddef>
-// #include <cstdio>
-// #include <cstring>
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
 
-// #include "bit.h"
-// #include "checknames.h"
-// #include "commonmacros.h"
-// #include "pack.h"
-// #include "packet.h"
-// #include "portability.h"
-// #include "socklib.h"
-// #include "strdup.h"
-// #include "strlcpy.h"
-// #include "xpconfig.h"
+#include "bit.h"
+#include "checknames.h"
+#include "commonmacros.h"
+#include "pack.h"
+#include "packet.h"
+#include "portability.h"
+#include "socklib.h"
+#include "strdup.h"
+#include "strlcpy.h"
+#include "xpconfig.h"
 
-// #include "client.h"
-// #include "configure.h"
-// #include "gfx2d.h"
-// #include "messages.h"
-// #include "netclient.h"
-// #include "paint.h"
-// #include "option.h"
-// #include "talk.h"
+#include "client.h"
+#include "configure.h"
+#include "gfx2d.h"
+#include "messages.h"
+#include "netclient.h"
+#include "paint.h"
+#include "option.h"
+#include "talk.h"
 
 // #define MAX_BUTTON_DEFS 10
 
@@ -210,25 +210,25 @@
 //     return false;
 // }
 
-// static bool Key_press_fuel(void)
-// {
-//     fuelTime = FUEL_NOTIFY_TIME;
-//     return false;
-// }
+bool Key_press_fuel(keys_t key)
+{
+    fuelTime = FUEL_NOTIFY_TIME;
+    return false;
+}
 
-// static bool Key_press_swap_settings(void)
-// {
-//     double tmp;
-// #define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
+bool Key_press_swap_settings(keys_t key)
+{
+    double tmp;
+#define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
 
-//     SWAP(power, power_s);
-//     SWAP(turnspeed, turnspeed_s);
-//     SWAP(turnresistance, turnresistance_s);
-//     controlTime = CONTROL_TIME;
-//     Config_redraw();
+    SWAP(power, power_s);
+    SWAP(turnspeed, turnspeed_s);
+    SWAP(turnresistance, turnresistance_s);
+    controlTime = CONTROL_TIME;
+    Config_redraw();
 
-//     return true;
-// }
+    return true;
+}
 
 // // static bool Key_press_swap_scalefactor(void)
 // // {
@@ -240,49 +240,49 @@
 // //     return false;
 // // }
 
-// static bool Key_press_increase_power(void)
-// {
-//     power = power * 1.10;
-//     power = MIN(power, MAX_PLAYER_POWER);
-//     Send_power(power);
+bool Key_press_increase_power(keys_t key)
+{
+    power = power * 1.10;
+    power = MIN(power, MAX_PLAYER_POWER);
+    Send_power(power);
 
-//     Config_redraw();
-//     controlTime = CONTROL_TIME;
-//     return false; /* server doesn't see these keypresses anymore */
-// }
+    Config_redraw();
+    controlTime = CONTROL_TIME;
+    return false; /* server doesn't see these keypresses anymore */
+}
 
-// static bool Key_press_decrease_power(void)
-// {
-//     power = power / 1.10;
-//     power = MAX(power, MIN_PLAYER_POWER);
-//     Send_power(power);
+bool Key_press_decrease_power(keys_t key)
+{
+    power = power * 0.90;
+    power = MAX(power, MIN_PLAYER_POWER);
+    Send_power(power);
 
-//     Config_redraw();
-//     controlTime = CONTROL_TIME;
-//     return false; /* server doesn't see these keypresses anymore */
-// }
+    Config_redraw();
+    controlTime = CONTROL_TIME;
+    return false; /* server doesn't see these keypresses anymore */
+}
 
-// static bool Key_press_increase_turnspeed(void)
-// {
-//     turnspeed = turnspeed * 1.05;
-//     turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
-//     Send_turnspeed(turnspeed);
+bool Key_press_increase_turnspeed(keys_t key)
+{
+    turnspeed = turnspeed * 1.05;
+    turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
+    Send_turnspeed(turnspeed);
 
-//     Config_redraw();
-//     controlTime = CONTROL_TIME;
-//     return false; /* server doesn't see these keypresses anymore */
-// }
+    Config_redraw();
+    controlTime = CONTROL_TIME;
+    return false; /* server doesn't see these keypresses anymore */
+}
 
-// static bool Key_press_decrease_turnspeed(void)
-// {
-//     turnspeed = turnspeed / 1.05;
-//     turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
-//     Send_turnspeed(turnspeed);
+bool Key_press_decrease_turnspeed(keys_t key)
+{
+    turnspeed = turnspeed * 0.95;
+    turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
+    Send_turnspeed(turnspeed);
 
-//     Config_redraw();
-//     controlTime = CONTROL_TIME;
-//     return false; /* server doesn't see these keypresses anymore */
-// }
+    Config_redraw();
+    controlTime = CONTROL_TIME;
+    return false; /* server doesn't see these keypresses anymore */
+}
 
 // // static bool Key_press_talk(void)
 // // {
