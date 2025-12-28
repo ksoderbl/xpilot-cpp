@@ -677,6 +677,9 @@ bool Key_release(keys_t key);
 void Set_auto_shield(bool on);
 void Set_toggle_shield(bool on);
 
+// was in xinit.cpp
+void Scale_dashes(void);
+
 /*
  * messages.c
  */

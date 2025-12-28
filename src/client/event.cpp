@@ -49,7 +49,7 @@
 
 // #define MAX_BUTTON_DEFS 10
 
-// static BITV_DECL(keyv, NUM_KEYS);
+BITV_DECL(keyv, NUM_KEYS);
 // static uint8_t keyv_new[NUM_KEYS];
 
 // keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
@@ -147,68 +147,95 @@
 //     numButtonDefs[ind] = 0;
 // }
 
-// // int Key_init(void)
-// // {
-// //     int i;
-
-// //     if (sizeof(keyv) != KEYBOARD_SIZE)
-// //     {
-// //         warn("%s, %d: keyv size %d, KEYBOARD_SIZE is %d",
-// //              __FILE__, __LINE__,
-// //              sizeof(keyv), KEYBOARD_SIZE);
-// //         exit(1);
-// //     }
-// //     memset(keyv, 0, sizeof keyv);
-// //     for (i = 0; i < NUM_KEYS; i++)
-// //         keyv_new[i] = 0;
-
-// //     BITV_SET(keyv, KEY_SHIELD);
-
-// //     return 0;
-// // }
-
-// // int Key_update(void)
-// // {
-// //     return Send_keyboard(keyv);
-// // }
-
-// static bool Key_check_talk_macro(keys_t key)
+// static int Key_set(int key, bool on)
 // {
-//     if (key >= KEY_MSG_1 && key < KEY_MSG_1 + TALK_FAST_NR_OF_MSGS)
-//         Talk_macro((int)(key - KEY_MSG_1));
-//     return true;
-// }
-
-// static bool Key_press_id_mode(void)
-// {
-//     showUserName = showUserName ? false : true;
-//     scoresChanged = true;
-//     return false; /* server doesn't need to know */
-// }
-
-// static bool Key_press_autoshield_hack(void)
-// {
-//     if (auto_shield && BITV_ISSET(keyv, KEY_SHIELD))
-//         BITV_CLR(keyv, KEY_SHIELD);
-//     return false;
-// }
-
-// static bool Key_press_shield(keys_t key)
-// {
-//     if (toggle_shield)
+//     if (on)
 //     {
-//         shields = !shields;
-//         if (shields)
+//         if (!BITV_ISSET(keyv, key))
+//         {
 //             BITV_SET(keyv, key);
-//         else
-//             BITV_CLR(keyv, key);
-//         return true;
+//             return true;
+//         }
 //     }
-//     else if (auto_shield)
-//         shields = true;
-
+//     else
+//     {
+//         if (BITV_ISSET(keyv, key))
+//         {
+//             BITV_CLR(keyv, key);
+//             return true;
+//         }
+//     }
 //     return false;
 // }
+
+int Key_init(void)
+{
+    if (sizeof(keyv) != KEYBOARD_SIZE)
+    {
+        error("%s, %d: keyv size %d, KEYBOARD_SIZE is %d",
+              __FILE__, __LINE__,
+              sizeof(keyv), KEYBOARD_SIZE);
+        exit(1);
+    }
+    memset(keyv, 0, sizeof keyv);
+    BITV_SET(keyv, KEY_SHIELD);
+
+    return 0;
+}
+
+int Key_update(void)
+{
+    return Send_keyboard(keyv);
+}
+
+bool Key_check_talk_macro(keys_t key)
+{
+    if (key >= KEY_MSG_1 && key < KEY_MSG_1 + TALK_FAST_NR_OF_MSGS)
+        /* talk macros */
+        Talk_macro((int)(key - KEY_MSG_1));
+    return true;
+}
+
+bool Key_press_id_mode(keys_t key)
+{
+    showUserName = showUserName ? false : true;
+    scoresChanged = true;
+    return false; /* server doesn't need to know */
+}
+
+bool Key_press_autoshield_hack(keys_t key)
+{
+    if (auto_shield && BITV_ISSET(keyv, KEY_SHIELD))
+        BITV_CLR(keyv, KEY_SHIELD);
+    return false;
+}
+
+bool Key_press_shield(keys_t key)
+{
+    if (toggle_shield)
+    {
+        shields = !shields;
+        if (shields)
+        {
+            BITV_SET(keyv, key);
+        }
+        else
+        {
+            BITV_CLR(keyv, key);
+        }
+        return true;
+    }
+    else if (auto_shield)
+    {
+        shields = 1;
+#if 0
+        shields = 0;
+        BITV_CLR(keyv, key);
+        return true;
+#endif
+    }
+    return false;
+}
 
 bool Key_press_fuel(keys_t key)
 {
@@ -230,15 +257,18 @@ bool Key_press_swap_settings(keys_t key)
     return true;
 }
 
-// // static bool Key_press_swap_scalefactor(void)
-// // {
-// //     double a = clData.altScaleFactor;
+bool Key_press_swap_scalefactor(keys_t key)
+{
+    DFLOAT tmp;
+    tmp = scaleFactor;
+    scaleFactor = scaleFactor_s;
+    scaleFactor_s = tmp;
 
-// //     Set_altScaleFactor(NULL, clData.scaleFactor);
-// //     Set_scaleFactor(NULL, a);
+    Scale_dashes();
+    Config_redraw();
 
-// //     return false;
-// // }
+    return false;
+}
 
 bool Key_press_increase_power(keys_t key)
 {
@@ -284,39 +314,36 @@ bool Key_press_decrease_turnspeed(keys_t key)
     return false; /* server doesn't see these keypresses anymore */
 }
 
-// // static bool Key_press_talk(void)
-// // {
-// //     int i;
+bool Key_press_talk(keys_t key)
+{
+    Talk_set_state((clData.talking == false) ? true : false);
+    return false; /* server doesn't need to know */
+}
 
-// //     /*
-// //      * this releases mouse in x11 client, so we clear the mouse buttons
-// //      * so they don't lock on
-// //      */
-// //     if (clData.pointerControl)
-// //         for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-// //             Pointer_button_released(i);
+bool Key_press_show_items(keys_t key)
+{
+    instruments.showItems = !instruments.showItems;
+    return false; /* server doesn't need to know */
+}
 
-// //     Talk_set_state(!clData.talking);
-// //     return false; /* server doesn't need to know */
-// // }
+bool Key_press_show_messages(keys_t key)
+{
+    instruments.showMessages = !instruments.showMessages;
+    return false; /* server doesn't need to know */
+}
 
-// static bool Key_press_show_items(void)
-// {
-//     instruments.showItems = !instruments.showItems;
-//     return false; /* server doesn't need to know */
-// }
-
-// static bool Key_press_show_messages(void)
-// {
-//     instruments.showMessages = !instruments.showMessages;
-//     return false; /* server doesn't need to know */
-// }
-
-// // static bool Key_press_pointer_control(void)
-// // {
-// //     Pointer_control_set_state(!clData.pointerControl);
-// //     return false; /* server doesn't need to know */
-// // }
+bool Key_press_pointer_control(keys_t key)
+{
+    if (version < 0x3202)
+    {
+        error("Cannot use pointer control below version 3.2.3");
+    }
+    else
+    {
+        Pointer_control_set_state(!pointerControl);
+    }
+    return false; /* server doesn't need to know */
+}
 
 // // static bool Key_press_toggle_fullscreen(void)
 // // {
@@ -330,11 +357,11 @@ bool Key_press_decrease_turnspeed(keys_t key)
 // //     return false; /* server doesn't need to know */
 // // }
 
-// // static bool Key_press_toggle_record(void)
-// // {
-// //     Record_toggle();
-// //     return false; /* server doesn't need to know */
-// // }
+bool Key_press_toggle_record(keys_t key)
+{
+    Record_toggle();
+    return false; /* server doesn't need to know */
+}
 
 // static bool Key_press_toggle_sound(void)
 // {
@@ -344,20 +371,20 @@ bool Key_press_decrease_turnspeed(keys_t key)
 //     return false; /* server doesn't need to know */
 // }
 
-// static bool Key_press_msgs_stdout(void)
-// {
-//     Print_messages_to_stdout();
-//     return false; /* server doesn't need to know */
-// }
+bool Key_press_msgs_stdout(keys_t key)
+{
+    Print_messages_to_stdout();
+    return false; /* server doesn't need to know */
+}
 
-// static bool Key_press_select_lose_item(void)
-// {
-//     if (lose_item_active == 1)
-//         lose_item_active = 2;
-//     else
-//         lose_item_active = 1;
-//     return true;
-// }
+bool Key_press_select_lose_item(keys_t key)
+{
+    if (lose_item_active == 1)
+        lose_item_active = 2;
+    else
+        lose_item_active = 1;
+    return true;
+}
 
 // static bool Key_press_yes(void)
 // {
@@ -469,273 +496,221 @@ bool Key_press_decrease_turnspeed(keys_t key)
 // //     return false;
 // // }
 
-// // bool Key_press(keys_t key)
-// // {
-// //     bool countchange;
-// //     int keycount, i;
+bool Key_press(keys_t key)
+{
+    Key_check_talk_macro(key);
 
-// //     if (clData.quitMode)
-// //         return Quit_mode_key_press(key);
+    switch (key)
+    {
+    case KEY_ID_MODE:
+        return (Key_press_id_mode(key));
 
-// //     countchange = Key_inc_count(key);
-// //     keycount = Key_get_count(key);
+    case KEY_FIRE_SHOT:
+    case KEY_FIRE_LASER:
+    case KEY_FIRE_MISSILE:
+    case KEY_FIRE_TORPEDO:
+    case KEY_FIRE_HEAT:
+    case KEY_DROP_MINE:
+    case KEY_DETACH_MINE:
+        Key_press_autoshield_hack(key);
+        break;
 
-// //     /*
-// //      * keycount -1 means this was a client only key, we don't count those
-// //      */
-// //     if (keycount != -1)
-// //     {
-// //         /*
-// //          * if countchange is false it means that Key_<inc|dec>_count()
-// //          * failed to change the count due to being at the end of the range
-// //          * (should be very rare) keycount != 1 means that this key was
-// //          * already pressed (multiple key mappings)
-// //          */
-// //         if ((!countchange) || (keycount != 1))
-// //             return true;
-// //     }
+    case KEY_SHIELD:
+        if (Key_press_shield(key))
+            return true;
+        break;
 
-// //     Key_check_talk_macro(key);
+    case KEY_REFUEL:
+    case KEY_REPAIR:
+    case KEY_TANK_NEXT:
+    case KEY_TANK_PREV:
+        Key_press_fuel(key);
+        break;
 
-// //     switch (key)
-// //     {
-// //     case KEY_ID_MODE:
-// //         return Key_press_id_mode();
+    case KEY_SWAP_SETTINGS:
+        if (!Key_press_swap_settings(key))
+            return false;
+        break;
 
-// //     case KEY_FIRE_SHOT:
-// //     case KEY_FIRE_LASER:
-// //     case KEY_FIRE_MISSILE:
-// //     case KEY_FIRE_TORPEDO:
-// //     case KEY_FIRE_HEAT:
-// //     case KEY_DROP_MINE:
-// //     case KEY_DETACH_MINE:
-// //         Key_press_autoshield_hack();
-// //         break;
+    case KEY_SWAP_SCALEFACTOR:
+        if (!Key_press_swap_scalefactor(key))
+            return false;
+        break;
 
-// //     case KEY_SHIELD:
-// //         if (Key_press_shield(key))
-// //             return true;
-// //         break;
+    case KEY_INCREASE_POWER:
+        return Key_press_increase_power(key);
 
-// //     case KEY_REFUEL:
-// //     case KEY_REPAIR:
-// //     case KEY_TANK_NEXT:
-// //     case KEY_TANK_PREV:
-// //         Key_press_fuel();
-// //         break;
+    case KEY_DECREASE_POWER:
+        return Key_press_decrease_power(key);
 
-// //     case KEY_SWAP_SETTINGS:
-// //         if (!Key_press_swap_settings())
-// //             return false;
-// //         break;
+    case KEY_INCREASE_TURNSPEED:
+        return Key_press_increase_turnspeed(key);
 
-// //     case KEY_SWAP_SCALEFACTOR:
-// //         if (!Key_press_swap_scalefactor())
-// //             return false;
-// //         break;
+    case KEY_DECREASE_TURNSPEED:
+        return Key_press_decrease_turnspeed(key);
 
-// //     case KEY_INCREASE_POWER:
-// //         return Key_press_increase_power();
+    case KEY_TALK:
+        return Key_press_talk(key);
 
-// //     case KEY_DECREASE_POWER:
-// //         return Key_press_decrease_power();
+    case KEY_TOGGLE_OWNED_ITEMS:
+        return Key_press_show_items(key);
 
-// //     case KEY_INCREASE_TURNSPEED:
-// //         return Key_press_increase_turnspeed();
+    case KEY_TOGGLE_MESSAGES:
+        return Key_press_show_messages(key);
 
-// //     case KEY_DECREASE_TURNSPEED:
-// //         return Key_press_decrease_turnspeed();
+    case KEY_POINTER_CONTROL:
+        return Key_press_pointer_control(key);
 
-// //     case KEY_TALK:
-// //         return Key_press_talk();
+    case KEY_TOGGLE_RECORD:
+        return Key_press_toggle_record(key);
 
-// //     case KEY_TOGGLE_OWNED_ITEMS:
-// //         return Key_press_show_items();
+    case KEY_PRINT_MSGS_STDOUT:
+        return Key_press_msgs_stdout(key);
 
-// //     case KEY_TOGGLE_MESSAGES:
-// //         return Key_press_show_messages();
+    case KEY_SELECT_ITEM:
+    case KEY_LOSE_ITEM:
+        if (!Key_press_select_lose_item(key))
+            return false;
+    default:
+        break;
+    }
 
-// //     case KEY_POINTER_CONTROL:
-// //         /*
-// //          * this releases mouse, so we clear the mouse buttons so they
-// //          * don't lock on
-// //          */
-// //         if (clData.pointerControl)
-// //             for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-// //                 Pointer_button_released(i);
+    if (key < NUM_KEYS)
+    {
+        BITV_SET(keyv, key);
+    }
 
-// //         return Key_press_pointer_control();
+    return true;
+}
 
-// //     case KEY_TOGGLE_RECORD:
-// //         return Key_press_toggle_record();
+bool Key_release(keys_t key)
+{
+    switch (key)
+    {
+    case KEY_ID_MODE:
+    case KEY_TALK:
+    case KEY_TOGGLE_OWNED_ITEMS:
+    case KEY_TOGGLE_MESSAGES:
+        return false; /* server doesn't need to know */
 
-// //     case KEY_TOGGLE_SOUND:
-// //         return Key_press_toggle_sound();
+    /* Don auto-shield hack */
+    /* restore shields */
+    case KEY_FIRE_SHOT:
+    case KEY_FIRE_LASER:
+    case KEY_FIRE_MISSILE:
+    case KEY_FIRE_TORPEDO:
+    case KEY_FIRE_HEAT:
+    case KEY_DROP_MINE:
+    case KEY_DETACH_MINE:
+        if (auto_shield && shields && !BITV_ISSET(keyv, KEY_SHIELD))
+        {
+            /* Here We need to know if any other weapons are still on */
+            /*      before we turn shield back on   */
+            BITV_CLR(keyv, key);
+            if (!BITV_ISSET(keyv, KEY_FIRE_SHOT) &&
+                !BITV_ISSET(keyv, KEY_FIRE_LASER) &&
+                !BITV_ISSET(keyv, KEY_FIRE_MISSILE) &&
+                !BITV_ISSET(keyv, KEY_FIRE_TORPEDO) &&
+                !BITV_ISSET(keyv, KEY_FIRE_HEAT) &&
+                !BITV_ISSET(keyv, KEY_DROP_MINE) &&
+                !BITV_ISSET(keyv, KEY_DETACH_MINE))
+            {
+                BITV_SET(keyv, KEY_SHIELD);
+            }
+        }
+        break;
 
-// //     case KEY_TOGGLE_RADAR_SCORE:
-// //         return Key_press_toggle_radar_score();
+    case KEY_SHIELD:
+        if (toggle_shield)
+        {
+            return false;
+        }
+        else if (auto_shield)
+        {
+            shields = 0;
+#if 0
+            shields = 1;
+            BITV_SET(keyv, key);
+            return true;
+#endif
+        }
+        break;
 
-// //     case KEY_PRINT_MSGS_STDOUT:
-// //         return Key_press_msgs_stdout();
+    case KEY_REFUEL:
+    case KEY_REPAIR:
+        fuelTime = FUEL_NOTIFY_TIME;
+        break;
 
-// //     case KEY_TOGGLE_FULLSCREEN:
-// //         return Key_press_toggle_fullscreen();
+    case KEY_SELECT_ITEM:
+    case KEY_LOSE_ITEM:
+        if (version < 0x3400)
+        {
+            return false;
+        }
+        if (lose_item_active == 2)
+        {
+            lose_item_active = 1;
+        }
+        else
+        {
+            lose_item_active = -FPS;
+        }
+        break;
 
-// //     case KEY_SELECT_ITEM:
-// //     case KEY_LOSE_ITEM:
-// //         if (!Key_press_select_lose_item())
-// //             return false;
-// //         break;
+    default:
+        break;
+    }
+    if (key < NUM_KEYS)
+    {
+        BITV_CLR(keyv, key);
+    }
 
-// //     case KEY_EXIT:
-// //         return Key_press_exit();
-// //     case KEY_YES:
-// //         return Key_press_yes();
-// //     case KEY_NO:
-// //         return Key_press_no();
+    return true;
+}
 
-// //     default:
-// //         break;
-// //     }
+void Reset_shields(void)
+{
+    if (toggle_shield || auto_shield)
+    {
+        BITV_SET(keyv, KEY_SHIELD);
+        shields = 1;
+        if (auto_shield)
+        {
+            if (BITV_ISSET(keyv, KEY_FIRE_SHOT) ||
+                BITV_ISSET(keyv, KEY_FIRE_LASER) ||
+                BITV_ISSET(keyv, KEY_FIRE_MISSILE) ||
+                BITV_ISSET(keyv, KEY_FIRE_TORPEDO) ||
+                BITV_ISSET(keyv, KEY_FIRE_HEAT) ||
+                BITV_ISSET(keyv, KEY_DROP_MINE) ||
+                BITV_ISSET(keyv, KEY_DETACH_MINE))
+            {
+                BITV_CLR(keyv, KEY_SHIELD);
+            }
+        }
+        Net_key_change();
+    }
+}
 
-// //     if (key < NUM_KEYS)
-// //         BITV_SET(keyv, key);
+void Set_auto_shield(bool on)
+{
+    auto_shield = on;
+}
 
-// //     return true;
-// // }
-
-// // bool Key_release(keys_t key)
-// // {
-// //     bool countchange;
-// //     int keycount;
-
-// //     /*
-// //      * Make sure nothing is done when we release the button we used
-// //      * to exit quit mode with.
-// //      */
-// //     if (key == quit_mode_exit_key)
-// //     {
-// //         assert(key != KEY_DUMMY);
-// //         quit_mode_exit_key = KEY_DUMMY;
-// //         return false;
-// //     }
-
-// //     countchange = Key_dec_count(key);
-// //     keycount = Key_get_count(key);
-
-// //     /* -1 means this was a client only key, we don't count those */
-// //     if (keycount != -1)
-// //     {
-// //         /*
-// //          * if countchange is false it means that Key_<inc|dec>_count()
-// //          * failed to change the count due to being at the end of the range
-// //          * (happens to most key releases let through from talk mode)
-// //          * keycount != 0 means that some physical keys remain pressed
-// //          * that map to this xpilot key
-// //          */
-// //         if ((!countchange) || (keycount != 0))
-// //             return true;
-// //     }
-
-// //     switch (key)
-// //     {
-// //     case KEY_ID_MODE:
-// //     case KEY_TALK:
-// //     case KEY_TOGGLE_OWNED_ITEMS:
-// //     case KEY_TOGGLE_MESSAGES:
-// //         return false; /* server doesn't need to know */
-
-// //     /* Don auto-shield hack */
-// //     /* restore shields */
-// //     case KEY_FIRE_SHOT:
-// //     case KEY_FIRE_LASER:
-// //     case KEY_FIRE_MISSILE:
-// //     case KEY_FIRE_TORPEDO:
-// //     case KEY_FIRE_HEAT:
-// //     case KEY_DROP_MINE:
-// //     case KEY_DETACH_MINE:
-// //         if (auto_shield && shields && !BITV_ISSET(keyv, KEY_SHIELD))
-// //         {
-// //             /* Here We need to know if any other weapons are still on */
-// //             /*      before we turn shield back on   */
-// //             BITV_CLR(keyv, key);
-// //             if (!BITV_ISSET(keyv, KEY_FIRE_SHOT) &&
-// //                 !BITV_ISSET(keyv, KEY_FIRE_LASER) &&
-// //                 !BITV_ISSET(keyv, KEY_FIRE_MISSILE) &&
-// //                 !BITV_ISSET(keyv, KEY_FIRE_TORPEDO) &&
-// //                 !BITV_ISSET(keyv, KEY_FIRE_HEAT) &&
-// //                 !BITV_ISSET(keyv, KEY_DROP_MINE) &&
-// //                 !BITV_ISSET(keyv, KEY_DETACH_MINE))
-// //                 BITV_SET(keyv, KEY_SHIELD);
-// //         }
-// //         break;
-
-// //     case KEY_SHIELD:
-// //         if (toggle_shield)
-// //             return false;
-// //         else if (auto_shield)
-// //             shields = false;
-// //         break;
-
-// //     case KEY_REFUEL:
-// //     case KEY_REPAIR:
-// //         fuelTime = FUEL_NOTIFY_TIME;
-// //         break;
-
-// //     case KEY_SELECT_ITEM:
-// //     case KEY_LOSE_ITEM:
-// //         if (lose_item_active == 2)
-// //             lose_item_active = 1;
-// //         else
-// //             lose_item_active = -(int)(clientFPS + 0.5);
-// //         break;
-
-// //     default:
-// //         break;
-// //     }
-// //     if (key < NUM_KEYS)
-// //         BITV_CLR(keyv, key);
-
-// //     return true;
-// // }
-
-// // void Reset_shields(void)
-// // {
-// //     if (toggle_shield || auto_shield)
-// //     {
-// //         BITV_SET(keyv, KEY_SHIELD);
-// //         shields = true;
-// //         if (auto_shield)
-// //         {
-// //             if (BITV_ISSET(keyv, KEY_FIRE_SHOT) ||
-// //                 BITV_ISSET(keyv, KEY_FIRE_LASER) ||
-// //                 BITV_ISSET(keyv, KEY_FIRE_MISSILE) ||
-// //                 BITV_ISSET(keyv, KEY_FIRE_TORPEDO) ||
-// //                 BITV_ISSET(keyv, KEY_FIRE_HEAT) ||
-// //                 BITV_ISSET(keyv, KEY_DROP_MINE) ||
-// //                 BITV_ISSET(keyv, KEY_DETACH_MINE))
-// //                 BITV_CLR(keyv, KEY_SHIELD);
-// //         }
-// //         Net_key_change();
-// //     }
-// // }
-
-// void Set_auto_shield(bool on)
-// {
-//     auto_shield = on;
-// }
-
-// void Set_toggle_shield(bool on)
-// {
-//     toggle_shield = on;
-//     if (toggle_shield)
-//     {
-//         if (auto_shield)
-//             shields = true;
-//         else
-//             shields = (BITV_ISSET(keyv, KEY_SHIELD)) ? true : false;
-//     }
-// }
+void Set_toggle_shield(bool on)
+{
+    toggle_shield = on;
+    if (toggle_shield)
+    {
+        if (auto_shield)
+        {
+            shields = 1;
+        }
+        else
+        {
+            shields = (BITV_ISSET(keyv, KEY_SHIELD) != 0);
+        }
+    }
+}
 
 // /*
 //  * Function to call when a button of a pointing device has been pressed.
