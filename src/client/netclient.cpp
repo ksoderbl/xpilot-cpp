@@ -87,9 +87,6 @@ pointer_move_t pointer_moves[MAX_POINTER_MOVES];
 int pointer_move_next;
 long last_keyboard_ack;
 bool dirPrediction;
-#ifdef _WINDOWS
-int received_self = FALSE;
-#endif
 
 /*
  * Local variables.
@@ -369,7 +366,7 @@ int Net_setup(void)
             }
             else
             {
-                assert(len > 0);
+                assert(len > 0); // TODO: remove
                 memcpy(&ptr[done], cbuf.ptr, (size_t)len);
                 Sockbuf_advance(&cbuf, len + cbuf.ptr - cbuf.buf);
                 done += len;
@@ -1133,8 +1130,8 @@ static void Net_lag_measurement(long key_ack)
         {
             keyboard_acktime[i] = loops;
 #if 0
-            printf("A;%d;%ld;%ld ", 
-                i, keyboard_change[i], keyboard_acktime[i]);
+            printf("A;%d;%ld;%ld ",
+                   i, keyboard_change[i], keyboard_acktime[i]);
 #endif
             break;
         }
@@ -1270,7 +1267,7 @@ int Net_input(void)
             {
                 if (n == 0)
                 {
-                    /* No more new packets available.                     */
+                    /* No more new packets available. */
                     if (i == 0)
                         /* No frames to be processed. */
                         return 0;
@@ -1587,6 +1584,41 @@ int Net_ask_for_motd(long offset, long maxlen)
     return 0;
 }
 
+// static void Check_view_dimensions(void)
+// {
+//     int width_wanted = draw_width;
+//     int height_wanted = draw_height;
+//     int srv_width, srv_height;
+
+//     width_wanted = (int)(width_wanted * scaleFactor + 0.5);
+//     height_wanted = (int)(height_wanted * scaleFactor + 0.5);
+
+//     srv_width = width_wanted;
+//     srv_height = height_wanted;
+//     LIMIT(srv_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+//     LIMIT(srv_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+//     if (ext_view_width != srv_width ||
+//         ext_view_height != srv_height)
+//     {
+//         Send_display();
+//     }
+
+//     active_view_width = ext_view_width;
+//     active_view_height = ext_view_height;
+//     ext_view_x_offset = 0;
+//     ext_view_y_offset = 0;
+//     if (width_wanted > ext_view_width)
+//     {
+//         ext_view_width = width_wanted;
+//         ext_view_x_offset = (width_wanted - active_view_width) / 2;
+//     }
+//     if (height_wanted > ext_view_height)
+//     {
+//         ext_view_height = height_wanted;
+//         ext_view_y_offset = (height_wanted - active_view_height) / 2;
+//     }
+// }
+
 /*
  * Receive the packet with counts for all the items.
  * New since pack version 4203.
@@ -1649,8 +1681,33 @@ int Receive_self(void)
     if (n <= 0)
         return n;
 
-    memset(num_items, 0, sizeof num_items);
+    if (version >= 0x4203)
+        memset(num_items, 0, sizeof num_items);
+    else
+    {
+        n = Packet_scanf(&rbuf,
+                         "%c%c%c%c%c"
+                         "%c%c%c%c%c"
+                         "%c%c%c%c",
+                         &(num_items[ITEM_CLOAK]),
+                         &(num_items[ITEM_SENSOR]),
+                         &(num_items[ITEM_MINE]),
+                         &(num_items[ITEM_MISSILE]),
+                         &(num_items[ITEM_ECM]),
 
+                         &(num_items[ITEM_TRANSPORTER]),
+                         &(num_items[ITEM_WIDEANGLE]),
+                         &(num_items[ITEM_REARSHOT]),
+                         &(num_items[ITEM_AFTERBURNER]),
+                         &(num_items[ITEM_TANK]),
+
+                         &(num_items[ITEM_LASER]),
+                         &(num_items[ITEM_EMERGENCY_THRUST]),
+                         &(num_items[ITEM_TRACTOR_BEAM]),
+                         &(num_items[ITEM_AUTOPILOT]));
+        if (n <= 0)
+            return n;
+    }
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
@@ -1658,7 +1715,7 @@ int Receive_self(void)
 
                      &currentTank, &sFuelSum, &sFuelMax,
                      &sViewWidth, &sViewHeight, &sNumSparkColors,
-                     //  &ext_view_width, &ext_view_height, &debris_colors,
+                     // &ext_view_width, &ext_view_height, &debris_colors,
                      &sStat, &sAutopilotLight);
     if (n <= 0)
         return n;
@@ -1666,6 +1723,57 @@ int Receive_self(void)
     ext_view_width = sViewWidth;
     ext_view_height = sViewHeight;
     debris_colors = sNumSparkColors;
+
+    if (version < 0x4203)
+    {
+        if (version >= 0x3720)
+        {
+            n = Packet_scanf(&rbuf, "%c%c%c%c",
+                             &(num_items[ITEM_EMERGENCY_SHIELD]),
+                             &(num_items[ITEM_DEFLECTOR]),
+                             &(num_items[ITEM_HYPERJUMP]),
+                             &(num_items[ITEM_PHASING]));
+            if (n <= 0)
+                return n;
+
+            if (version >= 0x4100)
+            {
+                n = Packet_scanf(&rbuf, "%c", &(num_items[ITEM_MIRROR]));
+                if (n <= 0)
+                    return n;
+                if (version >= 0x4201)
+                {
+                    n = Packet_scanf(&rbuf, "%c", &(num_items[ITEM_ARMOR]));
+                    if (n <= 0)
+                        return n;
+                }
+                else
+                    num_items[ITEM_ARMOR] = 0;
+            }
+            else
+            {
+                num_items[ITEM_MIRROR] = 0;
+                num_items[ITEM_ARMOR] = 0;
+            }
+        }
+        else
+        {
+            if (version >= 0x3200)
+            {
+                n = Packet_scanf(&rbuf, "%c",
+                                 &(num_items[ITEM_EMERGENCY_SHIELD]));
+                if (n <= 0)
+                    return n;
+            }
+            else
+                num_items[ITEM_EMERGENCY_SHIELD] = 0;
+            num_items[ITEM_DEFLECTOR] = 0;
+            num_items[ITEM_HYPERJUMP] = 0;
+            num_items[ITEM_PHASING] = 0;
+            num_items[ITEM_MIRROR] = 0;
+            num_items[ITEM_ARMOR] = 0;
+        }
+    }
 
     if (debris_colors > num_spark_colors)
         debris_colors = num_spark_colors;
@@ -1949,6 +2057,9 @@ int Receive_wreckage(void) /* since 3.8.0 */
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c%c", &ch, &x, &y,
                           &wrecktype, &size, &rot)) <= 0)
         return n;
+    if (version < 0x4202)
+        /* always color red. */
+        wrecktype &= 0x7F;
     if ((n = Handle_wreckage(x, y, wrecktype, size, rot)) == -1)
         return -1;
     return 1;
@@ -2122,6 +2233,8 @@ int Receive_war(void)
                           &ch, &robot_id, &killer_id)) <= 0)
         return n;
     /* not interested */
+    // if ((n = Handle_war(robot_id, killer_id)) == -1)
+    //     return -1;
     return 1;
 }
 
@@ -2135,6 +2248,8 @@ int Receive_seek(void)
                           &programmer_id, &robot_id, &sought_id)) <= 0)
         return n;
     /* not interested */
+    // if ((n = Handle_seek(programmer_id, robot_id, sought_id)) == -1)
+    //     return -1;
     return 1;
 }
 
@@ -2161,8 +2276,7 @@ int Receive_player(void)
     nick_name[MAX_NAME_LEN - 1] = '\0';
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
-
-    if (version < 0x4F10)
+    if (version > 0x3200 && version < 0x4F10)
         n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)]);
     else
         n = Packet_scanf(&cbuf, "%S%c", &shape[strlen(shape)], &myself);
@@ -2198,12 +2312,21 @@ int Receive_score_object(void)
     char msg[MAX_CHARS];
     uint8_t ch;
 
-    /* newer servers send scores with two decimals */
-    int rcv_score;
-    n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
-                     &ch, &rcv_score, &x, &y, msg);
-    score = rcv_score / 100;
-
+    if (version < 0x4500)
+    {
+        short rcv_score;
+        n = Packet_scanf(&cbuf, "%c%hd%hu%hu%s",
+                         &ch, &rcv_score, &x, &y, msg);
+        score = rcv_score;
+    }
+    else
+    {
+        /* newer servers send scores with two decimals */
+        int rcv_score;
+        n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
+                         &ch, &rcv_score, &x, &y, msg);
+        score = rcv_score / 100;
+    }
     if (n <= 0)
         return n;
     if ((n = Handle_score_object(score, x, y, msg)) == -1)
@@ -2219,12 +2342,22 @@ int Receive_score(void)
     int score = 0;
     uint8_t ch, mychar, alliance = ' ';
 
-    /* newer servers send scores with two decimals */
-    int rcv_score;
-    n = Packet_scanf(&cbuf, "%c%hd%d%hd%c%c", &ch,
-                     &id, &rcv_score, &life, &mychar, &alliance);
-    score = rcv_score / 100;
-
+    if (version < 0x4500)
+    {
+        short rcv_score;
+        n = Packet_scanf(&cbuf, "%c%hd%hd%hd%c", &ch,
+                         &id, &rcv_score, &life, &mychar);
+        score = rcv_score;
+        alliance = ' ';
+    }
+    else
+    {
+        /* newer servers send scores with two decimals */
+        int rcv_score;
+        n = Packet_scanf(&cbuf, "%c%hd%d%hd%c%c", &ch,
+                         &id, &rcv_score, &life, &mychar, &alliance);
+        score = rcv_score / 100;
+    }
     if (n <= 0)
         return n;
     if ((n = Handle_score(id, score, life, mychar, alliance)) == -1)
@@ -2498,6 +2631,11 @@ int Send_keyboard(uint8_t *keyboard_vector)
 {
     int size = KEYBOARD_SIZE;
 
+    if (version < 0x3800)
+    {
+        /* older servers have a keyboard_size of 8 bytes instead of 9. */
+        size--;
+    }
     if (wbuf.size - wbuf.len < size + 1 + 4)
         /* Not enough write buffer space for keyboard state */
         return 0;
@@ -2523,13 +2661,16 @@ int Send_shape(char *str)
     char buf[MSG_LEN], ext[MSG_LEN];
 
     w = Convert_shape_str(str);
-    Convert_ship_2_string(w, buf, ext, 0x3200);
+    Convert_ship_2_string(w, buf, ext, (version < 0x3200) ? 0x3100 : 0x3200);
     Free_ship_shape(w);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
         return -1;
-    if (Packet_printf(&wbuf, "%S", ext) <= 0)
-        return -1;
 
+    if (version > 0x3200)
+    {
+        if (Packet_printf(&wbuf, "%S", ext) <= 0)
+            return -1;
+    }
     return 0;
 }
 
@@ -2695,9 +2836,11 @@ int Send_modifier_bank(int bank)
 
 int Send_pointer_move(int movement)
 {
+    if (version < 0x3202)
+        return 0;
+
     if (Packet_printf(&wbuf, "%c%hd", PKT_POINTER_MOVE, movement) == -1)
         return -1;
-
     return 0;
 }
 
@@ -2706,6 +2849,9 @@ int Send_audio_request(int on)
 #ifdef DEBUG_SOUND
     printf("Send_audio_request %d\n", on);
 #endif
+
+    if (version < 0x3250)
+        return 0;
 
 #ifndef SOUND
     on = false;
@@ -2717,6 +2863,9 @@ int Send_audio_request(int on)
 
 int Send_fps_request(int fps)
 {
+    if (version < 0x3280)
+        return 0;
+
     if (Packet_printf(&wbuf, "%c%c", PKT_ASYNC_FPS, fps) == -1)
         return -1;
     return 0;
