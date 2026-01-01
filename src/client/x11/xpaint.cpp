@@ -129,16 +129,16 @@ keydefs_t *keyDefs = NULL;
 
 int cacheShips = 0; /* cache some ship bitmaps every frame */
 
-static int clockColor;         /* Clock color index */
-static int scoreColor;         /* Score list color indices */
-static int scoreSelfColor;     /* Score list own score color index */
-static int scoreInactiveColor; /* Score list inactive player color index */
-static int scoreInactiveSelfColor;
+static int clockColor = WHITE;      /* Clock color index */
+static int scoreColor = WHITE;      /* Score list color indices */
+static int scoreSelfColor = WHITE;  /* Score list own score color index */
+static int scoreInactiveColor = 12; /* Score list inactive player color index */
+static int scoreInactiveSelfColor = 12;
 /* Score list inactive self color index */
-static int scoreOwnTeamColor;   /* Score list own team color index */
-static int scoreEnemyTeamColor; /* Score list enemy team color index */
+static int scoreOwnTeamColor = WHITE;   /* Score list own team color index */
+static int scoreEnemyTeamColor = WHITE; /* Score list enemy team color index */
 
-static void Paint_clock(int redraw);
+static void Paint_clock(bool redraw);
 
 void Paint_frame(void)
 {
@@ -147,8 +147,8 @@ void Paint_frame(void)
     static int prev_prev_damaged = 0;
 
     Paint_frame_start();
-
     Paint_score_table();
+    Paint_clock(false);
 
     /*
      * Switch between two different window titles.
@@ -192,10 +192,16 @@ void Paint_frame(void)
         Rectangle_start();
         Segment_start();
 
-        Paint_vfuel();
-        Paint_vdecor();
-        Paint_vcannon();
-        Paint_vbase();
+        if (oldServer)
+        {
+            Paint_vfuel();
+            Paint_vdecor();
+            Paint_vcannon();
+            Paint_vbase();
+        }
+        else
+            Paint_objects();
+
         Paint_shots();
 
         Rectangle_end();
@@ -207,9 +213,9 @@ void Paint_frame(void)
         Paint_ships();
         Paint_meters();
         Paint_HUD();
-        Paint_HUD_values();
 
         Paint_recording();
+        Paint_HUD_values();
 
         Rectangle_end();
         Segment_end();
@@ -235,10 +241,9 @@ void Paint_frame(void)
 
     rd.endFrame();
 
-    if (radar_exposures == 1)
-    {
+    if (radar_exposures == 1 || UpdateRadar)
         Paint_world_radar();
-    }
+    UpdateRadar = false;
 
     /*
      * Now switch planes and clear the screen.
@@ -252,14 +257,21 @@ void Paint_frame(void)
         }
         else
         {
+            int x, y;
+            double xp, yp, xo, yo;
+            // unsigned w1, h1, w2, h2;
+            unsigned w, h;
 
-            int x, y, w, h;
-            float xp, yp, xo, yo;
+            xp = (double)(selfPos.x * 256) / Setup->width;
+            yp = (double)(selfPos.y * RadarHeight) / Setup->height;
+            xo = (double)256 / 2;
+            yo = (double)RadarHeight / 2;
 
-            xp = (float)(selfPos.x * 256) / Setup->width;
-            yp = (float)(selfPos.y * RadarHeight) / Setup->height;
-            xo = (float)256 / 2;
-            yo = (float)RadarHeight / 2;
+            assert(xp >= 0.0);
+            assert(xp < 256.0);
+            assert(yp >= 0.0);
+            assert(yp < RadarHeight);
+
             if (xo <= xp)
             {
                 x = (int)(xp - xo + 0.5);
@@ -291,9 +303,7 @@ void Paint_frame(void)
         }
     }
     else if (radar_exposures > 2)
-    {
         Paint_world_radar();
-    }
 
     if (dbuf_state->type == PIXMAP_COPY)
     {
@@ -303,7 +313,8 @@ void Paint_frame(void)
         // BUGFIX: This old code was buggy, because sometimes (with scalefactor < 1 ?) ext_view_width and ext_view_height are
         // smaller than the draw window, e.g. resulting in the rightmost and bottom part of the draw window not being drawn.
         // XCopyArea(dpy, drawPixmap, drawWindow, gameGC, 0, 0, ext_view_width, ext_view_height, 0, 0);
-        XCopyArea(dpy, drawPixmap, drawWindow, gameGC, 0, 0, draw_width, draw_height, 0, 0);
+        XCopyArea(dpy, drawPixmap, drawWindow, gameGC,
+                  0, 0, draw_width, draw_height, 0, 0);
     }
 
     dbuff_switch(dbuf_state);
@@ -311,10 +322,11 @@ void Paint_frame(void)
     if (!damaged)
     {
         SET_FG(colors[BLACK].pixel);
-        XFillRectangle(dpy, drawPixmap, gameGC, 0, 0, draw_width, draw_height);
+        XFillRectangle(dpy, drawPixmap, gameGC,
+                       0, 0, draw_width, draw_height);
     }
 
-    if (clData.talking == true)
+    if (clData.talking)
     {
         static bool toggle;
         static long last_toggled;
@@ -327,14 +339,12 @@ void Paint_frame(void)
         Talk_cursor(toggle);
     }
 
-    Paint_clock(0);
-
     XFlush(dpy);
 }
 
 #define SCORE_BORDER 6
 
-static void Paint_score_background(int thisLine)
+static void Paint_score_background(void)
 {
     if (!texturedObjects)
     {
@@ -373,61 +383,48 @@ void Paint_score_start(void)
     thisLine = SCORE_BORDER + scoreListFont->ascent;
 
     if (showUserName)
-    {
         strlcpy(headingStr, "NICK=USER@HOST", sizeof(headingStr));
-    }
+    else if (BIT(Setup->mode, TEAM_PLAY))
+        strlcpy(headingStr, "     SCORE   NAME     LIFE", sizeof(headingStr));
     else
     {
         strlcpy(headingStr, "  ", sizeof(headingStr));
         if (BIT(Setup->mode, TIMING))
         {
             if (version >= 0x3261)
-            {
                 strcat(headingStr, "LAP ");
-            }
         }
-        if (BIT(Setup->mode, TEAM_PLAY))
-        {
-            strlcpy(headingStr, " TM ", sizeof(headingStr));
-        }
-        else
-        {
-            strlcpy(headingStr, " AL ", sizeof(headingStr));
-        }
+        strlcpy(headingStr, " AL ", sizeof(headingStr));
         strcat(headingStr, "  SCORE  ");
         if (BIT(Setup->mode, LIMITED_LIVES))
-        {
             strlcat(headingStr, "LIFE", sizeof(headingStr));
-        }
         strlcat(headingStr, " NAME", sizeof(headingStr));
     }
-    Paint_score_background(thisLine);
+    Paint_score_background();
 
     ShadowDrawString(dpy, playersWindow, scoreListGC,
                      SCORE_BORDER, thisLine,
                      headingStr,
-                     colors[WHITE].pixel,
+                     colors[scoreColor].pixel,
                      colors[BLACK].pixel);
 
     gcv.line_style = LineSolid;
     XChangeGC(dpy, scoreListGC, GCLineStyle, &gcv);
     XDrawLine(dpy, playersWindow, scoreListGC,
               SCORE_BORDER, thisLine,
-              players_width - SCORE_BORDER, thisLine);
+              (int)players_width - SCORE_BORDER, thisLine);
 
     gcv.line_style = LineOnOffDash;
     XChangeGC(dpy, scoreListGC, GCLineStyle, &gcv);
 
-    Paint_clock(1);
+    Paint_clock(true);
 }
 
-void Paint_score_entry(int entry_num,
-                       other_t *other,
-                       bool best)
+void Paint_score_entry(int entry_num, other_t *other, bool is_team)
 {
-    static char raceStr[12], teamStr[4], lifeStr[8], label[MSG_LEN];
+    static char raceStr[8], teamStr[4], lifeStr[8], label[MSG_LEN];
     static int lineSpacing = -1, firstLine;
-    int thisLine;
+    int thisLine, color;
     char scoreStr[16];
 
     /*
@@ -455,8 +452,6 @@ void Paint_score_entry(int entry_num,
                 other->nick_name, other->user_name, other->host_name);
     else
     {
-        other_t *war = Other_by_id(other->war_id);
-
         if (BIT(Setup->mode, TIMING))
         {
             raceStr[0] = ' ';
@@ -466,14 +461,10 @@ void Paint_score_entry(int entry_num,
                 if ((other->mychar == ' ' || other->mychar == 'R') && other->round + other->check > 0)
                 {
                     if (other->round > 99)
-                    {
                         sprintf(raceStr, "%3d", other->round);
-                    }
                     else
-                    {
                         sprintf(raceStr, "%d.%c",
                                 other->round, other->check + 'a');
-                    }
                 }
             }
         }
@@ -485,15 +476,30 @@ void Paint_score_entry(int entry_num,
         if (BIT(Setup->mode, LIMITED_LIVES))
             sprintf(lifeStr, " %3d", other->life);
 
-        sprintf(scoreStr, "%5d", other->score);
-        sprintf(label, "%c %s%s%s%s  %s",
-                other->mychar, raceStr, teamStr,
-                scoreStr, lifeStr,
-                other->nick_name);
+        // if (Using_score_decimals())
+        //     sprintf(scoreStr, "%*.*f",
+        //             9 - showScoreDecimals, showScoreDecimals,
+        //             other->score);
+        // else
+        // {
+        double score = other->score;
+        int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
+        sprintf(scoreStr, "%6d", sc);
+        // }
+
+        if (BIT(Setup->mode, TEAM_PLAY))
+            sprintf(label, "%c %s  %-18s%s",
+                    other->mychar, scoreStr, other->nick_name, lifeStr);
+        else
+            sprintf(label, "%c %s%s%s%s  %s",
+                    other->mychar, raceStr, teamStr,
+                    scoreStr, lifeStr,
+                    other->nick_name);
     }
 
     /*
      * Draw the line
+     * e94_msu eKthHacks
      */
     if (other->mychar == 'D' || other->mychar == 'P' || other->mychar == 'W')
     {
@@ -511,29 +517,60 @@ void Paint_score_entry(int entry_num,
         }
         XDrawString(dpy, playersWindow, scoreListGC,
                     SCORE_BORDER, thisLine,
-                    label, strlen(label));
+                    label, (int)strlen(label));
     }
     else
     {
-        ShadowDrawString(dpy, playersWindow, scoreListGC,
-                         SCORE_BORDER, thisLine,
-                         label,
-                         colors[WHITE].pixel,
+        if (!is_team)
+        {
+            if (self && other->id == self->id)
+                color = scoreSelfColor;
+            else
+                color = scoreColor;
+        }
+        else
+        {
+            color = Team_color(other->team);
+            if (!color)
+            {
+                if (self && other->team == self->team)
+                    color = scoreOwnTeamColor;
+                else
+                    color = scoreEnemyTeamColor;
+            }
+        }
+
+        ShadowDrawString(dpy, playersWindow, scoreListGC, SCORE_BORDER,
+                         thisLine, label,
+                         colors[color].pixel,
                          colors[BLACK].pixel);
     }
 
     /*
-     * Underline the best player
+     * Underline the teams
      */
-    if (best)
+    if (is_team)
     {
+        color = (windowColor != WHITE ? WHITE : BLACK);
+        XSetForeground(dpy, scoreListGC, colors[color].pixel);
+        gcv.line_style = LineSolid;
+        XChangeGC(dpy, scoreListGC, GCLineStyle, &gcv);
         XDrawLine(dpy, playersWindow, scoreListGC,
                   SCORE_BORDER, thisLine,
-                  players_width - SCORE_BORDER, thisLine);
+                  (int)players_width - SCORE_BORDER, thisLine);
+        gcv.line_style = LineOnOffDash;
+        XChangeGC(dpy, scoreListGC, GCLineStyle, &gcv);
     }
 }
 
-static void Paint_clock(int redraw)
+struct team_score
+{
+    double score;
+    int life;
+    int playing;
+};
+
+static void Paint_clock(bool redraw)
 {
     int minute,
         hour,

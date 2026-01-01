@@ -2300,18 +2300,14 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_int_resource(rDB, "maxFPS", &maxFPS);
     oldMaxFPS = maxFPS;
 
-    Get_double_resource(rDB, "scaleFactor", &scaleFactor);
-    if (scaleFactor == 0.0)
-    {
-        scaleFactor = 1.0;
-    }
-    LIMIT(scaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
-    Get_double_resource(rDB, "altScaleFactor", &scaleFactor_s);
-    if (scaleFactor_s == 0.0)
-    {
-        scaleFactor_s = 2.0;
-    }
-    LIMIT(scaleFactor_s, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
+    Get_double_resource(rDB, "scaleFactor", &clData.scaleFactor);
+    if (clData.scaleFactor == 0.0)
+        clData.scaleFactor = 1.0;
+    LIMIT(clData.scaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
+    Get_double_resource(rDB, "altScaleFactor", &clData.altScaleFactor);
+    if (clData.altScaleFactor == 0.0)
+        clData.altScaleFactor = 2.0;
+    LIMIT(clData.altScaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
 
 #ifdef SOUND
     Get_string_resource(rDB, "sounds", sounds, sizeof sounds);
@@ -2997,8 +2993,7 @@ void Handle_X_options(void)
 bool Set_scaleFactor(xp_option_t *opt, double val)
 {
     clData.scaleFactor = val;
-    clData.scale = 1.0 / val;
-    clData.fscale = (float)clData.scale;
+    clData.scaleMultFactor = 1.0 / val;
     /* Resize removed because it is not needed here */
     Scale_dashes();
     Config_redraw();

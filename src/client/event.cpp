@@ -260,9 +260,9 @@ bool Key_press_swap_settings(keys_t key)
 bool Key_press_swap_scalefactor(keys_t key)
 {
     DFLOAT tmp;
-    tmp = scaleFactor;
-    scaleFactor = scaleFactor_s;
-    scaleFactor_s = tmp;
+    tmp = clData.scaleFactor;
+    clData.scaleFactor = clData.altScaleFactor;
+    clData.altScaleFactor = tmp;
 
     Scale_dashes();
     Config_redraw();

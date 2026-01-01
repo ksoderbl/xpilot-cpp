@@ -406,7 +406,7 @@ static bool Set_sparkProb(xp_option_t *opt, double val)
 {
     sparkProb = val;
     spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5);
-    // Check_view_dimensions(); // TODO: ENABLE
+    // Check_view_dimensions_old(); // TODO: ENABLE
     return true;
 }
 

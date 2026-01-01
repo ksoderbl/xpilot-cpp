@@ -61,16 +61,7 @@
 //     double altScaleFactor;
 // } client_data_t;
 
-client_data_t clData = {
-    false,
-    false,
-    false,
-    false,
-    0,
-    1.0,
-    1.0,
-    1.0,
-    1.0};
+client_data_t clData;
 
 char *geometry;
 xp_args_t xpArgs;
@@ -1420,7 +1411,6 @@ shipshape_t *Ship_by_id(int id)
 int Handle_leave(int id)
 {
     other_t *other;
-    int i;
     char msg[MSG_LEN];
 
     if ((other = Other_by_id(id)) != NULL)
@@ -1446,16 +1436,7 @@ int Handle_leave(int id)
             *other = other[1];
             other++;
         }
-        scoresChanged = 1;
-    }
-    for (i = 0; i < num_others; i++)
-    {
-        other = &Others[i];
-        if (other->war_id == id)
-        {
-            other->war_id = -1;
-            scoresChanged = 1;
-        }
+        scoresChanged = true;
     }
     return 0;
 }
@@ -1501,7 +1482,6 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
     other->id = id;
     other->team = player_team;
     other->mychar = mychar;
-    other->war_id = -1;
     strlcpy(other->nick_name, nick_name, sizeof(other->nick_name));
     strlcpy(other->user_name, user_name, sizeof(other->user_name));
     strlcpy(other->host_name, host_name, sizeof(other->host_name));
@@ -1534,19 +1514,19 @@ int Handle_team(int id, int pl_team)
     return 0;
 }
 
-int Handle_score(int id, int score, int life, int mychar, int alliance)
+int Handle_score(int id, double score, int life, int mychar, int alliance)
 {
     other_t *other;
 
     if ((other = Other_by_id(id)) == NULL)
     {
         warn("Can't update score for non-existing player %d,%d,%d",
-             id, score, life);
+             id, (int)score, life);
         return 0;
     }
     else if (other->score != score || other->life != life || other->mychar != mychar || other->alliance != alliance)
     {
-        other->score = score;
+        other->score = (int)score;
         other->life = life;
         other->mychar = mychar;
         other->alliance = alliance;
@@ -1578,11 +1558,11 @@ int Handle_timing(int id, int check, int round)
     return 0;
 }
 
-int Handle_score_object(int score, int x, int y, char *msg)
+int Handle_score_object(double score, int x, int y, char *msg)
 {
     score_object_t *sobj = &score_objects[score_object];
 
-    sobj->score = score;
+    sobj->score = (int)score;
     sobj->x = x;
     sobj->y = y;
     sobj->count = 1;
@@ -1590,7 +1570,7 @@ int Handle_score_object(int score, int x, int y, char *msg)
     /* Initialize sobj->hud_msg (is shown on the HUD) */
     if (msg[0] != '\0')
     {
-        sprintf(sobj->hud_msg, "%s %d", msg, score);
+        sprintf(sobj->hud_msg, "%s %d", msg, (int)score);
         sobj->hud_msg_len = strlen(sobj->hud_msg);
         // sobj->hud_msg_width = XTextWidth(gameFont,
         //                                  sobj->hud_msg, sobj->hud_msg_len);
@@ -1600,7 +1580,7 @@ int Handle_score_object(int score, int x, int y, char *msg)
         sobj->hud_msg_len = 0;
 
     /* Initialize sobj->msg data (is shown on game area) */
-    sprintf(sobj->msg, "%d", score);
+    sprintf(sobj->msg, "%d", (int)score);
 
     sobj->msg_len = strlen(sobj->msg);
     // sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);

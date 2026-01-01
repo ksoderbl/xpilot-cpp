@@ -32,16 +32,14 @@
 
 typedef struct
 {
-    bool talking;        /* Some talk window is open? */
-    bool pointerControl; /* Pointer (mouse) control is on? */
-    bool restorePointerControl;
-    /* Pointer control should be restored later? */
-    bool quitMode; /* Client is in quit mode? */
-    double clientLag;
-    double scaleFactor;
-    double scale;
-    float fscale;
-    double altScaleFactor;
+    bool talking = false;               /* Some talk window is open? */
+    bool pointerControl = false;        /* Pointer (mouse) control is on? */
+    bool restorePointerControl = false; /* Pointer control should be restored later? */
+    bool quitMode = false;              /* Client is in quit mode? */
+    double clientLag = 0.0;
+    double scaleFactor = 1.0;
+    double altScaleFactor = 1.0;
+    double scaleMultFactor = 1.0; // 1.0 / scaleFactor;
 } client_data_t;
 
 typedef struct
@@ -143,7 +141,6 @@ typedef struct
     short life;
     short mychar;
     short alliance;
-    short war_id;
     short name_width; /* In pixels */
     short name_len;   /* In bytes */
     shipshape_t *ship;
@@ -720,8 +717,8 @@ int Handle_player(int id, int team, int mychar,
                   char *nick_name, char *user_name, char *host_name,
                   char *shape, int myself);
 int Handle_team(int id, int pl_team);
-int Handle_score(int id, int score, int life, int mychar, int alliance);
-int Handle_score_object(int score, int x, int y, char *msg);
+int Handle_score(int id, double score, int life, int mychar, int alliance);
+int Handle_score_object(double score, int x, int y, char *msg);
 int Handle_timing(int id, int check, int round);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);

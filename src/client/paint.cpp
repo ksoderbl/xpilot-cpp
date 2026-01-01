@@ -61,10 +61,6 @@ static double time_counter = 0.0;
 unsigned draw_width, draw_height;
 int num_spark_colors;
 
-double scaleFactor;
-double scaleFactor_s;
-double scaleMultFactor; // 1.0 / scaleFactor;
-
 #define SCALE_ARRAY_SIZE 32768
 short scaleArray[SCALE_ARRAY_SIZE];
 
@@ -78,7 +74,7 @@ double WINSCALE(double x)
     if (x < 0)
         retval = -WINSCALE(-x);
     else
-        retval = (int)floor(x * scaleMultFactor + 0.5);
+        retval = (int)floor(x * clData.scaleMultFactor + 0.5);
 
     if (oldx != retval)
         warn("WINSCALE, x = %f, old = %d", x, oldx);
@@ -90,17 +86,17 @@ static void Init_scale_array(void)
 {
     int i, start, end, n;
 
-    if (scaleFactor < MIN_SCALEFACTOR)
-        scaleFactor = MIN_SCALEFACTOR;
-    if (scaleFactor > MAX_SCALEFACTOR)
-        scaleFactor = MAX_SCALEFACTOR;
-    scaleMultFactor = 1.0 / scaleFactor;
+    if (clData.scaleFactor < MIN_SCALEFACTOR)
+        clData.scaleFactor = MIN_SCALEFACTOR;
+    if (clData.scaleFactor > MAX_SCALEFACTOR)
+        clData.scaleFactor = MAX_SCALEFACTOR;
+    clData.scaleMultFactor = 1.0 / clData.scaleFactor;
 
     scaleArray[0] = 0;
 
     for (i = 1; i < NELEM(scaleArray); i++)
     {
-        n = (int)floor(i * scaleMultFactor + 0.5);
+        n = (int)floor(i * clData.scaleMultFactor + 0.5);
         if (n == 0)
         {
             /* keep values for non-zero indices at least 1. */
@@ -115,7 +111,7 @@ static void Init_scale_array(void)
 
     for (i = NELEM(scaleArray) - 1; i >= 0; i--)
     {
-        n = (int)floor(i * scaleMultFactor + 0.5);
+        n = (int)floor(i * clData.scaleMultFactor + 0.5);
         if (n > 32767)
         {
             /* keep values lower or equal to max short. */
@@ -130,7 +126,7 @@ static void Init_scale_array(void)
 
     for (i = start; i <= end; i++)
     {
-        scaleArray[i] = (int)floor(i * scaleMultFactor + 0.5);
+        scaleArray[i] = (int)floor(i * clData.scaleMultFactor + 0.5);
     }
 
     /* verify correct calculations, because of reported gcc optimization bugs. */
@@ -156,15 +152,15 @@ static void Init_scale_array(void)
 
 static bool scaleArrayInitialized = false;
 
-int Check_view_dimensions(void)
+int Check_view_dimensions_old(void)
 {
     // scaleFactor = 1.2;
 
-    if (scaleFactor < MIN_SCALEFACTOR)
-        scaleFactor = MIN_SCALEFACTOR;
-    if (scaleFactor > MAX_SCALEFACTOR)
-        scaleFactor = MAX_SCALEFACTOR;
-    scaleMultFactor = 1.0 / scaleFactor;
+    if (clData.scaleFactor < MIN_SCALEFACTOR)
+        clData.scaleFactor = MIN_SCALEFACTOR;
+    if (clData.scaleFactor > MAX_SCALEFACTOR)
+        clData.scaleFactor = MAX_SCALEFACTOR;
+    clData.scaleMultFactor = 1.0 / clData.scaleFactor;
 
     if (!scaleArrayInitialized)
     {
@@ -176,8 +172,8 @@ int Check_view_dimensions(void)
     int height_wanted = draw_height;
     int srv_width, srv_height;
 
-    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
-    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
+    width_wanted = (int)(width_wanted * clData.scaleFactor + 0.5);
+    height_wanted = (int)(height_wanted * clData.scaleFactor + 0.5);
 
     srv_width = width_wanted;
     srv_height = height_wanted;
@@ -238,47 +234,46 @@ void Paint_frame_start(void)
     }
 }
 
-void Paint_score_table(void)
+struct team_score
 {
-    struct team_score
-    {
-        int score;
-        int life;
-        int playing;
-    };
-    struct team_score team[MAX_TEAMS],
-        *team_order[MAX_TEAMS];
-    other_t *other,
-        **order;
-    int i, j, k, best = -1;
-    double ratio, best_ratio = -1e7;
+    double score;
+    int life;
+    int playing;
+};
 
-    if (scoresChanged == 0)
-    {
-        return;
-    }
+static void Determine_team_order(struct team_score *team_order[],
+                                 struct team_score team[])
+{
+    int i, j, k;
 
-    if (players_exposed == false)
-    {
-        return;
-    }
+    num_playing_teams = 0;
 
-    if (num_others < 1)
+    for (i = 0; i < MAX_TEAMS; i++)
     {
-        Paint_score_start();
-        scoresChanged = 0;
-        return;
+        if (team[i].playing)
+        {
+            for (j = 0; j < num_playing_teams; j++)
+            {
+                if (team[i].score > team_order[j]->score || (team[i].score == team_order[j]->score && ((BIT(Setup->mode, LIMITED_LIVES))
+                                                                                                           ? (team[i].life > team_order[j]->life)
+                                                                                                           : (team[i].life < team_order[j]->life))))
+                {
+                    for (k = i; k > j; k--)
+                        team_order[k] = team_order[k - 1];
+                    break;
+                }
+            }
+            team_order[j] = &team[i];
+            num_playing_teams++;
+        }
     }
+}
 
-    if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == NULL)
-    {
-        error("No memory for score");
-        return;
-    }
-    if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
-    {
-        memset(&team[0], 0, sizeof team);
-    }
+static void Determine_order(other_t **order, struct team_score team[])
+{
+    other_t *other;
+    int i, j, k;
+
     for (i = 0; i < num_others; i++)
     {
         other = &Others[i];
@@ -289,58 +284,33 @@ void Paint_score_table(void)
              * Put paused and waiting players last as well as tanks.
              */
             if (strchr("PTW", other->mychar))
-            {
                 j = i;
-            }
             else
             {
                 for (j = 0; j < i; j++)
                 {
                     if (order[j]->timing < other->timing)
-                    {
                         break;
-                    }
                     if (strchr("PTW", order[j]->mychar))
-                    {
                         break;
-                    }
                     if (order[j]->timing == other->timing)
                     {
                         if (order[j]->timing_loops > other->timing_loops)
-                        {
                             break;
-                        }
                     }
                 }
             }
         }
         else
         {
-            if (BIT(Setup->mode, LIMITED_LIVES))
-            {
-                ratio = (float)other->score;
-            }
-            else
-            {
-                ratio = (float)other->score / (other->life + 1);
-            }
-            if (best == -1 || ratio > best_ratio)
-            {
-                best_ratio = ratio;
-                best = i;
-            }
             for (j = 0; j < i; j++)
             {
                 if (order[j]->score < other->score)
-                {
                     break;
-                }
             }
         }
         for (k = i; k > j; k--)
-        {
             order[k] = order[k - 1];
-        }
         order[j] = other;
 
         if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
@@ -354,13 +324,9 @@ void Paint_score_table(void)
             case ' ':
             case 'R':
                 if (BIT(Setup->mode, LIMITED_LIVES))
-                {
                     team[other->team].life += other->life + 1;
-                }
                 else
-                {
                     team[other->team].life += other->life;
-                }
                 /*FALLTHROUGH*/
             default:
                 team[other->team].playing++;
@@ -369,68 +335,139 @@ void Paint_score_table(void)
             }
         }
     }
-    Paint_score_start();
-    if (BIT(Setup->mode, TIMING))
-    {
-        best = order[0] - Others;
-    }
+    return;
+}
+
+#define TEAM_PAUSEHACK 100
+
+static int Team_heading(int entrynum, int teamnum,
+                        int teamlives, double teamscore)
+{
+    other_t tmp;
+    tmp.id = -1;
+    tmp.team = teamnum;
+    tmp.name_width = 0;
+    tmp.ship = NULL;
+    if (teamnum != TEAM_PAUSEHACK)
+        sprintf(tmp.nick_name, "TEAM %d", tmp.team);
+    else
+        sprintf(tmp.nick_name, "Pause Wusses");
+    strcpy(tmp.user_name, tmp.nick_name);
+    strcpy(tmp.host_name, "");
+#if 0
+    if (BIT(Setup->mode, LIMITED_LIVES) && teamlives == 0)
+    tmp.mychar = 'D';
+    else
+    tmp.mychar = ' ';
+#else
+    tmp.mychar = ' ';
+#endif
+    tmp.score = teamscore;
+    tmp.life = teamlives;
+
+    Paint_score_entry(entrynum++, &tmp, true);
+    return entrynum;
+}
+
+static int Team_score_table(int entrynum, int teamnum,
+                            struct team_score team, other_t **order)
+{
+    other_t *other;
+    int i, j;
+    bool drawn = false;
+
     for (i = 0; i < num_others; i++)
     {
         other = order[i];
+
+        if (teamnum == TEAM_PAUSEHACK)
+        {
+            if (other->mychar != 'P')
+                continue;
+        }
+        else
+        {
+            if (other->team != teamnum || other->mychar == 'P')
+                continue;
+        }
+
+        if (!drawn)
+            entrynum = Team_heading(entrynum, teamnum, team.life, team.score);
         j = other - Others;
-        Paint_score_entry(i, other, (j == best) ? true : false);
+        Paint_score_entry(entrynum++, other, false);
+        drawn = true;
+    }
+
+    if (drawn)
+        entrynum += 1;
+    return entrynum;
+}
+
+void Paint_score_table(void)
+{
+    struct team_score team[MAX_TEAMS],
+        pausers,
+        *team_order[MAX_TEAMS];
+    other_t *other,
+        **order;
+    int i, j, entrynum = 0;
+
+    if (!scoresChanged || !players_exposed)
+        return;
+
+    if (num_others < 1)
+    {
+        Paint_score_start();
+        scoresChanged = false;
+        return;
+    }
+
+    if ((order = (other_t **)malloc(num_others * sizeof(other_t *))) == NULL)
+    {
+        error("No memory for score");
+        return;
     }
     if (BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY)
     {
-        int pos = num_others + 1;
-        int num_playing_teams = 0;
-        for (i = 0; i < MAX_TEAMS; i++)
+        memset(&team[0], 0, sizeof team);
+        memset(&pausers, 0, sizeof pausers);
+    }
+    Determine_order(order, team);
+    Paint_score_start();
+    if (!(BIT(Setup->mode, TEAM_PLAY | TIMING) == TEAM_PLAY))
+    {
+
+        for (i = 0; i < num_others; i++)
         {
-            if (team[i].playing)
-            {
-                for (j = 0; j < num_playing_teams; j++)
-                {
-                    if (team[i].score > team_order[j]->score || (team[i].score == team_order[j]->score && ((BIT(Setup->mode, LIMITED_LIVES))
-                                                                                                               ? (team[i].life > team_order[j]->life)
-                                                                                                               : (team[i].life < team_order[j]->life))))
-                    {
-                        for (k = i; k > j; k--)
-                        {
-                            team_order[k] = team_order[k - 1];
-                        }
-                        break;
-                    }
-                }
-                team_order[j] = &team[i];
-                num_playing_teams++;
-            }
-        }
-        for (i = 0; i < num_playing_teams; i++)
-        {
-            other_t tmp;
-            tmp.id = -1;
-            tmp.team = team_order[i] - &team[0];
-            tmp.war_id = -1;
-            tmp.name_width = 0;
-            tmp.ship = NULL;
-            sprintf(tmp.nick_name, "Team %d", tmp.team);
-            strcpy(tmp.user_name, tmp.nick_name);
-            strcpy(tmp.nick_name, "");
-            if (BIT(Setup->mode, LIMITED_LIVES) && team_order[i]->life == 0)
-            {
-                tmp.mychar = 'D';
-            }
-            else
-            {
-                tmp.mychar = ' ';
-            }
-            tmp.score = team_order[i]->score;
-            tmp.life = team_order[i]->life;
-            Paint_score_entry(pos++, &tmp, false);
+            other = order[i];
+            j = other - Others;
+            Paint_score_entry(i, other, false);
         }
     }
+    else
+    {
+        Determine_team_order(team_order, team);
+
+        /* add an empty line */
+        entrynum++;
+        for (i = 0; i < MAX_TEAMS; i++)
+            entrynum = Team_score_table(entrynum, i, team[i], order);
+        /* paint pausers */
+        entrynum = Team_score_table(entrynum, TEAM_PAUSEHACK, pausers, order);
+#if 0
+    for (i = 0; i < num_playing_teams; i++) {
+        entrynum = Team_heading(entrynum,
+                    team_order[i] - &team[0],
+                    team_order[i]->life,
+                    team_order[i]->score);
+    }
+#endif
+    }
+
+    // if (roundend)
+    //     Add_roundend_messages(order);
 
     free(order);
 
-    scoresChanged = 0;
+    scoresChanged = false;
 }

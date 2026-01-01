@@ -1045,7 +1045,7 @@ static int Config_create_clockAMPM(int widget_desc, int *height)
 static int Config_create_scaleFactor(int widget_desc, int *height)
 {
     return Config_create_double(widget_desc, height,
-                                "scaleFactor", &scaleFactor,
+                                "scaleFactor", &clData.scaleFactor,
                                 MIN_SCALEFACTOR, MAX_SCALEFACTOR,
                                 Config_update_scaleFactor, NULL);
 }
@@ -1053,7 +1053,7 @@ static int Config_create_scaleFactor(int widget_desc, int *height)
 static int Config_create_altScaleFactor(int widget_desc, int *height)
 {
     return Config_create_double(widget_desc, height,
-                                "altScaleFactor", &scaleFactor_s,
+                                "altScaleFactor", &clData.altScaleFactor,
                                 MIN_SCALEFACTOR, MAX_SCALEFACTOR,
                                 NULL, NULL);
 }
@@ -1558,8 +1558,8 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
 #if SOUND
     Config_save_int(fp, "maxVolume", maxVolume);
 #endif
-    Config_save_double(fp, "scaleFactor", scaleFactor);
-    Config_save_double(fp, "altScaleFactor", scaleFactor_s);
+    Config_save_double(fp, "scaleFactor", clData.scaleFactor);
+    Config_save_double(fp, "altScaleFactor", clData.altScaleFactor);
 
     /* don't save maxFPS */
 

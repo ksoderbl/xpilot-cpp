@@ -91,10 +91,6 @@ extern long loops;
 extern long loopsSlow;
 extern double timePerFrame;
 
-extern double scaleFactor; /* scale the draw (main playfield) window */
-extern double scaleFactor_s;
-extern double scaleMultFactor;
-
 extern double WINSCALE(double x);
 
 #define UWINSCALE(x) ((unsigned)WINSCALE(x))
@@ -140,7 +136,7 @@ int Team_color(int);
 int Life_color(other_t *other);
 int Life_color_by_life(int life);
 void Play_beep(void);
-int Check_view_dimensions(void);
+int Check_view_dimensions_old(void);
 void Store_hud_options(void);
 void Store_paintradar_options(void);
 

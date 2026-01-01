@@ -1584,7 +1584,7 @@ int Net_ask_for_motd(long offset, long maxlen)
     return 0;
 }
 
-// static void Check_view_dimensions(void)
+// static void Check_view_dimensions_old(void)
 // {
 //     int width_wanted = draw_width;
 //     int height_wanted = draw_height;
@@ -1778,7 +1778,7 @@ int Receive_self(void)
     if (debris_colors > num_spark_colors)
         debris_colors = num_spark_colors;
 
-    Check_view_dimensions();
+    Check_view_dimensions_old();
     /*
      * These assignments are done here because the server_display
      * structure members are not of the type that Packet_scanf()
@@ -2795,8 +2795,8 @@ int Send_display(void)
     int width_wanted = draw_width;
     int height_wanted = draw_height;
 
-    width_wanted = (int)(width_wanted * scaleFactor + 0.5);
-    height_wanted = (int)(height_wanted * scaleFactor + 0.5);
+    width_wanted = (int)(width_wanted * clData.scaleFactor + 0.5);
+    height_wanted = (int)(height_wanted * clData.scaleFactor + 0.5);
 
     LIMIT(width_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
     LIMIT(height_wanted, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
@@ -2812,7 +2812,7 @@ int Send_display(void)
     {
         ext_view_width = width_wanted;
         ext_view_height = height_wanted;
-        Check_view_dimensions();
+        Check_view_dimensions_old();
     }
     else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
                            width_wanted, height_wanted,

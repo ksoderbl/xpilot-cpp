@@ -187,7 +187,6 @@ bool Set_scaleFactor(xp_option_t *opt, double val)
 {
     clData.scaleFactor = val;
     clData.scale = 1.0 / val;
-    clData.fscale = (float)clData.scale;
     return true;
 }
 
