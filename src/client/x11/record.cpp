@@ -36,11 +36,13 @@
 
 #include "recordfile.h"
 
+#include "commonmacros.h"
 #include "const.h"
 #include "strdup.h"
 #include "strlcpy.h"
 #include "xpmemory.h"
 
+#include "option.h"
 #include "paint.h"
 #include "netclient.h"
 
@@ -70,8 +72,8 @@
 static char *record_filename = NULL; /* Name of recordfile. */
 static FILE *recordFP = NULL;        /* File handle for writing
                                       * recording frames to. */
-int recording = False;               /* Are we recording or not. */
-static int record_start = False;     /* Should we start recording
+int recording = false;               /* Are we recording or not. */
+static int record_start = false;     /* Should we start recording
                                       * at the next frame. */
 static int record_frame_count = 0;   /* How many recorded frames. */
 static const char *record_dashes;    /* Which dash list to use. */
@@ -432,10 +434,10 @@ static void RNewFrame(void)
         WriteHeader();
         record_dashes = dashes;
         record_num_dashes = NUM_DASHES;
-        record_dash_dirty = True;
+        record_dash_dirty = true;
     }
 
-    recording = True;
+    recording = true;
 
     RWriteByte(RC_NEWFRAME, recordFP);
     RWriteUShort(draw_width, recordFP);
@@ -469,7 +471,7 @@ static void REndFrame(void)
 
     fflush(recordFP);
 
-    recording = False;
+    recording = false;
 
     record_frame_count++; /* Number of frames written sofar. */
 }
@@ -721,7 +723,7 @@ static int RSetDashes(Display *display, GC gc,
     XSetDashes(display, gc, dash_offset, dash_list, n);
     record_dashes = dash_list; /* supposedly static memory */
     record_num_dashes = n;
-    record_dash_dirty = True;
+    record_dash_dirty = true;
     return 0;
 }
 
@@ -803,38 +805,31 @@ long Record_size(void)
  */
 void Record_toggle(void)
 {
-    if (record_filename != NULL)
+    if (record_filename != NULL && strlen(record_filename) > 0)
     {
         if (!record_start)
         {
-            record_start = True;
+            record_start = true;
             if (!recordFP)
             {
                 if ((recordFP = fopen(record_filename, "w")) == NULL)
                 {
-                    perror("Unable to open record file");
-                    free(record_filename);
-                    record_filename = NULL;
-                    record_start = False;
+                    warn("%s: %s", record_filename, strerror(errno));
+                    XFREE(record_filename);
+                    record_start = false;
                 }
                 else
-                {
                     setvbuf(recordFP, NULL, _IOFBF, (size_t)(8 * 1024));
-                }
             }
         }
         else
-        {
-            record_start = False;
-        }
+            record_start = false;
         if (record_start)
-        {
             rd = Rdrawing;
-        }
         else
         {
             rd = Xdrawing;
-            recording = False;
+            recording = false;
         }
     }
 }
@@ -847,9 +842,14 @@ void Record_cleanup(void)
 {
     if (record_filename != NULL && record_frame_count > 0)
     {
+        long pos = ftell(recordFP);
+
         fflush(recordFP);
         printf("Recorded %d frames to %s\n",
                record_frame_count, record_filename);
+        printf("Recording size is %.2f MB (avg. %.2f kB/frame).\n",
+               (double)pos / 1e6,
+               (1e-3 * pos) / (double)record_frame_count);
     }
 }
 
@@ -857,11 +857,43 @@ void Record_cleanup(void)
  * Store the name of the file where the user
  * wants recordings to be written to.
  */
-void Record_init(char *filename)
+void Record_init(const char *filename)
 {
     rd = Xdrawing;
-    if (filename != NULL && filename[0] != '\0')
-    {
-        record_filename = xp_strdup(filename);
-    }
+    assert(filename != NULL);
+    XFREE(record_filename);
+    record_filename = xp_safe_strdup(filename);
+}
+
+static bool setRecordFile(xp_option_t *opt, const char *value)
+{
+    assert(value);
+    /* Don't allow changing record file after file has been opened. */
+    if (recordFP != NULL)
+        return false;
+    Record_init(value);
+    return true;
+}
+
+static const char *getRecordFile(xp_option_t *opt)
+{
+    return record_filename;
+}
+
+xp_option_t record_options[] = {
+
+    XP_STRING_OPTION(
+        "recordFile",
+        "",
+        NULL, 0,
+        setRecordFile, NULL, getRecordFile,
+        XP_OPTFLAG_DEFAULT,
+        "An optional file where a recording of a game can be made.\n"
+        "If this file is undefined then recording isn't possible.\n"),
+
+};
+
+void Store_record_options(void)
+{
+    STORE_OPTIONS(record_options);
 }
