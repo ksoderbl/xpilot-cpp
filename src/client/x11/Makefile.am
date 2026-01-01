@@ -5,7 +5,6 @@ xpilot_cpp_client_x11_SOURCES = \
     bitmaps.cpp \
     bitmaps.h \
     colors.cpp \
-    colors.h \
     configure.cpp \
     dbuff.cpp \
     dbuff.h \

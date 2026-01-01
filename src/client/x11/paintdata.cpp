@@ -84,7 +84,8 @@ void Rectangle_end(void)
         if (num_rect[i] > 0)
         {
             SET_FG(colors[i].pixel);
-            rd.fillRectangles(dpy, drawPixmap, gameGC, rect_ptr[i], num_rect[i]);
+            rd.fillRectangles(dpy, drawPixmap, gameGC,
+                              rect_ptr[i], num_rect[i]);
             RELEASE(rect_ptr[i], num_rect[i], max_rect[i]);
         }
     }
@@ -109,6 +110,7 @@ void Arc_start(void)
 
     for (i = 0; i < maxColors; i++)
         num_arc[i] = 0;
+    num_rgb_arc = 0;
 }
 
 void Arc_end(void)
@@ -187,9 +189,7 @@ void Segment_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++)
-    {
         num_seg[i] = 0;
-    }
 }
 
 void Segment_end(void)

@@ -45,7 +45,6 @@
 #include "xperror.h"
 #include "dbuff.h"
 #include "protoclient.h"
-#include "colors.h"
 
 /*
  * The number of X11 visuals.

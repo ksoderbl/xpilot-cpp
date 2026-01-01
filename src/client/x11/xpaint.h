@@ -29,6 +29,7 @@
 #include "paint.h"
 
 #include "types.h"
+#include "xperror.h"
 
 /* The fonts used in the game */
 extern XFontStruct *gameFont;
@@ -124,6 +125,17 @@ extern char *texturePath;            /* Path list of texture directories */
 //     }
 // }
 
+extern unsigned long current_foreground;
+
+static inline void SET_FG(unsigned long fg)
+{
+    // warn("SET_FG: fg = 0x%08x", fg);
+    if (fg != current_foreground)
+        XSetForeground(dpy, gameGC, current_foreground = fg);
+}
+
+#define MAX_LINE_WIDTH 4
+
 extern void Paint_item_symbol(int type, Drawable d, GC mygc,
                               int x, int y, int color);
 extern void Paint_item(int type, Drawable d, GC mygc, int x, int y);
@@ -132,5 +144,17 @@ extern void Gui_paint_item_symbol(int type, Drawable d, GC mygc,
 extern void Gui_paint_item(int type, Drawable d, GC mygc, int x, int y);
 
 extern void Store_xpaint_options(void);
+
+/*
+ * colors.cpp
+ */
+extern void List_visuals(void);
+extern int Colors_init(void);
+extern int Colors_init_bitmaps(void);
+extern void Colors_free_bitmaps(void);
+extern void Colors_cleanup(void);
+extern void Colors_debug(void);
+extern void Init_spark_colors(void);
+extern void Store_color_options(void);
 
 #endif

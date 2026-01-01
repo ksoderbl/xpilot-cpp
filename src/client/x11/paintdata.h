@@ -29,17 +29,6 @@
 
 #include "xpaint.h"
 
-#define RESET_FG() (current_foreground = -1)
-#define SET_FG(PIXEL)                  \
-    if ((PIXEL) == current_foreground) \
-        ;                              \
-    else                               \
-        XSetForeground(dpy, gameGC, current_foreground = (PIXEL))
-
-extern unsigned long current_foreground;
-
-#define MAX_LINE_WIDTH 4
-
 extern void Rectangle_start(void);
 extern void Rectangle_end(void);
 extern int Rectangle_add(int color, int x, int y, int width, int height);
@@ -49,6 +38,11 @@ extern int Arc_add(int color,
                    int x, int y,
                    int width, int height,
                    int angle1, int angle2);
+extern int Arc_add_rgb(unsigned long color, /* Used if fullColor is on. */
+                       int fallback_color,  /* Used if fullColor is off. */
+                       int x, int y,
+                       int width, int height,
+                       int angle1, int angle2);
 extern void Segment_start(void);
 extern void Segment_end(void);
 extern int Segment_add(int color, int x1, int y1, int x2, int y2);

@@ -57,7 +57,6 @@
 #include "xperror.h"
 #include "protoclient.h"
 #include "portability.h"
-#include "colors.h"
 
 extern const char *Get_keyResourceString(keys_t key);
 extern void Get_xpilotrc_file(char *, unsigned);
