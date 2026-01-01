@@ -26,6 +26,7 @@
 #include <cstring>
 #include <cerrno>
 #include <cmath>
+#include <ctime>
 
 #include <sys/time.h>
 
@@ -1536,14 +1537,14 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
     return 0;
 }
 
-int Handle_timing(int id, int check, int round)
+int Handle_timing(int id, int check, int round, long tloops)
 {
     other_t *other;
 
     if ((other = Other_by_id(id)) == NULL)
     {
-        errno = 0;
-        error("Can't update timing for non-existing player %d,%d,%d", id, check, round);
+        warn("Can't update timing for non-existing player %d,%d,%d",
+             id, check, round);
         return 0;
     }
     else if (other->check != check || other->round != round)
@@ -1552,7 +1553,7 @@ int Handle_timing(int id, int check, int round)
         other->round = round;
         other->timing = round * num_checks + check;
         other->timing_loops = last_loops;
-        scoresChanged = 1;
+        scoresChanged = true;
     }
 
     return 0;
@@ -1614,15 +1615,14 @@ int Handle_start(long server_loops)
     num_vbase = 0;
     num_vdecor = 0;
     for (i = 0; i < DEBRIS_TYPES; i++)
-    {
         num_debris[i] = 0;
-    }
 
     damaged = 0;
     destruct = 0;
     shutdown_delay = 0;
     shutdown_count = -1;
     eyesId = (self != NULL) ? self->id : 0;
+    eyes = Other_by_id(eyesId);
     thrusttime = -1;
     shieldtime = -1;
     phasingtime = -1;
@@ -1642,7 +1642,7 @@ static void update_timing(void)
     {
         double usecs, fps;
 
-        // currentTime = time(NULL);
+        currentTime = time(NULL);
         usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
         fps = (1e6 * frame_counter) / usecs;
         old_tv = now;
@@ -1673,7 +1673,7 @@ static void update_timing(void)
 int Handle_end(long server_loops)
 {
     end_loops = server_loops;
-    snooping = self && (eyesId != self->id);
+    snooping = (self && eyesId != self->id) ? true : false;
     update_timing();
     Paint_frame();
     return 0;

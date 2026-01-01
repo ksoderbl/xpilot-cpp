@@ -2391,7 +2391,7 @@ int Receive_timing(void)
         return n;
     check = timing % num_checks;
     round = timing / num_checks;
-    if ((n = Handle_timing(id, check, round)) == -1)
+    if ((n = Handle_timing(id, check, round, last_loops)) == -1)
         return -1;
     return 1;
 }

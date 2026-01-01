@@ -719,7 +719,9 @@ int Handle_player(int id, int team, int mychar,
 int Handle_team(int id, int pl_team);
 int Handle_score(int id, double score, int life, int mychar, int alliance);
 int Handle_score_object(double score, int x, int y, char *msg);
-int Handle_timing(int id, int check, int round);
+int Handle_team_score(int team, double score);
+int Handle_timing(int id, int check, int round, long loops);
+int Handle_seek(int programmer_id, int robot_id, int sought_id);
 int Handle_start(long server_loops);
 int Handle_end(long server_loops);
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
@@ -769,6 +771,7 @@ int Handle_time_left(long sec);
 void Map_dots(void);
 void Map_restore(int startx, int starty, int width, int height);
 void Map_blue(int startx, int starty, int width, int height);
+bool Using_score_decimals(void);
 int Client_init(char *server, unsigned server_version);
 int Client_setup(void);
 void Client_cleanup(void);

@@ -501,20 +501,13 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
      * Draw the line
      * e94_msu eKthHacks
      */
-    if (other->mychar == 'D' || other->mychar == 'P' || other->mychar == 'W')
+    if (!is_team && strchr("DPW", other->mychar))
     {
-        if (!texturedObjects)
-        {
-            XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
-        }
+        if (self && other->id == self->id)
+            color = scoreInactiveSelfColor;
         else
-        {
-            /*
-            ** hm, this grey color is pretty, but am i guaranteed that there is
-            ** 16 standard colors just because texturedObjects = true?
-            */
-            XSetForeground(dpy, scoreListGC, colors[12].pixel);
-        }
+            color = scoreInactiveColor;
+        XSetForeground(dpy, scoreListGC, colors[color].pixel);
         XDrawString(dpy, playersWindow, scoreListGC,
                     SCORE_BORDER, thisLine,
                     label, (int)strlen(label));
@@ -572,17 +565,16 @@ struct team_score
 
 static void Paint_clock(bool redraw)
 {
-    int minute,
+    int second,
+        minute,
         hour,
-        height = scoreListFont->ascent + scoreListFont->descent + 3,
         border = 3;
-    time_t t;
     struct tm *m;
     char buf[16];
-    static long prev_loops;
-    static int width;
+    static unsigned width;
+    unsigned height = scoreListFont->ascent + scoreListFont->descent + 3;
 
-    if (instruments.clock == 0)
+    if (!clockColor)
     {
         if (width != 0)
         {
@@ -594,50 +586,38 @@ static void Paint_clock(bool redraw)
         }
         return;
     }
-    if (redraw == 0 && loops > prev_loops && loops - prev_loops < (FPS << 5))
-    {
-        return;
-    }
-    prev_loops = loops;
-    time(&t);
-    m = localtime(&t);
 
-    /* round seconds up to next minute. */
+    if (!redraw && !newSecond)
+        return;
+
+    m = localtime(&currentTime);
+    second = m->tm_sec;
     minute = m->tm_min;
     hour = m->tm_hour;
-    if (minute++ == 59)
-    {
-        minute = 0;
-        if (hour++ == 23)
-        {
-            hour = 0;
-        }
-    }
+    /* warn("drawing clock at %02d:%02d:%02d", hour, minute, second);*/
     if (!instruments.clockAMPM)
-    {
-        sprintf(buf, "%02d:%02d", hour, minute);
-    }
+        sprintf(buf, "%02d:%02d" /*":%02d"*/, hour, minute /*, second*/);
     else
     {
         char tmpchar = 'A';
         /* strftime(buf, sizeof(buf), "%l:%M%p", m); */
-        if (m->tm_hour > 12)
+        if (hour > 12)
         {
             tmpchar = 'P';
-            m->tm_hour %= 12;
+            hour %= 12;
         }
-        sprintf(buf, "%2d:%02d%cM", m->tm_hour, m->tm_min, tmpchar);
+        sprintf(buf, "%2d:%02d%cM", hour, minute, tmpchar);
     }
-    width = XTextWidth(scoreListFont, buf, strlen(buf));
+    width = XTextWidth(scoreListFont, buf, (int)strlen(buf));
     XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
     XFillRectangle(dpy, playersWindow, scoreListGC,
                    256 - (int)(width + 2 * border), 0,
                    width + 2 * border, height);
     ShadowDrawString(dpy, playersWindow, scoreListGC,
-                     256 - (width + border),
+                     256 - (int)(width + border),
                      scoreListFont->ascent + 4,
                      buf,
-                     colors[WHITE].pixel,
+                     colors[clockColor].pixel,
                      colors[BLACK].pixel);
 }
 
