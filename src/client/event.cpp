@@ -188,62 +188,51 @@ int Key_update(void)
     return Send_keyboard(keyv);
 }
 
-bool Key_check_talk_macro(keys_t key)
+static bool Key_check_talk_macro(keys_t key)
 {
     if (key >= KEY_MSG_1 && key < KEY_MSG_1 + TALK_FAST_NR_OF_MSGS)
-        /* talk macros */
         Talk_macro((int)(key - KEY_MSG_1));
     return true;
 }
 
-bool Key_press_id_mode(keys_t key)
+static bool Key_press_id_mode(void)
 {
     showUserName = showUserName ? false : true;
     scoresChanged = true;
     return false; /* server doesn't need to know */
 }
 
-bool Key_press_autoshield_hack(keys_t key)
+static bool Key_press_autoshield_hack(void)
 {
     if (auto_shield && BITV_ISSET(keyv, KEY_SHIELD))
         BITV_CLR(keyv, KEY_SHIELD);
     return false;
 }
 
-bool Key_press_shield(keys_t key)
+static bool Key_press_shield(keys_t key)
 {
     if (toggle_shield)
     {
         shields = !shields;
         if (shields)
-        {
             BITV_SET(keyv, key);
-        }
         else
-        {
             BITV_CLR(keyv, key);
-        }
         return true;
     }
     else if (auto_shield)
-    {
-        shields = 1;
-#if 0
-        shields = 0;
-        BITV_CLR(keyv, key);
-        return true;
-#endif
-    }
+        shields = true;
+
     return false;
 }
 
-bool Key_press_fuel(keys_t key)
+static bool Key_press_fuel(void)
 {
     fuelTime = FUEL_NOTIFY_TIME;
     return false;
 }
 
-bool Key_press_swap_settings(keys_t key)
+static bool Key_press_swap_settings(void)
 {
     double tmp;
 #define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
@@ -257,7 +246,7 @@ bool Key_press_swap_settings(keys_t key)
     return true;
 }
 
-bool Key_press_swap_scalefactor(keys_t key)
+static bool Key_press_swap_scalefactor(void)
 {
     DFLOAT tmp;
     tmp = clData.scaleFactor;
@@ -270,7 +259,7 @@ bool Key_press_swap_scalefactor(keys_t key)
     return false;
 }
 
-bool Key_press_increase_power(keys_t key)
+static bool Key_press_increase_power(void)
 {
     power = power * 1.10;
     power = MIN(power, MAX_PLAYER_POWER);
@@ -281,9 +270,9 @@ bool Key_press_increase_power(keys_t key)
     return false; /* server doesn't see these keypresses anymore */
 }
 
-bool Key_press_decrease_power(keys_t key)
+static bool Key_press_decrease_power(void)
 {
-    power = power * 0.90;
+    power = power / 1.10;
     power = MAX(power, MIN_PLAYER_POWER);
     Send_power(power);
 
@@ -292,7 +281,7 @@ bool Key_press_decrease_power(keys_t key)
     return false; /* server doesn't see these keypresses anymore */
 }
 
-bool Key_press_increase_turnspeed(keys_t key)
+static bool Key_press_increase_turnspeed(void)
 {
     turnspeed = turnspeed * 1.05;
     turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
@@ -303,9 +292,9 @@ bool Key_press_increase_turnspeed(keys_t key)
     return false; /* server doesn't see these keypresses anymore */
 }
 
-bool Key_press_decrease_turnspeed(keys_t key)
+static bool Key_press_decrease_turnspeed(void)
 {
-    turnspeed = turnspeed * 0.95;
+    turnspeed = turnspeed / 1.05;
     turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
 
@@ -314,70 +303,66 @@ bool Key_press_decrease_turnspeed(keys_t key)
     return false; /* server doesn't see these keypresses anymore */
 }
 
-bool Key_press_talk(keys_t key)
+static bool Key_press_talk(void)
 {
     Talk_set_state((clData.talking == false) ? true : false);
     return false; /* server doesn't need to know */
 }
 
-bool Key_press_show_items(keys_t key)
+static bool Key_press_show_items(void)
 {
     instruments.showItems = !instruments.showItems;
     return false; /* server doesn't need to know */
 }
 
-bool Key_press_show_messages(keys_t key)
+static bool Key_press_show_messages(void)
 {
     instruments.showMessages = !instruments.showMessages;
     return false; /* server doesn't need to know */
 }
 
-bool Key_press_pointer_control(keys_t key)
+static bool Key_press_pointer_control(void)
 {
     if (version < 0x3202)
-    {
-        error("Cannot use pointer control below version 3.2.3");
-    }
+        warn("Cannot use pointer control below version 3.2.3");
     else
-    {
         Pointer_control_set_state(!pointerControl);
-    }
     return false; /* server doesn't need to know */
 }
 
-// // static bool Key_press_toggle_fullscreen(void)
-// // {
-// //     Toggle_fullscreen();
-// //     return false; /* server doesn't need to know */
-// // }
+static bool Key_press_toggle_fullscreen(void)
+{
+    Toggle_fullscreen();
+    return false; /* server doesn't need to know */
+}
 
-// // static bool Key_press_toggle_radar_score(void)
-// // {
-// //     Toggle_radar_and_scorelist();
-// //     return false; /* server doesn't need to know */
-// // }
+static bool Key_press_toggle_radar_score(void)
+{
+    Toggle_radar_and_scorelist();
+    return false; /* server doesn't need to know */
+}
 
-bool Key_press_toggle_record(keys_t key)
+static bool Key_press_toggle_record(void)
 {
     Record_toggle();
     return false; /* server doesn't need to know */
 }
 
-// static bool Key_press_toggle_sound(void)
-// {
-// #ifdef SOUND
-//     sound = !sound;
-// #endif
-//     return false; /* server doesn't need to know */
-// }
+static bool Key_press_toggle_sound(void)
+{
+#ifdef SOUND
+    sound = !sound;
+#endif
+    return false; /* server doesn't need to know */
+}
 
-bool Key_press_msgs_stdout(keys_t key)
+static bool Key_press_msgs_stdout(void)
 {
     Print_messages_to_stdout();
     return false; /* server doesn't need to know */
 }
 
-bool Key_press_select_lose_item(keys_t key)
+static bool Key_press_select_lose_item(void)
 {
     if (lose_item_active == 1)
         lose_item_active = 2;
@@ -386,18 +371,18 @@ bool Key_press_select_lose_item(keys_t key)
     return true;
 }
 
-// static bool Key_press_yes(void)
-// {
-//     /* Handled in other code */
-//     assert(!clData.quitMode);
+static bool Key_press_yes(void)
+{
+    /* Handled in other code */
+    assert(!clData.quitMode);
 
-//     return false; /* server doesn't need to know */
-// }
+    return false; /* server doesn't need to know */
+}
 
-// static bool Key_press_no(void)
-// {
-//     return false; /* server doesn't need to know */
-// }
+static bool Key_press_no(void)
+{
+    return false; /* server doesn't need to know */
+}
 
 // // static bool Key_press_exit(void)
 // // {
@@ -503,7 +488,7 @@ bool Key_press(keys_t key)
     switch (key)
     {
     case KEY_ID_MODE:
-        return (Key_press_id_mode(key));
+        return (Key_press_id_mode());
 
     case KEY_FIRE_SHOT:
     case KEY_FIRE_LASER:
@@ -512,7 +497,7 @@ bool Key_press(keys_t key)
     case KEY_FIRE_HEAT:
     case KEY_DROP_MINE:
     case KEY_DETACH_MINE:
-        Key_press_autoshield_hack(key);
+        Key_press_autoshield_hack();
         break;
 
     case KEY_SHIELD:
@@ -524,52 +509,52 @@ bool Key_press(keys_t key)
     case KEY_REPAIR:
     case KEY_TANK_NEXT:
     case KEY_TANK_PREV:
-        Key_press_fuel(key);
+        Key_press_fuel();
         break;
 
     case KEY_SWAP_SETTINGS:
-        if (!Key_press_swap_settings(key))
+        if (!Key_press_swap_settings())
             return false;
         break;
 
     case KEY_SWAP_SCALEFACTOR:
-        if (!Key_press_swap_scalefactor(key))
+        if (!Key_press_swap_scalefactor())
             return false;
         break;
 
     case KEY_INCREASE_POWER:
-        return Key_press_increase_power(key);
+        return Key_press_increase_power();
 
     case KEY_DECREASE_POWER:
-        return Key_press_decrease_power(key);
+        return Key_press_decrease_power();
 
     case KEY_INCREASE_TURNSPEED:
-        return Key_press_increase_turnspeed(key);
+        return Key_press_increase_turnspeed();
 
     case KEY_DECREASE_TURNSPEED:
-        return Key_press_decrease_turnspeed(key);
+        return Key_press_decrease_turnspeed();
 
     case KEY_TALK:
-        return Key_press_talk(key);
+        return Key_press_talk();
 
     case KEY_TOGGLE_OWNED_ITEMS:
-        return Key_press_show_items(key);
+        return Key_press_show_items();
 
     case KEY_TOGGLE_MESSAGES:
-        return Key_press_show_messages(key);
+        return Key_press_show_messages();
 
     case KEY_POINTER_CONTROL:
-        return Key_press_pointer_control(key);
+        return Key_press_pointer_control();
 
     case KEY_TOGGLE_RECORD:
-        return Key_press_toggle_record(key);
+        return Key_press_toggle_record();
 
     case KEY_PRINT_MSGS_STDOUT:
-        return Key_press_msgs_stdout(key);
+        return Key_press_msgs_stdout();
 
     case KEY_SELECT_ITEM:
     case KEY_LOSE_ITEM:
-        if (!Key_press_select_lose_item(key))
+        if (!Key_press_select_lose_item())
             return false;
     default:
         break;
