@@ -65,42 +65,34 @@ static int backgroundPointColor;  /* background point drawing */
 static int fuelColor = RED;       /* fuel station drawing */
 static int visibilityBorderColor; /* visibility border drawing */
 
-void Gui_paint_walls(int x, int y, int type, int xi, int yi)
+void Gui_paint_walls(int x, int y, int type)
 {
     if (!texturedObjects)
     {
         if (type & BLUE_LEFT)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y),
                         X(x),
                         Y(y + BLOCK_SZ));
-        }
         if (type & BLUE_DOWN)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y));
-        }
         if (type & BLUE_RIGHT)
-        {
             Segment_add(wallColor,
                         X(x + BLOCK_SZ),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
-        }
         if (type & BLUE_UP)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
-        }
 
         if ((type & BLUE_FUEL) == BLUE_FUEL)
         {

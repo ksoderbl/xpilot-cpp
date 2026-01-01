@@ -332,12 +332,10 @@ void Paint_world(void)
     yi = mod(yb, Setup->y);
     mapbase = Setup->map_data + yi;
     if (ext_view_width > MAX_VIEW_SIZE || ext_view_height > MAX_VIEW_SIZE)
-    {
         Gui_paint_visible_border(world.x + ext_view_width / 2 - MAX_VIEW_SIZE / 2,
                                  world.y + ext_view_height / 2 - MAX_VIEW_SIZE / 2,
                                  world.x + ext_view_width / 2 + MAX_VIEW_SIZE / 2,
                                  world.y + ext_view_height / 2 + MAX_VIEW_SIZE / 2);
-    }
 
     for (ryb = yb; ryb <= ye; ryb++, yi++, y += BLOCK_SZ, mapbase++)
     {
@@ -375,11 +373,8 @@ void Paint_world(void)
                 {
 
                 case SETUP_FILLED_NO_DRAW:
-                    // if (BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS) && fill_top_left == -1)
-                    if ((instruments.filledWorld || instruments.texturedWalls) && fill_top_left == -1)
-                    {
+                    if ((instruments.filledWorld || instruments.texturedWalls) && fill_top_left == -1 && oldServer)
                         fill_top_left = fill_bottom_left = x;
-                    }
                     break;
                 case SETUP_CHECK:
                     Gui_paint_setup_check(x, y, (Check_index_by_pos(xi, yi) == nextCheckPoint));
@@ -519,26 +514,19 @@ void Paint_world(void)
                     break;
                 }
             }
-            else
+            else if (oldServer)
             {
-                // if (!BIT(instruments, SHOW_FILLED_WORLD | SHOW_TEXTURED_WALLS))
                 if (!(instruments.filledWorld || instruments.texturedWalls))
                 {
-                    Gui_paint_walls(x, y, type, xi, yi);
+                    Gui_paint_walls(x, y, type);
 
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                    {
-                        fuel = Fuel_by_pos(xi, yi);
-                        Handle_vfuel(x, y, fuel);
-                    }
+                        Handle_vfuel(x, y, Fuel_by_pos(xi, yi));
                 }
                 else
                 {
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                    {
-                        fuel = Fuel_by_pos(xi, yi);
-                        Handle_vfuel(x, y, fuel);
-                    }
+                        Handle_vfuel(x, y, Fuel_by_pos(xi, yi));
                     else if (type & BLUE_OPEN)
                     {
                         if (type & BLUE_BELOW)
