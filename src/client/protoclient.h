@@ -72,7 +72,7 @@ extern bool Is_allowed(char *);
 /*
  * sim.c
  */
-extern void Simulate(void);
+extern void Simulate(bool on);
 
 /*
  * textinterface.c

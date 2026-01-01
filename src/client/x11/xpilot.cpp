@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
     if (!noLocalMotd)
         printfile(Conf_localmotdfile());
 
-    Simulate();
+    Simulate(false);
 
     if (text || auto_connect || argv[1])
     {

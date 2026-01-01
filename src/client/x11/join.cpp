@@ -53,8 +53,6 @@
 #define SCORE_UPDATE_DELAY 4
 #endif
 
-void xpilotShutdown(void);
-
 extern void Record_cleanup(void);
 
 static int Handle_input(int new_input)

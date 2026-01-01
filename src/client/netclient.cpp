@@ -562,7 +562,7 @@ int Net_init(char *server, int port)
     size_t size;
     sock_t sock;
 
-    assert(server != NULL);
+    // assert(server != NULL);
 
     signal(SIGPIPE, SIG_IGN);
 

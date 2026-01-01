@@ -785,6 +785,8 @@ void Set_toggle_shield(bool on);
 void Set_auto_shield(bool on);
 void Platform_specific_cleanup(void);
 
+void xpilotShutdown(void);
+
 int x_event(int);
 
 int Key_init(void);

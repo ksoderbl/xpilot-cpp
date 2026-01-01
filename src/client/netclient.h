@@ -41,7 +41,7 @@ typedef struct
     int num_spark_colors;
 } display_t;
 
-extern int simulating;
+extern bool simulating;
 extern setup_t *Setup;
 extern int receive_window_size;
 extern long last_loops;
