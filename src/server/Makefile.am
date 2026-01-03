@@ -82,4 +82,4 @@ xpilot_cpp_server_SOURCES = \
     xp2map.cpp \
     xpmap.cpp
 
-xpilot_cpp_server_LDADD = -lm ../common/libxpcommon.a
+xpilot_cpp_server_LDADD = -lm -lz -lexpat ../common/libxpcommon.a
