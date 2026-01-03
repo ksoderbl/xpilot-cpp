@@ -60,10 +60,10 @@ extern int decorColor; /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
-static int baseNameColor = 4;         /* Color index for base name drawing */
+static int baseNameColor = BLUE;      /* Color index for base name drawing */
 static int backgroundPointColor = 4;  /* background point drawing */
 static int fuelColor = RED;           /* fuel station drawing */
-static int visibilityBorderColor = 4; /* visibility border drawing */
+static int visibilityBorderColor = 0; /* visibility border drawing */
 
 void Gui_paint_walls(int x, int y, int type)
 {
@@ -98,21 +98,17 @@ void Gui_paint_walls(int x, int y, int type)
         {
         }
         else if (type & BLUE_OPEN)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y),
                         X(x + BLOCK_SZ),
                         Y(y + BLOCK_SZ));
-        }
         else if (type & BLUE_CLOSED)
-        {
             Segment_add(wallColor,
                         X(x),
                         Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ),
                         Y(y));
-        }
     }
     else
     {
@@ -230,7 +226,7 @@ void Gui_paint_cannon(int x, int y, int type)
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         default:
-            warn("Bad base dir.");
+            warn("Unknown cannon type %d", type);
             return;
         }
     }
@@ -321,37 +317,91 @@ void Gui_paint_fuel(int x, int y, double fuel)
         }
     }
 }
-void Gui_paint_base(int x, int y, int xi, int yi, int type)
+
+void Gui_paint_base(int x, int y, int id, int team, int type)
 {
+    int color = -1;
+    const int BORDER = 4; /* in pixels */
+    int size = 0, size2 = 0;
+    other_t *other;
+    char s[3];
+    char info[6];
+    homebase_t *base = NULL;
+    bool do_basewarning = false;
+
+    other = Other_by_id(id);
+    base = Homebase_by_id(id);
+
+    if (baseNameColor >= BLACK)
+    {
+        if (!(color = Life_color(other)))
+            color = baseNameColor;
+    }
+    else
+        color = WHITE; // TODO
+
+    if (base != NULL)
+    {
+        /*
+         * Hacks to support base warnings.
+         */
+        // warn("Gui_paint_base: loops: %ld, base->appeartime: %ld", loops, base->appeartime);
+        if (loops < base->appeartime)
+            do_basewarning = true;
+
+        // if (version < 0x4F12 && do_basewarning)
+        // {
+        //     if (baseWarningType & 1)
+        //     {
+        //         /* We assume the ship will appear after 3 seconds. */
+        //         int count = (int)(360 * (base->appeartime - loops) / (3 * clientFPS));
+        //         LIMIT(count, 0, 360);
+        //         /* red box basewarning */
+        //         if (count > 0 && (baseWarningType & 1))
+        //             Gui_paint_appearing(x + BLOCK_SZ / 2, y + BLOCK_SZ / 2,
+        //                                 id, count);
+        //     }
+        // }
+    }
+
+    /* Mara's flashy basewarning */
+    if (do_basewarning && (baseWarningType & 2))
+    {
+        if (loopsSlow & 1)
+        {
+            if (color != WHITE)
+                color = WHITE;
+            else
+                color = BLACK;
+        }
+    }
+
+    SET_FG(colors[color].pixel);
+
     if (!texturedObjects)
     {
-        const int BORDER = 4; /* in pixels */
-        int id, team, size;
-        other_t *other;
-        char s[3];
-        int baseColor = BLUE;
-
-        SET_FG(colors[baseColor].pixel);
+        // int baseColor = BLUE;
+        // SET_FG(colors[baseColor].pixel);
 
         switch (type)
         {
         case SETUP_BASE_UP:
-            Segment_add(baseColor,
+            Segment_add(color,
                         X(x), Y(y - 1),
                         X(x + BLOCK_SZ), Y(y - 1));
             break;
         case SETUP_BASE_DOWN:
-            Segment_add(baseColor,
+            Segment_add(color,
                         X(x), Y(y + BLOCK_SZ + 1),
                         X(x + BLOCK_SZ), Y(y + BLOCK_SZ + 1));
             break;
         case SETUP_BASE_LEFT:
-            Segment_add(baseColor,
+            Segment_add(color,
                         X(x + BLOCK_SZ + 1), Y(y + BLOCK_SZ),
                         X(x + BLOCK_SZ + 1), Y(y));
             break;
         case SETUP_BASE_RIGHT:
-            Segment_add(baseColor,
+            Segment_add(color,
                         X(x - 1), Y(y + BLOCK_SZ),
                         X(x - 1), Y(y));
             break;
@@ -359,8 +409,8 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             warn("Bad base dir.");
             return;
         }
-        if (Base_info_by_pos(xi, yi, &id, &team) == -1)
-            return;
+        // if (Base_info_by_pos(xi, yi, &id, &team) == -1)
+        //     return;
 
         /* operate in pixels from here out */
         x = WINSCALE(X(x));
@@ -458,8 +508,8 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             warn("Bad base dir.");
             return;
         }
-        if (Base_info_by_pos(xi, yi, &id, &team) == -1)
-            return;
+        // if (Base_info_by_pos(xi, yi, &id, &team) == -1)
+        //     return;
 
         /* operate in pixels from here out */
         x = WINSCALE(X(x));
@@ -518,6 +568,20 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
          * Determine whether to paint remaining lives or D (dead), P (paused) or
          * W (waiting for next round) at base.
          */
+        if (other)
+        {
+            if (other->mychar == ' ' || other->mychar == 'R')
+            {
+                if (BIT(Setup->mode, LIMITED_LIVES))
+                    sprintf(info, " %d", other->life);
+                else
+                    sprintf(info, " ");
+            }
+            else
+                sprintf(info, " %c", other->mychar);
+
+            size2 = XTextWidth(gameFont, info, (int)strlen(info));
+        }
 
         if (size)
         {

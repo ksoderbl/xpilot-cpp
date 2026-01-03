@@ -1468,7 +1468,6 @@ void Initialize_global_variables(void)
     instruments.filledWorld = false;
     instruments.fuelGauge = false;
     instruments.fuelMeter = false;
-    instruments.horizontalHUDLine = false;
     instruments.outlineDecor = false;
     instruments.outlineWorld = false;
     instruments.packetDropMeter = false;
@@ -1489,7 +1488,6 @@ void Initialize_global_variables(void)
     instruments.texturedDecor = false;
     instruments.texturedWalls = false;
     instruments.turnSpeedMeter = false;
-    instruments.verticalHUDLine = false;
 }
 
 int optionsCount = NELEM(oldOptions);
@@ -1903,6 +1901,10 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
                    char *nickName, char *dispName, char *hostName,
                    char *shut_msg)
 {
+    // memset(&connectParam, 0, sizeof(Connect_param_t));
+    // connectParam.contact_port = SERVER_PORT;
+    // connectParam.team = TEAM_NOT_SET;
+
     char *ptr;
     char *str;
     int i;
@@ -2231,8 +2233,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bool_resource(rDB, "showMessages", &instruments.showMessages);
     Get_bool_resource(rDB, "showHUD", &instruments.showHUD);
     Get_bool_resource(rDB, "showHUDRadar", &instruments.showHUDRadar);
-    Get_bool_resource(rDB, "verticalHUDLine", &instruments.verticalHUDLine);
-    Get_bool_resource(rDB, "horizontalHUDLine", &instruments.horizontalHUDLine);
     Get_bool_resource(rDB, "fuelMeter", &instruments.fuelMeter);
     Get_bool_resource(rDB, "fuelGauge", &instruments.fuelGauge);
     Get_bool_resource(rDB, "turnSpeedMeter", &instruments.turnSpeedMeter);

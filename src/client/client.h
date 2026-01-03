@@ -52,7 +52,6 @@ typedef struct
     bool filledWorld;
     bool fuelGauge;
     bool fuelMeter;
-    bool horizontalHUDLine;
     bool outlineDecor;
     bool outlineWorld;
     bool packetDropMeter;
@@ -73,7 +72,6 @@ typedef struct
     bool texturedDecor;
     bool texturedWalls;
     bool turnSpeedMeter;
-    bool verticalHUDLine;
 } instruments_t;
 
 typedef struct

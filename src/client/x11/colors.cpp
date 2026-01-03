@@ -66,6 +66,7 @@
 #define XP_COLOR6 "#BB7700"
 #define XP_COLOR7 "#EE9900"
 #define XP_COLOR8 "#770000"
+// #define XP_COLOR8 "#002299" // NG
 #define XP_COLOR9 "#CC4400"
 #define XP_COLOR10 "#DD8800"
 #define XP_COLOR11 "#FFBB11" /* "xpyellow" */

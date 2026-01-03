@@ -70,8 +70,6 @@ static int Config_create_altTurnResistance(int widget_desc, int *height);
 static int Config_create_showMessages(int widget_desc, int *height);
 static int Config_create_showHUD(int widget_desc, int *height);
 static int Config_create_showHUDRadar(int widget_desc, int *height);
-static int Config_create_horizontalHUDLine(int widget_desc, int *height);
-static int Config_create_verticalHUDLine(int widget_desc, int *height);
 static int Config_create_speedFactHUD(int widget_desc, int *height);
 static int Config_create_speedFactPTR(int widget_desc, int *height);
 static int Config_create_fuelNotify(int widget_desc, int *height);
@@ -198,8 +196,6 @@ static int (*config_creator[])(int widget_desc, int *height) = {
     Config_create_oldMessagesColor,
     Config_create_showHUD,
     Config_create_showHUDRadar,
-    Config_create_horizontalHUDLine,
-    Config_create_verticalHUDLine,
     Config_create_speedFactHUD,
     Config_create_speedFactPTR,
     Config_create_fuelNotify,
@@ -678,22 +674,6 @@ static int Config_create_showHUDRadar(int widget_desc, int *height)
                               instruments.showHUDRadar,
                               Config_update_bool,
                               &instruments.showHUDRadar);
-}
-
-static int Config_create_horizontalHUDLine(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "horizontalHUDLine",
-                              instruments.horizontalHUDLine,
-                              Config_update_bool,
-                              &instruments.horizontalHUDLine);
-}
-
-static int Config_create_verticalHUDLine(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "verticalHUDLine",
-                              instruments.verticalHUDLine,
-                              Config_update_bool,
-                              &instruments.verticalHUDLine);
 }
 
 static int Config_create_speedFactHUD(int widget_desc, int *height)
@@ -1492,8 +1472,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_int(fp, "oldMessagesColor", oldMessagesColor);
     Config_save_bool(fp, "showHUD", instruments.showHUD);
     Config_save_bool(fp, "showHUDRadar", instruments.showHUDRadar);
-    Config_save_bool(fp, "verticalHUDLine", instruments.verticalHUDLine);
-    Config_save_bool(fp, "horizontalHUDLine", instruments.horizontalHUDLine);
     Config_save_bool(fp, "fuelMeter", instruments.fuelMeter);
     Config_save_bool(fp, "fuelGauge", instruments.fuelGauge);
     Config_save_bool(fp, "turnSpeedMeter", instruments.turnSpeedMeter);

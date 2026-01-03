@@ -109,6 +109,8 @@ extern int shieldDrawMode;           /* How to draw players shield */
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 extern char *texturePath;            /* Path list of texture directories */
 
+extern int spaceColor;
+
 // static inline void Check_name_string(other_t *other)
 // {
 //     if (other && other->max_chars_in_names != maxCharsInNames)

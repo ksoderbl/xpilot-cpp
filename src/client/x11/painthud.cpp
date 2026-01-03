@@ -62,8 +62,8 @@ extern int score_object;
 extern XGCValues gcv;
 
 int hudColor = BLUE;      /* Color index for HUD drawing */
-int hudHLineColor = BLUE; /* Color index for horiz. HUD line drawing */
-int hudVLineColor = BLUE; /* Color index for vert. HUD line drawing */
+int hudHLineColor = -1;   /* Color index for horiz. HUD line drawing */
+int hudVLineColor = -1;   /* Color index for vert. HUD line drawing */
 int hudItemsColor = BLUE; /* Color index for HUD items drawing */
 // int hudRadarEnemyColor = 3;      /* Color index for enemy hudradar dots */
 // int hudRadarOtherColor = BLUE;   /* Color index for other hudradar dots */
@@ -675,10 +675,9 @@ void Add_HUD_message(const char *message)
 void Paint_HUD(void)
 {
     const int BORDER = 3;
-    int vert_pos, horiz_pos, size;
+    int vert_pos, horiz_pos;
     char str[50];
-    int hud_pos_x;
-    int hud_pos_y;
+    int hud_pos_x, hud_pos_y, size;
     int did_fuel = 0;
     int i, j, maxWidth = -1,
               rect_x, rect_y, rect_width, rect_height;
@@ -690,14 +689,12 @@ void Paint_HUD(void)
     /*
      * Show speed pointer
      */
-    if (ptr_move_fact != 0.0 && selfVisible != 0 && (selfVel.x != 0 || selfVel.y != 0))
-    {
+    if (ptr_move_fact != 0.0 && selfVisible && (selfVel.x != 0 || selfVel.y != 0))
         Segment_add(hudColor,
                     ext_view_width / 2,
                     ext_view_height / 2,
                     (int)(ext_view_width / 2 - ptr_move_fact * selfVel.x),
                     (int)(ext_view_height / 2 + ptr_move_fact * selfVel.y));
-    }
 
     if (instruments.showHUDRadar)
         Paint_hudradar();
@@ -734,8 +731,9 @@ void Paint_HUD(void)
     gcv.line_style = LineOnOffDash;
     XChangeGC(dpy, gameGC, GCLineStyle | GCDashOffset, &gcv);
 
-    if (instruments.horizontalHUDLine)
+    if (hudHLineColor >= BLACK)
     {
+        SET_FG(colors[hudHLineColor].pixel);
         rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(hud_pos_x - hudSize),
                     WINSCALE(hud_pos_y - hudSize + HUD_OFFSET),
@@ -747,8 +745,9 @@ void Paint_HUD(void)
                     WINSCALE(hud_pos_x + hudSize),
                     WINSCALE(hud_pos_y + hudSize - HUD_OFFSET));
     }
-    if (instruments.verticalHUDLine)
+    if (hudVLineColor >= BLACK)
     {
+        SET_FG(colors[hudVLineColor].pixel);
         rd.drawLine(dpy, drawPixmap, gameGC,
                     WINSCALE(hud_pos_x - hudSize + HUD_OFFSET),
                     WINSCALE(hud_pos_y - hudSize),
@@ -894,7 +893,7 @@ void Paint_HUD(void)
         {
             if (j == 0 &&
                 sobj->hud_msg_width > WINSCALE(2 * hudSize - HUD_OFFSET * 2) &&
-                (did_fuel || instruments.verticalHUDLine))
+                (did_fuel || hudVLineColor >= BLACK))
                 ++j;
             rd.drawString(dpy, drawPixmap, gameGC,
                           WINSCALE(hud_pos_x) - sobj->hud_msg_width / 2,

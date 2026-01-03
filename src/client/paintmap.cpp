@@ -77,11 +77,16 @@ void Paint_vfuel(void)
 
 void Paint_vbase(void)
 {
-    int i;
+    int i, id, team;
     if (num_vbase > 0)
     {
         for (i = 0; i < num_vbase; i++)
-            Gui_paint_base(vbase_ptr[i].x, vbase_ptr[i].y, vbase_ptr[i].xi, vbase_ptr[i].yi, vbase_ptr[i].type);
+        {
+            Base_info_by_pos(vbase_ptr[i].xi, vbase_ptr[i].yi, &id, &team);
+            // warn("Paint_vbase: id %d, team %d", id, team);
+            Gui_paint_base(vbase_ptr[i].x, vbase_ptr[i].y, id, team,
+                           vbase_ptr[i].type);
+        }
         RELEASE(vbase_ptr, num_vbase, max_vbase);
     }
 }

@@ -129,6 +129,7 @@ keydefs_t *keyDefs = NULL;
 
 int cacheShips = 0; /* cache some ship bitmaps every frame */
 
+int spaceColor = BLACK;             /* Space (background) color index */
 static int clockColor = WHITE;      /* Clock color index */
 static int scoreColor = WHITE;      /* Score list color indices */
 static int scoreSelfColor = WHITE;  /* Score list own score color index */
@@ -174,7 +175,7 @@ void Paint_frame(void)
         if (prev_damaged || prev_prev_damaged)
         {
             /* clean up ecm damage */
-            SET_FG(colors[BLACK].pixel);
+            SET_FG(colors[spaceColor].pixel);
             XFillRectangle(dpy, drawWindow, gameGC,
                            0, 0, draw_width, draw_height);
         }
@@ -321,7 +322,7 @@ void Paint_frame(void)
 
     if (!damaged)
     {
-        SET_FG(colors[BLACK].pixel);
+        SET_FG(colors[spaceColor].pixel);
         XFillRectangle(dpy, drawPixmap, gameGC,
                        0, 0, draw_width, draw_height);
     }

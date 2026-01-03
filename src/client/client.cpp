@@ -69,7 +69,7 @@ xp_args_t xpArgs;
 Connect_param_t connectParam;
 
 bool newbie;
-int baseWarningType; /* Which type of base warning you prefer */
+int baseWarningType = 2; /* Which type of base warning you prefer */
 int maxCharsInNames;
 int hudRadarDotSize;            /* Size for hudradar dot drawing */
 double hudRadarScale = 3.0;     /* Scale for hudradar drawing */
@@ -1442,9 +1442,12 @@ int Handle_leave(int id)
     return 0;
 }
 
-int Handle_player(int id, int player_team, int mychar, char *nick_name,
-                  char *user_name, char *host_name, char *shape, int myself)
+int Handle_player(int id, int player_team, int mychar,
+                  char *nick_name, char *user_name, char *host_name,
+                  char *shape, int myself)
 {
+    warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name, myself);
+
     other_t *other;
 
     if (BIT(Setup->mode, TEAM_PLAY) && (player_team < 0 || player_team >= MAX_TEAMS))
@@ -1469,7 +1472,11 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
         }
         other = &Others[num_others++];
     }
-    if (self == NULL && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
+
+    // warn("Handle_player: id %d, connectParam.nick_name '%s'", id, connectParam.nick_name);
+
+    // if (self == NULL && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
+    if (self == NULL && (myself || (version < 0x4F10 && strcmp(name, nick_name) == 0)))
     {
         if (other != &Others[0])
         {
@@ -1479,6 +1486,7 @@ int Handle_player(int id, int player_team, int mychar, char *nick_name,
         }
         self = other;
     }
+    warn("Handle_player: self = %p", self);
     memset(other, 0, sizeof(other_t));
     other->id = id;
     other->team = player_team;
