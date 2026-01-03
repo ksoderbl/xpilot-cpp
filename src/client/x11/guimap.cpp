@@ -60,10 +60,10 @@ extern int decorColor; /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
-static int baseNameColor;         /* Color index for base name drawing */
-static int backgroundPointColor;  /* background point drawing */
-static int fuelColor = RED;       /* fuel station drawing */
-static int visibilityBorderColor; /* visibility border drawing */
+static int baseNameColor = 4;         /* Color index for base name drawing */
+static int backgroundPointColor = 4;  /* background point drawing */
+static int fuelColor = RED;           /* fuel station drawing */
+static int visibilityBorderColor = 4; /* visibility border drawing */
 
 void Gui_paint_walls(int x, int y, int type)
 {
@@ -230,8 +230,7 @@ void Gui_paint_cannon(int x, int y, int type)
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         default:
-            errno = 0;
-            error("Bad base dir.");
+            warn("Bad base dir.");
             return;
         }
     }
@@ -455,8 +454,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
                          WINSCALE(Y(y + BLOCK_SZ)), 0);
             break;
         default:
-            errno = 0;
-            error("Bad base dir.");
+            warn("Bad base dir.");
             return;
         }
         /* only draw base teams if ship naming is on, SKS 25/05/94 */
@@ -567,7 +565,6 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
 
     mask = decor[type];
 
-    // if (!BIT(instruments, SHOW_FILLED_DECOR | SHOW_TEXTURED_DECOR))
     if (!(instruments.filledDecor || instruments.texturedDecor))
     {
         if (mask & DECOR_LEFT)
@@ -672,13 +669,9 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
             }
         }
         if (mask & DECOR_RIGHT)
-        {
             fill_top_right = fill_bottom_right = x + BLOCK_SZ;
-        }
         if (fill_top_left == -1)
-        {
             fill_top_left = fill_bottom_left = x;
-        }
         if (fill_top_right == -1 && (last || more_y))
         {
             fill_top_right = x + BLOCK_SZ;
@@ -698,16 +691,12 @@ void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool mor
             rd.fillPolygon(dpy, drawPixmap, gameGC,
                            points, 5,
                            Convex, CoordModeOrigin);
-            fill_top_left =
-                fill_top_right =
-                    fill_bottom_left =
-                        fill_bottom_right = -1;
+            fill_top_left = fill_top_right =
+                fill_bottom_left = fill_bottom_right = -1;
         }
     }
     if (decorTileDoit && last)
-    {
         XSetFillStyle(dpy, gameGC, FillSolid);
-    }
 }
 
 void Gui_paint_setup_check(int x, int y, bool isNext)
@@ -753,23 +742,29 @@ void Gui_paint_border(int x, int y, int xi, int yi)
                 X(xi), Y(yi));
 }
 
-void Gui_paint_visible_border(int x, int y, int xi, int yi)
+static void Gui_paint_rectangle(int x, int y, int xi, int yi, int color)
 {
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(x), Y(y),
                 X(x), Y(yi));
 
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(xi), Y(y),
                 X(xi), Y(yi));
 
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(x), Y(y),
                 X(xi), Y(y));
 
-    Segment_add(hudColor,
+    Segment_add(color,
                 X(x), Y(yi),
                 X(xi), Y(yi));
+}
+
+void Gui_paint_visible_border(int x, int y, int xi, int yi)
+{
+    if (visibilityBorderColor)
+        Gui_paint_rectangle(x, y, xi, yi, visibilityBorderColor);
 }
 
 void Gui_paint_setup_acwise_grav(int x, int y)

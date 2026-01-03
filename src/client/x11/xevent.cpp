@@ -67,7 +67,7 @@ extern Cursor pointerControlCursor;
 //
 keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
-    warn("Lookup_key: event type %d, keysym 0x%03lx, reset %d", event->type, ks, reset);
+    // warn("Lookup_key: event type %d, keysym 0x%03lx, reset %d", event->type, ks, reset);
 
     keys_t ret = KEY_DUMMY;
     static int i = 0;

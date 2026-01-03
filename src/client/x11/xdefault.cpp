@@ -415,21 +415,24 @@ old_option_t oldOptions[] = {
      "No",
      KEY_DUMMY,
      "Should the fighters have marking lights, just like airplanes?\n"},
-    {"sparkProb",
-     NULL,
-     "0.50",
-     KEY_DUMMY,
-     "The chance that sparks are drawn or not.\n"
-     "This gives a sparkling effect.\n"
-     "Valid values are in the range [0.0-1.0]\n"},
+    {
+        "sparkProb",
+        NULL,
+        "1.0", // was "0.50",
+        KEY_DUMMY,
+        "The chance that sparks are drawn or not.\n"
+        "This gives a sparkling effect.\n"
+        "Valid values are in the range [0.0-1.0]\n"
+        // HELLO
+    },
     {"sparkSize",
      NULL,
-     "2",
+     "1", // was "2",
      KEY_DUMMY,
      "Size of sparks in pixels.\n"},
     {"charsPerSecond",
      NULL,
-     "50",
+     "100", // was "50",
      KEY_DUMMY,
      "Speed in which messages appear on screen in characters per second.\n"},
     {"clock",
@@ -592,7 +595,7 @@ old_option_t oldOptions[] = {
      "set the argument for this option to list.\n"},
     {"maxColors",
      NULL,
-     "8",
+     "16",
      KEY_DUMMY,
      "The number of colors to use.  Valid values are 4, 8 and 16.\n"},
     {"black",
@@ -1607,7 +1610,7 @@ void Usage(void)
 static int Find_resource(XrmDatabase db, const char *resource,
                          char *result, unsigned size, int *index)
 {
-    warn("Find_resource: resource = %s", resource);
+    // warn("Find_resource: resource = %s", resource);
 
     int i;
     int len;
@@ -1659,7 +1662,7 @@ static int Get_resource(XrmDatabase db,
 {
     int index;
 
-    warn("Get_resource: resource = %s", resource);
+    // warn("Get_resource: resource = %s", resource);
 
     return Find_resource(db, resource, result, size, &index);
 }
