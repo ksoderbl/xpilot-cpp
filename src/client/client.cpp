@@ -2176,12 +2176,22 @@ int Client_init(char *server, unsigned server_version)
 int Client_setup(void)
 {
     if (Map_init() == -1)
-    {
         return -1;
+
+    if (oldServer)
+    {
+        Map_dots();
+        Map_restore(0, 0, Setup->x, Setup->y);
+        Map_blue(0, 0, Setup->x, Setup->y);
+        /* kps -remove this, you shouldn't change options this way */
+        /* No one wants this on old-style maps anyway, so turn it off.
+         * I do, so turn it on.
+         * This allows people to turn it on in their .xpilotrc for new maps
+         * without affecting old ones. It's still possible to turn in on
+         * from the config menu during play for old maps.
+         * -- But doesn't seem to work anyway if turned on? Well who cares */
+        instruments.texturedWalls = false;
     }
-    Map_dots();
-    Map_restore(0, 0, Setup->x, Setup->y);
-    Map_blue(0, 0, Setup->x, Setup->y);
 
     RadarHeight = (RadarWidth * Setup->height) / Setup->width;
 

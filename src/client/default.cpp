@@ -699,25 +699,25 @@ xp_option_t default_options[] = {
         "This should always be 0, other values are for compatibility.\n"
         "See also turnSpeed.\n"),
 
-    // XP_DOUBLE_OPTION(
-    //     "scaleFactor",
-    //     1.0,
-    //     MIN_SCALEFACTOR,
-    //     MAX_SCALEFACTOR,
-    //     &clData.scaleFactor,
-    //     Set_scaleFactor,
-    //     XP_OPTFLAG_CONFIG_DEFAULT,
-    //     "Specifies scaling factor for the drawing window.\n"),
+    XP_DOUBLE_OPTION(
+        "scaleFactor",
+        1.0,
+        MIN_SCALEFACTOR,
+        MAX_SCALEFACTOR,
+        &clData.scaleFactor,
+        Set_scaleFactor,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Specifies scaling factor for the drawing window.\n"),
 
-    // XP_DOUBLE_OPTION(
-    //     "altScaleFactor",
-    //     2.0,
-    //     MIN_SCALEFACTOR,
-    //     MAX_SCALEFACTOR,
-    //     &clData.altScaleFactor,
-    //     Set_altScaleFactor,
-    //     XP_OPTFLAG_CONFIG_DEFAULT,
-    //     "Specifies alternative scaling factor for the drawing window.\n"),
+    XP_DOUBLE_OPTION(
+        "altScaleFactor",
+        2.0,
+        MIN_SCALEFACTOR,
+        MAX_SCALEFACTOR,
+        &clData.altScaleFactor,
+        Set_altScaleFactor,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Specifies alternative scaling factor for the drawing window.\n"),
 
     XP_INT_OPTION(
         "maxFPS",
