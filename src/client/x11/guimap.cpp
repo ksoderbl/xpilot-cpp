@@ -359,9 +359,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             warn("Bad base dir.");
             return;
         }
-        /* only draw base teams if ship naming is on, SKS 25/05/94 */
-        if (!instruments.showShipName ||
-            Base_info_by_pos(xi, yi, &id, &team) == -1)
+        if (Base_info_by_pos(xi, yi, &id, &team) == -1)
             return;
 
         /* operate in pixels from here out */
@@ -414,6 +412,9 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             x -= BORDER + (other ? other->name_width : 0) + size;
             y += -WINSCALE(BLOCK_SZ / 2) + gameFont->ascent / 2;
             break;
+        default:
+            warn("Bad base dir.");
+            return;
         }
         if (size)
         {
@@ -457,9 +458,7 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             warn("Bad base dir.");
             return;
         }
-        /* only draw base teams if ship naming is on, SKS 25/05/94 */
-        if (!instruments.showShipName ||
-            Base_info_by_pos(xi, yi, &id, &team) == -1)
+        if (Base_info_by_pos(xi, yi, &id, &team) == -1)
             return;
 
         /* operate in pixels from here out */
@@ -510,7 +509,16 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
             x -= BORDER + (other ? other->name_width : 0) + size;
             y += -WINSCALE(BLOCK_SZ / 2) + gameFont->ascent / 2;
             break;
+        default:
+            warn("BUG: bad base setup type in Gui_paint_base()");
+            break;
         }
+
+        /*
+         * Determine whether to paint remaining lives or D (dead), P (paused) or
+         * W (waiting for next round) at base.
+         */
+
         if (size)
         {
             rd.drawString(dpy, drawPixmap, gameGC, x, y, s, other ? 2 : 1);
@@ -523,7 +531,8 @@ void Gui_paint_base(int x, int y, int xi, int yi, int type)
     }
 }
 
-void Gui_paint_decor(int x, int y, int xi, int yi, int type, bool last, bool more_y)
+void Gui_paint_decor(int x, int y, int xi, int yi, int type,
+                     bool last, bool more_y)
 {
     XPoint points[5];
 

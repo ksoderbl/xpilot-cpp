@@ -196,7 +196,7 @@ void Gui_paint_item_object(int type, int x, int y)
     Gui_paint_item(type, drawPixmap, gameGC, WINSCALE(X(x)), WINSCALE(Y(y)));
 }
 
-void Gui_paint_ball(int x, int y)
+void Gui_paint_ball(int x, int y, int style)
 {
     if (!texturedObjects)
     {
@@ -386,6 +386,14 @@ void Gui_paint_wreck(int x, int y, bool deadly, int wtype, int rot, int size)
     rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
 }
 
+void Gui_paint_asteroids_begin(void)
+{
+}
+
+void Gui_paint_asteroids_end(void)
+{
+}
+
 void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
 {
     int cnt, tx, ty;
@@ -431,6 +439,10 @@ static void Gui_paint_nastyshot(int color, int x, int y, int size)
 
 void Gui_paint_fastshot(int color, int x, int y)
 {
+    /* this is for those pesky invisible shots */
+    if (color == 0)
+        return;
+
     if (!texturedObjects)
     {
         int z = shotSize / 2;
@@ -441,21 +453,28 @@ void Gui_paint_fastshot(int color, int x, int y)
     }
     else
     {
-        int s_size = (shotSize > 8) ? 8 : shotSize;
+        int s_size = MIN(shotSize, 16);
         int z = s_size / 2;
-        Bitmap_paint(drawPixmap, BM_BULLET, WINSCALE(x) - z, WINSCALE(y) - z, s_size - 1);
+
+        Bitmap_paint(drawPixmap, BM_BULLET, WINSCALE(x) - z,
+                     WINSCALE(y) - z, s_size - 1);
     }
 }
 
-void Gui_paint_teamshot(int color, int x, int y)
+void Gui_paint_teamshot(int x, int y)
 {
+    int color = teamShotColor;
+
+    if (color == 0)
+        return;
+
     if (!texturedObjects)
     {
         Gui_paint_nastyshot(color, x, y, shotSize / 2);
     }
     else
     {
-        int s_size = (teamShotSize > 8) ? 8 : shotSize;
+        int s_size = MIN(teamShotSize, 16);
         int z = s_size / 2;
         Bitmap_paint(drawPixmap, BM_BULLET_OWN, WINSCALE(x) - z,
                      WINSCALE(y) - z, s_size - 1);
@@ -926,7 +945,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
      * Determine if the name of the player should be drawn below
      * his/her ship.
      */
-    if (instruments.showShipName && self != NULL && self->id != id && other != NULL)
+    if (self != NULL && self->id != id && other != NULL)
         Gui_paint_ship_name(x, y, other);
 
     if (roundDelay > 0 && roundDelay % FPS < FPS / 2)

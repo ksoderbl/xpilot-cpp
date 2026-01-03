@@ -554,16 +554,6 @@ old_option_t oldOptions[] = {
      "Are shields drawn in a solid line.\n"
      "Not setting a value for this option will select the best value\n"
      "automatically for your particular display system.\n"},
-    {"showShipName",
-     NULL,
-     "Yes",
-     KEY_DUMMY,
-     "Should all ships have the name of the player drawn below them.\n"},
-    {"showMineName",
-     NULL,
-     "Yes",
-     KEY_DUMMY,
-     "Should the name of the owner of the mine be drawn below the mine.\n"},
     {"showMessages",
      NULL,
      "Yes",
@@ -1492,9 +1482,7 @@ void Initialize_global_variables(void)
     instruments.showItems = false;
     instruments.showLivesByShip = false;
     instruments.showMessages = true;
-    instruments.showMineName = false;
     instruments.showMyShipShape = false;
-    instruments.showShipName = false;
     instruments.showShipShapes = false;
     instruments.showShipShapesHack = false;
     instruments.slidingRadar = true;
@@ -2240,8 +2228,6 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
 
     // instruments = 0;
     memset(&instruments, 0, sizeof(instruments_t));
-    Get_bool_resource(rDB, "showShipName", &instruments.showShipName);
-    Get_bool_resource(rDB, "showMineName", &instruments.showMineName);
     Get_bool_resource(rDB, "showMessages", &instruments.showMessages);
     Get_bool_resource(rDB, "showHUD", &instruments.showHUD);
     Get_bool_resource(rDB, "showHUDRadar", &instruments.showHUDRadar);

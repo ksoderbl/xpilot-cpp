@@ -65,8 +65,6 @@ position_t *wreckageShapes[NUM_WRECKAGE_SHAPES][NUM_WRECKAGE_POINTS];
 
 bool markingLights;
 
-extern setup_t *Setup;
-
 static int wrap(int *xp, int *yp)
 {
     int x = *xp, y = *yp;
@@ -85,82 +83,6 @@ static int wrap(int *xp, int *yp)
     }
     return 1;
 }
-
-// /* might want to move this one to gui_objects.c */
-
-// /*db960828 added color parameter cause Windows needs to blt a different
-//          bitmap based on the color. Unix ignores this parameter*/
-// void Paint_item_symbol(int type, Drawable d, GC mygc, int x, int y, int color)
-// {
-//     if (!texturedObjects)
-//     {
-//         gcv.stipple = itemBitmaps[type];
-//         gcv.fill_style = FillStippled;
-//         gcv.ts_x_origin = x;
-//         gcv.ts_y_origin = y;
-//         XChangeGC(dpy, mygc,
-//                   GCStipple | GCFillStyle | GCTileStipXOrigin | GCTileStipYOrigin,
-//                   &gcv);
-//         rd.paintItemSymbol(type, d, mygc, x, y, color);
-//         XFillRectangle(dpy, d, mygc, x, y, ITEM_SIZE, ITEM_SIZE);
-//         gcv.fill_style = FillSolid;
-//         XChangeGC(dpy, mygc, GCFillStyle, &gcv);
-//     }
-//     else
-//     {
-//         Bitmap_paint(d, BM_ALL_ITEMS, x, y, type);
-//     }
-// }
-
-// void Paint_item(int type, Drawable d, GC mygc, int x, int y)
-// {
-//     const int SIZE = ITEM_TRIANGLE_SIZE;
-//     XPoint points[5];
-
-// #ifndef NO_ITEM_TRIANGLES
-//     points[0].x = x - SIZE;
-//     points[0].y = y - SIZE;
-//     points[1].x = x;
-//     points[1].y = y + SIZE;
-//     points[2].x = x + SIZE;
-//     points[2].y = y - SIZE;
-//     points[3] = points[0];
-//     SET_FG(colors[BLUE].pixel);
-//     rd.drawLines(dpy, d, mygc, points, 4, CoordModeOrigin);
-// #endif
-
-//     SET_FG(colors[RED].pixel);
-// #if 0
-//     str[0] = itemtype_ptr[i].type + '0';
-//     str[1] = '\0';
-//     rd.drawString(dpy, d, mygc,
-//                 x - XTextWidth(gameFont, str, 1)/2,
-//                 y + SIZE - 1,
-//                 str, 1);
-// #endif
-//     Paint_item_symbol(type, d, mygc,
-//                       x - ITEM_SIZE / 2,
-//                       y - SIZE + 2, ITEM_PLAYFIELD);
-// }
-
-// static void Paint_items(void)
-// {
-//     int i, x, y;
-
-//     if (num_itemtype > 0)
-//     {
-//         SET_FG(colors[RED].pixel);
-//         for (i = 0; i < num_itemtype; i++)
-//         {
-//             x = itemtype_ptr[i].x;
-//             y = itemtype_ptr[i].y;
-//             if (wrap(&x, &y))
-//                 Paint_item((uint8_t)itemtype_ptr[i].type, drawPixmap, gameGC,
-//                            WINSCALE(X(x)), WINSCALE(Y(y)));
-//         }
-//         RELEASE(itemtype_ptr, num_itemtype, max_itemtype);
-//     }
-// }
 
 static void Paint_items(void)
 {
@@ -182,19 +104,21 @@ static void Paint_items(void)
 
 static void Paint_balls(void)
 {
-    int i, j, id, x, y, xs, ys;
+    int i, j, id, style, x, y, xs, ys;
 
     if (num_ball > 0)
     {
+
         for (i = 0; i < num_ball; i++)
         {
             x = ball_ptr[i].x;
             y = ball_ptr[i].y;
             id = ball_ptr[i].id;
+            style = ball_ptr[i].style;
 
             if (wrap(&x, &y))
             {
-                Gui_paint_ball(x, y);
+                Gui_paint_ball(x, y, style);
 
                 if (id == -1)
                     continue;
@@ -240,7 +164,6 @@ static void Paint_mines(void)
                  * We do not know who is safe for mines sent with id==0
                  */
                 name = NULL;
-                if (instruments.showMineName)
                 {
                     if (mine_ptr[i].id != 0)
                     {
@@ -437,8 +360,9 @@ static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
 
 static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
 {
-    int x, y, j, color;
+    int x, y, j /*, color */;
 
+    (void)areas;
     /*
      * Teamshots are in range DEBRIS_TYPES to DEBRIS_TYPES*2-1 in fastshot.
      */
@@ -446,10 +370,9 @@ static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
     {
         x = BASE_X(i);
         y = BASE_Y(i);
-        color = COLOR(i);
+        /*color = COLOR(i);*/
         for (j = 0; j < num_fastshot[t_]; j++)
-            Gui_paint_teamshot(color,
-                               x + fastshot_ptr[t_][j].x,
+            Gui_paint_teamshot(x + fastshot_ptr[t_][j].x,
                                y - fastshot_ptr[t_][j].y);
         RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
     }

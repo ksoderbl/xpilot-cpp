@@ -109,8 +109,6 @@ static int Config_create_oldMessagesColor(int widget_desc, int *height);
 #ifdef SOUND
 static int Config_create_maxVolume(int widget_desc, int *height);
 #endif
-static int Config_create_showShipName(int widget_desc, int *height);
-static int Config_create_showMineName(int widget_desc, int *height);
 static int Config_create_fuelMeter(int widget_desc, int *height);
 static int Config_create_powerMeter(int widget_desc, int *height);
 static int Config_create_turnSpeedMeter(int widget_desc, int *height);
@@ -237,8 +235,6 @@ static int (*config_creator[])(int widget_desc, int *height) = {
 #ifdef SOUND
     Config_create_maxVolume,
 #endif
-    Config_create_showShipName,
-    Config_create_showMineName,
     Config_create_fuelMeter,
     Config_create_powerMeter,
     Config_create_turnSpeedMeter,
@@ -953,22 +949,6 @@ static int Config_create_maxFPS(int widget_desc, int *height)
                              Config_update_maxFPS, NULL);
 }
 
-static int Config_create_showShipName(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "showShipName",
-                              instruments.showShipName,
-                              Config_update_bool,
-                              &instruments.showShipName);
-}
-
-static int Config_create_showMineName(int widget_desc, int *height)
-{
-    return Config_create_bool(widget_desc, height, "showMineName",
-                              instruments.showMineName,
-                              Config_update_bool,
-                              &instruments.showMineName);
-}
-
 static int Config_create_fuelMeter(int widget_desc, int *height)
 {
     return Config_create_bool(widget_desc, height, "fuelMeter",
@@ -1506,8 +1486,6 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Config_save_double(fp, "fuelNotify", fuelNotify);
     Config_save_double(fp, "fuelWarning", fuelWarning);
     Config_save_double(fp, "fuelCritical", fuelCritical);
-    Config_save_bool(fp, "showShipName", instruments.showShipName);
-    Config_save_bool(fp, "showMineName", instruments.showMineName);
     Config_save_bool(fp, "showMessages", instruments.showMessages);
     Config_save_int(fp, "maxMessages", maxMessages);
     Config_save_int(fp, "messagesToStdout", messagesToStdout);

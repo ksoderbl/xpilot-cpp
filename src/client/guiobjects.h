@@ -25,7 +25,7 @@
 #define GUIOBJECTS_H
 
 void Gui_paint_item_object(int type, int x, int y);
-void Gui_paint_ball(int x, int y);
+void Gui_paint_ball(int x, int y, int style);
 void Gui_paint_ball_connector(int x1, int y1, int x2, int y2);
 
 void Gui_paint_mine(int x, int y, int teammine, char *name);
@@ -34,10 +34,12 @@ void Gui_paint_spark(int color, int x, int y);
 
 void Gui_paint_wreck(int x, int y, bool deadly, int wtype, int rot, int size);
 
+void Gui_paint_asteroids_begin(void);
+void Gui_paint_asteroids_end(void);
 void Gui_paint_asteroid(int x, int y, int type, int rot, int size);
 
 void Gui_paint_fastshot(int color, int x, int y);
-void Gui_paint_teamshot(int color, int x, int y);
+void Gui_paint_teamshot(int x, int y);
 
 void Gui_paint_missiles_begin(void);
 void Gui_paint_missiles_end(void);
@@ -48,6 +50,7 @@ void Gui_paint_lasers_end(void);
 void Gui_paint_laser(int color, int x1, int y1, int len, int dir);
 
 void Gui_paint_paused(int x, int y, int count);
+void Gui_paint_appearing(int x, int y, int id, int count);
 
 void Gui_paint_ecm(int x, int y, int size);
 
@@ -62,6 +65,9 @@ void Gui_paint_all_connectors_begin(void);
 void Gui_paint_ships_begin(void);
 void Gui_paint_ships_end(void);
 
-void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased, int shield, int deflector, int eshield);
+void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
+                    int shield, int deflector, int eshield);
+
+void Store_guiobject_options(void);
 
 #endif

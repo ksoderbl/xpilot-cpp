@@ -66,9 +66,7 @@ typedef struct
     bool showItems;
     bool showLivesByShip;
     bool showMessages;
-    bool showMineName;
     bool showMyShipShape;
-    bool showShipName;
     bool showShipShapes;
     bool showShipShapesHack;
     bool slidingRadar;
