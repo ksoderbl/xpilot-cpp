@@ -273,8 +273,22 @@ void Go_home(player_t *pl)
         Robot_go_home(pl);
 }
 
+void Base_set_option(base_t *base, const char *name, const char *value)
+{
+    // Item_t item;
+
+    // item = Item_by_option_name(name);
+    // if (item != NO_ITEM)
+    // {
+    //     base->initial_items[item] = atoi(value);
+    //     return;
+    // }
+
+    warn("This server doesn't support option %s for bases.", name);
+}
+
 /*
- * Compute the current sensor range for player `pl'.  This is based on the
+ * Compute the current sensor range for player 'pl'.  This is based on the
  * amount of fuel, the number of sensor items (each one adds 25%), and the
  * minimum and maximum visibility limits in effect.
  */

@@ -29,6 +29,8 @@
 
 #include <unistd.h>
 
+#include "xpconfig.h"
+
 #include "commonmacros.h"
 #include "strdup.h"
 #include "strlcpy.h"

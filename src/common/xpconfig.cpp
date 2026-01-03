@@ -25,6 +25,8 @@
 #include <cstring>
 #include <cctype>
 
+#include "config.h"
+
 #include "xpconfig.h"
 #include "xperror.h"
 

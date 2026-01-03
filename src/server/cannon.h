@@ -100,4 +100,6 @@ void Cannon_dies(cannon_t *cannon, player_t *pl);
 //    return Cannon_by_index(ind);
 // }
 
+void Cannon_set_option(cannon_t *cannon, const char *name, const char *value);
+
 #endif

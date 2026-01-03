@@ -700,10 +700,12 @@ static inline bool Is_cannon_id(int id)
 }
 
 /*
- * Prototypes for player.cpp
+ * Prototypes for player.c
  */
 void Pick_startpos(player_t *pl);
 void Go_home(player_t *pl);
+Item_t Item_by_option_name(const char *name);
+void Base_set_option(base_t *base, const char *name, const char *value);
 void Compute_sensor_range(player_t *pl);
 void Player_add_tank(player_t *pl, double tank_fuel);
 void Player_remove_tank(player_t *pl, int which_tank);
@@ -719,16 +721,30 @@ void Reset_all_players(void);
 void Check_team_members(int);
 void Compute_game_status(void);
 void Delete_player(player_t *pl);
+void Add_spectator(player_t *pl);
+void Delete_spectator(player_t *pl);
 void Detach_ball(player_t *pl, ballobject_t *ball);
 void Kill_player(player_t *pl, bool add_rank_death);
 void Player_death_reset(player_t *pl, bool add_rank_death);
 void Count_rounds(void);
 void Team_game_over(int winning_team, const char *reason);
 void Individual_game_over(int winner);
-void Race_game_over(void);
 bool Team_immune(int id1, int id2);
 
-bool Players_are_teammates(player_t *pl_i, player_t *pl_j);
-bool Players_are_allies(player_t *pl_i, player_t *pl_j);
+static inline void Player_set_float_dir(player_t *pl, double new_float_dir)
+{
+    // if (options.ngControls && new_float_dir != pl->float_dir)
+    // {
+    //     pl->float_dir = new_float_dir;
+    //     pl->float_dir_cos = cos(pl->float_dir * 2.0 * PI / RES);
+    //     pl->float_dir_sin = sin(pl->float_dir * 2.0 * PI / RES);
+    // }
+    // else
+    pl->float_dir = new_float_dir;
+}
+
+void Player_print_state(player_t *pl, const char *funcname);
+void Player_set_state(player_t *pl, int state);
+void Player_set_modbank(player_t *pl, int bank, const char *str);
 
 #endif

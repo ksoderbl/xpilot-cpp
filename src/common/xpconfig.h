@@ -24,6 +24,9 @@
 #ifndef XPCONFIG_H
 #define XPCONFIG_H
 
+// generated file
+#include "config.h"
+
 #ifndef CONF_DATADIR
 #error "CONF_DATADIR NOT DEFINED. GIVING UP."
 #endif

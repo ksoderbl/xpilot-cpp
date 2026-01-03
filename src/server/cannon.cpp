@@ -783,3 +783,40 @@ void Cannon_dies(cannon_t *c, player_t *pl)
                   10.0, 25.0,
                   8.0, 68.0);
 }
+
+void Cannon_set_option(cannon_t *cannon, const char *name, const char *value)
+{
+    Item_t item;
+    const char *origname = name;
+
+    // /* Remove possible cannon prefix from option name. */
+    // if (!strncasecmp(name, "cannon", 6))
+    //     name += 6;
+
+    // item = Item_by_option_name(name);
+    // if (item != NO_ITEM)
+    // {
+    //     cannon->initial_items[item] = atoi(value);
+    //     return;
+    // }
+
+    // if (!strcasecmp(name, "smartness"))
+    // {
+    //     int smartness = atoi(value);
+
+    //     LIMIT(smartness, 0, CANNON_SMARTNESS_MAX);
+    //     cannon->smartness = smartness;
+    //     return;
+    // }
+
+    // if (!strcasecmp(name, "shotspeed"))
+    // {
+    //     float shot_speed = atof(value);
+
+    //     /* limit ? */
+    //     cannon->shot_speed = shot_speed;
+    //     return;
+    // }
+
+    warn("This server doesn't support option %s for cannons.", origname);
+}
