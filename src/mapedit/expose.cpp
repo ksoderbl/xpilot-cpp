@@ -23,7 +23,6 @@
  * 1997:
  *      William Docter
  *
- * $Id: expose.c,v 5.2 2002/02/26 00:41:18 millerjl Exp $
  */
 
 #include "main.h"

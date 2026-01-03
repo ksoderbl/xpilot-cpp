@@ -1,5 +1,4 @@
-/* $Id: list.c,v 5.1 2001/05/14 19:28:45 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

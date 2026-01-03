@@ -1,5 +1,4 @@
-/* $Id: xevent.h,v 1.1 2001/06/02 20:40:04 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

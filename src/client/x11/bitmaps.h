@@ -1,5 +1,4 @@
-/* $Id: blockbitmaps.h,v 5.1 2002/02/10 19:29:39 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

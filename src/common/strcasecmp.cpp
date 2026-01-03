@@ -1,5 +1,4 @@
-/* $Id: strcasecmp.c,v 5.2 2001/06/02 21:02:25 bertg Exp $
- *
+/*
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell

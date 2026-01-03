@@ -42,7 +42,6 @@
     slouken@libsdl.org
 */
 
-/* $Id: text.c,v 1.36 2005/09/08 11:09:05 maximan Exp $ */
 /* modified for xpilot by Erik Andersson deity_at_home.se */
 
 #ifdef _WINDOWS

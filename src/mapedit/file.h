@@ -22,8 +22,6 @@
  *      Robert Templeman
  * 1997:
  *      William Docter
- *
- * $Id: file.h,v 5.0 2001/04/07 20:01:00 dik Exp $
  */
 
 /* stuff from xpilots 3.0 source */
