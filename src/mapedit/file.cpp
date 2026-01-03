@@ -859,6 +859,9 @@ int AddOption(const char *name, const char *value)
     }
     for (option = 0; option < numprefs; option++)
     {
+        // printf("AddOption: strcmp: nameCopy: '%s', prefs[option].name: '%s'\n", nameCopy, prefs[option].name);
+        // printf("AddOption: strcmp: nameCopy: '%s', prefs[option].altname: '%s'\n", nameCopy, prefs[option].altname);
+
         if (!strcmp(nameCopy, prefs[option].name))
             break;
         if (!strcmp(nameCopy, prefs[option].altname))

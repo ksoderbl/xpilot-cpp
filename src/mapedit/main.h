@@ -368,4 +368,4 @@ typedef struct
 } prefs_t;
 
 extern int numprefs;
-extern prefs_t prefs[260];
+extern prefs_t prefs[];

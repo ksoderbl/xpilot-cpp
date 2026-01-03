@@ -24,6 +24,9 @@
  *      William Docter
  */
 
+// in common
+#include "const.h"
+
 #include "main.h"
 #include "default_colors.h"
 
@@ -50,8 +53,8 @@ int prefssheet;
 map_data_t clipdata;
 xpmap_t map;
 
-int num_default_settings = 259;
-charlie default_settings[259] = {
+// int num_default_settings = 259;
+charlie default_settings[] = {
     {"gravity", "-0.14"},
     {"shipmass", "20.0"},
     {"ballmass", "50.0"},
@@ -312,8 +315,8 @@ charlie default_settings[259] = {
     {"maxpausetime", "3600"}};
 
 /* JLM Reorganized for new options */
-int numprefs = 260;
-prefs_t prefs[260] = {
+// int numprefs = 260;
+prefs_t prefs[] = {
     {"mapwidth", "", "Width:", 3, MAPWIDTH, map.width_str, 0, 0, 0, 0, 0},
     {"mapheight", "", "Height:", 3, MAPHEIGHT, map.height_str, 0, 1, 0, 0, 0},
     {"mapname", "", "Name:", 255, STRING, map.mapName, 0, 2, 0, 0, 0},
@@ -584,6 +587,8 @@ prefs_t prefs[260] = {
 
     {"mapdata", "", NULL, 0, MAPDATA, NULL, 0, 0, 0, 0, 0}};
 
+int numprefs = NELEM(prefs);
+
 /***************************************************************************/
 /* int main                                                                */
 /* Arguments :                                                             */
@@ -651,6 +656,8 @@ int main(int argc, char *argv[])
 void Setup_default_server_options()
 {
     int i;
+
+    int num_default_settings = NELEM(default_settings);
 
     for (i = 0; i < num_default_settings; i++)
         AddOption(default_settings[i].name, default_settings[i].value);
