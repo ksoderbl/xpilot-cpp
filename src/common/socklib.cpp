@@ -254,9 +254,7 @@ int sock_set_non_blocking(sock_t *sock, int flag)
 
 #ifdef USE_FCNTL_FNDELAY
     if (fcntl(sock->fd, F_SETFL, (flag != 0) ? FNDELAY : 0) != -1)
-    {
         return SOCK_IS_OK;
-    }
     sock_set_error(sock, errno, SOCK_CALL_FCNTL, __LINE__);
     sprintf(buf, "fcntl FNDELAY failed in socklib.c line %d", __LINE__);
     perror(buf);
@@ -272,9 +270,7 @@ int sock_set_non_blocking(sock_t *sock, int flag)
 
 #ifdef USE_FCNTL_O_NONBLOCK
     if (fcntl(sock->fd, F_SETFL, (flag != 0) ? O_NONBLOCK : 0) != -1)
-    {
         return SOCK_IS_OK;
-    }
     sock_set_error(sock, errno, SOCK_CALL_FCNTL, __LINE__);
     sprintf(buf, "fcntl O_NONBLOCK failed in socklib.c line %d", __LINE__);
     perror(buf);
@@ -282,9 +278,7 @@ int sock_set_non_blocking(sock_t *sock, int flag)
 
 #ifdef USE_FCNTL_O_NDELAY
     if (fcntl(sock->fd, F_SETFL, (flag != 0) ? O_NDELAY : 0) != -1)
-    {
         return SOCK_IS_OK;
-    }
     sock_set_error(sock, errno, SOCK_CALL_FCNTL, __LINE__);
     sprintf(buf, "fcntl O_NDELAY failed in socklib.c line %d", __LINE__);
     perror(buf);

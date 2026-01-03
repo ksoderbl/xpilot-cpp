@@ -26,10 +26,6 @@
 
 #include <cstdlib>
 
-void *xp_malloc(size_t size);
-void *xp_realloc(void *oldptr, size_t size);
-void *xp_calloc(size_t nmemb, size_t size);
-void xp_free(void *p);
 void *xp_safe_malloc(size_t size);
 void *xp_safe_realloc(void *oldptr, size_t size);
 void *xp_safe_calloc(size_t nmemb, size_t size);
