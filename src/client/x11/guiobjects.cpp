@@ -707,6 +707,8 @@ static void Gui_paint_rounddelay(int x, int y)
 /*  Here starts the paint functions for ships  (MM) */
 static void Gui_paint_ship_name(int x, int y, other_t *other)
 {
+    // warn("Gui_paint_ship_name: name: %s", other->nick_name);
+
     int shipNameColor = BLUE;
     FIND_NAME_WIDTH(other);
     SET_FG(colors[shipNameColor].pixel);
@@ -945,7 +947,8 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
      * Determine if the name of the player should be drawn below
      * his/her ship.
      */
-    if (self != NULL && self->id != id && other != NULL)
+    // if (self != NULL && self->id != id && other != NULL)
+    if (other != NULL)
         Gui_paint_ship_name(x, y, other);
 
     if (roundDelay > 0 && roundDelay % FPS < FPS / 2)
