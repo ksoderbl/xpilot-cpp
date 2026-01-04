@@ -58,26 +58,24 @@ list_iter_t server_it;
 void string_to_lower(char *s)
 {
     for (; *s; s++)
-    {
         *s = tolower(*s);
-    }
 }
 
 /*
  * From a hostname return the part after the last dot.
  * E.g.: Vincent.CS.Berkeley.EDU will return EDU.
  */
-char *Get_domain_from_hostname(char *hostname)
+char *Get_domain_from_hostname(char *host_name)
 {
     static char last_domain[] = "\x7E\x7E";
     char *dom;
 
-    if ((dom = strrchr(hostname, '.')) != NULL)
+    if ((dom = strrchr(host_name, '.')) != NULL)
     {
         if (dom[1] == '\0')
         {
             dom[0] = '\0';
-            dom = strrchr(hostname, '.');
+            dom = strrchr(host_name, '.');
         }
     }
     if (dom)
@@ -115,7 +113,7 @@ int Welcome_sort_server_list(void)
 
     if (!new_list)
     {
-        // Not_enough_memory();
+        error("Not enough memory\n");
         return -1;
     }
     while ((vp = List_pop_front(old_list)) != NULL)
@@ -128,7 +126,8 @@ int Welcome_sort_server_list(void)
             sip_old->hostname[1] = 'P';
         }
         sip_old->domain = Get_domain_from_hostname(sip_old->hostname);
-        for (it = List_begin(new_list); it != List_end(new_list); LI_FORWARD(it))
+        for (it = List_begin(new_list); it != List_end(new_list);
+             LI_FORWARD(it))
         {
             sip_new = SI_DATA(it);
             delta = sip_new->users - sip_old->users;
@@ -172,18 +171,18 @@ int Welcome_sort_server_list(void)
         }
         if (!List_insert(new_list, it, sip_old))
         {
-            // Not_enough_memory();
+            error("Not enough memory\n");
             Delete_server_info(sip_old);
         }
     }
 
-#if DEVELOPMENT
-    if (getenv("XPILOTWELCOMEDEBUG") != NULL)
+#if 1
     {
         /* print for debugging */
         printf("\n");
         printf("Printing server list:\n");
-        for (it = List_begin(new_list); it != List_end(new_list); LI_FORWARD(it))
+        for (it = List_begin(new_list); it != List_end(new_list);
+             LI_FORWARD(it))
         {
             sip_new = SI_DATA(it);
             printf("%2d %5s %-31s %u", sip_new->users, sip_new->domain,
@@ -221,7 +220,7 @@ int Add_server_info(server_info_t *sip)
         server_list = List_new();
         if (!server_list)
         {
-            // Not_enough_memory();
+            error("Not enough memory\n");
             return -1;
         }
     }
@@ -258,7 +257,7 @@ int Add_server_info(server_info_t *sip)
     }
     if (!List_insert(server_list, it, sip))
     {
-        // Not_enough_memory();
+        error("Not enough memory\n");
         return -1;
     }
 
@@ -313,7 +312,7 @@ void Add_meta_line(char *meta_line)
 
     if (!text)
     {
-        // Not_enough_memory();
+        error("Not enough memory\n");
         return;
     }
 
@@ -340,7 +339,7 @@ void Add_meta_line(char *meta_line)
 
     if ((sip = (server_info_t *)malloc(sizeof(server_info_t))) == NULL)
     {
-        // Not_enough_memory();
+        error("Not enough memory\n");
         free(text);
         return;
     }
@@ -553,9 +552,8 @@ void Ping_servers(void)
              * as "not responding" instead of just blank.
              */
             if (it_sip->pingtime == PING_UNKNOWN)
-            {
                 it_sip->pingtime = PING_NORESP;
-            }
+
             it_sip->serial = serial;
             outstanding++;
             LI_FORWARD(it);
@@ -755,9 +753,7 @@ int Get_meta_data(void)
         for (i = 0; i < NUM_METAS; i++)
         {
             if (metas[i].sock.fd == SOCK_FD_INVALID)
-            {
                 continue;
-            }
             else if (FD_ISSET(metas[i].sock.fd, &wset_out))
             {
                 /* promote socket from writable to readable. */
@@ -782,7 +778,8 @@ int Get_meta_data(void)
                     md[i].end = md[i].buf;
                 }
                 buffer_space = &md[i].buf[sizeof(md[i].buf)] - md[i].end;
-                bytes_read = read(metas[i].sock.fd, md[i].end, buffer_space);
+                bytes_read =
+                    read(metas[i].sock.fd, md[i].end, buffer_space);
                 if (bytes_read <= 0)
                 {
                     if (bytes_read == -1)
@@ -799,8 +796,7 @@ int Get_meta_data(void)
                     {
                         --senders;
                         if (senders == 0 &&
-                            server_list &&
-                            List_size(server_list) >= 30)
+                            server_list && List_size(server_list) >= 30)
                         {
                             /*
                              * Assume that this meta has sent us all there is
@@ -809,9 +805,7 @@ int Get_meta_data(void)
                         }
                     }
                     if (connections == 0)
-                    {
                         break;
-                    }
                 }
                 else
                 {
@@ -845,9 +839,8 @@ int Get_meta_data(void)
 
                         *newline = '\0';
                         if (newline > md[i].ptr && newline[-1] == '\r')
-                        {
                             newline[-1] = '\0';
-                        }
+
                         Add_meta_line(md[i].ptr);
                         md[i].ptr = newline + 1;
                     }
@@ -877,9 +870,8 @@ int Get_meta_data(void)
 
     server_count = 0;
     if (server_list)
-    {
         server_count = List_size(server_list);
-    }
+
     if (server_count > 0)
     {
         sprintf(buf, "Received information about %d Internet servers",
@@ -887,9 +879,8 @@ int Get_meta_data(void)
         server_list_creation_time = time(NULL);
     }
     else
-    {
         sprintf(buf, "Could not contact any Internet Meta server");
-    }
+
     // Welcome_create_label(1, buf);
 
     return server_count;
