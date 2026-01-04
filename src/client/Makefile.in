@@ -111,9 +111,10 @@ libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
 	datagram.$(OBJEXT) debugaudio.$(OBJEXT) default.$(OBJEXT) \
 	event.$(OBJEXT) gfx2d.$(OBJEXT) mapdata.$(OBJEXT) \
-	messages.$(OBJEXT) netclient.$(OBJEXT) option.$(OBJEXT) \
-	paint.$(OBJEXT) paintmap.$(OBJEXT) paintobjects.$(OBJEXT) \
-	query.$(OBJEXT) talkmacros.$(OBJEXT) textinterface.$(OBJEXT)
+	messages.$(OBJEXT) meta.$(OBJEXT) netclient.$(OBJEXT) \
+	option.$(OBJEXT) paint.$(OBJEXT) paintmap.$(OBJEXT) \
+	paintobjects.$(OBJEXT) query.$(OBJEXT) talkmacros.$(OBJEXT) \
+	textinterface.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -134,11 +135,11 @@ am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
 	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
 	./$(DEPDIR)/default.Po ./$(DEPDIR)/event.Po \
 	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/mapdata.Po \
-	./$(DEPDIR)/messages.Po ./$(DEPDIR)/netclient.Po \
-	./$(DEPDIR)/option.Po ./$(DEPDIR)/paint.Po \
-	./$(DEPDIR)/paintmap.Po ./$(DEPDIR)/paintobjects.Po \
-	./$(DEPDIR)/query.Po ./$(DEPDIR)/talkmacros.Po \
-	./$(DEPDIR)/textinterface.Po
+	./$(DEPDIR)/messages.Po ./$(DEPDIR)/meta.Po \
+	./$(DEPDIR)/netclient.Po ./$(DEPDIR)/option.Po \
+	./$(DEPDIR)/paint.Po ./$(DEPDIR)/paintmap.Po \
+	./$(DEPDIR)/paintobjects.Po ./$(DEPDIR)/query.Po \
+	./$(DEPDIR)/talkmacros.Po ./$(DEPDIR)/textinterface.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -346,8 +347,10 @@ libxpclient_a_SOURCES = \
     guiobjects.h \
     icon.h \
     mapdata.cpp \
-    messages.h \
     messages.cpp \
+    messages.h \
+    meta.cpp \
+    meta.h \
     netclient.cpp \
     netclient.h \
     option.cpp \
@@ -421,6 +424,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx2d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapdata.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/messages.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/meta.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/netclient.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/option.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paint.Po@am__quote@ # am--include-marker
@@ -657,6 +661,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/mapdata.Po
 	-rm -f ./$(DEPDIR)/messages.Po
+	-rm -f ./$(DEPDIR)/meta.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
 	-rm -f ./$(DEPDIR)/option.Po
 	-rm -f ./$(DEPDIR)/paint.Po
@@ -719,6 +724,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/gfx2d.Po
 	-rm -f ./$(DEPDIR)/mapdata.Po
 	-rm -f ./$(DEPDIR)/messages.Po
+	-rm -f ./$(DEPDIR)/meta.Po
 	-rm -f ./$(DEPDIR)/netclient.Po
 	-rm -f ./$(DEPDIR)/option.Po
 	-rm -f ./$(DEPDIR)/paint.Po
