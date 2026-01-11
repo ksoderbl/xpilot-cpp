@@ -887,6 +887,8 @@ static void Option_parse_node(hash_node *np)
 /*
  * Expand any "expand" arguments.
  */
+
+// These expand lists exist e.g. in defaults.txt
 static void Options_parse_expand(void)
 {
     hash_node *np;

@@ -42,6 +42,7 @@
 #include "strdup.h"
 #include "types.h"
 
+#include "commonmacros.h"
 #include "xperror.h"
 
 #include "client.h"
@@ -80,11 +81,13 @@ void audioInit(char *display)
     char buf[512], *file, *soundstr, *ifile;
     int i, j;
 
-    if (!maxVolume)
-    {
-        printf("maxVolume is 0: no sound.\n");
+#if 0
+    /* kps - let's not do this, otherwise sounds can't be enabled ingame */
+    if (!maxVolume) {
+        xpinfo("maxVolume is 0: no sound.\n");
         return;
     }
+#endif
     if (!(fp = fopen(soundFile, "r")))
     {
         error("Could not open soundfile %s", soundFile);
@@ -104,10 +107,10 @@ void audioInit(char *display)
             if (!strcmp(soundstr, soundNames[i]))
             {
                 size_t filename_ptrs_size = sizeof(char *) * MAX_RANDOM_SOUNDS;
-                size_t priv_ptrs_size = sizeof(void *) * MAX_RANDOM_SOUNDS;
+                size_t private_ptrs_size = sizeof(void *) * MAX_RANDOM_SOUNDS;
                 table[i].filenames = (char **)malloc(filename_ptrs_size);
-                table[i].priv = (void **)malloc(priv_ptrs_size);
-                memset(table[i].priv, 0, priv_ptrs_size);
+                table[i].priv = (void **)malloc(private_ptrs_size);
+                memset(table[i].priv, 0, private_ptrs_size);
                 ifile = strtok(file, " \t\n|");
                 j = 0;
                 while (ifile && j < MAX_RANDOM_SOUNDS)
@@ -126,8 +129,8 @@ void audioInit(char *display)
                     }
                     j++;
                     ifile = strtok(NULL, " \t\n|");
-                    table[i].nsounds = j;
                 }
+                table[i].nsounds = j;
                 break;
             }
 
@@ -143,26 +146,18 @@ void audioInit(char *display)
 void audioCleanup(void)
 {
     /* release malloc'ed memory here */
-    int i;
+    int i, j;
 
     for (i = 0; i < MAX_SOUNDS; i++)
     {
-        if (table[i].filenames)
-        {
-            free(table[i].filenames);
-            table[i].filenames = NULL;
-        }
-        if (table[i].priv)
-        {
-            free(table[i].priv);
-            table[i].priv = NULL;
-        }
+        XFREE(table[i].filenames);
+        XFREE(table[i].priv);
     }
 }
 
 void audioEvents(void)
 {
-    if (audioIsEnabled)
+    if (audioIsEnabled())
         audioDeviceEvents();
 }
 
@@ -170,7 +165,7 @@ int Handle_audio(int type, int volume)
 {
     int pick = 0;
 
-    if (!audioIsEnabled || !table[type].filenames)
+    if (!audioIsEnabled() || !table[type].filenames)
         return 0;
 
     if (table[type].nsounds > 1)
@@ -187,7 +182,7 @@ int Handle_audio(int type, int volume)
 
         /* eliminate duplicate sounds */
         for (i = 0; i < MAX_SOUNDS; i++)
-            if (i != type && table[i].filenames && table[i].priv[pick] && strcmp(table[type].filenames[0], table[i].filenames[0]) == 0)
+            if (i != type && table[i].filenames && table[i].priv[pick] && !strcmp(table[type].filenames[0], table[i].filenames[0]))
             {
                 table[type].priv[0] = table[i].priv[0];
                 break;
