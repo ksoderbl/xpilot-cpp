@@ -127,9 +127,9 @@ typedef struct
 typedef struct
 {
     double ratio;
+    double score;
     short id;
     uint16_t team;
-    short score;
     short check;
     short round;
     long timing_loops;
@@ -137,8 +137,11 @@ typedef struct
     short life;
     short mychar;
     short alliance;
-    short name_width; /* In pixels */
-    short name_len;   /* In bytes */
+    short name_width;         /* In pixels */
+    short name_len;           /* In bytes */
+    short max_chars_in_names; /* name_width was calculated
+                     for this value of maxCharsInNames */
+    short ignorelevel;
     shipshape_t *ship;
     char nick_name[MAX_CHARS];
     char user_name[MAX_CHARS];

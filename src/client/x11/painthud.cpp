@@ -192,7 +192,7 @@ void Paint_score_objects(void)
         score_object_t *sobj = &score_objects[i];
         if (sobj->count > 0)
         {
-            if (sobj->count % 3)
+            if (loopsSlow % 3)
             {
                 x = sobj->x * BLOCK_SZ + BLOCK_SZ / 2;
                 y = sobj->y * BLOCK_SZ + BLOCK_SZ / 2;
@@ -373,7 +373,7 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
 
     if (lock_dist != 0)
     {
-        if (lock_dist > WARNING_DISTANCE || warningCount++ % 2 == 0)
+        if (lock_dist > WARNING_DISTANCE || (loopsSlow & 1))
         {
             int size = MIN(mapdiag / lock_dist, 10);
 

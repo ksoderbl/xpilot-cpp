@@ -1494,6 +1494,7 @@ int Handle_player(int id, int player_team, int mychar,
     strlcpy(other->user_name, user_name, sizeof(other->user_name));
     strlcpy(other->host_name, host_name, sizeof(other->host_name));
     strlcpy(other->id_string, nick_name, sizeof(other->id_string));
+    other->max_chars_in_names = -1;
     scoresChanged = true;
     other->ship = Convert_shape_str(shape);
     Calculate_shield_radius(other->ship);

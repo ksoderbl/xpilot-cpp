@@ -21,12 +21,14 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XPAINT_H
-#define XPAINT_H
+#pragma once
+
+#include <cstring>
 
 #include <X11/Xlib.h>
 
 #include "paint.h"
+#include "strlcpy.h"
 
 #include "types.h"
 #include "xperror.h"
@@ -60,18 +62,14 @@ extern int radar_exposures; /* Is radar window exposed? */
 /* windows has 2 sets of item bitmaps */
 #define ITEM_HUD 0       /* one color for the HUD */
 #define ITEM_PLAYFIELD 1 /* and one color for the playfield */
-extern Pixmap itemBitmaps[];
 
-extern GC gameGC, messageGC, radarGC, buttonGC, scoreListGC, textGC, talkGC;
-extern GC motdGC;
+extern Pixmap itemBitmaps[];
+extern GC gameGC, messageGC, radarGC, buttonGC;
+extern GC scoreListGC, textGC, talkGC, motdGC;
 extern XGCValues gcv;
 
-extern Window topWindow;
-extern Window drawWindow;
-extern Window keyboardWindow;
-extern Window radarWindow;
-extern Window playersWindow;
-extern Window aboutWindow; /* The About window */
+extern Window topWindow, drawWindow, keyboardWindow;
+extern Window radarWindow, playersWindow;
 
 extern Pixmap drawPixmap;   /* Drawing area pixmap */
 extern Pixmap radarPixmap;  /* Radar drawing pixmap */
@@ -79,6 +77,7 @@ extern Pixmap radarPixmap2; /* Second radar drawing pixmap */
 extern long dpl_1[2];       /* Used by radar hack */
 extern long dpl_2[2];       /* Used by radar hack */
 
+extern Window aboutWindow;        /* The About window */
 extern Window about_close_b;      /* About close button */
 extern Window about_next_b;       /* About next page button */
 extern Window about_prev_b;       /* About prev page button */
@@ -111,22 +110,6 @@ extern char *texturePath;            /* Path list of texture directories */
 
 extern int spaceColor;
 
-// static inline void Check_name_string(other_t *other)
-// {
-//     if (other && other->max_chars_in_names != maxCharsInNames)
-//     {
-//         int len;
-
-//         strlcpy(other->id_string, other->nick_name, sizeof(other->id_string));
-//         len = strlen(other->id_string);
-//         if (maxCharsInNames >= 0 && maxCharsInNames < len)
-//             other->id_string[maxCharsInNames] = '\0';
-//         other->name_len = strlen(other->id_string);
-//         other->name_width = 2 + XTextWidth(gameFont, other->id_string, other->name_len);
-//         other->max_chars_in_names = maxCharsInNames;
-//     }
-// }
-
 extern unsigned long current_foreground;
 
 static inline void SET_FG(unsigned long fg)
@@ -138,6 +121,22 @@ static inline void SET_FG(unsigned long fg)
 
 #define MAX_LINE_WIDTH 4
 
+static inline void Check_name_string(other_t *other)
+{
+    if (other && other->max_chars_in_names != maxCharsInNames)
+    {
+        int len;
+
+        strlcpy(other->id_string, other->nick_name, sizeof(other->id_string));
+        len = strlen(other->id_string);
+        if (maxCharsInNames >= 0 && maxCharsInNames < len)
+            other->id_string[maxCharsInNames] = '\0';
+        other->name_len = strlen(other->id_string);
+        other->name_width = 2 + XTextWidth(gameFont, other->id_string, other->name_len);
+        other->max_chars_in_names = maxCharsInNames;
+    }
+}
+
 extern void Paint_item_symbol(int type, Drawable d, GC mygc,
                               int x, int y, int color);
 extern void Paint_item(int type, Drawable d, GC mygc, int x, int y);
@@ -148,7 +147,7 @@ extern void Gui_paint_item(int type, Drawable d, GC mygc, int x, int y);
 extern void Store_xpaint_options(void);
 
 /*
- * colors.cpp
+ * colors.c
  */
 extern void List_visuals(void);
 extern int Colors_init(void);
@@ -158,5 +157,3 @@ extern void Colors_cleanup(void);
 extern void Colors_debug(void);
 extern void Init_spark_colors(void);
 extern void Store_color_options(void);
-
-#endif
