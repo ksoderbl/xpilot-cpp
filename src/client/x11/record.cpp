@@ -72,8 +72,8 @@
 static char *record_filename = NULL; /* Name of recordfile. */
 static FILE *recordFP = NULL;        /* File handle for writing
                                       * recording frames to. */
-int recording = false;               /* Are we recording or not. */
-static int record_start = false;     /* Should we start recording
+bool recording = false;              /* Are we recording or not. */
+static bool record_start = false;    /* Should we start recording
                                       * at the next frame. */
 static int record_frame_count = 0;   /* How many recorded frames. */
 static const char *record_dashes;    /* Which dash list to use. */
@@ -86,7 +86,7 @@ static int record_dash_dirty = 0;    /* Has dashes list changed? */
 static void Dummy_newFrame(void) {}
 static void Dummy_endFrame(void) {}
 
-static void Dummy_paintItemSymbol(uint8_t type, Drawable drawable,
+static void Dummy_paintItemSymbol(int type, Drawable drawable,
                                   GC mygc, int x, int y, int color) {}
 
 extern char hostname[];
@@ -331,9 +331,7 @@ static void RWriteGC(GC gc, unsigned long req_mask)
                 }
             }
             else
-            {
                 write_mask &= ~(GCTileStipXOrigin | GCTileStipYOrigin | GCTile);
-            }
         }
 
         if (!write_mask && !record_dash_dirty)
@@ -454,13 +452,9 @@ static void REndFrame(void)
 
         RWriteByte(RC_DAMAGED, recordFP);
         if ((damaged & 1) != 0)
-        {
             XSetForeground(dpy, gameGC, colors[BLUE].pixel);
-        }
         else
-        {
             XSetForeground(dpy, gameGC, colors[BLACK].pixel);
-        }
         RWriteGC(gameGC, GCForeground | RTILEGC);
         RWriteByte(damaged, recordFP);
 
@@ -619,7 +613,7 @@ static int RFillPolygon(Display *display, Drawable drawable, GC gc,
     return 0;
 }
 
-static void RPaintItemSymbol(uint8_t type, Drawable drawable, GC mygc,
+static void RPaintItemSymbol(int type, Drawable drawable, GC mygc,
                              int x, int y, int color)
 {
     if (drawable == drawPixmap)
@@ -728,9 +722,9 @@ static int RSetDashes(Display *display, GC gc,
 }
 
 /*
- * The `_Xconst' trick from <X11/Xfuncproto.h> doesn't work
+ * The '_Xconst' trick from <X11/Xfuncproto.h> doesn't work
  * on Suns when not compiling under full ANSI mode.
- * So we force the prototypes to use `const' instead of `_Xconst'
+ * So we force the prototypes to use 'const' instead of '_Xconst'
  * by means of defining function types and casting with them.
  */
 typedef int (*draw_string_proto_t)(Display *, Drawable, GC,

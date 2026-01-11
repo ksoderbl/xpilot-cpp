@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECORD_H
-#define RECORD_H
+#pragma once
 
 /*
  * Structure to call all user-interface drawing routines
@@ -54,7 +53,7 @@ struct recordable_drawing
     int (*fillPolygon)(Display *display, Drawable drawable, GC gc,
                        XPoint *points, int npoints,
                        int shape, int mode);
-    void (*paintItemSymbol)(uint8_t type, Drawable drawable, GC mygc,
+    void (*paintItemSymbol)(int type, Drawable drawable, GC mygc,
                             int x, int y, int color);
     int (*fillRectangle)(Display *display, Drawable drawable, GC gc,
                          int x, int y,
@@ -71,11 +70,10 @@ struct recordable_drawing
 
 extern struct recordable_drawing rd; /* external Drawing interface */
 
-extern int recording; /* Are we recording or not. */
+extern bool recording; /* Are we recording or not. */
 
 long Record_size(void);
 void Record_toggle(void);
 void Record_init(const char *filename);
 void Record_cleanup(void);
-
-#endif
+void Store_record_options(void);

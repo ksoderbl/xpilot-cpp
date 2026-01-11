@@ -1023,6 +1023,29 @@ void Talk_resize(void)
                           TALK_WINDOW_WIDTH, TALK_WINDOW_HEIGHT);
 }
 
+/* Return length of first prefix with length at most len wider that 'width',
+ * or len + 1 if such doesn't exist. */
+static int Text_width_to_pos(XFontStruct *font, const char *text, size_t len,
+                             int width)
+{
+    /* dummies for 'XTextExtents', the faster version of XTextWidth */
+    int font_ascent_return, font_descent_return, direction_return;
+    /* wanted: overall_return.width */
+    XCharStruct overall_return;
+    int i;
+
+    for (i = 0; i <= (int)len; i++)
+    {
+        XTextExtents(font, text, i,
+                     &direction_return,
+                     &font_ascent_return, &font_descent_return,
+                     &overall_return);
+        if (overall_return.width >= width)
+            break;
+    }
+    return i;
+}
+
 /*
  * place the cursor in the talk window with help of the pointer button.
  * return the cursor position as index in talk_str.
@@ -1408,6 +1431,7 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
             c2.x = 0;
         }
         /* cut started at end of line; jump to next if possible */
+        ptr = TalkMsg[c1.y];
         if ((c1.x > XTextWidth(messageFont, ptr->txt, (int)ptr->len) || c1.x_off == 1) && c1.y < c2.y)
         {
             c1.x = 0;
@@ -1419,49 +1443,18 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
         /*
          * find the indices in the talk string
          */
-        ptr = TalkMsg[TALK_MSG_SCREENPOS(last_msg_index, c1.y)];
         c1.str_index = 0;
         if (c1.x_off == 1)
-        {
             c1.str_index = ptr->len - 1;
-        }
         else
-        {
-            for (i = 0; i <= ptr->len; i++)
-            {
-                XTextExtents(messageFont, ptr->txt, i,
-                             &direction_return,
-                             &font_ascent_return, &font_descent_return,
-                             &overall_return);
-                if (overall_return.width >= c1.x)
-                {
-                    break;
-                }
-                c1.str_index = i; /* get maximum implicitly */
-            }
-        }
+            c1.str_index = Text_width_to_pos(messageFont, ptr->txt, ptr->len, c1.x);
 
-        ptr = TalkMsg[TALK_MSG_SCREENPOS(last_msg_index, c2.y)];
+        ptr = TalkMsg[c2.y];
         c2.str_index = 0;
         if (c2.x_off == 1)
-        {
             c2.str_index = ptr->len - 1;
-        }
         else
-        {
-            for (i = 0; i <= ptr->len; i++)
-            {
-                XTextExtents(messageFont, ptr->txt, i,
-                             &direction_return,
-                             &font_ascent_return, &font_descent_return,
-                             &overall_return);
-                if (overall_return.width >= c2.x)
-                {
-                    break;
-                }
-                c2.str_index = i; /* get maximum implicitly */
-            }
-        }
+            c2.str_index = Text_width_to_pos(messageFont, ptr->txt, ptr->len, c2.x);
 
         /*
          * 'c1' ~ 'c2':
@@ -1506,24 +1499,23 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
                 }
             }
         }
-        else if (c2.str_index == TalkMsg[c2.y]->len)
+        else if (c2.str_index == (int)TalkMsg[c2.y]->len)
         {
             c2.str_index = TalkMsg[c2.y]->len - 1;
             c2.x_off = 0;
         }
         else if (c2.str_index > 0 && c2.x_off == 0)
-        {
             /* c2 is not the first on the line and a nl isn't included */
             c2.str_index--;
-        }
-        if (c1.str_index == TalkMsg[c1.y]->len)
+
+        if (c1.str_index == (int)TalkMsg[c1.y]->len)
             c1.str_index = TalkMsg[c1.y]->len - 1;
 
         /*
          * set the globals
          */
         selection.txt_size = MAX_MSGS * MSG_LEN;
-        selection.txt = (char *)malloc(selection.txt_size);
+        selection.txt = XMALLOC(char, selection.txt_size);
         if (selection.txt == NULL)
         {
             error("No memory for Selection");
@@ -1534,36 +1526,29 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
         selection.draw.y1 = c1.y;
         selection.draw.y2 = c2.y;
 
-        current_line = TALK_MSG_SCREENPOS(last_msg_index, selection.draw.y1);
-
-        /* how to walk through the messages */
-        {
-            next = +1;
-        }
+        current_line = selection.draw.y1;
 
         /* fetch the first line */
         strlcpy(cut_str, TalkMsg[current_line]->txt, sizeof(cut_str));
         cut_str_len = TalkMsg[current_line]->len;
-        current_line += next;
+        current_line++;
 
         if (selection.draw.y1 == selection.draw.y2)
         {
             /* ...it's the only line */
-            strncpy(selection.txt, &cut_str[selection.draw.x1],
-                    selection.draw.x2 - selection.draw.x1 + 1);
-            selection.txt[selection.draw.x2 - selection.draw.x1 + 1] = '\0';
+            assert((selection.draw.x2 + 1) >= selection.draw.x1);
+            strlcpy(selection.txt, &cut_str[selection.draw.x1],
+                    (size_t)(selection.draw.x2 + 1 + 1) - selection.draw.x1);
             cut_str[0] = '\0';
             if (c2.x_off == 1)
-            {
                 strlcat(selection.txt, "\n", selection.txt_size);
-            }
         }
         else
         {
             /* ...several lines */
-            strncpy(selection.txt, &cut_str[selection.draw.x1],
-                    cut_str_len - selection.draw.x1);
-            selection.txt[cut_str_len - selection.draw.x1] = '\0';
+            assert(cut_str_len >= selection.draw.x1);
+            strlcpy(selection.txt, &cut_str[selection.draw.x1],
+                    (size_t)(cut_str_len - selection.draw.x1 + 1));
             strlcat(selection.txt, "\n", selection.txt_size);
 
             /* whole lines themselves only if there are >= 3 lines */
@@ -1571,7 +1556,7 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
             {
                 strlcpy(cut_str, TalkMsg[current_line]->txt, sizeof(cut_str));
                 cut_str_len = TalkMsg[current_line]->len;
-                current_line += next;
+                current_line++;
                 strlcat(selection.txt, cut_str, selection.txt_size);
                 strlcat(selection.txt, "\n", selection.txt_size);
             }
@@ -1579,8 +1564,8 @@ void Talk_cut_from_messages(XButtonEvent *xbutton)
             /* the last line */
             strlcpy(cut_str, TalkMsg[current_line]->txt, sizeof(cut_str));
             cut_str_len = TalkMsg[current_line]->len;
-            current_line += next;
-            strncat(selection.txt, cut_str, selection.draw.x2 + 1);
+            current_line++;
+            strncat(selection.txt, cut_str, (size_t)selection.draw.x2 + 1);
             if (c2.x_off == 1)
                 strlcat(selection.txt, "\n", selection.txt_size);
         } /* more than one line */
