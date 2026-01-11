@@ -55,7 +55,6 @@
 #include "configure.h"
 #include "setup.h"
 #include "xperror.h"
-#include "protoclient.h"
 #include "portability.h"
 
 extern const char *Get_keyResourceString(keys_t key);

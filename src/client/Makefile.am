@@ -34,7 +34,6 @@ libxpclient_a_SOURCES = \
     paintmap.cpp \
     paintobjects.cpp \
     paintradar.h \
-    protoclient.h \
     query.cpp \
     talk.h \
     talkmacros.cpp \

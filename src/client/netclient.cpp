@@ -52,7 +52,7 @@
 #include "pack.h"
 #include "types.h"
 #include "socklib.h"
-#include "protoclient.h"
+#include "client.h"
 #include "portability.h"
 #include "talk.h"
 #include "about.h"

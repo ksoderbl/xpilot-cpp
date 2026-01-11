@@ -21,33 +21,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-// #include <cstdlib>
-// #include <cstdio>
-// #include <cstring>
-// #include <cerrno>
-// #include <cmath>
-
-// #include <unistd.h>
 #include <X11/Xlib.h>
 
 #include "commonmacros.h"
-// #include "const.h"
-// #include "strlcpy.h"
 
 #include "paint.h"
 
-// #include "xpconfig.h"
-// #include "const.h"
-// #include "xperror.h"
-// #include "bit.h"
-// #include "setup.h"
-// #include "rules.h"
-// #include "xpaint.h"
 #include "paintdata.h"
 #include "record.h"
 #include "xinit.h"
-// #include "protoclient.h"
-// #include "dbuff.h"
 
 static XRectangle *rect_ptr[MAX_COLORS];
 static int num_rect[MAX_COLORS], max_rect[MAX_COLORS];

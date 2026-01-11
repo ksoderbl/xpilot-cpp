@@ -45,7 +45,7 @@
 #include "xinit.h"
 #include "xperror.h"
 #include "netclient.h"
-#include "protoclient.h"
+#include "client.h"
 #include "keys.h"
 #include "bit.h"
 

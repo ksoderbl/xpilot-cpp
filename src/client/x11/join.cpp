@@ -44,7 +44,6 @@
 #include "xperror.h"
 #include "types.h"
 #include "netclient.h"
-#include "protoclient.h"
 #include "portability.h"
 #include "xpaint.h"
 #include "about.h"

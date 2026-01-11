@@ -36,7 +36,6 @@
 #include "xpconfig.h"
 #include "xperror.h"
 #include "socklib.h"
-#include "protoclient.h"
 #include "datagram.h"
 #include "portability.h"
 

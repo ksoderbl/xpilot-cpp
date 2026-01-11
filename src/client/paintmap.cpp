@@ -44,7 +44,7 @@
 #include "keys.h"
 #include "rules.h"
 #include "setup.h"
-#include "protoclient.h"
+#include "client.h"
 #include "guimap.h"
 
 int wallColor = BLUE; /* Color index for wall drawing */

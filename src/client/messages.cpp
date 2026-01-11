@@ -43,19 +43,6 @@
 #include "messages.h"
 #include "netclient.h"
 
-// // #include "types.h"
-// // #include "keys.h"
-
-// // #include "setup.h"
-// // #include "xpaint.h"
-// // #include "paintdata.h"
-// // #include "record.h"
-// // #include "xinit.h"
-// // #include "protoclient.h"
-// // #include "bitmaps.h"
-
-#include "client.h"
-
 message_t *TalkMsg[MAX_MSGS], *GameMsg[MAX_MSGS];
 message_t *TalkMsg_pending[MAX_MSGS], *GameMsg_pending[MAX_MSGS];
 char *HistoryMsg[MAX_HIST_MSGS];

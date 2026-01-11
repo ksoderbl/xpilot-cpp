@@ -53,7 +53,6 @@
 #include "paintdata.h"
 #include "record.h"
 #include "xinit.h"
-#include "protoclient.h"
 #include "portability.h"
 #include "bitmaps.h"
 #include "wreckshape.h"

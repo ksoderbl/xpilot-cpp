@@ -804,8 +804,14 @@ extern void Colors_init_style_colors(void);
 /*
  * default.c
  */
+extern void Parse_options(int *argcp, char **argvp, char *realName, int *port,
+                          int *my_team, bool *text, bool *list,
+                          bool *join, bool *noLocalMotd,
+                          char *nickName, char *dispName, char *hostName,
+                          char *shut_msg);
 extern void Store_default_options(void);
 extern void defaultCleanup(void); /* memory cleanup */
+extern void Get_xpilotrc_file(char *, unsigned);
 
 extern bool Set_scaleFactor(xp_option_t *opt, double val);
 extern bool Set_altScaleFactor(xp_option_t *opt, double val);
@@ -818,7 +824,10 @@ extern void Store_key_options(void);
 /*
  * join.c
  */
-extern int Join(Connect_param_t *conpar);
+// extern int Join(Connect_param_t *conpar);
+extern int Join(char *server_addr, char *server_name, int port,
+                char *user_name, char *nick_name, int my_team,
+                char *display, unsigned version);
 extern void xpilotShutdown(void);
 
 /*
@@ -846,6 +855,11 @@ extern int Init_asteroids(void);
  * query.c
  */
 extern int Query_all(sock_t *sockfd, int port, char *msg, size_t msglen);
+
+/*
+ * sim.c
+ */
+extern void Simulate(bool on);
 
 /*
  * textinterface.c

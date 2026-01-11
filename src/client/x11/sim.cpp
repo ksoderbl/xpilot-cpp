@@ -47,7 +47,7 @@ bool simulating;
 #include "xpaint.h"
 #include "xinit.h"
 #include "pack.h"
-#include "protoclient.h"
+#include "client.h"
 #include "portability.h"
 
 typedef struct rpos_s

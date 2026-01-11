@@ -51,7 +51,7 @@
 #include "xperror.h"
 #include "netclient.h"
 #include "dbuff.h"
-#include "protoclient.h"
+#include "client.h"
 #include "portability.h"
 
 /*

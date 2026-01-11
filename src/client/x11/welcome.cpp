@@ -47,7 +47,7 @@
 #include "net.h"
 #include "pack.h"
 #include "connectparam.h"
-#include "protoclient.h"
+#include "client.h"
 #include "portability.h"
 #include "socklib.h"
 

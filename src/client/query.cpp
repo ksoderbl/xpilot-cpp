@@ -41,7 +41,7 @@
 #include "xpconfig.h"
 #include "xperror.h"
 #include "socklib.h"
-#include "protoclient.h"
+#include "client.h"
 
 #ifndef MAX_INTERFACE
 #define MAX_INTERFACE 16 /* Max. number of network interfaces. */

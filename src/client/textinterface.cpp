@@ -48,7 +48,7 @@
 #include "portability.h"
 #include "checknames.h"
 #include "connectparam.h"
-#include "protoclient.h"
+#include "client.h"
 
 #define MAX_LINE MSG_LEN /* should not be smaller than MSG_LEN */
 

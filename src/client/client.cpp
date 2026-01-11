@@ -45,7 +45,6 @@
 #include "netclient.h"
 #include "paint.h"
 #include "paintradar.h"
-#include "protoclient.h"
 #include "talk.h"
 
 // typedef struct

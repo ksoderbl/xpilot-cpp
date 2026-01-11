@@ -39,7 +39,6 @@
 #include "setup.h"
 #include "bit.h"
 #include "xperror.h"
-#include "protoclient.h"
 #include "portability.h"
 #include "talk.h"
 #include "rules.h" /* TEAM_PLAY, LIMITED_LIVES */

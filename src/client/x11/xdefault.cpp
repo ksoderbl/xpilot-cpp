@@ -62,7 +62,7 @@
 #include "xinit.h"
 #include "xperror.h"
 #include "types.h"
-#include "protoclient.h"
+#include "client.h"
 #include "audio.h"
 #include "portability.h"
 #include "talk.h"

@@ -44,7 +44,7 @@
 #include "bit.h"
 #include "xperror.h"
 #include "widget.h"
-#include "protoclient.h"
+#include "client.h"
 #include "portability.h"
 
 typedef enum widget_type

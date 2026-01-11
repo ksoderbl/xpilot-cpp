@@ -44,7 +44,7 @@
 #include "xinit.h"
 #include "xperror.h"
 #include "dbuff.h"
-#include "protoclient.h"
+#include "client.h"
 
 /*
  * The number of X11 visuals.
