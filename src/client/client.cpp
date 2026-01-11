@@ -1544,6 +1544,17 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
     return 0;
 }
 
+int Handle_team_score(int team, double score)
+{
+    // if (teamscores[team] != score)
+    // {
+    //     teamscores[team] = score;
+    //     scoresChanged = true;
+    // }
+
+    return 0;
+}
+
 int Handle_timing(int id, int check, int round, long tloops)
 {
     other_t *other;

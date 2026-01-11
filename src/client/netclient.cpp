@@ -1874,8 +1874,19 @@ int Receive_ball(void)
     short x, y, id;
     uint8_t ch, style = 0xff /* no style */;
 
-    if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
-        return n;
+    if (version < 0x4F14)
+    {
+
+        if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
+            return n;
+    }
+    else
+    {
+        if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd%c", &ch, &x, &y, &id,
+                              &style)) <= 0)
+            return n;
+    }
+
     if ((n = Handle_ball(x, y, id, style)) == -1)
         return -1;
     return 1;
@@ -2308,11 +2319,11 @@ int Receive_score_object(void)
 {
     int n;
     uint16_t x, y;
-    int score = 0;
+    double score = 0;
     char msg[MAX_CHARS];
     uint8_t ch;
 
-    if (version < 0x4500)
+    if (version < 0x4500 || (version >= 0x4F09 && version < 0x4F11))
     {
         short rcv_score;
         n = Packet_scanf(&cbuf, "%c%hd%hu%hu%s",
@@ -2325,7 +2336,7 @@ int Receive_score_object(void)
         int rcv_score;
         n = Packet_scanf(&cbuf, "%c%d%hu%hu%s",
                          &ch, &rcv_score, &x, &y, msg);
-        score = rcv_score / 100;
+        score = (double)rcv_score / 100;
     }
     if (n <= 0)
         return n;
@@ -2339,10 +2350,10 @@ int Receive_score(void)
 {
     int n;
     short id, life;
-    int score = 0;
+    double score = 0;
     uint8_t ch, mychar, alliance = ' ';
 
-    if (version < 0x4500)
+    if (version < 0x4500 || (version >= 0x4F09 && version < 0x4F11))
     {
         short rcv_score;
         n = Packet_scanf(&cbuf, "%c%hd%hd%hd%c", &ch,
@@ -2356,7 +2367,7 @@ int Receive_score(void)
         int rcv_score;
         n = Packet_scanf(&cbuf, "%c%hd%d%hd%c%c", &ch,
                          &id, &rcv_score, &life, &mychar, &alliance);
-        score = rcv_score / 100;
+        score = (double)rcv_score / 100;
     }
     if (n <= 0)
         return n;
@@ -2371,9 +2382,13 @@ int Receive_team_score(void)
     uint8_t ch;
     short team;
     int rcv_score;
+    double score;
 
     if ((n = Packet_scanf(&cbuf, "%c%hd%d", &ch, &team, &rcv_score)) <= 0)
         return n;
+    score = (double)rcv_score / 100;
+    if ((n = Handle_team_score(team, score)) == -1)
+        return -1;
     return 1;
 }
 

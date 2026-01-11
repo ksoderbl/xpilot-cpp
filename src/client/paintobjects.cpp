@@ -253,6 +253,7 @@ static void Paint_asteroids(void)
 
     if (num_asteroids > 0)
     {
+        Gui_paint_asteroids_begin();
         for (i = 0; i < num_asteroids; i++)
         {
             x = asteroid_ptr[i].x;
@@ -266,6 +267,7 @@ static void Paint_asteroids(void)
                 Gui_paint_asteroid(x, y, type, rot, size);
             }
         }
+        Gui_paint_asteroids_end();
         RELEASE(asteroid_ptr, num_asteroids, max_asteroids);
     }
 }
@@ -427,20 +429,20 @@ static void Paint_paused(void)
 
 static void Paint_appearing(void)
 {
-    // int i, x, y;
+    int i, x, y;
 
-    // if (num_appearing > 0)
-    // {
-    //     for (i = 0; i < num_appearing; i++)
-    //     {
-    //         x = appearing_ptr[i].x;
-    //         y = appearing_ptr[i].y;
-    //         if (wrap(&x, &y))
-    //             Gui_paint_appearing(x, y, appearing_ptr[i].id,
-    //                                 appearing_ptr[i].count);
-    //     }
-    //     RELEASE(appearing_ptr, num_appearing, max_appearing);
-    // }
+    if (num_appearing > 0)
+    {
+        for (i = 0; i < num_appearing; i++)
+        {
+            x = appearing_ptr[i].x;
+            y = appearing_ptr[i].y;
+            if (wrap(&x, &y))
+                Gui_paint_appearing(x, y, appearing_ptr[i].id,
+                                    appearing_ptr[i].count);
+        }
+        RELEASE(appearing_ptr, num_appearing, max_appearing);
+    }
 }
 
 static void Paint_ecm(void)
