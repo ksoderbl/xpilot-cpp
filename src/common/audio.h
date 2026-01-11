@@ -22,8 +22,7 @@
  */
 /* This piece of code was provided by Greg Renda (greg@ncd.com). */
 
-#ifndef _audio_h
-#define _audio_h
+#pragma once
 
 #define SOUND_MAX_VOLUME 100
 #define SOUND_MIN_VOLUME 10
@@ -118,7 +117,7 @@ enum
 
 #ifdef _CAUDIO_C_
 
-static char *soundNames[] =
+static const char *soundNames[] =
     {
         "start",
         "fire_shot",
@@ -214,5 +213,3 @@ extern int Handle_audio(int type, int volume);
 extern int audioDeviceInit(char *display);
 extern void audioDeviceEvents(void);
 extern void audioDevicePlay(char *filename, int type, int volume, void **private_data);
-
-#endif /* _audio_h */

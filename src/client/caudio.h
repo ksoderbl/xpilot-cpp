@@ -26,6 +26,8 @@
  * client audio
  */
 
+#define SOUND
+
 #ifdef SOUND
 
 extern int Handle_audio(int type, int volume);
