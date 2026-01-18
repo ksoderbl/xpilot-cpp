@@ -1001,16 +1001,12 @@ void Count_rounds(void)
 
 void Team_game_over(int winning_team, const char *reason)
 {
-    int i, j;
-    double average_score;
-    int num_best_players;
-    int *best_players;
-    double best_ratio;
-    char msg[MSG_LEN];
+    int i, j, num_best_players, *best_players;
+    double average_score, best_ratio;
 
-    if (!(best_players = (int *)malloc(NumPlayers * sizeof(int))))
+    if (!(best_players = XMALLOC(int, NumPlayers)))
     {
-        error("no mem");
+        warn("no mem");
         End_game();
     }
 
@@ -1024,16 +1020,15 @@ void Team_game_over(int winning_team, const char *reason)
     /* Print out the results of the round */
     if (winning_team != -1)
     {
-        sprintf(msg, " < Team %d has won the game%s! >", winning_team,
-                reason);
+        Set_message_f(" < Team %d has won the round%s! >",
+                      winning_team, reason);
         sound_play_all(TEAM_WIN_SOUND);
     }
     else
     {
-        sprintf(msg, " < We have a draw%s! >", reason);
+        Set_message_f(" < We have a draw%s! >", reason);
         sound_play_all(TEAM_DRAW_SOUND);
     }
-    Set_message(msg);
 
     /* Give bonus to the best player */
     Give_best_player_bonus(average_score,
@@ -1052,7 +1047,8 @@ void Team_game_over(int winning_team, const char *reason)
                 continue;
             if (Player_is_tank(pl_i) ||
                 (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) ||
-                (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+                // (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+                Player_is_waiting(pl_i))
                 continue;
             for (j = 0; j < num_best_players; j++)
             {

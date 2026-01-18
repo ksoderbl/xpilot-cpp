@@ -408,25 +408,27 @@ int Handle_keyboard(player_t *pl)
     int i, j, k, key, pressed, xi, yi;
     double minv;
 
+    /*assert(!Player_is_killed(pl));*/
+
     for (key = 0; key < NUM_KEYS; key++)
     {
+        /* Find first keyv element where last_keyv isn't equal to prev_keyv. */
         if (pl->last_keyv[key / BITV_SIZE] == pl->prev_keyv[key / BITV_SIZE])
         {
-            key |= (BITV_SIZE - 1); /* Skip to next keyv element */
+            /* Skip to next keyv element. */
+            key |= (BITV_SIZE - 1);
             continue;
         }
+        /* Now check which specific key it is that has changed state. */
         while (BITV_ISSET(pl->last_keyv, key) == BITV_ISSET(pl->prev_keyv, key))
         {
             if (++key >= NUM_KEYS)
-            {
                 break;
-            }
         }
         if (key >= NUM_KEYS)
-        {
             break;
-        }
-        pressed = BITV_ISSET(pl->last_keyv, key) != 0;
+
+        pressed = (BITV_ISSET(pl->last_keyv, key) != 0) ? true : false;
         BITV_TOGGLE(pl->prev_keyv, key);
         if (key != KEY_SHIELD)                 /* would interfere with auto-idle-pause.. */
             pl->frame_last_busy = frame_loops; /* due to client auto-shield */
