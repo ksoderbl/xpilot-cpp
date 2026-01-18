@@ -1704,9 +1704,9 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     }
 
     Detach_ball(pl, NULL);
-    if (BIT(pl->used, USES_AUTOPILOT) || BIT(pl->obj_status, HOVERPAUSE))
+    if (Player_uses_autopilot(pl) || Player_is_hoverpaused(pl))
     {
-        CLR_BIT(pl->obj_status, HOVERPAUSE);
+        CLR_BIT(pl->pl_status, HOVERPAUSE);
         Autopilot(pl, false);
     }
 

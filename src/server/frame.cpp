@@ -424,10 +424,10 @@ static int Frame_status(connection_t *conn, player_t *pl)
         }
     }
 
-    if (BIT(pl->obj_status, HOVERPAUSE))
-        showautopilot = (pl->count <= 0 || (frame_loops % 8) < 4);
+    if (Player_is_hoverpaused(pl))
+        showautopilot = (pl->count <= 0 || (frame_loops_slow % 8) < 4);
     else if (Player_uses_autopilot(pl))
-        showautopilot = (frame_loops % 8) < 4;
+        showautopilot = (frame_loops_slow % 8) < 4;
     else
         showautopilot = 0;
 
@@ -1321,7 +1321,7 @@ void Frame_update(void)
             debris_end(conn);
             fastshot_end(conn);
         }
-        sound_play_queued(PlayersArray[ind]);
+        sound_play_queued(pl2);
         Send_end_of_frame(conn);
     }
     oldTimeLeft = newTimeLeft;
@@ -1338,10 +1338,7 @@ void Set_message(const char *message)
 
     if ((i = strlen(message)) >= MSG_LEN)
     {
-#ifndef SILENT
-        errno = 0;
-        error("Max message len exceed (%d,%s)", i, message);
-#endif
+        warn("Max message len exceed (%d,%s)", i, message);
         strlcpy(tmp, message, MSG_LEN);
         msg = tmp;
     }
@@ -1363,12 +1360,8 @@ void Set_player_message(player_t *pl, const char *message)
 
     if ((i = strlen(message)) >= MSG_LEN)
     {
-#ifndef SILENT
-        errno = 0;
-        error("Max message len exceed (%d,%s)", i, message);
-#endif
-        memcpy(tmp, message, MSG_LEN - 1);
-        tmp[MSG_LEN - 1] = '\0';
+        warn("Max message len exceed (%d,%s)", i, message);
+        strlcpy(tmp, message, MSG_LEN);
         msg = tmp;
     }
     else

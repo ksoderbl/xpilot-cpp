@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
 #define SERVER
 
@@ -141,9 +140,9 @@ typedef struct
     int pl_type;           /* extended type info (tank, robot) */
     char pl_type_mychar;   /* Special char for player type */
     uint8_t pl_old_status; /* OLD_PLAYING etc. */
+    uint16_t pl_state;     /* one of PL_STATE_* */
+    uint32_t pl_status;    /* HOVERPAUSE etc. */
 
-    uint16_t pl_status;       /* HOVERPAUSE etc. */
-    uint16_t pl_state;        /* one of PL_STATE_* */
     int pl_life;              /* Lives left (if lives limited) */
     int pl_deaths_since_join; /* Deaths since last joining server */
 
@@ -222,8 +221,7 @@ typedef struct
     } lock;
     int lockbank[LOCKBANK_MAX]; /* Saved player locks */
 
-    uint8_t dir;              /* Direction of acceleration */
-    uint8_t unused1;          /* padding for alignment */
+    short dir;                /* Direction of acceleration */
     char mychar;              /* Special char for player */
     char prev_mychar;         /* Special char for player */
     char name[MAX_CHARS];     /* Nick-name of player */
@@ -383,7 +381,7 @@ static inline bool Player_is_paused(player_t *pl)
 
 static inline bool Player_is_hoverpaused(player_t *pl)
 {
-    if (BIT(pl->obj_status, HOVERPAUSE))
+    if (BIT(pl->pl_status, HOVERPAUSE))
         return true;
     return false;
 }
@@ -746,5 +744,3 @@ static inline void Player_set_float_dir(player_t *pl, double new_float_dir)
 void Player_print_state(player_t *pl, const char *funcname);
 void Player_set_state(player_t *pl, int state);
 void Player_set_modbank(player_t *pl, int bank, const char *str);
-
-#endif

@@ -47,19 +47,23 @@
 #include "walls.h"
 #include "robot.h"
 
-#define update_object_speed(o_)                                                                  \
-    if (BIT((o_)->obj_status, GRAVITY))                                                          \
-    {                                                                                            \
-        (o_)->vel.x += (o_)->acc.x + world->gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].x; \
-        (o_)->vel.y += (o_)->acc.y + world->gravity[OBJ_X_IN_BLOCKS(o_)][OBJ_Y_IN_BLOCKS(o_)].y; \
-    }                                                                                            \
-    else                                                                                         \
-    {                                                                                            \
-        (o_)->vel.x += (o_)->acc.x;                                                              \
-        (o_)->vel.y += (o_)->acc.y;                                                              \
-    }
+int roundtime = -1;               /* time left this round */
+static double time_to_tick = 1.0; /* game time till next tick */
+static bool tick = false;         /* new tick of game time this frame */
 
-int roundtime = -1; /* time left this round */
+static inline void update_object_speed(object_t *obj)
+{
+    if (BIT(obj->obj_status, GRAVITY))
+    {
+        obj->vel.x += obj->acc.x + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].x;
+        obj->vel.y += obj->acc.y + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].y;
+    }
+    else
+    {
+        obj->vel.x += obj->acc.x;
+        obj->vel.y += obj->acc.y;
+    }
+}
 
 static char msg[MSG_LEN];
 
@@ -655,6 +659,9 @@ static void Transporter_update(void)
 
 static void Players_turn(void)
 {
+    int i;
+    player_t *pl;
+    double new_float_dir;
 }
 
 static void Use_items(player_t *pl)
@@ -909,7 +916,7 @@ static void Update_players(void)
          * Only do autopilot code if switched on and player is not
          * damaged (ie. can see).
          */
-        if ((BIT(pl->used, USES_AUTOPILOT)) || (BIT(pl->obj_status, HOVERPAUSE) && !pl->damaged))
+        if ((Player_uses_autopilot(pl) || Player_is_hoverpaused(pl)) && !pl->damaged)
             do_Autopilot(pl);
 
         /*
@@ -1185,7 +1192,7 @@ static void Update_players(void)
 
         if (!Player_is_paused(pl))
         {
-            update_object_speed(pl); /* New position */
+            update_object_speed(OBJ_PTR(pl)); /* New position */
             Move_player(pl);
         }
 
@@ -1212,12 +1219,11 @@ void Update_objects(void)
     player_t *pl;
     object_t *obj;
 
-    // xpinfo("update robots");
-
+    tick = true;
     /*
      * Update robots.
      */
-    Robot_update(true);
+    Robot_update(tick);
 
     /*
      * Autorepeat fire, must unfortunately be done here, not in
@@ -1237,16 +1243,13 @@ void Update_objects(void)
     /*
      * Special items.
      */
-    for (int i = 0; i < NUM_ITEMS; i++)
-        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0)
+    for (i = 0; i < NUM_ITEMS; i++)
+        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0f)
             Place_item(NULL, i);
 
     Fuel_update();
     Misc_object_update();
 
-    /*
-     * Asteroids.
-     */
     Asteroid_update();
     if (Num_ecms() > 0)
         Ecm_update();
