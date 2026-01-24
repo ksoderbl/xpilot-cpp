@@ -157,16 +157,12 @@ struct xp_mineobject
     long info; /* Miscellaneous info */ // TODO: REMOVE
 
     int mine_owner;       /* Who's object is this ? */
-    DFLOAT ecm_range;     /* Range from last ecm center */
+    double ecm_range;     /* Range from last ecm center */
     int mine_spread_left; /* how much spread time left */
 
 #define MINE_IND(ind) ((mineobject_t *)Obj[(ind)])
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
 };
-
-// #define MISSILE_EXTEND                       \
-//     DFLOAT max_speed; /* speed limitation */ \
-//     DFLOAT turnspeed; /* how fast to turn */
 
 #define MISSILE_EXTEND                              \
     float missile_max_speed; /* speed limitation */ \
@@ -280,7 +276,7 @@ struct xp_ballobject
 
     int ball_owner;            /* Who's object is this ? */
     treasure_t *ball_treasure; /* treasure for ball */
-    DFLOAT length;             /* distance ball to player */
+    double length;             /* distance ball to player */
 
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))

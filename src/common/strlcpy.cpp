@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include "strlcpy.h"
 
+#ifndef HAVE_STRLCPY
 /*
     NAME
         strlcpy
@@ -57,12 +58,12 @@ size_t strlcpy(char *dest, const char *src, size_t size)
         *d = '\0';
     }
     while (*s)
-    {
         s++;
-    }
     return (s - src);
 }
+#endif
 
+#ifndef HAVE_STRLCAT
 /*
     NAME
         strlcat
@@ -89,9 +90,7 @@ size_t strlcat(char *dest, const char *src, size_t size)
     if (size > 0)
     {
         while (*d && d < maxd)
-        {
             d++;
-        }
         dlen = (d - dest);
         while (*s && d < maxd)
         {
@@ -102,8 +101,7 @@ size_t strlcat(char *dest, const char *src, size_t size)
         *d = '\0';
     }
     while (*s)
-    {
         s++;
-    }
     return dlen + (s - src);
 }
+#endif

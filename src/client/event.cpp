@@ -248,7 +248,7 @@ static bool Key_press_swap_settings(void)
 
 static bool Key_press_swap_scalefactor(void)
 {
-    DFLOAT tmp;
+    double tmp;
     tmp = clData.scaleFactor;
     clData.scaleFactor = clData.altScaleFactor;
     clData.altScaleFactor = tmp;

@@ -26,16 +26,11 @@
 
 #include <cstdint>
 
-/*
- * On some systems an enum is smaller than an int.
- * On others bool is already a builtin type.
- * Using preprocessor macros to circumvent both situations.
- */
-typedef float DFLOAT;
+typedef uint8_t byte;
 
 typedef struct
 {
-        DFLOAT x, y;
+        float x, y;
 } vector_t;
 typedef vector_t position_t;
 
