@@ -46,7 +46,6 @@
 #include "netclient.h"
 #include "portability.h"
 #include "xpaint.h"
-#include "about.h"
 
 #ifndef SCORE_UPDATE_DELAY
 #define SCORE_UPDATE_DELAY 4

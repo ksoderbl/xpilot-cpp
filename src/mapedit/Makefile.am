@@ -19,7 +19,6 @@ xpilot_cpp_mapedit_SOURCES = \
     help.h \
     main.cpp \
     main.h \
-    map.h \
     proto.h \
     round.cpp \
     round.h \

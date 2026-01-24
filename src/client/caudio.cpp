@@ -37,6 +37,7 @@
 #include <cerrno>
 #include <sys/types.h>
 
+#include "caudio.h"
 #include "xpconfig.h"
 #include "const.h"
 #include "strdup.h"
@@ -150,15 +151,24 @@ void audioCleanup(void)
 
     for (i = 0; i < MAX_SOUNDS; i++)
     {
+        for (j = 0; j < table[i].nsounds; j++)
+            audioDeviceFree(table[i].priv[j]);
         XFREE(table[i].filenames);
         XFREE(table[i].priv);
     }
+    audioDeviceClose();
 }
 
 void audioEvents(void)
 {
     if (audioIsEnabled())
         audioDeviceEvents();
+}
+
+void audioUpdate(void)
+{
+    if (audioIsEnabled())
+        audioDeviceUpdate();
 }
 
 int Handle_audio(int type, int volume)

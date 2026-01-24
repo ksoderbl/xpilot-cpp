@@ -26,13 +26,28 @@
  * client audio
  */
 
+#pragma once
+
 #define SOUND
 
 #ifdef SOUND
 
-extern int Handle_audio(int type, int volume);
-extern void audioInit(char *display);
-extern void audioCleanup();
-extern void audioEvents();
+#include <climits>
+
+extern char soundFile[PATH_MAX]; /* audio mappings */
+extern int maxVolume;            /* maximum volume (in percent) */
+extern bool sound;               /* option 'sound' */
+
+int Handle_audio(int type, int volume);
+void audioInit(char *display);
+void audioCleanup(void);
+void audioEvents(void);
+void audioUpdate(void);
+int audioDeviceInit(char *display);
+void audioDevicePlay(char *filename, int type, int volume, void **priv);
+void audioDeviceEvents(void);
+void audioDeviceUpdate(void);
+void audioDeviceFree(void *priv);
+void audioDeviceClose(void);
 
 #endif

@@ -55,7 +55,6 @@
 #include "client.h"
 #include "portability.h"
 #include "talk.h"
-#include "about.h"
 
 #ifdef SOUND
 #include "audio.h"

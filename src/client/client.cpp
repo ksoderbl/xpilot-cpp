@@ -1895,8 +1895,40 @@ int Handle_ball(int x, int y, int id, int style)
     return 0;
 }
 
-int Handle_ship(int x, int y, int id, int dir, int shield, int cloak, int eshield,
-                int phased, int deflector)
+static int predict_self_dir(int received_dir)
+{
+    double pointer_delta = 0, dir_delta, new_dir;
+    int ind = pointer_move_next - 1;
+    int count = 0, int_new_dir;
+
+    if (ind < 0)
+        ind = MAX_POINTER_MOVES - 1;
+
+    while (pointer_moves[ind].id > last_keyboard_ack && count < 50)
+    {
+        pointer_delta += pointer_moves[ind].movement * pointer_moves[ind].turnspeed;
+        ind--;
+        if (ind < 0)
+            ind = MAX_POINTER_MOVES - 1;
+        count++;
+    }
+
+    dir_delta = pointer_delta / (RES / 2);
+    new_dir = (received_dir - dir_delta);
+    while (new_dir < 0)
+        new_dir += RES;
+    while (new_dir >= RES)
+        new_dir -= RES;
+    int_new_dir = (int)(new_dir + 0.5);
+    while (int_new_dir >= RES)
+        /* might be == RES */
+        int_new_dir -= RES;
+
+    return int_new_dir;
+}
+
+int Handle_ship(int x, int y, int id, int dir, int shield, int cloak,
+                int eshield, int phased, int deflector)
 {
     ship_t t;
 

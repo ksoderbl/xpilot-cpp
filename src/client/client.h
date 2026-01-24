@@ -805,6 +805,15 @@ void Platform_specific_cleanup(void);
 extern void Colors_init_style_colors(void);
 
 /*
+ * about.c
+ */
+extern int Handle_motd(long off, char *buf, int len, long filesize);
+extern void aboutCleanup(void);
+
+extern int motd_viewer;
+extern int keys_viewer;
+
+/*
  * default.c
  */
 extern void Parse_options(int *argcp, char **argvp, char *realName, int *port,

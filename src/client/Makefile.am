@@ -3,7 +3,6 @@ AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" -I$(top_srcdir)/src/common
 noinst_LIBRARIES = libxpclient.a
 
 libxpclient_a_SOURCES = \
-    about.h \
     caudio.cpp \
     caudio.h \
     client.cpp \
