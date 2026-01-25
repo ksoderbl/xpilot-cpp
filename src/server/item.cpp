@@ -60,11 +60,11 @@ static void Item_update_flags(player_t *pl)
         CLR_BIT(pl->have, HAS_DEFLECTOR);
     if (pl->item[ITEM_AFTERBURNER] <= 0)
         CLR_BIT(pl->have, HAS_AFTERBURNER);
-    if (pl->item[ITEM_PHASING] <= 0 && !BIT(pl->used, USES_PHASING_DEVICE) && pl->phasing_left == 0)
+    if (pl->item[ITEM_PHASING] <= 0 && !Player_is_phasing(pl) && pl->phasing_left <= 0)
         CLR_BIT(pl->have, HAS_PHASING_DEVICE);
-    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, USES_EMERGENCY_THRUST) && pl->emergency_thrust_left == 0)
+    if (pl->item[ITEM_EMERGENCY_THRUST] <= 0 && !BIT(pl->used, HAS_EMERGENCY_THRUST) && pl->emergency_thrust_left <= 0)
         CLR_BIT(pl->have, HAS_EMERGENCY_THRUST);
-    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, USES_EMERGENCY_SHIELD) && pl->emergency_shield_left == 0)
+    if (pl->item[ITEM_EMERGENCY_SHIELD] <= 0 && !BIT(pl->used, HAS_EMERGENCY_SHIELD) && pl->emergency_shield_left <= 0)
     {
         if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
         {
@@ -72,7 +72,7 @@ static void Item_update_flags(player_t *pl)
             if (!BIT(DEF_HAVE, HAS_SHIELD) && pl->shield_time <= 0)
             {
                 CLR_BIT(pl->have, HAS_SHIELD);
-                CLR_BIT(pl->used, USES_SHIELD);
+                CLR_BIT(pl->used, HAS_SHIELD);
             }
         }
     }
@@ -148,9 +148,10 @@ int Choose_random_item(void)
 
 void Place_item(player_t *pl, int item)
 {
-    int num_lose, num_per_pack, bx, by, place_count, dir, dist;
+    int num_lose, num_per_pack, place_count, dist;
+    int bx, by;
     long grav, rand_item;
-    int px, py;
+    clpos_t pos;
     vector_t vel;
     item_concentrator_t *con;
 
@@ -201,8 +202,7 @@ void Place_item(player_t *pl, int item)
     {
         grav = GRAVITY;
         rand_item = 0;
-        px = CLICK_TO_PIXEL(pl->prevpos.cx);
-        py = CLICK_TO_PIXEL(pl->prevpos.cy);
+        pos = pl->prevpos;
         if (!Player_is_killed(pl))
         {
             /*
@@ -211,25 +211,16 @@ void Place_item(player_t *pl, int item)
              * player won't immediately pick it up again.
              */
             if (pl->vel.x >= 0)
-                px -= (BLOCK_SZ + (int)(rfrac() * 8));
+                pos.cx -= (BLOCK_CLICKS + (int)(rfrac() * 8 * CLICK));
             else
-                px += (BLOCK_SZ + (int)(rfrac() * 8));
+                pos.cx += (BLOCK_CLICKS + (int)(rfrac() * 8 * CLICK));
             if (pl->vel.y >= 0)
-                py -= (BLOCK_SZ + (int)(rfrac() * 8));
+                pos.cy -= (BLOCK_CLICKS + (int)(rfrac() * 8 * CLICK));
             else
-                py += (BLOCK_SZ + (int)(rfrac() * 8));
+                pos.cy += (BLOCK_CLICKS + (int)(rfrac() * 8 * CLICK));
         }
-        if (px < 0)
-            px += world->width;
-        else if (px >= world->width)
-            px -= world->width;
-        if (py < 0)
-            py += world->height;
-        else if (py >= world->height)
-            py -= world->height;
-        bx = px / BLOCK_SZ;
-        by = py / BLOCK_SZ;
-        if (!BIT(1U << world->block[bx][by], SPACE_BLOCKS))
+        pos = World_wrap_clpos(pos);
+        if (!World_contains_clpos(pos))
             return;
     }
     else
@@ -238,14 +229,20 @@ void Place_item(player_t *pl, int item)
             grav = GRAVITY;
         else
             grav = 0;
+
         if (rfrac() < options.randomItemProb)
             rand_item = RANDOM_ITEM;
         else
             rand_item = 0;
-        if (world->NumItemConcentrators > 0 && rfrac() < options.itemConcentratorProb)
-            con = &world->itemConcentrators[(int)(rfrac() * world->NumItemConcentrators)];
+
+        if (Num_itemConcs() > 0 && rfrac() < options.itemConcentratorProb)
+            con = ItemConc_by_index((int)(rfrac() * Num_itemConcs()));
         else
             con = NULL;
+        /*
+         * kps - write a generic function that can be used here and
+         * with asteroids.
+         */
         /*
          * This will take very long (or forever) with maps
          * that hardly have any (or none) spaces.
@@ -255,37 +252,26 @@ void Place_item(player_t *pl, int item)
         {
             if (place_count >= 8)
                 return;
+
             if (con)
             {
-                dir = (int)(rfrac() * RES);
+                int dir = (int)(rfrac() * RES);
                 dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_SZ) + 1));
-                px = (int)((con->blk_pos.bx + 0.5) * BLOCK_SZ + dist * tcos(dir));
-                py = (int)((con->blk_pos.by + 0.5) * BLOCK_SZ + dist * tsin(dir));
-                if (BIT(world->rules->mode, WRAP_PLAY))
-                {
-                    if (px < 0)
-                        px += world->width;
-                    if (px >= world->width)
-                        px -= world->width;
-                    if (py < 0)
-                        py += world->height;
-                    if (py >= world->height)
-                        py -= world->height;
-                }
-                if (px < 0 || px >= world->width || py < 0 || py >= world->height)
-                {
+                dist = PIXEL_TO_CLICK(dist);
+                // dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_CLICKS) + 1));
+                pos.cx = (click_t)(con->pos.cx + dist * tcos(dir));
+                pos.cy = (click_t)(con->pos.cy + dist * tsin(dir));
+                pos = World_wrap_clpos(pos);
+                if (!World_contains_clpos(pos))
                     continue;
-                }
-                bx = px / BLOCK_SZ;
-                by = py / BLOCK_SZ;
             }
             else
             {
-                px = (int)(rfrac() * world->width);
-                py = (int)(rfrac() * world->height);
-                bx = px / BLOCK_SZ;
-                by = py / BLOCK_SZ;
+                pos = World_get_random_clpos();
             }
+            blkpos_t blk_pos = Clpos_to_blkpos(pos);
+            bx = blk_pos.bx;
+            by = blk_pos.by;
             if (BIT(1U << world->block[bx][by], SPACE_BLOCKS | CANNON_BIT))
                 break;
         }
@@ -337,10 +323,6 @@ void Place_item(player_t *pl, int item)
             vel.y += (int)(rfrac() * 8) - 3;
         }
     }
-
-    clpos_t pos;
-    pos.cx = PIXEL_TO_CLICK(px);
-    pos.cy = PIXEL_TO_CLICK(py);
 
     Make_item(pos, vel, item, num_per_pack, grav | rand_item);
 }
@@ -1086,6 +1068,8 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             if (mine->count <= 0)
                 CLR_BIT(mine->obj_status, CONFUSED);
             break;
+        default:
+            break;
         }
     }
 
@@ -1222,7 +1206,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
 void Fire_ecm(player_t *pl)
 {
-    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || BIT(pl->used, USES_PHASING_DEVICE))
+    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
         return;
 
     Fire_general_ecm(pl->id, pl->team, pl->pos);
