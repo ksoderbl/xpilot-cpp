@@ -1373,7 +1373,6 @@ void Xpmap_tags_to_internal_data(void)
         world->teams[i].TreasuresLeft = 0;
     }
 
-    xpprintf("grok map: read tags to internal data, create objects\n");
     /*
      * Change read tags to internal data, create objects
      */
@@ -1533,8 +1532,8 @@ void Xpmap_tags_to_internal_data(void)
                     World_place_treasure(pos, 0, (c == '^'), 0xff);
                     break;
                 case '!':
-                    // line[y] = TARGET;
-                    // itemID[y] = world->NumTargets;
+                    world->block[x][y] = TARGET;
+                    world->itemID[x][y] = world->NumTargets;
                     // world->targets[world->NumTargets].blk_pos.bx = x;
                     // world->targets[world->NumTargets].blk_pos.by = y;
                     // world->targets[world->NumTargets].pos.cx = cx;
@@ -1550,6 +1549,10 @@ void Xpmap_tags_to_internal_data(void)
                     // world->targets[world->NumTargets].update_mask = 0;
                     // world->targets[world->NumTargets].last_change = frame_loops;
                     // world->NumTargets++;
+                    World_place_target(pos, 0);
+                    pos.cx = x * BLOCK_CLICKS;
+                    pos.cy = y * BLOCK_CLICKS;
+
                     break;
                 case '%':
                     // line[y] = ITEM_CONCENTRATOR;

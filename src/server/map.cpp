@@ -232,27 +232,27 @@ int World_place_treasure(clpos_t pos, int team, bool empty,
 
 int World_place_target(clpos_t pos, int team)
 {
-    // target_t t;
-    // int ind = Num_targets();
+    target_t t;
+    int ind = Num_targets();
 
-    // t.pos = pos;
-    // /*
-    //  * If we have a block based map, the team is determined in
-    //  * in Xpmap_find_map_object_teams().
-    //  */
-    // t.team = team;
-    // t.dead_ticks = 0;
-    // t.damage = TARGET_DAMAGE;
-    // t.conn_mask = ~0;
-    // t.update_mask = 0;
-    // t.last_change = frame_loops;
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.pos = pos;
+    /*
+     * If we have a block based map, the team is determined in
+     * in Xpmap_find_map_object_teams().
+     */
+    t.team = team;
+    t.dead_ticks = 0;
+    t.damage = TARGET_DAMAGE;
+    t.conn_mask = ~0;
+    t.update_mask = 0;
+    t.last_change = frame_loops;
     // t.group = NO_GROUP;
+
     // Arraylist_add(world->targets, &t);
-
-    // return ind;
-
-    // TODO
-    return -1;
+    world->targets[ind] = t;
+    world->NumTargets++;
+    return ind;
 }
 
 int World_place_wormhole(clpos_t pos, wormtype_t type)
