@@ -84,7 +84,7 @@ unsigned RadarHeight = 0;
 unsigned RadarWidth = 256; /* radar width at the server */
 bool UpdateRadar = false;  /* radar update because of polystyle changes? */
 
-int oldServer = true;
+bool oldServer;
 ipos_t selfPos;
 ipos_t selfVel;
 short heading;
@@ -198,7 +198,7 @@ int cumulativeMouseMovement = 0;
 int clientPortStart = 0; /* First UDP port for clients */
 int clientPortEnd = 0;   /* Last one (these are for firewalls) */
 
-uint8_t lose_item;    /* index for dropping owned item */
+byte lose_item;       /* index for dropping owned item */
 int lose_item_active; /* one of the lose keys is pressed */
 
 #ifdef SOUND
@@ -206,6 +206,12 @@ char sounds[MAX_CHARS];      /* audio mappings */
 char audioServer[MAX_CHARS]; /* audio server */
 int maxVolume;               /* maximum volume (in percent) */
 #endif                       /* SOUND */
+
+static double teamscores[MAX_TEAMS];
+cannontime_t *cannons = NULL;
+int num_cannons = 0;
+target_t *targets = NULL;
+int num_targets = 0;
 
 fuelstation_t *fuels = NULL;
 int num_fuels = 0;
@@ -220,19 +226,11 @@ int num_edge_styles = 0;
 polygon_style_t *polygon_styles = NULL;
 int num_polygon_styles = 0;
 
-cannontime_t *cannons = NULL;
-int num_cannons = 0;
-target_t *targets = NULL;
-int num_targets = 0;
-
-#define MAX_CHECKPOINT 26
-
-other_t *Others = 0;
-int num_others = 0, max_others = 0;
-
 score_object_t score_objects[MAX_SCORE_OBJECTS];
 int score_object = 0;
 
+other_t *Others = NULL;
+int num_others = 0, max_others = 0;
 refuel_t *refuel_ptr;
 int num_refuel, max_refuel;
 connector_t *connector_ptr;
@@ -481,7 +479,7 @@ int Handle_base(int id, int ind)
 
 int Check_pos_by_index(int ind, int *xp, int *yp)
 {
-    if (ind < 0 || ind >= MAX_CHECKPOINT)
+    if (ind < 0 || ind >= num_checks)
     {
         warn("Bad checkpoint index (%d)", ind);
         *xp = 0;
@@ -498,7 +496,7 @@ int Check_index_by_pos(int x, int y)
     int i, pos;
 
     pos = x * Setup->y + y;
-    for (i = 0; i < MAX_CHECKPOINT; i++)
+    for (i = 0; i < num_checks; i++)
     {
         if (pos == checks[i].pos)
             return i;
@@ -955,7 +953,7 @@ static int init_polymap(void)
     ipos_t *points, min, max;
     char *ptr, *edgeptr;
 
-    oldServer = 0;
+    oldServer = false;
     ptr = (char *)Setup->map_data;
 
     parse_styles(&ptr);
@@ -1223,10 +1221,21 @@ static int init_blockmap(void)
         }
         num_cannons = 0;
     }
-    for (i = 0; i < MAX_CHECKPOINT; i++)
+    // for (i = 0; i < MAX_CHECKPOINT; i++)
+    // {
+    //     types[SETUP_CHECK + i] = 5;
+    // }
+    if (num_checks != 0)
     {
-        types[SETUP_CHECK + i] = 5;
+        checks = XMALLOC(checkpoint_t, num_checks);
+        if (checks == NULL)
+        {
+            error("No memory for Map checks (%d)", num_checks);
+            return -1;
+        }
+        num_checks = 0;
     }
+
     for (i = 0; i < max; i++)
     {
         type = Setup->map_data[i];
@@ -1535,7 +1544,7 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
     }
     else if (other->score != score || other->life != life || other->mychar != mychar || other->alliance != alliance)
     {
-        other->score = (int)score;
+        other->score = score;
         other->life = life;
         other->mychar = mychar;
         other->alliance = alliance;
@@ -1547,11 +1556,11 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
 
 int Handle_team_score(int team, double score)
 {
-    // if (teamscores[team] != score)
-    // {
-    //     teamscores[team] = score;
-    //     scoresChanged = true;
-    // }
+    if (teamscores[team] != score)
+    {
+        teamscores[team] = score;
+        scoresChanged = true;
+    }
 
     return 0;
 }
@@ -1695,6 +1704,15 @@ int Handle_end(long server_loops)
     snooping = (self && eyesId != self->id) ? true : false;
     update_timing();
     Paint_frame();
+#ifdef SOUND
+    audioUpdate();
+#endif
+    return 0;
+}
+
+int Handle_self_items(uint8_t *newNumItems)
+{
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
     return 0;
 }
 
@@ -1705,7 +1723,6 @@ static void update_status(int status)
     if (BIT(old_status, OLD_GAME_OVER) && !BIT(status, OLD_GAME_OVER) && !BIT(status, OLD_PAUSE))
         Raise_window();
 
-    /* GAME_OVER -> PLAYING */
     /* Player appeared? */
     if (BIT(old_status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) != OLD_PLAYING)
     {
@@ -1714,12 +1731,6 @@ static void update_status(int status)
     }
 
     old_status = status;
-}
-
-int Handle_self_items(uint8_t *newNumItems)
-{
-    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
-    return 0;
 }
 
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
@@ -2205,9 +2216,20 @@ int Handle_vdecor(int x, int y, int xi, int yi, int type)
     return 0;
 }
 
+bool Using_score_decimals(void)
+{
+    // if (showScoreDecimals > 0 && version >= 0x4500 && (version < 0x4F09 || version >= 0x4F11))
+    //     return true;
+    return false;
+}
+
 int Client_init(char *server, unsigned server_version)
 {
     version = server_version;
+    if (server_version < 0x4F09)
+        oldServer = true;
+    else
+        oldServer = false;
 
     if (Init_wreckage() == -1)
     {
@@ -2319,8 +2341,26 @@ int Client_start(void)
     return 0;
 }
 
-static void clientCleanup(void)
+void Client_cleanup(void)
 {
+    int i;
+
+    Pointer_control_set_state(false);
+    Platform_specific_cleanup();
+    Free_selectionAndHistory();
+    Free_msgs();
+    if (max_others > 0)
+    {
+        for (i = 0; i < num_others; i++)
+        {
+            other_t *other = &Others[i];
+            Free_ship_shape(other->ship);
+        }
+        free(Others);
+        num_others = 0;
+        max_others = 0;
+    }
+
     if (max_refuel > 0 && refuel_ptr)
     {
         max_refuel = 0;
@@ -2421,27 +2461,9 @@ static void clientCleanup(void)
         max_wormholes = 0;
         XFREE(wormhole_ptr);
     }
-}
 
-void Client_cleanup(void)
-{
-    int i;
-
-    Platform_specific_cleanup();
-    Free_selectionAndHistory();
-    if (max_others > 0)
-    {
-        for (i = 0; i < num_others; i++)
-        {
-            other_t *other = &Others[i];
-            Free_ship_shape(other->ship);
-        }
-        free(Others);
-        num_others = 0;
-        max_others = 0;
-    }
-    clientCleanup();
     Map_cleanup();
+    Paint_cleanup();
 }
 
 int Client_wrap_mode(void)

@@ -141,6 +141,11 @@ static int scoreEnemyTeamColor = WHITE; /* Score list enemy team color index */
 
 static void Paint_clock(bool redraw);
 
+void Paint_cleanup(void)
+{
+    Bitmaps_cleanup();
+}
+
 void Paint_frame(void)
 {
     static long scroll_i = 0;
