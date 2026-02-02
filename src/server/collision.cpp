@@ -605,7 +605,7 @@ static void PlayerObjectCollision(player_t *pl)
     /*
      * Collision between a player and an object.
      */
-    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+    if (!Player_is_alive(pl))
         return;
 
     Cell_get_objects(pl->pos, 4, 500, &obj_list, &obj_count);
