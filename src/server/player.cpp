@@ -29,6 +29,7 @@
 
 #include "commonmacros.h"
 #include "const.h"
+#include "strlcpy.h"
 
 #include "server.h"
 
