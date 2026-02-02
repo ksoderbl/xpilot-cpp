@@ -29,6 +29,7 @@
 #include "commonmacros.h"
 #include "randommt.h"
 #include "strdup.h"
+#include "strlcpy.h"
 
 #include "client.h"
 #include "option.h"
