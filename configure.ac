@@ -12,7 +12,10 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
-dnl --- C++17 requirement ---
+dnl Check for functions
+AC_CHECK_FUNCS([strlcat strlcpy])
+
+dnl C++17 requirement
 AC_MSG_CHECKING([for C++17 support])
 save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS -std=c++17"

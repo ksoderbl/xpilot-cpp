@@ -21,12 +21,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef STRLCPY_H
-#define STRLCPY_H
+#pragma once
 
 #include <cstdlib>
+#include <cstring>
+#include "config.h"
 
+#ifndef HAVE_STRLCPY
 size_t strlcpy(char *dest, const char *src, size_t size);
-size_t strlcat(char *dest, const char *src, size_t size);
+#endif
 
+#ifndef HAVE_STRLCAT
+size_t strlcat(char *dest, const char *src, size_t size);
 #endif
