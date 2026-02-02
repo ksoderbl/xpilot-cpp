@@ -29,6 +29,8 @@
 #include <cstring>
 #include <cstdint>
 
+#include "strlcpy.h"
+
 #include "cannon.h"
 
 #define SERVER
