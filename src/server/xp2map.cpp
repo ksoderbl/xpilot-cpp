@@ -27,6 +27,7 @@
 #include <expat.h>
 #include <zlib.h>
 
+#include "strlcpy.h"
 #include "xperror.h"
 
 #include "cannon.h"
