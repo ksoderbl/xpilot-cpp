@@ -3,3 +3,111 @@ apt install libglfw3-dev libglm-dev
 apt install vulkan-tools libvulkan-dev spirv-tools
 apt install vulkan-validationlayers-dev
 apt install glslc # gl shader language compiler?
+
+My installed libraries:
+
+ii  autotools-dev                         20240727.1                           all          Update infrastructure for config.{guess,sub} files
+ii  comerr-dev:amd64                      2.1-1.47.2-3+b7                      amd64        common error description library - headers and static libraries
+ii  dpkg-dev                              1.22.21                              all          Debian package development tools
+ii  gir1.2-glib-2.0-dev:amd64             2.84.4-3~deb13u2                     amd64        GIR XML for GLib, GObject, Gio and GModule
+ii  icu-devtools                          76.1-4                               amd64        Development utilities for International Components for Unicode
+ii  libasound2-dev:amd64                  1.2.14-1                             amd64        shared library for ALSA applications -- development files
+ii  libblas-dev:amd64                     3.12.1-6                             amd64        Basic Linear Algebra Subroutines 3, static library
+ii  libblkid-dev:amd64                    2.41-5                               amd64        block device ID library - headers
+ii  libbrotli-dev:amd64                   1.1.0-2+b7                           amd64        library implementing brotli encoder and decoder (development files)
+ii  libbz2-dev:amd64                      1.0.8-6                              amd64        high-quality block-sorting file compressor library - development
+ii  libc-dev-bin                          2.41-12+deb13u1                      amd64        GNU C Library: Development binaries
+ii  libc6-dev:amd64                       2.41-12+deb13u1                      amd64        GNU C Library: Development Libraries and Header Files
+ii  libcap-dev:amd64                      1:2.75-10+b3                         amd64        POSIX 1003.1e capabilities (development)
+ii  libcrypt-dev:amd64                    1:4.4.38-1                           amd64        libcrypt development files
+ii  libcurl4-openssl-dev:amd64            8.14.1-2+deb13u2                     amd64        development files and documentation for libcurl (OpenSSL flavour)
+ii  libdbus-1-dev:amd64                   1.16.2-2                             amd64        simple interprocess messaging system (development headers)
+ii  libdecor-0-dev:amd64                  0.2.2-2                              amd64        client-side window decoration library - development files
+ii  libdeflate-dev:amd64                  1.23-2                               amd64        headers for whole-buffer compression and decompression library
+ii  libdrm-dev:amd64                      2.4.124-2                            amd64        Userspace interface to kernel DRM services -- development files
+ii  libegl-dev:amd64                      1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- EGL development files
+ii  libexpat1-dev:amd64                   2.7.1-2                              amd64        XML parsing C library - development kit
+ii  libffi-dev:amd64                      3.4.8-2                              amd64        Foreign Function Interface library (development files)
+ii  libgbm-dev:amd64                      25.0.7-2                             amd64        generic buffer management API -- development files
+ii  libgcc-14-dev:amd64                   14.2.0-19                            amd64        GCC support library (development files)
+ii  libgfortran-14-dev:amd64              14.2.0-19                            amd64        Runtime library for GNU Fortran applications (development files)
+ii  libgio-2.0-dev:amd64                  2.84.4-3~deb13u2                     amd64        Development files for the GLib, GObject and GIO libraries
+ii  libgio-2.0-dev-bin                    2.84.4-3~deb13u2                     amd64        Development utilities for GLib, GObject and GIO libraries
+ii  libgl-dev:amd64                       1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- GL development files
+ii  libgl1-mesa-dev:amd64                 25.0.7-2                             amd64        transitional dummy package
+ii  libgles-dev:amd64                     1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- GLES development files
+ii  libglew-dev:amd64                     2.2.0-4+b2                           amd64        OpenGL Extension Wrangler - development environment
+ii  libglfw3-dev:amd64                    3.4-3                                amd64        portable library for OpenGL, window and input (development files)
+ii  libglib2.0-dev:amd64                  2.84.4-3~deb13u2                     amd64        Development metapackage for the GLib family of libraries
+ii  libglib2.0-dev-bin                    2.84.4-3~deb13u2                     amd64        Development utilities for the GLib library
+ii  libglm-dev                            0.9.9.8+ds-9                         all          C++ library for OpenGL GLSL type-based mathematics
+ii  libglu1-mesa-dev:amd64                9.0.2-1.1+b3                         amd64        Mesa OpenGL utility library -- development files
+ii  libglvnd-core-dev:amd64               1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- core development files
+ii  libglvnd-dev:amd64                    1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- development files
+ii  libglx-dev:amd64                      1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- GLX development files
+ii  libgmp-dev:amd64                      2:6.3.0+dfsg-3                       amd64        Multiprecision arithmetic library developers tools
+ii  libgnutls28-dev:amd64                 3.8.9-3+deb13u2                      amd64        GNU TLS library - development files
+ii  libibus-1.0-dev:amd64                 1.5.32-2                             amd64        Intelligent Input Bus - development file
+ii  libice-dev:amd64                      2:1.1.1-1                            amd64        X11 Inter-Client Exchange library (development headers)
+ii  libicu-dev:amd64                      76.1-4                               amd64        Development files for International Components for Unicode
+ii  libidn2-dev:amd64                     2.3.8-2                              amd64        Internationalized domain names (IDNA2008/TR46) development files
+ii  libjpeg-dev:amd64                     1:2.1.5-4                            amd64        Development files for the JPEG library [dummy package]
+ii  libjpeg62-turbo-dev:amd64             1:2.1.5-4                            amd64        Development files for the libjpeg-turbo JPEG library
+ii  libkrb5-dev:amd64                     1.21.3-5                             amd64        headers and development libraries for MIT Kerberos
+ii  liblapack-dev:amd64                   3.12.1-6                             amd64        Library of linear algebra routines 3 - static version
+ii  libldap-dev:amd64                     2.6.10+dfsg-1                        amd64        OpenLDAP development libraries
+ii  liblzma-dev:amd64                     5.8.1-1                              amd64        XZ-format compression library - development files
+ii  libmount-dev:amd64                    2.41-5                               amd64        device mounting library - headers
+ii  libncurses-dev:amd64                  6.5+20250216-2                       amd64        developer's libraries for ncurses
+ii  libnghttp2-dev:amd64                  1.64.0-1.1                           amd64        library implementing HTTP/2 protocol (development files)
+ii  libnghttp3-dev:amd64                  1.8.0-1                              amd64        HTTP/3 library with QUIC and QPACK (development)
+ii  libopengl-dev:amd64                   1.7.0-1+b2                           amd64        Vendor neutral GL dispatch library -- OpenGL development files
+ii  libp11-kit-dev:amd64                  0.25.5-3                             amd64        library for loading and coordinating access to PKCS#11 modules - development
+ii  libpciaccess-dev:amd64                0.17-3+b3                            amd64        Generic PCI access library for X - development files
+ii  libpcre2-dev:amd64                    10.46-1~deb13u1                      amd64        New Perl Compatible Regular Expression Library - development files
+ii  libpng-dev:amd64                      1.6.48-1+deb13u3                     amd64        PNG library - development (version 1.6)
+ii  libpsl-dev:amd64                      0.21.2-1.1+b1                        amd64        Library for Public Suffix List (development headers)
+ii  libpulse-dev:amd64                    17.0+dfsg1-2+b1                      amd64        PulseAudio client development headers and libraries
+ii  libreadline-dev:amd64                 8.2-6                                amd64        GNU readline and history libraries, development files
+ii  librtmp-dev:amd64                     2.4+20151223.gitfa8646d.1-2+b5       amd64        toolkit for RTMP streams (development files)
+ii  libsamplerate0-dev:amd64              0.2.2-4+b2                           amd64        Development files for audio sample rate conversion
+ii  libsdl2-dev:amd64                     2.32.4+dfsg-1                        amd64        Simple DirectMedia Layer development files
+ii  libselinux1-dev:amd64                 3.8.1-1                              amd64        SELinux development headers
+ii  libsepol-dev:amd64                    3.8.1-1                              amd64        SELinux binary policy manipulation library and development files
+ii  libsm-dev:amd64                       2:1.2.6-1                            amd64        X11 Session Management library (development headers)
+ii  libsndio-dev:amd64                    1.10.0-0.1                           amd64        Small audio and MIDI framework from OpenBSD, development files
+ii  libssh2-1-dev:amd64                   1.11.1-1                             amd64        SSH2 client-side library (development headers)
+ii  libssl-dev:amd64                      3.5.4-1~deb13u2                      amd64        Secure Sockets Layer toolkit - development files
+ii  libstdc++-14-dev:amd64                14.2.0-19                            amd64        GNU Standard C++ Library v3 (development files)
+ii  libsysprof-capture-4-dev:amd64        48.0-2                               amd64        capture library for system-wide Linux profiler
+ii  libsystemd-dev:amd64                  257.9-1~deb13u1                      amd64        systemd utility library - development files
+ii  libtasn1-6-dev:amd64                  4.20.0-2                             amd64        Manage ASN.1 structures (development)
+ii  libtirpc-dev:amd64                    1.3.6+ds-1                           amd64        transport-independent RPC library - development files
+ii  libudev-dev:amd64                     257.9-1~deb13u1                      amd64        libudev development files
+ii  libvulkan-dev:amd64                   1.4.309.0-1                          amd64        Vulkan loader library -- development files
+ii  libwayland-dev:amd64                  1.23.1-3                             amd64        wayland compositor infrastructure - development files
+ii  libx11-dev:amd64                      2:1.8.12-1                           amd64        X11 client-side library (development headers)
+ii  libxau-dev:amd64                      1:1.0.11-1                           amd64        X11 authorisation library (development headers)
+ii  libxcb1-dev:amd64                     1.17.0-2+b1                          amd64        X C Binding, development files
+ii  libxcursor-dev:amd64                  1:1.2.3-1                            amd64        X cursor management library (development files)
+ii  libxdmcp-dev:amd64                    1:1.1.5-1                            amd64        X11 authorisation library (development headers)
+ii  libxext-dev:amd64                     2:1.3.4-1+b3                         amd64        X11 miscellaneous extensions library (development headers)
+ii  libxfixes-dev:amd64                   1:6.0.0-2+b4                         amd64        X11 miscellaneous 'fixes' extension library (development headers)
+ii  libxi-dev:amd64                       2:1.8.2-1                            amd64        X11 Input extension library (development headers)
+ii  libxinerama-dev:amd64                 2:1.1.4-3+b4                         amd64        X11 Xinerama extension library (development headers)
+ii  libxkbcommon-dev:amd64                1.7.0-2                              amd64        library interface to the XKB compiler - development files
+ii  libxrandr-dev:amd64                   2:1.5.4-1+b3                         amd64        X11 RandR extension library (development headers)
+ii  libxrender-dev:amd64                  1:0.9.12-1                           amd64        X Rendering Extension client library (development files)
+ii  libxss-dev:amd64                      1:1.2.3-1+b3                         amd64        X11 Screen Saver extension library (development headers)
+ii  libxt-dev:amd64                       1:1.2.1-1.2+b2                       amd64        X11 toolkit intrinsics library (development headers)
+ii  libxv-dev:amd64                       2:1.0.11-1.1+b3                      amd64        X11 Video extension library (development headers)
+ii  libxxf86vm-dev:amd64                  1:1.1.4-1+b4                         amd64        X11 XFree86 video mode extension library (development headers)
+ii  libzstd-dev:amd64                     1.5.7+dfsg-1                         amd64        fast lossless compression algorithm -- development files
+ii  linux-libc-dev                        6.12.73-1                            all          Linux support headers for userspace development
+ii  manpages-dev                          6.9.1-1                              all          Manual pages about using GNU/Linux for development
+ii  nettle-dev:amd64                      3.10.1-1                             amd64        low level cryptographic library (development files)
+ii  r-base-dev                            4.5.0-3                              all          GNU R installation of auxiliary GNU R packages
+ii  uuid-dev:amd64                        2.41-5                               amd64        Universally Unique ID library - headers and static libraries
+ii  x11proto-dev                          2024.1-1                             all          X11 extension protocols and auxiliary headers
+ii  xtrans-dev                            1.4.0-1                              all          X transport library (development files)
+ii  zlib1g-dev:amd64                      1:1.3.dfsg+really1.3.1-1+b1          amd64        compression library - development
