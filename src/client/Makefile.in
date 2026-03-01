@@ -206,7 +206,7 @@ am__define_uniq_tagged_files = \
   unique=`for i in $$list; do \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = . items x11 sdl
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
@@ -241,6 +241,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+CC = @CC@
+CCDEPMODE = @CCDEPMODE@
+CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
 CTAGS = @CTAGS@
@@ -276,7 +279,20 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
+SDL2_CFLAGS = @SDL2_CFLAGS@
+SDL2_IMAGE_CFLAGS = @SDL2_IMAGE_CFLAGS@
+SDL2_IMAGE_LIBS = @SDL2_IMAGE_LIBS@
+SDL2_LIBS = @SDL2_LIBS@
+SDL2_MIXER_CFLAGS = @SDL2_MIXER_CFLAGS@
+SDL2_MIXER_LIBS = @SDL2_MIXER_LIBS@
+SDL2_TTF_CFLAGS = @SDL2_TTF_CFLAGS@
+SDL2_TTF_LIBS = @SDL2_TTF_LIBS@
+SDL_CFLAGS = @SDL_CFLAGS@
+SDL_LIBS = @SDL_LIBS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -285,6 +301,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -364,7 +381,12 @@ libxpclient_a_SOURCES = \
     talkmacros.cpp \
     textinterface.cpp
 
-SUBDIRS = . items x11
+@COND_SDL_CLIENT_FALSE@MAYBE_SDL = 
+
+# From section Conditional subdirectories with AM_CONDITIONAL
+# in GNU automake manual.
+@COND_SDL_CLIENT_TRUE@MAYBE_SDL = sdl
+SUBDIRS = . items x11 $(MAYBE_SDL)
 all: all-recursive
 
 .SUFFIXES:

@@ -38,4 +38,12 @@ libxpclient_a_SOURCES = \
     talkmacros.cpp \
     textinterface.cpp
 
-SUBDIRS = . items x11
+# From section Conditional subdirectories with AM_CONDITIONAL
+# in GNU automake manual.
+if COND_SDL_CLIENT
+  MAYBE_SDL = sdl
+else
+  MAYBE_SDL =
+endif
+
+SUBDIRS = . items x11 $(MAYBE_SDL)
