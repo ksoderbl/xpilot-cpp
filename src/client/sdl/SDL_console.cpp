@@ -642,8 +642,15 @@ void DrawCommandLine()
     strcpy(Topmost->VCommand, Topmost->Prompt);
 
     /* then add the visible part of the command */
-    strncat(Topmost->VCommand, &Topmost->Command[Topmost->Offset],
-            strlen(&Topmost->Command[Topmost->Offset]));
+    {
+        const char *src = &Topmost->Command[Topmost->Offset];
+        size_t dst_len = strlen(Topmost->VCommand);
+        size_t space = (dst_len < CON_CHARS_PER_LINE) ? (CON_CHARS_PER_LINE - dst_len) : 0;
+
+        if (space > 0)
+            strncat(Topmost->VCommand, src, space);
+        Topmost->VCommand[CON_CHARS_PER_LINE] = '\0';
+    }
 
     /* first of all restore InputBackground */
     rect.x = 0;
@@ -1102,15 +1109,28 @@ void Cursor_Home(ConsoleInformation *console)
     Topmost->CursorPos = 0;
     strcpy(temp, Topmost->RCommand);
     strcpy(Topmost->RCommand, Topmost->LCommand);
-    strncat(Topmost->RCommand, temp, strlen(temp));
+    {
+        size_t dst_len = strlen(Topmost->RCommand);
+        size_t space = (dst_len < CON_CHARS_PER_LINE) ? (CON_CHARS_PER_LINE - dst_len) : 0;
+
+        if (space > 0)
+            strncat(Topmost->RCommand, temp, space);
+        Topmost->RCommand[CON_CHARS_PER_LINE] = '\0';
+    }
     memset(Topmost->LCommand, 0, CON_CHARS_PER_LINE + 1);
 }
 
 void Cursor_End(ConsoleInformation *console)
 {
     Topmost->CursorPos = strlen(Topmost->Command);
-    strncat(Topmost->LCommand, Topmost->RCommand,
-            strlen(Topmost->RCommand));
+    {
+        size_t dst_len = strlen(Topmost->LCommand);
+        size_t space = (dst_len < CON_CHARS_PER_LINE) ? (CON_CHARS_PER_LINE - dst_len) : 0;
+
+        if (space > 0)
+            strncat(Topmost->LCommand, Topmost->RCommand, space);
+        Topmost->LCommand[CON_CHARS_PER_LINE] = '\0';
+    }
     memset(Topmost->RCommand, 0, CON_CHARS_PER_LINE + 1);
 }
 
