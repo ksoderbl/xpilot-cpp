@@ -1,4 +1,3 @@
-
 /* Handle clipboard text and data in arbitrary formats */
 
 #include <SDL2/SDL.h>
@@ -7,6 +6,23 @@
 
 #include "SDL.h"
 #include "SDL_syswm.h"*/
+
+#include <SDL2/SDL_syswm.h> /* SDL2: SDL_GetWindowWMInfo */
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
+
+#if defined(__unix__) && !defined(__QNXNTO__)
+/* SDL2 + X11: needed when using X11 clipboard atoms/properties directly */
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+#endif
+
+#if defined(__WIN32__)
+#include <windows.h>
+#endif
 
 #include "scrap.h"
 
@@ -58,13 +74,13 @@ typedef uint32_t scrap_type;
 #if defined(X11_SCRAP)
 /* * */
 static Display *SDL_Display;
-static Window SDL_Window;
+static Window SDL_X11Window;
 static void (*Lock_Display)(void);
 static void (*Unlock_Display)(void);
 
 #elif defined(WIN_SCRAP)
 /* * */
-static HWND SDL_Window;
+static HWND SDL_Win32Window;
 
 #elif defined(QNX_SCRAP)
 /* * */
@@ -206,7 +222,7 @@ convert_scrap(int type, char *dst, char *src, int srclen)
   case TextScrap('T', 'E', 'X', 'T'):
   {
     if (srclen == 0)
-      srclen = strlen(src);
+      srclen = (int)strlen(src);
     if (dst)
     {
       while (--srclen >= 0)
@@ -255,7 +271,7 @@ convert_scrap(int type, char *dst, char *src, int srclen)
       if (srclen == 0)
         memcpy(dst, src + sizeof(int), dstlen);
       else
-        memcpy(dst, src + sizeof(int), srclen - sizeof(int));
+        memcpy(dst, src + sizeof(int), srclen - (int)sizeof(int));
     }
     break;
   }
@@ -264,7 +280,7 @@ convert_scrap(int type, char *dst, char *src, int srclen)
 
 #if defined(X11_SCRAP)
 /* The system message filter function -- handle clipboard messages */
-PRIVATE int clipboard_filter(const SDL_Event *event);
+PRIVATE int clipboard_filter(void *userdata, SDL_Event *event);
 #endif
 
 PUBLIC int
@@ -278,7 +294,21 @@ init_scrap(void)
   SDL_SetError("SDL is not running on known window manager");
 
   SDL_VERSION(&info.version);
-  if (SDL_GetWMInfo(&info))
+
+  /* SDL2: we need an SDL_Window* to call SDL_GetWindowWMInfo() */
+  SDL_Window *sdl_window = SDL_GetKeyboardFocus();
+  if (!sdl_window)
+  {
+    /* Fallback: try mouse focus */
+    sdl_window = SDL_GetMouseFocus();
+  }
+  if (!sdl_window)
+  {
+    SDL_SetError("SDL2 has no focused window for clipboard handling");
+    return (retval);
+  }
+
+  if (SDL_GetWindowWMInfo(sdl_window, &info))
   {
     /* Save the information for later use */
 #if defined(X11_SCRAP)
@@ -286,13 +316,15 @@ init_scrap(void)
     if (info.subsystem == SDL_SYSWM_X11)
     {
       SDL_Display = info.info.x11.display;
-      SDL_Window = info.info.x11.window;
-      Lock_Display = info.info.x11.lock_func;
-      Unlock_Display = info.info.x11.unlock_func;
+      SDL_X11Window = info.info.x11.window;
+
+      /* SDL2 doesn't provide lock_func/unlock_func; use XLockDisplay */
+      Lock_Display = NULL;
+      Unlock_Display = NULL;
 
       /* Enable the special window hook events */
       SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
-      SDL_SetEventFilter(clipboard_filter);
+      SDL_SetEventFilter(clipboard_filter, NULL);
 
       retval = 0;
     }
@@ -303,7 +335,7 @@ init_scrap(void)
 
 #elif defined(WIN_SCRAP)
     /* * */
-    SDL_Window = info.window;
+    SDL_Win32Window = info.info.win.window;
     retval = 0;
 
 #elif defined(QNX_SCRAP)
@@ -323,13 +355,13 @@ lost_scrap(void)
 
 #if defined(X11_SCRAP)
   /* * */
-  Lock_Display();
-  retval = (XGetSelectionOwner(SDL_Display, XA_PRIMARY) != SDL_Window);
-  Unlock_Display();
+  XLockDisplay(SDL_Display);
+  retval = (XGetSelectionOwner(SDL_Display, XA_PRIMARY) != SDL_X11Window);
+  XUnlockDisplay(SDL_Display);
 
 #elif defined(WIN_SCRAP)
   /* * */
-  retval = (GetClipboardOwner() != SDL_Window);
+  retval = (GetClipboardOwner() != SDL_Win32Window);
 
 #elif defined(QNX_SCRAP)
   /* * */
@@ -355,19 +387,19 @@ put_scrap(int type, int srclen, char *src)
   dst = (char *)malloc(dstlen);
   if (dst != NULL)
   {
-    Lock_Display();
+    XLockDisplay(SDL_Display);
     convert_data(type, dst, src, srclen);
     XChangeProperty(SDL_Display, DefaultRootWindow(SDL_Display),
                     XA_CUT_BUFFER0, format, 8, PropModeReplace, (uint8_t *)dst, dstlen);
     free(dst);
     if (lost_scrap())
-      XSetSelectionOwner(SDL_Display, XA_PRIMARY, SDL_Window, CurrentTime);
-    Unlock_Display();
+      XSetSelectionOwner(SDL_Display, XA_PRIMARY, SDL_X11Window, CurrentTime);
+    XUnlockDisplay(SDL_Display);
   }
 
 #elif defined(WIN_SCRAP)
   /* * */
-  if (OpenClipboard(SDL_Window))
+  if (OpenClipboard(SDL_Win32Window))
   {
     HANDLE hMem;
 
@@ -459,10 +491,11 @@ get_scrap(int type, int *dstlen, char **dst)
     unsigned long overflow;
     uint8_t *src;
 
-    Lock_Display();
+    XLockDisplay(SDL_Display);
     owner = XGetSelectionOwner(SDL_Display, XA_PRIMARY);
-    Unlock_Display();
-    if ((owner == None) || (owner == SDL_Window))
+    XUnlockDisplay(SDL_Display);
+
+    if ((owner == None) || (owner == SDL_X11Window))
     {
       owner = DefaultRootWindow(SDL_Display);
       selection1 = XA_CUT_BUFFER0;
@@ -472,18 +505,20 @@ get_scrap(int type, int *dstlen, char **dst)
       int selection_response = 0;
       SDL_Event event;
 
-      owner = SDL_Window;
-      Lock_Display();
+      owner = SDL_X11Window;
+      XLockDisplay(SDL_Display);
       selection1 = XInternAtom(SDL_Display, "SDL_SELECTION", False);
       XConvertSelection(SDL_Display, XA_PRIMARY, format,
                         selection1, owner, CurrentTime);
-      Unlock_Display();
+      XUnlockDisplay(SDL_Display);
+
       while (!selection_response)
       {
         SDL_WaitEvent(&event);
         if (event.type == SDL_SYSWMEVENT)
         {
-          XEvent xevent = event.syswm.msg->event.xevent;
+          /* SDL2: syswm payload layout differs */
+          XEvent xevent = event.syswm.msg->msg.x11.event;
 
           if ((xevent.type == SelectionNotify) &&
               (xevent.xselection.requestor == owner))
@@ -491,28 +526,29 @@ get_scrap(int type, int *dstlen, char **dst)
         }
       }
     }
-    Lock_Display();
-    if (XGetWindowProperty(SDL_Display, owner, selection1, 0, INT_MAX / 4,
+
+    XLockDisplay(SDL_Display);
+    if (XGetWindowProperty(SDL_Display, owner, selection1, 0, (long)(INT_MAX / 4),
                            False, format, &seln_type, &seln_format,
                            &nbytes, &overflow, &src) == Success)
     {
       if (seln_type == format)
       {
-        *dstlen = convert_scrap(type, NULL, (char *)src, nbytes);
+        *dstlen = convert_scrap(type, NULL, (char *)src, (int)nbytes);
         *dst = (char *)realloc(*dst, *dstlen);
         if (*dst == NULL)
           *dstlen = 0;
         else
-          convert_scrap(type, *dst, (char *)src, nbytes);
+          convert_scrap(type, *dst, (char *)src, (int)nbytes);
       }
       XFree(src);
     }
+    XUnlockDisplay(SDL_Display);
   }
-  Unlock_Display();
 
 #elif defined(WIN_SCRAP)
   /* * */
-  if (IsClipboardFormatAvailable(format) && OpenClipboard(SDL_Window))
+  if (IsClipboardFormatAvailable(format) && OpenClipboard(SDL_Win32Window))
   {
     HANDLE hMem;
     char *src;
@@ -545,10 +581,10 @@ get_scrap(int type, int *dstlen, char **dst)
       clheader = PhClipboardPasteType(clhandle, Ph_CLIPBOARD_TYPE_TEXT);
       if (clheader != NULL)
       {
-        cldata = clheader->data;
+        cldata = (int *)clheader->data;
         if ((clheader->length > 4) && (*cldata == type))
         {
-          *dstlen = convert_scrap(type, NULL, (char *)clheader->data + 4, clheader->length - 4);
+          *dstlen = convert_scrap(type, NULL, (char *)clheader->data + 4, (int)clheader->length - 4);
           *dst = (char *)realloc(*dst, *dstlen);
           if (*dst == NULL)
           {
@@ -556,7 +592,7 @@ get_scrap(int type, int *dstlen, char **dst)
           }
           else
           {
-            convert_scrap(type, *dst, (char *)clheader->data + 4, clheader->length - 4);
+            convert_scrap(type, *dst, (char *)clheader->data + 4, (int)clheader->length - 4);
           }
         }
       }
@@ -565,17 +601,16 @@ get_scrap(int type, int *dstlen, char **dst)
   }
 #else                    /* 6.2.0 and 6.2.1 and future releases */
   {
-    void *clhandle;
     PhClipboardHdr *clheader;
     int *cldata;
 
     clheader = PhClipboardRead(InputGroup, Ph_CLIPBOARD_TYPE_TEXT);
     if (clheader != NULL)
     {
-      cldata = clheader->data;
+      cldata = (int *)clheader->data;
       if ((clheader->length > 4) && (*cldata == type))
       {
-        *dstlen = convert_scrap(type, NULL, (char *)clheader->data + 4, clheader->length - 4);
+        *dstlen = convert_scrap(type, NULL, (char *)clheader->data + 4, (int)clheader->length - 4);
         *dst = (char *)realloc(*dst, *dstlen);
         if (*dst == NULL)
         {
@@ -583,7 +618,7 @@ get_scrap(int type, int *dstlen, char **dst)
         }
         else
         {
-          convert_scrap(type, *dst, (char *)clheader->data + 4, clheader->length - 4);
+          convert_scrap(type, *dst, (char *)clheader->data + 4, (int)clheader->length - 4);
         }
       }
     }
@@ -593,8 +628,10 @@ get_scrap(int type, int *dstlen, char **dst)
 }
 
 #if defined(X11_SCRAP)
-PRIVATE int clipboard_filter(const SDL_Event *event)
+PRIVATE int clipboard_filter(void *userdata, SDL_Event *event)
 {
+  (void)userdata;
+
   /* Post all non-window manager specific events */
   if (event->type != SDL_SYSWMEVENT)
   {
@@ -602,7 +639,7 @@ PRIVATE int clipboard_filter(const SDL_Event *event)
   }
 
   /* Handle window-manager specific clipboard events */
-  switch (event->syswm.msg->event.xevent.type)
+  switch (event->syswm.msg->msg.x11.event.type)
   {
   /* Copy the selection from XA_CUT_BUFFER0 to the requested property */
   case SelectionRequest:
@@ -614,7 +651,7 @@ PRIVATE int clipboard_filter(const SDL_Event *event)
     unsigned long overflow;
     uint8_t *seln_data;
 
-    req = &event->syswm.msg->event.xevent.xselectionrequest;
+    req = &event->syswm.msg->msg.x11.event.xselectionrequest;
     sevent.xselection.type = SelectionNotify;
     sevent.xselection.display = req->display;
     sevent.xselection.selection = req->selection;
@@ -622,8 +659,9 @@ PRIVATE int clipboard_filter(const SDL_Event *event)
     sevent.xselection.property = None;
     sevent.xselection.requestor = req->requestor;
     sevent.xselection.time = req->time;
+
     if (XGetWindowProperty(SDL_Display, DefaultRootWindow(SDL_Display),
-                           XA_CUT_BUFFER0, 0, INT_MAX / 4, False, req->target,
+                           XA_CUT_BUFFER0, 0, (long)(INT_MAX / 4), False, req->target,
                            &sevent.xselection.target, &seln_format,
                            &nbytes, &overflow, &seln_data) == Success)
     {
@@ -631,12 +669,12 @@ PRIVATE int clipboard_filter(const SDL_Event *event)
       {
         if (sevent.xselection.target == XA_STRING)
         {
-          if (seln_data[nbytes - 1] == '\0')
+          if (nbytes > 0 && seln_data[nbytes - 1] == '\0')
             --nbytes;
         }
         XChangeProperty(SDL_Display, req->requestor, req->property,
                         sevent.xselection.target, seln_format, PropModeReplace,
-                        seln_data, nbytes);
+                        seln_data, (int)nbytes);
         sevent.xselection.property = req->property;
       }
       XFree(seln_data);

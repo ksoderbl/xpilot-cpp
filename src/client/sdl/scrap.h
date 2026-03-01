@@ -1,8 +1,9 @@
+#pragma once
 
 /* Handle clipboard text and data in arbitrary formats */
 
 /* Miscellaneous defines */
-#define TextScrap(A, B, C, D) (int)((A<<24)|(B<<16)|(C<<8)|(D<<0))
+#define TextScrap(A, B, C, D) (int)((A << 24) | (B << 16) | (C << 8) | (D << 0))
 
 extern int init_scrap(void);
 extern int lost_scrap(void);
