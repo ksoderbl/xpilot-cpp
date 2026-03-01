@@ -19,6 +19,14 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+
+#include "commonmacros.h"
+#include "const.h"
+#include "strdup.h"
+
+#include "client.h"
+#include "gfx2d.h"
 
 #include "images.h"
 #include "sdlpaint.h"

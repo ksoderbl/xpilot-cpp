@@ -141,6 +141,29 @@ static int sock_alloc_lastaddr(sock_t *sock)
     return (sock->lastaddr) ? SOCK_IS_OK : SOCK_IS_ERROR;
 }
 
+int sock_startup()
+{
+#ifdef _WINDOWS
+
+    WORD wVersionRequested;
+    WSADATA wsaData;
+
+    /* I have no idea which version of winsock supports
+     * the required socket stuff. */
+    wVersionRequested = MAKEWORD(1, 0);
+    if (WSAStartup(wVersionRequested, &wsaData))
+        return -1;
+#endif
+    return 0; /* socket initialization only needed for windows */
+}
+
+void sock_cleanup(void)
+{
+#ifdef _WINDOWS
+    WSACleanup();
+#endif
+}
+
 static void sock_free_lastaddr(sock_t *sock)
 {
     XFREE(sock->lastaddr);

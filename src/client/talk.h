@@ -39,6 +39,7 @@
 */
 
 /* Talk Macros */
-int Talk_macro(int);
+extern int Talk_macro(int);
+extern void Store_talk_macro_options(void);
 
 #endif
