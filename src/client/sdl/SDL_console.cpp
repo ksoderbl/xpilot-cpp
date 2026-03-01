@@ -17,19 +17,20 @@
     <https://www.gnu.org/licenses/>.
 
     Clemens Wacha
-    reflex-2000@gmx.net
 */
 
 /*  SDL_console.c
- *  Written By: Garrett Banuk <mongoose@mongeese.org>
- *  Code Cleanup and heavily extended by: Clemens Wacha <reflex-2000@gmx.net>
- *  Modified for XPilotNG/SDL: Juha Lindstr�m <juhal@users.sourceforge.net>
+ *  Written By: Garrett Banuk
+ *  Code Cleanup and heavily extended by: Clemens Wacha
+ *  Modified for XPilotNG/SDL: Juha Lindström
  */
 
-#include "xpclient_sdl.h"
+// #include "xpclient_sdl.h"
 
 #include "SDL_console.h"
 #include "DT_drawtext.h"
+
+#include "client.h"
 
 #ifdef _WINDOWS
 #define __FUNCTION__ ""
@@ -41,6 +42,9 @@
  * is currently taking keyboard input. */
 static ConsoleInformation *Topmost;
 
+/* Forward decl (same signature as before) */
+void Cursor_Add(ConsoleInformation *console, SDL_Event *event);
+
 /*  Takes keys from the keyboard and inputs them to the console
     If the event was not handled (i.e. WM events or unknown ctrl-shift
     sequences) the function returns the event for further processing. */
@@ -50,6 +54,22 @@ SDL_Event *CON_Events(SDL_Event *event)
         return event;
     if (!CON_isVisible(Topmost))
         return event;
+
+    /* SDL2 text input: actual printable characters come via SDL_TEXTINPUT. */
+    if (event->type == SDL_TEXTINPUT)
+    {
+        if (Topmost->InsMode)
+        {
+            Cursor_Add(Topmost, event);
+        }
+        else
+        {
+            Cursor_Add(Topmost, event);
+            /* overwrite mode: delete char after the inserted one */
+            Cursor_Del(Topmost);
+        }
+        return NULL;
+    }
 
     if (event->type == SDL_KEYDOWN)
     {
@@ -197,13 +217,17 @@ SDL_Event *CON_Events(SDL_Event *event)
 
                 return NULL;
             default:
-                if (Topmost->InsMode)
-                    Cursor_Add(Topmost, event);
-                else
-                {
-                    Cursor_Add(Topmost, event);
-                    Cursor_Del(Topmost);
-                }
+                // if (Topmost->InsMode)
+                //     Cursor_Add(Topmost, event);
+                // else
+                // {
+                //     Cursor_Add(Topmost, event);
+                //     Cursor_Del(Topmost);
+                // }
+                /* SDL2: printable characters arrive via SDL_TEXTINPUT, not KEYDOWN unicode fields.
+                   So we simply consume the keydown here and wait for SDL_TEXTINPUT.
+                   (Non-text keys should be handled by the cases above.) */
+                break;
             }
         }
         return NULL;
@@ -353,7 +377,10 @@ ConsoleInformation *CON_Init(const char *FontName,
         return NULL;
     }
     newinfo->Visible = CON_CLOSED;
+
+    /* SDL2: repurpose WasUnicode to track whether text input was active */
     newinfo->WasUnicode = 0;
+
     newinfo->RaiseOffset = 0;
     newinfo->ConsoleLines = NULL;
     newinfo->CommandLines = NULL;
@@ -479,8 +506,9 @@ void CON_Show(ConsoleInformation *console)
         console->Visible = CON_OPENING;
         CON_UpdateConsole(console);
 
-        console->WasUnicode = SDL_EnableUNICODE(-1);
-        SDL_EnableUNICODE(1);
+        /* SDL2: Start text input, remember previous state in WasUnicode */
+        console->WasUnicode = SDL_IsTextInputActive() ? 1 : 0;
+        SDL_StartTextInput();
     }
 }
 
@@ -490,7 +518,12 @@ void CON_Hide(ConsoleInformation *console)
     if (console)
     {
         console->Visible = CON_CLOSING;
-        SDL_EnableUNICODE(console->WasUnicode);
+
+        /* SDL2: Restore previous text input state */
+        if (console->WasUnicode)
+            SDL_StartTextInput();
+        else
+            SDL_StopTextInput();
     }
 }
 
@@ -741,8 +774,16 @@ int CON_Background(ConsoleInformation *console, const char *image, int x,
         return 1;
     }
 
-    console->BackgroundImage = SDL_DisplayFormat(temp);
+    /* SDL1.2: SDL_DisplayFormat(temp) */
+    console->BackgroundImage = SDL_ConvertSurfaceFormat(temp, SDL_PIXELFORMAT_ARGB8888, 0);
     SDL_FreeSurface(temp);
+
+    if (!console->BackgroundImage)
+    {
+        CON_Out(console, "Cannot convert background %s.", image);
+        return 1;
+    }
+
     console->BackX = x;
     console->BackY = y;
 
@@ -819,8 +860,16 @@ int CON_Resize(ConsoleInformation *console, SDL_Rect rect)
         PRINT_ERROR("Couldn't create the console->ConsoleSurface\n");
         return 1;
     }
-    console->ConsoleSurface = SDL_DisplayFormat(Temp);
+
+    /* SDL1.2: console->ConsoleSurface = SDL_DisplayFormat(Temp); */
+    console->ConsoleSurface = SDL_ConvertSurfaceFormat(Temp, SDL_PIXELFORMAT_ARGB8888, 0);
     SDL_FreeSurface(Temp);
+
+    if (!console->ConsoleSurface)
+    {
+        PRINT_ERROR("Couldn't convert the console->ConsoleSurface\n");
+        return 1;
+    }
 
     /* Load the dirty rectangle for user input */
     SDL_FreeSurface(console->InputBackground);
@@ -833,8 +882,16 @@ int CON_Resize(ConsoleInformation *console, SDL_Rect rect)
         PRINT_ERROR("Couldn't create the input background\n");
         return 1;
     }
-    console->InputBackground = SDL_DisplayFormat(Temp);
+
+    /* SDL1.2: console->InputBackground = SDL_DisplayFormat(Temp); */
+    console->InputBackground = SDL_ConvertSurfaceFormat(Temp, SDL_PIXELFORMAT_ARGB8888, 0);
     SDL_FreeSurface(Temp);
+
+    if (!console->InputBackground)
+    {
+        PRINT_ERROR("Couldn't convert the input background\n");
+        return 1;
+    }
 
     /* Now reset some stuff dependent on the previous size */
     console->ConsoleScrollBack = 0;
@@ -1084,16 +1141,30 @@ void Cursor_BSpace(ConsoleInformation *console)
 
 void Cursor_Add(ConsoleInformation *console, SDL_Event *event)
 {
-    int len = 0;
+    /* SDL2: accept SDL_TEXTINPUT events and insert their UTF-8 text bytes.
+       This keeps behavior close to old “unicode char” insertion, but does not
+       attempt full UTF-8 cursor semantics (minimal-change port). */
+    if (!Topmost || !event)
+        return;
 
-    /* Again: the commandline has to hold the command and the cursor (+1) */
-    if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE && event->key.keysym.unicode)
+    if (event->type != SDL_TEXTINPUT)
+        return;
+
+    const char *text = event->text.text;
+    if (!text || !text[0])
+        return;
+
+    for (int i = 0; text[i] != '\0'; ++i)
     {
-        Topmost->CursorPos++;
-        len = strlen(Topmost->LCommand);
-        Topmost->LCommand[len] = (char)event->key.keysym.unicode;
-        Topmost->LCommand[len + sizeof(char)] = '\0';
-        Assemble_Command(console);
+        /* commandline has to hold the command and the cursor (+1) */
+        if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE)
+        {
+            int len = (int)strlen(Topmost->LCommand);
+            Topmost->CursorPos++;
+            Topmost->LCommand[len] = text[i];
+            Topmost->LCommand[len + 1] = '\0';
+            Assemble_Command(console);
+        }
     }
 }
 

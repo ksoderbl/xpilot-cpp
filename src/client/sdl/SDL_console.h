@@ -23,13 +23,16 @@
 #ifndef SDL_CONSOLE_H
 #define SDL_CONSOLE_H
 
-#include "xpclient_sdl.h"
+// #include "xpclient_sdl.h"
+
+/* SDL2 core include (types like SDL_Surface/SDL_Event/SDL_Rect, plus DECLSPEC/SDLCALL) */
+#include <SDL2/SDL.h>
 
 #ifdef USUAL_SDL_INCLUDE_CONVENTION
-#include "begin_code.h"
+#include <SDL2/SDL_begin_code.h>
 #endif
 #ifdef MACOSX_FRAMEWORKS
-#include <SDL/begin_code.h>
+#include <SDL2/SDL_begin_code.h>
 #endif
 
 /*! Number of visible characters in a line. Lines in the history, the commandline, or CON_Out strings cannot be longer
@@ -231,10 +234,10 @@ extern "C"
 #endif
 
 #ifdef USUAL_SDL_INCLUDE_CONVENTION
-#include "close_code.h"
+#include <SDL2/SDL_close_code.h>
 #endif
 #ifdef MACOSX_FRAMEWORKS
-#include <SDL/close_code.h>
+#include <SDL2/SDL_close_code.h>
 #endif
 
 #endif /* SDL_CONSOLE_H */
