@@ -6,10 +6,12 @@
 
 */
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 #include "SDL_gfxPrimitives.h"
 #include "SDL_gfxPrimitives_font.h"
+
+#include "const.h"
 
 #ifdef _WINDOWS
 /* removes lots of the following warnings
@@ -3867,9 +3869,11 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
      */
     if (gfxPrimitivesFont[(uint8_t)c] == NULL)
     {
+        /* SDL2: create a 32-bit RGBA software surface.
+           SDL_HWSURFACE/SDL_SRCALPHA flags are SDL1.2-era; don't use them. */
         gfxPrimitivesFont[(uint8_t)c] =
-            SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_HWSURFACE | SDL_SRCALPHA, 8, 8,
-                                 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+            SDL_CreateRGBSurface(0, 8, 8, 32,
+                                 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
         /*
          * Check pointer
          */
@@ -3877,6 +3881,10 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
         {
             return (-1);
         }
+
+        /* Make sure alpha blending is enabled for blits (SDL2) */
+        SDL_SetSurfaceBlendMode(gfxPrimitivesFont[(uint8_t)c], SDL_BLENDMODE_BLEND);
+
         /*
          * Definitely redraw
          */
@@ -3894,8 +3902,11 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
     {
         /*
          * Redraw character
+         * SDL2: replace SDL_SetAlpha(..., SDL_SRCALPHA, 255)
          */
-        SDL_SetAlpha(gfxPrimitivesFont[(uint8_t)c], SDL_SRCALPHA, 255);
+        SDL_SetSurfaceAlphaMod(gfxPrimitivesFont[(uint8_t)c], 255);
+        SDL_SetSurfaceBlendMode(gfxPrimitivesFont[(uint8_t)c], SDL_BLENDMODE_BLEND);
+
         gfxPrimitivesFontColor[(uint8_t)c] = color;
 
         /*
@@ -3926,7 +3937,6 @@ int characterColor(SDL_Surface *dst, Sint16 x, Sint16 y, char c, Uint32 color)
                 }
                 bitpos++;
                 curpos += 4;
-                ;
             }
             charpos++;
         }
