@@ -28,7 +28,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 #include "sdlpaint.h"
 #include "images.h"

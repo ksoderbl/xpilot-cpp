@@ -21,7 +21,7 @@
 #ifndef SDLMETA_H
 #define SDLMETA_H
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 int Meta_window(Connect_param_t *conpar);
 

@@ -25,7 +25,7 @@
  *  Modified for XPilotNG/SDL: Juha Lindström
  */
 
-// #include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 #include "SDL_console.h"
 #include "DT_drawtext.h"

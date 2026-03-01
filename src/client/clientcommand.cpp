@@ -25,7 +25,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "xpclient.h"
+// #include "xpclient.h"
 
 const char c_commands[][16] = {
     "ignore",

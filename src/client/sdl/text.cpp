@@ -52,7 +52,7 @@
 #endif
 #endif
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 #include "text.h"
 

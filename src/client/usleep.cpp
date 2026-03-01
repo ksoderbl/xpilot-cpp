@@ -12,8 +12,7 @@
  *  Changed usleep into micro_delay to forego any possible prototype clashes.
  */
 
-#include "xpclient.h"
-
+// #include "xpclient.h"
 
 int micro_delay(unsigned usec)
 {
@@ -21,9 +20,9 @@ int micro_delay(unsigned usec)
     poll((struct poll *) 0, (size_t) 0, usec / 1000);    /* ms RES */
 #endif
     struct timeval timeout;
-    timeout.tv_usec = usec % (unsigned long) 1000000;
-    timeout.tv_sec = usec / (unsigned long) 1000000;
-    (void) select(0, NULL, NULL, NULL, &timeout);
+    timeout.tv_usec = usec % (unsigned long)1000000;
+    timeout.tv_sec = usec / (unsigned long)1000000;
+    (void)select(0, NULL, NULL, NULL, &timeout);
 
     return 0;
 }

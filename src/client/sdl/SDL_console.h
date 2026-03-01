@@ -23,7 +23,7 @@
 #ifndef SDL_CONSOLE_H
 #define SDL_CONSOLE_H
 
-// #include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 /* SDL2 core include (types like SDL_Surface/SDL_Event/SDL_Rect, plus DECLSPEC/SDLCALL) */
 #include <SDL2/SDL.h>

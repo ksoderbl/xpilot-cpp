@@ -44,7 +44,7 @@
  *  Modified for xpilot: Juha Lindström
  */
 
-// #include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 #include "DT_drawtext.h"
 

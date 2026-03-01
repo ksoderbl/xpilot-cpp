@@ -18,7 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "xpclient.h"
+// #include "xpclient.h"
 
 #define MAX_SCORES 500
 

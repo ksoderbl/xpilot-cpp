@@ -21,7 +21,7 @@
 #ifndef GLWIDGETS_H
 #define GLWIDGETS_H
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 
 #include "sdlkeys.h"
 #include "text.h"

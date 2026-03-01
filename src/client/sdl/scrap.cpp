@@ -1,7 +1,7 @@
 
 /* Handle clipboard text and data in arbitrary formats */
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h>
 /*#include <stdio.h>
 #include <limits.h>
 
