@@ -1,8 +1,8 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client. Copyright (C) 2003-2004 by
  *
- *     Juha Lindstr�m <juhal@users.sourceforge.net>
- *     Erik Andersson <deity_at_home.se>
+ *     Juha Lindström
+ *     Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,17 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_surface.h> /* SDL2: SDL_CreateRGBSurfaceWithFormat */
+
+#include "bit.h"
+#include "commonmacros.h"
+#include "rules.h"
+#include "setup.h"
+#include "xpmath.h"
+
+#include "client.h"
+#include "netclient.h"
 
 #include "sdlpaint.h"
 #include "SDL_gfxPrimitives.h"
@@ -163,8 +174,9 @@ static void Radar_paint_world_blocks(GLWidget *radar, SDL_Surface *s)
 
             type = Setup->map_data[xi * Setup->y + yi];
 
-            if (type >= SETUP_TARGET && type < SETUP_TARGET + 10 && !Target_alive(xi, yi, &damage))
-                type = SETUP_SPACE;
+            // TODO: Enable when Target_alive uses double for damage.
+            // if (type >= SETUP_TARGET && type < SETUP_TARGET + 10 && !Target_alive(xi, yi, &damage))
+            //     type = SETUP_SPACE;
 
             color = bcolor[type];
             if (color & 0xffffff)
@@ -398,15 +410,20 @@ static void Radar_init_texture(GLWidget *widget)
 static int Radar_init(GLWidget *widget)
 {
     radar_surface =
-        SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA,
-                             pow2_ceil(widget->bounds.w - 1),
-                             pow2_ceil(widget->bounds.h - 1), 32,
-                             RMASK, GMASK, BMASK, AMASK);
+        SDL_CreateRGBSurfaceWithFormat(0,
+                                       pow2_ceil(widget->bounds.w - 1),
+                                       pow2_ceil(widget->bounds.h - 1),
+                                       32,
+                                       SDL_PIXELFORMAT_RGBA32);
     if (!radar_surface)
     {
         error("Could not create radar surface: %s", SDL_GetError());
         return -1;
     }
+
+    /* SDL2: make sure blending behaves predictably if anything uses per-pixel alpha */
+    SDL_SetSurfaceBlendMode(radar_surface, SDL_BLENDMODE_BLEND);
+
     Radar_init_texture(widget);
     return 0;
 }

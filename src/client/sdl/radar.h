@@ -1,8 +1,8 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client. Copyright (C) 2003-2004 by
  *
- *     Juha Lindstr�m <juhal@users.sourceforge.net>
- *     Erik Andersson <maximan@users.sourceforge.net>
+ *     Juha Lindström
+ *     Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
