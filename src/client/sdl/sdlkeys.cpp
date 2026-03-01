@@ -25,7 +25,7 @@
 typedef struct
 {
     const char *name;
-    SDLKey key;
+    SDL_Keycode key;
 } sdlkey_t;
 
 static sdlkey_t sdlkeys[] = {
@@ -33,8 +33,8 @@ static sdlkey_t sdlkeys[] = {
     {"Tab", SDLK_TAB},
     {"Return", SDLK_RETURN},
     {"Pause", SDLK_PAUSE},
-    {"Scroll_Lock", SDLK_SCROLLOCK},
-    {"Print", SDLK_PRINT},
+    {"Scroll_Lock", SDLK_SCROLLLOCK},
+    {"Print", SDLK_PRINTSCREEN},
     {"Escape", SDLK_ESCAPE},
     {"Delete", SDLK_DELETE},
     {"Home", SDLK_HOME},
@@ -48,7 +48,7 @@ static sdlkey_t sdlkeys[] = {
     {"Next", SDLK_PAGEDOWN},
     {"End", SDLK_END},
     {"Insert", SDLK_INSERT},
-    {"Num_Lock", SDLK_NUMLOCK},
+    {"Num_Lock", SDLK_NUMLOCKCLEAR},
     {"KP_Enter", SDLK_KP_ENTER},
     {"KP_Multiply", SDLK_KP_MULTIPLY},
     {"KP_Add", SDLK_KP_PLUS},
@@ -166,7 +166,7 @@ static sdlkey_t sdlkeys[] = {
     {NULL, SDLK_UNKNOWN},
 };
 
-SDLKey Get_key_by_name(const char *name)
+SDL_Keycode Get_key_by_name(const char *name)
 {
     sdlkey_t *k;
 
@@ -179,7 +179,7 @@ SDLKey Get_key_by_name(const char *name)
     return SDLK_UNKNOWN;
 }
 
-char *Get_name_by_key(SDLKey key)
+char *Get_name_by_key(SDL_Keycode key)
 {
     sdlkey_t *k;
 
@@ -192,7 +192,7 @@ char *Get_name_by_key(SDLKey key)
 
 xp_keysym_t String_to_xp_keysym(/*const*/ char *name)
 {
-    SDLKey sdlk = Get_key_by_name(name);
+    SDL_Keycode sdlk = Get_key_by_name(name);
     if (sdlk == SDLK_UNKNOWN)
         return XP_KS_UNKNOWN;
     return (xp_keysym_t)sdlk;

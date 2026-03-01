@@ -24,6 +24,12 @@
 #include "SDL_console.h"
 #include "sdlwindow.h"
 
+#include "xpconfig.h"
+
+#include "netclient.h"
+#include "paint.h"
+#include "xperror.h"
+
 static sdl_window_t console_window;
 static ConsoleInformation *console;
 

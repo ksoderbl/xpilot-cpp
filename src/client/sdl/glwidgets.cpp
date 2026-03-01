@@ -19,6 +19,15 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+
+#include "commonmacros.h"
+#include "const.h"
+#include "rules.h"
+#include "xpmath.h"
+
+#include "netclient.h"
+#include "paint.h"
 
 #include "sdlpaint.h"
 #include "images.h"
@@ -182,7 +191,7 @@ static void hover_optionWidget(int over, Uint16 x, Uint16 y, void *data)
 
         if ((help = Option_get_help(opt)))
         {
-            if (!(hoverWidget = Init_ListWidget(x, y, &nullRGBA, &nullRGBA, &nullRGBA, DOWN, LEFT, VERTICAL, false)))
+            if (!(hoverWidget = Init_ListWidget(x, y, &nullRGBA, &nullRGBA, &nullRGBA, LW_DOWN, LW_LEFT, VERTICAL, false)))
             {
                 error("hover_optionWidget: Failed to create ListWidget\n");
                 return;
@@ -502,7 +511,7 @@ void load_textscrap(char *text)
         return;
 
     scraptarget = NULL;
-    scrap = realloc(scrap, strlen(text) + 1);
+    scrap = (char *)realloc(scrap, strlen(text) + 1);
     strcpy(scrap, text);
     for (cp = scrap, i = 0; i < (int)strlen(scrap); ++cp, ++i)
     {
@@ -961,7 +970,8 @@ static void motion_ScrollbarWidget(Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y,
     GLWidget *tmp;
     ScrollbarWidget *wid_info;
     GLWidget *slide;
-    Sint16 *coord1, coord2 = 0, min, max, size, move;
+    int *coord1, coord2 = 0;
+    Sint16 min, max, size, move;
     GLfloat oldpos;
 
     if (!data)

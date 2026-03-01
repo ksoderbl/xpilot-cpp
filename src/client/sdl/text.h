@@ -21,7 +21,12 @@
 #ifndef TEXT_H
 #define TEXT_H
 
+#include <vector>
+
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
+#include "arraylist.h"
 
 #include "sdlpaint.h"
 

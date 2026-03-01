@@ -55,6 +55,10 @@
 #define CONF_SOUNDDIR CONF_DATADIR "sound/"
 #endif
 
+#ifndef CONF_FONTDIR
+#define CONF_FONTDIR CONF_DATADIR "fonts/"
+#endif
+
 #ifndef CONF_DEFAULTS_FILE_NAME
 #define CONF_DEFAULTS_FILE_NAME CONF_DATADIR "defaults.txt"
 #endif

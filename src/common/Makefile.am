@@ -3,6 +3,8 @@ noinst_LIBRARIES = libxpcommon.a
 libxpcommon_a_SOURCES = \
     recordfile.cpp \
     recordfile.h \
+    arraylist.cpp \
+    arraylist.h \
     astershape.h \
     audio.h \
     bit.h \

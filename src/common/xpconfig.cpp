@@ -58,6 +58,13 @@ char *Conf_mapdir(void)
     return conf;
 }
 
+char *Conf_fontdir(void)
+{
+    static char conf[] = CONF_FONTDIR;
+
+    return conf;
+}
+
 static char conf_default_map_string[] = CONF_DEFAULT_MAP;
 
 char *Conf_default_map(void)
@@ -185,7 +192,7 @@ void Conf_print(void)
     warn("Conf_localmotdfile()      = %s", Conf_localmotdfile());
     warn("Conf_ship_file()          = %s", Conf_ship_file());
     warn("Conf_texturedir()         = %s", Conf_texturedir());
-    // warn("Conf_fontdir()            = %s", Conf_fontdir());
+    warn("Conf_fontdir()            = %s", Conf_fontdir());
     warn("Conf_sounddir()           = %s", Conf_sounddir());
     warn("Conf_soundfile()          = %s", Conf_soundfile());
     warn("Conf_zcat_ext()           = %s", Conf_zcat_ext());

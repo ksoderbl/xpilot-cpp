@@ -20,8 +20,11 @@
 
 #include <SDL2/SDL.h>
 
+#include "xperror.h"
+
 #include "sdlwindow.h"
-#include "error.h"
+
+#include "xpclient_sdl.h"
 
 static int next_p2(int t)
 {

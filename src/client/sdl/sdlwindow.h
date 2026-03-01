@@ -22,19 +22,29 @@
 #define SDLWINDOW_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h> /* for GLuint + GL types */
 
-typedef struct
+#ifdef __cplusplus
+extern "C"
 {
-    GLuint tx_id;
-    SDL_Surface *surface;
-    int x, y, w, h;
-} sdl_window_t;
+#endif
 
-int sdl_window_init(sdl_window_t *win, int x, int y, int w, int h);
-void sdl_window_move(sdl_window_t *win, int x, int y);
-int sdl_window_resize(sdl_window_t *win, int w, int h);
-void sdl_window_refresh(sdl_window_t *win);
-void sdl_window_paint(sdl_window_t *win);
-void sdl_window_destroy(sdl_window_t *win);
+    typedef struct
+    {
+        GLuint tx_id;
+        SDL_Surface *surface;
+        int x, y, w, h;
+    } sdl_window_t;
+
+    int sdl_window_init(sdl_window_t *win, int x, int y, int w, int h);
+    void sdl_window_move(sdl_window_t *win, int x, int y);
+    int sdl_window_resize(sdl_window_t *win, int w, int h);
+    void sdl_window_refresh(sdl_window_t *win);
+    void sdl_window_paint(sdl_window_t *win);
+    void sdl_window_destroy(sdl_window_t *win);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

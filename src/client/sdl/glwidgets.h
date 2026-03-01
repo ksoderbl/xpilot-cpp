@@ -26,6 +26,8 @@
 #include "sdlkeys.h"
 #include "text.h"
 
+#include "option.h"
+
 /****************************************************/
 /* BEGIN: Main GLWidget stuff                        */
 /****************************************************/

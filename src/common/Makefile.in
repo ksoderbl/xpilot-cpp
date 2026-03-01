@@ -108,12 +108,12 @@ am__v_AR_1 =
 libxpcommon_a_AR = $(AR) $(ARFLAGS)
 libxpcommon_a_RANLIB = $(RANLIB)
 libxpcommon_a_LIBADD =
-am_libxpcommon_a_OBJECTS = recordfile.$(OBJEXT) checknames.$(OBJEXT) \
-	list.$(OBJEXT) net.$(OBJEXT) portability.$(OBJEXT) \
-	randommt.$(OBJEXT) shipshape.$(OBJEXT) socklib.$(OBJEXT) \
-	strcasecmp.$(OBJEXT) strdup.$(OBJEXT) strlcpy.$(OBJEXT) \
-	xpconfig.$(OBJEXT) xperror.$(OBJEXT) xpmath.$(OBJEXT) \
-	xpmemory.$(OBJEXT)
+am_libxpcommon_a_OBJECTS = recordfile.$(OBJEXT) arraylist.$(OBJEXT) \
+	checknames.$(OBJEXT) list.$(OBJEXT) net.$(OBJEXT) \
+	portability.$(OBJEXT) randommt.$(OBJEXT) shipshape.$(OBJEXT) \
+	socklib.$(OBJEXT) strcasecmp.$(OBJEXT) strdup.$(OBJEXT) \
+	strlcpy.$(OBJEXT) xpconfig.$(OBJEXT) xperror.$(OBJEXT) \
+	xpmath.$(OBJEXT) xpmemory.$(OBJEXT)
 libxpcommon_a_OBJECTS = $(am_libxpcommon_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -130,7 +130,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/checknames.Po ./$(DEPDIR)/list.Po \
+am__depfiles_remade = ./$(DEPDIR)/arraylist.Po \
+	./$(DEPDIR)/checknames.Po ./$(DEPDIR)/list.Po \
 	./$(DEPDIR)/net.Po ./$(DEPDIR)/portability.Po \
 	./$(DEPDIR)/randommt.Po ./$(DEPDIR)/recordfile.Po \
 	./$(DEPDIR)/shipshape.Po ./$(DEPDIR)/socklib.Po \
@@ -304,6 +305,8 @@ noinst_LIBRARIES = libxpcommon.a
 libxpcommon_a_SOURCES = \
     recordfile.cpp \
     recordfile.h \
+    arraylist.cpp \
+    arraylist.h \
     astershape.h \
     audio.h \
     bit.h \
@@ -397,6 +400,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arraylist.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/checknames.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net.Po@am__quote@ # am--include-marker
@@ -558,6 +562,7 @@ clean: clean-am
 clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
+	-rm -f ./$(DEPDIR)/arraylist.Po
 	-rm -f ./$(DEPDIR)/checknames.Po
 	-rm -f ./$(DEPDIR)/list.Po
 	-rm -f ./$(DEPDIR)/net.Po
@@ -618,6 +623,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -f ./$(DEPDIR)/arraylist.Po
 	-rm -f ./$(DEPDIR)/checknames.Po
 	-rm -f ./$(DEPDIR)/list.Po
 	-rm -f ./$(DEPDIR)/net.Po
