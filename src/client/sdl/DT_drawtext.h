@@ -23,7 +23,7 @@
 #ifndef Drawtext_h
 #define Drawtext_h
 
-#include "xpclient_sdl.h"
+#include <SDL2/SDL.h> /* SDL_Surface, etc. */
 
 #define TRANS_FONT 1
 
@@ -49,7 +49,7 @@ extern "C"
     void DT_DestroyDrawText(void);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif

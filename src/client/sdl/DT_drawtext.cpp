@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindstr�m <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha Lindström
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,15 +37,14 @@
     <https://www.gnu.org/licenses/>.
 
     Clemens Wacha
-    reflex-2000@gmx.net
 */
 
 /*  DT_drawtext.c
- *  Written By: Garrett Banuk <mongoose@mongeese.org>
- *  Modified for xpilot: Juha Lindstr�m <juhal@users.sourceforge.net>
+ *  Written By: Garrett Banuk
+ *  Modified for xpilot: Juha Lindström
  */
 
-#include "xpclient_sdl.h"
+// #include "xpclient_sdl.h"
 
 #include "DT_drawtext.h"
 
@@ -90,8 +89,20 @@ int DT_LoadFont(const char *BitmapName, int flags)
     /* Add a font to the list */
     *CurrentFont = (BitFont *)malloc(sizeof(BitFont));
 
-    (*CurrentFont)->FontSurface = SDL_DisplayFormat(Temp);
+    /* SDL1.2 used SDL_DisplayFormat(); SDL2 replacement is ConvertSurface*.
+     * We pick a common 32-bit format that works well with colorkey & blits.
+     */
+    (*CurrentFont)->FontSurface = SDL_ConvertSurfaceFormat(Temp, SDL_PIXELFORMAT_ARGB8888, 0);
     SDL_FreeSurface(Temp);
+
+    if ((*CurrentFont)->FontSurface == NULL)
+    {
+        PRINT_ERROR("Cannot convert font surface format");
+        printf("%s: %s\n", BitmapName, SDL_GetError());
+        free(*CurrentFont);
+        *CurrentFont = NULL;
+        return -1;
+    }
 
     (*CurrentFont)->CharWidth = (*CurrentFont)->FontSurface->w / 256;
     (*CurrentFont)->CharHeight = (*CurrentFont)->FontSurface->h;
@@ -104,7 +115,15 @@ int DT_LoadFont(const char *BitmapName, int flags)
      */
     if (flags & TRANS_FONT)
     {
-        SDL_SetColorKey((*CurrentFont)->FontSurface, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB((*CurrentFont)->FontSurface->format, 255, 0, 255));
+        /* SDL2: SDL_SRCCOLORKEY flag is gone; enable is a boolean (SDL_TRUE).
+         * SDL_RLEACCEL is still accepted for surfaces.
+         */
+        SDL_SetColorKey(
+            (*CurrentFont)->FontSurface,
+            SDL_TRUE,
+            SDL_MapRGB((*CurrentFont)->FontSurface->format, 255, 0, 255));
+
+        SDL_SetSurfaceRLE((*CurrentFont)->FontSurface, 1);
     }
     return FontNumber;
 }
@@ -119,13 +138,15 @@ void DT_DrawText(const char *string, SDL_Surface *surface, int FontType, int x, 
     BitFont *CurrentFont;
 
     CurrentFont = DT_FontPointer(FontType);
+    if (!CurrentFont || !CurrentFont->FontSurface || !surface || !string)
+        return;
 
     /* see how many characters can fit on the screen */
     if (x > surface->w || y > surface->h)
         return;
 
     if ((int)strlen(string) < (surface->w - x) / CurrentFont->CharWidth)
-        characters = strlen(string);
+        characters = (int)strlen(string);
     else
         characters = (surface->w - x) / CurrentFont->CharWidth;
 
@@ -144,7 +165,7 @@ void DT_DrawText(const char *string, SDL_Surface *surface, int FontType, int x, 
         current = (const uint8_t)string[loop];
         if (current < 0 || current > 255)
             current = 0;
-        /* SourceRect.x = string[loop] * CurrentFont->CharWidth; */
+
         SourceRect.x = current * CurrentFont->CharWidth;
         SDL_BlitSurface(CurrentFont->FontSurface, &SourceRect, surface, &DestRect);
         DestRect.x += CurrentFont->CharWidth;
