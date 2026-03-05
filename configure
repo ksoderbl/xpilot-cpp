@@ -613,10 +613,30 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+COND_SDL_GAMELOOP_FALSE
+COND_SDL_GAMELOOP_TRUE
 COND_SDL_CLIENT_FALSE
 COND_SDL_CLIENT_TRUE
+COND_X11_CLIENT_FALSE
+COND_X11_CLIENT_TRUE
+COND_XP_MAPEDIT_FALSE
+COND_XP_MAPEDIT_TRUE
+COND_REPLAY_FALSE
+COND_REPLAY_TRUE
+COND_WINDOWS_FALSE
+COND_WINDOWS_TRUE
+COND_CLIENT_FALSE
+COND_CLIENT_TRUE
 SDL_LIBS
 SDL_CFLAGS
+X11_LIBS
+X11_CFLAGS
+GLU_LIBS
+GLU_CFLAGS
+GL_LIBS
+GL_CFLAGS
+ZLIB_LIBS
+ZLIB_CFLAGS
 SDL2_MIXER_LIBS
 SDL2_MIXER_CFLAGS
 SDL2_TTF_LIBS
@@ -756,6 +776,14 @@ SDL2_TTF_CFLAGS
 SDL2_TTF_LIBS
 SDL2_MIXER_CFLAGS
 SDL2_MIXER_LIBS
+ZLIB_CFLAGS
+ZLIB_LIBS
+GL_CFLAGS
+GL_LIBS
+GLU_CFLAGS
+GLU_LIBS
+X11_CFLAGS
+X11_LIBS
 SDL_CFLAGS
 SDL_LIBS'
 
@@ -1421,6 +1449,14 @@ Some influential environment variables:
               C compiler flags for SDL2_MIXER, overriding pkg-config
   SDL2_MIXER_LIBS
               linker flags for SDL2_MIXER, overriding pkg-config
+  ZLIB_CFLAGS C compiler flags for ZLIB, overriding pkg-config
+  ZLIB_LIBS   linker flags for ZLIB, overriding pkg-config
+  GL_CFLAGS   C compiler flags for GL, overriding pkg-config
+  GL_LIBS     linker flags for GL, overriding pkg-config
+  GLU_CFLAGS  C compiler flags for GLU, overriding pkg-config
+  GLU_LIBS    linker flags for GLU, overriding pkg-config
+  X11_CFLAGS  C compiler flags for X11, overriding pkg-config
+  X11_LIBS    linker flags for X11, overriding pkg-config
   SDL_CFLAGS  C compiler flags for SDL, overriding pkg-config
   SDL_LIBS    linker flags for SDL, overriding pkg-config
 
@@ -5711,8 +5747,6 @@ fi
 
 
 
-
-
 pkg_failed=no
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for SDL2_image >= 2.0.0" >&5
 printf %s "checking for SDL2_image >= 2.0.0... " >&6; }
@@ -5986,6 +6020,325 @@ printf "%s\n" "yes" >&6; }
 
 fi
 
+
+
+
+
+
+
+
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for zlib" >&5
+printf %s "checking for zlib... " >&6; }
+
+if test -n "$ZLIB_CFLAGS"; then
+    pkg_cv_ZLIB_CFLAGS="$ZLIB_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"zlib\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "zlib") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_ZLIB_CFLAGS=`$PKG_CONFIG --cflags "zlib" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$ZLIB_LIBS"; then
+    pkg_cv_ZLIB_LIBS="$ZLIB_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"zlib\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "zlib") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_ZLIB_LIBS=`$PKG_CONFIG --libs "zlib" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                ZLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "zlib" 2>&1`
+        else
+                ZLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "zlib" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$ZLIB_PKG_ERRORS" >&5
+
+
+  as_fn_error $? "zlib not found. Install zlib1g-dev (or equivalent)." "$LINENO" 5
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+  as_fn_error $? "zlib not found. Install zlib1g-dev (or equivalent)." "$LINENO" 5
+
+else
+        ZLIB_CFLAGS=$pkg_cv_ZLIB_CFLAGS
+        ZLIB_LIBS=$pkg_cv_ZLIB_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gl" >&5
+printf %s "checking for gl... " >&6; }
+
+if test -n "$GL_CFLAGS"; then
+    pkg_cv_GL_CFLAGS="$GL_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gl") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GL_CFLAGS=`$PKG_CONFIG --cflags "gl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GL_LIBS"; then
+    pkg_cv_GL_LIBS="$GL_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gl") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GL_LIBS=`$PKG_CONFIG --libs "gl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                GL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gl" 2>&1`
+        else
+                GL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gl" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$GL_PKG_ERRORS" >&5
+
+
+  as_fn_error $? "OpenGL (gl) not found. Install libgl1-mesa-dev (or equivalent)." "$LINENO" 5
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+  as_fn_error $? "OpenGL (gl) not found. Install libgl1-mesa-dev (or equivalent)." "$LINENO" 5
+
+else
+        GL_CFLAGS=$pkg_cv_GL_CFLAGS
+        GL_LIBS=$pkg_cv_GL_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+fi
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for glu" >&5
+printf %s "checking for glu... " >&6; }
+
+if test -n "$GLU_CFLAGS"; then
+    pkg_cv_GLU_CFLAGS="$GLU_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glu\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "glu") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GLU_CFLAGS=`$PKG_CONFIG --cflags "glu" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GLU_LIBS"; then
+    pkg_cv_GLU_LIBS="$GLU_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glu\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "glu") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GLU_LIBS=`$PKG_CONFIG --libs "glu" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                GLU_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "glu" 2>&1`
+        else
+                GLU_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "glu" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$GLU_PKG_ERRORS" >&5
+
+
+  as_fn_error $? "GLU (glu) not found. Install libglu1-mesa-dev (or equivalent)." "$LINENO" 5
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+  as_fn_error $? "GLU (glu) not found. Install libglu1-mesa-dev (or equivalent)." "$LINENO" 5
+
+else
+        GLU_CFLAGS=$pkg_cv_GLU_CFLAGS
+        GLU_LIBS=$pkg_cv_GLU_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+fi
+
+GL_CFLAGS="$GL_CFLAGS $GLU_CFLAGS"
+GL_LIBS="$GL_LIBS $GLU_LIBS"
+
+
+
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for x11" >&5
+printf %s "checking for x11... " >&6; }
+
+if test -n "$X11_CFLAGS"; then
+    pkg_cv_X11_CFLAGS="$X11_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"x11\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "x11") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_X11_CFLAGS=`$PKG_CONFIG --cflags "x11" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$X11_LIBS"; then
+    pkg_cv_X11_LIBS="$X11_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"x11\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "x11") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_X11_LIBS=`$PKG_CONFIG --libs "x11" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+                X11_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "x11" 2>&1`
+        else
+                X11_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "x11" 2>&1`
+        fi
+        # Put the nasty error message in config.log where it belongs
+        echo "$X11_PKG_ERRORS" >&5
+
+
+  as_fn_error $? "X11 not found. Install libx11-dev (or equivalent)." "$LINENO" 5
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+  as_fn_error $? "X11 not found. Install libx11-dev (or equivalent)." "$LINENO" 5
+
+else
+        X11_CFLAGS=$pkg_cv_X11_CFLAGS
+        X11_LIBS=$pkg_cv_X11_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+fi
+
+
+
 # Option to enable/disable SDL client
 # Check whether --enable-sdl-client was given.
 if test ${enable_sdl_client+y}
@@ -6082,12 +6435,60 @@ printf "%s\n" "yes" >&6; }
 fi
 fi
 
- if test "x$have_sdl_client" = xyes; then
+ if test x$need_libxpclient = xyes; then
+  COND_CLIENT_TRUE=
+  COND_CLIENT_FALSE='#'
+else
+  COND_CLIENT_TRUE='#'
+  COND_CLIENT_FALSE=
+fi
+
+ if test x$windows_target = xyes; then
+  COND_WINDOWS_TRUE=
+  COND_WINDOWS_FALSE='#'
+else
+  COND_WINDOWS_TRUE='#'
+  COND_WINDOWS_FALSE=
+fi
+
+ if test x$enable_replay = xyes; then
+  COND_REPLAY_TRUE=
+  COND_REPLAY_FALSE='#'
+else
+  COND_REPLAY_TRUE='#'
+  COND_REPLAY_FALSE=
+fi
+
+ if test x$enable_xp_mapedit = xyes; then
+  COND_XP_MAPEDIT_TRUE=
+  COND_XP_MAPEDIT_FALSE='#'
+else
+  COND_XP_MAPEDIT_TRUE='#'
+  COND_XP_MAPEDIT_FALSE=
+fi
+
+ if test x$enable_x11_client = xyes; then
+  COND_X11_CLIENT_TRUE=
+  COND_X11_CLIENT_FALSE='#'
+else
+  COND_X11_CLIENT_TRUE='#'
+  COND_X11_CLIENT_FALSE=
+fi
+
+ if test x$enable_sdl_client = xyes; then
   COND_SDL_CLIENT_TRUE=
   COND_SDL_CLIENT_FALSE='#'
 else
   COND_SDL_CLIENT_TRUE='#'
   COND_SDL_CLIENT_FALSE=
+fi
+
+ if test x$enable_sdl_gameloop = xyes; then
+  COND_SDL_GAMELOOP_TRUE=
+  COND_SDL_GAMELOOP_FALSE='#'
+else
+  COND_SDL_GAMELOOP_TRUE='#'
+  COND_SDL_GAMELOOP_FALSE=
 fi
 
 
@@ -6246,8 +6647,32 @@ if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${COND_CLIENT_TRUE}" && test -z "${COND_CLIENT_FALSE}"; then
+  as_fn_error $? "conditional \"COND_CLIENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COND_WINDOWS_TRUE}" && test -z "${COND_WINDOWS_FALSE}"; then
+  as_fn_error $? "conditional \"COND_WINDOWS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COND_REPLAY_TRUE}" && test -z "${COND_REPLAY_FALSE}"; then
+  as_fn_error $? "conditional \"COND_REPLAY\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COND_XP_MAPEDIT_TRUE}" && test -z "${COND_XP_MAPEDIT_FALSE}"; then
+  as_fn_error $? "conditional \"COND_XP_MAPEDIT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COND_X11_CLIENT_TRUE}" && test -z "${COND_X11_CLIENT_FALSE}"; then
+  as_fn_error $? "conditional \"COND_X11_CLIENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${COND_SDL_CLIENT_TRUE}" && test -z "${COND_SDL_CLIENT_FALSE}"; then
   as_fn_error $? "conditional \"COND_SDL_CLIENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COND_SDL_GAMELOOP_TRUE}" && test -z "${COND_SDL_GAMELOOP_FALSE}"; then
+  as_fn_error $? "conditional \"COND_SDL_GAMELOOP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

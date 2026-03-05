@@ -1,7 +1,8 @@
 bin_PROGRAMS = xpilot-cpp-client-sdl
 
 AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" \
-	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/client @SDL2_CFLAGS@
+	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/client \
+	$(SDL2_CFLAGS) $(SDL2_IMAGE_CFLAGS) $(SDL2_TTF_CFLAGS) $(SDL2_MIXER_CFLAGS)
 
 xpilot_cpp_client_sdl_SOURCES = \
 	asteroid_data.h DT_drawtext.cpp DT_drawtext.h \
@@ -15,15 +16,16 @@ xpilot_cpp_client_sdl_SOURCES = \
 xpilot_cpp_client_sdl_LDADD = \
 	$(top_builddir)/src/client/libxpclient.a \
 	$(top_builddir)/src/common/libxpcommon.a \
-	@GL_LIBS@ @SDL_EXTRA_LIBS@ @SDL2_LIBS@ \
-	@X_LIBS@ @X_PRE_LIBS@ @X_EXTENSIONS_LIB@ @X_EXTRA_LIBS@ \
-	@SOUND_LIBS@ @W32_LIBS@
+	$(GL_LIBS) \
+	$(SDL2_LIBS) $(SDL2_IMAGE_LIBS) $(SDL2_TTF_LIBS) $(SDL2_MIXER_LIBS) \
+	$(X11_LIBS) \
+	$(ZLIB_LIBS)
 
-# if COND_SDL_GAMELOOP
-#   xpilot_cpp_client_sdl_SOURCES += gameloop.cpp
-# else
+if COND_SDL_GAMELOOP
+   xpilot_cpp_client_sdl_SOURCES += gameloop.cpp
+else
   xpilot_cpp_client_sdl_SOURCES += gameloop_x.cpp
-# endif
+endif
 
 # if COND_WINDOWS
 #   xpilot_cpp_client_sdl_SOURCES += win32hacks.cpp

@@ -76,6 +76,7 @@ typedef struct
 /*
  * Exported variables.
  */
+bool simulating = false;
 setup_t *Setup = NULL;
 display_t server_display;
 int receive_window_size = 3;

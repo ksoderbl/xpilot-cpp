@@ -89,6 +89,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = xpilot-cpp-client-sdl$(EXEEXT)
+@COND_SDL_GAMELOOP_TRUE@am__append_1 = gameloop.cpp
+@COND_SDL_GAMELOOP_FALSE@am__append_2 = gameloop_x.cpp
 subdir = src/client/sdl
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -101,6 +103,18 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+am__xpilot_cpp_client_sdl_SOURCES_DIST = asteroid_data.h \
+	DT_drawtext.cpp DT_drawtext.h SDL_console.cpp SDL_console.h \
+	SDL_gfxPrimitives.cpp SDL_gfxPrimitives.h \
+	SDL_gfxPrimitives_font.h console.cpp console.h glwidgets.cpp \
+	glwidgets.h images.cpp images.h main.cpp scrap.cpp scrap.h \
+	radar.cpp radar.h sdlevent.cpp sdlgui.cpp sdlinit.cpp \
+	sdlkeys.cpp sdlkeys.h sdlpaint.cpp sdlpaint.h sdlwindow.cpp \
+	sdlwindow.h text.cpp text.h todo.cpp sdlmeta.h sdlmeta.cpp \
+	sdlinit.h ../xhacks.h xpclient_sdl.h gameloop.cpp \
+	gameloop_x.cpp
+@COND_SDL_GAMELOOP_TRUE@am__objects_1 = gameloop.$(OBJEXT)
+@COND_SDL_GAMELOOP_FALSE@am__objects_2 = gameloop_x.$(OBJEXT)
 am_xpilot_cpp_client_sdl_OBJECTS = DT_drawtext.$(OBJEXT) \
 	SDL_console.$(OBJEXT) SDL_gfxPrimitives.$(OBJEXT) \
 	console.$(OBJEXT) glwidgets.$(OBJEXT) images.$(OBJEXT) \
@@ -108,11 +122,15 @@ am_xpilot_cpp_client_sdl_OBJECTS = DT_drawtext.$(OBJEXT) \
 	sdlevent.$(OBJEXT) sdlgui.$(OBJEXT) sdlinit.$(OBJEXT) \
 	sdlkeys.$(OBJEXT) sdlpaint.$(OBJEXT) sdlwindow.$(OBJEXT) \
 	text.$(OBJEXT) todo.$(OBJEXT) sdlmeta.$(OBJEXT) \
-	gameloop_x.$(OBJEXT)
+	$(am__objects_1) $(am__objects_2)
 xpilot_cpp_client_sdl_OBJECTS = $(am_xpilot_cpp_client_sdl_OBJECTS)
+am__DEPENDENCIES_1 =
 xpilot_cpp_client_sdl_DEPENDENCIES =  \
 	$(top_builddir)/src/client/libxpclient.a \
-	$(top_builddir)/src/common/libxpcommon.a
+	$(top_builddir)/src/common/libxpcommon.a $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -130,14 +148,14 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/DT_drawtext.Po \
 	./$(DEPDIR)/SDL_console.Po ./$(DEPDIR)/SDL_gfxPrimitives.Po \
-	./$(DEPDIR)/console.Po ./$(DEPDIR)/gameloop_x.Po \
-	./$(DEPDIR)/glwidgets.Po ./$(DEPDIR)/images.Po \
-	./$(DEPDIR)/main.Po ./$(DEPDIR)/radar.Po ./$(DEPDIR)/scrap.Po \
-	./$(DEPDIR)/sdlevent.Po ./$(DEPDIR)/sdlgui.Po \
-	./$(DEPDIR)/sdlinit.Po ./$(DEPDIR)/sdlkeys.Po \
-	./$(DEPDIR)/sdlmeta.Po ./$(DEPDIR)/sdlpaint.Po \
-	./$(DEPDIR)/sdlwindow.Po ./$(DEPDIR)/text.Po \
-	./$(DEPDIR)/todo.Po
+	./$(DEPDIR)/console.Po ./$(DEPDIR)/gameloop.Po \
+	./$(DEPDIR)/gameloop_x.Po ./$(DEPDIR)/glwidgets.Po \
+	./$(DEPDIR)/images.Po ./$(DEPDIR)/main.Po ./$(DEPDIR)/radar.Po \
+	./$(DEPDIR)/scrap.Po ./$(DEPDIR)/sdlevent.Po \
+	./$(DEPDIR)/sdlgui.Po ./$(DEPDIR)/sdlinit.Po \
+	./$(DEPDIR)/sdlkeys.Po ./$(DEPDIR)/sdlmeta.Po \
+	./$(DEPDIR)/sdlpaint.Po ./$(DEPDIR)/sdlwindow.Po \
+	./$(DEPDIR)/text.Po ./$(DEPDIR)/todo.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -165,7 +183,7 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(xpilot_cpp_client_sdl_SOURCES)
-DIST_SOURCES = $(xpilot_cpp_client_sdl_SOURCES)
+DIST_SOURCES = $(am__xpilot_cpp_client_sdl_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -214,6 +232,10 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 ETAGS = @ETAGS@
 EXEEXT = @EXEEXT@
+GLU_CFLAGS = @GLU_CFLAGS@
+GLU_LIBS = @GLU_LIBS@
+GL_CFLAGS = @GL_CFLAGS@
+GL_LIBS = @GL_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -253,6 +275,10 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+X11_CFLAGS = @X11_CFLAGS@
+X11_LIBS = @X11_LIBS@
+ZLIB_CFLAGS = @ZLIB_CFLAGS@
+ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -300,12 +326,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -DCONF_DATADIR=\"$(pkgdatadir)/\" \
-	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/client @SDL2_CFLAGS@
+	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/client \
+	$(SDL2_CFLAGS) $(SDL2_IMAGE_CFLAGS) $(SDL2_TTF_CFLAGS) $(SDL2_MIXER_CFLAGS)
 
-
-# if COND_SDL_GAMELOOP
-#   xpilot_cpp_client_sdl_SOURCES += gameloop.cpp
-# else
 xpilot_cpp_client_sdl_SOURCES = asteroid_data.h DT_drawtext.cpp \
 	DT_drawtext.h SDL_console.cpp SDL_console.h \
 	SDL_gfxPrimitives.cpp SDL_gfxPrimitives.h \
@@ -314,15 +337,16 @@ xpilot_cpp_client_sdl_SOURCES = asteroid_data.h DT_drawtext.cpp \
 	radar.cpp radar.h sdlevent.cpp sdlgui.cpp sdlinit.cpp \
 	sdlkeys.cpp sdlkeys.h sdlpaint.cpp sdlpaint.h sdlwindow.cpp \
 	sdlwindow.h text.cpp text.h todo.cpp sdlmeta.h sdlmeta.cpp \
-	sdlinit.h ../xhacks.h xpclient_sdl.h gameloop_x.cpp
+	sdlinit.h ../xhacks.h xpclient_sdl.h $(am__append_1) \
+	$(am__append_2)
 xpilot_cpp_client_sdl_LDADD = \
 	$(top_builddir)/src/client/libxpclient.a \
 	$(top_builddir)/src/common/libxpcommon.a \
-	@GL_LIBS@ @SDL_EXTRA_LIBS@ @SDL2_LIBS@ \
-	@X_LIBS@ @X_PRE_LIBS@ @X_EXTENSIONS_LIB@ @X_EXTRA_LIBS@ \
-	@SOUND_LIBS@ @W32_LIBS@
+	$(GL_LIBS) \
+	$(SDL2_LIBS) $(SDL2_IMAGE_LIBS) $(SDL2_TTF_LIBS) $(SDL2_MIXER_LIBS) \
+	$(X11_LIBS) \
+	$(ZLIB_LIBS)
 
-# endif
 
 # if COND_WINDOWS
 #   xpilot_cpp_client_sdl_SOURCES += win32hacks.cpp
@@ -420,6 +444,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL_console.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL_gfxPrimitives.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/console.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameloop.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameloop_x.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glwidgets.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/images.Po@am__quote@ # am--include-marker
@@ -588,6 +613,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/SDL_console.Po
 	-rm -f ./$(DEPDIR)/SDL_gfxPrimitives.Po
 	-rm -f ./$(DEPDIR)/console.Po
+	-rm -f ./$(DEPDIR)/gameloop.Po
 	-rm -f ./$(DEPDIR)/gameloop_x.Po
 	-rm -f ./$(DEPDIR)/glwidgets.Po
 	-rm -f ./$(DEPDIR)/images.Po
@@ -652,6 +678,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/SDL_console.Po
 	-rm -f ./$(DEPDIR)/SDL_gfxPrimitives.Po
 	-rm -f ./$(DEPDIR)/console.Po
+	-rm -f ./$(DEPDIR)/gameloop.Po
 	-rm -f ./$(DEPDIR)/gameloop_x.Po
 	-rm -f ./$(DEPDIR)/glwidgets.Po
 	-rm -f ./$(DEPDIR)/images.Po

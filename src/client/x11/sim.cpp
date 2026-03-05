@@ -21,8 +21,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-bool simulating;
-
 #include <cstdlib>
 #include <cstdio>
 #include <csignal>
