@@ -97,18 +97,18 @@ int Meta_from(char *addr, int port)
     for (i = 0; i < NELEM(meta_servers); i++)
     {
         if (!strcmp(addr, meta_servers[i].addr))
-        {
             return (port == META_PORT);
-        }
     }
     return 0;
 }
 
 void Meta_gone(void)
 {
+    char msg[MSG_LEN];
+
     if (options.reportToMetaServer)
     {
-        sprintf(msg, "server %s\nremove", Server.host);
+        snprintf(msg, sizeof(msg), "server %s\nremove", Server.host);
         Meta_send(msg, strlen(msg) + 1);
     }
 }
@@ -119,41 +119,26 @@ void Meta_init(void)
     char *addr;
 
     if (!options.reportToMetaServer)
-    {
         return;
-    }
 
-#ifndef SILENT
     xpprintf("%s Locating Internet Meta server... ", showtime());
     fflush(stdout);
-#endif
+
     for (i = 0; i < NELEM(meta_servers); i++)
     {
         addr = sock_get_addr_by_name(meta_servers[i].name);
         if (addr)
-        {
-            strlcpy(meta_servers[i].addr, addr,
-                    sizeof(meta_servers[i].addr));
-        }
-#ifndef SILENT
+            strlcpy(meta_servers[i].addr, addr, sizeof(meta_servers[i].addr));
+
         if (addr)
-        {
             xpprintf("found %d", i + 1);
-        }
         else
-        {
             xpprintf("%d not found", i + 1);
-        }
         if (i + 1 == NELEM(meta_servers))
-        {
             xpprintf("\n");
-        }
         else
-        {
             xpprintf("... ");
-        }
         fflush(stdout);
-#endif
     }
 }
 
@@ -187,9 +172,7 @@ void Meta_update(int change)
         {
             if (NumQueuedPlayers == queue_length ||
                 currentTime - lastMetaSendTime < 5)
-            {
                 return;
-            }
         }
     }
     lastMetaSendTime = currentTime;
