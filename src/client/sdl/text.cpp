@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Erik Andersson <deity_at_home.se>
+ * Copyright (C) 2003-2004 Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
 
-    You should have received a copy of the GNU Library General Public
-    License along with this library; if not, write to the Free
+    You should have received a copy of the GNU General Public License
+    along with this library; if not, write to the Free
     <https://www.gnu.org/licenses/>.
 
     The SDL_GL_* functions in this file are available in the public domain.
@@ -42,7 +42,7 @@
     slouken@libsdl.org
 */
 
-/* modified for xpilot by Erik Andersson deity_at_home.se */
+/* modified for xpilot by Erik Andersson */
 
 #ifdef _WINDOWS
 #include <windows.h>
@@ -56,7 +56,19 @@
 #include <SDL2/SDL_opengl.h>
 #include <GL/glu.h>
 
-#include "xpclient_sdl.h"
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define RMASK 0xff000000
+#define GMASK 0x00ff0000
+#define BMASK 0x0000ff00
+#define AMASK 0x000000ff
+#else
+#define RMASK 0x000000ff
+#define GMASK 0x0000ff00
+#define BMASK 0x00ff0000
+#define AMASK 0xff000000
+#endif
+
+#include "client.h"
 
 #include "text.h"
 
@@ -88,8 +100,10 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
     int w, h;
     SDL_Surface *image;
     SDL_Rect area;
-    Uint32 saved_flags;
-    Uint8 saved_alpha;
+
+    /* SDL2: replace SDL_SetAlpha()/flags juggling with blend mode save/restore */
+    SDL_BlendMode saved_blend = SDL_BLENDMODE_NONE;
+    (void)SDL_GetSurfaceBlendMode(surface, &saved_blend);
 
     /* Use the surface width and height expanded to powers of 2 */
     w = next_p2(surface->w);
@@ -99,8 +113,9 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
     texcoord->MaxX = (GLfloat)surface->w / w; /* Max X */
     texcoord->MaxY = (GLfloat)surface->h / h; /* Max Y */
 
+    /* SDL2: SDL_SWSURFACE is gone; use 0 flags (software surface) */
     image = SDL_CreateRGBSurface(
-        SDL_SWSURFACE,
+        0,
         w, h,
         32,
         RMASK,
@@ -112,13 +127,8 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
         return 0;
     }
 
-    /* Save the alpha blending attributes */
-    saved_flags = surface->flags & (SDL_SRCALPHA | SDL_RLEACCELOK);
-    saved_alpha = surface->format->alpha;
-    if ((saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA)
-    {
-        SDL_SetAlpha(surface, 0, 0);
-    }
+    /* Disable blending for a clean copy into the intermediate surface */
+    SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_NONE);
 
     /* Copy the surface into the GL texture image */
     area.x = 0;
@@ -127,11 +137,8 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
     area.h = surface->h;
     SDL_BlitSurface(surface, &area, image, &area);
 
-    /* Restore the alpha blending attributes */
-    if ((saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA)
-    {
-        SDL_SetAlpha(surface, saved_flags, saved_alpha);
-    }
+    /* Restore previous blend mode */
+    SDL_SetSurfaceBlendMode(surface, saved_blend);
 
     /* Create an OpenGL texture for the image */
     glGenTextures(1, &texture);
@@ -424,7 +431,10 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
             src.h = dest.h = string_glyph->h;
 
             glyph = SDL_CreateRGBSurface(0, dest.w, dest.h, 32, 0, 0, 0, 0);
-            SDL_SetColorKey(glyph, SDL_SRCCOLORKEY, 0x00000000);
+            SDL_SetColorKey(
+                glyph,
+                SDL_TRUE,
+                SDL_MapRGB(glyph->format, 0, 0, 0));
             SDL_BlitSurface(string_glyph, &src, glyph, &dest);
 
             glGetError();
