@@ -352,7 +352,7 @@ int max_keydefs = 0;
  */
 keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
 {
-    warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, num_keydefs);
+    // warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, num_keydefs);
 
     keys_t ret = KEY_DUMMY;
     static int i = 0;
