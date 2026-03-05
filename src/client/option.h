@@ -23,6 +23,8 @@
 
 #include <cassert>
 
+#include "option.h"
+
 #include "keys.h"
 
 typedef enum

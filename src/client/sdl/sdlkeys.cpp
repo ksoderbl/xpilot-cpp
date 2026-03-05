@@ -20,6 +20,11 @@
 
 #include <SDL2/SDL.h>
 
+#include <cstring>
+
+// Using ../ to point to the client, not server option.h
+#include "../option.h"
+
 #include "sdlkeys.h"
 
 typedef struct
@@ -49,24 +54,30 @@ static sdlkey_t sdlkeys[] = {
     {"End", SDLK_END},
     {"Insert", SDLK_INSERT},
     {"Num_Lock", SDLK_NUMLOCKCLEAR},
+
+    /* Keypad (SDL2 uses SDLK_KP_<n>) */
     {"KP_Enter", SDLK_KP_ENTER},
     {"KP_Multiply", SDLK_KP_MULTIPLY},
     {"KP_Add", SDLK_KP_PLUS},
     {"KP_Subtract", SDLK_KP_MINUS},
     {"KP_Decimal", SDLK_KP_PERIOD},
     {"KP_Divide", SDLK_KP_DIVIDE},
-    {"KP_Insert", SDLK_KP0},
+
+    /* Historical aliases when NumLock is off: map to the same keypad keys. */
+    {"KP_Insert", SDLK_KP_0},
     {"KP_Delete", SDLK_KP_PERIOD},
-    {"KP_0", SDLK_KP0},
-    {"KP_1", SDLK_KP1},
-    {"KP_2", SDLK_KP2},
-    {"KP_3", SDLK_KP3},
-    {"KP_4", SDLK_KP4},
-    {"KP_5", SDLK_KP5},
-    {"KP_6", SDLK_KP6},
-    {"KP_7", SDLK_KP7},
-    {"KP_8", SDLK_KP8},
-    {"KP_9", SDLK_KP9},
+
+    {"KP_0", SDLK_KP_0},
+    {"KP_1", SDLK_KP_1},
+    {"KP_2", SDLK_KP_2},
+    {"KP_3", SDLK_KP_3},
+    {"KP_4", SDLK_KP_4},
+    {"KP_5", SDLK_KP_5},
+    {"KP_6", SDLK_KP_6},
+    {"KP_7", SDLK_KP_7},
+    {"KP_8", SDLK_KP_8},
+    {"KP_9", SDLK_KP_9},
+
     {"F1", SDLK_F1},
     {"F2", SDLK_F2},
     {"F3", SDLK_F3},
@@ -162,7 +173,10 @@ static sdlkey_t sdlkeys[] = {
     {"grave", SDLK_BACKQUOTE},
     {"quoteleft", SDLK_BACKQUOTE},
     {"quotedbl", SDLK_QUOTEDBL},
-    {"section", SDLK_WORLD_7},
+
+    /* SDL2 removed the old SDLK_WORLD_* key range; keep unmapped. */
+    {"section", SDLK_UNKNOWN},
+
     {NULL, SDLK_UNKNOWN},
 };
 
@@ -171,7 +185,7 @@ SDL_Keycode Get_key_by_name(const char *name)
     sdlkey_t *k;
 
     for (k = &sdlkeys[0]; k->name != NULL; k++)
-        if (!strcmp(name, k->name))
+        if (!std::strcmp(name, k->name))
         {
             return k->key;
         }
