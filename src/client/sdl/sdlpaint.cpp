@@ -3,16 +3,16 @@
  *
  * Copyright (C) 2003-2004 by
  *
- *      Juha Lindstr�m       <juhal@users.sourceforge.net>
- *      Erik Andersson       <deity_at_home.se>
- *      Darel Cullen         <darelcullen@users.sourceforge.net>
+ *      Juha Lindström
+ *      Erik Andersson
+ *      Darel Cullen
  *
  * Copyright (C) 1991-2002 by
  *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,31 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_ttf.h>
+
+#include <GL/glu.h>
+
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+
+#include <sys/time.h>
+
+#include "xpconfig.h"
+
+#include "bit.h"
+#include "commonmacros.h"
+#include "xperror.h"
+#include "xpmemory.h"
+#include "strdup.h"
+#include "rules.h"
+#include "setup.h"
+#include "version.h"
+
+#include "client.h"
+#include "netclient.h"
+#include "paint.h"
 
 #include "SDL_gfxPrimitives.h"
 #include "sdlpaint.h"
@@ -39,7 +64,6 @@
 #include "sdlwindow.h"
 #include "text.h"
 #include "glwidgets.h"
-#include "radar.h"
 
 #define SCORE_BORDER 5
 
@@ -55,6 +79,9 @@ static bool scoreListMoving;
 int paintSetupMode;
 
 GLWidget *MainWidget = NULL;
+
+/* SDL2: need the active GL window for SDL_GL_SwapWindow */
+extern SDL_Window *gWindow;
 
 static void Scorelist_button(Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data)
 {
@@ -342,7 +369,9 @@ void Paint_frame(void)
         glPopMatrix();
     }
 
-    SDL_GL_SwapBuffers();
+    /* SDL2: SDL_GL_SwapBuffers() was removed */
+    if (gWindow)
+        SDL_GL_SwapWindow(gWindow);
 
     if (newSecond)
     {
@@ -376,7 +405,8 @@ void Paint_score_start(void)
     fg.r = (scoreColorRGBA >> 24) & 255;
     fg.g = (scoreColorRGBA >> 16) & 255;
     fg.b = (scoreColorRGBA >> 8) & 255;
-    fg.unused = scoreColorRGBA & 255;
+    fg.a = scoreColorRGBA & 255;
+
     SDL_FillRect(scoreListWin.surface, NULL, 0);
     header = TTF_RenderText_Blended(scoreListFont, headingStr, fg);
     if (header == NULL)
@@ -384,8 +414,12 @@ void Paint_score_start(void)
         error("scorelist header rendering failed: %s", SDL_GetError());
         return;
     }
+
     scoreEntryRect.x = scoreEntryRect.y = SCORE_BORDER;
-    SDL_SetAlpha(header, 0, 0);
+
+    /* SDL2: SDL_SetAlpha() is gone; control blending via blend mode */
+    SDL_SetSurfaceBlendMode(header, SDL_BLENDMODE_NONE);
+
     SDL_BlitSurface(header, NULL, scoreListWin.surface, &scoreEntryRect);
     lineRGBA(scoreListWin.surface, SCORE_BORDER,
              scoreEntryRect.y + header->h + 2,
@@ -467,11 +501,11 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
         if (BIT(Setup->mode, LIMITED_LIVES))
             sprintf(lifeStr, " %3d", other->life);
 
-        if (Using_score_decimals())
-            sprintf(scoreStr, "%*.*f",
-                    7 - showScoreDecimals, showScoreDecimals,
-                    other->score);
-        else
+        // if (Using_score_decimals())
+        //     sprintf(scoreStr, "%*.*f",
+        //             7 - showScoreDecimals, showScoreDecimals,
+        //             other->score);
+        // else
         {
             double score = other->score;
             int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
@@ -520,17 +554,22 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
             }
         }
     }
+
     fg.r = (color >> 24) & 255;
     fg.g = (color >> 16) & 255;
     fg.b = (color >> 8) & 255;
-    fg.unused = color & 255;
+    fg.a = color & 255;
+
     line = TTF_RenderText_Blended(scoreListFont, label, fg);
     if (line == NULL)
     {
         error("scorelist rendering failed: %s", SDL_GetError());
         return;
     }
-    SDL_SetAlpha(line, 0, 0);
+
+    /* SDL2: SDL_SetAlpha() is gone; control blending via blend mode */
+    SDL_SetSurfaceBlendMode(line, SDL_BLENDMODE_NONE);
+
     SDL_BlitSurface(line, NULL, scoreListWin.surface, &scoreEntryRect);
     scoreEntryRect.h = line->h;
 

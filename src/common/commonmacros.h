@@ -122,4 +122,33 @@
 /* Use this to remove unused parameter warning. */
 #define UNUSED_PARAM(x) x = x
 
+#include <sys/time.h>
+
+static inline double timeval_to_seconds(struct timeval *tvp)
+{
+    return (double)tvp->tv_sec + tvp->tv_usec * 1e-6;
+}
+
+static inline struct timeval seconds_to_timeval(double t)
+{
+    struct timeval tv;
+
+    tv.tv_sec = (unsigned)t;
+    tv.tv_usec = (unsigned)(((t - (double)tv.tv_sec) * 1e6) + 0.5);
+
+    return tv;
+}
+
+/* returns 'tv2 - tv1' */
+static inline int timeval_sub(struct timeval *tv2,
+                              struct timeval *tv1)
+{
+    int s, us;
+
+    s = tv2->tv_sec - tv1->tv_sec;
+    us = tv2->tv_usec - tv1->tv_usec;
+
+    return 1000000 * s + us;
+}
+
 #endif
