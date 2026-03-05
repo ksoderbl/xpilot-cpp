@@ -468,23 +468,23 @@ void Key_clear_counts(void)
         Net_key_change();
 }
 
-// /* Remember which key we used to exit quit mode. */
-// static keys_t quit_mode_exit_key = KEY_DUMMY;
+/* Remember which key we used to exit quit mode. */
+static keys_t quit_mode_exit_key = KEY_DUMMY;
 
-// // static bool Quit_mode_key_press(keys_t key)
-// // {
-// //     if (key == KEY_YES)
-// //         Client_exit(0);
+static bool Quit_mode_key_press(keys_t key)
+{
+    if (key == KEY_YES)
+        Client_exit(0);
 
-// //     if (key == KEY_NO || key == KEY_EXIT)
-// //     {
-// //         clData.quitMode = false;
-// //         Clear_alert_messages();
-// //         quit_mode_exit_key = key;
-// //     }
+    if (key == KEY_NO || key == KEY_EXIT)
+    {
+        clData.quitMode = false;
+        Clear_alert_messages();
+        quit_mode_exit_key = key;
+    }
 
-// //     return false;
-// // }
+    return false;
+}
 
 bool Key_press(keys_t key)
 {
@@ -604,26 +604,15 @@ bool Key_release(keys_t key)
                 !BITV_ISSET(keyv, KEY_FIRE_HEAT) &&
                 !BITV_ISSET(keyv, KEY_DROP_MINE) &&
                 !BITV_ISSET(keyv, KEY_DETACH_MINE))
-            {
                 BITV_SET(keyv, KEY_SHIELD);
-            }
         }
         break;
 
     case KEY_SHIELD:
         if (toggle_shield)
-        {
             return false;
-        }
         else if (auto_shield)
-        {
-            shields = 0;
-#if 0
-            shields = 1;
-            BITV_SET(keyv, key);
-            return true;
-#endif
-        }
+            shields = false;
         break;
 
     case KEY_REFUEL:
@@ -638,22 +627,17 @@ bool Key_release(keys_t key)
             return false;
         }
         if (lose_item_active == 2)
-        {
             lose_item_active = 1;
-        }
         else
-        {
-            lose_item_active = -FPS;
-        }
+            lose_item_active = -(int)(clientFPS + 0.5);
+
         break;
 
     default:
         break;
     }
     if (key < NUM_KEYS)
-    {
         BITV_CLR(keyv, key);
-    }
 
     return true;
 }
@@ -663,7 +647,7 @@ void Reset_shields(void)
     if (toggle_shield || auto_shield)
     {
         BITV_SET(keyv, KEY_SHIELD);
-        shields = 1;
+        shields = true;
         if (auto_shield)
         {
             if (BITV_ISSET(keyv, KEY_FIRE_SHOT) ||
@@ -673,9 +657,7 @@ void Reset_shields(void)
                 BITV_ISSET(keyv, KEY_FIRE_HEAT) ||
                 BITV_ISSET(keyv, KEY_DROP_MINE) ||
                 BITV_ISSET(keyv, KEY_DETACH_MINE))
-            {
                 BITV_CLR(keyv, KEY_SHIELD);
-            }
         }
         Net_key_change();
     }
@@ -692,86 +674,82 @@ void Set_toggle_shield(bool on)
     if (toggle_shield)
     {
         if (auto_shield)
-        {
-            shields = 1;
-        }
+            shields = true;
         else
-        {
-            shields = (BITV_ISSET(keyv, KEY_SHIELD) != 0);
-        }
+            shields = (BITV_ISSET(keyv, KEY_SHIELD)) ? true : false;
     }
 }
 
-// /*
-//  * Function to call when a button of a pointing device has been pressed.
-//  * Argument 'button' should be 1 for the first pointer button, etc.
-//  */
-// // void Pointer_button_pressed(int button)
-// // {
-// //     int i, b_index = button - 1;
-// //     bool key_change = false;
+/*
+ * Function to call when a button of a pointing device has been pressed.
+ * Argument 'button' should be 1 for the first pointer button, etc.
+ */
+void Pointer_button_pressed(int button)
+{
+    int i, b_index = button - 1;
+    bool key_change = false;
 
-// //     if (button < 1 || button > MAX_POINTER_BUTTONS)
-// //         return;
+    if (button < 1 || button > MAX_POINTER_BUTTONS)
+        return;
 
-// //     for (i = 0; i < Num_buttonDefs(b_index); i++)
-// //         key_change |= Key_press(buttonDefs[b_index][i]);
+    for (i = 0; i < Num_buttonDefs(b_index); i++)
+        key_change |= Key_press(todoButtonDefs[b_index][i]);
 
-// //     if (key_change)
-// //         Net_key_change();
-// // }
+    if (key_change)
+        Net_key_change();
+}
 
-// void Pointer_button_released(int button)
-// {
-//     int i, b_index = button - 1;
-//     bool key_change = false;
+void Pointer_button_released(int button)
+{
+    int i, b_index = button - 1;
+    bool key_change = false;
 
-//     if (button < 1 || button > MAX_POINTER_BUTTONS)
-//         return;
+    if (button < 1 || button > MAX_POINTER_BUTTONS)
+        return;
 
-//     for (i = 0; i < Num_buttonDefs(b_index); i++)
-//         key_change |= Key_release(buttonDefs[b_index][i]);
+    for (i = 0; i < Num_buttonDefs(b_index); i++)
+        key_change |= Key_release(todoButtonDefs[b_index][i]);
 
-//     if (key_change)
-//         Net_key_change();
-// }
+    if (key_change)
+        Net_key_change();
+}
 
-// void Keyboard_button_pressed(xp_keysym_t ks)
-// {
-//     bool change = false;
-//     keys_t key;
+void Keyboard_button_pressed(xp_keysym_t ks)
+{
+    bool change = false;
+    keys_t key;
 
-// #if 0
-//     {
-//     char foo[80];
+#if 0
+    {
+    char foo[80];
 
-//     sprintf(foo, "keysym = %d (0x%x) []", (int)ks, (int)ks);
-//     Add_message(foo);
-//     }
-// #endif
+    sprintf(foo, "keysym = %d (0x%x) []", (int)ks, (int)ks);
+    Add_message(foo);
+    }
+#endif
 
-//     for (key = Generic_lookup_key(ks, true);
-//          key != KEY_DUMMY;
-//          key = Generic_lookup_key(ks, false))
-//         change |= Key_press(key);
+    for (key = Generic_lookup_key(ks, true);
+         key != KEY_DUMMY;
+         key = Generic_lookup_key(ks, false))
+        change |= Key_press(key);
 
-//     if (change)
-//         Net_key_change();
-// }
+    if (change)
+        Net_key_change();
+}
 
-// void Keyboard_button_released(xp_keysym_t ks)
-// {
-//     bool change = false;
-//     keys_t key;
+void Keyboard_button_released(xp_keysym_t ks)
+{
+    bool change = false;
+    keys_t key;
 
-//     for (key = Generic_lookup_key(ks, true);
-//          key != KEY_DUMMY;
-//          key = Generic_lookup_key(ks, false))
-//         change |= Key_release(key);
+    for (key = Generic_lookup_key(ks, true);
+         key != KEY_DUMMY;
+         key = Generic_lookup_key(ks, false))
+        change |= Key_release(key);
 
-//     if (change)
-//         Net_key_change();
-// }
+    if (change)
+        Net_key_change();
+}
 
 static void Bind_key_to_pointer_button(keys_t key, int ind)
 {
