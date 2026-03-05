@@ -102,28 +102,28 @@ void Pointer_control_set_state(bool on)
 
 void Talk_set_state(bool on)
 {
-    //     if (clData.talking == on)
-    //         return;
-    //     if (on)
-    //     {
-    //         /* When enabling talking, disable pointer control if it is enabled. */
-    //         if (clData.pointerControl)
-    //         {
-    //             clData.restorePointerControl = true;
-    //             Pointer_control_set_state(false);
-    //         }
-    //     }
+    if (clData.talking == on)
+        return;
+    if (on)
+    {
+        /* When enabling talking, disable pointer control if it is enabled. */
+        if (clData.pointerControl)
+        {
+            clData.restorePointerControl = true;
+            Pointer_control_set_state(false);
+        }
+    }
     Platform_specific_talk_set_state(on);
-    //     if (!on)
-    //     {
-    //         /* When disabling talking, enable pointer control if it was enabled. */
-    //         if (clData.restorePointerControl)
-    //         {
-    //             Pointer_control_set_state(true);
-    //             clData.restorePointerControl = false;
-    //         }
-    //     }
-    //     clData.talking = on;
+    if (!on)
+    {
+        /* When disabling talking, enable pointer control if it was enabled. */
+        if (clData.restorePointerControl)
+        {
+            Pointer_control_set_state(true);
+            clData.restorePointerControl = false;
+        }
+    }
+    clData.talking = on;
 }
 
 static inline int pointer_button_index_by_option(xp_option_t *opt)
@@ -147,26 +147,26 @@ static void Clear_buttonDefs(int ind)
     numButtonDefs[ind] = 0;
 }
 
-// static int Key_set(int key, bool on)
-// {
-//     if (on)
-//     {
-//         if (!BITV_ISSET(keyv, key))
-//         {
-//             BITV_SET(keyv, key);
-//             return true;
-//         }
-//     }
-//     else
-//     {
-//         if (BITV_ISSET(keyv, key))
-//         {
-//             BITV_CLR(keyv, key);
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+static int Key_set(int key, bool on)
+{
+    if (on)
+    {
+        if (!BITV_ISSET(keyv, key))
+        {
+            BITV_SET(keyv, key);
+            return true;
+        }
+    }
+    else
+    {
+        if (BITV_ISSET(keyv, key))
+        {
+            BITV_CLR(keyv, key);
+            return true;
+        }
+    }
+    return false;
+}
 
 int Key_init(void)
 {
