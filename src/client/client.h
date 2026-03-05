@@ -38,6 +38,8 @@ typedef struct
     bool quitMode = false;              /* Client is in quit mode? */
     double clientLag = 0.0;
     double scaleFactor = 1.0;
+    double scale = 1.0;
+    float fscale = 1.0;
     double altScaleFactor = 1.0;
     double scaleMultFactor = 1.0; // 1.0 / scaleFactor;
 } client_data_t;

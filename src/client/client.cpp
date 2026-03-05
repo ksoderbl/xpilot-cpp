@@ -47,20 +47,6 @@
 #include "paintradar.h"
 #include "talk.h"
 
-// typedef struct
-// {
-//     bool talking;        /* Some talk window is open? */
-//     bool pointerControl; /* Pointer (mouse) control is on? */
-//     bool restorePointerControl;
-//     /* Pointer control should be restored later? */
-//     bool quitMode; /* Client is in quit mode? */
-//     double clientLag;
-//     double scaleFactor;
-//     double scale;
-//     float fscale;
-//     double altScaleFactor;
-// } client_data_t;
-
 client_data_t clData;
 
 char *geometry;

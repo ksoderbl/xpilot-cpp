@@ -3,15 +3,15 @@
  *
  * Copyright (C) 2003-2004 by
  *
- *      Juha Lindstr�m       <juhal@users.sourceforge.net>
- *      Erik Andersson       <deity_at_home.se>
+ *      Juha Lindström
+ *      Erik Andersson
  *
  * Copyright (C) 1991-2002 by
  *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,20 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+#include <GL/glu.h>
+
+#include "bit.h"
+#include "paint.h"
+#include "rules.h"
+#include "setup.h"
+#include "wreckshape.h"
+#include "xperror.h"
+#include "xpmath.h"
+
+#include "client.h"
+#include "guiobjects.h"
+#include "netclient.h"
 
 #include "sdlpaint.h"
 #include "images.h"
@@ -150,7 +164,7 @@ static GLubyte get_alpha(Uint32 color)
 
 int GL_X(int x)
 {
-    return (int)((x - world.x) * clData.scale);
+    return (int)((x - world.x) * clData.scale); // TODO: remove 'scale', use e.g. scaleFactor.
 }
 
 int GL_Y(int y)
