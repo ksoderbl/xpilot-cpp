@@ -25,7 +25,6 @@ xpilot_cpp_server_SOURCES = \
     map.cpp \
     map.h \
     metaserver.cpp \
-    metaserver.h \
     modifiers.cpp \
     modifiers.h \
     netserver.cpp \

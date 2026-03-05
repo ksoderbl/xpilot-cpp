@@ -41,7 +41,8 @@
 
 static struct Meta metas[NUM_METAS] = {
     {META_HOST, META_IP, {0}, MetaConnecting},
-    {META_HOST_TWO, META_IP_TWO, {0}, MetaConnecting}};
+    //    {META_HOST_TWO, META_IP_TWO, {0}, MetaConnecting}
+};
 
 /*
  * Here we hold the servers which are listed by the meta servers.

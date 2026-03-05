@@ -37,10 +37,10 @@
  * Some constants for describing access to the meta servers.
  * XXX These are also defined in some other file.
  */
-#define NUM_METAS 2
+#define NUM_METAS 1
 #define META_HOST "meta.xpilot.org"
 #define META_HOST_TWO "meta2.xpilot.org"
-#define META_IP "104.236.193.200"
+#define META_IP "45.55.104.252"
 #define META_IP_TWO "194.28.50.74"
 #define META_PROG_PORT 4401
 #define NUM_META_DATA_FIELDS 18
