@@ -375,6 +375,16 @@ void Add_meta_line(char *meta_line)
     else
     {
         sip->ip = (ip0 << 24) | (ip1 << 16) | (ip2 << 8) | ip3;
+
+        // 2026-03: There's a new metaserver at 45.55.104.252, which has about 800
+        // servers running the Lifeless map on IPs 136.244.224.x. I don't want to see these.
+        if (!strcmp(sip->mapname, "Lifeless"))
+        {
+            free(sip);
+            free(text);
+            return;
+        }
+
         if (Add_server_info(sip) == -1)
         {
             free(sip);
