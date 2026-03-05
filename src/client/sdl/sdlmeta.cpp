@@ -941,6 +941,8 @@ static void Paint_MetaWidget(GLWidget *widget)
     glTexCoord2f(info->txc.MaxX, info->txc.MaxY);
     glVertex2i(b->x + b->w, b->y + b->h);
     /* keep original (even though it's suspicious) to avoid changing behavior */
+    // TODO: fix the (very likely) typo in Paint_MetaWidget() where the last glTexCoord2f uses i
+    // nfo->txc.MinY instead of MinX
     glTexCoord2f(info->txc.MinY, info->txc.MaxY);
     glVertex2i(b->x, b->y + b->h);
     glEnd();

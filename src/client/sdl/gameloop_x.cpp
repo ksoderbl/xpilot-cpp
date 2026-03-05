@@ -18,9 +18,23 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <X11/Xlib.h>
+#include <cassert>
+
+#include <cerrno>
+#include <sys/select.h>
+#include <sys/time.h>
 
 #include <SDL2/SDL.h>
+
+#ifdef HAVE_X11
+#include <X11/Xlib.h>
+#include <SDL2/SDL_syswm.h>
+#endif
+
+#include "xperror.h"
+
+#include "client.h"
+#include "netclient.h"
 
 extern int Process_event(SDL_Event *evt);
 
@@ -41,16 +55,32 @@ static int Poll_input(void)
 void Game_loop(void)
 {
     fd_set rfds, tfds;
-    int max, n, netfd, result, clientfd;
+    int max, n, netfd, result;
+
+#ifdef HAVE_X11
+    int clientfd;
     struct timeval tv;
     SDL_SysWMinfo info;
 
     SDL_VERSION(&info.version);
-    if (!SDL_GetWMInfo(&info))
+
+    /* SDL2: SDL_GetWMInfo() -> SDL_GetWindowWMInfo(window, &info)
+     * We need an SDL_Window* for this. Use the globally created window.
+     */
+    extern SDL_Window *gWindow;
+
+    if (!gWindow)
     {
-        error("SDL_GetWMInfo not supported");
+        error("No SDL window available for WM info");
         return;
     }
+
+    if (SDL_GetWindowWMInfo(gWindow, &info) != SDL_TRUE)
+    {
+        error("SDL_GetWindowWMInfo not supported: %s", SDL_GetError());
+        return;
+    }
+#endif
 
     if ((result = Net_input()) == -1)
     {
@@ -63,37 +93,51 @@ void Game_loop(void)
     if (Net_flush() == -1)
         return;
 
+#ifdef HAVE_X11
     if ((clientfd = ConnectionNumber(info.info.x11.display)) == -1)
     {
         error("Bad client filedescriptor");
         return;
     }
+#endif
+
     if ((netfd = Net_fd()) == -1)
     {
         error("Bad socket filedescriptor");
         return;
     }
+
     Net_key_change();
+
     FD_ZERO(&rfds);
+
+#ifdef HAVE_X11
     FD_SET(clientfd, &rfds);
+#endif
     FD_SET(netfd, &rfds);
+
+#ifdef HAVE_X11
     max = (clientfd > netfd) ? clientfd : netfd;
+#else
+    max = netfd;
+#endif
+
     for (tfds = rfds;; rfds = tfds)
     {
-
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
+        struct timeval tv_local;
+        tv_local.tv_sec = 1;
+        tv_local.tv_usec = 0;
 
         if (maxMouseTurnsPS > 0)
         {
             int t = Client_check_pointer_move_interval();
 
             assert(t > 0);
-            tv.tv_sec = t / 1000000;
-            tv.tv_usec = t % 1000000;
+            tv_local.tv_sec = t / 1000000;
+            tv_local.tv_usec = t % 1000000;
         }
 
-        if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1)
+        if ((n = select(max + 1, &rfds, NULL, NULL, &tv_local)) == -1)
         {
             if (errno == EINTR)
                 continue;
@@ -113,6 +157,8 @@ void Game_loop(void)
                 continue;
             }
         }
+
+#ifdef HAVE_X11
         if (FD_ISSET(clientfd, &rfds))
         {
             if (Poll_input())
@@ -123,6 +169,12 @@ void Game_loop(void)
                 return;
             }
         }
+#else
+        /* Non-X11 build: still poll SDL events regularly */
+        if (Poll_input())
+            return;
+#endif
+
         if (FD_ISSET(netfd, &rfds) || result > 1)
         {
             if ((result = Net_input()) == -1)
