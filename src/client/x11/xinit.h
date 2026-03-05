@@ -44,21 +44,30 @@ extern int buttonColor, windowColor, borderColor;
 extern int ButtonHeight;
 extern char visualName[MAX_VISUAL_NAME];
 extern Visual *visual;
-extern int dispDepth;
+extern unsigned dispDepth;
 extern bool texturedObjects;
 extern bool fullColor;
 extern char color_names[MAX_COLORS][MAX_COLOR_LEN];
-extern int top_width, top_height;
 // extern int                draw_width, draw_height;
-extern int players_width, players_height;
 extern char *geometry;
 extern bool autoServerMotdPopup;
 extern bool refreshMotd;
 extern char sparkColors[MSG_LEN];
 extern int spark_color[MAX_COLORS];
 // extern int                num_spark_colors;
+extern int button_form;
+extern unsigned top_width, top_height;
+extern unsigned players_width, players_height;
 extern bool ignoreWindowManager;
 extern bool quitting;
+
+/* XPilot Mouse settings */
+extern bool mouseAccelInClient;
+extern int new_acc_num, new_acc_denom, new_threshold;
+extern Cursor pointerControlCursor;
+/* For restoring the mouse back to normal */
+extern bool pre_exists;
+extern int pre_acc_num, pre_acc_denom, pre_threshold;
 
 /*
  * Prototypes for xinit.c

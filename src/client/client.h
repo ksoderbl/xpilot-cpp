@@ -525,11 +525,9 @@ extern char realname[MAX_CHARS];   /* Real name of player */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */
 extern unsigned version;           /* Version of the server */
 extern bool scoresChanged;
-extern bool toggle_shield;         /* Are shields toggled by a press? */
-extern bool shields;               /* When shields are considered up */
-extern bool auto_shield;           /* drops shield for fire */
-extern bool initialPointerControl; /* Start by using mouse for control? */
-extern bool pointerControl;        /* current state of mouse ship flying */
+extern bool toggle_shield; /* Are shields toggled by a press? */
+extern bool shields;       /* When shields are considered up */
+extern bool auto_shield;   /* drops shield for fire */
 
 extern int maxFPS; /* Max FPS player wants from server */
 extern int oldMaxFPS;

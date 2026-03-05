@@ -39,7 +39,6 @@
 
 #include "xpconfig.h"
 #include "const.h"
-#include "xinit.h"
 #include "keys.h"
 #include "packet.h"
 #include "bit.h"
@@ -52,7 +51,10 @@
 #include "paintdata.h"
 #include "talk.h"
 #include "configure.h"
+
+#include "xevent.h"
 #include "xeventhandlers.h"
+#include "xinit.h"
 
 extern int talk_key_repeating;       /* xevent.c */
 extern XEvent talk_key_repeat_event; /* xevent.c */
@@ -247,13 +249,11 @@ void FocusIn_event(XEvent *event)
 {
 #ifdef DEVELOPMENT
     if (!gotFocus)
-    {
         time(&back_in_play_since);
-    }
 #endif
-    if (initialPointerControl && !clData.talking)
+    if (clData.restorePointerControl && !clData.talking)
     {
-        initialPointerControl = false;
+        clData.restorePointerControl = false;
         Pointer_control_set_state(true);
     }
     gotFocus = true;
@@ -262,13 +262,14 @@ void FocusIn_event(XEvent *event)
 
 void UnmapNotify_event(XEvent *event)
 {
-    if (pointerControl)
+    if (clData.pointerControl)
     {
-        initialPointerControl = true;
+        clData.restorePointerControl = true;
         Pointer_control_set_state(false);
     }
     gotFocus = false;
     XAutoRepeatOn(dpy);
+    Key_clear_counts();
 }
 
 void ConfigureNotify_event(XEvent *event)
@@ -332,7 +333,7 @@ void ButtonPress_event(XEvent *event)
 
     if (xbutton->window == drawWindow || xbutton->window == talkWindow)
     {
-        if (pointerControl && !clData.talking && xbutton->button <= MAX_POINTER_BUTTONS)
+        if (clData.pointerControl && !clData.talking && xbutton->button <= MAX_POINTER_BUTTONS)
         {
             int i;
             for (i = 0; i < NUM_BUTTON_DEFS(xbutton->button - 1); ++i)
@@ -398,23 +399,19 @@ void MotionNotify_event(XEvent *event)
 {
     if (event->xmotion.window == drawWindow)
     {
-        if (pointerControl)
+        if (clData.pointerControl)
         {
             if (!clData.talking)
             {
                 if (!event->xmotion.send_event)
-                {
-                    movement += event->xmotion.x - mouse.x;
-                }
+                    mouseMovement += event->xmotion.x - mousePosition.x;
             }
-            mouse.x = event->xmotion.x;
-            mouse.y = event->xmotion.y;
+            mousePosition.x = event->xmotion.x;
+            mousePosition.y = event->xmotion.y;
         }
     }
     else
-    {
         Widget_event(event);
-    }
 }
 
 int ButtonRelease_event(XEvent *event)
@@ -424,7 +421,7 @@ int ButtonRelease_event(XEvent *event)
     if (xbutton->window == drawWindow || xbutton->window == talkWindow)
     {
 
-        if (pointerControl && !clData.talking && xbutton->button <= MAX_POINTER_BUTTONS)
+        if (clData.pointerControl && !clData.talking && xbutton->button <= MAX_POINTER_BUTTONS)
         {
             int i;
             for (i = 0; i < NUM_BUTTON_DEFS(xbutton->button - 1); ++i)

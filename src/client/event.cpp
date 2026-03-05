@@ -61,34 +61,34 @@ static int Key_get_count(keys_t key);
 static bool Key_inc_count(keys_t key);
 static bool Key_dec_count(keys_t key);
 
-// void Pointer_control_newbie_message(void)
-// {
-//     xp_option_t *opt = Find_option("keyExit");
-//     char msg[MSG_LEN];
-//     const char *val;
+void Pointer_control_newbie_message(void)
+{
+    xp_option_t *opt = Find_option("keyExit");
+    char msg[MSG_LEN];
+    const char *val;
 
-//     if (!newbie)
-//         return;
+    if (!newbie)
+        return;
 
-//     if (!opt)
-//         return;
+    if (!opt)
+        return;
 
-//     val = Option_value_to_string(opt);
-//     if (strlen(val) == 0)
-//         return;
+    val = Option_value_to_string(opt);
+    if (strlen(val) == 0)
+        return;
 
-//     if (clData.pointerControl)
-//         snprintf(msg, sizeof(msg),
-//                  "Mouse steering enabled. "
-//                  "Key(s) to disable it: %s.",
-//                  val);
-//     else
-//         snprintf(msg, sizeof(msg),
-//                  "Mouse steering disabled. "
-//                  "Click background with left mouse button to enable it.");
+    if (clData.pointerControl)
+        snprintf(msg, sizeof(msg),
+                 "Mouse steering enabled. "
+                 "Key(s) to disable it: %s.",
+                 val);
+    else
+        snprintf(msg, sizeof(msg),
+                 "Mouse steering disabled. "
+                 "Click background with left mouse button to enable it.");
 
-//     // Add_newbie_message(msg); // TODO
-// }
+    // Add_newbie_message(msg); // TODO
+}
 
 void Pointer_control_set_state(bool on)
 {
@@ -253,13 +253,10 @@ static bool Key_press_swap_settings(void)
 
 static bool Key_press_swap_scalefactor(void)
 {
-    double tmp;
-    tmp = clData.scaleFactor;
-    clData.scaleFactor = clData.altScaleFactor;
-    clData.altScaleFactor = tmp;
+    double a = clData.altScaleFactor;
 
-    Scale_dashes();
-    Config_redraw();
+    Set_altScaleFactor(NULL, clData.scaleFactor);
+    Set_scaleFactor(NULL, a);
 
     return false;
 }
@@ -310,7 +307,17 @@ static bool Key_press_decrease_turnspeed(void)
 
 static bool Key_press_talk(void)
 {
-    Talk_set_state((clData.talking == false) ? true : false);
+    int i;
+
+    /*
+     * this releases mouse in x11 client, so we clear the mouse buttons
+     * so they don't lock on
+     */
+    if (clData.pointerControl)
+        for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+            Pointer_button_released(i);
+
+    Talk_set_state(!clData.talking);
     return false; /* server doesn't need to know */
 }
 
@@ -331,7 +338,7 @@ static bool Key_press_pointer_control(void)
     if (version < 0x3202)
         warn("Cannot use pointer control below version 3.2.3");
     else
-        Pointer_control_set_state(!pointerControl);
+        Pointer_control_set_state(!clData.pointerControl);
     return false; /* server doesn't need to know */
 }
 
@@ -389,51 +396,51 @@ static bool Key_press_no(void)
     return false; /* server doesn't need to know */
 }
 
-// // static bool Key_press_exit(void)
-// // {
-// //     int i;
+static bool Key_press_exit(void)
+{
+    int i;
 
-// //     /* exit pointer control if exit key pressed in pointer control mode */
-// //     if (clData.pointerControl)
-// //     {
-// //         /*
-// //          * this releases mouse, so we clear the mouse buttons so
-// //          * they don't lock on
-// //          */
-// //         for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-// //             Pointer_button_released(i);
+    /* exit pointer control if exit key pressed in pointer control mode */
+    if (clData.pointerControl)
+    {
+        /*
+         * this releases mouse, so we clear the mouse buttons so
+         * they don't lock on
+         */
+        for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+            Pointer_button_released(i);
 
-// //         Pointer_control_set_state(false);
-// //         return false; /* server doesn't need to know */
-// //     }
+        Pointer_control_set_state(false);
+        return false; /* server doesn't need to know */
+    }
 
-// //     clData.quitMode = true;
-// //     Add_alert_message("Really Quit (y/n) ?", 0.0);
+    clData.quitMode = true;
+    Add_alert_message("Really Quit (y/n) ?", 0.0);
 
-// //     return false; /* server doesn't need to know */
-// // }
+    return false; /* server doesn't need to know */
+}
 
-// static int Key_get_count(keys_t key)
-// {
-//     if (key >= NUM_KEYS)
-//         return -1;
+static int Key_get_count(keys_t key)
+{
+    if (key >= NUM_KEYS)
+        return -1;
 
-//     return keyv_new[key];
-// }
+    return keyv_new[key];
+}
 
-// static bool Key_inc_count(keys_t key)
-// {
-//     if (key >= NUM_KEYS)
-//         return false;
+static bool Key_inc_count(keys_t key)
+{
+    if (key >= NUM_KEYS)
+        return false;
 
-//     if (keyv_new[key] < 255)
-//     {
-//         ++keyv_new[key];
-//         return true;
-//     }
+    if (keyv_new[key] < 255)
+    {
+        ++keyv_new[key];
+        return true;
+    }
 
-//     return false;
-// }
+    return false;
+}
 
 static bool Key_dec_count(keys_t key)
 {
@@ -488,12 +495,37 @@ static bool Quit_mode_key_press(keys_t key)
 
 bool Key_press(keys_t key)
 {
+    bool countchange;
+    int keycount, i;
+
+    if (clData.quitMode)
+        return Quit_mode_key_press(key);
+
+    countchange = Key_inc_count(key);
+    keycount = Key_get_count(key);
+
+    /*
+     * keycount -1 means this was a client only key, we don't count those
+     */
+    if (keycount != -1)
+    {
+        /*
+         * if countchange is false it means that Key_<inc|dec>_count()
+         * failed to change the count due to being at the end of the range
+         * (should be very rare) keycount != 1 means that this key was
+         * already pressed (multiple key mappings)
+         */
+        // TODO: enable this
+        // if ((!countchange) || (keycount != 1))
+        //     return true;
+    }
+
     Key_check_talk_macro(key);
 
     switch (key)
     {
     case KEY_ID_MODE:
-        return (Key_press_id_mode());
+        return Key_press_id_mode();
 
     case KEY_FIRE_SHOT:
     case KEY_FIRE_LASER:
@@ -549,32 +581,88 @@ bool Key_press(keys_t key)
         return Key_press_show_messages();
 
     case KEY_POINTER_CONTROL:
+        /*
+         * this releases mouse, so we clear the mouse buttons so they
+         * don't lock on
+         */
+        if (clData.pointerControl)
+            for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+                Pointer_button_released(i);
+
         return Key_press_pointer_control();
 
     case KEY_TOGGLE_RECORD:
         return Key_press_toggle_record();
 
+    case KEY_TOGGLE_SOUND:
+        return Key_press_toggle_sound();
+
+    case KEY_TOGGLE_RADAR_SCORE:
+        return Key_press_toggle_radar_score();
+
     case KEY_PRINT_MSGS_STDOUT:
         return Key_press_msgs_stdout();
+
+    case KEY_TOGGLE_FULLSCREEN:
+        return Key_press_toggle_fullscreen();
 
     case KEY_SELECT_ITEM:
     case KEY_LOSE_ITEM:
         if (!Key_press_select_lose_item())
             return false;
+        break;
+
+    case KEY_EXIT:
+        return Key_press_exit();
+    case KEY_YES:
+        return Key_press_yes();
+    case KEY_NO:
+        return Key_press_no();
+
     default:
         break;
     }
 
     if (key < NUM_KEYS)
-    {
         BITV_SET(keyv, key);
-    }
 
     return true;
 }
 
 bool Key_release(keys_t key)
 {
+    bool countchange;
+    int keycount;
+
+    /*
+     * Make sure nothing is done when we release the button we used
+     * to exit quit mode with.
+     */
+    if (key == quit_mode_exit_key)
+    {
+        assert(key != KEY_DUMMY);
+        quit_mode_exit_key = KEY_DUMMY;
+        return false;
+    }
+
+    countchange = Key_dec_count(key);
+    keycount = Key_get_count(key);
+
+    /* -1 means this was a client only key, we don't count those */
+    if (keycount != -1)
+    {
+        /*
+         * if countchange is false it means that Key_<inc|dec>_count()
+         * failed to change the count due to being at the end of the range
+         * (happens to most key releases let through from talk mode)
+         * keycount != 0 means that some physical keys remain pressed
+         * that map to this xpilot key
+         */
+        // TODO: enable
+        //    if ((!countchange) || (keycount != 0))
+        //         return true;
+    }
+
     switch (key)
     {
     case KEY_ID_MODE:

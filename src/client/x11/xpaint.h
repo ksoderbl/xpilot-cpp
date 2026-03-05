@@ -57,9 +57,9 @@ extern Display *kdpy;    /* Keyboard display */
 extern short about_page; /* Which page is the player on? */
 // extern uint16_t        team;                /* What team is the player on? */
 // extern bool players_exposed; /* Is score window exposed? */
-extern int radar_exposures; /* Is radar window exposed? */
+extern int radar_exposures;     /* Is radar window exposed? */
+extern bool radar_score_mapped; /* Is the radar and score window mapped */
 
-/* windows has 2 sets of item bitmaps */
 #define ITEM_HUD 0       /* one color for the HUD */
 #define ITEM_PLAYFIELD 1 /* and one color for the playfield */
 

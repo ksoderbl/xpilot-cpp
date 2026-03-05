@@ -141,6 +141,17 @@ static int scoreEnemyTeamColor = WHITE; /* Score list enemy team color index */
 
 static void Paint_clock(bool redraw);
 
+int Paint_init(void)
+{
+    if (Init_wreckage() == -1)
+        return -1;
+    if (Init_asteroids() == -1)
+        return -1;
+    if (Bitmaps_init() == -1)
+        return -1;
+    return 0;
+}
+
 void Paint_cleanup(void)
 {
     Bitmaps_cleanup();

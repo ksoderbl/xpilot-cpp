@@ -1168,7 +1168,7 @@ void Gui_paint_decor_dot(int x, int y, int size)
                   size, size);
 }
 
-void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
+void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
 {
     int size, a1, a2, b1, b2, color;
     char s[2];
@@ -1194,7 +1194,7 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
 
     if (BIT(Setup->mode, TEAM_PLAY))
     {
-        s[0] = '0' + target;
+        s[0] = '0' + team;
         s[1] = '\0';
         size = XTextWidth(gameFont, s, 1);
         rd.drawString(dpy, drawPixmap, gameGC,
@@ -1205,7 +1205,7 @@ void Gui_paint_setup_target(int x, int y, int target, int damage, bool own)
 
     if (damage != TARGET_DAMAGE)
     {
-        size = (damage * BLOCK_SZ) / (TARGET_DAMAGE * 2);
+        size = (int)((damage * BLOCK_SZ) / (TARGET_DAMAGE * 2));
         a1 = x + size;
         a2 = y + size;
         b1 = x + (BLOCK_SZ - size);

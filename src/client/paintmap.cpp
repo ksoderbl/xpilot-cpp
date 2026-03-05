@@ -490,7 +490,7 @@ void Paint_world(void)
                     team = type - SETUP_TARGET;
                     own = (eyeTeam == team);
 
-                    Gui_paint_setup_target(x, y, team, damage, own);
+                    Gui_paint_setup_target(x, y, team, (double)damage, own);
                 }
                 break;
 

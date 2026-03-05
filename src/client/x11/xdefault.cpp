@@ -1540,58 +1540,58 @@ const char *Get_keyResourceString(keys_t key)
     return NULL;
 }
 
-void Usage(void)
-{
-    int i;
+// void Usage(void)
+// {
+//     int i;
 
-    printf(
-        "Usage: xpilot [-options ...] [server]\n"
-        "Where options include:\n"
-        "\n");
-    for (i = 0; i < NELEM(oldOptions); i++)
-    {
-        printf("    -%s %s\n", oldOptions[i].name,
-               (oldOptions[i].noArg == NULL) ? "<value>" : "");
-        if (oldOptions[i].help && oldOptions[i].help[0])
-        {
-            const char *str;
-            printf("        ");
-            for (str = oldOptions[i].help; *str; str++)
-            {
-                putchar(*str);
-                if (*str == '\n' && str[1])
-                {
-                    printf("        ");
-                }
-            }
-            if (str[-1] != '\n')
-            {
-                putchar('\n');
-            }
-        }
-        if (oldOptions[i].fallback && oldOptions[i].fallback[0])
-        {
-            printf("        The default %s: %s.\n",
-                   (oldOptions[i].key == KEY_DUMMY)
-                       ? "value is"
-                   : (strchr(oldOptions[i].fallback, ' ') == NULL)
-                       ? "key is"
-                       : "keys are",
-                   oldOptions[i].fallback);
-        }
-        printf("\n");
-    }
-    printf(
-        "Most of these options can also be set in the .xpilotrc file\n"
-        "in your home directory.\n"
-        "Each key option may have multiple keys bound to it and\n"
-        "one key may be used by multiple key options.\n"
-        "If no server is specified then xpilot will search\n"
-        "for servers on your local network.\n"
-        "For a listing of remote servers try: telnet meta.xpilot.org 4400 \n");
+//     printf(
+//         "Usage: xpilot [-options ...] [server]\n"
+//         "Where options include:\n"
+//         "\n");
+//     for (i = 0; i < NELEM(oldOptions); i++)
+//     {
+//         printf("    -%s %s\n", oldOptions[i].name,
+//                (oldOptions[i].noArg == NULL) ? "<value>" : "");
+//         if (oldOptions[i].help && oldOptions[i].help[0])
+//         {
+//             const char *str;
+//             printf("        ");
+//             for (str = oldOptions[i].help; *str; str++)
+//             {
+//                 putchar(*str);
+//                 if (*str == '\n' && str[1])
+//                 {
+//                     printf("        ");
+//                 }
+//             }
+//             if (str[-1] != '\n')
+//             {
+//                 putchar('\n');
+//             }
+//         }
+//         if (oldOptions[i].fallback && oldOptions[i].fallback[0])
+//         {
+//             printf("        The default %s: %s.\n",
+//                    (oldOptions[i].key == KEY_DUMMY)
+//                        ? "value is"
+//                    : (strchr(oldOptions[i].fallback, ' ') == NULL)
+//                        ? "key is"
+//                        : "keys are",
+//                    oldOptions[i].fallback);
+//         }
+//         printf("\n");
+//     }
+//     printf(
+//         "Most of these options can also be set in the .xpilotrc file\n"
+//         "in your home directory.\n"
+//         "Each key option may have multiple keys bound to it and\n"
+//         "one key may be used by multiple key options.\n"
+//         "If no server is specified then xpilot will search\n"
+//         "for servers on your local network.\n"
+//         "For a listing of remote servers try: telnet meta.xpilot.org 4400 \n");
 
-    exit(1);
-}
+//     exit(1);
+// }
 
 static int Find_resource(XrmDatabase db, const char *resource,
                          char *result, unsigned size, int *index)
@@ -2254,7 +2254,7 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     Get_bool_resource(rDB, "texturedDecor", &instruments.texturedDecor);
 
     Get_bool_resource(rDB, "texturedObjects", &texturedObjects);
-    Get_bool_resource(rDB, "pointerControl", &initialPointerControl);
+    Get_bool_resource(rDB, "pointerControl", &clData.restorePointerControl);
     Get_double_resource(rDB, "showItemsTime", &showItemsTime);
     LIMIT(showItemsTime, MIN_SHOW_ITEMS_TIME, MAX_SHOW_ITEMS_TIME);
 

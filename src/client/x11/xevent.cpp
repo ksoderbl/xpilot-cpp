@@ -60,11 +60,10 @@ extern char *talk_fast_msgs[]; /* talk macros */
 
 // static BITV_DECL(keyv, NUM_KEYS);
 
-bool initialPointerControl = false;
-bool pointerControl = false;
-extern Cursor pointerControlCursor;
+static ipos_t delta;
+ipos_t mousePosition; /* position of mouse pointer. */
+int mouseMovement;    /* horizontal mouse movement. */
 
-//
 keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
     // warn("Lookup_key: event type %d, keysym 0x%03lx, reset %d", event->type, ks, reset);
@@ -134,21 +133,23 @@ keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 
 void Platform_specific_pointer_control_set_state(bool on)
 {
+    // TODO: remove
+    assert(clData.pointerControl != on);
+
     if (on)
     {
-        pointerControl = true;
-        XGrabPointer(dpy, drawWindow, true, 0, GrabModeAsync,
-                     GrabModeAsync, drawWindow, pointerControlCursor, CurrentTime);
+        XGrabPointer(dpy, drawWindow, True, 0, GrabModeAsync,
+                     GrabModeAsync, drawWindow, pointerControlCursor,
+                     CurrentTime);
         XWarpPointer(dpy, None, drawWindow,
                      0, 0, 0, 0,
-                     draw_width / 2, draw_height / 2);
+                     (int)draw_width / 2, (int)draw_height / 2);
         XDefineCursor(dpy, drawWindow, pointerControlCursor);
         XSelectInput(dpy, drawWindow,
                      PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
     }
     else
     {
-        pointerControl = false;
         XUngrabPointer(dpy, CurrentTime);
         XDefineCursor(dpy, drawWindow, None);
         XSelectInput(dpy, drawWindow, ButtonPressMask | ButtonReleaseMask);
@@ -161,24 +162,83 @@ void Platform_specific_talk_set_state(bool on)
 
     if (on)
     {
-        /* Enable talking, disable pointer control if it is enabled. */
-        if (pointerControl)
-        {
-            initialPointerControl = true;
-            Pointer_control_set_state(false);
-        }
-        XSelectInput(dpy, drawWindow, PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
+        // /* Enable talking, disable pointer control if it is enabled. */
+        // if (pointerControl)
+        // {
+        //     initialPointerControl = true;
+        //     Pointer_control_set_state(false);
+        // }
+        XSelectInput(dpy, drawWindow,
+                     PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
         Talk_map_window(true);
     }
     else
     {
         /* Disable talking, enable pointer control if it was enabled. */
         Talk_map_window(false);
-        if (initialPointerControl)
-        {
-            initialPointerControl = false;
-            Pointer_control_set_state(true);
-        }
+        // if (initialPointerControl)
+        // {
+        //     initialPointerControl = false;
+        //     Pointer_control_set_state(true);
+        // }
+    }
+}
+
+void Toggle_fullscreen(void)
+{
+    return;
+}
+
+void Toggle_radar_and_scorelist(void)
+{
+    if (radar_score_mapped)
+    {
+
+        /* change the draw area to be the size of the window */
+        draw_width = top_width;
+        draw_height = top_height;
+
+        /*
+         * We need to unmap the score and radar windows
+         * if config is mapped, leave it there its useful
+         * to have it popped up whilst in full screen
+         * the user can close it with "close"
+         */
+
+        XUnmapWindow(dpy, radarWindow);
+        XUnmapWindow(dpy, playersWindow);
+        Widget_unmap(button_form);
+
+        /* Move the draw area */
+        XMoveWindow(dpy, drawWindow, 0, 0);
+
+        /* Set the global variable to show that */
+        /* the radar and score are now unmapped */
+        radar_score_mapped = false;
+
+        /* Generate resize event */
+        Resize(topWindow, top_width, top_height);
+    }
+    else
+    {
+
+        /*
+         * We need to map the score and radar windows
+         * move the window back, note how 258 is a hard coded
+         * value in xinit.c, if they cant be bothered to declare
+         * a constant, neither can I - kps fix
+         */
+        draw_width = top_width - (258);
+        draw_height = top_height;
+
+        XMoveWindow(dpy, drawWindow, 258, 0);
+        Widget_map(button_form);
+        XMapWindow(dpy, radarWindow);
+        XMapWindow(dpy, playersWindow);
+
+        /* reflect that we are remapped to the client */
+
+        radar_score_mapped = true;
     }
 }
 
@@ -274,44 +334,43 @@ void xevent_keyboard(int queued)
             case MappingNotify:
                 XRefreshKeyboardMapping(&event.xmapping);
                 break;
+
+            default:
+                warn("Unknown event type (%d) in xevent_keyboard",
+                     event.type);
+                break;
             }
         }
     }
 }
 
-ipos_t delta;
-ipos_t mouse; /* position of mouse pointer. */
-int movement; /* horizontal mouse movement. */
-
 void xevent_pointer(void)
 {
     XEvent event;
 
-    if (pointerControl)
-    {
-        if (!clData.talking)
-        {
-            if (movement != 0)
-            {
-                Send_pointer_move(movement);
-                delta.x = draw_width / 2 - mouse.x;
-                delta.y = draw_height / 2 - mouse.y;
-                if (ABS(delta.x) > 3 * draw_width / 8 || ABS(delta.y) > 1 * draw_height / 8)
-                {
+    if (!clData.pointerControl || clData.talking)
+        return;
 
-                    memset(&event, 0, sizeof(event));
-                    event.type = MotionNotify;
-                    event.xmotion.display = dpy;
-                    event.xmotion.window = drawWindow;
-                    event.xmotion.x = draw_width / 2;
-                    event.xmotion.y = draw_height / 2;
-                    XSendEvent(dpy, drawWindow, False, PointerMotionMask, &event);
-                    XWarpPointer(dpy, None, drawWindow,
-                                 0, 0, 0, 0,
-                                 draw_width / 2, draw_height / 2);
-                    XFlush(dpy);
-                }
-            }
+    if (mouseMovement != 0)
+    {
+        Client_pointer_move(mouseMovement);
+        delta.x = draw_width / 2 - mousePosition.x;
+        delta.y = draw_height / 2 - mousePosition.y;
+        if (ABS(delta.x) > 3 * draw_width / 8 || ABS(delta.y) > 1 * draw_height / 8)
+        {
+
+            memset(&event, 0, sizeof(event));
+            event.type = MotionNotify;
+            event.xmotion.display = dpy;
+            event.xmotion.window = drawWindow;
+            event.xmotion.x = draw_width / 2;
+            event.xmotion.y = draw_height / 2;
+            XSendEvent(dpy, drawWindow, False,
+                       PointerMotionMask, &event);
+            XWarpPointer(dpy, None, drawWindow,
+                         0, 0, 0, 0,
+                         (int)draw_width / 2, (int)draw_height / 2);
+            XFlush(dpy);
         }
     }
 }
@@ -325,11 +384,7 @@ int x_event(int new_input)
     audioEvents();
 #endif /* SOUND */
 
-#ifdef JOYSTICK
-    Joystick_event();
-#endif /* JOYSTICK */
-
-    movement = 0;
+    mouseMovement = 0;
 
     switch (new_input)
     {

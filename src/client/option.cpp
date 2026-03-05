@@ -134,45 +134,45 @@ static void Print_default_value(xp_option_t *opt)
     }
 }
 
-// void Usage(void)
-// {
-//     int i;
+void Usage(void)
+{
+    int i;
 
-//     printf("Usage: %s [-options ...] [server]\n"
-//            "Where options include:\n"
-//            "\n",
-//            Program_name());
-//     for (i = 0; i < num_options; i++)
-//     {
-//         xp_option_t *opt = Option_by_index(i);
+    printf("Usage: %s [-options ...] [server]\n"
+           "Where options include:\n"
+           "\n",
+           Program_name());
+    for (i = 0; i < num_options; i++)
+    {
+        xp_option_t *opt = Option_by_index(i);
 
-//         printf("    -%s %s\n", opt->name,
-//                (opt->type != xp_noarg_option) ? "<value>" : "");
-//         if (opt->help && opt->help[0])
-//         {
-//             const char *str;
-//             printf("        ");
-//             for (str = opt->help; *str; str++)
-//             {
-//                 putchar(*str);
-//                 if (*str == '\n' && str[1])
-//                     printf("        ");
-//             }
-//             if (str[-1] != '\n')
-//                 putchar('\n');
-//         }
-//         Print_default_value(opt);
-//         printf("\n");
-//     }
-//     printf("Most of these options can also be set in the .xpilotrc file\n"
-//            "in your home directory.\n"
-//            "Each key option may have multiple keys bound to it and\n"
-//            "one key may be used by multiple key options.\n"
-//            "If no server is specified on the command line, xpilot will\n"
-//            "display a welcome screen where you can select a server.\n");
+        printf("    -%s %s\n", opt->name,
+               (opt->type != xp_noarg_option) ? "<value>" : "");
+        if (opt->help && opt->help[0])
+        {
+            const char *str;
+            printf("        ");
+            for (str = opt->help; *str; str++)
+            {
+                putchar(*str);
+                if (*str == '\n' && str[1])
+                    printf("        ");
+            }
+            if (str[-1] != '\n')
+                putchar('\n');
+        }
+        Print_default_value(opt);
+        printf("\n");
+    }
+    printf("Most of these options can also be set in the .xpilotrc file\n"
+           "in your home directory.\n"
+           "Each key option may have multiple keys bound to it and\n"
+           "one key may be used by multiple key options.\n"
+           "If no server is specified on the command line, xpilot will\n"
+           "display a welcome screen where you can select a server.\n");
 
-//     exit(1);
-// }
+    exit(1);
+}
 
 static void Version(void)
 {

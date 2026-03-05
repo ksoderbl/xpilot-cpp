@@ -84,7 +84,7 @@ static const char *color_defaults[MAX_COLORS] = {
 
 char visualName[MAX_VISUAL_NAME];
 Visual *visual;
-int dispDepth;
+unsigned dispDepth;
 bool fullColor;       /* Whether to try using colors as close to
                        * the specified ones as possible, or just
                        * use a few standard colors for everything. */

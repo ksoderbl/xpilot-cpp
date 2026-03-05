@@ -97,12 +97,13 @@ int ButtonHeight;
 Atom ProtocolAtom, KillAtom;
 int buttonColor, windowColor, borderColor;
 bool quitting = false;
-int top_width, top_height, top_x, top_y, top_posmask;
-// int                        draw_width, draw_height;
-int players_width, players_height;
+int top_x, top_y, top_posmask;
 // char *geometry;
 bool autoServerMotdPopup;
 bool refreshMotd;
+unsigned top_width, top_height;
+unsigned players_width, players_height;
+bool radar_score_mapped;
 Cursor pointerControlCursor;
 char sparkColors[MSG_LEN];
 int spark_color[MAX_COLORS];
@@ -548,6 +549,7 @@ int Init_playing_windows(void)
     radarWindow = XCreateSimpleWindow(dpy, topWindow, 0, 0,
                                       256, RadarHeight, 0, 0,
                                       colors[BLACK].pixel);
+    radar_score_mapped = true;
 
     /* Create buttons */
 #define BUTTON_WIDTH 84
@@ -723,7 +725,10 @@ void Resize(Window w, unsigned width, unsigned height)
         return;
 
     // Draw window does not include the top left radar or the scorelist/config area.
-    draw_width = top_width - 258;
+    if (radar_score_mapped)
+        draw_width = top_width - 258;
+    else
+        draw_width = top_width;
     draw_height = top_height;
 
     std::cout << "Resize: drawWindow size: " << width << "x" << height << std::endl;
