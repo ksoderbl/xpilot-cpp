@@ -528,7 +528,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
      */
     if (!is_team && strchr("DPW", other->mychar))
     {
-        if (other->id == self->id)
+        if (self && other->id == self->id)
             color = scoreInactiveSelfColorRGBA;
         else
             color = scoreInactiveColorRGBA;
@@ -537,7 +537,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
     {
         if (!is_team)
         {
-            if (other->id == self->id)
+            if (self && other->id == self->id)
                 color = scoreSelfColorRGBA;
             else
                 color = scoreColorRGBA;
