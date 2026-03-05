@@ -3,8 +3,8 @@
  *
  * Copyright (C) 2003-2004 by
  *
- *      Juha Lindstr�m       <juhal@users.sourceforge.net>
- *      Darel Cullen         <darelcullen@users.sourceforge.net>
+ *      Juha Lindström
+ *      Darel Cullen
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,15 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+#include <GL/glu.h>
+
+#include <ctime>
+
+#include "meta.h"
+#include "xperror.h"
+
+#include "paint.h"
 
 #include "sdlmeta.h"
 #include "sdlwindow.h"
@@ -114,6 +123,9 @@ typedef struct
     list_t players;
     char *players_str;
 } PlayerListWidget;
+
+/* SDL2: needed for SDL_GL_SwapWindow */
+extern SDL_Window *gWindow;
 
 static void Scroll_PlayerListWidget(GLfloat pos, void *data)
 {
@@ -928,6 +940,7 @@ static void Paint_MetaWidget(GLWidget *widget)
     glVertex2i(b->x + b->w, b->y);
     glTexCoord2f(info->txc.MaxX, info->txc.MaxY);
     glVertex2i(b->x + b->w, b->y + b->h);
+    /* keep original (even though it's suspicious) to avoid changing behavior */
     glTexCoord2f(info->txc.MinY, info->txc.MaxY);
     glVertex2i(b->x, b->y + b->h);
     glEnd();
@@ -1052,7 +1065,7 @@ static bool join_server(Connect_param_t *conpar, server_info_t *sip)
     return false;
 }
 
-static void handleKeyPress(GLWidget *meta, SDL_keysym *keysym)
+static void handleKeyPress(GLWidget *meta, SDL_Keysym *keysym)
 {
     /*static unsigned int row = 1;*/
     SDL_Event evt;
@@ -1101,7 +1114,7 @@ int Meta_window(Connect_param_t *conpar)
     {
 
         Delete_server_list();
-        if ((num_serv = Get_meta_data(err)) <= 0)
+        if ((num_serv = Get_meta_data()) <= 0)
         {
             error("Couldn't get meta list.");
             return -1;
@@ -1124,7 +1137,7 @@ int Meta_window(Connect_param_t *conpar)
     }
     root->bounds.x = root->bounds.y = 0;
     root->bounds.w = draw_width;
-    root->bounds.w = draw_height;
+    root->bounds.h = draw_height; /* SDL2 fix: was mistakenly assigning w twice */
 
     if (!(meta = Init_MetaWidget(server_list)))
     {
@@ -1198,7 +1211,10 @@ int Meta_window(Connect_param_t *conpar)
         glEnable(GL_SCISSOR_TEST);
         DrawGLWidgetsi(meta, 0, 0, draw_width, draw_height);
         glDisable(GL_SCISSOR_TEST);
-        SDL_GL_SwapBuffers();
+
+        /* SDL2: SDL_GL_SwapBuffers() removed */
+        if (gWindow)
+            SDL_GL_SwapWindow(gWindow);
 
         SDL_WaitEvent(&evt);
         do
@@ -1270,16 +1286,21 @@ int Meta_window(Connect_param_t *conpar)
                                    target->motiondata);
                 break;
 
-            case SDL_VIDEOEXPOSE:
-                glDisable(GL_SCISSOR_TEST);
-                set_alphacolor(blackRGBA);
-                glBegin(GL_QUADS);
-                glVertex2i(0, 0);
-                glVertex2i(draw_width, 0);
-                glVertex2i(draw_width, draw_height);
-                glVertex2i(0, draw_height);
-                glEnd();
-                glEnable(GL_SCISSOR_TEST);
+            /* SDL2 replacement for SDL_VIDEOEXPOSE */
+            case SDL_WINDOWEVENT:
+                if (evt.window.event == SDL_WINDOWEVENT_EXPOSED ||
+                    evt.window.event == SDL_WINDOWEVENT_SHOWN)
+                {
+                    glDisable(GL_SCISSOR_TEST);
+                    set_alphacolor(blackRGBA);
+                    glBegin(GL_QUADS);
+                    glVertex2i(0, 0);
+                    glVertex2i(draw_width, 0);
+                    glVertex2i(draw_width, draw_height);
+                    glVertex2i(0, draw_height);
+                    glEnd();
+                    glEnable(GL_SCISSOR_TEST);
+                }
                 break;
             }
         } while (SDL_PollEvent(&evt));
