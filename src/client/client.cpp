@@ -2470,3 +2470,13 @@ int Client_wrap_mode(void)
 {
     return (BIT(Setup->mode, WRAP_PLAY) != 0);
 }
+
+/*
+ * Exit the entire client.
+ */
+void Client_exit(int status)
+{
+    Net_cleanup();
+    Client_cleanup();
+    exit(status);
+}

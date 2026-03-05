@@ -1,8 +1,8 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client. Copyright (C) 2003-2004 by
  *
- *     Juha Lindstr�m <juhal@users.sourceforge.net>
- *     Erik Andersson <deity_at_home.se>
+ *     Juha Lindström
+ *     Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,25 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+
+#ifdef HAVE_XF86MISC
+#include <SDL2/SDL_syswm.h>
+#endif
+
+#include "client.h"
+#include "netclient.h"
+#include "paint.h"
 
 #include "sdlinit.h"
 #include "sdlkeys.h"
 #include "console.h"
 #include "sdlpaint.h"
 #include "glwidgets.h"
-#include "../xhacks.h"
+// #include "../xhacks.h"
 
 /* TODO: remove these from client.h and put them in *event.h */
 bool initialPointerControl = false;
@@ -34,7 +45,18 @@ bool initialPointerControl = false;
 static int mouseMovement; /* horizontal mouse movement. */
 
 GLWidget *clicktarget[NUM_MOUSE_BUTTONS];
-GLWidget *hovertarget = NULL;
+GLWidget *hovertarget = nullptr;
+
+/*
+ * SDL2 note:
+ * - SDL_WM_GrabInput() is gone. Use SDL_SetWindowGrab() and typically
+ *   SDL_SetRelativeMouseMode() for FPS-style pointer control.
+ * - SDL_VIDEORESIZE is gone. Use SDL_WINDOWEVENT + SDL_WINDOWEVENT_RESIZED/SIZE_CHANGED.
+ *
+ * This file assumes you have an SDL_Window* somewhere globally accessible.
+ * Hook this up to whatever your codebase uses (e.g. the one created in sdlinit.cpp).
+ */
+extern SDL_Window *gWindow;
 
 int Process_event(SDL_Event *evt);
 
@@ -45,21 +67,32 @@ void Platform_specific_pointer_control_set_state(bool on)
     if (on)
     {
         MainWidget_ShowMenu(MainWidget, false);
-        SDL_WM_GrabInput(SDL_GRAB_ON);
+
+        if (gWindow)
+            SDL_SetWindowGrab(gWindow, SDL_TRUE);
+
+        /* Relative mode gives xrel/yrel even if the cursor would hit screen edges. */
+        SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_ShowCursor(SDL_DISABLE);
     }
     else
     {
         MainWidget_ShowMenu(MainWidget, true);
-        SDL_WM_GrabInput(SDL_GRAB_OFF);
+
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+
+        if (gWindow)
+            SDL_SetWindowGrab(gWindow, SDL_FALSE);
+
         SDL_ShowCursor(SDL_ENABLE);
     }
 
 #ifdef HAVE_XF86MISC
+    if (gWindow)
     {
         SDL_SysWMinfo info;
         SDL_VERSION(&info.version);
-        if (SDL_GetWMInfo(&info) > 0)
+        if (SDL_GetWindowWMInfo(gWindow, &info) == SDL_TRUE)
             Disable_emulate3buttons(on, info.info.x11.display);
     }
 #endif
@@ -99,9 +132,21 @@ void Toggle_fullscreen(void)
         initial_h = draw_height;
     }
 
-    if (videoFlags & SDL_FULLSCREEN)
+    if (!gWindow)
     {
-        videoFlags ^= SDL_FULLSCREEN;
+        Add_message("No SDL window available. [*Client reply*]");
+        return;
+    }
+
+    /* SDL2: fullscreen is a window flag; SDL_FULLSCREEN from SDL1.2 isn't used the same way. */
+    const Uint32 wf = SDL_GetWindowFlags(gWindow);
+    const bool isFullscreen = (wf & SDL_WINDOW_FULLSCREEN) || (wf & SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    if (isFullscreen)
+    {
+        videoFlags &= ~SDL_FULLSCREEN;
+
+        SDL_SetWindowFullscreen(gWindow, 0);
         Resize_Window(initial_w, initial_h);
         return;
     }
@@ -109,11 +154,18 @@ void Toggle_fullscreen(void)
     w = initial_w = draw_width;
     h = initial_h = draw_height;
 
-    videoFlags ^= SDL_FULLSCREEN;
-    if (Resize_Window(w, h) == 0)
-        return;
+    videoFlags |= SDL_FULLSCREEN;
 
-    videoFlags ^= SDL_FULLSCREEN;
+    /* Use DESKTOP to avoid mode switches (closest to SDL1.2 "toggle" UX). */
+    if (SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) == 0)
+    {
+        if (Resize_Window(w, h) == 0)
+            return;
+    }
+
+    /* Revert on failure */
+    videoFlags &= ~SDL_FULLSCREEN;
+    SDL_SetWindowFullscreen(gWindow, 0);
     Resize_Window(initial_w, initial_h);
     Add_message("Failed to change video mode. [*Client reply*]");
 }
@@ -156,13 +208,16 @@ int Process_event(SDL_Event *evt)
         button = evt->button.button;
         if (!clData.pointerControl)
         {
-            if ((clicktarget[button - 1] = FindGLWidget(MainWidget, evt->button.x, evt->button.y)))
+            if (button >= 1 && button <= NUM_MOUSE_BUTTONS)
             {
-                if (clicktarget[button - 1]->button)
+                if ((clicktarget[button - 1] = FindGLWidget(MainWidget, evt->button.x, evt->button.y)))
                 {
-                    clicktarget[button - 1]->button(button, evt->button.state,
-                                                    evt->button.x, evt->button.y,
-                                                    clicktarget[button - 1]->buttondata);
+                    if (clicktarget[button - 1]->button)
+                    {
+                        clicktarget[button - 1]->button(button, evt->button.state,
+                                                        evt->button.x, evt->button.y,
+                                                        clicktarget[button - 1]->buttondata);
+                    }
                 }
             }
         }
@@ -187,22 +242,22 @@ int Process_event(SDL_Event *evt)
                 if (clicktarget[0]->motion)
                 {
                     clicktarget[0]->motion(evt->motion.xrel, evt->motion.yrel,
-                                           evt->button.x, evt->button.y,
+                                           evt->motion.x, evt->motion.y,
                                            clicktarget[0]->motiondata);
                 }
             }
             else
             {
-                GLWidget *tmp = FindGLWidget(MainWidget, evt->button.x, evt->button.y);
+                GLWidget *tmp = FindGLWidget(MainWidget, evt->motion.x, evt->motion.y);
                 if (tmp != hovertarget)
                 {
                     if (hovertarget && hovertarget->hover)
                     {
-                        hovertarget->hover(false, evt->button.x, evt->button.y, hovertarget->hoverdata);
+                        hovertarget->hover(false, evt->motion.x, evt->motion.y, hovertarget->hoverdata);
                     }
-                    tmp = FindGLWidget(MainWidget, evt->button.x, evt->button.y);
+                    tmp = FindGLWidget(MainWidget, evt->motion.x, evt->motion.y);
                     if (tmp && tmp->hover)
-                        tmp->hover(true, evt->button.x, evt->button.y, tmp->hoverdata);
+                        tmp->hover(true, evt->motion.x, evt->motion.y, tmp->hoverdata);
                     hovertarget = tmp;
                 }
             }
@@ -217,21 +272,29 @@ int Process_event(SDL_Event *evt)
         }
         else
         {
-            if (clicktarget[button - 1])
+            if (button >= 1 && button <= NUM_MOUSE_BUTTONS)
             {
-                if (clicktarget[button - 1]->button)
+                if (clicktarget[button - 1])
                 {
-                    clicktarget[button - 1]->button(button, evt->button.state,
-                                                    evt->button.x, evt->button.y,
-                                                    clicktarget[button - 1]->buttondata);
+                    if (clicktarget[button - 1]->button)
+                    {
+                        clicktarget[button - 1]->button(button, evt->button.state,
+                                                        evt->button.x, evt->button.y,
+                                                        clicktarget[button - 1]->buttondata);
+                    }
+                    clicktarget[button - 1] = nullptr;
                 }
-                clicktarget[button - 1] = NULL;
             }
         }
         break;
 
-    case SDL_VIDEORESIZE:
-        Resize_Window(evt->resize.w, evt->resize.h);
+    /* SDL2 replacement for SDL_VIDEORESIZE */
+    case SDL_WINDOWEVENT:
+        if (evt->window.event == SDL_WINDOWEVENT_RESIZED ||
+            evt->window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+        {
+            Resize_Window(evt->window.data1, evt->window.data2);
+        }
         break;
 
     default:
