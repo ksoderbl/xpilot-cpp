@@ -27,6 +27,8 @@
 #include "xperror.h"
 #include "strdup.h"
 
+// TODO: merge this into xpmemory files.
+
 char *xp_strdup(const char *old_string)
 {
     char *new_string;

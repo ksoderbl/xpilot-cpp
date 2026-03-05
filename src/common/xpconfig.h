@@ -39,9 +39,9 @@
 #define CONF_DEFAULT_MAP "globe.xp"
 #endif
 
-// #ifndef CONF_DATADIR
-// #define CONF_DATADIR "/usr/local/games/lib/xpilot/"
-// #endif
+#ifndef CONF_DATADIR
+#define CONF_DATADIR "/usr/local/games/lib/xpilot/"
+#endif
 
 #ifndef CONF_MAPDIR
 #define CONF_MAPDIR CONF_DATADIR "maps/"

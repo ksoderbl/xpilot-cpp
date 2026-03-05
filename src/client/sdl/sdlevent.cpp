@@ -120,11 +120,9 @@ void Toggle_radar_and_scorelist(void)
 }
 
 #ifndef _WINDOWS
-extern int videoFlags;
 void Toggle_fullscreen(void)
 {
     static int initial_w = -1, initial_h = -1;
-    int w, h;
 
     if (initial_w == -1)
     {
@@ -138,33 +136,29 @@ void Toggle_fullscreen(void)
         return;
     }
 
-    /* SDL2: fullscreen is a window flag; SDL_FULLSCREEN from SDL1.2 isn't used the same way. */
+    /* SDL2: detect fullscreen from the window flags (no legacy SDL_FULLSCREEN needed). */
     const Uint32 wf = SDL_GetWindowFlags(gWindow);
     const bool isFullscreen = (wf & SDL_WINDOW_FULLSCREEN) || (wf & SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     if (isFullscreen)
     {
-        videoFlags &= ~SDL_FULLSCREEN;
-
         SDL_SetWindowFullscreen(gWindow, 0);
         Resize_Window(initial_w, initial_h);
         return;
     }
 
-    w = initial_w = draw_width;
-    h = initial_h = draw_height;
-
-    videoFlags |= SDL_FULLSCREEN;
+    /* Remember the size we are toggling from (windowed size). */
+    initial_w = draw_width;
+    initial_h = draw_height;
 
     /* Use DESKTOP to avoid mode switches (closest to SDL1.2 "toggle" UX). */
     if (SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) == 0)
     {
-        if (Resize_Window(w, h) == 0)
-            return;
+        /* Let the window manager decide the fullscreen size; SDL_WINDOWEVENT will trigger Resize_Window. */
+        return;
     }
 
     /* Revert on failure */
-    videoFlags &= ~SDL_FULLSCREEN;
     SDL_SetWindowFullscreen(gWindow, 0);
     Resize_Window(initial_w, initial_h);
     Add_message("Failed to change video mode. [*Client reply*]");

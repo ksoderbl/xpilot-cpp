@@ -1,9 +1,9 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client. Copyright (C) 2003-2004 by
  *
- *      Juha Lindstr�m       <juhal@users.sourceforge.net>
- *      Erik Andersson       <deity_at_home.se>
- *      Darel Cullen         <darelcullen@users.sourceforge.net>
+ *      Juha Lindström
+ *      Erik Andersson
+ *      Darel Cullen
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,23 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_ttf.h>
+#include <GL/glu.h>
+
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+
+#include "version.h"
+#include "xpconfig.h"
+
+#include "commonmacros.h"
+#include "xperror.h"
+#include "xpmemory.h"
+#include "strdup.h"
+
+#include "paint.h"
 
 #include "text.h"
 #include "console.h"
@@ -39,18 +56,40 @@ extern void Gui_cleanup(void);
 
 int draw_depth;
 
-/* This holds video information assigned at initialise */
-const SDL_VideoInfo *videoInfo;
+static SDL_DisplayMode gDesktopMode{};
 
-/* Flags to pass to SDL_SetVideoMode */
+static bool Init_desktop_display_mode()
+{
+    if (SDL_GetDesktopDisplayMode(0, &gDesktopMode) != 0)
+    {
+        error("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+        return false;
+    }
+    return true;
+}
+
+/* Flags: in SDL2 we no longer pass these to SDL_SetVideoMode.
+ * Keep videoFlags as a legacy "our own" bitmask if other code expects it.
+ */
 int videoFlags;
-SDL_Surface *MainSDLSurface = NULL;
+
+/* SDL2: SDL_Surface* from SDL_SetVideoMode no longer exists for OpenGL windows. */
+SDL_Surface *MainSDLSurface = nullptr;
+
+/* SDL2 window + GL context */
+SDL_Window *gWindow = nullptr;
+SDL_GLContext gGLContext = nullptr;
 
 font_data gamefont;
 font_data mapfont;
 int gameFontSize;
 int mapFontSize;
 char *gamefontname;
+
+/* SDL1.2 compatibility: SDL_FULLSCREEN is not defined in SDL2. We keep it as our own bit. */
+#ifndef SDL_FULLSCREEN
+#define SDL_FULLSCREEN 0x00000001
+#endif
 
 /* ugly kps hack */
 static bool file_exists(const char *path)
@@ -98,32 +137,49 @@ int Init_playing_windows(void)
     return 0;
 }
 
+/* SDL2 replacement for SDL_ListModes + closest match logic */
 static bool find_size(int *w, int *h)
 {
-    SDL_Rect **modes, *m;
-    int i, d, best_i, best_d;
-
-    modes = SDL_ListModes(NULL, videoFlags);
-    if (modes == NULL)
+    if (!w || !h || *w <= 0 || *h <= 0)
         return false;
-    if (modes == (SDL_Rect **)-1)
-        return true;
 
-    best_i = 0;
-    best_d = INT_MAX;
-    for (i = 0; modes[i]; i++)
-    {
-        m = modes[i];
-        d = (m->w - *w) * (m->w - *w) + (m->h - *h) * (m->h - *h);
-        if (d < best_d)
-        {
-            best_d = d;
-            best_i = i;
-        }
-    }
-    *w = modes[best_i]->w;
-    *h = modes[best_i]->h;
+    int displayIndex = 0;
+    if (gWindow)
+        displayIndex = SDL_GetWindowDisplayIndex(gWindow);
+
+    if (displayIndex < 0)
+        displayIndex = 0;
+
+    SDL_DisplayMode target{};
+    target.w = *w;
+    target.h = *h;
+    target.format = 0;
+    target.refresh_rate = 0;
+    target.driverdata = nullptr;
+
+    SDL_DisplayMode closest{};
+    if (SDL_GetClosestDisplayMode(displayIndex, &target, &closest) == nullptr)
+        return false;
+
+    *w = closest.w;
+    *h = closest.h;
     return true;
+}
+
+static void apply_gl_state_after_resize()
+{
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glViewport(0, 0, draw_width, draw_height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, draw_width, 0, draw_height);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int Init_window(void)
@@ -134,62 +190,82 @@ int Init_window(void)
 
     if (TTF_Init())
     {
-        error("SDL_ttf initialization failed: %s", SDL_GetError());
+        error("SDL_ttf initialization failed: %s", TTF_GetError());
         return -1;
     }
     warn("SDL_ttf initialized.\n");
 
     Conf_print();
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         error("failed to initialize SDL: %s", SDL_GetError());
         return -1;
     }
 
-    atexit(SDL_Quit);
+    (void)Init_desktop_display_mode();
 
-    /* Fetch the video info */
-    videoInfo = SDL_GetVideoInfo();
+    atexit(SDL_Quit);
 
     num_spark_colors = 8;
 
-    /* the flags to pass to SDL_SetVideoMode */
-    videoFlags = SDL_OPENGL;           /* Enable OpenGL in SDL          */
-    videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering       */
-    videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
+    /* legacy flags: keep around, but don't pass to SDL2 to create the GL window */
+    videoFlags = 0;
 #ifndef _WINDOWS
-    videoFlags |= SDL_RESIZABLE; /* Enable window resizing        */
+    /* Resizable window in SDL2 is a window flag. Keep legacy marker off here. */
 #else
     videoFlags |= SDL_FULLSCREEN;
 #endif
 
-    /** This checks to see if surfaces can be stored in memory */
-    if (videoInfo->hw_available)
-        videoFlags |= SDL_HWSURFACE;
-    else
-        videoFlags |= SDL_SWSURFACE;
-
-    /* This checks if hardware blits can be done */
-    if (videoInfo->blit_hw)
-        videoFlags |= SDL_HWACCEL;
-
-    draw_depth = videoInfo->vfmt->BitsPerPixel;
+    /* SDL2: choose a sane default "depth" for old code paths */
+    draw_depth = 32;
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    if (videoFlags & SDL_FULLSCREEN)
-        if (!find_size((int *)&draw_width, (int *)&draw_height))
-            videoFlags ^= SDL_FULLSCREEN;
+    /* SDL2 window flags */
+    Uint32 windowFlags = SDL_WINDOW_OPENGL;
+#ifndef _WINDOWS
+    windowFlags |= SDL_WINDOW_RESIZABLE;
+#endif
 
-    if ((MainSDLSurface = SDL_SetVideoMode(draw_width,
-                                           draw_height,
-                                           draw_depth,
-                                           videoFlags)) == NULL)
+    if (videoFlags & SDL_FULLSCREEN)
     {
-        error("Could not find a valid GLX visual for your display");
+        /* match old Windows behavior */
+        windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+        /* If you still want "closest mode" behavior, keep the find_size call. */
+        if (!find_size((int *)&draw_width, (int *)&draw_height))
+        {
+            videoFlags ^= SDL_FULLSCREEN;
+            windowFlags &= ~SDL_WINDOW_FULLSCREEN_DESKTOP;
+        }
+    }
+
+    gWindow = SDL_CreateWindow(
+        TITLE,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        draw_width,
+        draw_height,
+        windowFlags);
+
+    if (!gWindow)
+    {
+        error("Could not create SDL2 window: %s", SDL_GetError());
         return -1;
     }
+
+    gGLContext = SDL_GL_CreateContext(gWindow);
+    if (!gGLContext)
+    {
+        error("Could not create OpenGL context: %s", SDL_GetError());
+        return -1;
+    }
+
+    SDL_GL_MakeCurrent(gWindow, gGLContext);
+
+    /* Optional: enable vsync if available */
+    (void)SDL_GL_SetSwapInterval(1);
 
     SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &value);
     printf("RGB bpp %d/", value);
@@ -200,16 +276,10 @@ int Init_window(void)
     SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &value);
     printf("Bit Depth is %d\n", value);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glViewport(0, 0, draw_width, draw_height);
-    glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0, draw_width, 0, draw_height);
-    glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    apply_gl_state_after_resize();
 
-    /* Set title for window */
-    SDL_WM_SetCaption(TITLE, NULL);
+    /* SDL2 replacement for SDL_WM_SetCaption */
+    SDL_SetWindowTitle(gWindow, TITLE);
 
     /* this prevents a freetype crash if you pass non existant fonts */
     if (!file_exists(gamefontname))
@@ -307,27 +377,14 @@ int Resize_Window(int width, int height)
 
     SetBounds_GLWidget(MainWidget, &b);
 
-    if (!SDL_SetVideoMode(width,
-                          height,
-                          draw_depth,
-                          videoFlags))
+    /* SDL2: replace SDL_SetVideoMode with SDL_SetWindowSize */
+    if (!gWindow)
         return -1;
 
-    /* change to the projection matrix and set our viewing volume. */
-    glMatrixMode(GL_PROJECTION);
+    SDL_SetWindowSize(gWindow, width, height);
 
-    glLoadIdentity();
-
-    gluOrtho2D(0, draw_width, 0, draw_height);
-
-    /* Make sure we're chaning the model view and not the projection */
-    glMatrixMode(GL_MODELVIEW);
-
-    /* Reset The View */
-    glLoadIdentity();
-
-    /* Setup our viewport. */
-    glViewport(0, 0, (GLint)draw_width, (GLint)draw_height);
+    /* Re-apply projection + viewport */
+    apply_gl_state_after_resize();
     return 0;
 }
 
@@ -339,6 +396,18 @@ void Platform_specific_cleanup(void)
     fontclean(&gamefont);
     fontclean(&mapfont);
     TTF_Quit();
+
+    if (gGLContext)
+    {
+        SDL_GL_DeleteContext(gGLContext);
+        gGLContext = nullptr;
+    }
+    if (gWindow)
+    {
+        SDL_DestroyWindow(gWindow);
+        gWindow = nullptr;
+    }
+
     SDL_Quit();
 }
 
@@ -356,7 +425,7 @@ static bool Set_geometry(xp_option_t *opt, const char *s)
     }
     if (w == 0 || h == 0)
         return false;
-    if (MainSDLSurface != NULL)
+    if (gWindow != nullptr)
     {
         Resize_Window(w, h);
     }
@@ -377,7 +446,6 @@ static const char *Get_geometry(xp_option_t *opt)
 
 static bool Set_fontName(xp_option_t *opt, const char *value)
 {
-    UNUSED_PARAM(opt);
     XFREE(gamefontname);
     gamefontname = xp_safe_strdup(value);
 
@@ -386,7 +454,6 @@ static bool Set_fontName(xp_option_t *opt, const char *value)
 
 static const char *Get_fontName(xp_option_t *opt)
 {
-    UNUSED_PARAM(opt);
     return gamefontname;
 }
 
