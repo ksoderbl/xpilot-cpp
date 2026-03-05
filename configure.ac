@@ -131,22 +131,23 @@ AM_CONDITIONAL([COND_SDL_CLIENT], [test x$enable_sdl_client = xyes])
 AM_CONDITIONAL([COND_SDL_GAMELOOP], [test x$enable_sdl_gameloop = xyes])
 
 AC_CONFIG_FILES([
-	Makefile
-	contrib/Makefile
-	doc/Makefile
-	lib/Makefile
-	lib/maps/Makefile
-	lib/textures/Makefile
-	src/Makefile
-	src/common/Makefile
-	src/client/Makefile
-	src/client/items/Makefile
-	src/client/x11/Makefile
-	src/client/sdl/Makefile
-	src/server/Makefile
-	src/replay/Makefile
-	src/replay/tools/Makefile
-	src/mapedit/Makefile
+  Makefile
+  contrib/Makefile
+  doc/Makefile
+  lib/Makefile
+  lib/fonts/Makefile
+  lib/maps/Makefile
+  lib/textures/Makefile
+  src/Makefile
+  src/common/Makefile
+  src/client/Makefile
+  src/client/items/Makefile
+  src/client/x11/Makefile
+  src/client/sdl/Makefile
+  src/server/Makefile
+  src/replay/Makefile
+  src/replay/tools/Makefile
+  src/mapedit/Makefile
 ])
 AC_OUTPUT
 

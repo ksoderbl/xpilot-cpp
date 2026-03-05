@@ -1,9 +1,13 @@
 
 xpilottexturesdir =  $(pkgdatadir)/textures
 xpilottextures_DATA = \
+	acwise_grav.ppm \
 	allitems.ppm \
+	asteroid.ppm \
 	asteroidconcentrator.ppm \
 	ball.ppm \
+	ball_gray.ppm \
+	ball_gray16.ppm \
 	base_down.ppm \
 	base_left.ppm \
 	base_right.ppm \
@@ -19,27 +23,41 @@ xpilottextures_DATA = \
 	checkpoint.ppm \
 	clouds.ppm \
 	concentrator.ppm \
+	cwise_grav.ppm \
 	fuel2.ppm \
 	fuelcell.ppm \
 	holder1.ppm \
 	holder2.ppm \
+	huditems.ppm \
 	logo.ppm \
+	metabtndown.png \
+	metabtnup.png \
+	metalite.ppm \
 	meter.ppm \
 	mine_other.ppm \
 	mine_team.ppm \
 	minus.ppm \
+	missile.ppm \
+	moon.ppm \
 	paused.ppm \
 	plus.ppm \
 	radar.ppm \
 	radar2.ppm \
 	radar3.ppm \
 	refuel.ppm \
+	rock4.ppm \
+	sdlmetabg.png \
+	shield.ppm \
 	ship.ppm \
+	ship_enemy.ppm \
+	ship_friend.ppm \
 	ship_blue.ppm \
 	ship_red.ppm \
 	ship_red2.ppm \
 	ship_red3.ppm \
 	sparks.ppm \
+	target.ppm \
+	volcanic.ppm \
 	wall_bottom.ppm \
 	wall_dl.ppm \
 	wall_dr.ppm \
