@@ -74,7 +74,7 @@ double WINSCALE(double x)
     if (x < 0)
         retval = -WINSCALE(-x);
     else
-        retval = (int)floor(x * clData.scaleMultFactor + 0.5);
+        retval = (int)floor(x * clData.scale + 0.5);
 
     if (oldx != retval)
         warn("WINSCALE, x = %f, old = %d", x, oldx);
@@ -90,13 +90,13 @@ static void Init_scale_array(void)
         clData.scaleFactor = MIN_SCALEFACTOR;
     if (clData.scaleFactor > MAX_SCALEFACTOR)
         clData.scaleFactor = MAX_SCALEFACTOR;
-    clData.scaleMultFactor = 1.0 / clData.scaleFactor;
+    clData.scale = 1.0 / clData.scaleFactor;
 
     scaleArray[0] = 0;
 
     for (i = 1; i < NELEM(scaleArray); i++)
     {
-        n = (int)floor(i * clData.scaleMultFactor + 0.5);
+        n = (int)floor(i * clData.scale + 0.5);
         if (n == 0)
         {
             /* keep values for non-zero indices at least 1. */
@@ -111,7 +111,7 @@ static void Init_scale_array(void)
 
     for (i = NELEM(scaleArray) - 1; i >= 0; i--)
     {
-        n = (int)floor(i * clData.scaleMultFactor + 0.5);
+        n = (int)floor(i * clData.scale + 0.5);
         if (n > 32767)
         {
             /* keep values lower or equal to max short. */
@@ -126,7 +126,7 @@ static void Init_scale_array(void)
 
     for (i = start; i <= end; i++)
     {
-        scaleArray[i] = (int)floor(i * clData.scaleMultFactor + 0.5);
+        scaleArray[i] = (int)floor(i * clData.scale + 0.5);
     }
 
     /* verify correct calculations, because of reported gcc optimization bugs. */
@@ -160,7 +160,7 @@ int Check_view_dimensions_old(void)
         clData.scaleFactor = MIN_SCALEFACTOR;
     if (clData.scaleFactor > MAX_SCALEFACTOR)
         clData.scaleFactor = MAX_SCALEFACTOR;
-    clData.scaleMultFactor = 1.0 / clData.scaleFactor;
+    clData.scale = 1.0 / clData.scaleFactor;
 
     if (!scaleArrayInitialized)
     {

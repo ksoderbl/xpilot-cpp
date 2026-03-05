@@ -132,7 +132,7 @@ keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
     return ret;
 }
 
-void Pointer_control_set_state(bool on)
+void Platform_specific_pointer_control_set_state(bool on)
 {
     if (on)
     {
@@ -156,7 +156,7 @@ void Pointer_control_set_state(bool on)
     XFlush(dpy);
 }
 
-void Talk_set_state(bool on)
+void Platform_specific_talk_set_state(bool on)
 {
 
     if (on)
@@ -224,9 +224,7 @@ void Key_event(XEvent *event)
 void Talk_event(XEvent *event)
 {
     if (!Talk_do_event(event))
-    {
         Talk_set_state(false);
-    }
 }
 
 int talk_key_repeating;

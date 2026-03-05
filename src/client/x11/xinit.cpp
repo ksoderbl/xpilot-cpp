@@ -767,18 +767,12 @@ void Platform_specific_cleanup(void)
             kdpy = NULL;
         }
     }
-    Free_msgs();
     Widget_cleanup();
 }
 
 int FatalError(Display *display)
 {
-    Net_cleanup();
-    /*
-     * Quit(&client);
-     * It's already a fatal I/O error, nothing to cleanup.
-     */
-    exit(0);
+    Client_exit(0);
     /* make complier not warn */
     return 0;
 }

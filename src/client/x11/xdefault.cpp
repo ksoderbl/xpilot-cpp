@@ -2981,7 +2981,8 @@ void Handle_X_options(void)
 bool Set_scaleFactor(xp_option_t *opt, double val)
 {
     clData.scaleFactor = val;
-    clData.scaleMultFactor = 1.0 / val;
+    clData.scale = 1.0 / val;
+    clData.fscale = (float)clData.scale;
     /* Resize removed because it is not needed here */
     Scale_dashes();
     Config_redraw();

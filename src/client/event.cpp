@@ -50,16 +50,16 @@
 #define MAX_BUTTON_DEFS 10
 
 BITV_DECL(keyv, NUM_KEYS);
-// static uint8_t keyv_new[NUM_KEYS];
+static uint8_t keyv_new[NUM_KEYS];
 
 keys_t todoButtonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
 
 char *pointerButtonBindings[MAX_POINTER_BUTTONS] =
     {NULL, NULL, NULL, NULL, NULL};
 
-// static int Key_get_count(keys_t key);
-// static bool Key_inc_count(keys_t key);
-// static bool Key_dec_count(keys_t key);
+static int Key_get_count(keys_t key);
+static bool Key_inc_count(keys_t key);
+static bool Key_dec_count(keys_t key);
 
 // void Pointer_control_newbie_message(void)
 // {
@@ -90,41 +90,41 @@ char *pointerButtonBindings[MAX_POINTER_BUTTONS] =
 //     // Add_newbie_message(msg); // TODO
 // }
 
-// // void Pointer_control_set_state(bool on)
-// // {
-// //     if (clData.pointerControl == on)
-// //         return;
-// //     Platform_specific_pointer_control_set_state(on);
-// //     clData.pointerControl = on;
-// //     if (!clData.restorePointerControl)
-// //         Pointer_control_newbie_message();
-// // }
+void Pointer_control_set_state(bool on)
+{
+    if (clData.pointerControl == on)
+        return;
+    Platform_specific_pointer_control_set_state(on);
+    clData.pointerControl = on;
+    // if (!clData.restorePointerControl)
+    //     Pointer_control_newbie_message();
+}
 
-// // void Talk_set_state(bool on)
-// // {
-// //     if (clData.talking == on)
-// //         return;
-// //     if (on)
-// //     {
-// //         /* When enabling talking, disable pointer control if it is enabled. */
-// //         if (clData.pointerControl)
-// //         {
-// //             clData.restorePointerControl = true;
-// //             Pointer_control_set_state(false);
-// //         }
-// //     }
-// //     Platform_specific_talk_set_state(on);
-// //     if (!on)
-// //     {
-// //         /* When disabling talking, enable pointer control if it was enabled. */
-// //         if (clData.restorePointerControl)
-// //         {
-// //             Pointer_control_set_state(true);
-// //             clData.restorePointerControl = false;
-// //         }
-// //     }
-// //     clData.talking = on;
-// // }
+void Talk_set_state(bool on)
+{
+    //     if (clData.talking == on)
+    //         return;
+    //     if (on)
+    //     {
+    //         /* When enabling talking, disable pointer control if it is enabled. */
+    //         if (clData.pointerControl)
+    //         {
+    //             clData.restorePointerControl = true;
+    //             Pointer_control_set_state(false);
+    //         }
+    //     }
+    Platform_specific_talk_set_state(on);
+    //     if (!on)
+    //     {
+    //         /* When disabling talking, enable pointer control if it was enabled. */
+    //         if (clData.restorePointerControl)
+    //         {
+    //             Pointer_control_set_state(true);
+    //             clData.restorePointerControl = false;
+    //         }
+    //     }
+    //     clData.talking = on;
+}
 
 static inline int pointer_button_index_by_option(xp_option_t *opt)
 {
@@ -170,14 +170,19 @@ static void Clear_buttonDefs(int ind)
 
 int Key_init(void)
 {
+    int i;
+
     if (sizeof(keyv) != KEYBOARD_SIZE)
     {
-        error("%s, %d: keyv size %d, KEYBOARD_SIZE is %d",
-              __FILE__, __LINE__,
-              sizeof(keyv), KEYBOARD_SIZE);
+        warn("%s, %d: keyv size %d, KEYBOARD_SIZE is %d",
+             __FILE__, __LINE__,
+             sizeof(keyv), KEYBOARD_SIZE);
         exit(1);
     }
     memset(keyv, 0, sizeof keyv);
+    for (i = 0; i < NUM_KEYS; i++)
+        keyv_new[i] = 0;
+
     BITV_SET(keyv, KEY_SHIELD);
 
     return 0;
@@ -430,38 +435,38 @@ static bool Key_press_no(void)
 //     return false;
 // }
 
-// static bool Key_dec_count(keys_t key)
-// {
-//     if (key >= NUM_KEYS)
-//         return false;
+static bool Key_dec_count(keys_t key)
+{
+    if (key >= NUM_KEYS)
+        return false;
 
-//     if (keyv_new[key] > 0)
-//     {
-//         --keyv_new[key];
-//         return true;
-//     }
+    if (keyv_new[key] > 0)
+    {
+        --keyv_new[key];
+        return true;
+    }
 
-//     return false;
-// }
+    return false;
+}
 
-// // void Key_clear_counts(void)
-// // {
-// //     int i;
-// //     bool change = false;
+void Key_clear_counts(void)
+{
+    int i;
+    bool change = false;
 
-// //     for (i = 0; i < NUM_KEYS; i++)
-// //     {
-// //         if (keyv_new[i] > 0)
-// //         {
-// //             /* set to one so that Key_release(i) will trigger */
-// //             keyv_new[i] = 1;
-// //             change |= Key_release((keys_t)i);
-// //         }
-// //     }
+    for (i = 0; i < NUM_KEYS; i++)
+    {
+        if (keyv_new[i] > 0)
+        {
+            /* set to one so that Key_release(i) will trigger */
+            keyv_new[i] = 1;
+            change |= Key_release((keys_t)i);
+        }
+    }
 
-// //     if (change)
-// //         Net_key_change();
-// // }
+    if (change)
+        Net_key_change();
+}
 
 // /* Remember which key we used to exit quit mode. */
 // static keys_t quit_mode_exit_key = KEY_DUMMY;
