@@ -547,7 +547,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
             color = Team_color(other->team);
             if (!color)
             {
-                if (other->team == self->team)
+                if (self && other->team == self->team)
                     color = scoreOwnTeamColorRGBA;
                 else
                     color = scoreEnemyTeamColorRGBA;
