@@ -1266,33 +1266,33 @@ xp_option_t default_options[] = {
         "and Ship Shaper for Java.  See the XPilot FAQ for details.\n"
         "See also the \"shipShapeFile\" option below.\n"),
 
-// XP_STRING_OPTION(
-//     "shipShapeFile",
-//     CONF_SHIP_FILE,
-//     NULL, 0,
-//     Set_shipShapeFile, NULL, Get_shipShapeFile,
-//     XP_OPTFLAG_DEFAULT,
-//     "An optional file where shipshapes can be stored.\n"
-//     "If this resource is defined and it refers to an existing file\n"
-//     "then shipshapes can be referenced to by their name.\n"
-//     "For instance if you define shipShapeFile to be\n"
-//     "/home/myself/.shipshapes and this file contains one or more\n"
-//     "shipshapes then you can select the shipshape by starting xpilot as:\n"
-//     "    xpilot -shipShape myshipshapename\n"
-//     "Where \"myshipshapename\" should be the \"name:\" or \"NM:\" of\n"
-//     "one of the shipshapes defined in /home/myself/.shipshapes.\n"
-//     "Each shipshape definition should be defined on only one line,\n"
-//     "where all characters up to the first left parenthesis don't matter.\n"
-//     /* shipshopshapshepshit getting nuts from all these shpshp-s. */),
+    XP_STRING_OPTION(
+        "shipShapeFile",
+        CONF_SHIP_FILE,
+        NULL, 0,
+        Set_shipShapeFile, NULL, Get_shipShapeFile,
+        XP_OPTFLAG_DEFAULT,
+        "An optional file where shipshapes can be stored.\n"
+        "If this resource is defined and it refers to an existing file\n"
+        "then shipshapes can be referenced to by their name.\n"
+        "For instance if you define shipShapeFile to be\n"
+        "/home/myself/.shipshapes and this file contains one or more\n"
+        "shipshapes then you can select the shipshape by starting xpilot as:\n"
+        "    xpilot -shipShape myshipshapename\n"
+        "Where \"myshipshapename\" should be the \"name:\" or \"NM:\" of\n"
+        "one of the shipshapes defined in /home/myself/.shipshapes.\n"
+        "Each shipshape definition should be defined on only one line,\n"
+        "where all characters up to the first left parenthesis don't matter.\n"
+        /* shipshopshapshepshit getting nuts from all these shpshp-s. */),
 
-// XP_STRING_OPTION(
-//     "texturePath",
-//     CONF_TEXTUREDIR,
-//     NULL, 0,
-//     Set_texturePath, NULL, Get_texturePath,
-//     XP_OPTFLAG_KEEP,
-//     "Search path for texture files.\n"
-//     "This is a list of one or more directories separated by colons.\n"),
+    XP_STRING_OPTION(
+        "texturePath",
+        CONF_TEXTUREDIR,
+        NULL, 0,
+        Set_texturePath, NULL, Get_texturePath,
+        XP_OPTFLAG_KEEP,
+        "Search path for texture files.\n"
+        "This is a list of one or more directories separated by colons.\n"),
 
 /* kps - these should not be needed in the SDL windows client. */
 #if 0
