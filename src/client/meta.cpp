@@ -177,29 +177,26 @@ int Welcome_sort_server_list(void)
         }
     }
 
-#if 1
+#if 0
+    /* print for debugging */
+    printf("\n");
+    printf("Printing server list:\n");
+    for (it = List_begin(new_list); it != List_end(new_list); LI_FORWARD(it))
     {
-        /* print for debugging */
-        printf("\n");
-        printf("Printing server list:\n");
-        for (it = List_begin(new_list); it != List_end(new_list);
-             LI_FORWARD(it))
-        {
-            sip_new = SI_DATA(it);
-            printf("%2d %5s %-31s %u", sip_new->users, sip_new->domain,
-                   sip_new->hostname, sip_new->port);
-            if (sip_new->pingtime == PING_UNKNOWN)
-                printf("%8s", "unknown");
-            else if (sip_new->pingtime == PING_NORESP)
-                printf("%8s", "no resp");
-            else if (sip_new->pingtime == PING_SLOW)
-                printf("%8s", "s-l-o-w");
-            else
-                printf("%8u", sip_new->pingtime);
-            printf("\n");
-        }
+        sip_new = SI_DATA(it);
+        printf("%2d %5s %-31s %u", sip_new->users, sip_new->domain,
+               sip_new->hostname, sip_new->port);
+        if (sip_new->pingtime == PING_UNKNOWN)
+            printf("%8s", "unknown");
+        else if (sip_new->pingtime == PING_NORESP)
+            printf("%8s", "no resp");
+        else if (sip_new->pingtime == PING_SLOW)
+            printf("%8s", "s-l-o-w");
+        else
+            printf("%8u", sip_new->pingtime);
         printf("\n");
     }
+    printf("\n");
 #endif
 
     List_delete(old_list);
