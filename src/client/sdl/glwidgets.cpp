@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Erik Andersson <maximan@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include "images.h"
 #include "text.h"
 #include "glwidgets.h"
-#include "scrap.h"
 
 /****************************************************/
 /* BEGIN: Main GLWidget stuff                        */
@@ -512,13 +511,21 @@ void load_textscrap(char *text)
 
     scraptarget = NULL;
     scrap = (char *)realloc(scrap, strlen(text) + 1);
+    if (!scrap)
+    {
+        error("load_textscrap: out of memory");
+        return;
+    }
+
     strcpy(scrap, text);
     for (cp = scrap, i = 0; i < (int)strlen(scrap); ++cp, ++i)
     {
         if (*cp == '\n')
             *cp = '\r';
     }
-    put_scrap(TextScrap('T', 'E', 'X', 'T'), strlen(scrap), scrap);
+
+    if (SDL_SetClipboardText(scrap) != 0)
+        error("SDL_SetClipboardText failed: %s", SDL_GetError());
 }
 /****************************************************/
 /* END: Main GLWidget stuff                         */
@@ -3717,8 +3724,6 @@ extern int Console_isVisible(void);
 extern void Paste_String_to_Console(char *text);
 static void button_MainWidget(Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data)
 {
-    int scraplen;
-
     if (!data)
         return;
 
@@ -3732,11 +3737,21 @@ static void button_MainWidget(Uint8 button, Uint8 state, Uint16 x, Uint16 y, voi
         {
             if (Console_isVisible())
             {
+                char *clipboardText;
+
                 scraptarget = NULL;
-                get_scrap(TextScrap('T', 'E', 'X', 'T'), &scraplen, &scrap);
-                if (scraplen == 0)
+
+                if (!SDL_HasClipboardText())
                     return;
-                Paste_String_to_Console(scrap);
+
+                clipboardText = SDL_GetClipboardText();
+                if (!clipboardText)
+                    return;
+
+                if (clipboardText[0] != '\0')
+                    Paste_String_to_Console(clipboardText);
+
+                SDL_free(clipboardText);
             }
         }
     }

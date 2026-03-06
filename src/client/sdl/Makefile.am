@@ -8,7 +8,7 @@ xpilot_cpp_client_sdl_SOURCES = \
 	asteroid_data.h DT_drawtext.cpp DT_drawtext.h \
 	SDL_console.cpp SDL_console.h SDL_gfxPrimitives.cpp SDL_gfxPrimitives.h \
 	SDL_gfxPrimitives_font.h console.cpp console.h glwidgets.cpp glwidgets.h \
-	images.cpp images.h main.cpp scrap.cpp scrap.h radar.cpp radar.h \
+	images.cpp images.h main.cpp radar.cpp radar.h \
 	sdlevent.cpp sdlgui.cpp sdlinit.cpp sdlkeys.cpp sdlkeys.h sdlpaint.cpp \
 	sdlpaint.h sdlwindow.cpp sdlwindow.h text.cpp text.h todo.cpp \
 	sdlmeta.h sdlmeta.cpp sdlinit.h ../xhacks.h xpclient_sdl.h

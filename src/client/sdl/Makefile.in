@@ -107,22 +107,21 @@ am__xpilot_cpp_client_sdl_SOURCES_DIST = asteroid_data.h \
 	DT_drawtext.cpp DT_drawtext.h SDL_console.cpp SDL_console.h \
 	SDL_gfxPrimitives.cpp SDL_gfxPrimitives.h \
 	SDL_gfxPrimitives_font.h console.cpp console.h glwidgets.cpp \
-	glwidgets.h images.cpp images.h main.cpp scrap.cpp scrap.h \
-	radar.cpp radar.h sdlevent.cpp sdlgui.cpp sdlinit.cpp \
-	sdlkeys.cpp sdlkeys.h sdlpaint.cpp sdlpaint.h sdlwindow.cpp \
-	sdlwindow.h text.cpp text.h todo.cpp sdlmeta.h sdlmeta.cpp \
-	sdlinit.h ../xhacks.h xpclient_sdl.h gameloop.cpp \
-	gameloop_x.cpp
+	glwidgets.h images.cpp images.h main.cpp radar.cpp radar.h \
+	sdlevent.cpp sdlgui.cpp sdlinit.cpp sdlkeys.cpp sdlkeys.h \
+	sdlpaint.cpp sdlpaint.h sdlwindow.cpp sdlwindow.h text.cpp \
+	text.h todo.cpp sdlmeta.h sdlmeta.cpp sdlinit.h ../xhacks.h \
+	xpclient_sdl.h gameloop.cpp gameloop_x.cpp
 @COND_SDL_GAMELOOP_TRUE@am__objects_1 = gameloop.$(OBJEXT)
 @COND_SDL_GAMELOOP_FALSE@am__objects_2 = gameloop_x.$(OBJEXT)
 am_xpilot_cpp_client_sdl_OBJECTS = DT_drawtext.$(OBJEXT) \
 	SDL_console.$(OBJEXT) SDL_gfxPrimitives.$(OBJEXT) \
 	console.$(OBJEXT) glwidgets.$(OBJEXT) images.$(OBJEXT) \
-	main.$(OBJEXT) scrap.$(OBJEXT) radar.$(OBJEXT) \
-	sdlevent.$(OBJEXT) sdlgui.$(OBJEXT) sdlinit.$(OBJEXT) \
-	sdlkeys.$(OBJEXT) sdlpaint.$(OBJEXT) sdlwindow.$(OBJEXT) \
-	text.$(OBJEXT) todo.$(OBJEXT) sdlmeta.$(OBJEXT) \
-	$(am__objects_1) $(am__objects_2)
+	main.$(OBJEXT) radar.$(OBJEXT) sdlevent.$(OBJEXT) \
+	sdlgui.$(OBJEXT) sdlinit.$(OBJEXT) sdlkeys.$(OBJEXT) \
+	sdlpaint.$(OBJEXT) sdlwindow.$(OBJEXT) text.$(OBJEXT) \
+	todo.$(OBJEXT) sdlmeta.$(OBJEXT) $(am__objects_1) \
+	$(am__objects_2)
 xpilot_cpp_client_sdl_OBJECTS = $(am_xpilot_cpp_client_sdl_OBJECTS)
 am__DEPENDENCIES_1 =
 xpilot_cpp_client_sdl_DEPENDENCIES =  \
@@ -151,11 +150,11 @@ am__depfiles_remade = ./$(DEPDIR)/DT_drawtext.Po \
 	./$(DEPDIR)/console.Po ./$(DEPDIR)/gameloop.Po \
 	./$(DEPDIR)/gameloop_x.Po ./$(DEPDIR)/glwidgets.Po \
 	./$(DEPDIR)/images.Po ./$(DEPDIR)/main.Po ./$(DEPDIR)/radar.Po \
-	./$(DEPDIR)/scrap.Po ./$(DEPDIR)/sdlevent.Po \
-	./$(DEPDIR)/sdlgui.Po ./$(DEPDIR)/sdlinit.Po \
-	./$(DEPDIR)/sdlkeys.Po ./$(DEPDIR)/sdlmeta.Po \
-	./$(DEPDIR)/sdlpaint.Po ./$(DEPDIR)/sdlwindow.Po \
-	./$(DEPDIR)/text.Po ./$(DEPDIR)/todo.Po
+	./$(DEPDIR)/sdlevent.Po ./$(DEPDIR)/sdlgui.Po \
+	./$(DEPDIR)/sdlinit.Po ./$(DEPDIR)/sdlkeys.Po \
+	./$(DEPDIR)/sdlmeta.Po ./$(DEPDIR)/sdlpaint.Po \
+	./$(DEPDIR)/sdlwindow.Po ./$(DEPDIR)/text.Po \
+	./$(DEPDIR)/todo.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -333,12 +332,11 @@ xpilot_cpp_client_sdl_SOURCES = asteroid_data.h DT_drawtext.cpp \
 	DT_drawtext.h SDL_console.cpp SDL_console.h \
 	SDL_gfxPrimitives.cpp SDL_gfxPrimitives.h \
 	SDL_gfxPrimitives_font.h console.cpp console.h glwidgets.cpp \
-	glwidgets.h images.cpp images.h main.cpp scrap.cpp scrap.h \
-	radar.cpp radar.h sdlevent.cpp sdlgui.cpp sdlinit.cpp \
-	sdlkeys.cpp sdlkeys.h sdlpaint.cpp sdlpaint.h sdlwindow.cpp \
-	sdlwindow.h text.cpp text.h todo.cpp sdlmeta.h sdlmeta.cpp \
-	sdlinit.h ../xhacks.h xpclient_sdl.h $(am__append_1) \
-	$(am__append_2)
+	glwidgets.h images.cpp images.h main.cpp radar.cpp radar.h \
+	sdlevent.cpp sdlgui.cpp sdlinit.cpp sdlkeys.cpp sdlkeys.h \
+	sdlpaint.cpp sdlpaint.h sdlwindow.cpp sdlwindow.h text.cpp \
+	text.h todo.cpp sdlmeta.h sdlmeta.cpp sdlinit.h ../xhacks.h \
+	xpclient_sdl.h $(am__append_1) $(am__append_2)
 xpilot_cpp_client_sdl_LDADD = \
 	$(top_builddir)/src/client/libxpclient.a \
 	$(top_builddir)/src/common/libxpcommon.a \
@@ -450,7 +448,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/images.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/radar.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scrap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdlevent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdlgui.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdlinit.Po@am__quote@ # am--include-marker
@@ -619,7 +616,6 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/images.Po
 	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f ./$(DEPDIR)/radar.Po
-	-rm -f ./$(DEPDIR)/scrap.Po
 	-rm -f ./$(DEPDIR)/sdlevent.Po
 	-rm -f ./$(DEPDIR)/sdlgui.Po
 	-rm -f ./$(DEPDIR)/sdlinit.Po
@@ -684,7 +680,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/images.Po
 	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f ./$(DEPDIR)/radar.Po
-	-rm -f ./$(DEPDIR)/scrap.Po
 	-rm -f ./$(DEPDIR)/sdlevent.Po
 	-rm -f ./$(DEPDIR)/sdlgui.Po
 	-rm -f ./$(DEPDIR)/sdlinit.Po
