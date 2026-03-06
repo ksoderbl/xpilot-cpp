@@ -39,7 +39,6 @@
 #include "xpconfig.h"
 #include "xpaint.h"
 #include "xinit.h"
-#include "list.h"
 #include "widget.h"
 #include "xperror.h"
 #include "dbuff.h"
@@ -419,9 +418,9 @@ static int Internet_server_join_cb(int widget, void *user_data,
 
     /* structure copy */
     *conpar = *global_conpar;
-    strlcpy(conpar->server_name, sip->hostname,
+    strlcpy(conpar->server_name, sip->hostname.c_str(),
             sizeof(conpar->server_name));
-    strlcpy(conpar->server_addr, sip->ip_str, sizeof(conpar->server_addr));
+    strlcpy(conpar->server_addr, sip->ip_str.c_str(), sizeof(conpar->server_addr));
     conpar->contact_port = sip->port;
     result = Contact_servers(1, &server_addr_ptr, 1, 0, 0, NULL,
                              0, NULL, NULL, NULL, NULL, conpar);
@@ -594,7 +593,7 @@ static int Internet_first_page_cb(int widget, void *user_data,
 {
     Connect_param_t *conpar = (Connect_param_t *)user_data;
 
-    server_it = List_begin(server_list);
+    server_it = server_list.begin();
 
     Welcome_show_server_list(conpar);
 
@@ -616,7 +615,7 @@ static int Internet_ping_cb(int widget, void *user_data, const char **text)
         Welcome_create_label(1, "Not enough memory.");
     }
 
-    server_it = List_begin(server_list);
+    server_it = server_list.begin();
     Welcome_show_server_list(conpar);
 
     return 0;
@@ -673,7 +672,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
     int subform_width = 0;
     int subform_height = 0;
     server_info_t *sip;
-    list_iter_t start_server_it = server_it;
+    server_list_iter_t start_server_it = server_it;
 
     Widget_get_dimensions(subform_widget, &subform_width, &subform_height);
     /*
@@ -736,70 +735,82 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
     /* Widget_map_sub(subform_widget);
        Welcome_process_exposure_events(); */
 
-    for (; server_it != List_end(server_list); LI_FORWARD(server_it))
+    for (; server_it != server_list.end(); ++server_it)
     {
         yoff += label_height + space_height;
         if (yoff + 2 * label_height + 3 * space_height >= subform_height)
             break;
-        sip = SI_DATA(server_it);
+        sip = *server_it;
+
         Widget_create_label(subform_widget,
                             player_offset, yoff,
                             player_width, label_height, true,
-                            border, sip->users ? sip->users_str : "");
+                            border, sip->users ? sip->users_str.c_str() : "");
         Widget_create_label(subform_widget,
                             queue_offset, yoff,
                             queue_width, label_height, true,
-                            border, sip->queue ? sip->queue_str : "");
+                            border, sip->queue ? sip->queue_str.c_str() : "");
         Widget_create_label(subform_widget,
                             bases_offset, yoff, true,
                             bases_width, label_height,
-                            border, sip->bases_str);
+                            border, sip->bases_str.c_str());
         Widget_create_label(subform_widget,
                             team_offset, yoff, true,
                             team_width, label_height,
                             border,
-                            (sip->teambases > 0) ? sip->teambases_str : "");
+                            (sip->teambases > 0) ? sip->teambases_str.c_str() : "");
         Widget_create_label(subform_widget,
                             fps_offset, yoff, true,
                             fps_width, label_height,
-                            border, sip->fps_str);
-        if (strlen(sip->status) > 4)
-            sip->status[4] = '\0';
+                            border, sip->fps_str.c_str());
+
+        std::string status = sip->status;
+        if (status.size() > 4)
+            status.resize(4);
 
         Widget_create_label(subform_widget,
                             status_offset, yoff,
                             status_width, label_height, true,
                             border,
-                            strcmp(sip->status,
-                                   "ok")
-                                ? sip->status
-                                : "");
-        if (strlen(sip->version) > max_version_length)
-            sip->version[max_version_length] = '\0';
+                            (status != "ok") ? status.c_str() : "");
 
-        string_to_lower(sip->version);
+        std::string version = sip->version;
+        if (version.size() > (size_t)max_version_length)
+            version.resize(max_version_length);
+        for (char &ch : version)
+            ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
+
         Widget_create_label(subform_widget,
                             version_offset, yoff,
                             version_width, label_height, true,
-                            border, sip->version);
+                            border, version.c_str());
         Widget_create_label(subform_widget,
                             map_offset, yoff,
                             map_width, label_height, true,
-                            border, sip->mapname);
+                            border, sip->mapname.c_str());
         Widget_create_activate(subform_widget,
                                server_offset,
                                yoff - (border == 0),
                                server_width, label_height,
-                               border ? border : 1, sip->hostname,
+                               border ? border : 1, sip->hostname.c_str(),
                                Internet_server_join_cb, (void *)sip);
-        sprintf(sip->pingtime_str, "%4d", sip->pingtime);
-        Widget_create_label(subform_widget,
-                            ping_offset, yoff,
-                            ping_width, label_height, true,
-                            border, (sip->pingtime == PING_NORESP) ? "none" : ((sip->pingtime == PING_SLOW) ? "slow" : ((sip->pingtime == PING_UNKNOWN) ? "" : sip->pingtime_str)));
+
+        // snprintf(sip->pingtime_str.data(), sip->pingtime_str.size(), "%4d", sip->pingtime);
+        /* TODO: Above is not safe unless pingtime_str is pre-sized, so use local text instead: */
+        {
+            char pingtime_buf[16];
+            snprintf(pingtime_buf, sizeof(pingtime_buf), "%4d", sip->pingtime);
+            Widget_create_label(subform_widget,
+                                ping_offset, yoff,
+                                ping_width, label_height, true,
+                                border,
+                                (sip->pingtime == PING_NORESP) ? "none"
+                                                               : ((sip->pingtime == PING_SLOW) ? "slow"
+                                                                                               : ((sip->pingtime == PING_UNKNOWN) ? "" : pingtime_buf)));
+        }
     }
 
-    if (server_it != List_end(server_list))
+    if (server_it != server_list.end())
     {
         int height_avail = subform_height - yoff;
         static char next_text[] = "Next Page";
@@ -826,7 +837,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
                                next_width, next_height,
                                next_border, next_text,
                                Internet_next_page_cb, (void *)conpar);
-        if (start_server_it != List_begin(server_list))
+        if (start_server_it != server_list.begin())
         {
             Widget_create_activate(subform_widget,
                                    first_x_offset, first_y_offset,
@@ -835,7 +846,7 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
                                    Internet_first_page_cb, (void *)conpar);
         }
     }
-    else if (start_server_it != List_begin(server_list))
+    else if (start_server_it != server_list.begin())
     {
         static char first_text[] = "First Page";
         int first_border = border ? border : 1;
@@ -856,18 +867,18 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
     {
         static char ping_text[] = "Measure Lag";
         int ping_border = border ? border : 1;
-        int ping_width = XTextWidth(buttonFont,
-                                    ping_text,
-                                    strlen(ping_text)) +
-                         extra_width + 2 * ping_border;
+        int ping_width2 = XTextWidth(buttonFont,
+                                     ping_text,
+                                     strlen(ping_text)) +
+                          extra_width + 2 * ping_border;
         int ping_height = label_height + 2 * (ping_border - border);
         int ping_pad = (ping_height + 1) / 2;
-        int ping_x_offset = subform_width - ping_width - ping_pad;
+        int ping_x_offset = subform_width - ping_width2 - ping_pad;
         int ping_y_offset = subform_height - ping_height - ping_pad;
 
         Widget_create_activate(subform_widget,
                                ping_x_offset, ping_y_offset,
-                               ping_width, ping_height,
+                               ping_width2, ping_height,
                                ping_border, ping_text,
                                Internet_ping_cb, (void *)conpar);
     }
@@ -894,8 +905,8 @@ static int Internet_cb(int widget, void *user_data, const char **text)
 
     Welcome_set_mode(ModeInternet);
 
-    if (!server_list ||
-        List_size(server_list) < 10 ||
+    if (server_list.empty() ||
+        (int)server_list.size() < 10 ||
         server_list_creation_time + 5 < time(NULL))
     {
 
@@ -914,7 +925,7 @@ static int Internet_cb(int widget, void *user_data, const char **text)
         }
     }
 
-    server_it = List_begin(server_list);
+    server_it = server_list.begin();
     Welcome_show_server_list(conpar);
 
     return 0;

@@ -4512,11 +4512,12 @@ static void Close_ImageButtonWidget(GLWidget *widget)
         return;
     }
     info = (ImageButtonWidget *)widget->wid_info;
-    free_string_texture(&(info->tex));
     if (info->imageUp)
         glDeleteTextures(1, &(info->imageUp));
     if (info->imageDown)
         glDeleteTextures(1, &(info->imageDown));
+    delete info;
+    widget->wid_info = NULL;
 }
 
 static void Paint_ImageButtonWidget(GLWidget *widget)
@@ -4608,10 +4609,10 @@ GLWidget *Init_ImageButtonWidget(const char *text,
         error("Failed to malloc in Init_ImageButtonWidget");
         return NULL;
     }
-    info = XMALLOC(ImageButtonWidget, 1);
+    info = new ImageButtonWidget();
     if (!info)
     {
-        free(tmp);
+        delete tmp;
         error("Failed to malloc in Init_ImageButtonWidget");
         return NULL;
     }
@@ -4625,8 +4626,8 @@ GLWidget *Init_ImageButtonWidget(const char *text,
 
     if (!render_text(&gamefont, text, &(info->tex)))
     {
-        free(info);
-        free(tmp);
+        delete info;
+        delete tmp;
         error("Failed to render text in Init_ImageButtonWidget");
         return NULL;
     }

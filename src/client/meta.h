@@ -23,8 +23,9 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
-#include "list.h"
 #include "pack.h"
 #include "socklib.h"
 
@@ -50,12 +51,6 @@
 #define PING_SLOW 9998     /* responded to first ping after \
                             * we had already retried (ie slow!) */
 
-/*
- * Access the data field of one of the servers
- * which is listed by the meta servers.
- */
-#define SI_DATA(it) ((server_info_t *)LI_DATA(it))
-
 /********************** Data Structures *********************/
 
 /*
@@ -65,36 +60,50 @@
  */
 struct ServerInfo
 {
-    char *version,
-        *hostname,
-        *users_str,
-        *mapname,
-        *mapsize,
-        *author,
-        *status,
-        *bases_str,
-        *fps_str,
-        *playlist,
-        *sound,
-        *teambases_str,
-        *timing, *ip_str, *freebases, *queue_str, *domain, pingtime_str[5];
-    unsigned port,
-        ip, users, bases, fps, uptime, teambases, queue, pingtime;
-    struct timeval start;
-    uint8_t serial;
+    std::string version;
+    std::string hostname;
+    std::string users_str;
+    std::string mapname;
+    std::string mapsize;
+    std::string author;
+    std::string status;
+    std::string bases_str;
+    std::string fps_str;
+    std::string playlist;
+    std::string sound;
+    std::string teambases_str;
+    std::string timing;
+    std::string ip_str;
+    std::string freebases;
+    std::string queue_str;
+    std::string domain;
+    std::string pingtime_str;
+
+    unsigned port = 0;
+    unsigned ip = 0;
+    unsigned users = 0;
+    unsigned bases = 0;
+    unsigned fps = 0;
+    unsigned uptime = 0;
+    unsigned teambases = 0;
+    unsigned queue = 0;
+    unsigned pingtime = PING_UNKNOWN;
+    struct timeval start{};
+    uint8_t serial = 0;
 };
+
+typedef struct ServerInfo server_info_t;
+using server_list_t = std::vector<server_info_t *>;
+using server_list_iter_t = server_list_t::iterator;
 
 /*
  * Here we hold the servers which are listed by the meta servers.
  * We record the time we contacted Meta so as to not overload Meta.
  * server_it is an iterator pointing at the first server for the next page.
  */
-
-extern list_t server_list;
+extern server_list_t server_list;
 extern time_t server_list_creation_time;
-extern list_iter_t server_it;
-
-typedef struct ServerInfo server_info_t;
+extern server_list_iter_t server_it;
 
 /*
  * States a connection to a meta server can be in.

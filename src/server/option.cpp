@@ -28,6 +28,9 @@
 #include <climits>
 #include <cerrno>
 
+#include <string>
+#include <vector>
+
 #include <unistd.h>
 
 #include "commonmacros.h"
@@ -681,66 +684,45 @@ bool Convert_string_to_bool(const char *value_str, bool *bool_ptr)
     return result;
 }
 
-void Convert_list_to_string(list_t list, char **str)
+void Convert_list_to_string(const std::vector<std::string> &list, char **str)
 {
-    list_iter_t iter;
-    size_t size = 0;
+    size_t size = 1;
 
-    for (iter = List_begin(list);
-         iter != List_end(list);
-         LI_FORWARD(iter))
-        size += 1 + strlen((const char *)LI_DATA(iter));
+    for (const std::string &item : list)
+        size += item.size() + 1;
 
     *str = (char *)xp_safe_malloc(size);
     **str = '\0';
-    for (iter = List_begin(list);
-         iter != List_end(list);
-         LI_FORWARD(iter))
+
+    for (size_t i = 0; i < list.size(); ++i)
     {
-        if (iter != List_begin(list))
+        if (i > 0)
             strlcat(*str, ",", size);
-        strlcat(*str, (const char *)LI_DATA(iter), size);
+        strlcat(*str, list[i].c_str(), size);
     }
 }
 
-void Convert_string_to_list(const char *value, list_t *list_ptr)
+void Convert_string_to_list(const char *value, std::vector<std::string> *list_ptr)
 {
-    const char *start, *end;
-    char *str;
+    const char *start;
+    const char *end;
 
-    /* possibly allocate a new list. */
-    if (NULL == *list_ptr)
-    {
-        *list_ptr = List_new();
-        if (NULL == *list_ptr)
-            fatal("Not enough memory for list");
-    }
+    if (list_ptr == NULL)
+        return;
 
-    /* make sure list is empty. */
-    List_clear(*list_ptr);
+    list_ptr->clear();
 
-    /* copy comma separated list elements from value to list. */
     for (start = value; *start; start = end)
     {
-        /* skip comma separators. */
         while (*start == ',')
             start++;
-        /* search for end of list element. */
+
         end = start;
         while (*end && *end != ',')
             end++;
-        /* copy non-zero results to list. */
+
         if (start < end)
-        {
-            size_t size = end - start;
-
-            str = (char *)xp_safe_malloc(size + 1);
-            memcpy(str, start, size);
-            str[size] = '\0';
-
-            if (NULL == List_push_back(*list_ptr, str))
-                fatal("Not enough memory for list element");
-        }
+            list_ptr->emplace_back(start, end - start);
     }
 }
 
@@ -873,7 +855,7 @@ static void Option_parse_node(hash_node *np)
 
     case valList:
     {
-        list_t *list_ptr = (list_t *)desc->variable;
+        std::vector<std::string> *list_ptr = (std::vector<std::string> *)desc->variable;
         printf("case valList: value = '%s'\n", value);
         Convert_string_to_list(value, list_ptr);
         break;
@@ -900,14 +882,10 @@ static void Options_parse_expand(void)
     else
         Option_parse_node(np);
 
-    if (options.expandList != NULL)
-    {
-        char *name;
-        while ((name = (char *)List_pop_front(options.expandList)) != NULL)
-            expandKeyword(name);
-        List_delete(options.expandList);
-        options.expandList = NULL;
-    }
+    for (const std::string &name : options.expandList)
+        expandKeyword(name.c_str());
+
+    options.expandList.clear();
 }
 
 /*

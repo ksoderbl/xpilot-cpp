@@ -26,6 +26,10 @@
 #include <GL/glu.h>
 
 #include <ctime>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
 
 #include "meta.h"
 #include "xperror.h"
@@ -84,7 +88,7 @@ typedef struct
 
 typedef struct
 {
-    list_t server_list;
+    server_list_t server_list;
     GLWidget *meta;
     GLWidget *scrollbar;
     GLWidget *header;
@@ -120,7 +124,7 @@ typedef struct
     Uint32 header_fg, header_bg, item_fg, item_bg;
     GLWidget *header;
     GLWidget *scrollbar;
-    list_t players;
+    std::vector<std::string> players;
     char *players_str;
 } PlayerListWidget;
 
@@ -142,7 +146,7 @@ static void Scroll_PlayerListWidget(GLfloat pos, void *data)
     }
 
     info = (PlayerListWidget *)widget->wid_info;
-    y = widget->bounds.y + ROW_HEIGHT - (int)(List_size(info->players) * ROW_HEIGHT * pos);
+    y = widget->bounds.y + ROW_HEIGHT - (int)(info->players.size() * ROW_HEIGHT * pos);
 
     for (row = widget->children; row; row = row->next)
     {
@@ -172,7 +176,7 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
 
     widget->bounds = *b;
     info = (PlayerListWidget *)widget->wid_info;
-    list_height = List_size(info->players) * ROW_HEIGHT + ROW_HEIGHT;
+    list_height = info->players.size() * ROW_HEIGHT + ROW_HEIGHT;
 
     if (info->scrollbar != NULL)
     {
@@ -226,16 +230,13 @@ static void SetBounds_PlayerListWidget(GLWidget *widget, SDL_Rect *b)
     }
 }
 
-static list_t create_player_list(char *players_str)
+static std::vector<std::string> create_player_list(char *players_str)
 {
-    list_t players;
+    std::vector<std::string> players;
     char *t;
 
-    if (!(players = List_new()))
-        return NULL;
     for (t = strtok(players_str, ","); t; t = strtok(NULL, ","))
-        if (!(List_push_back(players, t)))
-            break;
+        players.emplace_back(t);
 
     return players;
 }
@@ -253,10 +254,8 @@ static void Close_PlayerListWidget(GLWidget *widget)
     info = (PlayerListWidget *)widget->wid_info;
     if (info->players_str)
         free(info->players_str);
-    if (info->players)
-        List_delete(info->players);
     info->players_str = NULL;
-    info->players = NULL;
+    info->players.clear();
 }
 
 static void Paint_PlayerListWidget(GLWidget *widget)
@@ -273,38 +272,30 @@ static void Paint_PlayerListWidget(GLWidget *widget)
 
 static GLWidget *Init_PlayerListWidget(server_info_t *sip)
 {
-    char *player, *players_str;
-    list_t players;
-    list_iter_t iter;
+    char *players_str;
     GLWidget *tmp, *header, *row;
     PlayerListWidget *info;
 
-    if (!(players_str = strdup(sip->playlist)))
+    if (!(players_str = strdup(sip->playlist.c_str())))
     {
         error("out of memory");
-        return NULL;
-    }
-    if (!(players = create_player_list(players_str)))
-    {
-        error("failed to create players list");
-        free(players_str);
         return NULL;
     }
     if (!(tmp = Init_EmptyBaseGLWidget()))
     {
         error("Widget init failed");
         free(players_str);
-        List_delete(players);
         return NULL;
     }
     if (!(info = (PlayerListWidget *)malloc(sizeof(PlayerListWidget))))
     {
         error("out of memory");
         free(players_str);
-        List_delete(players);
         free(tmp);
         return NULL;
     }
+    new (&info->players) std::vector<std::string>();
+
     if (!(header =
               Init_LabelWidget("Players",
                                &(info->header_fg),
@@ -312,15 +303,15 @@ static GLWidget *Init_PlayerListWidget(server_info_t *sip)
                                CENTER, CENTER)))
     {
         error("failed to create header for player list");
+        info->players.~vector<std::string>();
         free(players_str);
-        List_delete(players);
         free(tmp);
         free(info);
         return NULL;
     }
 
     info->players_str = players_str;
-    info->players = players;
+    info->players = create_player_list(players_str);
     info->scrollbar = NULL;
     info->header = header;
     info->header_fg = PLIST_HEADER_FG;
@@ -334,12 +325,9 @@ static GLWidget *Init_PlayerListWidget(server_info_t *sip)
     tmp->Draw = Paint_PlayerListWidget;
     tmp->Close = Close_PlayerListWidget;
 
-    for (iter = List_begin(players);
-         iter != List_end(players);
-         LI_FORWARD(iter))
+    for (const std::string &player : info->players)
     {
-        player = (char *)SI_DATA(iter);
-        row = Init_LabelWidget(player,
+        row = Init_LabelWidget(player.c_str(),
                                &(info->item_fg),
                                &(info->item_bg),
                                LEFT, CENTER);
@@ -411,7 +399,7 @@ static void SetBounds_StatusWidget(GLWidget *widget, SDL_Rect *wb)
     }
 }
 
-static void add_status_entry(const char *name, char *value, GLWidget *parent)
+static void add_status_entry(const char *name, const char *value, GLWidget *parent)
 {
     GLWidget *name_label, *value_label;
     StatusWidget *info;
@@ -452,7 +440,7 @@ static GLWidget *Init_StatusWidget(server_info_t *sip)
         free(tmp);
         return NULL;
     }
-    sprintf(info->address_str, "%s:%u", sip->ip_str, sip->port);
+    sprintf(info->address_str, "%s:%u", sip->ip_str.c_str(), sip->port);
     sprintf(info->fps_str, "%u", sip->fps);
     info->sip = sip;
     info->name_fg = STATUS_FIELD_FG;
@@ -463,20 +451,20 @@ static GLWidget *Init_StatusWidget(server_info_t *sip)
     tmp->WIDGET = STATUSWIDGET;
     tmp->SetBounds = SetBounds_StatusWidget;
 
-    add_status_entry(" Server", sip->hostname, tmp);
+    add_status_entry(" Server", sip->hostname.c_str(), tmp);
     add_status_entry(" Address", info->address_str, tmp);
-    add_status_entry(" Version", sip->version, tmp);
-    add_status_entry(" Map name", sip->mapname, tmp);
-    add_status_entry(" Map size", sip->mapsize, tmp);
-    add_status_entry(" Map author", sip->author, tmp);
-    add_status_entry(" Status", sip->status, tmp);
-    add_status_entry(" Bases", sip->bases_str, tmp);
-    add_status_entry(" Teams", sip->teambases_str, tmp);
-    add_status_entry(" Free bases", sip->freebases, tmp);
-    add_status_entry(" Queue", sip->queue_str, tmp);
+    add_status_entry(" Version", sip->version.c_str(), tmp);
+    add_status_entry(" Map name", sip->mapname.c_str(), tmp);
+    add_status_entry(" Map size", sip->mapsize.c_str(), tmp);
+    add_status_entry(" Map author", sip->author.c_str(), tmp);
+    add_status_entry(" Status", sip->status.c_str(), tmp);
+    add_status_entry(" Bases", sip->bases_str.c_str(), tmp);
+    add_status_entry(" Teams", sip->teambases_str.c_str(), tmp);
+    add_status_entry(" Free bases", sip->freebases.c_str(), tmp);
+    add_status_entry(" Queue", sip->queue_str.c_str(), tmp);
     add_status_entry(" FPS", info->fps_str, tmp);
-    add_status_entry(" Sound", sip->sound, tmp);
-    add_status_entry(" Timing", sip->timing, tmp);
+    add_status_entry(" Sound", sip->sound.c_str(), tmp);
+    add_status_entry(" Timing", sip->timing.c_str(), tmp);
 
     return tmp;
 }
@@ -646,24 +634,24 @@ static void Button_MetaRowWidget(Uint8 button, Uint8 state, Uint16 x,
     {
         SelectRow_MetaWidget(row->table->meta, row);
 #if 0
-    printf("version: %s\n", row->sip->version);
-    printf("hostname: %s\n", row->sip->hostname);
-    printf("users_str: %s\n", row->sip->users_str);
-    printf("mapname: %s\n", row->sip->mapname);
-    printf("mapsize: %s\n", row->sip->mapsize);
-    printf("author: %s\n", row->sip->author);
-    printf("status: %s\n", row->sip->status);
-    printf("bases_str: %s\n", row->sip->bases_str);
-    printf("fps_str: %s\n", row->sip->fps_str);
-    printf("playlist: %s\n", row->sip->playlist);
-    printf("sound: %s\n", row->sip->sound);
-    printf("teambases_str: %s\n", row->sip->teambases_str);
-    printf("timing: %s\n", row->sip->timing);
-    printf("ip_str: %s\n", row->sip->ip_str);
-    printf("freebases: %s\n", row->sip->freebases);
-    printf("queue_str: %s\n", row->sip->queue_str);
-    printf("domain: %s\n", row->sip->domain);
-    printf("pingtime_str: %s\n", row->sip->pingtime_str);
+    printf("version: %s\n", row->sip->version.c_str());
+    printf("hostname: %s\n", row->sip->hostname.c_str());
+    printf("users_str: %s\n", row->sip->users_str.c_str());
+    printf("mapname: %s\n", row->sip->mapname.c_str());
+    printf("mapsize: %s\n", row->sip->mapsize.c_str());
+    printf("author: %s\n", row->sip->author.c_str());
+    printf("status: %s\n", row->sip->status.c_str());
+    printf("bases_str: %s\n", row->sip->bases_str.c_str());
+    printf("fps_str: %s\n", row->sip->fps_str.c_str());
+    printf("playlist: %s\n", row->sip->playlist.c_str());
+    printf("sound: %s\n", row->sip->sound.c_str());
+    printf("teambases_str: %s\n", row->sip->teambases_str.c_str());
+    printf("timing: %s\n", row->sip->timing.c_str());
+    printf("ip_str: %s\n", row->sip->ip_str.c_str());
+    printf("freebases: %s\n", row->sip->freebases.c_str());
+    printf("queue_str: %s\n", row->sip->queue_str.c_str());
+    printf("domain: %s\n", row->sip->domain.c_str());
+    printf("pingtime_str: %s\n", row->sip->pingtime_str.c_str());
     printf("port: %u\n", row->sip->port);
     printf("ip: %u\n", row->sip->ip);
     printf("users: %u\n", row->sip->users);
@@ -715,10 +703,10 @@ static GLWidget *Init_MetaRowWidget(server_info_t *sip,
         col->buttondata = tmp;                                            \
         AppendGLWidgetList(&(tmp->children), col);                        \
     }
-    COLUMN(sip->hostname);
-    COLUMN(sip->mapname);
-    COLUMN(sip->version);
-    COLUMN(sip->users_str);
+    COLUMN(sip->hostname.c_str());
+    COLUMN(sip->mapname.c_str());
+    COLUMN(sip->version.c_str());
+    COLUMN(sip->users_str.c_str());
 #undef COLUMN
 
     return tmp;
@@ -775,7 +763,7 @@ static void Scroll_MetaTableWidget(GLfloat pos, void *data)
     }
 
     info = (MetaTableWidget *)widget->wid_info;
-    y = widget->bounds.y + ROW_HEIGHT - (int)(List_size(info->server_list) * ROW_HEIGHT * pos);
+    y = widget->bounds.y + ROW_HEIGHT - (int)(info->server_list.size() * ROW_HEIGHT * pos);
 
     for (row = widget->children; row; row = row->next)
     {
@@ -805,7 +793,7 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
 
     widget->bounds = *b;
     info = (MetaTableWidget *)widget->wid_info;
-    table_height = List_size(info->server_list) * ROW_HEIGHT;
+    table_height = info->server_list.size() * ROW_HEIGHT;
 
     if (info->scrollbar != NULL)
     {
@@ -859,11 +847,9 @@ static void SetBounds_MetaTableWidget(GLWidget *widget, SDL_Rect *b)
     }
 }
 
-static GLWidget *Init_MetaTableWidget(GLWidget *meta, list_t servers)
+static GLWidget *Init_MetaTableWidget(GLWidget *meta, const server_list_t &servers)
 {
     GLWidget *tmp, *row;
-    list_iter_t iter;
-    server_info_t *sip;
     MetaTableWidget *info;
     bool bg = true;
 
@@ -878,6 +864,8 @@ static GLWidget *Init_MetaTableWidget(GLWidget *meta, list_t servers)
         free(tmp);
         return NULL;
     }
+    new (&info->server_list) server_list_t();
+
     info->meta = meta;
     info->server_list = servers;
     info->scrollbar = NULL;
@@ -889,11 +877,8 @@ static GLWidget *Init_MetaTableWidget(GLWidget *meta, list_t servers)
     tmp->WIDGET = METATABLEWIDGET;
     tmp->SetBounds = SetBounds_MetaTableWidget;
 
-    for (iter = List_begin(servers);
-         iter != List_end(servers);
-         LI_FORWARD(iter))
+    for (server_info_t *sip : servers)
     {
-        sip = SI_DATA(iter);
         row = Init_MetaRowWidget(sip, info, false, bg ? ROW_BG1 : ROW_BG2);
         if (!row)
             break;
@@ -941,8 +926,7 @@ static void Paint_MetaWidget(GLWidget *widget)
     glTexCoord2f(info->txc.MaxX, info->txc.MaxY);
     glVertex2i(b->x + b->w, b->y + b->h);
     /* keep original (even though it's suspicious) to avoid changing behavior */
-    // TODO: fix the (very likely) typo in Paint_MetaWidget() where the last glTexCoord2f uses i
-    // nfo->txc.MinY instead of MinX
+    // TODO: fix the (very likely) typo in Paint_MetaWidget() where the last glTexCoord2f uses info->txc.MinY instead of MinX
     glTexCoord2f(info->txc.MinY, info->txc.MaxY);
     glVertex2i(b->x, b->y + b->h);
     glEnd();
@@ -989,7 +973,7 @@ static void OnClick_Quit(GLWidget *widget)
     SDL_PushEvent(&evt);
 }
 
-static GLWidget *Init_MetaWidget(list_t servers)
+static GLWidget *Init_MetaWidget(const server_list_t &servers)
 {
     GLWidget *tmp;
     MetaWidget *info;
@@ -1052,9 +1036,9 @@ static GLWidget *Init_MetaWidget(list_t servers)
 static bool join_server(Connect_param_t *conpar, server_info_t *sip)
 {
     char *server_addr_ptr = conpar->server_addr;
-    strlcpy(conpar->server_name, sip->hostname,
+    strlcpy(conpar->server_name, sip->hostname.c_str(),
             sizeof(conpar->server_name));
-    strlcpy(conpar->server_addr, sip->ip_str, sizeof(conpar->server_addr));
+    strlcpy(conpar->server_addr, sip->ip_str.c_str(), sizeof(conpar->server_addr));
     conpar->contact_port = sip->port;
     if (Contact_servers(1, &server_addr_ptr, 1, 0, 0, NULL,
                         0, NULL, NULL, NULL, NULL, conpar))
@@ -1110,8 +1094,8 @@ int Meta_window(Connect_param_t *conpar)
     SDL_Event evt;
     server_info_t *server = NULL;
 
-    if (!server_list ||
-        List_size(server_list) < 10 ||
+    if (server_list.empty() ||
+        (int)server_list.size() < 10 ||
         server_list_creation_time + 5 < time(NULL))
     {
 

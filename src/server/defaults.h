@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DEFAULTS_H
-#define DEFAULTS_H
+#pragma once
 
 enum valType
 {
@@ -33,7 +32,7 @@ enum valType
     valIPos,   /* variable is type ipos */
     valString, /* variable is type char* */
     valSec,    /* variable is type int (converted to frames) */
-    valList    /* variable is a list of elements of type char* */
+    valList    /* variable is a list of elements of type std::string */
 };
 
 /*
@@ -80,5 +79,3 @@ void Option_set_value(
     int override,
     optOrigin opt_origin);
 char *Option_get_value(const char *name, optOrigin *origin_ptr);
-
-#endif

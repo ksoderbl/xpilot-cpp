@@ -267,24 +267,20 @@ int Parser_list_option(int *index, char *buf)
         break;
     case valList:
     {
-        list_t list = *(list_t *)option_descs[i].variable;
+        std::vector<std::string> &list =
+            *(std::vector<std::string> *)option_descs[i].variable;
+
         sprintf(buf, "%s:", option_descs[i].name);
         printf("parser: name: %s\n", option_descs[i].name);
-        if (list)
-        {
-            list_iter_t iter;
 
-            for (iter = List_begin(list);
-                 iter != List_end(list);
-                 LI_FORWARD(iter))
-            {
-                char *str = (char *)LI_DATA(iter);
-                printf("parser: str : %s\n", str);
-                if (iter != List_begin(list))
-                    strlcat(buf, ",", MSG_LEN);
-                if (strlcat(buf, str, MSG_LEN) >= MSG_LEN)
-                    break;
-            }
+        for (size_t j = 0; j < list.size(); ++j)
+        {
+            const std::string &str = list[j];
+            printf("parser: str : %s\n", str.c_str());
+            if (j > 0)
+                strlcat(buf, ",", MSG_LEN);
+            if (strlcat(buf, str.c_str(), MSG_LEN) >= MSG_LEN)
+                break;
         }
     }
     break;
@@ -293,7 +289,6 @@ int Parser_list_option(int *index, char *buf)
     }
     return 1;
 }
-
 /*
  * Check if the i-th command line argument
  * is a request for help or info.

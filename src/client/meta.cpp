@@ -24,10 +24,13 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cctype>
+#include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <string>
 
 #include "meta.h"
 
@@ -35,7 +38,6 @@
 
 #include "const.h"
 #include "net.h"
-#include "strdup.h"
 #include "strlcpy.h"
 #include "xperror.h"
 
@@ -49,9 +51,9 @@ static struct Meta metas[NUM_METAS] = {
  * We record the time we contacted Meta so as to not overload Meta.
  * server_it is an iterator pointing at the first server for the next page.
  */
-list_t server_list;
+server_list_t server_list;
 time_t server_list_creation_time;
-list_iter_t server_it;
+server_list_iter_t server_it = server_list.end();
 
 /*
  * Convert a string to lowercase.
@@ -59,7 +61,7 @@ list_iter_t server_it;
 void string_to_lower(char *s)
 {
     for (; *s; s++)
-        *s = tolower(*s);
+        *s = static_cast<char>(tolower(static_cast<unsigned char>(*s)));
 }
 
 /*
@@ -83,7 +85,7 @@ char *Get_domain_from_hostname(char *host_name)
     {
         dom++; /* skip dot */
         /* test toplevel domain for validity */
-        if (!isdigit(*dom))
+        if (!isdigit(static_cast<unsigned char>(*dom)))
         {
             if (strlen(dom) >= 2 && strlen(dom) <= 3)
             {
@@ -104,104 +106,46 @@ char *Get_domain_from_hostname(char *host_name)
  */
 int Welcome_sort_server_list(void)
 {
-    list_t old_list = server_list;
-    list_t new_list = List_new();
-    list_iter_t it;
-    int delta;
-    void *vp;
-    server_info_t *sip_old;
-    server_info_t *sip_new;
+    for (server_info_t *sip : server_list)
+    {
+        if (!sip)
+            continue;
 
-    if (!new_list)
-    {
-        error("Not enough memory\n");
-        return -1;
-    }
-    while ((vp = List_pop_front(old_list)) != NULL)
-    {
-        sip_old = (server_info_t *)vp;
-        string_to_lower(sip_old->hostname);
-        if (!strncmp(sip_old->hostname, "xpilot", 6))
+        if (!sip->hostname.empty())
         {
-            sip_old->hostname[0] = 'X';
-            sip_old->hostname[1] = 'P';
-        }
-        sip_old->domain = Get_domain_from_hostname(sip_old->hostname);
-        for (it = List_begin(new_list); it != List_end(new_list);
-             LI_FORWARD(it))
-        {
-            sip_new = SI_DATA(it);
-            delta = sip_new->users - sip_old->users;
-            if (delta < 0)
+            string_to_lower(sip->hostname.data());
+            if (!strncmp(sip->hostname.c_str(), "xpilot", 6))
             {
-                /* old has more users */
-                break;
+                sip->hostname[0] = 'X';
+                sip->hostname[1] = 'P';
             }
-            else if (delta == 0)
-            {
-                delta = sip_old->pingtime - sip_new->pingtime;
-                if (delta < 0)
-                {
-                    /* old has better ping time */
-                    break;
-                }
-                else if (delta == 0)
-                {
-                    delta = strcmp(sip_old->domain, sip_new->domain);
-                    if (delta < 0)
-                    {
-                        break;
-                    }
-                    else if (delta == 0)
-                    {
-                        delta = strcmp(sip_old->hostname, sip_new->hostname);
-                        if (delta < 0)
-                        {
-                            break;
-                        }
-                    }
-                    else if (delta == 0)
-                    {
-                        if (sip_old->port < sip_new->port)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+            sip->domain = Get_domain_from_hostname(sip->hostname.data());
         }
-        if (!List_insert(new_list, it, sip_old))
-        {
-            error("Not enough memory\n");
-            Delete_server_info(sip_old);
-        }
-    }
-
-#if 0
-    /* print for debugging */
-    printf("\n");
-    printf("Printing server list:\n");
-    for (it = List_begin(new_list); it != List_end(new_list); LI_FORWARD(it))
-    {
-        sip_new = SI_DATA(it);
-        printf("%2d %5s %-31s %u", sip_new->users, sip_new->domain,
-               sip_new->hostname, sip_new->port);
-        if (sip_new->pingtime == PING_UNKNOWN)
-            printf("%8s", "unknown");
-        else if (sip_new->pingtime == PING_NORESP)
-            printf("%8s", "no resp");
-        else if (sip_new->pingtime == PING_SLOW)
-            printf("%8s", "s-l-o-w");
         else
-            printf("%8u", sip_new->pingtime);
-        printf("\n");
+        {
+            sip->domain = "~~";
+        }
     }
-    printf("\n");
-#endif
 
-    List_delete(old_list);
-    server_list = new_list;
+    std::sort(server_list.begin(), server_list.end(),
+              [](const server_info_t *a, const server_info_t *b)
+              {
+                  if (a->users != b->users)
+                      return a->users > b->users;
 
+                  if (a->pingtime != b->pingtime)
+                      return a->pingtime < b->pingtime;
+
+                  if (a->domain != b->domain)
+                      return a->domain < b->domain;
+
+                  if (a->hostname != b->hostname)
+                      return a->hostname < b->hostname;
+
+                  return a->port < b->port;
+              });
+
+    server_it = server_list.begin();
     return 0;
 }
 
@@ -210,22 +154,14 @@ int Welcome_sort_server_list(void)
  */
 int Add_server_info(server_info_t *sip)
 {
-    list_iter_t it;
-    server_info_t *it_sip;
+    if (!sip)
+        return -1;
 
-    if (!server_list)
+    auto it = server_list.begin();
+    for (; it != server_list.end(); ++it)
     {
-        server_list = List_new();
-        if (!server_list)
-        {
-            error("Not enough memory\n");
-            return -1;
-        }
-    }
-    for (it = List_begin(server_list); it != List_end(server_list);
-         LI_FORWARD(it))
-    {
-        it_sip = SI_DATA(it);
+        server_info_t *it_sip = *it;
+
         /* sort on IP. */
         if (it_sip->ip < sip->ip)
             continue;
@@ -246,22 +182,20 @@ int Add_server_info(server_info_t *sip)
                 }
                 else
                 {
-                    it = List_erase(server_list, it);
+                    Delete_server_info(it_sip);
+                    it = server_list.erase(it);
                     /* printf("duplicate: replacing\n"); */
                 }
             }
         }
         break;
     }
-    if (!List_insert(server_list, it, sip))
-    {
-        error("Not enough memory\n");
-        return -1;
-    }
+
+    server_list.insert(it, sip);
 
     /* print for debugging */
     D(printf("list size = %d after %08x, %d\n",
-             List_size(server_list), sip->ip, sip->port));
+             (int)server_list.size(), sip->ip, sip->port));
 
     return 0;
 }
@@ -305,17 +239,14 @@ void Add_meta_line(char *meta_line)
     int num = 0;
     char *p;
     unsigned ip0, ip1, ip2, ip3 = 0;
-    char *text = xp_strdup(meta_line);
+    std::string text = meta_line ? meta_line : "";
     server_info_t *sip;
 
-    if (!text)
-    {
-        error("Not enough memory\n");
+    if (text.empty())
         return;
-    }
 
     /* split line into fields. */
-    for (p = my_strtok(text, ":"); p; p = my_strtok(NULL, ":"))
+    for (p = my_strtok(text.data(), ":"); p; p = my_strtok(NULL, ":"))
     {
         if (num < NUM_META_DATA_FIELDS)
         {
@@ -325,23 +256,15 @@ void Add_meta_line(char *meta_line)
     if (num < NUM_META_DATA_FIELDS)
     {
         /* should not happen, except maybe for last line. */
-        free(text);
         return;
     }
-    if (fields[0] != text)
+    if (fields[0] != text.data())
     {
         /* sanity check, should not happen. */
-        free(text);
         return;
     }
 
-    if ((sip = (server_info_t *)malloc(sizeof(server_info_t))) == NULL)
-    {
-        error("Not enough memory\n");
-        free(text);
-        return;
-    }
-    memset(sip, 0, sizeof(*sip));
+    sip = new server_info_t();
     sip->pingtime = PING_UNKNOWN;
     sip->version = fields[0];
     sip->hostname = fields[1];
@@ -359,17 +282,19 @@ void Add_meta_line(char *meta_line)
     sip->ip_str = fields[15];
     sip->freebases = fields[16];
     sip->queue_str = fields[17];
+
     if (sscanf(fields[i = 2], "%u", &sip->port) != 1 ||
         sscanf(fields[i = 3], "%u", &sip->users) != 1 ||
         sscanf(fields[i = 8], "%u", &sip->bases) != 1 ||
         sscanf(fields[i = 9], "%u", &sip->fps) != 1 ||
         sscanf(fields[i = 12], "%u", &sip->uptime) != 1 ||
         sscanf(fields[i = 13], "%u", &sip->teambases) != 1 ||
-        sscanf(fields[i = 15], "%u.%u.%u.%u", &ip0, &ip1, &ip2, &ip3) != 4 || (ip0 | ip1 | ip2 | ip3) > 255 || sscanf(fields[i = 17], "%u", &sip->queue) != 1)
+        sscanf(fields[i = 15], "%u.%u.%u.%u", &ip0, &ip1, &ip2, &ip3) != 4 ||
+        (ip0 | ip1 | ip2 | ip3) > 255 ||
+        sscanf(fields[i = 17], "%u", &sip->queue) != 1)
     {
         printf("error %d in: %s\n", i, meta_line);
-        free(sip);
-        free(text);
+        delete sip;
         return;
     }
     else
@@ -378,17 +303,15 @@ void Add_meta_line(char *meta_line)
 
         // 2026-03: There's a new metaserver at 45.55.104.252, which has about 800
         // servers running the Lifeless map on IPs 136.244.224.x. I don't want to see these.
-        if (!strcmp(sip->mapname, "Lifeless"))
+        if (sip->mapname == "Lifeless")
         {
-            free(sip);
-            free(text);
+            delete sip;
             return;
         }
 
         if (Add_server_info(sip) == -1)
         {
-            free(sip);
-            free(text);
+            delete sip;
             return;
         }
     }
@@ -467,11 +390,11 @@ void Ping_servers(void)
     const int interval = 1000 / 14; /* assumes we can do 14fps of pings */
     const int tries = 1;            /* at least 1 ping for ever server.
                                      * in practice we get several */
-    int maxwait = tries * interval * List_size(server_list);
+    int maxwait = tries * interval * (int)server_list.size();
     sock_t sock;
     fd_set input_mask, readmask;
     struct timeval start, end, timeout;
-    list_iter_t it, that;
+    server_list_iter_t it, that;
     server_info_t *it_sip;
     sockbuf_t sbuf, rbuf;
     int ms;
@@ -511,15 +434,15 @@ void Ping_servers(void)
     FD_ZERO(&input_mask);
     FD_SET(sock.fd, &input_mask);
 
-    it = List_end(server_list);
+    it = server_list.end();
     outstanding = 0;
     ms = 0;
     gettimeofday(&start, NULL);
     do
     {
-        while (outstanding < (ms / interval + 1))
+        while (outstanding < (ms / interval + 1) && !server_list.empty())
         {
-            if (it == List_end(server_list))
+            if (it == server_list.end())
             {
                 ++serial;
                 serial &= 0xFF;
@@ -550,10 +473,10 @@ void Ping_servers(void)
                  * their results more accurate.
                  */
                 // Welcome_sort_server_list();
-                it = List_begin(server_list);
+                it = server_list.begin();
             }
-            it_sip = SI_DATA(it);
-            sock_send_dest(&sock, it_sip->ip_str, it_sip->port,
+            it_sip = *it;
+            sock_send_dest(&sock, it_sip->ip_str.c_str(), it_sip->port,
                            sbuf.buf, sbuf.len);
             gettimeofday(&it_sip->start, NULL);
             /* if it has never been pinged (pung?) mark it now
@@ -564,7 +487,7 @@ void Ping_servers(void)
 
             it_sip->serial = serial;
             outstanding++;
-            LI_FORWARD(it);
+            ++it;
         }
         timeout.tv_sec = 0;
         timeout.tv_usec = (interval - (ms % interval)) * 1000;
@@ -592,11 +515,10 @@ void Ping_servers(void)
 
         reply_ip = sock_get_last_addr(&sock);
         reply_port = sock_get_last_port(&sock);
-        for (that = List_begin(server_list);
-             that != List_end(server_list); LI_FORWARD(that))
+        for (that = server_list.begin(); that != server_list.end(); ++that)
         {
-            it_sip = SI_DATA(that);
-            if (!strcmp(it_sip->ip_str, reply_ip) && reply_port == it_sip->port)
+            it_sip = *that;
+            if (!strcmp(it_sip->ip_str.c_str(), reply_ip) && reply_port == (int)it_sip->port)
             {
                 int n;
 
@@ -631,18 +553,12 @@ void Ping_servers(void)
  */
 void Delete_server_list(void)
 {
-    server_info_t *sip;
+    for (server_info_t *sip : server_list)
+        Delete_server_info(sip);
 
-    if (server_list)
-    {
-        while ((sip =
-                    (server_info_t *)List_pop_front(server_list)) != NULL)
-            Delete_server_info(sip);
-        List_delete(server_list);
-        server_list = NULL;
-        server_list_creation_time = 0;
-    }
-    server_it = NULL;
+    server_list.clear();
+    server_list_creation_time = 0;
+    server_it = server_list.end();
 }
 
 /*
@@ -650,15 +566,7 @@ void Delete_server_list(void)
  */
 void Delete_server_info(server_info_t *sip)
 {
-    if (sip)
-    {
-        if (sip->version)
-        {
-            free(sip->version);
-            sip->version = NULL;
-        }
-        free(sip);
-    }
+    delete sip;
 }
 
 /*
@@ -804,7 +712,7 @@ int Get_meta_data(void)
                     {
                         --senders;
                         if (senders == 0 &&
-                            server_list && List_size(server_list) >= 30)
+                            !server_list.empty() && (int)server_list.size() >= 30)
                         {
                             /*
                              * Assume that this meta has sent us all there is
@@ -876,9 +784,7 @@ int Get_meta_data(void)
         }
     }
 
-    server_count = 0;
-    if (server_list)
-        server_count = List_size(server_list);
+    server_count = (int)server_list.size();
 
     if (server_count > 0)
     {
@@ -891,5 +797,6 @@ int Get_meta_data(void)
 
     // Welcome_create_label(1, buf);
 
+    server_it = server_list.begin();
     return server_count;
 }

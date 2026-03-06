@@ -501,7 +501,7 @@ int sock_receive_any(sock_t *sock, char *buf, int len)
     return count;
 }
 
-int sock_send_dest(sock_t *sock, char *host, int port, char *buf, int len)
+int sock_send_dest(sock_t *sock, const char *host, int port, char *buf, int len)
 {
     struct sockaddr_in dest;
     struct hostent *hp;

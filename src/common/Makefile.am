@@ -13,8 +13,6 @@ libxpcommon_a_SOURCES = \
     const.h \
     item.h \
     keys.h \
-    list.cpp \
-    list.h \
     net.cpp \
     net.h \
     packet.h \

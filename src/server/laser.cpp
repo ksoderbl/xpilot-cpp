@@ -377,7 +377,6 @@ static void Laser_pulse_get_object_list(
 {
     double dx, dy;
     int range;
-    list_iter_t iter;
     object_t *ast;
 
     obj_list.clear();

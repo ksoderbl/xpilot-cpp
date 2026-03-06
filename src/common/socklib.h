@@ -98,7 +98,7 @@ char *sock_get_last_addr(sock_t *sock);
 char *sock_get_last_name(sock_t *sock);
 int sock_read(sock_t *sock, char *buf, int len);
 int sock_receive_any(sock_t *sock, char *buf, int len);
-int sock_send_dest(sock_t *sock, char *host, int port, char *buf, int len);
+int sock_send_dest(sock_t *sock, const char *host, int port, char *buf, int len);
 int sock_write(sock_t *sock, char *buf, int len);
 char *sock_get_addr_by_name(const char *name);
 unsigned long sock_get_inet_by_addr(char *dotaddr);
