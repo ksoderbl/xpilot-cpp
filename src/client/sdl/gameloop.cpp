@@ -20,6 +20,11 @@
 
 #include <SDL2/SDL.h>
 
+#include "xperror.h"
+
+#include "client.h"
+#include "netclient.h"
+
 extern int Process_event(SDL_Event *evt);
 
 void Game_loop(void)

@@ -122,6 +122,14 @@ if test "x$enable_sdl_client" != xno; then
     ])
 fi
 
+# Option to enable/disable the generic SDL game loop
+AC_ARG_ENABLE([sdl-gameloop],
+  AS_HELP_STRING([--enable-sdl-gameloop],
+                 [build SDL client with generic SDL game loop instead of X11 game loop]),
+  [enable_sdl_gameloop=$enableval],
+  [enable_sdl_gameloop=no]
+)
+
 AM_CONDITIONAL([COND_CLIENT], [test x$need_libxpclient = xyes])
 AM_CONDITIONAL([COND_WINDOWS], [test x$windows_target = xyes])
 AM_CONDITIONAL([COND_REPLAY], [test x$enable_replay = xyes])

@@ -753,6 +753,7 @@ enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
 enable_sdl_client
+enable_sdl_gameloop
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1419,6 +1420,8 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --enable-sdl-client     build SDL client (default: auto)
+  --enable-sdl-gameloop   build SDL client with generic SDL game loop instead
+                          of X11 game loop
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -6434,6 +6437,18 @@ printf "%s\n" "yes" >&6; }
         have_sdl_client=yes
 fi
 fi
+
+# Option to enable/disable the generic SDL game loop
+# Check whether --enable-sdl-gameloop was given.
+if test ${enable_sdl_gameloop+y}
+then :
+  enableval=$enable_sdl_gameloop; enable_sdl_gameloop=$enableval
+else case e in #(
+  e) enable_sdl_gameloop=no
+ ;;
+esac
+fi
+
 
  if test x$need_libxpclient = xyes; then
   COND_CLIENT_TRUE=
