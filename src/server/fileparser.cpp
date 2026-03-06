@@ -160,6 +160,7 @@ static char *getMultilineValue(char **map_ptr, char *delimiter)
  * expand: name
  *
  */
+
 // in commonmacros
 #undef EXPAND
 
@@ -207,7 +208,7 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
         return;
     }
     /*
-     *Skip lines that start with the end of the file... :')
+     * Skip lines that start with the end of the file... :')
      */
     if (ich == '\0')
     {
@@ -355,10 +356,7 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
     }
 #endif
     else
-    {
-        // printf("parseLine! option: name %s, value %s\n", name, value);
         Option_set_value(name, value, override, opt_origin);
-    }
 
     if (multiline)
         free(value);
@@ -366,6 +364,7 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
     free(head);
     return;
 }
+
 #undef EXPAND
 
 /*
@@ -387,15 +386,15 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
     /*
      * First try the xp2 map format
      */
-    // if (isXp2MapFile(ifile))
-    // {
-    //     is_polygon_map = true;
-    //     return parseXp2MapFile(FileName, opt_origin);
-    // }
+    if (isXp2MapFile(ifile))
+    {
+        is_polygon_map = true;
+        return parseXp2MapFile(FileName, opt_origin);
+    }
 
     /*
      * Using a 200 map sample, the average map size is 37k. This chunk
-     * size could be increased to avoid lots of    reallocs.
+     * size could be increased to avoid lots of reallocs.
      */
 #define MAP_CHUNK_SIZE 8192
 
@@ -449,6 +448,7 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
          * Parse all the lines in the file.
          */
         char *map_ptr = map_buf;
+
         while (*map_ptr)
             parseLine(&map_ptr, opt_origin);
     }
@@ -468,6 +468,7 @@ static int copyFilename(const char *file)
 static FILE *fileOpen(const char *file)
 {
     FILE *fp = fopen(file, "r");
+
     if (fp)
     {
         if (!copyFilename(file))
@@ -506,6 +507,7 @@ static bool hasMapExtension(const char *filename)
 static bool hasDirectoryPrefix(const char *filename)
 {
     static const char sep = '/';
+
     return (strchr(filename, sep) != NULL ? true : false);
 }
 
@@ -627,17 +629,21 @@ static FILE *openCompressedFile(const char *filename)
  * or compress filename extension.
  * The search order should be:
  *      filename
- *      filename.gz              if COMPRESSED_MAPS is true
+ *      filename.gz                   if CONF_COMPRESSED_MAPS is true
+ *      filename.xp2
+ *      filename.xp2.gz               if CONF_COMPRESSED_MAPS is true
  *      filename.xp
- *      filename.xp.gz           if COMPRESSED_MAPS is true
+ *      filename.xp.gz                if CONF_COMPRESSED_MAPS is true
  *      filename.map
- *      filename.map.gz          if COMPRESSED_MAPS is true
- *      MAPDIR filename
- *      MAPDIR filename.gz       if COMPRESSED_MAPS is true
- *      MAPDIR filename.xp
- *      MAPDIR filename.xp.gz    if COMPRESSED_MAPS is true
- *      MAPDIR filename.map
- *      MAPDIR filename.map.gz   if COMPRESSED_MAPS is true
+ *      filename.map.gz               if CONF_COMPRESSED_MAPS is true
+ *      CONF_MAPDIR filename
+ *      CONF_MAPDIR filename.gz       if CONF_COMPRESSED_MAPS is true
+ *      CONF_MAPDIR filename.xp2
+ *      CONF_MAPDIR filename.xp2.gz   if CONF_COMPRESSED_MAPS is true
+ *      CONF_MAPDIR filename.xp
+ *      CONF_MAPDIR filename.xp.gz    if CONF_COMPRESSED_MAPS is true
+ *      CONF_MAPDIR filename.map
+ *      CONF_MAPDIR filename.map.gz   if CONF_COMPRESSED_MAPS is true
  */
 static FILE *openMapFile(const char *filename)
 {
@@ -753,8 +759,6 @@ bool parseMapFile(const char *filename)
 
 void expandKeyword(const char *keyword)
 {
-    printf("expandKeyword: '%s'", keyword);
-
     optOrigin expand_origin;
     char *p;
 
