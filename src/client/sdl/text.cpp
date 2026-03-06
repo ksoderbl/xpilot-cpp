@@ -371,7 +371,7 @@ fontbounds printsize(font_data *ft_font, const char *fmt, ...)
     return nprintsize(ft_font, BUFSIZE, "%s", text);
 }
 
-bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
+bool render_text(font_data *ft_font, const std::string &text, string_tex_t *string_tex)
 {
     SDL_Color white = {0xFF, 0xFF, 0xFF, 0x00};
     SDL_Color *forecol;
@@ -379,6 +379,7 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
     SDL_Surface *glyph = NULL;
     SDL_Rect src, dest;
     GLenum gl_error;
+    const std::string rendered_text = text.empty() ? " " : text;
 
     if (!(ft_font))
         return false;
@@ -387,29 +388,32 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
     if (!(string_tex))
         return false;
 #if 0
-    if (!strlen(text)) return false; /* something is printing an empty string each frame */
+    if (text.empty()) return false; /* something is printing an empty string each frame */
 #else
     /* kps - fix for empty author field in cannon dodgers */
-    if (!strlen(text))
-        text = " ";
 #endif
 
     forecol = &white;
 
     string_tex->font_height = ft_font->h;
 
-    string_glyph = TTF_RenderText_Blended(ft_font->ttffont, text, *forecol);
+    string_glyph = TTF_RenderText_Blended(ft_font->ttffont, rendered_text.c_str(), *forecol);
+    if (!string_glyph)
+    {
+        printf("TTF_RenderText_Blended failed for [%s]\n", rendered_text.c_str());
+        return false;
+    }
 
-    string_tex->tex_list = Arraylist_alloc(sizeof(tex_t));
-
+    string_tex->clear();
     string_tex->width = 0;
     string_tex->height = string_glyph->h;
+    string_tex->text = rendered_text;
 
-    if (string_glyph)
     {
-        int i, num = 1 + string_glyph->w / 254;
-        string_tex->text = (char *)malloc(sizeof(char) * (strlen(text) + 1));
-        sprintf(string_tex->text, "%s", text);
+        int i;
+        int num = 1 + string_glyph->w / 254;
+        string_tex->tex_list.reserve(num);
+
         for (i = 0; i < num; ++i)
         {
             tex_t tex;
@@ -431,6 +435,12 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
             src.h = dest.h = string_glyph->h;
 
             glyph = SDL_CreateRGBSurface(0, dest.w, dest.h, 32, 0, 0, 0, 0);
+            if (!glyph)
+            {
+                SDL_FreeSurface(string_glyph);
+                return false;
+            }
+
             SDL_SetColorKey(
                 glyph,
                 SDL_TRUE,
@@ -447,15 +457,11 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
 
             SDL_FreeSurface(glyph);
 
-            Arraylist_add(string_tex->tex_list, &tex);
+            string_tex->tex_list.push_back(tex);
         }
-        SDL_FreeSurface(string_glyph);
     }
-    else
-    {
-        printf("TTF_RenderText_Blended failed for [%s]\n", text);
-        return false;
-    }
+
+    SDL_FreeSurface(string_glyph);
     return true;
 }
 
@@ -475,7 +481,7 @@ bool draw_text_fraq(font_data *ft_font, int color, int XALIGN, int YALIGN, int x
     if (!string_tex)
     {
         remove_tex = true;
-        string_tex = XMALLOC(string_tex_t, 1);
+        string_tex = new string_tex_t();
     }
 
     if (render_text(ft_font, text, string_tex))
@@ -484,7 +490,11 @@ bool draw_text_fraq(font_data *ft_font, int color, int XALIGN, int YALIGN, int x
     }
 
     if (!savetex || remove_tex)
+    {
         free_string_texture(string_tex);
+        if (remove_tex)
+            delete string_tex;
+    }
 
     return true;
 }
@@ -496,7 +506,8 @@ void disp_text(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int 
 
 void disp_text_fraq(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int x, int y, float xstart, float xstop, float ystart, float ystop, bool onHUD)
 {
-    int i, num, xpos;
+    int xpos;
+    std::vector<tex_t>::const_iterator it;
 
     if (!(string_tex))
         return;
@@ -509,10 +520,9 @@ void disp_text_fraq(string_tex_t *string_tex, int color, int XALIGN, int YALIGN,
         pushScreenCoordinateMatrix();
 
     xpos = x;
-    num = Arraylist_get_num_elements(string_tex->tex_list);
-    for (i = 0; i < num; ++i)
+    for (it = string_tex->tex_list.begin(); it != string_tex->tex_list.end(); ++it)
     {
-        tex_t tex = *((tex_t *)Arraylist_get(string_tex->tex_list, i));
+        const tex_t &tex = *it;
 
         glBindTexture(GL_TEXTURE_2D, tex.texture);
 
@@ -546,21 +556,7 @@ void disp_text_fraq(string_tex_t *string_tex, int color, int XALIGN, int YALIGN,
 void free_string_texture(string_tex_t *string_tex)
 {
     if (string_tex)
-    {
-        if (string_tex->tex_list)
-        {
-            int i, num = Arraylist_get_num_elements(string_tex->tex_list);
-            for (i = 0; i < num; ++i)
-            {
-                tex_t tex;
-                tex = *((tex_t *)Arraylist_get(string_tex->tex_list, i));
-                glDeleteTextures(1, &(tex.texture));
-            }
-            Arraylist_free(string_tex->tex_list);
-            string_tex->tex_list = NULL;
-        }
-        XFREE(string_tex->text);
-    }
+        string_tex->clear();
 }
 
 void print(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, int length, const char *text, bool onHUD)

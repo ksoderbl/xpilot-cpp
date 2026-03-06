@@ -99,7 +99,7 @@ extern GLWidget *clicktarget[NUM_MOUSE_BUTTONS];
 extern GLWidget *hovertarget;
 
 /* puts text into the copy buffer */
-void load_textscrap(char *text);
+void load_textscrap(const std::string &text);
 /****************************************************/
 /* END: Main GLWidget stuff                         */
 /****************************************************/

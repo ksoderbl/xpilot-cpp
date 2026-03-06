@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004  Erik Andersson <deity_at_home.se>
+ * Copyright (C) 2003-2004  Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,12 @@
 #ifndef TEXT_H
 #define TEXT_H
 
+#include <string>
+#include <utility>
 #include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-
-#include "arraylist.h"
 
 #include "sdlpaint.h"
 
@@ -63,14 +63,39 @@ typedef struct
     int width;
 } tex_t;
 
-typedef struct
+struct string_tex_t
 {
-    arraylist_t *tex_list;
-    char *text;
-    int width;
-    int height;
-    int font_height;
-} string_tex_t;
+    std::vector<tex_t> tex_list;
+    std::string text;
+    int width = 0;
+    int height = 0;
+    int font_height = 0;
+
+    void clear()
+    {
+        for (auto &tex : tex_list)
+        {
+            if (tex.texture != 0)
+                glDeleteTextures(1, &tex.texture);
+        }
+        tex_list.clear();
+        text.clear();
+        width = 0;
+        height = 0;
+        font_height = 0;
+    }
+
+    ~string_tex_t()
+    {
+        clear();
+    }
+
+    string_tex_t() = default;
+    string_tex_t(const string_tex_t &) = delete;
+    string_tex_t &operator=(const string_tex_t &) = delete;
+    string_tex_t(string_tex_t &&) noexcept = default;
+    string_tex_t &operator=(string_tex_t &&) noexcept = default;
+};
 
 extern int renderstyle;
 extern enum rendertype {
@@ -114,7 +139,7 @@ void mapprint(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int 
 
 bool draw_text(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *text, bool savetex, string_tex_t *string_tex, bool onHUD);
 bool draw_text_fraq(font_data *ft_font, int color, int XALIGN, int YALIGN, int x, int y, const char *text, float xstart, float xstop, float ystart, float ystop, bool savetex, string_tex_t *string_tex, bool onHUD);
-bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex);
+bool render_text(font_data *ft_font, const std::string &text, string_tex_t *string_tex);
 void disp_text(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int x, int y, bool onHUD);
 void disp_text_fraq(string_tex_t *string_tex, int color, int XALIGN, int YALIGN, int x, int y, float xstart, float xstop, float ystart, float ystop, bool onHUD);
 void free_string_texture(string_tex_t *string_tex);

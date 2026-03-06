@@ -1559,7 +1559,7 @@ void Paint_score_objects(void)
                 if (wrap(&x, &y))
                 {
                     /*mapprint(&mapfont,scoreObjectColorRGBA,CENTER,CENTER,x,y,"%s",sobj->msg);*/
-                    if (!score_object_texs[i].tex_list || strcmp(sobj->msg, score_object_texs[i].text))
+                    if (score_object_texs[i].tex_list.empty() || score_object_texs[i].text != sobj->msg)
                     {
                         free_string_texture(&score_object_texs[i]);
                         draw_text(&mapfont, scoreObjectColorRGBA, CENTER, CENTER, x, y, sobj->msg, true, &score_object_texs[i], false);
@@ -1577,7 +1577,7 @@ void Paint_score_objects(void)
         }
         else
         {
-            if (score_object_texs[i].tex_list)
+            if (!score_object_texs[i].tex_list.empty())
                 free_string_texture(&score_object_texs[i]);
         }
     }
@@ -2118,11 +2118,11 @@ void Paint_HUD(void)
         tex_index = 0;
         if (strcmp(str, hud_texts[tex_index]) != 0)
         {
-            if (HUD_texs[tex_index].tex_list)
+            if (!HUD_texs[tex_index].tex_list.empty())
                 free_string_texture(&HUD_texs[tex_index]);
             strlcpy(hud_texts[tex_index], str, 50);
         }
-        if (!HUD_texs[tex_index].tex_list)
+        if (HUD_texs[tex_index].tex_list.empty())
             render_text(&gamefont, str, &HUD_texs[tex_index]);
         disp_text(&HUD_texs[tex_index], hudColorRGBA, LEFT, DOWN, hud_pos_x + hudSize - HUD_OFFSET + BORDER, hud_pos_y - (hudSize - HUD_OFFSET + BORDER), true);
 
@@ -2136,11 +2136,11 @@ void Paint_HUD(void)
             tex_index = 1;
             if (strcmp(str, hud_texts[tex_index]) != 0)
             {
-                if (HUD_texs[tex_index].tex_list)
+                if (!HUD_texs[tex_index].tex_list.empty())
                     free_string_texture(&HUD_texs[tex_index]);
                 strlcpy(hud_texts[tex_index], str, 50);
             }
-            if (!HUD_texs[tex_index].tex_list)
+            if (HUD_texs[tex_index].tex_list.empty())
                 render_text(&gamefont, str, &HUD_texs[tex_index]);
             disp_text(&HUD_texs[tex_index], hudColorRGBA, LEFT, DOWN, hud_pos_x + hudSize - HUD_OFFSET + BORDER, hud_pos_y - hudSize - HUD_OFFSET + BORDER, true);
         }
@@ -2168,11 +2168,11 @@ void Paint_HUD(void)
                 tex_index = MAX_HUD_TEXS + i;
                 if (strcmp(sobj->hud_msg, hud_texts[tex_index]) != 0)
                 {
-                    if (HUD_texs[tex_index].tex_list)
+                    if (!HUD_texs[tex_index].tex_list.empty())
                         free_string_texture(&HUD_texs[tex_index]);
                     strlcpy(hud_texts[tex_index], sobj->hud_msg, 50);
                 }
-                if (!HUD_texs[tex_index].tex_list)
+                if (HUD_texs[tex_index].tex_list.empty())
                     render_text(&gamefont, sobj->hud_msg, &HUD_texs[tex_index]);
 
                 disp_text(&HUD_texs[tex_index], hudColorRGBA, CENTER, DOWN, hud_pos_x, hud_pos_y - (hudSize - HUD_OFFSET + BORDER + j * HUD_texs[tex_index].height), true);
@@ -2186,11 +2186,11 @@ void Paint_HUD(void)
             tex_index = 3;
             if (strcmp(str, hud_texts[tex_index]) != 0)
             {
-                if (HUD_texs[tex_index].tex_list)
+                if (!HUD_texs[tex_index].tex_list.empty())
                     free_string_texture(&HUD_texs[tex_index]);
                 strlcpy(hud_texts[tex_index], str, 50);
             }
-            if (!HUD_texs[tex_index].tex_list)
+            if (HUD_texs[tex_index].tex_list.empty())
                 render_text(&gamefont, str, &HUD_texs[tex_index]);
             disp_text(&HUD_texs[tex_index], hudColorRGBA, RIGHT, DOWN, hud_pos_x - hudSize + HUD_OFFSET - BORDER, hud_pos_y + hudSize + HUD_OFFSET + BORDER, true);
         }
@@ -2200,13 +2200,13 @@ void Paint_HUD(void)
         tex_index = 4;
         if (strcmp(mods, hud_texts[tex_index]) != 0)
         {
-            if (HUD_texs[tex_index].tex_list)
+            if (!HUD_texs[tex_index].tex_list.empty())
                 free_string_texture(&HUD_texs[tex_index]);
             strlcpy(hud_texts[tex_index], mods, 50);
         }
         if (strlen(mods))
         {
-            if (!HUD_texs[tex_index].tex_list)
+            if (HUD_texs[tex_index].tex_list.empty())
                 render_text(&gamefont, mods, &HUD_texs[tex_index]);
             disp_text(&HUD_texs[tex_index], hudColorRGBA, RIGHT, UP, hud_pos_x - hudSize + HUD_OFFSET - BORDER, hud_pos_y - hudSize + HUD_OFFSET - BORDER, true);
         }
@@ -2216,11 +2216,11 @@ void Paint_HUD(void)
             tex_index = 5;
             if (strcmp(autopilot, hud_texts[tex_index]) != 0)
             {
-                if (HUD_texs[tex_index].tex_list)
+                if (!HUD_texs[tex_index].tex_list.empty())
                     free_string_texture(&HUD_texs[tex_index]);
                 strlcpy(hud_texts[tex_index], autopilot, 50);
             }
-            if (!HUD_texs[tex_index].tex_list)
+            if (HUD_texs[tex_index].tex_list.empty())
                 render_text(&gamefont, autopilot, &HUD_texs[tex_index]);
             disp_text(&HUD_texs[tex_index], hudColorRGBA, RIGHT, DOWN, hud_pos_x, hud_pos_y + hudSize + HUD_OFFSET + BORDER + HUD_texs[tex_index].height * 2, true);
         }
@@ -2408,7 +2408,7 @@ void Paint_messages(void)
                 }
                 if (strlen(msg->txt))
                 {
-                    if (strcmp(msg->txt, wi->tex.text))
+                    if (wi->tex.text != msg->txt)
                     {
                         tmp2 = Init_LabelWidget(msg->txt, &messagesColorRGBA, &nullRGBA, LEFT, CENTER);
                         ListWidget_Insert(msg_list[i], tmp, tmp2);

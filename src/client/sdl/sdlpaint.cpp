@@ -243,10 +243,10 @@ void Paint_cleanup(void)
     Images_cleanup();
 
     for (i = 0; i < MAX_SCORE_OBJECTS; ++i)
-        if (score_object_texs[i].tex_list)
+        if (!score_object_texs[i].tex_list.empty())
             free_string_texture(&score_object_texs[i]);
     for (i = 0; i < MAX_METERS; ++i)
-        if (meter_texs[i].tex_list)
+        if (!meter_texs[i].tex_list.empty())
             free_string_texture(&meter_texs[i]);
 }
 
