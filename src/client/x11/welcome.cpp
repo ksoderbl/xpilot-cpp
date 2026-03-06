@@ -751,17 +751,17 @@ static int Welcome_show_server_list(Connect_param_t *conpar)
                             queue_width, label_height, true,
                             border, sip->queue ? sip->queue_str.c_str() : "");
         Widget_create_label(subform_widget,
-                            bases_offset, yoff, true,
-                            bases_width, label_height,
+                            bases_offset, yoff,
+                            bases_width, label_height, true,
                             border, sip->bases_str.c_str());
         Widget_create_label(subform_widget,
-                            team_offset, yoff, true,
-                            team_width, label_height,
+                            team_offset, yoff,
+                            team_width, label_height, true,
                             border,
                             (sip->teambases > 0) ? sip->teambases_str.c_str() : "");
         Widget_create_label(subform_widget,
-                            fps_offset, yoff, true,
-                            fps_width, label_height,
+                            fps_offset, yoff,
+                            fps_width, label_height, true,
                             border, sip->fps_str.c_str());
 
         std::string status = sip->status;

@@ -28,6 +28,7 @@
 
 void Widget_destroy_children(int widget_desc);
 void Widget_destroy(int widget_desc);
+void Widget_cleanup(void);
 Window Widget_window(int widget_desc);
 void Widget_draw(int widget_desc);
 int Widget_event(XEvent *event);
@@ -98,5 +99,7 @@ int Widget_create_viewer(const char *buf, int len,
                          const char *window_name, const char *icon_name,
                          XFontStruct *font);
 int Widget_update_viewer(int popup_desc, const char *buf, int len);
+
+void Widget_cleanup(void);
 
 #endif

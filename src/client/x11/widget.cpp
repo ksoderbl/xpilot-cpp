@@ -88,9 +88,9 @@ typedef struct widget_form
 
 typedef struct widget_label
 {
-    const char *str; /* Label string */
-    int x_offset,    /* String horizontal offset */
-        y_offset;    /* String vertical offset */
+    char *str;      /* Owned label string */
+    int x_offset,   /* String horizontal offset */
+        y_offset;   /* String vertical offset */
 } widget_label_t;
 
 typedef struct widget_bool
@@ -105,14 +105,14 @@ typedef struct widget_bool
 typedef struct widget_menu
 {
     bool pressed;      /* If button press active */
-    const char *str;   /* Label string */
+    char *str;         /* Owned label string */
     int pulldown_desc; /* Pulldown widget descriptor */
 } widget_menu_t;
 
 typedef struct widget_entry
 {
     bool inside;     /* If pointer inside window */
-    const char *str; /* Label string */
+    char *str;       /* Owned label string */
     int (*callback)(int, void *, const char **);
     void *user_data;
 } widget_entry_t;
@@ -121,7 +121,7 @@ typedef struct widget_activate
 {
     bool pressed;    /* If button press active */
     bool inside;     /* If pointer inside window */
-    const char *str; /* Label string */
+    char *str;       /* Owned label string */
     int (*callback)(int, void *, const char **);
     void *user_data;
 } widget_activate_t;
@@ -203,6 +203,22 @@ static int Widget_resize(int widget_desc, int width, int height);
 
 static widget_t *widgets;
 static int num_widgets, max_widgets;
+
+static char *Widget_strdup(const char *str)
+{
+    char *copy;
+    size_t len;
+
+    if (str == NULL)
+        str = "";
+
+    len = strlen(str) + 1;
+    if ((copy = XMALLOC(char, len)) == NULL)
+        return NULL;
+
+    memcpy(copy, str, len);
+    return copy;
+}
 
 static void Widget_window_gravity(Window w, int gravity)
 {
@@ -315,6 +331,30 @@ void Widget_destroy(int widget_desc)
             }
             else if (w_type == WIDGET_VIEWER)
                 Widget_destroy_viewer(w);
+            else if (w_type == WIDGET_LABEL)
+            {
+                widget_label_t *labelw = (widget_label_t *)w->sub;
+                free(labelw->str);
+                labelw->str = NULL;
+            }
+            else if (w_type == WIDGET_BUTTON_MENU)
+            {
+                widget_menu_t *menuw = (widget_menu_t *)w->sub;
+                free(menuw->str);
+                menuw->str = NULL;
+            }
+            else if (w_type == WIDGET_BUTTON_ENTRY)
+            {
+                widget_entry_t *entryw = (widget_entry_t *)w->sub;
+                free(entryw->str);
+                entryw->str = NULL;
+            }
+            else if (w_type == WIDGET_BUTTON_ACTIVATE)
+            {
+                widget_activate_t *activw = (widget_activate_t *)w->sub;
+                free(activw->str);
+                activw->str = NULL;
+            }
             free(w->sub);
             w->sub = NULL;
         }
@@ -1112,9 +1152,12 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
                     continue;
                 entryw->inside = false;
                 if (entryw->callback)
+                {
+                    const char *entry_text = entryw->str;
                     (*entryw->callback)(pullw->children[i],
                                         entryw->user_data,
-                                        &entryw->str);
+                                        &entry_text);
+                }
             }
         }
         break;
@@ -1131,9 +1174,10 @@ static void Widget_button(XEvent *event, int widget_desc, bool pressed)
         Widget_draw(widget_desc);
         if (pressed == false && activw->callback)
         {
+            const char *activate_text = activw->str;
             if ((*activw->callback)(widget_desc,
                                     activw->user_data,
-                                    &activw->str) == 1)
+                                    &activate_text) == 1)
                 Widget_draw(widget_desc);
         }
         break;
@@ -1544,7 +1588,13 @@ int Widget_create_activate(int parent_desc,
     }
     activw->pressed = false;
     activw->inside = false;
-    activw->str = str;
+    activw->str = Widget_strdup(str);
+    if (activw->str == NULL)
+    {
+        free(activw);
+        error("No memory for activate text");
+        return NO_WIDGET;
+    }
     activw->callback = callback;
     activw->user_data = user_data;
     window =
@@ -1690,7 +1740,13 @@ int Widget_add_pulldown_entry(int menu_desc, const char *str,
         return NO_WIDGET;
     }
     entryw->inside = false;
-    entryw->str = str;
+    entryw->str = Widget_strdup(str);
+    if (entryw->str == NULL)
+    {
+        free(entryw);
+        error("No memory for entry text");
+        return NO_WIDGET;
+    }
     entryw->callback = callback;
     entryw->user_data = user_data;
 
@@ -1746,7 +1802,13 @@ int Widget_create_menu(int parent_desc,
         return NO_WIDGET;
     }
     menuw->pressed = false;
-    menuw->str = str;
+    menuw->str = Widget_strdup(str);
+    if (menuw->str == NULL)
+    {
+        free(menuw);
+        error("No memory for menu text");
+        return NO_WIDGET;
+    }
     menuw->pulldown_desc = NO_WIDGET;
     window =
         XCreateSimpleWindow(dpy, parent_widget->window,
@@ -1924,9 +1986,15 @@ int Widget_create_label(int parent_desc,
         error("No memory for label widget");
         return NO_WIDGET;
     }
-    labelw->str = str;
+    labelw->str = Widget_strdup(str);
+    if (labelw->str == NULL)
+    {
+        free(labelw);
+        error("No memory for label text");
+        return NO_WIDGET;
+    }
     if (centered)
-        labelw->x_offset = (width - XTextWidth(textFont, str, (int)strlen(str))) / 2;
+        labelw->x_offset = (width - XTextWidth(textFont, labelw->str, (int)strlen(labelw->str))) / 2;
     else
         labelw->x_offset = 5;
     labelw->y_offset = (height - (textFont->ascent + textFont->descent)) / 2;
@@ -1970,9 +2038,15 @@ int Widget_create_colored_label(int parent_desc,
         error("No memory for label widget");
         return NO_WIDGET;
     }
-    labelw->str = str;
+    labelw->str = Widget_strdup(str);
+    if (labelw->str == NULL)
+    {
+        free(labelw);
+        error("No memory for label text");
+        return NO_WIDGET;
+    }
     if (centered)
-        labelw->x_offset = (width - XTextWidth(textFont, str, (int)strlen(str))) / 2;
+        labelw->x_offset = (width - XTextWidth(textFont, labelw->str, (int)strlen(labelw->str))) / 2;
     else
         labelw->x_offset = 5;
     labelw->y_offset = (height - (textFont->ascent + textFont->descent)) / 2;
@@ -2666,5 +2740,11 @@ int Widget_update_viewer(int popup_desc, const char *buf, int len)
 
 void Widget_cleanup(void)
 {
-    XFREE(widgets);
+    if (widgets)
+    {
+        free(widgets);
+        widgets = NULL;
+    }
+    num_widgets = 0;
+    max_widgets = 0;
 }
