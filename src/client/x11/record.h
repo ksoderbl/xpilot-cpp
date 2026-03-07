@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <X11/Xlib.h>
+
 /*
  * Structure to call all user-interface drawing routines
  * which are modified versions when recording is active.

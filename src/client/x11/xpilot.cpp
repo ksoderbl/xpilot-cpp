@@ -51,6 +51,11 @@
 
 #include "client.h"
 #include "configure.h"
+#include "guimap.h"
+#include "guiobjects.h"
+#include "record.h"
+#include "talk.h"
+
 #include "xinit.h"
 
 // In xdefault.cpp
@@ -169,11 +174,11 @@ int main(int argc, char *argv[])
     Store_hud_options();
     Store_paintradar_options();
     Store_xpaint_options();
-    // Store_guimap_options();
-    // Store_guiobject_options();
-    // Store_talk_macro_options();
+    Store_guimap_options();
+    Store_guiobject_options();
+    Store_talk_macro_options();
     Store_key_options();
-    // Store_record_options();
+    Store_record_options();
     Store_color_options();
 
     /*
