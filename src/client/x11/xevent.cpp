@@ -58,7 +58,10 @@
 
 extern char *talk_fast_msgs[]; /* talk macros */
 
-// static BITV_DECL(keyv, NUM_KEYS);
+int talk_key_repeating;
+XEvent talk_key_repeat_event;
+struct timeval talk_key_repeat_time;
+static struct timeval time_now;
 
 static ipos_t delta;
 ipos_t mousePosition; /* position of mouse pointer. */
@@ -66,48 +69,9 @@ int mouseMovement;    /* horizontal mouse movement. */
 
 keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
-    // warn("Lookup_key: event type %d, keysym 0x%03lx, reset %d", event->type, ks, reset);
+    keys_t ret = Generic_lookup_key((xp_keysym_t)ks, reset);
 
-    keys_t ret = KEY_DUMMY;
-    static int i = 0;
-
-    if (reset)
-    {
-        /* binary search since keyDefs is sorted on keysym. */
-        int lo = 0, hi = maxKeyDefs - 1;
-        while (lo < hi)
-        {
-            i = (lo + hi) >> 1;
-            if (ks > keyDefs[i].keysym)
-            {
-                lo = i + 1;
-            }
-            else
-            {
-                hi = i;
-            }
-        }
-        if (lo == hi && ks == keyDefs[lo].keysym)
-        {
-            while (lo > 0 && ks == keyDefs[lo - 1].keysym)
-            {
-                lo--;
-            }
-            i = lo;
-            ret = keyDefs[i].key;
-            i++;
-        }
-    }
-    else
-    {
-        if (i < maxKeyDefs && ks == keyDefs[i].keysym)
-        {
-            ret = keyDefs[i].key;
-            i++;
-        }
-    }
-
-    // #ifdef DEVELOPMENT
+#ifdef DEVELOPMENT
     if (reset && ret == KEY_DUMMY)
     {
         static XComposeStatus compose;
@@ -120,13 +84,12 @@ keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
             warn("Unknown keysym: 0x%03lx.", ks);
         else
         {
+            warn("No action bound to keysym 0x%03lx.", ks);
             if (*str)
-                warn("No action bound to keysym 0x%03lx, which is key \"%s\"", ks, str);
-            else
-                warn("No action bound to keysym 0x%03lx", ks);
+                warn("(which is key \"%s\")", str);
         }
     }
-    // #endif
+#endif
 
     return ret;
 }
@@ -162,31 +125,13 @@ void Platform_specific_talk_set_state(bool on)
 
     if (on)
     {
-        // /* Enable talking, disable pointer control if it is enabled. */
-        // if (pointerControl)
-        // {
-        //     initialPointerControl = true;
-        //     Pointer_control_set_state(false);
-        // }
         XSelectInput(dpy, drawWindow,
                      PointerMotionMask | ButtonPressMask | ButtonReleaseMask);
         Talk_map_window(true);
     }
     else
-    {
         /* Disable talking, enable pointer control if it was enabled. */
         Talk_map_window(false);
-        // if (initialPointerControl)
-        // {
-        //     initialPointerControl = false;
-        //     Pointer_control_set_state(true);
-        // }
-    }
-}
-
-void Toggle_fullscreen(void)
-{
-    return;
 }
 
 void Toggle_radar_and_scorelist(void)
@@ -242,42 +187,28 @@ void Toggle_radar_and_scorelist(void)
     }
 }
 
+void Toggle_fullscreen(void)
+{
+    return;
+}
+
 void Key_event(XEvent *event)
 {
     KeySym ks;
-    keys_t key;
-    int change = false;
-    bool (*key_do)(keys_t key);
+
+    if ((ks = XLookupKeysym(&event->xkey, 0)) == NoSymbol)
+        return;
 
     switch (event->type)
     {
     case KeyPress:
-        key_do = Key_press;
-        // Keyboard_button_pressed((xp_keysym_t)ks);
+        Keyboard_button_pressed((xp_keysym_t)ks);
         break;
     case KeyRelease:
-        key_do = Key_release;
-        // Keyboard_button_released((xp_keysym_t)ks);
+        Keyboard_button_released((xp_keysym_t)ks);
         break;
     default:
         return;
-    }
-
-    if ((ks = XLookupKeysym(&event->xkey, 0)) == NoSymbol)
-    {
-        return;
-    }
-
-    for (key = Lookup_key(event, ks, true);
-         key != KEY_DUMMY;
-         key = Lookup_key(event, ks, false))
-    {
-
-        change |= (*key_do)(key);
-    }
-    if (change)
-    {
-        Net_key_change();
     }
 }
 
@@ -287,23 +218,32 @@ void Talk_event(XEvent *event)
         Talk_set_state(false);
 }
 
-int talk_key_repeating;
-XEvent talk_key_repeat_event;
+static void Handle_talk_key_repeat(void)
+{
+    int i;
+
+    if (talk_key_repeating)
+    {
+        gettimeofday(&time_now, NULL);
+        i = 1000000 * (time_now.tv_sec - talk_key_repeat_time.tv_sec) +
+            time_now.tv_usec - talk_key_repeat_time.tv_usec;
+        if ((talk_key_repeating > 1 && i > 50000) || i > 500000)
+        {
+            Talk_event(&talk_key_repeat_event);
+            talk_key_repeating = 2;
+            talk_key_repeat_time = time_now;
+            if (!clData.talking)
+                talk_key_repeating = 0;
+        }
+    }
+}
 
 void xevent_keyboard(int queued)
 {
     int i, n;
     XEvent event;
 
-    if (talk_key_repeating > 0)
-    {
-        if (++talk_key_repeating >= FPS && (talk_key_repeating - FPS) % ((FPS + 2) / 3) == 0)
-        {
-            Talk_event(&talk_key_repeat_event);
-            if (!clData.talking)
-                talk_key_repeating = 0;
-        }
-    }
+    Handle_talk_key_repeat();
 
     if (kdpy)
     {

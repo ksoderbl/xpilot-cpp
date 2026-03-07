@@ -49,10 +49,10 @@
 
 #define MAX_BUTTON_DEFS 10
 
-BITV_DECL(keyv, NUM_KEYS);
+static BITV_DECL(keyv, NUM_KEYS);
 static uint8_t keyv_new[NUM_KEYS];
 
-keys_t todoButtonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
+keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
 
 char *pointerButtonBindings[MAX_POINTER_BUTTONS] =
     {NULL, NULL, NULL, NULL, NULL};
@@ -87,7 +87,7 @@ void Pointer_control_newbie_message(void)
                  "Mouse steering disabled. "
                  "Click background with left mouse button to enable it.");
 
-    // Add_newbie_message(msg); // TODO
+    Add_newbie_message(msg);
 }
 
 void Pointer_control_set_state(bool on)
@@ -96,8 +96,8 @@ void Pointer_control_set_state(bool on)
         return;
     Platform_specific_pointer_control_set_state(on);
     clData.pointerControl = on;
-    // if (!clData.restorePointerControl)
-    //     Pointer_control_newbie_message();
+    if (!clData.restorePointerControl)
+        Pointer_control_newbie_message();
 }
 
 void Talk_set_state(bool on)
@@ -145,27 +145,6 @@ static void Clear_buttonDefs(int ind)
     assert(ind >= 0);
     assert(ind < MAX_POINTER_BUTTONS);
     numButtonDefs[ind] = 0;
-}
-
-static int Key_set(int key, bool on)
-{
-    if (on)
-    {
-        if (!BITV_ISSET(keyv, key))
-        {
-            BITV_SET(keyv, key);
-            return true;
-        }
-    }
-    else
-    {
-        if (BITV_ISSET(keyv, key))
-        {
-            BITV_CLR(keyv, key);
-            return true;
-        }
-    }
-    return false;
 }
 
 int Key_init(void)
@@ -515,9 +494,8 @@ bool Key_press(keys_t key)
          * (should be very rare) keycount != 1 means that this key was
          * already pressed (multiple key mappings)
          */
-        // TODO: enable this
-        // if ((!countchange) || (keycount != 1))
-        //     return true;
+        if ((!countchange) || (keycount != 1))
+            return true;
     }
 
     Key_check_talk_macro(key);
@@ -658,9 +636,8 @@ bool Key_release(keys_t key)
          * keycount != 0 means that some physical keys remain pressed
          * that map to this xpilot key
          */
-        // TODO: enable
-        //    if ((!countchange) || (keycount != 0))
-        //         return true;
+        if ((!countchange) || (keycount != 0))
+            return true;
     }
 
     switch (key)
@@ -781,7 +758,7 @@ void Pointer_button_pressed(int button)
         return;
 
     for (i = 0; i < Num_buttonDefs(b_index); i++)
-        key_change |= Key_press(todoButtonDefs[b_index][i]);
+        key_change |= Key_press(buttonDefs[b_index][i]);
 
     if (key_change)
         Net_key_change();
@@ -796,7 +773,7 @@ void Pointer_button_released(int button)
         return;
 
     for (i = 0; i < Num_buttonDefs(b_index); i++)
-        key_change |= Key_release(todoButtonDefs[b_index][i]);
+        key_change |= Key_release(buttonDefs[b_index][i]);
 
     if (key_change)
         Net_key_change();
@@ -855,7 +832,7 @@ static void Bind_key_to_pointer_button(keys_t key, int ind)
         return;
     }
 
-    todoButtonDefs[ind][num_defs] = key;
+    buttonDefs[ind][num_defs] = key;
     numButtonDefs[ind]++;
 }
 

@@ -28,8 +28,8 @@
 #include <sys/types.h>
 
 #include <unistd.h>
-#include <X11/Xlib.h>
-#include <X11/Xos.h>
+// #include <X11/Xlib.h>
+// #include <X11/Xos.h>
 
 #include "commonmacros.h"
 #include "xpmath.h"
@@ -47,8 +47,8 @@
 #include "client.h"
 #include "guimap.h"
 
-int wallColor = BLUE; /* Color index for wall drawing */
-int decorColor = 6;   /* Color index for decoration drawing */
+// int wallColor = BLUE; /* Color index for wall drawing */
+// int decorColor = 6;   /* Color index for decoration drawing */
 
 extern setup_t *Setup;
 
@@ -284,10 +284,10 @@ void Paint_world(void)
         fill_bottom_left = -1,
         fill_bottom_right = -1;
     uint8_t *mapptr, *mapbase;
-    static int wallTileReady = 0;
-    static Pixmap wallTile = None;
-    int wallTileDoit = false;
-    XPoint points[5];
+    // static int wallTileReady = 0;
+    // static Pixmap wallTile = None;
+    // int wallTileDoit = false;
+    // XPoint points[5];
 
     //     if (instruments.texturedWalls) {
     //         if (!wallTileReady) {

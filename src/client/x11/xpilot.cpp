@@ -57,6 +57,7 @@
 #include "talk.h"
 
 #include "xinit.h"
+#include "xpaint.h"
 
 // In xdefault.cpp
 extern void Initialize_global_variables(void);
@@ -170,7 +171,7 @@ int main(int argc, char *argv[])
      * --- Create global option array ---
      */
     Store_default_options();
-    // Store_X_options();
+    Store_X_options();
     Store_hud_options();
     Store_paintradar_options();
     Store_xpaint_options();

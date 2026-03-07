@@ -85,12 +85,24 @@ static const char *color_defaults[MAX_COLORS] = {
 char visualName[MAX_VISUAL_NAME];
 Visual *visual;
 unsigned dispDepth;
-bool fullColor;       /* Whether to try using colors as close to
-                       * the specified ones as possible, or just
-                       * use a few standard colors for everything. */
-bool texturedObjects; /* Whether to draw bitmaps for some objects.
-                       * Previously this variable determined
-                       * fullColor too. */
+bool fullColor = false;       /* Whether to try using colors as close to
+                               * the specified ones as possible, or just
+                               * use a few standard colors for everything. */
+bool texturedObjects = false; /* Whether to draw bitmaps for some objects.
+                               * Previously this variable determined
+                               * fullColor too. */
+int maxColors;                /* Max. number of colors to use */
+XColor colors[MAX_COLORS];
+Colormap colormap; /* Private colormap */
+
+char sparkColors[MSG_LEN];
+int spark_color[MAX_COLORS];
+
+int buttonColor; /* Color index for button drawing */
+int windowColor; /* Color index for window drawing */
+int borderColor; /* Color index for border drawing */
+int wallColor;   /* Color index for wall drawing */
+int decorColor;  /* Color index for decoration drawing */
 
 /*
  * Dimensions of color cubes in decreasing
@@ -626,14 +638,15 @@ int Colors_init_bitmaps(void)
     // if (dbuf_state == NULL)
     //     return 0;
 
-    if (fullColor)
-    {
-        if (Colors_init_bitmap_colors() == -1)
-        {
-            fullColor = false;
-            texturedObjects = false;
-        }
-    }
+    // TODO: enable
+    // if (fullColor)
+    // {
+    //     if (Colors_init_bitmap_colors() == -1)
+    //     {
+    //         fullColor = false;
+    //         texturedObjects = false;
+    //     }
+    // }
 
     Colors_init_style_colors();
 

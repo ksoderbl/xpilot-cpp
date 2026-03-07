@@ -95,20 +95,26 @@
  */
 int ButtonHeight;
 Atom ProtocolAtom, KillAtom;
-int buttonColor, windowColor, borderColor;
 bool quitting = false;
 int top_x, top_y, top_posmask;
-// char *geometry;
 bool autoServerMotdPopup;
 bool refreshMotd;
 unsigned top_width, top_height;
 unsigned players_width, players_height;
 bool radar_score_mapped;
 Cursor pointerControlCursor;
-char sparkColors[MSG_LEN];
-int spark_color[MAX_COLORS];
-// int                        num_spark_colors;
 bool ignoreWindowManager;
+
+XFontStruct *gameFont; /* The fonts used in the game */
+XFontStruct *messageFont;
+XFontStruct *scoreListFont;
+XFontStruct *buttonFont;
+XFontStruct *textFont;
+XFontStruct *talkFont;
+XFontStruct *motdFont;
+
+/*static char myName[] = "xpilot";*/
+static char myClass[] = "XPilot";
 
 /*
  * NB!  Is dependent on the order of the items in item.h!
@@ -308,44 +314,21 @@ static void Init_disp_prop(Display *d, Window win,
  */
 int Init_top(void)
 {
-    int i;
     int top_x, top_y;
+    int i;
     int x, y;
     unsigned w, h;
-    int values;
+    unsigned long values;
     int top_flags;
     XGCValues xgc;
     XSetWindowAttributes sattr;
     unsigned long mask;
 
     if (topWindow)
-    {
-        error("Init_top called twice");
-        exit(1);
-    }
+        fatal("Init_top called twice");
 
     if (Colors_init() == -1)
         return -1;
-
-    if (shieldDrawMode == -1)
-        shieldDrawMode = 0;
-    if (hudColor >= maxColors || hudColor < 0)
-        hudColor = BLUE;
-    if (hudLockColor >= maxColors || hudLockColor < 0)
-        hudLockColor = hudColor;
-    if (wallColor >= maxColors || wallColor < 0)
-        wallColor = BLUE;
-
-    if (wallRadarColor >= maxColors)
-        wallRadarColor = BLUE;
-    if (targetRadarColor >= maxColors)
-        targetRadarColor = BLUE;
-    if (oldMessagesColor >= maxColors || oldMessagesColor < 0)
-        oldMessagesColor = BLUE;
-    if (decorColor >= maxColors || decorColor < 0)
-        decorColor = RED;
-    if (decorRadarColor >= maxColors)
-        decorRadarColor = BLUE;
 
     shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
 
@@ -515,10 +498,6 @@ int Init_top(void)
               WhitePixel(dpy, DefaultScreen(dpy)),
               BlackPixel(dpy, DefaultScreen(dpy)),
               GXcopy, AllPlanes);
-
-    windowColor = BLUE;
-    buttonColor = RED;
-    borderColor = WHITE;
 
     return 0;
 }

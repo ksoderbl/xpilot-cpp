@@ -33,20 +33,20 @@
 #include "commonmacros.h"
 #include "const.h"
 #include "item.h"
+#include "keys.h"
+#include "xpconfig.h"
+#include "xperror.h"
 
 #include "client.h"
+#include "configure.h"
+#include "netclient.h"
 #include "paint.h"
 
-#include "keydefs.h"
-
-#include "xpconfig.h"
-#include "keys.h"
-#include "xinit.h"
-#include "widget.h"
-#include "configure.h"
-#include "xperror.h"
-#include "netclient.h"
 #include "dbuff.h"
+#include "keydefs.h"
+#include "widget.h"
+#include "xinit.h"
+#include "xpaint.h"
 
 /* How far away objects should be placed from each other etc... */
 #define BORDER 10
@@ -67,8 +67,6 @@ static bool about_created = false;
  * keys will automatically skip that page.
  */
 static int itemsplit = -1;
-
-extern const char *Item_get_text(int i);
 
 /*
  * General text formatting routine which does wrap around
@@ -121,13 +119,13 @@ int DrawShadowText(Display *display, Window w, GC gc,
         for (; isspace(*str); str++)
             switch (*str)
             {
-                /* New paragraph */
+            /* New paragraph */
             case '\n':
                 x = x_border;
                 y += font->ascent + font->descent + 1;
                 break;
 
-                /* Just a space */
+            /* Just a space */
             default:
                 x += XTextWidth(font, " ", 1);
                 break;
@@ -149,90 +147,44 @@ void Expose_about_window(void)
 
     switch (about_page)
     {
+
     case 0:
+        DrawShadowText(dpy, aboutWindow, textGC,
+                       BORDER, BORDER,
+                       "ABOUT XPILOT\n"
+                       "\n"
+                       "The game was conceived in its original form at the "
+                       "University of Tromsø (Norway) by Ken Ronny Schouten and "
+                       "Bjørn Stabell during the fall of 1991, but much of the game today "
+                       "is the result of hard efforts by Bert Gijsbers of the "
+                       "molecular cytology lab at the University of Amsterdam "
+                       "(The Netherlands).  "
+                       "Bert joined the team in the spring of 1993.\n"
+                       "\n"
+                       "Dick Balaska (Connecticut, USA) ported XPilot to Windows 95 and NT "
+                       "in the summer of 1996.\n"
+                       "\n"
+                       "A large number of features have been contributed by XPilot fans from "
+                       "all around the world.  See the CREDITS file for details.\n"
+                       "\n"
+                       "For more information, "
+                       "read the XPilot FAQ (Frequently Asked Questions).\n"
+                       "\n\n"
+                       "Good luck as a future xpilot,\n"
+                       "Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska",
+                       colors[WHITE].pixel, colors[BLACK].pixel);
+        break;
+
     case 1:
-        if (about_page == 0)
-        {
-            y = DrawShadowText(dpy, aboutWindow, textGC,
-                               BORDER, BORDER,
-                               "BONUS ITEMS\n"
-                               "\n"
-                               "Scattered around the world you might find some "
-                               "of these red triangle objects.  They are "
-                               "well worth picking up since they either improve "
-                               "on the equipment you have, or they give you "
-                               "new equipment.  If a fighter explodes, some of "
-                               "its equipment might be found among the debris.",
-                               colors[WHITE].pixel, colors[BLACK].pixel);
-            first = 0;
-            last = (itemsplit == -1) ? (NUM_ITEMS - 1) : itemsplit;
-        }
-        else
-        {
-            y = DrawShadowText(dpy, aboutWindow, textGC,
-                               BORDER, BORDER,
-                               "BONUS ITEMS CONTINUED\n",
-                               colors[WHITE].pixel, colors[BLACK].pixel);
-            first = itemsplit + 1;
-            last = (NUM_ITEMS - 1);
-        }
-
-        y += BORDER;
-        box_start = y;
-        y += BORDER / 2;
-        for (i = first; i <= last; i++)
-        {
-            y += BORDER / 2;
-
-            /* Draw description text */
-            old_y = y;
-            y = DrawShadowText(dpy, aboutWindow, textGC,
-                               5 * BORDER + 2 * ITEM_SIZE, old_y,
-                               Item_get_text(i),
-                               colors[WHITE].pixel, colors[BLACK].pixel);
-            if (y - old_y < 2 * ITEM_TRIANGLE_SIZE)
-                y = old_y + 2 * ITEM_TRIANGLE_SIZE;
-            box_end = y + BORDER / 2;
-            if (i == last)
-                box_end += BORDER / 2;
-
-            /* Paint the item on the left side */
-            XSetForeground(dpy, textGC, colors[BLACK].pixel);
-            XFillRectangle(dpy, aboutWindow, textGC,
-                           BORDER, box_start,
-                           2 * ITEM_SIZE + 2 * BORDER,
-                           (unsigned)box_end - box_start);
-            XSetForeground(dpy, textGC, colors[RED].pixel);
-            Gui_paint_item((uint8_t)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
-                           old_y + ITEM_TRIANGLE_SIZE);
-            XSetForeground(dpy, textGC, colors[WHITE].pixel);
-
-            /*
-             * Check for items overlapping button window, if so then
-             * remove this item, set itemsplit to previous item and
-             * stop adding more items.
-             */
-            if (about_page == 0 && itemsplit == -1 && box_end >= (ABOUT_WINDOW_HEIGHT - BORDER * 2 - 4 - (2 * BTN_BORDER + buttonFont->ascent + buttonFont->descent)))
-            {
-                itemsplit = i - 1;
-                XSetForeground(dpy, textGC, colors[windowColor].pixel);
-                XFillRectangle(dpy, aboutWindow, textGC,
-                               BORDER, box_start,
-                               ABOUT_WINDOW_WIDTH,
-                               (unsigned)box_end - box_start);
-                XSetForeground(dpy, textGC, colors[WHITE].pixel);
-                break;
-            }
-
-            y = box_end;
-            box_start = box_end;
-        }
-        /*
-         * No page split, obviously font is small enough or not enough
-         * items.
-         */
-        if (about_page == 0 && itemsplit == -1)
-            itemsplit = NUM_ITEMS - 1;
+        DrawShadowText(dpy, aboutWindow, textGC,
+                       BORDER, BORDER,
+                       "ABOUT XPILOT NG\n"
+                       "\n"
+                       "XPilot NG is an improved version of XPilot.\n\n"
+                       "For more info visit http://xpilot.sourceforge.net/ or\n"
+                       "read the man pages xpilot-ng-x11(6) and xpilot-ng-server(6).\n\n"
+                       "You can report any bug you find to <" PACKAGE_BUGREPORT ">.",
+                       colors[WHITE].pixel, colors[BLACK].pixel);
         break;
 
     case 2:
@@ -265,32 +217,90 @@ void Expose_about_window(void)
         break;
 
     case 3:
-        DrawShadowText(dpy, aboutWindow, textGC,
-                       BORDER, BORDER,
-                       "ABOUT XPILOT\n"
-                       "\n"
-                       "The game was conceived in its orignal form at the "
-                       "University of Tromsø (Norway) by Ken Ronny Schouten and "
-                       "Bjørn Stabell during the fall of 1991, but much of the game today "
-                       "is the result of hard efforts by Bert Gijsbers of the "
-                       "molecular cytology lab at the University of Amsterdam (The Netherlands).  "
-                       "Bert joined the team in the spring of 1993.\n"
-                       "\n"
-                       "Dick Balaska (Connecticut, USA) ported XPilot to Windows 95 and NT "
-                       "in the summer of 1996.\n"
-                       "\n"
-                       "A large number of features have been contributed by XPilot fans from "
-                       "all around the world.  See the CREDITS file for details.\n"
-                       "\n"
-                       "For more information, "
-                       "read the XPilot FAQ (Frequently Asked Questions), "
-                       "and the on-line manual pages for xpilot(6) and xpilots(6).\n"
-                       "\n"
-                       "You can report any bug you find to <xpilot@xpilot.org>.\n"
-                       "\n\n"
-                       "Good luck as a future xpilot,\n"
-                       "Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska",
-                       colors[WHITE].pixel, colors[BLACK].pixel);
+    case 4:
+        if (about_page == 3)
+        {
+            y = DrawShadowText(dpy, aboutWindow, textGC,
+                               BORDER, BORDER,
+                               "BONUS ITEMS\n"
+                               "\n"
+                               "Scattered around the world you might find some "
+                               "of these red triangle objects.  They are "
+                               "well worth picking up since they either improve "
+                               "on the equipment you have, or they give you "
+                               "new equipment.  If a fighter explodes, some of "
+                               "its equipment might be found among the debris.",
+                               colors[WHITE].pixel, colors[BLACK].pixel);
+            first = 0;
+            last = (itemsplit == -1) ? (NUM_ITEMS - 1) : itemsplit;
+        }
+        else
+        {
+            y = DrawShadowText(dpy, aboutWindow, textGC,
+                               BORDER, BORDER,
+                               "BONUS ITEMS CONTINUED\n",
+                               colors[WHITE].pixel, colors[BLACK].pixel);
+            first = itemsplit + 1;
+            last = (NUM_ITEMS - 1);
+        }
+
+        y += BORDER;
+        box_start = y;
+        y += BORDER / 2;
+        for (i = first; i <= last; i++)
+        {
+
+            y += BORDER / 2;
+
+            /* Draw description text */
+            old_y = y;
+            y = DrawShadowText(dpy, aboutWindow, textGC,
+                               5 * BORDER + 2 * ITEM_SIZE, old_y,
+                               Item_get_text(i),
+                               colors[WHITE].pixel, colors[BLACK].pixel);
+            if (y - old_y < 2 * ITEM_TRIANGLE_SIZE)
+                y = old_y + 2 * ITEM_TRIANGLE_SIZE;
+            box_end = y + BORDER / 2;
+            if (i == last)
+                box_end += BORDER / 2;
+
+            /* Paint the item on the left side */
+            XSetForeground(dpy, textGC, colors[BLACK].pixel);
+            XFillRectangle(dpy, aboutWindow, textGC,
+                           BORDER, box_start,
+                           2 * ITEM_SIZE + 2 * BORDER,
+                           (unsigned)box_end - box_start);
+            XSetForeground(dpy, textGC, colors[RED].pixel);
+            Gui_paint_item((uint8_t)i, aboutWindow, textGC, 2 * BORDER + ITEM_SIZE,
+                           old_y + ITEM_TRIANGLE_SIZE);
+            XSetForeground(dpy, textGC, colors[WHITE].pixel);
+
+            /*
+             * Check for items overlapping button window, if so then
+             * remove this item, set itemsplit to previous item and
+             * stop adding more items.
+             */
+            if (about_page == 3 && itemsplit == -1 && box_end >= (ABOUT_WINDOW_HEIGHT - BORDER * 2 - 4 - (2 * BTN_BORDER + buttonFont->ascent + buttonFont->descent)))
+            {
+                itemsplit = i - 1;
+                XSetForeground(dpy, textGC, colors[windowColor].pixel);
+                XFillRectangle(dpy, aboutWindow, textGC,
+                               BORDER, box_start,
+                               ABOUT_WINDOW_WIDTH,
+                               (unsigned)box_end - box_start);
+                XSetForeground(dpy, textGC, colors[WHITE].pixel);
+                break;
+            }
+
+            y = box_end;
+            box_start = box_end;
+        }
+        /*
+         * No page split, obviously font is small enough or not enough
+         * items.
+         */
+        if (about_page == 3 && itemsplit == -1)
+            itemsplit = NUM_ITEMS - 1;
         break;
 
     default:
@@ -354,6 +364,7 @@ static void About_create_window(void)
                                        2 * BTN_BORDER + textWidth, buttonWindowHeight,
                                        0, 0,
                                        colors[buttonColor].pixel);
+
     textWidth = XTextWidth(buttonFont, "NEXT", 4);
     about_next_b = XCreateSimpleWindow(dpy, aboutWindow,
                                        (int)(windowWidth - BORDER - 2 * BTN_BORDER - textWidth),
@@ -454,61 +465,56 @@ int About_callback(int widget_desc, void *data, const char **str)
 
 /*****************************************************************************/
 int keys_viewer = NO_WIDGET;
-static bool keys_created = false;
 
 int Keys_callback(int widget_desc, void *data, const char **unused)
 {
-    unsigned bufsize = (maxKeyDefs * 64);
+    unsigned bufsize = (num_keydefs * 64);
     char *buf = XCALLOC(char, bufsize), *end = buf, *str;
     const char *help;
     int i, len, maxkeylen = 0;
 
-    if (keys_created == false)
+    for (i = 0; i < num_keydefs; i++)
     {
-        for (i = 0; i < maxKeyDefs; i++)
+        if ((str = XKeysymToString((KeySym)keydefs[i].keysym)) != NULL && (len = strlen(str)) > maxkeylen)
         {
-            if ((str = XKeysymToString(keyDefs[i].keysym)) != NULL && (len = strlen(str)) > maxkeylen)
-            {
-                maxkeylen = len;
-            }
+            maxkeylen = len;
         }
-        for (i = 0; i < maxKeyDefs; i++)
-        {
-            if (!(str = XKeysymToString(keyDefs[i].keysym)) || !(help = Get_keyHelpString(keyDefs[i].key)))
-            {
-                continue;
-            }
-            if ((end - buf) + (maxkeylen + strlen(help) + 4) >= bufsize)
-            {
-                bufsize += 4096;
-                xpprintf("realloc: %d\n", bufsize);
-                if (!(buf = XREALLOC(char, buf, bufsize)))
-                {
-                    error("No memory for key list");
-                    return 0;
-                }
-            }
-            sprintf(end, "%-*s  %s\n", maxkeylen, str, help);
-            end += strlen(end);
-        }
-        keys_viewer =
-            Widget_create_viewer(buf,
-                                 end - buf,
-                                 2 * DisplayWidth(dpy, DefaultScreen(dpy)) / 3,
-                                 4 * DisplayHeight(dpy, DefaultScreen(dpy)) / 5,
-                                 2,
-                                 "XPilot - key reference", "XPilot:keys",
-                                 motdFont);
-        if (keys_viewer == NO_WIDGET)
-        {
-            warn("Can't create key viewer");
-            return 0;
-        }
-
-        keys_created = true;
     }
+    for (i = 0; i < num_keydefs; i++)
+    {
+        if (!(str = XKeysymToString((KeySym)keydefs[i].keysym)) || !(help = Get_keyHelpString(keydefs[i].key)))
+            continue;
+
+        if ((end - buf) + (maxkeylen + strlen(help) + 4) >= bufsize)
+        {
+            bufsize += 4096;
+            xpprintf("realloc: %d\n", bufsize);
+            if (!(buf = XREALLOC(char, buf, bufsize)))
+            {
+                error("No memory for key list");
+                return 0;
+            }
+        }
+        sprintf(end, "%-*s  %s\n", maxkeylen, str, help);
+        end += strlen(end);
+    }
+    keys_viewer =
+        Widget_create_viewer(buf,
+                             end - buf,
+                             2 * DisplayWidth(dpy, DefaultScreen(dpy)) / 3,
+                             4 * DisplayHeight(dpy, DefaultScreen(dpy)) / 5,
+                             2,
+                             "XPilot - key reference", "XPilot:keys",
+                             motdFont);
+    if (keys_viewer == NO_WIDGET)
+    {
+        warn("Can't create key viewer");
+        return 0;
+    }
+#if 0
     else if (keys_viewer != NO_WIDGET)
-        Widget_map(keys_viewer);
+    Widget_map(keys_viewer);
+#endif
     return 0;
 }
 
@@ -516,7 +522,7 @@ void Keys_destroy(void)
 {
     Widget_destroy(keys_viewer);
     keys_viewer = NO_WIDGET;
-    keys_created = false;
+    /*keys_created = false;*/
 }
 
 #define MAX_MOTD_SIZE (30 * 1024)
@@ -528,12 +534,11 @@ static bool motd_auto_popup;
 
 int Motd_callback(int widget_desc, void *data, const char **str)
 {
-    if (motd_buf == NULL || refreshMotd)
-    {
-        motd_auto_popup = 0;
-        Net_ask_for_motd(0, MAX_MOTD_SIZE);
-        Net_flush();
-    }
+    /* always refresh motd */
+    motd_auto_popup = false;
+    Net_ask_for_motd(0, MAX_MOTD_SIZE);
+    Net_flush();
+
     if (motd_viewer != NO_WIDGET)
         Widget_map(motd_viewer);
     return 0;
@@ -573,7 +578,6 @@ int Handle_motd(long off, char *buf, int len, long filesize)
     {
         if (off + len > (long)motd_size)
             len = motd_size - off;
-
         memcpy(motd_buf + off, buf, (size_t)len);
     }
     else if (len == 0 && off > 0)
@@ -592,6 +596,7 @@ int Handle_motd(long off, char *buf, int len, long filesize)
     if (motd_viewer == NO_WIDGET)
     {
         char title[100];
+
         snprintf(title, sizeof(title), "XPilot motd from %s", servername);
         motd_viewer = Widget_create_viewer(
             motd_buf,
@@ -607,16 +612,6 @@ int Handle_motd(long off, char *buf, int len, long filesize)
     else if (len > 0)
         Widget_update_viewer(motd_viewer, motd_buf, off + len);
 
-    return 0;
-}
-
-int Startup_server_motd(void)
-{
-    if (autoServerMotdPopup)
-    {
-        motd_auto_popup = 1;
-        return Net_ask_for_motd(0, MAX_MOTD_SIZE);
-    }
     return 0;
 }
 

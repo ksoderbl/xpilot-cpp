@@ -64,21 +64,6 @@
 /*
  * Globals.
  */
-XFontStruct *gameFont; /* The fonts used in the game */
-XFontStruct *messageFont;
-XFontStruct *scoreListFont;
-XFontStruct *buttonFont;
-XFontStruct *textFont;
-XFontStruct *talkFont;
-XFontStruct *motdFont;
-char gameFontName[FONT_LEN]; /* The fonts used in the game */
-char messageFontName[FONT_LEN];
-char scoreListFontName[FONT_LEN];
-char buttonFontName[FONT_LEN];
-char textFontName[FONT_LEN];
-char talkFontName[FONT_LEN];
-char motdFontName[FONT_LEN];
-
 Display *dpy;     /* Display of player (pointer) */
 Display *kdpy;    /* Keyboard display */
 short about_page; /* Which page is the player on? */
@@ -109,9 +94,9 @@ Window about_next_b;  /* About window's next button */
 Window about_prev_b;  /* About window's previous button */
 Window keys_close_b;  /* Help window's close button */
 
-XColor colors[MAX_COLORS]; /* Colors */
-Colormap colormap;         /* Private colormap */
-int maxColors;             /* Max. number of colors to use */
+// XColor colors[MAX_COLORS]; /* Colors */
+// Colormap colormap;         /* Private colormap */
+// int maxColors;             /* Max. number of colors to use */
 bool gotFocus;
 // bool players_exposed;
 

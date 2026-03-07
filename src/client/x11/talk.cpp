@@ -34,20 +34,21 @@
 #include <X11/Xatom.h>
 #include <X11/Xmd.h>
 
+#include "bit.h"
 #include "commonmacros.h"
 #include "const.h"
+#include "keys.h"
 #include "strlcpy.h"
+#include "xpconfig.h"
+#include "xperror.h"
 
+#include "client.h"
 #include "messages.h"
+#include "netclient.h"
 #include "paint.h"
 
-#include "xpconfig.h"
 #include "xinit.h"
-#include "xperror.h"
-#include "netclient.h"
-#include "client.h"
-#include "keys.h"
-#include "bit.h"
+#include "xpaint.h"
 
 /* avoid trouble with Atoms and 64 bit archs */
 typedef CARD32 Atom32;
@@ -1243,6 +1244,25 @@ void Talk_window_cut(XButtonEvent *xbutton)
         Talk_refresh();
 
     } /* ButtonRelease */
+}
+
+bool Talk_cut_area_hit(XButtonEvent *xbutton)
+{
+    const int BORDER = 10;
+    const int SPACING = messageFont->ascent + messageFont->descent + 1;
+    int y; /* of initial ButtonEvent */
+
+    y = xbutton->y - BORDER;
+
+    if (y < 0)
+        y = -1;
+    else
+        y /= SPACING;
+
+    if (y < maxMessages)
+        return true;
+
+    return false;
 }
 
 /*

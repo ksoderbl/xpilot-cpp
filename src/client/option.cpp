@@ -1212,43 +1212,42 @@ void Parse_options(int *argcp, char **argvp)
 #endif /* SOUND */
 }
 
-// TODO: enable
-// const char *Get_keyHelpString(keys_t key)
-// {
-//     int i;
-//     char *nl;
-//     static char buf[MAX_CHARS];
+const char *Get_keyHelpString(keys_t key)
+{
+    int i;
+    char *nl;
+    static char buf[MAX_CHARS];
 
-//     for (i = 0; i < num_options; i++)
-//     {
-//         xp_option_t *opt = Option_by_index(i);
+    for (i = 0; i < num_options; i++)
+    {
+        xp_option_t *opt = Option_by_index(i);
 
-//         if (opt->key == key)
-//         {
-//             strlcpy(buf, opt->help, sizeof buf);
-//             if ((nl = strchr(buf, '\n')) != NULL)
-//                 *nl = '\0';
-//             return buf;
-//         }
-//     }
+        if (opt->key == key)
+        {
+            strlcpy(buf, opt->help, sizeof buf);
+            if ((nl = strchr(buf, '\n')) != NULL)
+                *nl = '\0';
+            return buf;
+        }
+    }
 
-//     return NULL;
-// }
+    return NULL;
+}
 
-// const char *Get_keyResourceString(keys_t key)
-// {
-//     int i;
+const char *Get_keyResourceString(keys_t key)
+{
+    int i;
 
-//     for (i = 0; i < num_options; i++)
-//     {
-//         xp_option_t *opt = Option_by_index(i);
+    for (i = 0; i < num_options; i++)
+    {
+        xp_option_t *opt = Option_by_index(i);
 
-//         if (opt->key == key)
-//             return opt->name;
-//     }
+        if (opt->key == key)
+            return opt->name;
+    }
 
-//     return NULL;
-// }
+    return NULL;
+}
 
 void Xpilotrc_get_filename(char *path, size_t size)
 {

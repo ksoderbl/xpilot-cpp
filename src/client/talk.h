@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TALK_H
-#define TALK_H
+#pragma once
 
 #define TALK_FAST_NR_OF_MSGS 20 /* talk macros */
 #define TALK_FAST_MSG_SIZE 400
@@ -32,14 +31,8 @@
 #define TALK_FAST_MIDDLE_DELIMITER '|'
 #define TALK_FAST_SPECIAL_TALK_CHAR '#'
 
-/*
-#define TEAM_PLAY               (1<<8)
-#define LIMITED_LIVES           (1<<3)
-#define MSG_PARSED_FIELD_LEN      20
-*/
-
-/* Talk Macros */
-extern int Talk_macro(int);
+extern int Talk_macro(int ind);
 extern void Store_talk_macro_options(void);
 
-#endif
+/* store message in history, when it is sent? */
+extern bool save_talk_str;
