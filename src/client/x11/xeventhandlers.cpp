@@ -56,9 +56,6 @@
 #include "xeventhandlers.h"
 #include "xinit.h"
 
-/* avoid trouble with Atoms and 64 bit archs */
-typedef CARD32 Atom32;
-
 #ifdef DEVELOPMENT
 time_t back_in_play_since;
 #endif
