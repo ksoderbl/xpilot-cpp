@@ -91,15 +91,9 @@ const char *Program_name(void)
  */
 int main(int argc, char *argv[])
 {
-    int result;
-    bool auto_connect = false,
-         text = false,
-         list_servers = false,
-         auto_shutdown = false,
-         noLocalMotd = false;
-    char *cp;
-    Connect_param_t *conpar;
-    static char shutdown_reason[MAX_CHARS];
+    int result, retval = 1;
+    bool auto_shutdown = false;
+    Connect_param_t *conpar = &connectParam;
 
     /*
      * --- Output copyright notice ---
@@ -107,12 +101,12 @@ int main(int argc, char *argv[])
     printf("  " COPYRIGHT ".\n"
            "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
            "for details see the\n"
-           "  provided LICENSE file.\n\n");
-    if (strcmp(Conf_localguru(), "xpilot@xpilot.org") && strcmp(Conf_localguru(), "xpilot@cs.uit.no"))
-    {
+           "  provided COPYING file.\n\n");
+    if (strcmp(Conf_localguru(), PACKAGE_BUGREPORT))
         printf("  %s is responsible for the local installation.\n\n",
                Conf_localguru());
-    }
+
+    Conf_print();
 
     Argc = argc;
     Argv = argv;
@@ -122,50 +116,9 @@ int main(int argc, char *argv[])
      */
     init_error(argv[0]);
 
-    seedMT((unsigned)time((time_t *)0) ^ Get_process_id());
+    seedMT((unsigned)time(NULL) ^ Get_process_id());
 
-    conpar = (Connect_param_t *)calloc(1, sizeof(Connect_param_t));
-    if (!conpar)
-    {
-        error("Not enough memory");
-        exit(1);
-    }
-    conpar->contact_port = SERVER_PORT;
-    conpar->team = TEAM_NOT_SET;
-
-    cp = getenv("XPILOTHOST");
-    if (cp)
-    {
-        strlcpy(hostname, cp, sizeof(hostname));
-    }
-    else
-    {
-        sock_get_local_hostname(hostname, sizeof hostname, 0);
-    }
-    if (Check_host_name(hostname) == NAME_ERROR)
-    {
-        xpprintf("fixing host from \"%s\" ", hostname);
-        Fix_host_name(hostname);
-        xpprintf("to \"%s\"\n", hostname);
-    }
-
-    cp = getenv("XPILOTUSER");
-    if (cp)
-    {
-        strlcpy(conpar->user_name, cp, sizeof(conpar->user_name));
-    }
-    else
-    {
-        Get_login_name(conpar->user_name, sizeof(conpar->user_name) - 1);
-    }
-    if (Check_user_name(conpar->user_name) == NAME_ERROR)
-    {
-        xpprintf("fixing name from \"%s\" ", conpar->user_name);
-        Fix_user_name(conpar->user_name);
-        xpprintf("to \"%s\"\n", conpar->user_name);
-    }
-
-    Initialize_global_variables();
+    memset(conpar, 0, sizeof(Connect_param_t));
 
     /*
      * --- Create global option array ---
@@ -185,62 +138,51 @@ int main(int argc, char *argv[])
     /*
      * --- Check commandline arguments and resource files ---
      */
-    Parse_options(&argc, argv, conpar->user_name,
-                  &conpar->contact_port, &conpar->team,
-                  &text, &list_servers,
-                  &auto_connect, &noLocalMotd,
-                  conpar->nick_name, conpar->disp_name,
-                  hostname, shutdown_reason);
+    memset(&xpArgs, 0, sizeof(xp_args_t));
+    Parse_options(&argc, argv);
+    /*strcpy(clientname,connectParam.nick_name); */
 
     Config_init();
     Handle_X_options();
 
-    if (Check_nick_name(conpar->nick_name) == NAME_ERROR)
-    {
-        xpprintf("fixing nick from \"%s\" ", conpar->nick_name);
-        Fix_nick_name(conpar->nick_name);
-        xpprintf("to \"%s\"\n", conpar->nick_name);
-    }
+    // /* CLIENTRANK */
+    // Init_saved_scores();
 
-    if (list_servers)
-    {
-        auto_connect = true;
-    }
-    if (shutdown_reason[0] != '\0')
+    if (xpArgs.list_servers)
+        xpArgs.auto_connect = true;
+
+    if (xpArgs.shutdown_reason[0] != '\0')
     {
         auto_shutdown = true;
-        auto_connect = true;
+        xpArgs.auto_connect = true;
     }
 
     /*
      * --- Message of the Day ---
      */
-    if (!noLocalMotd)
-        printfile(Conf_localmotdfile());
+    printfile(Conf_localmotdfile());
 
     Simulate(false);
 
-    if (text || auto_connect || argv[1])
+    if (xpArgs.text || xpArgs.auto_connect || argv[1])
     {
-        if (list_servers)
+        if (xpArgs.list_servers)
             printf("LISTING AVAILABLE SERVERS:\n");
 
         result = Contact_servers(argc - 1, &argv[1],
-                                 auto_connect, list_servers,
-                                 auto_shutdown, shutdown_reason,
-                                 0, 0, 0, 0, 0,
+                                 xpArgs.auto_connect, xpArgs.list_servers,
+                                 auto_shutdown, xpArgs.shutdown_reason,
+                                 0, NULL, NULL, NULL, NULL,
                                  conpar);
     }
     else
-    {
         result = Welcome_screen(conpar);
-    }
 
     if (result == 1)
-    {
-        return Join(conpar->server_addr, conpar->server_name, conpar->login_port,
-                    conpar->user_name, conpar->nick_name, conpar->team,
-                    conpar->disp_name, conpar->server_version);
-    }
-    return 1;
+        retval = Join(conpar);
+
+    // if (instruments.clientRanker)
+    //     Print_saved_scores();
+
+    return retval;
 }

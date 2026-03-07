@@ -95,7 +95,6 @@ static void Input_loop(void)
         tv.tv_sec = 1;
         tv.tv_usec = 0;
 
-        /*
         if (maxMouseTurnsPS > 0)
         {
             int t = Client_check_pointer_move_interval();
@@ -104,7 +103,6 @@ static void Input_loop(void)
             tv.tv_sec = t / 1000000;
             tv.tv_usec = t % 1000000;
         }
-            */
 
         if ((n = select(max + 1, &rfds, NULL, NULL, &tv)) == -1)
         {
@@ -201,7 +199,7 @@ static void Input_loop(void)
     }
 }
 
-void xpilotShutdown()
+void xpilotShutdown(void)
 {
     Net_cleanup();
     Client_cleanup();
@@ -220,24 +218,24 @@ static void sigcatch(int signum)
     exit(1);
 }
 
-int Join(char *server_addr, char *server_name, int port, char *user_name,
-         char *nick_name, int my_team, char *display, unsigned version)
+int Join(Connect_param_t *conpar)
 {
     signal(SIGINT, sigcatch);
     signal(SIGTERM, sigcatch);
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
 
-    if (Client_init(server_name, version) == -1)
-    {
+    if (Client_init(conpar->server_name, conpar->server_version) == -1)
         return -1;
-    }
-    if (Net_init(server_addr, port) == -1)
+
+    if (Net_init(conpar->server_addr, conpar->login_port) == -1)
     {
         Client_cleanup();
         return -1;
     }
-    if (Net_verify(user_name, nick_name, display) == -1)
+    if (Net_verify(conpar->user_name,
+                   conpar->nick_name,
+                   conpar->disp_name) == -1)
     {
         Net_cleanup();
         Client_cleanup();

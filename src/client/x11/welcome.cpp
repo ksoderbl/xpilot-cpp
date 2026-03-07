@@ -84,6 +84,7 @@ static int ping_servers_widget = NO_WIDGET;
  */
 static Connect_param_t *global_conpar;
 static Connect_param_t *localnet_conpars;
+static server_info_t *global_sip;
 
 /*
  * Enum for different modes the welcome screen can be in.
@@ -117,14 +118,19 @@ static const char team_header[] = "Tm";
 static const char fps_header[] = "FPS";
 static const char status_header[] = "Stat";
 static const char version_header[] = "Version";
-static const char map_header[] = "Map";
+static const char map_header[] = "Map Name";
 static const char server_header[] = "Server                           ";
 static const char ping_header[] = "Ping ";
+
+static const char stat_header[] = "Status";
+static char err[MSG_LEN] = {0};
+static char buf[MSG_LEN] = {0};
 
 /*
  * Other prototypes.
  */
-static int Welcome_process_one_event(XEvent *event);
+static int Welcome_process_one_event(XEvent *event,
+                                     Connect_param_t *conpar);
 static int Welcome_show_server_list(Connect_param_t *conpar);
 
 /*
@@ -136,17 +142,18 @@ static void Not_enough_memory(void)
     error("Not enough memory.");
 }
 
+static void Internet_widget_cleanup(void);
+static int Internet_cb(int widget, void *user_data, const char **text);
+
 /*
  * Process only exposure events.
  */
-static void Welcome_process_exposure_events(void)
+static void Welcome_process_exposure_events(Connect_param_t *conpar)
 {
     XEvent event;
 
     while (XCheckMaskEvent(dpy, ExposureMask, &event))
-    {
-        Welcome_process_one_event(&event);
-    }
+        Welcome_process_one_event(&event, conpar);
 }
 
 /*
@@ -162,6 +169,8 @@ static int Welcome_create_label(int pos, const char *label_text)
     int label_x, label_y, label_width, label_height;
     int subform_width = 0;
     int subform_height = 0;
+
+    Connect_param_t *conpar = (Connect_param_t *)global_conpar;
 
     Widget_destroy_children(subform_widget); /*?*/
     subform_label_widget = NO_WIDGET;
@@ -206,7 +215,7 @@ static int Welcome_create_label(int pos, const char *label_text)
         /* wait until mapped */
         (void)XSync(dpy, False);
         /* draw widgets */
-        Welcome_process_exposure_events();
+        Welcome_process_exposure_events(conpar);
     }
 
     return subform_label_widget;
@@ -253,6 +262,19 @@ static void Localnet_cleanup(void)
         free(localnet_conpars);
         localnet_conpars = NULL;
     }
+}
+
+static void Internet_widget_cleanup(void)
+{
+    /* unmap pings as we cannot do this in the localnet callback */
+    if (ping_servers_widget)
+        Widget_unmap(ping_servers_widget);
+    if (first_page_widget)
+        Widget_unmap(first_page_widget);
+    if (next_page_widget)
+        Widget_unmap(next_page_widget);
+
+    Widget_map(form_widget);
 }
 
 /*
@@ -1088,8 +1110,6 @@ static int Welcome_create_windows(Connect_param_t *conpar)
         return -1;
     Widget_set_background(subform_widget, BLACK);
 
-    Welcome_create_label(1, "Welcome to XPilot!");
-
     Widget_map_sub(form_widget);
     XMapSubwindows(dpy, topWindow);
 
@@ -1145,6 +1165,8 @@ static void Welcome_set_mode(enum Welcome_mode new_welcome_mode)
         break;
     case ModeHelp:
         break;
+    case ModeStatus:
+        break;
     case ModeQuit:
         break;
     default:
@@ -1157,7 +1179,8 @@ static void Welcome_set_mode(enum Welcome_mode new_welcome_mode)
 /*
  * Process one event.
  */
-static int Welcome_process_one_event(XEvent *event)
+static int Welcome_process_one_event(XEvent *event,
+                                     Connect_param_t *conpar)
 {
     XClientMessageEvent *cmev;
     XConfigureEvent *conf;
@@ -1217,6 +1240,11 @@ static int Welcome_process_one_event(XEvent *event)
         conf = &event->xconfigure;
         if (conf->window == topWindow)
         {
+            if ((top_width == conf->width) && (top_height == conf->height))
+            {
+                /* This event came from a window move operation */
+                return 0;
+            }
             top_width = conf->width;
             top_height = conf->height;
             LIMIT(top_width, MIN_TOP_WIDTH, MAX_TOP_WIDTH);
@@ -1260,8 +1288,8 @@ static int Welcome_process_pending_events(Connect_param_t *conpar)
     while (XEventsQueued(dpy, QueuedAfterFlush) > 0)
     {
         XNextEvent(dpy, &event);
-        result = Welcome_process_one_event(&event);
-        if (result != 0)
+        result = Welcome_process_one_event(&event, conpar);
+        if (result)
             return result;
     }
     return 0;
@@ -1275,11 +1303,16 @@ static int Welcome_input_loop(Connect_param_t *conpar)
     int result;
     XEvent event;
 
+    Welcome_set_mode(ModeWaiting);
+
+    /* Start main loop */
+    Welcome_create_label(1, "Welcome to XPilot!");
+
     while (!quitting && !joining)
     {
         XNextEvent(dpy, &event);
-        result = Welcome_process_one_event(&event);
-        if (result != 0)
+        result = Welcome_process_one_event(&event, conpar);
+        if (result)
             return result;
     }
 
@@ -1330,21 +1363,10 @@ int Welcome_screen(Connect_param_t *conpar)
     result = Welcome_doit(conpar);
 
     if (!quitting && joining)
-    {
         Welcome_cleanup();
-        result = Join(conpar->server_addr,
-                      conpar->server_name,
-                      conpar->login_port,
-                      conpar->user_name,
-                      conpar->nick_name,
-                      conpar->team,
-                      conpar->disp_name,
-                      conpar->server_version);
-    }
     else
-    {
+        /* kps - ?????? */
         Platform_specific_cleanup();
-    }
 
     return result;
 }

@@ -1923,553 +1923,553 @@ void Initialize_global_variables(void)
 //     }
 // }
 
-void Parse_options(int *argcp, char **argvp, char *realName, int *port,
-                   int *my_team, bool *text, bool *list,
-                   bool *join, bool *noLocalMotd,
-                   char *nickName, char *dispName, char *hostName,
-                   char *shut_msg)
-{
-    // memset(&connectParam, 0, sizeof(Connect_param_t));
-    // connectParam.contact_port = SERVER_PORT;
-    // connectParam.team = TEAM_NOT_SET;
+// void Parse_options(int *argcp, char **argvp, char *realName, int *port,
+//                    int *my_team, bool *text, bool *list,
+//                    bool *join, bool *noLocalMotd,
+//                    char *nickName, char *dispName, char *hostName,
+//                    char *shut_msg)
+// {
+// memset(&connectParam, 0, sizeof(Connect_param_t));
+// connectParam.contact_port = SERVER_PORT;
+// connectParam.team = TEAM_NOT_SET;
 
-    // char *ptr;
-    // char *str;
-    // int i;
-    // int j;
-    // int num;
-    // int firstKeyDef;
-    // keys_t key;
-    // KeySym ks;
+// char *ptr;
+// char *str;
+// int i;
+// int j;
+// int num;
+// int firstKeyDef;
+// keys_t key;
+// KeySym ks;
 
-    // char resValue[MAX(2 * MSG_LEN, PATH_MAX + 1)];
-    // XrmDatabase argDB = 0, rDB = 0;
+// char resValue[MAX(2 * MSG_LEN, PATH_MAX + 1)];
+// XrmDatabase argDB = 0, rDB = 0;
 
-    // XrmOptionDescRec *xopt;
-    // int size;
+// XrmOptionDescRec *xopt;
+// int size;
 
-    // XrmInitialize();
+// XrmInitialize();
 
-    // /*
-    //  * Construct a Xrm Option table from our options array.
-    //  */
-    // size = sizeof(*xopt) * NELEM(oldOptions);
-    // for (i = 0; i < NELEM(oldOptions); i++)
-    // {
-    //     size += 2 * (strlen(oldOptions[i].name) + 2);
-    // }
-    // if ((ptr = (char *)malloc(size)) == NULL)
-    // {
-    //     error("No memory for options");
-    //     exit(1);
-    // }
-    // xopt = (XrmOptionDescRec *)ptr;
-    // ptr += sizeof(*xopt) * NELEM(oldOptions);
-    // for (i = 0; i < NELEM(oldOptions); i++)
-    // {
-    //     oldOptions[i].hash = String_hash(oldOptions[i].name);
-    //     xopt[i].option = ptr;
-    //     xopt[i].option[0] = '-';
-    //     strcpy(&xopt[i].option[1], oldOptions[i].name);
-    //     size = strlen(oldOptions[i].name) + 2;
-    //     ptr += size;
-    //     xopt[i].specifier = ptr;
-    //     xopt[i].specifier[0] = '.';
-    //     strcpy(&xopt[i].specifier[1], oldOptions[i].name);
-    //     ptr += size;
-    //     if (oldOptions[i].noArg)
-    //     {
-    //         xopt[i].argKind = XrmoptionNoArg;
-    //         xopt[i].value = (char *)oldOptions[i].noArg;
-    //     }
-    //     else
-    //     {
-    //         xopt[i].argKind = XrmoptionSepArg;
-    //         xopt[i].value = NULL;
-    //     }
-    // }
+// /*
+//  * Construct a Xrm Option table from our options array.
+//  */
+// size = sizeof(*xopt) * NELEM(oldOptions);
+// for (i = 0; i < NELEM(oldOptions); i++)
+// {
+//     size += 2 * (strlen(oldOptions[i].name) + 2);
+// }
+// if ((ptr = (char *)malloc(size)) == NULL)
+// {
+//     error("No memory for options");
+//     exit(1);
+// }
+// xopt = (XrmOptionDescRec *)ptr;
+// ptr += sizeof(*xopt) * NELEM(oldOptions);
+// for (i = 0; i < NELEM(oldOptions); i++)
+// {
+//     oldOptions[i].hash = String_hash(oldOptions[i].name);
+//     xopt[i].option = ptr;
+//     xopt[i].option[0] = '-';
+//     strcpy(&xopt[i].option[1], oldOptions[i].name);
+//     size = strlen(oldOptions[i].name) + 2;
+//     ptr += size;
+//     xopt[i].specifier = ptr;
+//     xopt[i].specifier[0] = '.';
+//     strcpy(&xopt[i].specifier[1], oldOptions[i].name);
+//     ptr += size;
+//     if (oldOptions[i].noArg)
+//     {
+//         xopt[i].argKind = XrmoptionNoArg;
+//         xopt[i].value = (char *)oldOptions[i].noArg;
+//     }
+//     else
+//     {
+//         xopt[i].argKind = XrmoptionSepArg;
+//         xopt[i].value = NULL;
+//     }
+// }
 
-    // XrmParseCommand(&argDB, xopt, NELEM(oldOptions), myName, argcp, argvp);
+// XrmParseCommand(&argDB, xopt, NELEM(oldOptions), myName, argcp, argvp);
 
-    /*
-     * Check for bad arguments.
-     */
-    // for (i = 1; i < *argcp; i++)
-    // {
-    //     if (argvp[i][0] == '-' || argvp[i][0] == '+')
-    //     {
-    //         errno = 0;
-    //         error("Unknown or incomplete option '%s'", argvp[i]);
-    //         error("Type: %s -help to see a list of options", argvp[0]);
-    //         exit(1);
-    //     }
-    //     /* The rest of the arguments are hostnames of servers. */
-    // }
+/*
+ * Check for bad arguments.
+ */
+// for (i = 1; i < *argcp; i++)
+// {
+//     if (argvp[i][0] == '-' || argvp[i][0] == '+')
+//     {
+//         errno = 0;
+//         error("Unknown or incomplete option '%s'", argvp[i]);
+//         error("Type: %s -help to see a list of options", argvp[0]);
+//         exit(1);
+//     }
+//     /* The rest of the arguments are hostnames of servers. */
+// }
 
-    // // TODO:
-    // if (Get_resource(argDB, "help", resValue, sizeof resValue) != 0)
-    // {
-    //     Usage();
-    // }
+// // TODO:
+// if (Get_resource(argDB, "help", resValue, sizeof resValue) != 0)
+// {
+//     Usage();
+// }
 
-    // // TODO:
-    // if (Get_resource(argDB, "version", resValue, sizeof resValue) != 0)
-    // {
-    //     puts(TITLE);
-    //     exit(0);
-    // }
+// // TODO:
+// if (Get_resource(argDB, "version", resValue, sizeof resValue) != 0)
+// {
+//     puts(TITLE);
+//     exit(0);
+// }
 
-    // // TODO:
-    // Get_resource(argDB, "shutdown", shut_msg, MAX_CHARS);
+// // TODO:
+// Get_resource(argDB, "shutdown", shut_msg, MAX_CHARS);
 
-    // // TODO:
-    // if (Get_string_resource(argDB, "display", dispName, MAX_DISP_LEN) == 0 || dispName[0] == '\0')
-    // {
-    //     if ((ptr = getenv(DISPLAY_ENV)) != NULL)
-    //     {
-    //         strlcpy(dispName, ptr, MAX_DISP_LEN);
-    //     }
-    //     else
-    //     {
-    //         strlcpy(dispName, DISPLAY_DEF, MAX_DISP_LEN);
-    //     }
-    // }
-    // // strlcpy(dispName, DISPLAY_DEF, MAX_DISP_LEN);
+// // TODO:
+// if (Get_string_resource(argDB, "display", dispName, MAX_DISP_LEN) == 0 || dispName[0] == '\0')
+// {
+//     if ((ptr = getenv(DISPLAY_ENV)) != NULL)
+//     {
+//         strlcpy(dispName, ptr, MAX_DISP_LEN);
+//     }
+//     else
+//     {
+//         strlcpy(dispName, DISPLAY_DEF, MAX_DISP_LEN);
+//     }
+// }
+// // strlcpy(dispName, DISPLAY_DEF, MAX_DISP_LEN);
 
-    // if ((dpy = XOpenDisplay(dispName)) == NULL)
-    // {
-    //     error("Can't open display '%s'", dispName);
-    //     if (strcmp(dispName, "NO_X") == 0)
-    //     {
-    //         /* user does not want X stuff.  experimental.  use at own risk. */
-    //         strlcpy(nickName, realName, MAX_NAME_LEN);
-    //         *my_team = TEAM_NOT_SET;
-    //         Get_int_resource(argDB, "port", port);
-    //         Get_bool_resource(argDB, "list", list);
-    //         *text = true;
-    //         *join = false;
-    //         *noLocalMotd = true;
-    //         XrmDestroyDatabase(argDB);
-    //         free(xopt);
-    //         return;
-    //     }
-    //     exit(1);
-    // }
+// if ((dpy = XOpenDisplay(dispName)) == NULL)
+// {
+//     error("Can't open display '%s'", dispName);
+//     if (strcmp(dispName, "NO_X") == 0)
+//     {
+//         /* user does not want X stuff.  experimental.  use at own risk. */
+//         strlcpy(nickName, realName, MAX_NAME_LEN);
+//         *my_team = TEAM_NOT_SET;
+//         Get_int_resource(argDB, "port", port);
+//         Get_bool_resource(argDB, "list", list);
+//         *text = true;
+//         *join = false;
+//         *noLocalMotd = true;
+//         XrmDestroyDatabase(argDB);
+//         free(xopt);
+//         return;
+//     }
+//     exit(1);
+// }
 
-    // // TODO:
-    // if (Get_string_resource(argDB, "keyboard", resValue, MAX_DISP_LEN) == 0 || resValue[0] == '\0')
-    // {
-    //     if ((ptr = getenv(KEYBOARD_ENV)) != NULL)
-    //     {
-    //         strlcpy(resValue, ptr, MAX_DISP_LEN);
-    //     }
-    // }
-    // if (resValue[0] == '\0')
-    // {
-    //     kdpy = NULL;
-    // }
-    // else if ((kdpy = XOpenDisplay(resValue)) == NULL)
-    // {
-    //     error("Can't open keyboard '%s'", resValue);
-    //     exit(1);
-    // }
-    // // kdpy = NULL;
+// // TODO:
+// if (Get_string_resource(argDB, "keyboard", resValue, MAX_DISP_LEN) == 0 || resValue[0] == '\0')
+// {
+//     if ((ptr = getenv(KEYBOARD_ENV)) != NULL)
+//     {
+//         strlcpy(resValue, ptr, MAX_DISP_LEN);
+//     }
+// }
+// if (resValue[0] == '\0')
+// {
+//     kdpy = NULL;
+// }
+// else if ((kdpy = XOpenDisplay(resValue)) == NULL)
+// {
+//     error("Can't open keyboard '%s'", resValue);
+//     exit(1);
+// }
+// // kdpy = NULL;
 
-    // TODO
-    // Get_resource(argDB, "visual", visualName, sizeof visualName);
-    // if (strncasecmp(visualName, "list", 4) == 0)
-    // {
-    //     List_visuals();
-    //     exit(0);
-    // }
+// TODO
+// Get_resource(argDB, "visual", visualName, sizeof visualName);
+// if (strncasecmp(visualName, "list", 4) == 0)
+// {
+//     List_visuals();
+//     exit(0);
+// }
 
-    // Get_file_defaults(&rDB);
+// Get_file_defaults(&rDB);
 
-    // XrmMergeDatabases(argDB, &rDB);
+// XrmMergeDatabases(argDB, &rDB);
 
-    // // TODO
-    // Get_string_resource(rDB, "geometry", resValue, sizeof resValue);
-    // geometry = xp_strdup(resValue);
-    // // geometry = xp_strdup("1922x1349");
+// // TODO
+// Get_string_resource(rDB, "geometry", resValue, sizeof resValue);
+// geometry = xp_strdup(resValue);
+// // geometry = xp_strdup("1922x1349");
 
-    // TODO
-    // if ((talk_fast_temp_buf_big = (char *)malloc(TALK_FAST_MSG_SIZE)) != NULL)
-    // {
-    //     for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
-    //     {
-    //         sprintf(talk_fast_temp_buf, "msg%d", i + 1);
-    //         Get_resource(rDB, talk_fast_temp_buf, talk_fast_temp_buf_big, TALK_FAST_MSG_SIZE);
-    //         talk_fast_msgs[i] = xp_strdup(talk_fast_temp_buf_big);
-    //     }
-    //     free(talk_fast_temp_buf_big);
-    // }
-    // else
-    // {
-    //     for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
-    //     {
-    //         talk_fast_msgs[i] = NULL;
-    //     }
-    // }
-    // for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
-    //     talk_fast_msgs[i] = NULL;
+// TODO
+// if ((talk_fast_temp_buf_big = (char *)malloc(TALK_FAST_MSG_SIZE)) != NULL)
+// {
+//     for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
+//     {
+//         sprintf(talk_fast_temp_buf, "msg%d", i + 1);
+//         Get_resource(rDB, talk_fast_temp_buf, talk_fast_temp_buf_big, TALK_FAST_MSG_SIZE);
+//         talk_fast_msgs[i] = xp_strdup(talk_fast_temp_buf_big);
+//     }
+//     free(talk_fast_temp_buf_big);
+// }
+// else
+// {
+//     for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
+//     {
+//         talk_fast_msgs[i] = NULL;
+//     }
+// }
+// for (i = 0; i < TALK_FAST_NR_OF_MSGS; ++i)
+//     talk_fast_msgs[i] = NULL;
 
-    // TODO
-    // Get_bool_resource(rDB, "ignoreWindowManager", &ignoreWindowManager);
+// TODO
+// Get_bool_resource(rDB, "ignoreWindowManager", &ignoreWindowManager);
 
-    // // TODO
-    // Get_resource(rDB, "user", resValue, MAX_NAME_LEN);
-    // if (resValue[0])
-    // {
-    //     strlcpy(realName, resValue, MAX_NAME_LEN);
-    // }
-    // Fix_user_name(realName);
+// // TODO
+// Get_resource(rDB, "user", resValue, MAX_NAME_LEN);
+// if (resValue[0])
+// {
+//     strlcpy(realName, resValue, MAX_NAME_LEN);
+// }
+// Fix_user_name(realName);
 
-    // Get_resource(rDB, "host", resValue, MAX_HOST_LEN);
-    // if (resValue[0])
-    // {
-    //     strlcpy(hostName, resValue, MAX_HOST_LEN);
-    // }
-    // Fix_host_name(hostName);
+// Get_resource(rDB, "host", resValue, MAX_HOST_LEN);
+// if (resValue[0])
+// {
+//     strlcpy(hostName, resValue, MAX_HOST_LEN);
+// }
+// Fix_host_name(hostName);
 
-    // Get_resource(rDB, "name", nickName, MAX_NAME_LEN);
-    // if (!nickName[0])
-    // {
-    //     strlcpy(nickName, realName, MAX_NAME_LEN);
-    // }
-    // strlcpy(realName, "real", MAX_NAME_LEN);
-    // strlcpy(hostName, "host", MAX_HOST_LEN);
-    // strlcpy(nickName, "Nick", MAX_NAME_LEN);
+// Get_resource(rDB, "name", nickName, MAX_NAME_LEN);
+// if (!nickName[0])
+// {
+//     strlcpy(nickName, realName, MAX_NAME_LEN);
+// }
+// strlcpy(realName, "real", MAX_NAME_LEN);
+// strlcpy(hostName, "host", MAX_HOST_LEN);
+// strlcpy(nickName, "Nick", MAX_NAME_LEN);
 
-    // CAP_LETTER(nickName[0]);
-    // if (nickName[0] < 'A' || nickName[0] > 'Z')
-    // {
-    //     warn("Your player name \"%s\" should start with an uppercase letter",
-    //          nickName);
-    //     exit(1);
-    // }
-    // /* strip trailing whitespace. */
-    // for (ptr = &nickName[strlen(nickName)]; ptr-- > nickName;)
-    // {
-    //     if (isascii(*ptr) && isspace(*ptr))
-    //     {
-    //         *ptr = '\0';
-    //     }
-    //     else
-    //     {
-    //         break;
-    //     }
-    // }
-    // strlcpy(realname, realName, sizeof(realname));
-    // strlcpy(name, nickName, sizeof(name));
+// CAP_LETTER(nickName[0]);
+// if (nickName[0] < 'A' || nickName[0] > 'Z')
+// {
+//     warn("Your player name \"%s\" should start with an uppercase letter",
+//          nickName);
+//     exit(1);
+// }
+// /* strip trailing whitespace. */
+// for (ptr = &nickName[strlen(nickName)]; ptr-- > nickName;)
+// {
+//     if (isascii(*ptr) && isspace(*ptr))
+//     {
+//         *ptr = '\0';
+//     }
+//     else
+//     {
+//         break;
+//     }
+// }
+// strlcpy(realname, realName, sizeof(realname));
+// strlcpy(name, nickName, sizeof(name));
 
-    // TODO
-    // Get_int_resource(rDB, "team", my_team);
+// TODO
+// Get_int_resource(rDB, "team", my_team);
 
-    // if (*my_team < 0 || *my_team > 9)
-    // {
-    //     *my_team = TEAM_NOT_SET;
-    // }
-    // team = *my_team;
-    // team = TEAM_NOT_SET;
+// if (*my_team < 0 || *my_team > 9)
+// {
+//     *my_team = TEAM_NOT_SET;
+// }
+// team = *my_team;
+// team = TEAM_NOT_SET;
 
-    // TODO
-    //     Get_int_resource(rDB, "port", port);
-    //     Get_bool_resource(rDB, "text", text);
-    //     Get_bool_resource(rDB, "list", list);
-    //     Get_bool_resource(rDB, "join", join);
-    //     Get_bool_resource(rDB, "noLocalMotd", noLocalMotd);
-    //     Get_bool_resource(rDB, "autoServerMotdPopup", &autoServerMotdPopup);
-    //     Get_bool_resource(rDB, "refreshMotd", &refreshMotd);
+// TODO
+//     Get_int_resource(rDB, "port", port);
+//     Get_bool_resource(rDB, "text", text);
+//     Get_bool_resource(rDB, "list", list);
+//     Get_bool_resource(rDB, "join", join);
+//     Get_bool_resource(rDB, "noLocalMotd", noLocalMotd);
+//     Get_bool_resource(rDB, "autoServerMotdPopup", &autoServerMotdPopup);
+//     Get_bool_resource(rDB, "refreshMotd", &refreshMotd);
 
-    //     Get_shipshape_resource(rDB, &shipShape);
-    //     Validate_shape_str(shipShape);
+//     Get_shipshape_resource(rDB, &shipShape);
+//     Validate_shape_str(shipShape);
 
-    //     Get_double_resource(rDB, "power", &power);
-    //     Get_double_resource(rDB, "turnSpeed", &turnspeed);
-    //     Get_double_resource(rDB, "turnResistance", &turnresistance);
-    //     Get_double_resource(rDB, "altPower", &power_s);
-    //     Get_double_resource(rDB, "altTurnSpeed", &turnspeed_s);
-    //     Get_double_resource(rDB, "altTurnResistance", &turnresistance_s);
+//     Get_double_resource(rDB, "power", &power);
+//     Get_double_resource(rDB, "turnSpeed", &turnspeed);
+//     Get_double_resource(rDB, "turnResistance", &turnresistance);
+//     Get_double_resource(rDB, "altPower", &power_s);
+//     Get_double_resource(rDB, "altTurnSpeed", &turnspeed_s);
+//     Get_double_resource(rDB, "altTurnResistance", &turnresistance_s);
 
-    //     Get_double_resource(rDB, "sparkProb", &sparkProb);
-    //     spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
-    //     Get_int_resource(rDB, "charsPerSecond", &charsPerSecond);
-    //     Get_bool_resource(rDB, "markingLights", &markingLights);
+//     Get_double_resource(rDB, "sparkProb", &sparkProb);
+//     spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
+//     Get_int_resource(rDB, "charsPerSecond", &charsPerSecond);
+//     Get_bool_resource(rDB, "markingLights", &markingLights);
 
-    //     Get_int_resource(rDB, "backgroundPointDist", &backgroundPointDist);
-    //     Get_int_resource(rDB, "backgroundPointSize", &backgroundPointSize);
-    //     LIMIT(backgroundPointSize, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
-    //     Get_int_resource(rDB, "sparkSize", &sparkSize);
-    //     LIMIT(sparkSize, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
-    //     Get_int_resource(rDB, "shotSize", &shotSize);
-    //     LIMIT(shotSize, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
-    //     Get_int_resource(rDB, "teamShotSize", &teamShotSize);
-    //     LIMIT(teamShotSize, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
-    //     /*
-    //      * This is a special value; default or not defined means choose depending
-    //      * on the display, otherwise its a boolean value.
-    //      */
-    //     Get_string_resource(rDB, "shieldDrawSolid", resValue, sizeof resValue);
-    //     if (strncasecmp(resValue, "default", 7) == 0)
-    //         shieldDrawMode = -1;
-    //     else
-    //         shieldDrawMode = ON(resValue);
-    //     Get_bool_resource(rDB, "toggleShield", &toggle_shield);
-    //     Get_bool_resource(rDB, "autoShield", &auto_shield);
+//     Get_int_resource(rDB, "backgroundPointDist", &backgroundPointDist);
+//     Get_int_resource(rDB, "backgroundPointSize", &backgroundPointSize);
+//     LIMIT(backgroundPointSize, MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE);
+//     Get_int_resource(rDB, "sparkSize", &sparkSize);
+//     LIMIT(sparkSize, MIN_SPARK_SIZE, MAX_SPARK_SIZE);
+//     Get_int_resource(rDB, "shotSize", &shotSize);
+//     LIMIT(shotSize, MIN_SHOT_SIZE, MAX_SHOT_SIZE);
+//     Get_int_resource(rDB, "teamShotSize", &teamShotSize);
+//     LIMIT(teamShotSize, MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE);
+//     /*
+//      * This is a special value; default or not defined means choose depending
+//      * on the display, otherwise its a boolean value.
+//      */
+//     Get_string_resource(rDB, "shieldDrawSolid", resValue, sizeof resValue);
+//     if (strncasecmp(resValue, "default", 7) == 0)
+//         shieldDrawMode = -1;
+//     else
+//         shieldDrawMode = ON(resValue);
+//     Get_bool_resource(rDB, "toggleShield", &toggle_shield);
+//     Get_bool_resource(rDB, "autoShield", &auto_shield);
 
-    //     Get_int_resource(rDB, "clientPortStart", &clientPortStart);
-    //     Get_int_resource(rDB, "clientPortEnd", &clientPortEnd);
+//     Get_int_resource(rDB, "clientPortStart", &clientPortStart);
+//     Get_int_resource(rDB, "clientPortEnd", &clientPortEnd);
 
-    //     Get_resource(rDB, "modifierBank1", modBankStr[0], sizeof modBankStr[0]);
-    //     Get_resource(rDB, "modifierBank2", modBankStr[1], sizeof modBankStr[1]);
-    //     Get_resource(rDB, "modifierBank3", modBankStr[2], sizeof modBankStr[2]);
-    //     Get_resource(rDB, "modifierBank4", modBankStr[3], sizeof modBankStr[3]);
+//     Get_resource(rDB, "modifierBank1", modBankStr[0], sizeof modBankStr[0]);
+//     Get_resource(rDB, "modifierBank2", modBankStr[1], sizeof modBankStr[1]);
+//     Get_resource(rDB, "modifierBank3", modBankStr[2], sizeof modBankStr[2]);
+//     Get_resource(rDB, "modifierBank4", modBankStr[3], sizeof modBankStr[3]);
 
-    //     Get_resource(rDB, "visual", visualName, sizeof visualName);
+//     Get_resource(rDB, "visual", visualName, sizeof visualName);
 
-    //     Get_int_resource(rDB, "maxColors", &maxColors);
+//     Get_int_resource(rDB, "maxColors", &maxColors);
 
-    //     Get_string_resource(rDB, "black", color_names[0], sizeof(color_names[0]));
-    //     Get_string_resource(rDB, "white", color_names[1], sizeof(color_names[1]));
-    //     Get_string_resource(rDB, "blue", color_names[2], sizeof(color_names[2]));
-    //     Get_string_resource(rDB, "red", color_names[3], sizeof(color_names[3]));
-    //     for (i = 0; i < MAX_COLORS; i++)
-    //     {
-    //         char buf[16];
-    //         sprintf(buf, "color%d", i);
-    //         if (!Get_string_resource(rDB, buf, resValue, MAX_COLOR_LEN))
-    //         {
-    //             if (i < NUM_COLORS)
-    //             {
-    //                 strlcpy(resValue, color_names[i], MAX_COLOR_LEN);
-    //             }
-    //         }
-    //         strlcpy(color_names[i], resValue, MAX_COLOR_LEN);
-    //     }
-    //     Get_int_resource(rDB, "hudColor", &hudColor);
-    //     Get_int_resource(rDB, "hudLockColor", &hudLockColor);
-    //     Get_int_resource(rDB, "wallColor", &wallColor);
-    //     Get_int_resource(rDB, "wallRadarColor", &wallRadarColor);
-    //     Get_int_resource(rDB, "decorColor", &decorColor);
-    //     Get_int_resource(rDB, "decorRadarColor", &decorRadarColor);
-    //     Get_int_resource(rDB, "targetRadarColor", &targetRadarColor);
-    //     Get_int_resource(rDB, "oldMessagesColor", &oldMessagesColor);
-    //     Get_resource(rDB, "sparkColors", sparkColors, MSG_LEN);
+//     Get_string_resource(rDB, "black", color_names[0], sizeof(color_names[0]));
+//     Get_string_resource(rDB, "white", color_names[1], sizeof(color_names[1]));
+//     Get_string_resource(rDB, "blue", color_names[2], sizeof(color_names[2]));
+//     Get_string_resource(rDB, "red", color_names[3], sizeof(color_names[3]));
+//     for (i = 0; i < MAX_COLORS; i++)
+//     {
+//         char buf[16];
+//         sprintf(buf, "color%d", i);
+//         if (!Get_string_resource(rDB, buf, resValue, MAX_COLOR_LEN))
+//         {
+//             if (i < NUM_COLORS)
+//             {
+//                 strlcpy(resValue, color_names[i], MAX_COLOR_LEN);
+//             }
+//         }
+//         strlcpy(color_names[i], resValue, MAX_COLOR_LEN);
+//     }
+//     Get_int_resource(rDB, "hudColor", &hudColor);
+//     Get_int_resource(rDB, "hudLockColor", &hudLockColor);
+//     Get_int_resource(rDB, "wallColor", &wallColor);
+//     Get_int_resource(rDB, "wallRadarColor", &wallRadarColor);
+//     Get_int_resource(rDB, "decorColor", &decorColor);
+//     Get_int_resource(rDB, "decorRadarColor", &decorRadarColor);
+//     Get_int_resource(rDB, "targetRadarColor", &targetRadarColor);
+//     Get_int_resource(rDB, "oldMessagesColor", &oldMessagesColor);
+//     Get_resource(rDB, "sparkColors", sparkColors, MSG_LEN);
 
-    //     // instruments = 0;
-    //     memset(&instruments, 0, sizeof(instruments_t));
-    //     Get_bool_resource(rDB, "showMessages", &instruments.showMessages);
-    //     Get_bool_resource(rDB, "showHUD", &instruments.showHUD);
-    //     Get_bool_resource(rDB, "showHUDRadar", &instruments.showHUDRadar);
-    //     Get_bool_resource(rDB, "fuelMeter", &instruments.fuelMeter);
-    //     Get_bool_resource(rDB, "fuelGauge", &instruments.fuelGauge);
-    //     Get_bool_resource(rDB, "turnSpeedMeter", &instruments.turnSpeedMeter);
-    //     Get_bool_resource(rDB, "powerMeter", &instruments.powerMeter);
-    //     Get_bool_resource(rDB, "packetSizeMeter", &instruments.packetSizeMeter);
-    //     Get_bool_resource(rDB, "packetLossMeter", &instruments.packetLossMeter);
-    //     Get_bool_resource(rDB, "packetDropMeter", &instruments.packetDropMeter);
-    //     Get_bool_resource(rDB, "packetLagMeter", &instruments.packetLagMeter);
-    //     Get_bool_resource(rDB, "slidingRadar", &instruments.slidingRadar);
-    //     Get_bool_resource(rDB, "showItems", &instruments.showItems);
-    //     Get_bool_resource(rDB, "clock", &instruments.clock);
-    //     Get_bool_resource(rDB, "clockAMPM", &instruments.clockAMPM);
-    //     Get_bool_resource(rDB, "outlineWorld", &instruments.outlineWorld);
-    //     Get_bool_resource(rDB, "filledWorld", &instruments.filledWorld);
-    //     Get_bool_resource(rDB, "texturedWalls", &instruments.texturedWalls);
-    //     Get_bool_resource(rDB, "showDecor", &instruments.showDecor);
-    //     Get_bool_resource(rDB, "outlineDecor", &instruments.outlineDecor);
-    //     Get_bool_resource(rDB, "filledDecor", &instruments.filledDecor);
-    //     Get_bool_resource(rDB, "texturedDecor", &instruments.texturedDecor);
+//     // instruments = 0;
+//     memset(&instruments, 0, sizeof(instruments_t));
+//     Get_bool_resource(rDB, "showMessages", &instruments.showMessages);
+//     Get_bool_resource(rDB, "showHUD", &instruments.showHUD);
+//     Get_bool_resource(rDB, "showHUDRadar", &instruments.showHUDRadar);
+//     Get_bool_resource(rDB, "fuelMeter", &instruments.fuelMeter);
+//     Get_bool_resource(rDB, "fuelGauge", &instruments.fuelGauge);
+//     Get_bool_resource(rDB, "turnSpeedMeter", &instruments.turnSpeedMeter);
+//     Get_bool_resource(rDB, "powerMeter", &instruments.powerMeter);
+//     Get_bool_resource(rDB, "packetSizeMeter", &instruments.packetSizeMeter);
+//     Get_bool_resource(rDB, "packetLossMeter", &instruments.packetLossMeter);
+//     Get_bool_resource(rDB, "packetDropMeter", &instruments.packetDropMeter);
+//     Get_bool_resource(rDB, "packetLagMeter", &instruments.packetLagMeter);
+//     Get_bool_resource(rDB, "slidingRadar", &instruments.slidingRadar);
+//     Get_bool_resource(rDB, "showItems", &instruments.showItems);
+//     Get_bool_resource(rDB, "clock", &instruments.clock);
+//     Get_bool_resource(rDB, "clockAMPM", &instruments.clockAMPM);
+//     Get_bool_resource(rDB, "outlineWorld", &instruments.outlineWorld);
+//     Get_bool_resource(rDB, "filledWorld", &instruments.filledWorld);
+//     Get_bool_resource(rDB, "texturedWalls", &instruments.texturedWalls);
+//     Get_bool_resource(rDB, "showDecor", &instruments.showDecor);
+//     Get_bool_resource(rDB, "outlineDecor", &instruments.outlineDecor);
+//     Get_bool_resource(rDB, "filledDecor", &instruments.filledDecor);
+//     Get_bool_resource(rDB, "texturedDecor", &instruments.texturedDecor);
 
-    //     Get_bool_resource(rDB, "texturedObjects", &texturedObjects);
-    //     Get_bool_resource(rDB, "pointerControl", &clData.restorePointerControl);
-    //     Get_double_resource(rDB, "showItemsTime", &showItemsTime);
-    //     LIMIT(showItemsTime, MIN_SHOW_ITEMS_TIME, MAX_SHOW_ITEMS_TIME);
+//     Get_bool_resource(rDB, "texturedObjects", &texturedObjects);
+//     Get_bool_resource(rDB, "pointerControl", &clData.restorePointerControl);
+//     Get_double_resource(rDB, "showItemsTime", &showItemsTime);
+//     LIMIT(showItemsTime, MIN_SHOW_ITEMS_TIME, MAX_SHOW_ITEMS_TIME);
 
-    //     Get_double_resource(rDB, "speedFactHUD", &hud_move_fact);
-    //     Get_double_resource(rDB, "speedFactPTR", &ptr_move_fact);
-    //     Get_double_resource(rDB, "fuelNotify", &fuelNotify);
-    //     Get_double_resource(rDB, "fuelWarning", &fuelWarning);
-    //     Get_double_resource(rDB, "fuelCritical", &fuelCritical);
+//     Get_double_resource(rDB, "speedFactHUD", &hud_move_fact);
+//     Get_double_resource(rDB, "speedFactPTR", &ptr_move_fact);
+//     Get_double_resource(rDB, "fuelNotify", &fuelNotify);
+//     Get_double_resource(rDB, "fuelWarning", &fuelWarning);
+//     Get_double_resource(rDB, "fuelCritical", &fuelCritical);
 
-    //     Get_resource(rDB, "gameFont", gameFontName, sizeof gameFontName);
-    //     Get_resource(rDB, "messageFont", messageFontName, sizeof messageFontName);
-    //     Get_resource(rDB, "scoreListFont", scoreListFontName, sizeof scoreListFontName);
-    //     Get_resource(rDB, "buttonFont", buttonFontName, sizeof buttonFontName);
-    //     Get_resource(rDB, "textFont", textFontName, sizeof textFontName);
-    //     Get_resource(rDB, "talkFont", talkFontName, sizeof talkFontName);
-    //     Get_resource(rDB, "motdFont", motdFontName, sizeof motdFontName);
+//     Get_resource(rDB, "gameFont", gameFontName, sizeof gameFontName);
+//     Get_resource(rDB, "messageFont", messageFontName, sizeof messageFontName);
+//     Get_resource(rDB, "scoreListFont", scoreListFontName, sizeof scoreListFontName);
+//     Get_resource(rDB, "buttonFont", buttonFontName, sizeof buttonFontName);
+//     Get_resource(rDB, "textFont", textFontName, sizeof textFontName);
+//     Get_resource(rDB, "talkFont", talkFontName, sizeof talkFontName);
+//     Get_resource(rDB, "motdFont", motdFontName, sizeof motdFontName);
 
-    //     Get_int_resource(rDB, "maxMessages", &maxMessages);
-    //     Get_int_resource(rDB, "messagesToStdout", &messagesToStdout);
-    //     Get_int_resource(rDB, "maxLinesInHistory", &maxLinesInHistory);
-    //     LIMIT(maxLinesInHistory, 1, MAX_HIST_MSGS);
+//     Get_int_resource(rDB, "maxMessages", &maxMessages);
+//     Get_int_resource(rDB, "messagesToStdout", &messagesToStdout);
+//     Get_int_resource(rDB, "maxLinesInHistory", &maxLinesInHistory);
+//     LIMIT(maxLinesInHistory, 1, MAX_HIST_MSGS);
 
-    //     Get_int_resource(rDB, "receiveWindowSize", &receive_window_size);
-    //     LIMIT(receive_window_size, MIN_RECEIVE_WINDOW_SIZE, MAX_RECEIVE_WINDOW_SIZE);
+//     Get_int_resource(rDB, "receiveWindowSize", &receive_window_size);
+//     LIMIT(receive_window_size, MIN_RECEIVE_WINDOW_SIZE, MAX_RECEIVE_WINDOW_SIZE);
 
-    //     Get_resource(rDB, "recordFile", resValue, sizeof resValue);
-    //     Record_init(resValue);
-    //     Get_resource(rDB, "texturePath", resValue, sizeof resValue);
-    //     texturePath = xp_strdup(resValue);
+//     Get_resource(rDB, "recordFile", resValue, sizeof resValue);
+//     Record_init(resValue);
+//     Get_resource(rDB, "texturePath", resValue, sizeof resValue);
+//     texturePath = xp_strdup(resValue);
 
-    //     Get_int_resource(rDB, "maxFPS", &maxFPS);
-    //     oldMaxFPS = maxFPS;
+//     Get_int_resource(rDB, "maxFPS", &maxFPS);
+//     oldMaxFPS = maxFPS;
 
-    //     Get_double_resource(rDB, "scaleFactor", &clData.scaleFactor);
-    //     if (clData.scaleFactor == 0.0)
-    //         clData.scaleFactor = 1.0;
-    //     LIMIT(clData.scaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
-    //     Get_double_resource(rDB, "altScaleFactor", &clData.altScaleFactor);
-    //     if (clData.altScaleFactor == 0.0)
-    //         clData.altScaleFactor = 2.0;
-    //     LIMIT(clData.altScaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
+//     Get_double_resource(rDB, "scaleFactor", &clData.scaleFactor);
+//     if (clData.scaleFactor == 0.0)
+//         clData.scaleFactor = 1.0;
+//     LIMIT(clData.scaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
+//     Get_double_resource(rDB, "altScaleFactor", &clData.altScaleFactor);
+//     if (clData.altScaleFactor == 0.0)
+//         clData.altScaleFactor = 2.0;
+//     LIMIT(clData.altScaleFactor, MIN_SCALEFACTOR, MAX_SCALEFACTOR);
 
-    // #ifdef SOUND
-    //     Get_string_resource(rDB, "sounds", sounds, sizeof sounds);
-    //     Get_int_resource(rDB, "maxVolume", &maxVolume);
-    //     Get_resource(rDB, "audioServer", audioServer, sizeof audioServer);
-    // #endif
+// #ifdef SOUND
+//     Get_string_resource(rDB, "sounds", sounds, sizeof sounds);
+//     Get_int_resource(rDB, "maxVolume", &maxVolume);
+//     Get_resource(rDB, "audioServer", audioServer, sizeof audioServer);
+// #endif
 
-    //     Get_test_resources(rDB);
+//     Get_test_resources(rDB);
 
-    //     /*
-    //      * Key bindings
-    //      */
-    //     maxKeyDefs = 2 * NUM_KEYS;
-    //     if (!(keyDefs = (keydefs_t *)malloc(maxKeyDefs * sizeof(keydefs_t))))
-    //     {
-    //         error("No memory for key bindings");
-    //         exit(1);
-    //     }
-    //     num = 0;
-    //     for (i = 0; i < NELEM(oldOptions); i++)
-    //     {
-    //         if ((key = oldOptions[i].key) == KEY_DUMMY)
-    //         {
-    //             continue;
-    //         }
-    //         Get_resource(rDB, oldOptions[i].name, resValue, sizeof resValue);
-    //         firstKeyDef = num;
-    //         for (str = strtok(resValue, " \t\r\n");
-    //              str != NULL;
-    //              str = strtok(NULL, " \t\r\n"))
-    //         {
+//     /*
+//      * Key bindings
+//      */
+//     maxKeyDefs = 2 * NUM_KEYS;
+//     if (!(keyDefs = (keydefs_t *)malloc(maxKeyDefs * sizeof(keydefs_t))))
+//     {
+//         error("No memory for key bindings");
+//         exit(1);
+//     }
+//     num = 0;
+//     for (i = 0; i < NELEM(oldOptions); i++)
+//     {
+//         if ((key = oldOptions[i].key) == KEY_DUMMY)
+//         {
+//             continue;
+//         }
+//         Get_resource(rDB, oldOptions[i].name, resValue, sizeof resValue);
+//         firstKeyDef = num;
+//         for (str = strtok(resValue, " \t\r\n");
+//              str != NULL;
+//              str = strtok(NULL, " \t\r\n"))
+//         {
 
-    //             if ((ks = XStringToKeysym(str)) == NoSymbol)
-    //             {
-    //                 printf("Invalid keysym \"%s\" for key \"%s\".\n",
-    //                        str, oldOptions[i].name);
-    //                 continue;
-    //             }
+//             if ((ks = XStringToKeysym(str)) == NoSymbol)
+//             {
+//                 printf("Invalid keysym \"%s\" for key \"%s\".\n",
+//                        str, oldOptions[i].name);
+//                 continue;
+//             }
 
-    //             for (j = firstKeyDef; j < num; j++)
-    //             {
-    //                 if (keyDefs[j].keysym == ks && keyDefs[j].key == key)
-    //                 {
-    //                     break;
-    //                 }
-    //             }
-    //             if (j < num)
-    //             {
-    //                 continue;
-    //             }
-    //             if (num >= maxKeyDefs)
-    //             {
-    //                 maxKeyDefs += NUM_KEYS;
-    //                 if (!(keyDefs = (keydefs_t *)
-    //                           realloc(keyDefs, maxKeyDefs * sizeof(keydefs_t))))
-    //                 {
-    //                     error("No memory for key bindings");
-    //                     exit(1);
-    //                 }
-    //             }
+//             for (j = firstKeyDef; j < num; j++)
+//             {
+//                 if (keyDefs[j].keysym == ks && keyDefs[j].key == key)
+//                 {
+//                     break;
+//                 }
+//             }
+//             if (j < num)
+//             {
+//                 continue;
+//             }
+//             if (num >= maxKeyDefs)
+//             {
+//                 maxKeyDefs += NUM_KEYS;
+//                 if (!(keyDefs = (keydefs_t *)
+//                           realloc(keyDefs, maxKeyDefs * sizeof(keydefs_t))))
+//                 {
+//                     error("No memory for key bindings");
+//                     exit(1);
+//                 }
+//             }
 
-    //             /* insertion sort. */
-    //             for (j = num; j > 0; j--)
-    //             {
-    //                 if (ks >= keyDefs[j - 1].keysym)
-    //                 {
-    //                     break;
-    //                 }
-    //                 keyDefs[j] = keyDefs[j - 1];
-    //             }
-    //             keyDefs[j].keysym = ks;
-    //             keyDefs[j].key = key;
-    //             num++;
-    //             if (!key)
-    //             {
-    //                 printf("bug key 0\n");
-    //                 exit(1);
-    //             }
-    //         }
-    //     }
-    //     if (num < maxKeyDefs)
-    //     {
-    //         maxKeyDefs = num;
-    //         if (!(keyDefs = (keydefs_t *)
-    //                   realloc(keyDefs, maxKeyDefs * sizeof(keydefs_t))))
-    //         {
-    //             error("No memory for key bindings");
-    //             exit(1);
-    //         }
-    //     }
+//             /* insertion sort. */
+//             for (j = num; j > 0; j--)
+//             {
+//                 if (ks >= keyDefs[j - 1].keysym)
+//                 {
+//                     break;
+//                 }
+//                 keyDefs[j] = keyDefs[j - 1];
+//             }
+//             keyDefs[j].keysym = ks;
+//             keyDefs[j].key = key;
+//             num++;
+//             if (!key)
+//             {
+//                 printf("bug key 0\n");
+//                 exit(1);
+//             }
+//         }
+//     }
+//     if (num < maxKeyDefs)
+//     {
+//         maxKeyDefs = num;
+//         if (!(keyDefs = (keydefs_t *)
+//                   realloc(keyDefs, maxKeyDefs * sizeof(keydefs_t))))
+//         {
+//             error("No memory for key bindings");
+//             exit(1);
+//         }
+//     }
 
-    /*
-     * Pointer button bindings
-     */
-    //     for (i = 0; i < MAX_POINTER_BUTTONS; i++)
-    //     {
-    //         sprintf(resValue, "pointerButton%d", i + 1);
-    //         Get_resource(rDB, resValue, resValue, sizeof resValue);
-    //         ptr = resValue;
-    //         if (*ptr != '\0')
-    //         {
-    //             for (ptr = strtok(resValue, " \t\r\n");
-    //                  ptr != NULL;
-    //                  ptr = strtok(NULL, " \t\r\n"))
-    //             {
-    //                 if (!strncasecmp(ptr, "key", 3))
-    //                     ptr += 3;
-    //                 for (j = 0; j < NELEM(oldOptions); j++)
-    //                 {
-    //                     if (oldOptions[j].key != KEY_DUMMY)
-    //                     {
-    //                         if (!strcasecmp(ptr, oldOptions[j].name + 3))
-    //                         {
-    //                             if (NUM_BUTTON_DEFS(i) == MAX_BUTTON_DEFS)
-    //                             {
-    //                                 errno = 0;
-    //                                 error("Can only have %d keys bound to"
-    //                                       " pointer button %d",
-    //                                       MAX_BUTTON_DEFS, i);
-    //                                 break;
-    //                             }
-    //                             buttonDefs[i][NUM_BUTTON_DEFS(i)++] = oldOptions[j].key;
-    //                             break;
-    //                         }
-    //                     }
-    //                 }
-    //                 if (j == NELEM(oldOptions))
-    //                 {
-    //                     errno = 0;
-    //                     error("Unknown key \"%s\" for pointer button %d", ptr, i);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     // Record_init("");
+/*
+ * Pointer button bindings
+ */
+//     for (i = 0; i < MAX_POINTER_BUTTONS; i++)
+//     {
+//         sprintf(resValue, "pointerButton%d", i + 1);
+//         Get_resource(rDB, resValue, resValue, sizeof resValue);
+//         ptr = resValue;
+//         if (*ptr != '\0')
+//         {
+//             for (ptr = strtok(resValue, " \t\r\n");
+//                  ptr != NULL;
+//                  ptr = strtok(NULL, " \t\r\n"))
+//             {
+//                 if (!strncasecmp(ptr, "key", 3))
+//                     ptr += 3;
+//                 for (j = 0; j < NELEM(oldOptions); j++)
+//                 {
+//                     if (oldOptions[j].key != KEY_DUMMY)
+//                     {
+//                         if (!strcasecmp(ptr, oldOptions[j].name + 3))
+//                         {
+//                             if (NUM_BUTTON_DEFS(i) == MAX_BUTTON_DEFS)
+//                             {
+//                                 errno = 0;
+//                                 error("Can only have %d keys bound to"
+//                                       " pointer button %d",
+//                                       MAX_BUTTON_DEFS, i);
+//                                 break;
+//                             }
+//                             buttonDefs[i][NUM_BUTTON_DEFS(i)++] = oldOptions[j].key;
+//                             break;
+//                         }
+//                     }
+//                 }
+//                 if (j == NELEM(oldOptions))
+//                 {
+//                     errno = 0;
+//                     error("Unknown key \"%s\" for pointer button %d", ptr, i);
+//                 }
+//             }
+//         }
+//     }
+//     // Record_init("");
 
-    //     XrmDestroyDatabase(rDB);
+//     XrmDestroyDatabase(rDB);
 
-    //     free(xopt);
+//     free(xopt);
 
-    // #ifdef SOUND
-    //     audioInit(dispName);
-    // #endif /* SOUND */
+// #ifdef SOUND
+//     audioInit(dispName);
+// #endif /* SOUND */
 
-    //     warn("Parse_options end");
-}
+//     warn("Parse_options end");
+// }
 
 // void defaultCleanup(void)
 // {
