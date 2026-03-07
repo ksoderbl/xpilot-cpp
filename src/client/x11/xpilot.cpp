@@ -36,7 +36,6 @@
 
 #include "randommt.h"
 #include "strlcpy.h"
-
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"
@@ -47,9 +46,12 @@
 #include "socklib.h"
 #include "net.h"
 #include "connectparam.h"
-#include "client.h"
 #include "portability.h"
 #include "checknames.h"
+
+#include "client.h"
+#include "configure.h"
+#include "xinit.h"
 
 // In xdefault.cpp
 extern void Initialize_global_variables(void);
@@ -162,7 +164,7 @@ int main(int argc, char *argv[])
     /*
      * --- Create global option array ---
      */
-    // Store_default_options();
+    Store_default_options();
     // Store_X_options();
     // Store_hud_options();
     // Store_paintradar_options();
@@ -170,7 +172,7 @@ int main(int argc, char *argv[])
     // Store_guimap_options();
     // Store_guiobject_options();
     // Store_talk_macro_options();
-    // Store_key_options();
+    Store_key_options();
     // Store_record_options();
     // Store_color_options();
 
@@ -183,6 +185,9 @@ int main(int argc, char *argv[])
                   &auto_connect, &noLocalMotd,
                   conpar->nick_name, conpar->disp_name,
                   hostname, shutdown_reason);
+
+    Config_init();
+    Handle_X_options();
 
     if (Check_nick_name(conpar->nick_name) == NAME_ERROR)
     {

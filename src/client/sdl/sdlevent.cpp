@@ -304,6 +304,6 @@ int Process_event(SDL_Event *evt)
 }
 
 /* kps - just here so that this can link to generic client files */
-void old_config_redraw(void)
+void Config_redraw(void)
 {
 }

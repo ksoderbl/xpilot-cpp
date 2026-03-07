@@ -2443,15 +2443,15 @@ void Parse_options(int *argcp, char **argvp, char *realName, int *port,
     warn("Parse_options end");
 }
 
-void defaultCleanup(void)
-{
-    XFREE(keyDefs);
-    XFREE(texturePath);
-    XFREE(shipShape);
-#ifdef SOUND
-    audioCleanup();
-#endif /* SOUND */
-}
+// void defaultCleanup(void)
+// {
+//     XFREE(keyDefs);
+//     XFREE(texturePath);
+//     XFREE(shipShape);
+// #ifdef SOUND
+//     audioCleanup();
+// #endif /* SOUND */
+// }
 
 #ifdef DEVELOPMENT
 static int X_error_handler(Display *display, XErrorEvent *xev)
@@ -2985,7 +2985,7 @@ bool Set_scaleFactor(xp_option_t *opt, double val)
     clData.fscale = (float)clData.scale;
     /* Resize removed because it is not needed here */
     Scale_dashes();
-    old_config_redraw();
+    Config_redraw();
     Bitmap_update_scale();
     return true;
 }

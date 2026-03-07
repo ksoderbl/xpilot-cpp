@@ -70,6 +70,12 @@ extern bool pre_exists;
 extern int pre_acc_num, pre_acc_denom, pre_threshold;
 
 /*
+ * xdefault.c
+ */
+extern void Store_X_options(void);
+extern void Handle_X_options(void);
+
+/*
  * Prototypes for xinit.c
  */
 extern const char *Item_get_text(int i);
