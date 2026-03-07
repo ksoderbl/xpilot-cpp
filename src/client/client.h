@@ -445,6 +445,8 @@ extern uint8_t lastNumItems[NUM_ITEMS];
 extern int numItemsTime[NUM_ITEMS];
 extern double showItemsTime;
 extern short autopilotLight;
+extern int showScoreDecimals;
+extern double scoreObjectTime; /* How long to show score objects */
 
 extern short lock_id;   /* Id of player locked onto */
 extern short lock_dir;  /* Direction of lock */
@@ -479,8 +481,6 @@ extern int backgroundPointSize; /* size of navigation points */
 extern int sparkSize;           /* size of sparks and debris */
 extern int shotSize;            /* size of shot */
 extern int teamShotSize;        /* size of team shot */
-
-extern long control_count; /* Display control for how long? */
 
 extern double controlTime;     /* Display control for how long? */
 extern uint8_t spark_rand;     /* Sparkling effect */
@@ -520,8 +520,6 @@ extern char *packet_measure;      /* packet measurement in a second */
 extern long packet_loop;          /* start of measurement */
 
 extern bool showUserName;          /* Show username instead of nickname */
-extern char name[MAX_CHARS];       /* Nick-name of player */
-extern char realname[MAX_CHARS];   /* Real name of player */
 extern char servername[MAX_CHARS]; /* Name of server connecting to */
 extern unsigned version;           /* Version of the server */
 extern bool scoresChanged;
@@ -776,7 +774,6 @@ void Client_cleanup(void);
 int Client_start(void);
 int Client_fps_request(void);
 int Client_power(void);
-int Client_wrap_mode(void);
 int Client_pointer_move(int movement);
 int Client_check_pointer_move_interval(void);
 void Client_exit(int status);

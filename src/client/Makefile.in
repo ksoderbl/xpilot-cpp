@@ -109,12 +109,13 @@ libxpclient_a_AR = $(AR) $(ARFLAGS)
 libxpclient_a_RANLIB = $(RANLIB)
 libxpclient_a_LIBADD =
 am_libxpclient_a_OBJECTS = caudio.$(OBJEXT) client.$(OBJEXT) \
-	datagram.$(OBJEXT) debugaudio.$(OBJEXT) default.$(OBJEXT) \
-	event.$(OBJEXT) gfx2d.$(OBJEXT) mapdata.$(OBJEXT) \
-	messages.$(OBJEXT) meta.$(OBJEXT) netclient.$(OBJEXT) \
-	option.$(OBJEXT) paint.$(OBJEXT) paintmap.$(OBJEXT) \
-	paintobjects.$(OBJEXT) query.$(OBJEXT) talkmacros.$(OBJEXT) \
-	textinterface.$(OBJEXT)
+	clientcommand.$(OBJEXT) datagram.$(OBJEXT) \
+	debugaudio.$(OBJEXT) default.$(OBJEXT) event.$(OBJEXT) \
+	gfx2d.$(OBJEXT) mapdata.$(OBJEXT) messages.$(OBJEXT) \
+	meta.$(OBJEXT) netclient.$(OBJEXT) option.$(OBJEXT) \
+	paint.$(OBJEXT) paintmap.$(OBJEXT) paintobjects.$(OBJEXT) \
+	query.$(OBJEXT) talkmacros.$(OBJEXT) textinterface.$(OBJEXT) \
+	usleep.$(OBJEXT)
 libxpclient_a_OBJECTS = $(am_libxpclient_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -132,14 +133,15 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/caudio.Po ./$(DEPDIR)/client.Po \
-	./$(DEPDIR)/datagram.Po ./$(DEPDIR)/debugaudio.Po \
-	./$(DEPDIR)/default.Po ./$(DEPDIR)/event.Po \
-	./$(DEPDIR)/gfx2d.Po ./$(DEPDIR)/mapdata.Po \
-	./$(DEPDIR)/messages.Po ./$(DEPDIR)/meta.Po \
-	./$(DEPDIR)/netclient.Po ./$(DEPDIR)/option.Po \
-	./$(DEPDIR)/paint.Po ./$(DEPDIR)/paintmap.Po \
-	./$(DEPDIR)/paintobjects.Po ./$(DEPDIR)/query.Po \
-	./$(DEPDIR)/talkmacros.Po ./$(DEPDIR)/textinterface.Po
+	./$(DEPDIR)/clientcommand.Po ./$(DEPDIR)/datagram.Po \
+	./$(DEPDIR)/debugaudio.Po ./$(DEPDIR)/default.Po \
+	./$(DEPDIR)/event.Po ./$(DEPDIR)/gfx2d.Po \
+	./$(DEPDIR)/mapdata.Po ./$(DEPDIR)/messages.Po \
+	./$(DEPDIR)/meta.Po ./$(DEPDIR)/netclient.Po \
+	./$(DEPDIR)/option.Po ./$(DEPDIR)/paint.Po \
+	./$(DEPDIR)/paintmap.Po ./$(DEPDIR)/paintobjects.Po \
+	./$(DEPDIR)/query.Po ./$(DEPDIR)/talkmacros.Po \
+	./$(DEPDIR)/textinterface.Po ./$(DEPDIR)/usleep.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -358,6 +360,8 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
+    clientcommand.cpp \
+    clientcommand.h \
     configure.h \
     connectparam.h \
     datagram.cpp \
@@ -387,7 +391,8 @@ libxpclient_a_SOURCES = \
     query.cpp \
     talk.h \
     talkmacros.cpp \
-    textinterface.cpp
+    textinterface.cpp \
+    usleep.cpp
 
 @COND_SDL_CLIENT_FALSE@MAYBE_SDL = 
 
@@ -445,6 +450,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/caudio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clientcommand.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/datagram.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debugaudio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/default.Po@am__quote@ # am--include-marker
@@ -461,6 +467,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/query.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/talkmacros.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/textinterface.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usleep.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -682,6 +689,7 @@ clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/caudio.Po
 	-rm -f ./$(DEPDIR)/client.Po
+	-rm -f ./$(DEPDIR)/clientcommand.Po
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
 	-rm -f ./$(DEPDIR)/default.Po
@@ -698,6 +706,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po
+	-rm -f ./$(DEPDIR)/usleep.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -745,6 +754,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/caudio.Po
 	-rm -f ./$(DEPDIR)/client.Po
+	-rm -f ./$(DEPDIR)/clientcommand.Po
 	-rm -f ./$(DEPDIR)/datagram.Po
 	-rm -f ./$(DEPDIR)/debugaudio.Po
 	-rm -f ./$(DEPDIR)/default.Po
@@ -761,6 +771,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/query.Po
 	-rm -f ./$(DEPDIR)/talkmacros.Po
 	-rm -f ./$(DEPDIR)/textinterface.Po
+	-rm -f ./$(DEPDIR)/usleep.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

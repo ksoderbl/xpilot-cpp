@@ -38,7 +38,6 @@
 ipos_t world;
 ipos_t realWorld;
 
-uint16_t team; /* What team is the player on? */
 bool players_exposed;
 
 short ext_view_width;   /* Width of extended visible area */
@@ -47,11 +46,6 @@ int active_view_width;  /* Width of active map area displayed. */
 int active_view_height; /* Height of active map area displayed. */
 int ext_view_x_offset;  /* Offset ext_view_width */
 int ext_view_y_offset;  /* Offset ext_view_height */
-uint8_t debris_colors;  /* Number of debris intensities from server */
-
-char modBankStr[NUM_MODBANKS][MAX_CHARS]; /* modifier banks */
-
-int maxKeyDefs;
 
 long loops = 0;
 long loopsSlow = 0; /* Proceeds slower than loops */

@@ -35,10 +35,6 @@
 #define DEF_TOP_WIDTH (1280 + 2)
 #define DEF_TOP_HEIGHT 1024
 
-// #define MAX_POINTER_BUTTONS 5
-// #define MAX_BUTTON_DEFS 3
-// #define NUM_BUTTON_DEFS(i) numButtonDefs[i]
-
 extern Atom ProtocolAtom, KillAtom;
 extern int buttonColor;
 extern int windowColor;
@@ -53,14 +49,6 @@ extern Visual *visual;
 extern unsigned dispDepth;
 extern bool texturedObjects;
 extern bool fullColor;
-// extern char color_names[MAX_COLORS][MAX_COLOR_LEN];
-// extern int                draw_width, draw_height;
-// extern char *geometry;
-// extern bool autoServerMotdPopup;
-// extern bool refreshMotd;
-// extern char sparkColors[MSG_LEN];
-// extern int spark_color[MAX_COLORS];
-// extern int                num_spark_colors;
 extern int button_form;
 extern unsigned top_width, top_height;
 extern unsigned players_width, players_height;

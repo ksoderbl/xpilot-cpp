@@ -99,11 +99,27 @@ static void WriteHeader(void)
 {
     struct XPRHeader hdr{};
 
-    hdr.nickname = std::string(name);
-    hdr.realname = std::string(realname);
-    hdr.hostname = std::string(hostname);
+    hdr.nickname = std::string(connectParam.nick_name);
+    hdr.realname = std::string(connectParam.user_name);
+    hdr.hostname = std::string(connectParam.host_name);
     hdr.servername = std::string(servername);
-    hdr.fps = FPS;
+
+    /*
+     * The client will try to determine an optimal recording FPS value,
+     * however, if it has not done that, server FPS will be used.
+     */
+    {
+        int fps;
+        char tmpbuf[64];
+
+        if (recordFPS > 0)
+            fps = recordFPS;
+        else
+            fps = FPS;
+        sprintf(tmpbuf, "Started recording at %d FPS. [*Client notice*]", fps);
+        Add_message(tmpbuf);
+        hdr.fps = fps;
+    }
 
     time_t t;
     char buf[256];
@@ -113,9 +129,8 @@ static void WriteHeader(void)
     time(&t);
     strlcpy(buf, ctime(&t), sizeof(buf));
     if ((ptr = strchr(buf, '\n')) != NULL)
-    {
         *ptr = '\0';
-    }
+
     hdr.recorddate = std::string(buf);
 
     /* Write info about graphics setup. */

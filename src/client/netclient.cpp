@@ -36,25 +36,26 @@
 #include <sys/param.h>
 #include <sys/time.h>
 
+#include "bit.h"
 #include "commonmacros.h"
 #include "const.h"
 #include "item.h"
+#include "net.h"
+#include "setup.h"
 #include "strlcpy.h"
-
+#include "pack.h"
+#include "packet.h"
+#include "portability.h"
+#include "socklib.h"
+#include "talk.h"
+#include "types.h"
 #include "xpconfig.h"
 #include "xperror.h"
-#include "net.h"
-#include "netclient.h"
-#include "setup.h"
-#include "packet.h"
-#include "bit.h"
-#include "paint.h"
-#include "pack.h"
-#include "types.h"
-#include "socklib.h"
+
 #include "client.h"
-#include "portability.h"
-#include "talk.h"
+#include "clientcommand.h"
+#include "netclient.h"
+#include "paint.h"
 
 #ifdef SOUND
 #include "audio.h"
@@ -566,6 +567,11 @@ int Net_init(char *server, int port)
 
     signal(SIGPIPE, SIG_IGN);
 
+    server_display.view_width = 0;
+    server_display.view_height = 0;
+    server_display.spark_rand = 0;
+    server_display.num_spark_colors = 0;
+
     Receive_init();
     if (!clientPortStart || !clientPortEnd ||
         (clientPortStart > clientPortEnd))
@@ -710,6 +716,7 @@ void Net_cleanup(void)
         }
         sock_close(&sock);
     }
+    sock_cleanup();
 }
 
 /*
@@ -1232,10 +1239,12 @@ static int Net_read(frame_buf_t *frame)
 int Net_input(void)
 {
     int i, j, n;
+    int num_buffered_packets;
     frame_buf_t *frame,
         *last_frame,
         *oldest_frame = &Frames[0],
         tmpframe;
+    time_t time_now;
 
     for (i = 0; i < receive_window_size; i++)
     {
@@ -1339,17 +1348,20 @@ int Net_input(void)
      * Find oldest packet.
      */
     last_frame = oldest_frame = &Frames[0];
+    num_buffered_packets = 1; /* Could be 0, but returns before using this */
     for (i = 1; i < receive_window_size; i++, last_frame++)
     {
         frame = &Frames[i];
         if (frame->loops == 0)
         {
             if (frame->sbuf.len > 0)
+            {
                 /*
                  * This is an unidentifiable packet.
                  * Process it last, because it arrived last.
                  */
                 continue;
+            }
             else
                 /*
                  * Empty.  The rest should be empty too,
@@ -1385,7 +1397,7 @@ int Net_input(void)
      */
     n = Net_packet();
 
-    if (last_frame->loops > oldest_frame->loops)
+    if (last_frame != oldest_frame)
     {
         /*
          * Switch buffers to prevent gaps.
@@ -1722,7 +1734,7 @@ int Receive_self(void)
 
     ext_view_width = sViewWidth;
     ext_view_height = sViewHeight;
-    debris_colors = sNumSparkColors;
+    // debris_colors = sNumSparkColors;
 
     if (version < 0x4203)
     {
@@ -1775,8 +1787,8 @@ int Receive_self(void)
         }
     }
 
-    if (debris_colors > num_spark_colors)
-        debris_colors = num_spark_colors;
+    // if (debris_colors > num_spark_colors)
+    //     debris_colors = num_spark_colors;
 
     Check_view_dimensions_old();
     /*
@@ -2244,8 +2256,6 @@ int Receive_war(void)
                           &ch, &robot_id, &killer_id)) <= 0)
         return n;
     /* not interested */
-    // if ((n = Handle_war(robot_id, killer_id)) == -1)
-    //     return -1;
     return 1;
 }
 
@@ -2259,8 +2269,6 @@ int Receive_seek(void)
                           &programmer_id, &robot_id, &sought_id)) <= 0)
         return n;
     /* not interested */
-    // if ((n = Handle_seek(programmer_id, robot_id, sought_id)) == -1)
-    //     return -1;
     return 1;
 }
 
@@ -2283,10 +2291,10 @@ int Receive_player(void)
                           nick_name, user_name, host_name,
                           shape)) <= 0)
         return n;
-
     nick_name[MAX_NAME_LEN - 1] = '\0';
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
+
     if (version > 0x3200 && version < 0x4F10)
         n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)]);
     else
@@ -2788,8 +2796,14 @@ int Receive_talk_ack(void)
 int Net_talk(char *str)
 {
     strlcpy(talk_str, str, sizeof talk_str);
-    talk_pending = ++talk_sequence_num;
-    talk_last_send = last_loops - TALK_RETRY;
+    if (talk_str[0] == '\\') /* it's a clientcommand! */
+        executeCommand(talk_str + 1);
+    else
+    {
+        talk_pending = ++talk_sequence_num;
+        talk_last_send = last_loops - TALK_RETRY;
+        Send_talk();
+    }
     return 0;
 }
 
@@ -2818,7 +2832,7 @@ int Send_display(void)
 
     if (width_wanted == ext_view_width &&
         height_wanted == ext_view_height &&
-        debris_colors == num_spark_colors &&
+        // debris_colors == num_spark_colors &&
         spark_rand == old_spark_rand &&
         last_loops != 0)
         return 0;
@@ -2851,11 +2865,59 @@ int Send_modifier_bank(int bank)
 
 int Send_pointer_move(int movement)
 {
+    static int total;
+
+#if 0
+    struct timeval tv;
+    static struct timeval old_tv;
+    double s, u, t;
+    static double oldt = 0;
+    static int num = 1;
+
+    gettimeofday(&tv, NULL);
+
+    s = tv.tv_sec;
+    u = tv.tv_usec;
+    t = s + u * 1e-6;
+
+    if (tv.tv_sec != old_tv.tv_sec) {
+    warn("Send_pointer_moves = %d", num);
+    num = 1;
+    } else
+    num ++;
+
+    /*warn("%d %.2f: %d", num, t - oldt, movement);*/
+
+    oldt = t;
+    old_tv = tv;
+#endif
+
     if (version < 0x3202)
         return 0;
 
+    if (dirPrediction)
+    {
+        pointer_moves[pointer_move_next].movement = movement;
+        pointer_moves[pointer_move_next].turnspeed = turnspeed;
+        pointer_moves[pointer_move_next].id = last_keyboard_change + 1;
+
+        pointer_move_next++;
+        if (pointer_move_next >= MAX_POINTER_MOVES)
+            pointer_move_next = 0;
+    }
+
+    if (version >= 0x4F13)
+    {
+        total += movement;
+        movement = total;
+    }
+
     if (Packet_printf(&wbuf, "%c%hd", PKT_POINTER_MOVE, movement) == -1)
         return -1;
+
+    if (dirPrediction)
+        Net_key_change();
+
     return 0;
 }
 
@@ -2881,6 +2943,8 @@ int Send_fps_request(int fps)
     if (version < 0x3280)
         return 0;
 
+    assert(fps > 0);
+    assert(fps <= MAX_SUPPORTED_FPS);
     if (Packet_printf(&wbuf, "%c%c", PKT_ASYNC_FPS, fps) == -1)
         return -1;
     return 0;

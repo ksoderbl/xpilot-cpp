@@ -41,6 +41,7 @@
 #include "xpmath.h"
 
 #include "client.h"
+#include "clientcommand.h"
 #include "messages.h"
 #include "netclient.h"
 #include "paint.h"
@@ -117,7 +118,6 @@ int backgroundPointSize; /* size of navigation points */
 int sparkSize;           /* size of debris and spark */
 int shotSize;            /* size of shot */
 int teamShotSize;        /* size of team shot */
-long control_count;      /* Display control for how long? */
 
 double controlTime;     /* Display control for how long? */
 uint8_t spark_rand;     /* Sparkling effect */
@@ -156,15 +156,13 @@ int packet_lag;            /* approximate lag in frames */
 char *packet_measure;      /* packet measurement in a second */
 long packet_loop;          /* start of measurement */
 
-bool showUserName = false;  /* Show username instead of nick name */
-char name[MAX_CHARS];       /* Nick-name of player */
-char realname[MAX_CHARS];   /* Real name of player */
-char servername[MAX_CHARS]; /* Name of server connecting to */
-unsigned version;           /* Version of the server */
-bool toggle_shield;         /* Are shields toggled by a press? */
-bool shields = true;        /* When shields are considered up */
-
-bool auto_shield = true; /* shield drops for fire */
+bool showUserName = false;                /* Show username instead of nick name */
+char servername[MAX_CHARS];               /* Name of server connecting to */
+unsigned version;                         /* Version of the server */
+bool toggle_shield;                       /* Are shields toggled by a press? */
+bool shields = true;                      /* When shields are considered up */
+bool auto_shield = true;                  /* shield drops for fire */
+char modBankStr[NUM_MODBANKS][MAX_CHARS]; /* modifier banks */
 
 int maxFPS; /* Max FPS player wants from server */
 int oldMaxFPS = 0;
@@ -194,10 +192,10 @@ int maxVolume;               /* maximum volume (in percent) */
 #endif                       /* SOUND */
 
 static double teamscores[MAX_TEAMS];
-cannontime_t *cannons = NULL;
-int num_cannons = 0;
-target_t *targets = NULL;
-int num_targets = 0;
+static cannontime_t *cannons = NULL;
+static int num_cannons = 0;
+static target_t *targets = NULL;
+static int num_targets = 0;
 
 fuelstation_t *fuels = NULL;
 int num_fuels = 0;
@@ -1469,8 +1467,7 @@ int Handle_player(int id, int player_team, int mychar,
 
     // warn("Handle_player: id %d, connectParam.nick_name '%s'", id, connectParam.nick_name);
 
-    // if (self == NULL && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
-    if (self == NULL && (myself || (version < 0x4F10 && strcmp(name, nick_name) == 0)))
+    if (self == NULL && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
     {
         if (other != &Others[0])
         {
@@ -2142,7 +2139,57 @@ int Handle_radar(int x, int y, int size)
 
 int Handle_message(char *msg)
 {
-    Add_message(msg);
+    int i;
+    char ignoree[MAX_CHARS];
+    other_t *other;
+
+    if (msg[strlen(msg) - 1] == ']')
+    {
+        for (i = strlen(msg) - 1; i > 0; i--)
+        {
+            if (msg[i - 1] == ' ' && msg[i] == '[')
+                break;
+        }
+
+        if (i == 0)
+        { /* Odd, but let it pass */
+            Add_message(msg);
+            return 0;
+        }
+
+        strcpy(ignoree, &msg[i + 1]);
+
+        for (i = 0; i < (int)strlen(ignoree); i++)
+        {
+            if (ignoree[i] == ']')
+                break;
+        }
+        ignoree[i] = '\0';
+
+        other = Other_by_name(ignoree, false);
+
+        if (other == NULL)
+        { /* Not in list, probably servermessage */
+            Add_message(msg);
+            return 0;
+        }
+
+        if (other->ignorelevel <= 0)
+        {
+            Add_message(msg);
+            return 0;
+        }
+
+        if (other->ignorelevel >= 2)
+            return 0;
+
+        /* ignorelevel must be 1 */
+
+        crippleTalk(msg);
+        Add_message(msg);
+    }
+    else
+        Add_message(msg);
     return 0;
 }
 
@@ -2213,19 +2260,9 @@ int Client_init(char *server, unsigned server_version)
 {
     version = server_version;
     if (server_version < 0x4F09)
-        oldServer = true;
+        oldServer = 1;
     else
-        oldServer = false;
-
-    // if (Init_wreckage() == -1)
-    // {
-    //     return -1;
-    // }
-
-    // if (Init_asteroids() == -1)
-    // {
-    //     return -1;
-    // }
+        oldServer = 0;
 
     if (Paint_init() == -1)
         return -1;
@@ -2266,23 +2303,6 @@ int Client_setup(void)
     if (Alloc_history() == -1)
         return -1;
 
-    /* Old servers can't deal with 0.0 turnresistance, so swap to
-     * the alternate bank, and hope there's something better there. */
-    /* HACK: Hanging Gardens runs an old server (version code 0x4101)
-     * which happens to have the turnresistance patch. */
-    if (turnresistance == 0.0 && version < 0x4200 && version != 0x4101)
-    {
-        double tmp;
-#define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
-        SWAP(power, power_s);
-        SWAP(turnspeed, turnspeed_s);
-        SWAP(turnresistance, turnresistance_s);
-#undef SWAP
-        controlTime = CONTROL_TIME;
-        Add_message("Old server can't handle turnResistance=0.0; "
-                    "swapping to alternate settings [*Client message*]");
-    }
-
     return 0;
 }
 
@@ -2309,8 +2329,13 @@ int Client_power(void)
         Send_turnspeed(turnspeed) == -1 ||
         Send_turnspeed_s(turnspeed_s) == -1 ||
         Send_turnresistance(turnresistance) == -1 ||
-        Send_turnresistance_s(turnresistance_s) == -1 ||
-        Send_display() == -1)
+        Send_turnresistance_s(turnresistance_s) == -1)
+        return -1;
+
+    // if (Check_view_dimensions() == -1)
+    //     return -1;
+
+    if (Send_display() == -1)
         return -1;
 
     for (i = 0; i < NUM_MODBANKS; i++)
@@ -2452,11 +2477,6 @@ void Client_cleanup(void)
 
     Map_cleanup();
     Paint_cleanup();
-}
-
-int Client_wrap_mode(void)
-{
-    return (BIT(Setup->mode, WRAP_PLAY) != 0);
 }
 
 int Client_pointer_move(int movement)

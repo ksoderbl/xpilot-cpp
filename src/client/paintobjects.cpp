@@ -163,22 +163,20 @@ static void Paint_mines(void)
                  * We do not know who is safe for mines sent with id==0
                  */
                 name = NULL;
+                if (mine_ptr[i].id != 0)
                 {
-                    if (mine_ptr[i].id != 0)
+                    other_t *other;
+                    if (mine_ptr[i].id == EXPIRED_MINE_ID)
                     {
-                        other_t *other;
-                        if (mine_ptr[i].id == EXPIRED_MINE_ID)
-                        {
-                            static char expired_name[] = "Expired";
-                            name = expired_name;
-                        }
-                        else if ((other = Other_by_id(mine_ptr[i].id)) != NULL)
-                            name = other->nick_name;
-                        else
-                        {
-                            static char unknown_name[] = "Not of this world!";
-                            name = unknown_name;
-                        }
+                        static char expired_name[] = "Expired";
+                        name = expired_name;
+                    }
+                    else if ((other = Other_by_id(mine_ptr[i].id)) != NULL)
+                        name = other->nick_name;
+                    else
+                    {
+                        static char unknown_name[] = "Not of this world!";
+                        name = unknown_name;
                     }
                 }
                 Gui_paint_mine(x, y, mine_ptr[i].teammine, name);
@@ -195,11 +193,11 @@ static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
 #if 0
 /* before "sparkColors" option: */
 #define DEBRIS_COLOR(color) \
-    ((debris_colors > 4) ? (5 + (((color & 1) << 2) | (color >> 1))) : ((debris_colors >= 3) ? (5 + color) : (color)))
+    ((num_spark_colors > 4) ? (5 + (((color & 1) << 2) | (color >> 1))) : ((num_spark_colors >= 3) ? (5 + color) : (color)))
 #else
 /* adjusted for "sparkColors" option: */
 #define DEBRIS_COLOR(color) \
-    ((debris_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color))
+    ((num_spark_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color))
 #endif
 
     for (i = 0; i < max_; i++)
@@ -260,7 +258,7 @@ static void Paint_asteroids(void)
             y = asteroid_ptr[i].y;
             if (wrap(&x, &y))
             {
-                type = (asteroid_ptr[i].type) % NUM_ASTEROID_SHAPES;
+                type = asteroid_ptr[i].type;
                 rot = asteroid_ptr[i].rotation;
                 size = asteroid_ptr[i].size;
 
@@ -391,7 +389,7 @@ void Paint_shots(void)
     x_areas = (active_view_width + 255) >> 8;
     y_areas = (active_view_height + 255) >> 8;
     areas = x_areas * y_areas;
-    max_ = areas * (debris_colors >= 3 ? debris_colors : 4);
+    max_ = areas * (num_spark_colors >= 3 ? num_spark_colors : 4);
 
     Paint_debris(x_areas, y_areas, areas, max_);
 

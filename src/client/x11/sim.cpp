@@ -173,7 +173,7 @@ static rpos_t fake_ships[N_FAKE_SHIPS];
 
 static void Fake_others(void)
 {
-    extern char name[];
+    char name[] = "Fake";
     char fakename[15];
     int i;
 

@@ -96,9 +96,6 @@
 int ButtonHeight;
 Atom ProtocolAtom, KillAtom;
 bool quitting = false;
-int top_x, top_y, top_posmask;
-bool autoServerMotdPopup;
-bool refreshMotd;
 unsigned top_width, top_height;
 unsigned players_width, players_height;
 bool radar_score_mapped;
@@ -240,16 +237,14 @@ static XFontStruct *Set_font(Display *display, GC gc,
  */
 extern char **Argv;
 extern int Argc;
-extern char myClass[];
 
 static void Init_disp_prop(Display *d, Window win,
-                           int w, int h, int x, int y,
+                           unsigned w, unsigned h, int x, int y,
                            int flags)
 {
     XClassHint xclh;
     XWMHints xwmh;
     XSizeHints xsh;
-    char msg[256];
 
     xwmh.flags = InputHint | StateHint | IconPixmapHint;
     xwmh.input = True;
@@ -284,15 +279,8 @@ static void Init_disp_prop(Display *d, Window win,
     /*
      * Now initialize icon and window title name.
      */
-    if (titleFlip)
-        sprintf(msg, "Successful connection to server at \"%s\".",
-                servername);
-    else
-        sprintf(msg, "%s -- Server at \"%s\".", TITLE, servername);
-    XStoreName(d, win, msg);
-
-    sprintf(msg, "%s:%s", name, servername);
-    XSetIconName(d, win, msg);
+    XStoreName(d, win, TITLE);
+    XSetIconName(d, win, TITLE);
 
     if (d != dpy)
         return;

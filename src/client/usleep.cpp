@@ -12,7 +12,8 @@
  *  Changed usleep into micro_delay to forego any possible prototype clashes.
  */
 
-// #include "xpclient.h"
+#include <cstdlib>
+#include <sys/select.h>
 
 int micro_delay(unsigned usec)
 {

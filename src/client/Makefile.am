@@ -7,6 +7,8 @@ libxpclient_a_SOURCES = \
     caudio.h \
     client.cpp \
     client.h \
+    clientcommand.cpp \
+    clientcommand.h \
     configure.h \
     connectparam.h \
     datagram.cpp \
@@ -36,7 +38,8 @@ libxpclient_a_SOURCES = \
     query.cpp \
     talk.h \
     talkmacros.cpp \
-    textinterface.cpp
+    textinterface.cpp \
+    usleep.cpp
 
 # From section Conditional subdirectories with AM_CONDITIONAL
 # in GNU automake manual.

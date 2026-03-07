@@ -1,14 +1,12 @@
 /*
- * XPilot NG, a multiplayer space war game.
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- * Copyright (C) 1991-2001 by
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
- *      Bj�rn Stabell        <bjoern@xpilot.org>
- *      Ken Ronny Schouten   <ken@xpilot.org>
- *      Bert Gijsbers        <bert@xpilot.org>
- *      Dick Balaska         <dick@xpilot.org>
- *
- * Copyright (C) 2003-2004 Kristian S�derblom <kps@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Kristian Söderblom
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +23,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-// #include "xpclient.h"
+#include <cassert>
+#include <cctype>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+
+#include "const.h"
+#include "xperror.h"
+
+#include "client.h"
 
 const char c_commands[][16] = {
     "ignore",
