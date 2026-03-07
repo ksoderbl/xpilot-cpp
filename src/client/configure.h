@@ -28,10 +28,10 @@
 #define CONFIG_DEFAULT 1
 #define CONFIG_COLORS 2
 
-void Config_init(void);
-int Config(bool, int);
-void Config_redraw(void);
-void Config_resize(void);
-void Config_destroy(void);
+void Old_config_init(void);
+int Old_config(bool, int);
+void Old_config_redraw(void);
+void Old_config_resize(void);
+void Old_config_destroy(void);
 
 #endif

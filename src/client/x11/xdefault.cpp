@@ -2985,7 +2985,7 @@ bool Set_scaleFactor(xp_option_t *opt, double val)
     clData.fscale = (float)clData.scale;
     /* Resize removed because it is not needed here */
     Scale_dashes();
-    Config_redraw();
+    Old_config_redraw();
     Bitmap_update_scale();
     return true;
 }

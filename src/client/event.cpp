@@ -246,7 +246,7 @@ static bool Key_press_swap_settings(void)
     SWAP(turnspeed, turnspeed_s);
     SWAP(turnresistance, turnresistance_s);
     controlTime = CONTROL_TIME;
-    Config_redraw();
+    Old_config_redraw();
 
     return true;
 }
@@ -267,7 +267,7 @@ static bool Key_press_increase_power(void)
     power = MIN(power, MAX_PLAYER_POWER);
     Send_power(power);
 
-    Config_redraw();
+    Old_config_redraw();
     controlTime = CONTROL_TIME;
     return false; /* server doesn't see these keypresses anymore */
 }
@@ -278,7 +278,7 @@ static bool Key_press_decrease_power(void)
     power = MAX(power, MIN_PLAYER_POWER);
     Send_power(power);
 
-    Config_redraw();
+    Old_config_redraw();
     controlTime = CONTROL_TIME;
     return false; /* server doesn't see these keypresses anymore */
 }
@@ -289,7 +289,7 @@ static bool Key_press_increase_turnspeed(void)
     turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
 
-    Config_redraw();
+    Old_config_redraw();
     controlTime = CONTROL_TIME;
     return false; /* server doesn't see these keypresses anymore */
 }
@@ -300,7 +300,7 @@ static bool Key_press_decrease_turnspeed(void)
     turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
 
-    Config_redraw();
+    Old_config_redraw();
     controlTime = CONTROL_TIME;
     return false; /* server doesn't see these keypresses anymore */
 }

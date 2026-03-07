@@ -60,92 +60,92 @@
 extern const char *Get_keyResourceString(keys_t key);
 extern void Get_xpilotrc_file(char *, unsigned);
 
-static int Config_create_power(int widget_desc, int *height);
-static int Config_create_turnSpeed(int widget_desc, int *height);
-static int Config_create_turnResistance(int widget_desc, int *height);
-static int Config_create_altPower(int widget_desc, int *height);
-static int Config_create_altTurnSpeed(int widget_desc, int *height);
-static int Config_create_altTurnResistance(int widget_desc, int *height);
-static int Config_create_showMessages(int widget_desc, int *height);
-static int Config_create_showHUD(int widget_desc, int *height);
-static int Config_create_showHUDRadar(int widget_desc, int *height);
-static int Config_create_speedFactHUD(int widget_desc, int *height);
-static int Config_create_speedFactPTR(int widget_desc, int *height);
-static int Config_create_fuelNotify(int widget_desc, int *height);
-static int Config_create_fuelWarning(int widget_desc, int *height);
-static int Config_create_fuelCritical(int widget_desc, int *height);
-static int Config_create_fuelGauge(int widget_desc, int *height);
-static int Config_create_outlineWorld(int widget_desc, int *height);
-static int Config_create_filledWorld(int widget_desc, int *height);
-static int Config_create_texturedWalls(int widget_desc, int *height);
-static int Config_create_texturedObjects(int widget_desc, int *height);
-static int Config_create_slidingRadar(int widget_desc, int *height);
-static int Config_create_showItems(int widget_desc, int *height);
-static int Config_create_showItemsTime(int widget_desc, int *height);
-static int Config_create_backgroundPointDist(int widget_desc, int *height);
-static int Config_create_backgroundPointSize(int widget_desc, int *height);
-static int Config_create_sparkSize(int widget_desc, int *height);
-static int Config_create_charsPerSecond(int widget_desc, int *height);
-static int Config_create_toggleShield(int widget_desc, int *height);
-static int Config_create_autoShield(int widget_desc, int *height);
-static int Config_create_sparkProb(int widget_desc, int *height);
-static int Config_create_shotSize(int widget_desc, int *height);
-static int Config_create_teamShotSize(int widget_desc, int *height);
-static int Config_create_hudColor(int widget_desc, int *height);
-static int Config_create_hudLockColor(int widget_desc, int *height);
-static int Config_create_wallColor(int widget_desc, int *height);
-static int Config_create_decorColor(int widget_desc, int *height);
-static int Config_create_showDecor(int widget_desc, int *height);
-static int Config_create_outlineDecor(int widget_desc, int *height);
-static int Config_create_filledDecor(int widget_desc, int *height);
-static int Config_create_texturedDecor(int widget_desc, int *height);
-static int Config_create_maxFPS(int widget_desc, int *height);
-static int Config_create_maxMessages(int widget_desc, int *height);
-static int Config_create_messagesToStdout(int widget_desc, int *height);
-static int Config_create_oldMessagesColor(int widget_desc, int *height);
+static int Old_config_create_power(int widget_desc, int *height);
+static int Old_config_create_turnSpeed(int widget_desc, int *height);
+static int Old_config_create_turnResistance(int widget_desc, int *height);
+static int Old_config_create_altPower(int widget_desc, int *height);
+static int Old_config_create_altTurnSpeed(int widget_desc, int *height);
+static int Old_config_create_altTurnResistance(int widget_desc, int *height);
+static int Old_config_create_showMessages(int widget_desc, int *height);
+static int Old_config_create_showHUD(int widget_desc, int *height);
+static int Old_config_create_showHUDRadar(int widget_desc, int *height);
+static int Old_config_create_speedFactHUD(int widget_desc, int *height);
+static int Old_config_create_speedFactPTR(int widget_desc, int *height);
+static int Old_config_create_fuelNotify(int widget_desc, int *height);
+static int Old_config_create_fuelWarning(int widget_desc, int *height);
+static int Old_config_create_fuelCritical(int widget_desc, int *height);
+static int Old_config_create_fuelGauge(int widget_desc, int *height);
+static int Old_config_create_outlineWorld(int widget_desc, int *height);
+static int Old_config_create_filledWorld(int widget_desc, int *height);
+static int Old_config_create_texturedWalls(int widget_desc, int *height);
+static int Old_config_create_texturedObjects(int widget_desc, int *height);
+static int Old_config_create_slidingRadar(int widget_desc, int *height);
+static int Old_config_create_showItems(int widget_desc, int *height);
+static int Old_config_create_showItemsTime(int widget_desc, int *height);
+static int Old_config_create_backgroundPointDist(int widget_desc, int *height);
+static int Old_config_create_backgroundPointSize(int widget_desc, int *height);
+static int Old_config_create_sparkSize(int widget_desc, int *height);
+static int Old_config_create_charsPerSecond(int widget_desc, int *height);
+static int Old_config_create_toggleShield(int widget_desc, int *height);
+static int Old_config_create_autoShield(int widget_desc, int *height);
+static int Old_config_create_sparkProb(int widget_desc, int *height);
+static int Old_config_create_shotSize(int widget_desc, int *height);
+static int Old_config_create_teamShotSize(int widget_desc, int *height);
+static int Old_config_create_hudColor(int widget_desc, int *height);
+static int Old_config_create_hudLockColor(int widget_desc, int *height);
+static int Old_config_create_wallColor(int widget_desc, int *height);
+static int Old_config_create_decorColor(int widget_desc, int *height);
+static int Old_config_create_showDecor(int widget_desc, int *height);
+static int Old_config_create_outlineDecor(int widget_desc, int *height);
+static int Old_config_create_filledDecor(int widget_desc, int *height);
+static int Old_config_create_texturedDecor(int widget_desc, int *height);
+static int Old_config_create_maxFPS(int widget_desc, int *height);
+static int Old_config_create_maxMessages(int widget_desc, int *height);
+static int Old_config_create_messagesToStdout(int widget_desc, int *height);
+static int Old_config_create_oldMessagesColor(int widget_desc, int *height);
 #ifdef SOUND
-static int Config_create_maxVolume(int widget_desc, int *height);
+static int Old_config_create_maxVolume(int widget_desc, int *height);
 #endif
-static int Config_create_fuelMeter(int widget_desc, int *height);
-static int Config_create_powerMeter(int widget_desc, int *height);
-static int Config_create_turnSpeedMeter(int widget_desc, int *height);
-static int Config_create_packetSizeMeter(int widget_desc, int *height);
-static int Config_create_packetLossMeter(int widget_desc, int *height);
-static int Config_create_packetDropMeter(int widget_desc, int *height);
-static int Config_create_packetLagMeter(int widget_desc, int *height);
-static int Config_create_clock(int widget_desc, int *height);
-static int Config_create_clockAMPM(int widget_desc, int *height);
-static int Config_create_markingLights(int widget_desc, int *height);
-static int Config_create_scaleFactor(int widget_desc, int *height);
-static int Config_create_altScaleFactor(int widget_desc, int *height);
+static int Old_config_create_fuelMeter(int widget_desc, int *height);
+static int Old_config_create_powerMeter(int widget_desc, int *height);
+static int Old_config_create_turnSpeedMeter(int widget_desc, int *height);
+static int Old_config_create_packetSizeMeter(int widget_desc, int *height);
+static int Old_config_create_packetLossMeter(int widget_desc, int *height);
+static int Old_config_create_packetDropMeter(int widget_desc, int *height);
+static int Old_config_create_packetLagMeter(int widget_desc, int *height);
+static int Old_config_create_clock(int widget_desc, int *height);
+static int Old_config_create_clockAMPM(int widget_desc, int *height);
+static int Old_config_create_markingLights(int widget_desc, int *height);
+static int Old_config_create_scaleFactor(int widget_desc, int *height);
+static int Old_config_create_altScaleFactor(int widget_desc, int *height);
 
-static int Config_create_save(int widget_desc, int *height);
+static int Old_config_create_save(int widget_desc, int *height);
 
-static int Config_update_bool(int widget_desc, void *data, bool *val);
-static int Config_update_instruments(int widget_desc, void *data, bool *val);
-static int Config_update_dots(int widget_desc, void *data, int *val);
-static int Config_update_altPower(int widget_desc, void *data, double *val);
-static int Config_update_altTurnResistance(int widget_desc, void *data,
-                                           double *val);
-static int Config_update_altTurnSpeed(int widget_desc, void *data, double *val);
-static int Config_update_power(int widget_desc, void *data, double *val);
-static int Config_update_turnResistance(int widget_desc, void *data,
-                                        double *val);
-static int Config_update_turnSpeed(int widget_desc, void *data, double *val);
-static int Config_update_sparkProb(int widget_desc, void *data, double *val);
-static int Config_update_charsPerSecond(int widget_desc, void *data, int *val);
-static int Config_update_toggleShield(int widget_desc, void *data, bool *val);
-static int Config_update_autoShield(int widget_desc, void *data, bool *val);
-static int Config_update_maxFPS(int widget_desc, void *data, int *val);
-static int Config_update_texturedObjects(int widget_desc, void *data, bool *val);
-static int Config_update_scaleFactor(int widget_desc, void *data, double *val);
+static int Old_config_update_bool(int widget_desc, void *data, bool *val);
+static int Old_config_update_instruments(int widget_desc, void *data, bool *val);
+static int Old_config_update_dots(int widget_desc, void *data, int *val);
+static int Old_config_update_altPower(int widget_desc, void *data, double *val);
+static int Old_config_update_altTurnResistance(int widget_desc, void *data,
+                                               double *val);
+static int Old_config_update_altTurnSpeed(int widget_desc, void *data, double *val);
+static int Old_config_update_power(int widget_desc, void *data, double *val);
+static int Old_config_update_turnResistance(int widget_desc, void *data,
+                                            double *val);
+static int Old_config_update_turnSpeed(int widget_desc, void *data, double *val);
+static int Old_config_update_sparkProb(int widget_desc, void *data, double *val);
+static int Old_config_update_charsPerSecond(int widget_desc, void *data, int *val);
+static int Old_config_update_toggleShield(int widget_desc, void *data, bool *val);
+static int Old_config_update_autoShield(int widget_desc, void *data, bool *val);
+static int Old_config_update_maxFPS(int widget_desc, void *data, int *val);
+static int Old_config_update_texturedObjects(int widget_desc, void *data, bool *val);
+static int Old_config_update_scaleFactor(int widget_desc, void *data, double *val);
 
-static int Config_close(int widget_desc, void *data, const char **strptr);
-static int Config_next(int widget_desc, void *data, const char **strptr);
-static int Config_prev(int widget_desc, void *data, const char **strptr);
-static int Config_save(int widget_desc, void *data, const char **strptr);
-static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
-                                        const char **strptr);
+static int Old_config_close(int widget_desc, void *data, const char **strptr);
+static int Old_config_next(int widget_desc, void *data, const char **strptr);
+static int Old_config_prev(int widget_desc, void *data, const char **strptr);
+static int Old_config_save(int widget_desc, void *data, const char **strptr);
+static int Old_config_save_confirm_callback(int widget_desc, void *popup_desc,
+                                            const char **strptr);
 
 typedef struct xpilotrc
 {
@@ -183,65 +183,65 @@ static int *config_widget_desc,
 static int config_what = CONFIG_NONE;
 
 static int (*config_creator[])(int widget_desc, int *height) = {
-    Config_create_power,
-    Config_create_turnSpeed,
-    Config_create_turnResistance,
-    Config_create_altPower,
-    Config_create_altTurnSpeed,
-    Config_create_altTurnResistance,
-    Config_create_showMessages,
-    Config_create_maxMessages,
-    Config_create_messagesToStdout,
-    Config_create_oldMessagesColor,
-    Config_create_showHUD,
-    Config_create_showHUDRadar,
-    Config_create_speedFactHUD,
-    Config_create_speedFactPTR,
-    Config_create_fuelNotify,
-    Config_create_fuelWarning,
-    Config_create_fuelCritical,
-    Config_create_fuelGauge,
-    Config_create_outlineWorld,
-    Config_create_filledWorld,
-    Config_create_texturedWalls,
-    Config_create_texturedObjects,
-    Config_create_slidingRadar,
-    Config_create_showItems,
-    Config_create_showItemsTime,
-    Config_create_backgroundPointDist,
-    Config_create_backgroundPointSize,
-    Config_create_sparkSize,
-    Config_create_sparkProb,
-    Config_create_charsPerSecond,
-    Config_create_markingLights,
-    Config_create_toggleShield,
-    Config_create_autoShield,
-    Config_create_shotSize,
-    Config_create_teamShotSize,
-    Config_create_hudColor,
-    Config_create_hudLockColor,
-    Config_create_wallColor,
-    Config_create_decorColor,
-    Config_create_showDecor,
-    Config_create_outlineDecor,
-    Config_create_filledDecor,
-    Config_create_texturedDecor,
-    Config_create_maxFPS,
+    Old_config_create_power,
+    Old_config_create_turnSpeed,
+    Old_config_create_turnResistance,
+    Old_config_create_altPower,
+    Old_config_create_altTurnSpeed,
+    Old_config_create_altTurnResistance,
+    Old_config_create_showMessages,
+    Old_config_create_maxMessages,
+    Old_config_create_messagesToStdout,
+    Old_config_create_oldMessagesColor,
+    Old_config_create_showHUD,
+    Old_config_create_showHUDRadar,
+    Old_config_create_speedFactHUD,
+    Old_config_create_speedFactPTR,
+    Old_config_create_fuelNotify,
+    Old_config_create_fuelWarning,
+    Old_config_create_fuelCritical,
+    Old_config_create_fuelGauge,
+    Old_config_create_outlineWorld,
+    Old_config_create_filledWorld,
+    Old_config_create_texturedWalls,
+    Old_config_create_texturedObjects,
+    Old_config_create_slidingRadar,
+    Old_config_create_showItems,
+    Old_config_create_showItemsTime,
+    Old_config_create_backgroundPointDist,
+    Old_config_create_backgroundPointSize,
+    Old_config_create_sparkSize,
+    Old_config_create_sparkProb,
+    Old_config_create_charsPerSecond,
+    Old_config_create_markingLights,
+    Old_config_create_toggleShield,
+    Old_config_create_autoShield,
+    Old_config_create_shotSize,
+    Old_config_create_teamShotSize,
+    Old_config_create_hudColor,
+    Old_config_create_hudLockColor,
+    Old_config_create_wallColor,
+    Old_config_create_decorColor,
+    Old_config_create_showDecor,
+    Old_config_create_outlineDecor,
+    Old_config_create_filledDecor,
+    Old_config_create_texturedDecor,
+    Old_config_create_maxFPS,
 #ifdef SOUND
-    Config_create_maxVolume,
+    Old_config_create_maxVolume,
 #endif
-    Config_create_fuelMeter,
-    Config_create_powerMeter,
-    Config_create_turnSpeedMeter,
-    Config_create_packetSizeMeter,
-    Config_create_packetLossMeter,
-    Config_create_packetDropMeter,
-    Config_create_packetLagMeter,
-    Config_create_clock,
-    Config_create_clockAMPM,
-    Config_create_scaleFactor,
-    Config_create_altScaleFactor,
-    Config_create_save /* must be last */
+    Old_config_create_fuelMeter,
+    Old_config_create_powerMeter,
+    Old_config_create_turnSpeedMeter,
+    Old_config_create_packetSizeMeter,
+    Old_config_create_packetLossMeter,
+    Old_config_create_packetDropMeter,
+    Old_config_create_packetLagMeter,
+    Old_config_create_clock,
+    Old_config_create_clockAMPM,
+    Old_config_create_scaleFactor,
+    Old_config_create_altScaleFactor,
+    Old_config_create_save /* must be last */
 };
 static int config_widget_ids[NELEM(config_creator)];
 
@@ -334,7 +334,7 @@ static void Create_config(void)
                 Widget_create_activate(config_widget_desc[num],
                                        offset, height,
                                        width, config_button_height,
-                                       0, "PREV", Config_prev,
+                                       0, "PREV", Old_config_prev,
                                        (void *)(long)num);
             if (widget_desc == 0)
                 break;
@@ -346,7 +346,7 @@ static void Create_config(void)
                 Widget_create_activate(config_widget_desc[num],
                                        offset, height,
                                        width, config_button_height,
-                                       0, "NEXT", Config_next,
+                                       0, "NEXT", Old_config_next,
                                        (void *)(long)num);
             if (widget_desc == 0)
                 break;
@@ -358,7 +358,7 @@ static void Create_config(void)
                 Widget_create_activate(config_widget_desc[num],
                                        offset, height,
                                        width, config_button_height,
-                                       0, "CLOSE", Config_close,
+                                       0, "CLOSE", Old_config_close,
                                        (void *)(long)num);
             if (widget_desc == 0)
                 break;
@@ -397,14 +397,14 @@ static void Create_config(void)
     }
 }
 
-static int Config_close(int widget_desc, void *data, const char **strptr)
+static int Old_config_close(int widget_desc, void *data, const char **strptr)
 {
     Widget_unmap(config_widget_desc[config_page]);
     config_mapped = false;
     return 0;
 }
 
-static int Config_next(int widget_desc, void *data, const char **strptr)
+static int Old_config_next(int widget_desc, void *data, const char **strptr)
 {
     int prev_page = config_page;
 
@@ -418,7 +418,7 @@ static int Config_next(int widget_desc, void *data, const char **strptr)
     return 0;
 }
 
-static int Config_prev(int widget_desc, void *data, const char **strptr)
+static int Old_config_prev(int widget_desc, void *data, const char **strptr)
 {
     int prev_page = config_page;
 
@@ -432,10 +432,10 @@ static int Config_prev(int widget_desc, void *data, const char **strptr)
     return 0;
 }
 
-static int Config_create_bool(int widget_desc, int *height,
-                              const char *str, bool val,
-                              int (*callback)(int, void *, bool *),
-                              void *data)
+static int Old_config_create_bool(int widget_desc, int *height,
+                                  const char *str, bool val,
+                                  int (*callback)(int, void *, bool *),
+                                  void *data)
 {
     int offset,
         label_width,
@@ -466,9 +466,9 @@ static int Config_create_bool(int widget_desc, int *height,
     return boolw;
 }
 
-static int Config_create_int(int widget_desc, int *height,
-                             const char *str, int *val, int min, int max,
-                             int (*callback)(int, void *, int *), void *data)
+static int Old_config_create_int(int widget_desc, int *height,
+                                 const char *str, int *val, int min, int max,
+                                 int (*callback)(int, void *, int *), void *data)
 {
     int offset,
         label_width,
@@ -504,9 +504,9 @@ static int Config_create_int(int widget_desc, int *height,
     return intw;
 }
 
-static int Config_create_color(int widget_desc, int *height, int color,
-                               const char *str, int *val, int min, int max,
-                               int (*callback)(int, void *, int *), void *data)
+static int Old_config_create_color(int widget_desc, int *height, int color,
+                                   const char *str, int *val, int min, int max,
+                                   int (*callback)(int, void *, int *), void *data)
 {
     int offset, label_width, colw;
 
@@ -540,11 +540,11 @@ static int Config_create_color(int widget_desc, int *height, int color,
     return colw;
 }
 
-static int Config_create_double(int widget_desc, int *height,
-                                const char *str, double *val,
-                                double min, double max,
-                                int (*callback)(int, void *, double *),
-                                void *data)
+static int Old_config_create_double(int widget_desc, int *height,
+                                    const char *str, double *val,
+                                    double min, double max,
+                                    int (*callback)(int, void *, double *),
+                                    void *data)
 {
     int offset,
         label_width,
@@ -580,450 +580,450 @@ static int Config_create_double(int widget_desc, int *height,
     return doublew;
 }
 
-static int Config_create_power(int widget_desc, int *height)
+static int Old_config_create_power(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "power", &power,
-                                MIN_PLAYER_POWER, MAX_PLAYER_POWER,
-                                Config_update_power, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "power", &power,
+                                    MIN_PLAYER_POWER, MAX_PLAYER_POWER,
+                                    Old_config_update_power, NULL);
 }
 
-static int Config_create_turnSpeed(int widget_desc, int *height)
+static int Old_config_create_turnSpeed(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "turnSpeed", &turnspeed,
-                                MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
-                                Config_update_turnSpeed, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "turnSpeed", &turnspeed,
+                                    MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
+                                    Old_config_update_turnSpeed, NULL);
 }
 
-static int Config_create_turnResistance(int widget_desc, int *height)
+static int Old_config_create_turnResistance(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "turnResistance", &turnresistance,
-                                MIN_PLAYER_TURNRESISTANCE,
-                                MAX_PLAYER_TURNRESISTANCE,
-                                Config_update_turnResistance, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "turnResistance", &turnresistance,
+                                    MIN_PLAYER_TURNRESISTANCE,
+                                    MAX_PLAYER_TURNRESISTANCE,
+                                    Old_config_update_turnResistance, NULL);
 }
 
-static int Config_create_altPower(int widget_desc, int *height)
+static int Old_config_create_altPower(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "altPower", &power_s,
-                                MIN_PLAYER_POWER, MAX_PLAYER_POWER,
-                                Config_update_altPower, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "altPower", &power_s,
+                                    MIN_PLAYER_POWER, MAX_PLAYER_POWER,
+                                    Old_config_update_altPower, NULL);
 }
 
-static int Config_create_altTurnSpeed(int widget_desc, int *height)
+static int Old_config_create_altTurnSpeed(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "altTurnSpeed", &turnspeed_s,
-                                MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
-                                Config_update_altTurnSpeed, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "altTurnSpeed", &turnspeed_s,
+                                    MIN_PLAYER_TURNSPEED, MAX_PLAYER_TURNSPEED,
+                                    Old_config_update_altTurnSpeed, NULL);
 }
 
-static int Config_create_altTurnResistance(int widget_desc, int *height)
+static int Old_config_create_altTurnResistance(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "altTurnResistance", &turnresistance_s,
-                                MIN_PLAYER_TURNRESISTANCE,
-                                MAX_PLAYER_TURNRESISTANCE,
-                                Config_update_altTurnResistance, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "altTurnResistance", &turnresistance_s,
+                                    MIN_PLAYER_TURNRESISTANCE,
+                                    MAX_PLAYER_TURNRESISTANCE,
+                                    Old_config_update_altTurnResistance, NULL);
 }
 
-static int Config_create_showMessages(int widget_desc, int *height)
+static int Old_config_create_showMessages(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "showMessages",
-                              instruments.showMessages,
-                              Config_update_bool,
-                              &instruments.showMessages);
+    return Old_config_create_bool(widget_desc, height, "showMessages",
+                                  instruments.showMessages,
+                                  Old_config_update_bool,
+                                  &instruments.showMessages);
 }
 
-static int Config_create_maxMessages(int widget_desc, int *height)
+static int Old_config_create_maxMessages(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "maxMessages", &maxMessages, 1, MAX_MSGS,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "maxMessages", &maxMessages, 1, MAX_MSGS,
+                                 NULL, NULL);
 }
 
-static int Config_create_messagesToStdout(int widget_desc, int *height)
+static int Old_config_create_messagesToStdout(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "messagesToStdout", &messagesToStdout, 0, 2,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "messagesToStdout", &messagesToStdout, 0, 2,
+                                 NULL, NULL);
 }
 
-static int Config_create_oldMessagesColor(int widget_desc, int *height)
+static int Old_config_create_oldMessagesColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "oldMessagesColor", &oldMessagesColor, 0, maxColors - 1,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "oldMessagesColor", &oldMessagesColor, 0, maxColors - 1,
+                                 NULL, NULL);
 }
 
-static int Config_create_showHUD(int widget_desc, int *height)
+static int Old_config_create_showHUD(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "showHUD",
-                              instruments.showHUD,
-                              Config_update_bool,
-                              &instruments.showHUD);
+    return Old_config_create_bool(widget_desc, height, "showHUD",
+                                  instruments.showHUD,
+                                  Old_config_update_bool,
+                                  &instruments.showHUD);
 }
 
-static int Config_create_showHUDRadar(int widget_desc, int *height)
+static int Old_config_create_showHUDRadar(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "showHUDRadar",
-                              instruments.showHUDRadar,
-                              Config_update_bool,
-                              &instruments.showHUDRadar);
+    return Old_config_create_bool(widget_desc, height, "showHUDRadar",
+                                  instruments.showHUDRadar,
+                                  Old_config_update_bool,
+                                  &instruments.showHUDRadar);
 }
 
-static int Config_create_speedFactHUD(int widget_desc, int *height)
+static int Old_config_create_speedFactHUD(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "speedFactHUD", &hud_move_fact, -10.0, 10.0,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "speedFactHUD", &hud_move_fact, -10.0, 10.0,
+                                    NULL, NULL);
 }
 
-static int Config_create_speedFactPTR(int widget_desc, int *height)
+static int Old_config_create_speedFactPTR(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "speedFactPTR", &ptr_move_fact, -10.0, 10.0,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "speedFactPTR", &ptr_move_fact, -10.0, 10.0,
+                                    NULL, NULL);
 }
 
-static int Config_create_fuelNotify(int widget_desc, int *height)
+static int Old_config_create_fuelNotify(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "fuelNotify", &fuelNotify, 0, 1000,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "fuelNotify", &fuelNotify, 0, 1000,
+                                    NULL, NULL);
 }
 
-static int Config_create_fuelWarning(int widget_desc, int *height)
+static int Old_config_create_fuelWarning(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "fuelWarning", &fuelWarning, 0, 1000,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "fuelWarning", &fuelWarning, 0, 1000,
+                                    NULL, NULL);
 }
 
-static int Config_create_fuelCritical(int widget_desc, int *height)
+static int Old_config_create_fuelCritical(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "fuelCritical", &fuelCritical, 0, 1000,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "fuelCritical", &fuelCritical, 0, 1000,
+                                    NULL, NULL);
 }
 
-static int Config_create_fuelGauge(int widget_desc, int *height)
+static int Old_config_create_fuelGauge(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "fuelGauge",
-                              instruments.fuelGauge,
-                              Config_update_bool,
-                              &instruments.fuelGauge);
+    return Old_config_create_bool(widget_desc, height, "fuelGauge",
+                                  instruments.fuelGauge,
+                                  Old_config_update_bool,
+                                  &instruments.fuelGauge);
 }
 
-static int Config_create_outlineWorld(int widget_desc, int *height)
+static int Old_config_create_outlineWorld(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "outlineWorld",
-                              instruments.outlineWorld,
-                              Config_update_bool,
-                              &instruments.outlineWorld);
+    return Old_config_create_bool(widget_desc, height, "outlineWorld",
+                                  instruments.outlineWorld,
+                                  Old_config_update_bool,
+                                  &instruments.outlineWorld);
 }
 
-static int Config_create_filledWorld(int widget_desc, int *height)
+static int Old_config_create_filledWorld(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "filledWorld",
-                              instruments.filledWorld,
-                              Config_update_bool,
-                              &instruments.filledWorld);
+    return Old_config_create_bool(widget_desc, height, "filledWorld",
+                                  instruments.filledWorld,
+                                  Old_config_update_bool,
+                                  &instruments.filledWorld);
 }
 
-static int Config_create_texturedWalls(int widget_desc, int *height)
+static int Old_config_create_texturedWalls(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "texturedWalls",
-                              instruments.texturedWalls,
-                              Config_update_bool,
-                              &instruments.texturedWalls);
+    return Old_config_create_bool(widget_desc, height, "texturedWalls",
+                                  instruments.texturedWalls,
+                                  Old_config_update_bool,
+                                  &instruments.texturedWalls);
 }
 
-static int Config_create_texturedObjects(int widget_desc, int *height)
+static int Old_config_create_texturedObjects(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "texturedObjects",
-                              (texturedObjects) ? true : false,
-                              Config_update_texturedObjects,
-                              NULL);
+    return Old_config_create_bool(widget_desc, height, "texturedObjects",
+                                  (texturedObjects) ? true : false,
+                                  Old_config_update_texturedObjects,
+                                  NULL);
 }
 
-static int Config_create_slidingRadar(int widget_desc, int *height)
+static int Old_config_create_slidingRadar(int widget_desc, int *height)
 {
     if (Client_wrap_mode() == 0)
     {
         return 1;
     }
-    return Config_create_bool(widget_desc, height, "slidingRadar",
-                              instruments.slidingRadar,
-                              Config_update_bool,
-                              &instruments.slidingRadar);
+    return Old_config_create_bool(widget_desc, height, "slidingRadar",
+                                  instruments.slidingRadar,
+                                  Old_config_update_bool,
+                                  &instruments.slidingRadar);
 }
 
-static int Config_create_backgroundPointDist(int widget_desc, int *height)
+static int Old_config_create_backgroundPointDist(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "backgroundPointDist", &backgroundPointDist, 0, 10,
-                             Config_update_dots, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "backgroundPointDist", &backgroundPointDist, 0, 10,
+                                 Old_config_update_dots, NULL);
 }
 
-static int Config_create_showItems(int widget_desc, int *height)
+static int Old_config_create_showItems(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "showItems",
-                              instruments.showItems,
-                              Config_update_bool,
-                              &instruments.showItems);
+    return Old_config_create_bool(widget_desc, height, "showItems",
+                                  instruments.showItems,
+                                  Old_config_update_bool,
+                                  &instruments.showItems);
 }
 
-static int Config_create_showItemsTime(int widget_desc, int *height)
+static int Old_config_create_showItemsTime(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "showItemsTime", &showItemsTime,
-                                MIN_SHOW_ITEMS_TIME,
-                                MAX_SHOW_ITEMS_TIME,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "showItemsTime", &showItemsTime,
+                                    MIN_SHOW_ITEMS_TIME,
+                                    MAX_SHOW_ITEMS_TIME,
+                                    NULL, NULL);
 }
 
-static int Config_create_backgroundPointSize(int widget_desc, int *height)
+static int Old_config_create_backgroundPointSize(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "backgroundPointSize", &backgroundPointSize,
-                             MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE,
-                             Config_update_dots, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "backgroundPointSize", &backgroundPointSize,
+                                 MIN_MAP_POINT_SIZE, MAX_MAP_POINT_SIZE,
+                                 Old_config_update_dots, NULL);
 }
 
-static int Config_create_sparkSize(int widget_desc, int *height)
+static int Old_config_create_sparkSize(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "sparkSize", &sparkSize,
-                             MIN_SPARK_SIZE, MAX_SPARK_SIZE,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "sparkSize", &sparkSize,
+                                 MIN_SPARK_SIZE, MAX_SPARK_SIZE,
+                                 NULL, NULL);
 }
 
-static int Config_create_sparkProb(int widget_desc, int *height)
+static int Old_config_create_sparkProb(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "sparkProb", &sparkProb,
-                                0.0, 1.0,
-                                Config_update_sparkProb, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "sparkProb", &sparkProb,
+                                    0.0, 1.0,
+                                    Old_config_update_sparkProb, NULL);
 }
 
-static int Config_create_charsPerSecond(int widget_desc, int *height)
+static int Old_config_create_charsPerSecond(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "charsPerSecond", &charsPerSecond,
-                             10, 255,
-                             Config_update_charsPerSecond, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "charsPerSecond", &charsPerSecond,
+                                 10, 255,
+                                 Old_config_update_charsPerSecond, NULL);
 }
 
-static int Config_create_toggleShield(int widget_desc, int *height)
+static int Old_config_create_toggleShield(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "toggleShield",
-                              (toggle_shield) ? true : false,
-                              Config_update_toggleShield, NULL);
+    return Old_config_create_bool(widget_desc, height, "toggleShield",
+                                  (toggle_shield) ? true : false,
+                                  Old_config_update_toggleShield, NULL);
 }
 
-static int Config_create_autoShield(int widget_desc, int *height)
+static int Old_config_create_autoShield(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "autoShield",
-                              (auto_shield) ? true : false,
-                              Config_update_autoShield, NULL);
+    return Old_config_create_bool(widget_desc, height, "autoShield",
+                                  (auto_shield) ? true : false,
+                                  Old_config_update_autoShield, NULL);
 }
 
-static int Config_create_shotSize(int widget_desc, int *height)
+static int Old_config_create_shotSize(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "shotSize", &shotSize,
-                             MIN_SHOT_SIZE, MAX_SHOT_SIZE,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "shotSize", &shotSize,
+                                 MIN_SHOT_SIZE, MAX_SHOT_SIZE,
+                                 NULL, NULL);
 }
 
-static int Config_create_teamShotSize(int widget_desc, int *height)
+static int Old_config_create_teamShotSize(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "teamShotSize", &teamShotSize,
-                             MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "teamShotSize", &teamShotSize,
+                                 MIN_TEAMSHOT_SIZE, MAX_TEAMSHOT_SIZE,
+                                 NULL, NULL);
 }
 
-static int Config_create_hudColor(int widget_desc, int *height)
+static int Old_config_create_hudColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "hudColor", &hudColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "hudColor", &hudColor,
+                                 0, maxColors - 1,
+                                 NULL, NULL);
 }
 
-static int Config_create_hudLockColor(int widget_desc, int *height)
+static int Old_config_create_hudLockColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "hudLockColor", &hudLockColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "hudLockColor", &hudLockColor,
+                                 0, maxColors - 1,
+                                 NULL, NULL);
 }
 
-static int Config_create_wallColor(int widget_desc, int *height)
+static int Old_config_create_wallColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "wallColor", &wallColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "wallColor", &wallColor,
+                                 0, maxColors - 1,
+                                 NULL, NULL);
 }
 
-static int Config_create_decorColor(int widget_desc, int *height)
+static int Old_config_create_decorColor(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "decorColor", &decorColor,
-                             0, maxColors - 1,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "decorColor", &decorColor,
+                                 0, maxColors - 1,
+                                 NULL, NULL);
 }
 
-static int Config_create_showDecor(int widget_desc, int *height)
+static int Old_config_create_showDecor(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "showDecor",
-                              instruments.showDecor,
-                              Config_update_bool,
-                              &instruments.showDecor);
+    return Old_config_create_bool(widget_desc, height, "showDecor",
+                                  instruments.showDecor,
+                                  Old_config_update_bool,
+                                  &instruments.showDecor);
 }
 
-static int Config_create_outlineDecor(int widget_desc, int *height)
+static int Old_config_create_outlineDecor(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "outlineDecor",
-                              instruments.outlineDecor,
-                              Config_update_bool,
-                              &instruments.outlineDecor);
+    return Old_config_create_bool(widget_desc, height, "outlineDecor",
+                                  instruments.outlineDecor,
+                                  Old_config_update_bool,
+                                  &instruments.outlineDecor);
 }
 
-static int Config_create_filledDecor(int widget_desc, int *height)
+static int Old_config_create_filledDecor(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "filledDecor",
-                              instruments.filledDecor,
-                              Config_update_bool,
-                              &instruments.filledDecor);
+    return Old_config_create_bool(widget_desc, height, "filledDecor",
+                                  instruments.filledDecor,
+                                  Old_config_update_bool,
+                                  &instruments.filledDecor);
 }
 
-static int Config_create_texturedDecor(int widget_desc, int *height)
+static int Old_config_create_texturedDecor(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "texturedDecor",
-                              instruments.texturedDecor,
-                              Config_update_bool,
-                              &instruments.texturedDecor);
+    return Old_config_create_bool(widget_desc, height, "texturedDecor",
+                                  instruments.texturedDecor,
+                                  Old_config_update_bool,
+                                  &instruments.texturedDecor);
 }
 
 #ifdef SOUND
-static int Config_create_maxVolume(int widget_desc, int *height)
+static int Old_config_create_maxVolume(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "maxVolume", &maxVolume, 0, 255,
-                             NULL, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "maxVolume", &maxVolume, 0, 255,
+                                 NULL, NULL);
 }
 #endif
 
-static int Config_create_maxFPS(int widget_desc, int *height)
+static int Old_config_create_maxFPS(int widget_desc, int *height)
 {
-    return Config_create_int(widget_desc, height,
-                             "maxFPS", &maxFPS, 1, MAX_SUPPORTED_FPS,
-                             Config_update_maxFPS, NULL);
+    return Old_config_create_int(widget_desc, height,
+                                 "maxFPS", &maxFPS, 1, MAX_SUPPORTED_FPS,
+                                 Old_config_update_maxFPS, NULL);
 }
 
-static int Config_create_fuelMeter(int widget_desc, int *height)
+static int Old_config_create_fuelMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "fuelMeter",
-                              instruments.fuelMeter,
-                              Config_update_bool,
-                              &instruments.fuelMeter);
+    return Old_config_create_bool(widget_desc, height, "fuelMeter",
+                                  instruments.fuelMeter,
+                                  Old_config_update_bool,
+                                  &instruments.fuelMeter);
 }
 
-static int Config_create_powerMeter(int widget_desc, int *height)
+static int Old_config_create_powerMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "powerMeter",
-                              instruments.powerMeter,
-                              Config_update_bool,
-                              &instruments.powerMeter);
+    return Old_config_create_bool(widget_desc, height, "powerMeter",
+                                  instruments.powerMeter,
+                                  Old_config_update_bool,
+                                  &instruments.powerMeter);
 }
 
-static int Config_create_turnSpeedMeter(int widget_desc, int *height)
+static int Old_config_create_turnSpeedMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "turnSpeedMeter",
-                              instruments.turnSpeedMeter,
-                              Config_update_bool,
-                              &instruments.turnSpeedMeter);
+    return Old_config_create_bool(widget_desc, height, "turnSpeedMeter",
+                                  instruments.turnSpeedMeter,
+                                  Old_config_update_bool,
+                                  &instruments.turnSpeedMeter);
 }
 
-static int Config_create_packetSizeMeter(int widget_desc, int *height)
+static int Old_config_create_packetSizeMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "packetSizeMeter",
-                              instruments.packetSizeMeter,
-                              Config_update_bool,
-                              &instruments.packetSizeMeter);
+    return Old_config_create_bool(widget_desc, height, "packetSizeMeter",
+                                  instruments.packetSizeMeter,
+                                  Old_config_update_bool,
+                                  &instruments.packetSizeMeter);
 }
 
-static int Config_create_packetLossMeter(int widget_desc, int *height)
+static int Old_config_create_packetLossMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "packetLossMeter",
-                              instruments.packetLossMeter,
-                              Config_update_bool,
-                              &instruments.packetLossMeter);
+    return Old_config_create_bool(widget_desc, height, "packetLossMeter",
+                                  instruments.packetLossMeter,
+                                  Old_config_update_bool,
+                                  &instruments.packetLossMeter);
 }
 
-static int Config_create_packetDropMeter(int widget_desc, int *height)
+static int Old_config_create_packetDropMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "packetDropMeter",
-                              instruments.packetDropMeter,
-                              Config_update_bool,
-                              &instruments.packetDropMeter);
+    return Old_config_create_bool(widget_desc, height, "packetDropMeter",
+                                  instruments.packetDropMeter,
+                                  Old_config_update_bool,
+                                  &instruments.packetDropMeter);
 }
 
-static int Config_create_packetLagMeter(int widget_desc, int *height)
+static int Old_config_create_packetLagMeter(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "packetLagMeter",
-                              instruments.packetLagMeter,
-                              Config_update_bool,
-                              &instruments.packetLagMeter);
+    return Old_config_create_bool(widget_desc, height, "packetLagMeter",
+                                  instruments.packetLagMeter,
+                                  Old_config_update_bool,
+                                  &instruments.packetLagMeter);
 }
 
-static int Config_create_clock(int widget_desc, int *height)
+static int Old_config_create_clock(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "clock",
-                              instruments.clock,
-                              Config_update_bool,
-                              &instruments.clock);
+    return Old_config_create_bool(widget_desc, height, "clock",
+                                  instruments.clock,
+                                  Old_config_update_bool,
+                                  &instruments.clock);
 }
 
-static int Config_create_clockAMPM(int widget_desc, int *height)
+static int Old_config_create_clockAMPM(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "clockAMPM",
-                              instruments.clockAMPM,
-                              Config_update_bool,
-                              &instruments.clockAMPM);
+    return Old_config_create_bool(widget_desc, height, "clockAMPM",
+                                  instruments.clockAMPM,
+                                  Old_config_update_bool,
+                                  &instruments.clockAMPM);
 }
 
-static int Config_create_scaleFactor(int widget_desc, int *height)
+static int Old_config_create_scaleFactor(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "scaleFactor", &clData.scaleFactor,
-                                MIN_SCALEFACTOR, MAX_SCALEFACTOR,
-                                Config_update_scaleFactor, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "scaleFactor", &clData.scaleFactor,
+                                    MIN_SCALEFACTOR, MAX_SCALEFACTOR,
+                                    Old_config_update_scaleFactor, NULL);
 }
 
-static int Config_create_altScaleFactor(int widget_desc, int *height)
+static int Old_config_create_altScaleFactor(int widget_desc, int *height)
 {
-    return Config_create_double(widget_desc, height,
-                                "altScaleFactor", &clData.altScaleFactor,
-                                MIN_SCALEFACTOR, MAX_SCALEFACTOR,
-                                NULL, NULL);
+    return Old_config_create_double(widget_desc, height,
+                                    "altScaleFactor", &clData.altScaleFactor,
+                                    MIN_SCALEFACTOR, MAX_SCALEFACTOR,
+                                    NULL, NULL);
 }
 
-static int Config_create_markingLights(int widget_desc, int *height)
+static int Old_config_create_markingLights(int widget_desc, int *height)
 {
-    return Config_create_bool(widget_desc, height, "markingLights",
-                              markingLights,
-                              Config_update_bool, &markingLights);
+    return Old_config_create_bool(widget_desc, height, "markingLights",
+                                  markingLights,
+                                  Old_config_update_bool, &markingLights);
 }
 
-static int Config_create_save(int widget_desc, int *height)
+static int Old_config_create_save(int widget_desc, int *height)
 {
     static char save_str[] = "Save Configuration";
     int space,
@@ -1042,7 +1042,7 @@ static int Config_create_save(int widget_desc, int *height)
                                *height + space / 2,
                                width, config_button_height,
                                0, save_str,
-                               Config_save, (void *)save_str);
+                               Old_config_save, (void *)save_str);
     if (button_desc == NO_WIDGET)
     {
         return 0;
@@ -1056,7 +1056,7 @@ static int Config_create_save(int widget_desc, int *height)
  * Requires that a pointer to the boolean value has been given as
  * client_data argument, and updates this value to the real value.
  */
-static int Config_update_bool(int widget_desc, void *data, bool *val)
+static int Old_config_update_bool(int widget_desc, void *data, bool *val)
 {
     bool *client_data = (bool *)data;
     *client_data = *val;
@@ -1064,9 +1064,9 @@ static int Config_update_bool(int widget_desc, void *data, bool *val)
 }
 
 // TODO: Make separate update functions,
-// e.g. Config_update_outlineWorld
+// e.g. Old_config_update_outlineWorld
 
-// static int Config_update_instruments(int widget_desc, void *data, bool *val)
+// static int Old_config_update_instruments(int widget_desc, void *data, bool *val)
 // {
 // instruments_t old_instruments = instruments;
 // long bit = (long)data;
@@ -1112,7 +1112,7 @@ static int Config_update_bool(int widget_desc, void *data, bool *val)
 // return 0;
 // }
 
-static int Config_update_dots(int widget_desc, void *data, int *val)
+static int Old_config_update_dots(int widget_desc, void *data, int *val)
 {
     if (val == &backgroundPointSize && backgroundPointSize > 1)
     {
@@ -1122,76 +1122,76 @@ static int Config_update_dots(int widget_desc, void *data, int *val)
     return 0;
 }
 
-static int Config_update_power(int widget_desc, void *data, double *val)
+static int Old_config_update_power(int widget_desc, void *data, double *val)
 {
     Send_power(*val);
     controlTime = CONTROL_TIME;
     return 0;
 }
 
-static int Config_update_turnSpeed(int widget_desc, void *data, double *val)
+static int Old_config_update_turnSpeed(int widget_desc, void *data, double *val)
 {
     Send_turnspeed(*val);
     controlTime = CONTROL_TIME;
     return 0;
 }
 
-static int Config_update_turnResistance(int widget_desc, void *data, double *val)
+static int Old_config_update_turnResistance(int widget_desc, void *data, double *val)
 {
     Send_turnresistance(*val);
     return 0;
 }
 
-static int Config_update_altPower(int widget_desc, void *data, double *val)
+static int Old_config_update_altPower(int widget_desc, void *data, double *val)
 {
     Send_power_s(*val);
     return 0;
 }
 
-static int Config_update_altTurnSpeed(int widget_desc, void *data, double *val)
+static int Old_config_update_altTurnSpeed(int widget_desc, void *data, double *val)
 {
     Send_turnspeed_s(*val);
     return 0;
 }
 
-static int Config_update_altTurnResistance(int widget_desc, void *data, double *val)
+static int Old_config_update_altTurnResistance(int widget_desc, void *data, double *val)
 {
     Send_turnresistance_s(*val);
     return 0;
 }
 
-static int Config_update_sparkProb(int widget_desc, void *data, double *val)
+static int Old_config_update_sparkProb(int widget_desc, void *data, double *val)
 {
     spark_rand = (int)(sparkProb * MAX_SPARK_RAND + 0.5f);
     Send_display();
     return 0;
 }
 
-static int Config_update_charsPerSecond(int widget_desc, void *data, int *val)
+static int Old_config_update_charsPerSecond(int widget_desc, void *data, int *val)
 {
     charsPerTick = (double)charsPerSecond / FPS;
     return 0;
 }
 
-static int Config_update_toggleShield(int widget_desc, void *data, bool *val)
+static int Old_config_update_toggleShield(int widget_desc, void *data, bool *val)
 {
     Set_toggle_shield(*val != false);
     return 0;
 }
 
-static int Config_update_autoShield(int widget_desc, void *data, bool *val)
+static int Old_config_update_autoShield(int widget_desc, void *data, bool *val)
 {
     Set_auto_shield(*val != false);
     return 0;
 }
 
-static int Config_update_maxFPS(int widget_desc, void *data, int *val)
+static int Old_config_update_maxFPS(int widget_desc, void *data, int *val)
 {
     Check_client_fps();
     return 0;
 }
 
-static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
+static int Old_config_update_texturedObjects(int widget_desc, void *data, bool *val)
 {
     if ((*val != false) != texturedObjects)
     {
@@ -1217,18 +1217,18 @@ static int Config_update_texturedObjects(int widget_desc, void *data, bool *val)
     return 0;
 }
 
-static int Config_update_scaleFactor(int widget_desc, void *data, double *val)
+static int Old_config_update_scaleFactor(int widget_desc, void *data, double *val)
 {
     Resize(topWindow, (unsigned)top_width, (unsigned)top_height);
     Scale_dashes();
     return 0;
 }
 
-static void Config_save_failed(const char *reason, const char **strptr)
+static void Old_config_save_failed(const char *reason, const char **strptr)
 {
     if (config_save_confirm_desc != NO_WIDGET)
         Widget_destroy(config_save_confirm_desc);
-    config_save_confirm_desc = Widget_create_confirm(reason, Config_save_confirm_callback);
+    config_save_confirm_desc = Widget_create_confirm(reason, Old_config_save_confirm_callback);
 
     if (config_save_confirm_desc != NO_WIDGET)
         Widget_raise(config_save_confirm_desc);
@@ -1319,7 +1319,7 @@ static void Xpilotrc_use(char *line)
     }
 }
 
-static void Config_save_resource(FILE *fp, const char *resource, char *value)
+static void Old_config_save_resource(FILE *fp, const char *resource, char *value)
 {
     char buf[256];
 
@@ -1328,28 +1328,28 @@ static void Config_save_resource(FILE *fp, const char *resource, char *value)
     fprintf(fp, "%s", buf);
 }
 
-static void Config_save_double(FILE *fp, const char *resource, double value)
+static void Old_config_save_double(FILE *fp, const char *resource, double value)
 {
     char buf[40];
 
     sprintf(buf, "%.3f", value);
-    Config_save_resource(fp, resource, buf);
+    Old_config_save_resource(fp, resource, buf);
 }
 
-static void Config_save_int(FILE *fp, const char *resource, int value)
+static void Old_config_save_int(FILE *fp, const char *resource, int value)
 {
     char buf[20];
 
     sprintf(buf, "%d", value);
-    Config_save_resource(fp, resource, buf);
+    Old_config_save_resource(fp, resource, buf);
 }
 
-static void Config_save_bool(FILE *fp, const char *resource, int value)
+static void Old_config_save_bool(FILE *fp, const char *resource, int value)
 {
     char buf[20];
 
     sprintf(buf, "%s", (value != 0) ? "True" : "False");
-    Config_save_resource(fp, resource, buf);
+    Old_config_save_resource(fp, resource, buf);
 }
 
 /*
@@ -1357,7 +1357,7 @@ static void Config_save_bool(FILE *fp, const char *resource, int value)
  * On success set output pointer to index into keyDefs[] and return TRUE.
  * On failure return FALSE.
  */
-static bool Config_find_key(keys_t key, int start, int end, int *key_index)
+static bool Old_config_find_key(keys_t key, int start, int end, int *key_index)
 {
     int i;
 
@@ -1373,7 +1373,7 @@ static bool Config_find_key(keys_t key, int start, int end, int *key_index)
     return false;
 }
 
-static void Config_save_keys(FILE *fp)
+static void Old_config_save_keys(FILE *fp)
 {
     int i, j;
     KeySym ks;
@@ -1389,7 +1389,7 @@ static void Config_save_keys(FILE *fp)
         key = keyDefs[i].key;
 
         /* try and see if we have already saved this key. */
-        if (Config_find_key(key, 0, i, &j))
+        if (Old_config_find_key(key, 0, i, &j))
         {
             /* yes, saved this one before.  skip it now. */
             continue;
@@ -1405,7 +1405,7 @@ static void Config_save_keys(FILE *fp)
             strlcpy(buf, str, sizeof(buf));
             /* find all other keysyms which map to the same key. */
             j = i;
-            while (Config_find_key(key, j + 1, maxKeyDefs, &j))
+            while (Old_config_find_key(key, j + 1, maxKeyDefs, &j))
             {
                 ks = keyDefs[j].keysym;
                 if ((str = XKeysymToString(ks)) != NULL)
@@ -1414,12 +1414,12 @@ static void Config_save_keys(FILE *fp)
                     strcat(buf, str);
                 }
             }
-            Config_save_resource(fp, res, buf);
+            Old_config_save_resource(fp, res, buf);
         }
     }
 }
 
-static int Config_save(int widget_desc, void *button_str, const char **strptr)
+static int Old_config_save(int widget_desc, void *button_str, const char **strptr)
 {
     int i;
     FILE *fp = NULL;
@@ -1434,7 +1434,7 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     Get_xpilotrc_file(oldfile, sizeof(oldfile));
     if (oldfile[0] == '\0')
     {
-        Config_save_failed("Can't find .xpilotrc file", strptr);
+        Old_config_save_failed("Can't find .xpilotrc file", strptr);
         return 1;
     }
     if ((fp = fopen(oldfile, "r")) != NULL)
@@ -1449,80 +1449,80 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     unlink(newfile);
     if ((fp = fopen(newfile, "w")) == NULL)
     {
-        Config_save_failed("Can't open file to save to.", strptr);
+        Old_config_save_failed("Can't open file to save to.", strptr);
         return 1;
     }
 
-    Config_save_resource(fp, "name", name);
-    Config_save_double(fp, "power", power);
-    Config_save_double(fp, "turnSpeed", turnspeed);
-    Config_save_double(fp, "turnResistance", turnresistance);
-    Config_save_double(fp, "altPower", power_s);
-    Config_save_double(fp, "altTurnSpeed", turnspeed_s);
-    Config_save_double(fp, "altTurnResistance", turnresistance_s);
-    Config_save_double(fp, "speedFactHUD", hud_move_fact);
-    Config_save_double(fp, "speedFactPTR", ptr_move_fact);
-    Config_save_double(fp, "fuelNotify", fuelNotify);
-    Config_save_double(fp, "fuelWarning", fuelWarning);
-    Config_save_double(fp, "fuelCritical", fuelCritical);
-    Config_save_bool(fp, "showMessages", instruments.showMessages);
-    Config_save_int(fp, "maxMessages", maxMessages);
-    Config_save_int(fp, "messagesToStdout", messagesToStdout);
-    Config_save_int(fp, "oldMessagesColor", oldMessagesColor);
-    Config_save_bool(fp, "showHUD", instruments.showHUD);
-    Config_save_bool(fp, "showHUDRadar", instruments.showHUDRadar);
-    Config_save_bool(fp, "fuelMeter", instruments.fuelMeter);
-    Config_save_bool(fp, "fuelGauge", instruments.fuelGauge);
-    Config_save_bool(fp, "turnSpeedMeter", instruments.turnSpeedMeter);
-    Config_save_bool(fp, "powerMeter", instruments.powerMeter);
-    Config_save_bool(fp, "packetSizeMeter", instruments.packetSizeMeter);
-    Config_save_bool(fp, "packetLossMeter", instruments.packetLossMeter);
-    Config_save_bool(fp, "packetDropMeter", instruments.packetDropMeter);
-    Config_save_bool(fp, "packetLagMeter", instruments.packetLagMeter);
-    Config_save_bool(fp, "slidingRadar", instruments.slidingRadar);
-    Config_save_bool(fp, "showItems", instruments.showItems);
-    Config_save_double(fp, "showItemsTime", showItemsTime);
-    Config_save_bool(fp, "outlineWorld", instruments.outlineWorld);
-    Config_save_bool(fp, "filledWorld", instruments.filledWorld);
-    Config_save_bool(fp, "texturedWalls", instruments.texturedWalls);
-    Config_save_bool(fp, "texturedObjects", texturedObjects);
-    Config_save_bool(fp, "clock", instruments.clock);
-    Config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
-    Config_save_int(fp, "backgroundPointDist", backgroundPointDist);
-    Config_save_int(fp, "backgroundPointSize", backgroundPointSize);
-    Config_save_int(fp, "sparkSize", sparkSize);
-    Config_save_double(fp, "sparkProb", sparkProb);
-    Config_save_int(fp, "shotSize", shotSize);
-    Config_save_int(fp, "teamShotSize", teamShotSize);
-    Config_save_int(fp, "hudColor", hudColor);
-    Config_save_int(fp, "hudLockColor", hudLockColor);
-    Config_save_int(fp, "wallColor", wallColor);
-    Config_save_int(fp, "decorColor", decorColor);
-    Config_save_bool(fp, "showDecor", instruments.showDecor);
-    Config_save_bool(fp, "outlineDecor", instruments.outlineDecor);
-    Config_save_bool(fp, "filledDecor", instruments.filledDecor);
-    Config_save_bool(fp, "texturedDecor", instruments.texturedDecor);
-    Config_save_int(fp, "receiveWindowSize", receive_window_size);
-    Config_save_int(fp, "charsPerSecond", charsPerSecond);
-    Config_save_bool(fp, "markingLights", markingLights);
-    Config_save_bool(fp, "toggleShield", toggle_shield);
-    Config_save_bool(fp, "autoShield", auto_shield);
-    Config_save_int(fp, "clientPortStart", clientPortStart);
-    Config_save_int(fp, "clientPortEnd", clientPortEnd);
+    Old_config_save_resource(fp, "name", name);
+    Old_config_save_double(fp, "power", power);
+    Old_config_save_double(fp, "turnSpeed", turnspeed);
+    Old_config_save_double(fp, "turnResistance", turnresistance);
+    Old_config_save_double(fp, "altPower", power_s);
+    Old_config_save_double(fp, "altTurnSpeed", turnspeed_s);
+    Old_config_save_double(fp, "altTurnResistance", turnresistance_s);
+    Old_config_save_double(fp, "speedFactHUD", hud_move_fact);
+    Old_config_save_double(fp, "speedFactPTR", ptr_move_fact);
+    Old_config_save_double(fp, "fuelNotify", fuelNotify);
+    Old_config_save_double(fp, "fuelWarning", fuelWarning);
+    Old_config_save_double(fp, "fuelCritical", fuelCritical);
+    Old_config_save_bool(fp, "showMessages", instruments.showMessages);
+    Old_config_save_int(fp, "maxMessages", maxMessages);
+    Old_config_save_int(fp, "messagesToStdout", messagesToStdout);
+    Old_config_save_int(fp, "oldMessagesColor", oldMessagesColor);
+    Old_config_save_bool(fp, "showHUD", instruments.showHUD);
+    Old_config_save_bool(fp, "showHUDRadar", instruments.showHUDRadar);
+    Old_config_save_bool(fp, "fuelMeter", instruments.fuelMeter);
+    Old_config_save_bool(fp, "fuelGauge", instruments.fuelGauge);
+    Old_config_save_bool(fp, "turnSpeedMeter", instruments.turnSpeedMeter);
+    Old_config_save_bool(fp, "powerMeter", instruments.powerMeter);
+    Old_config_save_bool(fp, "packetSizeMeter", instruments.packetSizeMeter);
+    Old_config_save_bool(fp, "packetLossMeter", instruments.packetLossMeter);
+    Old_config_save_bool(fp, "packetDropMeter", instruments.packetDropMeter);
+    Old_config_save_bool(fp, "packetLagMeter", instruments.packetLagMeter);
+    Old_config_save_bool(fp, "slidingRadar", instruments.slidingRadar);
+    Old_config_save_bool(fp, "showItems", instruments.showItems);
+    Old_config_save_double(fp, "showItemsTime", showItemsTime);
+    Old_config_save_bool(fp, "outlineWorld", instruments.outlineWorld);
+    Old_config_save_bool(fp, "filledWorld", instruments.filledWorld);
+    Old_config_save_bool(fp, "texturedWalls", instruments.texturedWalls);
+    Old_config_save_bool(fp, "texturedObjects", texturedObjects);
+    Old_config_save_bool(fp, "clock", instruments.clock);
+    Old_config_save_bool(fp, "clockAMPM", instruments.clockAMPM);
+    Old_config_save_int(fp, "backgroundPointDist", backgroundPointDist);
+    Old_config_save_int(fp, "backgroundPointSize", backgroundPointSize);
+    Old_config_save_int(fp, "sparkSize", sparkSize);
+    Old_config_save_double(fp, "sparkProb", sparkProb);
+    Old_config_save_int(fp, "shotSize", shotSize);
+    Old_config_save_int(fp, "teamShotSize", teamShotSize);
+    Old_config_save_int(fp, "hudColor", hudColor);
+    Old_config_save_int(fp, "hudLockColor", hudLockColor);
+    Old_config_save_int(fp, "wallColor", wallColor);
+    Old_config_save_int(fp, "decorColor", decorColor);
+    Old_config_save_bool(fp, "showDecor", instruments.showDecor);
+    Old_config_save_bool(fp, "outlineDecor", instruments.outlineDecor);
+    Old_config_save_bool(fp, "filledDecor", instruments.filledDecor);
+    Old_config_save_bool(fp, "texturedDecor", instruments.texturedDecor);
+    Old_config_save_int(fp, "receiveWindowSize", receive_window_size);
+    Old_config_save_int(fp, "charsPerSecond", charsPerSecond);
+    Old_config_save_bool(fp, "markingLights", markingLights);
+    Old_config_save_bool(fp, "toggleShield", toggle_shield);
+    Old_config_save_bool(fp, "autoShield", auto_shield);
+    Old_config_save_int(fp, "clientPortStart", clientPortStart);
+    Old_config_save_int(fp, "clientPortEnd", clientPortEnd);
 #if SOUND
-    Config_save_int(fp, "maxVolume", maxVolume);
+    Old_config_save_int(fp, "maxVolume", maxVolume);
 #endif
-    Config_save_double(fp, "scaleFactor", clData.scaleFactor);
-    Config_save_double(fp, "altScaleFactor", clData.altScaleFactor);
+    Old_config_save_double(fp, "scaleFactor", clData.scaleFactor);
+    Old_config_save_double(fp, "altScaleFactor", clData.altScaleFactor);
 
     /* don't save maxFPS */
 
-    Config_save_keys(fp);
+    Old_config_save_keys(fp);
 
     for (i = 0; i < NUM_MODBANKS; i++)
     {
         sprintf(buf, "modifierBank%d", i + 1);
-        Config_save_resource(fp, buf, modBankStr[i]);
+        Old_config_save_resource(fp, buf, modBankStr[i]);
     }
 
     Xpilotrc_end(fp);
@@ -1543,8 +1543,8 @@ static int Config_save(int widget_desc, void *button_str, const char **strptr)
     return 1;
 }
 
-static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
-                                        const char **strptr)
+static int Old_config_save_confirm_callback(int widget_desc, void *popup_desc,
+                                            const char **strptr)
 {
     if (config_save_confirm_desc != NO_WIDGET)
     {
@@ -1554,7 +1554,7 @@ static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
     return 0;
 }
 
-int Config(bool doit, int what)
+int Old_config(bool doit, int what)
 {
     /* get rid of the old widgets, it's the most easy way */
     if (config_created == false)
@@ -1588,7 +1588,7 @@ int Config(bool doit, int what)
     return (config_mapped);
 }
 
-void Config_destroy(void)
+void Old_config_destroy(void)
 {
     int i;
 
@@ -1609,19 +1609,19 @@ void Config_destroy(void)
     }
 }
 
-void Config_resize(void)
+void Old_config_resize(void)
 {
     bool mapped = config_mapped;
 
     if (config_created)
     {
-        Config_destroy();
+        Old_config_destroy();
         if (mapped)
-            Config(mapped, config_what);
+            Old_config(mapped, config_what);
     }
 }
 
-void Config_redraw(void)
+void Old_config_redraw(void)
 {
     int i;
 

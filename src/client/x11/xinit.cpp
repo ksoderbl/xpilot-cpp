@@ -659,19 +659,19 @@ int Init_playing_windows(void)
 
 static int Config_callback(int widget_desc, void *data, const char **str)
 {
-    Config(true, CONFIG_DEFAULT);
+    Old_config(true, CONFIG_DEFAULT);
     return 0;
 }
 
 static int Colors_callback(int widget_desc, void *data, const char **str)
 {
-    Config(true, CONFIG_COLORS);
+    Old_config(true, CONFIG_COLORS);
     return 0;
 }
 
 static int Score_callback(int widget_desc, void *data, const char **str)
 {
-    Config(false, CONFIG_NONE);
+    Old_config(false, CONFIG_NONE);
     if (showUserName)
     {
         showUserName = false;
@@ -682,7 +682,7 @@ static int Score_callback(int widget_desc, void *data, const char **str)
 
 static int Player_callback(int widget_desc, void *data, const char **str)
 {
-    Config(false, CONFIG_NONE);
+    Old_config(false, CONFIG_NONE);
     if (!showUserName)
     {
         showUserName = true;
@@ -747,7 +747,7 @@ void Resize(Window w, unsigned width, unsigned height)
     XResizeWindow(dpy, playersWindow,
                   players_width, players_height);
     Talk_resize();
-    Config_resize();
+    Old_config_resize();
 }
 
 /*
