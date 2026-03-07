@@ -57,6 +57,16 @@
 #include "xperror.h"
 #include "portability.h"
 
+static int Config_creator(xp_option_t *opt, int widget_desc, int *height);
+static int Config_create_save(int widget_desc, int *height);
+static int Config_close(int widget_desc, void *data, const char **strptr);
+static int Config_next(int widget_desc, void *data, const char **strptr);
+static int Config_prev(int widget_desc, void *data, const char **strptr);
+static int Config_save(int widget_desc, void *data, const char **strptr);
+static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
+                                        const char **strptr);
+
+// old -->
 extern const char *Get_keyResourceString(keys_t key);
 extern void Get_xpilotrc_file(char *, unsigned);
 
@@ -155,9 +165,17 @@ typedef struct xpilotrc
 
 static xpilotrc_t *xpilotrc_ptr;
 static int num_xpilotrc, max_xpilotrc;
+// <-- old
 
-static bool config_created = false,
-            config_mapped = false;
+static int num_default_options = 0;
+static int max_default_options = 0;
+static int *default_option_indices = NULL;
+static int num_color_options = 0;
+static int max_color_options = 0;
+static int *color_option_indices = NULL;
+
+static bool old_config_created = false,
+            old_config_mapped = false;
 static int config_page,
     config_x,
     config_y,
@@ -179,10 +197,10 @@ static int config_page,
 static int *config_widget_desc,
     config_save_confirm_desc = NO_WIDGET;
 
-// static int *config_widget_ids = NULL; // TODO
+static int *config_widget_ids = NULL;
 static int config_what = CONFIG_NONE;
 
-static int (*config_creator[])(int widget_desc, int *height) = {
+static int (*old_config_creator[])(int widget_desc, int *height) = {
     Old_config_create_power,
     Old_config_create_turnSpeed,
     Old_config_create_turnResistance,
@@ -243,11 +261,11 @@ static int (*config_creator[])(int widget_desc, int *height) = {
     Old_config_create_altScaleFactor,
     Old_config_create_save /* must be last */
 };
-static int config_widget_ids[NELEM(config_creator)];
+static int old_config_widget_ids[NELEM(old_config_creator)];
 
-static int Nelem_config_creator(void)
+static int Old_nelem_config_creator(void)
 {
-    return NELEM(config_creator);
+    return NELEM(old_config_creator);
 }
 
 static void Create_config(void)
@@ -303,7 +321,7 @@ static void Create_config(void)
     config_int_width = 4 + XTextWidth(buttonFont, "10000", 5);
     config_double_width = 4 + XTextWidth(buttonFont, "0.222", 5);
 
-    config_max = Nelem_config_creator();
+    config_max = Old_nelem_config_creator();
     config_widget_desc = XMALLOC(int, config_max);
     if (config_widget_desc == NULL)
     {
@@ -313,7 +331,7 @@ static void Create_config(void)
 
     num = -1;
     full = true;
-    for (i = 0; i < Nelem_config_creator(); i++)
+    for (i = 0; i < Old_nelem_config_creator(); i++)
     {
         if (full)
         {
@@ -365,8 +383,8 @@ static void Create_config(void)
 
             height = config_space;
         }
-        if ((config_widget_ids[i] =
-                 (*config_creator[i])(config_widget_desc[num], &height)) == 0)
+        if ((old_config_widget_ids[i] =
+                 (*old_config_creator[i])(config_widget_desc[num], &height)) == 0)
         {
             i--;
             full = true;
@@ -375,15 +393,15 @@ static void Create_config(void)
             continue;
         }
     }
-    if (i < Nelem_config_creator())
+    if (i < Old_nelem_config_creator())
     {
         for (; num >= 0; num--)
         {
             if (config_widget_desc[num] != 0)
                 Widget_destroy(config_widget_desc[num]);
         }
-        config_created = false;
-        config_mapped = false;
+        old_config_created = false;
+        old_config_mapped = false;
     }
     else
     {
@@ -392,15 +410,15 @@ static void Create_config(void)
         config_page = 0;
         for (i = 0; i < config_max; i++)
             Widget_map_sub(config_widget_desc[i]);
-        config_created = true;
-        config_mapped = false;
+        old_config_created = true;
+        old_config_mapped = false;
     }
 }
 
 static int Old_config_close(int widget_desc, void *data, const char **strptr)
 {
     Widget_unmap(config_widget_desc[config_page]);
-    config_mapped = false;
+    old_config_mapped = false;
     return 0;
 }
 
@@ -413,7 +431,7 @@ static int Old_config_next(int widget_desc, void *data, const char **strptr)
         config_page = (config_page + 1) % config_max;
         Widget_raise(config_widget_desc[config_page]);
         Widget_unmap(config_widget_desc[prev_page]);
-        config_mapped = true;
+        old_config_mapped = true;
     }
     return 0;
 }
@@ -427,7 +445,7 @@ static int Old_config_prev(int widget_desc, void *data, const char **strptr)
         config_page = (config_page - 1 + config_max) % config_max;
         Widget_raise(config_widget_desc[config_page]);
         Widget_unmap(config_widget_desc[prev_page]);
-        config_mapped = true;
+        old_config_mapped = true;
     }
     return 0;
 }
@@ -1557,24 +1575,24 @@ static int Old_config_save_confirm_callback(int widget_desc, void *popup_desc,
 int Old_config(bool doit, int what)
 {
     /* get rid of the old widgets, it's the most easy way */
-    if (config_created == false)
+    if (old_config_created == false)
     {
         if (doit == false)
         {
             return 0;
         }
         Create_config();
-        if (config_created == false)
+        if (old_config_created == false)
         {
             return false;
         }
     }
-    if (config_mapped == false)
+    if (old_config_mapped == false)
     {
         if (doit)
         {
             Widget_raise(config_widget_desc[config_page]);
-            config_mapped = true;
+            old_config_mapped = true;
         }
     }
     else
@@ -1582,26 +1600,26 @@ int Old_config(bool doit, int what)
         if (doit == false)
         {
             Widget_unmap(config_widget_desc[config_page]);
-            config_mapped = false;
+            old_config_mapped = false;
         }
     }
-    return (config_mapped);
+    return (old_config_mapped);
 }
 
 void Old_config_destroy(void)
 {
     int i;
 
-    if (config_created)
+    if (old_config_created)
     {
-        if (config_mapped)
+        if (old_config_mapped)
         {
             Widget_unmap(config_widget_desc[config_page]);
-            config_mapped = false;
+            old_config_mapped = false;
         }
         for (i = 0; i < config_max; i++)
             Widget_destroy(config_widget_desc[i]);
-        config_created = false;
+        old_config_created = false;
         free(config_widget_desc);
         config_widget_desc = NULL;
         config_max = 0;
@@ -1611,9 +1629,9 @@ void Old_config_destroy(void)
 
 void Old_config_resize(void)
 {
-    bool mapped = config_mapped;
+    bool mapped = old_config_mapped;
 
-    if (config_created)
+    if (old_config_created)
     {
         Old_config_destroy();
         if (mapped)
@@ -1625,11 +1643,11 @@ void Old_config_redraw(void)
 {
     int i;
 
-    if (!config_mapped)
+    if (!old_config_mapped)
         return;
 
-    for (i = 0; i < NELEM(config_creator); i++)
+    for (i = 0; i < NELEM(old_config_creator); i++)
     {
-        Widget_draw(config_widget_ids[i]);
+        Widget_draw(old_config_widget_ids[i]);
     }
 }
