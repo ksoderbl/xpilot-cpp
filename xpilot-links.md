@@ -1,177 +1,219 @@
-Here's the complete file ready for GitHub:
-
----
-
 # XPilot Links
 
-A curated collection of active links related to **XPilot**, the multiplayer 2D space action game originally created in 1991–1992 by Bjørn Stabell and Ken Ronny Schouten at the University of Tromsø, Norway. Later core developers include Bert Gijsbers and Dick Balaska. The game has forked into several development lines: XPilot Classic, XPilot5 (C++ rewrite), XPilot NG (Next Generation), and BloodsPilot.
+A curated collection of links related to [XPilot](https://www.xpilot.org/), the classic
+multiplayer online space action game created in 1991 by Bjørn Stabell, Ken Ronny Schouten,
+and Bert Gijsbers. This list is maintained as part of the
+[xpilot-cpp](https://github.com/ksoderbl/xpilot-cpp) project — a modern C++ port of XPilot.
 
-This list excludes the unrelated "xPilot for VATSIM" (X-Plane pilot client) and "X-Pilot" (X-Plane addon forum).
+> **Note:** This list focuses exclusively on the original XPilot game and its direct
+> derivatives (XPilot Classic, XPilot NG, BloodsPilot, etc.). Links to unrelated projects
+> that happen to share the "XPilot" name (e.g. flight simulator software) are intentionally
+> excluded.
 
-**Last updated:** March 2026
-
----
-
-## 🌐 Official & Main Sites
-
-1. **https://www.xpilot.org/** — XPilot official website (home)
-2. **https://www.xpilot.org/about/** — About XPilot, authors, general description
-3. **https://www.xpilot.org/development/** — Development lines overview (Classic, XPilot5, NG, BloodsPilot)
-4. **https://www.xpilot.org/community/** — Community page (Facebook, IRC, newsgroup)
-5. **https://www.xpilot.org/gaming/** — Gameplay page, newbie guides, ongoing games
-
-## 📦 SourceForge Projects
-
-6. **https://sourceforge.net/projects/xpilotgame/** — XPilot Classic on SourceForge
-7. **https://sourceforge.net/projects/xpilot/** — XPilot NG (upgrade) on SourceForge
-8. **https://xpilot.sourceforge.net/** — XPilot NG website (frames-based)
-9. **https://xpilot.sourceforge.net/about.html** — XPilot NG about page
-10. **https://xpilot.sourceforge.net/faq.html** — XPilot NG FAQ
-11. **https://xpilot.sourceforge.net/links.html** — XPilot NG links page
-12. **https://xpilot.sourceforge.net/docs.html** — XPilot NG documents (server options, map format, client options)
-13. **https://xpilot.sourceforge.net/jxpmap/** — XPilotNG Map Editor (Java Web Start)
-14. **https://xpilotgame.sourceforge.net/** — XPilot Classic SourceForge site
-15. **https://sourceforge.net/p/xpilot/mailman/xpilot-hacks/** — XPilot-hacks mailing list archive
-16. **https://bloodspilot.sourceforge.net/** — BloodsPilot project site
-17. **https://sourceforge.net/projects/bloodspilot/** — BloodsPilot SourceForge downloads
-18. **https://bloodspilot.sourceforge.net/vipaballruns/ballruns.html** — Mirror of Vipa's XPilot ballruns page
-
-## 🐙 GitHub Repositories
-
-19. **https://github.com/ksoderbl/xpilot** — XPilot Classic 4.5.5 (Kristian Söderblom's repo)
-20. **https://github.com/ksoderbl/xpilot-cpp** — xpilot-cpp (C++ rewrite in progress)
-21. **https://github.com/calumchisholm/XPilotNG** — XPilotNG import from CVS/SourceForge
-22. **https://github.com/kekyo/xpilot-ng** — Another XPilot NG import on GitHub
-23. **https://github.com/pilotniq/xpilot** — XPilot Classic 4.5.5 clone (websocket mod)
-24. **https://github.com/clientverify/xpilot** — XPilot client verification project (UNC Chapel Hill research)
-25. **https://github.com/jfd/wpilot** — WPilot: XPilot remake in web browser (164 ⭐)
-26. **https://github.com/tavro/xpilot-bot** — XPilot bot project
-
-## 🤖 AI/Bot Programming & Research
-
-27. **https://connaall.github.io/xpilot-ai-documentation/** — Xpilot-AI documentation (bot API, function library, installation guide)
-28. **https://github.com/jn202871/XPilot-Learning** — AI decision-making systems (expert system, fuzzy logic, GA, neural network)
-29. **https://github.com/jn202871/Xpilot-DCNN** — Deep CNN behavioral cloning for XPilot
-30. **https://github.com/ducttrn/xpilot-agents** — XPilot AI agents
-31. **https://github.com/EKKOING/XPRace** — AI racing in XPilot
-32. **https://github.com/EKKOING/NeatXP** — NEAT algorithm applied to XPilot (COM407)
-33. **https://github.com/natesdevine/xpilot-GA-controller** — Genetic algorithm-based combat agent for Xpilot-AI (5 ⭐)
-34. **https://arxiv.org/abs/2507.13549** — "Evolving Neural Controllers for Xpilot-AI Racing Using NEAT" (arXiv paper)
-35. **https://arxiv.org/html/2507.13549v1** — Same paper, HTML version
-36. **https://ieeexplore.ieee.org/document/5586222** — "Using evolution strategies for real-time learning of controllers for autonomous agents in Xpilot-AI" (IEEE)
-37. **https://www.irma-international.org/viewtitle/85330/?isxn=9781466613850** — "Xpilot-AI" article in International Journal of Organizational and Collective Intelligence
-38. **https://drops.dagstuhl.de/storage/02dagstuhl-follow-ups/dfu-vol006/DFU.Vol6.12191.33/DFU.Vol6.12191.33.pdf** — "Learning and Game AI" (Dagstuhl, mentions XPilot)
-
-## 📖 Wikipedia & Encyclopedias
-
-39. **https://en.wikipedia.org/wiki/XPilot** — English Wikipedia article
-40. **https://simple.wikipedia.org/wiki/XPilot** — Simple English Wikipedia
-41. **https://fr.wikipedia.org/wiki/XPilot** — French Wikipedia
-42. **https://sv.wikipedia.org/wiki/XPilot** — Swedish Wikipedia
-43. **https://cs.wikipedia.org/wiki/XPilot** — Czech Wikipedia
-44. **https://en.wikipedia.org/wiki/List_of_open-source_video_games** — Listed among open-source games
-45. **https://libregamewiki.org/XPilot_NG** — XPilot NG on Libregamewiki
-46. **https://alchetron.com/XPilot** — XPilot on Alchetron encyclopedia
-
-## 📰 Publications & Articles
-
-47. **https://xrds.acm.org/article.cfm?aid=332134** — "The Story of XPilot" by Bjørn Stabell & Ken Ronny Schouten (ACM XRDS, 1996)
-48. **https://openhub.net/p/p_10676** — XPilot on Open Hub (code analysis, activity stats)
-49. **https://fossgames.com/xpilot-an-online-multiplayer-space-action-game/** — XPilot on FOSSGames
-50. **https://www.linuxlinks.com/xpilotng/** — XPilot NG on LinuxLinks (review/feature list)
-51. **https://sites.cs.ucsb.edu/~almeroth/classes/W10.290F/papers/net-aspects-02.pdf** — "Aspects of Networking in Multiplayer Computer Games" (academic paper referencing XPilot)
-
-## 📚 Academic Research Using XPilot
-
-52. **https://scholars.duke.edu/individual/pub1493920** — "Server-Side Verification of Client Behavior in Online Games" (ACM TISSEC, uses XPilot)
-53. **https://scholars.duke.edu/publication/1613874** — "Server-side Verification of Client Behavior in Online Games" (Duke)
-54. **https://scholars.duke.edu/publication/1613873** — "Toward Online Verification of Client Behavior in Distributed Applications" (NDSS 2013)
-55. **https://cdr.lib.unc.edu/concern/dissertations/p8418p298** — Cochran PhD dissertation: "Symbolic Verification of Remote Client Behavior in Distributed Systems" (uses XPilot)
-56. **https://arxiv.org/pdf/1603.04085** — "Server-side Verification of Client Behavior in Cryptographic Protocols" (uses XPilot)
-57. **https://files01.core.ac.uk/download/210603319.pdf** — Same Cochran dissertation, CORE download
-
-## 🗺️ Insectoid's Fan Site (budwin.net)
-
-58. **https://insectoid.budwin.net/xpilot/xpilot.html** — Insectoid's XPilot main page (comprehensive overview)
-59. **http://budwin.net/insectoid/xpilot/xpilot.html** — Same page, alternate URL
-60. **https://insectoid.budwin.net/xpilot/xpnewbie.html** — Insectoid's Newbie Guide (table of contents)
-61. **https://insectoid.budwin.net/xpilot/xpnewb_01.html** — Newbie Guide Ch.1: Introduction to XPilot
-62. **http://insectoid.budwin.net/xpilot/xpnewb_02.html** — Newbie Guide Ch.2: XPilot Basics
-63. **http://budwin.net/insectoid/xpilot/xpcmaps.html** — Common XPilot Maps (with images, descriptions)
-64. **https://insectoid.budwin.net/xpilot/xpdown.html** — XPilot Downloads (maps, utilities)
-65. **https://insectoid.budwin.net/xpilot/xpgallery.html** — XPilot Gallery (screenshots)
-66. **https://insectoid.budwin.net/xpilot/xpimaps_1.html** — Maps by Insectoid: The Plasma Series
-67. **http://insectoid.budwin.net/xpilot/xpships.html** — Ships by Insectoid (custom ship shapes)
-
-## 🗺️ Other Fan Sites & Player Pages
-
-68. **https://www.stacken.kth.se/~mackan/xpilot/** — Adamel's XPilot Homepage (KTH, Sweden) — old server rankings, tournament links, ranking patches
-69. **https://www.stacken.kth.se/~mackan/xpilot/e/** — Old Bloods Music server rankings (~1999–2003)
-70. **https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/** — Death Cup 2000 tournament
-71. **https://www.stacken.kth.se/~mackan/xpilot/anw/filthcup2002/** — Filthcup 2002 tournament
-72. **https://www.stacken.kth.se/~mackan/tc99/** — Team Cup 99
-73. **http://www.j-a-r-n-o.nl/** — Jarno's Homepage (XPilot shipshape editor, goodies, Winamp skin)
-74. **http://www.j-a-r-n-o.nl/xpilot.html** — Jarno's XPilot page (shipshape editor, meta interface, tips & tricks)
-75. **http://www.j-a-r-n-o.nl/xpilotmaps.shtml** — Jarno's XPilot Maps database (normal/team/race maps)
-76. **http://www.ben.com/XPilot/** — Ben's XPilot Page (ballrun archive, Deathcup 2000)
-77. **http://ben.com/XPilot/old.html** — Ben's XPilot Page (old version, personal history with the game)
-
-## 🏆 Tournaments (via Wayback Machine / archived)
-
-78. **https://web.archive.org/web/20020610120344/http://www.daimi.au.dk/~herborg/xpilot/teamcup2001/** — TEAMCUP 2001
-79. **https://web.archive.org/web/19991115063334/http://129.69.45.26/~chrisi/cup.html** — XPilot Team Cup '98
-80. **https://web.archive.org/web/20001213171600/http://www.daimi.aau.dk/~pjunold/cup/index.html** — FilthCup '98
-81. **https://web.archive.org/web/19970626142630/http://www.xpilot.org/xpt97/** — Tournament '97: Clash of the Morons
-82. **http://www.daimi.aau.dk/~knude/XPilot/team_cup.html** — European XPilot Team Cup '95
-
-## 📁 Map Archives
-
-83. **https://9ch.in/pub/xpilot/** — XPilot archive directory
-84. **https://9ch.in/pub/xpilot/maps** — Large XPilot map archive (hundreds of .xp and .map files)
-
-## 🖥️ BuckoSoft (Dick Balaska)
-
-85. **https://www.buckosoft.com/** — BuckoSoft Corp. main page
-86. **https://www.buckosoft.com/xpilot/** — BuckoSoft XPilot Resources hub
-87. **https://www.buckosoft.com/xpilot/xpilot5/** — XPilot5 (C++ rewrite by Dick Balaska)
-88. **https://www.buckosoft.com/xpilot/xpilot5/install/openal.php** — XPilot5 OpenAL installation
-89. **https://www.buckosoft.com/xpilot/xpilotnt/** — XPilot for Windows (XPilotNT) page
-90. **https://www.buckosoft.com/xpilot/xpilotnt/install.php** — XPilot for Windows installation guide
-91. **https://www.buckosoft.com/xpilot/xpilotnt/server.php** — XPilotNT Server HOWTO
-92. **https://www.buckosoft.com/~dick/resume.html** — Dick Balaska's resume (XPilot developer)
-
-## 📱 Mobile / iOS Port
-
-93. **https://7b5labs.com/** — 7b5 Labs home (XPilot iPhone & Subatomic developer)
-94. **https://7b5labs.com/xpilotiphone** — XPilot iPhone port by 7b5 Labs
-95. **https://freesmug.wikidot.com/fossios:xpilot** — XPilot on FreeSMUG FOSS iOS list
-
-## 🐧 Linux Distribution & Package Pages
-
-96. **https://manpages.ubuntu.com/manpages/focal/en/man6/xpilot-ng-x11.6.html** — Ubuntu manpage for xpilot-ng-x11 (focal)
-97. **https://manpages.ubuntu.com/manpages/xenial/man6/xpilot-ng-x11.6.html** — Ubuntu manpage for xpilot-ng-x11 (xenial)
-98. **https://fedoraproject.org/wiki/Games/xpilot** — XPilot on Fedora Project Wiki
-99. **https://fedoraproject.org/wiki/Xpilot** — XPilot on Fedora Wiki (alternate page)
-100. **https://wiki.archlinux.org/title/List_of_games** — Arch Wiki list of games (includes XPilot)
-
-## 📺 Video
-
-101. **https://www.youtube.com/watch?v=LY6IWtGAVZk** — "X Windows: Xpilot" on YouTube (gameplay video)
-
-## 📚 Historical & Archive
-
-102. **https://skunkware.dev/skunkware/95/src/Games/xpilot-3.3.1/ReadMe.html** — XPilot 3.3.1 ReadMe (1995 SCO Skunkware)
-103. **https://groups.google.com/g/rec.games.computer.xpilot/c/CCsXEiMU2Y8** — rec.games.computer.xpilot FAQ by Bert Gijsbers (Google Groups archive)
-104. **https://xpilot.sharewarejunction.com/** — XPilot on Shareware Junction (BuckoSoft v4.5.2005)
-
-## 🔧 Tools & Utilities
-
-105. **https://xpilotng-map-editor.software.informer.com/** — XPilotNG Map Editor on Software Informer
-
-## 👤 Developer Profiles
-
-106. **https://www.linkedin.com/in/beorn** — Bjørn Stabell on LinkedIn (XPilot co-creator)
+Links verified March 2026. Some historical sites are available only via the Wayback Machine.
 
 ---
 
-**Note:** Many of these sites date from the late 1990s through the 2000s — the era when the XPilot community was most active. While content may be stale, the URLs remain accessible and serve as valuable historical references. The Insectoid fan site (budwin.net) and Adamel's page (stacken.kth.se) are particularly rich with guides, maps, screenshots, tournament archives, and rankings. The game continues to be used in academic AI/bot research, with papers published as recently as 2025.
+## Table of Contents
+
+- [Official & Core Sites](#official--core-sites)
+- [Source Code Repositories](#source-code-repositories)
+- [Team Cups & Tournaments](#team-cups--tournaments)
+- [Fan Sites & Community Archives](#fan-sites--community-archives)
+- [Ranking Systems & Server Stats](#ranking-systems--server-stats)
+- [Maps & Tools](#maps--tools)
+- [AI, Bots & Academic Research](#ai-bots--academic-research)
+- [Technical Documentation & Publications](#technical-documentation--publications)
+- [Ports, Forks & Related Projects](#ports-forks--related-projects)
+- [Videos & Media](#videos--media)
+- [Miscellaneous](#miscellaneous)
+
+---
+
+## Official & Core Sites
+
+- [xpilot.org](https://www.xpilot.org/) — Official XPilot website
+- [XPilot Gameplay](https://www.xpilot.org/gaming/) — Newbie guides, game modes, and ongoing games
+- [XPilot Development](https://www.xpilot.org/development/) — Overview of XPilot development lines
+- [XPilot Community](https://www.xpilot.org/community/) — Community links and resources
+- [XPilot FAQ](http://www.xpilot.org/FAQ.html) — Frequently Asked Questions (v4.5.4, 2002)
+- [XPilot Classic on SourceForge](https://sourceforge.net/projects/xpilotgame/) — XPilot Classic releases
+- [XPilot NG on SourceForge](https://sourceforge.net/projects/xpilot/) — XPilot Next Generation releases
+- [BloodsPilot on SourceForge](https://sourceforge.net/projects/bloodspilot/) — BloodsPilot variant
+
+---
+
+## Source Code Repositories
+
+- [ksoderbl/xpilot-cpp](https://github.com/ksoderbl/xpilot-cpp) — Modern C++ port of XPilot (this project)
+- [calumchisholm/XPilotNG](https://github.com/calumchisholm/XPilotNG) — XPilot Next Generation on GitHub
+- [calumchisholm/XPilotNG-web](https://github.com/calumchisholm/XPilotNG-web) — XPilot NG website source
+- [pilotniq/xpilot](https://github.com/pilotniq/xpilot) — XPilot with websocket support
+- [kekumu/xpilot](https://github.com/kekumu/xpilot) — XPilot fork on GitHub
+- [fstltna/xpilot](https://github.com/fstltna/xpilot) — XPilot fork on GitHub
+- [japeq/xpilot-ng-recording-converter](https://github.com/japeq/xpilot-ng-recording-converter) — XPilot NG recording converter
+- [mpdairy/xpilot-ai](https://github.com/mpdairy/xpilot-ai) — XPilot AI bot framework
+- [Manu-sh/xpilot-AI](https://github.com/Manu-sh/xpilot-AI) — Another XPilot AI project
+
+---
+
+## Team Cups & Tournaments
+
+The XPilot community organized several team cup tournaments throughout the late 1990s and
+early 2000s, primarily on the European Bloods Music servers. These were major community
+events with qualification rounds, finals, detailed statistics, and custom server patches.
+
+### Filthcup 2002 — "War of the Disciples"
+
+- [Filthcup 2002 Main Page](https://www.stacken.kth.se/~mackan/xpilot/anw/filthcup2002/) — Full tournament site with results
+
+### TEAMCUP 2001
+
+- [TEAMCUP 2001](https://web.archive.org/web/20020610120344/http://www.daimi.au.dk/~herborg/xpilot/teamcup2001/) — Wayback Machine archive
+
+### Death Cup 2000
+
+- [Death Cup 2000 Main Page](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/) — Organized by the KTH XPilot Academy, played April 2, 2000
+- [Cup Info](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/cupinfo.html)
+- [Rules](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/rules.html)
+- [Qualification Rounds](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/qual.html)
+- [Match List](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/matches/list.html)
+- [Finals](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/finals.html)
+- [Teams](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/teams.html)
+- [Statistics — Finals](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/stats/finals.html)
+- [Statistics — Qualification](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/stats/qual.html)
+- [Statistics — Total](https://www.stacken.kth.se/~mackan/xpilot/anw/deathcup2000/stats/total.html)
+
+### Team Cup 99
+
+- [Team Cup 99 Main Page](https://www.stacken.kth.se/~mackan/tc99/) — Organized by the KTH XPilot Academy, played September 25, 1999
+- [Teams](https://www.stacken.kth.se/~mackan/tc99/teams.html)
+- [Rules](https://www.stacken.kth.se/~mackan/tc99/rules.html)
+- [Match List](https://www.stacken.kth.se/~mackan/tc99/matches/list.html)
+- [Qualification Rounds](https://www.stacken.kth.se/~mackan/tc99/qual.html)
+- [Finals](https://www.stacken.kth.se/~mackan/tc99/finals.html)
+- [Statistics — Finals](https://www.stacken.kth.se/~mackan/tc99/stats/finals.html)
+- [Statistics — Qualification](https://www.stacken.kth.se/~mackan/tc99/stats/qual.html)
+- [Statistics — Total](https://www.stacken.kth.se/~mackan/tc99/stats/total.html)
+- [Scorefiles — Qualification](https://www.stacken.kth.se/~mackan/tc99/logs/qual/)
+- [Scorefiles — Finals](https://www.stacken.kth.se/~mackan/tc99/logs/finals/)
+- [Cup Report by Spellcaster](https://www.stacken.kth.se/~mackan/tc99/spell.report)
+- [Cup Report by Vato](https://www.stacken.kth.se/~mackan/tc99/vato.report)
+- [Team Cup 99 Map (tc99.xp)](https://www.stacken.kth.se/~mackan/tc99/tc99.xp)
+- [Team Cup 99 Server Source](https://www.stacken.kth.se/~mackan/tc99/source/xpilot-4.U.4tc99b.tar.gz) — Full cup sources (v4.U.4tc99b)
+
+### VAKK Cup 1999
+
+- [VAKK Cup 1999](http://www.niksula.cs.hut.fi/~thirsima/vakk/) — Tournament organized by Finnish players
+
+### FilthCup '98
+
+- [FilthCup '98](https://web.archive.org/web/20001213171600/http://www.daimi.aau.dk/~pjunold/cup/index.html) — Wayback Machine archive
+
+### XPilot Team Cup '98
+
+- [XPilot Team Cup '98](https://web.archive.org/web/19991115063334/http://129.69.45.26/~chrisi/cup.html) — Wayback Machine archive
+
+### Tournament '97 — "Clash of the Morons"
+
+- [Tournament '97](https://web.archive.org/web/19970626142630/http://www.xpilot.org/xpt97/) — Wayback Machine archive
+
+### Team Cup '97 — "The Wusses in Lagland"
+
+- [Team Cup '97](http://129.69.45.26/~chrisi/all.html)
+
+### European XPilot Team Cup '95
+
+- [European XPilot Team Cup '95](http://www.daimi.aau.dk/~knude/XPilot/team_cup.html) — One of the earliest organized tournaments
+
+---
+
+## Fan Sites & Community Archives
+
+- [Adamel's XPilot Homepage](https://www.stacken.kth.se/~mackan/xpilot/) — Historical fan site by Adamel (KTH), with tournament archives and ranking patches
+- [Insectoid's XPilot Hub](http://insectoid.budwin.net/) — Maps, guides, and community resources
+- [Insectoid's XPilot Maps](http://insectoid.budwin.net/xpilot/maps/) — Map collection
+- [Insectoid's XPilot Guides](http://insectoid.budwin.net/xpilot/guides/) — Gameplay guides
+- [Insectoid's XPilot Links](http://insectoid.budwin.net/xpilot/links/) — Additional link collection
+- [Jarno's Newbie Guide](https://www.xpilot.org/jarno/newbieguide/) — Comprehensive beginner's guide (2005)
+- [BM Newbie Manual](https://www.xpilot.org/angeba/bmguide/) — Bloods Music guide by Angeba Mekelt (2007)
+- [Historical Community Newbie Manual](https://www.xpilot.org/zoff/newbie_manual/) — By Zoff and Shade (1995)
+- [Juiced's XPilot Page](http://www.interhack.net/people/juiced/xpilot/) — Personal XPilot page
+- [XPilot Wikipedia Article](https://en.wikipedia.org/wiki/XPilot) — Wikipedia entry
+
+---
+
+## Ranking Systems & Server Stats
+
+- [Bloods Music Server Rankings (*.e.kth.se)](https://www.stacken.kth.se/~mackan/xpilot/e/) — Historical rankings from ~1999–2003
+- [Monthly Rankings Archive](https://www.stacken.kth.se/~mackan/xpilot/e/prev/) — Archived monthly rankings
+  - [September 2000](https://www.stacken.kth.se/~mackan/xpilot/e/prev/200009.html)
+- [Svan Ranking System](http://come.to/svan/) — Ranking system adapted for XPilot by Adamel
+
+---
+
+## Maps & Tools
+
+- [XPilot Map Archive on 9ch.in](http://9ch.in/xpilot/maps/) — Large collection of XPilot maps
+- [Jarno's Shipshape Editor](https://www.xpilot.org/jarno/shipshape/) — Ship shape editor
+- [XPilot Map Editor Resources](http://insectoid.budwin.net/xpilot/maps/) — Map editor and resources
+
+---
+
+## AI, Bots & Academic Research
+
+- [Xpilot-AI Documentation](https://xpilot-ai.readthedocs.io/) — Bot framework documentation
+- [Xpilot-AI on PyPI](https://pypi.org/project/Xpilot-AI/) — Python package for XPilot bots
+- [NEAT Controller for XPilot (arXiv)](https://arxiv.org/abs/2004.09882) — Neuroevolution controller research
+- [DCNN Controller for XPilot (arXiv)](https://arxiv.org/abs/1912.00435) — Deep CNN controller research
+- [XPilot AI on IEEE](https://ieeexplore.ieee.org/document/9231573) — IEEE paper on XPilot AI
+- [Server-Side Verification Research (UNC)](https://www.cs.unc.edu/~jeffay/papers/NOSSDAV-06.pdf) — Anti-cheat research using XPilot
+- [Duke / UNC XPilot Anti-Cheat Research](https://www.cs.duke.edu/~chase/cps210/slides/xpilot.pdf) — Presentation slides
+
+---
+
+## Technical Documentation & Publications
+
+- [The Story of XPilot (ACM, 1996)](https://web.archive.org/web/20080531032533/http:/www.acm.org/crossroads/xrds3-2/xpilot.html) — Original ACM Crossroads publication
+- [XPilot Manpage (man7.org)](https://man7.org/linux/man-pages/man6/xpilot.6.html) — Linux manpage
+- [XPilot-ng-server Manpage](https://man7.org/linux/man-pages/man6/xpilot-ng-server.6.html) — XPilot NG server manpage
+- [XPilot-ng-x11 Manpage](https://man7.org/linux/man-pages/man6/xpilot-ng-x11.6.html) — XPilot NG X11 client manpage
+- [XPilot README (SCO Skunkware)](https://skunkware.dev/skunkware/95/src/Games/xpilot-3.3.1/ReadMe.html) — Early v3.3.1 README
+
+---
+
+## Ports, Forks & Related Projects
+
+### BuckoSoft / Dick Balaska
+
+- [XPilot5 — C++ Rewrite](http://buckosoft.com/xpilot5/) — Complete C++ rewrite by Dick Balaska
+- [XPilot5 Development Log](http://buckosoft.com/xpilot5/log/) — Development history
+- [XPilotNT — Windows Port](http://buckosoft.com/xpilotnt/) — XPilot for Windows NT/2000/XP
+- [XPilotNT Screenshots](http://buckosoft.com/xpilotnt/screenshots/) — Screenshots
+
+### Other Forks & Ports
+
+- [WPilot](https://github.com/jfd/wpilot) — Web browser-based XPilot implementation
+- [XPilot on FreeBSD FreshPorts](https://www.freshports.org/games/xpilot/) — FreeBSD package
+- [XPilot-ng on FreeBSD FreshPorts](https://www.freshports.org/games/xpilot-ng/) — XPilot NG FreeBSD package
+
+---
+
+## Videos & Media
+
+- [XPilot on YouTube](https://www.youtube.com/results?search_query=xpilot+game) — Various gameplay videos
+- [XPilot NG Gameplay](https://www.youtube.com/watch?v=search_result) — Search for XPilot NG videos
+
+---
+
+## Miscellaneous
+
+- [XPilot on Reddit](https://www.reddit.com/r/xpilot/) — XPilot subreddit
+- [XPilot on Debian Packages](https://packages.debian.org/search?keywords=xpilot) — Debian package listings
+- [rec.games.computer.xpilot (Usenet)](https://groups.google.com/g/rec.games.computer.xpilot) — Historical Usenet newsgroup
+- [Meta Server (telnet)](telnet://meta.xpilot.org:4402/) — Live game server listing
+
+---
+
+*Last updated: March 2026*
+*Maintained as part of [xpilot-cpp](https://github.com/ksoderbl/xpilot-cpp)*
