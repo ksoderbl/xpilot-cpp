@@ -59,9 +59,12 @@
  */
 #define XP_COLOR0 "#000000" /* black */
 #define XP_COLOR1 "#FFFFFF" /* white */
-#define XP_COLOR2 "#4E7CFF" /* "xpblue" */
-#define XP_COLOR3 "#FF3A27" /* "xpred" */
-#define XP_COLOR4 "#33BB44" /* "xpgreen" */
+// #define XP_COLOR2 "#4E7CFF" /* "xpblue" */
+// #define XP_COLOR3 "#FF3A27" /* "xpred" */
+// #define XP_COLOR4 "#33BB44" /* "xpgreen" */
+#define XP_COLOR2 "#0000FF"
+#define XP_COLOR3 "#FF0000"
+#define XP_COLOR4 "#00FF00"
 #define XP_COLOR5 "#992200"
 #define XP_COLOR6 "#BB7700"
 #define XP_COLOR7 "#EE9900"
