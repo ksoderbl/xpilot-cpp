@@ -136,6 +136,7 @@ events with qualification rounds, finals, detailed statistics, and custom server
 - [Insectoid's XPilot Guides](http://insectoid.budwin.net/xpilot/guides/) — Gameplay guides
 - [Insectoid's XPilot Links](http://insectoid.budwin.net/xpilot/links/) — Additional link collection
 - [Jarno's Newbie Guide](https://www.xpilot.org/jarno/newbieguide/) — Comprehensive beginner's guide (2005)
+- [Rotunda's XPilot discussion forum](https://xpilot.ktd.krakow.pl/forum/) — Discussion Forum
 - [BM Newbie Manual](https://www.xpilot.org/angeba/bmguide/) — Bloods Music guide by Angeba Mekelt (2007)
 - [Historical Community Newbie Manual](https://www.xpilot.org/zoff/newbie_manual/) — By Zoff and Shade (1995)
 - [Juiced's XPilot Page](http://www.interhack.net/people/juiced/xpilot/) — Personal XPilot page
