@@ -201,8 +201,8 @@ events with qualification rounds, finals, detailed statistics, and custom server
 
 ## Videos & Media
 
+- [X Windows: Xpilot on YouTube](https://www.youtube.com/watch?v=LY6IWtGAVZk) — "X Windows: Xpilot" by Sparcie (2022) — 9-minute video overview covering XPilot's development history, gameplay, and legacy
 - [XPilot on YouTube](https://www.youtube.com/results?search_query=xpilot+game) — Various gameplay videos
-- [XPilot NG Gameplay](https://www.youtube.com/watch?v=search_result) — Search for XPilot NG videos
 
 ---
 
