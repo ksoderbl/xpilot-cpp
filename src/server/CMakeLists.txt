@@ -1,0 +1,75 @@
+add_executable(xpilot-cpp-server
+    alliance.cpp
+    asteroid.cpp
+    cannon.cpp
+    cell.cpp
+    cmdline.cpp
+    collision.cpp
+    command.cpp
+    contact.cpp
+    event.cpp
+    fileparser.cpp
+    frame.cpp
+    gravity.cpp
+    id.cpp
+    item.cpp
+    laser.cpp
+    map.cpp
+    metaserver.cpp
+    modifiers.cpp
+    netserver.cpp
+    object.cpp
+    option.cpp
+    parser.cpp
+    player.cpp
+    polygon.cpp
+    race.cpp
+    rank.cpp
+    recwrap.cpp
+    robot.cpp
+    robotdef.cpp
+    rules.cpp
+    saudio.cpp
+    sched.cpp
+    score.cpp
+    server.cpp
+    ship.cpp
+    shot.cpp
+    showtime.cpp
+    srecord.cpp
+    stratbot.cpp
+    suibotdef.cpp
+    target.cpp
+    teamcup.cpp
+    treasure.cpp
+    tuner.cpp
+    update.cpp
+    walls.cpp
+    walls2.cpp
+    wildmap.cpp
+    wormhole.cpp
+    xp2map.cpp
+    xpmap.cpp
+)
+
+target_include_directories(xpilot-cpp-server
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/common
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_BINARY_DIR}/generated
+)
+
+target_compile_definitions(xpilot-cpp-server
+    PRIVATE
+        CONF_DATADIR="${XPILOT_CONF_DATADIR}"
+)
+
+target_link_libraries(xpilot-cpp-server
+    PRIVATE
+        xpcommon
+        EXPAT::EXPAT
+        ZLIB::ZLIB
+        m
+)
+
+install(TARGETS xpilot-cpp-server RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
