@@ -393,35 +393,30 @@ void Gui_paint_asteroids_end(void)
 {
 }
 
-// xpilot-cpp-client-x11: Gui_paint_asteroid: x = 3742, y = 2683, type = 14, rot = 46, size = 1
-// Segmentation fault (core dumped)
-
 void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
 {
-    try
+    int cnt, tx, ty;
+    static XPoint points[NUM_ASTEROID_POINTS + 2];
+
+    // warn("Gui_paint_asteroid: x = %d, y = %d, type = %d, rot = %d, size = %d",
+    //      x, y, type, rot, size);
+
+    // xpilot-cpp-client-x11: Gui_paint_asteroid: x = 3742, y = 2683, type = 14, rot = 46, size = 1
+    // Segmentation fault (core dumped)
+    type = type % NUM_ASTEROID_SHAPES;
+
+    for (cnt = 0; cnt < NUM_ASTEROID_POINTS; cnt++)
     {
-        int cnt, tx, ty;
-        static XPoint points[NUM_ASTEROID_POINTS + 2];
+        tx = (int)(asteroidShapes[type][cnt][rot].x * size * 1.4);
+        ty = (int)(asteroidShapes[type][cnt][rot].y * size * 1.4);
 
-        warn("Gui_paint_asteroid: x = %d, y = %d, type = %d, rot = %d, size = %d",
-             x, y, type, rot, size);
-
-        for (cnt = 0; cnt < NUM_ASTEROID_POINTS; cnt++)
-        {
-            tx = (int)(asteroidShapes[type][cnt][rot].x * size * 1.4);
-            ty = (int)(asteroidShapes[type][cnt][rot].y * size * 1.4);
-
-            points[cnt].x = WINSCALE(X(x + tx));
-            points[cnt].y = WINSCALE(Y(y + ty));
-        }
-        points[cnt++] = points[0];
-
-        SET_FG(colors[WHITE].pixel);
-        rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
+        points[cnt].x = WINSCALE(X(x + tx));
+        points[cnt].y = WINSCALE(Y(y + ty));
     }
-    catch (...)
-    {
-    }
+    points[cnt++] = points[0];
+
+    SET_FG(colors[WHITE].pixel);
+    rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
 }
 
 static void Gui_paint_nastyshot(int color, int x, int y, int size)
