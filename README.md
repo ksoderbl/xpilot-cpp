@@ -76,7 +76,7 @@ Example:
 
 | Dependency | Debian package | Required by |
 |---|---|---|
-| C++17 compiler | `build-essential` | Core |
+| c++20 compiler | `build-essential` | Core |
 | Autotools | `autoconf automake` | Build system |
 | pkg-config | `pkg-config` | Build system |
 | SDL2 ≥ 2.0 | `libsdl2-dev` | Client |

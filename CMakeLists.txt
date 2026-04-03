@@ -5,7 +5,7 @@ project(xpilot-cpp VERSION 4.5.5 LANGUAGES C CXX)
 include(GNUInstallDirs)
 include(CheckFunctionExists)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

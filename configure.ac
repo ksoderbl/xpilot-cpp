@@ -17,19 +17,19 @@ PKG_PROG_PKG_CONFIG
 dnl Check for functions
 AC_CHECK_FUNCS([strlcat strlcpy])
 
-dnl C++17 requirement
-AC_MSG_CHECKING([for C++17 support])
+dnl C++20 requirement
+AC_MSG_CHECKING([for C++20 support])
 
 save_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS -std=c++17"
+CXXFLAGS="$CXXFLAGS -std=c++20"
 AC_COMPILE_IFELSE(
   [AC_LANG_PROGRAM([[#include <optional>]], [[std::optional<int> x;]])],
   [AC_MSG_RESULT([yes])],
   [AC_MSG_RESULT([no])
    CXXFLAGS="$save_CXXFLAGS"
-   AC_MSG_ERROR([A C++17 compiler is required])]
+   AC_MSG_ERROR([A C++20 compiler is required])]
 )
-CXXFLAGS="$save_CXXFLAGS -std=c++17"
+CXXFLAGS="$save_CXXFLAGS -std=c++20"
 
 AC_PROG_RANLIB
 

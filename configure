@@ -5524,11 +5524,11 @@ then :
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for C++17 support" >&5
-printf %s "checking for C++17 support... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for C++20 support" >&5
+printf %s "checking for C++20 support... " >&6; }
 
 save_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS -std=c++17"
+CXXFLAGS="$CXXFLAGS -std=c++20"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <optional>
@@ -5548,12 +5548,12 @@ else case e in #(
   e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
    CXXFLAGS="$save_CXXFLAGS"
-   as_fn_error $? "A C++17 compiler is required" "$LINENO" 5
+   as_fn_error $? "A C++20 compiler is required" "$LINENO" 5
  ;;
 esac
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
-CXXFLAGS="$save_CXXFLAGS -std=c++17"
+CXXFLAGS="$save_CXXFLAGS -std=c++20"
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
