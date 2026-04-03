@@ -393,23 +393,35 @@ void Gui_paint_asteroids_end(void)
 {
 }
 
+// xpilot-cpp-client-x11: Gui_paint_asteroid: x = 3742, y = 2683, type = 14, rot = 46, size = 1
+// Segmentation fault (core dumped)
+
 void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
 {
-    int cnt, tx, ty;
-    static XPoint points[NUM_ASTEROID_POINTS + 2];
-
-    for (cnt = 0; cnt < NUM_ASTEROID_POINTS; cnt++)
+    try
     {
-        tx = (int)(asteroidShapes[type][cnt][rot].x * size * 1.4);
-        ty = (int)(asteroidShapes[type][cnt][rot].y * size * 1.4);
+        int cnt, tx, ty;
+        static XPoint points[NUM_ASTEROID_POINTS + 2];
 
-        points[cnt].x = WINSCALE(X(x + tx));
-        points[cnt].y = WINSCALE(Y(y + ty));
+        warn("Gui_paint_asteroid: x = %d, y = %d, type = %d, rot = %d, size = %d",
+             x, y, type, rot, size);
+
+        for (cnt = 0; cnt < NUM_ASTEROID_POINTS; cnt++)
+        {
+            tx = (int)(asteroidShapes[type][cnt][rot].x * size * 1.4);
+            ty = (int)(asteroidShapes[type][cnt][rot].y * size * 1.4);
+
+            points[cnt].x = WINSCALE(X(x + tx));
+            points[cnt].y = WINSCALE(Y(y + ty));
+        }
+        points[cnt++] = points[0];
+
+        SET_FG(colors[WHITE].pixel);
+        rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
     }
-    points[cnt++] = points[0];
-
-    SET_FG(colors[WHITE].pixel);
-    rd.drawLines(dpy, drawPixmap, gameGC, points, cnt, 0);
+    catch (...)
+    {
+    }
 }
 
 static void Gui_paint_nastyshot(int color, int x, int y, int size)
