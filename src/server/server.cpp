@@ -93,10 +93,6 @@ int game_lock = false;
 time_t gameOverTime = 0;
 time_t serverStartTime = 0;
 
-int roundsPlayed; /* # of rounds played sofar. */
-
-double timeStep = 1.0; /* Game time step per frame */
-
 extern void Main_loop(void);
 static void Handle_signal(int sig_no);
 

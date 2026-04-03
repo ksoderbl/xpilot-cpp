@@ -829,143 +829,143 @@ static void *ralloc(void *ptr, size_t size)
 //     }
 // }
 
-// /* Used internally by the movement routines to find the first line
-//  * (in the list given by *lines) that the given trajectory hits. */
-// static int Lines_check(int msx, int msy, int mdx, int mdy, int *mindone,
-//                        const uint16_t *lines, int chx, int chy,
-//                        int chxy, const move_t *move, int *minline,
-//                        int *height)
-// {
-//     int lsx, lsy, ldx, ldy, temp, mirror, start, end, i, x, sy, ey, prod;
-//     int mbase = mdy >> 1, hit = 0;
+/* Used internally by the movement routines to find the first line
+ * (in the list given by *lines) that the given trajectory hits. */
+static int Lines_check(int msx, int msy, int mdx, int mdy, int *mindone,
+                       const uint16_t *lines, int chx, int chy,
+                       int chxy, const move_t *move, int *minline,
+                       int *height)
+{
+    int lsx, lsy, ldx, ldy, temp, mirror, start, end, i, x, sy, ey, prod;
+    int mbase = mdy >> 1, hit = 0;
 
-//     while ((i = *lines++) != 65535)
-//     {
-//         if (linet[i].group && (!can_hit(&groups[linet[i].group], move)))
-//             continue;
-//         lsx = linet[i].start.cx;
-//         lsy = linet[i].start.cy;
-//         ldx = linet[i].delta.cx;
-//         ldy = linet[i].delta.cy;
+    while ((i = *lines++) != 65535)
+    {
+        if (linet[i].group && (!can_hit(&groups[linet[i].group], move)))
+            continue;
+        lsx = linet[i].start.cx;
+        lsy = linet[i].start.cy;
+        ldx = linet[i].delta.cx;
+        ldy = linet[i].delta.cy;
 
-//         if (chx)
-//         {
-//             lsx = -lsx;
-//             ldx = -ldx;
-//         }
-//         if (chy)
-//         {
-//             lsy = -lsy;
-//             ldy = -ldy;
-//         }
-//         if (chxy)
-//         {
-//             temp = ldx;
-//             ldx = ldy;
-//             ldy = temp;
-//             temp = lsx;
-//             lsx = lsy;
-//             lsy = temp;
-//         }
-//         lsx -= msx;
-//         lsy -= msy;
-//         if (chxy)
-//         {
-//             lsx = CENTER_YCLICK(lsx);
-//             lsy = CENTER_XCLICK(lsy);
-//         }
-//         else
-//         {
-//             lsx = CENTER_XCLICK(lsx);
-//             lsy = CENTER_YCLICK(lsy);
-//         }
-//         if (*height < lsy + (ldy < 0 ? ldy : 0))
-//             continue;
-//         if (0 > lsy + (ldy < 0 ? 0 : ldy))
-//             continue;
+        if (chx)
+        {
+            lsx = -lsx;
+            ldx = -ldx;
+        }
+        if (chy)
+        {
+            lsy = -lsy;
+            ldy = -ldy;
+        }
+        if (chxy)
+        {
+            temp = ldx;
+            ldx = ldy;
+            ldy = temp;
+            temp = lsx;
+            lsx = lsy;
+            lsy = temp;
+        }
+        lsx -= msx;
+        lsy -= msy;
+        if (chxy)
+        {
+            lsx = CENTER_YCLICK(lsx);
+            lsy = CENTER_XCLICK(lsy);
+        }
+        else
+        {
+            lsx = CENTER_XCLICK(lsx);
+            lsy = CENTER_YCLICK(lsy);
+        }
+        if (*height < lsy + (ldy < 0 ? ldy : 0))
+            continue;
+        if (0 > lsy + (ldy < 0 ? 0 : ldy))
+            continue;
 
-//         mirror = chx ^ chy ^ chxy;
-//         if (ldx < 0)
-//         {
-//             lsx += ldx;
-//             ldx = -ldx;
-//             lsy += ldy;
-//             ldy = -ldy;
-//             mirror ^= 1;
-//         }
+        mirror = chx ^ chy ^ chxy;
+        if (ldx < 0)
+        {
+            lsx += ldx;
+            ldx = -ldx;
+            lsy += ldy;
+            ldy = -ldy;
+            mirror ^= 1;
+        }
 
-//         start = MAX(0, lsx);
-//         end = MIN(*mindone + 1, lsx + ldx);
-//         if (start > end)
-//             continue;
+        start = MAX(0, lsx);
+        end = MIN(*mindone + 1, lsx + ldx);
+        if (start > end)
+            continue;
 
-//         sy = LINEY(mdx, mdy, mbase, start);
-//         prod = (start - lsx) * ldy - (sy - lsy) * ldx;
+        sy = LINEY(mdx, mdy, mbase, start);
+        prod = (start - lsx) * ldy - (sy - lsy) * ldx;
 
-//         if (!prod)
-//         {
-//             if (!ldx && (lsy + (ldy < 0 ? ldy : 0) > sy ||
-//                          lsy + (ldy < 0 ? 0 : ldy) < sy))
-//                 continue;
-//             if ((prod = -lsx * ldy + lsy * ldx) > 0 == mirror || prod == 0)
-//                 continue;
-//             start--;
-//         }
-//         else
-//         {
-//             if (prod > 0 == mirror)
-//                 continue;
-//             ey = LINEY(mdx, mdy, mbase, end);
-//             if (ABS(prod) >= ldx && ABS((prod = (end - lsx) * ldy - (ey - lsy) * ldx)) >= ldx && prod > 0 != mirror)
-//                 continue;
-//             {
-//                 int schs, sche;
-//                 double diff = ((double)(-mbase) / mdx - (double)(lsx)*ldy / ldx + lsy);
-//                 double diff2 = (double)mdy / mdx - (double)ldy / ldx;
+        if (!prod)
+        {
+            if (!ldx && (lsy + (ldy < 0 ? ldy : 0) > sy ||
+                         lsy + (ldy < 0 ? 0 : ldy) < sy))
+                continue;
+            if ((prod = -lsx * ldy + lsy * ldx) > 0 == mirror || prod == 0)
+                continue;
+            start--;
+        }
+        else
+        {
+            if (prod > 0 == mirror)
+                continue;
+            ey = LINEY(mdx, mdy, mbase, end);
+            if (ABS(prod) >= ldx && ABS((prod = (end - lsx) * ldy - (ey - lsy) * ldx)) >= ldx && prod > 0 != mirror)
+                continue;
+            {
+                int schs, sche;
+                double diff = ((double)(-mbase) / mdx - (double)(lsx)*ldy / ldx + lsy);
+                double diff2 = (double)mdy / mdx - (double)ldy / ldx;
 
-//                 if (ABS(diff2) < 1. / (50000. * 50000))
-//                 {
-//                     if (diff > 0 || diff < -1)
-//                         continue;
-//                     else
-//                     {
-//                         schs = start + 1;
-//                         sche = end;
-//                     }
-//                 }
-//                 /* Can this float->int conversion cause overflows?
-//                  * If so, calculate min/max before conversion. */
-//                 else if (diff2 < 0)
-//                 {
-//                     schs = MAX(start + 1, (int)((diff + 1) / diff2 + .9));
-//                     sche = MIN(end, (int)(diff / diff2 + 1.1));
-//                 }
-//                 else
-//                 {
-//                     schs = MAX(start + 1, (int)(diff / diff2 + .9));
-//                     sche = MIN(end, (int)((diff + 1) / diff2 + 1.1));
-//                 }
+                if (ABS(diff2) < 1. / (50000. * 50000))
+                {
+                    if (diff > 0 || diff < -1)
+                        continue;
+                    else
+                    {
+                        schs = start + 1;
+                        sche = end;
+                    }
+                }
+                /* Can this float->int conversion cause overflows?
+                 * If so, calculate min/max before conversion. */
+                else if (diff2 < 0)
+                {
+                    schs = MAX(start + 1, (int)((diff + 1) / diff2 + .9));
+                    sche = MIN(end, (int)(diff / diff2 + 1.1));
+                }
+                else
+                {
+                    schs = MAX(start + 1, (int)(diff / diff2 + .9));
+                    sche = MIN(end, (int)((diff + 1) / diff2 + 1.1));
+                }
 
-//                 for (x = schs; x <= sche; x++)
-//                     if ((prod = (x - lsx) * ldy - (LINEY(mdx, mdy, mbase, x) - lsy) * ldx) >= 0 == mirror || prod == 0)
-//                         goto found;
-//                 continue;
-//             found:
-//                 start = x - 1;
-//             }
-//         }
+                for (x = schs; x <= sche; x++)
+                    if ((prod = (x - lsx) * ldy - (LINEY(mdx, mdy, mbase, x) - lsy) * ldx) >= 0 == mirror || prod == 0)
+                        goto found;
+                continue;
+            found:
+                start = x - 1;
+            }
+        }
 
-//         /* delta components can be big, so (float) to avoid overflow */
-//         if (start < *mindone || (start == *mindone && *minline != -1 && SIDE((float)move->delta.cx, (float)move->delta.cy, i) < 0))
-//         {
-//             hit = 1;
-//             *mindone = start;
-//             *minline = i;
-//             *height = LINEY(mdx, mdy, mbase, start);
-//         }
-//     }
-//     return hit;
-// }
+        /* delta components can be big, so (float) to avoid overflow */
+        if (start < *mindone || (start == *mindone && *minline != -1 && SIDE((float)move->delta.cx, (float)move->delta.cy, i) < 0))
+        {
+            hit = 1;
+            *mindone = start;
+            *minline = i;
+            *height = LINEY(mdx, mdy, mbase, start);
+        }
+    }
+    return hit;
+}
 
 /* Try to move a pointlike object along the path determined by *move.
  * The amount moved is returned in *answer. If the movement hits a line
@@ -992,97 +992,97 @@ static void *ralloc(void *ptr, size_t size)
 /* Do not call this with no movement. */
 /* May not be called with point already on top of line.
  * Maybe I should change that to allow lines that could be crossed. */
-// void Move_point(const move_t *move, struct collans *answer)
-// {
-//     int minline, mindone, minheight;
-//     int block;
-//     int msx = move->start.cx, msy = move->start.cy;
-//     int mdx = move->delta.cx, mdy = move->delta.cy;
-//     int mbase;
-//     int chxy = 0, chx = 0, chy = 0;
-//     int x, temp;
-//     uint16_t *lines;
+void Move_point(const move_t *move, struct collans *answer)
+{
+    int minline, mindone, minheight;
+    int block;
+    int msx = move->start.cx, msy = move->start.cy;
+    int mdx = move->delta.cx, mdy = move->delta.cy;
+    int mbase;
+    int chxy = 0, chx = 0, chy = 0;
+    int x, temp;
+    uint16_t *lines;
 
-//     block = (move->start.cx >> B_SHIFT) + mapx * (move->start.cy >> B_SHIFT);
-//     x = blockline[block].distance;
-//     lines = blockline[block].lines;
+    block = (move->start.cx >> B_SHIFT) + mapx * (move->start.cy >> B_SHIFT);
+    x = blockline[block].distance;
+    lines = blockline[block].lines;
 
-//     if (mdx < 0)
-//     {
-//         mdx = -mdx;
-//         msx = -msx;
-//         chx = 1;
-//     }
-//     if (mdy < 0)
-//     {
-//         mdy = -mdy;
-//         msy = -msy;
-//         chy = 1;
-//     }
-//     if (mdx < mdy)
-//     {
-//         temp = mdx;
-//         mdx = mdy;
-//         mdy = temp;
-//         temp = msx;
-//         msx = msy;
-//         msy = temp;
-//         chxy = 1;
-//     }
+    if (mdx < 0)
+    {
+        mdx = -mdx;
+        msx = -msx;
+        chx = 1;
+    }
+    if (mdy < 0)
+    {
+        mdy = -mdy;
+        msy = -msy;
+        chy = 1;
+    }
+    if (mdx < mdy)
+    {
+        temp = mdx;
+        mdx = mdy;
+        mdy = temp;
+        temp = msx;
+        msx = msy;
+        msy = temp;
+        chxy = 1;
+    }
 
-//     /* 46341*46341 overflows signed 32-bit int */
-//     if (mdx > 45000)
-//     {
-//         /* might overflow without float */
-//         mdy = (int)((float)mdy * 45000 / mdx);
-//         mdx = 45000;
-//     }
+    /* 46341*46341 overflows signed 32-bit int */
+    if (mdx > 45000)
+    {
+        /* might overflow without float */
+        mdy = (int)((float)mdy * 45000 / mdx);
+        mdx = 45000;
+    }
 
-//     mindone = mdx;
-//     minheight = mdy;
-//     mdx++;
-//     mdy++;
-//     mbase = mdy >> 1;
+    mindone = mdx;
+    minheight = mdy;
+    mdx++;
+    mdy++;
+    mbase = mdy >> 1;
 
-//     if (mindone > x)
-//     {
-//         if (x < MAX_MOVE)
-//         {
-//             /* !@# change this so that the point always moves away from
-//                the current block */
-//             temp = msx > 0 ? B_CLICKS - (msx & B_MASK) : (-msx) & B_MASK;
-//             temp = MIN(temp,
-//                        (msy > 0 ? B_CLICKS - (msy & B_MASK) : -msy & B_MASK));
-//             x += temp;
-//             x = MIN(x, MAX_MOVE);
-//         }
-//         if (mindone > x)
-//         {
-//             mindone = x;
-//             minheight = LINEY(mdx, mdy, mbase, mindone);
-//         }
-//     }
-//     minline = -1;
+    if (mindone > x)
+    {
+        if (x < MAX_MOVE)
+        {
+            /* !@# change this so that the point always moves away from
+               the current block */
+            temp = msx > 0 ? B_CLICKS - (msx & B_MASK) : (-msx) & B_MASK;
+            temp = MIN(temp,
+                       (msy > 0 ? B_CLICKS - (msy & B_MASK) : -msy & B_MASK));
+            x += temp;
+            x = MIN(x, MAX_MOVE);
+        }
+        if (mindone > x)
+        {
+            mindone = x;
+            minheight = LINEY(mdx, mdy, mbase, mindone);
+        }
+    }
+    minline = -1;
 
-//     Lines_check(msx, msy, mdx, mdy, &mindone, lines, chx, chy, chxy,
-//                 move, &minline, &minheight);
+    Lines_check(msx, msy, mdx, mdy, &mindone, lines, chx, chy, chxy,
+                move, &minline, &minheight);
 
-//     answer->line = minline;
-//     if (chxy)
-//     {
-//         temp = mindone;
-//         mindone = minheight;
-//         minheight = temp;
-//     }
-//     if (chx)
-//         mindone = -mindone;
-//     if (chy)
-//         minheight = -minheight;
-//     answer->moved.cx = mindone;
-//     answer->moved.cy = minheight;
+    answer->line = minline;
+    if (chxy)
+    {
+        temp = mindone;
+        mindone = minheight;
+        minheight = temp;
+    }
+    if (chx)
+        mindone = -mindone;
+    if (chy)
+        minheight = -minheight;
+    answer->moved.cx = mindone;
+    answer->moved.cy = minheight;
 
-//     return;
-// }
+    return;
+}
 
 /* Similar to Move_point above, except that it gets the shape parameter
  * (and direction of that shape), and in case of collision, the 'point'

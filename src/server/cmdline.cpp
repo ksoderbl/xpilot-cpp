@@ -42,23 +42,26 @@
 #include "tuner.h"
 #include "walls.h"
 
-options_t options;
+double friction;
+double coriolisCosine, coriolisSine; /* cos and sin of cor. angle */
+int roundsPlayed = 0;                /* # of rounds played sofar. */
+extern char conf_logfile_string[];   /* Default name of log file */
 
-extern char conf_logfile_string[]; /* Default name of log file */
+double timeStep = 1.0; /* Game time step per frame */
+double timePerFrame;   /* Real time elapsed per frame */
+double ecmSizeFactor;  /* Factor for ecm size update */
+struct options options;
 
 /*
-** Two functions which can be used if an option
-** does not have its own function which should
-** be called after the option value has been
-** changed during runtime.  The tuner_none
-** function should be specified when an option
-** cannot be changed at all during runtime.
-** The tuner_dummy can be specified if it
-** is OK to modify the option during runtime
-** and no follow up action is needed.
-*/
-void tuner_none(void) {}
-void tuner_dummy(void) {}
+ * Two functions which can be used if an option does not have its own
+ * function which should be called after the option value has been
+ * changed during runtime.  The tuner_none function should be
+ * specified when an option cannot be changed at all during runtime.
+ * The tuner_dummy can be specified if it is OK to modify the option
+ * during runtime and no follow up action is needed.
+ */
+void tuner_none(void) { ; }
+void tuner_dummy(void) { ; }
 
 static void Tune_robot_user_name(void) { Fix_user_name(options.robotUserName); }
 static void Tune_robot_host_name(void) { Fix_host_name(options.robotHostName); }
