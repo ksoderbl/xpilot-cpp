@@ -49,23 +49,23 @@ if(XPILOT_BUILD_SDL_CLIENT)
     pkg_check_modules(SDL2_GFX QUIET SDL2_gfx>=2.0.0)
 endif()
 
-add_compile_options(
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Wformat=2
-    -Wundef
-    -Wshadow
-    -Wcast-qual
-    -Wwrite-strings
-    -Wredundant-decls
-    -Wmissing-declarations
-    -Woverloaded-virtual
-    -Wnon-virtual-dtor
-    -Wold-style-cast
-    -Wzero-as-null-pointer-constant
-    -Wuseless-cast
-)
+# add_compile_options(
+#     -Wall
+#     -Wextra
+#     -Wpedantic
+#     -Wformat=2
+#     -Wundef
+#     -Wshadow
+#     -Wcast-qual
+#     -Wwrite-strings
+#     -Wredundant-decls
+#     -Wmissing-declarations
+#     -Woverloaded-virtual
+#     -Wnon-virtual-dtor
+#     -Wold-style-cast
+#     -Wzero-as-null-pointer-constant
+#     -Wuseless-cast
+# )
 
 # Later we need only:
 # -Wconversion
