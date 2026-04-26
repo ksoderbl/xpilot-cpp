@@ -771,9 +771,9 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
          */
         if ((my_data->robot_count % 100) <= my_data->attack)
         {
-            SET_BIT(mods.nuclear, NUCLEAR);
+            SET_BIT(mods.nuclear, MODS_NUCLEAR);
             if (stock > min && (stock < (2 * min) || (my_data->robot_count % 2) == 0))
-                SET_BIT(mods.nuclear, FULLNUCLEAR);
+                SET_BIT(mods.nuclear, MODS_FULLNUCLEAR);
         }
     }
 

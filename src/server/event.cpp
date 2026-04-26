@@ -615,11 +615,11 @@ int Handle_keyboard(player_t *pl)
                 {
                     switch (pl->mods.nuclear)
                     {
-                    case NUCLEAR:
-                        pl->mods.nuclear |= FULLNUCLEAR;
+                    case MODS_NUCLEAR:
+                        pl->mods.nuclear |= MODS_FULLNUCLEAR;
                         break;
                     case 0:
-                        pl->mods.nuclear = NUCLEAR;
+                        pl->mods.nuclear = MODS_NUCLEAR;
                         break;
                     default:
                         pl->mods.nuclear = 0;

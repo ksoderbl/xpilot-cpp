@@ -1891,7 +1891,7 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             /* happens at end of round reset. */
             return;
         }
-        if (BIT(obj->mods.nuclear, NUCLEAR))
+        if (BIT(obj->mods.nuclear, MODS_NUCLEAR))
         {
             targ->damage = 0;
         }

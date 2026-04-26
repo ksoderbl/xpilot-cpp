@@ -42,8 +42,8 @@ typedef struct
 #define CLEAR_MODS(mods) memset(&(mods), 0, sizeof(modifiers_t))
 
 #define MODS_NUCLEAR_MAX 2 /* - N FN */
-#define NUCLEAR (1U << 0)
-#define FULLNUCLEAR (1U << 1)
+// #define NUCLEAR (1U << 0)
+// #define FULLNUCLEAR (1U << 1)
 
 #define MODS_WARHEAD_MAX 3 /* - C I CI */
 #define CLUSTER (1U << 0)
@@ -55,8 +55,31 @@ typedef struct
 #define MODS_POWER_MAX 3    /* - B1 B2 B3 */
 
 #define MODS_LASER_MAX 2 /* - LS LB */
-#define STUN (1U << 0)
-#define BLIND (1U << 1)
+// #define STUN (1U << 0)
+// #define BLIND (1U << 1)
+
+#define MODS_NUCLEAR (1 << 0)
+#define MODS_FULLNUCLEAR (1 << 1)
+#define MODS_LASER_STUN (1 << 0)
+#define MODS_LASER_BLIND (1 << 1)
+
+typedef enum
+{
+    ModsNuclear,   /* 0,  MODS_NUCLEAR, MODS_NUCLEAR|MODS_FULLNUCLEAR */
+    ModsCluster,   /* 0 - MODS_CLUSTER_MAX */
+    ModsImplosion, /* 0 - MODS_IMPLOSION_MAX */
+    ModsVelocity,  /* 0 - MODS_VELOCITY_MAX */
+    ModsMini,      /* 0 - MODS_MINI_MAX */
+    ModsSpread,    /* 0 - MODS_SPREAD_MAX */
+    ModsPower,     /* 0 - MODS_POWER_MAX */
+    ModsLaser      /* 0,  MODS_LASER_STUN, MODS_LASER_BLIND */
+} modifier_t;
+
+static inline void Mods_clear(modifiers_t *mods)
+{
+    // *mods = 0;
+    memset(&(mods), 0, sizeof(modifiers_t));
+}
 
 int num2str(int num, char *str, int i);
 int str2num(char **strp, int min, int max);

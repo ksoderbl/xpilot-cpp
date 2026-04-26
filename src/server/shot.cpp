@@ -149,13 +149,13 @@ void Place_general_mine(int id, int team, int status,
 
     if (options.nukeMinSmarts <= 0)
     {
-        CLR_BIT(mods.nuclear, NUCLEAR);
+        CLR_BIT(mods.nuclear, MODS_NUCLEAR);
     }
-    if (BIT(mods.nuclear, NUCLEAR))
+    if (BIT(mods.nuclear, MODS_NUCLEAR))
     {
         if (pl)
         {
-            used = (BIT(mods.nuclear, FULLNUCLEAR)
+            used = (BIT(mods.nuclear, MODS_FULLNUCLEAR)
                         ? pl->item[ITEM_MINE]
                         : options.nukeMinMines);
             if (pl->item[ITEM_MINE] < options.nukeMinMines)
@@ -397,8 +397,8 @@ char *Describe_shot(int type, int status, modifiers_t mods, int hit)
             howmany,
             ((mods.velocity || mods.spread || mods.power) ? "modified " : ""),
             (mods.mini ? "mini " : ""),
-            (BIT(mods.nuclear, FULLNUCLEAR) ? "full " : ""),
-            (BIT(mods.nuclear, NUCLEAR) ? "nuclear " : ""),
+            (BIT(mods.nuclear, MODS_FULLNUCLEAR) ? "full " : ""),
+            (BIT(mods.nuclear, MODS_NUCLEAR) ? "nuclear " : ""),
             (BIT(mods.warhead, IMPLOSION) ? "imploding " : ""),
             (BIT(mods.warhead, CLUSTER) ? "cluster " : ""),
             name,
@@ -582,13 +582,13 @@ void Fire_general_shot(int id, int team, bool cannon,
             return;
 
         if (options.nukeMinSmarts <= 0)
-            CLR_BIT(mods.nuclear, NUCLEAR);
+            CLR_BIT(mods.nuclear, MODS_NUCLEAR);
 
-        if (BIT(mods.nuclear, NUCLEAR))
+        if (BIT(mods.nuclear, MODS_NUCLEAR))
         {
             if (pl)
             {
-                used = (BIT(mods.nuclear, FULLNUCLEAR)
+                used = (BIT(mods.nuclear, MODS_FULLNUCLEAR)
                             ? pl->item[ITEM_MISSILE]
                             : options.nukeMinSmarts);
                 if (pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
@@ -1147,6 +1147,8 @@ void Fire_normal_shots(player_t *pl)
 /* Removes shot from array */
 void Delete_shot(int ind)
 {
+    // warn("Delete_shot: ind = %d", ind);
+
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
     itemobject_t *item;
@@ -1155,6 +1157,8 @@ void Delete_shot(int ind)
     modifiers_t mods;
     int i, intensity, type, color, num_debris, status;
     double modv, speed_modv, life_modv, num_modv, mass, min_life, max_life;
+
+    warn("Delete_shot: shot->type = %d", shot->type);
 
     switch (shot->type)
     {
@@ -1169,11 +1173,18 @@ void Delete_shot(int ind)
         break;
 
     case OBJ_BALL:
+        // warn("Delete_shot: BALL!");
         ball = BALL_PTR(shot);
+        warn("Delete_shot: Ball with id %d", ball->id);
         if (ball->id != NO_ID)
-            Detach_ball(Player_by_id(ball->id), ball);
+        {
+            player_t *ball_pl = Player_by_id(ball->id);
+            warn("Delete_shot: Ball pl %p", ball_pl);
+            Detach_ball(ball_pl, ball);
+        }
         else
         {
+            warn("Delete_shot: Ball->id is NO_ID");
             /*
              * Maybe some player is still busy trying to connect to this ball.
              */
@@ -1185,6 +1196,7 @@ void Delete_shot(int ind)
                     pl_i->ball = NULL;
             }
         }
+        warn("Delete_shot: Ball->ball_owner id is %d", ball->ball_owner);
         if (ball->ball_owner == NO_ID)
         {
             /*
@@ -1192,11 +1204,15 @@ void Delete_shot(int ind)
              * have been destroyed is by being knocked out of the goal.
              * Therefore we force the ball to be recreated.
              */
+            warn("Delete_shot: Ball ball->ball_treasure is %p", ball->ball_treasure);
             ball->ball_treasure->have = false;
+            warn("Delete_shot: Ball set bit RECREATE");
             SET_BIT(ball->obj_status, RECREATE);
+            warn("Delete_shot: Ball set bit RECREATE done");
         }
         if (BIT(ball->obj_status, RECREATE))
         {
+            warn("Delete_shot: Ball RECREATE");
             addBall = true;
             if (BIT(ball->obj_status, NOEXPLOSION))
                 break;
@@ -1233,7 +1249,7 @@ void Delete_shot(int ind)
         if (BIT(shot->obj_status, FROMCANNON))
             status |= FROMCANNON;
 
-        if (BIT(shot->mods.nuclear, NUCLEAR))
+        if (BIT(shot->mods.nuclear, MODS_NUCLEAR))
             sound_play_all(NUKE_EXPLOSION_SOUND);
 
         else if (shot->type == OBJ_MINE)
@@ -1255,7 +1271,7 @@ void Delete_shot(int ind)
             mass = options.shotMass * 3;
             modv = 1 << shot->mods.velocity;
             num_modv = 4;
-            if (BIT(shot->mods.nuclear, NUCLEAR))
+            if (BIT(shot->mods.nuclear, MODS_NUCLEAR))
             {
                 modv *= 4.0;
                 num_modv = 1;
@@ -1285,7 +1301,7 @@ void Delete_shot(int ind)
             num_modv = num_modv / ((double)(unsigned)shot->mods.mini + 1.0);
         }
 
-        if (BIT(shot->mods.nuclear, NUCLEAR))
+        if (BIT(shot->mods.nuclear, MODS_NUCLEAR))
         {
             double nuke_factor;
             if (shot->type == OBJ_MINE)
@@ -1600,7 +1616,7 @@ void Update_connector_force(ballobject_t *ball)
 void Update_torpedo(torpobject_t *torp)
 {
     double acc;
-    if (BIT(torp->mods.nuclear, NUCLEAR))
+    if (BIT(torp->mods.nuclear, MODS_NUCLEAR))
         acc = (torp->info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
     else
         acc = (torp->info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;

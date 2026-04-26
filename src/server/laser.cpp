@@ -227,7 +227,7 @@ static void Laser_pulse_hits_player(
         return;
     if (!BIT(obj->type, KILLING_SHOTS))
         return;
-    if (BIT(pulse->mods.laser, STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
+    if (BIT(pulse->mods.laser, MODS_LASER_STUN) || (options.laserIsStunGun == true && options.allowLaserModifiers == false))
     {
         if (BIT(vicpl->used, HAS_SHIELD | HAS_LASER | HAS_SHOT) || BIT(vicpl->obj_status, THRUSTING))
         {
@@ -252,7 +252,7 @@ static void Laser_pulse_hits_player(
             vicpl->stunned += 5;
         }
     }
-    else if (BIT(pulse->mods.laser, BLIND))
+    else if (BIT(pulse->mods.laser, MODS_LASER_BLIND))
     {
         vicpl->damaged += (FPS + 6);
         vicpl->forceVisible += (FPS + 6);

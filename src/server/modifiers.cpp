@@ -71,15 +71,111 @@ int str2num(char **strp, int min, int max)
     return num;
 }
 
+#define MODS_N_BIT0 (1 << 0) /* nuclear */
+#define MODS_N_BIT1 (1 << 1) /* fullnuclear */
+#define MODS_C_BIT (1 << 2)  /* cluster */
+#define MODS_I_BIT (1 << 3)  /* implosion */
+#define MODS_V_BIT0 (1 << 4) /* velocity */
+#define MODS_V_BIT1 (1 << 5)
+#define MODS_X_BIT0 (1 << 6) /* mini */
+#define MODS_X_BIT1 (1 << 7)
+#define MODS_Z_BIT0 (1 << 8) /* spread */
+#define MODS_Z_BIT1 (1 << 9)
+#define MODS_B_BIT0 (1 << 10) /* power */
+#define MODS_B_BIT1 (1 << 11)
+#define MODS_LS_BIT (1 << 12) /* stun laser */
+#define MODS_LB_BIT (1 << 13) /* blinding laser */
+
+static inline int Get_nuclear_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_nuclear_modifier(modifiers_t *mods, int value)
+{
+}
+
+static inline int Get_cluster_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_cluster_modifier(modifiers_t *mods, int value)
+{
+}
+
+static inline int Get_implosion_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_implosion_modifier(modifiers_t *mods, int value)
+{
+}
+
+static inline int Get_velocity_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_velocity_modifier(modifiers_t *mods, int value)
+{
+}
+
+static inline int Get_mini_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_mini_modifier(modifiers_t *mods, int value)
+{
+}
+static inline int Get_spread_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_spread_modifier(modifiers_t *mods, int value)
+{
+}
+
+static inline int Get_power_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_power_modifier(modifiers_t *mods, int value)
+{
+}
+
+static inline int Get_laser_modifier(modifiers_t mods)
+{
+    return 0;
+}
+
+static inline void Set_laser_modifier(modifiers_t *mods, int value)
+{
+}
+
+int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
+{
+    return 0;
+}
+
+int Mods_get(modifiers_t mods, modifier_t modifier)
+{
+    return 0;
+}
+
 /*
  * modstr must be able to hold at least MAX_CHARS chars.
  */
 void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
 {
     int i = 0;
-    if (BIT(mods.nuclear, FULLNUCLEAR))
+    if (BIT(mods.nuclear, MODS_FULLNUCLEAR))
         modstr[i++] = 'F';
-    if (BIT(mods.nuclear, NUCLEAR))
+    if (BIT(mods.nuclear, MODS_NUCLEAR))
         modstr[i++] = 'N';
     if (BIT(mods.warhead, CLUSTER))
         modstr[i++] = 'C';
@@ -118,7 +214,7 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
         if (i)
             modstr[i++] = ' ';
         modstr[i++] = 'L';
-        modstr[i++] = (BIT(mods.laser, STUN) ? 'S' : 'B');
+        modstr[i++] = (BIT(mods.laser, MODS_LASER_STUN) ? 'S' : 'B');
     }
     modstr[i] = '\0';
 }

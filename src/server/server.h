@@ -143,6 +143,9 @@ void filter_mods(modifiers_t *mods);
 /*
  * Prototypes for map.c
  */
+void World_free(void);
+bool Grok_map(void);
+
 int World_place_base(clpos_t pos, int dir, int team, int order);
 int World_place_cannon(clpos_t pos, int dir, int team);
 int World_place_check(clpos_t pos, int ind);
@@ -155,8 +158,6 @@ int World_place_item_concentrator(clpos_t pos);
 int World_place_asteroid_concentrator(clpos_t pos);
 int World_place_friction_area(clpos_t pos, double fric);
 
-void World_free(void);
-bool Grok_map(void);
 void Find_base_direction(void);
 void Compute_gravity(void);
 double Wrap_findDir(double dx, double dy);
@@ -216,7 +217,8 @@ void Player_add_fuel(player_t *pl, double amount);
 void Place_item(player_t *pl, int type);
 int Choose_random_item(void);
 void Tractor_beam(player_t *pl);
-void General_tractor_beam(int id, clpos_t pos, int items, player_t *victim, bool pressor);
+void General_tractor_beam(int id, clpos_t pos,
+                          int items, player_t *victim, bool pressor);
 void Place_mine(player_t *pl);
 void Place_moving_mine(player_t *pl);
 void Place_general_mine(int id, int team, int status,
@@ -236,7 +238,6 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun);
 void Fire_right_shot(player_t *pl, int type, int dir, int gun);
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
-void Make_treasure_ball(treasure_t *t);
 int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
@@ -460,5 +461,51 @@ void P_set_hitmask(int group, hitmask_t hitmask);
  * Prototypes for showtime.c
  */
 char *showtime(void);
+
+/*
+ * Prototypes for srecord.c
+ */
+void Init_recording(void);
+void Handle_recording_buffers(void);
+void Get_recording_data(void);
+
+/*
+ * Prototypes for tag.c
+ */
+void Transfer_tag(player_t *oldtag_pl, player_t *newtag_pl);
+void Check_tag(void);
+
+/*
+ * Prototypes for target.c
+ */
+void Target_update(void);
+void Object_hits_target(object_t *obj, target_t *targ, double player_cost);
+hitmask_t Target_hitmask(target_t *targ);
+void Target_set_hitmask(int group, target_t *targ);
+void Target_init(void);
+void World_restore_target(target_t *targ);
+void World_remove_target(target_t *targ);
+
+/*
+ * Prototypes for treasure.c
+ */
+void Make_treasure_ball(treasure_t *t);
+void Ball_hits_goal(ballobject_t *ball, group_t *groupptr);
+void Ball_is_replaced(ballobject_t *ball);
+void Ball_is_destroyed(ballobject_t *ball);
+bool Balltarget_hitfunc(group_t *groupptr, const move_t *move);
+
+/*
+ * Prototypes for wormhole.c
+ */
+bool Initiate_hyperjump(player_t *pl);
+void Player_warp(player_t *pl);
+void Player_finish_warp(player_t *pl);
+void Object_warp(object_t *obj);
+void Object_finish_warp(object_t *obj);
+void Object_hits_wormhole(object_t *obj, int ind);
+hitmask_t Wormhole_hitmask(wormhole_t *wormhole);
+bool Wormhole_hitfunc(group_t *groupptr, const move_t *move);
+bool Verify_wormhole_consistency(void);
 
 #endif

@@ -27,6 +27,8 @@
 #include <climits>
 #include <cmath>
 
+#include "xperror.h"
+
 #include "server.h"
 
 #define SERVER
@@ -40,6 +42,8 @@
 
 void Make_treasure_ball(treasure_t *t)
 {
+    warn("Make_treasure_ball: treasure is %p", t);
+
     ballobject_t *ball;
     clpos_t pos = t->pos;
 

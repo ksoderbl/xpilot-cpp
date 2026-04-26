@@ -434,8 +434,8 @@ void Detonate_items(player_t *pl)
             vector_t vel;
 
             mods = pl->mods;
-            if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MINE] < options.nukeMinMines)
-                CLR_BIT(mods.nuclear, NUCLEAR);
+            if (BIT(mods.nuclear, MODS_NUCLEAR) && pl->item[ITEM_MINE] < options.nukeMinMines)
+                CLR_BIT(mods.nuclear, MODS_NUCLEAR);
 
             vel.x = pl->vel.x + speed * tcos(dir);
             vel.y = pl->vel.y + speed * tsin(dir);
@@ -473,8 +473,8 @@ void Detonate_items(player_t *pl)
             }
 
             mods = pl->mods;
-            if (BIT(mods.nuclear, NUCLEAR) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
-                CLR_BIT(mods.nuclear, NUCLEAR);
+            if (BIT(mods.nuclear, MODS_NUCLEAR) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
+                CLR_BIT(mods.nuclear, MODS_NUCLEAR);
             Fire_general_shot(owner_pl->id, pl->team, false, pl->pos,
                               type, (int)(rfrac() * RES), mods, NO_ID);
         }

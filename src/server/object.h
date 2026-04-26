@@ -81,6 +81,45 @@
 #define OBJ_ASTEROID_BIT (1U << 12)
 #define OBJ_CANNON_SHOT_BIT (1U << 13)
 
+/*
+ * Possible object status bits.
+ */
+// #define GRAVITY (1U << 0)
+// #define WARPING (1U << 1)
+// #define WARPED (1U << 2)
+// #define CONFUSED (1U << 3)
+// #define FROMCANNON (1U << 4)     /* Object from cannon */
+// #define RECREATE (1U << 5)       /* Recreate ball */
+// #define THRUSTING (1U << 6)      /* Engine is thrusting */
+// #define OWNERIMMUNE (1U << 7)    /* Owner is immune to object */
+// #define NOEXPLOSION (1U << 8)    /* No recreate explosion */
+// #define COLLISIONSHOVE (1U << 9) /* Collision counts as shove */
+// #define RANDOM_ITEM (1U << 10)   /* Item shows up as random */
+
+#define PLAYING (1L << 0)       /* Not returning to base */
+#define PAUSE (1L << 1)         /* Must stay below 8 */
+#define GAME_OVER (1L << 2)     /* Must stay below 8 */
+#define THRUSTING (1L << 3)     /* not used by client? */
+#define SELF_DESTRUCT (1L << 4) /* not used by client? */
+#define WANT_AUDIO (1L << 5)    /* whether client has SOUND */
+
+#define KILLED (1L << 10)
+#define GRAVITY (1L << 11)
+#define WARPING (1L << 12)
+#define WARPED (1L << 13)
+#define CONFUSED (1L << 14)
+#define FROMCANNON (1L << 15)     /* Object from cannon */
+#define HOVERPAUSE (1L << 16)     /* Hovering pause */
+#define RECREATE (1L << 17)       /* Recreate ball */
+#define FROMBOUNCE (1L << 18)     /* Spark from wall bounce */
+#define OWNERIMMUNE (1L << 19)    /* Owner is immune to object */
+#define REPROGRAM (1L << 20)      /* Player reprogramming */
+#define NOEXPLOSION (1L << 21)    /* No ball recreate explosion */
+#define COLLISIONSHOVE (1L << 22) /* Collision counts as shove */
+#define FINISH (1L << 23)         /* Reached race finish */
+#define RACE_OVER (1L << 24)      /* After finished and score. */
+#define RANDOM_ITEM (1L << 25)    /* If an item shows up as random */
+
 #define LOCK_NONE 0x00    /* No lock */
 #define LOCK_PLAYER 0x01  /* Locked on player */
 #define LOCK_VISIBLE 0x02 /* Lock information was on HUD */

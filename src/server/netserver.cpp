@@ -2534,13 +2534,13 @@ static int Receive_modifier_bank(connection_t *connp)
                     if (!BIT(world->rules->mode, ALLOW_NUKES))
                         break;
                     if (*(cp + 1) == 'N' || *(cp + 1) == 'n')
-                        SET_BIT(mods.nuclear, FULLNUCLEAR);
+                        SET_BIT(mods.nuclear, MODS_FULLNUCLEAR);
                     break;
                 case 'N':
                 case 'n':
                     if (!BIT(world->rules->mode, ALLOW_NUKES))
                         break;
-                    SET_BIT(mods.nuclear, NUCLEAR);
+                    SET_BIT(mods.nuclear, MODS_NUCLEAR);
                     break;
                 case 'C':
                 case 'c':
@@ -2582,9 +2582,9 @@ static int Receive_modifier_bank(connection_t *connp)
                     if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
                         break;
                     if (*cp == 'S' || *cp == 's')
-                        SET_BIT(mods.laser, STUN);
+                        SET_BIT(mods.laser, MODS_LASER_STUN);
                     if (*cp == 'B' || *cp == 'b')
-                        SET_BIT(mods.laser, BLIND);
+                        SET_BIT(mods.laser, MODS_LASER_BLIND);
                     break;
                 }
             }

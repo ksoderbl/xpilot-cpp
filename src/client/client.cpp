@@ -384,15 +384,15 @@ int Handle_cannon(int ind, int dead_time)
     return 0;
 }
 
-int Handle_target(int num, int dead_time, int damage)
+int Handle_target(int num, int dead_time, double damage)
 {
     if (num < 0 || num >= num_targets)
     {
         warn("Bad target index (%d)", num);
         return 0;
     }
-    if (dead_time == 0 && (damage < 1 || damage > TARGET_DAMAGE))
-        printf("BUG target %d, dead %d, damage %d\n", num, dead_time, damage);
+    if (dead_time == 0 && (damage <= 0.0 || damage > TARGET_DAMAGE))
+        warn("BUG target %d, dead %d, damage %f", num, dead_time, damage);
     if (targets[num].dead_time > 0 && dead_time == 0)
     {
         int pos = targets[num].pos;
@@ -1205,10 +1205,6 @@ static int init_blockmap(void)
         }
         num_cannons = 0;
     }
-    // for (i = 0; i < MAX_CHECKPOINT; i++)
-    // {
-    //     types[SETUP_CHECK + i] = 5;
-    // }
     if (num_checks != 0)
     {
         checks = XMALLOC(checkpoint_t, num_checks);
