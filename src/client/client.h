@@ -694,8 +694,8 @@ void Print_messages_to_stdout(void);
  * client.c
  */
 double Fuel_by_pos(int x, int y);
-int Target_alive(int x, int y, int *damage);
-int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage);
+int Target_alive(int x, int y, double *damage);
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage);
 int Handle_fuel(int ind, double fuel);
 int Cannon_dead_time_by_pos(int x, int y, int *dot);
 int Handle_cannon(int ind, int dead_time);

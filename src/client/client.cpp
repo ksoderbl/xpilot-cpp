@@ -296,7 +296,7 @@ double Fuel_by_pos(int x, int y)
     return fuelp->fuel;
 }
 
-int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage)
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
 {
     if (ind < 0 || ind >= num_targets)
         return -1;
@@ -307,7 +307,7 @@ int Target_by_index(int ind, int *xp, int *yp, int *dead_time, int *damage)
     return 0;
 }
 
-int Target_alive(int x, int y, int *damage)
+int Target_alive(int x, int y, double *damage)
 {
     int i, lo, hi, pos;
 

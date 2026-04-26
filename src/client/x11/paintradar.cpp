@@ -323,7 +323,7 @@ void Paint_world_radar_old(void)
     int i, xi, yi, xm, ym, xp, yp = 0;
     int xmoff, xioff;
     int type, vis;
-    int damage;
+    double damage;
     double xs, ys;
     int npoint = 0, nsegment = 0;
     int start, end;
@@ -631,7 +631,8 @@ void Paint_world_radar_old(void)
     for (i = 0;; i++)
     {
         int dead_time;
-        int targ_damage;
+        // int targ_damage;
+        double targ_damage;
         if (Target_by_index(i, &xi, &yi, &dead_time, &targ_damage) == -1)
             break;
         if (dead_time)
