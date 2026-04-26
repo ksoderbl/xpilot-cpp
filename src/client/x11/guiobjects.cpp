@@ -61,40 +61,32 @@
 #include "pack.h"
 #include "xpmath.h"
 
-extern setup_t *Setup;
-
-extern XGCValues gcv;
-
-// int blockBitmapShips = 1;
-// int ballColor = 4;
-// int connColor = 4;
-
 static bool texturedShips = false; /* Turned this off because the images drawn
                                     * don't match the actual shipshape used
                                     * for wall collisions by the server. */
-static int ballColor = WHITE;      /* Color index for ball drawing */
-static int connColor = RED;        /* Color index for connector drawing */
-static int teamShotColor = BLUE;   /* Color index for harmless shot drawing */
-static int zeroLivesColor = 5;     /* Color to associate with 0 lives */
-static int oneLifeColor = 11;      /* Color to associate with 1 life */
-static int twoLivesColor = 4;      /* Color to associate with 2 lives */
-static int manyLivesColor = 0;     /* Color to associate with >2 lives */
-static int selfLWColor = 3;        /* Color index for selfLifeWarning */
-static int enemyLWColor = 3;       /* Color index for enemyLifeWarning */
-static int teamLWColor = 2;        /* Color index for teamLifeWarning */
-static int shipNameColor = 2;      /* Color index for ship name drawing */
-static int mineNameColor = 2;      /* Color index for mine name drawing */
-static int teamShipColor = 2;      /* Color index to associate with team 0 */
-static int team0Color = 0;         /* Color index to associate with team 0 */
-static int team1Color = 0;         /* Color index to associate with team 1 */
-static int team2Color = 0;         /* Color index to associate with team 2 */
-static int team3Color = 0;         /* Color index to associate with team 3 */
-static int team4Color = 0;         /* Color index to associate with team 4 */
-static int team5Color = 0;         /* Color index to associate with team 5 */
-static int team6Color = 0;         /* Color index to associate with team 6 */
-static int team7Color = 0;         /* Color index to associate with team 7 */
-static int team8Color = 0;         /* Color index to associate with team 8 */
-static int team9Color = 0;         /* Color index to associate with team 9 */
+static int ballColor;              /* Color index for ball drawing */
+static int connColor;              /* Color index for connector drawing */
+static int teamShotColor;          /* Color index for harmless shot drawing */
+static int zeroLivesColor;         /* Color to associate with 0 lives */
+static int oneLifeColor;           /* Color to associate with 1 life */
+static int twoLivesColor;          /* Color to associate with 2 lives */
+static int manyLivesColor;         /* Color to associate with >2 lives */
+static int selfLWColor;            /* Color index for selfLifeWarning */
+static int enemyLWColor;           /* Color index for enemyLifeWarning */
+static int teamLWColor;            /* Color index for teamLifeWarning */
+static int shipNameColor;          /* Color index for ship name drawing */
+static int mineNameColor;          /* Color index for mine name drawing */
+static int teamShipColor;          /* Color index to associate with team 0 */
+static int team0Color;             /* Color index to associate with team 0 */
+static int team1Color;             /* Color index to associate with team 1 */
+static int team2Color;             /* Color index to associate with team 2 */
+static int team3Color;             /* Color index to associate with team 3 */
+static int team4Color;             /* Color index to associate with team 4 */
+static int team5Color;             /* Color index to associate with team 5 */
+static int team6Color;             /* Color index to associate with team 6 */
+static int team7Color;             /* Color index to associate with team 7 */
+static int team8Color;             /* Color index to associate with team 8 */
+static int team9Color;             /* Color index to associate with team 9 */
 
 static int asteroidRawShapes[NUM_ASTEROID_SHAPES][NUM_ASTEROID_POINTS][2] = {
     {ASTEROID_SHAPE_0},
@@ -713,8 +705,6 @@ static void Gui_paint_rounddelay(int x, int y)
 /*  Here starts the paint functions for ships  (MM) */
 static void Gui_paint_ship_name(int x, int y, other_t *other)
 {
-    // warn("Gui_paint_ship_name: name: %s", other->nick_name);
-
     int shipNameColor = BLUE;
     FIND_NAME_WIDTH(other);
     SET_FG(colors[shipNameColor].pixel);
@@ -722,6 +712,17 @@ static void Gui_paint_ship_name(int x, int y, other_t *other)
                   WINSCALE(X(x)) - other->name_width / 2,
                   WINSCALE(Y(y) + 16) + gameFont->ascent,
                   other->nick_name, other->name_len);
+
+    if (instruments.showLivesByShip && BIT(Setup->mode, LIMITED_LIVES))
+    {
+        char keff[4] = "";
+
+        sprintf(keff, "%03d", other->life);
+        rd.drawString(dpy, drawPixmap, gameGC,
+                      WINSCALE(X(x) + SHIP_SZ),
+                      WINSCALE(Y(y) - SHIP_SZ) + gameFont->ascent,
+                      &keff[2], 1);
+    }
 }
 
 static int Gui_is_my_tank(other_t *other)
@@ -758,6 +759,32 @@ static int Gui_calculate_ship_color(int id, other_t *other)
 #endif
     if (roundDelay > 0 && ship_color == WHITE)
         ship_color = RED;
+
+    /* Check for team color */
+    if (other && BIT(Setup->mode, TEAM_PLAY))
+    {
+        int team_color = Team_color(other->team);
+        if (team_color)
+            return team_color;
+    }
+
+    /* Vato color hack start, edited by mara & kps */
+    if (BIT(Setup->mode, LIMITED_LIVES))
+    {
+        /* Paint your ship in selfLWColor when on last life */
+        if (eyes != NULL && eyes->id == id && eyes->life == 0)
+        {
+            ship_color = selfLWColor;
+        }
+
+        /* Paint enemy ships with last life in enemyLWColor */
+        if (eyes != NULL && eyes->id != id && other != NULL && eyeTeam != other->team && other->life == 0)
+        {
+            ship_color = enemyLWColor;
+        }
+    }
+    /* Vato color hack end */
+
     return ship_color;
 }
 
@@ -945,9 +972,15 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
 
     ship = Ship_by_id(id);
     other = Other_by_id(id);
-
     ship_color = WHITE;
-    cnt = set_shipshape(x, y, dir, ship, points);
+
+    /* mara attempts similar behaviour to the kth ss hack */
+    if ((!instruments.showShipShapes) && (self != NULL) && (self->id != id))
+        cnt = set_shipshape(x, y, dir, Default_ship(), points);
+    else if ((!instruments.showMyShipShape) && (self != NULL) && (self->id == id))
+        cnt = set_shipshape(x, y, dir, Default_ship(), points);
+    else
+        cnt = set_shipshape(x, y, dir, ship, points);
 
     /*
      * Determine if the name of the player should be drawn below
