@@ -345,6 +345,9 @@ void Pause_player(player_t *pl, bool on)
 {
     int i;
 
+    /* kps - add support for pausing robots ? */
+    if (!Player_is_human(pl))
+        return;
     if (on && !Player_is_paused(pl))
     {
         /* Turn pause mode on */

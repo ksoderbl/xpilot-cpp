@@ -982,22 +982,16 @@ static void Give_individual_bonus(player_t *pl, double average_score)
 
 void Count_rounds(void)
 {
-    char msg[MSG_LEN];
-
     if (!options.roundsToPlay)
-    {
         return;
-    }
 
     ++roundsPlayed;
 
-    sprintf(msg, " < Round %d out of %d completed. >",
-            roundsPlayed, options.roundsToPlay);
-    Set_message(msg);
-    if (roundsPlayed >= options.roundsToPlay)
-    {
+    Set_message_f(" < Round %d out of %d completed. >",
+                  roundsPlayed, options.roundsToPlay);
+    /* only do the game over once */
+    if (roundsPlayed == options.roundsToPlay)
         Game_Over();
-    }
 }
 
 void Team_game_over(int winning_team, const char *reason)
@@ -1862,7 +1856,7 @@ void Player_set_state(player_t *pl, int state)
         Player_set_mychar(pl, pl->pl_type_mychar);
         /*Player_set_mychar(pl, 'A');*/
         pl->pl_old_status = 0;
-        // pl->recovery_count = RECOVERY_DELAY; // TODO
+        pl->recovery_count = RECOVERY_DELAY;
         break;
     case PL_STATE_ALIVE:
         Player_set_mychar(pl, pl->pl_type_mychar);

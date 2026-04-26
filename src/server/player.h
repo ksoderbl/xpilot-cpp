@@ -157,25 +157,28 @@ typedef struct
     long used; /* Items you use */
     long have; /* Items you have */
 
-    int shield_time;         /* Shields if no allowShields */
-    pl_fuel_t fuel;          /* ship tanks and the stored fuel */
-    double emptymass;        /* Mass of empty ship */
-    double float_dir;        /* Direction, in float var */
-    double turnresistance;   /* How much is lost in % */
-    double turnvel;          /* Current velocity of turn (right) */
-    double oldturnvel;       /* Last velocity of turn (right) */
-    double turnacc;          /* Current acceleration of turn */
-    int score;               /* Current score of player */
-    int prev_score;          /* Last score that has been updated */
-    int prev_life;           /* Last life that has been updated */
-    shipshape_t *ship;       /* wire model of ship shape */
-    double power;            /* Force of thrust */
-    double power_s;          /* Saved power fiks */
-    double turnspeed_s;      /* Saved turnspeed */
-    double turnresistance_s; /* Saved (see above) */
-    double sensor_range;     /* Range of sensors (radar) */
-    int shots;               /* Number of active shots by player */
-    int missile_rack;        /* Next missile rack to be active */
+    int shield_time;                       /* Shields if no allowShields */
+    pl_fuel_t fuel;                        /* ship tanks and the stored fuel */
+    double emptymass;                      /* Mass of empty ship */
+    double float_dir;                      /* Direction, in float var */
+    double wanted_float_dir; /*TURNQUEUE*/ /* Direction, in float var */
+    double float_dir_cos;                  /* Cosine of float_dir */
+    double float_dir_sin;                  /* Sine of float_dir */
+    double turnresistance;                 /* How much is lost in % */
+    double turnvel;                        /* Current velocity of turn (right) */
+    double oldturnvel;                     /* Last velocity of turn (right) */
+    double turnacc;                        /* Current acceleration of turn */
+    int score;                             /* Current score of player */
+    int prev_score;                        /* Last score that has been updated */
+    int prev_life;                         /* Last life that has been updated */
+    shipshape_t *ship;                     /* wire model of ship shape */
+    double power;                          /* Force of thrust */
+    double power_s;                        /* Saved power fiks */
+    double turnspeed_s;                    /* Saved turnspeed */
+    double turnresistance_s;               /* Saved (see above) */
+    double sensor_range;                   /* Range of sensors (radar) */
+    int shots;                             /* Number of active shots by player */
+    int missile_rack;                      /* Next missile rack to be active */
 
     int num_pulses; /* Number of laser pulses in the air. */
 
@@ -185,6 +188,10 @@ typedef struct
     int emergency_shield_max;  /* maximum time left */
     int phasing_left;          /* how much time left */
     int phasing_max;           /* maximum time left */
+
+    double pause_count;         /* ticks until unpause possible */
+    double recovery_count;      /* ticks to recovery */
+    double self_destruct_count; /* if > 0, ticks before boom */
 
     int item[NUM_ITEMS]; /* for each item type how many */
     int lose_item;       /* which item to drop */
@@ -210,6 +217,7 @@ typedef struct
     int last_lap_time;                 /* What was your last pass? */
     int last_check_dir;                /* player dir at last checkpoint */
     long last_wall_touch;              /* last time player touched a wall */
+    double survival_time;              /* time player has survived unshielded*/
 
     int home_base_ind; /* Num of home base */
     base_t *home_base_ptr;
@@ -320,13 +328,6 @@ static inline player_t *Player_by_id(int id)
     int ind = GetInd(id);
     player_t *pl = Player_by_index(ind);
     return pl;
-}
-
-static inline bool Player_uses_emergency_thrust(player_t *pl)
-{
-    if (BIT(pl->used, USES_EMERGENCY_THRUST))
-        return true;
-    return false;
 }
 
 static inline bool Player_is_waiting(player_t *pl)
@@ -522,22 +523,22 @@ static inline bool Player_is_repairing(player_t *pl)
     return false;
 }
 
-// static inline bool Player_is_self_destructing(player_t *pl)
-// {
-//     return (pl->self_destruct_count > 0.0) ? true : false;
-// }
+static inline bool Player_is_self_destructing(player_t *pl)
+{
+    return (pl->self_destruct_count > 0.0) ? true : false;
+}
 
-// static inline void Player_self_destruct(player_t *pl, bool on)
-// {
-//     if (on)
-//     {
-//         if (Player_is_self_destructing(pl))
-//             return;
-//         pl->self_destruct_count = SELF_DESTRUCT_DELAY;
-//     }
-//     else
-//         pl->self_destruct_count = 0.0;
-// }
+static inline void Player_self_destruct(player_t *pl, bool on)
+{
+    if (on)
+    {
+        if (Player_is_self_destructing(pl))
+            return;
+        pl->self_destruct_count = SELF_DESTRUCT_DELAY;
+    }
+    else
+        pl->self_destruct_count = 0.0;
+}
 
 static inline bool Player_is_human(player_t *pl)
 {
@@ -632,12 +633,12 @@ static inline bool Player_has_emergency_thrust(player_t *pl)
 #endif
 }
 
-// static inline bool Player_uses_emergency_thrust(player_t *pl)
-// {
-//     if (BIT(pl->used, USES_EMERGENCY_THRUST))
-//         return true;
-//     return false;
-// }
+static inline bool Player_uses_emergency_thrust(player_t *pl)
+{
+    if (BIT(pl->used, USES_EMERGENCY_THRUST))
+        return true;
+    return false;
+}
 
 static inline bool Player_has_phasing_device(player_t *pl)
 {

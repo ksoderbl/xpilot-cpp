@@ -176,11 +176,10 @@ void Set_swapper_state(player_t *pl)
                 /* kps - there used to be a if (pl->mychar == ' ') here,
                  * not sure what that was good for.
                  */
-                // TODO
-                // Player_set_state(pl, PL_STATE_WAITING);
-                // Player_self_destruct(pl, false);
-                // pl->pause_count = 0;
-                // pl->recovery_count = 0;
+                Player_set_state(pl, PL_STATE_WAITING);
+                Player_self_destruct(pl, false);
+                pl->pause_count = 0;
+                pl->recovery_count = 0;
                 break;
             }
         }
