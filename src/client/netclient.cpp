@@ -2101,6 +2101,9 @@ int Receive_asteroid(void) /* since 4.4.0 */
     type = ((type_size >> 4) & 0x0F);
     size = (type_size & 0x0F);
 
+    warn("Receive_asteroid: x = %d, y = %d, type = %d, size = %d, rot = %d",
+         x, y, type, size, rot);
+
     if ((n = Handle_asteroid(x, y, type, size, rot)) == -1)
         return -1;
     return 1;
