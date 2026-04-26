@@ -318,8 +318,6 @@ int Init_top(void)
     if (Colors_init() == -1)
         return -1;
 
-    shieldDrawMode = shieldDrawMode ? LineSolid : LineOnOffDash;
-
     /*
      * Get toplevel geometry.
      */

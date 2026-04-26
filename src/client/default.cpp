@@ -1035,15 +1035,15 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Specifies the size of the background points.  0 means no points.\n"),
 
-    // XP_DOUBLE_OPTION(
-    //     "scoreObjectTime",
-    //     4.0,
-    //     0.0,
-    //     10.0,
-    //     &scoreObjectTime,
-    //     NULL,
-    //     XP_OPTFLAG_CONFIG_DEFAULT,
-    //     "How many seconds score objects remain visible on the map.\n"),
+    XP_DOUBLE_OPTION(
+        "scoreObjectTime",
+        4.0,
+        0.0,
+        10.0,
+        &scoreObjectTime,
+        NULL,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "How many seconds score objects remain visible on the map.\n"),
 
     XP_INT_OPTION(
         "charsPerSecond",
@@ -1155,15 +1155,15 @@ xp_option_t default_options[] = {
         XP_OPTFLAG_CONFIG_DEFAULT,
         "Uses a red line to indicate the current velocity and direction.\n"),
 
-    // XP_INT_OPTION(
-    //     "showScoreDecimals",
-    //     1,
-    //     0,
-    //     2,
-    //     &showScoreDecimals,
-    //     NULL,
-    //     XP_OPTFLAG_CONFIG_DEFAULT,
-    //     "The number of decimals to use when displaying scores.\n"),
+    XP_INT_OPTION(
+        "showScoreDecimals",
+        1,
+        0,
+        2,
+        &showScoreDecimals,
+        NULL,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "The number of decimals to use when displaying scores.\n"),
 
     XP_DOUBLE_OPTION(
         "altPower",
@@ -1211,13 +1211,13 @@ xp_option_t default_options[] = {
     "Too complicated.  Keep it on 3.\n"),
 #endif
 
-    // XP_BOOL_OPTION(
-    //     "markingLights",
-    //     false,
-    //     &markingLights,
-    //     NULL,
-    //     XP_OPTFLAG_CONFIG_DEFAULT,
-    //     "Should the fighters have marking lights, just like airplanes?\n"),
+    XP_BOOL_OPTION(
+        "markingLights",
+        false,
+        &markingLights,
+        NULL,
+        XP_OPTFLAG_CONFIG_DEFAULT,
+        "Should the fighters have marking lights, just like airplanes?\n"),
 
     XP_STRING_OPTION(
         "modifierBank1",

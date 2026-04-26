@@ -67,7 +67,6 @@
 Display *dpy;     /* Display of player (pointer) */
 Display *kdpy;    /* Keyboard display */
 short about_page; /* Which page is the player on? */
-// uint16_t        team;                /* What team is the player on? */
 
 GC gameGC;      /* GC for the game area */
 GC messageGC;   /* GC for messages in the game area */
@@ -84,45 +83,29 @@ Window drawWindow;     /* Main play window */
 Window keyboardWindow; /* Keyboard window */
 Window radarWindow;    /* Radar window */
 Window playersWindow;  /* Player list window */
-Window aboutWindow;    /* About window */
-Window talkWindow;     /* Talk window */
 
 Pixmap drawPixmap; /* Saved pixmap for the drawing */
 
+Window aboutWindow;
 Window about_close_b; /* About window's close button */
 Window about_next_b;  /* About window's next button */
 Window about_prev_b;  /* About window's previous button */
 Window keys_close_b;  /* Help window's close button */
 
-// XColor colors[MAX_COLORS]; /* Colors */
-// Colormap colormap;         /* Private colormap */
-// int maxColors;             /* Max. number of colors to use */
+Window talkWindow;
 bool gotFocus;
-// bool players_exposed;
-
-// TODO: Remove titleFlip
-bool titleFlip = true;   /* Do special title bar flipping? */
-int shieldDrawMode = -1; /* Either LineOnOffDash or LineSolid */
-// char        modBankStr[NUM_MODBANKS][MAX_CHARS];        /* modifier banks */
-// char *texturePath = NULL; /* Path list of texture directories */
 
 keydefs_t *keyDefs = NULL;
 
-// other_t     *self;          /* player info */
-
-// long        loops = 0;
-
-int cacheShips = 0; /* cache some ship bitmaps every frame */
-
-int spaceColor = BLACK;             /* Space (background) color index */
-static int clockColor = WHITE;      /* Clock color index */
-static int scoreColor = WHITE;      /* Score list color indices */
-static int scoreSelfColor = WHITE;  /* Score list own score color index */
-static int scoreInactiveColor = 12; /* Score list inactive player color index */
-static int scoreInactiveSelfColor = 12;
+int spaceColor = BLACK;        /* Space (background) color index */
+static int clockColor;         /* Clock color index */
+static int scoreColor;         /* Score list color indices */
+static int scoreSelfColor;     /* Score list own score color index */
+static int scoreInactiveColor; /* Score list inactive player color index */
+static int scoreInactiveSelfColor;
 /* Score list inactive self color index */
-static int scoreOwnTeamColor = WHITE;   /* Score list own team color index */
-static int scoreEnemyTeamColor = WHITE; /* Score list enemy team color index */
+static int scoreOwnTeamColor;   /* Score list own team color index */
+static int scoreEnemyTeamColor; /* Score list enemy team color index */
 
 static void Paint_clock(bool redraw);
 
@@ -152,18 +135,6 @@ void Paint_frame(void)
     Paint_score_table();
     Paint_clock(false);
 
-    /*
-     * Switch between two different window titles.
-     */
-#define TITLE_DELAY 100
-    if (titleFlip && (loops % TITLE_DELAY) == 0)
-    {
-        scroll_i = !scroll_i;
-        if (scroll_i)
-            XStoreName(dpy, topWindow, COPYRIGHT);
-        else
-            XStoreName(dpy, topWindow, TITLE);
-    }
     SET_FG(colors[BLACK].pixel);
 
     rd.newFrame();

@@ -85,28 +85,7 @@ extern Window talkWindow;         /* Talk window */
 extern XColor colors[MAX_COLORS]; /* Colors */
 extern Colormap colormap;         /* Private colormap */
 extern int maxColors;             /* Max. number of colors to use */
-extern int hudColor;              /* Color index for HUD drawing */
-extern int hudLockColor;          /* Color index for lock on HUD drawing */
-extern int wallColor;             /* Color index for wall drawing */
-extern int wallRadarColor;        /* Color index for walls on radar */
-extern int targetRadarColor;      /* Color index for targets on radar */
-extern int decorColor;            /* Color index for decoration drawing */
-extern int decorRadarColor;       /* Color index for decorations on radar */
-extern int oldMessagesColor;      /* Color index for old message strings */
 extern bool gotFocus;             /* Do we have the mouse pointer */
-// extern short        ext_view_width;                /* Width of extended visible area */
-// extern short        ext_view_height;        /* Height of extended visible area */
-// extern int        active_view_width;        /* Width of active map area displayed. */
-// extern int        active_view_height;        /* Height of active map area displayed. */
-// extern int        ext_view_x_offset;        /* Offset of ext_view_width */
-// extern int        ext_view_y_offset;        /* Offset of ext_view_height */
-// extern uint8_t        debris_colors;                /* Number of debris intensities */
-extern double charsPerTick;          /* Output speed of messages */
-extern bool markingLights;           /* Marking lights on ships */
-extern bool titleFlip;               /* Do special titlebar flipping? */
-extern int shieldDrawMode;           /* How to draw players shield */
-extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
-extern char *texturePath;            /* Path list of texture directories */
 
 extern int spaceColor;
 

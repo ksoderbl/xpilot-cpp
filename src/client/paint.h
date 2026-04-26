@@ -67,8 +67,6 @@ extern unsigned draw_width, draw_height;
 extern char dashes[NUM_DASHES];
 extern char cdashes[NUM_CDASHES];
 
-extern int num_spark_colors;
-
 extern uint16_t team;        /* What team is the player on? */
 extern bool players_exposed; /* Is score window exposed? */
 
@@ -82,7 +80,11 @@ extern uint8_t debris_colors;  /* Number of debris intensities */
 
 extern char modBankStr[][MAX_CHARS]; /* modifier banks strings */
 
+extern bool markingLights; /* Marking lights on ships */
+
 extern int maxKeyDefs;
+
+extern int num_spark_colors;
 
 extern long loops;
 extern long loopsSlow;
