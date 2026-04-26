@@ -241,11 +241,12 @@ void Place_general_mine(int id, int team, int status,
 
         mine->type = OBJ_MINE;
         mine->color = BLUE;
-        mine->info = options.mineFuseTime;
+        mine->mine_info = options.mineFuseTime;
         mine->obj_status = status;
         mine->id = (pl ? pl->id : NO_ID);
         mine->team = team;
         mine->mine_owner = mine->id;
+        mine->mine_count = 0.0;
         Object_position_init_clpos(OBJ_PTR(mine), pos);
         if (minis > 1)
         {
@@ -1158,7 +1159,7 @@ void Delete_shot(int ind)
     int i, intensity, type, color, num_debris, status;
     double modv, speed_modv, life_modv, num_modv, mass, min_life, max_life;
 
-    warn("Delete_shot: shot->type = %d", shot->type);
+    // warn("Delete_shot: shot->type = %d", shot->type);
 
     switch (shot->type)
     {
@@ -1204,7 +1205,8 @@ void Delete_shot(int ind)
              * have been destroyed is by being knocked out of the goal.
              * Therefore we force the ball to be recreated.
              */
-            warn("Delete_shot: Ball ball->ball_treasure is %p", ball->ball_treasure);
+            warn("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
+            warn("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
             ball->ball_treasure->have = false;
             warn("Delete_shot: Ball set bit RECREATE");
             SET_BIT(ball->obj_status, RECREATE);
@@ -1592,7 +1594,6 @@ void Update_connector_force(ballobject_t *ball)
         Detach_ball(pl, ball);
         return;
     }
-    ball->length = length;
 
     /* compute damping for player */
     cosine = (pl->vel.x * D.x) + (pl->vel.y * D.y);
@@ -1934,12 +1935,18 @@ void Update_missile(missileobject_t *missile)
 
 void Update_mine(mineobject_t *mine)
 {
-    if (BIT(mine->obj_status, CONFUSED) && --mine->count <= 0)
-        CLR_BIT(mine->obj_status, CONFUSED);
-
-    if (BIT(mine->obj_status, OWNERIMMUNE) && mine->info)
+    if (BIT(mine->obj_status, CONFUSED))
     {
-        if (--mine->info <= 0)
+        if ((mine->mine_count -= timeStep) <= 0)
+        {
+            CLR_BIT(mine->obj_status, CONFUSED);
+            mine->mine_count = 0;
+        }
+    }
+
+    if (BIT(mine->obj_status, OWNERIMMUNE) && mine->mine_info)
+    {
+        if (--mine->mine_info <= 0)
             CLR_BIT(mine->obj_status, OWNERIMMUNE);
     }
 

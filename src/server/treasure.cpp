@@ -61,7 +61,6 @@ void Make_treasure_ball(treasure_t *t)
     if ((ball = BALL_PTR(Object_allocate())) == NULL)
         return;
 
-    ball->length = options.ballConnectorLength;
     ball->life = LONG_MAX;
     ball->mass = options.ballMass;
     ball->vel.x = 0; /* make the ball stuck a little */
@@ -74,12 +73,15 @@ void Make_treasure_ball(treasure_t *t)
     ball->team = t->team;
     ball->type = OBJ_BALL;
     ball->color = WHITE;
-    ball->count = 0;
+    // ball->count = 0;
     ball->pl_range = BALL_RADIUS;
     ball->pl_radius = BALL_RADIUS;
     CLEAR_MODS(ball->mods);
     ball->obj_status = RECREATE;
     ball->ball_treasure = t;
+    ball->ball_treasure_copy = t;
+    warn("Make_treasure_ball: ball_treasure is      %p", ball->ball_treasure);
+    warn("Make_treasure_ball: ball_treasure_copy is %p", ball->ball_treasure_copy);
     Cell_add_object(OBJ_PTR(ball));
 
     t->have = true;

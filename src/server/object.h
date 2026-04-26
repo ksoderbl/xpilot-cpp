@@ -192,8 +192,8 @@ struct xp_mineobject
 
     OBJECT_EXTEND
 
-    int count;                          // TODO: REMOVE
-    long info; /* Miscellaneous info */ // TODO: REMOVE
+    float mine_count;                        /* Misc snafus */
+    long mine_info; /* Miscellaneous info */ // TODO: REMOVE
 
     int mine_owner;       /* Who's object is this ? */
     double ecm_range;     /* Range from last ecm center */
@@ -311,11 +311,15 @@ struct xp_ballobject
 
     OBJECT_EXTEND
 
-    int count; /* Misc timings */ // TODO: REMOVE
+    int ball_count; /* Misc timings */ // TODO: REMOVE
 
-    int ball_owner;            /* Who's object is this ? */
-    treasure_t *ball_treasure; /* treasure for ball */
-    double length;             /* distance ball to player */
+    int ball_owner; /* Who's object is this ? */
+    // int dummy1;
+    // int dummy2;
+    treasure_t *ball_treasure;      /* treasure for ball */
+    treasure_t *ball_treasure_copy; /* treasure for ball */
+    // int dummy3;
+    // int dummy4;
 
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))

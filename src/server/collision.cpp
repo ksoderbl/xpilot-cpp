@@ -475,7 +475,6 @@ static void PlayerCollision(void)
                     if (ball->ball_owner == NO_ID)
                         ball->life = LONG_MAX; /* for frame counter */
                     ball->ball_owner = pl->id;
-                    ball->length = distance;
                     SET_BIT(ball->obj_status, GRAVITY);
                     // world->treasures[ball->treasure].have = false;
                     ball->ball_treasure->have = false;

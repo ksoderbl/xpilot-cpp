@@ -1053,19 +1053,19 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
              *  50                10                6
              *         0 (closest)        15                10
              */
-            if (range <= 0 || (int)(rfrac() * 100.0) < ((int)(10 * (1 - range)) + 5))
+            if (range <= 0 || (int)(rfrac() * 100.0f) < ((int)(10 * (1 - range)) + 5))
             {
                 mine->life = 0;
                 break;
             }
-            mine->count = ((int)(8 * (1 - range)) + 2) * FPS;
+            mine->mine_count = ((8 * (1 - range)) + 2) * 12;
             if (!BIT(mine->obj_status, CONFUSED) && (closest_mine == NULL || range < closest_mine_range))
             {
                 closest_mine = mine;
                 closest_mine_range = range;
             }
             SET_BIT(mine->obj_status, CONFUSED);
-            if (mine->count <= 0)
+            if (mine->mine_count <= 0)
                 CLR_BIT(mine->obj_status, CONFUSED);
             break;
         default:
