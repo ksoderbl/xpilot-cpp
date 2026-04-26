@@ -232,8 +232,8 @@ void Paint_frame(void)
         {
             int x, y;
             double xp, yp, xo, yo;
-            // unsigned w1, h1, w2, h2;
             unsigned w, h;
+            unsigned w1, h1, w2, h2;
 
             xp = (double)(selfPos.x * 256) / Setup->width;
             yp = (double)(selfPos.y * RadarHeight) / Setup->height;
@@ -319,33 +319,41 @@ void Paint_frame(void)
 
 static void Paint_score_background(void)
 {
-    if (!texturedObjects)
-    {
-        XClearWindow(dpy, playersWindow);
-    }
-    else
-    {
-        XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
+    // if (fullColor &&
+    //     Bitmap_get(playersWindow, BM_SCORE_BG, 0) != NULL &&
+    //     Bitmap_get(playersWindow, BM_LOGO, 0) != NULL)
+    // {
+    // }
 
-        Bitmap_paint(playersWindow, BM_SCORE_BG,
-                     0, 0,
-                     //  players_width, BG_IMAGE_HEIGHT,
-                     0);
+    XClearWindow(dpy, playersWindow);
 
-        if (players_height > BG_IMAGE_HEIGHT + LOGO_HEIGHT)
-        {
-            XFillRectangle(dpy, playersWindow, scoreListGC,
-                           0, BG_IMAGE_HEIGHT,
-                           players_width,
-                           players_height - (BG_IMAGE_HEIGHT + LOGO_HEIGHT));
-        }
-        Bitmap_paint(playersWindow, BM_LOGO,
-                     0, players_height - LOGO_HEIGHT,
-                     //  players_width, LOGO_HEIGHT,
-                     0);
+    // if (!texturedObjects)
+    // {
+    //     XClearWindow(dpy, playersWindow);
+    // }
+    // else
+    // {
+    //     XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
 
-        XFlush(dpy);
-    }
+    //     Bitmap_paint(playersWindow, BM_SCORE_BG,
+    //                  0, 0,
+    //                  //  players_width, BG_IMAGE_HEIGHT,
+    //                  0);
+
+    //     if (players_height > BG_IMAGE_HEIGHT + LOGO_HEIGHT)
+    //     {
+    //         XFillRectangle(dpy, playersWindow, scoreListGC,
+    //                        0, BG_IMAGE_HEIGHT,
+    //                        players_width,
+    //                        players_height - (BG_IMAGE_HEIGHT + LOGO_HEIGHT));
+    //     }
+    //     Bitmap_paint(playersWindow, BM_LOGO,
+    //                  0, players_height - LOGO_HEIGHT,
+    //                  //  players_width, LOGO_HEIGHT,
+    //                  0);
+
+    //     XFlush(dpy);
+    // }
 }
 
 void Paint_score_start(void)
@@ -363,10 +371,7 @@ void Paint_score_start(void)
     {
         strlcpy(headingStr, "  ", sizeof(headingStr));
         if (BIT(Setup->mode, TIMING))
-        {
-            if (version >= 0x3261)
-                strcat(headingStr, "LAP ");
-        }
+            strcat(headingStr, "LAP ");
         strlcpy(headingStr, " AL ", sizeof(headingStr));
         strcat(headingStr, "  SCORE  ");
         if (BIT(Setup->mode, LIMITED_LIVES))
@@ -429,16 +434,13 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
         {
             raceStr[0] = ' ';
             raceStr[1] = ' ';
-            if (version >= 0x3261)
+            if ((other->mychar == ' ' || other->mychar == 'R') && other->round + other->check > 0)
             {
-                if ((other->mychar == ' ' || other->mychar == 'R') && other->round + other->check > 0)
-                {
-                    if (other->round > 99)
-                        sprintf(raceStr, "%3d", other->round);
-                    else
-                        sprintf(raceStr, "%d.%c",
-                                other->round, other->check + 'a');
-                }
+                if (other->round > 99)
+                    sprintf(raceStr, "%3d", other->round);
+                else
+                    sprintf(raceStr, "%d.%c",
+                            other->round, other->check + 'a');
             }
         }
         if (BIT(Setup->mode, TEAM_PLAY))
@@ -449,16 +451,16 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
         if (BIT(Setup->mode, LIMITED_LIVES))
             sprintf(lifeStr, " %3d", other->life);
 
-        // if (Using_score_decimals())
-        //     sprintf(scoreStr, "%*.*f",
-        //             9 - showScoreDecimals, showScoreDecimals,
-        //             other->score);
-        // else
-        // {
-        double score = other->score;
-        int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
-        sprintf(scoreStr, "%6d", sc);
-        // }
+        if (Using_score_decimals())
+            sprintf(scoreStr, "%*.*f",
+                    9 - showScoreDecimals, showScoreDecimals,
+                    other->score);
+        else
+        {
+            double score = other->score;
+            int sc = (int)(score >= 0.0 ? score + 0.5 : score - 0.5);
+            sprintf(scoreStr, "%6d", sc);
+        }
 
         if (BIT(Setup->mode, TEAM_PLAY))
             sprintf(label, "%c %s  %-18s%s",
