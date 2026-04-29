@@ -368,7 +368,10 @@ static inline bool Player_is_killed(player_t *pl)
 
 static inline bool Player_is_dead(player_t *pl)
 {
-    return pl->pl_state == PL_STATE_DEAD ? true : false;
+    // return pl->pl_state == PL_STATE_DEAD ? true : false;
+    if (BIT(pl->obj_status, GAME_OVER))
+        return true;
+    return false;
 }
 
 static inline bool Player_is_paused(player_t *pl)

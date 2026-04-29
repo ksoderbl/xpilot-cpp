@@ -75,28 +75,127 @@ void Race_compute_game_status(void)
     double pts;
     char msg[MSG_LEN];
 
+    /*
+     * kps - ng wants to handle laps here, requires change in collision.c
+     * too, maybe I'll fix it later.
+     */
+
+#if 0
+    /* Handle finishing of laps */
+    for (i = 0; i < NumPlayers; i++) {
+    pl = Player_by_index(i);
+   if (!BIT(pl->pl_status, FINISH))
+        continue;
+    pl->last_lap_time = pl->time - pl->last_lap;
+    if ((pl->best_lap > pl->last_lap_time || pl->best_lap == 0)
+        && pl->time != 0 && pl->round != 1) {
+        pl->best_lap = pl->last_lap_time;
+    }
+    pl->last_lap = pl->time;
+    if (pl->round > options.raceLaps) {
+        Player_death_reset(pl);
+        Player_set_state(pl, PL_STATE_DEAD);
+        sprintf(msg, "%s finished the race. Last lap time: %.2fs. "
+            "Personal race best lap time: %.2fs.",
+            pl->name,
+            (double) pl->last_lap_time / FPS,
+            (double) pl->best_lap / FPS);
+    }
+    else if (pl->round > 1)
+        sprintf(msg, "%s completes lap %d in %.2fs. "
+            "Personal race best lap time: %.2fs.",
+            pl->name,
+            pl->round-1,
+            (double) pl->last_lap_time / FPS,
+            (double) pl->best_lap / FPS);
+    else {
+        sprintf(msg, "%s starts lap 1 of %d", pl->name,
+            options.raceLaps);
+        CLR_BIT(pl->pl_status, FINISH); /* no elimination from starting */
+    }
+    Set_message(msg);
+    }
+    if (options.eliminationRace) {
+    for (;;) {
+        int pli, count = 0, lap = INT_MAX;
+        player_t *pl_i;
+
+        for (i = 0; i < NumPlayers; i++) {
+        pl = Player_by_index(i);
+        if (BIT(pl->pl_status, FINISH) && pl->round < lap) {
+            lap = pl->round;
+            pli = i;
+        }
+        }
+        if (lap == INT_MAX)
+        break;
+        pl_i = Player_by_index(pli);
+        CLR_BIT(pl_i->pl_status, FINISH);
+        lap = 0;
+        for (i = 0; i < NumPlayers; i++) {
+        pl = Player_by_index(i);
+        if (!Player_is_active(pl))
+            continue;
+        if (pl->round < pl_i->round) {
+            count++;
+            if (pl->round > lap)
+            lap = pl->round;
+        }
+        }
+        if (pl_i->round < lap + count)
+        continue;
+        for (i = 0; i < NumPlayers; i++) {
+        pl = Player_by_index(i);
+        if (!Player_is_active(pl))
+            continue;
+        if (pl->round < pl_i->round) {
+            Player_death_reset(pl);
+            Player_set_state(pl, PL_STATE_DEAD);
+            if (count == 1) {
+           sprintf(msg, "%s was the last to complete lap "
+                "%d and is out of the race.",
+                pl->name, pl_i->round - 1);
+            Set_message(msg);
+            }
+            else {
+            sprintf(msg, "%s was the last to complete some "
+                "lap between %d and %d.", pl->name,
+                pl->round, pl_i->round - 1);
+            Set_message(msg);
+            }
+        }
+        }
+    }
+    }
+#endif
+
     /* First count the players */
     for (i = 0; i < NumPlayers; i++)
     {
         pl = Player_by_index(i);
         if (Player_is_paused(pl) || Player_is_tank(pl))
             continue;
-        if (!BIT(pl->obj_status, GAME_OVER))
-            num_alive_players++;
-        else if (pl->mychar == 'W')
+        if (Player_is_waiting(pl))
         {
             num_waiting_players++;
             continue;
         }
+        else if (!Player_is_dead(pl))
+            num_alive_players++;
 
-        if (BIT(pl->obj_status, RACE_OVER))
+        if (BIT(pl->pl_status, RACE_OVER))
         {
             num_race_over_players++;
             pos++;
         }
-        else if (BIT(pl->obj_status, FINISH))
-            num_finished_players++;
-        else if (!BIT(pl->obj_status, GAME_OVER))
+        else if (BIT(pl->pl_status, FINISH))
+        {
+            if (pl->round > options.raceLaps)
+                num_finished_players++;
+            else
+                CLR_BIT(pl->pl_status, FINISH);
+        }
+        else if (!Player_is_dead(pl))
             alive = pl;
 
         /*
@@ -131,12 +230,12 @@ void Race_compute_game_status(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Player_by_index(i);
-            if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
+            if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
                 continue;
-            if (BIT(pl->obj_status, FINISH))
+            if (BIT(pl->pl_status, FINISH))
             {
-                CLR_BIT(pl->obj_status, FINISH);
-                SET_BIT(pl->obj_status, RACE_OVER);
+                CLR_BIT(pl->pl_status, FINISH);
+                SET_BIT(pl->pl_status, RACE_OVER);
                 if (pts > 0)
                 {
                     sprintf(msg,
@@ -149,6 +248,7 @@ void Race_compute_game_status(void)
                     Set_message(msg);
                     sprintf(msg, "[Position %d%s]", pos,
                             (num_finished_players == 1) ? "" : " (jointly)");
+                    // if (!options.zeroSumScoring)
                     Score(pl, pts, pl->pos, msg);
                 }
                 else
@@ -182,15 +282,13 @@ void Race_compute_game_status(void)
     {
         if (num_alive_players > 1)
             return;
-        if (num_alive_players == 1)
-        {
-            if (num_finished_players + num_race_over_players == 0)
-                return;
-            if (!alive || alive->round == 0)
-                return;
-        }
+        if (num_alive_players == 1 && num_active_players == 1)
+            return;
     }
-    else if (num_finished_players == 0)
+    /* !@# fix
+     * No meaningful messages / scores if someone wins by staying alive
+     */
+    else if (num_finished_players == 0 || num_alive_players > 1)
         return;
 
     Race_game_over();
@@ -221,7 +319,7 @@ void Race_game_over(void)
             if (Player_is_tank(pl))
                 continue;
 
-            if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || pl->best_lap <= 0)
+            if (Player_is_paused(pl) || Player_is_waiting(pl) || pl->best_lap <= 0)
                 j = i;
             else
             {
@@ -232,7 +330,7 @@ void Race_game_over(void)
                     if (pl->best_lap < pl_j->best_lap)
                         break;
 
-                    if (Player_is_paused(pl_j) || (BIT(PlayersArray[order[j]]->obj_status, GAME_OVER) && PlayersArray[order[j]]->mychar == 'W'))
+                    if (Player_is_paused(pl_j) || Player_is_waiting(pl_j))
                         break;
                 }
             }
@@ -265,15 +363,13 @@ void Race_game_over(void)
     for (i = NumPlayers - 1; i >= 0; i--)
     {
         pl = Player_by_index(i);
-        CLR_BIT(pl->obj_status, RACE_OVER | FINISH);
-        if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
-        {
+        CLR_BIT(pl->pl_status, RACE_OVER | FINISH);
+        if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
             continue;
-        }
         num_active_players++;
 
         /* Kill any remaining players */
-        if (!BIT(pl->obj_status, GAME_OVER))
+        if (!Player_is_dead(pl))
             Kill_player(pl, false);
         else
             Player_death_reset(pl, false);
@@ -296,10 +392,9 @@ void Race_game_over(void)
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Player_by_index(i);
-            if (Player_is_paused(pl) || (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W') || Player_is_tank(pl))
-            {
+            if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
                 continue;
-            }
+
             if (pl->best_lap == bestlap)
             {
                 Set_message_f("%s %s the best lap time of %.2fs",
@@ -338,6 +433,7 @@ void Player_pass_checkpoint(player_t *pl)
     if (pl->check == 0)
     {
         pl->round++;
+#if 1
         pl->last_lap_time = pl->time - pl->last_lap;
         if ((pl->best_lap > pl->last_lap_time || pl->best_lap == 0) && pl->time != 0 && pl->round != 1)
         {
@@ -363,7 +459,7 @@ void Player_pass_checkpoint(player_t *pl)
             }
             Player_death_reset(pl, false);
             pl->mychar = 'D';
-            SET_BIT(pl->obj_status, GAME_OVER | FINISH);
+            SET_BIT(pl->pl_status, GAME_OVER | FINISH);
             Set_message_f("%s finished the race. Last lap time: %.2fs. "
                           "Personal race best lap time: %.2fs.",
                           pl->name,
@@ -382,6 +478,11 @@ void Player_pass_checkpoint(player_t *pl)
         else
             Set_message_f("%s starts lap 1 of %d.",
                           pl->name, options.raceLaps);
+#else
+        /* this is how 4.3.1X did this */
+        SET_BIT(pl->pl_status, FINISH);
+        /* Rest done in Compute_game_status() */
+#endif
     }
 
     if (++pl->check == world->NumChecks)
@@ -389,4 +490,20 @@ void Player_pass_checkpoint(player_t *pl)
     pl->last_check_dir = pl->dir;
 
     updateScores = true;
+}
+
+void PlayerCheckpointCollision(player_t *pl)
+{
+    if (!BIT(world->rules->mode, TIMING))
+        return;
+
+    if (Player_is_active(pl))
+    {
+        check_t *check = Check_by_index(pl->check);
+
+        if (pl->round != 0)
+            pl->time++;
+        if (Player_is_alive(pl) && Wrap_length(pl->pos.cx - check->pos.cx, pl->pos.cy - check->pos.cy) < options.checkpointRadius * BLOCK_CLICKS && !Player_is_tank(pl) && !options.ballrace)
+            Player_pass_checkpoint(pl);
+    }
 }
