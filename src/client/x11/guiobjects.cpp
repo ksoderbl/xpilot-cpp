@@ -390,8 +390,8 @@ void Gui_paint_asteroid(int x, int y, int type, int rot, int size)
     int cnt, tx, ty;
     static XPoint points[NUM_ASTEROID_POINTS + 2];
 
-    warn("Gui_paint_asteroid: x = %d, y = %d, type = %d, size = %d, rot = %d",
-         x, y, type, size, rot);
+    // warn("Gui_paint_asteroid: x = %d, y = %d, type = %d, size = %d, rot = %d",
+    //      x, y, type, size, rot);
 
     // xpilot-cpp-client-x11: Gui_paint_asteroid: x = 3742, y = 2683, type = 14, rot = 46, size = 1
     // Segmentation fault (core dumped)

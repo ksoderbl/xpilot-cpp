@@ -1525,14 +1525,14 @@ int Send_asteroid(connection_t *connp, clpos_t pos,
     uint8_t type_size;
     int x = CLICK_TO_PIXEL(pos.cx), y = CLICK_TO_PIXEL(pos.cy);
 
-    warn("Send_asteroid, 1: x = %d, y = %d, type = %d, size = %d, rot = %d",
-         x, y, type, size, rot);
+    // warn("Send_asteroid, 1: x = %d, y = %d, type = %d, size = %d, rot = %d",
+    //      x, y, type, size, rot);
 
     type = type & 0xF;
     size = size & 0xF;
 
-    warn("Send_asteroid, 2: x = %d, y = %d, type = %d, size = %d, rot = %d",
-         x, y, type, size, rot);
+    // warn("Send_asteroid, 2: x = %d, y = %d, type = %d, size = %d, rot = %d",
+    //      x, y, type, size, rot);
 
     /*
     if (!FEATURE(connp, F_ASTEROID))

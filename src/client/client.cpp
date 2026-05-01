@@ -2043,8 +2043,8 @@ int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
 
 int Handle_asteroid(int x, int y, int type, int size, int rotation)
 {
-    warn("Handle_asteroid: x = %d, y = %d, type = %d, size = %d, rotation = %d",
-         x, y, type, size, rotation);
+    // warn("Handle_asteroid: x = %d, y = %d, type = %d, size = %d, rotation = %d",
+    //      x, y, type, size, rotation);
 
     asteroid_t t;
 
