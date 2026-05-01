@@ -125,6 +125,8 @@ typedef struct
     long lastChange;
 } visibility_t;
 
+struct ranknode;
+
 /* IMPORTANT
  *
  * This is the player structure, the first part MUST be similar to object_t,
@@ -171,6 +173,7 @@ typedef struct
     int score;                             /* Current score of player */
     int prev_score;                        /* Last score that has been updated */
     int prev_life;                         /* Last life that has been updated */
+    bool update_score;                     /* score table info needs to be sent */
     shipshape_t *ship;                     /* wire model of ship shape */
     double power;                          /* Force of thrust */
     double power_s;                        /* Saved power fiks */
@@ -261,10 +264,11 @@ typedef struct
     int wormDrawCount, wormHoleHit, wormHoleDest;
     int stunned;
 
-    int last_target_update;   /* index of last updated target */
-    int last_cannon_update;   /* index of last updated cannon */
-    int last_fuel_update;     /* index of last updated fuel */
-    int last_wormhole_update; /* index of last updated wormhole */
+    int last_target_update;    /* index of last updated target */
+    int last_cannon_update;    /* index of last updated cannon */
+    int last_fuel_update;      /* index of last updated fuel */
+    int last_wormhole_update;  /* index of last updated wormhole */
+    int last_polystyle_update; /* index of last updated polygon */
 
     int ecmcount; /* number of active ecms */
 
@@ -279,8 +283,14 @@ typedef struct
     void *audio; /* audio private data */
 
     int player_fps; /* FPS that this player can do */
+    int maxturnsps; /* turns per second limit */
 
     int isowner; /* If player started this server. */
+
+    struct ranknode *rank;
+
+    double pauseTime; /* seconds player has paused */
+    double idleTime;  /* seconds player has idled */
 
     int flooding;
 
@@ -390,22 +400,24 @@ static inline bool Player_is_hoverpaused(player_t *pl)
     return false;
 }
 
-// extern void Set_Score(player_t *pl, double score);
-// extern void Add_Score(player_t *pl, double score);
+extern void Set_Score(player_t *pl, double score);
+extern void Add_Score(player_t *pl, double score);
 
-// static inline void Player_add_score(player_t *pl, double points)
-// {
-//     Add_Score(pl, points);
-//     pl->update_score = true;
-//     updateScores = true;
-// }
+static inline void Player_add_score(player_t *pl, double points)
+{
+    // TODO
+    //     Add_Score(pl, points);
+    //     pl->update_score = true;
+    //     updateScores = true;
+}
 
-// static inline void Player_set_score(player_t *pl, double points)
-// {
-//     Set_Score(pl, points);
-//     pl->update_score = true;
-//     updateScores = true;
-// }
+static inline void Player_set_score(player_t *pl, double points)
+{
+    // TODO
+    //     Set_Score(pl, points);
+    //     pl->update_score = true;
+    //     updateScores = true;
+}
 
 static inline void Player_set_mychar(player_t *pl, char mychar)
 {

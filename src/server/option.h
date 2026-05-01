@@ -45,69 +45,195 @@ typedef struct options
     char *serverHost;  /* Host name (for multihomed hosts) */
     char *greeting;
 
-    bool allowPlayerCrashes;             /* Can players overrun other players? */
-    bool allowPlayerBounces;             /* Can players bounce other players? */
-    bool allowPlayerKilling;             /* Can players kill each other? */
-    bool allowShields;                   /* Can players use shields? */
-    bool playerStartsShielded;           /* Players start with shields up? */
-    bool shotsWallBounce;                /* Do shots bounce off walls? */
-    bool minesWallBounce;                /* Do mines bounce off walls? */
-    bool itemsWallBounce;                /* Do items bounce off walls? */
-    bool missilesWallBounce;             /* Do missiles bounce off walls? */
-    bool sparksWallBounce;               /* Do sparks bounce off walls? */
-    bool debrisWallBounce;               /* Do sparks bounce off walls? */
-    bool ballsWallBounce;                /* Do balls bounce off walls? */
-    bool ballCollisions;                 /* Do balls participate in colls.? */
-    bool ballSparkCollisions;            /* Do sparks push balls around? */
-    bool asteroidsWallBounce;            /* Do asteroids bounce off walls? */
-    bool cloakedExhaust;                 /* Generate exhaust when cloaked? */
-    bool cloakedShield;                  /* Allowed to use shields when cloaked? */
-    bool ecmsReprogramMines;             /* Do ecms reprogram mines? */
-    bool ecmsReprogramRobots;            /* Do ecms reprogram robots? */
-    double maxObjectWallBounceSpeed;     /* max object bounce speed */
-    double maxShieldedWallBounceSpeed;   /* max shielded bounce speed */
-    double maxUnshieldedWallBounceSpeed; /* max unshielded bounce speed */
-    double maxShieldedWallBounceAngle;   /* max angle for landing */
-    double maxUnshieldedWallBounceAngle; /* max angle for landing */
-    double playerWallBrakeFactor;        /* wall lowers speed if less than 1 */
-    double objectWallBrakeFactor;        /* wall lowers speed if less than 1 */
-    double objectWallBounceLifeFactor;   /* reduce object life */
-    double wallBounceFuelDrainMult;      /* Wall bouncing fuel drain factor */
-    double wallBounceDestroyItemProb;    /* Wall bouncing item destroy prob */
-    bool limitedVisibility;              /* Is visibility limited? */
-    double minVisibilityDistance;        /* Minimum visibility when starting */
-    double maxVisibilityDistance;        /* Maximum visibility */
-    bool limitedLives;                   /* Are lives limited? */
-    int worldLives;                      /* If so, what's the max? */
-    bool endOfRoundReset;                /* Reset the world when round ends? */
-    int resetOnHuman;                    /* Last human to reset round for */
-    bool allowAlliances;                 /* Are alliances allowed? */
-    bool announceAlliances;              /* Are changes in alliances broadcast? */
-    bool teamPlay;                       /* Are teams allowed? */
-    bool teamFuel;                       /* Do fuelstations belong to teams? */
-    bool teamCannons;                    /* Do cannons belong to teams? */
-    int cannonSmartness;                 /* Accuracy of cannonfire */
-    bool cannonsUseItems;                /* Do cannons use items? */
-    bool cannonsDefend;                  /* Do cannons defend themselves? */
-    bool cannonFlak;                     /* Do cannons fire flak? */
-    int cannonDeadTime;                  /* How long do cannons stay dead? */
-    bool keepShots;                      /* Keep shots when player leaves? */
-    bool timing;                         /* Is this a race? */
-    bool ballrace;                       /* Do we race with balls? */
-    bool ballrace_connect;               /* Need to be connected to ball to pass checkpoints? */
-    bool edgeWrap;                       /* Do objects wrap when they cross the edge of the Universe? */
-    bool edgeBounce;                     /* Do objects bounce when they hit the edge of the Universe? */
-    bool extraBorder;                    /* Give map an extra border? */
-    ipos_t gravityPoint;                 /* Where does gravity originate? */
-    double gravityAngle;                 /* If gravity is along a uniform line, at what angle is that line? */
-    bool gravityPointSource;             /* Is gravity a point source? */
-    bool gravityClockwise;               /* If so, is it clockwise? */
-    bool gravityAnticlockwise;           /* If not clockwise, anticlockwise? */
-    bool gravityVisible;                 /* Is gravity visible? */
-    bool wormholeVisible;                /* Are wormholes visible? */
-    bool itemConcentratorVisible;        /* Are itemconcentrators visible? */
-    bool asteroidConcentratorVisible;    /* Are asteroid concentrators visible? */
+    // Can players overrun other players?
+    bool allowPlayerCrashes;
+
+    // Can players bounce other players?
+    bool allowPlayerBounces;
+
+    // Can players kill each other?
+    bool allowPlayerKilling;
+
+    // Can players use shields?
+    bool allowShields;
+
+    // Players start with shields up?
+    bool playerStartsShielded;
+
+    // Do shots bounce off walls?
+    bool shotsWallBounce;
+
+    // Do balls bounce off walls?
+    bool ballsWallBounce;
+
+    // Do balls participate in colls.?
+    bool ballCollisions;
+
+    // Do sparks push balls around?
+    bool ballSparkCollisions;
+
+    // Do mines bounce off walls?
+    bool minesWallBounce;
+
+    // Do items bounce off walls?
+    bool itemsWallBounce;
+
+    // Do missiles bounce off walls?
+    bool missilesWallBounce;
+
+    // Do sparks bounce off walls?
+    bool sparksWallBounce;
+
+    // Do sparks bounce off walls?
+    bool debrisWallBounce;
+
+    // Do asteroids bounce off walls?
+    bool asteroidsWallBounce;
+
+    // Generate exhaust when cloaked?
+    bool cloakedExhaust;
+
+    // Allowed to use shields when cloaked?
+    bool cloakedShield;
+
+    // Do ecms reprogram mines?
+    bool ecmsReprogramMines;
+
+    // Do ecms reprogram robots?
+    bool ecmsReprogramRobots;
+
+    // max object bounce speed
+    double maxObjectWallBounceSpeed;
+
+    // max shielded bounce speed
+    double maxShieldedWallBounceSpeed;
+
+    // max unshielded bounce speed
+    double maxUnshieldedWallBounceSpeed;
+
+    // max angle for landing
+    double maxShieldedWallBounceAngle;
+
+    // max angle for landing
+    double maxUnshieldedWallBounceAngle;
+
+    // wall lowers speed if less than 1
+    double playerWallBrakeFactor;
+
+    // wall lowers speed if less than 1
+    double objectWallBrakeFactor;
+
+    // reduce object life
+    double objectWallBounceLifeFactor;
+
+    // Wall bouncing fuel drain factor
+    double wallBounceFuelDrainMult;
+
+    // Wall bouncing item destroy prob
+    double wallBounceDestroyItemProb;
+
+    // Is visibility limited?
+    bool limitedVisibility;
+
+    // Minimum visibility when starting
+    double minVisibilityDistance;
+
+    // Maximum visibility
+    double maxVisibilityDistance;
+
+    // Are lives limited?
+    bool limitedLives;
+
+    // If so, what's the max?
+    int worldLives;
+
+    // Reset the world when round ends?
+    bool endOfRoundReset;
+
+    // Last human to reset round for
+    int resetOnHuman;
+
+    // Are alliances allowed?
+    bool allowAlliances;
+
+    // Are changes in alliances broadcast?
+    bool announceAlliances;
+
+    // Are teams allowed?
+    bool teamPlay;
+
+    // Do fuelstations belong to teams?
+    bool teamFuel;
+
+    // Do cannons belong to teams?
+    bool teamCannons;
+
+    // Accuracy of cannonfire
+    int cannonSmartness;
+
+    // Do cannons use items?
+    bool cannonsUseItems;
+
+    // Do cannons defend themselves?
+    bool cannonsDefend;
+
+    // Do cannons fire flak?
+    bool cannonFlak;
+
+    // How long do cannons stay dead?
+    int cannonDeadTime;
+
+    double survivalScore;
+
+    // Keep shots when player leaves?
+    bool keepShots;
+
+    // Is this a race?
+    bool timing;
+
+    // Do we race with balls?
+    bool ballrace;
+
+    // Need to be connected to ball to pass checkpoints?
+    bool ballrace_connect;
+
+    // Do objects wrap when they cross the edge of the Universe?
+    bool edgeWrap;
+
+    // Do objects bounce when they hit the edge of the Universe?
+    bool edgeBounce;
+
+    // Give map an extra border?
+    bool extraBorder;
+
+    // Where does gravity originate?
+    ipos_t gravityPoint;
+
+    // If gravity is along a uniform line, at what angle is that line?
+    double gravityAngle;
+
+    // Is gravity a point source?
+    bool gravityPointSource;
+
+    // If so, is it clockwise?
+    bool gravityClockwise;
+
+    // If not clockwise, anticlockwise?
+    bool gravityAnticlockwise;
+
+    // Is gravity visible?
+    bool gravityVisible;
+
+    // Are wormholes visible?
+    bool wormholeVisible;
+
+    // Are itemconcentrators visible?
+    bool itemConcentratorVisible;
+
+    // Are asteroid concentrators visible?
+    bool asteroidConcentratorVisible;
     int wormTime;
+
     char *defaultsFileName;        /* Name of defaults file... */
     char *passwordFileName;        /* Name of password file... */
     char *motdFileName;            /* Name of motd file */
@@ -263,7 +389,22 @@ typedef struct options
 
     char *recordFileName;
 
+    char *rankFileName;
+    char *rankWebpageFileName;
+    char *rankWebpageCSS;
+
     bool polygonMode;
 } options_t;
+
+/*
+ * Prototypes for option.c
+ */
+// void Options_parse(void);
+// void Options_free(void);
+// bool Convert_string_to_int(const char *value_str, int *int_ptr);
+// bool Convert_string_to_float(const char *value_str, double *float_ptr);
+// bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
+// void Convert_list_to_string(list_t list, char **string);
+// void Convert_string_to_list(const char *value, list_t *list_ptr);
 
 extern options_t options;
