@@ -73,7 +73,7 @@ static char msg[MSG_LEN];
 extern int login_in_progress;
 extern char ShutdownReason[];
 
-static bool Owner(char request, char *user_name, char *host_addr,
+static bool Owner(int request, char *user_name, char *host_addr,
                   int host_port, int pass);
 void Queue_loop(void);
 static int Queue_player(char *real, char *nick, char *disp, int team,
@@ -87,7 +87,7 @@ void Contact_cleanup(void)
     sock_close(&contactSocket);
 }
 
-bool Contact_init(void)
+int Contact_init(void)
 {
     int status;
 
@@ -294,36 +294,22 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
  *
  * IMPORTANT! Adjust the next code if you're changing version numbers.
  */
+// TODO
 static unsigned Version_to_magic(unsigned version)
 {
-    if (version >= 0x3100 && version <= MY_VERSION)
-    {
+    if (version >= 0x4203 && version <= MY_VERSION)
         return VERSION2MAGIC(version);
-    }
     return MAGIC;
 }
 
 void Contact(int fd, void *arg)
 {
-    int i,
-        team,
-        bytes,
-        delay,
-        login_port,
-        qpos,
-        status;
-    char reply_to;
-    unsigned magic,
-        version,
-        my_magic;
+    int i, team, bytes, delay, qpos, status;
+    char reply_to, ch;
+    unsigned magic, version, my_magic;
     uint16_t port;
-    char ch,
-        user_name[MAX_CHARS],
-        disp_name[MAX_CHARS],
-        nick_name[MAX_CHARS],
-        host_name[MAX_CHARS],
-        host_addr[24],
-        str[MSG_LEN];
+    char user_name[MAX_CHARS], disp_name[MAX_CHARS], nick_name[MAX_CHARS];
+    char host_name[MAX_CHARS], host_addr[24], str[MSG_LEN];
 
     /*
      * Someone connected to us, now try and decipher the message :)
@@ -332,19 +318,19 @@ void Contact(int fd, void *arg)
     if ((bytes = sock_receive_any(&contactSocket, ibuf.buf, ibuf.size)) <= 8)
     {
         if (bytes < 0 && errno != EWOULDBLOCK && errno != EAGAIN && errno != EINTR)
-        {
             /*
              * Clear the error condition for the contact socket.
              */
             sock_get_error(&contactSocket);
-        }
         return;
     }
     ibuf.len = bytes;
 
     strlcpy(host_addr, sock_get_last_addr(&contactSocket), sizeof(host_addr));
+    xpprintf("%s Checking Address:(%s)\n", showtime(), host_addr);
     if (Check_address(host_addr))
     {
+        xpprintf("%s Host blocked!:(%s)\n", showtime(), host_addr);
         return;
     }
 
@@ -395,7 +381,7 @@ void Contact(int fd, void *arg)
 
     if (reply_to & PRIVILEGE_PACK_MASK)
     {
-        long key = 0;
+        long key;
         static long credentials;
 
         if (!credentials)
@@ -407,10 +393,9 @@ void Contact(int fd, void *arg)
             credentials &= 0xFFFFFFFF;
         }
         if (Packet_scanf(&ibuf, "%ld", &key) <= 0)
-        {
             return;
-        }
-        if (!Owner(reply_to, user_name, host_addr, port, key == credentials))
+        if (!Owner((int)reply_to, user_name, host_addr, port,
+                   key == credentials))
         {
             Sockbuf_clear(&ibuf);
             Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, E_NOT_OWNER);
@@ -420,7 +405,8 @@ void Contact(int fd, void *arg)
         if (reply_to == CREDENTIALS_pack)
         {
             Sockbuf_clear(&ibuf);
-            Packet_printf(&ibuf, "%u%c%c%ld", my_magic, reply_to, SUCCESS, credentials);
+            Packet_printf(&ibuf, "%u%c%c%ld", my_magic, reply_to, SUCCESS,
+                          credentials);
             Reply(host_addr, port);
             return;
         }
@@ -440,7 +426,8 @@ void Contact(int fd, void *arg)
         if (Packet_scanf(&ibuf, "%s%s%s%d", nick_name, disp_name, host_name,
                          &team) <= 0)
         {
-            D(printf("Incomplete enter queue from %s@%s", user_name, host_addr));
+            D(printf("Incomplete enter queue from %s@%s",
+                     user_name, host_addr));
             return;
         }
         Fix_nick_name(nick_name);
@@ -468,13 +455,12 @@ void Contact(int fd, void *arg)
          * Someone asked for information.
          */
 
-#ifndef SILENT
         xpprintf("%s %s@%s asked for info about current game.\n",
                  showtime(), user_name, host_addr);
-#endif
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, SUCCESS);
-        Server_info(ibuf.buf + ibuf.len, ibuf.size - ibuf.len);
+        assert(ibuf.size - ibuf.len >= 0);
+        Server_info(ibuf.buf + ibuf.len, (size_t)(ibuf.size - ibuf.len));
         ibuf.buf[ibuf.size - 1] = '\0';
         ibuf.len += strlen(ibuf.buf + ibuf.len) + 1;
     }
@@ -522,31 +508,15 @@ void Contact(int fd, void *arg)
 
     case SHUTDOWN_pack:
     {
+        char reason[MAX_CHARS];
         /*
          * Shutdown the entire server.
          */
 
-        if (Packet_scanf(&ibuf, "%d%s", &delay, ShutdownReason) <= 0)
-        {
+        if (Packet_scanf(&ibuf, "%d%s", &delay, reason) <= 0)
             status = E_INVAL;
-        }
         else
-        {
-            sprintf(msg, "|*******| %s (%s) |*******| \"%s\"",
-                    (delay > 0) ? "SHUTTING DOWN" : "SHUTDOWN STOPPED",
-                    user_name, ShutdownReason);
-            if (delay > 0)
-            {
-                ShutdownServer = delay * FPS; /* delay is in seconds */
-                ;
-                ShutdownDelay = ShutdownServer;
-            }
-            else
-            {
-                ShutdownServer = -1;
-            }
-            Set_message(msg);
-        }
+            Server_shutdown(user_name, delay, reason);
 
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, status);
@@ -558,46 +528,23 @@ void Contact(int fd, void *arg)
         /*
          * Kick someone from the game.
          */
-        int found = -1;
-
         if (Packet_scanf(&ibuf, "%s", str) <= 0)
-        {
             status = E_INVAL;
-        }
         else
         {
-            for (i = 0; i < NumPlayers; i++)
-            {
-                player_t *pl_i = Player_by_index(i);
-                /*
-                 * Kicking players by username is not a good idea,
-                 * because several players may have the same username.
-                 * E.g., system administrators joining as root...
-                 */
-                if (strcasecmp(str, pl_i->name) == 0 || strcasecmp(str, pl_i->username) == 0)
-                {
-                    found = i;
-                }
-            }
-            if (found == -1)
-            {
+            player_t *pl_found = Get_player_by_name(str, NULL, NULL);
+
+            if (!pl_found)
                 status = E_NOT_FOUND;
-            }
             else
             {
-                player_t *found_pl = PlayersArray[found];
-                sprintf(msg,
-                        "\"%s\" upset the gods and was kicked out of the game.",
-                        found_pl->name);
-                Set_message(msg);
-                if (found_pl->conn == NULL)
-                {
-                    Delete_player(found_pl);
-                }
+                Set_message_f("\"%s\" upset the gods and was kicked out "
+                              "of the game.",
+                              pl_found->name);
+                if (pl_found->conn == NULL)
+                    Delete_player(pl_found);
                 else
-                {
-                    Destroy_connection(found_pl->conn, "kicked out");
-                }
+                    Destroy_connection(pl_found->conn, "kicked out");
                 updateScores = true;
             }
         }
@@ -1003,14 +950,13 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
 /*
  * Move a player higher up in the list of waiting players.
  */
-int Queue_advance_player(char *name, char *msg)
+int Queue_advance_player(char *name, char *qmsg, size_t size)
 {
-    struct queued_player *qp;
-    struct queued_player *prev, *first = NULL;
+    struct queued_player *qp, *prev, *first = NULL;
 
     if (strlen(name) >= MAX_NAME_LEN)
     {
-        strcpy(msg, "Name too long.");
+        strlcpy(qmsg, "Name too long.", size);
         return -1;
     }
 
@@ -1020,9 +966,9 @@ int Queue_advance_player(char *name, char *msg)
         if (!strcasecmp(qp->nick_name, name))
         {
             if (!prev)
-                strcpy(msg, "Already first.");
+                strlcpy(qmsg, "Already first.", size);
             else if (qp->login_port != -1)
-                strcpy(msg, "Already entering game.");
+                strlcpy(qmsg, "Already entering game.", size);
             else
             {
                 /* Remove "qp" from list. */
@@ -1041,17 +987,15 @@ int Queue_advance_player(char *name, char *msg)
                     qp->next = qp_list;
                     qp_list = qp;
                 }
-                strcpy(msg, "Done.");
+                strlcpy(qmsg, "Done.", size);
             }
             return 0;
         }
         else if (qp->login_port != -1)
-        {
             first = qp;
-        }
     }
 
-    sprintf(msg, "Player \"%s\" not in queue.", name);
+    snprintf(qmsg, size, "Player \"%s\" not in queue.", name);
 
     return 0;
 }
@@ -1086,7 +1030,7 @@ int Queue_show_list(char *qmsg, size_t size)
 /*
  * Returns true if <name> has owner status of this server.
  */
-static bool Owner(char request, char *user_name, char *host_addr,
+static bool Owner(int request, char *user_name, char *host_addr,
                   int host_port, int pass)
 {
     if (pass || request == CREDENTIALS_pack)
@@ -1099,10 +1043,8 @@ static bool Owner(char request, char *user_name, char *host_addr,
     }
     else if (request == MESSAGE_pack && !strcmp(user_name, "kenrsc") && Meta_from(host_addr, host_port))
         return true;
-#ifndef SILENT
     fprintf(stderr, "Permission denied for %s@%s, command 0x%02x, pass %d.\n",
             user_name, host_addr, request, pass);
-#endif
     return false;
 }
 

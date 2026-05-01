@@ -322,6 +322,7 @@ void End_game(void);
 int Pick_team(int pick_for_type);
 void Server_info(char *str, size_t max_size);
 void Log_game(const char *heading);
+const char *Describe_game_status(void);
 void Game_Over(void);
 void Server_shutdown(const char *user_name, int delay, const char *reason);
 void Server_log_admin_message(player_t *pl, const char *str);
@@ -332,11 +333,12 @@ void Main_loop(void);
  * Prototypes for contact.c
  */
 void Contact_cleanup(void);
-bool Contact_init(void);
+int Contact_init(void);
 void Contact(int fd, void *arg);
+void Queue_kick(const char *nick);
 void Queue_loop(void);
-int Queue_advance_player(char *name, char *msg);
-int Queue_show_list(char *qmsg, size_t size);
+int Queue_advance_player(char *name, char *msg, size_t size);
+int Queue_show_list(char *msg, size_t size);
 void Set_deny_hosts(void);
 
 /*
@@ -368,17 +370,6 @@ void Emergency_thrust(player_t *pl, bool on);
 void Emergency_shield(player_t *pl, bool on);
 void Phasing(player_t *pl, bool on);
 void Thrust(player_t *pl, bool on);
-
-/*
- * Prototypes for option.c
- */
-void Options_parse(void);
-void Options_free(void);
-bool Convert_string_to_int(const char *value_str, int *int_ptr);
-bool Convert_string_to_float(const char *value_str, double *float_ptr);
-bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
-void Convert_list_to_string(const std::vector<std::string> &list, char **str);
-void Convert_string_to_list(const char *value, std::vector<std::string> *list_ptr);
 
 /*
  * Prototypes for parser.c

@@ -371,26 +371,39 @@ void Handle_player_command(player_t *pl, char *cmd)
     }
 }
 
-static int Cmd_advance(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+/*
+ * The queue system from the original server is not replicated
+ * during playback. Therefore interactions with it in the
+ * recording can cause problems (at least different message
+ * lengths in acks from client). It would be possible to work
+ * around this, but not implemented now. Currently queue and advance
+ * commands are disabled during recording.
+ */
+static int Cmd_advance(char *arg, player_t *pl, bool oper,
+                       char *msg, size_t size)
 {
     int result;
 
     if (!oper)
-    {
         return CMD_RESULT_NOT_OPERATOR;
-    }
 
-    if (!arg || !*arg)
+    /*
+    if (record || playback)
     {
-        return CMD_RESULT_NO_NAME;
-    }
-
-    result = Queue_advance_player(arg, msg);
-
-    if (result < 0)
-    {
+        strlcpy(msg, "Command currently disabled during recording for "
+                    "technical reasons.",
+                size);
         return CMD_RESULT_ERROR;
     }
+    */
+
+    if (!arg || !*arg)
+        return CMD_RESULT_NO_NAME;
+
+    result = Queue_advance_player(arg, msg, size);
+
+    if (result < 0)
+        return CMD_RESULT_ERROR;
 
     return CMD_RESULT_SUCCESS;
 }
@@ -662,30 +675,30 @@ static int Cmd_lock(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 }
 
 /* temporary hack */
-// static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t size)
-// {
-//     int new_maxturnsps;
+static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+{
+    int new_maxturnsps;
 
-//     if (!arg || !*arg)
-//     {
-//         snprintf(msg, size, "Your current maxturnsps is %d.", pl->maxturnsps);
-//         return CMD_RESULT_SUCCESS;
-//     }
+    if (!arg || !*arg)
+    {
+        snprintf(msg, size, "Your current maxturnsps is %d.", pl->maxturnsps);
+        return CMD_RESULT_SUCCESS;
+    }
 
-//     new_maxturnsps = atoi(arg);
-//     if (new_maxturnsps <= 0)
-//     {
-//         snprintf(msg, size, "Value of maxturnsps must be > 0.");
-//         return CMD_RESULT_ERROR;
-//     }
+    new_maxturnsps = atoi(arg);
+    if (new_maxturnsps <= 0)
+    {
+        snprintf(msg, size, "Value of maxturnsps must be > 0.");
+        return CMD_RESULT_ERROR;
+    }
 
-//     pl->maxturnsps = new_maxturnsps;
-//     Set_player_message_f(pl, "Max number of turns/s is now %d. "
-//                              "[*Server reply*]",
-//                          pl->maxturnsps);
+    pl->maxturnsps = new_maxturnsps;
+    Set_player_message_f(pl, "Max number of turns/s is now %d. "
+                             "[*Server reply*]",
+                         pl->maxturnsps);
 
-//     return CMD_RESULT_SUCCESS;
-// }
+    return CMD_RESULT_SUCCESS;
+}
 
 // static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 // {

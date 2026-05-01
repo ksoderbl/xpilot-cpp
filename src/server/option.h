@@ -399,12 +399,12 @@ typedef struct options
 /*
  * Prototypes for option.c
  */
-// void Options_parse(void);
-// void Options_free(void);
-// bool Convert_string_to_int(const char *value_str, int *int_ptr);
-// bool Convert_string_to_float(const char *value_str, double *float_ptr);
-// bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
-// void Convert_list_to_string(list_t list, char **string);
-// void Convert_string_to_list(const char *value, list_t *list_ptr);
+void Options_parse(void);
+void Options_free(void);
+bool Convert_string_to_int(const char *value_str, int *int_ptr);
+bool Convert_string_to_float(const char *value_str, double *float_ptr);
+bool Convert_string_to_bool(const char *value_str, bool *bool_ptr);
+void Convert_list_to_string(const std::vector<std::string> &list, char **str);
+void Convert_string_to_list(const char *value, std::vector<std::string> *list_ptr);
 
 extern options_t options;
