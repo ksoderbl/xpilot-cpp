@@ -114,8 +114,8 @@ static pixel_visibility_t pv;
 static click_visibility_t cv;
 static int view_width,
     view_height,
-    view_click_width,
-    view_click_height,
+    view_cwidth,
+    view_cheight,
     horizontal_blocks,
     vertical_blocks,
     debris_x_areas,
@@ -130,18 +130,12 @@ static debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 static unsigned fastshot_num[DEBRIS_TYPES * 2],
     fastshot_max[DEBRIS_TYPES * 2];
 
-// #define inview(x_, y_)                                                  \
-//     ((((x_) > pv.world.x && (x_) < pv.world.x + view_width) ||          \
-//       ((x_) > pv.realWorld.x && (x_) < pv.realWorld.x + view_width)) && \
-//      (((y_) > pv.world.y && (y_) < pv.world.y + view_height) ||         \
-//       ((y_) > pv.realWorld.y && (y_) < pv.realWorld.y + view_height)))
-
 static inline bool clpos_inview(click_visibility_t *cv, clpos_t pos)
 {
-    return (((pos.cx > cv->world.cx && pos.cx < cv->world.cx + view_click_width) ||
-             (pos.cx > cv->realWorld.cx && pos.cx < cv->realWorld.cx + view_click_width)) &&
-            ((pos.cy > cv->world.cy && pos.cy < cv->world.cy + view_click_height) ||
-             (pos.cy > cv->realWorld.cy && pos.cy < cv->realWorld.cy + view_click_height)));
+    return (((pos.cx > cv->world.cx && pos.cx < cv->world.cx + view_cwidth) ||
+             (pos.cx > cv->realWorld.cx && pos.cx < cv->realWorld.cx + view_cwidth)) &&
+            ((pos.cy > cv->world.cy && pos.cy < cv->world.cy + view_cheight) ||
+             (pos.cy > cv->realWorld.cy && pos.cy < cv->realWorld.cy + view_cheight)));
 }
 
 static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
@@ -615,7 +609,7 @@ static void Frame_shuffle_objects(void)
     for (i = 0; i < num_object_shuffle; i++)
         object_shuffle_ptr[i] = i;
 
-    /* permute. */
+    /* permute. Not perfect distribution but probably doesn't matter here */
     for (i = num_object_shuffle - 1; i >= 0; --i)
     {
         if (object_shuffle_ptr[i] == i)
@@ -713,11 +707,13 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             if ((fuzz >>= 7) < 0x40)
                 fuzz = randomMT();
             if ((fuzz & 0x7F) >= spark_rand)
+            {
                 /*
                  * produce a sparkling effect by not displaying
                  * particles every frame.
                  */
                 break;
+            }
             /*
              * The number of colors which the client
              * uses for displaying debris is bigger than 2
@@ -762,7 +758,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         case OBJ_ASTEROID:
         {
             wireobject_t *ast = WIRE_PTR(shot);
-            Send_asteroid(conn, pos, ast->wire_type, ast->wire_size, ast->wire_rotation);
+            Send_asteroid(conn, pos, ast->wire_type,
+                          ast->wire_size, ast->wire_rotation);
         }
         break;
 
@@ -1187,21 +1184,21 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
             pv.realWorld.y -= world->height;
     }
 
-    view_click_width = PIXEL_TO_CLICK(view_width);
-    view_click_height = PIXEL_TO_CLICK(view_height);
+    view_cwidth = PIXEL_TO_CLICK(view_width);
+    view_cheight = PIXEL_TO_CLICK(view_height);
 
-    cv.world.cx = pl->pos.cx - view_click_width / 2; /* Scroll */
-    cv.world.cy = pl->pos.cy - view_click_height / 2;
+    cv.world.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
+    cv.world.cy = pl->pos.cy - view_cheight / 2;
     cv.realWorld = cv.world;
     if (BIT(world->rules->mode, WRAP_PLAY))
     {
-        if (cv.world.cx < 0 && cv.world.cx + view_click_width < world->cwidth)
+        if (cv.world.cx < 0 && cv.world.cx + view_cwidth < world->cwidth)
             cv.world.cx += world->cwidth;
-        else if (cv.world.cx > 0 && cv.world.cx + view_click_width >= world->cwidth)
+        else if (cv.world.cx > 0 && cv.world.cx + view_cwidth >= world->cwidth)
             cv.realWorld.cx -= world->cwidth;
-        if (cv.world.cy < 0 && cv.world.cy + view_click_height < world->cheight)
+        if (cv.world.cy < 0 && cv.world.cy + view_cheight < world->cheight)
             cv.world.cy += world->cheight;
-        else if (cv.world.cy > 0 && cv.world.cy + view_click_height >= world->cheight)
+        else if (cv.world.cy > 0 && cv.world.cy + view_cheight >= world->cheight)
             cv.realWorld.cy -= world->cheight;
     }
 }

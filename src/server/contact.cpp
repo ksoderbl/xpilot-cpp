@@ -69,17 +69,12 @@ int NumPseudoPlayers = 0;
 sock_t contactSocket;
 
 static sockbuf_t ibuf;
-static char msg[MSG_LEN];
-extern int login_in_progress;
-extern char ShutdownReason[];
 
 static bool Owner(int request, char *user_name, char *host_addr,
                   int host_port, int pass);
-void Queue_loop(void);
 static int Queue_player(char *real, char *nick, char *disp, int team,
                         char *addr, char *host, unsigned version, int port,
                         int *qpos);
-void Contact(int fd, void *arg);
 static int Check_address(char *addr);
 
 void Contact_cleanup(void)
@@ -125,16 +120,19 @@ int Contact_init(void)
  */
 static int Kick_robot_players(int team)
 {
+    int i;
+
     if (NumRobots == 0) /* no robots available for kicking */
         return 0;
+
     if (team == TEAM_NOT_SET)
     {
         if (BIT(world->rules->mode, TEAM_PLAY) && options.reserveRobotTeam)
         {
-            /* kick robot with lowest score from any team but robotTeam */
-            int low_score = INT_MAX;
+            /* kick robot with lowest score from any team but robot team */
+            double low_score = FLT_MAX;
             player_t *low_pl = NULL;
-            int i;
+
             for (i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
@@ -165,9 +163,9 @@ static int Kick_robot_players(int team)
         if (world->teams[team].NumRobots > 0)
         {
             /* kick robot with lowest score from this team */
-            int low_score = INT_MAX;
+            double low_score = FLT_MAX;
             player_t *low_pl = NULL;
-            int i;
+
             for (i = 0; i < NumPlayers; i++)
             {
                 player_t *pl_i = Player_by_index(i);
@@ -195,36 +193,48 @@ static int Kick_robot_players(int team)
  * Kick paused players?
  * Return the number of kicked players.
  */
-static int Kick_paused_players(int team)
+static int do_kick(int team, int nonlast)
 {
-    int i;
-    int num_unpaused = 0;
+    int i, num_unpaused = 0;
 
     for (i = NumPlayers - 1; i >= 0; i--)
     {
         player_t *pl_i = Player_by_index(i);
-        if (pl_i->conn != NULL && BIT(pl_i->obj_status, PAUSE) && (team == TEAM_NOT_SET || pl_i->team == team))
+
+        // if (pl_i->conn != NULL && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team && pl_i->home_base != NULL)) && !(pl_i->privs & PRIV_NOAUTOKICK) && (!nonlast || !(pl_i->privs & PRIV_AUTOKICKLAST)))
+        if (pl_i->conn != NULL && Player_is_paused(pl_i) && (team == TEAM_NOT_SET || (pl_i->team == team)))
         {
+
             if (team == TEAM_NOT_SET)
             {
-                sprintf(msg,
-                        "The paused \"%s\" was kicked because the game is full.",
-                        pl_i->name);
+                Set_message_f("The paused \"%s\" was kicked because the "
+                              "game is full.",
+                              pl_i->name);
                 Destroy_connection(pl_i->conn, "no pause with full game");
             }
             else
             {
-                sprintf(msg,
-                        "The paused \"%s\" was kicked because team %d is full.",
-                        pl_i->name, team);
+                Set_message_f("The paused \"%s\" was kicked because team %d "
+                              "is full.",
+                              pl_i->name, team);
                 Destroy_connection(pl_i->conn, "no pause with full team");
             }
-            Set_message(msg);
             num_unpaused++;
         }
     }
 
     return num_unpaused;
+}
+
+static int Kick_paused_players(int team)
+{
+    int ret;
+
+    ret = do_kick(team, 1);
+    if (ret < 1)
+        ret = do_kick(team, 0);
+
+    return ret;
 }
 
 static int Reply(char *host_addr, int port)
@@ -234,14 +244,11 @@ static int Reply(char *host_addr, int port)
 
     for (i = 0; i < max_send_retries; i++)
     {
-        if ((result = sock_send_dest(&ibuf.sock, host_addr, port, ibuf.buf, ibuf.len)) == -1)
-        {
+        if ((result = sock_send_dest(&ibuf.sock, host_addr, port,
+                                     ibuf.buf, ibuf.len)) == -1)
             sock_get_error(&ibuf.sock);
-        }
         else
-        {
             break;
-        }
     }
 
     return result;
@@ -256,9 +263,7 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
      * Bad input parameters?
      */
     if (user_name[0] == 0 || host_name[0] == 0 || nick_name[0] < 'A' || nick_name[0] > 'Z')
-    {
         return E_INVAL;
-    }
 
     /*
      * All names must be unique (so we know who we're talking about).
@@ -267,13 +272,9 @@ static int Check_names(char *nick_name, char *user_name, char *host_name)
     for (ptr = &nick_name[strlen(nick_name)]; ptr-- > nick_name;)
     {
         if (isascii(*ptr) && isspace(*ptr))
-        {
             *ptr = '\0';
-        }
         else
-        {
             break;
-        }
     }
     for (i = 0; i < NumPlayers; i++)
     {
@@ -604,10 +605,8 @@ void Contact(int fd, void *arg)
          */
         bool bad = false, full, change;
 
-#ifndef SILENT
         xpprintf("%s %s@%s asked for an option list.\n",
                  showtime(), user_name, host_addr);
-#endif
         i = 0;
         do
         {
@@ -678,7 +677,7 @@ struct queued_player
     long last_ack_recv;
 };
 
-static struct queued_player *qp_list;
+struct queued_player *qp_list;
 
 static void Queue_remove(struct queued_player *qp, struct queued_player *prev)
 {
@@ -878,13 +877,12 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
 
     for (qp = qp_list; qp; prev = qp, qp = qp->next)
     {
-
         num_queued++;
         if (qp->login_port == -1)
             ++*qpos;
 
         /* same nick? */
-        if (!strcmp(nick, qp->nick_name))
+        if (!strcasecmp(nick, qp->nick_name))
         {
             /* same screen? */
             if (!strcmp(addr, qp->host_addr) && !strcmp(user, qp->user_name) && !strcmp(disp, qp->disp_name))
@@ -906,18 +904,16 @@ static int Queue_player(char *user, char *nick, char *disp, int team,
         if (!strcmp(addr, qp->host_addr))
         {
             if (++num_same_hosts > 1)
-            {
                 return E_IN_USE;
-            }
         }
     }
 
     NumQueuedPlayers = num_queued;
     if (NumQueuedPlayers >= MaxQueuedPlayers)
         return E_GAME_FULL;
+    // if (game_lock && !rplayback && !options.baselessPausing)
     if (game_lock)
         return E_GAME_LOCKED;
-
     if (Check_max_clients_per_IP(addr))
         return E_GAME_LOCKED;
 
