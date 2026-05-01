@@ -45,6 +45,7 @@
 #include "xperror.h"
 #include "object.h"
 #include "xpmath.h"
+#include "rank.h"
 #include "robot.h"
 
 bool updateScores = true;
@@ -748,10 +749,16 @@ void Reset_all_players(void)
             }
         }
         CLR_BIT(pl->obj_status, GAME_OVER);
-        CLR_BIT(pl->have, HAS_BALL);
+
         pl->kills = 0;
         pl->deaths = 0;
+
+        if (!Player_is_paused(pl) && !Player_is_waiting(pl))
+            Rank_add_round(pl);
+
+        CLR_BIT(pl->have, HAS_BALL);
         Player_reset_timing(pl);
+
         if (!Player_is_paused(pl))
         {
             pl->mychar = ' ';
@@ -917,28 +924,29 @@ static void Give_best_player_bonus(double average_score,
     double points;
     char msg[MSG_LEN];
 
-    if (best_ratio == 0)
-    {
-        sprintf(msg, "There is no Deadly Player");
-    }
+    if (num_best_players == 0 || best_ratio == 0)
+        sprintf(msg, "There is no Deadly Player.");
     else if (num_best_players == 1)
     {
-        player_t *bp = PlayersArray[best_players[0]];
+        player_t *bp = Player_by_index(best_players[0]);
 
         sprintf(msg,
                 "%s is the Deadliest Player with a kill ratio of %d/%d.",
                 bp->name,
                 bp->kills, bp->deaths);
-        points = best_ratio * Rate(bp->score, average_score);
+        points = best_ratio * Rate(Get_Score(bp), average_score);
+        // if (!options.zeroSumScoring)
         Score(bp, points, bp->pos, "[Deadliest]");
+        Rank_add_deadliest(bp);
+        /*if (options.zeroSumScoring);*/ /* TODO */
     }
     else
     {
         msg[0] = '\0';
         for (i = 0; i < num_best_players; i++)
         {
-            player_t *bp = PlayersArray[best_players[i]];
-            double ratio = Rate(bp->score, average_score);
+            player_t *bp = Player_by_index(best_players[i]);
+            double ratio = Rate(Get_Score(bp), average_score);
             double score = (ratio + num_best_players) / num_best_players;
 
             if (msg[0])
@@ -955,7 +963,10 @@ static void Give_best_player_bonus(double average_score,
             }
             strcat(msg, bp->name);
             points = (int)(best_ratio * score);
+            // if (!options.zeroSumScoring)
             Score(bp, points, bp->pos, "[Deadly]");
+            Rank_add_deadliest(bp);
+            /*if (options.zeroSumScoring);*/ /* TODO */
         }
         if (strlen(msg) + 64 >= sizeof(msg))
         {
@@ -964,20 +975,21 @@ static void Give_best_player_bonus(double average_score,
         }
         sprintf(msg + strlen(msg),
                 " are the Deadly Players with kill ratios of %d/%d.",
-                PlayersArray[best_players[0]]->kills,
-                PlayersArray[best_players[0]]->deaths);
+                Player_by_index(best_players[0])->kills,
+                Player_by_index(best_players[0])->deaths);
     }
     Set_message(msg);
 }
 
 static void Give_individual_bonus(player_t *pl, double average_score)
 {
-    double ratio;
-    double points;
+    double ratio, points;
 
     ratio = (double)pl->kills / (pl->deaths + 1);
     points = ratio * Rate(Get_Score(pl), average_score);
+    // if (!options.zeroSumScoring)
     Score(pl, points, pl->pos, "[Winner]");
+    /*if (options.zeroSumScoring);*/ /* TODO */
 }
 
 void Count_rounds(void)
@@ -1060,6 +1072,11 @@ void Team_game_over(int winning_team, const char *reason)
     Count_rounds();
 
     free(best_players);
+
+    /* Ranking */
+    Rank_write_webpage();
+    Rank_write_rankfile();
+    Rank_show_ranks();
 }
 
 void Individual_game_over(int winner)
@@ -1182,7 +1199,7 @@ void Compute_game_status(void)
                 /* Ignore players with no treasure troves */
                 continue;
 #endif
-            else if (BIT(pl_i->obj_status, GAME_OVER))
+            else if (Player_is_waiting(pl_i) || Player_is_dead(pl_i))
             {
                 if (team_state[pl_i->team] == TeamEmpty)
                 {
@@ -1215,12 +1232,10 @@ void Compute_game_status(void)
         {
             char *bp;
             int teams_with_treasure = 0, team_win[MAX_TEAMS];
-            double team_score[MAX_TEAMS];
-            int winners;
-            int max_destroyed = 0;
-            int max_left = 0;
-            double max_score = 0;
-            team_t *team_ptr;
+            double team_score[MAX_TEAMS], max_score = 0;
+            int winners, max_destroyed = 0, max_left = 0;
+            team_t *team_ptr, *specialballteam_ptr;
+            bool no_special_balls_present = false;
 
             /*
              * Game is not over if more than one team which have treasures
@@ -1393,7 +1408,7 @@ void Compute_game_status(void)
 
             if (Player_is_paused(pl_i) || Player_is_tank(pl_i))
                 continue;
-            if (!BIT(pl_i->obj_status, GAME_OVER))
+            if (!(Player_is_waiting(pl_i) || Player_is_dead(pl_i)))
             {
                 num_alive_players++;
                 if (Player_is_robot(pl_i))
@@ -1532,8 +1547,16 @@ void Delete_player(player_t *pl)
 
     NumPlayers--;
     if (Player_is_tank(pl))
-    {
         NumPseudoPlayers--;
+
+    if (pl->rank)
+    {
+        Rank_save_score(pl);
+        if (NumPlayers == NumRobots + NumPseudoPlayers)
+        {
+            Rank_write_webpage();
+            Rank_write_rankfile();
+        }
     }
 
     if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl))
@@ -1694,6 +1717,9 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
         return;
     }
 
+    if (Player_is_paused(pl))
+        return;
+
     Detach_ball(pl, NULL);
     if (Player_uses_autopilot(pl) || Player_is_hoverpaused(pl))
     {
@@ -1761,6 +1787,12 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
         {
             pl->life++;
         }
+    }
+
+    if (add_rank_death)
+    {
+        Rank_add_death(pl);
+        pl->pl_deaths_since_join++;
     }
 
     pl->have = DEF_HAVE;

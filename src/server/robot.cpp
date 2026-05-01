@@ -45,6 +45,7 @@
 #include "saudio.h"
 #include "netserver.h"
 #include "pack.h"
+#include "rank.h"
 #include "robot.h"
 #include "xperror.h"
 #include "server.h"
@@ -747,6 +748,8 @@ static void Robot_create(void)
     NumPlayers++;
     NumRobots++;
 
+    Rank_get_saved_score(robot);
+
     for (i = 0; i < NumPlayers - 1; i++)
     {
         player_t *pl_i = Player_by_index(i);
@@ -762,7 +765,8 @@ static void Robot_create(void)
 
     if (options.logRobots)
         xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
-                 showtime(), robot->name, NumPlayers, robot->username, robot->home_base_ind);
+                 showtime(), robot->name, NumPlayers, robot->username,
+                 robot->home_base_ind);
 
     if (NumPlayers == 1)
     {

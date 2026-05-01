@@ -67,6 +67,7 @@
 #include "server.h"
 #include "xpmath.h"
 #include "walls.h"
+#include "rank.h"
 
 char server_version[] = VERSION;
 
@@ -142,12 +143,11 @@ int main(int argc, char **argv)
     Alloc_shots(MAX_TOTAL_SHOTS);
     Alloc_cells();
 
-    xpprintf("move init\n");
     Move_init();
-    xpprintf("robot init\n");
     Robot_init();
-    xpprintf("treasure init\n");
     Treasure_init();
+
+    Rank_init_saved_scores();
 
     /*
      * Get server's official name.
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
         if (addr == NULL)
         {
             warn("Failed name lookup on: %s", options.serverHost);
-            return 1;
+            exit(1);
         }
         serverAddr = xp_strdup(addr);
         strlcpy(Server.host, options.serverHost, sizeof(Server.host));
@@ -196,7 +196,8 @@ int main(int argc, char **argv)
      */
     serverStartTime = time(NULL);
 
-    xpprintf("%s Server runs at %d frames per second\n", showtime(), options.framesPerSecond);
+    xpprintf("%s Server runs at %d frames per second\n",
+             showtime(), options.framesPerSecond);
 
     // printf("timerResolution: %d\n", options.timerResolution);
     if (options.timerResolution > 0)
@@ -242,11 +243,7 @@ void Main_loop(void)
             ShutdownServer--;
     }
 
-    // xpinfo("Main_loop: call Input");
-
     Input();
-
-    // xpinfo("Main_loop: update");
 
     if (NumPlayers > NumRobots + NumPseudoPlayers || options.RawMode)
     {
@@ -257,19 +254,18 @@ void Main_loop(void)
                 NoPlayersEnteredYet = false;
                 if (options.gameDuration > 0.0)
                 {
-                    xpprintf("%s Server will stop in %g minutes.\n", showtime(), options.gameDuration);
-                    gameOverTime = (time_t)(options.gameDuration * 60) + time((time_t *)NULL);
+                    xpprintf("%s Server will stop in %g minutes.\n",
+                             showtime(), options.gameDuration);
+                    gameOverTime = (time_t)(options.gameDuration * 60) + time(NULL);
                 }
             }
         }
 
-        // xpinfo("Main_loop: update objects");
-
         Update_objects();
 
-        // xpinfo("Main_loop: update frame");
-
-        Frame_update();
+#define CONF_UPDATES_PR_FRAME 1
+        if ((main_loops % CONF_UPDATES_PR_FRAME) == 0)
+            Frame_update();
     }
 
     // xpinfo("Main_loop: checking end game");

@@ -13,36 +13,79 @@ typedef struct options
     double ballMass;
     double shotMass;
     double shotSpeed;
-    int shotLife;  /* Default number of ticks */
-                   /* each shot will live */
-    int maxRobots; /* How many robots should enter */
-    int minRobots; /* the game? */
+
+    // Default number of ticks each shot will live
+    int shotLife;
+
+    // How many robots should enter the game?
+    int maxRobots;
+    int minRobots;
     char *robotFile;
     int robotsTalk;
-    int robotsLeave;     /* Do robots leave at all? */
-    int robotLeaveLife;  /* Max life per robot (0=off)*/
-    int robotLeaveScore; /* Min score for robot to live (0=off)*/
-    int robotLeaveRatio; /* Min ratio for robot to live (0=off)*/
-    int robotTeam;
-    bool restrictRobots;   /* Restrict robots to robotTeam? */
-    bool reserveRobotTeam; /* Allow only robots in robotTeam? */
-    int maxPlayerShots;    /* Max shots pr. player */
-    bool shotsGravity;     /* Shots affected by gravity */
-    int fireRepeatRate;    /* Frames per autorepeat fire (0=off) */
 
-    bool RawMode;      /* Let robots live even if there */
-                       /* are no players logged in */
-    bool NoQuit;       /* Don't quit even if there are */
-                       /* no human players playing */
-    bool logRobots;    /* log robots coming and going */
-    char *mapFileName; /* Name of mapfile... */
-    char *mapData;     /* Raw map data... */
-    int mapWidth;      /* Width of the universe */
-    int mapHeight;     /* Height of the universe */
-    char *mapName;     /* Name of the universe */
-    char *mapAuthor;   /* Name of the creator */
-    int contactPort;   /* Contact port number */
-    char *serverHost;  /* Host name (for multihomed hosts) */
+    // Do robots leave at all?
+    int robotsLeave;
+
+    // Max life per robot (0=off)
+    int robotLeaveLife;
+
+    // Min score for robot to live (0=off)
+    int robotLeaveScore;
+
+    // Min ratio for robot to live (0=off)
+    int robotLeaveRatio;
+
+    int robotTeam;
+
+    // Restrict robots to robotTeam?
+    bool restrictRobots;
+
+    // Allow only robots in robotTeam?
+    bool reserveRobotTeam;
+
+    // Max shots pr. player
+    int maxPlayerShots;
+
+    // Shots affected by gravity
+    bool shotsGravity;
+
+    // Frames per autorepeat fire (0=off)
+    int fireRepeatRate;
+
+    // Let robots live even if there  are no players logged in
+    bool RawMode;
+
+    // Don't quit even if there are no human players playing
+    bool NoQuit;
+
+    // log robots coming and going
+    bool logRobots;
+
+    // Name of mapfile
+    char *mapFileName;
+
+    // Raw map data
+    char *mapData;
+
+    // Width of the universe
+    int mapWidth;
+
+    // Height of the universe
+    int mapHeight;
+
+    // Name of the universe
+    char *mapName;
+
+    // Name of the creator
+    char *mapAuthor;
+
+    // Contact port number
+    int contactPort;
+
+    // Host name (for multihomed hosts)
+    char *serverHost;
+
+    // Server greeting message to players
     char *greeting;
 
     // Can players overrun other players?
@@ -234,24 +277,50 @@ typedef struct options
     bool asteroidConcentratorVisible;
     int wormTime;
 
-    char *defaultsFileName;        /* Name of defaults file... */
-    char *passwordFileName;        /* Name of password file... */
-    char *motdFileName;            /* Name of motd file */
-    char *scoreTableFileName;      /* Name of score table file */
-    char *adminMessageFileName;    /* Name of admin message file */
-    int adminMessageFileSizeLimit; /* Limit on admin message file size */
+    // Name of defaults file
+    char *defaultsFileName;
 
-    int nukeMinSmarts;            /* minimum smarts for a nuke */
-    int nukeMinMines;             /* minimum number of mines for nuke */
-    double nukeClusterDamage;     /* multiplier for damage from nuke */
-                                  /* cluster debris, reduces number */
-                                  /* of particles by similar amount */
-    int mineFuseTime;             /* Length of time mine is fused */
-    int mineLife;                 /* lifetime of mines */
-    double minMineSpeed;          /* minimum speed of mines */
-    int missileLife;              /* lifetime of missiles */
-    int baseMineRange;            /* Distance from base mines may be used */
-    int mineShotDetonateDistance; /* When does a shot trigger a mine? */
+    // Name of password file
+    char *passwordFileName;
+
+    // Name of motd file
+    char *motdFileName;
+
+    // Name of score table file
+    char *scoreTableFileName;
+
+    // Name of admin message file
+    char *adminMessageFileName;
+
+    // Limit on admin message file size
+    int adminMessageFileSizeLimit;
+
+    // minimum smarts for a nuke
+    int nukeMinSmarts;
+
+    // minimum number of mines for nuke
+    int nukeMinMines;
+
+    // multiplier for damage from nuke cluster debris, reduces number of particles by similar amount
+    double nukeClusterDamage;
+
+    // Length of time mine is fused
+    int mineFuseTime;
+
+    // lifetime of mines
+    int mineLife;
+
+    // minimum speed of mines
+    double minMineSpeed;
+
+    // lifetime of missiles
+    int missileLife;
+
+    // Distance from base mines may be used
+    int baseMineRange;
+
+    // When does a shot trigger a mine?
+    int mineShotDetonateDistance;
 
     double shotKillScoreMult;
     double torpedoKillScoreMult;

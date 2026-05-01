@@ -50,6 +50,7 @@
 
 #include "player.h"
 #include "robot.h"
+#include "rank.h"
 
 /*
  * The very first "analytical" collision patch, XPilot 3.6.2
@@ -755,7 +756,6 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
 {
     int sc;
     int killer;
-    // ballobject_t *ball = BALL_PTR(obj);
 
     /*
      * The ball is special, usually players bounce off of it with
@@ -763,11 +763,13 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
      * be destroyed.
      */
     Obj_repel(OBJ_PTR(pl), OBJ_PTR(ball), radius);
-    if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+    if (!Player_uses_emergency_shield(pl))
     {
         Player_add_fuel(pl, ED_BALL_HIT);
         if (options.treasureCollisionDestroys)
         {
+            if (BIT(world->rules->mode, TEAM_PLAY) && pl->team == ball->ball_treasure->team)
+                Rank_saved_ball(pl);
             ball->life = 0;
         }
     }

@@ -40,13 +40,14 @@
 #include "score.h"
 #include "netserver.h"
 #include "player.h"
+#include "rank.h"
 
 void Score(player_t *pl, double points, clpos_t pos, const char *msg)
 {
     // points are assumed to be whole numbers
     int intPoints = (int)points;
 
-    pl->score += (intPoints);
+    Rank_add_score(pl, intPoints);
 
     // xpinfo("Player %s score changed by %f and is now %d", pl->name, points, pl->score);
 
