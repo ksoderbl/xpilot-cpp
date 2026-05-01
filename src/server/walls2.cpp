@@ -1246,176 +1246,176 @@ void Move_point(const move_t *move, struct collans *answer)
  * not explicitly constructed in the algorithm). Return the number of a group
  * that would be hit during morphing or NO_GROUP if there is enough room. */
 /* This might be useful elsewhere in the code, need not be kept static */
-// static int Shape_morph(shape_t *shape1, int dir1,
-//                        shape_t *shape2, int dir2,
-//                        hitmask_t hitmask, const object_t *obj,
-//                        int x, int y,
-//                        struct collans *myanswer)
-// {
-//     struct collans answer;
-//     int i, p, xo1, xo2, yo1, yo2, xn1, xn2, yn1, yn2, xp, yp, s, t;
-//     uint16_t *points;
-//     move_t mv;
-//     /*clpos_t *pts1, *pts2;*/
-//     int num_points;
+static int Shape_morph(shape_t *shape1, int dir1,
+                       shape_t *shape2, int dir2,
+                       hitmask_t hitmask, const object_t *obj,
+                       int x, int y,
+                       struct collans *myanswer)
+{
+    struct collans answer;
+    int i, p, xo1, xo2, yo1, yo2, xn1, xn2, yn1, yn2, xp, yp, s, t;
+    uint16_t *points;
+    move_t mv;
+    /*clpos_t *pts1, *pts2;*/
+    int num_points;
 
-//     mv.hitmask = hitmask;
-//     mv.obj = obj;
-//     /*pts1 = Shape_get_points((shape_t *)shape1, dir1);
-//       pts2 = Shape_get_points((shape_t *)shape2, dir2);*/
+    mv.hitmask = hitmask;
+    mv.obj = obj;
+    /*pts1 = Shape_get_points((shape_t *)shape1, dir1);
+      pts2 = Shape_get_points((shape_t *)shape2, dir2);*/
 
-//     /* kps - can this happen ?? */
-//     if (shape1->num_points != shape2->num_points)
-//         warn("Shape_morph: shapes have different number of points!");
+    /* kps - can this happen ?? */
+    if (shape1->num_points != shape2->num_points)
+        warn("Shape_morph: shapes have different number of points!");
 
-//     num_points = shape1->num_points;
+    num_points = shape1->num_points;
 
-//     for (i = 0; i < num_points; i++)
-//     {
-//         clpos_t pt1, pt2;
-//         /*clpos_t ptx1, ptx2;
+    for (i = 0; i < num_points; i++)
+    {
+        clpos_t pt1, pt2;
+        /*clpos_t ptx1, ptx2;
 
-//           ptx1 = pts1[i];
-//           ptx2 = pts2[i];*/
-//         pt1 = Ship_get_point_clpos((shipshape_t *)shape1, i, dir1);
-//         pt2 = Ship_get_point_clpos((shipshape_t *)shape2, i, dir2);
+          ptx1 = pts1[i];
+          ptx2 = pts2[i];*/
+        pt1 = Ship_get_point_clpos((shipshape_t *)shape1, i, dir1);
+        pt2 = Ship_get_point_clpos((shipshape_t *)shape2, i, dir2);
 
-//         /*assert(ptx1.cx == pt1.cx);
-//           assert(ptx1.cy == pt1.cy);
-//           assert(ptx2.cx == pt2.cx);
-//           assert(ptx2.cy == pt2.cy);*/
+        /*assert(ptx1.cx == pt1.cx);
+          assert(ptx1.cy == pt1.cy);
+          assert(ptx2.cx == pt2.cx);
+          assert(ptx2.cy == pt2.cy);*/
 
-//         mv.start.cx = x + pt1.cx;
-//         mv.start.cy = y + pt1.cy;
-//         mv.delta.cx = x + pt2.cx - mv.start.cx;
-//         mv.delta.cy = y + pt2.cy - mv.start.cy;
-//         mv.start.cx = WRAP_XCLICK(mv.start.cx);
-//         mv.start.cy = WRAP_YCLICK(mv.start.cy);
-//         while (mv.delta.cx || mv.delta.cy)
-//         {
-//             Move_point(&mv, &answer);
-//             if (answer.line != -1)
-//             {
-//                 /* report what lines/points/vectors caused the move to fail*/
-//                 myanswer->line = answer.line;
-//                 myanswer->point = i;
-//                 myanswer->moved.cx = mv.delta.cx;
-//                 myanswer->moved.cy = mv.delta.cy;
-//                 return linet[answer.line].group;
-//             }
-//             mv.start.cx = WRAP_XCLICK(mv.start.cx + answer.moved.cx);
-//             mv.start.cy = WRAP_YCLICK(mv.start.cy + answer.moved.cy);
-//             mv.delta.cx -= answer.moved.cx;
-//             mv.delta.cy -= answer.moved.cy;
-//         }
-//     }
+        mv.start.cx = x + pt1.cx;
+        mv.start.cy = y + pt1.cy;
+        mv.delta.cx = x + pt2.cx - mv.start.cx;
+        mv.delta.cy = y + pt2.cy - mv.start.cy;
+        mv.start.cx = WRAP_XCLICK(mv.start.cx);
+        mv.start.cy = WRAP_YCLICK(mv.start.cy);
+        while (mv.delta.cx || mv.delta.cy)
+        {
+            Move_point(&mv, &answer);
+            if (answer.line != -1)
+            {
+                /* report what lines/points/vectors caused the move to fail*/
+                myanswer->line = answer.line;
+                myanswer->point = i;
+                myanswer->moved.cx = mv.delta.cx;
+                myanswer->moved.cy = mv.delta.cy;
+                return linet[answer.line].group;
+            }
+            mv.start.cx = WRAP_XCLICK(mv.start.cx + answer.moved.cx);
+            mv.start.cy = WRAP_YCLICK(mv.start.cy + answer.moved.cy);
+            mv.delta.cx -= answer.moved.cx;
+            mv.delta.cy -= answer.moved.cy;
+        }
+    }
 
-//     /* Convex shapes would be much easier. */
-//     points = blockline[(x >> B_SHIFT) + mapx * (y >> B_SHIFT)].points;
-//     while ((p = *points++) != 65535)
-//     {
-//         clpos_t pto1, ptn1;
+    /* Convex shapes would be much easier. */
+    points = blockline[(x >> B_SHIFT) + mapx * (y >> B_SHIFT)].points;
+    while ((p = *points++) != 65535)
+    {
+        clpos_t pto1, ptn1;
 
-//         if (linet[p].group && (!can_hit(&groups[linet[p].group], &mv)))
-//             continue;
-//         xp = CENTER_XCLICK(linet[p].start.cx - x);
-//         yp = CENTER_YCLICK(linet[p].start.cy - y);
+        if (linet[p].group && (!can_hit(&groups[linet[p].group], &mv)))
+            continue;
+        xp = CENTER_XCLICK(linet[p].start.cx - x);
+        yp = CENTER_YCLICK(linet[p].start.cy - y);
 
-//         /*pto1 = pts1[num_points - 1];
-//           ptn1 = pts2[num_points - 1];*/
-//         pto1 = Ship_get_point_clpos((shipshape_t *)shape1, num_points - 1, dir1);
-//         ptn1 = Ship_get_point_clpos((shipshape_t *)shape2, num_points - 1, dir2);
+        /*pto1 = pts1[num_points - 1];
+          ptn1 = pts2[num_points - 1];*/
+        pto1 = Ship_get_point_clpos((shipshape_t *)shape1, num_points - 1, dir1);
+        ptn1 = Ship_get_point_clpos((shipshape_t *)shape2, num_points - 1, dir2);
 
-//         xo1 = pto1.cx - xp;
-//         yo1 = pto1.cy - yp;
-//         xn1 = ptn1.cx - xp;
-//         yn1 = ptn1.cy - yp;
-//         t = 0;
+        xo1 = pto1.cx - xp;
+        yo1 = pto1.cy - yp;
+        xn1 = ptn1.cx - xp;
+        yn1 = ptn1.cy - yp;
+        t = 0;
 
-//         for (i = 0; i < num_points; i++)
-//         {
-//             clpos_t pto2, ptn2;
+        for (i = 0; i < num_points; i++)
+        {
+            clpos_t pto2, ptn2;
 
-//             /*pto2 = pts1[i];
-//               ptn2 = pts2[i];*/
-//             pto2 = Ship_get_point_clpos((shipshape_t *)shape1, i, dir1);
-//             ptn2 = Ship_get_point_clpos((shipshape_t *)shape2, i, dir2);
+            /*pto2 = pts1[i];
+              ptn2 = pts2[i];*/
+            pto2 = Ship_get_point_clpos((shipshape_t *)shape1, i, dir1);
+            ptn2 = Ship_get_point_clpos((shipshape_t *)shape2, i, dir2);
 
-//             xo2 = pto2.cx - xp;
-//             yo2 = pto2.cy - yp;
-//             xn2 = ptn2.cx - xp;
-//             yn2 = ptn2.cy - yp;
+            xo2 = pto2.cx - xp;
+            yo2 = pto2.cy - yp;
+            xn2 = ptn2.cx - xp;
+            yn2 = ptn2.cy - yp;
 
-// #define TEMPFUNC(X1, Y1, X2, Y2)                                             \
-//     myanswer->line = -1;                                                     \
-//     myanswer->point = i;                                                     \
-//     myanswer->moved.cx = (X2) - (X1);                                        \
-//     myanswer->moved.cy = (Y2) - (Y1);                                        \
-//     if ((X1) < 0)                                                            \
-//     {                                                                        \
-//         if ((X2) >= 0)                                                       \
-//         {                                                                    \
-//             if ((Y1) > 0 && (Y2) >= 0)                                       \
-//                 t++;                                                         \
-//             else if (((Y1) >= 0 || (Y2) >= 0) &&                             \
-//                      (s = (X1) * ((Y1) - (Y2)) - (Y1) * ((X1) - (X2))) >= 0) \
-//             {                                                                \
-//                 if (s == 0)                                                  \
-//                 {                                                            \
-//                     return linet[p].group;                                   \
-//                 }                                                            \
-//                 else                                                         \
-//                     t++;                                                     \
-//             }                                                                \
-//         }                                                                    \
-//     }                                                                        \
-//     else                                                                     \
-//     {                                                                        \
-//         if ((X2) <= 0)                                                       \
-//         {                                                                    \
-//             if ((X2) == 0)                                                   \
-//             {                                                                \
-//                 if ((Y2) == 0 || ((X1) == 0 && (((Y1) <= 0 && (Y2) >= 0) ||  \
-//                                                 ((Y1) >= 0 && (Y2) <= 0))))  \
-//                 {                                                            \
-//                     return linet[p].group;                                   \
-//                 }                                                            \
-//             }                                                                \
-//             else if ((Y1) > 0 && (Y2) >= 0)                                  \
-//                 t++;                                                         \
-//             else if (((Y1) >= 0 || (Y2) >= 0) &&                             \
-//                      (s = (X1) * ((Y1) - (Y2)) - (Y1) * ((X1) - (X2))) <= 0) \
-//             {                                                                \
-//                 if (s == 0)                                                  \
-//                     return linet[p].group;                                   \
-//                 else                                                         \
-//                     t++;                                                     \
-//             }                                                                \
-//         }                                                                    \
-//     }
+#define TEMPFUNC(X1, Y1, X2, Y2)                                             \
+    myanswer->line = -1;                                                     \
+    myanswer->point = i;                                                     \
+    myanswer->moved.cx = (X2) - (X1);                                        \
+    myanswer->moved.cy = (Y2) - (Y1);                                        \
+    if ((X1) < 0)                                                            \
+    {                                                                        \
+        if ((X2) >= 0)                                                       \
+        {                                                                    \
+            if ((Y1) > 0 && (Y2) >= 0)                                       \
+                t++;                                                         \
+            else if (((Y1) >= 0 || (Y2) >= 0) &&                             \
+                     (s = (X1) * ((Y1) - (Y2)) - (Y1) * ((X1) - (X2))) >= 0) \
+            {                                                                \
+                if (s == 0)                                                  \
+                {                                                            \
+                    return linet[p].group;                                   \
+                }                                                            \
+                else                                                         \
+                    t++;                                                     \
+            }                                                                \
+        }                                                                    \
+    }                                                                        \
+    else                                                                     \
+    {                                                                        \
+        if ((X2) <= 0)                                                       \
+        {                                                                    \
+            if ((X2) == 0)                                                   \
+            {                                                                \
+                if ((Y2) == 0 || ((X1) == 0 && (((Y1) <= 0 && (Y2) >= 0) ||  \
+                                                ((Y1) >= 0 && (Y2) <= 0))))  \
+                {                                                            \
+                    return linet[p].group;                                   \
+                }                                                            \
+            }                                                                \
+            else if ((Y1) > 0 && (Y2) >= 0)                                  \
+                t++;                                                         \
+            else if (((Y1) >= 0 || (Y2) >= 0) &&                             \
+                     (s = (X1) * ((Y1) - (Y2)) - (Y1) * ((X1) - (X2))) <= 0) \
+            {                                                                \
+                if (s == 0)                                                  \
+                    return linet[p].group;                                   \
+                else                                                         \
+                    t++;                                                     \
+            }                                                                \
+        }                                                                    \
+    }
 
-//             TEMPFUNC(xo1, yo1, xn1, yn1);
-//             TEMPFUNC(xn1, yn1, xn2, yn2);
-//             TEMPFUNC(xn2, yn2, xo2, yo2);
-//             TEMPFUNC(xo2, yo2, xo1, yo1);
-// #undef TEMPFUNC
+            TEMPFUNC(xo1, yo1, xn1, yn1);
+            TEMPFUNC(xn1, yn1, xn2, yn2);
+            TEMPFUNC(xn2, yn2, xo2, yo2);
+            TEMPFUNC(xo2, yo2, xo1, yo1);
+#undef TEMPFUNC
 
-//             if (t & 1)
-//             {
-//                 myanswer->line = -1; /*p not a line, but point*/
-//                 myanswer->point = i;
-//                 myanswer->moved.cx = p;
-//                 myanswer->moved.cy = 0;
-//                 return linet[p].group;
-//             }
-//             xo1 = xo2;
-//             yo1 = yo2;
-//             xn1 = xn2;
-//             yn1 = yn2;
-//         }
-//     }
-//     return NO_GROUP;
-// }
+            if (t & 1)
+            {
+                myanswer->line = -1; /*p not a line, but point*/
+                myanswer->point = i;
+                myanswer->moved.cx = p;
+                myanswer->moved.cy = 0;
+                return linet[p].group;
+            }
+            xo1 = xo2;
+            yo1 = yo2;
+            xn1 = xn2;
+            yn1 = yn2;
+        }
+    }
+    return NO_GROUP;
+}
 
 /* Try to move one click away from a line after a collision. Needed because
  * otherwise we could keep hitting it even though direction of movement
@@ -1645,105 +1645,106 @@ static void store_4byte(int value, uint8_t **start, int *offset, int *sz)
     store_2byte(value & 0xffff, start, offset, sz);
 }
 
-// int Polys_to_client(uint8_t **start)
-// {
-//     int i, j, startx, starty, dx, dy;
-//     int *edges;
-//     int size, offset;
-// #define STORE1(x) store_byte(x, start, &offset, &size)
-// #define STORE2(x) store_2byte(x, start, &offset, &size)
-// #define STORE4(x) store_4byte(x, start, &offset, &size)
+int Polys_to_client(uint8_t **start)
+{
+    int i, j, startx, starty, dx, dy;
+    int *edges;
+    int size, offset;
+#define STORE1(x) store_byte(x, start, &offset, &size)
+#define STORE2(x) store_2byte(x, start, &offset, &size)
+#define STORE4(x) store_4byte(x, start, &offset, &size)
 
-//     *start = (uint8_t *)ralloc(NULL, 100);
-//     size = 100;
-//     offset = 0;
+    *start = (uint8_t *)ralloc(NULL, 100);
+    size = 100;
+    offset = 0;
 
-//     STORE1(num_pstyles);
-//     STORE1(num_estyles);
-//     STORE1(num_bstyles);
-//     for (i = 0; i < num_pstyles; i++)
-//     {
-//         STORE4(pstyles[i].color);
-//         STORE1(pstyles[i].texture_id);
-//         STORE1(pstyles[i].defedge_id);
-//         STORE1(pstyles[i].flags);
-//     }
-//     for (i = 0; i < num_estyles; i++)
-//     {
-//         STORE1(estyles[i].width);
-//         STORE4(estyles[i].color);
-//         STORE1(estyles[i].style);
-//     }
-//     for (i = 0; i < num_bstyles; i++)
-//     {
-//         j = 0;
-//         while (1)
-//         {
-//             STORE1(bstyles[i].filename[j]);
-//             if (!bstyles[i].filename[j])
-//                 break;
-//             j++;
-//         }
-//         STORE1(bstyles[i].flags);
-//     }
-//     STORE2(num_polys);
-//     for (i = 0; i < num_polys; i++)
-//     {
-//         STORE1(pdata[i].style);
-//         j = pdata[i].num_points;
-//         STORE2(pdata[i].num_echanges);
-//         edges = estyleptr + pdata[i].estyles_start;
-//         while (*edges != INT_MAX)
-//             STORE2(*edges++);
-//         startx = pdata[i].pos.cx;
-//         starty = pdata[i].pos.cy;
-//         edges = edgeptr + pdata[i].edges;
-//         STORE2(j);
-//         STORE2(startx >> CLICK_SHIFT);
-//         STORE2(starty >> CLICK_SHIFT);
-//         dx = startx;
-//         dy = starty;
-//         for (; j > 0; j--)
-//         {
-//             dx += *edges++;
-//             dy += *edges++;
-//             if (j != 1)
-//             {
-//                 STORE2((dx >> CLICK_SHIFT) - (startx >> CLICK_SHIFT));
-//                 STORE2((dy >> CLICK_SHIFT) - (starty >> CLICK_SHIFT));
-//             }
-//             startx = dx;
-//             starty = dy;
-//         }
-//     }
-//     STORE1(world->NumBases);
-//     for (i = 0; i < Num_bases(); i++)
-//     {
-//         base_t *base = Base_by_index(i);
-//         if (base->team == TEAM_NOT_SET)
-//             STORE1(0);
-//         else
-//             STORE1(base->team);
-//         STORE2(base->pos.cx >> CLICK_SHIFT);
-//         STORE2(base->pos.cy >> CLICK_SHIFT);
-//         STORE1(base->dir);
-//     }
-//     STORE2(Num_fuels());
-//     for (i = 0; i < Num_fuels(); i++)
-//     {
-//         fuel_t *fs = Fuel_by_index(i);
+    STORE1(num_pstyles);
+    STORE1(num_estyles);
+    STORE1(num_bstyles);
+    for (i = 0; i < num_pstyles; i++)
+    {
+        STORE4(pstyles[i].color);
+        STORE1(pstyles[i].texture_id);
+        STORE1(pstyles[i].defedge_id);
+        STORE1(pstyles[i].flags);
+    }
+    for (i = 0; i < num_estyles; i++)
+    {
+        STORE1(estyles[i].width);
+        STORE4(estyles[i].color);
+        STORE1(estyles[i].style);
+    }
+    for (i = 0; i < num_bstyles; i++)
+    {
+        j = 0;
+        while (1)
+        {
+            STORE1(bstyles[i].filename[j]);
+            if (!bstyles[i].filename[j])
+                break;
+            j++;
+        }
+        STORE1(bstyles[i].flags);
+    }
+    STORE2(num_polys);
+    for (i = 0; i < num_polys; i++)
+    {
+        STORE1(pdata[i].style);
+        j = pdata[i].num_points;
+        STORE2(pdata[i].num_echanges);
+        edges = estyleptr + pdata[i].estyles_start;
+        while (*edges != INT_MAX)
+            STORE2(*edges++);
+        startx = pdata[i].pos.cx;
+        starty = pdata[i].pos.cy;
+        edges = edgeptr + pdata[i].edges;
+        STORE2(j);
+        STORE2(startx >> CLICK_SHIFT);
+        STORE2(starty >> CLICK_SHIFT);
+        dx = startx;
+        dy = starty;
+        for (; j > 0; j--)
+        {
+            dx += *edges++;
+            dy += *edges++;
+            if (j != 1)
+            {
+                STORE2((dx >> CLICK_SHIFT) - (startx >> CLICK_SHIFT));
+                STORE2((dy >> CLICK_SHIFT) - (starty >> CLICK_SHIFT));
+            }
+            startx = dx;
+            starty = dy;
+        }
+    }
+    STORE1(world->NumBases);
+    for (i = 0; i < Num_bases(); i++)
+    {
+        base_t *base = Base_by_index(i);
+        if (base->team == TEAM_NOT_SET)
+            STORE1(0);
+        else
+            STORE1(base->team);
+        STORE2(base->pos.cx >> CLICK_SHIFT);
+        STORE2(base->pos.cy >> CLICK_SHIFT);
+        STORE1(base->dir);
+    }
+    STORE2(Num_fuels());
+    for (i = 0; i < Num_fuels(); i++)
+    {
+        fuel_t *fs = Fuel_by_index(i);
 
-//         STORE2(fs->pos.cx >> CLICK_SHIFT);
-//         STORE2(fs->pos.cy >> CLICK_SHIFT);
-//     }
-//     STORE1(world->NumChecks);
-//     for (i = 0; i < world->NumChecks; i++)
-//     {
-//         STORE2(world->checks[i].pos.cx >> CLICK_SHIFT);
-//         STORE2(world->checks[i].pos.cy >> CLICK_SHIFT);
-//     }
-//     return offset;
-// }
+        STORE2(fs->pos.cx >> CLICK_SHIFT);
+        STORE2(fs->pos.cy >> CLICK_SHIFT);
+    }
+    STORE1(world->NumChecks);
+    // TODO
+    // for (i = 0; i < world->NumChecks; i++)
+    // {
+    //     STORE2(world->checks[i].pos.cx >> CLICK_SHIFT);
+    //     STORE2(world->checks[i].pos.cy >> CLICK_SHIFT);
+    // }
+    return offset;
+}
 
 struct tempy
 {
@@ -1761,195 +1762,195 @@ struct templine
  * a polygon belonging to a group that could be hit by the given
  * hitmask/object.
  * Return the number of a group that would be hit or NO_GROUP. */
-// int is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj)
-// {
-//     short *ptr;
-//     int inside, cx1, cx2, cy1, cy2, s;
-//     struct inside_block *gblock;
-//     move_t mv;
+int is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj)
+{
+    short *ptr;
+    int inside, cx1, cx2, cy1, cy2, s;
+    struct inside_block *gblock;
+    move_t mv;
 
-// #if 0
-//     /* kps - is_inside seems to assume that cx and cy are inside the map */
-//     clpos_t pos;
+#if 0
+    /* kps - is_inside seems to assume that cx and cy are inside the map */
+    clpos_t pos;
 
-//     pos.cx = cx;
-//     pos.cy = cy;
+    pos.cx = cx;
+    pos.cy = cy;
 
-//     assert(World_contains_clpos(&World, pos));
-// #endif
+    assert(World_contains_clpos(&World, pos));
+#endif
 
-//     mv.hitmask = hitmask;
-//     mv.obj = obj;
-//     gblock = &inside_table[(cx >> B_SHIFT) + mapx * (cy >> B_SHIFT)];
-//     if (gblock->group == NO_GROUP)
-//         return NO_GROUP;
-//     do
-//     {
-//         if (gblock->group && (!can_hit(&groups[gblock->group], &mv)))
-//         {
-//             gblock = gblock->next;
-//             continue;
-//         }
-//         inside = gblock->base_value;
-//         if (gblock->lines == NULL)
-//         {
-//             if (inside)
-//                 return gblock->group;
-//             else
-//             {
-//                 gblock = gblock->next;
-//                 continue;
-//             }
-//         }
-//         cx &= B_MASK;
-//         cy &= B_MASK;
-//         ptr = gblock->y;
-//         if (ptr)
-//             while (cy > *ptr++)
-//                 inside++;
-//         ptr = gblock->lines;
-//         while (*ptr != 32767)
-//         {
-//             cx1 = *ptr++ - cx;
-//             cy1 = *ptr++ - cy;
-//             cx2 = *ptr++ - cx;
-//             cy2 = *ptr++ - cy;
-//             if (cy1 < 0)
-//             {
-//                 if (cy2 >= 0)
-//                 {
-//                     if (cx1 > 0 && cx2 >= 0)
-//                         inside++;
-//                     else if ((cx1 >= 0 || cx2 >= 0) &&
-//                              (s = cy1 * (cx1 - cx2) - cx1 * (cy1 - cy2)) >= 0)
-//                     {
-//                         if (s == 0)
-//                             return gblock->group;
-//                         else
-//                             inside++;
-//                     }
-//                 }
-//             }
-//             else if (cy2 <= 0)
-//             {
-//                 if (cy2 == 0)
-//                 {
-//                     if (cx2 == 0 || (cy1 == 0 && ((cx1 <= 0 && cx2 >= 0) ||
-//                                                   (cx1 >= 0 && cx2 <= 0))))
-//                         return gblock->group;
-//                 }
-//                 else if (cx1 > 0 && cx2 >= 0)
-//                     inside++;
-//                 else if ((cx1 >= 0 || cx2 >= 0) &&
-//                          (s = cy1 * (cx1 - cx2) - cx1 * (cy1 - cy2)) <= 0)
-//                 {
-//                     if (s == 0)
-//                         return gblock->group;
-//                     else
-//                         inside++;
-//                 }
-//             }
-//         }
-//         if (inside & 1)
-//             return gblock->group;
-//         gblock = gblock->next;
-//     } while (gblock);
-//     return NO_GROUP;
-// }
+    mv.hitmask = hitmask;
+    mv.obj = obj;
+    gblock = &inside_table[(cx >> B_SHIFT) + mapx * (cy >> B_SHIFT)];
+    if (gblock->group == NO_GROUP)
+        return NO_GROUP;
+    do
+    {
+        if (gblock->group && (!can_hit(&groups[gblock->group], &mv)))
+        {
+            gblock = gblock->next;
+            continue;
+        }
+        inside = gblock->base_value;
+        if (gblock->lines == NULL)
+        {
+            if (inside)
+                return gblock->group;
+            else
+            {
+                gblock = gblock->next;
+                continue;
+            }
+        }
+        cx &= B_MASK;
+        cy &= B_MASK;
+        ptr = gblock->y;
+        if (ptr)
+            while (cy > *ptr++)
+                inside++;
+        ptr = gblock->lines;
+        while (*ptr != 32767)
+        {
+            cx1 = *ptr++ - cx;
+            cy1 = *ptr++ - cy;
+            cx2 = *ptr++ - cx;
+            cy2 = *ptr++ - cy;
+            if (cy1 < 0)
+            {
+                if (cy2 >= 0)
+                {
+                    if (cx1 > 0 && cx2 >= 0)
+                        inside++;
+                    else if ((cx1 >= 0 || cx2 >= 0) &&
+                             (s = cy1 * (cx1 - cx2) - cx1 * (cy1 - cy2)) >= 0)
+                    {
+                        if (s == 0)
+                            return gblock->group;
+                        else
+                            inside++;
+                    }
+                }
+            }
+            else if (cy2 <= 0)
+            {
+                if (cy2 == 0)
+                {
+                    if (cx2 == 0 || (cy1 == 0 && ((cx1 <= 0 && cx2 >= 0) ||
+                                                  (cx1 >= 0 && cx2 <= 0))))
+                        return gblock->group;
+                }
+                else if (cx1 > 0 && cx2 >= 0)
+                    inside++;
+                else if ((cx1 >= 0 || cx2 >= 0) &&
+                         (s = cy1 * (cx1 - cx2) - cx1 * (cy1 - cy2)) <= 0)
+                {
+                    if (s == 0)
+                        return gblock->group;
+                    else
+                        inside++;
+                }
+            }
+        }
+        if (inside & 1)
+            return gblock->group;
+        gblock = gblock->next;
+    } while (gblock);
+    return NO_GROUP;
+}
 
 // /* Similar to the above, except check whether any part of the shape
 //  * (edge or inside) would hit the group. */
-// int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
-//                     shape_t *s, int dir)
-// {
-//     static clpos_t zeropos;
-//     static shape_t zeroshape;
-//     int i, group;
-//     struct collans ans;
+int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
+                    shape_t *s, int dir)
+{
+    static clpos_t zeropos;
+    static shape_t zeroshape;
+    int i, group;
+    struct collans ans;
 
-//     /* Implemented by first checking whether the middle point of the
-//      * shape is on top of something. If not, check whether it is possible
-//      * to enlarge a degenerate shape where all points are on top of each
-//      * other (at the middle point) to the given one. (So it relies on the
-//      * rule that the shape must contain the middle point. */
+    /* Implemented by first checking whether the middle point of the
+     * shape is on top of something. If not, check whether it is possible
+     * to enlarge a degenerate shape where all points are on top of each
+     * other (at the middle point) to the given one. (So it relies on the
+     * rule that the shape must contain the middle point. */
 
-//     if ((group = is_inside(cx, cy, hitmask, obj)) != NO_GROUP)
-//         return group;
+    if ((group = is_inside(cx, cy, hitmask, obj)) != NO_GROUP)
+        return group;
 
-//     /*
-//      * kps - Ship numpoints can be > MAX_SHIP_PTS because of
-//      * SSHACK. This should somehow be fixed.
-//      */
-//     zeroshape.num_points = s->num_points;
+    /*
+     * kps - Ship numpoints can be > MAX_SHIP_PTS because of
+     * SSHACK. This should somehow be fixed.
+     */
+    zeroshape.num_points = s->num_points;
 
-//     if (zeroshape.pts[0] == NULL)
-//     {
-//         for (i = 0; i < MAX_SHIP_PTS2; i++)
-//             zeroshape.pts[i] = &zeropos;
-//     }
+    if (zeroshape.pts[0] == NULL)
+    {
+        for (i = 0; i < MAX_SHIP_PTS2; i++)
+            zeroshape.pts[i] = &zeropos;
+    }
 
-//     return Shape_morph(&zeroshape, 0, s, dir, hitmask, obj, cx, cy, &ans);
-// }
+    return Shape_morph(&zeroshape, 0, s, dir, hitmask, obj, cx, cy, &ans);
+}
 
-// static void closest_line(int bx, int by, double dist, int inside)
-// {
-//     if (dist <= temparray[bx + mapx * by].distance)
-//     {
-//         if (dist == temparray[bx + mapx * by].distance)
-//             /* Must be joined polygons(s) if the map is legal
-//              * (the same line appears in both directions).
-//              * Both sides of this line are inside. */
-//             /* These lines could be removed from the table as a minor
-//              * optimization. */
-//             inside = 1;
-//         temparray[bx + mapx * by].distance = dist;
-//         temparray[bx + mapx * by].inside = inside;
-//     }
-// }
+static void closest_line(int bx, int by, double dist, int inside)
+{
+    if (dist <= temparray[bx + mapx * by].distance)
+    {
+        if (dist == temparray[bx + mapx * by].distance)
+            /* Must be joined polygons(s) if the map is legal
+             * (the same line appears in both directions).
+             * Both sides of this line are inside. */
+            /* These lines could be removed from the table as a minor
+             * optimization. */
+            inside = 1;
+        temparray[bx + mapx * by].distance = dist;
+        temparray[bx + mapx * by].inside = inside;
+    }
+}
 
-// static void insert_y(int block, int y)
-// {
-//     struct tempy *ptr;
-//     struct tempy **prev;
+static void insert_y(int block, int y)
+{
+    struct tempy *ptr;
+    struct tempy **prev;
 
-//     ptr = temparray[block].y;
-//     prev = &temparray[block].y;
-//     while (ptr && ptr->y < y)
-//     {
-//         prev = &ptr->next;
-//         ptr = ptr->next;
-//     }
-//     if (ptr && ptr->y == y)
-//     {
-//         *prev = ptr->next;
-//         free(ptr);
-//         return;
-//     }
-//     *prev = (struct tempy *)ralloc(NULL, sizeof(struct tempy));
-//     (*prev)->y = y;
-//     (*prev)->next = ptr;
-// }
+    ptr = temparray[block].y;
+    prev = &temparray[block].y;
+    while (ptr && ptr->y < y)
+    {
+        prev = &ptr->next;
+        ptr = ptr->next;
+    }
+    if (ptr && ptr->y == y)
+    {
+        *prev = ptr->next;
+        free(ptr);
+        return;
+    }
+    *prev = (struct tempy *)ralloc(NULL, sizeof(struct tempy));
+    (*prev)->y = y;
+    (*prev)->next = ptr;
+}
 
-// static void store_inside_line(int bx, int by, int ox, int oy, int dx, int dy)
-// {
-//     int block;
-//     struct templine *s;
+static void store_inside_line(int bx, int by, int ox, int oy, int dx, int dy)
+{
+    int block;
+    struct templine *s;
 
-//     block = bx + mapx * by;
-//     ox = CENTER_XCLICK(ox - bx * B_CLICKS);
-//     oy = CENTER_YCLICK(oy - by * B_CLICKS);
-//     if (oy >= 0 && oy < B_CLICKS && ox >= B_CLICKS)
-//         insert_y(block, oy);
-//     if (oy + dy >= 0 && oy + dy < B_CLICKS && ox + dx >= B_CLICKS)
-//         insert_y(block, oy + dy);
-//     s = (struct templine *)ralloc(NULL, sizeof(struct templine));
-//     s->x1 = ox;
-//     s->x2 = ox + dx;
-//     s->y1 = oy;
-//     s->y2 = oy + dy;
-//     s->next = temparray[block].lines;
-//     temparray[block].lines = s;
-// }
+    block = bx + mapx * by;
+    ox = CENTER_XCLICK(ox - bx * B_CLICKS);
+    oy = CENTER_YCLICK(oy - by * B_CLICKS);
+    if (oy >= 0 && oy < B_CLICKS && ox >= B_CLICKS)
+        insert_y(block, oy);
+    if (oy + dy >= 0 && oy + dy < B_CLICKS && ox + dx >= B_CLICKS)
+        insert_y(block, oy + dy);
+    s = (struct templine *)ralloc(NULL, sizeof(struct templine));
+    s->x1 = ox;
+    s->x2 = ox + dx;
+    s->y1 = oy;
+    s->y2 = oy + dy;
+    s->next = temparray[block].lines;
+    temparray[block].lines = s;
+}
 
 // static void finish_inside(int block, int group)
 // {
