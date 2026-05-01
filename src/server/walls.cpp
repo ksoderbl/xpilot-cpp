@@ -327,7 +327,7 @@ void Move_init(void)
     LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
     LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);
     LIMIT(options.playerWallBrakeFactor, 0, 1);
-    LIMIT(options.objectWallBrakeFactor, 0, 1);
+    LIMIT(options.objectWallBounceBrakeFactor, 0, 1);
     LIMIT(options.objectWallBounceLifeFactor, 0, 1);
     LIMIT(options.wallBounceFuelDrainMult, 0, 1000);
     wallBounceExplosionMult = sqrt(options.wallBounceFuelDrainMult);
@@ -2227,10 +2227,10 @@ void Move_object(object_t *obj)
                     obj->life = 0;
                     break;
                 }
-                ms.vel.x *= options.objectWallBrakeFactor;
-                ms.vel.y *= options.objectWallBrakeFactor;
-                ms.todo.cx = (int)(ms.todo.cx * options.objectWallBrakeFactor);
-                ms.todo.cy = (int)(ms.todo.cy * options.objectWallBrakeFactor);
+                ms.vel.x *= options.objectWallBounceBrakeFactor;
+                ms.vel.y *= options.objectWallBounceBrakeFactor;
+                ms.todo.cx = (int)(ms.todo.cx * options.objectWallBounceBrakeFactor);
+                ms.todo.cy = (int)(ms.todo.cy * options.objectWallBounceBrakeFactor);
             }
             if (++nothing_done >= 5)
             {
@@ -2499,7 +2499,7 @@ void Move_player(player_t *pl)
     /* Figure out which friction to use. */
     if (Player_is_phasing(pl))
     {
-        fric = options.friction;
+        fric = options.frictionSetting;
     }
     else
     {
@@ -2509,7 +2509,7 @@ void Move_player(player_t *pl)
             fric = options.blockFriction;
             break;
         default:
-            fric = options.friction;
+            fric = options.frictionSetting;
             break;
         }
     }

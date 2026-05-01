@@ -86,3 +86,15 @@ void Target_update(void)
         world->targets[i].last_change = frame_loops;
     }
 }
+
+void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
+{
+}
+
+void World_restore_target(target_t *targ)
+{
+}
+
+void World_remove_target(target_t *targ)
+{
+}

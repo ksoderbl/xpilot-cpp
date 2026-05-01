@@ -93,7 +93,17 @@ static void Ship_set_m_rack_ipos(shipshape_t *ship, int i, ipos_t pos)
     ship->m_rack[i][0] = ipos2clpos(pos);
 }
 
-// TODO: get rid of these precomputations
+clpos_t *Shape_get_points(shape_t *s, int dir)
+{
+    int i;
+
+    /* kps - optimize if cashed_dir == dir */
+    for (i = 0; i < s->num_points; i++)
+        s->cashed_pts[i] = s->pts[i][dir];
+
+    return s->cashed_pts;
+}
+
 void Rotate_point(clpos_t pt[RES])
 {
     int i;

@@ -324,15 +324,12 @@ static void PlayerCollision(void)
                 sound_play_sensors(pl->pos, PLAYER_HIT_PLAYER_SOUND);
                 if (BIT(world->rules->mode, BOUNCE_WITH_PLAYER))
                 {
-                    if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) !=
-                        (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+                    if (!Player_uses_emergency_shield(pl))
                     {
                         Player_add_fuel(pl, ED_PL_CRASH);
                         Item_damage(pl, options.destroyItemInCollisionProb);
                     }
-                    if (BIT(pl_j->used, (HAS_SHIELD |
-                                         HAS_EMERGENCY_SHIELD)) !=
-                        (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+                    if (!Player_uses_emergency_shield(pl_j))
                     {
                         Player_add_fuel(pl_j, ED_PL_CRASH);
                         Item_damage(pl_j, options.destroyItemInCollisionProb);

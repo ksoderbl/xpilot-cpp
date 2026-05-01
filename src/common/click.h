@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CLICK_H
-#define CLICK_H
+#pragma once
 
 #include "const.h"
 #include "types.h"
@@ -161,5 +160,3 @@ static inline clpos_t position2clpos(position_t pt)
 
     return pos;
 }
-
-#endif

@@ -41,6 +41,7 @@
 #include "checknames.h"
 #include "tuner.h"
 #include "walls.h"
+#include "sched.h"
 
 double friction;
 double coriolisCosine, coriolisSine; /* cos and sin of cor. angle */
@@ -618,15 +619,15 @@ static option_desc opts[] = {
      &options.playerWallBrakeFactor,
      valReal,
      Move_init,
-     "Factor to slow down players when they hit the wall (between 0 and 1).\n",
+     "Factor to slow down players when they hit the wall (0 to 1).\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"objectWallBounceBrakeFactor",
      "objectWallBrake",
      "0.95",
-     &options.objectWallBrakeFactor,
+     &options.objectWallBounceBrakeFactor,
      valReal,
      Move_init,
-     "Factor to slow down objects when they hit the wall (between 0 and 1).\n",
+     "Factor to slow down objects when they hit the wall (0 to 1).\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"objectWallBounceLifeFactor",
      "objectWallBounceLifeFactor",
@@ -634,7 +635,7 @@ static option_desc opts[] = {
      &options.objectWallBounceLifeFactor,
      valReal,
      Move_init,
-     "Factor to reduce the life of objects after bouncing (between 0 and 1).\n",
+     "Factor to reduce the life of objects after bouncing (0 to 1).\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"wallBounceFuelDrainMult",
      "wallBounceDrain",
@@ -1007,6 +1008,25 @@ static option_desc opts[] = {
      tuner_dummy,
      "Is the ball connector made of string?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"ballRadius",
+     "ballRadius",
+     "10.0",
+     &options.ballRadius,
+     valReal,
+     Ball_line_init,
+     "What radius, measured in pixels, the treasure balls have on\n"
+     "the server. In traditional XPilot, the ball was treated as a\n"
+     "point (radius = 0), but visually appeared on the client with\n"
+     "a radius of 10 pixels.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"multipleConnectors",
+     "multipleBallConnectors",
+     "true",
+     &options.multipleConnectors,
+     valBool,
+     tuner_dummy,
+     "Can a player connect to multiple balls or just to one?\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"treasureCollisionMayKill",
      "treasureUnshieldedCollisionKills",
      "false",
@@ -1233,7 +1253,7 @@ static option_desc opts[] = {
      "14",
      &options.framesPerSecond,
      valInt,
-     tuner_fps,
+     Timing_setup,
      "The number of frames per second the server should strive for.\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"allowSmartMissiles",
@@ -2335,7 +2355,7 @@ static option_desc opts[] = {
     {"friction",
      "friction",
      "0.0",
-     &options.friction,
+     &options.frictionSetting,
      valReal,
      tuner_dummy,
      "Fraction of velocity ship loses each frame.\n",
@@ -2617,4 +2637,85 @@ option_desc *Find_option_by_name(const char *name)
             return (&opts[j]);
     }
     return NULL;
+}
+
+void Timing_setup(void)
+{
+    LIMIT(FPS, 1, MAX_SERVER_FPS);
+    //     LIMIT(options.gameSpeed, 0.0, FPS);
+    // #ifndef SELECT_SCHED
+    //     LIMIT(options.timerResolution, 0, 100);
+    // #endif
+    //     if (options.gameSpeed == 0.0)
+    //         options.gameSpeed = FPS;
+    //     if (options.gameSpeed < FPS / 50.)
+    //         options.gameSpeed = FPS / 50.;
+
+    //     /*
+    //      * Calculate amount of game time that elapses per frame.
+    //      */
+    //     timeStep = options.gameSpeed / FPS;
+
+    //     /*
+    //      * Calculate amount of real time that elapses per frame.
+    //      */
+    //     timePerFrame = 1.0 / FPS;
+
+    /*
+     * EXPERIMENTAL FEATURE:
+     * Negative values for friction give an "acceleration area".
+     * kps - maybe we should remove FrictionArea and add AccelerationArea.
+     */
+    LIMIT(options.frictionSetting, -1.0, 1.0);
+    friction = options.frictionSetting;
+    if (friction < 1.0)
+        friction = 1.0 - pow(1.0 - friction, timeStep);
+
+    /* Adjust friction area friction suitable for gameSpeed */
+    {
+        int i;
+
+        LIMIT(options.blockFriction, -1.0, 1.0);
+
+        for (i = 0; i < Num_frictionAreas(); i++)
+        {
+            friction_area_t *fa = FrictionArea_by_index(i);
+            double fric;
+
+            /*
+             * On xp maps, use blockFriction for all the friction areas,
+             * on xp2 maps each friction area has an own friction value.
+             */
+            if (is_polygon_map)
+                fric = fa->friction_setting;
+            else
+                fric = options.blockFriction;
+
+            LIMIT(fric, -1.0, 1.0);
+            if (fric < 1.0)
+                fric = 1.0 - pow(1.0 - fric, timeStep);
+            fa->friction = fric;
+        }
+    }
+
+    /* ecm size used to be halved every update on old servers */
+    ecmSizeFactor = pow(0.5, timeStep);
+
+    {
+        double cor_angle;
+
+        cor_angle = options.coriolis * PI / 180.0;
+
+        coriolisCosine = cos(cor_angle / timeStep);
+        coriolisSine = sin(cor_angle / timeStep);
+    }
+
+    // #ifdef SELECT_SCHED
+    //     install_timer_tick(NULL, FPS);
+    // #else
+    //     install_timer_tick(NULL, options.timerResolution ? options.timerResolution
+    //                                                      : FPS);
+    // #endif
+
+    install_timer_tick(nullptr, FPS);
 }

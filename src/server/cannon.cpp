@@ -749,6 +749,28 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     }
 }
 
+void Object_hits_cannon(object_t *obj, cannon_t *c)
+{
+    if (obj->type == OBJ_ITEM)
+    {
+        itemobject_t *item = ITEM_PTR(obj);
+
+        Cannon_add_item(c, item->item_type, item->item_count);
+    }
+    else
+    {
+        player_t *pl = Player_by_id(obj->id);
+
+        if (!BIT(c->used, HAS_EMERGENCY_SHIELD))
+        {
+            if (c->item[ITEM_ARMOR] > 0)
+                c->item[ITEM_ARMOR]--;
+            else
+                Cannon_dies(c, pl);
+        }
+    }
+}
+
 void Cannon_dies(cannon_t *c, player_t *pl)
 {
     vector_t zero_vel = {0.0, 0.0};

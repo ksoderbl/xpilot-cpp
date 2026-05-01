@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRECORD_H
-#define SRECORD_H
+#pragma once
 
 extern int playback;
 extern int record;
@@ -43,4 +42,3 @@ extern int *playback_ei_start;
 extern char *playback_es_start;
 extern int *playback_opttout;
 extern int recOpt;
-#endif /* SRECORD_H */

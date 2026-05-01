@@ -52,6 +52,8 @@ typedef struct options
     // Frames per autorepeat fire (0=off)
     int fireRepeatRate;
 
+    bool treasureCollisionKills;
+
     // Let robots live even if there  are no players logged in
     bool RawMode;
 
@@ -133,6 +135,9 @@ typedef struct options
     // Do asteroids bounce off walls?
     bool asteroidsWallBounce;
 
+    // Do laser pulses bounce off walls?
+    bool pulsesWallBounce;
+
     // Generate exhaust when cloaked?
     bool cloakedExhaust;
 
@@ -147,6 +152,8 @@ typedef struct options
 
     // max object bounce speed
     double maxObjectWallBounceSpeed;
+
+    double maxSparkWallBounceSpeed;
 
     // max shielded bounce speed
     double maxShieldedWallBounceSpeed;
@@ -163,8 +170,13 @@ typedef struct options
     // wall lowers speed if less than 1
     double playerWallBrakeFactor;
 
+    int playerWallBounceType;
+    double playerWallBounceBrakeFactor;
+    double playerBallBounceBrakeFactor;
+    double playerWallFriction;
+
     // wall lowers speed if less than 1
-    double objectWallBrakeFactor;
+    double objectWallBounceBrakeFactor;
 
     // reduce object life
     double objectWallBounceLifeFactor;
@@ -220,6 +232,8 @@ typedef struct options
     // Do cannons defend themselves?
     bool cannonsDefend;
 
+    bool cannonsPickupItems;
+
     // Do cannons fire flak?
     bool cannonFlak;
 
@@ -230,6 +244,8 @@ typedef struct options
 
     // Keep shots when player leaves?
     bool keepShots;
+
+    bool tagGame;
 
     // Is this a race?
     bool timing;
@@ -364,6 +380,10 @@ typedef struct options
 
     int framesPerSecond;
 
+    double tagItKillScoreMult;
+    double tagKillItScoreMult;
+    bool zeroSumScoring;
+
     bool allowSmartMissiles;
     bool allowHeatSeekers;
     bool allowTorpedoes;
@@ -412,7 +432,8 @@ typedef struct options
     double ballConnectorLength;
     bool connectorIsString; /* can the connector get shorter? */
 
-    double friction;           /* friction only affects ships */
+    // friction only affects ships
+    double frictionSetting;
     double blockFriction;      /* friction in friction blocks */
     bool blockFrictionVisible; /* if yes, friction blocks are decor; */
                                /* if no, friction blocks are space */
@@ -458,9 +479,17 @@ typedef struct options
 
     char *recordFileName;
 
+    double ballRadius;
+    bool multipleConnectors;
+
     char *rankFileName;
     char *rankWebpageFileName;
     char *rankWebpageCSS;
+
+    double turnPushPersistence;
+    double turnGrip;
+
+    double constantSpeed;
 
     bool polygonMode;
 } options_t;

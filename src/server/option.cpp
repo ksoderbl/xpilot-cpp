@@ -489,8 +489,8 @@ static void Option_change_node(
         node->value->override = override;
         node->value->origin = opt_origin;
     }
-#if DEVELOPMENT
-    else
+#ifdef DEVELOPMENT
+    if (set_ok != true)
     {
         const char *old_value_origin_name = Origin_name(node->value->origin);
         const char *new_value_origin_name = Origin_name(opt_origin);
@@ -517,13 +517,38 @@ void Option_set_value(
     hash_value *vp;
     int ix = Option_hash_string(name);
 
+    /* Warn about obsolete behaviour. */
+    if (opt_origin == OPT_MAP && value)
+    {
+        if ((!strcasecmp(name, "mineLife") || (!strcasecmp(name, "missileLife"))) && atoi(value) == 0)
+        {
+            warn("Value of %s is %s in map.", name, value);
+            warn("This is an obsolete way to set the default value.");
+            warn("It will cause the weapon to detonate at once.");
+            warn("To fix, remove the option from the map file.");
+        }
+    }
+
     for (np = Option_hash_array[ix]; np; np = np->next)
     {
         if (!strcasecmp(name, np->name))
         {
+            if (opt_origin == OPT_MAP && np->value->origin == OPT_MAP)
+            {
+                warn("The map contains multiple instances of the option %s.",
+                     name);
+                warn("The server will use the first instance.");
+                return;
+            }
             Option_change_node(np, value, override, opt_origin);
             return;
         }
+    }
+
+    if (opt_origin == OPT_MAP && np == NULL)
+    {
+        warn("Server does not support option '%s'", name);
+        return;
     }
 
     if (!value)
@@ -710,17 +735,22 @@ void Convert_string_to_list(const char *value, std::vector<std::string> *list_pt
     if (list_ptr == NULL)
         return;
 
+    /* make sure list is empty. */
     list_ptr->clear();
 
+    /* copy comma separated list elements from value to list. */
     for (start = value; *start; start = end)
     {
+        /* skip comma separators. */
         while (*start == ',')
             start++;
 
+        /* search for end of list element. */
         end = start;
         while (*end && *end != ',')
             end++;
 
+        /* copy non-zero results to list. */
         if (start < end)
             list_ptr->emplace_back(start, end - start);
     }
@@ -921,10 +951,10 @@ void Options_parse(void)
 {
     int i;
     hash_node *np;
-    option_desc *options;
+    option_desc *option_descs;
     int option_count;
 
-    options = Get_option_descs(&option_count);
+    option_descs = Get_option_descs(&option_count);
 
     /*
      * Expand a possible "-expand" option.
@@ -932,23 +962,20 @@ void Options_parse(void)
     Options_parse_expand();
 
     /*
+     * kps - this might not be necessary.
      * This must be done in order that FPS will return the eventual
-     * frames per second for computing valSec.
+     * frames per second for computing valSec and valPerSec.
      */
     Options_parse_FPS();
 
     for (i = 0; i < option_count; i++)
     {
-        np = Get_hash_node_by_name(options[i].name);
+        np = Get_hash_node_by_name(option_descs[i].name);
         if (np == NULL)
-        {
             dumpcore("Could not find option hash node for option '%s'.",
-                     options[i].name);
-        }
+                     option_descs[i].name);
         else
-        {
             Option_parse_node(np);
-        }
     }
 }
 

@@ -48,13 +48,6 @@ int num_pstyles, num_bstyles, num_estyles = 1;     /* "Internal" edgestyle */
 int max_bases, max_balls, max_polys, max_echanges; /* !@# make static after testing done */
 static int current_estyle, current_group, is_decor;
 
-// From walls2
-struct group *groups = NULL;
-int num_groups = 0, max_groups = 0;
-
-int num_lines = 0;
-int num_polys = 0;
-
 static int Create_group(int type, int team, hitmask_t hitmask,
                         bool (*hitfunc)(group_t *gp, const move_t *move),
                         int mapobj_ind)

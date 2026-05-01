@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#pragma once
 
 #define SERVER
 
@@ -142,20 +141,23 @@ struct cell_node
     cell_node_t *prev;
 };
 
-#define OBJECT_BASE                                      \
-    short id;            /* For shots => id of player */ \
-    uint16_t team;       /* Team of player or cannon */  \
-    clpos_t pos;         /* World coordinates */         \
-    ipos_t pix_pos;      /* World pixel coordinates */   \
-    clpos_t prevpos;     /* previous position */         \
-    vector_t vel;        /* speed in x,y */              \
-    vector_t acc;        /* acceleration in x,y */       \
-    float mass;          /* mass in unigrams */          \
-    modifiers_t mods;    /* Modifiers to this object */  \
-    long life;           /* No of ticks left to live */  \
-    int type;            /* one bit of OBJ_XXX */        \
-    uint8_t color;       /* Color of object */           \
-    uint8_t missile_dir; /* missile direction */         \
+#define OBJECT_BASE                                           \
+    short id;            /* For shots => id of player */      \
+    uint16_t team;       /* Team of player or cannon */       \
+    clpos_t pos;         /* World coordinates */              \
+    ipos_t pix_pos;      /* World pixel coordinates */        \
+    clpos_t prevpos;     /* previous position */              \
+    clpos_t extmove;     /* For collision detection */        \
+    float wall_time;     /* bounce/crash time within frame */ \
+    vector_t vel;        /* speed in x,y */                   \
+    vector_t acc;        /* acceleration in x,y */            \
+    float mass;          /* mass in unigrams */               \
+    modifiers_t mods;    /* Modifiers to this object */       \
+    long life;           /* No of ticks left to live */       \
+    int type;            /* one bit of OBJ_XXX */             \
+    uint8_t color;       /* Color of object */                \
+    uint8_t collmode;    /* collision checking mode */        \
+    uint8_t missile_dir; /* missile direction */              \
     uint32_t obj_status; /* gravity, etc. */
 
 /* up to here all object types are the same as all player types. */
@@ -457,10 +459,19 @@ extern int NumRobots;
 void Object_position_set_clpos(object_t *obj, clpos_t pos);
 void Object_position_init_clpos(object_t *obj, clpos_t pos);
 
-#define Object_position_remember(o_)  \
-    ((o_)->prevpos.cx = (o_)->pos.cx, \
-     (o_)->prevpos.cy = (o_)->pos.cy)
+static inline void Object_position_remember(object_t *obj)
+{
+    obj->prevpos = obj->pos;
+}
 
 const char *Object_typename(object_t *obj);
 
-#endif
+static inline void Object_position_set_clvec(object_t *obj, clvec_t vec)
+{
+    clpos_t pos;
+
+    pos.cx = vec.cx;
+    pos.cy = vec.cy;
+
+    Object_position_set_clpos(obj, pos);
+}

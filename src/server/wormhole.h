@@ -21,11 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WORMHOLE_H
-#define WORMHOLE_H
+#pragma once
 
 #include "click.h"
 
 #define WORMHOLE_RADIUS ((BLOCK_CLICKS / 2) - 1)
-
-#endif

@@ -165,13 +165,6 @@ static int Compress_map(uint8_t *map, size_t size)
     return j;
 }
 
-// TODO: Remove when we use shape_is_inside from xp2map
-static int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
-                           shape_t *s, int dir)
-{
-    return 0;
-}
-
 void Create_blockmap_from_polygons(void)
 {
     int i, h, type;

@@ -178,6 +178,8 @@ int main(int argc, char **argv)
 
     Meta_init();
 
+    Timing_setup();
+
     if (Setup_net_server() == -1)
         End_game();
 

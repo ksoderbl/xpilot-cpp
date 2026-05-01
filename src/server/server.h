@@ -84,17 +84,20 @@ extern int login_in_progress;
 extern server_t Server;
 extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
 // extern int GetInd[];
-extern int ShutdownServer;
-extern int ShutdownDelay;
+extern int ShutdownServer, ShutdownDelay;
 extern long main_loops;
+
+extern int tagItPlayerId;
 extern int mainLoopTime;
 extern char *serverAddr;
 extern bool updateScores;
 extern int game_lock;
+extern double friction;
 extern int roundtime;
 extern int roundsPlayed;
 extern long KILLING_SHOTS;
 // extern unsigned SPACE_BLOCKS;
+extern double coriolisCosine, coriolisSine;
 
 extern char ShutdownReason[];
 
@@ -130,6 +133,24 @@ int CountDefensiveItems(player_t *pl);
 int peek_ID(void);
 int request_ID(void);
 void release_ID(int id);
+
+/*
+ * Prototypes for walls2.c
+ */
+void Groups_init(void);
+void Walls_init(void);
+void Treasure_init(void);
+void Move_init2(void);
+void Move_object2(object_t *obj);
+void Move_player2(player_t *pl);
+void Turn_player2(player_t *pl, bool push);
+int is_inside(int x, int y, hitmask_t hitmask, const object_t *obj);
+int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
+                    shape_t *s, int dir);
+int Polys_to_client(uint8_t **);
+void Ball_line_init(void);
+void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt);
+void Object_crash2(object_t *obj, int crashtype, int mapobj_ind);
 
 /*
  * Prototypes for event.c
@@ -198,6 +219,8 @@ bool parseXp2MapFile(char *fname, optOrigin opt_origin);
  */
 void tuner_none(void);
 void tuner_dummy(void);
+void Check_playerlimit(void);
+void Timing_setup(void);
 bool Init_options(void);
 void Free_options(void);
 
@@ -470,7 +493,7 @@ void Check_tag(void);
  * Prototypes for target.c
  */
 void Target_update(void);
-void Object_hits_target(object_t *obj, target_t *targ, double player_cost);
+void Object_hits_target2(object_t *obj, target_t *targ, double player_cost);
 hitmask_t Target_hitmask(target_t *targ);
 void Target_set_hitmask(int group, target_t *targ);
 void Target_init(void);

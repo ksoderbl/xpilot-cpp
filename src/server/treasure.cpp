@@ -171,3 +171,7 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
 
     return 1;
 }
+
+void Ball_hits_goal(ballobject_t *ball, group_t *gp)
+{
+}

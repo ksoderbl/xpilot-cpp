@@ -316,7 +316,10 @@ void Player_position_restore(player_t *pl);
 void Player_position_limit(player_t *pl);
 void Player_position_debug(player_t *pl, const char *msg);
 
-#define Player_position_remember(p_) Object_position_remember(p_)
+static inline void Player_position_remember(player_t *pl)
+{
+    pl->prevpos = pl->pos;
+}
 
 extern int playerArrayNumber;
 extern player_t **PlayersArray;

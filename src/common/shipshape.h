@@ -87,6 +87,7 @@ extern void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext,
                                   unsigned shape_version);
 extern void Rotate_point(clpos_t pt[RES]);
 extern void Rotate_position(position_t pt[RES]);
+extern clpos_t *Shape_get_points(shape_t *s, int dir);
 
 static inline clpos_t
 Ship_get_point_clpos(shipshape_t *ship, int i, int dir)
