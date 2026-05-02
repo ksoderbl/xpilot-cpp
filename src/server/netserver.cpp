@@ -1108,23 +1108,21 @@ static void Handle_input(int fd, void *arg)
             /*
              * Incomplete client packet.
              * Drop rest of packet.
+             * OPTIMIZED RECORDING MIGHT NOT WORK CORRECTLY
              */
             Sockbuf_clear(&connp->r);
+            xpprintf("Incomplete packet\n");
             break;
         }
         if (connp->state == CONN_PLAYING)
-        {
             connp->start = main_loops;
-        }
     }
 }
 
 int Input(void)
 {
-    int i,
-        ind,
-        num_reliable = 0,
-        input_reliable[MAX_SELECT_FD];
+    int i, num_reliable = 0;
+    int ind, input_reliable[MAX_SELECT_FD];
     connection_t *connp;
     char msg[MSG_LEN];
 
@@ -2506,11 +2504,8 @@ static int Receive_display(connection_t *connp)
 static int Receive_modifier_bank(connection_t *connp)
 {
     player_t *pl;
-    uint8_t bank;
+    uint8_t bank, ch;
     char str[MAX_CHARS];
-    uint8_t ch;
-    char *cp;
-    modifiers_t mods;
     int n;
 
     if ((n = Packet_scanf(&connp->r, "%c%c%s", &ch, &bank, str)) <= 0)
@@ -2520,77 +2515,7 @@ static int Receive_modifier_bank(connection_t *connp)
         return n;
     }
     pl = Player_by_id(connp->id);
-    if (bank < NUM_MODBANKS)
-    {
-        CLEAR_MODS(mods);
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-        {
-            for (cp = str; *cp; cp++)
-            {
-                switch (*cp)
-                {
-                case 'F':
-                case 'f':
-                    if (!BIT(world->rules->mode, ALLOW_NUKES))
-                        break;
-                    if (*(cp + 1) == 'N' || *(cp + 1) == 'n')
-                        SET_BIT(mods.nuclear, MODS_FULLNUCLEAR);
-                    break;
-                case 'N':
-                case 'n':
-                    if (!BIT(world->rules->mode, ALLOW_NUKES))
-                        break;
-                    SET_BIT(mods.nuclear, MODS_NUCLEAR);
-                    break;
-                case 'C':
-                case 'c':
-                    if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
-                        break;
-                    SET_BIT(mods.warhead, CLUSTER);
-                    break;
-                case 'I':
-                case 'i':
-                    SET_BIT(mods.warhead, IMPLOSION);
-                    break;
-                case 'V':
-                case 'v':
-                    cp++;
-                    mods.velocity = str2num(&cp, 0, MODS_VELOCITY_MAX);
-                    cp--;
-                    break;
-                case 'X':
-                case 'x':
-                    cp++;
-                    mods.mini = str2num(&cp, 1, MODS_MINI_MAX + 1) - 1;
-                    cp--;
-                    break;
-                case 'Z':
-                case 'z':
-                    cp++;
-                    mods.spread = str2num(&cp, 0, MODS_SPREAD_MAX);
-                    cp--;
-                    break;
-                case 'B':
-                case 'b':
-                    cp++;
-                    mods.power = str2num(&cp, 0, MODS_POWER_MAX);
-                    cp--;
-                    break;
-                case 'L':
-                case 'l':
-                    cp++;
-                    if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
-                        break;
-                    if (*cp == 'S' || *cp == 's')
-                        SET_BIT(mods.laser, MODS_LASER_STUN);
-                    if (*cp == 'B' || *cp == 'b')
-                        SET_BIT(mods.laser, MODS_LASER_BLIND);
-                    break;
-                }
-            }
-        }
-        pl->modbank[bank] = mods;
-    }
+    Player_set_modbank(pl, bank, str);
     return 1;
 }
 

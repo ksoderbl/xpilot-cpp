@@ -775,7 +775,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
             }
-            else if (shot->mods.nuclear && (frame_loops & 2))
+            else if (Mods_get(shot->mods, ModsNuclear) && (frame_loops_slow & 2))
             {
                 color = RED;
                 teamshot = DEBRIS_TYPES;
@@ -1075,7 +1075,8 @@ static void Frame_radar(connection_t *conn, player_t *pl)
             if (!BIT(shot->type, mask))
                 continue;
 
-            shownuke = (options.nukesOnRadar && (shot)->mods.nuclear);
+            // shownuke = (options.nukesOnRadar && (shot)->mods.nuclear);
+            shownuke = (options.nukesOnRadar && Mods_get(shot->mods, ModsNuclear));
             if (shownuke && (frame_loops_slow & 2))
                 size = 3;
             else

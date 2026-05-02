@@ -33,6 +33,7 @@
 #include "shipshape.h"
 
 #include "map.h"
+#include "option.h"
 #include "modifiers.h"
 #include "serverconst.h"
 
@@ -162,11 +163,12 @@ struct cell_node
 
 /* up to here all object types are the same as all player types. */
 
-#define OBJECT_EXTEND                              \
-    cell_node cell; /* node in cell linked list */ \
-    long fuselife;  /* fuse duration ticks */      \
-    int pl_range;   /* distance for collision */   \
-    int pl_radius;  /* distance for hit */
+#define OBJECT_EXTEND                                \
+    cell_node_t cell; /* node in cell linked list */ \
+    int pl_range;     /* distance for collision */   \
+    int pl_radius;    /* distance for hit */         \
+    long fuselife;    /* fuse duration ticks */      \
+    float fuse;       /* ticks until fused, TODO */
 
 /*
  * Generic object
@@ -474,4 +476,18 @@ static inline void Object_position_set_clvec(object_t *obj, clvec_t vec)
     pos.cy = vec.cy;
 
     Object_position_set_clpos(obj, pos);
+}
+
+// #define SHOT_MULT(o)                                                           \
+//     ((BIT((o)->mods.nuclear, MODS_NUCLEAR) && BIT((o)->mods.warhead, CLUSTER)) \
+//          ? options.nukeClusterDamage                                           \
+//          : 1.0)
+
+static inline double SHOT_MULT(object_t *obj)
+{
+    int nuclear = Mods_get(obj->mods, ModsNuclear);
+    int cluster = Mods_get(obj->mods, ModsCluster);
+    if (nuclear && cluster)
+        return options.nukeClusterDamage;
+    return 1.0;
 }

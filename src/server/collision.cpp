@@ -716,7 +716,7 @@ static void PlayerObjectCollision(player_t *pl)
             if (hit)
             {
                 Player_collides_with_asteroid(pl, WIRE_PTR(obj));
-                Delta_mv_elastic((object_t *)pl, (object_t *)obj);
+                Delta_mv_elastic(OBJ_PTR(pl), obj);
             }
             if (Player_is_killed(pl))
                 return;
@@ -724,7 +724,7 @@ static void PlayerObjectCollision(player_t *pl)
 
         case OBJ_CANNON_SHOT:
             /* don't explode cannon flak if it hits directly*/
-            CLR_BIT(obj->mods.warhead, CLUSTER);
+            Mods_set(&obj->mods, ModsCluster, 0);
             break;
 
         default:
@@ -737,15 +737,11 @@ static void PlayerObjectCollision(player_t *pl)
         {
             Player_collides_with_killing_shot(pl, obj);
             if (Player_is_killed(pl))
-            {
                 return;
-            }
         }
 
         if (hit)
-        {
-            Delta_mv((object_t *)pl, (object_t *)obj);
-        }
+            Delta_mv(OBJ_PTR(pl), obj);
     }
 }
 
@@ -1172,7 +1168,8 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
      * Sound effects are missing when shot is deadly.
      */
 
-    if (BIT(pl->used, HAS_SHIELD) || Player_has_armor(pl) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, MODS_NUCLEAR) && (int)(rfrac() >= 0.25)))
+    // if (BIT(pl->used, HAS_SHIELD) || Player_has_armor(pl) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, MODS_NUCLEAR) && (int)(rfrac() >= 0.25)))
+    if (BIT(pl->used, HAS_SHIELD) || Player_has_armor(pl) || (obj->type == OBJ_TORPEDO && Mods_get(obj->mods, ModsNuclear) && (rfrac() >= 0.25)))
     {
         switch (obj->type)
         {
@@ -1207,8 +1204,9 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                               kp->name);
             }
             drain = (long)(ED_SMART_SHOT_HIT /
-                           ((obj->mods.mini + 1) * (obj->mods.power + 1)));
-            if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+                           // ((obj->mods.mini + 1) * (obj->mods.power + 1)));
+                           ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1)));
+            if (!Player_uses_emergency_shield(pl))
                 Player_add_fuel(pl, drain);
             pl->forceVisible += 2;
             break;
@@ -1216,7 +1214,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
             sound_play_sensors(pl->pos, PLAYER_EAT_SHOT_SOUND);
-            if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+            if (!Player_uses_emergency_shield(pl))
             {
                 // BUGFIX: xpilot 4.5.5beta uses a drainfactor > 1
                 // here, which causes the "no fuel bug", meaning that
@@ -1284,7 +1282,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             switch (obj->type)
             {
             case OBJ_SHOT:
-                if (BIT(obj->mods.warhead, CLUSTER))
+                if (Mods_get(obj->mods, ModsCluster))
                     factor = options.clusterKillScoreMult;
                 else
                     factor = options.shotKillScoreMult;
@@ -1429,7 +1427,8 @@ static void AsteroidCollision(void)
             case OBJ_HEAT_SHOT:
                 obj->life = 0;
                 Delta_mv(ast, obj);
-                damage = ED_SMART_SHOT_HIT / ((obj->mods.mini + 1) * (obj->mods.power + 1));
+                // damage = ED_SMART_SHOT_HIT / ((obj->mods.mini + 1) * (obj->mods.power + 1));
+                damage = ED_SMART_SHOT_HIT / ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1));
                 sound = true;
                 break;
             default:

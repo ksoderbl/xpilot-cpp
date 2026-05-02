@@ -1891,14 +1891,12 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             /* happens at end of round reset. */
             return;
         }
-        if (BIT(obj->mods.nuclear, MODS_NUCLEAR))
-        {
+        // if (BIT(obj->mods.nuclear, MODS_NUCLEAR))
+        if (Mods_get(obj->mods, ModsNuclear) & MODS_NUCLEAR)
             targ->damage = 0;
-        }
         else
-        {
-            targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
-        }
+            // targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
+            targ->damage += (int)(ED_SMART_SHOT_HIT / (Mods_get(obj->mods, ModsMini) + 1));
         break;
     case OBJ_MINE:
         if (!obj->mass)
@@ -1906,7 +1904,8 @@ static void Object_hits_target(move_state_t *ms, long player_cost)
             /* happens at end of round reset. */
             return;
         }
-        targ->damage -= TARGET_DAMAGE / (obj->mods.mini + 1);
+        // targ->damage -= TARGET_DAMAGE / (obj->mods.mini + 1);
+        targ->damage -= TARGET_DAMAGE / (Mods_get(obj->mods, ModsMini) + 1);
         break;
     case OBJ_PLAYER:
         if (player_cost <= 0 || player_cost > TARGET_DAMAGE / 4)

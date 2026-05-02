@@ -318,7 +318,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     asteroid->pl_radius = radius;
     asteroid->fuselife = asteroid->life - 1;
     asteroid->obj_status = GRAVITY;
-    CLEAR_MODS(asteroid->mods);
+    Mods_clear(&asteroid->mods);
 
     if (Asteroid_add_to_list(asteroid))
     {

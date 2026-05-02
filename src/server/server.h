@@ -159,7 +159,6 @@ int Handle_keyboard(player_t *pl);
 void Pause_player(player_t *pl, bool on);
 int Player_lock_closest(player_t *pl, bool next);
 bool team_dead(int team);
-void filter_mods(modifiers_t *mods);
 
 /*
  * Prototypes for map.c

@@ -39,6 +39,7 @@
 #include "saudio.h"
 #include "bit.h"
 #include "netserver.h"
+#include "modifiers.h"
 
 #define SWAP(_a, _b)      \
     {                     \
@@ -614,94 +615,102 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_TOGGLE_NUCLEAR:
-                if (BIT(world->rules->mode, ALLOW_NUKES))
-                {
-                    switch (pl->mods.nuclear)
-                    {
-                    case MODS_NUCLEAR:
-                        pl->mods.nuclear |= MODS_FULLNUCLEAR;
-                        break;
-                    case 0:
-                        pl->mods.nuclear = MODS_NUCLEAR;
-                        break;
-                    default:
-                        pl->mods.nuclear = 0;
-                        break;
-                    }
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_NUKES))
+                // {
+                //     switch (pl->mods.nuclear)
+                //     {
+                //     case MODS_NUCLEAR:
+                //         pl->mods.nuclear |= MODS_FULLNUCLEAR;
+                //         break;
+                //     case 0:
+                //         pl->mods.nuclear = MODS_NUCLEAR;
+                //         break;
+                //     default:
+                //         pl->mods.nuclear = 0;
+                //         break;
+                //     }
+                // }
                 break;
 
             case KEY_TOGGLE_CLUSTER:
-                if (BIT(world->rules->mode, ALLOW_CLUSTERS))
-                {
-                    TOGGLE_BIT(pl->mods.warhead, CLUSTER);
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_CLUSTERS))
+                // {
+                //     TOGGLE_BIT(pl->mods.warhead, CLUSTER);
+                // }
                 break;
 
             case KEY_TOGGLE_IMPLOSION:
-                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                {
-                    TOGGLE_BIT(pl->mods.warhead, IMPLOSION);
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+                // {
+                //     TOGGLE_BIT(pl->mods.warhead, IMPLOSION);
+                // }
                 break;
 
             case KEY_TOGGLE_VELOCITY:
-                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                {
-                    /* NB. These may be bit fields, dont modify this code */
-                    if (pl->mods.velocity == MODS_VELOCITY_MAX)
-                        pl->mods.velocity = 0;
-                    else
-                        pl->mods.velocity++;
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+                // {
+                //     /* NB. These may be bit fields, dont modify this code */
+                //     if (pl->mods.velocity == MODS_VELOCITY_MAX)
+                //         pl->mods.velocity = 0;
+                //     else
+                //         pl->mods.velocity++;
+                // }
                 break;
 
             case KEY_TOGGLE_MINI:
-                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                {
-                    /* NB. These may be bit fields, dont modify this code */
-                    if (pl->mods.mini == MODS_MINI_MAX)
-                        pl->mods.mini = 0;
-                    else
-                        pl->mods.mini++;
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+                // {
+                //     /* NB. These may be bit fields, dont modify this code */
+                //     if (pl->mods.mini == MODS_MINI_MAX)
+                //         pl->mods.mini = 0;
+                //     else
+                //         pl->mods.mini++;
+                // }
                 break;
 
             case KEY_TOGGLE_SPREAD:
-                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                {
-                    /* NB. These may be bit fields, dont modify this code */
-                    if (pl->mods.spread == MODS_SPREAD_MAX)
-                        pl->mods.spread = 0;
-                    else
-                        pl->mods.spread++;
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+                // {
+                //     /* NB. These may be bit fields, dont modify this code */
+                //     if (pl->mods.spread == MODS_SPREAD_MAX)
+                //         pl->mods.spread = 0;
+                //     else
+                //         pl->mods.spread++;
+                // }
                 break;
 
             case KEY_TOGGLE_LASER:
-                if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
-                {
-                    /* NB. These may be bit fields, dont modify this code */
-                    if (pl->mods.laser == MODS_LASER_MAX)
-                        pl->mods.laser = 0;
-                    else
-                        pl->mods.laser++;
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
+                // {
+                //     /* NB. These may be bit fields, dont modify this code */
+                //     if (pl->mods.laser == MODS_LASER_MAX)
+                //         pl->mods.laser = 0;
+                //     else
+                //         pl->mods.laser++;
+                // }
                 break;
 
             case KEY_TOGGLE_POWER:
-                if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                {
-                    /* NB. These may be bit fields, dont modify this code */
-                    if (pl->mods.power == MODS_POWER_MAX)
-                        pl->mods.power = 0;
-                    else
-                        pl->mods.power++;
-                }
+                // TODO
+                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+                // {
+                //     /* NB. These may be bit fields, dont modify this code */
+                //     if (pl->mods.power == MODS_POWER_MAX)
+                //         pl->mods.power = 0;
+                //     else
+                //         pl->mods.power++;
+                // }
                 break;
 
             case KEY_CLEAR_MODIFIERS:
-                CLEAR_MODS(pl->mods);
+                Mods_clear(&pl->mods);
                 break;
 
             case KEY_REPROGRAM:
@@ -716,13 +725,11 @@ int Handle_keyboard(player_t *pl)
                 modifiers_t *m = &(pl->modbank[key - KEY_LOAD_MODIFIERS_1]);
 
                 if (BIT(pl->pl_status, REPROGRAM))
-                {
                     *m = pl->mods;
-                }
                 else
                 {
                     pl->mods = *m;
-                    filter_mods(&pl->mods);
+                    Mods_filter(&pl->mods);
                 }
                 break;
             }
@@ -974,7 +981,8 @@ int Handle_keyboard(player_t *pl)
                         continue;
                     if (pl->item[pl->lose_item] > 0)
                     {
-                        pl->lose_item_state = 2; /* 2: key down; 1: key up */
+                        /* 2: key down; 1: key up */
+                        pl->lose_item_state = 2;
                         break;
                     }
                 }
@@ -1064,25 +1072,4 @@ int Handle_keyboard(player_t *pl)
     memcpy(pl->prev_keyv, pl->last_keyv, sizeof(pl->last_keyv));
 
     return 1;
-}
-
-void filter_mods(modifiers_t *mods)
-{
-    if (!BIT(world->rules->mode, ALLOW_NUKES))
-        mods->nuclear = 0;
-
-    if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
-        CLR_BIT(mods->warhead, CLUSTER);
-
-    if (!BIT(world->rules->mode, ALLOW_MODIFIERS))
-    {
-        CLR_BIT(mods->warhead, IMPLOSION);
-        mods->velocity = 0;
-        mods->mini = 0;
-        mods->spread = 0;
-        mods->power = 0;
-    }
-
-    if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
-        mods->laser = 0;
 }

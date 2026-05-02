@@ -25,8 +25,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WALLS2_H
-#define WALLS2_H
+#pragma once
 
 #include "click.h"
 #include "object.h"
@@ -195,5 +194,3 @@ struct move_parameters
 // extern int num_polys, num_pstyles, num_estyles, num_bstyles;
 
 void Move_point(const move_t *move, struct collans *answer);
-
-#endif

@@ -36,6 +36,7 @@
 #include "map.h"
 #include "object.h"
 #include "serverconst.h"
+#include "modifiers.h"
 
 /*
  * These values are set in the player->pl_type field.

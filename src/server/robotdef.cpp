@@ -694,20 +694,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
 
 static void Robot_check_new_modifiers(player_t *pl, modifiers_t mods)
 {
-    if (!BIT(world->rules->mode, ALLOW_NUKES))
-        mods.nuclear = 0;
-    if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
-        CLR_BIT(mods.warhead, CLUSTER);
-    if (!BIT(world->rules->mode, ALLOW_MODIFIERS))
-    {
-        mods.velocity =
-            mods.mini =
-                mods.spread =
-                    mods.power = 0;
-        CLR_BIT(mods.warhead, IMPLOSION);
-    }
-    if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
-        mods.laser = 0;
+    Mods_filter(&mods);
     pl->mods = mods;
 }
 
@@ -717,7 +704,7 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
     modifiers_t mods;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
-    CLEAR_MODS(mods);
+    Mods_clear(&mods);
 
     switch (weapon_type)
     {
@@ -730,7 +717,8 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
          * Robots choose non-damage laser settings occasionally.
          */
         if ((my_data->robot_count % 4) == 0)
-            mods.laser = (int)(rfrac() * (MODS_LASER_MAX + 1));
+            Mods_set(&mods, ModsLaser,
+                     (int)(rfrac() * (MODS_LASER_MAX + 1)));
         Robot_check_new_modifiers(pl, mods);
         return;
 
@@ -739,9 +727,11 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
          * Robots usually use wide beam shots, however they may narrow
          * the beam occasionally.
          */
-        mods.spread = 0;
+        // mods.spread = 0;
+        Mods_set(&mods, ModsSpread, 0);
         if ((my_data->robot_count % 4) == 0)
-            mods.spread = (int)(rfrac() * (MODS_SPREAD_MAX + 1));
+            Mods_set(&mods, ModsSpread,
+                     (int)(rfrac() * (MODS_SPREAD_MAX + 1)));
         Robot_check_new_modifiers(pl, mods);
         return;
 
@@ -756,7 +746,8 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         stock = pl->item[ITEM_MISSILE];
         min = options.nukeMinSmarts;
         if ((my_data->robot_count % 4) == 0)
-            mods.power = (int)(rfrac() * (MODS_POWER_MAX + 1));
+            Mods_set(&mods, ModsPower,
+                     (int)(rfrac() * (MODS_POWER_MAX + 1)));
         break;
 
     default:
@@ -771,9 +762,10 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
          */
         if ((my_data->robot_count % 100) <= my_data->attack)
         {
-            SET_BIT(mods.nuclear, MODS_NUCLEAR);
+            Mods_set(&mods, ModsNuclear, MODS_NUCLEAR);
             if (stock > min && (stock < (2 * min) || (my_data->robot_count % 2) == 0))
-                SET_BIT(mods.nuclear, MODS_FULLNUCLEAR);
+                // SET_BIT(mods.nuclear, MODS_FULLNUCLEAR);
+                Mods_set(&mods, ModsNuclear, MODS_FULLNUCLEAR);
         }
     }
 
@@ -782,20 +774,24 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
         if ((my_data->robot_count % 2) == 0)
         {
             if ((my_data->robot_count % 8) == 0)
-                mods.velocity = (int)(rfrac() * MODS_VELOCITY_MAX) + 1;
-            SET_BIT(mods.warhead, CLUSTER);
+                // mods.velocity = (int)(rfrac() * MODS_VELOCITY_MAX) + 1;
+                Mods_set(&mods, ModsVelocity,
+                         (int)(rfrac() * MODS_VELOCITY_MAX) + 1);
+            Mods_set(&mods, ModsCluster, 1);
         }
     }
     else if ((my_data->robot_count % 3) == 0)
-        SET_BIT(mods.warhead, IMPLOSION);
+        Mods_set(&mods, ModsImplosion, 1);
 
     /*
      * Robot may change to use mini device setting occasionally.
      */
     if ((my_data->robot_count % 10) == 0)
     {
-        mods.mini = (int)(rfrac() * (MODS_MINI_MAX + 1));
-        mods.spread = (int)(rfrac() * (MODS_SPREAD_MAX + 1));
+        // mods.mini = (int)(rfrac() * (MODS_MINI_MAX + 1));
+        Mods_set(&mods, ModsMini, (int)(rfrac() * (MODS_MINI_MAX + 1)));
+        Mods_set(&mods, ModsSpread,
+                 (int)(rfrac() * (MODS_SPREAD_MAX + 1)));
     }
 
     Robot_check_new_modifiers(pl, mods);

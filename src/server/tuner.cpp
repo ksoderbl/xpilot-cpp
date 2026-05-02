@@ -35,6 +35,7 @@
 #include "sched.h"
 #include "walls.h"
 #include "robot.h"
+#include "modifiers.h"
 
 extern time_t gameOverTime;
 
@@ -234,9 +235,7 @@ void tuner_modifiers(void)
     Set_world_rules();
 
     for (i = 0; i < NumPlayers; i++)
-    {
-        filter_mods(&Player_by_index(i)->mods);
-    }
+        Mods_filter(&(Player_by_index(i))->mods);
 }
 
 void tuner_minelife(void)
@@ -254,9 +253,8 @@ void tuner_minelife(void)
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
         {
-            life =
-                (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Obj[i]->mods.mini +
-                                                                         1);
+            // life = (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Obj[i]->mods.mini + 1);
+            life = (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Mods_get(Obj[i]->mods, ModsMini) + 1);
 
             Obj[i]->life = (int)(rfrac() * life);
             /* We wouldn't want all the mines
@@ -282,9 +280,8 @@ void tuner_missilelife(void)
 
         if (!BIT(Obj[i]->obj_status, FROMCANNON))
         {
-            life =
-                (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Obj[i]->mods.mini +
-                                                                            1);
+            // life = (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Obj[i]->mods.mini + 1);
+            life = (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Mods_get(Obj[i]->mods, ModsMini) + 1);
 
             Obj[i]->life = (int)(rfrac() * life);
             /* Maybe all the missiles are full

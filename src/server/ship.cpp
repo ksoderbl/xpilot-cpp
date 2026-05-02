@@ -558,11 +558,11 @@ void Make_debris(clpos_t pos,
     if (max_speed < min_speed)
         max_speed = min_speed;
 
-    CLEAR_MODS(mods);
+    Mods_clear(&mods);
 
     if (type == OBJ_SHOT)
     {
-        SET_BIT(mods.warhead, CLUSTER);
+        Mods_set(&mods, ModsCluster, 1);
         if (!options.shotsGravity)
             CLR_BIT(status, GRAVITY);
     }
@@ -681,7 +681,7 @@ void Make_wreckage(clpos_t pos,
     if (max_wreckage > MAX_TOTAL_SHOTS - NumObjs)
         max_wreckage = MAX_TOTAL_SHOTS - NumObjs;
 
-    CLEAR_MODS(mods);
+    Mods_clear(&mods);
 
     for (i = 0; i < max_wreckage && sum_mass < total_mass; i++)
     {

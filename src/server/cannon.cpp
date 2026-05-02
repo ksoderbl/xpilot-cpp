@@ -549,18 +549,21 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     bool played = false;
     vector_t zero_vel = {0.0, 0.0};
 
-    CLEAR_MODS(mods);
+    Mods_clear(&mods);
     switch (weapon)
     {
     case CW_MINE:
         if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.25))
-            SET_BIT(mods.warhead, CLUSTER);
+            Mods_set(&mods, ModsCluster, 1);
         if (BIT(world->rules->mode, ALLOW_MODIFIERS))
         {
             if (rfrac() >= 0.2)
-                SET_BIT(mods.warhead, IMPLOSION);
-            mods.power = (int)(rfrac() * (MODS_POWER_MAX + 1));
-            mods.velocity = (int)(rfrac() * (MODS_VELOCITY_MAX + 1));
+                Mods_set(&mods, ModsImplosion, 1);
+
+            Mods_set(&mods, ModsPower,
+                     (int)(rfrac() * (MODS_POWER_MAX + 1)));
+            Mods_set(&mods, ModsVelocity,
+                     (int)(rfrac() * (MODS_VELOCITY_MAX + 1)));
         }
         if (rfrac() < 0.5)
         { /* place mine in front of cannon */
@@ -574,10 +577,13 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
             vector_t vel;
             if (BIT(world->rules->mode, ALLOW_MODIFIERS))
             {
-                mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
-                mods.spread = (int)(rfrac() * (MODS_SPREAD_MAX + 1));
+                // mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
+                Mods_set(&mods, ModsMini,
+                         (int)(rfrac() * MODS_MINI_MAX) + 1);
+                Mods_set(&mods, ModsSpread,
+                         (int)(rfrac() * (MODS_SPREAD_MAX + 1)));
             }
-            speed = (int)(speed * 0.5 + 0.1 * smartness);
+            speed = speed * 0.5 + 0.1 * smartness;
             vel.x = tcos(dir) * speed;
             vel.y = tsin(dir) * speed;
             Place_general_mine(NO_ID, c->team, GRAVITY | FROMCANNON,
@@ -589,20 +595,20 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         break;
     case CW_MISSILE:
         if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.333))
-            SET_BIT(mods.warhead, CLUSTER);
+            Mods_set(&mods, ModsCluster, 1);
         if (BIT(world->rules->mode, ALLOW_MODIFIERS))
         {
             if (rfrac() >= 0.25)
-                SET_BIT(mods.warhead, IMPLOSION);
-            mods.power = (int)(rfrac() * (MODS_POWER_MAX + 1));
-            mods.velocity = (int)(rfrac() * (MODS_VELOCITY_MAX + 1));
+                Mods_set(&mods, ModsImplosion, 1);
+            Mods_set(&mods, ModsPower, (int)(rfrac() * (MODS_POWER_MAX + 1)));
+            Mods_set(&mods, ModsVelocity, (int)(rfrac() * (MODS_VELOCITY_MAX + 1)));
             /* Because cannons don't have missile racks, all mini missiles
                would be fired from the same point and appear to the players
                as 1 missile (except heatseekers, which would appear to split
                in midair because of navigation errors (see Move_smart_shot)).
                Therefore, we don't minify cannon missiles.
             mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
-            mods.spread = (int)(rfrac() * (MODS_SPREAD_MAX + 1));
+            Mods_set(&mods, ModsSpread, (int)(rfrac() * (MODS_SPREAD_MAX + 1)));
             */
         }
         /* smarter cannons use more advanced missile types */
@@ -641,7 +647,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         /* stun and blinding lasers are very dangerous,
            so we don't use them often */
         if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - smartness)) >= 1)
-            mods.laser = (int)(rfrac() * (MODS_LASER_MAX + 1));
+            Mods_set(&mods, ModsLaser, (int)(rfrac() * (MODS_LASER_MAX + 1)));
         Fire_general_laser(NO_ID, c->team, c->pos, dir, mods);
         sound_play_sensors(c->pos, FIRE_LASER_SOUND);
         played = true;
@@ -720,7 +726,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     case CW_SHOT:
     default:
         if (options.cannonFlak)
-            mods.warhead = CLUSTER;
+            Mods_set(&mods, ModsCluster, 1);
         /* smarter cannons fire more accurately and
            can therefore narrow their bullet streams */
         for (i = 0; i < (1 + 2 * c->item[ITEM_WIDEANGLE]); i++)

@@ -76,7 +76,7 @@ void Make_treasure_ball(treasure_t *t)
     // ball->count = 0;
     ball->pl_range = BALL_RADIUS;
     ball->pl_radius = BALL_RADIUS;
-    CLEAR_MODS(ball->mods);
+    Mods_clear(&ball->mods);
     ball->obj_status = RECREATE;
     ball->ball_treasure = t;
     ball->ball_treasure_copy = t;

@@ -23,25 +23,32 @@
 #pragma once
 
 #include <cstring>
+#include <cstdint>
+
+// #include "player.h"
 
 /*
  * Weapons modifiers.
  */
-typedef struct
-{
-    unsigned int nuclear : 2;  /* N  modifier */
-    unsigned int warhead : 2;  /* CI modifier */
-    unsigned int velocity : 2; /* V# modifier */
-    unsigned int mini : 2;     /* X# modifier */
-    unsigned int spread : 2;   /* Z# modifier */
-    unsigned int power : 2;    /* B# modifier */
-    unsigned int laser : 2;    /* LS LB modifier */
-    unsigned int spare : 2;    /* padding for alignment */
-} modifiers_t;
+// typedef struct
+// {
+//     unsigned int nuclear;  /* N  modifier */
+//     unsigned int warhead;  /* CI modifier */
+//     unsigned int velocity; /* V# modifier */
+//     unsigned int mini;     /* X# modifier */
+//     unsigned int spread;   /* Z# modifier */
+//     unsigned int power;    /* B# modifier */
+//     unsigned int laser;    /* LS LB modifier */
+// } modifiers_t;
 
-#define CLEAR_MODS(mods) memset(&(mods), 0, sizeof(modifiers_t))
+typedef uint16_t modifiers_t;
 
-#define MODS_NUCLEAR_MAX 2 /* - N FN */
+// #define Mods_clear(mods) memset(&(mods), 0, sizeof(modifiers_t))
+
+#define MODS_NUCLEAR_MAX 2   /* - N FN */
+#define MODS_CLUSTER_MAX 1   /* - C */
+#define MODS_IMPLOSION_MAX 1 /* - I */
+
 // #define NUCLEAR (1U << 0)
 // #define FULLNUCLEAR (1U << 1)
 
@@ -77,11 +84,15 @@ typedef enum
 
 static inline void Mods_clear(modifiers_t *mods)
 {
-    // *mods = 0;
-    memset(&(mods), 0, sizeof(modifiers_t));
+    memset((mods), 0, sizeof(modifiers_t));
 }
 
-int num2str(int num, char *str, int i);
-int str2num(char **strp, int min, int max);
+// int num2str(int num, char *str, int i);
+// int str2num(char **strp, int min, int max);
 
-void Mods_to_string(modifiers_t mods, char *modstr, size_t size);
+// void Player_set_modbank(player_t *pl, int bank, const char *str);
+
+void Mods_to_string(modifiers_t mods, char *dst, size_t size);
+int Mods_set(modifiers_t *mods, modifier_t modifier, int val);
+int Mods_get(modifiers_t mods, modifier_t modifier);
+void Mods_filter(modifiers_t *mods);
