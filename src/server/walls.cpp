@@ -2198,10 +2198,16 @@ void Move_object(object_t *obj)
         if (!(ms.done.cx | ms.done.cy))
         {
             pos_update |= (ms.crash | ms.bounce);
+            // TODO
+            // if (ms.crash != NotACrash)
+            //     pos_update = true;
+
+            // if (ms.bounce != NotABounce)
+            //     pos_update = true;
+
             if (ms.crash)
-            {
                 break;
-            }
+
             if (ms.bounce && ms.bounce != BounceEdge)
             {
                 if (obj->type != OBJ_BALL_BIT)
@@ -2264,13 +2270,9 @@ void Move_object(object_t *obj)
     obj->vel = ms.vel;
     obj->missile_dir = ms.dir;
     if (ms.crash)
-    {
         Object_crash(&ms);
-    }
     if (pos_update)
-    {
         Object_position_remember(obj);
-    }
     Cell_add_object(obj);
 }
 
@@ -2641,7 +2643,15 @@ void Move_player(player_t *pl)
         for (i = 0; i < pl->ship->num_points; i++)
         {
             Move_segment(&ms[i]);
+
             pos_update |= (ms[i].crash | ms[i].bounce);
+            // TODO
+            // if (ms[i].crash != NotACrash)
+            //     pos_update = true;
+
+            // if (ms[i].bounce != NotABounce)
+            //     pos_update = true;
+
             if (ms[i].crash)
             {
                 crash = i;
@@ -2902,13 +2912,10 @@ void Move_player(player_t *pl)
     pl->velocity = VECTOR_LENGTH(pl->vel);
 
     if (ms[worst].crash)
-    {
         Player_crash(&ms[worst], worst, false);
-    }
+
     if (pos_update)
-    {
         Player_position_remember(pl);
-    }
 }
 
 void Turn_player(player_t *pl)
