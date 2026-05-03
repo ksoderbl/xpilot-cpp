@@ -46,6 +46,7 @@
 #include "click.h"
 #include "object.h"
 #include "robot.h"
+#include "target.h"
 
 #define WALLDIST_MASK \
     (FILLED_BIT | REC_LU_BIT | REC_LD_BIT | REC_RU_BIT | REC_RD_BIT | FUEL_BIT | CANNON_BIT | TREASURE_BIT | TARGET_BIT | CHECK_BIT | WORMHOLE_BIT)
@@ -324,6 +325,7 @@ void Move_init(void)
     LIMIT(options.maxObjectWallBounceSpeed, 0, world->hypotenuse);
     LIMIT(options.maxShieldedWallBounceSpeed, 0, world->hypotenuse);
     LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->hypotenuse);
+
     LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
     LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);
     LIMIT(options.playerWallBrakeFactor, 0, 1);
@@ -1841,213 +1843,6 @@ static void Cannon_dies(move_state_t *ms)
     }
 }
 
-static void Object_hits_target(move_state_t *ms, long player_cost)
-{
-    target_t *targ = &world->targets[ms->target];
-    object_t *obj = ms->mip->obj;
-    int j, sc, por, bx, by;
-    int win_score = 0,
-        lose_score = 0;
-    int win_team_members = 0,
-        lose_team_members = 0,
-        somebody_flag = 0,
-        targets_remaining = 0,
-        targets_total = 0;
-    int drainfactor;
-    vector_t zero_vel = {0.0, 0.0};
-    player_t *kp;
-
-    /* a normal shot or a direct mine hit work, cannons don't */
-    /* KK: should shots/mines by cannons of opposing teams work? */
-    /* also players suiciding on target will cause damage */
-    if (!BIT(obj->type, KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
-    {
-        return;
-    }
-    if (obj->id <= 0)
-    {
-        return;
-    }
-    kp = Player_by_id(obj->id);
-    if (targ->team == obj->team)
-    {
-        return;
-    }
-
-    switch (obj->type)
-    {
-    case OBJ_SHOT:
-        drainfactor = 1;
-        targ->damage += (int)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
-        break;
-    case OBJ_PULSE:
-        targ->damage += (int)(ED_LASER_HIT);
-        break;
-    case OBJ_SMART_SHOT:
-    case OBJ_TORPEDO:
-    case OBJ_HEAT_SHOT:
-        if (!obj->mass)
-        {
-            /* happens at end of round reset. */
-            return;
-        }
-        // if (BIT(obj->mods.nuclear, MODS_NUCLEAR))
-        if (Mods_get(obj->mods, ModsNuclear) & MODS_NUCLEAR)
-            targ->damage = 0;
-        else
-            // targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
-            targ->damage += (int)(ED_SMART_SHOT_HIT / (Mods_get(obj->mods, ModsMini) + 1));
-        break;
-    case OBJ_MINE:
-        if (!obj->mass)
-        {
-            /* happens at end of round reset. */
-            return;
-        }
-        // targ->damage -= TARGET_DAMAGE / (obj->mods.mini + 1);
-        targ->damage -= TARGET_DAMAGE / (Mods_get(obj->mods, ModsMini) + 1);
-        break;
-    case OBJ_PLAYER:
-        if (player_cost <= 0 || player_cost > TARGET_DAMAGE / 4)
-            player_cost = TARGET_DAMAGE / 4;
-        targ->damage -= player_cost;
-        break;
-
-    default:
-        /*???*/
-        break;
-    }
-
-    targ->conn_mask = 0;
-    targ->last_change = frame_loops;
-    if (targ->damage > 0)
-        return;
-
-    targ->update_mask = (unsigned)-1;
-    targ->damage = TARGET_DAMAGE;
-    targ->dead_ticks = options.targetDeadTime;
-
-    /*
-     * Destroy target.
-     * Turn it into a space to simplify other calculations.
-     */
-    bx = targ->blk_pos.bx;
-    by = targ->blk_pos.by;
-    world->block[bx][by] = SPACE;
-
-    Make_debris(targ->pos,
-                zero_vel,
-                NO_ID,
-                targ->team,
-                OBJ_DEBRIS,
-                4.5,
-                GRAVITY,
-                RED,
-                6,
-                75, 150,
-                (int)(75 + 75 * rfrac()),
-                0, RES - 1,
-                20.0, 70.0,
-                10.0, 100.0);
-
-    if (BIT(world->rules->mode, TEAM_PLAY))
-    {
-        for (j = 0; j < NumPlayers; j++)
-        {
-            player_t *pl_j = Player_by_index(j);
-
-            if (Player_is_tank(pl_j) ||
-                (BIT(pl_j->obj_status, PAUSE) && pl_j->count <= 0) ||
-                (BIT(pl_j->obj_status, GAME_OVER) && pl_j->mychar == 'W' && pl_j->score == 0))
-                continue;
-            if (pl_j->team == targ->team)
-            {
-                lose_score += pl_j->score;
-                lose_team_members++;
-                if (BIT(pl_j->obj_status, GAME_OVER) == 0)
-                    somebody_flag = 1;
-            }
-            else if (pl_j->team == kp->team)
-            {
-                win_score += pl_j->score;
-                win_team_members++;
-            }
-        }
-    }
-    if (somebody_flag)
-    {
-        for (j = 0; j < Num_targets(); j++)
-        {
-            if (world->targets[j].team == targ->team)
-            {
-                targets_total++;
-                if (world->targets[j].dead_ticks == 0)
-                    targets_remaining++;
-            }
-        }
-    }
-    if (!somebody_flag)
-        return;
-
-    sound_play_sensors(targ->pos, DESTROY_TARGET_SOUND);
-
-    if (targets_remaining > 0)
-    {
-        sc = Rate(kp->score, CANNON_SCORE) / 4;
-        sc = sc * (targets_total - targets_remaining) / (targets_total + 1);
-        if (sc > 0)
-        {
-            Score(kp, sc, targ->pos, "Target: ");
-        }
-        /*
-         * If players can't collide with their own targets, we
-         * assume there are many used as shields.  Don't litter
-         * the game with the message below.
-         */
-        if (options.targetTeamCollision && targets_total < 10)
-        {
-            sprintf(msg, "%s blew up one of team %d's targets.",
-                    kp->name, (int)targ->team);
-            Set_message(msg);
-        }
-        return;
-    }
-
-    sprintf(msg, "%s blew up team %d's %starget.",
-            kp->name,
-            (int)targ->team,
-            (targets_total > 1) ? "last " : "");
-    Set_message(msg);
-
-    if (options.targetKillTeam)
-    {
-        kp->kills++;
-    }
-
-    sc = Rate(win_score, lose_score);
-    por = (sc * lose_team_members) / win_team_members;
-
-    for (j = 0; j < NumPlayers; j++)
-    {
-        player_t *pl_j = Player_by_index(j);
-
-        if (Player_is_tank(pl_j) ||
-            (BIT(pl_j->obj_status, PAUSE) && pl_j->count <= 0) ||
-            (BIT(pl_j->obj_status, GAME_OVER) && pl_j->mychar == 'W' && pl_j->score == 0))
-            continue;
-
-        if (pl_j->team == targ->team)
-        {
-            if (options.targetKillTeam && targets_remaining == 0 && !BIT(pl_j->obj_status, KILLED | PAUSE | GAME_OVER))
-                SET_BIT(pl_j->obj_status, KILLED);
-            Score(pl_j, -sc, targ->pos, "Target: ");
-        }
-        else if (pl_j->team == kp->team &&
-                 (pl_j->team != TEAM_NOT_SET || pl_j->id == kp->id))
-            Score(pl_j, por, targ->pos, "Target: ");
-    }
-}
-
 static void Object_crash(move_state_t *ms)
 {
     object_t *obj = ms->mip->obj;
@@ -2072,7 +1867,8 @@ static void Object_crash(move_state_t *ms)
 
     case CrashTarget:
         obj->life = 0;
-        Object_hits_target(ms, -1);
+        // Object_hits_target(ms, -1);
+        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1);
         break;
 
     case CrashWall:
@@ -2338,7 +2134,8 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
         sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
-        Object_hits_target(ms, -1);
+        // Object_hits_target(ms, -1);
+        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1);
         break;
 
     case CrashTreasure:
@@ -2462,7 +2259,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
 
     if (Player_is_killed(pl) && Get_Score(pl) < 0 && Player_is_robot(pl))
     {
-        pl->home_base_ptr = Base_by_index(0);
+        pl->home_base = Base_by_index(0);
         pl->home_base_ind = 0;
         Pick_startpos(pl);
     }
@@ -2868,7 +2665,8 @@ void Move_player(player_t *pl)
                     {
                         cost <<= FUEL_SCALE_BITS;
                         cost = (long)(cost * (options.wallBounceFuelDrainMult / 4.0));
-                        Object_hits_target(&ms[worst], cost);
+                        // Object_hits_target(&ms[worst], cost);
+                        Object_hits_target(ms[worst].mip->obj, &world->targets[ms[worst].target], cost);
                     }
                 }
             }

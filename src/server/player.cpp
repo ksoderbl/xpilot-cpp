@@ -93,7 +93,7 @@ void Pick_startpos(player_t *pl)
 
     if (Player_is_tank(pl))
     {
-        pl->home_base_ptr = Base_by_index(0);
+        pl->home_base = Base_by_index(0);
         pl->home_base_ind = 0;
         return;
     }

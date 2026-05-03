@@ -224,7 +224,7 @@ typedef struct
     double survival_time;              /* time player has survived unshielded*/
 
     int home_base_ind; /* Num of home base */
-    base_t *home_base_ptr;
+    base_t *home_base;
     struct
     {
         int tagged;      /* Flag, what is tagged? */

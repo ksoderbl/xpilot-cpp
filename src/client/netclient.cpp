@@ -539,10 +539,12 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
         }
         break;
     }
-#ifndef SILENT
+
     if (retries > 1)
+    {
         printf("Verified correctly\n");
-#endif
+    }
+
     return 0;
 }
 

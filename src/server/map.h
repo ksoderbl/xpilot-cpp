@@ -104,6 +104,10 @@
 #define DIR_LEFT (RES / 2)
 #define DIR_DOWN (3 * RES / 4)
 
+typedef struct world world_t;
+extern world_t World, *world;
+extern bool is_polygon_map;
+
 typedef struct fuel
 {
     blkpos_t blk_pos;
@@ -192,7 +196,7 @@ typedef enum
     WORM_FIXED
 } wormtype_t;
 
-typedef struct
+typedef struct wormhole
 {
     blkpos_t blk_pos;
     clpos_t pos;
@@ -280,7 +284,7 @@ typedef struct
 
 extern bool is_polygon_map;
 
-typedef struct
+struct world
 {
     int x, y;                /* Size of world in blocks */
     int bwidth_floor;        /* Width of world in blocks, rounded down */
@@ -339,10 +343,7 @@ typedef struct
     treasure_t *treasures;
     int NumWormholes;
     wormhole_t *wormholes;
-} world_t;
-
-extern world_t World, *world;
-extern bool is_polygon_map;
+};
 
 static inline void World_set_block(blkpos_t blk, int type)
 {
@@ -413,21 +414,45 @@ static inline clpos_t World_wrap_clpos(clpos_t pos)
 }
 
 /*
+ * Two macros for edge wrap of x and y coordinates measured in clicks.
+ * Note that the correction needed should never be bigger than the size of the map.
+ */
+// #define WRAP_XCLICK(x_)                      \
+//     (BIT(World.rules->mode, WRAP_PLAY)       \
+//          ? ((x_) < 0                         \
+//                 ? (x_) + World.cwidth        \
+//                 : ((x_) >= World.cwidth      \
+//                        ? (x_) - World.cwidth \
+//                        : (x_)))              \
+//          : (x_))
+
+// #define WRAP_YCLICK(y_)                       \
+//     (BIT(World.rules->mode, WRAP_PLAY)        \
+//          ? ((y_) < 0                          \
+//                 ? (y_) + World.cheight        \
+//                 : ((y_) >= World.cheight      \
+//                        ? (y_) - World.cheight \
+//                        : (y_)))               \
+//          : (y_))
+
+/*
  * Two inline function for edge wrap of x and y coordinates measured
  * in clicks.
  *
  * Note that even when wrap play is off, ships will wrap around the map
  * if there is not walls that hinder it.
  */
-// static inline int WRAP_XCLICK(int cx)
-// {
-//     return World_wrap_xclick(cx);
-// }
+static inline int WRAP_XCLICK(int cx)
+{
+    // TODO: Check WRAP_PLAY ?
+    return World_wrap_xclick(cx);
+}
 
-// static inline int WRAP_YCLICK(int cy)
-// {
-//     return World_wrap_yclick(cy);
-// }
+static inline int WRAP_YCLICK(int cy)
+{
+    // TODO: Check WRAP_PLAY ?
+    return World_wrap_yclick(cy);
+}
 
 /*
  * Two macros for edge wrap of differences in position.

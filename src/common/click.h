@@ -61,28 +61,6 @@ typedef struct
 #define FLOAT_TO_CLICK(F) ((int)((F) * CLICK))
 
 /*
- * Two macros for edge wrap of x and y coordinates measured in clicks.
- * Note that the correction needed should never be bigger than the size of the map.
- */
-#define WRAP_XCLICK(x_)                      \
-    (BIT(World.rules->mode, WRAP_PLAY)       \
-         ? ((x_) < 0                         \
-                ? (x_) + World.cwidth        \
-                : ((x_) >= World.cwidth      \
-                       ? (x_) - World.cwidth \
-                       : (x_)))              \
-         : (x_))
-
-#define WRAP_YCLICK(y_)                       \
-    (BIT(World.rules->mode, WRAP_PLAY)        \
-         ? ((y_) < 0                          \
-                ? (y_) + World.cheight        \
-                : ((y_) >= World.cheight      \
-                       ? (y_) - World.cheight \
-                       : (y_)))               \
-         : (y_))
-
-/*
  * Return the block position this click position is in.
  */
 static inline blkpos_t Clpos_to_blkpos(clpos_t pos)

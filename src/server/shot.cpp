@@ -1466,64 +1466,6 @@ void Delete_shot(int ind)
     }
 }
 
-void Fire_laser(player_t *pl)
-{
-    if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
-    {
-        if (pl->fuel.sum <= -ED_LASER)
-            CLR_BIT(pl->used, HAS_LASER);
-        else
-        {
-            clpos_t pos;
-            clpos_t m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
-            pos.cx = pl->pos.cx + m_gun.cx + FLOAT_TO_CLICK(pl->vel.x);
-            pos.cy = pl->pos.cy + m_gun.cy + FLOAT_TO_CLICK(pl->vel.y);
-            pos.cx = WRAP_XCLICK(pos.cx);
-            pos.cy = WRAP_YCLICK(pos.cy);
-            if (World_contains_clpos(pos))
-                Fire_general_laser(pl->id, pl->team, pos, pl->dir, pl->mods);
-        }
-    }
-}
-
-void Fire_general_laser(int id, int team, clpos_t pos, int dir,
-                        modifiers_t mods)
-{
-    pulse_t *pulse;
-    int life;
-    player_t *pl = Player_by_id(id);
-    /*cannon_t *cannon = Cannon_by_id(id);*/
-
-    if (pl)
-    {
-        Player_add_fuel(pl, ED_LASER);
-        sound_play_sensors(pos, FIRE_LASER_SOUND);
-        life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
-    }
-    else
-        life = (int)PULSE_LIFE(CANNON_PULSES);
-
-    if (NumPulses >= MAX_TOTAL_PULSES)
-        return;
-    Pulses[NumPulses] = (pulse_t *)malloc(sizeof(pulse_t));
-    if (Pulses[NumPulses] == NULL)
-        return;
-
-    pulse = Pulses[NumPulses];
-    pulse->id = (pl ? pl->id : NO_ID);
-    pulse->team = team;
-    pulse->dir = dir;
-    pulse->len = PULSE_LENGTH;
-    pulse->life = life;
-    pulse->mods = mods;
-    pulse->refl = false;
-    pulse->pix_pos.x = CLICK_TO_FLOAT(pos.cx) - PULSE_SPEED * tcos(dir);
-    pulse->pix_pos.y = CLICK_TO_FLOAT(pos.cy) - PULSE_SPEED * tsin(dir);
-    NumPulses++;
-    if (pl)
-        pl->num_pulses++;
-}
-
 void Update_connector_force(ballobject_t *ball)
 {
     /*

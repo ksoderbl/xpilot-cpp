@@ -23,4 +23,13 @@
 
 #pragma once
 
+#include "object.h"
+#include "map.h"
+
 void Target_update(void);
+
+void Object_hits_target(
+    // move_state_t *ms,
+    object_t *obj,
+    target_t *targ,
+    long player_cost);

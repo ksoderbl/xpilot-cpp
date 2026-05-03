@@ -422,7 +422,6 @@ void Destroy_connection(connection_t *connp, const char *reason)
         sock_get_error(sock);
         sock_write(sock, pkt, len);
     }
-#ifndef SILENT
     xpprintf("%s Goodbye %s=%s@%s|%s (\"%s\")\n",
              showtime(),
              connp->nick ? connp->nick : "",
@@ -430,7 +429,6 @@ void Destroy_connection(connection_t *connp, const char *reason)
              connp->host ? connp->host : "",
              connp->dpy ? connp->dpy : "",
              reason);
-#endif
 
     Conn_set_state(connp, CONN_FREE, CONN_FREE);
 
@@ -603,6 +601,7 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     connp->ship = NULL;
     connp->team = team;
     connp->version = version;
+    Feature_init(connp);
     connp->start = main_loops;
     connp->magic = randomMT() + my_port + sock.fd + team + main_loops;
     connp->id = NO_ID;
@@ -690,14 +689,14 @@ static int Handle_listening(connection_t *connp)
             return -1;
         }
     }
-#ifndef SILENT
+
     xpprintf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
              connp->user, connp->host, connp->dpy, connp->addr, connp->his_port);
     if (connp->version != MY_VERSION)
         xpprintf(" (version %04x)\n", connp->version);
     else
         xpprintf("\n");
-#endif
+
     if (connp->r.ptr[0] != PKT_VERIFY)
     {
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
@@ -717,10 +716,8 @@ static int Handle_listening(connection_t *connp)
     Fix_nick_name(nick);
     if (strcmp(user, connp->user))
     {
-#ifndef SILENT
         xpprintf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
                  showtime(), user, nick, connp->user, connp->nick);
-#endif
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
         Send_reliable(connp);
         Destroy_connection(connp, "verify incorrect");

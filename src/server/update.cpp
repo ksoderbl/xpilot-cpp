@@ -81,7 +81,7 @@ static void Transport_to_home(player_t *pl)
     const int T = RECOVERY_DELAY;
 
     /*
-    if (pl->home_base_ptr == NULL)
+    if (pl->home_base == NULL)
     {
         pl->vel.x = 0;
         pl->vel.y = 0;

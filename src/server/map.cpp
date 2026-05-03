@@ -633,11 +633,9 @@ bool Grok_map(void)
     if (BIT(world->rules->mode, TIMING))
         Find_base_order();
 
-#ifndef SILENT
     xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
              world->name, world->NumBases, world->x, world->y,
              BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
-#endif
 
     D(Print_map());
 

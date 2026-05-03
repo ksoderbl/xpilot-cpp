@@ -91,7 +91,6 @@ static void Xpmap_missing_error(int line_num)
 
 static void Map_extra_error(int line_num)
 {
-#ifndef SILENT
     static int prev_line_num, error_count;
     const int max_error = 5;
 
@@ -108,12 +107,10 @@ static void Map_extra_error(int line_num)
             xpprintf("And so on...\n");
         }
     }
-#endif
 }
 
 static void Map_missing_error(int line_num)
 {
-#ifndef SILENT
     static int prev_line_num, error_count;
     const int max_error = 5;
 
@@ -129,7 +126,6 @@ static void Map_missing_error(int line_num)
             xpprintf("And so on...\n");
         }
     }
-#endif
 }
 
 /*

@@ -1131,10 +1131,11 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
         if (Player_is_phasing(p))
             continue;
 
-        if (BIT(p->obj_status, PLAYING | GAME_OVER | PAUSE) == PLAYING)
+        if (Player_is_active(p))
         {
-            range = Wrap_length(CLICK_TO_FLOAT(pos.cx - p->pos.cx),
-                                CLICK_TO_FLOAT(pos.cy - p->pos.cy));
+            range = Wrap_length(pos.cx - p->pos.cx,
+                                pos.cy - p->pos.cy) /
+                    CLICK;
             if (range > ECM_DISTANCE)
                 continue;
 
