@@ -615,99 +615,96 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_TOGGLE_NUCLEAR:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_NUKES))
-                // {
-                //     switch (pl->mods.nuclear)
-                //     {
-                //     case MODS_NUCLEAR:
-                //         pl->mods.nuclear |= MODS_FULLNUCLEAR;
-                //         break;
-                //     case 0:
-                //         pl->mods.nuclear = MODS_NUCLEAR;
-                //         break;
-                //     default:
-                //         pl->mods.nuclear = 0;
-                //         break;
-                //     }
-                // }
+                switch (Mods_get(pl->mods, ModsNuclear))
+                {
+                case MODS_NUCLEAR:
+                    Mods_set(&pl->mods, ModsNuclear,
+                             MODS_NUCLEAR | MODS_FULLNUCLEAR);
+                    break;
+                case 0:
+                    Mods_set(&pl->mods, ModsNuclear, MODS_NUCLEAR);
+                    break;
+                default:
+                    Mods_set(&pl->mods, ModsNuclear, 0);
+                    break;
+                }
                 break;
 
             case KEY_TOGGLE_CLUSTER:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_CLUSTERS))
-                // {
-                //     TOGGLE_BIT(pl->mods.warhead, CLUSTER);
-                // }
-                break;
+            {
+                int cluster = Mods_get(pl->mods, ModsCluster);
+
+                Mods_set(&pl->mods, ModsCluster, !cluster);
+            }
+            break;
 
             case KEY_TOGGLE_IMPLOSION:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                // {
-                //     TOGGLE_BIT(pl->mods.warhead, IMPLOSION);
-                // }
-                break;
+            {
+                int implosion = Mods_get(pl->mods, ModsImplosion);
+
+                Mods_set(&pl->mods, ModsImplosion, !implosion);
+            }
+            break;
 
             case KEY_TOGGLE_VELOCITY:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                // {
-                //     /* NB. These may be bit fields, dont modify this code */
-                //     if (pl->mods.velocity == MODS_VELOCITY_MAX)
-                //         pl->mods.velocity = 0;
-                //     else
-                //         pl->mods.velocity++;
-                // }
-                break;
+            {
+                int velocity = Mods_get(pl->mods, ModsVelocity);
+
+                if (velocity == MODS_VELOCITY_MAX)
+                    velocity = 0;
+                else
+                    velocity++;
+                Mods_set(&pl->mods, ModsVelocity, velocity);
+            }
+            break;
 
             case KEY_TOGGLE_MINI:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                // {
-                //     /* NB. These may be bit fields, dont modify this code */
-                //     if (pl->mods.mini == MODS_MINI_MAX)
-                //         pl->mods.mini = 0;
-                //     else
-                //         pl->mods.mini++;
-                // }
-                break;
+            {
+                int mini = Mods_get(pl->mods, ModsMini);
+
+                if (mini == MODS_MINI_MAX)
+                    mini = 0;
+                else
+                    mini++;
+                Mods_set(&pl->mods, ModsMini, mini);
+            }
+            break;
 
             case KEY_TOGGLE_SPREAD:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                // {
-                //     /* NB. These may be bit fields, dont modify this code */
-                //     if (pl->mods.spread == MODS_SPREAD_MAX)
-                //         pl->mods.spread = 0;
-                //     else
-                //         pl->mods.spread++;
-                // }
-                break;
+            {
+                int spread = Mods_get(pl->mods, ModsSpread);
+
+                if (spread == MODS_SPREAD_MAX)
+                    spread = 0;
+                else
+                    spread++;
+                Mods_set(&pl->mods, ModsSpread, spread);
+            }
+            break;
 
             case KEY_TOGGLE_LASER:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
-                // {
-                //     /* NB. These may be bit fields, dont modify this code */
-                //     if (pl->mods.laser == MODS_LASER_MAX)
-                //         pl->mods.laser = 0;
-                //     else
-                //         pl->mods.laser++;
-                // }
-                break;
+            {
+                int laser = Mods_get(pl->mods, ModsLaser);
+
+                if (laser == MODS_LASER_MAX)
+                    laser = 0;
+                else
+                    laser++;
+                Mods_set(&pl->mods, ModsLaser, laser);
+            }
+            break;
 
             case KEY_TOGGLE_POWER:
-                // TODO
-                // if (BIT(world->rules->mode, ALLOW_MODIFIERS))
-                // {
-                //     /* NB. These may be bit fields, dont modify this code */
-                //     if (pl->mods.power == MODS_POWER_MAX)
-                //         pl->mods.power = 0;
-                //     else
-                //         pl->mods.power++;
-                // }
-                break;
+            {
+                int power = Mods_get(pl->mods, ModsPower);
+
+                if (power == MODS_POWER_MAX)
+                    power = 0;
+                else
+                    power++;
+                Mods_set(&pl->mods, ModsPower, power);
+            }
+            break;
 
             case KEY_CLEAR_MODIFIERS:
                 Mods_clear(&pl->mods);

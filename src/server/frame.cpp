@@ -429,6 +429,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
      * Don't forget to modify Receive_modifier_bank() in netserver.c
      */
     Mods_to_string(pl->mods, modsstr, sizeof(modsstr));
+    warn("Mods_to_string returned %s", modsstr);
     n = Send_self(conn,
                   pl,
                   lock_id,

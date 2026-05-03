@@ -30,18 +30,19 @@
 /*
  * Weapons modifiers.
  */
-// typedef struct
-// {
-//     unsigned int nuclear;  /* N  modifier */
-//     unsigned int warhead;  /* CI modifier */
-//     unsigned int velocity; /* V# modifier */
-//     unsigned int mini;     /* X# modifier */
-//     unsigned int spread;   /* Z# modifier */
-//     unsigned int power;    /* B# modifier */
-//     unsigned int laser;    /* LS LB modifier */
-// } modifiers_t;
+typedef struct
+{
+    uint8_t nuclear;  /* N  modifier */
+    uint8_t warhead;  /* CI modifier */
+    uint8_t velocity; /* V# modifier */
+    uint8_t mini;     /* X# modifier */
+    uint8_t spread;   /* Z# modifier */
+    uint8_t power;    /* B# modifier */
+    uint8_t laser;    /* LS LB modifier */
+    uint8_t dummy;    /* alignment */
+} modifiers_t;
 
-typedef uint16_t modifiers_t;
+// typedef uint16_t modifiers_t;
 
 // #define Mods_clear(mods) memset(&(mods), 0, sizeof(modifiers_t))
 
@@ -86,9 +87,6 @@ static inline void Mods_clear(modifiers_t *mods)
 {
     memset((mods), 0, sizeof(modifiers_t));
 }
-
-// int num2str(int num, char *str, int i);
-// int str2num(char **strp, int min, int max);
 
 // void Player_set_modbank(player_t *pl, int bank, const char *str);
 

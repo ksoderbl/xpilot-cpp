@@ -34,7 +34,7 @@
  * Fast conversion of 'num' into 'str' starting at position 'i', returns
  * index of character after converted number.
  */
-int num2str(int num, char *str, int i)
+static int num2str(int num, char *str, int i)
 {
     int digits, t;
 
@@ -75,7 +75,7 @@ int num2str(int num, char *str, int i)
 
 static inline int Get_nuclear_modifier(modifiers_t mods)
 {
-    return 0;
+    return mods.nuclear;
 }
 
 static inline void Set_nuclear_modifier(modifiers_t *mods, int value)
@@ -87,7 +87,7 @@ static inline int Get_cluster_modifier(modifiers_t mods)
 {
     // (BIT(obj->mods.warhead, CLUSTER))
     // BIT(mods.warhead, CLUSTER)
-    return 0;
+    return mods.warhead;
 }
 
 static inline void Set_cluster_modifier(modifiers_t *mods, int value)
@@ -97,7 +97,7 @@ static inline void Set_cluster_modifier(modifiers_t *mods, int value)
 
 static inline int Get_implosion_modifier(modifiers_t mods)
 {
-    return 0;
+    return mods.warhead;
 }
 
 static inline void Set_implosion_modifier(modifiers_t *mods, int value)
@@ -107,7 +107,7 @@ static inline void Set_implosion_modifier(modifiers_t *mods, int value)
 
 static inline int Get_velocity_modifier(modifiers_t mods)
 {
-    return 0;
+    return mods.velocity;
 }
 
 static inline void Set_velocity_modifier(modifiers_t *mods, int value)
@@ -118,7 +118,7 @@ static inline void Set_velocity_modifier(modifiers_t *mods, int value)
 static inline int Get_mini_modifier(modifiers_t mods)
 {
     // minis = (mods.mini + 1)
-    return 0;
+    return mods.mini + 1;
 }
 
 static inline void Set_mini_modifier(modifiers_t *mods, int value)
@@ -128,7 +128,7 @@ static inline void Set_mini_modifier(modifiers_t *mods, int value)
 
 static inline int Get_spread_modifier(modifiers_t mods)
 {
-    return 0;
+    return mods.spread;
 }
 
 static inline void Set_spread_modifier(modifiers_t *mods, int value)
@@ -138,7 +138,7 @@ static inline void Set_spread_modifier(modifiers_t *mods, int value)
 
 static inline int Get_power_modifier(modifiers_t mods)
 {
-    return 0;
+    return mods.power;
 }
 
 static inline void Set_power_modifier(modifiers_t *mods, int value)
@@ -148,7 +148,7 @@ static inline void Set_power_modifier(modifiers_t *mods, int value)
 
 static inline int Get_laser_modifier(modifiers_t mods)
 {
-    return 0;
+    return mods.laser;
 }
 
 static inline void Set_laser_modifier(modifiers_t *mods, int value)
@@ -158,6 +158,51 @@ static inline void Set_laser_modifier(modifiers_t *mods, int value)
 
 int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
 {
+    int oldVal = Mods_get(*mods, modifier);
+    if (oldVal == val)
+    {
+        // warn("Mods_set: EQUAL: modifier: %d, value: %d", modifier, val);
+        return 0;
+    }
+
+    switch (modifier)
+    {
+    case ModsNuclear:
+        warn("Mods_set: modifier: Nuclear, value: %d", val);
+        mods->nuclear = val;
+        break;
+    case ModsCluster:
+        warn("Mods_set: modifier: Cluster, value: %d", val);
+        mods->warhead = val;
+        break;
+    case ModsImplosion:
+        warn("Mods_set: modifier: Implosion, value: %d", val);
+        mods->warhead = val;
+        break;
+    case ModsVelocity:
+        warn("Mods_set: modifier: Velocity, value: %d", val);
+        mods->velocity = val;
+        break;
+    case ModsMini:
+        warn("Mods_set: modifier: Mini, value: %d", val);
+        mods->mini = val;
+        break;
+    case ModsSpread:
+        warn("Mods_set: modifier: Spread, value: %d", val);
+        mods->spread = val;
+        break;
+    case ModsPower:
+        warn("Mods_set: modifier: Power, value: %d", val);
+        mods->power = val;
+        break;
+    case ModsLaser:
+        warn("Mods_set: modifier: Laser, value: %d", val);
+        mods->laser = val;
+        break;
+    default:
+        break;
+    }
+
     // SET_BIT(mods.warhead, CLUSTER)
     // SET_BIT(mods.warhead, IMPLOSION)
     // SET_BIT(mods.nuclear, MODS_NUCLEAR)
