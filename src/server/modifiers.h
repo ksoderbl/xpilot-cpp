@@ -30,23 +30,23 @@
 /*
  * Weapons modifiers.
  */
-typedef struct
-{
-    uint8_t nuclear;  /* N  modifier */
-    uint8_t warhead;  /* CI modifier */
-    uint8_t velocity; /* V# modifier */
-    uint8_t mini;     /* X# modifier */
-    uint8_t spread;   /* Z# modifier */
-    uint8_t power;    /* B# modifier */
-    uint8_t laser;    /* LS LB modifier */
-    uint8_t dummy;    /* alignment */
-} modifiers_t;
+// typedef struct
+// {
+//     uint8_t nuclear;  /* N  modifier */
+//     uint8_t warhead;  /* CI modifier */
+//     uint8_t velocity; /* V# modifier */
+//     uint8_t mini;     /* X# modifier */
+//     uint8_t spread;   /* Z# modifier */
+//     uint8_t power;    /* B# modifier */
+//     uint8_t laser;    /* LS LB modifier */
+//     uint8_t dummy;    /* alignment */
+// } modifiers_t;
 
-// typedef uint16_t modifiers_t;
+typedef uint16_t modifiers_t;
 
 // #define Mods_clear(mods) memset(&(mods), 0, sizeof(modifiers_t))
 
-#define MODS_NUCLEAR_MAX 2   /* - N FN */
+#define MODS_NUCLEAR_MAX 3   /* - N FN */
 #define MODS_CLUSTER_MAX 1   /* - C */
 #define MODS_IMPLOSION_MAX 1 /* - I */
 

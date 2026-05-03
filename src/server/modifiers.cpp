@@ -58,6 +58,9 @@ static int num2str(int num, char *str, int i)
     return i + digits;
 }
 
+#define MODS_BIT0 (1 << 0)
+#define MODS_BIT1 (1 << 1)
+
 #define MODS_N_BIT0 (1 << 0) /* nuclear */
 #define MODS_N_BIT1 (1 << 1) /* fullnuclear */
 #define MODS_C_BIT (1 << 2)  /* cluster */
@@ -75,131 +78,256 @@ static int num2str(int num, char *str, int i)
 
 static inline int Get_nuclear_modifier(modifiers_t mods)
 {
-    return mods.nuclear;
+    // return mods.nuclear;
+    int n0, n1;
+
+    n0 = BIT(mods, MODS_N_BIT0) ? 1 : 0;
+    n1 = BIT(mods, MODS_N_BIT1) ? 1 : 0;
+
+    return (n1 << 1) + n0;
 }
 
 static inline void Set_nuclear_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_NUCLEAR_MAX);
+    if (BIT(value, MODS_BIT0))
+        SET_BIT(*mods, MODS_N_BIT0);
+    else
+        CLR_BIT(*mods, MODS_N_BIT0);
+    if (BIT(value, MODS_BIT1))
+        SET_BIT(*mods, MODS_N_BIT1);
+    else
+        CLR_BIT(*mods, MODS_N_BIT1);
 }
 
 static inline int Get_cluster_modifier(modifiers_t mods)
 {
     // (BIT(obj->mods.warhead, CLUSTER))
     // BIT(mods.warhead, CLUSTER)
-    return mods.warhead;
+    // return mods.warhead;
+    return (int)BIT(mods, MODS_C_BIT) ? 1 : 0;
 }
 
 static inline void Set_cluster_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_CLUSTER_MAX);
+    if (value)
+        SET_BIT(*mods, MODS_C_BIT);
+    else
+        CLR_BIT(*mods, MODS_C_BIT);
 }
 
 static inline int Get_implosion_modifier(modifiers_t mods)
 {
-    return mods.warhead;
+    // return mods.warhead;
+    return (int)BIT(mods, MODS_I_BIT) ? 1 : 0;
 }
 
 static inline void Set_implosion_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_IMPLOSION_MAX);
+    if (value)
+        SET_BIT(*mods, MODS_I_BIT);
+    else
+        CLR_BIT(*mods, MODS_I_BIT);
 }
 
 static inline int Get_velocity_modifier(modifiers_t mods)
 {
-    return mods.velocity;
+    // return mods.velocity;
+    int v0, v1;
+
+    v0 = BIT(mods, MODS_V_BIT0) ? 1 : 0;
+    v1 = BIT(mods, MODS_V_BIT1) ? 1 : 0;
+
+    return (v1 << 1) + v0;
 }
 
 static inline void Set_velocity_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_VELOCITY_MAX);
+    if (BIT(value, MODS_BIT0))
+        SET_BIT(*mods, MODS_V_BIT0);
+    else
+        CLR_BIT(*mods, MODS_V_BIT0);
+    if (BIT(value, MODS_BIT1))
+        SET_BIT(*mods, MODS_V_BIT1);
+    else
+        CLR_BIT(*mods, MODS_V_BIT1);
 }
 
 static inline int Get_mini_modifier(modifiers_t mods)
 {
     // minis = (mods.mini + 1)
-    return mods.mini + 1;
+    // return mods.mini + 1;
+    int x0, x1;
+
+    x0 = BIT(mods, MODS_X_BIT0) ? 1 : 0;
+    x1 = BIT(mods, MODS_X_BIT1) ? 1 : 0;
+
+    return (x1 << 1) + x0;
 }
 
 static inline void Set_mini_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_MINI_MAX);
+    if (BIT(value, MODS_BIT0))
+        SET_BIT(*mods, MODS_X_BIT0);
+    else
+        CLR_BIT(*mods, MODS_X_BIT0);
+    if (BIT(value, MODS_BIT1))
+        SET_BIT(*mods, MODS_X_BIT1);
+    else
+        CLR_BIT(*mods, MODS_X_BIT1);
 }
 
 static inline int Get_spread_modifier(modifiers_t mods)
 {
-    return mods.spread;
+    // return mods.spread;
+    int z0, z1;
+
+    z0 = BIT(mods, MODS_Z_BIT0) ? 1 : 0;
+    z1 = BIT(mods, MODS_Z_BIT1) ? 1 : 0;
+
+    return (z1 << 1) + z0;
 }
 
 static inline void Set_spread_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_SPREAD_MAX);
+    if (BIT(value, MODS_BIT0))
+        SET_BIT(*mods, MODS_Z_BIT0);
+    else
+        CLR_BIT(*mods, MODS_Z_BIT0);
+    if (BIT(value, MODS_BIT1))
+        SET_BIT(*mods, MODS_Z_BIT1);
+    else
+        CLR_BIT(*mods, MODS_Z_BIT1);
 }
 
 static inline int Get_power_modifier(modifiers_t mods)
 {
-    return mods.power;
+    // return mods.power;
+    int b0, b1;
+
+    b0 = BIT(mods, MODS_B_BIT0) ? 1 : 0;
+    b1 = BIT(mods, MODS_B_BIT1) ? 1 : 0;
+
+    return (b1 << 1) + b0;
 }
 
 static inline void Set_power_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_POWER_MAX);
+    if (BIT(value, MODS_BIT0))
+        SET_BIT(*mods, MODS_B_BIT0);
+    else
+        CLR_BIT(*mods, MODS_B_BIT0);
+    if (BIT(value, MODS_BIT1))
+        SET_BIT(*mods, MODS_B_BIT1);
+    else
+        CLR_BIT(*mods, MODS_B_BIT1);
 }
 
 static inline int Get_laser_modifier(modifiers_t mods)
 {
-    return mods.laser;
+    // return mods.laser;
+    int ls, lb;
+
+    ls = BIT(mods, MODS_LS_BIT) ? 1 : 0;
+    lb = BIT(mods, MODS_LB_BIT) ? 1 : 0;
+
+    return (lb << 1) + ls;
 }
 
 static inline void Set_laser_modifier(modifiers_t *mods, int value)
 {
     LIMIT(value, 0, MODS_LASER_MAX);
+    if (BIT(value, MODS_BIT0))
+        SET_BIT(*mods, MODS_LS_BIT);
+    else
+        CLR_BIT(*mods, MODS_LS_BIT);
+    if (BIT(value, MODS_BIT1))
+        SET_BIT(*mods, MODS_LB_BIT);
+    else
+        CLR_BIT(*mods, MODS_LB_BIT);
 }
 
 int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
 {
     int oldVal = Mods_get(*mods, modifier);
+    warn("Mods_set: modifier: %d, oldVal: %d, value: %d", modifier, oldVal, val);
     if (oldVal == val)
     {
-        // warn("Mods_set: EQUAL: modifier: %d, value: %d", modifier, val);
+        warn("Mods_set: EQUAL: modifier: %d, value: %d", modifier, val);
         return 0;
     }
+
+    bool allow = false;
+
+    if (val == 0)
+        allow = true;
+    else if (modifier == ModsNuclear)
+    {
+        if (BIT(world->rules->mode, ALLOW_NUKES))
+            allow = true;
+    }
+    else if (modifier == ModsCluster)
+    {
+        if (BIT(world->rules->mode, ALLOW_CLUSTERS))
+            allow = true;
+    }
+    else if (modifier == ModsLaser)
+    {
+        if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
+            allow = true;
+    }
+    else
+    {
+        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+            allow = true;
+    }
+
+    if (!allow)
+        return -1;
 
     switch (modifier)
     {
     case ModsNuclear:
         warn("Mods_set: modifier: Nuclear, value: %d", val);
-        mods->nuclear = val;
+        Set_nuclear_modifier(mods, val);
         break;
     case ModsCluster:
         warn("Mods_set: modifier: Cluster, value: %d", val);
-        mods->warhead = val;
+        Set_cluster_modifier(mods, val);
         break;
     case ModsImplosion:
         warn("Mods_set: modifier: Implosion, value: %d", val);
-        mods->warhead = val;
+        Set_implosion_modifier(mods, val);
         break;
     case ModsVelocity:
         warn("Mods_set: modifier: Velocity, value: %d", val);
-        mods->velocity = val;
+        Set_velocity_modifier(mods, val);
         break;
     case ModsMini:
         warn("Mods_set: modifier: Mini, value: %d", val);
-        mods->mini = val;
+        Set_mini_modifier(mods, val);
         break;
     case ModsSpread:
         warn("Mods_set: modifier: Spread, value: %d", val);
-        mods->spread = val;
+        Set_spread_modifier(mods, val);
         break;
     case ModsPower:
         warn("Mods_set: modifier: Power, value: %d", val);
-        mods->power = val;
+        Set_power_modifier(mods, val);
         break;
     case ModsLaser:
         warn("Mods_set: modifier: Laser, value: %d", val);
-        mods->laser = val;
+        Set_laser_modifier(mods, val);
         break;
     default:
+        warn("No such modifier: %d", modifier);
+        // assert(0);
         break;
     }
 
@@ -241,17 +369,17 @@ int Mods_get(modifiers_t mods, modifier_t modifier)
  */
 void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
 {
-    int i = 0;
+    int i = 0, t;
 
     if (size < MAX_CHARS)
         return;
 
-    int nuclear = Get_nuclear_modifier(mods);
+    t = Get_nuclear_modifier(mods);
     // if (BIT(mods.nuclear, MODS_FULLNUCLEAR))
-    if (nuclear & MODS_FULLNUCLEAR)
+    if (t & MODS_FULLNUCLEAR)
         modstr[i++] = 'F';
     // if (BIT(mods.nuclear, MODS_NUCLEAR))
-    if (nuclear & MODS_NUCLEAR)
+    if (t & MODS_NUCLEAR)
         modstr[i++] = 'N';
     // if (BIT(mods.warhead, CLUSTER))
     if (Get_cluster_modifier(mods))
@@ -259,50 +387,54 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
     // if (BIT(mods.warhead, IMPLOSION))
     if (Get_implosion_modifier(mods))
         modstr[i++] = 'I';
-    int velocity = Get_velocity_modifier(mods);
+    t = Get_velocity_modifier(mods);
     // if (mods.velocity)
-    if (velocity)
+    if (t)
     {
         if (i)
             modstr[i++] = ' ';
         modstr[i++] = 'V';
-        i = num2str(velocity, modstr, i);
+        i = num2str(t, modstr, i);
     }
-    int mini = Get_mini_modifier(mods);
+    t = Get_mini_modifier(mods);
     // if (mods.mini)
-    if (mini)
+    if (t)
     {
         if (i)
             modstr[i++] = ' ';
         modstr[i++] = 'X';
-        i = num2str(mini + 1, modstr, i);
+        i = num2str(t + 1, modstr, i);
     }
-    int spread = Get_spread_modifier(mods);
+    t = Get_spread_modifier(mods);
     // if (mods.spread)
-    if (spread)
+    if (t)
     {
         if (i)
             modstr[i++] = ' ';
         modstr[i++] = 'Z';
-        i = num2str(spread, modstr, i);
+        i = num2str(t, modstr, i);
     }
-    int power = Get_power_modifier(mods);
+    t = Get_power_modifier(mods);
     // if (mods.power)
-    if (power)
+    if (t)
     {
         if (i)
             modstr[i++] = ' ';
         modstr[i++] = 'B';
-        i = num2str(power, modstr, i);
+        i = num2str(t, modstr, i);
     }
-    int laser = Get_laser_modifier(mods);
+    t = Get_laser_modifier(mods);
     // if (mods.laser)
-    if (laser)
+    if (t)
     {
         if (i)
             modstr[i++] = ' ';
         modstr[i++] = 'L';
-        modstr[i++] = (BIT(laser, MODS_LASER_STUN) ? 'S' : 'B');
+        // modstr[i++] = (BIT(t, MODS_LASER_STUN) ? 'S' : 'B');
+        if (t & MODS_LASER_STUN)
+            modstr[i++] = 'S';
+        if (t & MODS_LASER_BLIND)
+            modstr[i++] = 'B';
     }
     modstr[i] = '\0';
 }
