@@ -673,6 +673,8 @@ void Add_HUD_message(const char *message)
 
 void Paint_HUD(void)
 {
+    warn("Paint_HUD");
+
     const int BORDER = 3;
     int vert_pos, horiz_pos;
     char str[50];
@@ -695,8 +697,8 @@ void Paint_HUD(void)
                     (int)(ext_view_width / 2 - ptr_move_fact * selfVel.x),
                     (int)(ext_view_height / 2 + ptr_move_fact * selfVel.y));
 
-    if (instruments.showHUDRadar)
-        Paint_hudradar();
+    // if (instruments.showHUDRadar)
+    //     Paint_hudradar();
 
     /* from xpilot ng 4.7.1 */
     if (hudRadarEnemyColor || hudRadarOtherColor)
@@ -715,8 +717,8 @@ void Paint_HUD(void)
                        SHIP_SZ);
     }
 
-    if (!instruments.showHUD)
-        return;
+    // if (!instruments.showHUD)
+    //     return;
 
     /*
      * Display the HUD
@@ -915,6 +917,7 @@ void Paint_HUD(void)
 
     /* Update the modifiers */
     modlen = strlen(mods);
+    warn("mods: %s", mods);
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER) - XTextWidth(gameFont, mods, modlen),
                   WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->ascent,

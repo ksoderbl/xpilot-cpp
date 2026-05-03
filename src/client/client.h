@@ -61,8 +61,6 @@ typedef struct
     bool packetSizeMeter;
     bool powerMeter;
     bool showDecor;
-    bool showHUD;
-    bool showHUDRadar;
     bool showItems;
     bool showLivesByShip;
     bool showMessages;

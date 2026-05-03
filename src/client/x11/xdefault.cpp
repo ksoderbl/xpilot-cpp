@@ -133,8 +133,6 @@ void Initialize_global_variables(void)
     instruments.packetSizeMeter = false;
     instruments.powerMeter = false;
     instruments.showDecor = false;
-    instruments.showHUD = false;
-    instruments.showHUDRadar = false;
     instruments.showItems = false;
     instruments.showLivesByShip = false;
     instruments.showMessages = true;
