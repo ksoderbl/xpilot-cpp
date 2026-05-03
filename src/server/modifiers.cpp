@@ -443,9 +443,24 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
     modstr[i] = '\0';
 }
 
+// TODO
 std::string Mods_to_string2(modifiers_t mods)
 {
-    return "";
+    std::string str = "";
+
+    int t = Get_nuclear_modifier(mods);
+    if (t & MODS_FULLNUCLEAR)
+        str += "F";
+
+    t = Get_spread_modifier(mods);
+    if (t)
+    {
+        if (!str.empty())
+            str += ' ';
+        str += 'Z' + std::to_string(t);
+    }
+
+    return str;
 }
 
 void Mods_filter(modifiers_t *mods)
