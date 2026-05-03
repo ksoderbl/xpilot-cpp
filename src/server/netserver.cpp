@@ -189,6 +189,7 @@ static void Feature_init(connection_t *connp)
     int v = connp->version;
     int features = 0;
 
+    // XPilot 4
     if (v < 0x4F00)
     {
         if (v >= 0x4210)
@@ -204,7 +205,8 @@ static void Feature_init(connection_t *connp)
         if (v >= 0x4501)
             SET_BIT(features, F_TEMPWORM);
     }
-    else
+    // XPilot NG
+    else if (v >= 0x4F00 && v < 0x5000)
     {
         SET_BIT(features, F_POLY);
         SET_BIT(features, F_TEAMRADAR);
@@ -601,7 +603,35 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
     connp->ship = NULL;
     connp->team = team;
     connp->version = version;
+
     Feature_init(connp);
+    if (FEATURE(connp, F_POLY))
+        printf("Have F_POLY\n");
+    if (FEATURE(connp, F_FLOATSCORE))
+        printf("Have F_FLOATSCORE\n");
+    if (FEATURE(connp, F_EXPLICITSELF))
+        printf("Have F_EXPLICITSELF\n");
+    if (FEATURE(connp, F_ASTEROID))
+        printf("Have F_ASTEROID\n");
+    if (FEATURE(connp, F_TEMPWORM))
+        printf("Have F_TEMPWORM\n");
+    if (FEATURE(connp, F_FASTRADAR))
+        printf("Have F_FASTRADAR\n");
+    if (FEATURE(connp, F_SEPARATEPHASING))
+        printf("Have F_SEPARATEPHASING\n");
+    if (FEATURE(connp, F_TEAMRADAR))
+        printf("Have F_TEAMRADAR\n");
+    if (FEATURE(connp, F_SHOW_APPEARING))
+        printf("Have F_SHOW_APPEARING\n");
+    if (FEATURE(connp, F_SENDTEAM))
+        printf("Have F_SENDTEAM\n");
+    if (FEATURE(connp, F_CUMULATIVETURN))
+        printf("Have F_CUMULATIVETURN\n");
+    if (FEATURE(connp, F_BALLSTYLE))
+        printf("Have F_BALLSTYLE\n");
+    if (FEATURE(connp, F_POLYSTYLE))
+        printf("Have F_POLYSTYLE\n");
+
     connp->start = main_loops;
     connp->magic = randomMT() + my_port + sock.fd + team + main_loops;
     connp->id = NO_ID;
@@ -805,7 +835,76 @@ static int Handle_setup(connection_t *connp)
     if (connp->setup >= S->setup_size)
         Conn_set_state(connp, CONN_DRAIN, CONN_LOGIN);
 
+#if 0
+    if (CheckBanned(connp->user, connp->nick, connp->addr, connp->host)) {
+    Destroy_connection(connp, "Banned from server, contact " LOCALGURU);
+    return -1;
+    }
+    if (!CheckAllowed(connp->user, connp->nick, connp->addr, connp->host)) {
+    Destroy_connection(connp, "Restricted nick, contact " LOCALGURU);
+    return -1;
+    }
+#endif
+
     return 0;
+}
+
+/*
+ * Ugly hack to prevent people from confusing Mara BMS.
+ * This should be removed ASAP.
+ */
+static void UglyHack(char *string)
+{
+    static const char *we_dont_want_these_substrings[] = {
+        "BALL", "Ball", "VAKK", "B A L L", "ball",
+        "SAFE", "Safe", "safe", "S A F E",
+        "COVER", "Cover", "cover", "INCOMING", "Incoming", "incoming",
+        "POP", "Pop", "pop"};
+    int i;
+
+    for (i = 0; i < NELEM(we_dont_want_these_substrings); i++)
+    {
+        const char *substr = we_dont_want_these_substrings[i];
+        char *s;
+
+        /* not really needed, but here for safety */
+        if (substr == NULL)
+            break;
+
+        while ((s = strstr(string, substr)) != NULL)
+            *s = 'X';
+    }
+}
+
+static void LegalizeName(char *string, bool hack)
+{
+    char *s = string;
+    static char allowed_chars[] =
+        " !#%&'()-.0123456789"
+        "@ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "_abcdefghijklmnopqrstuvwxyz";
+
+    if (hack)
+        UglyHack(s);
+
+    while (*s != '\0')
+    {
+        char ch = *s;
+        if (!strchr(allowed_chars, ch))
+            ch = 'x';
+        *s++ = ch;
+    }
+}
+
+static void LegalizeHost(char *string)
+{
+    while (*string != '\0')
+    {
+        char ch = *string;
+        if (!isalnum(ch) && ch != '.')
+            ch = '.';
+        *string++ = ch;
+    }
 }
 
 /*
