@@ -22,6 +22,8 @@
  */
 #pragma once
 
+#include <string>
+
 #include <cstring>
 #include <cstdint>
 
@@ -91,6 +93,9 @@ static inline void Mods_clear(modifiers_t *mods)
 // void Player_set_modbank(player_t *pl, int bank, const char *str);
 
 void Mods_to_string(modifiers_t mods, char *dst, size_t size);
+std::string Mods_to_string2(modifiers_t mods);
 int Mods_set(modifiers_t *mods, modifier_t modifier, int val);
 int Mods_get(modifiers_t mods, modifier_t modifier);
 void Mods_filter(modifiers_t *mods);
+
+void modifiersTest(void);

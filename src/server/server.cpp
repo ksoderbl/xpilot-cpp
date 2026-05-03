@@ -97,6 +97,8 @@ time_t serverStartTime = 0;
 extern void Main_loop(void);
 static void Handle_signal(int sig_no);
 
+extern void modifiersUnitTest(void);
+
 int main(int argc, char **argv)
 {
     int timer_tick_rate;
@@ -125,6 +127,9 @@ int main(int argc, char **argv)
     xpprintf("parser\n");
     if (!Parser(argc, argv))
         exit(1);
+
+    // Unit tests
+    modifiersUnitTest();
 
     /* Lock the server into memory */
     plock_server(options.pLockServer);

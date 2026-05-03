@@ -263,6 +263,8 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
         return 0;
     }
 
+    warn("1");
+
     bool allow = false;
 
     if (val == 0)
@@ -290,6 +292,8 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
 
     if (!allow)
         return -1;
+
+    warn("2");
 
     switch (modifier)
     {
@@ -439,6 +443,11 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
     modstr[i] = '\0';
 }
 
+std::string Mods_to_string2(modifiers_t mods)
+{
+    return "";
+}
+
 void Mods_filter(modifiers_t *mods)
 {
     if (!BIT(world->rules->mode, ALLOW_NUKES))
@@ -572,4 +581,40 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
         }
     }
     pl->modbank[bank] = mods;
+}
+
+void modifiersUnitTest(void)
+{
+    modifiers_t mods;
+
+    Mods_clear(&mods);
+
+    int spread = 3;
+    Mods_set(&mods, ModsSpread, spread);
+
+    char modsstr[MAX_CHARS];
+
+    Mods_to_string(mods, modsstr, sizeof(modsstr));
+    xpinfo("modifiersUnitTest Mods_to_string  returned \"%s\"", modsstr);
+
+    if (!strcmp(modsstr, "Z3"))
+    {
+        xpinfo("SUCCESS");
+    }
+    else
+    {
+        warn("FAIL");
+    }
+
+    std::string s = Mods_to_string2(mods);
+    xpinfo("modifiersUnitTest: modsstr2 = \"%s\"", s.c_str());
+
+    if (s == "Z3")
+    {
+        xpinfo("SUCCESS");
+    }
+    else
+    {
+        warn("FAIL");
+    }
 }
