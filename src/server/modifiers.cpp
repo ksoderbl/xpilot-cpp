@@ -256,10 +256,10 @@ static inline void Set_laser_modifier(modifiers_t *mods, int value)
 int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
 {
     int oldVal = Mods_get(*mods, modifier);
-    warn("Mods_set: modifier: %d, oldVal: %d, value: %d", modifier, oldVal, val);
+    // warn("Mods_set: modifier: %d, oldVal: %d, value: %d", modifier, oldVal, val);
     if (oldVal == val)
     {
-        warn("Mods_set: EQUAL: modifier: %d, value: %d", modifier, val);
+        // warn("Mods_set: EQUAL: modifier: %d, value: %d", modifier, val);
         return 0;
     }
 
@@ -297,35 +297,35 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
     switch (modifier)
     {
     case ModsNuclear:
-        warn("Mods_set: modifier: Nuclear, value: %d", val);
+        // warn("Mods_set: modifier: Nuclear, value: %d", val);
         Set_nuclear_modifier(mods, val);
         break;
     case ModsCluster:
-        warn("Mods_set: modifier: Cluster, value: %d", val);
+        // warn("Mods_set: modifier: Cluster, value: %d", val);
         Set_cluster_modifier(mods, val);
         break;
     case ModsImplosion:
-        warn("Mods_set: modifier: Implosion, value: %d", val);
+        // warn("Mods_set: modifier: Implosion, value: %d", val);
         Set_implosion_modifier(mods, val);
         break;
     case ModsVelocity:
-        warn("Mods_set: modifier: Velocity, value: %d", val);
+        // warn("Mods_set: modifier: Velocity, value: %d", val);
         Set_velocity_modifier(mods, val);
         break;
     case ModsMini:
-        warn("Mods_set: modifier: Mini, value: %d", val);
+        // warn("Mods_set: modifier: Mini, value: %d", val);
         Set_mini_modifier(mods, val);
         break;
     case ModsSpread:
-        warn("Mods_set: modifier: Spread, value: %d", val);
+        // warn("Mods_set: modifier: Spread, value: %d", val);
         Set_spread_modifier(mods, val);
         break;
     case ModsPower:
-        warn("Mods_set: modifier: Power, value: %d", val);
+        // warn("Mods_set: modifier: Power, value: %d", val);
         Set_power_modifier(mods, val);
         break;
     case ModsLaser:
-        warn("Mods_set: modifier: Laser, value: %d", val);
+        // warn("Mods_set: modifier: Laser, value: %d", val);
         Set_laser_modifier(mods, val);
         break;
     default:

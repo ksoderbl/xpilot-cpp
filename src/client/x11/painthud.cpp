@@ -673,7 +673,7 @@ void Add_HUD_message(const char *message)
 
 void Paint_HUD(void)
 {
-    warn("Paint_HUD");
+    // warn("Paint_HUD");
 
     const int BORDER = 3;
     int vert_pos, horiz_pos;
@@ -924,7 +924,7 @@ void Paint_HUD(void)
 
     /* Update the modifiers */
     modlen = strlen(mods);
-    warn("mods: %s", mods);
+    // warn("mods: %s", mods);
     rd.drawString(dpy, drawPixmap, gameGC,
                   WINSCALE(hud_pos_x - hudSize + HUD_OFFSET - BORDER) - XTextWidth(gameFont, mods, modlen),
                   WINSCALE(hud_pos_y + hudSize - HUD_OFFSET + BORDER) + gameFont->ascent,

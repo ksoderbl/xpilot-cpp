@@ -2197,12 +2197,25 @@ void Move_object(object_t *obj)
         if (!(ms.done.cx | ms.done.cy))
         {
             pos_update |= (ms.crash | ms.bounce);
-            // TODO
-            // if (ms.crash != NotACrash)
-            //     pos_update = true;
 
-            // if (ms.bounce != NotABounce)
-            //     pos_update = true;
+            bool pos_update2 = false;
+
+            if (ms.crash != NotACrash)
+                pos_update2 = true;
+
+            if (ms.bounce != NotABounce)
+                pos_update2 = true;
+
+            // if (pos_update)
+            //     warn("POS_UPDATE!");
+            if (pos_update == pos_update2)
+            {
+                // warn("SUCCESS!");
+            }
+            else
+            {
+                warn("FAIL: pos_update = %d, pos_update2 = %d", pos_update, pos_update2);
+            }
 
             if (ms.crash)
                 break;
@@ -2643,13 +2656,26 @@ void Move_player(player_t *pl)
         {
             Move_segment(&ms[i]);
 
-            pos_update |= (ms[i].crash | ms[i].bounce);
-            // TODO
-            // if (ms[i].crash != NotACrash)
-            //     pos_update = true;
+            bool pos_update2 = pos_update;
 
-            // if (ms[i].bounce != NotABounce)
-            //     pos_update = true;
+            pos_update |= (ms[i].crash | ms[i].bounce);
+
+            if (ms[i].crash != NotACrash)
+                pos_update2 = true;
+
+            if (ms[i].bounce != NotABounce)
+                pos_update2 = true;
+
+            // if (pos_update)
+            //     warn("POS_UPDATE!");
+            if (pos_update == pos_update2)
+            {
+                // warn("SUCCESS! (i = %d)", i);
+            }
+            else
+            {
+                warn("FAIL: i = %d, pos_update = %d, pos_update2 = %d", i, pos_update, pos_update2);
+            }
 
             if (ms[i].crash)
             {
@@ -3064,6 +3090,23 @@ void Turn_player(player_t *pl)
             do
             {
                 Move_segment(&ms[i]);
+
+                bool val1 = ms[i].crash | ms[i].bounce;
+                bool isCrash = (ms[i].crash != NotACrash);
+                bool isBounce = (ms[i].bounce != NotABounce);
+
+                if (val1 || isCrash || isBounce)
+                    warn("i=%d, val1=%d, isCrash=%d, isBounce=%d", i, val1, isCrash, isBounce);
+
+                if (val1 == (isCrash || isBounce))
+                {
+                    // warn("SUCCESS!");
+                }
+                else
+                {
+                    warn("FAIL!");
+                }
+
                 if (ms[i].crash | ms[i].bounce)
                 {
                     if (ms[i].crash)
