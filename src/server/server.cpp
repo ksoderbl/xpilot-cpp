@@ -145,7 +145,7 @@ int main(int argc, char **argv)
     Walls_init();
 
     /* Allocate memory for players, shots and messages */
-    Alloc_players(world->NumBases + MAX_PSEUDO_PLAYERS);
+    Alloc_players(Num_bases() + MAX_PSEUDO_PLAYERS);
     Alloc_shots(MAX_TOTAL_SHOTS);
     Alloc_cells();
 
@@ -524,7 +524,7 @@ void Server_info(char *str, size_t max_size)
                                                                                                   : "ok",
             FPS,
             world->x, world->y, world->name, world->author,
-            NumPlayers, world->NumBases);
+            NumPlayers, Num_bases());
 
     if (strlen(str) >= max_size)
     {

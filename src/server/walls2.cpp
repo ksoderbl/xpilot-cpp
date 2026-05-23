@@ -1722,7 +1722,7 @@ int Polys_to_client(uint8_t **start)
             starty = dy;
         }
     }
-    STORE1(world->NumBases);
+    STORE1(Num_bases());
     for (i = 0; i < Num_bases(); i++)
     {
         base_t *base = Base_by_index(i);

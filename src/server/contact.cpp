@@ -783,9 +783,9 @@ void Queue_loop(void)
         {
 
             /* is there a homebase available? */
-            if (NumPlayers - NumPseudoPlayers + login_in_progress < world->NumBases ||
-                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < world->NumBases) ||
-                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < world->NumBases))
+            if (NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases() ||
+                (Kick_robot_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases()) ||
+                (Kick_paused_players(TEAM_NOT_SET) && NumPlayers - NumPseudoPlayers + login_in_progress < Num_bases()))
             {
 
                 /* find a team for this fellow. */

@@ -141,9 +141,10 @@ int World_place_fuel(clpos_t pos, int team)
     t.last_change = frame_loops;
     t.team = team;
 
-    // Arraylist_add(world->fuels, &t);
-    world->fuels[ind] = t;
-    world->NumFuels++;
+    // world->fuels[ind] = t;
+    // world->NumFuels++;
+    world->fuels.push_back(t);
+
     return ind;
 }
 
@@ -249,9 +250,10 @@ int World_place_target(clpos_t pos, int team)
     t.last_change = frame_loops;
     // t.group = NO_GROUP;
 
-    // Arraylist_add(world->targets, &t);
-    world->targets[ind] = t;
-    world->NumTargets++;
+    // world->targets[ind] = t;
+    // world->NumTargets++;
+    world->targets.push_back(t);
+
     return ind;
 }
 
@@ -457,14 +459,23 @@ static void Init_map(void)
     world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 
     world->NumAsteroidConcs = 0;
+
     world->NumBases = 0;
+    // world->bases.clear();
+
     world->NumCannons = 0;
     world->NumEcms = 0;
-    world->NumFuels = 0;
+
+    // world->NumFuels = 0;
+    world->fuels.clear();
+
     world->NumFrictionAreas = 0;
     world->NumGravs = 0;
     world->NumItemConcentrators = 0;
-    world->NumTargets = 0;
+
+    // world->NumTargets = 0;
+    world->targets.clear();
+
     world->NumTransporters = 0;
     world->NumTreasures = 0;
     world->NumWormholes = 0;
@@ -477,14 +488,23 @@ void World_free(void)
     XFREE(world->gravity);
 
     XFREE(world->asteroidConcs);
+
     XFREE(world->bases);
+    // world->bases.clear();
+
     XFREE(world->cannons);
     XFREE(world->ecms);
-    XFREE(world->fuels);
+
+    // XFREE(world->fuels);
+    world->fuels.clear();
+
     XFREE(world->frictionAreas);
     XFREE(world->gravs);
     XFREE(world->itemConcentrators);
-    XFREE(world->targets);
+
+    // XFREE(world->targets);
+    world->targets.clear();
+
     XFREE(world->transporters);
     XFREE(world->treasures);
     XFREE(world->wormholes);
@@ -505,7 +525,7 @@ static void Alloc_map(void)
         (vector_t **)malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
     world->gravs = NULL;
     world->bases = NULL;
-    world->fuels = NULL;
+    // world->fuels = NULL;
     world->cannons = NULL;
     world->wormholes = NULL;
     world->itemConcentrators = NULL;
@@ -634,7 +654,7 @@ bool Grok_map(void)
         Find_base_order();
 
     xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
-             world->name, world->NumBases, world->x, world->y,
+             world->name, Num_bases(), world->x, world->y,
              BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
 
     D(Print_map());
@@ -821,7 +841,7 @@ static void Find_base_order(void)
         world->baseorder = NULL;
         return;
     }
-    if ((n = world->NumBases) <= 0)
+    if ((n = Num_bases()) <= 0)
     {
         error("Cannot support race mode in a map without bases");
         exit(-1);

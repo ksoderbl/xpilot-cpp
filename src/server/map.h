@@ -26,10 +26,10 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 
 #include <cassert>
+#include <vector>
 
 #include "click.h"
 #include "const.h"
@@ -114,7 +114,7 @@ typedef struct fuel
     position_t pix_pos;
     clpos_t pos;
     long fuel;
-    unsigned conn_mask;
+    uint32_t conn_mask;
     long last_change;
     int team;
 } fuel_t;
@@ -148,7 +148,7 @@ typedef struct cannon
     clpos_t pos;
     int dir;
     int dead_ticks;
-    unsigned conn_mask;
+    uint32_t conn_mask;
     long last_change;
     int item[NUM_ITEMS];
     int damaged;
@@ -254,13 +254,11 @@ typedef struct team
 
 typedef struct item_concentrator
 {
-    blkpos_t blk_pos;
     clpos_t pos;
 } item_concentrator_t;
 
 typedef struct asteroid_concentrator
 {
-    blkpos_t blk_pos;
     clpos_t pos;
 } asteroid_concentrator_t;
 
@@ -330,22 +328,31 @@ struct world
 
     int NumAsteroidConcs;
     asteroid_concentrator_t *asteroidConcs;
+
     int NumBases;
     base_t *bases;
+    // std::vector<base_t> bases;
+
     int NumCannons;
     cannon_t *cannons;
     int NumEcms;
     ecm_t *ecms;
-    int NumFuels;
-    fuel_t *fuels;
+
+    // int NumFuels;
+    // fuel_t *fuels;
+    std::vector<fuel_t> fuels;
+
     int NumFrictionAreas;
     friction_area_t *frictionAreas;
     int NumGravs;
     grav_t *gravs;
     int NumItemConcentrators;
     item_concentrator_t *itemConcentrators;
-    int NumTargets;
-    target_t *targets;
+
+    // int NumTargets;
+    // target_t *targets;
+    std::vector<target_t> targets;
+
     int NumTransporters;
     transporter_t *transporters;
     int NumTreasures;
@@ -499,14 +506,32 @@ static inline int WRAP_YCLICK(int cy)
     (((X) < -(world->cheight >> 1)) ? (X) + world->cheight : (((X) >= (world->cheight >> 1)) ? (X) - world->cheight : (X)))
 
 #define Num_asteroidConcs() (world->NumAsteroidConcs)
+
 #define Num_bases() (world->NumBases)
+// static inline int Num_bases()
+// {
+//     return Num_bases();
+// }
+
 #define Num_cannons() (world->NumCannons)
 #define Num_ecms() (world->NumEcms)
 #define Num_frictionAreas() (world->NumFrictionAreas)
-#define Num_fuels() (world->NumFuels)
+
+// #define Num_fuels() (world->NumFuels)
+static inline int Num_fuels()
+{
+    return world->fuels.size();
+}
+
 #define Num_gravs() (world->NumGravs)
 #define Num_itemConcs() (world->NumItemConcentrators)
-#define Num_targets() (world->NumTargets)
+
+// #define Num_targets() (world->NumTargets)
+static inline int Num_targets()
+{
+    return world->targets.size();
+}
+
 #define Num_transporters() (world->NumTransporters)
 #define Num_treasures() (world->NumTreasures)
 #define Num_wormholes() (world->NumWormholes)
@@ -519,7 +544,11 @@ static inline int WRAP_YCLICK(int cy)
 #define Fuel_by_index(i) ((fuel_t *)(&world->fuels[i]))
 #define Grav_by_index(i) ((grav_t *)(&world->gravs[i]))
 #define ItemConc_by_index(i) ((item_concentrator_t *)(&world->itemConcentrators[i]))
-#define Target_by_index(i) ((target_t *)(&world->targets[i]))
+// #define Target_by_index(i) ((target_t *)(&world->targets[i]))
+static target_t *Target_by_index(int i)
+{
+    return &world->targets[i];
+}
 #define Treasure_by_index(i) ((treasure_t *)(&world->treasures[i]))
 #define Wormhole_by_index(i) ((wormhole_t *)(&world->wormholes[i]))
 #define Transporter_by_index(i) ((transporter_t *)(&world->transporters[i]))
@@ -541,5 +570,3 @@ static inline team_t *Team_by_index(int ind)
         return &world->teams[ind];
     return NULL;
 }
-
-#endif

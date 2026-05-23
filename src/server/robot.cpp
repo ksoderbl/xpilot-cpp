@@ -1018,7 +1018,7 @@ void Robot_update(bool tick)
     num_playing_ships = num_any_ships - NumPseudoPlayers;
     if ((num_playing_ships < options.maxRobots ||
          NumRobots < options.minRobots) &&
-        num_playing_ships < world->NumBases && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
+        num_playing_ships < Num_bases() && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
     {
 
         if (++new_robot_delay >= ROBOT_CREATE_DELAY)
@@ -1032,7 +1032,7 @@ void Robot_update(bool tick)
         new_robot_delay = 0;
         if (NumRobots > 0)
         {
-            if ((num_playing_ships > world->NumBases) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
+            if ((num_playing_ships > Num_bases()) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
                 Robot_delete(NULL, false);
         }
     }

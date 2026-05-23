@@ -343,7 +343,7 @@ int Setup_net_server(void)
      * the select(2) call minus those for stdin, stdout, stderr,
      * the contact socket, and the socket for the resolver library routines.
      */
-    max_connections = MIN(MAX_SELECT_FD - 5, world->NumBases);
+    max_connections = MIN(MAX_SELECT_FD - 5, Num_bases());
     size = max_connections * sizeof(*Conn);
     if ((Conn = (connection_t *)malloc(size)) == NULL)
     {
@@ -1025,7 +1025,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     int i, conn_bit;
     const char sender[] = "[*Server notice*]";
 
-    if (NumPlayers - NumPseudoPlayers >= world->NumBases)
+    if (NumPlayers - NumPseudoPlayers >= Num_bases())
     {
         strlcpy(errmsg, "Not enough bases for players", errsize);
         warn("%s", errmsg);

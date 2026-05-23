@@ -863,10 +863,10 @@ void Xpmap_grok_map_data(void)
             world->NumTreasures++;
             break;
         case '#':
-            world->NumFuels++;
+            // world->NumFuels++;
             break;
         case '!':
-            world->NumTargets++;
+            // world->NumTargets++;
             break;
         case '%':
             world->NumItemConcentrators++;
@@ -1255,12 +1255,12 @@ void Xpmap_tags_to_internal_data(void)
         error("Out of memory - cannons");
         exit(-1);
     }
-    if (world->NumFuels > 0 && (world->fuels = (fuel_t *)
-                                    malloc(world->NumFuels * sizeof(fuel_t))) == NULL)
-    {
-        error("Out of memory - fuel depots");
-        exit(-1);
-    }
+    // if (world->NumFuels > 0 && (world->fuels = (fuel_t *)
+    //                                 malloc(world->NumFuels * sizeof(fuel_t))) == NULL)
+    // {
+    //     error("Out of memory - fuel depots");
+    //     exit(-1);
+    // }
     if (world->NumGravs > 0 && (world->gravs = (grav_t *)
                                     malloc(world->NumGravs * sizeof(grav_t))) == NULL)
     {
@@ -1279,12 +1279,12 @@ void Xpmap_tags_to_internal_data(void)
         error("Out of memory - treasures");
         exit(-1);
     }
-    if (world->NumTargets > 0 && (world->targets = (target_t *)
-                                      malloc(world->NumTargets * sizeof(target_t))) == NULL)
-    {
-        error("Out of memory - targets");
-        exit(-1);
-    }
+    // if (world->NumTargets > 0 && (world->targets = (target_t *)
+    //                                   malloc(world->NumTargets * sizeof(target_t))) == NULL)
+    // {
+    //     error("Out of memory - targets");
+    //     exit(-1);
+    // }
     if (world->NumItemConcentrators > 0 && (world->itemConcentrators = (item_concentrator_t *)
                                                 malloc(world->NumItemConcentrators * sizeof(item_concentrator_t))) == NULL)
     {
@@ -1341,14 +1341,23 @@ void Xpmap_tags_to_internal_data(void)
      * into structures.
      */
     world->NumAsteroidConcs = 0;
+
     world->NumBases = 0;
+    // world->bases.clear();
+
     world->NumCannons = 0;
     world->NumEcms = 0;
-    world->NumFuels = 0;
+
+    // world->NumFuels = 0;
+    world->fuels.clear();
+
     world->NumFrictionAreas = 0;
     world->NumGravs = 0;
     world->NumItemConcentrators = 0;
-    world->NumTargets = 0;
+
+    // world->NumTargets = 0;
+    world->targets.clear();
+
     world->NumTransporters = 0;
     world->NumTreasures = 0;
     world->NumWormholes = 0;
@@ -1494,7 +1503,7 @@ void Xpmap_tags_to_internal_data(void)
 
                 case '#':
                     world->block[x][y] = FUEL;
-                    world->itemID[x][y] = world->NumFuels;
+                    world->itemID[x][y] = world->fuels.size();
                     World_place_fuel(pos, TEAM_NOT_SET);
                     break;
 
@@ -1524,7 +1533,7 @@ void Xpmap_tags_to_internal_data(void)
                     break;
                 case '!':
                     world->block[x][y] = TARGET;
-                    world->itemID[x][y] = world->NumTargets;
+                    world->itemID[x][y] = world->targets.size();
                     // world->targets[world->NumTargets].blk_pos.bx = x;
                     // world->targets[world->NumTargets].blk_pos.by = y;
                     // world->targets[world->NumTargets].pos.cx = cx;
@@ -1541,8 +1550,8 @@ void Xpmap_tags_to_internal_data(void)
                     // world->targets[world->NumTargets].last_change = frame_loops;
                     // world->NumTargets++;
                     World_place_target(pos, 0);
-                    pos.cx = x * BLOCK_CLICKS;
-                    pos.cy = y * BLOCK_CLICKS;
+                    // pos.cx = x * BLOCK_CLICKS;
+                    // pos.cy = y * BLOCK_CLICKS;
 
                     break;
                 case '%':
@@ -1579,33 +1588,33 @@ void Xpmap_tags_to_internal_data(void)
                 case '9':
                     world->block[x][y] = BASE;
                     // line[y] = BASE;
-                    world->itemID[x][y] = world->NumBases;
-                    world->bases[world->NumBases].blk_pos = Clpos_to_blkpos(pos);
-                    world->bases[world->NumBases].pos = pos;
+                    world->itemID[x][y] = Num_bases();
+                    world->bases[Num_bases()].blk_pos = Clpos_to_blkpos(pos);
+                    world->bases[Num_bases()].pos = pos;
                     /*
                      * The direction of the base should be so that it points
                      * up with respect to the gravity in the region.  This
                      * is fixed in Find_base_dir() when the gravity has
                      * been computed.
                      */
-                    world->bases[world->NumBases].dir = DIR_UP;
+                    world->bases[Num_bases()].dir = DIR_UP;
                     if (BIT(world->rules->mode, TEAM_PLAY))
                     {
                         if (c >= '0' && c <= '9')
                         {
-                            world->bases[world->NumBases].team = c - '0';
+                            world->bases[Num_bases()].team = c - '0';
                         }
                         else
                         {
-                            world->bases[world->NumBases].team = 0;
+                            world->bases[Num_bases()].team = 0;
                         }
-                        world->teams[world->bases[world->NumBases].team].NumBases++;
-                        if (world->teams[world->bases[world->NumBases].team].NumBases == 1)
+                        world->teams[world->bases[Num_bases()].team].NumBases++;
+                        if (world->teams[world->bases[Num_bases()].team].NumBases == 1)
                             world->NumTeamBases++;
                     }
                     else
                     {
-                        world->bases[world->NumBases].team = TEAM_NOT_SET;
+                        world->bases[Num_bases()].team = TEAM_NOT_SET;
                     }
                     world->NumBases++;
                     break;
@@ -1894,7 +1903,7 @@ void Xpmap_tags_to_internal_data(void)
                     world->cannons[i].team = team;
                 }
             }
-            for (i = 0; i < world->NumFuels; i++)
+            for (i = 0; i < Num_fuels(); i++)
             {
                 team = Find_closest_team(world->fuels[i].pos);
                 if (team == TEAM_NOT_SET)

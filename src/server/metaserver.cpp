@@ -227,7 +227,7 @@ void Meta_update(int change)
     else
     {
         sprintf(freebases, "=%d",
-                world->NumBases - num_active_players - login_in_progress);
+                Num_bases() - num_active_players - login_in_progress);
     }
 
     sprintf(string,
@@ -249,7 +249,7 @@ void Meta_update(int change)
             "add sound " SOUND_SUPPORT_STR "\n",
             Server.host, num_active_players,
             META_VERSION, world->name, world->x, world->y, world->author,
-            world->NumBases, FPS, options.contactPort,
+            Num_bases(), FPS, options.contactPort,
             game_mode, world->NumTeamBases, freebases,
             BIT(world->rules->mode, TIMING) ? 1 : 0,
             (long)(time(NULL) - serverStartTime),
