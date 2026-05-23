@@ -197,9 +197,10 @@ typedef struct
     double recovery_count;      /* ticks to recovery */
     double self_destruct_count; /* if > 0, ticks before boom */
 
-    int item[NUM_ITEMS]; /* for each item type how many */
-    int lose_item;       /* which item to drop */
-    int lose_item_state; /* lose item key state, 2=up,1=down */
+    int item[NUM_ITEMS];         /* for each item type how many */
+    int initial_item[NUM_ITEMS]; /* items player had initially */
+    int lose_item;               /* which item to drop */
+    int lose_item_state;         /* lose item key state, 2=up,1=down */
 
     double auto_power_s;               /* autopilot saves of current */
                                        /* power, turnspeed and */
@@ -207,7 +208,6 @@ typedef struct
     double auto_turnresistance_s;      /* when autopilot turned off */
     modifiers_t modbank[NUM_MODBANKS]; /* useful modifier settings */
     bool tractor_is_pressor;           /* on if tractor is pressor */
-    int shot_max;                      /* Maximum number of shots active */
     long shot_time;                    /* Time of last shot fired by player */
     int repair_target;                 /* Repairing this target */
     int fs;                            /* Connected to fuel station fs */

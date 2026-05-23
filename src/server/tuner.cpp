@@ -44,16 +44,6 @@ void tuner_plock(void)
     options.pLockServer = (plock_server(options.pLockServer) == 1) ? true : false;
 }
 
-void tuner_shotsmax(void)
-{
-    int i;
-
-    for (i = 0; i < NumPlayers; i++)
-    {
-        Player_by_index(i)->shot_max = options.maxPlayerShots;
-    }
-}
-
 void tuner_shipmass(void)
 {
     int i;

@@ -450,7 +450,7 @@ void Detonate_items(player_t *pl)
         {
             int type;
 
-            if (pl->shots >= pl->shot_max)
+            if (pl->shots >= options.maxPlayerShots)
                 break;
 
             /*

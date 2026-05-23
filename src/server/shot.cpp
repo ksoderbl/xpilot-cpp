@@ -414,12 +414,9 @@ char *Describe_shot(int type, int status, modifiers_t mods, int hit)
 
 static inline bool Player_can_fire_shot(player_t *pl)
 {
-    if (pl->shots >= pl->shot_max || BIT(pl->used, HAS_SHIELD | HAS_PHASING_DEVICE))
+    if (pl->shots >= options.maxPlayerShots || BIT(pl->used, HAS_SHIELD) || Player_is_phasing(pl))
         return false;
     return true;
-    // if (pl->shots >= options.maxPlayerShots || BIT(pl->used, HAS_SHIELD) || Player_is_phasing(pl))
-    //     return false;
-    // return true;
 }
 
 void Fire_main_shot(player_t *pl, int type, int dir)

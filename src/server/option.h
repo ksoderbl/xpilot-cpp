@@ -54,6 +54,8 @@ typedef struct options
 
     bool treasureCollisionKills;
 
+    bool Log;
+
     // Let robots live even if there  are no players logged in
     bool RawMode;
 

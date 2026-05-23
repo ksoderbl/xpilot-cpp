@@ -340,6 +340,10 @@ void End_game(void)
 
     Contact_cleanup();
 
+    /* Ranking. */
+    Rank_write_webpage();
+    Rank_write_rankfile();
+
     Free_players();
     Free_shots();
     World_free();
@@ -640,38 +644,34 @@ static void Handle_signal(int sig_no)
     _exit(sig_no); /* just in case */
 }
 
+/* kps - is this useful??? */
 void Log_game(const char *heading)
 {
-#ifdef LOG
     char str[1024];
     FILE *fp;
     char timenow[81];
     struct tm *ptr;
     time_t lt;
 
-    if (!Log)
+    if (!options.Log)
         return;
 
     lt = time(NULL);
     ptr = localtime(&lt);
     strftime(timenow, 79, "%I:%M:%S %p %Z %A, %B %d, %Y", ptr);
 
-    sprintf(str, "%-50.50s\t%10.10s@%-15.15s\tWorld: %-25.25s\t%10.10s\n",
-            timenow,
-            Server.owner,
-            Server.host,
-            world->name,
-            heading);
+    snprintf(str, sizeof(str),
+             "%-50.50s\t%10.10s@%-15.15s\tWorld: %-25.25s\t%10.10s\n",
+             timenow, Server.owner, Server.host, world->name, heading);
 
     if ((fp = fopen(Conf_logfile(), "a")) == NULL)
-    { /* Couldn't open file */
+    {
         error("Couldn't open log file, contact %s", Conf_localguru());
         return;
     }
 
     fputs(str, fp);
     fclose(fp);
-#endif
 }
 
 void Game_Over(void)
@@ -759,7 +759,8 @@ void Game_Over(void)
         if (Player_is_paused(pl_i))
             continue;
 
-        SET_BIT(pl_i->obj_status, GAME_OVER);
+        SET_BIT(pl_i->obj_status, GAME_OVER); // TODO: REMOVE
+        Player_set_state(pl_i, PL_STATE_DEAD);
         if (Player_is_human(pl_i))
         {
             if (Get_Score(pl_i) > maxsc)
