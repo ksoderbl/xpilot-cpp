@@ -260,7 +260,7 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun);
 void Fire_right_shot(player_t *pl, int type, int dir, int gun);
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
-int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt);
+int Punish_team1(player_t *pl, treasure_t *td, treasure_t *tt);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
 void Fire_general_laser(int id, int team, clpos_t pos, int dir, modifiers_t mods);

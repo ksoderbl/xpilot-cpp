@@ -310,13 +310,6 @@ void Walls_init(void)
     Walldist_init();
 }
 
-void Treasure_init(void)
-{
-    int i;
-    for (i = 0; i < Num_treasures(); i++)
-        Make_treasure_ball(Treasure_by_index(i));
-}
-
 void Move_init(void)
 {
     mp.click_width = PIXEL_TO_CLICK(world->width);
@@ -1168,8 +1161,8 @@ void Move_segment(move_state_t *ms)
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(Player_by_id(ball->ball_owner), msg);
                         }
-                        else if (Punish_team(Player_by_id(ball->ball_owner),
-                                             ball->ball_treasure, tt))
+                        else if (Punish_team1(Player_by_id(ball->ball_owner),
+                                              ball->ball_treasure, tt))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
                     ball->life = 0;

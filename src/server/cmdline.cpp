@@ -958,6 +958,15 @@ static option_desc opts[] = {
      "Does a team's treasure have to be safe before enemy balls can be\n"
      "cashed?\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
+    {"specialBallTeam",
+     "specialBall",
+     "-1",
+     &options.specialBallTeam,
+     valInt,
+     tuner_dummy,
+     "Balls that belong to this team are 'special' balls that score\n"
+     "against all other teams.\n",
+     OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"treasureCollisionDestroys",
      "treasureCollisionDestroy",
      "true",

@@ -421,6 +421,7 @@ typedef struct options
     int targetDeadTime;       /* How long do targgets stay dead? */
     bool treasureKillTeam;    /* die if treasure is destroyed? */
     bool captureTheFlag;      /* must treasure be safe to cash balls? */
+    int specialBallTeam;
     bool treasureCollisionDestroys;
     bool treasureCollisionMayKill;
     bool wreckageCollisionMayKill;
