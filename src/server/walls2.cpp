@@ -162,9 +162,9 @@ static inline bool can_hit(group_t *gp, const move_t *move)
 
 void Move_init2(void)
 {
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->hypotenuse);
+    LIMIT(options.maxObjectWallBounceSpeed, 0, world->pixel_hypotenuse);
+    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
+    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
 
     LIMIT(options.playerWallBounceBrakeFactor, 0, 1);
     LIMIT(options.playerWallFriction, 0, FLT_MAX);

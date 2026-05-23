@@ -306,7 +306,7 @@ void Compute_sensor_range(player_t *pl)
         else
             options.minVisibilityDistance *= BLOCK_SZ;
         if (options.maxVisibilityDistance <= 0.0)
-            options.maxVisibilityDistance = world->hypotenuse;
+            options.maxVisibilityDistance = world->pixel_hypotenuse;
         else
             options.maxVisibilityDistance *= BLOCK_SZ;
 

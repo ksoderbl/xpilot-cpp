@@ -322,9 +322,9 @@ void Move_init(void)
     mp.click_width = PIXEL_TO_CLICK(world->width);
     mp.click_height = PIXEL_TO_CLICK(world->height);
 
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->hypotenuse);
+    LIMIT(options.maxObjectWallBounceSpeed, 0, world->pixel_hypotenuse);
+    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
+    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
 
     LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
     LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);

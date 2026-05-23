@@ -2323,7 +2323,7 @@ static void Robot_default_round_tick(void)
     Visibility_distance = min_visibility + (((VISIBILITY_DISTANCE - min_visibility) * (NUM_IDS - NumRobots)) / NUM_IDS);
 
     /* limit distance to allowable enemies. */
-    Max_enemy_distance = world->hypotenuse;
-    if (world->hypotenuse > Visibility_distance)
-        Max_enemy_distance = min_enemy_distance + (((world->hypotenuse - min_enemy_distance) * (NUM_IDS - NumRobots)) / NUM_IDS);
+    Max_enemy_distance = world->pixel_hypotenuse;
+    if (world->pixel_hypotenuse > Visibility_distance)
+        Max_enemy_distance = min_enemy_distance + (((world->pixel_hypotenuse - min_enemy_distance) * (NUM_IDS - NumRobots)) / NUM_IDS);
 }

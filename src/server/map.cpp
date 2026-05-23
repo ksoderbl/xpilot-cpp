@@ -450,7 +450,7 @@ static void Init_map(void)
 
     world->width = world->x * BLOCK_SZ;
     world->height = world->y * BLOCK_SZ;
-    world->hypotenuse = (int)LENGTH(world->width, world->height);
+    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
 
     world->cwidth = PIXEL_TO_CLICK(world->width);
     world->cheight = PIXEL_TO_CLICK(world->height);
@@ -581,7 +581,7 @@ bool Grok_map(void)
 
     world->width = world->x * BLOCK_SZ;
     world->height = world->y * BLOCK_SZ;
-    world->hypotenuse = (int)LENGTH(world->width, world->height);
+    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
 
     world->cwidth = PIXEL_TO_CLICK(world->width);
     world->cheight = PIXEL_TO_CLICK(world->height);
@@ -663,7 +663,7 @@ static void Generate_random_map(void)
 
     world->width = world->x * BLOCK_SZ;
     world->height = world->y * BLOCK_SZ;
-    world->hypotenuse = (int)LENGTH(world->width, world->height);
+    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
 
     world->cwidth = PIXEL_TO_CLICK(world->width);
     world->cheight = PIXEL_TO_CLICK(world->height);

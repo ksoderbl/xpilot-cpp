@@ -200,12 +200,12 @@ typedef struct wormhole
 {
     blkpos_t blk_pos;
     clpos_t pos;
-    int lastdest,   /* last destination wormhole */
-        countdown;  /* if >0 warp to lastdest else random */
+    int lastdest;   /* last destination wormhole */
+    int countdown;  /* if >0 warp to lastdest else random */
     bool temporary; /* wormhole was left by hyperjump */
     wormtype_t type;
-    uint8_t lastblock; /* block it occluded */
-    uint16_t lastID;
+    int lastID;
+    int lastblock; /* block it occluded */
     int group;
 } wormhole_t;
 
@@ -213,22 +213,24 @@ typedef struct treasure
 {
     blkpos_t blk_pos;
     clpos_t pos;
-    bool have;     /* true if this treasure has ball in it */
-    uint16_t team; /* team of this treasure */
-    int destroyed; /* how often this treasure destroyed */
-    bool empty;    /* true if this treasure never had a ball in it */
+    bool have;      /* true if this treasure has ball in it */
+    int team;       /* team of this treasure */
+    int destroyed;  /* how often this treasure destroyed */
+    bool empty;     /* true if this treasure never had a ball */
+    int ball_style; /* polystyle to use for color */
 } treasure_t;
 
 typedef struct target
 {
     blkpos_t blk_pos;
     clpos_t pos;
-    uint16_t team;
+    int team;
     int dead_ticks;
     int damage;
-    unsigned conn_mask;
-    unsigned update_mask;
+    uint32_t conn_mask;
+    uint32_t update_mask;
     long last_change;
+    int group;
 } target_t;
 
 typedef struct team
@@ -286,13 +288,13 @@ extern bool is_polygon_map;
 
 struct world
 {
-    int x, y;                /* Size of world in blocks */
+    int x, y;                /* Size of world in blocks, rounded up */
     int bwidth_floor;        /* Width of world in blocks, rounded down */
     int bheight_floor;       /* Height of world in blocks, rounded down */
-    int diagonal;            /* Diagonal length in blocks */
+    double diagonal;         /* Diagonal length in blocks */
     int width, height;       /* Size of world in pixels (optimization) */
-    int hypotenuse;          /* Diagonal length in pixels (optimization) */
-    int cwidth, cheight;     /* Size of world in clicks (optimization) */
+    int pixel_hypotenuse;    /* Diagonal length in pixels (optimization) */
+    int cwidth, cheight;     /* Size of world in clicks */
     double click_hypotenuse; /* Diagonal length in clicks (optimization) */
 
     rules_t *rules;

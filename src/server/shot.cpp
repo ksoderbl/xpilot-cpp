@@ -303,7 +303,7 @@ void Detonate_mines(player_t *pl)
 {
     int i, closest = -1;
     double dist;
-    double min_dist = world->hypotenuse + 1;
+    double min_dist = world->pixel_hypotenuse + 1;
 
     if (Player_is_phasing(pl))
         return;

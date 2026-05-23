@@ -52,7 +52,7 @@ void Make_treasure_ball(treasure_t *t)
     if (t->have)
     {
         xpprintf("%s Failed Make_treasure_ball(treasure=%p):\n",
-                 showtime(), t);
+                 showtime(), (long)t);
         xpprintf("\ttreasure: destroyed = %d, team = %d, have = %d\n",
                  t->destroyed, t->team, t->have);
         return;
@@ -73,7 +73,6 @@ void Make_treasure_ball(treasure_t *t)
     ball->team = t->team;
     ball->type = OBJ_BALL;
     ball->color = WHITE;
-    // ball->count = 0;
     ball->pl_range = BALL_RADIUS;
     ball->pl_radius = BALL_RADIUS;
     Mods_clear(&ball->mods);
@@ -83,7 +82,8 @@ void Make_treasure_ball(treasure_t *t)
     warn("Make_treasure_ball: ball_treasure is      %p", ball->ball_treasure);
     warn("Make_treasure_ball: ball_treasure_copy is %p", ball->ball_treasure_copy);
     Cell_add_object(OBJ_PTR(ball));
-
+    ball->ball_loose_ticks = 0;
+    ball->ball_style = t->ball_style;
     t->have = true;
 }
 
@@ -127,9 +127,8 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
     }
 
     sound_play_all(DESTROY_BALL_SOUND);
-    sprintf(msg, " < %s's (%d) team has destroyed team %d treasure >",
-            pl->name, pl->team, td->team);
-    Set_message(msg);
+    Set_message_f(" < %s's (%d) team has destroyed team %d treasure >",
+                  pl->name, pl->team, td->team);
 
     if (!somebody_flag)
     {
@@ -174,4 +173,64 @@ int Punish_team(player_t *pl, treasure_t *td, treasure_t *tt)
 
 void Ball_hits_goal(ballobject_t *ball, group_t *gp)
 {
+}
+
+/*
+ * Here follows some hit functions, used in the walls code to determine
+ * if some object can hit some polygon. The arguments for a hit function
+ * are: the pointer to the polygon group that the polygon belongs to and
+ * the pointer to the move. The hit function checks if the move can hit
+ * the polygon group.
+ * NOTE: hit functions should not have any side effects (i.e. change
+ * anything) unless you know what you are doing.
+ */
+
+// extern bool in_legacy_mode_ball_hack;
+/*
+ * This function is called when something would hit a balltarget.
+ * The function determines if it hits or not.
+ */
+bool Balltarget_hitfunc(group_t *gp, const move_t *move)
+{
+    const ballobject_t *ball = NULL;
+
+    /* this can happen if is_inside is called for a balltarget with
+       a NULL obj */
+    if (move->obj == NULL)
+        return true;
+
+    assert(move->obj->type == OBJ_BALL);
+
+    ball = (const ballobject_t *)move->obj;
+
+    if (ball->ball_owner == NO_ID)
+        return true;
+
+    // TODO
+
+    // if (in_legacy_mode_ball_hack)
+    //     return true;
+
+    // if (BIT(world->rules->mode, TEAM_PLAY))
+    // {
+    //     /*
+    //      * The only case a ball does not hit a balltarget is when
+    //      * the ball and the target are of the same team, but the
+    //      * owner is not.
+    //      */
+    //     if (ball->ball_treasure->team != options.specialBallTeam /* kps - ? */
+    //         /* khs - "special" ball and "special" treasure have the same "team" */
+    //         /* the player/team that gets this ball into this treasure scores    */
+    //         /* against all other teams, therefore the ball must be able to hit - ok? */
+    //         && ball->ball_treasure->team == gp->team && Player_by_id(ball->ball_owner)->team != gp->team)
+    //         return false;
+    //     return true;
+    // }
+
+    // /* not teamplay */
+
+    // /* kps - fix this */
+
+    /* allow grabbing of ball */
+    return false;
 }

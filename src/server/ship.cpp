@@ -552,10 +552,10 @@ void Make_debris(clpos_t pos,
             max_life = options.shotLife;
         }
     }
-    if (min_speed * max_life > world->hypotenuse)
-        min_speed = world->hypotenuse / max_life;
-    if (max_speed * min_life > world->hypotenuse)
-        max_speed = world->hypotenuse / min_life;
+    if (min_speed * max_life > world->pixel_hypotenuse)
+        min_speed = world->pixel_hypotenuse / max_life;
+    if (max_speed * min_life > world->pixel_hypotenuse)
+        max_speed = world->pixel_hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -622,9 +622,9 @@ void Make_debris(clpos_t pos,
         debris->mass = mass;
         debris->type = type;
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > world->hypotenuse)
+        if (life * speed > world->pixel_hypotenuse)
         {
-            life = (long)(world->hypotenuse / speed);
+            life = (long)(world->pixel_hypotenuse / speed);
         }
         debris->life = life;
         debris->fuselife = life;
@@ -672,10 +672,10 @@ void Make_wreckage(clpos_t pos,
         }
     }
 
-    if (min_speed * max_life > world->hypotenuse)
-        min_speed = world->hypotenuse / max_life;
-    if (max_speed * min_life > world->hypotenuse)
-        max_speed = world->hypotenuse / min_life;
+    if (min_speed * max_life > world->pixel_hypotenuse)
+        min_speed = world->pixel_hypotenuse / max_life;
+    if (max_speed * min_life > world->pixel_hypotenuse)
+        max_speed = world->pixel_hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -728,9 +728,9 @@ void Make_wreckage(clpos_t pos,
 
         /* Lifespan  */
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > world->hypotenuse)
+        if (life * speed > world->pixel_hypotenuse)
         {
-            life = (long)(world->hypotenuse / speed);
+            life = (long)(world->pixel_hypotenuse / speed);
         }
         wreckage->life = life;
         wreckage->fuselife = wreckage->life;

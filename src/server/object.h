@@ -317,13 +317,20 @@ struct xp_ballobject
 
     int ball_count; /* Misc timings */ // TODO: REMOVE
 
-    int ball_owner; /* Who's object is this ? */
-    // int dummy1;
-    // int dummy2;
+    double ball_loose_ticks;
+
+    int dummy1;
+    int dummy2;
+
+    // There's a bug here with these pointers, the dummy ints protect against it.
     treasure_t *ball_treasure;      /* treasure for ball */
     treasure_t *ball_treasure_copy; /* treasure for ball */
-    // int dummy3;
-    // int dummy4;
+
+    int dummy3;
+    int dummy4;
+
+    short ball_owner; /* Who's object is this ? */
+    short ball_style; /* What polystyle to use */
 
 #define BALL_IND(ind) ((ballobject_t *)Obj[(ind)])
 #define BALL_PTR(obj) ((ballobject_t *)(obj))

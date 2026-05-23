@@ -280,12 +280,11 @@ void P_end_ballarea(void)
 
 int P_start_balltarget(int team, int treasure_ind)
 {
-    // return Create_group(TREASURE,
-    //                     team,
-    //                     NONBALL_BIT,
-    //                     Balltarget_hitfunc,
-    //                     treasure_ind);
-    return -1; // TODO
+    return Create_group(TREASURE,
+                        team,
+                        NONBALL_BIT,
+                        Balltarget_hitfunc,
+                        treasure_ind);
 }
 
 void P_end_balltarget(void)
