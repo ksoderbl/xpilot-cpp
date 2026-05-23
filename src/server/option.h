@@ -495,6 +495,15 @@ typedef struct options
     double constantSpeed;
 
     bool polygonMode;
+
+    bool teamcup;
+    char *teamcupName;
+    char *teamcupMailAddress;
+    char *teamcupScoreFileNamePrefix;
+    int teamcupMatchNumber;
+
+    double mainLoopTime;
+    int cellGetObjectsThreshold;
 } options_t;
 
 /*

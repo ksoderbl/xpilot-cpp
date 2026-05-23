@@ -1052,24 +1052,20 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     if (options.greeting)
         Set_player_message_f(pl, "%s [*Server greeting*]", options.greeting);
 
+    Set_player_message_f(pl, "Server runs %s version %s. %s",
+                         PACKAGE_NAME, VERSION, sender);
+
     if (connp->version < MY_VERSION)
     {
-        Set_player_message_f(pl, "Server runs version %s. %s", VERSION, sender);
-        // if (connp->version < 0x4401)
-        // {
-        //     sprintf(msg,
-        //             "Your client does not support the fast radar packet. %s",
-        //             sender);
-        //     Set_player_message(pl, msg);
-        // }
-        // if (connp->version < 0x4400 && options.maxAsteroidDensity > 0)
-        // {
-        //     sprintf(msg,
-        //             "Your client will see the %d asteroids as balls. %s",
-        //             (int)world->asteroids.max,
-        //             sender);
-        //     Set_player_message(pl, msg);
-        // }
+        if (!FEATURE(connp, F_FASTRADAR))
+            Set_player_message_f(pl, "Your client does not support the "
+                                     "fast radar packet. %s",
+                                 sender);
+
+        if (!FEATURE(connp, F_ASTEROID) && options.maxAsteroidDensity > 0)
+            Set_player_message_f(pl, "Your client will see asteroids as "
+                                     "balls. %s",
+                                 sender);
     }
 
     conn_bit = (1 << connp->ind);
@@ -1111,6 +1107,19 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             CLR_BIT(targ->conn_mask, conn_bit);
             SET_BIT(targ->update_mask, conn_bit);
         }
+    }
+    for (i = 0; i < num_polys; i++)
+    {
+        poly_t *poly = &pdata[i];
+
+        /*
+         * The client assumes at startup that all polygons have their original
+         * style.
+         */
+        if (poly->style == poly->current_style)
+            CLR_BIT(poly->update_mask, conn_bit);
+        else
+            SET_BIT(poly->update_mask, conn_bit);
     }
 
     sound_player_init(pl);
