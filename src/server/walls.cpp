@@ -1799,7 +1799,7 @@ static void Cannon_dies(move_state_t *ms)
 {
     warn("walls: cannon dies!");
 
-    cannon_t *cannon = world->cannons + ms->cannon;
+    cannon_t *cannon = &world->cannons[ms->cannon];
     int cx = cannon->pos.cx;
     int cy = cannon->pos.cy;
     int killer = -1;

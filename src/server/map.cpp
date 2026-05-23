@@ -95,9 +95,14 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     t.dead_ticks = 0;
     t.conn_mask = (unsigned)-1;
     t.team = team;
-    world->cannons[ind] = t;
+
+    // world->fuels[ind] = t;
+    // world->NumFuels++;
+    world->cannons.push_back(t);
+
+    // world->cannons[ind] = t;
     Cannon_init(Cannon_by_index(ind));
-    world->NumCannons++;
+    // world->NumCannons++;
     return ind;
 
     // cannon_t t, *cannon;
@@ -463,7 +468,9 @@ static void Init_map(void)
     world->NumBases = 0;
     // world->bases.clear();
 
-    world->NumCannons = 0;
+    // world->NumCannons = 0;
+    world->cannons.clear();
+
     world->NumEcms = 0;
 
     // world->NumFuels = 0;
@@ -492,7 +499,9 @@ void World_free(void)
     XFREE(world->bases);
     // world->bases.clear();
 
-    XFREE(world->cannons);
+    // XFREE(world->cannons);
+    world->cannons.clear();
+
     XFREE(world->ecms);
 
     // XFREE(world->fuels);
@@ -526,7 +535,7 @@ static void Alloc_map(void)
     world->gravs = NULL;
     world->bases = NULL;
     // world->fuels = NULL;
-    world->cannons = NULL;
+    // world->cannons = NULL;
     world->wormholes = NULL;
     world->itemConcentrators = NULL;
     world->asteroidConcs = NULL;

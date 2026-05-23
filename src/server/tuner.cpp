@@ -192,7 +192,7 @@ void tuner_cannonsuseitems(void)
 
     for (i = 0; i < Num_cannons(); i++)
     {
-        c = world->cannons + i;
+        c = &world->cannons[i];
         for (j = 0; j < NUM_ITEMS; j++)
         {
             c->item[j] = 0;

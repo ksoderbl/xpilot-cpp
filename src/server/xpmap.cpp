@@ -856,7 +856,7 @@ void Xpmap_grok_map_data(void)
         case 'd':
         case 'f':
         case 'c':
-            world->NumCannons++;
+            // world->NumCannons++;
             break;
         case '*':
         case '^':
@@ -1249,12 +1249,12 @@ void Xpmap_tags_to_internal_data(void)
     /*
      * Get space for special objects.
      */
-    if (world->NumCannons > 0 && (world->cannons = (cannon_t *)
-                                      malloc(world->NumCannons * sizeof(cannon_t))) == NULL)
-    {
-        error("Out of memory - cannons");
-        exit(-1);
-    }
+    // if (world->NumCannons > 0 && (world->cannons = (cannon_t *)
+    //                                   malloc(world->NumCannons * sizeof(cannon_t))) == NULL)
+    // {
+    //     error("Out of memory - cannons");
+    //     exit(-1);
+    // }
     // if (world->NumFuels > 0 && (world->fuels = (fuel_t *)
     //                                 malloc(world->NumFuels * sizeof(fuel_t))) == NULL)
     // {
@@ -1345,7 +1345,9 @@ void Xpmap_tags_to_internal_data(void)
     world->NumBases = 0;
     // world->bases.clear();
 
-    world->NumCannons = 0;
+    // world->NumCannons = 0;
+    world->cannons.clear();
+
     world->NumEcms = 0;
 
     // world->NumFuels = 0;
@@ -1426,7 +1428,7 @@ void Xpmap_tags_to_internal_data(void)
 
                 case 'r':
                     world->block[x][y] = CANNON;
-                    world->itemID[x][y] = world->NumCannons;
+                    world->itemID[x][y] = world->cannons.size();
                     // world->cannons[world->NumCannons].dir = DIR_UP;
                     // world->cannons[world->NumCannons].blk_pos.bx = x;
                     // world->cannons[world->NumCannons].blk_pos.by = y;
@@ -1445,7 +1447,7 @@ void Xpmap_tags_to_internal_data(void)
                     break;
                 case 'd':
                     world->block[x][y] = CANNON;
-                    world->itemID[x][y] = world->NumCannons;
+                    world->itemID[x][y] = world->cannons.size();
                     // world->cannons[world->NumCannons].dir = DIR_LEFT;
                     // world->cannons[world->NumCannons].blk_pos.bx = x;
                     // world->cannons[world->NumCannons].blk_pos.by = y;
@@ -1464,7 +1466,7 @@ void Xpmap_tags_to_internal_data(void)
                     break;
                 case 'f':
                     world->block[x][y] = CANNON;
-                    world->itemID[x][y] = world->NumCannons;
+                    world->itemID[x][y] = world->cannons.size();
                     // world->cannons[world->NumCannons].dir = DIR_RIGHT;
                     // world->cannons[world->NumCannons].blk_pos.bx = x;
                     // world->cannons[world->NumCannons].blk_pos.by = y;
@@ -1483,7 +1485,7 @@ void Xpmap_tags_to_internal_data(void)
                     break;
                 case 'c':
                     world->block[x][y] = CANNON;
-                    world->itemID[x][y] = world->NumCannons;
+                    world->itemID[x][y] = world->cannons.size();
                     // world->cannons[world->NumCannons].dir = DIR_DOWN;
                     // world->cannons[world->NumCannons].blk_pos.bx = x;
                     // world->cannons[world->NumCannons].blk_pos.by = y;

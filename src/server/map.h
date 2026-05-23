@@ -333,8 +333,10 @@ struct world
     base_t *bases;
     // std::vector<base_t> bases;
 
-    int NumCannons;
-    cannon_t *cannons;
+    // int NumCannons;
+    // cannon_t *cannons;
+    std::vector<cannon_t> cannons;
+
     int NumEcms;
     ecm_t *ecms;
 
@@ -513,7 +515,12 @@ static inline int WRAP_YCLICK(int cy)
 //     return Num_bases();
 // }
 
-#define Num_cannons() (world->NumCannons)
+// #define Num_cannons() (world->NumCannons)
+static inline int Num_cannons()
+{
+    return world->cannons.size();
+}
+
 #define Num_ecms() (world->NumEcms)
 #define Num_frictionAreas() (world->NumFrictionAreas)
 
