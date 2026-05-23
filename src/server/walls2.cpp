@@ -560,7 +560,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         return 0;
     }
 
-    if (obj->type != OBJ_BALL_BIT && obj->type != OBJ_PULSE_BIT)
+    if (obj->type != OBJ_BALL && obj->type != OBJ_PULSE)
     {
         obj->life *= options.objectWallBounceLifeFactor;
         if (obj->life <= 0)
@@ -572,22 +572,22 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
      * "reactive" thrust.  This is exactly like ground effect
      * in the real world.  Very useful for stopping against walls.
      */
-    if (obj->type != OBJ_PULSE_BIT &&
-        obj->type != OBJ_SPARK_BIT &&
+    if (obj->type != OBJ_PULSE &&
+        obj->type != OBJ_SPARK &&
         sqr(obj->vel.x) + sqr(obj->vel.y) > sqr(options.maxObjectWallBounceSpeed))
     {
         obj->life = 0;
         return 0;
     }
 
-    if (obj->type == OBJ_SPARK_BIT &&
+    if (obj->type == OBJ_SPARK &&
         sqr(obj->vel.x) + sqr(obj->vel.y) > sqr(options.maxSparkWallBounceSpeed))
     {
         obj->life = 0;
         return 0;
     }
 
-    if (obj->type == OBJ_SPARK_BIT)
+    if (obj->type == OBJ_SPARK)
         CLR_BIT(obj->obj_status, OWNERIMMUNE);
 
     if (line >= num_lines)
@@ -606,7 +606,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         s = linet[line].s;
     }
 
-    if (obj->type == OBJ_PULSE_BIT)
+    if (obj->type == OBJ_PULSE)
         wall_brake_factor = 1.0;
     fx = move->delta.cx * c + move->delta.cy * s;
     fy = move->delta.cx * s - move->delta.cy * c;
@@ -620,7 +620,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         obj->collmode = 3;
 
     /* find direction of pulse after bounce */
-    if (obj->type == OBJ_PULSE_BIT)
+    if (obj->type == OBJ_PULSE)
     {
         pulseobject_t *pulse = PULSE_PTR(obj);
 

@@ -488,6 +488,112 @@ int Check_connection(char *user, char *nick, char *dpy, char *addr)
     return -1;
 }
 
+#if 0
+/*
+ * Banning of players
+ */
+static void dcase(char *str)
+{
+    while (*str) {
+    *str = tolower(*str);
+    str++;
+    }
+
+
+char *banned_users[] = { "<", ">", "\"", "'", NULL };
+char *banned_nicks[] = { "<", ">", "\"", "'", NULL };
+char *banned_addrs[] = { NULL };
+char *banned_hosts[] = { "<", ">", "\"", "'", NULL };
+
+int CheckBanned(char *user, char *nick, char *addr, char *host)
+{
+    int ret = 0, i;
+
+    user = strdup(user);
+    nick = strdup(nick);
+    addr = strdup(addr);
+    host = strdup(host);
+    dcase(user);
+    dcase(nick);
+    dcase(addr);
+    dcase(host);
+
+    for (i = 0; banned_users[i] != NULL; i++) {
+    if (strstr(user, banned_users[i]) != NULL) {
+        ret = 1;
+        goto out;
+    }
+    }
+    for (i = 0; banned_nicks[i] != NULL; i++) {
+    if (strstr(nick, banned_nicks[i]) != NULL) {
+        ret = 1;
+        goto out;
+    }
+    }
+    for (i = 0; banned_addrs[i] != NULL; i++) {
+    if (strstr(addr, banned_addrs[i]) != NULL) {
+        ret = 1;
+        goto out;
+    }
+    }
+    for (i = 0; banned_hosts[i] != NULL; i++) {
+    if (strstr(host, banned_hosts[i]) != NULL) {
+        ret = 1;
+        goto out;
+    }
+    }
+ out:
+    free(user);
+    free(nick);
+    free(addr);
+    free(host);
+
+    return ret;
+}
+
+struct restrict {
+    char *nick;
+   char *addr;
+    char *mail;
+};
+
+struct restrict restricted[] = {
+    { NULL, NULL, NULL }
+};
+
+int CheckAllowed(char *user, char *nick, char *addr, char *host)
+{
+    int i, allowed = 1;
+    /*char *realnick = nick;*/
+   char *mail = NULL;
+
+    nick = strdup(nick);
+    addr = strdup(addr);
+    dcase(nick);
+    dcase(addr);
+
+    for (i = 0; restricted[i].nick != NULL; i++) {
+    if (strstr(nick, restricted[i].nick) != NULL) {
+        if (strncmp(addr, restricted[i].addr, strlen(restricted[i].addr))
+        == 0) {
+        allowed = 1;
+        break;
+       }
+        allowed = 0;
+        mail = restricted[i].mail;
+    }
+    }
+    if (!allowed) {
+    /* Do whatever you want here... */
+    }
+
+    free(nick);
+    free(addr);
+
+    return allowed;
+}
+#endif
+
 /*
  * A client has requested a playing connection with this server.
  * See if we have room for one more player and if his name is not

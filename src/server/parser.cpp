@@ -188,11 +188,10 @@ static void Parser_dump_flags(char *progname)
  */
 static void Parser_dump_config(char *progname)
 {
-    /* option_desc                *option_descs; */
+    option_desc *option_descs;
     int option_count;
 
-    /* option_descs = */
-    Get_option_descs(&option_count);
+    option_descs = Get_option_descs(&option_count);
 
     xpprintf("\n");
     xpprintf("# %s option dump\n", progname);
@@ -224,54 +223,53 @@ static void Parser_dump_all(char *progname)
  * This is called when a client requests
  * to see the current server parameter list.
  */
-int Parser_list_option(int *index, char *buf)
+int Parser_list_option(int *ind, char *buf)
 {
-    int i = *index;
-    option_desc *option_descs;
-    int option_count;
+    int i = *ind, option_count;
+    option_desc *opts;
 
-    option_descs = Get_option_descs(&option_count);
+    opts = Get_option_descs(&option_count);
 
     if (i < 0 || i >= option_count)
         return -1;
-    if (option_descs[i].defaultValue == NULL)
+
+    if (opts[i].defaultValue == NULL)
         return 0;
-    if ((option_descs[i].flags & OPT_VISIBLE) == 0)
+
+    if ((opts[i].flags & OPT_VISIBLE) == 0)
         return 0;
-    switch (option_descs[i].type)
+
+    switch (opts[i].type)
     {
     case valInt:
-        sprintf(buf, "%s:%d", option_descs[i].name,
-                *(int *)option_descs[i].variable);
+        sprintf(buf, "%s:%d", opts[i].name,
+                *(int *)opts[i].variable);
         break;
     case valSec:
-        sprintf(buf, "%s:%d", option_descs[i].name,
-                *(int *)option_descs[i].variable / FPS);
+        sprintf(buf, "%s:%d", opts[i].name, *(int *)opts[i].variable / FPS);
         break;
     case valReal:
-        sprintf(buf, "%s:%g", option_descs[i].name,
-                *(double *)option_descs[i].variable);
+        sprintf(buf, "%s:%g", opts[i].name, *(double *)opts[i].variable);
         break;
     case valBool:
-        sprintf(buf, "%s:%s", option_descs[i].name,
-                *(bool *)option_descs[i].variable ? "yes" : "no");
+        sprintf(buf, "%s:%s", opts[i].name,
+                *(bool *)opts[i].variable ? "yes" : "no");
         break;
     case valIPos:
-        sprintf(buf, "%s:%d,%d", option_descs[i].name,
-                ((ipos_t *)option_descs[i].variable)->x,
-                ((ipos_t *)option_descs[i].variable)->y);
+        sprintf(buf, "%s:%d,%d", opts[i].name,
+                ((ipos_t *)opts[i].variable)->x,
+                ((ipos_t *)opts[i].variable)->y);
         break;
     case valString:
-        sprintf(buf, "%s:%s", option_descs[i].name,
-                *(char **)option_descs[i].variable);
+        sprintf(buf, "%s:%s", opts[i].name, *(char **)opts[i].variable);
         break;
     case valList:
     {
         std::vector<std::string> &list =
-            *(std::vector<std::string> *)option_descs[i].variable;
+            *(std::vector<std::string> *)opts[i].variable;
 
-        sprintf(buf, "%s:", option_descs[i].name);
-        printf("parser: name: %s\n", option_descs[i].name);
+        sprintf(buf, "%s:", opts[i].name);
+        printf("parser: name: %s\n", opts[i].name);
 
         for (size_t j = 0; j < list.size(); ++j)
         {
@@ -343,11 +341,13 @@ static bool Parse_check_info_request(char **argv, int i)
 bool Parser(int argc, char **argv)
 {
     int i;
-    bool status;
     char *fname;
     option_desc *desc;
 
-    xpprintf("parser: init-options\n");
+    options.mapData = NULL;
+    options.mapWidth = 0;
+    options.mapHeight = 0;
+
     if (Init_options() == false)
         return false;
 
