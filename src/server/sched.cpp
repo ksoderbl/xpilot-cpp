@@ -45,9 +45,9 @@
 
 int sched_running = false;
 
-volatile long timer_ticks; /* SIGALRMs that have occurred */
-static long timers_used;   /* SIGALRMs that have been used */
-static long timer_freq;    /* rate at which timer ticks. (in FPS) */
+long timer_ticks;        /* SIGALRMs that have occurred */
+static long timers_used; /* SIGALRMs that have been used */
+static long timer_freq;  /* rate at which timer ticks. (in FPS) */
 static void (*timer_handler)(void);
 static time_t current_time;
 static int ticks_till_second;

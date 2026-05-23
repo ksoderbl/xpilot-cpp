@@ -1161,8 +1161,7 @@ void Move_segment(move_state_t *ms)
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
                             Set_player_message(Player_by_id(ball->ball_owner), msg);
                         }
-                        else if (Punish_team1(Player_by_id(ball->ball_owner),
-                                              ball->ball_treasure, tt))
+                        else if (Punish_team1(Player_by_id(ball->ball_owner), ball->ball_treasure, ball->pos))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
                     ball->life = 0;

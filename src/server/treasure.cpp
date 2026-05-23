@@ -355,17 +355,12 @@ bool Balltarget_hitfunc(group_t *gp, const move_t *move)
     return false;
 }
 
-//
-//
-// ******************************************************************************************************
-//
-//
-
-int Punish_team1(player_t *pl, treasure_t *td, treasure_t *tt)
+// pl = player who cashed ball
+// td  = destroyed treasure
+// pos = ball position
+int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
 {
     static char msg[MSG_LEN];
-    // treasure_t *td = &world->treasures[t_destroyed];
-    // treasure_t *tt = &world->treasures[t_target];
     int i;
     int win_score = 0, lose_score = 0;
     int win_team_members = 0, lose_team_members = 0;
@@ -391,7 +386,7 @@ int Punish_team1(player_t *pl, treasure_t *td, treasure_t *tt)
                 if (BIT(pl_i->obj_status, GAME_OVER) == 0)
                     somebody_flag = 1;
             }
-            else if (pl_i->team == tt->team)
+            else if (pl_i->team == pl->team)
             {
                 win_score += Get_Score(pl_i);
                 win_team_members++;
@@ -405,14 +400,13 @@ int Punish_team1(player_t *pl, treasure_t *td, treasure_t *tt)
 
     if (!somebody_flag)
     {
-        Score(pl, Rate(Get_Score(pl), CANNON_SCORE) / 2,
-              tt->pos, "Treasure:");
+        Score(pl, Rate(Get_Score(pl), CANNON_SCORE) / 2, pos, "Treasure:");
         return 0;
     }
 
     td->destroyed++;
     world->teams[td->team].TreasuresLeft--;
-    world->teams[tt->team].TreasuresDestroyed++;
+    world->teams[pl->team].TreasuresDestroyed++;
 
     sc = 3 * Rate(win_score, lose_score);
     por = (sc * lose_team_members) / (2 * win_team_members + 1);
@@ -427,13 +421,13 @@ int Punish_team1(player_t *pl, treasure_t *td, treasure_t *tt)
             continue;
         if (pl_i->team == td->team)
         {
-            Score(pl_i, -sc, tt->pos, "Treasure: ");
+            Score(pl_i, -sc, pos, "Treasure: ");
             if (options.treasureKillTeam)
                 SET_BIT(pl_i->obj_status, KILLED);
         }
-        else if (pl_i->team == tt->team &&
+        else if (pl_i->team == pl->team &&
                  (pl_i->team != TEAM_NOT_SET || pl_i->id == pl->id))
-            Score(pl_i, (pl_i->id == pl->id ? 3 * por : 2 * por), tt->pos, "Treasure: ");
+            Score(pl_i, (pl_i->id == pl->id ? 3 * por : 2 * por), pos, "Treasure: ");
     }
 
     if (options.treasureKillTeam)
