@@ -35,6 +35,8 @@ void tuner_worldlives(void);
 void tuner_cannonsmartness(void);
 void tuner_teamcannons(void);
 void tuner_cannonsuseitems(void);
+void tuner_mincannonshotlife(void);
+void tuner_maxcannonshotlife(void);
 void tuner_wormtime(void);
 void tuner_modifiers(void);
 void tuner_minelife(void);

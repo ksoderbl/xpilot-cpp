@@ -26,6 +26,7 @@
 
 #include "map.h"
 #include "player.h"
+#include "polygon.h"
 #include "serverconst.h"
 
 extern long CANNON_USE_ITEM;
@@ -100,4 +101,54 @@ void Cannon_dies(cannon_t *cannon, player_t *pl);
 //    return Cannon_by_index(ind);
 // }
 
+hitmask_t Cannon_hitmask(cannon_t *cannon);
+void Cannon_set_hitmask(int group, cannon_t *cannon);
+bool Cannon_hitfunc(group_t *groupptr, const move_t *move);
+void World_restore_cannon(cannon_t *cannon);
+void World_remove_cannon(cannon_t *cannon);
 void Cannon_set_option(cannon_t *cannon, const char *name, const char *value);
+
+static inline int Cannon_get_smartness(cannon_t *c)
+{
+   if (c->smartness != -1)
+      return c->smartness;
+   return options.cannonSmartness;
+}
+
+static inline double Cannon_get_min_shot_life(cannon_t *c)
+{
+   return options.minCannonShotLife;
+}
+
+static inline double Cannon_get_max_shot_life(cannon_t *c)
+{
+   return options.maxCannonShotLife;
+}
+
+static inline double Cannon_get_shot_life(cannon_t *cannon)
+{
+   double minlife, maxlife, d;
+
+   minlife = Cannon_get_min_shot_life(cannon);
+   maxlife = Cannon_get_max_shot_life(cannon);
+   d = maxlife - minlife;
+
+   return minlife + rfrac() * d;
+}
+
+static inline double Cannon_get_shot_speed(cannon_t *cannon)
+{
+   if (cannon->shot_speed > 0)
+      return cannon->shot_speed;
+   return options.cannonShotSpeed;
+}
+
+static inline cannon_t *Cannon_by_id(int id)
+{
+   int ind;
+
+   if (id < MIN_CANNON_ID || id > MAX_CANNON_ID)
+      return NULL;
+   ind = id - MIN_CANNON_ID;
+   return Cannon_by_index(ind);
+}

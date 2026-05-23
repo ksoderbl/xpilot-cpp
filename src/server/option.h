@@ -242,7 +242,12 @@ typedef struct options
     // How long do cannons stay dead?
     int cannonDeadTime;
 
+    double cannonDeadTicks;
+    double minCannonShotLife;
+    double maxCannonShotLife;
     double survivalScore;
+
+    double cannonShotSpeed;
 
     // Keep shots when player leaves?
     bool keepShots;

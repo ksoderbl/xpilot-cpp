@@ -317,8 +317,48 @@ void Object_hits_target(
     }
 }
 
+hitmask_t Target_hitmask(target_t *targ)
+{
+    /* target is destroyed - nothing hits */
+    if (targ->dead_ticks > 0)
+        return ALL_BITS;
+
+    /* everything hits targets that don't belong to a team */
+    if (targ->team == TEAM_NOT_SET)
+        return 0;
+
+    /* if options.targetTeamCollision is true, everything hits a target */
+    if (options.targetTeamCollision)
+        return 0;
+
+    /* note that targets are always team immune */
+    return HITMASK(targ->team);
+}
+
 void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 {
+}
+
+void Target_set_hitmask(int group, target_t *targ)
+{
+    assert(targ->group == group);
+    P_set_hitmask(targ->group, Target_hitmask(targ));
+}
+
+void Target_init(void)
+{
+    int group;
+
+    for (group = 0; group < num_groups; group++)
+    {
+        group_t *gp = groupptr_by_id(group);
+
+        if (gp->type == TARGET)
+            Target_set_hitmask(group, Target_by_index(gp->mapobj_ind));
+    }
+#if 0
+    P_grouphack(TARGET, Target_set_hitmask);
+#endif
 }
 
 void World_restore_target(target_t *targ)

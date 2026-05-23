@@ -48,6 +48,7 @@
 #endif
 #endif
 
+#include "cannon.h"
 #include "score.h"
 #include "server.h"
 #include "robot.h"
@@ -892,4 +893,47 @@ int plock_server(bool on)
         xpprintf("Can't plock: Server was not compiled with plock support\n");
     return 0;
 #endif
+}
+
+/* kps - this is really ugly */
+extern bool in_move_player;
+
+bool Friction_area_hitfunc(group_t *groupptr, const move_t *move)
+{
+    if (in_move_player)
+        return true;
+    return false;
+}
+
+/*
+ * Handling of group properties
+ */
+void Team_immunity_init(void)
+{
+    int group;
+
+    for (group = 0; group < num_groups; group++)
+    {
+        group_t *gp = groupptr_by_id(group);
+
+        if (gp->type == CANNON)
+        {
+            cannon_t *cannon = Cannon_by_index(gp->mapobj_ind);
+
+            assert(cannon->group == group);
+            Cannon_set_hitmask(group, cannon);
+        }
+    }
+
+#if 0
+    /* change hitmask of all cannons */
+    P_grouphack(CANNON, Cannon_set_hitmask);
+#endif
+}
+
+/* kps - called at server startup to initialize hit masks */
+void Hitmasks_init(void)
+{
+    Target_init();
+    Team_immunity_init();
 }

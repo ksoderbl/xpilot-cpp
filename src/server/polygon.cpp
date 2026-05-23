@@ -27,6 +27,7 @@
 #include "commonmacros.h"
 #include "strlcpy.h"
 
+#include "cannon.h"
 #include "server.h"
 #include "map.h"
 #include "polygon.h"
@@ -294,15 +295,14 @@ void P_end_balltarget(void)
 
 int P_start_target(int target_ind)
 {
-    // target_t *targ = Target_by_index(target_ind);
+    target_t *targ = Target_by_index(target_ind);
 
-    // targ->group = Create_group(TARGET,
-    //                            targ->team,
-    //                            Target_hitmask(targ),
-    //                            NULL,
-    //                            target_ind);
-    // return targ->group;
-    return -1; // TODO
+    targ->group = Create_group(TARGET,
+                               targ->team,
+                               Target_hitmask(targ),
+                               NULL,
+                               target_ind);
+    return targ->group;
 }
 
 void P_end_target(void)
@@ -312,15 +312,14 @@ void P_end_target(void)
 
 int P_start_cannon(int cannon_ind)
 {
-    // cannon_t *cannon = Cannon_by_index(cannon_ind);
+    cannon_t *cannon = Cannon_by_index(cannon_ind);
 
-    // cannon->group = Create_group(CANNON,
-    //                              cannon->team,
-    //                              Cannon_hitmask(cannon),
-    //                              Cannon_hitfunc,
-    //                              cannon_ind);
-    // return cannon->group;
-    return -1; // TODO
+    cannon->group = Create_group(CANNON,
+                                 cannon->team,
+                                 Cannon_hitmask(cannon),
+                                 Cannon_hitfunc,
+                                 cannon_ind);
+    return cannon->group;
 }
 
 void P_end_cannon(void)
@@ -330,15 +329,14 @@ void P_end_cannon(void)
 
 int P_start_wormhole(int wormhole_ind)
 {
-    // wormhole_t *wormhole = Wormhole_by_index(wormhole_ind);
+    wormhole_t *wormhole = Wormhole_by_index(wormhole_ind);
 
-    // wormhole->group = Create_group(WORMHOLE,
-    //                                TEAM_NOT_SET,
-    //                                Wormhole_hitmask(wormhole),
-    //                                Wormhole_hitfunc,
-    //                                wormhole_ind);
-    // return wormhole->group;
-    return -1; // TODO
+    wormhole->group = Create_group(WORMHOLE,
+                                   TEAM_NOT_SET,
+                                   Wormhole_hitmask(wormhole),
+                                   Wormhole_hitfunc,
+                                   wormhole_ind);
+    return wormhole->group;
 }
 
 void P_end_wormhole(void)
@@ -348,15 +346,14 @@ void P_end_wormhole(void)
 
 int P_start_friction_area(int fa_ind)
 {
-    // friction_area_t *fa = FrictionArea_by_index(fa_ind);
+    friction_area_t *fa = FrictionArea_by_index(fa_ind);
 
-    // fa->group = Create_group(FRICTION,
-    //                          TEAM_NOT_SET,
-    //                          0,
-    //                          Friction_area_hitfunc,
-    //                          fa_ind);
-    // return fa->group;
-    return -1; // TODO
+    fa->group = Create_group(FRICTION,
+                             TEAM_NOT_SET,
+                             0,
+                             Friction_area_hitfunc,
+                             fa_ind);
+    return fa->group;
 }
 
 void P_end_friction_area(void)

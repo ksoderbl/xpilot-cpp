@@ -171,6 +171,18 @@ void tuner_teamcannons(void)
     }
 }
 
+void tuner_mincannonshotlife(void)
+{
+    LIMIT(options.minCannonShotLife, 0, FLT_MAX);
+    LIMIT(options.maxCannonShotLife, options.minCannonShotLife, FLT_MAX);
+}
+
+void tuner_maxcannonshotlife(void)
+{
+    LIMIT(options.maxCannonShotLife, 0, FLT_MAX);
+    LIMIT(options.minCannonShotLife, 0, options.maxCannonShotLife);
+}
+
 void tuner_cannonsuseitems(void)
 {
     int i, j;

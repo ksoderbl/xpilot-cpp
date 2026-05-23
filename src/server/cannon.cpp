@@ -812,6 +812,113 @@ void Cannon_dies(cannon_t *c, player_t *pl)
                   8.0, 68.0);
 }
 
+hitmask_t Cannon_hitmask(cannon_t *cannon)
+{
+    if (cannon->dead_ticks > 0)
+        return ALL_BITS;
+    if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity)
+        return HITMASK(cannon->team);
+    return 0;
+}
+
+void Cannon_set_hitmask(int group, cannon_t *cannon)
+{
+    assert(group == cannon->group);
+
+    P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
+}
+
+void World_restore_cannon(cannon_t *cannon)
+{
+    blkpos_t blk = Clpos_to_blkpos(cannon->pos);
+    int i;
+
+    World_set_block(blk, CANNON);
+
+    for (i = 0; i < num_polys; i++)
+    {
+        poly_t *poly = &pdata[i];
+
+        if (poly->group == cannon->group)
+        {
+            poly->current_style = poly->style;
+            poly->update_mask = ~0;
+            poly->last_change = frame_loops;
+        }
+    }
+
+    cannon->conn_mask = 0;
+    cannon->last_change = frame_loops;
+    cannon->dead_ticks = 0;
+
+    P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
+}
+
+void World_remove_cannon(cannon_t *cannon)
+{
+    blkpos_t blk = Clpos_to_blkpos(cannon->pos);
+    int i;
+
+    cannon->dead_ticks = options.cannonDeadTicks;
+    cannon->conn_mask = 0;
+
+    World_set_block(blk, SPACE);
+
+    for (i = 0; i < num_polys; i++)
+    {
+        poly_t *poly = &pdata[i];
+
+        if (poly->group == cannon->group)
+        {
+            poly->current_style = poly->destroyed_style;
+            poly->update_mask = ~0;
+            poly->last_change = frame_loops;
+        }
+    }
+
+    P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
+}
+
+// extern struct move_parameters mp;
+/*
+ * This function is called when something would hit a cannon.
+ *
+ * Ideas stolen from Move_segment in walls_old.c
+ */
+bool Cannon_hitfunc(group_t *gp, const move_t *move)
+{
+    const object_t *obj = move->obj;
+    cannon_t *cannon = Cannon_by_index(gp->mapobj_ind);
+    unsigned long cannon_mask;
+
+    /* this should never happen if hitmasks are ok */
+    assert(!(cannon->dead_ticks > 0));
+
+    /* if cannon is phased nothing will hit it */
+    if (BIT(cannon->used, USES_PHASING_DEVICE))
+        return false;
+
+    if (obj == NULL)
+        return true;
+
+    // TODO
+    // cannon_mask = mp.obj_cannon_mask | OBJ_PLAYER_BIT;
+    cannon_mask = OBJ_PLAYER_BIT;
+    if (!BIT(cannon_mask, OBJ_TYPEBIT(obj->type)))
+        return false;
+
+    /*
+     * kps - if no team play, both cannons have team == TEAM_NOT_SET,
+     * this code should work, no matter if team play is true or not.
+     */
+    if (BIT(obj->obj_status, FROMCANNON) && obj->team == cannon->team)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void Cannon_set_option(cannon_t *cannon, const char *name, const char *value)
 {
     Item_t item;

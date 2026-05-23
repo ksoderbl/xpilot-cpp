@@ -260,6 +260,12 @@ void Fire_left_shot(player_t *pl, int type, int dir, int gun);
 void Fire_right_shot(player_t *pl, int type, int dir, int gun);
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
 void Fire_right_rshot(player_t *pl, int type, int dir, int gun);
+
+bool Friction_area_hitfunc(group_t *groupptr, const move_t *move);
+
+void Team_immunity_init(void);
+void Hitmasks_init(void);
+
 int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);

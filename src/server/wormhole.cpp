@@ -25,6 +25,34 @@
 
 #include "server.h"
 
+/*
+ * Functions used in game.
+ */
+
+hitmask_t Wormhole_hitmask(wormhole_t *wormhole)
+{
+    if (wormhole->type == WORM_OUT)
+        return ALL_BITS;
+    return 0;
+}
+
+bool Wormhole_hitfunc(group_t *gp, const move_t *move)
+{
+    const object_t *obj = move->obj;
+    wormhole_t *wormhole = Wormhole_by_index(gp->mapobj_ind);
+
+    if (wormhole->type == WORM_OUT)
+        return false;
+
+    if (obj == NULL)
+        return true;
+
+    if (BIT(obj->obj_status, WARPED | WARPING))
+        return false;
+
+    return true;
+}
+
 void Object_hits_wormhole(object_t *obj, int ind)
 {
     SET_BIT(obj->obj_status, WARPING);

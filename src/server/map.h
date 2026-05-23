@@ -160,6 +160,12 @@ typedef struct cannon
     int emergency_shield_left;
     int phasing_left;
     // short id;
+
+    int group;
+
+    short smartness;
+    float shot_speed;
+    int initial_items[NUM_ITEMS];
 } cannon_t;
 
 typedef struct check
@@ -169,15 +175,16 @@ typedef struct check
 
 typedef struct item
 {
-    double prob;       /* Probability [0..1] for item to appear */
-    int max;           /* Max on world at a given time */
-    int num;           /* Number active right now */
-    int chance;        /* Chance [0..127] for this item to appear */
-    double cannonprob; /* Relative probability for item to appear */
-    int min_per_pack;  /* minimum number of elements per item. */
-    int max_per_pack;  /* maximum number of elements per item. */
-    int initial;       /* initial number of elements per player. */
-    int limit;         /* max number of elements per player/cannon. */
+    double prob;        /* Probability [0..1] for item to appear */
+    int max;            /* Max on world at a given time */
+    int num;            /* Number active right now */
+    int chance;         /* Chance [0..127] for this item to appear */
+    double cannonprob;  /* Relative probability for item to appear */
+    int min_per_pack;   /* minimum number of elements per item. */
+    int max_per_pack;   /* maximum number of elements per item. */
+    int initial;        /* initial number of elements per player. */
+    int cannon_initial; /* initial number of elements per cannon. */
+    int limit;          /* max number of elements per player/cannon. */
 } item_t;
 
 typedef struct asteroid
