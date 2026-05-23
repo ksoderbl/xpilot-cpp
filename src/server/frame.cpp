@@ -104,14 +104,11 @@ static int max_player_shuffle;
 static radar_t *radar_ptr;
 static int num_radar, max_radar;
 
-static pixel_visibility_t pv;
 static click_visibility_t cv;
 static int view_width,
     view_height,
     view_cwidth,
     view_cheight,
-    horizontal_blocks,
-    vertical_blocks,
     debris_x_areas,
     debris_y_areas,
     debris_areas,
@@ -197,14 +194,6 @@ static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
     clpos_t pos = {cx, cy};
     return clpos_inview(&cv, pos);
 }
-
-// static int block_inview(block_visibility_t *bv, int x, int y)
-// {
-//     return ((x > bv->world.x && x < bv->world.x + horizontal_blocks) ||
-//             (x > bv->realWorld.x && x < bv->realWorld.x + horizontal_blocks)) &&
-//            ((y > bv->world.y && y < bv->world.y + vertical_blocks) ||
-//             (y > bv->realWorld.y && y < bv->realWorld.y + vertical_blocks));
-// }
 
 #define DEBRIS_STORE(xd, yd, color, offset)                                                                             \
     int i;                                                                                                              \
@@ -587,9 +576,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
 static void Frame_map(connection_t *conn, player_t *pl)
 {
     int i, k;
-    // int bx, by;
     int conn_bit = (1 << conn->ind);
-    // block_visibility_t bv;
     const int fuel_packet_size = 5;
     const int cannon_packet_size = 5;
     const int target_packet_size = 7;
@@ -597,24 +584,6 @@ static void Frame_map(connection_t *conn, player_t *pl)
     int bytes_left = 2000;
     int max_packet;
     int packet_count;
-
-    // bx = OBJ_X_IN_BLOCKS(pl);
-    // by = OBJ_Y_IN_BLOCKS(pl);
-
-    // bv.world.x = bx - (horizontal_blocks >> 1);
-    // bv.world.y = by - (vertical_blocks >> 1);
-    // bv.realWorld = bv.world;
-    // if (BIT(world->rules->mode, WRAP_PLAY))
-    // {
-    //     if (bv.world.x < 0 && bv.world.x + horizontal_blocks < world->x)
-    //         bv.world.x += world->x;
-    //     else if (bv.world.x > 0 && bv.world.x + horizontal_blocks > world->x)
-    //         bv.realWorld.x -= world->x;
-    //     if (bv.world.y < 0 && bv.world.y + vertical_blocks < world->y)
-    //         bv.world.y += world->y;
-    //     else if (bv.world.y > 0 && bv.world.y + vertical_blocks > world->y)
-    //         bv.realWorld.y -= world->y;
-    // }
 
     packet_count = 0;
     max_packet = MAX(5, bytes_left / target_packet_size);
@@ -1291,26 +1260,9 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     debris_x_areas = (view_width + 255) >> 8;
     debris_y_areas = (view_height + 255) >> 8;
     debris_areas = debris_x_areas * debris_y_areas;
-    horizontal_blocks = (view_width + (BLOCK_SZ - 1)) / BLOCK_SZ;
-    vertical_blocks = (view_height + (BLOCK_SZ - 1)) / BLOCK_SZ;
 
-    pv.world.x = pl->pix_pos.x - view_width / 2; /* Scroll */
-    pv.world.y = pl->pix_pos.y - view_height / 2;
-    pv.realWorld = pv.world;
-    if (BIT(world->rules->mode, WRAP_PLAY))
-    {
-        if (pv.world.x < 0 && pv.world.x + view_width < world->width)
-            pv.world.x += world->width;
-        else if (pv.world.x > 0 && pv.world.x + view_width >= world->width)
-            pv.realWorld.x -= world->width;
-        if (pv.world.y < 0 && pv.world.y + view_height < world->height)
-            pv.world.y += world->height;
-        else if (pv.world.y > 0 && pv.world.y + view_height >= world->height)
-            pv.realWorld.y -= world->height;
-    }
-
-    view_cwidth = PIXEL_TO_CLICK(view_width);
-    view_cheight = PIXEL_TO_CLICK(view_height);
+    view_cwidth = view_width * CLICK;
+    view_cheight = view_height * CLICK;
 
     cv.unrealWorld.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
     cv.unrealWorld.cy = pl->pos.cy - view_cheight / 2;
