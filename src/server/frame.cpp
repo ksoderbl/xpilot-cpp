@@ -57,9 +57,10 @@
 typedef uint16_t shuffle_t;
 
 /*
- * Structure for calculating if a pixel is visible by a player.
+ * Structure for calculating if a click position is visible by a player.
+ * Used for map state info updating.
  * The following always holds:
- *        (world.x >= realWorld.x && world.y >= realWorld.y)
+ *     (world.cx >= realWorld.cx && world.cy >= realWorld.cy)
  */
 typedef struct
 {
@@ -70,20 +71,13 @@ typedef struct
                      coordinates before adjustment... */
 } pixel_visibility_t;
 
-/*
- * Structure with player position info measured in blocks instead of pixels.
- * Used for map state info updating.
- */
-// typedef struct
-// {
-//     ipos_t world;
-//     ipos_t realWorld;
-// } block_visibility_t;
-
 typedef struct
 {
-    clpos_t world;
-    clpos_t realWorld;
+    clpos_t unrealWorld; /* Lower left hand corner is this */
+                         /* world coordinate */
+    clpos_t realWorld;   /* If the player is on the edge of
+                       the screen, these are the world
+                       coordinates before adjustment... */
 } click_visibility_t;
 
 typedef struct
@@ -130,12 +124,72 @@ static debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 static unsigned fastshot_num[DEBRIS_TYPES * 2],
     fastshot_max[DEBRIS_TYPES * 2];
 
+/*
+ * Macro to make room in a given dynamic array for new elements.
+ * P is the pointer to the array memory.
+ * N is the current number of elements in the array.
+ * M is the current size of the array.
+ * T is the type of the elements.
+ * E is the number of new elements to store in the array.
+ * The goal is to keep the number of malloc/realloc calls low
+ * while not wasting too much memory because of over-allocation.
+ */
+#define EXPAND(P, N, M, T, E)                     \
+    if ((N) + (E) > (M))                          \
+    {                                             \
+        if ((M) <= 0)                             \
+        {                                         \
+            M = (E) + 2;                          \
+            P = (T *)malloc((M) * sizeof(T));     \
+            N = 0;                                \
+        }                                         \
+        else                                      \
+        {                                         \
+            M = ((M) << 1) + (E);                 \
+            P = (T *)realloc(P, (M) * sizeof(T)); \
+        }                                         \
+        if (P == NULL)                            \
+        {                                         \
+            error("No memory");                   \
+            N = M = 0;                            \
+            return; /* ! */                       \
+        }                                         \
+    }
+
+/*
+ * Note - I've changed the block_inview calls to clpos_inview calls,
+ * which means that the center of a block has to be visible to be
+ * in view.
+ */
+static inline bool clpos_inview2(click_visibility_t *v, clpos_t pos)
+{
+    clpos_t wpos = v->unrealWorld, rwpos = v->realWorld;
+
+    if (!((pos.cx > wpos.cx && pos.cx < wpos.cx + view_cwidth) || (pos.cx > rwpos.cx && pos.cx < rwpos.cx + view_cwidth)))
+        return false;
+    if (!((pos.cy > wpos.cy && pos.cy < wpos.cy + view_cheight) || (pos.cy > rwpos.cy && pos.cy < rwpos.cy + view_cheight)))
+        return false;
+    return true;
+}
+
 static inline bool clpos_inview(click_visibility_t *cv, clpos_t pos)
 {
-    return (((pos.cx > cv->world.cx && pos.cx < cv->world.cx + view_cwidth) ||
-             (pos.cx > cv->realWorld.cx && pos.cx < cv->realWorld.cx + view_cwidth)) &&
-            ((pos.cy > cv->world.cy && pos.cy < cv->world.cy + view_cheight) ||
-             (pos.cy > cv->realWorld.cy && pos.cy < cv->realWorld.cy + view_cheight)));
+    bool retval = (((pos.cx > cv->unrealWorld.cx && pos.cx < cv->unrealWorld.cx + view_cwidth) ||
+                    (pos.cx > cv->realWorld.cx && pos.cx < cv->realWorld.cx + view_cwidth)) &&
+                   ((pos.cy > cv->unrealWorld.cy && pos.cy < cv->unrealWorld.cy + view_cheight) ||
+                    (pos.cy > cv->realWorld.cy && pos.cy < cv->realWorld.cy + view_cheight)));
+    bool retval2 = clpos_inview2(cv, pos);
+
+    if (retval == retval2)
+    {
+        // warn("SUCCESS!!!!");
+    }
+    else
+    {
+        warn("FAIL!!!!");
+    }
+
+    return retval;
 }
 
 static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
@@ -152,8 +206,105 @@ static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
 //             (y > bv->realWorld.y && y < bv->realWorld.y + vertical_blocks));
 // }
 
-static void fastshot_store(int xf, int yf, int color, int offset)
+#define DEBRIS_STORE(xd, yd, color, offset)                                                                             \
+    int i;                                                                                                              \
+    if (xd < 0)                                                                                                         \
+        xd += world->width;                                                                                             \
+    if (yd < 0)                                                                                                         \
+        yd += world->height;                                                                                            \
+    if ((unsigned)xd >= (unsigned)view_width || (unsigned)yd >= (unsigned)view_height)                                  \
+    {                                                                                                                   \
+        /*                                                                                                              \
+         * There's some rounding error or so somewhere.                                                                 \
+         * Should be possible to resolve it.                                                                            \
+         */                                                                                                             \
+        return;                                                                                                         \
+    }                                                                                                                   \
+                                                                                                                        \
+    i = offset + color * debris_areas + (((yd >> 8) % debris_y_areas) * debris_x_areas) + ((xd >> 8) % debris_x_areas); \
+                                                                                                                        \
+    if (num_ >= 255)                                                                                                    \
+        return;                                                                                                         \
+    if (num_ >= max_)                                                                                                   \
+    {                                                                                                                   \
+        if (num_ == 0)                                                                                                  \
+            ptr_ = (debris_t *)malloc((max_ = 16) * sizeof(*ptr_));                                                     \
+        else                                                                                                            \
+            ptr_ = (debris_t *)realloc(ptr_, (max_ += max_) * sizeof(*ptr_));                                           \
+        if (ptr_ == NULL)                                                                                               \
+        {                                                                                                               \
+            error("No memory for debris");                                                                              \
+            num_ = 0;                                                                                                   \
+            return;                                                                                                     \
+        }                                                                                                               \
+    }                                                                                                                   \
+    ptr_[num_].x = (uint8_t)xd;                                                                                         \
+    ptr_[num_].y = (uint8_t)yd;                                                                                         \
+    num_++;
+
+static void fastshot_store_old(int cx, int cy, int color, int offset)
 {
+    int xf = CLICK_TO_PIXEL(cx),
+        yf = CLICK_TO_PIXEL(cy);
+#define ptr_ (fastshot_ptr[i])
+#define num_ (fastshot_num[i])
+#define max_ (fastshot_max[i])
+    DEBRIS_STORE(xf, yf, color, offset);
+#undef ptr_
+#undef num_
+#undef max_
+}
+
+static void debris_store_old(int cx, int cy, int color)
+{
+    int xf = CLICK_TO_PIXEL(cx),
+        yf = CLICK_TO_PIXEL(cy);
+#define ptr_ (debris_ptr[i])
+#define num_ (debris_num[i])
+#define max_ (debris_max[i])
+    DEBRIS_STORE(xf, yf, color, 0);
+#undef ptr_
+#undef num_
+#undef max_
+}
+
+static void fastshot_end(connection_t *conn)
+{
+    int i;
+
+    for (i = 0; i < DEBRIS_TYPES * 2; i++)
+    {
+        if (fastshot_num[i] != 0)
+        {
+            Send_fastshot(conn, i,
+                          (uint8_t *)fastshot_ptr[i],
+                          fastshot_num[i]);
+            fastshot_num[i] = 0;
+        }
+    }
+}
+
+static void debris_end(connection_t *conn)
+{
+    int i;
+
+    for (i = 0; i < DEBRIS_TYPES; i++)
+    {
+        if (debris_num[i] != 0)
+        {
+            Send_debris(conn, i,
+                        (uint8_t *)debris_ptr[i],
+                        debris_num[i]);
+            debris_num[i] = 0;
+        }
+    }
+}
+
+static void fastshot_store(int cx, int cy, int color, int offset)
+{
+    int xf = CLICK_TO_PIXEL(cx),
+        yf = CLICK_TO_PIXEL(cy);
+
     int i;
     if (xf < 0)
     {
@@ -200,8 +351,11 @@ static void fastshot_store(int xf, int yf, int color, int offset)
     (fastshot_num[i])++;
 }
 
-static void debris_store(int xf, int yf, int color)
+static void debris_store(int cx, int cy, int color)
 {
+    int xf = CLICK_TO_PIXEL(cx),
+        yf = CLICK_TO_PIXEL(cy);
+
     int i;
     int offset = 0;
     if (xf < 0)
@@ -249,38 +403,6 @@ static void debris_store(int xf, int yf, int color)
     (debris_num[i])++;
 }
 
-static void fastshot_end(connection_t *conn)
-{
-    int i;
-
-    for (i = 0; i < DEBRIS_TYPES * 2; i++)
-    {
-        if (fastshot_num[i] != 0)
-        {
-            Send_fastshot(conn, i,
-                          (uint8_t *)fastshot_ptr[i],
-                          fastshot_num[i]);
-            fastshot_num[i] = 0;
-        }
-    }
-}
-
-static void debris_end(connection_t *conn)
-{
-    int i;
-
-    for (i = 0; i < DEBRIS_TYPES; i++)
-    {
-        if (debris_num[i] != 0)
-        {
-            Send_debris(conn, i,
-                        (uint8_t *)debris_ptr[i],
-                        debris_num[i]);
-            debris_num[i] = 0;
-        }
-    }
-}
-
 static void Frame_radar_buffer_reset(void)
 {
     num_radar = 0;
@@ -306,7 +428,7 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
     shuffle_t *radar_shuffle;
     size_t shuffle_bufsize;
 
-    radar_height = (radar_width * world->y) / world->x;
+    radar_height = (radar_width * world->height) / world->width;
 
     if (num_radar > MIN(256, MAX_SHUFFLE_INDEX))
         num_radar = MIN(256, MAX_SHUFFLE_INDEX);
@@ -325,9 +447,7 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
         radar_shuffle[dest] = tmp;
     }
 
-    // if (Get_conn_version(conn) <= 0x4400)
-    // if (!FEATURE(conn, F_FASTRADAR))
-    if (false)
+    if (!FEATURE(conn, F_FASTRADAR))
     {
         for (i = 0; i < num_radar; i++)
         {
@@ -394,11 +514,12 @@ static int Frame_status(connection_t *conn, player_t *pl)
      */
 
     CLR_BIT(pl->lock.tagged, LOCK_VISIBLE);
-    if (BIT(pl->lock.tagged, LOCK_PLAYER) && BIT(pl->used, HAS_COMPASS))
+    if (BIT(pl->lock.tagged, LOCK_PLAYER) && Player_uses_compass(pl))
     {
+        player_t *lock_pl = Player_by_id(pl->lock.pl_id);
+
         lock_id = pl->lock.pl_id;
         lock_ind = GetInd(lock_id);
-        player_t *lock_pl = Player_by_id(pl->lock.pl_id);
 
         if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
@@ -419,7 +540,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
     }
 
     if (Player_is_hoverpaused(pl))
-        showautopilot = (pl->count <= 0 || (frame_loops_slow % 8) < 4);
+        showautopilot = (pl->pause_count <= 0 || (frame_loops_slow % 8) < 4);
     else if (Player_uses_autopilot(pl))
         showautopilot = (frame_loops_slow % 8) < 4;
     else
@@ -744,8 +865,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                     color = debris_colors - 1;
             }
 
-            debris_store((int)(shot->pix_pos.x - pv.world.x),
-                         (int)(shot->pix_pos.y - pv.world.y),
+            debris_store(shot->pos.cx - cv.unrealWorld.cx,
+                         shot->pos.cy - cv.unrealWorld.cy,
                          color);
             break;
 
@@ -786,8 +907,8 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             else
                 teamshot = 0;
 
-            fastshot_store((int)(shot->pix_pos.x - pv.world.x),
-                           (int)(shot->pix_pos.y - pv.world.y),
+            fastshot_store(shot->pos.cx - cv.unrealWorld.cx,
+                           shot->pos.cy - cv.unrealWorld.cy,
                            color, teamshot);
             break;
 
@@ -1191,18 +1312,18 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     view_cwidth = PIXEL_TO_CLICK(view_width);
     view_cheight = PIXEL_TO_CLICK(view_height);
 
-    cv.world.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
-    cv.world.cy = pl->pos.cy - view_cheight / 2;
-    cv.realWorld = cv.world;
+    cv.unrealWorld.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
+    cv.unrealWorld.cy = pl->pos.cy - view_cheight / 2;
+    cv.realWorld = cv.unrealWorld;
     if (BIT(world->rules->mode, WRAP_PLAY))
     {
-        if (cv.world.cx < 0 && cv.world.cx + view_cwidth < world->cwidth)
-            cv.world.cx += world->cwidth;
-        else if (cv.world.cx > 0 && cv.world.cx + view_cwidth >= world->cwidth)
+        if (cv.unrealWorld.cx < 0 && cv.unrealWorld.cx + view_cwidth < world->cwidth)
+            cv.unrealWorld.cx += world->cwidth;
+        else if (cv.unrealWorld.cx > 0 && cv.unrealWorld.cx + view_cwidth >= world->cwidth)
             cv.realWorld.cx -= world->cwidth;
-        if (cv.world.cy < 0 && cv.world.cy + view_cheight < world->cheight)
-            cv.world.cy += world->cheight;
-        else if (cv.world.cy > 0 && cv.world.cy + view_cheight >= world->cheight)
+        if (cv.unrealWorld.cy < 0 && cv.unrealWorld.cy + view_cheight < world->cheight)
+            cv.unrealWorld.cy += world->cheight;
+        else if (cv.unrealWorld.cy > 0 && cv.unrealWorld.cy + view_cheight >= world->cheight)
             cv.realWorld.cy -= world->cheight;
     }
 }
@@ -1314,8 +1435,8 @@ void Frame_update(void)
             if (Frame_status(conn, pl2) <= 0)
                 continue;
             Frame_map(conn, pl2);
-            Frame_ships(conn, pl2);
             Frame_shots(conn, pl2);
+            Frame_ships(conn, pl2);
             Frame_radar(conn, pl2);
             Frame_lose_item_state(pl);
             debris_end(conn);
