@@ -712,8 +712,10 @@ void Paint_HUD(void)
 
         /* paint hud radar dots where ships are outside active view */
         Paint_hudradar(hudRadarMapScale,
-                       (double)active_view_width / 2,
-                       (double)active_view_height / 2,
+                       0, // Draw also inside the active view for testing.
+                       0,
+                       //    (double)active_view_width / 2,
+                       //    (double)active_view_height / 2,
                        SHIP_SZ);
     }
 
