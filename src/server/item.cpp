@@ -587,7 +587,7 @@ void Do_deflector(player_t *pl)
         }
 
         /* don't push balls out of treasure boxes */
-        if (BIT(obj->type, OBJ_BALL_BIT) && !BIT(obj->obj_status, GRAVITY))
+        if (obj->type == OBJ_BALL && !BIT(obj->obj_status, GRAVITY))
             continue;
 
         dx = (obj->pix_pos.x - pl->pix_pos.x);

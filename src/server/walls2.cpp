@@ -49,7 +49,6 @@
 #include "object.h"
 #include "robot.h"
 #include "cannon.h"
-#include "objpos.h"
 #include "asteroid.h"
 #include "srecord.h"
 #include "rank.h"
@@ -311,7 +310,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos, PLAYER_HIT_CANNON_SOUND);
         }
-        if (!BIT(cannon->used, USES_EMERGENCY_SHIELD))
+        if (!BIT(cannon->used, HAS_EMERGENCY_SHIELD))
         {
             /* pl gets points if the cannon is rammed with shields up */
             if (Player_uses_emergency_shield(pl))
@@ -530,7 +529,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
 
     if (type == TREASURE)
     {
-        if (obj->type == OBJ_BALL_BIT)
+        if (obj->type == OBJ_BALL)
             Ball_hits_goal(BALL_PTR(obj), groupptr_by_id(group));
         obj->life = 0;
         return 0;

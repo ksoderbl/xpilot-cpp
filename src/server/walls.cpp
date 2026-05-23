@@ -1103,7 +1103,7 @@ void Move_segment(move_state_t *ms)
                      * depends on which team the treasure and the ball
                      * belong to.
                      */
-                    if (mi->obj->type != OBJ_BALL_BIT)
+                    if (mi->obj->type != OBJ_BALL)
                     {
                         return;
                     }
@@ -1850,10 +1850,8 @@ static void Object_crash(move_state_t *ms)
         /*
          * Ball type has already been handled.
          */
-        if (obj->type == OBJ_BALL_BIT)
-        {
+        if (obj->type == OBJ_BALL)
             break;
-        }
         obj->life = 0;
         break;
 
@@ -2010,7 +2008,7 @@ void Move_object(object_t *obj)
 
             if (ms.bounce && ms.bounce != BounceEdge)
             {
-                if (obj->type != OBJ_BALL_BIT)
+                if (obj->type != OBJ_BALL)
                     obj->life = (long)(obj->life * options.objectWallBounceLifeFactor);
                 if (obj->life <= 0)
                 {

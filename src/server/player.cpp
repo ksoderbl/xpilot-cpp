@@ -786,12 +786,16 @@ void Reset_all_players(void)
         /* We are starting all over again */
         for (j = NumObjs - 1; j >= 0; j--)
         {
-            if (BIT(Obj[j]->type, OBJ_BALL_BIT))
+            if (Obj[j]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(j);
                 ball->id = NO_ID;
                 ball->life = 0;
-                ball->ball_owner = 0; /* why not -1 ??? */
+                /*
+                 * why not -1 ???
+                 * naive question, obviously yet another dirty hack
+                 */
+                ball->ball_owner = 0;
                 CLR_BIT(ball->obj_status, RECREATE);
                 Delete_shot(j);
             }

@@ -1456,6 +1456,25 @@ int Send_player(connection_t *connp, int id)
     return n;
 }
 
+int Send_team(connection_t *connp, int id, int team)
+{
+    /*
+     * No way to send only team to old clients, all player info has to be
+     * resent. This only works if pl->team really is the same as team.
+     */
+    if (!FEATURE(connp, F_SENDTEAM))
+        return Send_player(connp, id);
+
+    if (!BIT(connp->state, CONN_PLAYING | CONN_READY))
+    {
+        warn("Connection not ready for team info (%d,%d)",
+             connp->state, connp->id);
+        return 0;
+    }
+
+    return Packet_printf(&connp->c, "%c%hd%c", PKT_TEAM, id, team);
+}
+
 /*
  * Send the new score for some player to a client.
  */

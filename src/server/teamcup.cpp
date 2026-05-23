@@ -18,6 +18,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "teamcup.h"
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -26,6 +28,7 @@
 
 #include "option.h"
 #include "player.h"
+#include "score.h"
 #include "server.h"
 
 static char teamcup_score_file_name[1024];

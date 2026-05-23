@@ -1449,7 +1449,7 @@ static void AsteroidCollision(void)
                 {
                     if (options.asteroidPoints > 0 && (obj->id != NO_ID || (obj->type == OBJ_BALL_BIT && BALL_PTR(obj)->ball_owner != NO_ID)))
                     {
-                        int owner_id = ((obj->type == OBJ_BALL_BIT)
+                        int owner_id = ((obj->type == OBJ_BALL)
                                             ? BALL_PTR(obj)->ball_owner
                                             : obj->id);
                         int ind = GetInd(owner_id);
@@ -1487,8 +1487,8 @@ static void BallCollision(void)
         ball = BALL_IND(i);
 
         /* ignore if: */
-        if (ball->type != OBJ_BALL_BIT || /* not a ball */
-            ball->life <= 0 ||            /* dying ball */
+        if (ball->type != OBJ_BALL || /* not a ball */
+            ball->life <= 0 ||        /* dying ball */
             (ball->id != NO_ID && Player_is_phasing(Player_by_id(ball->id))) ||
             /* phased ball */
             ball->ball_treasure->have) /* safe in a treasure */
