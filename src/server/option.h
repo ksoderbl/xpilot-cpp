@@ -365,17 +365,31 @@ typedef struct options
     double asteroidMaxScore;
     double cannonMaxScore;
 
-    double movingItemProb;         /* Probability for moving items */
-    double randomItemProb;         /* Probability for random-appearing items */
-    double dropItemOnKillProb;     /* Probability for players items to */
-                                   /* drop when player is killed */
-    double detonateItemOnKillProb; /* Probaility for remaining items to */
-                                   /* detonate when player is killed */
+    // Probability for moving items
+    double movingItemProb;
+
+    // Probability for random-appearing items
+    double randomItemProb;
+
+    // Probability for players items to drop when player is killed
+    double dropItemOnKillProb;
+
+    // Probaility for remaining items to detonate when player is killed
+    double detonateItemOnKillProb;
+
     double destroyItemInCollisionProb;
-    double asteroidItemProb; /* prob. that a broken asteroid will */
-    int asteroidMaxItems;    /* have one or more items */
-    double rogueHeatProb;    /* prob. that unclaimed rocketpack */
-    double rogueMineProb;    /* or minepack will "activate" */
+
+    // prob. that a broken asteroid will
+    double asteroidItemProb;
+
+    // have one or more items
+    int asteroidMaxItems;
+
+    // prob. that unclaimed rocketpack
+    double rogueHeatProb;
+
+    // or minepack will "activate"
+    double rogueMineProb;
     double itemProbMult;
     double cannonItemProbMult;
     double maxItemDensity;
@@ -400,34 +414,83 @@ typedef struct options
     bool allowLaserModifiers;
     bool allowShipShapes;
 
-    bool playersOnRadar;        /* Are players visible on radar? */
-    bool missilesOnRadar;       /* Are missiles visible on radar? */
-    bool minesOnRadar;          /* Are mines visible on radar? */
-    bool nukesOnRadar;          /* Are nuke weapons radar visible? */
-    bool treasuresOnRadar;      /* Are treasure balls radar visible? */
-    bool asteroidsOnRadar;      /* Are asteroids radar visible? */
-    bool distinguishMissiles;   /* Smarts, heats & torps look diff.? */
-    int maxMissilesPerPack;     /* Number of missiles per item. */
-    int maxMinesPerPack;        /* Number of mines per item. */
-    bool identifyMines;         /* Mines have names displayed? */
-    bool shieldedItemPickup;    /* Pickup items with shields up? */
-    bool shieldedMining;        /* Detach mines with shields up? */
-    bool laserIsStunGun;        /* Is the laser a stun gun? */
-    bool reportToMetaServer;    /* Send status to meta-server? */
-    bool searchDomainForXPilot; /* Do a DNS lookup for XPilot.domain? */
-    char *denyHosts;            /* Computers which are denied service */
-    double gameDuration;        /* total duration of game in minutes */
-    bool allowViewing;          /* Are players allowed to watch others? */
+    // Are players visible on radar?
+    bool playersOnRadar;
 
-    bool teamAssign;   /* Assign player to team if not set? */
-    bool teamImmunity; /* Is team immune from player action */
+    // Are missiles visible on radar?
+    bool missilesOnRadar;
 
-    bool targetKillTeam;      /* if your target explodes, you die? */
-    bool targetTeamCollision; /* Does team collide with target? */
-    bool targetSync;          /* all targets reappear together */
-    int targetDeadTime;       /* How long do targgets stay dead? */
-    bool treasureKillTeam;    /* die if treasure is destroyed? */
-    bool captureTheFlag;      /* must treasure be safe to cash balls? */
+    // Are mines visible on radar?
+    bool minesOnRadar;
+
+    // Are nuke weapons radar visible?
+    bool nukesOnRadar;
+
+    // Are treasure balls radar visible?
+    bool treasuresOnRadar;
+
+    // Are asteroids radar visible?
+    bool asteroidsOnRadar;
+
+    // Smarts, heats & torps look diff.?
+    bool distinguishMissiles;
+
+    // Number of missiles per item.
+    int maxMissilesPerPack;
+
+    // Number of mines per item.
+    int maxMinesPerPack;
+
+    // Mines have names displayed?
+    bool identifyMines;
+
+    // Pickup items with shields up?
+    bool shieldedItemPickup;
+
+    // Detach mines with shields up?
+    bool shieldedMining;
+
+    // Is the laser a stun gun?
+    bool laserIsStunGun;
+
+    // Send status to meta-server?
+    bool reportToMetaServer;
+
+    // Do a DNS lookup for XPilot.domain?
+    bool searchDomainForXPilot;
+
+    // Computers which are denied service
+    char *denyHosts;
+
+    // total duration of game in minutes
+    double gameDuration;
+
+    // Are players allowed to watch others?
+    bool allowViewing;
+
+    // Assign player to team if not set?
+    bool teamAssign;
+
+    // Is team immune from player action
+    bool teamImmunity;
+
+    // if your target explodes, you die?
+    bool targetKillTeam;
+
+    // Does team collide with target?
+    bool targetTeamCollision;
+
+    // all targets reappear together
+    bool targetSync;
+
+    // How long do targets stay dead?
+    int targetDeadTime;
+
+    // die if treasure is destroyed?
+    bool treasureKillTeam;
+
+    // must treasure be safe to cash balls?
+    bool captureTheFlag;
     int specialBallTeam;
     bool treasureCollisionDestroys;
     bool treasureCollisionMayKill;
@@ -442,45 +505,90 @@ typedef struct options
 
     // friction only affects ships
     double frictionSetting;
-    double blockFriction;      /* friction in friction blocks */
-    bool blockFrictionVisible; /* if yes, friction blocks are decor; */
-                               /* if no, friction blocks are space */
-    int coriolis;              /* angle velocity turns each frame */
-    double checkpointRadius;   /* in blocks */
-    int raceLaps;              /* how many laps per race */
-    bool lockOtherTeam;        /* lock ply from other teams when dead? */
-    bool loseItemDestroys;     /* destroy item on loseItem? */
-    bool useWreckage;          /* destroyed ships leave wreckage? */
 
-    int maxOffensiveItems; /* how many offensive and defensive */
-    int maxDefensiveItems; /* items can player carry */
+    // friction in friction blocks
+    double blockFriction;
 
-    int maxRoundTime; /* max. duration of each round */
-    int roundsToPlay; /* # of rounds to play. */
+    // if yes, friction blocks are decor
+    // if no, friction blocks are space
+    bool blockFrictionVisible;
 
-    int maxVisibleObject; /* how many objects a player can see */
-    bool pLockServer;     /* Is server swappable out of memory?  */
-    bool ignore20MaxFPS;  /* ignore client maxFPS request if 20 */
-    int timerResolution;  /* OS timer resolution (times/sec) */
-    char *password;       /* password for operator status */
-    int clientPortStart;  /* First UDP port for clients */
-    int clientPortEnd;    /* Last one (these are for firewalls) */
+    // angle velocity turns each frame
+    int coriolis;
 
-    char *robotUserName; /* Real name for robot */
-    char *robotHostName; /* Host name for robot */
+    // in blocks
+    double checkpointRadius;
 
-    char *tankUserName;     /* Real name for tank */
-    char *tankHostName;     /* Host name for tank */
-    int tankScoreDecrement; /* Amount by which the tank's score */
-                            /* is decreased from the player's */
+    // how many laps per race
+    int raceLaps;
 
-    bool selfImmunity; /* Are players immune to their own weapons? */
+    // lock ply from other teams when dead?
+    bool lockOtherTeam;
 
-    char *defaultShipShape; /* What ship shape is used for players */
-                            /* who do not define their own? */
-    char *tankShipShape;    /* What ship shape is used for tanks? */
-    int maxPauseTime;       /* Max. time you can stay paused for */
-    int maxClientsPerIP;    /* Max. number of clients that can login from the same IP */
+    // destroy item on loseItem?
+    bool loseItemDestroys;
+
+    // destroyed ships leave wreckage?
+    bool useWreckage;
+
+    // how many offensive and defensive items can player carry
+    int maxOffensiveItems;
+    int maxDefensiveItems;
+
+    // max. duration of each round
+    int maxRoundTime;
+
+    // # of rounds to play.
+    int roundsToPlay;
+
+    // how many objects a player can see
+    int maxVisibleObject;
+
+    // Is server swappable out of memory?
+    bool pLockServer;
+
+    // ignore client maxFPS request if 20
+    bool ignore20MaxFPS;
+
+    // OS timer resolution (times/sec)
+    int timerResolution;
+
+    // password for operator status
+    char *password;
+
+    // First UDP port for clients
+    int clientPortStart;
+
+    // Last one (these are for firewalls)
+    int clientPortEnd;
+
+    // Real name for robot
+    char *robotUserName;
+
+    // Host name for robot
+    char *robotHostName;
+
+    // Real name for tank
+    char *tankUserName;
+
+    // Host name for tank
+    char *tankHostName;
+
+    // Amount by which the tank's score is decreased from the player's
+    int tankScoreDecrement;
+
+    // Are players immune to their own weapons?
+    bool selfImmunity;
+
+    // What ship shape is used for players who do not define their own?
+    char *defaultShipShape;
+
+    // What ship shape is used for tanks?
+    char *tankShipShape;
+
+    // Max. time you can stay paused for
+    int maxPauseTime;
+    int maxClientsPerIP; /* Max. number of clients that can login from the same IP */
 
     int recordMode;
     int recordFlushInterval;
