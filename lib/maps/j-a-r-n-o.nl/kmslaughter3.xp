@@ -1,0 +1,348 @@
+# Created by xp-mapedit on Sun May  6 16:59:07 2001
+
+# xpilots option dump
+# 
+# LIBDIR = /grads/forman/xpilot/
+# DEFAULTS_FILE_NAME = /grads/forman/xpilot//defaults
+# MAPDIR = /grads/forman/xpilot//maps/
+# DEFAULT_MAP = globe.map
+# SERVERMOTDFILE = /grads/forman/xpilot//servermotd
+# 
+mapfilename:kmslaughter.map
+
+limitedlives : yes
+mapname : Slaughter 3
+mapauthor : ???  mods by KM
+mapwidth : 110
+mapheight : 110
+extraborder : no
+edgewrap : yes
+edgebounce : no
+gravity : 0.0
+gravitypoint : 0,0
+gravityangle : 90
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : no
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : yes
+debriswallbounce : yes
+playerwallbouncebrakefactor : 0.5
+objectwallbouncebrakefactor : 0.90
+maxrobots : 0
+minrobots : -1
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -75
+robotleaveratio : -5
+ecmsreprogramrobots : yes
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+cannonsmartness : 1
+cannonsuseitems : no
+cannonitemprobmult : 1.0
+allowshipshapes : yes
+shipmass : 15.0
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+firerepeatrate : 2
+maxplayershots : 15
+keepshots : no
+maxoffensiveitems : 5
+maxdefensiveitems : 7
+loseitemdestroys : no
+initialfuel : 1000
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 2
+initialtransporters : 0
+initiallasers : 0
+initialemergencythrusts : 0
+initialtractorbeams : 0
+initialautopilots : 1
+initialemergencyshields : 0
+initialdeflectors : 0
+initialhyperjumps : 0
+initialphasings : 0
+initialmirrors : 0
+initialarmor : 0
+maxfuel : 10000
+maxtanks : 8
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 7
+maxautopilots : 10
+maxemergencyshields : 10
+maxdeflectors : 10
+maxhyperjumps : 10
+maxphasings : 10
+maxmirrors : 10
+maxarmor : 10
+allowshields : no
+shieldeditempickup : no
+shieldedmining : no
+playerstartsshielded : yes
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.00
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 120
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+destroyitemincollisionprob : 0.00
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+allownukes : yes
+allowclusters : no
+nukeclusterdamage : 1.0
+allowmodifiers : yes
+allowlasermodifiers : yes
+laserisstungun : no
+allowplayerkilling : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowsmartmissiles : no
+allowheatseekers : no
+allowtorpedoes : yes
+ecmsreprogrammines : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+distinguishmissiles : yes
+identifymines : yes
+minefusetime : 00
+minelife : 0
+maxminesperpack : 3
+baseminerange : 0
+missilelife : 0
+maxmissilesperpack : 2
+nukeminsmarts : 7
+nukeminmines : 3
+movingitemprob : 0.2
+maxobjectwallbouncespeed : 40
+objectwallbouncelifefactor : 0.80
+maxitemdensity : 0.0005
+itemconcentratorradius : 10
+itemconcentratorprob : 1.0
+itemprobmult : 1e-8
+itemenergypackprob : 1
+itemtankprob : 1
+itemecmprob : 1
+itemmineprob : 1.5
+roguemineprob : 1.0
+itemmissileprob : 1
+rogueheatprob : 1.0
+itemcloakprob : 0
+itemsensorprob : 0
+itemwideangleprob : 0
+itemrearshotprob : 0
+itemafterburnerprob : 2
+itemtransporterprob : 1
+itemlaserprob : 0
+itememergencythrustprob : 1
+itemtractorbeamprob : 2
+itemautopilotprob : 0
+itememergencyshieldprob : 0.5
+itemdeflectorprob : 0.5
+itemhyperjumpprob : 1
+itemphasingprob : 0.3
+itemmirrorprob : 0
+itemarmorprob : 0.5
+oneplayeronly : no
+limitedlives : yes
+worldlives : 3
+playersonradar : yes
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+reset : yes
+lockotherteam : yes
+targetkillteam : no
+targetteamcollision : no
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+wreckagecollisionmaykill : no
+treasuresonradar : no
+timing : no
+racelaps : 3
+checkpointradius : 6.0
+friction : 0.0
+framespersecond : 12
+timerresolution : 0
+ignore20maxfps : yes
+reporttometaserver : yes
+idlerun : no
+noquit : yes
+resetonhuman : no
+gameduration : 00
+rounddelay : 0
+maxroundtime : 0
+roundstoplay : 0
+contactport : 15345
+denyhosts : no
+plockserver : no
+allowviewing : yes
+analyticalcollisiondetection : yes
+cloakedexhaust : no
+cloakedshield : no
+itemconcentratorvisible : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 1.5
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 1.0
+crashscoremult : 0.33
+minescoremult : 0.17
+usewreckage : yes
+
+mapData: \multiline: EndOfMapdata
+                         qxxxw                                              axxxxw                            
+                    xxxxxxxxxxxxxw                                           axxxxw                           
+                   qxxxxxxxxxxxxxxw                                           axxxxw                          
+                 qxxxxxxxxxxxxxxxxxw                                            axxxxx                        
+                 xxxxxxxxxxxxxxxxxxxxw                                           axxxs                        
+                 axxs           axxxxxw                         qxx                                           
+                                  axxxx           qxxw        qxxxs                                           
+                                   axxx         qxxxxxw      qxxxs                                            
+                                               qxxxxxxx      xxs                                              
+                                               xxxxxxxx      xx                                               
+                                               axxxxxxx      xx                                               
+                                                axxxxxx      ax                                               
+                                                  axxxx                                                       
+                                                   xxxs                             qxxw                      
+                                                                                    xxxxxxw                   
+                                                                                    xxxxxxxw                  
+                                      xw                                           qxxxxxxxxxw                
+                                      xxw                                          xxxxxxxxxxxxxw             
+                   qxxxx              xxxxw                   xx                   xxxxxxxxxxxxxx    xw       
+                 qxxxxxs              xxxxx                   xx                   xxxxxxxxxxxxxx    xxxw     
+              qxxxxxxxs        qxx    axxxx                   xx                   xxxxxxxxxx#xxs   qxxxxw    
+             xxxxxxxxs         xxs     axxs      qxw          xx                   xxxxxxxxxxxs     xxxxxx    
+             xxxxxxxs         qxx*              qxxx         qxx                  qxxxxxxxxxxx     qxxxxxxw   
+            qxxxxxxs          xxx             qxxxxxw        xxx      xx        qxxxxxxxxxxxxs     xxxxxxxx   
+           qxxxxxxs           xxx           qxxxxxxxx        xxx      xx        xxxxxxxxxxxxx      xxxxxxxxw  
+           xxxxxxs            xxx          qxxxxxxxxx        axx      xs       qxxxxxxxxxxxxx      xxxxxxxxx  
+           xxxxxs            qxxx         xxxxxxxxxxxw                       qxxxxxx#xxxxxxxs      axxxxxxxx  
+           xxxs            xxxxs          xxxxxxxxxxxx                       xxxxxxs                axxxxxx#  
+           axs            qxxs            xxxxxxxxxxxs                       #xxxx#                  xxxxxxx  
+                         qxxx             xxxxxxxxxxx                        axxxxx                  xxxxxxs  
+                       qxxxx#             xxxxxxxxxxs                           axs                 qxxxxxx   
+                     qxxxxxxx             xxxxxxxxxx                                               qxxxxxxx   
+                     xxxxxxx#            qxxxxxxxxxs                 xxw                        2qxxxxxxxxs   
+                     xxxxxxxs         1 qxxxxxxxxxx                  xxxw                       #xxxxxxxxx    
+                     xxxxxs          x#xxxxxxxxxxxs                 qxxxxxxx                    axxxxxxxxs    
+                     xxxs             axxxxxxxxs                   qxxxxxxxx*                     axxxxx      
+                                       axxxxxxx             qxxx#xxxxxxxxxxxw               2      axxxx      
+                             1  1        axxxxs            xxxxxxxxxxxxxxxxxxxxxw 2        q#x      xxxx      
+       qx                 qxx#xx#w 1      axxx             xxxxxxxxxxxxxxxxxxxxxxx#xw2     xxxw     axxx      
+      qxx               xxxxxxxxxxx#w      axx             axxxxxxxxxxxxxxxxxxxxxxxxx#     xxxxw     ax#      
+      xxs               axxxxxxxxxxxxw                           axxxxxxxxxxxxxxxxxxxxw    xxxxxxw            
+     qxx                     axxxxxxxxxw                            axxxxxxxxxxxxxxxxxx    xxxxxxx            
+     xxx                        axxxxxxxw                            axxxxxxxxxxxxxxxxx    xxxxxxx            
+     xxs                             axxx                                  axxxs axxxxx    xxxxxxx            
+    qxx                                                                           axxx#    x#xxxxx            
+    xxx                                                                            axxx    xxs                
+   qxxs                                                                qxx          axx    xs                 
+   xx                                                                 xxxx                                    
+                                                                      axxx                                    
+                                                                       xxx                                    
+                                                                       xxx                                    
+                                                                       xxx                                    
+                                                                       xxs                                    
+                                                                      qxx                                     
+                                                                      xxx                                     
+                                                                      xxs                                     
+                                       x                                                                      
+                                      qxw                                                                     
+xxxxxxw                              qxxxxw                                                   qxw             
+xxxxxxxx                             xxxxxx                                               xxwqxxxw           q
+xxxs                                 axxxxs              xxw                              xxxxxxxxw          x
+xxx                                    axs               axxxxxx                         qxxxxxxxxx          x
+xxs                                                        axxxxw                       xxxxxxxxxxs          a
+                                                              axxxx                     xxxxxxxxs             
+                                                                                        axxxxxs               
+                                                                                         xxxxs                
+                                                                                        qxxxs                 
+                 x##xxx                                                                 xxxx                  
+  qxxxw          xxxxxx                          xxw                                    xxxs                  
+xxxxxxxw        qxxxxxx                         qxxxxxx                                                   xxxx
+xxxxxxxxxw     xxxxxxxx                         xxxxxxxw                       xw               qxx       xxxx
+xxxxxxxxxx     xxxxxxxxw                        xxxxxxxxxxw                   qxx               xxx       xxxx
+xxxxxxxxxx     xxxxxxxxxw                       xxxxxxxxxxxx                  xxxw             qxxxw      axxx
+xxxx#xxxxs     xxxxxxxxxxw                     qxxxxxxxxxxxs                  axxx             xxxxxw       ax
+xxs            axxxxxxxxxxw                   qxxxxxx#x#xxs                    xxx             xxxxxx        a
+                axxxxxxxxxx                 xxxxxxs            qxxx            axx            qxxxxxx         
+                   axxxxs                  qxxxxs            qxxxxxw            ax           qxxxxxxs         
+                                          qxxxxx             xxxxxxxw                       qxxxxxxx          
+                                         qxxxs               xxxxxxxx                       xxxxxxxx          
+                                         xxxx*               xxxxxxxx                      qxxxxx#s           
+                                         xxxx                 axxxxxs                      xxxs               
+                                         xxs                    axxx                                          
+                  qxxxxxw                                        axx                                          
+                 qxxxxxxxxxxw                    3                xx                                          
+            x#x#xxxxxxxxxxxxx                 xxx#                xxw                                         
+  qxxx      axxxxxxxxxxxxxxxx                qxxxx                xxxw                                        
+ qxxxxw       axxxxs                         xxxxx       3  3     xxxxw                                       
+ xxxxxxw                             qx      xxxxxw      #xx#w    xxxxx                                       
+ xxxxxxxw                            xx      xxxxxx      xxxxx    axxxx                               qxx     
+ xxxxxxxxxw                          ax     qxxxxxxw3    axxxxw    xxxx            qxxw               xxx     
+ xxxxxxxxxx                           x     xxxxxxxx#     xxxxxw   axxx            xxxx              qxxx     
+ axxxxxxxxx                           x     xxxxxxxxxxw   xxxxxx    #xx            xxxs              xxxx     
+  xxxxxxxxs                                 #xxxxxxxxxx   axxxs                   qxxs               xxxx     
+  #xxxxxxs                                   axxxxxxxxs     ax                    xxs                xxxx     
+  xxxxxxx            qxxx#xxxx                axxxxxxs                           qxxw               qxxxs     
+  xxxxxxx          xxxxxxxxxxx                 #xxxs    qxxw                    #xxxx              qxxxx      
+ qxxxxxxx          xxxxxxxxxxx                          xxxxw                   axxxs              xxxxx      
+ xxxxxxxs         qxxxxxxxxxs                          qxxxxs                                      xxxxs      
+ #xxxxxx          #xxxxxxx#s                           xxxs                                        xxx#       
+ xxxxxxs          xxxxxxs                                           qxw                           qxxxx       
+ xxxs                                                              qxxx                           xxxxs       
+ xxs                                                             qxxxs                           qxxxx        
+ xs                                                             qxxxs                            xxs          
+                                                               qxxxs                                          
+                                                               xxxs                                           
+                                                               xxs         xw                                 
+                                                                           xx                                 
+                                                                           xxw                                
+                                                                           xxxw                               
+                                                                           axxxw                              
+EndOfMapdata
+

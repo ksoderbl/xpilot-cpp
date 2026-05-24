@@ -1,0 +1,290 @@
+#Created by MapXpress 4.4.0a on Fri Jul 27 15:34:37 2001
+
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#
+#
+#
+#
+#
+
+mapwidth : 200
+mapheight : 200
+mapname : Starship Race
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+gravity : 0
+maxplayershots : 0
+friction : 0.02
+edgebounce : no
+edgewrap : yes
+blockfriction : 0.50
+maxshieldedwallbouncespeed : 30
+maxunshieldedwallbouncespeed : 200
+maxshieldedplayerwallbounceangle : 120
+maxunshieldedplayerwallbounceangle : 180
+limitedvisibility : yes
+minvisibilitydistance : 25.0
+maxvisibilitydistance : 50.0
+wreckagecollisionmaykill : yes
+shieldeditempickup : yes
+targetdeadtime : 20
+allowplayercrashes : no
+cannondeadtime : 20
+timing : yes
+maxitemdensity : 0.012
+checkpointradius : 3.0
+initialfuel : 2600
+initialafterburners : 2
+initiallasers : 1
+initialautopilots : 1
+maxoffensiveitems : 1000
+maxdefensiveitems : 1000
+maxecms : 100
+maxmines : 100
+maxmissiles : 100
+maxcloaks : 100
+maxsensors : 100
+maxwideangles : 100
+maxrearshots : 100
+maxafterburners : 100
+maxtransporters : 100
+maxdeflectors : 100
+maxphasings : 100
+maxhyperjumps : 100
+maxemergencythrusts : 100
+maxlasers : 100
+maxtractorbeams : 100
+maxautopilots : 100
+maxemergencyshields : 100
+maxmirrors : 100
+maxarmor : 100
+itemenergypackprob : 0
+itemtankprob : 0
+itemecmprob : 0
+itemmineprob : 0
+itemmissileprob : 0
+itemcloakprob : 0
+itemsensorprob : 0
+itemwideangleprob : 0
+itemrearshotprob : 0
+itemafterburnerprob : 0
+itemtransporterprob : 0
+itemlaserprob : 0
+itememergencythrustprob : 0
+itemtractorbeamprob : 0
+itemautopilotprob : 1e-6
+itememergencyshieldprob : 0
+itemdeflectorprob : 0
+itemhyperjumpprob : 0
+itemphasingprob : 0
+itemmirrorprob : 0
+itemarmorprob : 0
+movingitemprob : 0.0
+
+mapData: \multiline: EndOfMapdata
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+         )                                                                                                                                                                                              
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                     (                                                                                                                                  
+                                                                       (    (                                                                                                                           
+                                                                                                                                                                                                        
+                                                                    (                                                                                                                                   
+                                                                        (                                                                                                                               
+                                                                                                                                                                                                        
+                                                                      (                                                                                                                                 
+                                                                   (   H     (                                                                                                                          
+                                                                                                                                              w                                                         
+                                                                     (    (                                                                                                                             
+                                                                                                                                          w                                                             
+                                                                                                                                        s         a                                                     
+                                                                    (  (                                                                   qx  x                                                        
+                                                                           (                                                               w                                                            
+                                                                                                                                       x       q x                                                      
+                                                                                                                                         w                                                              
+                                                                                                                                            B                                                           
+                                                                                                                                       xs    x  s                                                       
+                                                                                                                                                                                                        
+                                                                                                                                         x     a  w                                                     
+                                                                                                                                      x      q                                                          
+                                                                                                                                           x   x                                                        
+                                                                                                                                      q  x                                                              
+                                                                                                                                             x  x                                                       
+                                                                                                                                       x    a                                                           
+                                                                                                                                         w x   s                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                               )                        
+            f                                                                                                                                                                                           
+                                                                                                                                                                                                        
+       d  r                                                                                                                                                                                             
+             d                                                                                                                                  >>>>>>>>>                                               
+                                                                                                                                               >         >                                              
+     c                                                                                                                                        >           >                                             
+        f D r                                                                                                                                >             >                                            
+              d                                                                                                                             >               >                                           
+           )                                                                                                                               >                 >                                          
+      d  f                                                                                                                                 >                 >                                          
+                                                                                                                                           >                 >                                          
+          r d   c                                                                                                                          >                 >                                          
+                                                                                                ---                                        >        M        >                                          
+                                                                                                -E-                                        >                 >                                          
+                                                                                                ---            qxxxxxxxxxw                 >                 >                                          
+     c                                                                                                        qxxxxxxxxxxxw                >                 >                                          
+                                                                                                             qxxxxxxxxxxxxxw               >                 >                                          
+                                                                                                            qxxxxxxxxxxxxxxxw               >               >                                           
+                                                                   ^                                        xxxxxxxxxxxxxxxxx                >             >                                            
+                                                                                                            xxxxxxxxxxxxxxxxx                 >           >                                             
+                                                                       ^                                    xxxxxxxxxxxxxxxxx                  >         >                                              
+                                                               ^                                            xxxxxxs   axxxxxx                   >>>>>>>>>                                               
+                                                                                                            xxxxxx  O  xxxxxx                                                                           
+                                                                   ^       ^                                xxxxxs qxw axxxxx                                                                           
+                                                                                                            xxxxx  xxx  xxxxx                                                                           
+                                                                                                            xxxxx  xxx  xxxxx                                                                           
+                                                                 ^  K)  ^                                   xxxxx  xxx  xxxxx                                                                           
+                                                                                                            axxxxw xxx qxxxxs                                                                           
+                                                                      ^                                      axxxx axs xxxxs                                                                            
+                                                                                                              axxx  x  xxxs                                                                             
+                                                                  ^       ^                                    axx  x  xxs                                                                              
+                                                                                                                                                      )                                                 
+                                                                      ^                                                                                                                                 
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                     )                                                                                                                                                                                  
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                      tbbbbbbzbby                                                                                                                                       
+                                                     tbbbbzbbbbbby                                                                                                                                      
+                                                    tbzbbbbbbbbbbby                                                                                                                                 )   
+                                                   tbbbbzbbzbbbzbzby                                                                                                                                    
+                                                   bbbbbbbbbbzbbbbbb                                                                                                                                    
+                                                   bbbbzbzbbbbbbbzbb                                                                                                                                    
+                                                   bbzbbbbbbzbbbbbbb                                                                                                                                    
+                                                   bbbbbbbbbbbbzbbbb                               _                                                                                                    
+                                                   zbbbbzbbLbzbbbbzb                         q#w  ___  q#w                                                                               iii            
+                                                   bbbbbbbbbbbbbbzbb                         ### __A__ ###                                                                              iiiii           
+                                                   bzbzbbbzbbbbzbbbb                         a#s  ___  a#s                                                                              iiPii           
+                                                   bbbbbbbbbzbbbbbbb                               _                                                                                    iiiii           
+                                                   bbbbbbzbbbbbzbbbb                                                                                                                     iii            
+                                                   gbbbzbbbbbzbbbzbh                                                                                                                                    
+                                                    gbbbbbbbbbbbbbh                                                                                                                                     
+                                                     gbbzbbzbzbbbh                                                                                                                                      
+                                                      gbbbbbbbbbh                                                                                                                                       
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                              +                                                                                                         
+                                                                                                 j                                                                                                      
+                                                                                         > -                                                                                                            
+                                                                                              <                                                                                                         
+                                                                                                                                                                                                        
+                                                                                        +  i      -                                                                                                     
+                                                                                                                                                                                                        
+                                                                                             C +                                                                    )                                   
+                                                                                                   +                                                                                                    
+                                        )                                               - < k                                                                                                           
+                                                                                                >                                                                                                       
+                                                                                                                                                                                                        
+                                                                                         m   -                                                                                                          
+                                                                                                 <                                                                                                      
+                                                                                           +                                                                                                            
+                                                                                                                                                                                                        
+                                                                                              >                                                 <<<<<                                                   
+                         !!!!!!!                                                                                                )                 N                                                     
+                        !       !                                                                                                               >>>>>                                                   
+                       !         !                                                                                                                                                                      
+                       !         !                                                                                                                                                                      
+                       !         !                                                                                                                                                                      
+                       !    J    !                                                                                                                                                                      
+                       !         !                                                                                                                                                                      
+                       !         !                                                                                                                                                                      
+                       !         !                                                                                                                                                                      
+                        !       !                                                                                                                                                                       
+                         !!!!!!!                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                               )                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                   %%%                                  
+                                                                                                            +++++++                                                %F%                                  
+                                                                                                           +       +                                               %%%                                  
+                                                                                                          +         +                                                                                   
+                                                                                                         +           +                                                                                  
+                                                                                                        +             +                                                                                 
+                                                                                                        +             +                                                                                 
+                                                                      )                                 +             +                                                                                 
+                                                                                                        +      I      +                                                                                 
+                                                                                                        +             +                                                                                 
+                                                                                                        +             +                                                                                 
+                                                                                                        +             +                                                                                 
+                                                                                                         +           +                                                                                  
+                                                                                                          +         +                                                                                   
+                                                                                                           +       +                                                                                    
+                                                                                                            +++++++                                                                                     
+                  )                                                                                                                                                                                     
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                             !                                                                                                                                          
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                            !    !                                                                                                                                      
+                                                         !    !                                                                                                                                         
+                                                                                                                                                                                                        
+                                                             !                                                                                                                                          
+                                                           !    !  !                                                                             )                                                      
+                                                        !     G                                                                                                                                         
+                                                           !      !                                                                                                                                     
+                                                               !                                                                                                                                        
+                                                         !                                                                                                                                              
+                                                              !  !                                                                                                                                      
+                                                            !                                                                                                                                           
+                                                               !                                                                                                                                        
+                                                        !                                                                                                                                               
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+EndOfMapdata
+

@@ -1,0 +1,328 @@
+# Created by xp-mapedit on Tue Feb  6 16:53:40 2001
+
+roundstoplay:0
+timerresolution:0
+usewreckage:yes
+
+mapname : Tanks A Lot!
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+mapwidth : 100
+mapheight : 100
+extraborder : no
+edgewrap : no
+edgebounce : yes
+gravity : -0.14
+gravitypoint : 50,50
+gravityangle : 0
+gravitypointsource : yes
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : yes
+debriswallbounce : no
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+maxrobots : 4
+minrobots : -1
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+ecmsreprogramrobots : yes
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+cannonsmartness : 1
+cannonsuseitems : no
+cannonitemprobmult : 1.0
+allowshipshapes : yes
+shipmass : 20.0
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 5
+firerepeatrate : 2
+maxplayershots : 2
+keepshots : yes
+maxoffensiveitems : 100
+maxdefensiveitems : 100
+loseitemdestroys : no
+initialfuel : 9999
+initialtanks : 3
+initialecms : 0
+initialmines : 2
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 2
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 5
+initialtransporters : 0
+initiallasers : 2
+initialemergencythrusts : 0
+initialtractorbeams : 1
+initialautopilots : 1
+initialemergencyshields : 0
+initialdeflectors : 0
+initialhyperjumps : 0
+initialphasings : 0
+initialmirrors : 0
+initialarmor : 0
+maxfuel : 10000
+maxtanks : 20
+maxecms : 10
+maxmines : 100
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxdeflectors : 10
+maxhyperjumps : 10
+maxphasings : 10
+maxmirrors : 10
+maxarmor : 10
+allowshields : no
+shieldeditempickup : no
+shieldedmining : no
+playerstartsshielded : no
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+maxshieldedwallbouncespeed : 500
+maxunshieldedwallbouncespeed : 50
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+destroyitemincollisionprob : 0.0
+dropitemonkillprob : 0.0
+detonateitemonkillprob : 1.0
+allownukes : yes
+allowclusters : no
+nukeclusterdamage : 1.0
+allowmodifiers : yes
+allowlasermodifiers : no
+laserisstungun : yes
+allowplayerkilling : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowsmartmissiles : no
+allowheatseekers : no
+allowtorpedoes : yes
+ecmsreprogrammines : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+distinguishmissiles : yes
+identifymines : yes
+minefusetime : 00
+minelife : 0
+maxminesperpack : 3
+baseminerange : 0
+missilelife : 0
+maxmissilesperpack : 4
+nukeminsmarts : 7
+nukeminmines : 2
+movingitemprob : 1.0
+maxobjectwallbouncespeed : 40
+objectwallbouncelifefactor : 0.80
+maxitemdensity : 0.00012
+itemconcentratorradius : 1
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+itemenergypackprob : 5e-7
+itemtankprob : 15e-7
+itemecmprob : 3e-7
+itemmineprob : 15e-7
+roguemineprob : 0.0
+itemmissileprob : 0e-7
+rogueheatprob : 0.0
+itemcloakprob : 1e-7
+itemsensorprob : 3e-7
+itemwideangleprob : 0e-7
+itemrearshotprob : 0e-7
+itemafterburnerprob : 2e-7
+itemtransporterprob : 1e-7
+itemlaserprob : 1e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 1e-7
+itemautopilotprob : 0e-7
+itememergencyshieldprob : 0e-7
+itemdeflectorprob : 1e-7
+itemhyperjumpprob : 0e-7
+itemphasingprob : 0e-7
+itemmirrorprob : 1e-7
+itemarmorprob : 1e-7
+oneplayeronly : no
+limitedlives : no
+worldlives : 0
+playersonradar : yes
+teamplay : no
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+reset : yes
+lockotherteam : yes
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+wreckagecollisionmaykill : no
+treasuresonradar : yes
+timing : no
+racelaps : 3
+checkpointradius : 6.0
+friction : 0.0
+framespersecond : 12
+ignore20maxfps : yes
+reporttometaserver : yes
+idlerun : yes
+noquit : yes
+resetonhuman : no
+gameduration : 00
+rounddelay : 0
+maxroundtime : 0
+allowviewing : yes
+analyticalcollisiondetection : yes
+cloakedexhaust : yes
+cloakedshield : no
+itemconcentratorvisible : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 1.0
+runoverkillscoremult : 1.0
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 1.0
+crashscoremult : 0.33
+minescoremult : 0.17
+keepTanks: true
+selfImmunity: true
+turnThrust: true
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs_axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxx                                            $                                             xxxxx
+xxxxx                                                                                          xxxxx
+xxxxx                                                                                          xxxxx
+xxxxx   bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb   xxxxx
+xxxxx   b%                                      %b%                                       %b   xxxxx
+xxxxx   b                                        b                                         b   xxxxx
+xxxxx   b                   $                    b                     $                   b   xxxxx
+xxxxx   b      qxxxxxxxxxxxw_qxxxxxxxxxxxxxw     b     qxxxxxxxxxxxxxxw_qxxxxxxxxxxxw      b   xxxxx
+xxxxx   b     qxxxxxxxxxxxxx#xxxxxxxxxxxxxxxw    b    qxxxxxxxxxxxxxxxx#xxxxxxxxxxxxxw     b   xxxxx
+xxxxx   b    qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   b   qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw    b   xxxxx
+xxxxx   b   qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw  b  qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs   b   xxxxx
+xxxxx   b  $_#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#_$  b   xxxxx
+xxxxx   b   qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  b  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs  b  axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs   b   axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs    b    axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs     b     axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs      b      axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   axxxxxxxxxxxxxxxxxxxxxxxxxxxxs       b       axxxxxxxxxxxxxxxxxxxxxxxxxxxxxs   b   xxxxx
+xxxxx   b    axxxxxxxxxxxxxxxxxxxxxxxxxxs        b        axxxxxxxxxxxxxxxxxxxxxxxxxxxs    b   xxxxx
+xxxxx   b     axxxxxxxxxxxxxxxxxxxxxxxxs         b         axxxxxxxxxxxxxxxxxxxxxxxxxs     b   xxxxx
+xxxxx   b      axxxxxxxxxxxxxxxxxxxxxxs          b          axxxxxxxxxxxxxxxxxxxxxxxs      b   xxxxx
+xxxxx   b                                        b                                         b   xxxxx
+xxxxx   b                                        b                                         b   xxxxx
+xxxxs   b%                                      %b%                                       %b   axxxx
+xxx#_$  bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb  $_#xxx
+xxxxw   b%                                      %b%                                       %b   qxxxx
+xxxxx   b                                        b                                         b   xxxxx
+xxxxx   b                                        b                                         b   xxxxx
+xxxxx   b      qxxxxxxxxxxxxxxxxxxxxxxw          b          qxxxxxxxxxxxxxxxxxxxxxxxw      b   xxxxx
+xxxxx   b     qxxxxxxxxxxxxxxxxxxxxxxxxw         b         qxxxxxxxxxxxxxxxxxxxxxxxxxw     b   xxxxx
+xxxxx   b    qxxxxxxxxxxxxxxxxxxxxxxxxxxw        b        qxxxxxxxxxxxxxxxxxxxxxxxxxxxw    b   xxxxx
+xxxxx   b   qxxxxxxxxxxxxxxxxxxxxxxxxxxxxw       b       qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw      b      qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw     b     qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw    b    qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   b   qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#_$  b   xxxxx
+xxxxx   b   axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   b   xxxxx
+xxxxx   b  $_#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   b   xxxxx
+xxxxx   b   axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs   b   axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs   b   xxxxx
+xxxxx   b    axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs    b    axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs    b   xxxxx
+xxxxx   b     axxxxxxxxxxxxx#xxxxxxxxxxxxxxs     b     axxxxxxxxxxxxxxx#xxxxxxxxxxxxxs     b   xxxxx
+xxxxx   b      axxxxxxxxxxxs_axxxxxxxxxxxxs      b      axxxxxxxxxxxxxs_axxxxxxxxxxxs      b   xxxxx
+xxxxx   b                   $                    b                     $                   b   xxxxx
+xxxxx   b                                        b                                         b   xxxxx
+xxxxx   b%                                      %b%                                       %b   xxxxx
+xxxxx   bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb   xxxxx
+xxxxx                                                                                          xxxxx
+xxxxx                                                                                          xxxxx
+xxxxx                                            $                                             xxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw_qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

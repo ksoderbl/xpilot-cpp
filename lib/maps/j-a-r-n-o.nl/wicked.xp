@@ -1,0 +1,279 @@
+#Created by MapXpress 2.0.2 on Sun Mar 25 16:17:01 2001
+
+#
+#
+
+mapwidth : 50
+mapheight : 50
+mapname : Buggy Shit
+mapauthor : DR
+limitedlives : yes
+worldlives : 3
+reset : no
+shipmass : 20.0
+gravity : 0
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 2
+maxplayershots : 256
+firerepeatrate : 1
+friction : 0.0
+edgebounce : yes
+edgewrap : no
+extraborder : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 0
+playerstartsshielded : no
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : no
+missileswallbounce : no
+sparkswallbounce : yes
+debriswallbounce : no
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 1
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+oneplayeronly : no
+teamplay : yes
+teamassign : yes
+teamimmunity : no
+teamcannons : no
+teamfuel : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : no
+treasurecollisionmaykill : yes
+wreckagecollisionmaykill : no
+distinguishmissiles : yes
+keepshots : no
+identifymines : yes
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : no
+shieldeditempickup : no
+shieldedmining : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : no
+cannonsmartness : 3
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 0
+itemconcentratorvisible : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : no
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : no
+allowshipshapes : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 1.0
+maxminesperpack : 2
+minelife : 0
+minefusetime : 0.0
+baseminerange : 0
+roguemineprob : 1.0
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 0.0
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 7
+nukeminmines : 4
+nukeclusterdamage : 1.0
+itemconcentratorradius : 1
+maxitemdensity : 0.000
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : no
+reporttometaserver : yes
+contactport : 15345
+noquit : no
+idlerun : no
+plockserver : no
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 14
+ignore20maxfps : no
+analyticalcollisiondetection : yes
+timerresolution : 0
+usewreckage : yes
+initialfuel : 1000
+initialtanks : 2
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 2
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 2
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+itemenergypackprob : 1e-9
+itemtankprob : 1e-9
+itemecmprob : 1e-9
+itemmineprob : 1e-9
+itemmissileprob : 1e-9
+itemcloakprob : 1e-9
+itemsensorprob : 1e-9
+itemwideangleprob : 1e-9
+itemrearshotprob : 1e-9
+itemafterburnerprob : 1e-9
+itemtransporterprob : 1e-9
+itemlaserprob : 1e-9
+itememergencythrustprob : 1e-9
+itemtractorbeamprob : 1e-9
+itemautopilotprob : 1e-9
+itememergencyshieldprob : 1e-9
+itemdeflectorprob : 1e-9
+itemhyperjumpprob : 1e-9
+itemphasingprob : 1e-9
+itemmirrorprob : 1e-9
+itemarmorprob : 1e-9
+movingitemprob : 0.2
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1
+cannonitemprobmult : 1.0
+shotkillscoremult : 2
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 2
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xs5    axx    xxs  8 8      axx         xxs    4ax
+x5$     axw  qxs   $ $       axxw      qxs     $4x
+x        axw xs                axxw   qxs        x
+x         axxs                   axxw xs        qx
+xw         xs     ****** ******    axxs        qxx
+xxw   *         **!!!!!! !!!!!!**         *   qxxx
+xxxw   *      **!!!!          !!!**      *    xs x
+xs xw   *    *!!!!              !!!*    *    qx  x
+x  axw   * **!                    !!** *    qxs  x
+x   ax    **!                      !!**    qxs   x
+x   qx   **!                        !!**   xs    x
+x  qxs   *!                          !!*   xw    x
+x  xs   *!                            !!*  axw   x
+x qx   *!                              !!*  axw  x
+xxxs   *!                               !*   axw x
+xxs   *!!                                !*   axxx
+xs    *!                                 !*    axx
+x    *!!                                  !*    ax
+x    *!                                   !*     x
+x6$  *!                                   !*     x
+x    *!                                   !*   $7x
+x6$  *!                                   !*     x
+x    *!                                   !*     x
+x                       1                 !*   $7x
+x    *!                 *                        x
+x    *!                                   !*     x
+x    *!                                   !*     x
+x    *!                                   !*     x
+x    *!                                   !*    qx
+xw   *!                                   !*   qxx
+xxw   *!                                 !*    xxx
+xxx   *!!                                !*   qxxx
+xxxw   *!                               !*   qxs x
+xs xw  *!                               !*   xs  x
+x  axw  *!                             !*   qx   x
+x   ax   *!                           !*    xs   x
+x   qx   **!                         !**    xw   x
+x  qxs  * **!                       !***    axw  x
+x  xs  *   **!                     !**  *    axw x
+x qx  *      *!!                 !!*     *    axxx
+xxxs *        **!!             !!**       *    axx
+xxs *           **!!!!!! !!!!!!**          *    ax
+xs                ****** ******       qx    *    x
+x       qxxxw                        qxxw        x
+x      qxs axxw                    qxxs xw       x
+x     qxs    axxw                 qxs   ax       x
+x2$  qxs       axxw             qxxs     xw    $3x
+xw2 qxx         x xxw    9 9   qxx       xxw   3qx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

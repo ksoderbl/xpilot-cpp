@@ -1,0 +1,83 @@
+#Created by MapXpress 2.0.2 on Wed May 23 22:26:02 2001
+
+#
+#
+
+mapwidth : 7
+mapheight : 7
+mapname : --->The Smallest 12-player, 4-team map! (with tresures)<----
+mapauthor : RUSSIAN BALLER
+limitedlives : yes
+worldlives : 3
+reset : no
+gravity : -0.0
+firerepeatrate : 1
+maxrobots : 0
+itemswallbounce : no
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.5
+teamplay : yes
+treasurekillteam : yes
+treasurecollisiondestroys : no
+treasurecollisionmaykill : yes
+distinguishmissiles : no
+keepshots : yes
+identifymines : no
+allowplayercrashes : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+rogueheatprob : 0
+maxitemdensity : 0.99
+allowviewing : yes
+password : jarno-dont-erase!
+usewreckage : no
+initialfuel : 40
+initialtanks : 1
+initialafterburners : 1
+initialdeflectors : 1
+initiallasers : 3
+initialmirrors : 10
+initialarmor : 5
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+dropitemonkillprob : 1
+detonateitemonkillprob : 1
+itemconcentratorprob : 1
+
+mapData: \multiline: EndOfMapdata
+xxx*xxx
+x#222#x
+x3$$$1x
+*3$%$1*
+x3$$$1x
+x#444#x
+xxx*xxx
+EndOfMapdata
+

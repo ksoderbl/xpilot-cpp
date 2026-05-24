@@ -1,0 +1,400 @@
+# Created by xp-mapedit on Wed Jan 30 12:28:58 2002
+
+limitedlives : yes
+mapwidth : 150
+mapheight : 150
+mapname : Swamp Race
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+limitedlives : yes
+worldlives : 5
+selfimmunity : no
+gravity : 0.00
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+gravityvisible : yes
+coriolis : 0
+friction : 0.05
+blockfriction : 0.25
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+shipmass : 20.0
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 0
+firerepeatrate : 2
+keepshots : no
+edgebounce : yes
+edgewrap : no
+extraborder : no
+turnthrust : yes
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 4
+robotrealname : robot
+robothostname : xpilot.org
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : no
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : yes
+debriswallbounce : no
+asteroidswallbounce : yes
+wreckagecollisionmaykill : no
+tankrealname : tank
+tankhostname : tanks.org
+maxobjectwallbouncespeed : 100
+maxshieldedwallbouncespeed : 50
+maxunshieldedwallbouncespeed : 50
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 0.80
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+wormholevisible : yes
+itemconcentratorvisible : yes
+blockfrictionvisible : yes
+wormtime : 0
+playerstartsshielded : yes
+shieldeditempickup : no
+shieldedmining : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+targetdeadtime : 60
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+connectorisstring : no
+ballcollisions : no
+ballsparkcollisions : yes
+ballmass : 50.0
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : no
+teamplay : no
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+capturetheflag : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : no
+cannonsmartness : 1
+cannondeadtime : 72
+cannonflak : yes
+identifymines : yes
+maxminesperpack : 2
+minelife : 0
+minefusetime : 0
+baseminerange : 0
+roguemineprob : 1.0
+nukeminmines : 4
+minminespeed : 0
+nukeclusterdamage : 1.0
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+distinguishmissiles : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 1.0
+nukeminsmarts : 7
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+allowshipshapes : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : no
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : no
+allowclusters : no
+allowmodifiers : no
+allowlasermodifiers : no
+laserisstungun : yes
+maxroundtime : 0
+gameduration : 0.0
+rounddelay : 0
+roundstoplay : 0
+reset : yes
+resetonhuman : 0
+timing : yes
+checkpointradius : 6.0
+racelaps : 3
+itemconcentratorradius : 10
+usewreckage : yes
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 12
+initialfuel : 1000
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 3
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 5
+initialtractorbeams : 2
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxfuel : 10000
+maxtanks : 8
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxdeflectors : 10
+maxphasings : 10
+maxhyperjumps : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxmirrors : 10
+maxarmor : 10
+maxoffensiveitems : 100
+maxdefensiveitems : 100
+maxitemdensity : 0.00012
+itemenergypackprob : 3e-7
+itemtankprob : 0e-7
+itemecmprob : 0e-7
+itemmineprob : 0e-7
+itemmissileprob : 0e-7
+itemcloakprob : 0e-7
+itemsensorprob : 0e-7
+itemwideangleprob : 0e-7
+itemrearshotprob : 0e-7
+itemafterburnerprob : 0e-7
+itemtransporterprob : 0e-7
+itemlaserprob : 0e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 0e-7
+itemautopilotprob : 0e-7
+itememergencyshieldprob : 0e-7
+itemdeflectorprob : 0e-7
+itemhyperjumpprob : 0e-7
+itemphasingprob : 0e-7
+itemmirrorprob : 0e-7
+itemarmorprob : 0e-7
+movingitemprob : 0.0
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+randomitemprob : 0.0
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xs                axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs  axxs  axxxxxxxs                          ax
+x                       axxxxxs axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs                                               x
+x                                 axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs  axxxw                                               x
+x                                  axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs     axxxw                                              x
+x                                   axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs         qxxxxw       qxw           qxxxxx                  x
+x        _   _                        axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs            qxxxxxxxw    qxxs         qxxxs                     x
+x        $   $                          axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs            qxxxxs axxxxw   xxs  qxxxxw qxxs                       x
+x                                         axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs             qxxxs     axxxxw qxxw qxxsaxxxxxxw                       x
+x      _  _  _                              axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs              qxxxs        xxxxxxxxxxxxs     axxxxxxw                    x
+x      $  $  $                                 axxxxxxxxxxxxxxxxxxxxxxxxxs               qxxs          axxxxxxxxxxs          axxxx                   x
+x                                                   axxxxs                               axs             axxxxxxxxw                                  x
+x     _        _$                                                                                        qxxxxxxxxxxw                                x
+x     $    _$                                                                                 qxxw   qxxxxxxxxxxxxxxxxxw                             x
+x       _                                                                                   qxxsaxxxxxxsaxxxxxxxs    axxxw                           x
+x       $                                                                                 qxxxs   axxs   axxxxxxw E    axxxw                         x
+x          _$                                                                             axs     qxx     xxxxxxxw       axxxw                       x
+x                                                                                                qxxs    qxxxs axxxw       axxw                      x
+x                                                                                               qxxs     xxs     axx        axxw                     x
+x                                                                                              qxxs      xs       axw         axw                    x
+xw                                                                                            xxxs       x         xxw         as                   qx
+xx                                                  xxxxw                                               qxw        axxxw                            xx
+xx                                                  xxxxx                                              qxxx          axxw                           xx
+xx                     A                            axxxx                                             qxxxx           axxxxw                        xx
+xx                                                                                                   qxxsaxw          qxxxxxxxw                     xx
+xx                                                                                                   xxs  xx         qxxs axxxxw                    xx
+xx                                   xxw                                                             xs   axw      qxxxs    axxs                    xx
+xx                                   xxx                                                            qx    qxx     xxxs                              xx
+xx                                   xxx                                                            as    axs                                       ax
+xx                                                                                                                                                   x
+xs                                                                                                                                                   x
+x                                                                                                                                                    x
+x                                                                                                                                                    x
+x                                                                                                                                                    x
+x                                                                                                                                                    x
+x                                                                                                                   tzy                              x
+x                                                                                                                  tzzzy                             x
+xxx                                tzzzzzzzzzzzzy                                                                 tzzzzzy                            x
+xxxw                               zzzzzzzzzzzzzzzzy                                                              zzzzzzzy                           x
+xxxxw                             tzzzzzzzzzzzzzzzzzy                                                             zzzzzzzzy                          x
+xxxxxxw                           zzzzzzzzzzzzzzzzzzzy                                                            zzzzzzzzzy                         x
+xxxxxxxw                         tzzzzzzzzzzzzzzzzzzzz                                                            zzzzzzzzzzy                        x
+xxxxxxxxw                        zzzzzzzzzzzzzzzzzzzzzy                                                           zzzzzzzzzzz                        x
+xxxxxxxxxw                       zzzzzzzzzqxxxwzzzzzzzzy                                                          zzzzzzzzzzzy                       x
+xxxxxxxxxxw                      zzzzzzzzzxxxxxzzzzzzzzz                                                          zzzzzzzzzzzz                       x
+xxxxxxxxxxxw                     zzzzzzzzzxxxxxzzzzzzzzz                                                          zzzzzzzzzzzzy                      x
+xxxxxxxxxxxx                     zzzzzzzzzaxxxszzzzzzzzz                  xxx                                     gzzzzzzzzzzzz                      x
+xxxxxxxxxxxxw                    zzzzzzzzzzzzzzzzzzzzzzz                  xxx                                      zzzzzzzzzzzzy                     x
+xxxxxxxxxxxxxw                   zzzzzzzzzzzzzzzzzzzzzzz                  xxx                                      gzzzzzzzzzzzzy                    x
+xxxxxxxxxxxxxx                   zzzzzzzzzzzzzzzzzzzzzzh                  axs                                       zzzzzzzzzzzzz                    x
+xxxxxxxxxxxxxxw                  zzzzzzzzzzzzzzzzzzzzzz                                                             gzzzzzzzzzzzz                    x
+xxxxxxxxxxxxxxx                  gzzzzzzzzzzzzzzzzzzzzh                                                              zzzzzzzzzzzz                    x
+xxxxxxxxxxxxxxx                   gzzzzzzzzzzzzzzzzzzz                                                               gzzzzzzzzzzz                    x
+xxxxxxxxxxxxxxx                    gzzzzzzzzzzzzzzzzzh                                                                gzzzzzzzzzz                   qx
+xxxxxxxxxxxxxxx                     gzzzzzzzzzzzzzzzh                                                                  gzzzzzzzzz                   xx
+xxxxxxxxxxxxxxx                      gzzzzzzzzzzzzzh                                                                    gzzzzzzzh                   xx
+xxxxxxxxxxxxxxx                        gzzzzzzzzh                                                                        zzzzzh                     xx
+xxxxxxxxxxxxxxs                                                                                                                                     xx
+xxxxxxxxxxxxxxw                                                                                                                                     xx
+xxxxxxxxxxxxxxx                                                                                                                                     ax
+xxxxxxxxxxxxxxs                                                                                                                                      x
+xxxxxxxxxxxxxs                                                                                 xxxw                                                 qx
+xxxxxxxxxxxxs          qxxw                                                                    xxxx                                                 xx
+xxxxxxxxxxs            xxxx                     qxw                                            xxxx                                                 ax
+xxxxxxxs               xxxs                     xxxw                                           axxs                                                  x
+xxxxxs                 axx                      xxxx                                          tzxxzy                                                 x
+xxxs                                            xxxx                                         zzzzzzzzy                                               x
+x                                               axxs                                         zzzzzzzzzzy                                             x
+x                                                                                            zzzzzzzzzzzzy                                           x
+x                                                                                 F          zzzzzzzzzzzzzz                                          x
+x                                                                                            zzzzzzzzzzzzzzy                                         x
+x                                                                                            gzzzzzzzzzzzzzz                                         x
+x                                                                                             zzzzzzzzzzzzzz                                         x
+x                                                                                             zzzzzzzzzzzzzz                                         x
+x                                       B                                                     gzzzzzzzzzzzzz                                         x
+x                                                                                              zzzzzzzzzzzzz             zzzzzy                      x
+x                                                                                              gzzzzzzzzzzzz             zzzzzzzzy                   x
+x                                                                                               zzzzzzzzzzzz            zzzzzzzzzzzy                 x
+x                                                                    xxw                        gzzzzzzzzzzh            zzzzzzzzzzzzy                x
+x                                                                    xxxx                        gzzzzzzzzz             zzzzzzzzzzzzzy               x
+x                                                                    xxxx                            gzzzzh             zzzzzzzzzzzzzz               x
+x                                                                    axxx                                               zzzzqxxwzzzzzz               x
+x                                                                                                                       zzzzxxxxzzzzzz               x
+x                                                                                                                       zzzzaxxzzzzzzz               x
+x                                                                                                 qxxw                  zzzzzzzzzzzzzz               x
+x             qxw                                                                                 xxxx                  zzzzzzzzzzzzzh               x
+x            qxxxw                                                                                xxxs                  zzzzzzzzzzzzh                x
+x            xxxxx                                                                                axx           D       zzzzzzzzzzzz                 x
+x            axxxs                                                                                                      zzzzzzzzzzzh                 x
+x                                                                                                                       zzzzzzzzzzh                  x
+x                                    qxxxxw                                                                             gzzzzzzzzh                   x
+x                                    axxxxs                                                                              zzzzzzzh                    x
+x                                                                                                                        gzzzzh                      x
+x                                                                                                                                                    x
+x                                                     qxxw                                                                                           x
+x                                                     xxxx                                                                                           x
+x                                                     axxs                                tbbbbbbbbbbby                                              x
+x                                                                                        tbbbbbbbbbbbbbbbby                                          x
+x                                                                                        bbbbbbbbbbbbbbbbbbbby                                       x
+x                                                                                        bbbbbbbbbbbbbbbbbbbbbby                                     x
+x                                      tzy                                               bbbbqxxxwbbbbbbbbbbbbbb                                     x
+x                                      zzzy                                              bbbbaxxxxbbbbbbbbbbbbbby                                    x
+x                                      zzzzzzzzzzzy                                      gbbbbaxxsbbbbbbbqxwbbbbb                                   qx
+x                                      gzzzzzzzzzzzzy                                     gbbbbbbbbbbbbbbxxxbbbbb                                   xx
+x                                       zzzzzzzqwzzzz                                       gbbbbbbbbbbbbaxsbbbbb                                   xx
+x                                       gzzzzzzxxzzzz                                        gbbbbbbbbbbbbbbbbbbb                                   ax
+x                                        gzzzzzaszzzz                                         gbbbbbbbbbbbbbbbbbb                                    x
+x                                         gzzzzzzzzzz                                          gbbbbbbbbbbbbbbbbh                                    x
+x                                          gzzzzzzzzz                                            gbbbbbbbbbbbbbb                                     x
+x                                qw          gzzzzzzh                                              gbbbbbbbbbbbh                                     x
+x                                xx           zzzzh                                                    gbbbbbh                                       x
+x                                xxw          gzzh                                                                                                   x
+x           qxxxx                xxx                                                                                          qxw                    x
+x           xxxxx                xxx                                                                                          xxxw                   x
+x           xxxxs                axs                                                                                          axxs                   x
+x                                                                                                                                                   qx
+x                                                                                                                                                   xx
+x                                                      qxxw                                                                                         xx
+x                                                      xxxx                                   qxxw                                                  xx
+xw                                                     xxxx                                   xxxx                                                  xx
+xx                                                     xxxs                                   axxs                                                  xx
+xx                                                     as                                      xs                                                   ax
+xx                                                                                                                                                   x
+xx     xxx          xxw                                                                                                                              x
+xx     xxx          xxxw                                                                                                                             x
+xx     xxx          xxxx                                                                                                                             x
+xx     axx          xxxx                      C                             xxxw                                                                    qx
+xx                  axxx                                                    xxxxw                                                                  txx
+xx                                                                          axxxx                                                                tzzax
+xs                                                                           axxx                                                               tzzzzx
+x                                                                             xxx                                                              tzzzzzx
+x                                                                             axx                                                            tzzzzzzzx
+x                                  qxw                                                                                                      tzzzzzzzzx
+x                                  axs                                                                                                     tzzzzzzzzzx
+x                                   x                                                                                                     tzzzzzzzzzzx
+x                                                                                                                                        tzzzzzzzzzzzx
+x                                                                                                                                     tzzzzzzzzzzzzzzx
+x                                                                                                                                    tzzzzzzzzzzzzzzzx
+x      xxw                                                                                                                           zzzzzzzzzzzzzzzzx
+x      xxx                                                       %  %  %  %                                                          zzzzzzzzzzzzzzzzx
+x      xxx                                                                                                                           zzzzzzzzzzzzzzzzx
+x      axx                                                                                                                               gzzzzzzzzzzzx
+x                                                                                                                                   tzzy      gzzh   x
+x                                                                                                                                  tzzzzzzzzy      G x
+x                                                                                                                                tzzzzzzzzzzzzzzzy   x
+x                                                             q############w                                                    tzzzzzzzzzzzzzzzzzzzzx
+x                                                            q#xxxxxxxxxxxx###w                                                 zzzzzzzzzzzzzzzzzzzzzx
+x                                                           q#xxxxxxxxxxxxxxxx#w                                               tzzzzzzzzzzzzzzzzzzzzzx
+xw                                                         q#xxxxxxxxxxxxxxxxxx#w     qxxxxw                  qxxxxxw          zzzzzqxxwzzzzzzqxwzzzqx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

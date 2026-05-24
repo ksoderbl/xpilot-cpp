@@ -1,0 +1,132 @@
+#Created by MapXpress 4.5.0 on Wed Mar 22 12:57:58 2006
+
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#
+#
+#
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : The Chambers of Death
+mapauthor : AcnotAlpha
+edgebounce : no
+edgewrap : yes
+selfimmunity : yes
+maxrobots : 3
+minesonradar : yes
+treasuresonradar : yes
+shieldeditempickup : yes
+cannonsuseitems : yes
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+initialfuel : 2000
+
+mapData: \multiline: EndOfMapdata
+                    x                                            x                                  
+                    x                                                                               
+                    x                                                                               
+                    x                                                                               
+                 xxxxxx                                          x                                  
+             xxxxx    xx   xxx                                  xx                                  
+         xxxx                xx                                 x                                   
+        xx                    xxx                               x                                   
+       x                        xx                             x                                    
+      x                          xx                            xxxx                                 
+     xx                           xx                           x   xx                               
+    xx                             xx                         x      xx                             
+   xx                               x          %              x        x                            
+   x           %                    xx                       x    %     x                           
+  xx                   %     %      x xxx                    x    %      xx                xxx      
+  x     %    %                      x    xx         %                     x              xxx        
+  x                                 xx                                     x           xxx          
+                   %                 x        xx                   %  %    x   _  xxxxxx            
+                                     x         xx          x               xxxxxxxx                 
+                                     xx         xx        xx               x                        
+             x   xx         %         x           x      xx                x                        
+        xxxxx     xxxx                x           xx    xx     %          x                         
+    xxxxx            xxx                           x###xx           %     x                         
+    xx                 xxx                          x#xx                  x                         
+     xx                   xx                        xxx                   x                         
+      x                    xx         x              x       %         % x                          
+      xx                    x         x               xx                                            
+                            xx       xx                x                                 %          
+                  %     %    x       x                  x                      %                    
+                             x      x                    x       %       x                          
+          x                   x    xx                     x             x                   %       
+          xx                  xx xxx         %            xx            x                           
+     %      xx         %       xxx                         x     %      x     %                 %   
+             xx                x                            x           x                           
+              x      %          x                           x          xxxx                         
+      %       xxx               x         %         %                  x  xxx       %               
+             x           %      xx              %                      x    x           %           
+            x                    x                                    x     xx                      
+     %      x                    x                           x        x      xx                     
+          xxxx                   x                           x##  _  xx       x                %    
+         xx      xx              xx     %     %              x#xxxxxxx        xx      %             
+        xx         xx             x                          xxx               x                    
+        x           xx            xx                         x                 x          %         
+                     x       _     xx                        x                  x   %               
+                     xxxx  xxxxxxxx x                 %      x                  x                   
+                %     x            xx                       xx                  x              %    
+ %    x               xx            xx                      x                   xx     %            
+     xx                x              xx                   xx     %              x                  
+     x                  x               xx                xx                     x                  
+     x                  x                 xx            xxx             %        x                  
+    x         %          x         xx      xx      _  xxx                        x                  
+ %  x                    x       xxx x      x####xxxxx                          xx                  
+    x                    x       x    x      x#xx                               x           xx  xxx 
+    x               %     x     xx           xx                %                x        xxxx     xx
+    x    %                xx    x             xx                                x##   xxxx          
+   _x                      x###x               x                     %          x#xxxx              
+   xx                      xx#x         xxx    x                                xx                  
+   x            %           xx            xxx  x                               x               %    
+   x                 %       x    %         xxxx        %                   xxx                     
+   x                        xx                xx                          xx                        
+    x                    r  x                   xx                                                  
+    x    rr              xrrx       %            xxx          %                 %           %       
+    x   rxx              xxxx                      x                xx              %          %    
+     x  xx                 x               %        x               x                   %           
+  %  x rx                  xx                       xx x            x      %                        
+     xrx       %            x                  %     xxx            x                               
+      xx                    x   %                     xx           xx              %               x
+      x                     x                         xx          xxxx                        xx    
+      x                     x         %%             xx          xxx  xxx      %             xx     
+  %  xx    %      %         x                      xxx          xx x    xx                   x      
+     x                      x                     xx            x   x    x                  xx      
+     x                      x                   xxx             x   x                      xx       
+     x                     xx              xx  xx              xx   x                     xx        
+    xx             %       x             xxx                  xx        %  xx   _         x         
+    x                      x          xxx                    xx             x#xxxx       xx         
+  %                       x#   _   xxxx                      x      x       xx   xxxx   xx      %   
+           %              xxxxxxxxxx                         x      x        x      xx##x           
+                        xxx                                         x        x       xxx            
+                       xx                                           x   %    x        xx            
+    x                xx                                  xx         x        x         x            
+    x                x                                  xx     %    x            %     x      %     
+  % x            x                                    xx            x                  x            
+    x          xx                                    xx             x                  x            
+    xx       xx                           xxxxx   xxxx              x       x   %      x            
+     x     xxx                      xx  xxx    xxxxx       %        xxx _   x         x             
+  %   x _ xx                     xxxx              xx              xx  xx##xx         x     %       
+      xxxx                    xxxx                  x              x     xx                         
+      xx       %%%           xx                      x       %     x       x    %                   
+     xx  %%%%%%%%%%        xxx           %            x           xx        xx                      
+    xx  %%m%%%%%%%%       xx                   %      x           x          x     x                
+  xx    %mm%%%%%%%%       x         %                xx         xx           x    x                 
+  x    %%mm%%%%%%%%%      x                          x          x       %    x   xx     %      %    
+ xx  %%%%mm%%%%%%%%%      x             %            x      xx               x   x                  
+ x         jjjjjjjj%      x                    %    x   xxxxx        %       x##x                   
+xx         jjjjjjjj%     x     %                    x xxx                    x#x                    
+x    %%%%%%%%%%%%%%%     x           %             xxxx                      xxx                    
+x    %%%%%%%%%%%%%%      x                     %   x         %          %    xx                     
+x                        x                 _       x                         x                      
+x                        x                xxx     xx                _        x                   _  
+x               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

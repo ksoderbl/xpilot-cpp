@@ -1,0 +1,329 @@
+#Created by MapXpress 2.0.2 on Fri Mar 16 22:55:09 2001
+
+#
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : Drunken's Redemption
+mapauthor : D.R.
+limitedlives : yes
+worldlives : 5
+reset : yes
+shipmass : 20.0
+gravity : -0.0
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 256
+firerepeatrate : 2
+friction : 0.0
+edgebounce : no
+edgewrap : yes
+extraborder : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : no
+minrobots : -1
+maxrobots : 0
+playerstartsshielded : yes
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : no
+debriswallbounce : no
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 1
+objectwallbouncelifefactor : 1
+wallbouncefueldrainmult : 0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+oneplayeronly : no
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : yes
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : no
+treasurecollisionmaykill : yes
+wreckagecollisionmaykill : no
+distinguishmissiles : no
+keepshots : no
+identifymines : yes
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : yes
+shieldeditempickup : no
+shieldedmining : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : no
+cannonsmartness : 1
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 0
+itemconcentratorvisible : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : no
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+allowshipshapes : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 0
+maxminesperpack : 2
+minelife : 0
+minefusetime : 0.0
+baseminerange : 0
+roguemineprob : 0
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 0.0
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 7
+nukeminmines : 4
+nukeclusterdamage : 1.0
+itemconcentratorradius : 10
+maxitemdensity : 0.0012
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : no
+reporttometaserver : yes
+contactport : 15345
+noquit : no
+idlerun : no
+plockserver : no
+lockotherteam : yes
+allowviewing : no
+framespersecond : 14
+ignore20maxfps : yes
+analyticalcollisiondetection : yes
+timerresolution : 0
+usewreckage : yes
+initialfuel : 1000
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 1
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+itemenergypackprob : 1e-9
+itemtankprob : 1e-9
+itemecmprob : 1e-9
+itemmineprob : 1e-9
+itemmissileprob : 1e-9
+itemcloakprob : 1e-9
+itemsensorprob : 1e-9
+itemwideangleprob : 1e-9
+itemrearshotprob : 1e-9
+itemafterburnerprob : 1e-9
+itemtransporterprob : 1e-9
+itemlaserprob : 1e-9
+itememergencythrustprob : 1e-9
+itemtractorbeamprob : 1e-9
+itemautopilotprob : 1e-9
+itememergencyshieldprob : 1e-9
+itemdeflectorprob : 1e-9
+itemhyperjumpprob : 1e-9
+itemphasingprob : 1e-9
+itemmirrorprob : 1e-9
+itemarmorprob : 1e-9
+movingitemprob : 0.2
+dropitemonkillprob : 1
+detonateitemonkillprob : 0
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+
+mapData: \multiline: EndOfMapdata
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+            qxxxxxxxxxxxw                                              qxxxxxxxxxxxw                
+          qxxxs       axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx         axxw              
+         qxxs                                                                       axxw            
+        qxs               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs               axxw           
+       qxs                 axw                                   qxs                   axw          
+      qxs                   axw                                 qxs                     axw         
+      xx                     xx                                 xx                       xx         
+     qxs                     axw                               qxs                       axw        
+     xx                       xx                               xs                         ax        
+     xs                       ax                              qx                           xw       
+     x                         x                              xs                           ax       
+     #                         x                              x                             x       
+     #*                       *#                              #                             x       
+     #1$                     $9#                              #*                            #       
+     #*                       *#                              #1$                          *#       
+     #                         #                              #*                          $9#       
+     #                         x                              #                            *#       
+     #w                       qx                              x                             #       
+     xx                       xx                              x                             #       
+     axw                     qxs                              x                             x       
+      xx                     xx                               x                            qx       
+      ax                    xxxxxxxxxxxx                      x                            xs       
+       x x                             x                      x w                         qx        
+       x xw               qxxxxxxxxxxx x                      x xw                       qxs        
+       x xxxw           qxxs         x x                      x xx                       xx         
+       x xaxxxw       qxxxs          x x                      x xxw                      xs         
+       x x  axxxxxxxxxxxs            x x                      x xaxw                   q x          
+       x x                           x x                      x x axxw               qxx x          
+       x x                           x x                      x x  axxw             qxxx x          
+       x x                           x x  qxxxxxxxxxxxw       x x    axxw         qxxs x x          
+       x x                           x xqxxs         axxw     x x      axxxxxxxxxxxs   x x          
+       x x                           x xxs             axxxxxxx x                      x x          
+       x x                           x xs                       x                      x x          
+       x x                          qx                   xxxxxxxx                      x x          
+       x x                         qxs                     axw                         x x          
+       x x                         xx                       xx                         x x          
+       x x                        qxs                       axw                        x x          
+       x x                        xs                         ax                        x x          
+       x x                       qx                           xw                       x x          
+       x x                       xs                           ax                       x x          
+       x x                       x                             x                       x x          
+       x x                       x                             x                       x x          
+       x x                       #                             #                       x x          
+       x x                       #*                           *#                       x x          
+       x x                       #1$                         $9#                       x x          
+       x x                       #*                           *#                       x x          
+       x x                       #                             #                       x x          
+       x x                       #                             #                       x x          
+       x x                       x                             #                       x x          
+       x x                       xw                           qx                       x x          
+       x x                       ax                           xs                       x x          
+       x x                        xw                         qx                        x x          
+       x x                        axw                       qxs                        x x          
+       x x                         xx                       xx                         x x          
+       x x #                       axw                     qxxxxxxxxxxxxxxx            x x          
+       x x                          axw                                   x            x x          
+       x x                     xxxxxxxxxw               qxxxxxxxxxxxxxxxx x            x x          
+       x x                     x                       qxxs             x x            x x          
+       x x  qxxxxxxxxxxxxxxxxxxx xxxxxxxxxxw         qxxs               x x            x x          
+       x xqxxs         axxxx     x        axxxxxxxxxxxs                 x x            x x          
+       x xxs                 xxxxx                                    qxx xxxxxxxxw    x x          
+       x xs               axxw                                      qxxxs       axxxw  x x          
+       x s                 axx                                     qxxs           axxw x x          
+      qx                    axw                                   qxs               axwx x          
+     qxs                     axw                                 qxs                 axx x          
+     xs                       ax                                qxs                   ax x          
+    qx                         xw                               xx                     x x          
+    xs                         ax                              qxs                     a x          
+    x                           x                              xx                        x          
+    x                           x                              xs                        x          
+    #                           #                              x                         x          
+    #*                         *#                              #                         #          
+    #9$                       $1#                              #*                       *#          
+    #*                        $*#                              #1$                     $9#          
+    #                           #                              #*$                      *#          
+    #                           #                              #                         #          
+    x                           x                              #                         #          
+    xw                         qx                              xw                       qx          
+    ax                         xs                              xx                       xx          
+     xw                       qx                               axw                     qxs          
+     axw                     qxs                                xx                     xx           
+      axw                   qxs                                 axw                   qxs           
+       xxw                 qxx                                   axw                 qxs            
+       axxw               qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw               qxs             
+         axw                                                                      qxxs              
+          axxw         qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw       qxxxs               
+            axxxxxxxxxxxs                                             axxxxxxxxxxxs                 
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+EndOfMapdata
+

@@ -1,0 +1,152 @@
+#The most recompensed ways for kill are throwing balls against enemies and shoving ships against treasures.
+#
+#WARNING: Be careful with connecting balls, they have high velocity due to the mass and the connectors are lowers so the best way is connect a ball since the other side of the wall.
+#
+#Most important weapons:
+#
+#	-Score Multiplier = 2 (if shove against a treasure):
+#		·Tractor beams.
+#		·Imploding/Exploding mines.
+#
+#	-Score Multiplier = 1:
+#		·Laser Beams.
+#
+#	-score Multiplier = 0.5:
+#		·Cluster Mines.
+#
+#	-helpful objects:
+#		·ECM (reprograming mines).
+#		·Energy Packs (no Fuel Blocks).
+#
+#No shots.
+#Wreckage from explosions can kill.
+
+allowclusters : yes
+allowlasermodifiers : yes
+allowmodifiers : yes
+allownukes : yes
+allowplayerbounces : yes
+allowplayercrashes : no
+allowshields : no
+ballconnectorlength : 90
+ballkillscoremult : 2
+ballmass : 5.0
+cannonsmartness : 1
+clusterkillscoremult : 0.5
+debriswallbounce : yes
+firerepeatrate : 0
+gravity : 0
+gravityvisible : no
+initialtractorbeams : 2
+initialtransporters : 1
+itemecmprob : 3e-9
+itemmineprob : 3e-9
+itemmissileprob : 0
+itemprobmult : 10.0
+itemrearshotprob : 0
+itemwideangleprob : 0
+mapauthor : garri <lgarrido@wanadoo.es>
+mapheight : 81
+mapname : Pigeonholes of Killer Balls
+mapwidth : 81
+maxminesperpack : 1
+maxobjectwallbouncespeed : 167
+maxplayershots : 0
+maxrobots : 7
+maxshieldedplayerwallbounceangle : 180
+maxshieldedwallbouncespeed : 1500
+maxunshieldedplayerwallbounceangle : 180
+maxunshieldedwallbouncespeed : 500
+nukesonradar : no
+playersonradar : no
+robotstalk : yes
+shipmass : 20.0
+shovekillscoremult : 2
+sparkswallbounce : yes
+treasurecollisionmaykill : yes
+treasuresonradar : no
+wreckagecollisionmaykill : yes
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xs       axs       axs       axs       axs       axs      *axs      *axs       ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    )         @         )         )    x    @         )         )         @    x
+x                                       x                                       x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw       qxw   _   qxw       qxw       qxw       qxw       qxw       qxw   _   qx
+xxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxxxx  xxxxxxxxxxxxxxxxxxxxxxxx
+xs      *axs       axs       axs      *axs      *axs       axs       axs      *ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    )         @         )         )         )         )         )         )    x
+x                                                                               x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw       qxw   _   qxw       qxw       qxw       qxw       qxw       qxw       qx
+xxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxxxx  xxxx
+xs       axs       axs      *axs       axs      *axs      *axs       axs      *ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    @         )         )         @         )         )         )    x    )    x
+x                                                                     x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw       qxw       qxw       qxw       qxw       qxw       qxw       qxw       qx
+xxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxxxx  xxxxxxxxxxxxxx
+xs      *axs       axs       axs       axs       axs       axs       axs       ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    )    x    )         )    x    )         )    x    )         @         )    x
+x         x                   x                   x                             x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw       qxw       qxw       qxw       qxw       qxw       qxw       qxw       qx
+xxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxx
+xs      *axs      *axs      *axs      *axs       axs       axs      *axs      *ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    @         )    x    )         )    x    )         @    x    )         @    x
+x                   x                   x                   x                   x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw   _   qxw       qxw       qxw       qxw       qxw       qxw       qxw   _   qx
+xxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xs       axs      *axs       axs      *axs      *axs       axs       axs       ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    @    x    )         )         @         )    x    @         )    x    )    x
+x         x                                       x                   x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw       qxw       qxw       qxw   _   qxw       qxw   _   qxw       qxw       qx
+xxxxx  xxxxxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxx
+xs      *axs      *axs       axs       axs      *axs       axs      *axs       ax
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+x    )    x    @         @         )    x    )         )    x    )         )    x
+x         x                             x                   x                   x
+x         x         x         x         x         x         x         x         x
+x         x         x         x         x         x         x         x         x
+xw       qxw   _   qxw       qxw       qxw       qxw       qxw       qxw       qx
+xxxxx  xxxxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxxxxx  xxxxxx     xxx
+xs       axs       axs      *axs       axs       axs      *axs       axs       ax
+x         x         x         x         x         x         x         x  ----- dx
+x         x         x         x         x         x         x           -------dx
+x         x         x         x         x         x         x           -------dx
+x    )         )         )         )         @         )         )      ---)---dx
+x                                                                       -------dx
+x         x         x         x         x         x         x           -------dx
+x         x         x         x         x         x         x         x  ----- dx
+xw       qxw       qxw       qxw       qxw       qxw       qxw       qxwrrrrrrrqx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata

@@ -1,0 +1,122 @@
+#Created by MapXpress 2.0.2 on Fri Jul 20 14:47:38 2001
+
+mapwidth : 100
+mapheight : 100
+mapname : Mella!
+mapauthor : Penguin
+limitedlives : yes
+worldlives: 3
+minrobots: 3
+maxUnshieldedWallBounceSpeed : 90
+maxUnshieldedPlayerWallBounceAngle : 180
+maxShieldedWallBounceSpeed : 100
+maxShieldedPlayerWallBounceAngle : 180 
+initialMines : 3
+allowShields : no
+shotLife : 1000
+initialhyperjumps : 1
+
+
+mapData: \multiline: EndOfMapdata
+xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccxxx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f   _                                                                                   _    dx     
+f                                            _                                               dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                    d#f                                              d#f                    dx     
+f                     #                                                #                     dx     
+f                    q#w                                              q#w                    dx     
+f                 #########                                         #######                  dx     
+f                    a#s                                              a#s                    dx     
+f                     #                                                #                     dx     
+f                    d#f                                              d#f                    dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f     _                                                                                      dx     
+f                                             _                                              dx     
+f                                                                                      _     dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                                                                                            dx     
+f                     d#f                                                                    dx     
+f                      #                                                                     dx     
+f                      #                                              d#f                    dx     
+f                     q#w                                              #                     dx     
+f                  #########                        qxw                #                     dx     
+f                     a#s                      qxxxxxxx               q#w                    dx     
+f                      #                      xxxxxxxxxw            #######                  dx     
+f                     d#f                     xxxxxxxxxxw             a#s                    dx     
+f                                             xxxxxxxxxxx              #                     dx     
+f                                             axxxxxs axs              #                     dx     
+f                                              xxxxx                  d#f                    dx     
+f                                             qxxxxs                                         dx     
+f                                             xxxxxw                                         dx     
+f                                               axxx                                         dx     
+f                                                  x                                         dx     
+f    _                                         _                                       _     dx     
+f                                                                                            dx     
+f                                                                                            dx     
+x                                                                                            dx     
+xrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrqx     
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs     
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+EndOfMapdata
+

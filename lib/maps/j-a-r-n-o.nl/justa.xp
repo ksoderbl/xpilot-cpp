@@ -1,0 +1,213 @@
+#Created by MapXpress 4.4.0a on Wed Jun 20 18:07:36 2001
+
+#Options updated for Xpilot 4.4.0
+mapwidth : 100
+mapheight : 100
+mapname : ***&$& Justa Map &$&***
+mapauthor : Drunken Russian
+limitedlives : yes
+worldlives : 3
+maxplayershots : 99999
+firerepeatrate : 1
+edgebounce : no
+edgewrap : yes
+defaultshipshape : (NM:Butterfly)(AU:Lewis Beard)(SH: 0,0 0,8 -15,15 0,2 0,-8 -15,-15 0,-2 0,0 0,8 12,15 0,2 0,-2 12,-15 0,-8 0,0 0,2 -12,7 0,0 0,-2 -12,-7 0,0)(EN: 0,0)(MG: 0,0)(LG: 0,1 0,2 12,-15)(RG: 0,-1 0,-2 12,15)(LL: -15,15 0,8 12,15)(RL: -15,-15 0,-8 12,-15)(MR: 12
+tankshipshape : (NM:Bird of Prey)(AU:John Norlin)(SH: 15,0 10,5 7,2 -10,5 -5,15 5,15 -10,15 -15,5 -15,-5 -10,-15 5,-15 -5,-15 -10,-5 7,-2 10,-5)(EN: -15,0)(MG: 15,0)(LG: 5,15)(RG: 5,-15)(LL: -10,15)(RL: -10,-15)(MR: 15,0)
+selfimmunity : yes
+playerstartsshielded : no
+mineswallbounce : yes
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 360
+maxunshieldedplayerwallbounceangle : 360
+playerwallbouncebrakefactor : 0.5
+objectwallbouncebrakefactor : 1
+objectwallbouncelifefactor : 1
+wallbouncefueldrainmult : 0
+robotrealname : bitch
+robothostname : bitches r' us
+tankrealname : whore
+tankhostname : whores r' us
+asteroidswallbounce : no
+keepshots : yes
+identifymines : no
+shieldeditempickup : yes
+shieldedmining : yes
+allowplayercrashes : no
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+allowshipshapes : no
+maxmissilesperpack : 5
+rogueheatprob : 0
+maxminesperpack : 10
+baseminerange : 5
+roguemineprob : 0
+asteroidcollisionmaykill : no
+maxasteroiddensity : 0.001
+laserisstungun : yes
+nukeminmines : 11
+nukeclusterdamage : 10
+itemconcentratorradius : 5
+maxitemdensity : 1
+usewreckage : no
+clientportstart : 15345
+clientportend : 15365
+reset : no
+initialfuel : 99999
+initialtanks : 8
+initialafterburners : 15
+initialautopilots : 99
+initialarmor : 3
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+itemenergypackprob : 0
+itemtankprob : 0
+itemsensorprob : 0
+itemrearshotprob : 0
+itemafterburnerprob : 0
+itemtransporterprob : 0
+itememergencythrustprob : 0
+itemautopilotprob : 0
+dropitemonkillprob : 1
+detonateitemonkillprob : 0
+destroyitemincollisionprob : 0
+itemconcentratorprob : 0.5
+itemprobmult : 4
+randomitemprob : 0
+smartkillscoremult : 1
+tankkillscoremult : 3
+runoverkillscoremult : 3
+ballkillscoremult : 3
+explosionkillscoremult : 3
+shovekillscoremult : 3
+crashscoremult : 3
+tankscoredecrement : -30000
+
+mapData: \multiline: EndOfMapdata
+                                                 xxx                                                
+            qw_qxw  qw                           xxx                                         qw     
+           qxxxxxxxxxs                           axxw                                       qxx     
+          qxxxxxxs                   qw           axxw                                 xw _qxxs     
+         qxxsaxs                    qxx            axx             _                   xxxxxxs      
+        qxxx                        xxxw_           as             xxw                 axxxxs       
+        xxxs                        axxxxxw                         as                  axxs        
+        xxs            qw            axxxxxw                                qw                      
+        as            qxx                 axw                               as                      
+                     qxxs                  axxw                                                     
+                    qxxs                    axxw         qw                                         
+                    axs                      axx         xxw                                        
+                                              axw        axxw                                       
+                                               ax         axxw                                      
+                  qw              qxw           xw         axxw                                qw   
+                 qxx             qxxxxw         as           axw                 qxw           xxw  
+                 xxs            qxxxxxxw                      axw               qxxxxxxxxxw _ qxxx  
+         qw                 qw_qxxxxxxxx                       axw    %        qxxxsaxxxxxxxxxxxxs  
+        qxxw               qxxxxxxxxxsasx                       ax             axxs   axxxxxxxxxs   
+        xxxxw             qxxxs   axs                            xw        qw             axxxs     
+        axxxx            qxxs                                    as        as              as       
+         axxxw           xxs                                                                        
+          axxx          qxs                                                                         
+           axx          xx                                               qw               qw        
+            axw         as                    qw   qw                    xxwqxw _         axw       
+             axxxw         qxxxw             qxxw_qxxxxxw               qxxxxxxxxxxw       axw      
+              axxxw       qxxxxs            qxxxxxxxxxxxxxxxw          qxxxxsaxsaxxx        as      
+               axxxwqxw_ qxxxxs             axxxxxxxxxs   axxxx        axxxs     axxw               
+                xxxxxxxxxxxxxs     qw             axxs                   as        axxw             
+        _       axxsaxxxxxxxx      as                                                axw        _   
+       qxw       as  axsaxxxs                                                         axw      qxw  
+       axxxw                    qw                                                     ax      axx  
+       qxxxxw                   as         qw             qw _             qw           xw      ax  
+      qxxxxxxw               qxw           as            qxxxxxxxw        qxx           ax       x  
+     qxxxxxsas               xxx                       qxxxxsaxxxs       qxxx            xw      xw 
+     xxxxxs                  xxs                      qxxs    axx      qxxxxs            xx      ax 
+    qxxxxs      _   qxw      xs                      qxs       as     qxxxxs             xx       x 
+  qxxxs       qxxxxxxxs     qx                       xx               xxxxs              xxw        
+  xxxs        xxxxxxxs      xx          qw          qxs          qw _qxxxx               axx        
+  xxx         xxxxxs       qxs          xs          xs          qxxxxxxxxs                as        
+  xxs        qxxxs        qxs           x           x        qxxxxxxxs                              
+ qxx         xxxx        qxx            x           xw       as axs                                 
+ axs         xxxx        xxx           qxw          xx                                              
+             xxxx        xxs          qxxx         qxxw                      qw         qw          
+             axxs        ax           axxx         xxxx                      xx         axw         
+             qxs          x            axs         axxs                      ax         qxxw        
+            qxx         _qx             x          qxx                        xw        axxx        
+           qxxs        qxxs             x          axxw                       xx         xxx        
+           xxs         axx              xw          axxw                      axw        axxw       
+           as           ax              xx           axxw                      xxw       qxxxxxw_   
+                         xw             xxw           axxxw                    axx       axxsaxxxxw 
+                         xxw            axxw           axxxw                    axw           axxxs 
+               _         xxs             xxs             axs                     xx                 
+              qxw       qxs              xxw_                                   qxxw_               
+             qxxxw      xxw              axxxw                                  asaxxw              
+            qxxxxs      xxxw              asaxw                        _           axxw             
+            axxxs       axxx      qw         axw                     qxxw           xxx             
+            qxxs         axxw     xxw         as                     xxxx           axxw            
+           qxxs           axx     xxx                                xxxs            axx            
+           xxx             axw    xxx                                xxx              as            
+           xxx              xx    axx                                axs      _                     
+          qxxx              as     ax                                qx      qxx                    
+          xxxs                      x                               qxx      xxs                    
+          xxs                      qx                              qxxs      ax                     
+          xx                       xx                    qw       qxxx        x                     
+         qxs                 %     axw                qw as      qxxxx       qxw                    
+        qxs           _             xx                as         xxxxs       xxxw                   
+      _qxs          qxxw            xx             qw            axxs        axxx                   
+     qxxs         qxxxxs            xs            qxs            qxs          axs                   
+     axx        qxxxsas             x           _qxs           qxxs            xw           qw      
+      xx      qxxxxs               qxw         qxxs        _  qxxs             xxw          ax      
+     qxxw     xxxxs               qxxx       qxxxs        qxxxxs               xxx           x      
+     xxxx     xxxs                xxxs       axxs      qxxxxxxs                xxx                  
+     axxx    qxs                  xxs        qxs       axxsaxs                qxxs            qw    
+     qxxx   qxs                   as         xx                              qxxx            qxs    
+    qxxxx  qxxwqw        qxxw  qw           qxx                              axxx           qxxw    
+    xxxxx  axxxxs       qxxxxw as           axx                               axx           xxxx    
+    xxxxs   xxxxw      qxxxxxs               xx                                ax           axxx    
+    axxs    xxxxx      xxxxxs                ax                                 x           qxxx    
+            axxxs      as                     x                                 x           axxx    
+            qxxx                                                                xw           axx    
+            axxx                                                                axw_         qxx    
+             xxxw                               x                                axxw        xxs    
+             axxxw                   _            qw            qw_               axs       qxx     
+              xxxx                  qxw           axxw         qxxx                         axxw    
+              axxxw _               axx             as       xxxxs                           axx    
+               axxxxxxxw             axw                                                      xx    
+                  axxxxs              as                                                     qxs    
+                   axs                                                                      qxs     
+                                                                              _qw           xx      
+                                                                        qw  qxxxs           xs      
+                                                                        xxwqxxxs           qx       
+                                         qxw                           qxxxxxs             xx       
+                                         axxxw                      _  xxs                qxx       
+                                          axxxw                   qxxw as                 axx       
+                                           axxxw_qxw              axxs                     axw      
+                                             axxxxxxw                                       as      
+                                              as axxs                                               
+                                                  as                                                
+                                                                                                    
+EndOfMapdata
+

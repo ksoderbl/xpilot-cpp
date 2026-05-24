@@ -1,0 +1,201 @@
+#Created by MapXpress 4.4.0a on Fri Oct 05 21:28:29 2001
+
+#Options updated for Xpilot 4.4.0
+#Options updated for Xpilot 4.4.0
+#
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : Click-click
+mapauthor : DRUNKEN RUSSIAN, MOTHA FUGAZ
+gravity : 0
+friction : 0.01
+defaultshipshape : xpilot.shipShape: (NM:DustPan)(AU:Lewis Beard)(SH: 15,15 15,-15 -1,-9 -1,-4 -7,-1 -14,-1 -14,1 -7,1 -1,4 -1,9 15,15)(EN: -14,0)(MG: 15,0)(LG: 15,15 15,11)(RG: 15,-15 15,-11)(LL: -1,9)(RL: -1,-9)(MR: 15,1)
+tankshipshape : xpilot.shipShape: (NM:best2best2)(AU:jethro)(SH: 8,0 1,0 -15,-8 -9,0 -15,8 1,0 -6,-2 -6,2 1,0 1,0)(EN: 8,0)(LG: -15,8 1,0 8,0)(RG: 8,0 1,0 -15,-8)(LR: -15,8 -9,0 -10,5)(RR: -15,-8 -10,-5 -9,0)(LL: -15,8 -14,7 -13,6)(RL: -15,-8 -14,-7 -13,-6)(MR: -8,4 -6,
+robotsleave : no
+maxrobots : 5
+mineswallbounce : yes
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.5
+objectwallbouncelifefactor : 1
+wallbouncefueldrainmult : 0
+robotrealname : whore
+robothostname : dr's house
+tankrealname : bitch
+tankhostname : dr's school
+maxvisibilitydistance : 0
+keepshots : yes
+targetdeadtime : 5
+cannonsuseitems : yes
+cannonsmartness : 3
+wormtime : 1
+allowplayercrashes : no
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+maxmissilesperpack : 3
+rogueheatprob : 0
+maxminesperpack : 4
+baseminerange : 3
+roguemineprob : 0
+cannondeadtime : 5
+nukeminmines : 5
+maxitemdensity : 1
+allowviewing : yes
+ignore20maxfps : no
+password : baller
+initialtanks : 1
+initialafterburners : 1
+initialautopilots : 1
+initialarmor : 3
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+movingitemprob : 0
+dropitemonkillprob : 1
+detonateitemonkillprob : 0
+itemconcentratorprob : 0
+cannonitemprobmult : 0
+randomitemprob : 0.5
+asteroidprob : 0
+torpedokillscoremult : 1.5
+smartkillscoremult : .5
+tankkillscoremult : 2
+runoverkillscoremult : 2
+explosionkillscoremult : 2
+shovekillscoremult : 2
+crashscoremult : 2
+minescoremult : .2
+tankscoredecrement : -2000
+asteroidscoring : no
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxs                        c            )             c                            axxxxxxxxx
+xxxxxxxxx                                                                                         )x
+x)                                                                                                 x
+x                                                                                                  x
+x                                                                                                  x
+x             x                                                                      x             x
+x             x                                                                      x     xw     _x
+x_     qx     x                                                                      x     x#######x
+x#######x     x                                                                      x            )x
+x)            x                                                                      x             x
+x             x                                                                      x             x
+x             x                                                                      x             x
+x             x                   _                                                  x             x
+x            (x               qxxxxxxxw                                              x     xw     _x
+x_     qx     x             qxxxxxxxxxxxw                                            x     x#######x
+x#######x     x             xxxxxxxxxxxxx                                            x(           )x
+x)            x            qxxxxxxxxxxxxxw                                           x             x
+x             x            xxxxxxxxxxxxxxx                                           x             x
+x             x            xxxxxxxxxxxxxxx                                           x             x
+x             x            xxxxxxxxxxxxxxx                                           x             x
+x             x            xxxxxxxxxxxxxxx                                           x            _x
+x_     qx     x            xxxxxxxxxxxxxxx                                           x     x#######x
+x#######x     x            xxxxxxxxxxxxxxx                                           x            )x
+x)            x            xxxxxxxxxxxxxxx                                           x             x
+x             x            axxxxxxxxxxxxxs                                           x             x
+x             x             xxxxxxxxxxxxx                                            x             x
+x             x             axxxxxxxxxxxs                                            x             x
+x             x               axxxxxxxs                                              x     xw     _x
+x_     qx     x                   c                          _                       x     x#######x
+x#######x     x                                        qxxxxxxxxxw                   x            )x
+x)           (x                                       qxxxxxxxxxxxw                  x             x
+x             x                                      xxxxxxxxxxxxxxx                 x             x
+x             x                                     qxxxxxxxxxxxxxxxw                x(            x
+x             x                                    qxxxxxxxxxxxxxxxxxw               x             x
+x             x                                    xxxxxxxxxxxxxxxxxxx               x     xw     _x
+x_     qx     x                                    xxxxxxxxxxxxxxxxxxx               x     x#######x
+x#######x     x                                    xxxxxxxxxxxxxxxxxxx               x            )x
+x)            x                                    xxxxxxxxxxxxxxxxxxx               x             x
+x             x                                    xxxxxxxxxxxxxxxxxxx               x             x
+x             x                                    xxxxxxxxxxxxxxxxxxx               x             x
+x             x                                    xxxxxxxxxxxxxxxxxxx               x             x
+x             x                                    xxxxxxxxxxxxxxxxxxx               x     xw     _x
+x_     qx     x                                    xxxxxxxxxxxxxxxxxxx               x     x#######x
+x#######x     x                                    axxxxxxxxxxxxxxxxxs               x            )x
+x)            x                                     axxxxxxxxxxxxxxxs                x             x
+x            (x                   _                  xxxxxxxxxxxxxxx                 x             x
+x             x             qxxxxxxxxxw               axxxxxxxxxxxs                  x             x
+x             x           qxxxxxxxxxxxxxw              axxxxxxxxxs                   x             x
+x             x          qxxxxxxxxxxxxxxxw                    c                      x     xw     _x
+x_     qx     x         qxxxxxxxxxxxxxxxxxw                                          x(    x#######x
+x#######x     x         xxxxxxxxxxxxxxxxxxx                                          x            )x
+x)            x        qxxxxxxxxxxxxxxxxxxxw                                         x             x
+x             x)       xxxxxxxxxxxxxxxxxxxxx                                         x             x
+x             x        xxxxxxxxxxxxxxxxxxxxx                                         x             x
+x             x        xxxxxxxxxxxxxxxxxxxxx                                         x             x
+x_     qx     x        xxxxxxxxxxxxxxxxxxxxx                                         x     xw     _x
+x#######x     x        xxxxxxxxxxxxxxxxxxxxx                                        )x     x#######x
+x)            x        xxxxxxxxxxxxxxxxxxxxx                                         x            )x
+x             x        xxxxxxxxxxxxxxxxxxxxx                                         x             x
+x             x        xxxxxxxxxxxxxxxxxxxxx                                         x             x
+x             x        xxxxxxxxxxxxxxxxxxxxx                                         x             x
+x             x        axxxxxxxxxxxxxxxxxxxs                                         x             x
+x_     qx     x         xxxxxxxxxxxxxxxxxxx                                          x     xw     _x
+x#######x    (x         axxxxxxxxxxxxxxxxxs                                          x     x#######x
+x)            x          axxxxxxxxxxxxxxxs                                           x            )x
+x             x           axxxxxxxxxxxxxs                                            x             x
+x             x             axxxxxxxxxs                       _                      x             x
+x             x                  c                      qxxxxxxxxxw                  x             x
+x             x                                       qxxxxxxxxxxxxxw                x             x
+x_     qx     x                                      qxxxxxxxxxxxxxxxw               x     xw     _x
+x#######x     x                                     qxxxxxxxxxxxxxxxxxw              x     x#######x
+x)            x                                     xxxxxxxxxxxxxxxxxxx              x(           )x
+x             x                                    qxxxxxxxxxxxxxxxxxxxw             x             x
+x             x                                    xxxxxxxxxxxxxxxxxxxxx             x             x
+x             x                                    xxxxxxxxxxxxxxxxxxxxx             x             x
+x             x                                    xxxxxxxxxxxxxxxxxxxxx             x             x
+x_     qx     x                                    xxxxxxxxxxxxxxxxxxxxx             x     xw     _x
+x#######x     x                                    xxxxxxxxxxxxxxxxxxxxx             x     x#######x
+x)            x                                    xxxxxxxxxxxxxxxxxxxxx             x            )x
+x            (x                                    xxxxxxxxxxxxxxxxxxxxx             x             x
+x             x                                    xxxxxxxxxxxxxxxxxxxxx             x             x
+x             x                                    xxxxxxxxxxxxxxxxxxxxx             x             x
+x             x                                    axxxxxxxxxxxxxxxxxxxs             x(            x
+x_     qx     x                                     xxxxxxxxxxxxxxxxxxx              x     xw     _x
+x#######x     x                                     axxxxxxxxxxxxxxxxxs              x     x#######x
+x)            x                                      axxxxxxxxxxxxxxxs               x            )x
+x             x                                       axxxxxxxxxxxxxs                x             x
+x             x                                         axxxxxxxxxs                  x             x
+x             x                                                                      x             x
+x             x                                                                      x             x
+x_     qx     x                                                                      x     xw     _x
+x#######x     x                                                                      x     x#######x
+x)            x                                                                      x            )x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x_     qxw                                       )                                        qxw     _x
+x#######xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx#######x
+EndOfMapdata
+

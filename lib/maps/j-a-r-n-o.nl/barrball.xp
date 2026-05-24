@@ -1,0 +1,159 @@
+framespersecond:12
+robots:3
+robotteam:0
+allowplayercrashes:yes
+allowplayerkilling:yes
+allowshields:yes
+playerstartsshielded:yes
+targetkillteam:yes
+teamassign:yes
+teamimmunity:yes
+teamcannons: yes
+limitedlives:yes
+allownukes:no
+playersonradar:yes
+missilesonradar:yes
+treasuresonradar:yes
+shieldeditempickup:no
+shieldedmining:no
+laserisstungun:no
+movingitemprob:0.2
+dropitemonkillprob:0.5
+destroyitemincollisionprob:0.3
+initialfuel:1500
+initialtanks:1
+initialecms:1
+initialmines:2
+initialmissiles:2
+initialcloaks:0
+initialsensors:0
+initialwideangles:1
+initialrearshots:0
+initialtransporters:0
+initiallasers:2
+initialemergencythrusts:0
+initialemergencyshields:0
+initialafterburners:2
+initialautopilots:1
+initialArmor:1
+
+movingitemprob:0.5
+dropitemonkillprob:0.5
+destroyitemincollisionprob:0.3
+itemenergypackprob:0.5
+itemtankprob:0.0
+itemecmprob:0.5
+itemmineprob:0.8
+itemmissileprob:0.8
+itemcloakprob:0.01
+itemsensorprob:0.7
+itemwideangleprob:0.5
+itemrearshotprob:0.01
+itemafterburnerprob:0.6
+itemtransporterprob:0.5
+itemlaserprob:0.7
+itememergencythrustprob:0.0
+itememergencyshieldprob:0.0
+itemtractorbeamprob:0.7
+itemautopilotprob:0.0
+
+emcsreprogrammines:yes
+playerminimumstartfuel:1000
+targetteamcollision:no
+allowplayerbounces:yes
+itemswallbounce:yes
+shotswallbounce:yes
+ballswallbounce:yes
+sparkswallbounce:yes
+debriswallbounce:no
+mineswallbounce:yes
+missileswallbounce:yes
+allowclusters:yes
+allowmodifiers:yes
+allowlasermodifiers:yes
+allowshipshapes:yes
+playersonradar:yes
+missilesonradar:yes
+minesonradar:yes
+nukesonradar:yes
+distinguishmissiles:yes
+identifymines:yes
+nukeminsmarts:3
+nukeminmines:3
+emcsreprogrammines:yes
+maxmissilesperpack:1
+minefusetime:420
+detonateitemonkillprob:0.5
+rogueheatprob:0.01
+roguemineprob:0.02
+maxshieldedwallbouncespeed:60
+maxunshieldedwallbouncespeed:60
+maxshieldedplayerwallbounceangle:180
+maxunshieldedplayerwallbounceangle:180
+playerwallbouncebrakefactor:0.5
+limitedlives:yes
+
+mapwidth : 74
+mapheight : 48
+mapname : BarrierBall
+mapauthor : Will112358
+edgewrap : yes
+teamplay : yes
+oneplayeronly : no
+worldlives : 3
+limitedvisibility : no
+gravity : 0
+maxplayershots : 24
+shotsgravity : yes
+
+mapData: \multiline: EndOfMapdata
+#                              !f!       !d!                              
+#            aw                !!!       !!!                qs            
+#             aw               !f!       !d!               qs             
+#              aw              !!! tbbby !!!              qs              
+#w              aw             !f! b   b !d!             qs              q
+-#1           %  xf            !!! bbbbb !!!            dx  %           2#
+#s              qs             !f!       !d!             aw              a
+#              qs              !!! tbbbb !!!              aw              
+#             qs               !f! b     !d!               aw             
+#            qs                !!! bbbbb !!!                aw            
+#                              !f!       !d!                              
+#                              !!! tbbbb !!!                              
+#                              !f! b b   !d!                              
+#            aw                !!! gbbbb !!!                qs            
+#             aw               !f!       !d!               qs             
+#              aw              !!!     b !!!              qs              
+#w              aw             !f!     b !d!             qs              q
+-#1           %  xf            !!! bbbbb !!!            dx  %           2#
+#s              qs             !f!       !d!             aw              a
+#              qs              !!!       !!!              aw              
+#             qs               !f! t tby !d!               aw             
+#            qs                !!! b b b !!!                aw            
+#                              !f! gbh h !d!                              
+#*                             !!!g      !!!                             *
+#                              !f! tbbbb !d!                              
+#            aw                !!! b     !!!                qs            
+#             aw               !f! bbbbb !d!               qs             
+#              aw              !!!       !!!              qs              
+#w              aw             !f! tbbbb !d!             qs              q
+-#1           %  xf            !!! b b   !!!            dx  %           2#
+#s              qs             !f! gbbbb !d!             aw              a
+#              qs              !!!       !!!              aw              
+#             qs               !f! bbbbb !d!               aw             
+#            qs                !!!  b    !!!                aw            
+#                              !f! bbbbb !d!                              
+#                              !!!       !!!                              
+#                              !f!       !d!                              
+#            aw                !!! tbbby !!!                qs            
+#             aw               !f! b   b !d!               qs             
+#              aw              !!! gbbbh !!!              qs              
+#w              aw             !f!       !d!             qs              q
+-#1           %  xf            !!! tbbbb !!!            dx  %           2#
+#s              qs             !f! b     !d!             aw              a
+#              qs              !!! bbbbb !!!              aw              
+#             qs               !f!       !d!               aw             
+#            qs                !!!       !!!                aw            
+#                              !f!       !d!                              
+#                              !!!       !!!                              
+EndOfMapdata
+

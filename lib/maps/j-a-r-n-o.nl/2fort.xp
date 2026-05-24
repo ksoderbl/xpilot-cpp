@@ -1,0 +1,138 @@
+#Created by MapXpress 4.4.0a on Wed Nov 28 23:45:15 2001
+
+#Options updated for Xpilot 4.4.0
+mapwidth : 150
+mapheight : 50
+mapname : 2fort
+mapauthor : DRUNKEN RUSSIAN
+limitedlives : yes
+worldlives : 3
+gravity : -0.0
+maxrobots : 0
+mineswallbounce : yes
+missileswallbounce : yes
+maxobjectwallbouncespeed : 999999
+maxshieldedwallbouncespeed : 999999
+maxunshieldedwallbouncespeed : 999999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.5
+objectwallbouncebrakefactor : 1
+objectwallbouncelifefactor : 1
+teamplay : yes
+teamfuel : yes
+targetkillteam : yes
+targetsync : yes
+treasurekillteam : yes
+treasurecollisionmaykill : yes
+capturetheflag : yes
+allowplayercrashes : no
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+rogueheatprob : 0
+maxminesperpack : 3
+roguemineprob : 0
+nukeminmines : 8
+itemconcentratorradius : 5
+maxitemdensity : 0.0012
+allowviewing : yes
+usewreckage : no
+initialfuel : 1500
+initialtanks : 2
+initialafterburners : 2
+initialemergencythrusts : 1
+initialautopilots : 2
+initialarmor : 3
+maxoffensiveitems : 999999
+maxdefensiveitems : 999999
+maxfuel : 999999
+maxtanks : 999999
+maxecms : 999999
+maxmines : 999999
+maxmissiles : 999999
+maxcloaks : 999999
+maxsensors : 999999
+maxwideangles : 999999
+maxrearshots : 999999
+maxafterburners : 999999
+maxtransporters : 999999
+maxdeflectors : 999999
+maxphasings : 999999
+maxhyperjumps : 999999
+maxemergencythrusts : 999999
+maxlasers : 999999
+maxtractorbeams : 999999
+maxautopilots : 999999
+maxemergencyshields : 999999
+maxmirrors : 999999
+maxarmor : 999999
+movingitemprob : 0
+dropitemonkillprob : 1
+detonateitemonkillprob : 0
+itemconcentratorprob : 0.75
+itemprobmult : 2
+cannonitemprobmult : 0
+asteroidprob : 0
+torpedokillscoremult : 1.5
+smartkillscoremult : .5
+tankkillscoremult : 2
+runoverkillscoremult : 3
+ballkillscoremult : -2
+shovekillscoremult : 1
+tankscoredecrement : -20000
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xs    axxs                         axs     axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs      axs            bb      bb   axxs    ax
+x     qxs                           x       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x             bb      bb    axw     x
+x    qxs    bbbbbbbbbb              x       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x             bb      bb     axw    x
+x   qxs     bbbbbbbbbbb             x       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x             bb      bb      axw   x
+x  qxs               bb             x       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x             bb      bb       axw  x
+xwqxs               bb       x      x       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x      x      bb      bb        axwqx
+xxxs               bb        x              xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx               x      bb      bb         axxx
+xxs               bb         x              xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx               x      bb      bb          axx
+x%               bb          x              xxxxxxxxxxxxxxxxxxxxxxxxxxxxs axxxxxxxxxxxxxxxxxxxxxxxxxxxxxx               x      bbbbbbbbbbbbb        ax
+xw              bb           x              xxxxxxxxxxxxxxxxxxxxxxxxxxs      axxxxxxxxxxxxxxxxxxxxxxxxxxx               x      bbbbbbbbbbbbb        %x
+xxw            bb            x              xxxxxxxxxxxxxxxxxxxxxxxxs           axxxxxxxxxxxxxxxxxxxxxxxx               x              bb          qxx
+xxxw          bb             x      x       xxxxxxxxxxxxxxxxxxxxxxs                axxxxxxxxxxxxxxxxxxxxx        x      x              bb         qxxx
+xsaxw        bb              x      x       xxxxxxxxxxxxxxxxxxxxs         x            axxxxxxxxxxxxxxxxx        x      x              bb        qxsax
+x  ax        bb              x      x       xxxxxxxxxxxxxxxxxs            x               axxxxxxxxxxxxxx        x      x              bb        xs  x
+x   xw       bb              x      x       xxxxxxxxxxxxxxxs              x                  axxxxxxxxxxx        x      x              bb       qx   x
+x   axw      bbbbbbbbbbbbb   x      x       xxxxxxxxxxxxxs                x                     axxxxxxxx        x      x              bb      qxs   x
+x    axw     bbbbbbbbbbbbb   x      x       xxxxxxxxxxxs                  x                       axxxxxx        x      x              bb     qxs    x
+x     axw                    x      x       xxxxxxxxs                     x                        axxxxx        x      x              bb    qxs     x
+xw    qxxw                   x      x                                     x                                      x      x              bb   qxxw    qx
+xxxxxxxxxxxxxxxxxxxxx        x      x                                     x                                      x      x        xxxxxxxxxxxxxxxxxxxxx
+x2$2$2$                      x      x                                                                            x      x                      $4$4$4x
+x###################*       (x      x                                                                            x      x(       *###################x
+x2$2$2$                      x      x                                                                            x      x                      $4$4$4x
+xxxxxxxxxxxxxxxxxxxxx        x      x       xxxxxxxxxxxxxxxxxxxxxxxxxx     ))    xxxxxxxxxxxxxxxxxxxxxxxx        x      x        xxxxxxxxxxxxxxxxxxxxx
+xs    axxs                   x      x                                                                            x      x                   axxs    ax
+x      xs                    x      x                                                                            x      x                    ax      x
+x     qx                     x      x                                                                            x      x                     xw     x
+x    qxs                     x      x                                                                            x      x                     axw    x
+x    xs                      x      x                                     x                                      x      x                      ax    x
+x   qx                       x      x                                     x                                      x      x                       xw   x
+x   xs                       x      x        xxxxxxxw                     x                        qxxxxx        x      x                       ax   x
+x  qx                        x      x        xxxxxxxxxxw                  x                       qxxxxxx        x      x                        xw  x
+xwqxs                        x      x        xxxxxxxxxxxxw                x                     qxxxxxxxx        x      x                        axwqx
+xxxs                         x               xxxxxxxxxxxxxxw              x                  qxxxxxxxxxxx               x                         axxx
+xxx                          x               xxxxxxxxxxxxxxxxw            x               qxxxxxxxxxxxxxx               x                          xxx
+xxs                          x               xxxxxxxxxxxxxxxxxxxw         x            qxxxxxxxxxxxxxxxxx               x                          axx
+x%                           x               xxxxxxxxxxxxxxxxxxxxxw                qxxxxxxxxxxxxxxxxxxxxx               x                           ax
+xw                           x               xxxxxxxxxxxxxxxxxxxxxxxw           qxxxxxxxxxxxxxxxxxxxxxxxx               x                           %x
+xxw                          x               xxxxxxxxxxxxxxxxxxxxxxxxxw      qxxxxxxxxxxxxxxxxxxxxxxxxxxx               x                          qxx
+xxxw                         x      x        xxxxxxxxxxxxxxxxxxxxxxxxxxxw qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x      x                         qxxx
+xsax                         x      x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x      x                         xsax
+x  xw                        x      x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x      x                        qx  x
+x  axw                              x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x                              qxs  x
+x   axw                             x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x                             qxs   x
+x    ax                             x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x                             xs    x
+x     xw                            x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x                            qx     x
+x     axw                           x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        x                           qxs     x
+xw    qxxw                         qxw      qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw      qxw                         qxxw    qx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

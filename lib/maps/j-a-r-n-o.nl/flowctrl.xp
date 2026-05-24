@@ -1,0 +1,352 @@
+#Created by MapXpress 4.4.0a on Tue Oct 30 19:16:06 2001
+
+#Options updated for Xpilot 4.4.0
+#connectorisstring:no 
+#ballcollisions:yes 
+#ballsparkcollisions:yes 
+#cannonflak:yes 
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : Flow Control
+mapauthor : Zemyla (pad53945@sci.tamucc.edu)
+limitedlives : yes
+worldlives : 3
+shipmass : 20.0
+gravity : 0
+gravityangle : 0
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 256
+firerepeatrate : 2
+friction : 0.0
+edgebounce : no
+edgewrap : yes
+extraborder : no
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+selfimmunity : no
+turnthrust : no
+coriolis : 0
+blockfriction : 0.0
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 4
+playerstartsshielded : yes
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : no
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : no
+debriswallbounce : no
+maxobjectwallbouncespeed : 100
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 200
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 0.80
+wallbouncefueldrainmult : 1.0
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+robotrealname : robot
+robothostname : xpilot.org
+tankrealname : tank
+tankhostname : tanks.org
+asteroidswallbounce : yes
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : no
+teamfuel : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+wreckagecollisionmaykill : no
+distinguishmissiles : yes
+keepshots : no
+identifymines : yes
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : no
+shieldeditempickup : no
+shieldedmining : no
+cloakedexhaust : yes
+cloakedshield : yes
+capturetheflag : no
+targetdeadtime : 60
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+cannonsuseitems : no
+cannonsmartness : 1
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : no
+wormholevisible : yes
+wormtime : 0
+itemconcentratorvisible : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : no
+allowshipshapes : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 1.0
+maxminesperpack : 2
+minelife : 0
+minefusetime : 00
+baseminerange : 0
+roguemineprob : 1.0
+minminespeed : 0
+blockfrictionvisible : yes
+cannondeadtime : 72
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 0.0
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 7
+nukeminmines : 4
+nukeclusterdamage : 1.0
+itemconcentratorradius : 10
+maxitemdensity : 0.00012
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : 0
+lockotherteam : yes
+allowviewing : no
+framespersecond : 12
+usewreckage : yes
+reset : yes
+initialfuel : 1000
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 2
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 100
+maxdefensiveitems : 100
+maxfuel : 10000
+maxtanks : 8
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxdeflectors : 10
+maxphasings : 10
+maxhyperjumps : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxmirrors : 10
+maxarmor : 10
+itemenergypackprob : 2e-7
+itemtankprob : 1e-7
+itemecmprob : 1e-7
+itemmineprob : 10e-7
+itemmissileprob : 10e-7
+itemcloakprob : 0e-7
+itemsensorprob : 0e-7
+itemwideangleprob : 1e-7
+itemrearshotprob : 1e-7
+itemafterburnerprob : 0e-7
+itemtransporterprob : 1e-7
+itemlaserprob : 0e-7
+itememergencythrustprob : 0e-7
+itemtractorbeamprob : 0e-7
+itemautopilotprob : 0e-7
+itememergencyshieldprob : 0e-7
+itemdeflectorprob : 1e-7
+itemhyperjumpprob : 1e-7
+itemphasingprob : 1e-7
+itemmirrorprob : 0e-7
+itemarmorprob : 1e-7
+movingitemprob : 0.0
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+randomitemprob : 0.0
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+#xxxxxxx mmm xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxx
+x       y   t       x                   x                   x                   x                   
+x       gy th       x                   x                   x                   x                   
+x        gbh        x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x         $         
+ gy               th                     gy                  gy               th          4         
+k gy             th j                   k gy                k gy             th j        qxw        
+k  b             b  j                   k  b                k  b             b  j      $4xxx4$      
+k th             gy j                   k th                k th             gy j        axs        
+ th               gy                     th                  th               gy          4         
+x                   x                   x                   x                   x         $         
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x        tby        x        tby        x        tby        x        tby        
+x                   x       th gy       x       th gy       x       th gy       x *     th gy       
+x                   x       h   g       x       h   g       x       h   g       x       h   g       
+xxxxxxxx mmm xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxx
+x       y   t       x                   x                   x                   x                   
+x       gy th       x                   x                   x                   x                   
+x        gbh        x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+ gy               th                  th                  th                     gy                 
+k gy             th j                th j                th j                   k gy                
+k  b             b  j                b  j                b  j                   k  b                
+k th             gy j                gy j                gy j                   k th                
+ th               gy                  gy                  gy                     th                 
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x        tby        x        tby        x                   
+x                   x                   x       th gy       x       th gy       x                   
+x                   x                   x       h   g       x       h   g       x                   
+xxxxxxxx mmm xxxxxxxxxxxxxxx mmm xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx mmm xxxxxxx
+x       y   t       x       y   t       x                   x                   x       y   t       
+x       gy th       x       gy th       x                   x                   x       gy th       
+x        gbh        x        gbh        x                   x                   x        gbh        
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+ gy                  gy                  gy                  gy                  gy                 
+k gy                k gy                k gy                k gy                k gy                
+k  b                k  b                k  b                k  b                k  b                
+k th                k th                k th                k th                k th                
+ th                  th                  th                  th                  th                 
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x        tby        x                   x        tby        x        tby        x                   
+x       th gy       x                   x       th gy       x       th gy       x                   
+x       h   g       x                   x       h   g       x       h   g       x                   
+xxxxxxxx iii xxxxxxxxxxxxxxx mmm xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx mmm xxxxxxx
+x                   x       y   t       x                   x                   x       y   t       
+x                   x       gy th       x                   x                   x       gy th       
+x                   x        gbh        x                   x                   x        gbh        
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+ gy               th                     gy               th                  th                    
+k gy             th j                   k gy             th j                th j                   
+k  b             b  j                   k  b             b  j                b  j                   
+k th             gy j                   k th             gy j                gy j                   
+ th               gy                     th               gy                  gy                    
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x        tby        x        tby        x        tby        x                   x        tby        
+x       th gy       x       th gy       x       th gy       x                   x       th gy       
+x       h   g       x       h   g       x       h   g       x                   x       h   g       
+xxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx iii xxxxxxxxxxxxxxx mmm xxxxxxxxxxxxxxx iii xxxxxxx
+x                   x                   x                   x       y   t       x                   
+x                 * x                   x                   x       gy th       x                   
+x                   x                   x                   x        gbh        x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x         $         x                   x                   x                   x                   
+ gy       2       th                     gy               th                  th                  th
+j gy     qxw     th j                   k gy             th j                th j                th 
+j  b   $2xxx2$   b  j                   k  b             b  j                b  j                b  
+j th     axs     gy j                   k th             gy j                gy j                gy 
+ th       2       gy                     th               gy                  gy                  gy
+x         $         x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x                   x                   x                   x                   
+x                   x        tby        x        tby        x        tby        x        tby        
+x                   x       th gy       x       th gy       x       th gy       x       th gy       
+x                   x       h   g       x       h   g       x       h   g       x       h   g       
+EndOfMapdata
+

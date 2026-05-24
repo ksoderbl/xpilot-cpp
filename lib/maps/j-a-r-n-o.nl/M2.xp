@@ -1,0 +1,451 @@
+# Created by xp-mapedit2 on Mon Jul 23 16:26:53 2001
+
+oneplayeronly:no
+timerresolution:0
+ignore20maxfps:yes
+reporttometaserver:yes
+idlerun:yes
+noquit:no
+contactport:15345
+plockserver:no
+password:Kool
+analyticalcollisiondetection:yes
+
+mapwidth : 200
+mapheight : 200
+mapname : Death Map 2002 (Sage's Map)
+mapauthor : Mystic (aka.  Konami & Sage)
+limitedlives : no
+selfimmunity : no
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : no
+gravityvisible : yes
+coriolis : 0
+friction : 0.0
+blockfriction : 0.0
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+shotmass : 0.1
+shotspeed : 30
+shotlife : 45
+maxplayershots : 15
+firerepeatrate : 1
+keepshots : yes
+edgewrap : yes
+extraborder : no
+turnthrust : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 100
+robotleavescore : -300
+robotleaveratio : -350
+robotteam : 2
+restrictrobots : yes
+reserverobotteam : no
+minrobots : 2
+maxrobots : 3
+robotrealname : Losser
+robothostname : xpilot.org
+shotswallbounce : yes
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : no
+debriswallbounce : yes
+asteroidswallbounce : yes
+wreckagecollisionmaykill : no
+tankrealname : Tank
+tankhostname : tanks.org
+maxobjectwallbouncespeed : 9999999999999999999
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.4
+objectwallbouncebrakefactor : 0.7
+objectwallbouncelifefactor : 0.99
+wallbouncefueldrainmult : 0.1
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+wormholevisible : no
+itemconcentratorvisible : no
+blockfrictionvisible : yes
+wormtime : 0
+playerstartsshielded : no
+shieldeditempickup : yes
+shieldedmining : yes
+targetkillteam : yes
+targetteamcollision : no
+targetsync : no
+targetdeadtime : 60
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+playersonradar : yes
+missilesonradar : yes
+minesonradar : yes
+nukesonradar : yes
+treasuresonradar : yes
+teamplay : no
+teamassign : yes
+teamimmunity : yes
+teamcannons : yes
+teamfuel : no
+capturetheflag : no
+cloakedexhaust : no
+cloakedshield : yes
+cannonsuseitems : yes
+cannonsmartness : 5
+cannondeadtime : 72
+identifymines : yes
+maxminesperpack : 5
+minelife : 0
+minefusetime : 0
+baseminerange : 0
+roguemineprob : 0
+nukeminmines : 2
+minminespeed : 0
+nukeclusterdamage : 1.0
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+distinguishmissiles : yes
+maxmissilesperpack : 2
+missilelife : 0
+rogueheatprob : 0
+nukeminsmarts : 4
+asteroidcollisionmaykill : yes
+asteroidsonradar : no
+maxasteroiddensity : 0
+allowshipshapes : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+laserisstungun : no
+maxroundtime : 0
+gameduration : 00
+rounddelay : 0
+roundstoplay : 12
+reset : yes
+resetonhuman : 0
+checkpointradius : 6.0
+racelaps : 3
+itemconcentratorradius : 4
+usewreckage : yes
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 12
+initialfuel : 9000000000000000000
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 3
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 1
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxfuel : 9000000000000000000
+maxtanks : 99
+maxecms : 99
+maxmines : 99
+maxmissiles : 99
+maxcloaks : 99
+maxsensors : 99
+maxwideangles : 99
+maxrearshots : 99
+maxafterburners : 99
+maxtransporters : 99
+maxdeflectors : 99
+maxphasings : 99
+maxhyperjumps : 99
+maxemergencythrusts : 99
+maxlasers : 99
+maxtractorbeams : 99
+maxautopilots : 99
+maxemergencyshields : 99
+maxmirrors : 99
+maxarmor : 99
+maxoffensiveitems : 100000
+maxdefensiveitems : 100000
+maxitemdensity : 0.0001
+itemenergypackprob : 1e-7
+itemtankprob : 1e-7
+itemecmprob : 1e-7
+itemmineprob : 1e-7
+itemmissileprob : 1e-7
+itemcloakprob : 1e-7
+itemsensorprob : 1e-7
+itemwideangleprob : 1e-7
+itemrearshotprob : 1e-7
+itemafterburnerprob : 1e-7
+itemtransporterprob : 1e-7
+itemlaserprob : 1e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 1e-7
+itemautopilotprob : 1e-7
+itememergencyshieldprob : 1e-7
+itemdeflectorprob : 1e-7
+itemhyperjumpprob : 1e-7
+itemphasingprob : 1e-7
+itemmirrorprob : 1e-7
+itemarmorprob : 1e-7
+movingitemprob : 0.2
+dropitemonkillprob : 0.8
+detonateitemonkillprob : 0.1
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 20.9
+itemprobmult : 5.0
+cannonitemprobmult : 2.0
+randomitemprob : 9.0
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxxxxx#x   x        (x!!!!     qxxxxxw        qxxxxxw            x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx!!!!     x     x        x     x            x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     xxxxxxxxxxxxxxxxxxxxxxxxccccccccccccccccccc  !!     x     x        x     x2$          x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     xxxxxxxxxxxxxxxxxxxxxxxx                     !!     axxxxxs       (axxxxxs     (      x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxx                     !!       2               2               x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   x xxxxxxxxxxxxxxxxxxxxxxx                     !!       $               $               x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxx                     !!                                       x                                            x                            
+x                 1                x   x      x            x      (                  !!                                       x               (                            x                            
+x                 $               xx   xx     x            x             (     (     !!                                       x                                            x        w                   
+x                                 x     x     x            x                         !!       bbby                            x                                            x       q#s                  
+x                               $1x     x     x            x                         !!       b  b             b    b         x                                            x        a            $      
+x   xxxx                          xw   qx     x            x                         !!       b tb            b      b        x                                            x                     _      
+xxxxx  a                                1     x            x                         !!       b b  tbby tb tb b  tb  b        x                                            x                   xxxxxxxxx
+                                        $     x            x                         !!       b gb b  b by by b  by  b        x                                            _                   x        
+                                              x            x                         !!       b (b b  b gb gb b (gb  b        x                                   w        $                   x        
+                                              x            x                         !!       bbbh gbbh bh bh  b bh b         x                                  q#s                           x        
+xxxxx  q                                      x       w    x            (            !!                                     $2x              w                    a                            x    xxxx
+x   xxxx1$                                    x      q#s   x                         !!                                       x             q#s                                                x    x   
+x                                             x       a    xtbby                     !!                                       x              a                                                xx    xx  
+x                 xs  ax                    $1x            xb))b                 (   !!                                       x                                                               x      x  
+x                 x    x                      x            xb))b                     !!                                       x                                                               x      x  
+x                xx    xx                     x            xb)hb                     !!                                       x                                                               x      x  
+x          1     x      x     1               x            xb))b   rrrrrrrrrrrrrrrrrr!!                                       x                                                               xxw  qxx  
+xxxxxxxxxxxxxxxxxx      xxxxxxxxxxxxxxxxxxxxxxx            xxxxxxxxxxxxxxxxxxxxxxxxxxx!                                       x                                                                         
+x                x      x                                                            x!                                       x        _ xxxx                                                           
+x                xx    xx                                                            x!                          !!!!!!!!!!!!!xxxxxxxxxxxx  x                                                           
+x                 x    x                                                             x!                          !            xx            a                                                           
+x                 xw  qx                                                             x!                          !            xx                                                                        
+x                                                                                    x!           (              !            x#                                                                        
+x                                                                                    x!                          !            xx            q                                                           
+x                                                                                    x!                          !            xx     xxxxx  x                                                           
+x                                                                                    x!                          !       tbbbyxx     x####xxx                                                           
+x                                                                                    x!                          !       b(((bxx     x####xxx      _                                                    
+x                                                                                    x!                          !       b(((bxx     x####xxxxxxxxxxxxxxxx#xxxxxxxxxxxxxxxxxxxxxxxxxx#xxxxxxxxxxxxxxxxxx
+x                                                                                    x!                          !       b(((bxx     x####xxxx                    _                                     
+x                                                                                    x!                          !       b(((bxx     xxxxx   a                    $                                     
+x                                                                                    x!  2    2   2  2      2    !       b(((bxx                                                                        
+x                 w                                                                  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                                                        
+x                q#s                                                                                                           x                                                                        
+x                 a                                              w                                                             xxxxxxxxxxx   q                                                          
+x                                                               q#s                                                                      xxxxx                                                          
+x                                                                a                                                                                                                                      
+x                                                                                                                                                                                                       
+x                                                                                                                                                                                                     $_
+x                                                                                                                                                                                                       
+x                                                                                                                         w                                                                             
+x                                                                                                                        q#s                                                                            
+x                                                                                                     w                   a                                                                             
+x                                                                                                    q#s                                                                                       xxxxxxxxx
+x                                                                                                     a                                                                                                 
+x                                                                                                                                                                      w                                
+x                                                                                                                                                                     q#s                               
+x                                  w                                                                                                                                   a                  x             
+xxxxxxxxxxxxxxxxxx                q#s                                                                                                                                                     x             
+x       1        x                 a                                                                                                                                                      x         tbby
+x       $        x                                                                                                                                                                        x         b((b
+x                x                                                                                                                                                                        x         b((b
+x                x                                                                          (                                                                                             x         bg(b
+x                x1$                                                                                                                                                                      x  _      b((b
+x                x                                                                                                                                                                        xxxxxxxxxxxxxx
+x                                                                                                                                                                                                       
+x 1        1                                                                                                                                                                                            
+xxxxxxxxxxxxxxx                                                                                     xw                                                                                                  
+x                                                                                                   xxw                                                                                                 
+x                                                                  w                                axxw                                                                                                
+x                                                                 q#s                                axxw                                  w                                          _            xb   
+x                                                                  a                                  axxw                                q#s                        xxxx            xxxb          xb   
+x                                                                                                      axxw                                a                         xbbb            xb xb         xbxx 
+x                                                                                                       axxw                                                         xb              xb xb         xb x 
+x                                                                                                        axxw                                                        xxx xb xbxb     xxxb  xxb   xxxb x 
+x                                                                                                         axxw                                                       xbb xb xbxxxxb  xbb  xb xb xb xbxxx
+x                                                                                                          axx1                                                      xb  xb xbxb xb  xb   xb xb xb xbaxs
+x                                                                                                           axxw                                                    (xb   xxb xb xb  xb    xx xb xxb    
+x                                                                                                            axxw                                                   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                                             axxw                                                  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                                              axxw                                                 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                                               axxw                                                xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                                                axxw                                               xxxx----+++++++++++++++++++++++++xxx
+x                                                                                                                 axxw                                              xxxx-#--+++++++++++++++++++++++++xxx
+x                                                                                                                  axxw                                             xxxx--                         ++xxx
+x                              w                                                                                    axx                                             xxxx--                         ++xxx
+x                             q#s                                                                                    ax                                             xxxx++                         ++xxx
+x                              a                                                                                                                                    xxxx++                   )     ++xxx
+x_$                                                                                                                                                                 xxxx++  )                      ++xxx
+x                                                                                w                                                                                  xxxx++                         ++xxx
+x                                                                               q#s                                                                                 xxxx++                         ++xxx
+x                                                                                a                                                                              xxxxxxxx++                         ++xxx
+x                                                                                          xxxxxxxxxxxxxxxxxxxxxxxx                                             xxxxxxxx++           )             ++xxx
+x                                                                                          x++++++++++++++++++++++x                                             xxxxxxxx++                         ++xxx
+x                                                                                          x+                    +x                              xxxxxxxxxxx    xxxxxxxx++                         ++xxx
+x                                                                                          x+               (    +x                              x              xxxxxxxx++                         ++xxx
+x                                                                                          x+                    +x          w                   x              xxxxxxxx++                         ++xxx
+x                                                                                          x+                    +x         q#s                  x              xxxxxxxx++                         ++xxx
+x                                                                                          x+  (        %        +x          a                   x              xxxxxxxx++                         ++xxx
+x                                                                                          x+     %              +x                              xx             xxxxxxxx++                         ++xxx
+x                                                                                          x+         %    %     +x                               x             xxxxxxxx++  )                      ++xxx
+x                                                      _                                   x+                    +x                               x                 xxxx++                        (++xxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx+            %       +x                               x   xs( axx       xxxx+++++++++++++++++++++++++++++xxx
+x++++km                                     x                            x  x   x          x+                    +x                               x   x     x       xxxx+++++++++++++++++++++++++++++xxx
+x+))km                      b  b  bbb bb bb x                            x  x   x          x+        %           +x                               x   xx!!!xx       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x+)km                       b  b  b   b b b x  by tb          b          x  x   x          x+                    +x                               x    x   x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x+mm                        b bbb bb  b   b x  bb bb      tb  b  b       x  x   x  xxxx    x+                    +x                               x    x!!!x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xmm                         b  b  b   b   b x  bgbhb b  b bh bbb   tb    x  x   x  x  x    x++++++++++++++++++++++x@                              x    x  (x        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xm                          b  b  bbb b   b x  b   b gy b gb  b  b b     x  x      x  x    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx!!!xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                           x  b   b  gbh bh  b  b gb    x  x      x       xccccccccccccccccccccccx                                 xxxx   xxxx                                x      x(
+x                  % % %                    x         th                 x  x  xxxxx xxxxxxx                      x                                 xxxx!!!xxxx                                x      x 
+x                   %%%                     x        th                  x  x  x     xx    x          )           x                   xxxxxxxxxxx   xxxx   xxxx                                x  xxx x 
+x                  %%#%%                    x       th                   x  x  x           xrrrrrrrrrrrrrrrrrrrrrrx   xxxxxxxx   xxxxxx  x      x   xxxx!!!xxxx                         xxxxxxxx  xxx x 
+x                   %%%                     x                            x  x  xxxxxxxx    xxxxxxxxxxxxxxxxxxxxxxxx   x    xxx   xxx            x   xxx(    xxx  xxxxxxxxxxxx   xxxxx      xxxxx  xxx   
+x                  % % %                    x          by tb             x     x      x    x                          x x  xxx   xxx  xxx   xxxxx   xxxx   xxxx  x                  x      xxxxxx xxxxxx
+x                                           x          bb bb          tbyx     x      x    x                          x x  xxx   xxx    xx      x   xxxs   axxx  x                  x      xxxxxx xxxxxx
+x                                           x          bgbhb tby  bby b bxxxx  x      x    x         xxxxxxxxxxxxxxxxxx xxxx       x  xxxxxx    x                x                  x      xxxxxx xxxxxx
+x                                           x          b   b b by  th bh x     x  xxxxx    x    xxxxxxxxxxxxxxxxxxxxx   xx            x         x          xxxxxxx                  x      xxxxxx xxxx  
+x                                           x          b   b gbhb tbb gbbx  xxxx  xx       x    xxxxxxxxxxxxxxxxxxxxx          xxxxxxxx  xxxxxxxxxxxxxxxxxxx           xxxxxxxxx    x      xxx    xxxx  
+x                                           xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     x  x    xxxxx    xxxxxxxxxxxxxxxxxxxxxx        xx          x                               x    x    x   xxxxx     x  x  
+x                                           x    x                             x  x        x    xxxxxxxxxxxxxxxxxxxxxx       xxx          x                               x    x    x   xxxx   xxxx  x  
+x                                           x    x                                xxxxxxx  x    xxxxxxxxxxxxxxxxxxxxxx   xxxxxxx          x   xxxxxxxxx       xxxxxxxxx   x    xxxxxxxxxxxxx xxx     x  
+x                                           x    x                                x        x    xxxxxxxxxxxxxxxxxxxxxx   x                x           x   x   x           x       x          x          
+x                                           x    xxxxxx  xxxxxxxxxxxxxxxx         x        x    xxxxxxxx    xxxxxxxxxx   x                x           x   x   x           x    x  x          x    xxxxxx
+xkkkkkkkkkkkkkmmmmmm     mmmmmmjjjjjjjjjjjjjx    x                      xxxxxxxxxxx        x    xxxxxxxx    xxxxxx       xxxx             xxxxxxxx    x   x   x   xxxxxxxxx    x  x   x  xxxxx          
+xkkkkkkkkkkkkkmkkkkmmmmmmmjjjjjjjjjjjjjjjjjjx    x                      x  x         xxxxxxx                             x  x    xxxxxxxxxx      x    x   x   x                x  x   x         xxxxx   
+xkkkkkkkkkkkii+++mmmmmmmmmmm+++iijjjjjjjjjjjx    x                      x  x         x                                   x  x    x               x    x   x   x              xxx  x   x         xx      
+xkkkkkkkkkkkii+++wmmmmmmmmmq+++iijjjjjjjjjjjx    xxxxxxxxxxxx           x  x         x                   xxxxxxxxxxxxxxxxx  x    x               x    x   x   xxxxxxxxxxxxx    x      xxxxxxxxxxxxxxxxx(
+xxxxxxxxxxxxxxxxxxmmmmmmmmmxxxxxxxxxxxxxxxxxx               xxxxxxxxxx  x  x   xxxxxxx                                      x    x               x        x   x           x    x     xxxxxxxxxxxxxxxxxxx
+xccccccccccccccccsmmmmmmmmmaccccccccccccccccx               x           x  x   xx    x      xxxxxxxxxxx                     x    x               x        x   x           x    xxx xxxx+++++++++++++++++
+xfccccccccccccccmjmmmmmmmmmkmcccccccccccccdcxxxxxxxxxxxx  x x           x  x         x   x  x         x                     x    x    xxxxxxxx   x     xxxx   x           x    x     xx+      $        +
+xff             m           m             ddx          x  x x x         x  x         x   x  x         x               xx    x    x    x   x  x   x     xxxx   x                x     xx+               +
+xff                                       ddx          x  x x x  xxxxxxxx  x         x   x  x         x          xxxxxxx    xx   x    x   x  x   xxxxxxxxxx   xxxxx            x  xxxxx+               +
+xff                                       ddx          x  x x x  x   x     xxxxx   xxx   x  xxxxxx    xxxxxxxx     x        xx   x    x   x  x          x         xxxxxxxxxxx  x  xxxxx+               +
+xff                                       ddx          x  x   x  x   x         x   x     x       x    x      x     x             x    x   x  x          x         x               x xxx+               +
+xff                                       ddx   xxxxxxxx  x x x  x   x         x   x  xxxx       x    x      x           x       x    x      xxxxxxxx   x xxxxxxx x               xx xx+               +
+xff                                       ddx             x x x  x   xxxxxxxx  x   x     xxxxxx  x    x  xx  x           x    xxxx    x      xx         x     xxx x               xxx x+               +
+xff                                       ddx             xxxxx  x             x   xxx        x  x    x  xx  xxxxxxxxxxxxx          xxxxxx   xx         x     xxx x   x   xxxxxxxxxxxxx+               +
+xff                                       ddx   xxxxxxxxxxx xxx  x             x     x        x  x       xx          x                   x   xx   xxxxxxx         x   x               x+               +
+xff                                       ddx               x    x  xxxxx            x        x  x       xx          x                   x   xx   xxxxxxxxxxx     x   xxxxxxxxxxx  x  x+               +
+xff                                       ddx               x    x      x  xxx       xxxxxxxxxx  x    xxxxxxxx       x   x               x   xx   xxxxxxxxxxxxxxxxx   x            x  x                 
+xff                      b   b            ddxxxxxxxxxxxxx   x    x      xxxxxx       x           x    xxxxxxxxxxxxx  x   x               x   xx                   x   xx           x  x      w          
+xff        b   b         b   b            ddx           x   x  xxx         xxx       x           x       xx          x   xxxxxxxxxxxxxx  x   xx                   x   xxxxxxxxxxxxxx  x     q#s         
+xff        b   b         b   b            ddx           x   x  x xxxxxxx   xxxxxxxxxxx    xxxxxxxx       xx          x   x    x          x   xx                   x                x  x      a          
+xff        b   b  bbbbb  b   b            ddx           x   x  xxxxxxxxx   xxxxx          x           x  xx xxxxxx   x   x    x          x   xxxxxxxxxxxx         x                x  x                 
+xff        b   b  b      b   b            ddxxxx        x   x          x   xxxxx          x           x  xx x            x    x          x   xxxxxxxxx            x                x  x                 
+xff        bbbbb  b      b   b            ddxx#x   x    x   x          x   xxxxx          x           x     x            xxxx   xxxxxxxxxxxx      x         x     x                x  x                 
+xff        b   b  bbb    b   b            ddxx#x   x    x   x          x   xxxxx          x           x     x            x             x   x      x         x     xxxxxx   xxxxx   x  x                 
+xff        b   b  b      b   b            ddxx#x   x    xxxxxxxxxxxx   x       xxxxxxxxx  x           x     xxxxxxxxxxx  xxxxxxxxxxxx  x   x      x         x          x   x   x   x  x                 
+xff        b   b  b      b   b            ddxx#x   x               x   x               x  x    xxxxxxxx     x            x                 xxxxx  x         x          x   xx  x   xxxx                 
+xff        b   b  bbbbb  b   bbbbbb       ddxx#x   x               xxxxxxxxx           x  x    x            x            x                 x         xxx    x          x       x      x                 
+xff                                       ddx##x   x               x       x           x  x    x            x   xxxxxxxxxxxxxxxxxxxxxxxxx  x         x      x          x       x      x                 
+xff                                       ddxxxx   xxxxxxxxxxxx    x       xxxxxxxxx   x  x    x  xx        x            xxxxxxxxxxxxx     x         x      x          xxxx    xx     x                 
+xff                                       ddx                 #    x               x   x  x    x  xxxxxxxxxxx            xxxxxxxxxxxxx     xx   xxxxxx      xxxxxxxx      xxxxxxx     x                 
+xff                                       ddx                 x    x   x          xx   x  x    x            x            xxxxxxxxxxxxx  x   x   x                  x                  x                 
+xff                                       ddxxxxxxxxxxxxxxx   x        x               x  x    x            xxxxxxxxxx   x              x   x   x                  x                  x                 
+xff                                       ddx                 x        x            xxxx  x    xxxxxxxxxx   x  xx    x                  x   x   x   x    x         xx                 x                 
+xff                                       ddx                 x        xxxxxxxxxxxxxx     x    x            x  x  x  x                  x   x   x   x    xxxxxxx    x                 x                 
+xff                                       ddx            xxxxxxxxxxx   x            x     x    x            x  x  x  x  xxxxxxxxxxxxxxxxx   xxxxx   x          x    xxxxxxxxxxxxxxxxxxx                 
+xff                                       ddx   x                  x   x            x     x    x  xxxxx     x  x  x  x  x                           x          x                      x                 
+xff                                       ddx   x                  x   x            x     x    x      x     x     x  x  x                           x          x                      x                 
+xff                                       ddx   x xxx#xxxxxx       x   x   xxxxxxxx       x    x      xxxxxxxxx   x  x  x  xxxxx                    x          x                      x                 
+xff                                       ddx   x x                x   x   x  x       xxxxx    x      x   xxxxx   x     xx x   xxxxxxxxxxxx   xxxxxxxxxxxxxx   x      xxxx  xxxxxxx   x            w    
+xff                                       ddx   x x                x   x   x  x       x        xxxxx  x   xxxxxxxxx      x x              x   x            x   x         x  x     x   x           q#s   
+xff                                       ddx   x x        xxxxx   x   x   x  x  xxxxxx        xxx    x   x              x x              x   x            x   xxxxxxx   x  x     x   x            a    
+xff                                       ddx   x x        x###x   x       x  x       x   xxxxxxxx  xxx   x       xxxxxxxx x  xxxxxxxxx   x   x            x   xxxxxx    x        x   x                 
+xff                                       ddx   x xxxxxxxxxx#x#x   x       x  x  x    x          x  x         x   x        x       xxxx   x   x  xxxxxxx   x   xxxxxx    x        x   x                 
+xff                                      @ddx   x          x#x#x   x       x  x  x    x          x  x         x   x xxxxxx x       xxxx       x  x     x   x   xxxxxx           xxx   x                 
+xrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrx   x          x#x#x   xxxxxxxxx  x  x    x          x  x         x   x x    x x       xxxx       x  x     x   x   xxxxxx   xxxxxxxxx     x                 
+xrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrx)  x          x###x              x  x    x   xxxxx  x  x    xxxx x   x x  xxx x  xxxxxxxxx    x  x  x     x   x   xxxxxx   x             x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx              x  x        x   x     x       x x   x x      x  xxxxxxxxx    x  x  x xx  x   x   x        x             x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                 x        x   x     x       x x   x x      x  xxxxxxxxx    x  x  x  x  x   x   x        x   xxxxxxxxxxx                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                 x        x   x     x       x x xxx xxxxx  x  xxxxxxxxx    x  x  x (x  x   x   x   xxxxxx   x x   x x x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     xxxxxxxxxxxxxxx   x   xxxxxx    x x   x     x  x  xxxxxxxxxxxx x  x  xxxx  x   x   x   x        x   x     x                 
+xx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x           x        x    x x   x     x     xxxxxxxxxxxx x  x        x   x       x        xx xxxxx xx                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x                    x    x x   x     x     xxxxxxxxxxxx x  x        x   x       x  xx x  x  x  x   x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x                    x    x   xxx     xxxxxxxxxxxxxxxxxx x  xxxxxxxxxx   xxxxxxxxx   x xx x xxx   x x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x                    x    x   x#x     xxxxxxx   x      x x                           x  x x  x  xxxxx                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    x   xxxxxxxxx        x    x   xxx     xxxxxxx   x      x x                          xx  x x  x   x xx                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x           x   xxxxxx    xxxxxxx     xxxxxxx   x        x                          x   x    xx   ! x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x           x   x                     xxxxxxx   x        x                          x   x    x  x x(x                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                  x           x   x                     xxxxxxx   x xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    x             x           x   x                     xxxxxxx   x x                            _         x                            
+x)))                  b   b                                 (((x    x    xxxxxxxxxxxxxxxxxx   x   x                     x     x   x x                            $         x                            
+x)))                  b   b                                 (((x    x                     x   x   x     x   xxxxxxxxxxxxx     x     x                                      x                            
+x)))                  b   b                                 (((x    x                     x   x   x     x   x   xxxxxxxxx     x  x  x                                      x                            
+x)))  b   b   b    b  b   b     b   b   b   b   b   b    b  (((x    x                     x   x   x     x   x   xxxxxxxxx   x x  x  x                          w           x                            
+x)))                  b   b                                 (((x    xxxxxxxxxxx           x       x     x   x   xxxxxxxxx   x x  x  x                         q#s          x                            
+x)))                  b   b                                 (((x              x           x       x     x   x   xxxxxxxxx   x    x  x                          a           x                            
+x)))                  b   b                   b             (((x              x           xxxxxxxxx     x   x   xxxxxxxxxx  x    x  x                                      x                            
+x)))                  b   b                    b            (((x              xxxxxxxxxxxxx             x   x      x     x  x    x  x                                      x                            
+x)))      b     b     b   b b   b    b   bbbbbbbb           (((x              x                         x   x      x     x  x    x  x                                      x                            
+x)))                  b   b                    b            (((xxxxxxxxxxx    x                         x                   x    x  x                                    $_x                            
+x)))                  b   b                   b             (((xxxxxxxxxxx    x                         x              x    x    x  x_$                                    x                     w      
+x)))                  b   b                                 (((xxxxxxxxxxx    x                         x              x    x    x  x                                      x                    q#s     
+x)))                  b   b     b   b   b   b   b   b   b   (((xxxxxxxxxxx    x   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                      x                     a      
+x)))  b   b   b     b b   b                                 (((xxxxxxxxxxx    x   x                    2                      x                                            x                            
+x)))                  b   b                                 (((xxxxxxxxxxx    x   x                    $                      x                                            x                            
+x)))                  b   b                                 (((x              x   x  (                                        x                                            x                            
+x)))                  b   b                                 (((x              x   x                                           x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw   qxxxxxxxxxxxxxxxxxxxxxxxx              x   x                                           x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxx              x   x                                           x                                            x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxx   x                                           x                    w                       x                          $_
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx x   xxxxxxxxxxxxxxxxxxxxxxxxx####x   x         x                                           x                   q#s                      x                            
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx   xxxxxxxxxxxxxxxxxxxxxxxxxxxx#x   x         x                                           x_$                  a                       x                            
+EndOfMapdata
+

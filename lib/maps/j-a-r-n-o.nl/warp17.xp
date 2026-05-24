@@ -1,0 +1,235 @@
+#Created by MapXpress 4.4.0a on Sat Jun 16 21:01:53 2001
+
+mapwidth : 100
+mapheight : 200
+mapname : Warp 17 racing
+mapauthor : J-a-r-n-o
+limitedlives : yes
+gravity : 0
+shotlife : 120
+maxplayershots : 1
+edgewrap : yes
+maxrobots : 0
+playerstartsshielded : no
+shotswallbounce : yes
+maxobjectwallbouncespeed : 8000
+maxshieldedwallbouncespeed : 8000
+maxunshieldedwallbouncespeed : 8000
+maxshieldedplayerwallbounceangle : 0
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.3
+objectwallbouncebrakefactor : 0.0
+objectwallbouncelifefactor : 1.0
+allowplayercrashes : no
+allowshields : no
+timing : yes
+checkpointradius : 18.0
+racelaps : 10
+allowviewing : yes
+framespersecond : 12
+initialfuel : 500
+initialafterburners : 5
+itemprobmult : 0.0
+
+mapData: \multiline: EndOfMapdata
+              g    bh              xxxxxxxxxxxxxxx                                               xxx
+              bg B b              gxxxxxxxxxxxxxxx                                               xxx
+               t   b               xxxxxxxxxxxxxxx                                               xxx
+               bbb b               xxxxxxxxxxxxxxx                                               xxx
+     qxw         gbh               xxxxxxxxxxxxxxx                                               xxx
+    qxxx                           xxxxxxxxxxxxxxx                                               xxx
+    xxxx                           xxxxxxxxxxxxxxx                                               xxx
+    xxxx                           xxxxxxxxxxxxxxx                                               xxx
+    xxxx                           xxxxxxxxxxxxxxx                                               xxx
+    xxxx                           xxxxxxxxxxxxxxx                                               xxx
+    xxxs                           xxxxxxxxxxxxxxx                                               xxx
+    axs                            xxxxxxxxxxxxxxx         b                            b        xxx
+                                   xxxxxxxxxxxxxxx         b                            b        xxx
+                                   xxxxxxxxxxxxxxx        bbb                          bbb       xxx
+                                   xxxxxxxxxxxxxxx        bbbb                        bbbb       xxx
+                                   xxxxxxxxxxxxxxx        bbbbb                      bbbbb       xxx
+                                   xxxxxxxxxxxxxxx         bbbb                      bbbb        xxx
+                                   xxxxxxxxxxxxxxx         bbbb                      bbbb        xxx
+                                   xxxxxxxxxxxxxxx         bbbbb                    bbbbb        xxx
+                                   xxxxxxxxxxxxxxx          bbbb                    bbbb         xxx
+                                   xxxxxxxxxxxxxxx          bbbb                    bbbb         xxx
+                                   xxxxxxxxxxxxxxx          bbbb                    bbbb         xxx
+                                   xxxxxxxxxxxxxxx           bbbb                  bbbb          xxx
+                                   xxxxxxxxxxxxxxx           bbbb                  bbbb          xxx
+                                   xxxxxxxxxxxxxxx           bbbb                  bbbb          xxx
+                          gbbb     xxxxxxxxxxxxxxx            bbbb                bbbb           xxx
+                                   xxxxxxxxxxxxxxx            bbbb                bbbb           xxx
+                                   xxxxxxxxxxxxxxx            bbbb       bb       bbbb           xxx
+                     qw            xxxxxxxxxxxxxxx             bbb      bbbb      bbb            xxx
+                    qxx            xxxxxxxxxxxxxxx             bbbb     bbbb     bbbb            xxx
+                   qxxx            xxxxxxxxxxxxxxx             bbbb    bbbbbb    bbbb            xxx
+                  qxxxx            xxxxxxxxxxxxxxx              bbb    bbbbbb    bbb             xxx
+                  xxxxx            xxxxxxxxxxxxxxx              bbb    bbbbbb    bbb             xxx
+                  xxxxx            xxxxxxxxxxxxxxx              bbbb  bbb  bbb  bbbb             xxx
+                  axxxx            xxxxxxxxxxxxxxx               bbb  bbb  bbb  bbb              xxx
+                   axxx            xxxxxxxxxxxxxxx               bbb  bbb  bbb  bbb              xxx
+                    xxx            xxxxxxxxxxxxxxx               bbbbbbbb  bbbbbbbb              xxx
+                    axxw           xxxxxxxxxxxxxxx                bbbbbbb  bbbbbbb               xxx
+                     axs           xxxxxxxxxxxxxxx                bbbbbb    bbbbbb               xxx
+                                   xxxxxxxxxxxxxxx                bbbbb      bbbbb               xxx
+      bh                           xxxxxxxxxxxxxxx                 bbbb      bbbb                xxx
+    gbh                            xxxxxxxxxxxxxxx                 bbbb      bbbb                xxx
+                                   xxxxxxxxxxxxxxx                  bb        bb                 xxx
+                                   xxxxxxxxxxxxxxx                   b        b                  xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                       bbbb                    xxx
+              qw                  qxxxxxxxxxxxxxxx                      bbbbbb                   xxx
+             qxxw                qxxxxxxxxxxxxxxxx                      bbbbbb                   xxx
+             xxxx                xxxxxxxxxxxxxxxxx                      bbbbbb                   xxx
+             axxx                xxxxxxxxxxxxxxxxx                     bbbbbbbb                  xxx
+              xxxw              qxxxxxxxxxxxxxxxxx                     bbb  bbb                  xxx
+             qxxxs              xxxxxxxxxxxxxxxxxx                     bbb  bbb                  xxx
+             xxxs               xxxxxxxxxxxxxxxxxx                    bbbb  bbbb                 xxx
+             axxwA              xxxxxxxxxxxxxxxxxx                    bbbb  bbbb                 xxx
+              axx b             axxxxxxxxxxxxxxxxx                    bbbb  bbbb                 xxx
+               xx gb             axxxxxxxxxxxxxxxx                   bbbb    bbbb                xxx
+               as  gb             axxxxxxxxxxxxxxx                   bbbb    bbbb                xxx
+                    b              xxxxxxxxxxxxxxx                   bbbb    bbbb                xxx
+                    gb             xxxxxxxxxxxxxxx                   bbbb    bbbb                xxx
+                     gbh           xxxxxxxxxxxxxxx                  bbbb      bbbb               xxx
+                                   xxxxxxxxxxxxxxx                  bbbb      bbbb               xxx
+                                   xxxxxxxxxxxxxxx                  bbbbbbbbbbbbbb               xxx
+                                   xxxxxxxxxxxxxxx                 bbbbbbbbbbbbbbbb              xxx
+                                   xxxxxxxxxxxxxxx                 bbbbbbbbbbbbbbbb              xxx
+                                   xxxxxxxxxxxxxxx                 bbb          bbb              xxx
+                                   xxxxxxxxxxxxxxx                bbbb          bbbb             xxx
+                                   xxxxxxxxxxxxxxx                bbbb          bbbb             xxx
+                                   xxxxxxxxxxxxxxx                bbb            bbb             xxx
+                                   xxxxxxxxxxxxxxx               bbbb            bbbb            xxx
+                                   xxxxxxxxxxxxxxx               bbbb            bbbb            xxx
+       qw                          xxxxxxxxxxxxxxx               bbb              bbb            xxx
+      qxxw                         xxxxxxxxxxxxxxx               bbb              bbb            xxx
+      xxxxw                        xxxxxxxxxxxxxxx              bbb                bbb           xxx
+      xxxxs                        xxxxxxxxxxxxxxx                                               xxx
+      xxxx                         xxxxxxxxxxxxxxx                                               xxx
+     qxxxx                         xxxxxxxxxxxxxxx                                               xxx
+     xxxxx                         xxxxxxxxxxxxxxx                                               xxx
+     axxxx                         xxxxxxxxxxxxxxx                                               xxx
+      xxxx                         xxxxxxxxxxxxxxx                                               xxx
+      xxxx                         xxxxxxxxxxxxxxx                                               xxx
+      axxx                         xxxxxxxxxxxxxxx                                               xxx
+       axxw                        xxxxxxxxxxxxxxx                 bbbbbbbbbbb                   xxx
+        axx                        xxxxxxxxxxxxxxx                 bbbbbbbbbbbbb                 xxx
+         as  gb                    axxxxxxxxxxxxxx                 bbbbbbbbbbbbbb                xxx
+              gb                gb  axxxxxxxxxxxxx                 bbb      bbbbbb               xxx
+               b                 gb  xxxxxxxxxxxxx                 bbb        bbbb               xxx
+               gh                 g  axxxxxxxxxxxx                 bbb         bbb               xxx
+                                      xxxxxxxxxxxx                 bbb         bbb               xxx
+                                      axxxxxxxxxxx                 bbb         bbb               xxx
+                                       xxxxxxxxxxx                 bbb         bbb               xxx
+                                       axxxxxxxxxx                 bbb        bbbb               xxx
+                                        xxxxxxxxxx                 bbb        bbbb               xxx
+                                        axxxxxxxxx                 bbb       bbbb                xxx
+                                         xxxxxxxxx                 bbb    bbbbbbb                xxx
+                                         axxxxxxxx                 bbbbbbbbbbbbb                 xxx
+                                   x      xxxxxxxx                 bbbbbbbbbbbb                  xxx
+                                   xw     axxxxxxx                 bbbbbbbbbbb                   xxx
+                                   xx      xxxxxxx                 bbbbbbbb                      xxx
+                                   xxw     axxxxxx                 bbbbbbbb                      xxx
+                          xw       xxx      xxxxxx                 bbbbbbbbb                     xxx
+                        xqxxxxw    xxxw     axxxxx                 bbbbbbbbbbb                   xxx
+                        axxxxxxx   xxxx      xxxxx                 bbb  bbbbbbb                  xxx
+                         axxxxxs   xxxxw     axxxx                 bbb   bbbbbbb                 xxx
+                          xxxxx    xxxxx      xxxx                 bbb    bbbbbbb                xxx
+                          xxxxx    xxxxx      xxxx                 bbb      bbbbb                xxx
+                          xxxxx    xxxxx      xxxx                 bbb       bbbbb               xxx
+                 D       qxxxxx    xxxxx      xxxx                 bbb        bbbbb              xxx
+     gb                  xxxxxs    xxxxx      xxxx                 bbb          bbbb             xxx
+      b                  xxxxs     xxxxx      xxxx                 bbb           bbbb            xxx
+      b                  xxxx      xxxxx      xxxx                                               xxx
+      gb                 xxs       xxxxx      xxxx                                               xxx
+       gb                as        xxxxx      xxxx                                               xxx
+        gb                         xxxxx      xxxx                                               xxx
+         gh                        xxxxx      xxxx                                               xxx
+                                   xxxxx  __  xxxx                                               xxx
+                                   xxxxx      xxxx                                               xxx
+                                   xxxxx______xxxx                 bbbbbbbbbbb                   xxx
+                                   xxxxxxxxxxxxxxx                 bbbbbbbbbbbbb                 xxx
+                                   xxxxxxxxxxxxxxx                 bbbbbbbbbbbbbb                xxx
+                                   xxxxxxxxxxxxxxx                 bbb      bbbbbb               xxx
+                                   xxxxxxxxxxxxxxx                 bbb        bbbb               xxx
+                                   xxxxxxxxxxxxxxx                 bbb         bbb               xxx
+                                   xxxxxxxxxxxxxxx                 bbb         bbb               xxx
+                                   xxxxxxxxxxxxxxx                 bbb         bbb               xxx
+w                                  xxxxxxxxxxxxxxx                 bbb         bbb               xxx
+x                                  xxxxxxxxxxxxxxx                 bbb        bbbb               xxx
+xw                                 xxxxxxxxxxxxxxx                 bbb        bbbb               xxx
+xxx                                xxxxxxxxxxxxxxx                 bbb       bbbb                xxx
+xxxw                               xxxxxxxxxxxxxxx                 bbb    bbbbbbb                xxx
+xxxx                               xxxxxxxxxxxxxxx                 bbbbbbbbbbbbb                 xxx
+xxxx                               xxxxxxxxxxxxxxx                 bbbbbbbbbbbb                  xxx
+xxxxw                   gb         xxxxxxxxxxxxxxx                 bbbbbbbbbbb                   xxx
+xxxxxw                   g    bh   xxxxxxxxxxxxxxx                 bbbbbbbb                      xxx
+xxxxxx                        b    xxxxxxxxxxxxxxx                 bbb                           xxx
+xxxxxs                        b    xxxxxxxxxxxxxxx                 bbb                           xxx
+xxxxxw                        b    xxxxxxxxxxxxxxx                 bbb                           xxx
+xxs as                        b    xxxxxxxxxxxxxxx                 bbb                           xxx
+xx                           bh    xxxxxxxxxxxxxxx                 bbb                           xxx
+s                           bh     xxxxxxxxxxxxxxx                 bbb                           xxx
+                           bb      xxxxxxxxxxxxxxx                 bbb                           xxx
+                          bh       xxxxxxxxxxxxxxx                 bbb                           xxx
+                         gh        xxxxxxxxxxxxxxx                 bbb                           xxx
+                                   xxxxxxxxxxxxxxx                 bbb                           xxx
+                                   xxxxxxxxxxxxxxx                 bbb                           xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+              qw C                 xxxxxxxxxxxxxxx                                               xxx
+              xxxw                 xxxxxxxxxxxxxxx                                               xxx
+             qxxxxw                xxxxxxxxxxxxxxx                                               xxx
+            xxxxxxxw               xxxxxxxxxxxxxxx                                               xxx
+            axxxxxxx               xxxxxxxxxxxxxxx                                               xxx
+             xxxxxxx               xxxxxxxxxxxxxxx            bbbbb                              xxx
+            qxxxxxxxw              xxxxxxxxxxxxxxx           bbbbbb         bbbbbbbbbbbbbbbbb    xxx
+            xxxxxxxxxxx            xxxxxxxxxxxxxxx           bbbbbb         bbbbbbbbbbbbbbbbb    xxx
+            xxxxxxxxxxx           qxxxxxxxxxxxxxxx          bbbbbbb         bbbbbbbbbbbbbbbbb    xxx
+            axxxxxxxxs            xxxxxxxxxxxxxxxx         bbbb bbb                      bbb     xxx
+              axxxxxs             xxxxxxxxxxxxxxxx              bbb                      bbb     xxx
+              xaxxxx              axxxxxxxxxxxxxxx              bbb                     bbb      xxx
+               qxxxx               xxxxxxxxxxxxxxx              bbb                     bbb      xxx
+               xxxxx               xxxxxxxxxxxxxxx              bbb                    bbb       xxx
+  bbb            axs               xxxxxxxxxxxxxxx              bbb                    bbb       xxx
+ bh gh                             xxxxxxxxxxxxxxx              bbb                   bbb        xxx
+bb                                 xxxxxxxxxxxxxxx              bbb                   bbb        xxx
+h                                  xxxxxxxxxxxxxxx              bbb                   bbb        xxx
+                                   xxxxxxxxxxxxxxx              bbb                  bbb         xxx
+                                   xxxxxxxxxxxxxxx              bbb                  bbb         xxx
+                                   xxxxxxxxxxxxxxx              bbb                 bbb          xxx
+                                   xxxxxxxxxxxxxxx              bbb                 bbb          xxx
+                                   xxxxxxxxxxxxxxx              bbb                bbb           xxx
+                                   xxxxxxxxxxxxxxx              bbb                bbb           xxx
+                                   xxxxxxxxxxxxxxx              bbb               bbb            xxx
+                                   xxxxxxxxxxxxxxx              bbb               bbb            xxx
+                                   xxxxxxxxxxxxxxx              bbb              bbbb            xxx
+                                   xxxxxxxxxxxxxxx              bbb              bbb             xxx
+                                   xxxxxxxxxxxxxxx              bbb             bbbb             xxx
+                                   xxxxxxxxxxxxxxx              bbb             bbb              xxx
+                                   xxxxxxxxxxxxxxx              bbb            bbbb              xxx
+                                   xxxxxxxxxxxxxxx            bbbbbbb          bbb               xxx
+                          qxw      xxxxxxxxxxxxxxx           bbbbbbbbb        bbbb               xxx
+                          xxxw     xxxxxxxxxxxxxxx                            bbb                xxx
+                          xxxx     xxxxxxxxxxxxxxx                                               xxx
+                          axxx     xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                                   xxxxxxxxxxxxxxx                                               xxx
+                     bb            xxxxxxxxxxxxxxx                                               xxx
+            gbb     bh             xxxxxxxxxxxxxxx                                               xxx
+EndOfMapdata

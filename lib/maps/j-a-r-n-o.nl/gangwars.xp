@@ -1,0 +1,331 @@
+#Created by MapXpress 2.0.2 on Sat May 12 01:06:14 2001
+
+#
+#
+#
+
+mapwidth : 120
+mapheight : 100
+mapname : Gang Wars
+mapauthor : Russian Baller
+limitedlives : yes
+worldlives : 3
+reset : no
+shipmass : 20.0
+gravity : -0.0
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : no
+shotmass : 0.1
+shotspeed : 21.0
+shotlife : 60
+maxplayershots : 7
+firerepeatrate : 2
+friction : 0.0
+edgebounce : yes
+edgewrap : no
+extraborder : no
+robotstalk : no
+robotsleave : no
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : no
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 10
+playerstartsshielded : yes
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : yes
+debriswallbounce : no
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.5
+objectwallbouncebrakefactor : 1
+objectwallbouncelifefactor : 1
+wallbouncefueldrainmult : 2
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : yes
+minvisibilitydistance : 1
+maxvisibilitydistance : 40
+oneplayeronly : no
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : yes
+teamfuel : no
+targetkillteam : yes
+targetteamcollision : no
+targetsync : yes
+treasurekillteam : yes
+treasurecollisiondestroys : no
+treasurecollisionmaykill : yes
+wreckagecollisionmaykill : no
+distinguishmissiles : no
+keepshots : yes
+identifymines : no
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : yes
+shieldeditempickup : no
+shieldedmining : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : no
+cannonsmartness : 2
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 1
+itemconcentratorvisible : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+allowshipshapes : yes
+maxmissilesperpack : 4
+missilelife : 0
+rogueheatprob : 1.0
+maxminesperpack : 3
+minelife : 0
+minefusetime : 0.0
+baseminerange : 0
+roguemineprob : 0
+timing : no
+maxroundtime : 0
+roundstoplay : 0
+gameduration : 0.0
+rounddelay : 0
+laserisstungun : no
+nukeminsmarts : 7
+nukeminmines : 4
+nukeclusterdamage : 2
+itemconcentratorradius : 2
+maxitemdensity : 0.012
+checkpointradius : 6.0
+racelaps : 3
+resetonhuman : no
+reporttometaserver : yes
+contactport : 15345
+noquit : no
+idlerun : no
+plockserver : no
+lockotherteam : yes
+allowviewing : no
+framespersecond : 12
+ignore20maxfps : no
+analyticalcollisiondetection : yes
+password : baller
+timerresolution : 0
+usewreckage : no
+initialfuel : 1500
+initialtanks : 1
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 2
+initialtransporters : 0
+initialdeflectors : 0
+initialphasings : 0
+initialhyperjumps : 0
+initialemergencythrusts : 0
+initiallasers : 0
+initialtractorbeams : 0
+initialautopilots : 2
+initialemergencyshields : 0
+initialmirrors : 0
+initialarmor : 0
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+itemenergypackprob : 1e-9
+itemtankprob : 0
+itemecmprob : 0
+itemmineprob : 1e-9
+itemmissileprob : 1e-9
+itemcloakprob : 0
+itemsensorprob : 0
+itemwideangleprob : 1e-9
+itemrearshotprob : 1e-9
+itemafterburnerprob : 1e-9
+itemtransporterprob : 0
+itemlaserprob : 1e-9
+itememergencythrustprob : 0
+itemtractorbeamprob : 0
+itemautopilotprob : 0
+itememergencyshieldprob : 1e-9
+itemdeflectorprob : 0
+itemhyperjumpprob : 0
+itemphasingprob : 0
+itemmirrorprob : 0
+itemarmorprob : 1e-9
+movingitemprob : 0
+dropitemonkillprob : 1
+detonateitemonkillprob : 0
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                                                      x
+x                                                                                                                      x
+x       bbbbbb    bbbbbb  bbbbb  bbbbb  bbbbbb   bbbbb   bbbbbb  bbbbbb  bbbbbb   bbbbb  bbbbb  bbbbbb  bbbbbb   bbbb  x
+x               )                     )                                            )            )                      x
+x                                                     )           )                                          )         x
+x   b          r r                                                                                   r r               x
+x   b ) xxxxxxxx!xxxxxxxxx                                                                   xxxxxxxxx!xxxxxxxx        x
+x   b   x     x#2#x      x     b   xxx!xxxxxxxxxxxxx          xxxxxx!xxxxx!xxxx       b      x c    x#4#x     x    b   x
+x   b   x     x#$#x      x     b   x      jjjjjjjjjx    b     x               x       b      x      x#$#x     x    b   x
+x   b   x     x# #x      x     b   x               x    b     x xx xxx xxx    x       b      x      x# #x     x    b   x
+x   b   x     x# #xf     x     b   x  mm x      # ix    b     x x   x  x x    x       b      x      x# #x     x )  b   x
+x      dxxxxxxx   x      x     b   !     x      # ix    b     ! xx  x  x x xx x       b      x      x   xxxxxxxf   b   x
+x       !   c     x      x     b   x     x #######0!    b     x  x  x  x x    !              x      x         !        x
+x       !         x      xf        x     xxxxxxxxxxx    b     x xx  x  xxx    x             dx      x         !        x
+x      dx  xxxxxxxx      !         x m m  jjjjjjjjjx    b     x               x              !      xxxxxxxx  xf       x
+x       x  x     c       xf        x               x          x    xxx xxx    x       b     dx             x  x        x
+x       x  x             x     b   x     x      # ix          !    x x x      x       b      x             x  x    b   x
+x   b   x  x             x     b   x     x      # ix   )      x    xxx x      x       b      xf            x  x    b   x
+x   b   x  x             x     b   !  m  x #######0!          x    xx  xxx    x    )  b      x             x  x    b   x
+x   b   x  xxxxxxxxx     x     b   x     xxxxxxxxxxx          x    x x x      !       b      x     xxxxxxxxx  x    b   x
+x   b   x                x     b   x  m   jjjjjjjjjx    b     x    x   xxx    x              x      cc        x    b   x
+x   b   x                x     b   x               x    b     x               x              x                x        x
+x   b   x      bbbbbbbb dx  )  b   x     x      # ix    b     x               !              x                x        x
+x       x             b  x         x   m x      # ix    b     x xxxxxxxxxx    x       b      x  b     b       x    b   x
+x  )    x             b  x         ! m   x #######0!    b     ! x(       x    x       b      xf b     b       x    b   x
+x       xxxxxxx       b  xf        x m   xxxxxxxxxxx  ) b     x x        x    x       b     dx  b     b xxxxxxx )  b   x
+x       x*!c          b  !     b   x      jjjjjjjjjx  )       x x        x    x       b      !  b     b   cc!*x    b   x
+x       x!!       bbbbb dxf    b   x  m            x          x x > ><   x    !             dx  b     b     !!x    b   x
+x   b   x         b      x     b   !     x      # ix    b     x x     >  x    x              x  b     b       x        x
+x   b   xf        b      x     b   x     x      # ix    b     ! x        x    x       b      x  bbbbbbbb     dx        x
+x   b   x        %b      x     b   x   m x #######0!    b     x x  <%    x    x    )  b      x       %b       x        x
+x  )b   x         b      x     b   x m   xxxxxxxxxxx    b     x x >   <  x    x       b      x        b       x        x
+x   b   x         b      x     b   !      jjjjjjjjjx    b     x x >      x    !       b      x        b       x    b   x
+x   b   x         bbbbb  x  )      x               x    b     x x   <    x    x       b      x        b       x    b   x
+x       x               xx         x  m  x      # ix    b     x x   > >  x    x       b      xx       b       x    b   x
+x  )   dx     r        (xx         x     x      # ix          x x        x    x              xx(              xf   b   x
+x       !   xxxxxxxx####xxf    b   x     x #######0!  ) b     ! x        x    x             dxx####xxxxxxxx   !  ) b   x
+x   b   !             $2 !     b   x   m xxxxxxxxxxx    b     xxxxxxxxx  x    x              ! 4$             !    b   x
+x   b   !   xxxxxxxx####xxf    b   x mm   jjjjjjjjjx    b     x       x  x    !       b     dxx####xxxxxxxx   !        x
+x   b  dx      #2#x     xx     b   x               x    b     xdxxxxx x  x    x       b      xx     x#4#      xf       x
+x   b   x      #$#x     xx     b   x     x      # ix    b     !dx   x x  x    x       b      xx     x#$#      x        x
+x   b   xf     # #x      x     b   !  m  x      # ix    b     xdx x x x  x    x       b      x      x# #     dx    b   x
+x ) b   x      # #x      x     b   x     x #######0!          xdx x x x  x    x       b      x      x# #      x    b   x
+x   b   x      # #x      x     b   x  m  xxxxxxxxxxx          xdx x x x  x    !              x      x# #      x    b   x
+x       x         x      x         !  m   jjjjjjjjjx          xdx x x x  x    x     )        x      x         x    b   x
+x       x         xf     x    )    x               x    b     x   x x x  x    x              x      x         x        x
+x       x         x     dxf        x   m x      # ix    b     x#### x x  x    x       b     dx      x    r    x        x
+x       x  xxxxxxxx      !     b   x     x      # ix    b     x0  x x x  x    !       b      !      xxxxxxxx  x  )     x
+x   b   x    c          dxf    b   x m   x #######0!    b     xxxbx x x  x    x       b     dx                x    b   x
+x   b   x                x     b   x  m  xxxxxxxxxxx  ) b     !     x x  x    x       b      xf               x    b   x
+x   b   x                x     b   !      jjjjjjjjjx    b     !  xxxx x  x    x       b      x                x    b   x
+x ) b   x                x     b   x               x    b     !  x    x  x    !              x           r    x    b   x
+x   b   xxxxxxx          x     b   x   m x      # ix          xxxx xxxxx x    x              x          xxxxxxx    b   x
+x   b  dx##   x          x     b   x     x      # ix    b     x    x     x    x              x          x   ##xf   b   x
+x   b   !2$   x          x   )     x m   x #######0!    b     x 000# x xxx    x    )  b      x          x   $4!        x
+x      dx##   x          x         !     xxxxxxxxxxx    b     x      x x      x       b      x          x   ##xf       x
+x       x     x          x         x      jjjjjjjjjx    b     xx###xxx x      x       b      x          x     x    b   x
+x       x     x          x     b   x               x    b     x x      x      !       b      x         dx     x    b   x
+x   b   x     x          xf    b   !   m x      # ix  ) b     ! x      x      x       b     dx         dx     x    b   x
+x   b   x     x          !     b   x     x      # ix          x x   >  x      x       b      !          x     x    b   x
+x ) b   x     x          xf    b   x m   x #######0!          x x  <   x      x             dx          x     x    b   x
+x   b   x     x    x     x     b   x   m xxxxxxxxxxx    b     x x   >> x      x              x     x    x     x    b   x
+x   b   x     xf   x     x     b   x      jjjjjjjjjx    b     x x <%   x      !              x     x    x     x    b   x
+x   b   x     x    x     x         !               x    b     ! x      x      x              x     x    x     x )      x
+x       x     x    x     x         x  m  x      # ix    b     x x < <  x      x       b      x     x    x     x        x
+x       x     x    xf    x   )     x     x      # ix    b     x x    > x      x       b      x     x    x     x        x
+x  )    x     x    x     x     b   x     x #######0!    b     x x >    x      x       b      x    dx    x     x    b   x
+x       x     xxx  x     x     b   !  m  xxxxxxxxxxx          x x     (x      x    )  b      x     x  xxx     x    b   x
+x   b   x          x     x     b   x   m  jjjjjjjjjx          ! xxxxxxxx      !       b      x     x          x    b   x
+x   b   x          x     x     b   x m             x          x               x       b      x     x          x    b   x
+x   b   x          x     x     b   !     x      # ix    b     x               x              x     x          x )  b   x
+x   b   xxxxxxx    x     xf    b   x   m x      # ix    b     !               x             dx     x    xxxxxxx    b   x
+x   b   x          x     !         x     x #######0!    b     x               x              !     x          x        x
+x   b   x          x     xf  )     !  m  xxxxxxxxxxx  ) b     x               !       b     dx     x          x        x
+x   b   x         dx     x         x m    jjjjjjjjjx    b     x               x       b      x     x          x        x
+x       x          x     x     b   x               x    b     x               x       b      x     x          x    b   x
+x       x          x     x     b   !     x      # ix    b     !               x       b      x     x          x    b   x
+x       x  xxxxxxxxx    dx     b   x     x      # ix    b     x               x       b      x     xxxxxxxxx  x    b   x
+x  )b   x  x   c         x     b   x   m x #######0!          x               !              xf     c      x  x    b   x
+x   b   x  x             x     b   x  m  xxxxxxxxxxx          x               x              x             x  x  ) b   x
+x   b   x  x             x         x      jjjjjjjjjx )        x               x              x             x  x    b   x
+x   b   x  x             x         !               x    b     !               x   )          x             x  x        x
+x   b  dx  xxxxxxxx      x     b   x m   x      # ix    b     x               x       b      x      xxxxxxxx  xf       x
+x       !         x      x     b   x m   x      # ix    b     x               x       b      x      x         !        x
+x       !         x      xf  ) b   x   m x #######0!    b     x               !       b     dx      x         !    b   x
+x      dxxxxxxx   x      !     b   x     xxxxxxxxxxx    b     x               x       b      !      x   xxxxxxxf   b   x
+x       x     x# #x      xf    b   ! m    jjjjjjjjjx    b     !               x       b     dx      x# #x     x    b   x
+x   b   x     x# #x      x     b   x m m           x    b     x               x       b      x      x# #x     x    b   x
+x   b   x     x#$#x      x         x     x      # ix    b     x               x       b      x      x#$#x     x    b   x
+x   b   x     x#2#x r    x         x   m x      # ix          x               !       b      x  r   x#4#x     x  ) b   x
+x   b ) xxxxxxxx!xxxxxxxxx  )      x  m  x ###!###0!          xxx!xxx!xxxxx!xxx              xxxxxxxxx!xxxxxxxx    b   x
+x   b          c c                       xxxxx!xxxxx                                                 c c               x
+x   b                                                                                                                  x
+x   b          )                                                                                                       x
+x   b    bbbbbb  bbbbbb ) bbbbbbb   bbbbbb   bbbbbbb bbbbbbbb  bbbbbb  bbbbb   bbbbbb  bbbb   bbbbb  bbbbb bbbb bbbbbb x
+x                                                   )                    )      )                      )               x
+x                                                             )          )                )                            x
+x                                                                                                                      x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata
+

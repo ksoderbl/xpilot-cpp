@@ -1,0 +1,261 @@
+# Created by ./xp-mapedit on Fri Mar  2 14:50:20 2001
+
+mapname : Gladiators
+mapauthor : Will112358
+mapwidth : 50
+mapheight : 50
+extraborder : yes
+edgewrap : no
+edgebounce : yes
+gravity : 0
+gravitypoint : 0,0
+gravityangle : 90
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+shotswallbounce : yes
+ballswallbounce : yes
+mineswallbounce : yes
+itemswallbounce : yes
+missileswallbounce : yes
+sparkswallbounce : no
+debriswallbounce : no
+playerwallbouncebrakefactor : 0.4
+objectwallbouncebrakefactor : 1
+minrobots : -1
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -75
+robotleaveratio : -5
+ecmsreprogramrobots : yes
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+cannonsmartness : 1
+cannonsuseitems : no
+cannonitemprobmult : 1.0
+allowshipshapes : yes
+shotmass : 1
+shotspeed : 10
+shotlife : 10
+firerepeatrate : 1
+maxplayershots : 30
+keepshots : no
+maxoffensiveitems : 50
+maxdefensiveitems : 50
+loseitemdestroys : no
+initialfuel : 500
+initialtanks : 0
+initialecms : 0
+initialmines : 0
+initialmissiles : 0
+initialcloaks : 0
+initialsensors : 0
+initialwideangles : 0
+initialrearshots : 0
+initialafterburners : 5
+initialtransporters : 0
+initiallasers : 1
+initialemergencythrusts : 0
+initialtractorbeams : 0
+initialautopilots : 1
+initialemergencyshields : 0
+initialdeflectors : 0
+initialhyperjumps : 0
+initialphasings : 0
+initialmirrors : 0
+initialarmor : 10
+maxfuel : 10000
+maxtanks : 8
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxemergencythrusts : 10
+maxlasers : 5
+maxtractorbeams : 4
+maxautopilots : 10
+maxemergencyshields : 10
+maxdeflectors : 10
+maxhyperjumps : 10
+maxphasings : 10
+maxmirrors : 10
+maxarmor : 10
+allowshields : no
+shieldeditempickup : no
+shieldedmining : yes
+playerstartsshielded : yes
+wallbouncefueldrainmult : 0.1
+wallbouncedestroyitemprob : 0.0
+maxshieldedwallbouncespeed : 200
+maxunshieldedwallbouncespeed : 100
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+destroyitemincollisionprob : 0.0
+dropitemonkillprob : 0.8
+detonateitemonkillprob : 0.1
+allownukes : no
+allowclusters : no
+nukeclusterdamage : 1.0
+allowmodifiers : no
+allowlasermodifiers : no
+laserisstungun : yes
+allowplayerkilling : yes
+allowplayercrashes : no
+allowplayerbounces : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+ecmsreprogrammines : yes
+missilesonradar : yes
+minesonradar : yes
+nukesonradar : yes
+distinguishmissiles : yes
+identifymines : yes
+minefusetime : 0
+minelife : 0
+maxminesperpack : 2
+baseminerange : 0
+missilelife : 0
+maxmissilesperpack : 2
+nukeminsmarts : 4
+nukeminmines : 3
+movingitemprob : 0.3
+maxobjectwallbouncespeed : 1000
+objectwallbouncelifefactor : 0.99
+maxitemdensity : 0.0001
+itemconcentratorradius : 10
+itemconcentratorprob : 1.0
+itemprobmult : 0.05
+itemenergypackprob : 1e-7
+itemtankprob : 1e-7
+itemecmprob : 1e-7
+itemmineprob : 1e-7
+roguemineprob : 0
+itemmissileprob : 1e-7
+rogueheatprob : 0
+itemcloakprob : 1e-7
+itemsensorprob : 1e-7
+itemwideangleprob : 1e-7
+itemrearshotprob : 1e-7
+itemafterburnerprob : 1e-7
+itemtransporterprob : 1e-7
+itemlaserprob : 1e-7
+itememergencythrustprob : 1e-7
+itemtractorbeamprob : 1e-7
+itemautopilotprob : 1e-7
+itememergencyshieldprob : 1e-7
+itemdeflectorprob : 1e-7
+itemhyperjumpprob : 1e-7
+itemphasingprob : 1e-7
+itemmirrorprob : 1e-7
+itemarmorprob : 1e-7
+limitedlives : no
+playersonradar : yes
+teamplay : yes
+teamassign : yes
+teamimmunity : yes
+teamcannons : yes
+teamfuel : yes
+reset : yes
+lockotherteam : yes
+targetkillteam : no
+targetteamcollision : no
+targetsync : no
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+wreckagecollisionmaykill : no
+treasuresonradar : yes
+racelaps : 3
+checkpointradius : 6.0
+friction : 0.0
+framespersecond : 12
+gameduration : 00
+rounddelay : 0
+maxroundtime : 0
+allowviewing : no
+analyticalcollisiondetection : yes
+cloakedexhaust : yes
+cloakedshield : yes
+itemconcentratorvisible : yes
+gravityvisible : yes
+wormholevisible : yes
+wormtime : 0
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+targetscoremult : 0.001
+
+mapData: \multiline: EndOfMapdata
+*    bccc         axxxs    axxxs         cccb    *
+     b               aw !! qs               b     
+     b                aw  qs                b     
+    th                 x  x                 gy    
+   th                  x  x                  gy   
+bbbh                   awqs                   gbbb
+f                     $1##2$                     d
+f                      %##%                      d
+f                     $1##2$                     d
+                       qsaw                       
+                       x  x                       
+                       x  x                       
+                      qs  aw                      
+                     qs    aw                     
+                  qxxxw    qxxxw                  
+               qxxxxxxxxxxxxxxxxxxw               
+               xs       b        ax               
+               x         b        x               
+              qx        b         xw              
+              xx         b        xx              
+              xx        b         xx              
+      tb      xx         b        xx    tbbby     
+     thb      xx        b         xx    h   b     
+       b      xx         b        xx       th     
+b b b  b   b b!!        b         !! b b  th  b b 
+ b b   b  b b !!         b        !!b b  th  b b b
+       b      xx        b         xx    th        
+     tbbby    xx         b        xx    bbbby     
+              xx        b         xx              
+              xx         b        xx              
+              xx        b         xx              
+              ax         b        xs              
+               x        b         x               
+               xw        b       qx               
+               axxxxxxxxxxxxxxxxxxs               
+                  axxxs    axxxs                  
+                     aw    qs                     
+                      aw  qs                      
+                       x  x                       
+                       x  x                       
+                       awqs                       
+f                     $1##2$                     d
+f                      %##%                      d
+f                     $1##2$                     d
+bbby                   qsaw                   tbbb
+   gy                  x  x                  th   
+    gy                 x  x                 th    
+     b                qs  aw                b     
+     b               qs !! aw               b     
+*    brrr         qxxxw    qxxxw         rrrb    *
+EndOfMapdata
+

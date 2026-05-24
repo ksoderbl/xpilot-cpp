@@ -1,0 +1,106 @@
+mapWidth: 21
+mapHeight: 40
+mapName: Pool Table
+mapAuthor: Zemyla (pad53945@sci.tamucc.edu)
+gravity: 0
+maxPlayerShots: 0
+shotsGravity: no
+allowPlayerCrashes: no
+allowShields: no
+minesWallBounce: yes
+itemsWallBounce: no
+sparksWallBounce: yes
+debrisWallBounce: yes
+cloakedShield: no
+maxShieldedWallBounceSpeed: 200
+maxUnshieldedWallBounceSpeed: 200
+maxShieldedPlayerWallBounceAngle: 180
+maxUnshieldedPlayerWallBounceAngle: 180
+cannonsPickupItems: yes
+ecmsReprogramRobots: no
+wormholeVisible: no
+allowSmartMissiles: no
+allowHeatSeekers: no
+allowTorpedoes: no
+allowModifiers: yes
+missilesOnRadar: no
+nukesOnRadar: no
+distinguishMissiles: no
+laserIsStunGun: yes
+shotKillScoreMult: 0
+explosionKillScoreMult: 1
+shoveKillScoreMult: 1
+movingItemProb: 1
+maxItemDensity: 0.0012
+itemEnergyPackProb: 1e-006
+itemTankProb: 2e-007
+itemECMProb: 3e-007
+itemMineProb: 6e-007
+itemMissileProb: 0
+itemCloakProb: 0
+itemSensorProb: 0
+itemWideangleProb: 0
+itemRearshotProb: 0
+itemAfterburnerProb: 1.5e-006
+itemTransporterProb: 4e-007
+itemDeflectorProb: 1e-007
+itemHyperJumpProb: 2e-007
+itemPhasingProb: 2e-007
+itemLaserProb: 1e-007
+itemEmergencyThrustProb: 7e-007
+itemTractorBeamProb: 1.2e-006
+itemAutopilotProb: 3e-007
+itemEmergencyShieldProb: 0
+initialFuel: 2600
+initialAfterburners: 2
+initialTractorBeams: 1
+initialAutopilots: 1
+maxFuel: 9999
+maxTractorBeams: 10
+friction: 0.05
+selfImmunity: true
+turnThrust: true
+
+mapData: \multiline: EndOfMapData
+xxxxxxxxxxxxxxxxxxxxx
+x((b             b((x
+x((b             b((x
+xbbh             gbbx
+x                   x
+x     _ _ _ _ _     x
+x                   x
+x      _ _ _ _      x
+x                   x
+x       _ _ _       x
+x                   x
+x        _ _        x
+x                   x
+x         _         x
+x                   x
+x                   x
+xbby             tbbx
+x((b             b((x
+x((b             b((x
+xbbh             gbbx
+x                   x
+x                   x
+x                   x
+x                   x
+x                   x
+x                   x
+x         _         x
+x                   x
+x                   x
+x                   x
+x                   x
+x                   x
+xbby             tbbx
+x((b             b((x
+x((b             b((x
+xxxxxxxxxxxxxxxxxxxxx
+xrrrrrrrrrrrrrrrrrrrx
+x)))))))))))))))))))x
+xcccccccccccccccccccx
+xxxxxxxxxxxxxxxxxxxxx
+EndOfMapData
+

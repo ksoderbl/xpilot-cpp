@@ -1,0 +1,2199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<TITLE>XPilot - Maps</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<script LANGUAGE="JavaScript" TYPE="text/javascript">
+<!--
+if(top.document.location == document.location)
+{
+	top.document.location = "/Xpilot/Maps/";
+}
+// -->
+</script>
+</head>
+<body text="#33CCFF" bgcolor="#42038D" link="#CCFFFF" vlink="#3366FF" alink="#3333FF" background="Images/j-a-r-n-o.jpg">
+<A HREF="/members/listing.pl"></A>
+
+<center><font size="+4">Xpilot</font><font size="+2"> : Maps</font>
+<p>
+<hr WIDTH="100%"></center>
+
+<p><font color="#0000FF"><font size="+2">N</font></font> means that the map is a normal map.
+<br><font color="#FF0000"><font size="+2">T</font></font> means that the map is a teamplaymap.
+<br><font color="#00FF00"><font size="+2">R</font></font> means that the map is a racingmap.
+<FORM ACTION="xpilotmaps.shtml" METHOD="get">
+<TABLE BORDER=0><TR><TD>
+Show 
+<SELECT NAME="type">
+ <OPTION VALUE="all">all
+ <OPTION VALUE="normal">normal
+ <OPTION VALUE="timing">race
+ <OPTION VALUE="teamplay">team
+</SELECT>
+ maps &nbsp; &nbsp;<INPUT TYPE="submit" VALUE="Go!">
+</TD></TR></TABLE>
+</FORM>
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">
+<!--
+	var str = "";
+	str += document.location;
+	str = str.substring(str.lastIndexOf("?") + 1, str.length);
+	var type = "";
+
+	if(str.substring(0, 5) == "type=")
+	{
+		type = str.substring(5, str.length);
+
+		if(type == "all")
+			document.forms[0].type.selectedIndex = 0;
+		else if(type == "normal")
+			document.forms[0].type.selectedIndex = 1;
+		else if(type == "timing")
+			document.forms[0].type.selectedIndex = 2;
+		else if(type == "teamplay")
+			document.forms[0].type.selectedIndex = 3;
+	}
+// -->
+</SCRIPT>
+<P><HR WIDTH="100%"><BR>
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/200.xp">(Blood's Music) Race map</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by edited </td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/200.gif" ALT="(Blood's Music) Race map" HSPACE=5 height=100 width=100 align=LEFT>
+This is just a kind of race map of bloods<BR>enjoy!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>3 lives</td>
+<td>29 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/2fort.xp">2fort</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:sashapan@rcn.com?subject=2fort">DRUNKEN RUSSIAN</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/2fort.gif" ALT="2fort" HSPACE=5 height=50 width=150 align=LEFT>
+KICK ASS STUFF FROM THE MASTA MAKER. 1/2 derived from half-life multiplayer map 2fort.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>150 x 50</td>
+<td>6 + 6 bases</td>
+<td>3 lives</td>
+<td>29 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/4teamplan.xp">4-Team Planet</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=4%2dTeam%20Planet">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/4teamplan.gif" ALT="4-Team Planet" HSPACE=5 height=199 width=199 align=LEFT>
+This map has four teams. &nbsp;It is somewhat like Worm Mountain, as you have to go to the enemy's base and drop his treasures down your chute.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>199 x 199</td>
+<td>5 + 5 + 5 + 5 bases</td>
+<td>Unlimited lives</td>
+<td>07 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Chatroom.xp">The Chatroom</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by AcnotKid</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Chatroom.gif" ALT="The Chatroom" HSPACE=5 height=100 width=100 align=LEFT>
+It has come to my attention that some pilots, who shall remain namless, have been using the teamplay maps for chating. This map is for those pilots to go to instead of the teamplay maps. It seats 38<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>38 bases</td>
+<td>Unlimited lives</td>
+<td>18 Mar 2006</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Circuit1.xp">Circuit</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:rotunda_pk@users.sourceforge.net?subject=Circuit">Nico</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Circuit1.gif" ALT="Circuit" HSPACE=5 height=205 width=205 align=LEFT>
+<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>205 x 205</td>
+<td>32 bases</td>
+<td>4 lives</td>
+<td>12 Feb 2011</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Dog-Fighter.xp">Dog-Fighter Assault Arena</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Dog%2dFighter%20Assault%20Arena">Areo-Fighter &amp; Acer</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Dog-Fighter.gif" ALT="Dog-Fighter Assault Arena" HSPACE=5 height=300 width=250 align=LEFT>
+My new map Still needs a little agustments but its fun to play against other players :)<BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>250 x 300</td>
+<td>83 bases</td>
+<td>Unlimited lives</td>
+<td>17 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Fracture.xp">Fracture</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:ctk314@yahoo.com?subject=Fracture">Chris King</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Fracture.gif" ALT="Fracture" HSPACE=5 height=256 width=256 align=LEFT>
+This is a four team map with targets buried in<BR>the "planet" and treasures on the edge. Nasty<BR>cannons guard entrances to the planet that aren't<BR>guarded by home bases.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>256 x 256</td>
+<td>8 + 8 + 8 + 8 bases</td>
+<td>Unlimited lives</td>
+<td>25 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Lion.xp">CAREFUL!</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Sir Leo **</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Lion.gif" ALT="CAREFUL!" HSPACE=5 height=100 width=100 align=LEFT>
+even though it looks hard, it didn't take long to<BR>make this map.<BR>add as many bases as u want <BR>it was made with xp-mapedit.<BR>enjoy, more maps will be coming soon!<BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>2 bases</td>
+<td>Unlimited lives</td>
+<td>30 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/M2.xp">Death Map 2002 (Sage's Map)</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Death%20Map%202002%20%28Sage%27s%20Map%29">Lance(UnknownWarrior)</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/M2.gif" ALT="Death Map 2002 (Sage's Map)" HSPACE=5 height=200 width=200 align=LEFT>
+his is a hard map that is if you get caught in the MAze.<BR>it took me a long time to make this map.<BR>find me and tell me your suggestions or problems<BR><BR>This map is an update.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>37 bases</td>
+<td>Unlimited lives</td>
+<td>23 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Mario.xp">Mario Land 8</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Mario%20Land%208">Mystic (aka. UnknownWarriors)</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Mario.gif" ALT="Mario Land 8" HSPACE=5 height=200 width=200 align=LEFT>
+Thsi is my favorite ball MAP!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>4 + 4 + 4 + 4 bases</td>
+<td>3 lives</td>
+<td>17 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Newbie-Paradise.xp">Newbie Paradise</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:will@swproductions.co.uk?subject=Newbie%20Paradise">Silly Willy</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Newbie-Paradise.gif" ALT="Newbie Paradise" HSPACE=5 height=100 width=100 align=LEFT>
+Robots join teams with humans - this provides an ideal environment for newbies to learn team play.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>Unlimited lives</td>
+<td>16 Dec 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Ricochet.xp">Ricochet! </A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:rider@toad.net?subject=Ricochet%21%20">SARCASMOS</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Ricochet.gif" ALT="Ricochet! " HSPACE=5 height=100 width=100 align=LEFT>
+Here, mines and missiles (torpedos only) bounce off of walls. &nbsp;MinMineSpeed is set, so NO MINE LAYING. MineLife is also set so bombs don't last very long. &nbsp;There are three item concentrators, get your mines and missiles from them. &nbsp;Use clusters for mines and X4 for missiles. &nbsp;Have Fun!!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>8 bases</td>
+<td>Unlimited lives</td>
+<td>19 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Synapse.xp">Synapse</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Duncan Rowland (dr@st-and.ac.uk)</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Synapse.gif" ALT="Synapse" HSPACE=5 height=150 width=150 align=LEFT>
+As requested, the classic Synapse map by Duncan Rowland.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>150 x 150</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>05 Jan 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Town.xp">Crazy Town</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Crazy%20Town">Areo-Fighter (aka. UnknownWarriors)</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Town.gif" ALT="Crazy Town" HSPACE=5 height=50 width=45 align=LEFT>
+This is a Tough map if you find the secret!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>45 x 50</td>
+<td>4 + 22 + 22 bases</td>
+<td>5 lives</td>
+<td>17 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Tuxhat1.xp">&lt;New Map></A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Sir Leo</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Tuxhat1.gif" ALT="<New Map>" HSPACE=5 height=100 width=100 align=LEFT>
+yep, I made this one too<BR>it has no real map name, call it what u like<BR>I don't care, and Im not that creative<BR>this was made kinda for the Linux users<BR>for all those Win users, im working on a map for u <BR>too.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>5 bases</td>
+<td>Unlimited lives</td>
+<td>29 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Uh.xp">The Protecters</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=The%20Protecters">Aero-Fighter</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Uh.gif" ALT="The Protecters" HSPACE=5 height=300 width=300 align=LEFT>
+My Babe Map i luv to draw so i decided to make one of my draeing into an Xpilot map <BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>300 x 300</td>
+<td>13 bases</td>
+<td>3 lives</td>
+<td>17 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Watch.xp">Watch that corner!</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by Sir Leo</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Watch.gif" ALT="Watch that corner!" HSPACE=5 height=100 width=100 align=LEFT>
+kinda just a sharp corner kinda deal<BR>racing map, made it in my spare time.<BR>oh, I also made the Racing Blood's map<BR>;-)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>3 bases</td>
+<td>Unlimited lives</td>
+<td>29 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/Worm-Mountain.xp">Worm Mountain</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:Austin_Donnelly@yahoo.co.uk?subject=Worm%20Mountain">Duncan Rowland &lt;dr@st-and.ac.uk></a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/Worm-Mountain.gif" ALT="Worm Mountain" HSPACE=5 height=200 width=200 align=LEFT>
+A classic from way back. &nbsp;Cluster mines and<BR>limited shields. &nbsp;Go past the enemy base, blow up<BR>the targets protecting their treasures, and throw<BR>the balls down the chute opposite.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>7 + 7 bases</td>
+<td>0 lives</td>
+<td>27 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/actvolcano.xp">Active Volcano</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Active%20Volcano">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/actvolcano.gif" ALT="Active Volcano" HSPACE=5 height=100 width=200 align=LEFT>
+This is like my regular Volcano map, except that the crater now has been taken up by asteroid concentrators (need 4.5.0 or better) that shoot asteroids into the air. &nbsp;You get items by blasting asteroids open (need 4.4.2 or better). &nbsp;Getting a ball to the other side is interesting, because if it hits an asteroid, it is destroyed; your best bet is to use phasing or hyperjumps.<BR><BR>As you may have noticed, this is a rather new-fangled map :-).<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 100</td>
+<td>5 + 5 bases</td>
+<td>3 lives</td>
+<td>17 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/amph.xp">Amphibious Race</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Amphibious%20Race">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/amph.gif" ALT="Amphibious Race" HSPACE=5 height=75 width=200 align=LEFT>
+This is a race map. &nbsp;Half the checkpoints are at the bottom of the "pool" (made of block friction), so you must "swim" to get them.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 75</td>
+<td>6 bases</td>
+<td>Unlimited lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/antipodal.xp">Antipodal Forts</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:aNmOdeSbPeA1M@uPlLsEtAeSrE.net?subject=Antipodal%20Forts">Will112358</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/antipodal.gif" ALT="Antipodal Forts" HSPACE=5 height=100 width=100 align=LEFT>
+There are two target forts at the antipodes of the circle in the middle. The goal is to break into the opposing fort and release the ball (situated beneath the fort) so that it goes into the wormhole near the center and into your treasure box. (updated 2002.01.12)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>3 lives</td>
+<td>12 Jan 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/arena.xp">ARENA</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by ME, a.k.a Sir Leo</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/arena.gif" ALT="ARENA" HSPACE=5 height=75 width=75 align=LEFT>
+sorry its not centered<BR>one of my first maps, just basicaly a figting map<BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>75 x 75</td>
+<td>19 + 1 + 1 + 1 bases</td>
+<td>3 lives</td>
+<td>29 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/as.xp">sfdsfdg</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by krys</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/as.gif" ALT="sfdsfdg" HSPACE=5 height=100 width=100 align=LEFT>
+It's crazy map with three balls :)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>0 bases</td>
+<td>Unlimited lives</td>
+<td>20 Oct 2007</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/assault.xp">Assault</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:ominous.omen@gmail.com?subject=Assault">K</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/assault.gif" ALT="Assault" HSPACE=5 height=100 width=100 align=LEFT>
+A team based assault attack. The objective is to slaughter all of your opponents before they do! Take control of your opponent and the middle items base for extra firepower to mow your enemies down! Chaos ensues.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>18 + 18 bases</td>
+<td>4 lives</td>
+<td>10 Aug 2005</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/babe2.map">babe2</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=babe2">DarkLengency</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/babe2.gif" ALT="babe2" HSPACE=5 height=212 width=144 align=LEFT>
+Map some one gave me<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>144 x 212</td>
+<td>4 + 4 + 4 + 4 + 4 bases</td>
+<td>Unlimited lives</td>
+<td>17 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/ballhandle.xp">Atomic ball</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:benny_alden@yahoo.com?subject=Atomic%20ball">TheLordOfTheWinds</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/ballhandle.gif" ALT="Atomic ball" HSPACE=5 height=100 width=100 align=LEFT>
+Its a ball map, &nbsp;2 teams, suggestions open, &nbsp;you can<BR>download and modify it if you like. &nbsp;All the players who tested it<BR>kept quit, &nbsp;or said it was cool, &nbsp;but the server was<BR>too laggy. &nbsp;My first map!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>5 lives</td>
+<td>17 Jul 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/ballrunning.xp">Ballrunning with Asteroids</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Ballrunning%20with%20Asteroids">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/ballrunning.gif" ALT="Ballrunning with Asteroids" HSPACE=5 height=99 width=200 align=LEFT>
+In this map, you have an empty treasure; up to 7 competitors; and up to 24 robots. &nbsp;You have to take all of the treasures from the robots before your competitors do. &nbsp;You can be sure that the robots will resist with all of their might.<BR><BR>Oh, you also have to dodge asteroids, as well.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 99</td>
+<td>24 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 bases</td>
+<td>Unlimited lives</td>
+<td>14 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/barrball.xp">BarrierBall</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:aNmOdSePbAeM1@uPlLsEtAeSrE.net?subject=BarrierBall">Will112358</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/barrball.gif" ALT="BarrierBall" HSPACE=5 height=48 width=74 align=LEFT>
+There are two target barriers with embedded cannons in the middle. There are also chevron-shaped walls to protect the bases, but be careful: they're reflective, so your shots can be turned back parallel to their original course. The area between the target barriers is labeled "no man's land", because that's the only place both teams can get to without blowing up targets.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>74 x 48</td>
+<td>4 + 4 bases</td>
+<td>3 lives</td>
+<td>05 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/basket.xp">Basketball Court</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Basketball%20Court">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/basket.gif" ALT="Basketball Court" HSPACE=5 height=68 width=96 align=LEFT>
+This is a replica of a basketball court. &nbsp;You grab the ball from the center and put it into your "hoop". &nbsp;You get 2 points for doing so.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>96 x 68</td>
+<td>2 + 5 + 5 bases</td>
+<td>Unlimited lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/blokjump.xp">Block-Jumping</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Block%2dJumping">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/blokjump.gif" ALT="Block-Jumping" HSPACE=5 height=40 width=40 align=LEFT>
+There are 25 checkpoints, one in each block. &nbsp;To get to the next checkpoint, you have to jump into a wormhole and hope you end up at the right place.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>40 x 40</td>
+<td>25 bases</td>
+<td>Unlimited lives</td>
+<td>06 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/caves.xp">The Caves</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:Austin_Donnelly@yahoo.co.uk?subject=The%20Caves">Brent Fleet-Lambert</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/caves.gif" ALT="The Caves" HSPACE=5 height=200 width=200 align=LEFT>
+Another UK classic. &nbsp;Items, robots. &nbsp;Fast dogfighting. &nbsp;Try to kill the player with the most<BR>powerups, and steal them off him!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>27 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/chambers.xp">The Chambers of Death</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:dingopinhead@yahoo.com?subject=The%20Chambers%20of%20Death">AcnotAlpha</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/chambers.gif" ALT="The Chambers of Death" HSPACE=5 height=100 width=100 align=LEFT>
+This map is a fighting map I made that has some item collectors and cannons. The cannons use items, just like on my Warp Accelerator V4. There are only six cannons, but you've got to watch out for the others. &nbsp;<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>09 Apr 2006</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/click.xp">Click-click</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Click%2dclick">DRUNKEN RUSSIAN, MOTHA FUGAZ</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/click.gif" ALT="Click-click" HSPACE=5 height=100 width=100 align=LEFT>
+WHAAZZZZUUUPPP?!!??!hey y'all get ready for another hit em up map from the drunk. dark hell ish, cant figure out how to get items,though :)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>32 bases</td>
+<td>Unlimited lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/cracks2.xp">Cracks</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by Will112358</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/cracks2.gif" ALT="Cracks" HSPACE=5 height=200 width=200 align=LEFT>
+In this map, shots are massive and fire backward, so you need to adjust your shipshape to have the guns in the rear, so you don't shoot yourself. Since the shots are so massive and you start out with one wide, very high speeds can be attained. Along the bottom rung of the route, there are targets that your shots/exhaust hit and blow up occasionally.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>5 bases</td>
+<td>Unlimited lives</td>
+<td>05 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/cramped.xp">--->The Smallest 12-player, 4-team map! (with tresures)&lt;----</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=%2d%2d%2d%3eThe%20Smallest%2012%2dplayer%2c%204%2dteam%20map%21%20%28with%20tresures%29%3c%2d%2d%2d%2d">Drunken Russian</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/cramped.gif" ALT="--->The Smallest 12-player, 4-team map! (with tresures)<----" HSPACE=5 height=7 width=7 align=LEFT>
+yeah, its fun. yeah, it gets boring fast. yeah, who cares?<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>7 x 7</td>
+<td>3 + 3 + 3 + 3 bases</td>
+<td>3 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="../Xpilot/Maps/crosscountry.xp">Crosscountry racing</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jarno@j-a-r-n-o.nl?subject=Crosscountry%20racing">J-a-r-n-o</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="../Xpilot/Maps/crosscountry.gif" ALT="Crosscountry racing" HSPACE=5 height=64 width=128 align=LEFT>
+A racingmap with all the checkpoint spread out over the map. This means that you don't have to follow a route, but you actually have to navigate. It takes a few laps to figure out the best route and then you find a better one.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>128 x 64</td>
+<td>15 bases</td>
+<td>3 lives</td>
+<td>16 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/cytheran.xp">Cythrean Facility</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Cythrean%20Facility">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/cytheran.gif" ALT="Cythrean Facility" HSPACE=5 height=60 width=200 align=LEFT>
+In this map, the shots fly out fast, and you have armor. &nbsp;You must capture the opponents' balls before they deplete your armor.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 60</td>
+<td>10 + 10 bases</td>
+<td>Unlimited lives</td>
+<td>22 Jan 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/darlanio_blood_music2.xp">Blood's Music II Modified</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:darlanio@cyberspace.org?subject=Blood%27s%20Music%20II%20Modified">Blood, TIMID, DR.DEATH. Modified by Darlanio</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/darlanio_blood_music2.gif" ALT="Blood's Music II Modified" HSPACE=5 height=100 width=100 align=LEFT>
+Altered Blood's Music II with 4 teams (16 bases), with 4 robots in team 2. The map is a bit cramped, and suggestions and modifications are welcome.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 + 4 + 4 bases</td>
+<td>3 lives</td>
+<td>07 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/downhill.xp">Downhill Race</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Downhill%20Race">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/downhill.gif" ALT="Downhill Race" HSPACE=5 height=150 width=150 align=LEFT>
+This map is like a ski race. &nbsp;The gravity is high so you have to stay close to the ground. &nbsp;And watch out for the pit.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>150 x 150</td>
+<td>10 bases</td>
+<td>5 lives</td>
+<td>24 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/drspecial.xp">Drunken Special</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Drunken%20Special">Drunken Russian</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/drspecial.gif" ALT="Drunken Special" HSPACE=5 height=50 width=50 align=LEFT>
+just a kick-ass map. thats all. SO PLAY IT!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>50 x 50</td>
+<td>5 + 5 bases</td>
+<td>4 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/drunkenred.xp">Drunken's Redemption</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Drunken%27s%20Redemption">D.R.</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/drunkenred.gif" ALT="Drunken's Redemption" HSPACE=5 height=100 width=100 align=LEFT>
+2 of each team fight it out to death. not really fair unless 5 on 5.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>5 + 5 bases</td>
+<td>5 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/drusas.xp">Drunken's RPG</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Drunken%27s%20RPG">Russian Baller</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/drusas.gif" ALT="Drunken's RPG" HSPACE=5 height=200 width=200 align=LEFT>
+just a good old role-playin-game wannabe. take car of her. :)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>69 bases</td>
+<td>Unlimited lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="../Xpilot/Maps/fastone.xp">The fast one</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jarno@j-a-r-n-o.nl?subject=The%20fast%20one">J-a-r-n-o</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="../Xpilot/Maps/fastone.gif" ALT="The fast one" HSPACE=5 height=200 width=200 align=LEFT>
+My first attempt at mapmaking. I just wanted to go really really really really really really fast. The central tube there has gravityfields which will push you forward. Then I added some other mapelements to fill up the map. It makes the map less boring. I was still a newbie when I made this map, so the cannons just shoot straight. It was easier for me to take off from my base like that.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>13 bases</td>
+<td>Unlimited lives</td>
+<td>16 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/fireball.xp">Fireball</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Olaf Brandt</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/fireball.gif" ALT="Fireball" HSPACE=5 height=200 width=200 align=LEFT>
+<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>15 bases</td>
+<td>Unlimited lives</td>
+<td>19 Jan 2004</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/flag.xp">Xpilot Ball Map 2342 &nbsp;&nbsp;Xpg (Xpilot Pro Games)</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Xpilot%20Ball%20Map%202342%20%20%20Xpg%20%28Xpilot%20Pro%20Games%29">Aero-Fighter</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/flag.gif" ALT="Xpilot Ball Map 2342   Xpg (Xpilot Pro Games)" HSPACE=5 height=250 width=200 align=LEFT>
+This wuz going to be a Capture the case game w/ 3 balls w/ to of the treasures empty but i found a but in the mapedit so i change the map this map has many cornners so there are many posablitys to get a perfect ball run<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 250</td>
+<td>8 + 8 bases</td>
+<td>3 lives</td>
+<td>23 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/flag2.xp">Capture the flag</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Capture%20the%20flag">Aero-Fighter</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/flag2.gif" ALT="Capture the flag" HSPACE=5 height=250 width=200 align=LEFT>
+notong to it but u have two treasure and get the <BR>other teams treasure to urs while protecting your own ball<BR><BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 250</td>
+<td>8 + 8 bases</td>
+<td>3 lives</td>
+<td>29 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/flowctrl.xp">Flow Control</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Flow%20Control">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/flowctrl.gif" ALT="Flow Control" HSPACE=5 height=100 width=100 align=LEFT>
+This map is quite complex. &nbsp;There are one-way gravity valves, and you need to go through the proper sequence to get to the enemy base.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>3 lives</td>
+<td>31 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/gangwars.xp">Gang Wars</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Gang%20Wars">Russian Baller</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/gangwars.gif" ALT="Gang Wars" HSPACE=5 height=100 width=120 align=LEFT>
+almost my favorite. brings a new meaning of "get off my block" to xpilot<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>120 x 100</td>
+<td>18 + 5 + 5 bases</td>
+<td>3 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/gladiators.xp">Gladiators</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:aNmOdSePbAeM1@uPlLsEtAeSrE.net?subject=Gladiators">Will112358</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/gladiators.gif" ALT="Gladiators" HSPACE=5 height=50 width=50 align=LEFT>
+There is an arena in the middle for the gladiators to fight with their shot-whips (slow, short range shots) and lasers. It is a no man's land in the sense of BarrierBall. There is a ball at each corner. You have to go through the arena (and your opponent) to get your opponents' balls (unless you cheat and use a phase).<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>50 x 50</td>
+<td>4 + 4 bases</td>
+<td>Unlimited lives</td>
+<td>05 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/goodone.xp">>-&lt; Worthless Attemp >-&lt;</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=%3e%2d%3c%20Worthless%20Attemp%20%3e%2d%3c">DRUNKEN RUSSIAN</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/goodone.gif" ALT=">-< Worthless Attemp >-<" HSPACE=5 height=200 width=200 align=LEFT>
+i dunno what this is, but its mine :)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>25 bases</td>
+<td>Unlimited lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/heatseeker.xp">Heatseeker Madness</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Heatseeker%20Madness">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/heatseeker.gif" ALT="Heatseeker Madness" HSPACE=5 height=200 width=200 align=LEFT>
+In this map, your main weapon is the heatseeker. &nbsp;You start with missiles (which you can use as heatseekers or as torpedos, but NOT as smart missiles) to kill your enemies with. &nbsp;But watch out, because those same heatseekers can come back and kill you too!<BR><BR>You also have tanks and ECMs to avert incoming heatseekers. <BR><BR>I made this map under the firm belief that smart missiles are for wusses (even though I use them sometimes :)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>34 bases</td>
+<td>Unlimited lives</td>
+<td>03 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/jarno.xp">Jarno's Map</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Who Cares?</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/jarno.gif" ALT="Jarno's Map" HSPACE=5 height=50 width=50 align=LEFT>
+I prefer to Remain Anonymous as to who I am.<BR>This is just a tribute for all that Jarno has done for ALLLL those newbies<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>50 x 50</td>
+<td>2 bases</td>
+<td>Unlimited lives</td>
+<td>19 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/joust.xp">Joust</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Nathan McCoy</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/joust.gif" ALT="Joust" HSPACE=5 height=50 width=60 align=LEFT>
+This is essentially a remake of Joust, complete with lava. You can't shoot: you have to earn points by ramming people into walls. It's really a lot of fun, and isn't too difficult for beginners.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>60 x 50</td>
+<td>20 bases</td>
+<td>5 lives</td>
+<td>03 Nov 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/justa.xp">***&amp;$&amp; Justa Map &amp;$&amp;***</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=%2a%2a%2a%26%24%26%20Justa%20Map%20%26%24%26%2a%2a%2a">Drunken Russian</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/justa.gif" ALT="***&$& Justa Map &$&***" HSPACE=5 height=100 width=100 align=LEFT>
+yeah, title sez it all...<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>32 bases</td>
+<td>3 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/kmslaughter3.xp">Slaughter 3</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pforman@rocketjets.com?subject=Slaughter%203">??? &nbsp;mods by Keith Maniac</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/kmslaughter3.gif" ALT="Slaughter 3" HSPACE=5 height=110 width=110 align=LEFT>
+A modified version of an old old map from the archive.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>110 x 110</td>
+<td>4 + 4 + 4 bases</td>
+<td>3 lives</td>
+<td>07 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/knights.xp">Azeroth (knights Only)</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jrglenn@charter.net?subject=Azeroth%20%28knights%20Only%29">Sir Striker &amp; The Queen</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/knights.gif" ALT="Azeroth (knights Only)" HSPACE=5 height=250 width=200 align=LEFT>
+Thsi map is for Knights ONLY!!! <BR>You have to be a Knight to Play it!!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 250</td>
+<td>29 bases</td>
+<td>Unlimited lives</td>
+<td>17 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/lameola.xp">Lameola</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Lameola">Russian Baller</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/lameola.gif" ALT="Lameola" HSPACE=5 height=200 width=200 align=LEFT>
+never tested, so whatch out :)<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>5 + 5 bases</td>
+<td>3 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/laserbattleball.xp">LaSeR BaTtLe BaLL </A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by someone</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/laserbattleball.gif" ALT="LaSeR BaTtLe BaLL " HSPACE=5 height=100 width=100 align=LEFT>
+old map<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>6 + 6 bases</td>
+<td>3 lives</td>
+<td>09 Mar 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/lion2.xp">Pouncing Lion</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Sir Shrike **</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/lion2.gif" ALT="Pouncing Lion" HSPACE=5 height=100 width=100 align=LEFT>
+this is an updated version of Careful... couldn't remember the password for the other one.<BR>enjoy... more will be coming....and J, u better get that comment unit working fast! :D<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>5 bases</td>
+<td>Unlimited lives</td>
+<td>21 Jan 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/mella.xp">Mella!</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:ralphcf@home.com?subject=Mella%21">Penguin</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/mella.gif" ALT="Mella!" HSPACE=5 height=100 width=100 align=LEFT>
+Not classic and barely fair (just don't wind up in the corner)<BR>The ultimate free-for-all<BR>try experimenting eith shot bounce, armor, wideangle...<BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>9 bases</td>
+<td>3 lives</td>
+<td>21 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/misc_ellement.xp">Misc Ellements Inclosed</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:xpilot13@yahoo.com?subject=Misc%20Ellements%20Inclosed">AcnotKid</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/misc_ellement.gif" ALT="Misc Ellements Inclosed" HSPACE=5 height=100 width=100 align=LEFT>
+ Fast fire rate, and limited bullets make for a machine gun effect. There are no shields. A few asteroids are contained in a carral. This map has a number of traps and hidden rewards.<BR><BR>http://www.geocities.com/xpilot13/home.html<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>8 bases</td>
+<td>Unlimited lives</td>
+<td>15 Jul 2006</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/ndhx.xp">*NDH EXTREME*</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jethro4137@adres.nl?subject=%2aNDH%20EXTREME%2a">Xagor(Jethro)</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/ndhx.gif" ALT="*NDH EXTREME*" HSPACE=5 height=200 width=200 align=LEFT>
+The next generation in NDH gaming. Consists of 6 ballz for attacking your enemies. Score bonuses for Ballz,tanks,torpedoes,and lasers.This map take the ultimate skill for your NDH dogfighting.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>18 bases</td>
+<td>Unlimited lives</td>
+<td>03 Oct 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/newdarkhellteams.xp">New Dark Hell Teams</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:twexler@yahoo.com?subject=New%20Dark%20Hell%20Teams">SIR SPOOTY</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/newdarkhellteams.gif" ALT="New Dark Hell Teams" HSPACE=5 height=200 width=200 align=LEFT>
+Made with the latest version of xp-mapedit new dark hell is now improved by makeing it teams<BR>Stay tooned for more updates of this map<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>1 + 7 + 8 bases</td>
+<td>Unlimited lives</td>
+<td>10 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/nuclear2.xp">Nuclear Power Plant II</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Nuclear%20Power%20Plant%20II">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/nuclear2.gif" ALT="Nuclear Power Plant II" HSPACE=5 height=100 width=100 align=LEFT>
+This is my second iteration of "Nuclear Power Plant". &nbsp;It is a dogfighter's heaven, as you zip through the dangerously radioactive tubes and eventually get to the main reactor.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>8 bases</td>
+<td>Unlimited lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/nukedarkhell.xp">New Dark Hell</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by PeaceMaker</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/nukedarkhell.gif" ALT="New Dark Hell" HSPACE=5 height=200 width=200 align=LEFT>
+aweosme map<BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>16 bases</td>
+<td>Unlimited lives</td>
+<td>19 Apr 2004</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="../Xpilot/Maps/oldball.xp">Old ball</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jarno@j-a-r-n-o.nl?subject=Old%20ball">J-a-r-n-o</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="../Xpilot/Maps/oldball.gif" ALT="Old ball" HSPACE=5 height=100 width=100 align=LEFT>
+A teamplaymap for two four-player teams and one ball for each team. The treasurebox is behind a small gravityfield, which makes it a bit harder to grab the ball. You need to bounce against the wall to get enough momentum to get the ball clear from the box. I occasionally run it on a rankingserver at my university.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>4 lives</td>
+<td>16 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/pathball.xp">PathBall</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:aNmOdSePbAeM1@uPlLsEtAeSrE.net?subject=PathBall">Will112358</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/pathball.gif" ALT="PathBall" HSPACE=5 height=102 width=102 align=LEFT>
+This is one of my first maps. There are four teams, each encased in its own target shelter. There are gravity paths between diagonal teams which speed you up for the first half, and slow you down for the second, so they work in both directions to shorten your journey. The difficuly lies in keeping the targets open, keeping control where the paths intersect, and managing to hit your own ballbox.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>102 x 102</td>
+<td>4 + 4 + 4 + 4 bases</td>
+<td>3 lives</td>
+<td>05 Jul 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/pigeonholes.xp">Pigeonholes of Killer Balls</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:lgarrido@wanandoo.es?subject=Pigeonholes%20of%20Killer%20Balls">garri</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/pigeonholes.gif" ALT="Pigeonholes of Killer Balls" HSPACE=5 height=81 width=81 align=LEFT>
+Labyrinth map where players can't shot.<BR><BR>The most recompensed ways for kill are throwing balls against enemies and shoving ships against treasures, pushing them or using tractor beams and implode mines.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>81 x 81</td>
+<td>8 bases</td>
+<td>Unlimited lives</td>
+<td>27 Apr 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/pooltabl.xp">Pool Table</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Pool%20Table">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/pooltabl.gif" ALT="Pool Table" HSPACE=5 height=40 width=21 align=LEFT>
+To win in this map, you have to shove your foes into the pockets, where they will quickly die.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>21 x 40</td>
+<td>16 bases</td>
+<td>Unlimited lives</td>
+<td>06 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/reg.xp">Regular Creativity</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Regular%20Creativity">Russian Baller as given to Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/reg.gif" ALT="Regular Creativity" HSPACE=5 height=100 width=100 align=LEFT>
+This map is a basic team map. &nbsp;The team members come shooting out of their bases into the deflector at the top.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>5 + 4 + 4 bases</td>
+<td>3 lives</td>
+<td>17 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/robothell.xp">Robot Hell</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Robot%20Hell">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/robothell.gif" ALT="Robot Hell" HSPACE=5 height=100 width=100 align=LEFT>
+The robots and their cannons are at the bottom. &nbsp;You are at the top. &nbsp;Can you win?<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>34 + 4 + 4 bases</td>
+<td>5 lives</td>
+<td>11 Dec 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/sarcasticchaos.xp">Sarcastic Chaos</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by SARCASMOS</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/sarcasticchaos.gif" ALT="Sarcastic Chaos" HSPACE=5 height=100 width=100 align=LEFT>
+New team map<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>3 lives</td>
+<td>28 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/shards.xp">Shards (shielded &lt; unshielded)</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Shards%20%28shielded%20%3c%20unshielded%29">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/shards.gif" ALT="Shards (shielded < unshielded)" HSPACE=5 height=100 width=100 align=LEFT>
+This map is somewhat like a demented "Random Land". &nbsp;The main thing to watch is the fact that you are more likely to die from a wallcrash with your shields up than with your shields down.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>8 bases</td>
+<td>Unlimited lives</td>
+<td>28 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/skyscraper.xp">Skyscraper</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Skyscraper">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/skyscraper.gif" ALT="Skyscraper" HSPACE=5 height=70 width=99 align=LEFT>
+This map has high gravity, so the only way you can get from one place to another effectively is by climbing the ladders. &nbsp;Each team has a side of the building.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>99 x 70</td>
+<td>4 + 4 bases</td>
+<td>Unlimited lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/slalom.xp">Slalom</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Slalom">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/slalom.gif" ALT="Slalom" HSPACE=5 height=50 width=200 align=LEFT>
+You rush downhill, passing through the gates (and trying not to run into them). &nbsp;That's all there is to it!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 50</td>
+<td>12 bases</td>
+<td>4 lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/special.xp">Circles</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Circles">DRUNKEN RUSSIAN</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/special.gif" ALT="Circles" HSPACE=5 height=300 width=300 align=LEFT>
+another success....<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>300 x 300</td>
+<td>24 bases</td>
+<td>Unlimited lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/spider.xp">Spider Web</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Spider%20Web">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/spider.gif" ALT="Spider Web" HSPACE=5 height=99 width=99 align=LEFT>
+This map is somewhat like LARDBOTTOM's Vat of Lard. &nbsp;The person in the center is the spider, and the other four teams are the flies. &nbsp;The flies have to go into the spider's parlor, grab the treasure, and take it back to their nest without getting stuck in the web.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>99 x 99</td>
+<td>1 + 4 + 4 + 4 + 4 bases</td>
+<td>Unlimited lives</td>
+<td>28 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/stainless.xp">Stainless v0.8</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pforman@rocketjets.com?subject=Stainless%20v0%2e8">Keith Maniac</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/stainless.gif" ALT="Stainless v0.8" HSPACE=5 height=100 width=100 align=LEFT>
+A 2-team tournament map with extremely straight walls.<BR>No direct ball runs, so turning is crucial.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>3 lives</td>
+<td>07 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/starship-race.xp">Starship Race</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Starship%20Race">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/starship-race.gif" ALT="Starship Race" HSPACE=5 height=200 width=200 align=LEFT>
+This was loosely inspired by the Star Trek book "Starship Race". &nbsp;It uses every dirty trick in the book to keep you from the checkpoints.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/suicide.xp">Suicide</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Suicide">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/suicide.gif" ALT="Suicide" HSPACE=5 height=100 width=100 align=LEFT>
+In this map, the object of the game is to suicide on your opponents. &nbsp;The only weapon you have is yourself and your wreckage.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>10 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/suicide2.xp">Suicide II</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Suicide%20II">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/suicide2.gif" ALT="Suicide II" HSPACE=5 height=100 width=100 align=LEFT>
+This map looks like Suicide I, and the end is the same (kill by dying). &nbsp;But the means is completely different. &nbsp;You gather cluster mines and then ram into a wall. &nbsp;The resulting explosion should take out a lot of your enemies.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>11 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/suimusic.xp">Suicider's Music</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Suicider%27s%20Music">Patrick Kenny, mods by Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/suimusic.gif" ALT="Suicider's Music" HSPACE=5 height=100 width=100 align=LEFT>
+This has the same premise as Suicide II, but it is a team map.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>4 + 4 bases</td>
+<td>5 lives</td>
+<td>19 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/sumo.xp">Sumo Wrestling</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Sumo%20Wrestling">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/sumo.gif" ALT="Sumo Wrestling" HSPACE=5 height=50 width=50 align=LEFT>
+Like a sumo wrestler, you must shove your opponent out of the ring. &nbsp;This is a team map, so have your teammates assist you!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>50 x 50</td>
+<td>7 + 7 + 7 + 7 bases</td>
+<td>Unlimited lives</td>
+<td>12 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/swamp.xp">Swamp Race</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Swamp%20Race">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/swamp.gif" ALT="Swamp Race" HSPACE=5 height=150 width=150 align=LEFT>
+In this map, you must fly through the marsh, staying away from the swampy areas (they slow you down) and trying not to hit the mangroves. &nbsp;You have 5 stun lasers and 2 tractor beams to slow down competitors.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>150 x 150</td>
+<td>10 bases</td>
+<td>5 lives</td>
+<td>30 Jan 2002</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/sym.xp">Sym</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by KAT</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/sym.gif" ALT="Sym" HSPACE=5 height=99 width=99 align=LEFT>
+A completely symmetrical map (if I didn't make a mistake). Features wormholes and friction blocks. <BR>There are seperate stores which contain item concentrators. However, it takes time to get to the items and in the meantime someone might steal your ball. &nbsp;So always watch your ball!<BR><BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>99 x 99</td>
+<td>2 + 2 + 2 + 2 bases</td>
+<td>3 lives</td>
+<td>03 Apr 2011</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/tanks.xp">Tanks A Lot!</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Tanks%20A%20Lot%21">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/tanks.gif" ALT="Tanks A Lot!" HSPACE=5 height=100 width=100 align=LEFT>
+In this map, the major weapons are tanks (to smash your enemies), mines (to stop the tanks), and stun lasers (also to stop the tanks).<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>12 bases</td>
+<td>Unlimited lives</td>
+<td>06 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/teamglobe.xp">The Team Globe</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=The%20Team%20Globe">Bjørn Stabell (MODS BY DRUNKEN RUSSIAN)</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/teamglobe.gif" ALT="The Team Globe" HSPACE=5 height=170 width=170 align=LEFT>
+team globe, kinda explains it all.i think this one is mine, but im not sure<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>170 x 170</td>
+<td>6 + 5 bases</td>
+<td>4 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/volcano.xp">Volcano</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Volcano">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/volcano.gif" ALT="Volcano" HSPACE=5 height=100 width=200 align=LEFT>
+This is a three-team map, with one of the teams belonging to the robots. &nbsp;There are two routes: &nbsp;over the crater or under it.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 100</td>
+<td>5 + 5 + 5 bases</td>
+<td>3 lives</td>
+<td>06 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/warp.xp">The Warp Acclerator V4</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:dingopinhead@yahoo.com?subject=The%20Warp%20Acclerator%20V4">AcnotAlpha</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/warp.gif" ALT="The Warp Acclerator V4" HSPACE=5 height=100 width=200 align=LEFT>
+This is a Warp Tunnel that I made. It is revision 4 and there is a long tunnel with currents pointing one way and a few bases at the mouth of the Warp Tunnel. You cannot kill anybody, except if you slam them into a wall or cannon. Be warned, the cannons do use items! If you shoot them, they will give you the items if you pick them up.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 100</td>
+<td>7 bases</td>
+<td>Unlimited lives</td>
+<td>09 Apr 2006</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="../Xpilot/Maps/warp17.xp">Warp 17 racing</A></B>&nbsp;&nbsp;&nbsp; <font color="#00FF00">R</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:jarno@j-a-r-n-o.nl?subject=Warp%2017%20racing">J-a-r-n-o</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="../Xpilot/Maps/warp17.gif" ALT="Warp 17 racing" HSPACE=5 height=200 width=100 align=LEFT>
+A fast racemap. 5 afterburners and just 500 fuel.<BR>The decorwalls warn you of a upcoming wall. It's very hard to complete the 10 laps at high speed.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 200</td>
+<td>8 bases</td>
+<td>0 lives</td>
+<td>16 Jun 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/warplanet.xp">Warring Planets</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:pad53945@sci.tamucc.edu?subject=Warring%20Planets">Zemyla</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/warplanet.gif" ALT="Warring Planets" HSPACE=5 height=299 width=299 align=LEFT>
+This is a four-team map, with each team owning a planet and a moon. &nbsp;The moon is really just a gateway for the enemy to throw balls from your base to his treasure.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>299 x 299</td>
+<td>8 + 8 + 8 + 8 bases</td>
+<td>5 lives</td>
+<td>13 Sep 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/wicked.xp">Buggy Shit</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Buggy%20Shit">DRUNKEN RUSSIAN COMING AT YA!</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/wicked.gif" ALT="Buggy Shit" HSPACE=5 height=50 width=50 align=LEFT>
+yeah!<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>50 x 50</td>
+<td>1 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 bases</td>
+<td>3 lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/wildwest.xp">Wild Wild West</A></B>&nbsp;&nbsp;&nbsp; <font color="#FF0000">T</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:Austin_Donnelly@yahoo.co.uk?subject=Wild%20Wild%20West">Austin aka Molotov</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/wildwest.gif" ALT="Wild Wild West" HSPACE=5 height=60 width=60 align=LEFT>
+Frantic multiplayer fun: 2 balls, shootout<BR>over the central barrier, steal the enemys ball<BR>and bring it back. &nbsp;Small and fast.<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>60 x 60</td>
+<td>5 + 5 bases</td>
+<td>3 lives</td>
+<td>27 Nov 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/xa.xp">KRUMPIR</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by Krystof@Mara</td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/xa.gif" ALT="KRUMPIR" HSPACE=5 height=100 width=100 align=LEFT>
+This is level, in which isn't easy leak behind the wall. <BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>100 x 100</td>
+<td>5 bases</td>
+<td>Unlimited lives</td>
+<td>20 Oct 2007</td>
+</tr>
+</table>
+<BR>&nbsp;
+<table width="100%">
+<tr>
+<td><font size="+2"><B><A HREF="/Xpilot/Maps/zxzx.xp">Drunken's 2nd RPG</A></B>&nbsp;&nbsp;&nbsp; <font color="#0000FF">N</font></font></td>
+<td ALIGN=RIGHT>by <a href="mailto:drgreenthumb@porschefan.com?subject=Drunken%27s%202nd%20RPG">Russian Baller</a></td>
+</tr>
+
+<tr>
+<td COLSPAN="2"><img SRC="/Xpilot/Maps/zxzx.gif" ALT="Drunken's 2nd RPG" HSPACE=5 height=200 width=200 align=LEFT>
+not worth downloading, but i made some.... umm.... corrections.. i guess you could call it that<BR>
+</td>
+</tr>
+</table>
+
+<table BORDER COLS=4>
+<tr>
+<td>200 x 200</td>
+<td>67 bases</td>
+<td>Unlimited lives</td>
+<td>06 Oct 2001</td>
+</tr>
+</table>
+<BR>&nbsp;
+
+<P>You can upload you own maps here too by using the form below.
+<BR>The maximum filesize is 100 Kb, which is more than enough for maps.
+<BR>When you click on the "Browse..."-button, a dialog will appear where you
+can select your map. Note that the dialog will start looking for HTML-files, 
+which is wrong. You can correct this by letting is search for *.* instead of *.html.
+<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/mapupload.cgi" METHOD="POST">
+<CENTER><TABLE><TR><TD>
+<CENTER><INPUT TYPE="FILE" SIZE=40 NAME=mapfile></CENTER>
+</TD></TR><TR><TD><CENTER>
+<P><INPUT TYPE="SUBMIT" VALUE="Submit">&nbsp;
+<INPUT TYPE="RESET" VALUE="Reset"></CENTER></TD></TABLE>
+</CENTER></FORM>
+<HR WIDTH="100%"><P>
+<A HREF="xpilotmaps.delete.shtml">Click here</A>, if you wish to delete one of your maps. I am still working
+on a more fancy way to edit a map. Now you just have to delete your map and upload the
+new version.
+<P><hr WIDTH="100%"><FONT SIZE="-1">[
+<A HREF="xpilotmain.html">xpilotmain</A> |
+<A HREF="cgi-bin/showpoll.cgi">voteresults</A> |
+<A HREF="Xpilot/Newbie/newbie.html">newbieguide</A> |
+<A HREF="xpilotserver.html">serveroptions</A> |
+<A HREF="xpilottips.html">tips & tricks</A> |
+<A HREF="xpilotmeta.html">meta-interface</A> |
+<A HREF="xpiloteditor.html">shipshapeeditor</A> |
+<A HREF="xpilotshipshapes.html">shipshapes</A> |
+<A HREF="links.xpilot.shtml">links</A> |
+<B>maps</B> |
+<A HREF="xpilotgoodies.html">goodies</A> |
+<A HREF="xpilotpalm.html">for Palm</A> |
+<A HREF="xpilotwap.html">for WAP</A> |
+<A HREF="xpilotpatches.html">my patches</A> |
+<A HREF="xpilototherpatches.html">other patches</A>
+]</FONT>
+<p><!--WEBBOT bot="HTMLMarkup" startspan ALT="Site Meter" -->
+<script language="JavaScript" TYPE="text/javascript">
+<!--
+document.write("<a href=\"http://www.sitemeter.com/");
+document.write("stats.asp?site=jarno\" target=_top>");
+document.write("<img src=\"http://www.sitemeter.com/");
+document.write("meter.asp?site=jarno");
+document.write("&refer="+escape(top.document.referrer));
+document.write("&hours="+(new Date()).getHours());
+document.write("&minutes="+(new Date()).getMinutes());
+document.write("\" border=0 alt=\"Site Meter\" HEIGHT=1 WIDTH=1></a>");
+// -->
+</script>
+<!--WEBBOT bot="HTMLMarkup" Endspan -->
+</body>
+</html>

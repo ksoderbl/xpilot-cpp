@@ -1,0 +1,345 @@
+# Created by ./xp-mapedit on Thu Jun 14 19:51:17 2001
+
+mapwidth : 100
+mapheight : 100
+mapname : CAREFUL!
+mapauthor : Sir Shrike **
+limitedlives : no
+worldlives : 0
+selfimmunity : no
+gravity : -0.14
+gravityangle : 90
+gravitypoint : 0,0
+gravitypointsource : no
+gravityclockwise : no
+gravityanticlockwise : no
+shotsgravity : yes
+gravityvisible : no
+coriolis : 0
+friction : 0.0
+blockfriction : 0.3
+defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
+tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
+shipmass : 20.0
+shotmass : 0.1
+shotspeed : 100.0
+shotlife : 60
+maxplayershots : 256
+firerepeatrate : 2
+keepshots : no
+edgebounce : yes
+edgewrap : yes
+extraborder : no
+turnthrust : no
+robotstalk : no
+robotsleave : yes
+robotleavelife : 50
+robotleavescore : -90
+robotleaveratio : -5
+robotteam : 0
+restrictrobots : yes
+reserverobotteam : yes
+minrobots : -1
+maxrobots : 4
+robotrealname : robot
+robothostname : xpilot.org
+shotswallbounce : no
+ballswallbounce : yes
+mineswallbounce : no
+itemswallbounce : yes
+missileswallbounce : no
+sparkswallbounce : no
+debriswallbounce : no
+asteroidswallbounce : no
+wreckagecollisionmaykill : no
+tankrealname : tank
+tankhostname : tanks.org
+maxobjectwallbouncespeed : 5000000
+maxshieldedwallbouncespeed : 900000000
+maxunshieldedwallbouncespeed : 9000000000000000000
+maxshieldedplayerwallbounceangle : 360
+maxunshieldedplayerwallbounceangle : 360
+playerwallbouncebrakefactor : 0.89
+objectwallbouncebrakefactor : 0.95
+objectwallbouncelifefactor : 0.80
+wallbouncefueldrainmult : 0.1
+wallbouncedestroyitemprob : 0.0
+loseitemdestroys : no
+limitedvisibility : no
+minvisibilitydistance : 0.0
+maxvisibilitydistance : 0.0
+wormholevisible : no
+itemconcentratorvisible : no
+wormtime : 0
+playerstartsshielded : yes
+shieldeditempickup : no
+shieldedmining : no
+targetkillteam : no
+targetteamcollision : yes
+targetsync : no
+targetdeadtime : 60
+treasurekillteam : no
+treasurecollisiondestroys : yes
+treasurecollisionmaykill : no
+ballconnectorlength : 120
+maxballconnectorratio : 0.30
+ballconnectordamping : 2.0
+ballconnectorspringconstant : 1500.0
+ballmass : 50.0
+playersonradar : yes
+missilesonradar : yes
+minesonradar : no
+nukesonradar : yes
+treasuresonradar : no
+teamplay : no
+teamassign : no
+teamimmunity : no
+teamcannons : no
+teamfuel : no
+capturetheflag : no
+cloakedexhaust : yes
+cloakedshield : yes
+cannonsuseitems : yes
+cannonsmartness : 10
+cannondeadtime : 10
+identifymines : yes
+maxminesperpack : 10
+minelife : 2
+minefusetime : 30
+baseminerange : 0
+roguemineprob : 1.0
+nukeminmines : 4
+minminespeed : 2
+nukeclusterdamage : 1.0
+ecmsreprogramrobots : yes
+ecmsreprogrammines : yes
+distinguishmissiles : yes
+maxmissilesperpack : 10
+missilelife : 10
+rogueheatprob : 1.0
+nukeminsmarts : 7
+asteroidcollisionmaykill : no
+asteroidsonradar : no
+maxasteroiddensity : 0
+allowshipshapes : yes
+allowsmartmissiles : yes
+allowheatseekers : yes
+allowtorpedoes : yes
+allowplayercrashes : yes
+allowplayerbounces : yes
+allowplayerkilling : yes
+allowshields : no
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+laserisstungun : yes
+maxroundtime : 0
+gameduration : 0.0
+rounddelay : 0
+roundstoplay : 0
+reset : yes
+resetonhuman : 0
+timing : no
+checkpointradius : 6.0
+racelaps : 3
+itemconcentratorradius : 10
+usewreckage : yes
+lockotherteam : yes
+allowviewing : yes
+framespersecond : 20
+initialfuel : 1000
+initialtanks : 2
+initialecms : 0
+initialmines : 1
+initialmissiles : 1
+initialcloaks : 1
+initialsensors : 1
+initialwideangles : 1
+initialrearshots : 1
+initialafterburners : 2
+initialtransporters : 1
+initialdeflectors : 1
+initialphasings : 1
+initialhyperjumps : 1
+initialemergencythrusts : 1
+initiallasers : 1
+initialtractorbeams : 1
+initialautopilots : 1
+initialemergencyshields : 1
+initialmirrors : 1
+initialarmor : 1
+maxfuel : 10000
+maxtanks : 10
+maxecms : 10
+maxmines : 10
+maxmissiles : 10
+maxcloaks : 10
+maxsensors : 10
+maxwideangles : 10
+maxrearshots : 10
+maxafterburners : 10
+maxtransporters : 10
+maxdeflectors : 10
+maxphasings : 10
+maxhyperjumps : 10
+maxemergencythrusts : 10
+maxlasers : 10
+maxtractorbeams : 10
+maxautopilots : 10
+maxemergencyshields : 10
+maxmirrors : 10
+maxarmor : 10
+maxoffensiveitems : 100
+maxdefensiveitems : 100
+maxitemdensity : 0.12
+itemenergypackprob : 1e-9
+itemtankprob : 1e-9
+itemecmprob : 1e-9
+itemmineprob : 1e-9
+itemmissileprob : 1e-9
+itemcloakprob : 1e-9
+itemsensorprob : 1e-9
+itemwideangleprob : 1e-9
+itemrearshotprob : 1e-9
+itemafterburnerprob : 1e-9
+itemtransporterprob : 1e-9
+itemlaserprob : 1e-9
+itememergencythrustprob : 1e-9
+itemtractorbeamprob : 1e-9
+itemautopilotprob : 1e-9
+itememergencyshieldprob : 1e-9
+itemdeflectorprob : 1e-9
+itemhyperjumpprob : 1e-9
+itemphasingprob : 1e-9
+itemmirrorprob : 1e-9
+itemarmorprob : 1e-9
+movingitemprob : 0.2
+dropitemonkillprob : 0.5
+detonateitemonkillprob : 0.5
+destroyitemincollisionprob : 0.0
+itemconcentratorprob : 1.0
+itemprobmult : 1.0
+cannonitemprobmult : 1.0
+randomitemprob : 0.0
+asteroidprob : 5e-7
+shotkillscoremult : 1.0
+torpedokillscoremult : 1.0
+smartkillscoremult : 1.0
+heatkillscoremult : 1.0
+clusterkillscoremult : 1.0
+laserkillscoremult : 1.0
+tankkillscoremult : 0.44
+runoverkillscoremult : 0.33
+ballkillscoremult : 1.0
+explosionkillscoremult : 0.33
+shovekillscoremult : 0.5
+crashscoremult : 0.33
+minescoremult : 0.17
+tankscoredecrement : 500
+asteroidscoring : yes
+
+mapData: \multiline: EndOfMapdata
+                                                                                                    
+bbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzbbb
+                                                                                                   b
+                                                                                                   b
+                               _                                                                   z
+                             x xxxx     xxxxxxxx                                                   z
+                     xx     xxxxxxxx    xxxxxxx                                                    z
+                    xxx     xxxxxxxx    xxxxxx                                                     z
+                   xxx      xx      xxxxx       x   xx                                             z
+                 xxxx       x  b    xxxx   b   xx  xxx                 )                           z
+                xx x       xx ##b   xxx   b##  xx   xx                                             z
+               xx  x       x  ###b       b###   xb     x                                           z
+               x  x       xx b####       ####b   b    xx                                           z
+               x  x      xx   b###b     b###b    b     x                                           z
+                 xx      xx    bb##     ##bb     bb    xx                                          z
+                         x                        b bb  x                                          z
+             xx         xx           xzx                x                                          z
+          xx        xx xx           xx x                xx                                         z
+         xx  x      xxxx            x  x          bb     xx                                        z
+         x  xx        xxxx x        xxxx        bb     b                                           z
+      xx   xx          xx  x                  bb      bbb                                          z
+    xx     xx              xx                 b   bb  bbb                                          z
+   xx        xx         xxxxxx        xxxxx      bbb   b                                           z
+xxx     x     xx       xxx   xxxxxx######xxx      bb                                               z
+ x  x   xx    xx      xxx     xxxx#(%%%%##xxx x   bb              xx                               z
+   xxx   xx   xx     xxx        x#%%%%%%%##xxxx   b    xx      xxzxxx                              z
+  xxx     x  xxx      x        x#%%%#%%%%%#x          xxxx   xxx     xx                            z
+   xx     x  xxx              xx#%%%#%%%%%#x        xxx  xx       xx  xx                           z
+    xx   xxx xxx              xx#%%%%%%%%##x     xx xx   xx       xx xxx                           z
+    xx  xxxxxxxx              xxzz%%%%%%##x     xxx                   x                            z
+       xxxxx   x               xz##%%_%##x     xx          %                                       z
+ xx  xx         x             xx   #####  x   xx                        x                          z
+xxxxxxxx       xxx            x       xx  x xxx   xf                     x                         z
+             xxxxxx           x           x xx   xxf                     x                         z
+             xx   xxx         xx          x     xx                       x                         z
+         xxxx      xx         xxx     rrxx      x    xxxf        xf      x                         z
+       xx          xx          xxxxrr xxx       x    xxxf       xxf      x                         z
+      xxx          xx              xxzxxx       x    x         xx xx     x                         z
+     xx             xx                           xx  x    xx  xxx  x     x                         z
+     x               xx                        xx  x x    xx  x    x     z                         z
+     x                xx                       xx   x x  xx   x         xx                         z
+    xx                xxxx                  rrrx    x    xx   x        x x                         z
+ xxxxx                 xxxrrrrrr          rrxxxx    xx   xx   xxx   x   x                          z
+ xxxx                   xxxxxxxxr       rrxx        x    xx xxx  xxxxxxxx                          z
+                        x xxxxxxxrr  rrrxxxx         xxxx            x                             z
+                        x       xxx  xxxx     xx                    xxx                            z
+                        x            x       x                                                     z
+                        xx        x  x       x                                                     z
+                        x         x  x       x                                                     z
+                        xx        x  x      x                                                      z
+                        xx        x  x     xxx                                                     z
+                          x      xx  xx    x                                                       z
+                          x  x  xx   xx    xx                                                      z
+                          xxxxxxxx   xxxxxxx                                                       z
+                                                                                                   z
+                                                                                                   b
+                                                                                                   b
+                                                                                                   b
+bbzzzzzzzzzzzzzzzzzzzzbbbbbbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzbbb
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                               bbbb     bbbbbby    bbbbbbb   by     b    bbbb                       
+                               bhgb     b%%%%gby   bh        bby    b    bhgb                       
+                              tb%%by    b%%%%%gby  b         bgb    b    b  b                       
+                             tbb%%bby   b%%%%%%gb  b         b by   b    bytb                       
+                             bbh%%gbb   b%%%%%tbh  b         b bb   b    bbbb                       
+                             bh%%%%gb   b%%%%tbh   by        b gby  b   bbhgbb                      
+                             b%%%%%%b   bbbbbbh    bbbb      b  gby b   bh  gb                      
+                             bbbbbbbb   b gby      bh        b   gb b   b    b                      
+                             bh    gb   b  gby     b         b    byb   b    b                      
+                             b      b   b   gby    b         b    gbb   b    b                      
+                             b      b   b    gby   by        b     gb   b    b                      
+                             b      b   b     gb   bbbbbbb   b      b   b    b                      
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+EndOfMapdata
+
+------------0xKhTmLbOuNdAr

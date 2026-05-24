@@ -1,0 +1,168 @@
+#Created by MapXpress 4.5.0 on Tue Jun 06 20:42:23 2006
+
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#Options updated for Xpilot 4.5.0
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+mapwidth : 100
+mapheight : 100
+mapname : Misc Ellements Inclosed
+mapauthor : AcnotKid
+shotsgravity : no
+maxplayershots : 30
+firerepeatrate : 1
+edgebounce : no
+edgewrap : yes
+turnthrust : yes
+robotstalk : no
+maxrobots : 3
+playerstartsshielded : no
+limitedvisibility : yes
+gravityvisible : no
+wormholevisible : yes
+allowshields : no
+allownukes : yes
+allowclusters : no
+allowmodifiers : yes
+allowlasermodifiers : yes
+asteroidcollisionmaykill : no
+asteroidsonradar : yes
+maxasteroiddensity : 0.5
+initialecms : 2
+announcealliances  : yes
+asteroidconcentratorvisible : no
+asteroidconcentratorradius : 2
+
+mapData: \multiline: EndOfMapdata
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                         q                                                          
+                                        xbx       qw                                                
+                                       qbx@w   qxxxs                                                
+                                      xb #  xwqx                                                    
+                                     qb ##    xs                                                    
+                                    xb x##    x                                                     
+                                   qbxb b bxxxxw                                                    
+                                    axxbxxxxxxxs                                                    
+                                       s     as                                                     
+                                                                     qxw   qxw                      
+                                                                                                    
+                                                                     qxw _ qxw                      
+                                                                     sbasxasba                      
+                                                                     wbq x wbq                      
+                                                                     axs x axs                      
+                                                                         x                          
+                                                                         x                          
+                                                                        ax                          
+       aw                    qw                                                                     
+        aw                  qsaw                                     s x x x a                      
+         aw     _          qs  aw                                   x         x                     
+       _  axxxxxxxxxxxxxxxxx    aw                                  x    _    x                     
+      xxxxxxxxxxxxxxxxxxxxxs    qs                                   x w x q x                      
+          qxs       x          qs                                                                   
+         qs         x                                                                               
+        qs          x                                                                               
+       qs                                                                                           
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                 qxxxw                                              
+                                                qk---jw                                             
+                                                skiiija                                             
+                                                ai<i>is                                             
+                                                 axixs                                              
+                                                  xix                                               
+                                                  x)x                                               
+                                                  xix                                               
+                                                  xix                                               
+                                                  xix                                               
+                                                  xix                                               
+                                                  xix                                               
+                                                  xix                                               
+                     qx                          qsiaw                                              
+                    qxx                         qs<i>aw                                             
+           x     qxxxs                                                                              
+                 xxs                                                                                
+                qxs                                                                                 
+                xx                                                                                  
+                xx                                                                                  
+                xs                                                                                  
+           qx   a                                                                                   
+           aw   q                                                                                   
+           ax qxs                                                                                   
+              xx                                                                                    
+              axx                                                                                   
+                x                                                                                   
+                s                                                                                   
+                                               _                                                    
+                         qxxxxxw qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxw                
+                         xxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxx        x                
+                         xxxxxxx axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs xxxxx        x                
+                         xxxxxxx                                      axxxx        x                
+                         xxxxxxx                                          x        x                
+                         xxxxxxx  qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxw  x_       x                
+                         x     s  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  axxs  axxs                
+                         x        axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                            
+                         x     w                       axxxxxxxxxxxxxxxxw                           
+                         x     x                        xxxxxxxxxxxxxxxxxxxxxxxxxxxw                
+                         x     xxxxxw  qxxxxxxxxxxxxxw  axxxxxxxxxxxxxxxxxxxxxxxxxxx                
+                         x        x   qxxxxxs                                      x                
+                         x        x   xx##xx                                       x                
+                         x        x   xx  xx                                       x                
+                         x        x   xx@ xx                                       z                
+    qxxxxw               x        x)  xx##xx                                       x                
+qw_qxxxxxs  qw           x        x)  xx  xx                                       z                
+xxxxxxxxs qxxx           x        x   xx@ xx                                       x                
+xxxs  %x  axxxx          x        x   xxxxxx        xw                                              
+xxx q  xw qxxxx          x    %   x   xx  xx         aw                            x                
+x s x  xs xxxxs          x   % %  x   ax@ xxw      _  x                            z                
+xs  axxs qxxxx           x    %   xxx  xxxxxxxxxxxxxxxxxw                          x                
+s  w    qxxxxs           x    %   x   qxxxxxxxxxxxxxxxxxx                          z                
+  qxxxxxxxxxx            x   % %  x                  xxxx                          x                
+ qxxxxxxxxxxs            x    %   x                  xxxx                          x                
+qxxxxxxxxxxw             x        x                  xxxx &                        x                
+xxxs                     x        x                ( xxxx                          x                
+                         x        x                  xxxx                          x                
+                         axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxs                
+                                                                                                    
+                                                                                                    
+                                                                                                    
+EndOfMapdata
+

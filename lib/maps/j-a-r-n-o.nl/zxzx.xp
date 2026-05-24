@@ -1,0 +1,298 @@
+#Created by MapXpress 2.0.2 on Sun May 27 20:25:33 2001
+
+#
+#
+#
+
+mapwidth : 200
+mapheight : 200
+mapname : Drunken's 2nd RPG
+mapauthor : Russian Baller
+limitedlives : no
+worldlives : 0
+reset : no
+gravity : 0
+gravitypointsource : yes
+gravityclockwise : yes
+gravityanticlockwise : yes
+maxplayershots : 500
+edgebounce : yes
+edgewrap : no
+extraborder : no
+robotsleave : no
+restrictrobots : no
+reserverobotteam : no
+mineswallbounce : yes
+maxobjectwallbouncespeed : 99999
+maxshieldedwallbouncespeed : 99999
+maxunshieldedwallbouncespeed : 99999
+maxshieldedplayerwallbounceangle : 180
+maxunshieldedplayerwallbounceangle : 180
+playerwallbouncebrakefactor : 0.5
+objectwallbouncebrakefactor : 1
+objectwallbouncelifefactor : 1
+wallbouncefueldrainmult : 0
+oneplayeronly : no
+distinguishmissiles : no
+keepshots : no
+identifymines : no
+cannonsuseitems : no
+cannonsmartness : 3
+wormholevisible : no
+wormtime : 2
+itemconcentratorvisible : yes
+allowplayercrashes : no
+allowshields : yes
+allownukes : yes
+allowclusters : yes
+allowmodifiers : yes
+allowlasermodifiers : yes
+maxmissilesperpack : 8
+maxminesperpack : 20
+baseminerange : 5
+nukeminsmarts : 2
+nukeminmines : 2
+nukeclusterdamage : 2
+itemconcentratorradius : 1
+maxitemdensity : 0.0012
+allowviewing : yes
+ignore20maxfps : no
+password : baller
+usewreckage : no
+initialfuel : 1500
+initialtanks : 1
+initialafterburners : 3
+initialautopilots : 2
+maxoffensiveitems : 99999
+maxdefensiveitems : 99999
+maxfuel : 99999
+maxtanks : 99999
+maxecms : 99999
+maxmines : 99999
+maxmissiles : 99999
+maxcloaks : 99999
+maxsensors : 99999
+maxwideangles : 99999
+maxrearshots : 99999
+maxafterburners : 99999
+maxtransporters : 99999
+maxdeflectors : 99999
+maxphasings : 99999
+maxhyperjumps : 99999
+maxemergencythrusts : 99999
+maxlasers : 99999
+maxtractorbeams : 99999
+maxautopilots : 99999
+maxemergencyshields : 99999
+maxmirrors : 99999
+maxarmor : 99999
+movingitemprob : 1
+dropitemonkillprob : 1
+detonateitemonkillprob : 0
+itemconcentratorprob : 0.5
+itemprobmult : 2
+ballkillscoremult : 2
+
+mapData: \multiline: EndOfMapdata
+   xxxxxxxxxxxxxxxxxxxxxxxxx                                                                                                                                                                            
+   xxxxxxxxxxxxxxxxxxxxxxxxxx    x                                                                                                                                                                      
+   xxxxxxxxxxxxxxxxxxxxxxxxxxx   x####xxxx                                                                                                                            bbb bbbb  b    b                  
+   xxxxx#              xxxxxxxx  x       xx      xxxxx            xxxxx                             xxxxx                                                             b   b  b  bbb  bbbb               
+   xxxxx#                  xxxxx x        xx   xxx   x           xx   xx   x                       xx   xxx                                                           b   b  b  b    b                  
+   xxxxx#         xx        xxxx x         xx  x     x           x     x   x               xxxxx   xx     xx                                                          bbb b  b  b b  b                  
+   xxxxx#         xx         xxxxx          xx x  ## xx          x     x   xx              x   x    xx     xx        xxxxxxxxxxxxx                                    b   bbbb  bb   bbbb               
+   xxxxx#        xxxx         xxxx   xxxxx   xxx      x          x     x   xx              x   x     x      xx     xxx           xx                                   b   bb    b    b                  
+   xxxxx#        x  x          xxx  x     x   xx      x          x ##  x   x#x             x   x     x       x    xx           ## x                                   b   b b   b    b                  
+   xxxxx# % % %  #  xx         xxx  x     x   xx      x          x     x   x#x             x###x     x       x   xx             # x           ****                        b  b  b    b                  
+   xxxxx#        #   x          xx  x     x   x       x          x     x   x  x            x   x     x       xx xx              # x                                             bbbb bbb                
+   xxxxx#     %  #   x          xx  x     x   x       x          x     x   x   x           x   x    xx        xxx                xx                                                                     
+   xxxxx# %      #   xx         xx  x     x   x       x         xx     x   x   x           x   x    x         xx              xxxx                        bbb                                           
+   xxxxx#    %   #    x          x   xxxxx  ) x       x         x      x   x    x          x   x    x        xxx           xxxx                           b b                                           
+   xxxxx#        #    xf         x            x       x         x      x   x    x          x   x    x        xx          xxx                              b b     b     b  bbbbbb                       
+   xxxxx#        #    xf         x           xx       x         x      x   x     x         x   x    x        x          xx     xxxxx                      bbb bbb   bb  b   b    bb                     
+   xxxxx#%       #    xf                    xxx       x         x      x   x     x         x   x    x                  xx    xxx   xxx                    b   b b b bbb b   b   bb                      
+   xxxxx#   %    #    xf         x        xxx x       x         x      x   x      x        x   x    x                xxx    xx       x                    b   b b b b b b   b   bb     b                
+   xxxxx#     %  #    xf         x       xx   x       x         x      x   x       x       x   x    x               xx    xxx        x                    b   bbb b b bbb   b    bbb   b                
+   xxxxx#  %     #    xf         x       x    x      xx         x     xx   x  x    x       x   x   xx             xxx    xx          xxxxxxxxx                              b      b   b                
+   xxxxx#        #    xf        xx       xx   x      x          x     x    x  x     x      x   x   x             xx    xxx                   xxx                                bbbb   b                
+   xxxxx#    %   #    xf        xx        x   x      x         xx     x    x  xx    x      x   x   x             x   xxx             xxxx      xx                                bb    b                
+   xxxxx#        #   xx         xx        xx  x      x         x     xx    x  x x    x     x   x   x            x   xx              xx  xxx     xx                                     b                
+   xxxxx#  %     #   x         xxx   _     x  xx     x         x     x     x  x x_   x     x   x  xx            x  xx              xx      x     x                                     b                
+   xxxxx#    %   #   x         xxx   xx    xx  x     x        xx     x     x  x  x    x    x   x  x             x  x              xx        x    xx       xxx                          b                
+   xxxxx#        #   x        xxxx   xxx    xx x     xx       x     xx     x  x   x    x   x   x  x     xx      xxxx             xx         xx    x   xxxxx xxx                        b   bb           
+   xxxxx#   % %  #  xx        xxxx   x x     x x      x       x     x      x  x   x    x   x   x  x     x x     _              xxx           x    x xxx       xx                   bbb b  bb            
+   xxxxx#        #  x        xxxxx   x xx    xxx      x      xx     x      x  x    x    x  x   x  x     x xx    xxxxxxxxxxxxxxxx             xx   xxx          xx                   bbbb bb             
+   xxxxx#        #  x       xxxxxx   x  x     xx      xx    xx     x       x  x     x   x  x   x  x    xx  x    x  xx                         x    x             xx                   bbbb              
+   xxxxx# % % %  x xx       xxxxxx   x  xx     x       xx xxx      x       x  x     x    x x   x  x    xx  x    x   xx                        xx        _         xx                                    
+   xxxxx#        xxx       xxxxxxx   x   xx    x        xxx       xx       x  x      x   x x   x  x    x   x    xx   xxx                       x       xxxx        x                                    
+   xxxxx#        xx       xxxxxxxx   x    x                        xx      x  x       x   xx   x  x    x   xx    xx    xxx                     x      xx  xx        x                                   
+   xxxxx#               xxxxxxxxxx   x    xx           ****         xxx   xx  x       x    x   x xx    x    x     x      xxx         x         x     xx     x       x                                   
+   xxxxx#              xxxxxxxxx x   x     xx                         xxxxx   x        x       xxx     x    x     xxx      xxxxxxxxxxx         xx    x       xx     xx                                  
+   xxxxx#   _        xxxxxxxxxx  x   x      xx                                x         x             x     x       xxx                         x    x        x      x                                  
+   xxxxxxxxxxxxxxxxxxxxxxxxxxxx  xxxxx       xxx               xxxxxx         x         x             x     xx        xxxxxxxxxxxx              x   x          x     x   ccccccccccccccccccccccccccccccc
+   xxxxxxxxxxxxxxxxxxxxxxxxxx                  xxx       _  xxxx    xxxxxxxxxxx          x          xxx     xxx                 xxx             x   x          x     x   ccccccccccccccccccccccccccccccc
+   xxxxxxxxxxxxxxxxxxxxxxxxx                     xxxxxxxxxxxx         x                   xxxxxxxxxxx         xx                  x             x   x          x     x   ccccccccccccccccccccccccccccccc
+   xxxxxxxxxxxxxxxxxxxxxxx                                                                                     xx              ## x             x   x          x     x   ccccccccccccccccccccccccccccccc
+   xxxxxxxxxxxxxxxxxxxxxx                                                                                       xx             ## x             x   x          xx    xx  ccccccccccccccccccccccccccccccc
+                                                                                                                 xxxx             x             x   x           xx    x  ccccccccccccccccccccccccccccccc
+                                                                                                                    xxxxxx       xx             x   x            x    xx ccccccccccccccccccccccccccccccc
+                                                                                                                         xxxxxxxxx              x   x            x  #  x ccccccccccccccccccccccccccccccc
+                                                                                                                                               xx   x            x  #  xxccccccccccccccccccccccccccccccc
+                                                                                                                                                x   x            x  #   xccccccccccccccccccccccccccccccc
+                                                                                                                                                x   x            x ##   xccccccccccccccccccccccccccccccc
+                                                                  xxxxxx                                                                        x   x             x    xxccccccccccccccccccccccccccccccc
+                                                                xxx    xx                                                                       x   x             xx  xx ccccccccccccccccccccccccccccccc
+                                                               xx      ##x                                                     xxxxx            x   x              xxx   ccccccccccccccccccccccccccccccc
+                                                              xx  xxxx  ##x                                                   xx   xxx          x   xxxxxx               ccccccccccccccccccccccccccccccc
+                                                             xx  xx   xx #xx                                                 xx      xx         x x x    x               ccccccccccccccccccccccccccccccc
+                                                            xx  xx     xx# x                                                x         xx        xxx      xx              ccccccccccccccccccccccccccccccc
+                                                            x  xx       xx xx   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  xx          x        xx        x              ccccccccccccccccccccccccccccccc
+                                                            x  x         xx x xxx                c                      x  x           xx       x         xx             ccccccccccccccccccccccccccccccc
+                                                            x  x          x x x                  xxx                    x x             x       x          x             ccccccccccccccccccccccccccccccc
+                                                    xxx     x  x          x xxx xxxxxxxxxxxx     x x                    xxx             x      xx          xx          x ccccccccccccccccccccccccccccccc
+    xx        x                                    xx x     x  x          xxx x x          xxxxxxx xx                   xx              x      x            x          x ccccccccccccccccccccccccccccccc
+     x        xx  xxxxxxxx        xxx              x  x     xx x              x x                   x                   xx              x      xx           x          x ccccccccccccccccccccccccccccccc
+     x       xxxxxx       xxx    xx xx             x #x      x xx             x x                   x                   x      *         x      x    xx     x          x ccccccccccccccccccccccccccccccc
+     xx     xxxxx           xx   x   x             x #x      x  x             x xx                  x           xxxxxxxxx                x      x   x xx     x         x ccccccccccccccccccccccccccccccc
+      xx  xxx xxx            x   x   x             x #x      x  xx            x  x                  xxxxxxxxx   x     x                  x      x   x  x_    x         x ccccccccccccccccccccccccccccccc
+       xxxx   xx             xx  x   x             x##x      x   xx           x  x                          x   x    xx     *   *        x     xx   x  xx    x         x ccccccccccccccccccccccccccccccc
+              x               x  x   x             x  x      xx   xx          x  x                          x   x    x              *    x     x    x   x    x         x ccccccccccccccccccccccccccccccc
+              x               x  x   x             x  x       xx   x          x  x                          x   x    x*     xx           xx    x    x   x    xx        xcccccccccccccccccccccccccccccccc
+              x                x x   x             x  x        xx   x         x  x                          x   x   xx     xxxx       *   x    x    x   xx    x        xcccccccccccccccccccccccccccccccc
+             xx                x x   x             x  x         xx  xx        x  xx                         x   x   x     xx  xx          x    x    x    x    x        xccccccccccccccc                 
+             x                 x x  xx             x  x          xx  xx       xx   xxxxxxxxxxxx             x   x  xx  *  x    xx   *     xx   x    x    x    x        xccccccccccccccc                 
+             x                 x x  x              x  x           xx  xx       xx             x             x   x xx      x     xx         x   x    x    xx   x        xccccccccccccccc                 
+             x                 xxx  x              x  x            xx  x        xx            x             x   x x       xx     xx        x   x    x     x   x        xccccccccccccccc                 
+             x                  xx  x              x  x             xx xx        xxxxxxx      x             x   xxx        x      x    *   x   x    x     x   x        xcccccccccccccccccccccccccccc    
+             #                  xx  x              x  x              x  xx             xxxx   x             x   x      *   x      x        x   x    x     x   x        xcccccccccccccccccccccccccccc    
+       y     #                      x              x  x              xx  x                x   x             x   x          xx     x *      x   x    x     xx  x        xcccccccccccccccccccccccccccc    
+  bbbbbby    #                  xx  x              x  x     xxxx      x  xx               x   x             x   x           x    xx        x   x    x      x  x        xcccccccccccccccccccccccccccc    
+  bbbbbbh                       xx  x              x  x     x  xx     x   x               x   x             x   x    *      x    x         x   x    x      x  xx       xcccccccccccccccccccccccccccc    
+       h                       x x  x              x  x    xx   xx    x   x               x   x            x    x            x  xx    *    x   x    x      x   x       xcccccccccccccccccccccccccccc    
+            #                  x x  x              x  x    x  x  x   xx   x               xx  x            x    x  *    *    xxxx          x   x    x      x   x       xcccccccccccccccccccccccccccc    
+            #                 xx x  x              x  x    x   x xxxxx    x                x  x            x    x                   *      x   x    x      x   x       x     ccccccccccccccccccccccc    
+            #                xx  x  x              x  x    xx  x         xx                x  x           xx   x      *     *              x   x    x      xx# x       x     ccccccccccccccccccccccc    
+           xxxxxxx          xx   x  x              x  x     x  x        xx                 x  x           x    x    * *                 *  xx  x    x       x# x       x     ccccccccccccccccccccccc    
+           xx     x     _ xxx    x  x              x  x     x  xxx   xxxx                  x  x          xx    x                  *         x  x    x       x##x       x     ccccccccccccccccccccccc    
+           xx      x    xxx      x  x             xx  x     xx    xxxx                     x  x          x     x        *   xx              x  xx   x       x #xx      x     ccccccccccccccccccccccc    
+          xxx      xxxxxx        x  x             x   x      xx                            x  x          x     x            xxx      *      x   x   x       x # x      x     ccccccccccccccccccccccc    
+          x x###xxxxxx           x  x             x   x       xxx      xxx                 x  x          x     x          * x x             x   x   x       x   x      x                                
+          x         x            x  x            xx   x      xx xxxxxxxx                   x  x          x     x    *   *   x  xx       *   x   x   x       x   x      x                                
+         xx         x            x  x            x    x      x                             x  x          x     x        *   x   xxx         x   x   x       x   x      x                                
+         x          x            x  x            x    x      x                             x  x          x     x            x     xx  *     x   x   x       x   x      x                                
+         x          x            x  x           xx   x       x  xx  x                      xx x          x    xx            x      xx     * x   x   x       x   x      x                                
+        xx          x            x  x           x    x       x x x  x                       x xx         x    x             x       x       x   x   xx      xx  x      x                                
+        x           x            x  x          xx    x      xx x x  x                       x  x         x    x             x       xx      x  xx    x       x  x      x                                
+        x           x            x  xx        xx     x     xx  x x  x                       x  x         x    x             x        xx      x  x    x       x  x      x                                
+       xx           x            x   x       xx      xx   xx   x x  x                      xx  x         x    x            x          xx     x  x    x       x  xx     x                                
+       x           xx            x   x     xxx        xxxxx    x x  xxxxxxxxxxxxxxxxxxxxxxx xx x       xxx    x            x           x     x  x    x       x   x     x                                
+       x           x             xx   x  xxx                  xx xx           xxxxx xxxx   xxx x     xxx      xxxxx        x           xx    xx x    x       xx  x     x                                
+       x          xx              x   xxxx      xx           xx   xx                           x    xx            xx       x            x     x x    x        x  x     x                                
+      xx          x               x    xx    _xxxxx        xxx     xxx _                       x    x              x      xx             x    xxx    x        xx x     x                                
+      x           x               xx        xxx   xx    xxxx         xxxxxxxxxxxxxxxxxxxxxxxxxx     x              x    xxx              x     xx    x         x xx    x                                
+     xx           x                xx    xxxx       xxxxx              xx                           xx             x   xx                x     xx   xx         xxxx   xx                                
+     x            x                 xxxxxx                                                           xxx             xxx                 xx         x             xxxxx                                 
+     x            x         xx                                                                         xxxxxxxxxxxxxxx                    xxxx     x                                                    
+    xx            x         x                                                                                                                xxxxxx                                                     
+                  xx      xx                                                                                                                  xx                                                        
+                   xx   xxx                                                                                                                                                                             
+                    xxxxx                                                                                                                                                                               
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                      xxxxxxxxxxxx                                      
+                                                                                                                                                           axs                                          
+                       b    b    bbbbbbbbbbb          b                                                                                                     x                                           
+                       b    b         b               b                                                                                                     x                                           
+                       b    b         b               b                                                                                                     x                                           
+                       b    b         b               b                                                                                                     x                  xw              xw       
+                       b    b         b               b                                                                                                     x                  xxw             axw      
+                       b    b         b               b                                                                                                     x                  xxxw             axw     
+                       b    b         b               b                                       xxxxxx xxxxxxx                                                x                  xxxxw            qxxw    
+                       b    b         b               b                                       x            x                                                x                   axxxw          qxs xw   
+                       b    b         b               b                                       x            x                                                x                    axxxw         xs  axw  
+                       b    b         b               b                                       x            x                                                x                     axxxw       qx    xxw 
+                       b    b         b               b                                       xrrrrrrrrrrrrx                                                x                      axxxw     qxs   qxxxw
+                       bbbbbb         b               b                                       xxxxxxxmxxxxxx                                                x                       xxxxw    xs   qxs ax
+                       b    b         b               b                                           xc  cx                                                    x                      qxs xxw  qx    xs    
+                       b    b         b               b                                           xf  dx                                                    x                     qxxw axxw xs   qx     
+                       b    b         b               b                                           xf> dx                                                    x                    qxxxxw xxxxs   qxs     
+                       b    b         b               b                                           xf  dx                                                   qxw                  qxs xxxw xxxw   xs      
+                       b    b         b               b                                           xf  dx                                               xxxxxxxxxxxx             xs  axxxw xxxw qx       
+                       b    b         b               b                                           xf< dx                                                                       qx    axxxw xxxxxs       
+                       b    b         b               b                                           xf  dx                                                                      qxs     axxxw xxxx        
+                       b    b   bbbbbbbbbbbbbb        b                                           xr  dx                                                                     qxs       xxxxw xxxw       
+                       b    b                                                                     xxmxxx                                                                    qxs      qxxxxxxxxxxxw      
+                       b    b                         b                                          x      x                                                                  qxx  qxxw x>>xxx xx xxxw     
+                       b    b                         b                                         x        x                                                                 xxxx>>> xxx>+axxxxxw xxxw    
+                                                      b                                        x          x                                                               qxs<>>>>>ax>+++<xxx xw xxxw   
+                                                                                              x            x                                                             qxs>>>>>>>>>+++<<<axw xxxxxxw  
+                                                                                             x#            #x                                                           qxs>>>>>><>>>>++<<<<axw xxxxxxw 
+                                                                                             x#            #x                                                          qxs>>>>>>>>>>>++<<<<<<<xxs axxxxw
+           _________________________________________________________                         x#            #x                                                          xs>>>>>>>>>>>%<<<<<<<<qxx   axx x
+                                                                                             x#            #x                                                         qx>>>>>>>>>>>% <<<<<<<qxs     axxx
+                                                                                             x#            #x                                                        qxs>>>>>>>>>>% <<<<<<< xs       axx
+                                                                                             x#            #x                                                       qx>>>>>>>>>>>% <<<<<<< qx         ax
+                                                                                             x#            #x                      **                              qx>>>>>>>>>>>% <<<<<<< qxs           
+                                                                                             x#            #x                      **                             qxs>>>>>>>>>>% <<<<<<< qxs            
+                                                                                             x#            #x                                                     xs>>>>>>>>>>% <<<<<<< qxs             
+                                                                                             x#            #x                                                     x >>>>>>>>>% <<<<<<< qxs              
+                                                                                             x#            #x                                                     x >>>>>>>>% <<<<<<<<qxs               
+                                                                                             x#            #x                                                     x>>>>>>>>% <<<<<<<< xs                
+                                                                                             x#   %    %   #x                                                    qx>>>>>>>% <<<<<<<< qx                 
+                                                                                            xx#   %   %    #xx                                                   xs>>>>>>% <<<<<<<< qxs                 
+                                                                                            xx#    % %     #xx                                                   x><>>>>% <<<<<<<< qxs                  
+                                                                                           x x#    %%      #x x                                                  x>>>>>% <<<<<<<< qxs                   
+                                                                                           x x#     %      #x x                                                  x>>>>% <<<<<<<< qxs                    
+                                                                                          x  x#            #x  x                                                qx>>>  <<<<<<   qxs                     
+                                                **                                        x  x#            #x  x                                                x>>>  <<<<<  qxxxs                      
+                                                **                                        x  x#            #x  x                                                x>>  <<<<<qxxxx                         
+                                                                                         x   x#            #x   x                                               x>  <<<qxxxs ax                         
+                                                                                         x   x#            #x   x                                              qx  <<xxxs                              x
+                                                                                        x    x#            #x    x                                            qxs <xxs                   x             x
+                                                                                        x    x#            #x    x                                           qxsqxxs                     x             x
+                                                                                       x     x#            #x     x                                         qxsqxs                       x             x
+                                                                                       x     x#            #x     x                                        qxsqxs                        x             x
+                                                                                       x     x#    mmmm    #x     x                                       qxsqxs                         x             x
+                                                                                      x      x#    mmmm    #x      x                                     qxsqxs                          x             x
+                                                                                      x      x#    mmmm    #x      x                                    qxsqxs                           x             x
+                                                                                     x       x#    mmmm    #x       x                                  qxsqxs                            x             x
+                                                                                     x       x#    mmmm    #x       x                                 qxsqxs                             xw            x
+                                                                                    x        x#mmmmmmmmmmmm#x        x                               qxsqxs                              ax            x
+                                                                                    x        x#mmmmmmmmmmmm#x        x                              qxsqxs                                x            x
+                                                                                    x        xxmmmmmmmmmmmmxx        x                             qxsqxs                                 x            x
+                                                                                   x       xx      mmmm      xx       x                           qxsqxs                                  x            x
+                                                                                   x     xx        mmmm        xx     x                          qxsqxs                                   x            x
+                                                                                  x   xxx                        xxx   x                         xsqxs                                    x            x
+                                                                                  x xx                              xx x                         sqxs                                     x            x
+                                                                                 xxx                                  xxx                                                                 x            x
+                                                                                                                                                                                          xw           x
+                                                                                                                                                                                          ax           x
+                                                                                                                                                                                           x           x
+                                                                                                                                                                                           x           x
+                                                                                                                                                                                           x           x
+                                                                                                                                                                                           x           x
+                                                                                                                                                                                           x           x
+                                                                                                                                                                                           x           x
+                                                                                                                                                                                           xw          x
+                                                                                                                                                                                           axxxw       x
+                                                                                                                                                                                              axxxw    x
+                                                                                                                                                                                                 axxxw x
+                                                                                                                                                                                                    axxx
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+                                                                                                                                                                                                        
+ (                                                                                                                                                                                                      
+                                                                                                                                                                                                        
+EndOfMapdata
+
