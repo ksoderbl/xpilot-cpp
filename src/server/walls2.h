@@ -31,79 +31,80 @@
 #include "object.h"
 #include "player.h"
 #include "polygon.h"
+#include "walls.h"
 
-/*
- * Wall collision detection and bouncing.
- *
- * The wall collision detection routines depend on repeatability
- * (getting the same result even after some "neutral" calculations)
- * and an exact determination whether a point is in space,
- * inside the wall (crash!) or on the edge.
- * This will be hard to achieve if only floating point would be used.
- * However, a resolution of a pixel is a bit rough and ugly.
- * Therefore a fixed point sub-pixel resolution is used called clicks.
- */
+// /*
+//  * Wall collision detection and bouncing.
+//  *
+//  * The wall collision detection routines depend on repeatability
+//  * (getting the same result even after some "neutral" calculations)
+//  * and an exact determination whether a point is in space,
+//  * inside the wall (crash!) or on the edge.
+//  * This will be hard to achieve if only floating point would be used.
+//  * However, a resolution of a pixel is a bit rough and ugly.
+//  * Therefore a fixed point sub-pixel resolution is used called clicks.
+//  */
 
-#define FLOAT_TO_INT(F) ((F) < 0 ? -(int)(0.5f - (F)) : (int)((F) + 0.5f))
-#define DOUBLE_TO_INT(D) ((D) < 0 ? -(int)(0.5 - (D)) : (int)((D) + 0.5))
+// #define FLOAT_TO_INT(F) ((F) < 0 ? -(int)(0.5f - (F)) : (int)((F) + 0.5f))
+// #define DOUBLE_TO_INT(D) ((D) < 0 ? -(int)(0.5 - (D)) : (int)((D) + 0.5))
 
-typedef enum
-{
-    NotACrash = 0,
-    CrashUniverse = 0x01,
-    CrashWall = 0x02,
-    CrashTarget = 0x04,
-    CrashTreasure = 0x08,
-    CrashCannon = 0x10,
-    CrashUnknown = 0x20,
-    CrashWormHole = 0x40,
-    CrashWallSpeed = 0x80,
-    CrashWallNoFuel = 0x100,
-    CrashWallAngle = 0x200
-} move_crash_t;
+// typedef enum
+// {
+//     NotACrash = 0,
+//     CrashUniverse = 0x01,
+//     CrashWall = 0x02,
+//     CrashTarget = 0x04,
+//     CrashTreasure = 0x08,
+//     CrashCannon = 0x10,
+//     CrashUnknown = 0x20,
+//     CrashWormHole = 0x40,
+//     CrashWallSpeed = 0x80,
+//     CrashWallNoFuel = 0x100,
+//     CrashWallAngle = 0x200
+// } move_crash_t;
 
-typedef struct
-{
-    int edge_wrap;
-    int edge_bounce;
-    int wall_bounce;
-    int cannon_crashes;
-    int target_crashes;
-    int treasure_crashes;
-    int wormhole_warps;
-    int phased;
-    object_t *obj;
-    player_t *pl;
-} move_info_t;
+// typedef struct
+// {
+//     int edge_wrap;
+//     int edge_bounce;
+//     int wall_bounce;
+//     int cannon_crashes;
+//     int target_crashes;
+//     int treasure_crashes;
+//     int wormhole_warps;
+//     int phased;
+//     object_t *obj;
+//     player_t *pl;
+// } move_info_t;
 
-typedef struct
-{
-    const move_info_t *mip;
-    move_crash_t crash;
-    clpos_t pos;
-    vector_t vel;
-    clvec_t todo;
-    clvec_t done;
-    int dir;
-    int cannon;
-    int wormhole;
-    int target;
-    int treasure;
-} move_state_t;
+// typedef struct
+// {
+//     const move_info_t *mip;
+//     move_crash_t crash;
+//     clpos_t pos;
+//     vector_t vel;
+//     clvec_t todo;
+//     clvec_t done;
+//     int dir;
+//     int cannon;
+//     int wormhole;
+//     int target;
+//     int treasure;
+// } move_state_t;
 
-struct move_parameters
-{
-    click_t click_width;  /* Map width in clicks */
-    click_t click_height; /* Map width in clicks */
+// struct move_parameters
+// {
+//     click_t click_width;  /* Map width in clicks */
+//     click_t click_height; /* Map width in clicks */
 
-    int max_shielded_angle;   /* max player bounce angle */
-    int max_unshielded_angle; /* max player bounce angle */
+//     int max_shielded_angle;   /* max player bounce angle */
+//     int max_unshielded_angle; /* max player bounce angle */
 
-    unsigned long obj_bounce_mask;   /* which objects bounce? */
-    unsigned long obj_cannon_mask;   /* objects crash cannons? */
-    unsigned long obj_target_mask;   /* object target hit? */
-    unsigned long obj_treasure_mask; /* objects treasure crash? */
-};
+//     unsigned long obj_bounce_mask;   /* which objects bounce? */
+//     unsigned long obj_cannon_mask;   /* objects crash cannons? */
+//     unsigned long obj_target_mask;   /* object target hit? */
+//     unsigned long obj_treasure_mask; /* objects treasure crash? */
+// };
 
 // /* kps change 100, 30 etc to something sane */
 // struct polystyle
