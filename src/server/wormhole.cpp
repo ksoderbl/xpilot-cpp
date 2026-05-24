@@ -26,6 +26,19 @@
 #include "server.h"
 
 /*
+ * Initialization functions.
+ */
+
+void Wormhole_line_init(void)
+{
+}
+
+bool Verify_wormhole_consistency(void)
+{
+    return false;
+}
+
+/*
  * Functions used in game.
  */
 
@@ -57,4 +70,56 @@ void Object_hits_wormhole(object_t *obj, int ind)
 {
     SET_BIT(obj->obj_status, WARPING);
     // obj->wormHoleHit = ind;//TODO
+}
+
+/*
+ * Warp balls connected to warped player.
+ */
+static void Warp_balls(player_t *pl, clpos_t dest)
+{
+}
+
+static int Find_wormhole_dest(int wh_hit_ind)
+{
+    int wh_ind = 0;
+
+    return wh_ind;
+}
+
+/*
+ * Move player trough wormhole.
+ */
+static void Traverse_wormhole(player_t *pl)
+{
+}
+
+/*
+ * Returns true if warp status was achieved.
+ */
+bool Initiate_hyperjump(player_t *pl)
+{
+    return false;
+}
+
+/*
+ * Player has used hyperjump item.
+ */
+static void Hyperjump(player_t *pl)
+{
+}
+
+void Player_warp(player_t *pl)
+{
+}
+
+void Player_finish_warp(player_t *pl)
+{
+}
+
+void Object_warp(object_t *obj)
+{
+}
+
+void Object_finish_warp(object_t *obj)
+{
 }
