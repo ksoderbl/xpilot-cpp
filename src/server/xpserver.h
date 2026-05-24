@@ -69,7 +69,7 @@
 #include "target.h"
 #include "teamcup.h"
 #include "tuner.h"
-#include "walls.h"
+#include "walls1.h"
 #include "wormhole.h"
 #include "server.h"
 

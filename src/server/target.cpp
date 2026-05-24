@@ -44,7 +44,7 @@
 #include "score.h"
 #include "saudio.h"
 #include "item.h"
-#include "walls.h"
+#include "walls1.h"
 #include "click.h"
 #include "object.h"
 #include "robot.h"

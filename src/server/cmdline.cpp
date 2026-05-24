@@ -40,7 +40,7 @@
 #include "portability.h"
 #include "checknames.h"
 #include "tuner.h"
-#include "walls.h"
+#include "walls1.h"
 #include "sched.h"
 
 double friction;

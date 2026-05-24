@@ -46,7 +46,7 @@
 #include "object.h"
 #include "asteroid.h"
 #include "xpmath.h"
-#include "walls.h"
+#include "walls1.h"
 #include "robot.h"
 #include "cannon.h"
 

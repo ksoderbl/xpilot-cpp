@@ -45,6 +45,7 @@ add_executable(xpilot-cpp-server
     tuner.cpp
     update.cpp
     walls.cpp
+    walls1.cpp
     walls2.cpp
     wildmap.cpp
     wormhole.cpp

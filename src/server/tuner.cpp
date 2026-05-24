@@ -33,7 +33,7 @@
 #include "xperror.h"
 #include "xpmath.h"
 #include "sched.h"
-#include "walls.h"
+#include "walls1.h"
 #include "robot.h"
 #include "modifiers.h"
 

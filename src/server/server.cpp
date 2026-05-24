@@ -67,7 +67,7 @@
 #include "portability.h"
 #include "server.h"
 #include "xpmath.h"
-#include "walls.h"
+#include "walls1.h"
 #include "rank.h"
 
 char server_version[] = VERSION;

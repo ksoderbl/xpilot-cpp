@@ -48,7 +48,7 @@
 #include "map.h"
 #include "object.h"
 #include "saudio.h"
-#include "walls.h"
+#include "walls1.h"
 
 // #define SERVER
 // #include "xpconfig.h"

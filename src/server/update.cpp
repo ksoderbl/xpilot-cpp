@@ -44,7 +44,7 @@
 #include "cannon.h"
 #include "asteroid.h"
 #include "netserver.h"
-#include "walls.h"
+#include "walls1.h"
 #include "robot.h"
 
 int roundtime = -1;               /* time left this round */

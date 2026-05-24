@@ -51,7 +51,7 @@
 #include "portability.h"
 #include "xpmath.h"
 #include "object.h"
-#include "walls.h"
+#include "walls1.h"
 
 #define ROB_LOOK_AH 2
 
