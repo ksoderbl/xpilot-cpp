@@ -323,6 +323,7 @@ struct world
 
     int NumTeamBases; /* How many 'different' teams are allowed */
     baseorder_t *baseorder;
+
     int NumChecks;
     ipos_t checks[OLD_MAX_CHECKS];
 
@@ -346,8 +347,10 @@ struct world
 
     int NumFrictionAreas;
     friction_area_t *frictionAreas;
+
     int NumGravs;
     grav_t *gravs;
+
     int NumItemConcentrators;
     item_concentrator_t *itemConcentrators;
 
@@ -471,6 +474,73 @@ static inline int WRAP_YCLICK(int cy)
     // TODO: Check WRAP_PLAY ?
     return World_wrap_yclick(cy);
 }
+
+/*
+ * Two macros for edge wrap of x and y coordinates measured in pixels.
+ * Note that the correction needed shouldn't ever be bigger than one mapsize.
+ */
+#define WRAP_XPIXEL(x_)                      \
+    (BIT(world->rules->mode, WRAP_PLAY)      \
+         ? ((x_) < 0                         \
+                ? (x_) + world->width        \
+                : ((x_) >= world->width      \
+                       ? (x_) - world->width \
+                       : (x_)))              \
+         : (x_))
+
+#define WRAP_YPIXEL(y_)                       \
+    (BIT(world->rules->mode, WRAP_PLAY)       \
+         ? ((y_) < 0                          \
+                ? (y_) + world->height        \
+                : ((y_) >= world->height      \
+                       ? (y_) - world->height \
+                       : (y_)))               \
+         : (y_))
+
+/*
+ * Two macros for edge wrap of x and y coordinates measured in map blocks.
+ * Note that the correction needed shouldn't ever be bigger than one mapsize.
+ */
+#define WRAP_XBLOCK(x_)                  \
+    (BIT(world->rules->mode, WRAP_PLAY)  \
+         ? ((x_) < 0                     \
+                ? (x_) + world->x        \
+                : ((x_) >= world->x      \
+                       ? (x_) - world->x \
+                       : (x_)))          \
+         : (x_))
+
+#define WRAP_YBLOCK(y_)                  \
+    (BIT(world->rules->mode, WRAP_PLAY)  \
+         ? ((y_) < 0                     \
+                ? (y_) + world->y        \
+                : ((y_) >= world->y      \
+                       ? (y_) - world->y \
+                       : (y_)))          \
+         : (y_))
+
+/*
+ * Two macros for edge wrap of differences in position.
+ * If the absolute value of a difference is bigger than
+ * half the map size then it is wrapped.
+ */
+#define WRAP_DX(dx)                           \
+    (BIT(world->rules->mode, WRAP_PLAY)       \
+         ? ((dx) < -(world->width >> 1)       \
+                ? (dx) + world->width         \
+                : ((dx) > (world->width >> 1) \
+                       ? (dx) - world->width  \
+                       : (dx)))               \
+         : (dx))
+
+#define WRAP_DY(dy)                            \
+    (BIT(world->rules->mode, WRAP_PLAY)        \
+         ? ((dy) < -(world->height >> 1)       \
+                ? (dy) + world->height         \
+                : ((dy) > (world->height >> 1) \
+                       ? (dy) - world->height  \
+                       : (dy)))                \
+         : (dy))
 
 /*
  * Two macros for edge wrap of differences in position.

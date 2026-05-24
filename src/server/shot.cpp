@@ -1013,8 +1013,6 @@ void Fire_general_shot(int id, int team, bool cannon,
                 Ship_get_m_rack_clpos(pl->ship, rack_no, 0).cy);
         }
         shotpos = World_wrap_clpos(shotpos);
-        if (shotpos.cx < 0 || shotpos.cx >= world->cwidth || shotpos.cy < 0 || shotpos.cy >= world->cheight)
-            continue;
 
         Object_position_init_clpos(shot, shotpos);
 
@@ -1307,7 +1305,6 @@ void Delete_shot(int ind)
                 intensity = 512;
             else
                 intensity = 32;
-            // num_modv = num_modv / ((double)(unsigned)shot->mods.mini + 1.0);
             num_modv /= ((double)(Mods_get(shot->mods, ModsMini) + 1));
         }
 
@@ -1319,12 +1316,10 @@ void Delete_shot(int ind)
                 nuke_factor = NUKE_MINE_EXPL_MULT * shot->mass / MINE_MASS;
             else
                 nuke_factor = NUKE_SMART_EXPL_MULT * shot->mass / MISSILE_MASS;
-            // nuke_factor = (nuke_factor * (shot->mods.mini + 1)) / SHOT_MULT(shot);
             nuke_factor *= ((Mods_get(shot->mods, ModsMini) + 1) / SHOT_MULT(shot));
             intensity = (int)(intensity * nuke_factor);
         }
 
-        // if (BIT(shot->mods.warhead, IMPLOSION))
         if (Mods_get(shot->mods, ModsImplosion))
             /*intensity >>= 1;*/
             mass = -mass;
@@ -1511,7 +1506,7 @@ void Update_connector_force(ballobject_t *ball)
      */
 
     player_t *pl = Player_by_id(ball->id);
-    vector_t D;
+    vector_t D, D2;
     double length, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
     /* const double                k = 1500.0, b = 2.0; */
@@ -1524,6 +1519,13 @@ void Update_connector_force(ballobject_t *ball)
     /* compute the normalized vector between the ball and the player */
     D.x = WRAP_DX(pl->pix_pos.x - ball->pix_pos.x);
     D.y = WRAP_DY(pl->pix_pos.y - ball->pix_pos.y);
+    // D2.x = WRAP_DCX(pl->pos.cx - ball->pos.cx);
+    // D2.y = WRAP_DCY(pl->pos.cy - ball->pos.cy);
+    // D2.x = CLICK_TO_FLOAT(D2.x);
+    // D2.y = CLICK_TO_FLOAT(D2.y);
+
+    // warn("D.x, D.y, D2.x, D2.y = %f, %f, %f, %f", D.x, D.y, D2.x, D2.y);
+
     length = VECTOR_LENGTH(D);
     if (length > 0.0)
     {

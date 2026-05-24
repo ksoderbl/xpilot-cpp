@@ -2883,8 +2883,8 @@ void Turn_player(player_t *pl)
                 bool isCrash = (ms[i].crash != NotACrash);
                 bool isBounce = (ms[i].bounce != NotABounce);
 
-                if (val1 || isCrash || isBounce)
-                    warn("i=%d, val1=%d, isCrash=%d, isBounce=%d", i, val1, isCrash, isBounce);
+                // if (val1 || isCrash || isBounce)
+                //     warn("i=%d, val1=%d, isCrash=%d, isBounce=%d", i, val1, isCrash, isBounce);
 
                 if (val1 == (isCrash || isBounce))
                 {
