@@ -96,8 +96,6 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     t.conn_mask = (unsigned)-1;
     t.team = team;
 
-    // world->fuels[ind] = t;
-    // world->NumFuels++;
     world->cannons.push_back(t);
 
     // world->cannons[ind] = t;
@@ -314,7 +312,7 @@ static void alloc_old_checks(void)
 
 int World_place_check(clpos_t pos, int ind)
 {
-    // check_t t;
+    check_t t;
 
     // if (!BIT(world->rules->mode, TIMING))
     // {
@@ -366,7 +364,7 @@ int World_place_check(clpos_t pos, int ind)
 
 int World_place_item_concentrator(clpos_t pos)
 {
-    // item_concentrator_t t;
+    item_concentrator_t t;
     // int ind = Num_itemConcs();
 
     // t.pos = pos;
@@ -380,7 +378,7 @@ int World_place_item_concentrator(clpos_t pos)
 
 int World_place_asteroid_concentrator(clpos_t pos)
 {
-    // asteroid_concentrator_t t;
+    asteroid_concentrator_t t;
     // int ind = Num_asteroidConcs();
 
     // t.pos = pos;
