@@ -120,4 +120,8 @@ void Add_Score(player_t *pl, double score)
 void Handle_Scoring(scoretype_t st, player_t *killer, player_t *victim,
                     void *extra, const char *somemsg)
 {
+    if (killer)
+        warn("Handle_Scoring: killer = %s", killer->name);
+    if (victim)
+        warn("Handle_Scoring: victim = %s", victim->name);
 }

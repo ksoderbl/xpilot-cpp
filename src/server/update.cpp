@@ -892,7 +892,7 @@ static void Update_players(void)
             }
             if (BIT(pl->obj_status, SELF_DESTRUCT))
             {
-                SET_BIT(pl->obj_status, KILLED);
+                Player_set_state(pl, PL_STATE_KILLED);
                 Set_message_f("%s has committed suicide.", pl->name);
                 Throw_items(pl);
                 Kill_player(pl, true);

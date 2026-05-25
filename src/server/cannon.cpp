@@ -33,6 +33,7 @@
 #include "randommt.h"
 #include "xperror.h"
 
+#include "score.h"
 #include "server.h"
 
 #define SERVER
@@ -810,6 +811,11 @@ void Cannon_dies(cannon_t *c, player_t *pl)
                   (int)(c->dir - (RES * 0.2)), (int)(c->dir + (RES * 0.2)),
                   10.0, 25.0,
                   8.0, 68.0);
+
+    if (pl)
+    {
+        Handle_Scoring(SCORE_CANNON_KILL, pl, NULL, c, NULL);
+    }
 }
 
 hitmask_t Cannon_hitmask(cannon_t *cannon)

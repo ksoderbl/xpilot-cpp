@@ -325,7 +325,7 @@ static void Laser_pulse_hits_player(
         Player_add_fuel(vicpl, ED_LASER_HIT);
         if (!BIT(vicpl->used, HAS_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
-            SET_BIT(vicpl->obj_status, KILLED);
+            Player_set_state(vicpl, PL_STATE_KILLED);
             if (pl)
             {
                 sprintf(msg,

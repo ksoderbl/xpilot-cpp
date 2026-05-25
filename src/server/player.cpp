@@ -1904,6 +1904,7 @@ void Player_set_state(player_t *pl, int state)
         pl->pl_old_status = OLD_PLAYING;
         break;
     case PL_STATE_KILLED:
+        SET_BIT(pl->obj_status, KILLED);
         break;
     case PL_STATE_DEAD:
         Player_set_mychar(pl, 'D');

@@ -2170,7 +2170,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         int total_pusher_score = 0;
         int i, j, sc;
 
-        SET_BIT(pl->obj_status, KILLED);
+        Player_set_state(pl, PL_STATE_KILLED);
         sprintf(msg, howfmt, pl->name, (!pt) ? " head first" : "");
 
         /* get a list of who pushed me */
