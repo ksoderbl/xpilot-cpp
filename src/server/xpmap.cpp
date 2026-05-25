@@ -1443,14 +1443,14 @@ void Xpmap_tags_to_internal_data(void)
                     Xpmap_place_cannon(blk, DIR_DOWN);
                     break;
 
-                case '#':
+                case XPMAP_FUEL:
                     world->block[x][y] = FUEL;
                     world->itemID[x][y] = world->fuels.size();
                     World_place_fuel(pos, TEAM_NOT_SET);
                     break;
 
-                case '*':
-                case '^':
+                case XPMAP_TREASURE:
+                case XPMAP_EMPTY_TREASURE:
                     world->block[x][y] = TREASURE;
                     world->itemID[x][y] = world->NumTreasures;
                     // line[y] = TREASURE;
@@ -1473,7 +1473,7 @@ void Xpmap_tags_to_internal_data(void)
                     // bool empty = (c == '^');
                     World_place_treasure(pos, 0, (c == '^'), 0xff);
                     break;
-                case '!':
+                case XPMAP_TARGET:
                     world->block[x][y] = TARGET;
                     world->itemID[x][y] = world->targets.size();
                     // world->targets[world->NumTargets].blk_pos.bx = x;
@@ -1496,7 +1496,7 @@ void Xpmap_tags_to_internal_data(void)
                     // pos.cy = y * BLOCK_CLICKS;
 
                     break;
-                case '%':
+                case XPMAP_ITEM_CONCENTRATOR:
                     // line[y] = ITEM_CONCENTRATOR;
                     // itemID[y] = world->NumItemConcentrators;
                     // world->itemConcentrators[world->NumItemConcentrators].blk_pos.bx = x;
@@ -1505,7 +1505,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->itemConcentrators[world->NumItemConcentrators].pos.cy = cy;
                     // world->NumItemConcentrators++;
                     break;
-                case '&':
+                case XPMAP_ASTEROID_CONCENTRATOR:
                     // line[y] = ASTEROID_CONCENTRATOR;
                     // itemID[y] = world->NumAsteroidConcs;
                     // world->asteroidConcs[world->NumAsteroidConcs].blk_pos.bx = x;
@@ -1514,20 +1514,20 @@ void Xpmap_tags_to_internal_data(void)
                     // world->asteroidConcs[world->NumAsteroidConcs].pos.cy = cy;
                     // world->NumAsteroidConcs++;
                     break;
-                case '$':
+                case XPMAP_BASE_ATTRACTOR:
                     world->block[x][y] = BASE_ATTRACTOR;
                     break;
-                case '_':
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
+                case XPMAP_BASE:
+                case XPMAP_BASE_TEAM_0:
+                case XPMAP_BASE_TEAM_1:
+                case XPMAP_BASE_TEAM_2:
+                case XPMAP_BASE_TEAM_3:
+                case XPMAP_BASE_TEAM_4:
+                case XPMAP_BASE_TEAM_5:
+                case XPMAP_BASE_TEAM_6:
+                case XPMAP_BASE_TEAM_7:
+                case XPMAP_BASE_TEAM_8:
+                case XPMAP_BASE_TEAM_9:
                     world->block[x][y] = BASE;
                     // line[y] = BASE;
                     world->itemID[x][y] = Num_bases();
@@ -1561,7 +1561,7 @@ void Xpmap_tags_to_internal_data(void)
                     world->NumBases++;
                     break;
 
-                case '+':
+                case XPMAP_POS_GRAV:
                     // line[y] = POS_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1571,7 +1571,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case '-':
+                case XPMAP_NEG_GRAV:
                     // line[y] = NEG_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1581,7 +1581,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case '>':
+                case XPMAP_CWISE_GRAV:
                     // line[y] = CWISE_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1591,7 +1591,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case '<':
+                case XPMAP_ACWISE_GRAV:
                     // line[y] = ACWISE_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1601,7 +1601,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case 'i':
+                case XPMAP_UP_GRAV:
                     // line[y] = UP_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1611,7 +1611,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case 'm':
+                case XPMAP_DOWN_GRAV:
                     // line[y] = DOWN_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1621,7 +1621,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = -GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case 'k':
+                case XPMAP_RIGHT_GRAV:
                     // line[y] = RIGHT_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1631,7 +1631,7 @@ void Xpmap_tags_to_internal_data(void)
                     // world->gravs[world->NumGravs].force = GRAVS_POWER;
                     // world->NumGravs++;
                     break;
-                case 'j':
+                case XPMAP_LEFT_GRAV:
                     // line[y] = LEFT_GRAV;
                     // itemID[y] = world->NumGravs;
                     // world->gravs[world->NumGravs].blk_pos.bx = x;
@@ -1642,9 +1642,9 @@ void Xpmap_tags_to_internal_data(void)
                     // world->NumGravs++;
                     break;
 
-                case '@':
-                case '(':
-                case ')':
+                case XPMAP_WORMHOLE_NORMAL:
+                case XPMAP_WORMHOLE_IN:
+                case XPMAP_WORMHOLE_OUT:
                     world->block[x][y] = WORMHOLE;
                     world->itemID[x][y] = world->NumWormholes;
                     // world->wormholes[world->NumWormholes].blk_pos.bx = x;
@@ -1693,32 +1693,32 @@ void Xpmap_tags_to_internal_data(void)
 
                     break;
 
-                case 'A':
-                case 'B':
-                case 'C':
-                case 'D':
-                case 'E':
-                case 'F':
-                case 'G':
-                case 'H':
-                case 'I':
-                case 'J':
-                case 'K':
-                case 'L':
-                case 'M':
-                case 'N':
-                case 'O':
-                case 'P':
-                case 'Q':
-                case 'R':
-                case 'S':
-                case 'T':
-                case 'U':
-                case 'V':
-                case 'W':
-                case 'X':
-                case 'Y':
-                case 'Z':
+                case XPMAP_CHECK_0:
+                case XPMAP_CHECK_1:
+                case XPMAP_CHECK_2:
+                case XPMAP_CHECK_3:
+                case XPMAP_CHECK_4:
+                case XPMAP_CHECK_5:
+                case XPMAP_CHECK_6:
+                case XPMAP_CHECK_7:
+                case XPMAP_CHECK_8:
+                case XPMAP_CHECK_9:
+                case XPMAP_CHECK_10:
+                case XPMAP_CHECK_11:
+                case XPMAP_CHECK_12:
+                case XPMAP_CHECK_13:
+                case XPMAP_CHECK_14:
+                case XPMAP_CHECK_15:
+                case XPMAP_CHECK_16:
+                case XPMAP_CHECK_17:
+                case XPMAP_CHECK_18:
+                case XPMAP_CHECK_19:
+                case XPMAP_CHECK_20:
+                case XPMAP_CHECK_21:
+                case XPMAP_CHECK_22:
+                case XPMAP_CHECK_23:
+                case XPMAP_CHECK_24:
+                case XPMAP_CHECK_25:
                     // if (BIT(world->rules->mode, TIMING))
                     // {
                     //     world->checks[c - 'A'].x = x;
@@ -1731,24 +1731,24 @@ void Xpmap_tags_to_internal_data(void)
                     // }
                     break;
 
-                case 'z':
+                case XPMAP_FRICTION_AREA:
                     // line[y] = FRICTION;
                     break;
 
-                case 'b':
-                    // line[y] = DECOR_FILLED;
+                case XPMAP_DECOR_FILLED:
+                    Xpmap_place_block(blk, DECOR_FILLED);
                     break;
-                case 'h':
-                    // line[y] = DECOR_LU;
+                case XPMAP_DECOR_LU:
+                    Xpmap_place_block(blk, DECOR_LU);
                     break;
-                case 'g':
-                    // line[y] = DECOR_RU;
+                case XPMAP_DECOR_RU:
+                    Xpmap_place_block(blk, DECOR_RU);
                     break;
-                case 'y':
-                    // line[y] = DECOR_LD;
+                case XPMAP_DECOR_LD:
+                    Xpmap_place_block(blk, DECOR_LD);
                     break;
-                case 't':
-                    // line[y] = DECOR_RD;
+                case XPMAP_DECOR_RD:
+                    Xpmap_place_block(blk, DECOR_RD);
                     break;
                 }
             }
