@@ -35,6 +35,7 @@
 #include "strdup.h"
 #include "strlcpy.h"
 
+#include "rank.h"
 #include "server.h"
 
 #define SERVER
@@ -191,19 +192,26 @@ void Set_swapper_state(player_t *pl)
 #define CMD_RESULT_NOT_OPERATOR (-2)
 #define CMD_RESULT_NO_NAME (-3)
 
-static int Cmd_help(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_advance(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 static int Cmd_ally(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_version(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_get(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_help(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_kick(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 static int Cmd_lock(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 static int Cmd_password(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 static int Cmd_pause(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_plinfo(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_queue(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 static int Cmd_set(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_kick(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_queue(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_advance(char *arg, player_t *pl, bool oper, char *msg, size_t size);
-static int Cmd_get(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_shutdown(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_stats(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size);
+static int Cmd_version(char *arg, player_t *pl, bool oper, char *msg, size_t size);
 
 typedef struct
 {
@@ -218,74 +226,99 @@ typedef struct
  * A list of all the commands sorted alphabetically.
  */
 static Command_info commands[] = {
+    {"addr",
+     "addr",
+     "/addr <player name or ID number>. Show IP-address of player.  "
+     "(operator)",
+     true,
+     Cmd_addr},
     {"advance",
      "ad",
      "/advance <name of player in the queue>. "
      "Move the player to the front of the queue.  (operator)",
-     1,
+     true,
      Cmd_advance},
     {"ally",
      "al",
      "/ally {invite|cancel|refuse|accept|leave|list} [<player name>]. "
      "Manages alliances and invitations for them.",
-     0,
+     false,
      Cmd_ally},
     {"get",
      "g",
      "/get <option>.  Gets a server option.",
-     0,
+     false,
      Cmd_get},
     {"help",
      "h",
      "Print command list.  /help <command> gives more info.",
-     0,
+     false,
      Cmd_help},
     {"kick",
      "k",
-     "/kick <player name or ID number>.  Remove a player from game.  (operator)",
-     1,
+     "/kick <player name or ID number>.  Remove a player from game.  "
+     "(operator)",
+     true,
      Cmd_kick},
     {"lock",
      "l",
-     "Just /lock tells lock status.  /lock 1 locks, /lock 0 unlocks.  (operator)",
-     0, /* checked in the function */
+     "Just /lock tells lock status.  /lock 1 locks, /lock 0 unlocks.  "
+     "(operator)",
+     false, /* checked in the function */
      Cmd_lock},
     {"password",
      "pas",
      "/password <string>.  If string matches -password option "
      "gives operator status.",
-     0,
+     false,
      Cmd_password},
     {"pause",
      "pau",
      "/pause <player name or ID number>.  Pauses player.  (operator)",
-     1,
+     true,
      Cmd_pause},
+    {"plinfo",
+     "pl",
+     "/plinfo <player name or ID number>.  Show misc. player info.",
+     false,
+     Cmd_plinfo},
     {"queue",
      "q",
      "/queue.  Show the names of players waiting to enter.",
-     0,
+     false,
      Cmd_queue},
     {"reset",
      "r",
      "Just /reset re-starts the round. "
      "/reset.  Resets all scores to 0.  (operator)",
-     1,
+     true,
      Cmd_reset},
     {"set",
      "s",
      "/set <option> <value>.  Sets a server option.  (operator)",
-     1,
+     true,
      Cmd_set},
+    {"shutdown",
+     "shutd",
+     "/shutdown <delay in seconds> [reason].  Shutdown server. "
+     "Use delay <= 0 to cancel. (operator)  "
+     "Just /shutdown to query.",
+     false, /* checked in the function */
+     Cmd_shutdown},
+    {"stats",
+     "st",
+     "/stats <player name or ID number>.  Show player ranking info.",
+     false,
+     Cmd_stats},
     {"team",
      "t",
      "/team <team number> swaps you to given team.",
-     0,
+     false,
      Cmd_team},
     {"version",
      "v",
      "Print server version.",
-     0,
+     false,
      Cmd_version},
 };
 
@@ -309,26 +342,28 @@ void Handle_player_command(player_t *pl, char *cmd)
 
     args = strchr(cmd + 1, ' ');
     if (!args)
-    {
         /* point to end of string. */
         args = cmd + strlen(cmd);
-    }
     else
     {
         /* zero terminate cmd and advance 1 byte. */
         *args++ = '\0';
+        while (isspace(*args))
+            args++;
     }
 
     for (i = 0; i < NELEM(commands); i++)
     {
-        if (!strncasecmp(cmd, commands[i].abbrev, strlen(commands[i].abbrev)))
-        {
+        size_t len1 = strlen(commands[i].abbrev);
+        size_t len2 = strlen(cmd);
+
+        if (!strncasecmp(cmd, commands[i].name, MAX(len1, len2)))
             break;
-        }
     }
     if (i == NELEM(commands))
     {
-        sprintf(msg, "Unknown command '%s'.  [*Server reply*]", cmd);
+        snprintf(msg, sizeof(msg),
+                 "Unknown command '%s'.  [*Server reply*]", cmd);
         Set_player_message(pl, msg);
         return;
     }
@@ -369,6 +404,36 @@ void Handle_player_command(player_t *pl, char *cmd)
         strlcat(msg, " [*Server reply*]", sizeof(msg));
         Set_player_message(pl, msg);
     }
+}
+
+static int Cmd_addr(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+{
+    player_t *pl2 = NULL;
+    const char *errorstr;
+
+    if (!oper)
+        return CMD_RESULT_NOT_OPERATOR;
+
+    if (!arg || !*arg)
+        return CMD_RESULT_NO_NAME;
+
+    pl2 = Get_player_by_name(arg, NULL, &errorstr);
+    if (pl2)
+    {
+        const char *addr = Player_get_addr(pl2);
+
+        if (addr == NULL)
+            snprintf(msg, size, "Unable to get address for %s.", pl2->name);
+        else
+            snprintf(msg, size, "%s plays from: %s.", pl2->name, addr);
+    }
+    else
+    {
+        strlcpy(msg, errorstr, size);
+        return CMD_RESULT_ERROR;
+    }
+
+    return CMD_RESULT_SUCCESS;
 }
 
 /*
@@ -700,53 +765,55 @@ static int Cmd_maxturnsps(char *arg, player_t *pl, bool oper, char *msg, size_t 
     return CMD_RESULT_SUCCESS;
 }
 
-// static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
-// {
-//     int new_mute;
-//     player_t *mutee;
-//     const char *errorstr;
+/*
+static int Cmd_mute(char *arg, player_t *pl, bool oper, char *msg, size_t size)
+{
+    int new_mute;
+    player_t *mutee;
+    const char *errorstr;
 
-//     if (!arg || !*arg)
-//     {
-//         snprintf(msg, size, "Baseless paused players are currently %s.",
-//                  mute_baseless ? "muted" : "unmuted");
-//         return CMD_RESULT_SUCCESS;
-//     }
+    if (!arg || !*arg)
+    {
+        snprintf(msg, size, "Baseless paused players are currently %s.",
+                 mute_baseless ? "muted" : "unmuted");
+        return CMD_RESULT_SUCCESS;
+    }
 
-//     if (!oper)
-//         return CMD_RESULT_NOT_OPERATOR;
+    if (!oper)
+        return CMD_RESULT_NOT_OPERATOR;
 
-//     if (!strcmp(arg, "1"))
-//         new_mute = true;
-//     else if (!strcmp(arg, "0"))
-//         new_mute = false;
-//     else if ((mutee = Get_player_by_name(arg, NULL, &errorstr)) != NULL)
-//     {
-//         mutee->muted = mutee->muted ? false : true;
-//         snprintf(msg, size, "Player %s is now %s.",
-//                  mutee->name, mutee->muted ? "muted" : "unmuted");
-//         return CMD_RESULT_SUCCESS;
-//     }
-//     else
-//     {
-//         strlcpy(msg, errorstr, size);
-//         return CMD_RESULT_ERROR;
-//     }
+    if (!strcmp(arg, "1"))
+        new_mute = true;
+    else if (!strcmp(arg, "0"))
+        new_mute = false;
+    else if ((mutee = Get_player_by_name(arg, NULL, &errorstr)) != NULL)
+    {
+        mutee->muted = mutee->muted ? false : true;
+        snprintf(msg, size, "Player %s is now %s.",
+                 mutee->name, mutee->muted ? "muted" : "unmuted");
+        return CMD_RESULT_SUCCESS;
+    }
+    else
+    {
+        strlcpy(msg, errorstr, size);
+        return CMD_RESULT_ERROR;
+    }
 
-//     if (new_mute == mute_baseless)
-//         snprintf(msg, size, "Already %s.",
-//                  mute_baseless ? "muted" : "unmuted");
-//     else
-//     {
-//         mute_baseless = new_mute;
-//         snprintf(msg, size, " < Baseless paused players have been %s by %s! >",
-//                  mute_baseless ? "muted" : "unmuted", pl->name);
-//         Set_message(msg);
-//         strlcpy(msg, "", size);
-//     }
+    if (new_mute == mute_baseless)
+        snprintf(msg, size, "Already %s.",
+                 mute_baseless ? "muted" : "unmuted");
+    else
+    {
+        mute_baseless = new_mute;
+        snprintf(msg, size, " < Baseless paused players have been %s by %s! >",
+                 mute_baseless ? "muted" : "unmuted", pl->name);
+        Set_message(msg);
+        strlcpy(msg, "", size);
+    }
 
-//     return CMD_RESULT_SUCCESS;
-// }
+    return CMD_RESULT_SUCCESS;
+}
+*/
 
 /* kps - this one is a bit obscure, maybe clean it up a bit ? */
 static int Cmd_op(char *arg, player_t *pl, bool oper, char *msg, size_t size)
@@ -958,9 +1025,8 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
         {
             player_t *pl_i = Player_by_index(i);
 
-            // TODO
-            // if (!Player_is_paused(pl_i))
-            //     Rank_set_score(pl_i, 0.0);
+            if (!Player_is_paused(pl_i))
+                Rank_set_score(pl_i, 0.0);
         }
         Reset_all_players();
         if (options.gameDuration == -1)
@@ -989,19 +1055,18 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     return CMD_RESULT_SUCCESS;
 }
 
-// TODO
 static int Cmd_stats(char *arg, player_t *pl, bool oper, char *msg, size_t size)
 {
     if (!arg || !*arg)
         return CMD_RESULT_NO_NAME;
 
-    // if (!Rank_get_stats(arg, msg, size))
-    // {
-    snprintf(msg, size, "Player \"%s\" doesn't have ranking stats.", arg);
-    return CMD_RESULT_ERROR;
-    // }
+    if (!Rank_get_stats(arg, msg, size))
+    {
+        snprintf(msg, size, "Player \"%s\" doesn't have ranking stats.", arg);
+        return CMD_RESULT_ERROR;
+    }
 
-    // return CMD_RESULT_SUCCESS;
+    return CMD_RESULT_SUCCESS;
 }
 
 static int Cmd_team(char *arg, player_t *pl, bool oper, char *msg, size_t size)

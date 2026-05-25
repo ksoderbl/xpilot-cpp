@@ -297,35 +297,27 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
     switch (modifier)
     {
     case ModsNuclear:
-        // warn("Mods_set: modifier: Nuclear, value: %d", val);
         Set_nuclear_modifier(mods, val);
         break;
     case ModsCluster:
-        // warn("Mods_set: modifier: Cluster, value: %d", val);
         Set_cluster_modifier(mods, val);
         break;
     case ModsImplosion:
-        // warn("Mods_set: modifier: Implosion, value: %d", val);
         Set_implosion_modifier(mods, val);
         break;
     case ModsVelocity:
-        // warn("Mods_set: modifier: Velocity, value: %d", val);
         Set_velocity_modifier(mods, val);
         break;
     case ModsMini:
-        // warn("Mods_set: modifier: Mini, value: %d", val);
         Set_mini_modifier(mods, val);
         break;
     case ModsSpread:
-        // warn("Mods_set: modifier: Spread, value: %d", val);
         Set_spread_modifier(mods, val);
         break;
     case ModsPower:
-        // warn("Mods_set: modifier: Power, value: %d", val);
         Set_power_modifier(mods, val);
         break;
     case ModsLaser:
-        // warn("Mods_set: modifier: Laser, value: %d", val);
         Set_laser_modifier(mods, val);
         break;
     default:
@@ -378,20 +370,15 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
         return;
 
     t = Get_nuclear_modifier(mods);
-    // if (BIT(mods.nuclear, MODS_FULLNUCLEAR))
     if (t & MODS_FULLNUCLEAR)
         modstr[i++] = 'F';
-    // if (BIT(mods.nuclear, MODS_NUCLEAR))
     if (t & MODS_NUCLEAR)
         modstr[i++] = 'N';
-    // if (BIT(mods.warhead, CLUSTER))
     if (Get_cluster_modifier(mods))
         modstr[i++] = 'C';
-    // if (BIT(mods.warhead, IMPLOSION))
     if (Get_implosion_modifier(mods))
         modstr[i++] = 'I';
     t = Get_velocity_modifier(mods);
-    // if (mods.velocity)
     if (t)
     {
         if (i)
@@ -400,7 +387,6 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
         i = num2str(t, modstr, i);
     }
     t = Get_mini_modifier(mods);
-    // if (mods.mini)
     if (t)
     {
         if (i)
@@ -409,7 +395,6 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
         i = num2str(t + 1, modstr, i);
     }
     t = Get_spread_modifier(mods);
-    // if (mods.spread)
     if (t)
     {
         if (i)
@@ -418,7 +403,6 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
         i = num2str(t, modstr, i);
     }
     t = Get_power_modifier(mods);
-    // if (mods.power)
     if (t)
     {
         if (i)
@@ -427,7 +411,6 @@ void Mods_to_string(modifiers_t mods, char *modstr, size_t size)
         i = num2str(t, modstr, i);
     }
     t = Get_laser_modifier(mods);
-    // if (mods.laser)
     if (t)
     {
         if (i)
@@ -507,20 +490,13 @@ std::string Mods_to_string2(modifiers_t mods)
 void Mods_filter(modifiers_t *mods)
 {
     if (!BIT(world->rules->mode, ALLOW_NUKES))
-        // mods->nuclear = 0;
         Mods_set(mods, ModsNuclear, 0);
 
     if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
-        // CLR_BIT(mods->warhead, CLUSTER);
         Mods_set(mods, ModsCluster, 0);
 
     if (!BIT(world->rules->mode, ALLOW_MODIFIERS))
     {
-        // CLR_BIT(mods->warhead, IMPLOSION);
-        // mods->velocity = 0;
-        // mods->mini = 0;
-        // mods->spread = 0;
-        // mods->power = 0;
         Mods_set(mods, ModsImplosion, 0);
         Mods_set(mods, ModsVelocity, 0);
         Mods_set(mods, ModsMini, 0);
@@ -529,7 +505,6 @@ void Mods_filter(modifiers_t *mods)
     }
 
     if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
-        // mods->laser = 0;
         Mods_set(mods, ModsLaser, 0);
 }
 
@@ -624,10 +599,8 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
                 if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
                     break;
                 if (*cp == 'S' || *cp == 's')
-                    // SET_BIT(mods.laser, MODS_LASER_STUN);
                     Mods_set(&mods, ModsLaser, MODS_LASER_STUN);
                 if (*cp == 'B' || *cp == 'b')
-                    // SET_BIT(mods.laser, MODS_LASER_BLIND);
                     Mods_set(&mods, ModsLaser, MODS_LASER_BLIND);
                 break;
             default:
