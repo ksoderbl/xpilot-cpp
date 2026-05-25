@@ -1395,112 +1395,52 @@ void Xpmap_tags_to_internal_data(void)
                 clpos_t pos;
                 pos.cx = (x + 0.5) * BLOCK_CLICKS;
                 pos.cy = (y + 0.5) * BLOCK_CLICKS;
-                blkpos_t blk_pos = Clpos_to_blkpos(pos);
+                blkpos_t blk = Clpos_to_blkpos(pos);
 
                 world->itemID[x][y] = (uint16_t)-1;
 
                 // Default: space
-                World_set_block(blk_pos, SPACE);
+                World_set_block(blk, SPACE);
 
                 switch (c)
                 {
-                case ' ':
-                case '.':
+                case XPMAP_SPACE:
+                case XPMAP_SPACE_ALT:
                 default:
-                    World_set_block(blk_pos, SPACE);
+                    Xpmap_place_block(blk, SPACE);
                     break;
 
-                case 'x':
-                    World_set_block(blk_pos, FILLED);
+                case XPMAP_FILLED:
+                    Xpmap_place_block(blk, FILLED);
                     break;
-                case 's':
-                    World_set_block(blk_pos, REC_LU);
+                case XPMAP_REC_LU:
+                    Xpmap_place_block(blk, REC_LU);
                     break;
-                case 'a':
-                    World_set_block(blk_pos, REC_RU);
+                case XPMAP_REC_RU:
+                    Xpmap_place_block(blk, REC_RU);
                     break;
-                case 'w':
-                    World_set_block(blk_pos, REC_LD);
+                case XPMAP_REC_LD:
+                    Xpmap_place_block(blk, REC_LD);
                     break;
-                case 'q':
-                    World_set_block(blk_pos, REC_RD);
+                case XPMAP_REC_RD:
+                    Xpmap_place_block(blk, REC_RD);
                     break;
 
-                case 'r':
-                    world->block[x][y] = CANNON;
+                case XPMAP_CANNON_UP:
                     world->itemID[x][y] = world->cannons.size();
-                    // world->cannons[world->NumCannons].dir = DIR_UP;
-                    // world->cannons[world->NumCannons].blk_pos.bx = x;
-                    // world->cannons[world->NumCannons].blk_pos.by = y;
-                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.333) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pos.cx = cx;
-                    // world->cannons[world->NumCannons].pos.cy = (y + 0.333) * BLOCK_CLICKS;
-                    // world->cannons[world->NumCannons].dead_ticks = 0;
-                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    // Cannon_init(Cannon_by_index(world->NumCannons));
-                    // world->NumCannons++;
-                    pos.cx = (x + 0.5) * BLOCK_CLICKS;
-                    pos.cy = (y + 0.333) * BLOCK_CLICKS;
-                    World_place_cannon(pos, DIR_UP, TEAM_NOT_SET);
+                    Xpmap_place_cannon(blk, DIR_UP);
                     break;
-                case 'd':
-                    world->block[x][y] = CANNON;
+                case XPMAP_CANNON_LEFT:
                     world->itemID[x][y] = world->cannons.size();
-                    // world->cannons[world->NumCannons].dir = DIR_LEFT;
-                    // world->cannons[world->NumCannons].blk_pos.bx = x;
-                    // world->cannons[world->NumCannons].blk_pos.by = y;
-                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.667) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pos.cx =  * BLOCK_CLICKS;
-                    // world->cannons[world->NumCannons].pos.cy = cy;
-                    // world->cannons[world->NumCannons].dead_ticks = 0;
-                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    // Cannon_init(Cannon_by_index(world->NumCannons));
-                    // world->NumCannons++;
-                    pos.cx = (x + 0.667) * BLOCK_CLICKS;
-                    pos.cy = (y + 0.5) * BLOCK_CLICKS;
-                    World_place_cannon(pos, DIR_LEFT, TEAM_NOT_SET);
+                    Xpmap_place_cannon(blk, DIR_LEFT);
                     break;
-                case 'f':
-                    world->block[x][y] = CANNON;
+                case XPMAP_CANNON_RIGHT:
                     world->itemID[x][y] = world->cannons.size();
-                    // world->cannons[world->NumCannons].dir = DIR_RIGHT;
-                    // world->cannons[world->NumCannons].blk_pos.bx = x;
-                    // world->cannons[world->NumCannons].blk_pos.by = y;
-                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.333) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.5) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pos.cx = (x + 0.333) * BLOCK_CLICKS;
-                    // world->cannons[world->NumCannons].pos.cy = cy;
-                    // world->cannons[world->NumCannons].dead_ticks = 0;
-                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    // Cannon_init(Cannon_by_index(world->NumCannons));
-                    // world->NumCannons++;
-                    pos.cx = (x + 0.333) * BLOCK_CLICKS;
-                    pos.cy = (y + 0.5) * BLOCK_CLICKS;
-                    World_place_cannon(pos, DIR_RIGHT, TEAM_NOT_SET);
+                    Xpmap_place_cannon(blk, DIR_RIGHT);
                     break;
-                case 'c':
-                    world->block[x][y] = CANNON;
+                case XPMAP_CANNON_DOWN:
                     world->itemID[x][y] = world->cannons.size();
-                    // world->cannons[world->NumCannons].dir = DIR_DOWN;
-                    // world->cannons[world->NumCannons].blk_pos.bx = x;
-                    // world->cannons[world->NumCannons].blk_pos.by = y;
-                    // world->cannons[world->NumCannons].pix_pos.x = (x + 0.5) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pix_pos.y = (y + 0.667) * BLOCK_SZ;
-                    // world->cannons[world->NumCannons].pos.cx = cx;
-                    // world->cannons[world->NumCannons].pos.cy = (y + 0.667) * BLOCK_CLICKS;
-                    // world->cannons[world->NumCannons].dead_ticks = 0;
-                    // world->cannons[world->NumCannons].conn_mask = (unsigned)-1;
-                    // world->cannons[world->NumCannons].team = TEAM_NOT_SET;
-                    // Cannon_init(Cannon_by_index(world->NumCannons));
-                    // world->NumCannons++;
-                    pos.cx = (x + 0.5) * BLOCK_CLICKS;
-                    pos.cy = (y + 0.667) * BLOCK_CLICKS;
-                    World_place_cannon(pos, DIR_DOWN, TEAM_NOT_SET);
+                    Xpmap_place_cannon(blk, DIR_DOWN);
                     break;
 
                 case '#':
