@@ -445,6 +445,32 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
     }
 }
 
+void Player_init_items(player_t *pl)
+{
+    int i;
+
+    /*
+     * Give player an initial set of items.
+     */
+    for (i = 0; i < NUM_ITEMS; i++)
+    {
+        if (i == ITEM_FUEL || i == ITEM_TANK)
+            pl->item[i] = 0;
+        else
+            pl->item[i] = world->items[i].initial;
+        // warn("Player %s, item %d, number = %d", pl->name, i, pl->item[i]);
+    }
+
+    Player_init_fuel(pl, (double)world->items[ITEM_FUEL].initial);
+
+    /*
+     * Remember the amount of initial items. This way we can
+     * later figure out what items the player has picked up.
+     */
+    for (i = 0; i < NUM_ITEMS; i++)
+        pl->initial_item[i] = pl->item[i];
+}
+
 int Init_player(int ind, shipshape_t *ship, int type)
 {
     player_t *pl = Player_by_index(ind);
@@ -461,14 +487,15 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->mass = options.shipMass;
     pl->emptymass = options.shipMass;
 
-    for (i = 0; i < NUM_ITEMS; i++)
-    {
-        if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = world->items[i].initial;
-    }
+    // for (i = 0; i < NUM_ITEMS; i++)
+    // {
+    //     if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+    //         pl->item[i] = world->items[i].initial;
+    // }
 
-    pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
-    Player_init_fuel(pl, pl->fuel.sum);
+    // pl->fuel.sum = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
+    // Player_init_fuel(pl, pl->fuel.sum);
+    Player_init_items(pl);
 
     if (options.allowShipShapes == true && ship)
         pl->ship = ship;
@@ -574,26 +601,37 @@ int Init_player(int ind, shipshape_t *ship, int type)
     /*
      * If limited lives and if nobody has lost a life yet, you may enter
      * now, otherwise you will have to wait 'til everyone gets GAME OVER.
+     *
+     * If limited lives you will have to wait 'til everyone gets GAME OVER.
+     *
+     * Indeed you have to! (Mara)
+     *
+     * At least don't make the player wait for a new round if he's the
+     * only one on the server. Mara's change (always too_late) meant
+     * there was a round reset when the first player joined. -uau
+     *
+     * In individual games, make the new players appear after a small delay.
      */
     if (BIT(world->rules->mode, LIMITED_LIVES))
     {
-        for (i = 0; i < NumPlayers; i++)
-        {
-            player_t *pl_i = Player_by_index(i);
-            /* If a non-team member has lost a life,
-             * then it's too late to join. */
-            if (pl_i->life < world->rules->lives && !Players_are_teammates(pl, pl_i))
-            {
-                too_late = true;
-                break;
-            }
-        }
-        if (too_late)
-        {
-            pl->mychar = 'W';
-            pl->prev_life = pl->life = 0;
-            SET_BIT(pl->obj_status, GAME_OVER);
-        }
+        // for (i = 0; i < NumPlayers; i++)
+        // {
+        //     player_t *pl_i = Player_by_index(i);
+        //     /* If a non-team member has lost a life,
+        //      * then it's too late to join. */
+        //     if (pl_i->life < world->rules->lives && !Players_are_teammates(pl, pl_i))
+        //     {
+        //         too_late = true;
+        //         break;
+        //     }
+        // }
+        // if (too_late)
+        // {
+        //     pl->mychar = 'W';
+        //     pl->prev_life = pl->life = 0;
+        //     SET_BIT(pl->obj_status, GAME_OVER);
+        // }
+        Player_set_state(pl, PL_STATE_WAITING);
     }
 
     pl->team = TEAM_NOT_SET;
@@ -1742,13 +1780,9 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->acc.x = pl->acc.y = 0.0;
     pl->emptymass = pl->mass = options.shipMass;
     pl->obj_status |= DEF_BITS;
-    pl->obj_status &= ~(KILL_BITS);
+    pl->obj_status &= ~(KILL_BITS); // Removes KILL_BITS, i.e. (THRUSTING | PLAYING | KILLED | SELF_DESTRUCT | WARPING | WARPED)
 
-    for (i = 0; i < NUM_ITEMS; i++)
-    {
-        if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
-            pl->item[i] = world->items[i].initial;
-    }
+    Player_init_items(pl);
 
     pl->forceVisible = 0;
     pl->count = MAX(RECOVERY_DELAY, pl->count);
@@ -1893,6 +1927,9 @@ void Player_set_state(player_t *pl, int state)
     switch (state)
     {
     case PL_STATE_WAITING:
+        pl->mychar = 'W';
+        pl->prev_life = pl->life = 0;
+        SET_BIT(pl->obj_status, GAME_OVER);
         Player_set_mychar(pl, 'W');
         Player_set_life(pl, 0);
         pl->pl_old_status = OLD_GAME_OVER;
