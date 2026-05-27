@@ -445,6 +445,41 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
     }
 }
 
+#if 0
+/*
+ * Set initial items for a player.
+ * Number of initial items can depend on which base the player starts from.
+ */
+void Player_init_items(player_t *pl)
+{
+    int i, num_tanks;
+    double total_fuel;
+    base_t *base = pl->home_base;
+
+    for (i = 0; i < NUM_ITEMS; i++) {
+    if (i == ITEM_FUEL || i == ITEM_TANK))
+        continue;
+
+    if (base && base->initial_items[i] >= 0)
+        pl->item[i] = base->initial_items[i];
+    else
+        pl->item[i] = world->items[i].initial;
+    }
+
+    if (base && base->initial_items[ITEM_TANK] >= 0)
+    num_tanks = base->initial_items[ITEM_TANK];
+    else
+    num_tanks = world->items[ITEM_TANK].initial;
+
+    if (base && base->initial_items[ITEM_FUEL] >= 0)
+    total_fuel = (double)base->initial_items[ITEM_FUEL];
+    else
+    total_fuel = (double)world->items[ITEM_FUEL].initial;
+
+    Player_init_fuel(pl, num_tanks, total_fuel);
+}
+#endif
+
 void Player_init_items(player_t *pl)
 {
     int i;
@@ -497,7 +532,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
     // Player_init_fuel(pl, pl->fuel.sum);
     Player_init_items(pl);
 
-    if (options.allowShipShapes == true && ship)
+    if (options.allowShipShapes && ship)
         pl->ship = ship;
     else
     {
