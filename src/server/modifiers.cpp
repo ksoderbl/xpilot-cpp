@@ -253,6 +253,9 @@ static inline void Set_laser_modifier(modifiers_t *mods, int value)
         CLR_BIT(*mods, MODS_LB_BIT);
 }
 
+/*
+ * Returns 0 if ok, -1 if not allowed.
+ */
 int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
 {
     int oldVal = Mods_get(*mods, modifier);

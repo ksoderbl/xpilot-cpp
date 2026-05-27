@@ -379,6 +379,26 @@ static inline bool Player_is_killed(player_t *pl)
     return oldValue;
 }
 
+// static inline bool Player_is_active(player_t *pl)
+// {
+//     if (Player_is_alive(pl) || Player_is_killed(pl))
+//         return true;
+//     return false;
+// }
+
+static inline bool Player_is_active(player_t *pl)
+{
+    bool newValue = (Player_is_alive(pl) || Player_is_killed(pl));
+    bool oldValue = (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING);
+    if (newValue != oldValue)
+        warn("Player_is_active FAIL, old = %d, new = %d, pl_state = %d, pl = %s!", oldValue, newValue, pl->pl_state, pl->name);
+    return oldValue;
+
+    // if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
+    //     return true;
+    // return false;
+}
+
 static inline bool Player_is_dead(player_t *pl)
 {
     bool newValue = (pl->pl_state == PL_STATE_DEAD ? true : false);
@@ -683,21 +703,6 @@ static inline bool Player_is_phasing(player_t *pl)
 static inline bool Player_is_cloaked(player_t *pl)
 {
     if (BIT(pl->used, USES_CLOAKING_DEVICE))
-        return true;
-    return false;
-}
-
-// TODO
-// static inline bool Player_is_active(player_t *pl)
-// {
-//     if (Player_is_alive(pl) || Player_is_killed(pl))
-//         return true;
-//     return false;
-// }
-
-static inline bool Player_is_active(player_t *pl)
-{
-    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
         return true;
     return false;
 }
