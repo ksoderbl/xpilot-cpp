@@ -541,6 +541,8 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->stunned = 0;
 
     pl->obj_status = PLAYING | GRAVITY | DEF_BITS;
+    assert(pl->pl_state == PL_STATE_UNDEFINED);
+    Player_set_state(pl, PL_STATE_ALIVE);
     pl->have = DEF_HAVE;
     pl->used = DEF_USED;
 
@@ -1886,6 +1888,8 @@ void Player_set_state(player_t *pl, int state)
 {
     pl->pl_state = state;
 
+    Player_print_state(pl, "Player_set_state");
+
     switch (state)
     {
     case PL_STATE_WAITING:
@@ -1901,6 +1905,7 @@ void Player_set_state(player_t *pl, int state)
         break;
     case PL_STATE_ALIVE:
         Player_set_mychar(pl, pl->pl_type_mychar);
+        SET_BIT(pl->obj_status, PLAYING);
         pl->pl_old_status = OLD_PLAYING;
         break;
     case PL_STATE_KILLED:

@@ -38,6 +38,8 @@
 #include "serverconst.h"
 #include "modifiers.h"
 
+#include "xperror.h"
+
 /*
  * These values are set in the player->pl_type field.
  */
@@ -346,11 +348,11 @@ static inline player_t *Player_by_id(int id)
 
 static inline bool Player_is_waiting(player_t *pl)
 {
-    if (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W')
-        return true;
-    return false;
-    // TODO
-    // return pl->pl_state == PL_STATE_WAITING ? true : false;
+    bool newValue = (pl->pl_state == PL_STATE_WAITING ? true : false);
+    bool oldValue = (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W');
+    if (newValue != oldValue)
+        warn("Player_is_waiting FAIL, old = %d, new = %d, pl_state = %d, pl = %s!", oldValue, newValue, pl->pl_state, pl->name);
+    return oldValue;
 }
 
 static inline bool Player_is_appearing(player_t *pl)
@@ -358,43 +360,41 @@ static inline bool Player_is_appearing(player_t *pl)
     return pl->pl_state == PL_STATE_APPEARING ? true : false;
 }
 
-// TODO
-// static inline bool Player_is_alive(player_t *pl)
-// {
-//     return pl->pl_state == PL_STATE_ALIVE ? true : false;
-// }
 static inline bool Player_is_alive(player_t *pl)
 {
-    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
-        return true;
-    return false;
+    bool newValue = (pl->pl_state == PL_STATE_ALIVE ? true : false);
+    bool oldValue = (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING);
+    if (newValue != oldValue)
+        warn("Player_is_alive FAIL, old = %d, new = %d, pl_state = %d, pl = %s!", oldValue, newValue, pl->pl_state, pl->name);
+    return oldValue;
 }
 
 /* player was killed this frame ? */
 static inline bool Player_is_killed(player_t *pl)
 {
-    // TODO
-    // return pl->pl_state == PL_STATE_KILLED ? true : false;
-    if (BIT(pl->obj_status, KILLED))
-        return true;
-    return false;
+    bool newValue = (pl->pl_state == PL_STATE_KILLED ? true : false);
+    bool oldValue = BIT(pl->obj_status, KILLED);
+    if (newValue != oldValue)
+        warn("Player_is_killed FAIL, old = %d, new = %d, pl_state = %d, pl = %s!", oldValue, newValue, pl->pl_state, pl->name);
+    return oldValue;
 }
 
 static inline bool Player_is_dead(player_t *pl)
 {
-    // return pl->pl_state == PL_STATE_DEAD ? true : false;
-    if (BIT(pl->obj_status, GAME_OVER))
-        return true;
-    return false;
+    bool newValue = (pl->pl_state == PL_STATE_DEAD ? true : false);
+    bool oldValue = (BIT(pl->obj_status, GAME_OVER));
+    if (newValue != oldValue)
+        warn("Player_is_dead FAIL, old = %d, new = %d, pl_state = %d, pl = %s!", oldValue, newValue, pl->pl_state, pl->name);
+    return oldValue;
 }
 
 static inline bool Player_is_paused(player_t *pl)
 {
-    // TODO
-    // return pl->pl_state == PL_STATE_PAUSED ? true : false;
-    if (BIT(pl->obj_status, PAUSE))
-        return true;
-    return false;
+    bool newValue = (pl->pl_state == PL_STATE_PAUSED ? true : false);
+    bool oldValue = (BIT(pl->obj_status, PAUSE));
+    if (newValue != oldValue)
+        warn("Player_is_paused FAIL, old = %d, new = %d, pl_state = %d, pl = %s!", oldValue, newValue, pl->pl_state, pl->name);
+    return oldValue;
 }
 
 static inline bool Player_is_hoverpaused(player_t *pl)
