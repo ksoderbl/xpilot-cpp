@@ -632,8 +632,7 @@ static inline bool Player_uses_tractor_beam(player_t *pl)
 
 static inline bool Player_uses_emergency_shield(player_t *pl)
 {
-    if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) ==
-        (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+    if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) == (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
         return true;
     return false;
 }

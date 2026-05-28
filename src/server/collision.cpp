@@ -385,6 +385,7 @@ static void PlayerCollision(void)
                             Score_players(j_tank_owner_pl, sc, pl->name,
                                           pl, -sc, pl_j->name);
                         } /* don't bother scoring two tanks */
+                        Handle_Scoring(SCORE_COLLISION, pl, pl_j, NULL, NULL);
                     }
                     else
                     {
@@ -406,6 +407,7 @@ static void PlayerCollision(void)
                             sc = (int)floor(Rate(pl->score, pl_j->score) * options.runoverKillScoreMult);
                         Score_players(i_tank_owner_pl, sc, pl_j->name,
                                       pl_j, -sc, pl->name);
+                        Handle_Scoring(SCORE_ROADKILL, pl, pl_j, NULL, NULL);
                     }
                 }
                 else
@@ -428,6 +430,7 @@ static void PlayerCollision(void)
                             sc = (int)floor(Rate(pl_j->score, pl->score) * options.runoverKillScoreMult);
                         Score_players(j_tank_owner_pl, sc, pl->name,
                                       pl, -sc, pl_j->name);
+                        Handle_Scoring(SCORE_ROADKILL, pl_j, pl, NULL, NULL);
                     }
                 }
 
@@ -442,7 +445,7 @@ static void PlayerCollision(void)
                     if (Player_is_robot(pl) && Robot_war_on_player(pl) == pl_j->id)
                         Robot_reset_war(pl);
                     /* cannot crash with more than one player at the same time? */
-                    /* hmm, if 3 players meet at the same point at the same time? */
+                    /* if 3 players meet at the same point at the same time? */
                     /* break; */
                 }
             }
@@ -485,7 +488,6 @@ static void PlayerCollision(void)
         else
         {
             /*
-             * TODO:
              * We want a separate list of balls to avoid searching
              * the object list for balls.
              */
@@ -593,7 +595,8 @@ int CountDefensiveItems(player_t *pl)
 
 static void PlayerObjectCollision(player_t *pl)
 {
-    int j, range, radius, hit, obj_count;
+    int j, obj_count;
+    int range, radius;
     object_t *obj, **obj_list;
 
     /*
@@ -606,6 +609,8 @@ static void PlayerObjectCollision(player_t *pl)
 
     for (j = 0; j < obj_count; j++)
     {
+        bool hit;
+
         obj = obj_list[j];
         if (obj->life <= 0)
             continue;
@@ -670,16 +675,27 @@ static void PlayerObjectCollision(player_t *pl)
          * Objects actually only hit the player if they are really close.
          */
         radius = SHIP_SZ + obj->pl_radius;
+
+        /*
+         * kps - why was radius used in 4.3.1X and range in 4.5.4 ?
+         */
         if (radius >= range)
-            hit = 1;
+            hit = true;
         else
-        {
             hit = in_range_acd(pl->prevpos.cx, pl->prevpos.cy,
                                pl->pos.cx, pl->pos.cy,
                                obj->prevpos.cx, obj->prevpos.cy,
                                obj->pos.cx, obj->pos.cy,
                                range);
-        }
+#if 0
+    if (obj->collmode != 1) {
+        char MSG[80];
+        sprintf(MSG, "Collision type=%d, hit=%d, cm=%d, time=%f, "
+            "frame=%ld [*DEBUG*]", obj->type, hit, obj->collmode,
+            obj->wall_time, frame_loops);
+        Set_message(MSG);
+         }
+#endif
 
         /*
          * Object collision.
@@ -776,11 +792,14 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
             return;
         }
     }
+
+    /* Player has died */
     if (ball->ball_owner == NO_ID)
     {
         Set_message_f("%s was killed by a ball.", pl->name);
         sc = (int)floor(Rate(0, pl->score) * options.ballKillScoreMult * options.unownedKillScoreMult);
         Score(pl, -sc, pl->pos, "Ball");
+        Handle_Scoring(SCORE_BALL_KILL, NULL, pl, NULL, NULL);
     }
     else
     {
@@ -1004,12 +1023,9 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
 {
     int sc;
-    int killer;
-    // mineobject_t *mine = MINE_PTR(obj);
     player_t *kp = NULL;
 
     sound_play_sensors(pl->pos, PLAYER_HIT_MINE_SOUND);
-    killer = -1;
     if (mine->id == NO_ID && mine->mine_owner == NO_ID)
         Set_message_f("%s hit %s.",
                       pl->name,
@@ -1063,6 +1079,7 @@ static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
         sc = (int)floor(Rate(kp->score, pl->score) * options.mineScoreMult);
         Score_players(kp, sc, pl->name,
                       pl, -sc, kp->name);
+        Handle_Scoring(SCORE_HIT_MINE, kp, pl, NULL, NULL);
     }
 }
 
@@ -1103,6 +1120,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
             Score_players(kp, sc, pl->name,
                           pl, -sc, kp->name);
         }
+        Handle_Scoring(SCORE_EXPLOSION, kp, pl, NULL, NULL);
         obj->life = 0;
         return;
     }
@@ -1122,8 +1140,9 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     if (ast->life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
     {
         Score(pl, options.asteroidPoints, ast->pos, "");
+        Handle_Scoring(SCORE_ASTEROID_KILL, pl, NULL, ast, NULL);
     }
-    if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+    if (!Player_uses_emergency_shield(pl))
         Player_add_fuel(pl, -cost);
 
     if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
@@ -1138,11 +1157,13 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
 
         sc = (int)floor(Rate(0, pl->score) * options.unownedKillScoreMult);
         Score(pl, -sc, pl->pos, "[Asteroid]");
+        Handle_Scoring(SCORE_ASTEROID_DEATH, NULL, pl, NULL, NULL);
         if (Player_is_tank(pl) && options.asteroidPoints > 0)
         {
             player_t *owner_pl = Player_by_id(pl->lock.pl_id);
             if (owner_pl->score <= options.asteroidMaxScore)
                 Score(owner_pl, options.asteroidPoints, ast->pos, "");
+            Handle_Scoring(SCORE_ASTEROID_KILL, owner_pl, NULL, ast, NULL);
         }
         return;
     }
@@ -1168,7 +1189,6 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
      * Sound effects are missing when shot is deadly.
      */
 
-    // if (BIT(pl->used, HAS_SHIELD) || Player_has_armor(pl) || (obj->type == OBJ_TORPEDO && BIT(obj->mods.nuclear, MODS_NUCLEAR) && (int)(rfrac() >= 0.25)))
     if (BIT(pl->used, HAS_SHIELD) || Player_has_armor(pl) || (obj->type == OBJ_TORPEDO && Mods_get(obj->mods, ModsNuclear) && (rfrac() >= 0.25)))
     {
         switch (obj->type)

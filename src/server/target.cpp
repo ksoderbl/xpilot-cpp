@@ -264,6 +264,8 @@ void Object_hits_target(
     if (!somebody)
         return;
 
+    Handle_Scoring(SCORE_TARGET, kp, NULL, targ, NULL);
+
     sound_play_sensors(targ->pos, DESTROY_TARGET_SOUND);
 
     if (targets_remaining > 0)
