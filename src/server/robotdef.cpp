@@ -1261,10 +1261,15 @@ static bool Detect_ship(player_t *pl, player_t *ship)
     if (sqr(dx) + sqr(dy) > sqr(Visibility_distance))
         return false;
 
-    if (Player_is_thrusting(ship) && options.cloakedExhaust)
+    if (BIT(ship->obj_status, THRUSTING) && options.cloakedExhaust)
         return true;
 
-    if (BIT(ship->used, HAS_SHOT) || BIT(ship->used, HAS_LASER) || Player_is_refueling(ship) || Player_is_repairing(ship) || Player_uses_connector(ship) || Player_uses_tractor_beam(ship))
+    if (BIT(ship->used, HAS_SHOT |
+                            HAS_LASER |
+                            HAS_REFUEL |
+                            HAS_REPAIR |
+                            HAS_CONNECTOR |
+                            HAS_TRACTOR_BEAM))
         return true;
 
     if (BIT(ship->have, HAS_BALL))
@@ -1585,13 +1590,6 @@ static int Robot_default_play_check_map(player_t *pl)
         }
     }
 
-#if 0
-    if (fuel_i != NO_IND)
-    warn("Closest fuel   = %d, distance = %.2f", fuel_i, fuel_dist);
-    if (target_i != NO_IND)
-    warn("Closest target = %d, distance = %.2f", target_i, target_dist);
-#endif
-
     if (fuel_i != NO_IND && (target_dist > fuel_dist || !BIT(world->rules->mode, TEAM_PLAY)) && BIT(my_data->longterm_mode, NEED_FUEL))
     {
 
@@ -1633,11 +1631,6 @@ static int Robot_default_play_check_map(player_t *pl)
             cannon_dist = distance;
         }
     }
-
-#if 0
-    if (cannon_i != NO_IND)
-    warn("Closest cannon = %d, distance = %.2f", cannon_i, cannon_dist);
-#endif
 
     if (cannon_i != NO_IND)
     {

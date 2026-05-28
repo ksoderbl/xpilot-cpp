@@ -166,7 +166,7 @@ void Place_item(player_t *pl, int item)
     {
         if (Player_is_killed(pl))
         {
-            num_lose = pl->item[item] - pl->initial_item[item];
+            num_lose = pl->item[item] - world->items[item].initial;
             if (num_lose <= 0)
                 return;
             pl->item[item] -= num_lose;
@@ -289,10 +289,9 @@ void Place_item(player_t *pl, int item)
                 int dvx = (int)(rfrac() * 8);
                 int dvy = (int)(rfrac() * 8);
                 const float drop_speed_factor = 0.75f;
-
                 vel.x *= drop_speed_factor;
                 vel.y *= drop_speed_factor;
-                if (vl < 1.0f)
+                if (vl < 1.0)
                 {
                     vel.x -= (pl->vel.x >= 0) ? dvx : -dvx;
                     vel.y -= (pl->vel.y >= 0) ? dvy : -dvy;
@@ -373,16 +372,17 @@ void Throw_items(player_t *pl)
 
     for (item = 0; item < NUM_ITEMS; item++)
     {
-        if (item == ITEM_FUEL || item == ITEM_TANK)
-            continue;
-        do
+        if (!BIT(1U << item, ITEM_BIT_FUEL | ITEM_BIT_TANK))
         {
-            num_items_to_throw = pl->item[item] - pl->initial_item[item];
-            if (num_items_to_throw <= 0)
-                break;
-            Place_item(pl, item);
-            remain = pl->item[item] - pl->initial_item[item];
-        } while (remain > 0 && remain < num_items_to_throw);
+            do
+            {
+                num_items_to_throw = pl->item[item] - world->items[item].initial;
+                if (num_items_to_throw <= 0)
+                    break;
+                Place_item(pl, item);
+                remain = pl->item[item] - world->items[item].initial;
+            } while (remain > 0 && remain < num_items_to_throw);
+        }
     }
 
     Item_update_flags(pl);
@@ -411,9 +411,9 @@ void Detonate_items(player_t *pl)
     /*
      * Initial items are immune to detonation.
      */
-    if ((pl->item[ITEM_MINE] -= pl->initial_item[ITEM_MINE]) < 0)
+    if ((pl->item[ITEM_MINE] -= world->items[ITEM_MINE].initial) < 0)
         pl->item[ITEM_MINE] = 0;
-    if ((pl->item[ITEM_MISSILE] -= pl->initial_item[ITEM_MISSILE]) < 0)
+    if ((pl->item[ITEM_MISSILE] -= world->items[ITEM_MISSILE].initial) < 0)
         pl->item[ITEM_MISSILE] = 0;
 
     /*
@@ -434,6 +434,7 @@ void Detonate_items(player_t *pl)
             vector_t vel;
 
             mods = pl->mods;
+            // if (BIT(mods.nuclear, MODS_NUCLEAR) && pl->item[ITEM_MINE] < options.nukeMinMines)
             if (Mods_get(mods, ModsNuclear) && pl->item[ITEM_MINE] < options.nukeMinMines)
                 Mods_set(&mods, ModsNuclear, 0);
 
@@ -490,6 +491,7 @@ void Tractor_beam(player_t *pl)
     player_t *locked_pl = Player_by_id(pl->lock.pl_id);
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
+    // if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->obj_status, PLAYING | PAUSE | KILLED | GAME_OVER) != PLAYING || pl->lock.distance >= maxdist || BIT(pl->used, USES_PHASING_DEVICE) || BIT(PlayersArray[GetInd[pl->lock.pl_id]]->used, USES_PHASING_DEVICE))
     if (BIT(pl->lock.tagged, LOCK_PLAYER | LOCK_VISIBLE) != (LOCK_PLAYER | LOCK_VISIBLE) || !Player_is_alive(locked_pl) || pl->lock.distance >= maxdist || Player_is_phasing(pl) || Player_is_phasing(locked_pl))
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
@@ -519,16 +521,15 @@ void General_tractor_beam(int id, clpos_t pos,
     player_t *pl = Player_by_id(id);
     /*cannon_t *cannon = Cannon_by_id(id);*/
 
-    dist = Wrap_length(pos.cx - victim->pos.cx,
-                       pos.cy - victim->pos.cy) /
-           CLICK;
+    // TODO
+    dist = Wrap_length(CLICK_TO_PIXEL(pos.cx - victim->pos.cx), CLICK_TO_PIXEL(pos.cy - victim->pos.cy));
     if (dist > maxdist)
         return;
     percent = TRACTOR_PERCENT(dist, maxdist);
     cost = (long)TRACTOR_COST(percent);
     force = TRACTOR_FORCE(pressor, percent, maxforce);
 
-    sound_play_sensors(pos, pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND);
+    sound_play_sensors(pos, (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
 
     if (pl)
         Player_add_fuel(pl, cost);
@@ -619,7 +620,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || Player_is_phasing(pl))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     /* find victim */
@@ -828,9 +829,6 @@ void Do_general_transporter(int id, clpos_t pos,
     }
         Player_add_fuel(victim, -amount);
         break;
-    default:
-        warn("Do_general_transporter: unknown item type.");
-        break;
     }
 
     /* inform the world about the robbery */
@@ -855,7 +853,7 @@ void Do_general_transporter(int id, clpos_t pos,
 
     /* update thief */
     if (!(item == ITEM_FUEL || item == ITEM_TANK))
-        pl->item[item] += (int)amount;
+        pl->item[item] += amount;
     switch (item)
     {
     case ITEM_AFTERBURNER:

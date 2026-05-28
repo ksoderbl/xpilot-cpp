@@ -555,18 +555,18 @@ static int Frame_status(connection_t *conn, player_t *pl)
 
     if (Player_uses_emergency_thrust(pl))
         Send_thrusttime(conn,
-                        (int)pl->emergency_thrust_left,
-                        EMERGENCY_THRUST_TIME);
-    if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
+                        pl->emergency_thrust_left,
+                        pl->emergency_thrust_max);
+    if (BIT(pl->used, USES_EMERGENCY_SHIELD))
         Send_shieldtime(conn,
-                        (int)pl->emergency_shield_left,
-                        EMERGENCY_SHIELD_TIME);
-    if (Player_is_self_destructing(pl))
-        Send_destruct(conn, (int)pl->self_destruct_count);
+                        pl->emergency_shield_left,
+                        pl->emergency_shield_max);
+    if (BIT(pl->obj_status, SELF_DESTRUCT) && pl->count > 0)
+        Send_destruct(conn, pl->count);
     if (Player_is_phasing(pl))
         Send_phasingtime(conn,
-                         (int)pl->phasing_left,
-                         PHASING_TIME);
+                         pl->phasing_left,
+                         pl->phasing_max);
     if (ShutdownServer != -1)
         Send_shutdown(conn, ShutdownServer, ShutdownDelay);
 

@@ -153,14 +153,12 @@ typedef struct cannon
     int item[NUM_ITEMS];
     int damaged;
     int tractor_target_id;
-
+    int tractor_count;
     bool tractor_is_pressor;
     uint16_t team;
     long used;
-
-    double tractor_count;
-    double emergency_shield_left;
-    double phasing_left;
+    int emergency_shield_left;
+    int phasing_left;
     // short id;
 
     int group;

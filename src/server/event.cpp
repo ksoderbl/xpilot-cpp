@@ -795,13 +795,9 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_SELF_DESTRUCT:
-                if (Player_is_self_destructing(pl))
-                    Player_self_destruct(pl, false);
-                else
-                    Player_self_destruct(pl, true);
-                // TOGGLE_BIT(pl->obj_status, SELF_DESTRUCT);
-                // if (BIT(pl->obj_status, SELF_DESTRUCT))
-                //     pl->count = 150;
+                TOGGLE_BIT(pl->obj_status, SELF_DESTRUCT);
+                if (BIT(pl->obj_status, SELF_DESTRUCT))
+                    pl->count = 150;
                 break;
 
             case KEY_PAUSE:

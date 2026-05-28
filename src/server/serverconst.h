@@ -199,11 +199,9 @@
 #define TRACTOR_FORCE(tr_pr, percent, maxforce) \
     ((percent) * (maxforce) * ((tr_pr) ? -1 : 1))
 
-#define WARN_TIME (2 * 12)
-#define EMERGENCY_SHIELD_TIME (4 * 12)
+#define WARN_TIME 2
+
 #define SHIELD_TIME (2 * 12)
-#define PHASING_TIME (4 * 12)
-#define EMERGENCY_THRUST_TIME (4 * 12)
 
 #define ALLIANCE_NOT_SET (-1)
 

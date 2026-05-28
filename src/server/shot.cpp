@@ -1383,7 +1383,7 @@ void Delete_shot(int ind)
             if (shot->life == 0 && shot->color != WHITE)
             {
                 shot->color = WHITE;
-                shot->life = WARN_TIME;
+                shot->life = FPS * WARN_TIME;
                 return;
             }
             if (shot->life == 0 && rfrac() < options.rogueHeatProb)
@@ -1394,7 +1394,7 @@ void Delete_shot(int ind)
             if (!shot->life && shot->color != WHITE)
             {
                 shot->color = WHITE;
-                shot->life = WARN_TIME;
+                shot->life = FPS * WARN_TIME;
                 return;
             }
             if (shot->life == 0 && rfrac() < options.rogueMineProb)

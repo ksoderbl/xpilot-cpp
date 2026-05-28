@@ -124,11 +124,14 @@ static void Transport_to_home(player_t *pl)
  */
 void Phasing(player_t *pl, bool on)
 {
+    const int phasing_time = 4 * FPS;
+
     if (on)
     {
         if (pl->phasing_left <= 0)
         {
-            pl->phasing_left = PHASING_TIME;
+            pl->phasing_left = phasing_time;
+            pl->phasing_max = phasing_time;
             pl->item[ITEM_PHASING]--;
         }
         SET_BIT(pl->used, USES_PHASING_DEVICE);
@@ -235,14 +238,17 @@ void Deflector(player_t *pl, bool on)
  */
 void Emergency_thrust(player_t *pl, bool on)
 {
+    const int emergency_thrust_time = 4 * FPS;
+
     if (on)
     {
         if (pl->emergency_thrust_left <= 0)
         {
-            pl->emergency_thrust_left = EMERGENCY_THRUST_TIME;
+            pl->emergency_thrust_left = emergency_thrust_time;
+            pl->emergency_thrust_max = emergency_thrust_time;
             pl->item[ITEM_EMERGENCY_THRUST]--;
         }
-        if (!Player_uses_emergency_thrust(pl))
+        if (!BIT(pl->used, USES_EMERGENCY_THRUST))
         {
             SET_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_ON_SOUND);
@@ -268,13 +274,16 @@ void Emergency_thrust(player_t *pl, bool on)
  */
 void Emergency_shield(player_t *pl, bool on)
 {
+    const int emergency_shield_time = 4 * FPS; /* 8 -> 4 */
+
     if (on)
     {
         if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
         {
             if (pl->emergency_shield_left <= 0)
             {
-                pl->emergency_shield_left = EMERGENCY_SHIELD_TIME;
+                pl->emergency_shield_left = emergency_shield_time;
+                pl->emergency_shield_max = emergency_shield_time;
                 pl->item[ITEM_EMERGENCY_SHIELD]--;
             }
             if (options.cloakedShield || !BIT(pl->used, USES_CLOAKING_DEVICE))
@@ -659,15 +668,14 @@ static void Use_items(player_t *pl)
 {
     if (pl->shield_time > 0)
     {
-        pl->shield_time -= timeStep;
-        if (pl->shield_time <= 0)
+        if (--pl->shield_time == 0)
         {
-            pl->shield_time = 0;
             if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                 CLR_BIT(pl->used, USES_SHIELD);
         }
         if (BIT(pl->used, USES_SHIELD) == 0)
         {
+            /* BG 95/06/03: change test on "have" to "used". */
             if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                 CLR_BIT(pl->have, HAS_SHIELD);
             pl->shield_time = 0;
@@ -676,8 +684,7 @@ static void Use_items(player_t *pl)
 
     if (Player_is_phasing(pl))
     {
-        pl->phasing_left -= timeStep;
-        if (pl->phasing_left <= 0)
+        if (--pl->phasing_left <= 0)
         {
             if (pl->item[ITEM_PHASING] > 0)
                 Phasing(pl, true);
@@ -775,11 +782,11 @@ static void Do_refuel(player_t *pl)
  */
 static void Do_repair(player_t *pl)
 {
-    target_t *targ = Target_by_index(pl->repair_target);
-
-    if ((Wrap_length(pl->pos.cx - targ->pos.cx,
-                     pl->pos.cy - targ->pos.cy) > 90.0 * CLICK) ||
-        targ->damage >= TARGET_DAMAGE || targ->dead_ticks > 0 || Player_is_phasing(pl))
+    target_t *targ = &world->targets[pl->repair_target];
+    if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
+        targ->damage >= TARGET_DAMAGE ||
+        targ->dead_ticks > 0 ||
+        BIT(pl->used, USES_PHASING_DEVICE))
         CLR_BIT(pl->used, USES_REPAIR);
     else
     {
@@ -885,7 +892,7 @@ static void Update_players(void)
             }
             if (BIT(pl->obj_status, SELF_DESTRUCT))
             {
-                Player_set_state(pl, PL_STATE_KILLED);
+                SET_BIT(pl->obj_status, KILLED);
                 Set_message_f("%s has committed suicide.", pl->name);
                 Throw_items(pl);
                 Kill_player(pl, true);
@@ -1191,8 +1198,8 @@ static void Update_players(void)
 
         if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
         {
-            if (Player_is_thrusting(pl))
-                Make_thrust_sparks(pl);
+            if (BIT(pl->obj_status, THRUSTING))
+                Thrust(pl);
         }
 
         Compute_sensor_range(pl);

@@ -48,7 +48,7 @@
  * Functions for ship movement.
  */
 
-void Make_thrust_sparks(player_t *pl)
+void Thrust(player_t *pl)
 {
     const int min_dir = (int)(pl->dir + RES / 2 - RES * 0.2 - 1);
     const int max_dir = (int)(pl->dir + RES / 2 + RES * 0.2 + 1);
@@ -568,8 +568,7 @@ void Make_debris(clpos_t pos,
             CLR_BIT(status, GRAVITY);
     }
 
-    // num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
-    num_debris = num_debris_todo;
+    num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
 
     // if (num_debris_todo != num_debris)
     // {
