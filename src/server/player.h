@@ -188,12 +188,9 @@ typedef struct
 
     int num_pulses; /* Number of laser pulses in the air. */
 
-    int emergency_thrust_left; /* how much emergency thrust left */
-    int emergency_thrust_max;  /* maximum time left */
-    int emergency_shield_left; /* how much emergency shield left */
-    int emergency_shield_max;  /* maximum time left */
-    int phasing_left;          /* how much time left */
-    int phasing_max;           /* maximum time left */
+    double emergency_thrust_left; /* how much emergency thrust left */
+    double emergency_shield_left; /* how much emergency shield left */
+    double phasing_left;          /* how much time left */
 
     double pause_count;         /* ticks until unpause possible */
     double recovery_count;      /* ticks to recovery */

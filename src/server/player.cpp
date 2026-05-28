@@ -593,11 +593,8 @@ int Init_player(int ind, shipshape_t *ship, int type)
     pl->name[0] = '\0';
     pl->num_pulses = 0;
     pl->emergency_thrust_left = 0;
-    pl->emergency_thrust_max = 0;
     pl->emergency_shield_left = 0;
-    pl->emergency_shield_max = 0;
     pl->phasing_left = 0;
-    pl->phasing_max = 0;
     pl->ecmcount = 0;
     pl->damaged = 0;
     pl->stunned = 0;
@@ -1823,11 +1820,8 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->count = MAX(RECOVERY_DELAY, pl->count);
     pl->ecmcount = 0;
     pl->emergency_thrust_left = 0;
-    pl->emergency_thrust_max = 0;
     pl->emergency_shield_left = 0;
-    pl->emergency_shield_max = 0;
     pl->phasing_left = 0;
-    pl->phasing_max = 0;
     pl->self_destruct_count = 0;
     pl->damaged = 0;
     pl->stunned = 0;

@@ -130,7 +130,8 @@ void Cannon_update(bool tick)
         }
         if (c->emergency_shield_left > 0)
         {
-            if ((c->emergency_shield_left -= timeStep) <= 0)
+            c->emergency_shield_left -= timeStep;
+            if (c->emergency_shield_left <= 0)
             {
                 CLR_BIT(c->used, HAS_EMERGENCY_SHIELD);
                 sound_play_sensors(c->pos, EMERGENCY_SHIELD_OFF_SOUND);
@@ -138,7 +139,8 @@ void Cannon_update(bool tick)
         }
         if (c->phasing_left > 0)
         {
-            if ((c->phasing_left -= timeStep) <= 0)
+            c->phasing_left -= timeStep;
+            if (c->phasing_left <= 0)
             {
                 CLR_BIT(c->used, USES_PHASING_DEVICE);
                 sound_play_sensors(c->pos, PHASING_OFF_SOUND);

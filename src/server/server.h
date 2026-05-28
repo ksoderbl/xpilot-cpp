@@ -278,6 +278,12 @@ void do_lose_item(player_t *pl);
 void Update_torpedo(torpobject_t *torp);
 void Update_missile(missileobject_t *missile);
 void Update_mine(mineobject_t *mine);
+
+/*
+ * Prototypes for ship.c
+ */
+void Make_thrust_sparks(player_t *pl);
+
 void Make_debris(clpos_t pos,
                  vector_t vel,
                  int owner_id,
