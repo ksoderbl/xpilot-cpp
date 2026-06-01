@@ -325,7 +325,7 @@ static bool Msg_scan_for_ball_destruction(const char *message)
 /* Needed by base warning hack */
 static void Msg_scan_death(int id)
 {
-    warn("Msg_scan_death: id: %d", id);
+    // warn("Msg_scan_death: id: %d", id);
 
     int i;
     other_t *other;
@@ -337,9 +337,9 @@ static void Msg_scan_death(int id)
     if (!other)
         return;
 
-    warn("Msg_scan_death: other: %p", other);
-    warn("Msg_scan_death: other->nick_name: %s", other->nick_name);
-    warn("Msg_scan_death: other->life: %d", other->life);
+    // warn("Msg_scan_death: other: %p", other);
+    // warn("Msg_scan_death: other->nick_name: %s", other->nick_name);
+    // warn("Msg_scan_death: other->life: %d", other->life);
 
     /* don't do base warning for players who lost their last life */
     if (BIT(Setup->mode, LIMITED_LIVES) && other->life == 0)
@@ -347,12 +347,12 @@ static void Msg_scan_death(int id)
 
     for (i = 0; i < num_bases; i++)
     {
-        warn("Msg_scan_death: i=%d, id=%d, bases[i].id=%d", i, id, bases[i].id);
+        // warn("Msg_scan_death: i=%d, id=%d, bases[i].id=%d", i, id, bases[i].id);
         if (bases[i].id == id)
         {
-            warn("Msg_scan_death: i=%d, end_loops=%ld", i, end_loops);
+            // warn("Msg_scan_death: i=%d, end_loops=%ld", i, end_loops);
             bases[i].appeartime = (long)(end_loops + 3 * clientFPS);
-            warn("Msg_scan_death: i=%d, bases[i].appeartime=%ld", i, bases[i].appeartime);
+            // warn("Msg_scan_death: i=%d, bases[i].appeartime=%ld", i, bases[i].appeartime);
             break;
         }
     }
