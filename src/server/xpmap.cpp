@@ -869,10 +869,10 @@ void Xpmap_grok_map_data(void)
             // world->NumTargets++;
             break;
         case '%':
-            world->NumItemConcentrators++;
+            // world->NumItemConcentrators++;
             break;
         case '&':
-            world->NumAsteroidConcs++;
+            // world->NumAsteroidConcs++;
             break;
         case '_':
         case '0':
@@ -895,7 +895,7 @@ void Xpmap_grok_map_data(void)
         case 'm':
         case 'j':
         case 'k':
-            world->NumGravs++;
+            // world->NumGravs++;
             break;
         case '@':
         case '(':
@@ -1261,12 +1261,12 @@ void Xpmap_tags_to_internal_data(void)
     //     error("Out of memory - fuel depots");
     //     exit(-1);
     // }
-    if (world->NumGravs > 0 && (world->gravs = (grav_t *)
-                                    malloc(world->NumGravs * sizeof(grav_t))) == NULL)
-    {
-        error("Out of memory - gravs");
-        exit(-1);
-    }
+    // if (world->NumGravs > 0 && (world->gravs = (grav_t *)
+    //                                 malloc(world->NumGravs * sizeof(grav_t))) == NULL)
+    // {
+    //     error("Out of memory - gravs");
+    //     exit(-1);
+    // }
     if (world->NumWormholes > 0 && (world->wormholes = (wormhole_t *)
                                         malloc(world->NumWormholes * sizeof(wormhole_t))) == NULL)
     {
@@ -1285,18 +1285,18 @@ void Xpmap_tags_to_internal_data(void)
     //     error("Out of memory - targets");
     //     exit(-1);
     // }
-    if (world->NumItemConcentrators > 0 && (world->itemConcentrators = (item_concentrator_t *)
-                                                malloc(world->NumItemConcentrators * sizeof(item_concentrator_t))) == NULL)
-    {
-        error("Out of memory - item concentrators");
-        exit(-1);
-    }
-    if (world->NumAsteroidConcs > 0 && (world->asteroidConcs = (asteroid_concentrator_t *)
-                                            malloc(world->NumAsteroidConcs * sizeof(asteroid_concentrator_t))) == NULL)
-    {
-        error("Out of memory - asteroid concentrators");
-        exit(-1);
-    }
+    // if (world->NumItemConcentrators > 0 && (world->itemConcentrators = (item_concentrator_t *)
+    //                                             malloc(world->NumItemConcentrators * sizeof(item_concentrator_t))) == NULL)
+    // {
+    //     error("Out of memory - item concentrators");
+    //     exit(-1);
+    // }
+    // if (world->NumAsteroidConcs > 0 && (world->asteroidConcs = (asteroid_concentrator_t *)
+    //                                         malloc(world->NumAsteroidConcs * sizeof(asteroid_concentrator_t))) == NULL)
+    // {
+    //     error("Out of memory - asteroid concentrators");
+    //     exit(-1);
+    // }
     if (world->NumBases > 0)
     {
         if ((world->bases = (base_t *)
@@ -1322,12 +1322,12 @@ void Xpmap_tags_to_internal_data(void)
         error("Out of memory - ecms");
         exit(-1);
     }
-    if (MAX_TOTAL_FRICTIONAREAS > 0 && (world->frictionAreas = (friction_area_t *)
-                                            malloc(MAX_TOTAL_FRICTIONAREAS * sizeof(friction_area_t))) == NULL)
-    {
-        error("Out of memory - friction areas");
-        exit(-1);
-    }
+    // if (MAX_TOTAL_FRICTIONAREAS > 0 && (world->frictionAreas = (friction_area_t *)
+    //                                         malloc(MAX_TOTAL_FRICTIONAREAS * sizeof(friction_area_t))) == NULL)
+    // {
+    //     error("Out of memory - friction areas");
+    //     exit(-1);
+    // }
     if (MAX_TOTAL_TRANSPORTERS > 0 && (world->transporters = (transporter_t *)
                                            malloc(MAX_TOTAL_TRANSPORTERS * sizeof(transporter_t))) == NULL)
     {
@@ -1340,7 +1340,8 @@ void Xpmap_tags_to_internal_data(void)
      * and reuse these counters while inserting the objects
      * into structures.
      */
-    world->NumAsteroidConcs = 0;
+    // world->NumAsteroidConcs = 0;
+    world->asteroidConcs.clear();
 
     world->NumBases = 0;
     // world->bases.clear();
@@ -1353,9 +1354,12 @@ void Xpmap_tags_to_internal_data(void)
     // world->NumFuels = 0;
     world->fuels.clear();
 
-    world->NumFrictionAreas = 0;
-    world->NumGravs = 0;
-    world->NumItemConcentrators = 0;
+    // world->NumFrictionAreas = 0;
+    world->frictionAreas.clear();
+    // world->NumGravs = 0;
+    world->gravs.clear();
+    // world->NumItemConcentrators = 0;
+    world->itemConcentrators.clear();
 
     // world->NumTargets = 0;
     world->targets.clear();
@@ -1497,22 +1501,10 @@ void Xpmap_tags_to_internal_data(void)
 
                     break;
                 case XPMAP_ITEM_CONCENTRATOR:
-                    // line[y] = ITEM_CONCENTRATOR;
-                    // itemID[y] = world->NumItemConcentrators;
-                    // world->itemConcentrators[world->NumItemConcentrators].blk_pos.bx = x;
-                    // world->itemConcentrators[world->NumItemConcentrators].blk_pos.by = y;
-                    // world->itemConcentrators[world->NumItemConcentrators].pos.cx = cx;
-                    // world->itemConcentrators[world->NumItemConcentrators].pos.cy = cy;
-                    // world->NumItemConcentrators++;
+                    Xpmap_place_item_concentrator(blk);
                     break;
                 case XPMAP_ASTEROID_CONCENTRATOR:
-                    // line[y] = ASTEROID_CONCENTRATOR;
-                    // itemID[y] = world->NumAsteroidConcs;
-                    // world->asteroidConcs[world->NumAsteroidConcs].blk_pos.bx = x;
-                    // world->asteroidConcs[world->NumAsteroidConcs].blk_pos.by = y;
-                    // world->asteroidConcs[world->NumAsteroidConcs].pos.cx = cx;
-                    // world->asteroidConcs[world->NumAsteroidConcs].pos.cy = cy;
-                    // world->NumAsteroidConcs++;
+                    Xpmap_place_asteroid_concentrator(blk);
                     break;
                 case XPMAP_BASE_ATTRACTOR:
                     world->block[x][y] = BASE_ATTRACTOR;
@@ -1562,134 +1554,86 @@ void Xpmap_tags_to_internal_data(void)
                     break;
 
                 case XPMAP_POS_GRAV:
-                    // line[y] = POS_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, -GRAVS_POWER, POS_GRAV);
                     break;
                 case XPMAP_NEG_GRAV:
-                    // line[y] = NEG_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, GRAVS_POWER, NEG_GRAV);
                     break;
                 case XPMAP_CWISE_GRAV:
-                    // line[y] = CWISE_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, GRAVS_POWER, CWISE_GRAV);
                     break;
                 case XPMAP_ACWISE_GRAV:
-                    // line[y] = ACWISE_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, -GRAVS_POWER, ACWISE_GRAV);
                     break;
                 case XPMAP_UP_GRAV:
-                    // line[y] = UP_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, GRAVS_POWER, UP_GRAV);
                     break;
                 case XPMAP_DOWN_GRAV:
-                    // line[y] = DOWN_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, -GRAVS_POWER, DOWN_GRAV);
                     break;
                 case XPMAP_RIGHT_GRAV:
-                    // line[y] = RIGHT_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, GRAVS_POWER, RIGHT_GRAV);
                     break;
                 case XPMAP_LEFT_GRAV:
-                    // line[y] = LEFT_GRAV;
-                    // itemID[y] = world->NumGravs;
-                    // world->gravs[world->NumGravs].blk_pos.bx = x;
-                    // world->gravs[world->NumGravs].blk_pos.by = y;
-                    // world->gravs[world->NumGravs].pos.cx = cx;
-                    // world->gravs[world->NumGravs].pos.cy = cy;
-                    // world->gravs[world->NumGravs].force = -GRAVS_POWER;
-                    // world->NumGravs++;
+                    Xpmap_place_grav(blk, -GRAVS_POWER, LEFT_GRAV);
                     break;
 
                 case XPMAP_WORMHOLE_NORMAL:
+                    // Xpmap_place_wormhole(blk, WORM_NORMAL);
+                    // world->itemID[x][y] = Num_wormholes();
+                    // worm_norm++;
+                    // break;
                 case XPMAP_WORMHOLE_IN:
+                    // Xpmap_place_wormhole(blk, WORM_IN);
+                    // world->itemID[x][y] = Num_wormholes();
+                    // worm_in++;
+                    // break;
                 case XPMAP_WORMHOLE_OUT:
+                    // Xpmap_place_wormhole(blk, WORM_OUT);
+                    // world->itemID[x][y] = Num_wormholes();
+                    // worm_out++;
+                    // break;
                     world->block[x][y] = WORMHOLE;
                     world->itemID[x][y] = world->NumWormholes;
-                    // world->wormholes[world->NumWormholes].blk_pos.bx = x;
-                    // world->wormholes[world->NumWormholes].blk_pos.by = y;
-                    // world->wormholes[world->NumWormholes].pos.cx = cx;
-                    // world->wormholes[world->NumWormholes].pos.cy = cy;
-                    // world->wormholes[world->NumWormholes].countdown = 0;
-                    // world->wormholes[world->NumWormholes].lastdest = -1;
-                    // world->wormholes[world->NumWormholes].temporary = 0;
-                    // world->wormholes[world->NumWormholes].lastblock = SPACE;
-                    // world->wormholes[world->NumWormholes].lastID = -1;
-                    // if (c == '@')
-                    // {
-                    //     world->wormholes[world->NumWormholes].type = WORM_NORMAL;
-                    //     worm_norm++;
-                    // }
-                    // else if (c == '(')
-                    // {
-                    //     world->wormholes[world->NumWormholes].type = WORM_IN;
-                    //     worm_in++;
-                    // }
-                    // else
-                    // {
-                    //     world->wormholes[world->NumWormholes].type = WORM_OUT;
-                    //     worm_out++;
-                    // }
-                    // line[y] = WORMHOLE;
-                    // itemID[y] = world->NumWormholes;
-                    // world->NumWormholes++;
-
+                    world->wormholes[world->NumWormholes].blk_pos = Clpos_to_blkpos(pos);
+                    world->wormholes[world->NumWormholes].pos = pos;
+                    world->wormholes[world->NumWormholes].countdown = 0;
+                    world->wormholes[world->NumWormholes].lastdest = -1;
+                    world->wormholes[world->NumWormholes].temporary = 0;
+                    world->wormholes[world->NumWormholes].lastblock = SPACE;
+                    world->wormholes[world->NumWormholes].lastID = -1;
                     if (c == '@')
                     {
-                        World_place_wormhole(pos, WORM_NORMAL);
+                        world->wormholes[world->NumWormholes].type = WORM_NORMAL;
                         worm_norm++;
                     }
                     else if (c == '(')
                     {
-                        World_place_wormhole(pos, WORM_IN);
+                        world->wormholes[world->NumWormholes].type = WORM_IN;
                         worm_in++;
                     }
                     else
                     {
-                        World_place_wormhole(pos, WORM_OUT);
+                        world->wormholes[world->NumWormholes].type = WORM_OUT;
                         worm_out++;
                     }
+                    world->NumWormholes++;
+
+                    // if (c == '@')
+                    // {
+                    //     World_place_wormhole(pos, WORM_NORMAL);
+                    //     worm_norm++;
+                    // }
+                    // else if (c == '(')
+                    // {
+                    //     World_place_wormhole(pos, WORM_IN);
+                    //     worm_in++;
+                    // }
+                    // else
+                    // {
+                    //     World_place_wormhole(pos, WORM_OUT);
+                    //     worm_out++;
+                    // }
 
                     break;
 
@@ -1732,7 +1676,7 @@ void Xpmap_tags_to_internal_data(void)
                     break;
 
                 case XPMAP_FRICTION_AREA:
-                    // line[y] = FRICTION;
+                    Xpmap_place_friction_area(blk);
                     break;
 
                 case XPMAP_DECOR_FILLED:
