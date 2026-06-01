@@ -79,9 +79,10 @@ void Cannon_update(bool tick)
         {
             if ((c->dead_ticks -= timeStep) <= 0)
             {
-                world->block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
-                c->conn_mask = 0;
-                c->last_change = frame_loops;
+                // world->block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
+                // c->conn_mask = 0;
+                // c->last_change = frame_loops;
+                World_restore_cannon(c);
             }
             continue;
         }
@@ -784,7 +785,8 @@ void Cannon_dies(cannon_t *c, player_t *pl)
 {
     vector_t zero_vel = {0.0, 0.0};
 
-    world->block[c->blk_pos.bx][c->blk_pos.by] = SPACE;
+    // world->block[c->blk_pos.bx][c->blk_pos.by] = SPACE;
+    World_remove_cannon(c);
     Cannon_throw_items(c);
     Cannon_init(c);
     sound_play_sensors(c->pos, CANNON_EXPLOSION_SOUND);
@@ -843,23 +845,23 @@ void World_restore_cannon(cannon_t *cannon)
 
     World_set_block(blk, CANNON);
 
-    for (i = 0; i < num_polys; i++)
-    {
-        poly_t *poly = &pdata[i];
+    // for (i = 0; i < num_polys; i++)
+    // {
+    //     poly_t *poly = &pdata[i];
 
-        if (poly->group == cannon->group)
-        {
-            poly->current_style = poly->style;
-            poly->update_mask = ~0;
-            poly->last_change = frame_loops;
-        }
-    }
+    //     if (poly->group == cannon->group)
+    //     {
+    //         poly->current_style = poly->style;
+    //         poly->update_mask = ~0;
+    //         poly->last_change = frame_loops;
+    //     }
+    // }
 
     cannon->conn_mask = 0;
     cannon->last_change = frame_loops;
     cannon->dead_ticks = 0;
 
-    P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
+    // P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
 }
 
 void World_remove_cannon(cannon_t *cannon)
@@ -867,24 +869,24 @@ void World_remove_cannon(cannon_t *cannon)
     blkpos_t blk = Clpos_to_blkpos(cannon->pos);
     int i;
 
-    cannon->dead_ticks = options.cannonDeadTicks;
+    // cannon->dead_ticks = options.cannonDeadTicks;
     cannon->conn_mask = 0;
 
     World_set_block(blk, SPACE);
 
-    for (i = 0; i < num_polys; i++)
-    {
-        poly_t *poly = &pdata[i];
+    // for (i = 0; i < num_polys; i++)
+    // {
+    //     poly_t *poly = &pdata[i];
 
-        if (poly->group == cannon->group)
-        {
-            poly->current_style = poly->destroyed_style;
-            poly->update_mask = ~0;
-            poly->last_change = frame_loops;
-        }
-    }
+    //     if (poly->group == cannon->group)
+    //     {
+    //         poly->current_style = poly->destroyed_style;
+    //         poly->update_mask = ~0;
+    //         poly->last_change = frame_loops;
+    //     }
+    // }
 
-    P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
+    // P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
 }
 
 // extern struct move_parameters mp;

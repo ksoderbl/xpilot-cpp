@@ -57,57 +57,60 @@
  */
 void Target_update(void)
 {
-    for (int i = 0; i < Num_targets(); i++)
+    int i, j;
+
+    for (i = 0; i < Num_targets(); i++)
     {
-        if (world->targets[i].dead_ticks > 0)
+        target_t *targ = Target_by_index(i);
+
+        if (targ->dead_ticks > 0)
         {
-            if (!--world->targets[i].dead_ticks)
+            if (!--targ->dead_ticks)
             {
-                world->block[world->targets[i].blk_pos.bx][world->targets[i].blk_pos.by] = TARGET;
-                world->targets[i].conn_mask = 0;
-                world->targets[i].update_mask = (unsigned)-1;
-                world->targets[i].last_change = frame_loops;
+                // world->block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
+                // targ->conn_mask = 0;
+                // targ->update_mask = (unsigned)-1;
+                // targ->last_change = frame_loops;
+                World_restore_target(targ);
 
                 if (options.targetSync)
                 {
-                    uint16_t team = world->targets[i].team;
-
-                    for (int j = 0; j < Num_targets(); j++)
+                    for (j = 0; j < Num_targets(); j++)
                     {
-                        if (world->targets[j].team == team)
+                        target_t *t = Target_by_index(j);
+
+                        if (t->team == targ->team)
                         {
-                            world->block[world->targets[j].blk_pos.bx]
-                                        [world->targets[j].blk_pos.by] = TARGET;
-                            world->targets[j].conn_mask = 0;
-                            world->targets[j].update_mask = (unsigned)-1;
-                            world->targets[j].last_change = frame_loops;
-                            world->targets[j].dead_ticks = 0;
-                            world->targets[j].damage = TARGET_DAMAGE;
+                            // world->block[t->blk_pos.bx][t->blk_pos.by] = TARGET;
+                            // t->conn_mask = 0;
+                            // t->update_mask = (unsigned)-1;
+                            // t->last_change = frame_loops;
+                            // t->dead_ticks = 0;
+                            t->damage = TARGET_DAMAGE;
+                            World_restore_target(targ);
                         }
                     }
                 }
             }
             continue;
         }
-        else if (world->targets[i].damage == TARGET_DAMAGE)
-        {
+        else if (targ->damage == TARGET_DAMAGE)
             continue;
-        }
-        world->targets[i].damage += TARGET_REPAIR_PER_FRAME;
-        if (world->targets[i].damage >= TARGET_DAMAGE)
-        {
-            world->targets[i].damage = TARGET_DAMAGE;
-        }
-        else if (world->targets[i].last_change + TARGET_UPDATE_DELAY < frame_loops)
-        {
+
+        targ->damage += TARGET_REPAIR_PER_FRAME;
+        if (targ->damage >= TARGET_DAMAGE)
+
+            targ->damage = TARGET_DAMAGE;
+
+        else if (targ->last_change + TARGET_UPDATE_DELAY < frame_loops)
             /*
              * We don't send target info to the clients every frame
              * if the latest repair wouldn't change their display.
              */
             continue;
-        }
-        world->targets[i].conn_mask = 0;
-        world->targets[i].last_change = frame_loops;
+
+        targ->conn_mask = 0;
+        targ->last_change = frame_loops;
     }
 }
 
@@ -365,6 +368,14 @@ void Target_init(void)
 
 void World_restore_target(target_t *targ)
 {
+    blkpos_t blk = Clpos_to_blkpos(targ->pos);
+
+    World_set_block(blk, TARGET);
+
+    targ->conn_mask = 0;
+    targ->update_mask = ~0;
+    targ->last_change = frame_loops;
+    targ->dead_ticks = 0;
 }
 
 void World_remove_target(target_t *targ)
