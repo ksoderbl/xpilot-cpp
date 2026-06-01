@@ -323,12 +323,12 @@ struct world
 
     int NumTeamBases; /* How many 'different' teams are allowed */
     baseorder_t *baseorder;
-
     int NumChecks;
     ipos_t checks[OLD_MAX_CHECKS];
 
-    int NumAsteroidConcs;
-    asteroid_concentrator_t *asteroidConcs;
+    // int NumAsteroidConcs;
+    // asteroid_concentrator_t *asteroidConcs;
+    std::vector<asteroid_concentrator_t> asteroidConcs;
 
     int NumBases;
     base_t *bases;
@@ -345,14 +345,17 @@ struct world
     // fuel_t *fuels;
     std::vector<fuel_t> fuels;
 
-    int NumFrictionAreas;
-    friction_area_t *frictionAreas;
+    // int NumFrictionAreas;
+    // friction_area_t *frictionAreas;
+    std::vector<friction_area_t> frictionAreas;
 
-    int NumGravs;
-    grav_t *gravs;
+    // int NumGravs;
+    // grav_t *gravs;
+    std::vector<grav_t> gravs;
 
-    int NumItemConcentrators;
-    item_concentrator_t *itemConcentrators;
+    // int NumItemConcentrators;
+    // item_concentrator_t *itemConcentrators;
+    std::vector<item_concentrator_t> itemConcentrators;
 
     // int NumTargets;
     // target_t *targets;
@@ -362,6 +365,7 @@ struct world
     transporter_t *transporters;
     int NumTreasures;
     treasure_t *treasures;
+
     int NumWormholes;
     wormhole_t *wormholes;
 };
@@ -476,73 +480,6 @@ static inline int WRAP_YCLICK(int cy)
 }
 
 /*
- * Two macros for edge wrap of x and y coordinates measured in pixels.
- * Note that the correction needed shouldn't ever be bigger than one mapsize.
- */
-#define WRAP_XPIXEL(x_)                      \
-    (BIT(world->rules->mode, WRAP_PLAY)      \
-         ? ((x_) < 0                         \
-                ? (x_) + world->width        \
-                : ((x_) >= world->width      \
-                       ? (x_) - world->width \
-                       : (x_)))              \
-         : (x_))
-
-#define WRAP_YPIXEL(y_)                       \
-    (BIT(world->rules->mode, WRAP_PLAY)       \
-         ? ((y_) < 0                          \
-                ? (y_) + world->height        \
-                : ((y_) >= world->height      \
-                       ? (y_) - world->height \
-                       : (y_)))               \
-         : (y_))
-
-/*
- * Two macros for edge wrap of x and y coordinates measured in map blocks.
- * Note that the correction needed shouldn't ever be bigger than one mapsize.
- */
-#define WRAP_XBLOCK(x_)                  \
-    (BIT(world->rules->mode, WRAP_PLAY)  \
-         ? ((x_) < 0                     \
-                ? (x_) + world->x        \
-                : ((x_) >= world->x      \
-                       ? (x_) - world->x \
-                       : (x_)))          \
-         : (x_))
-
-#define WRAP_YBLOCK(y_)                  \
-    (BIT(world->rules->mode, WRAP_PLAY)  \
-         ? ((y_) < 0                     \
-                ? (y_) + world->y        \
-                : ((y_) >= world->y      \
-                       ? (y_) - world->y \
-                       : (y_)))          \
-         : (y_))
-
-/*
- * Two macros for edge wrap of differences in position.
- * If the absolute value of a difference is bigger than
- * half the map size then it is wrapped.
- */
-#define WRAP_DX(dx)                           \
-    (BIT(world->rules->mode, WRAP_PLAY)       \
-         ? ((dx) < -(world->width >> 1)       \
-                ? (dx) + world->width         \
-                : ((dx) > (world->width >> 1) \
-                       ? (dx) - world->width  \
-                       : (dx)))               \
-         : (dx))
-
-#define WRAP_DY(dy)                            \
-    (BIT(world->rules->mode, WRAP_PLAY)        \
-         ? ((dy) < -(world->height >> 1)       \
-                ? (dy) + world->height         \
-                : ((dy) > (world->height >> 1) \
-                       ? (dy) - world->height  \
-                       : (dy)))                \
-         : (dy))
-
-/*
  * Two macros for edge wrap of differences in position.
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
@@ -577,7 +514,11 @@ static inline int WRAP_YCLICK(int cy)
 #define CENTER_YCLICK(X) \
     (((X) < -(world->cheight >> 1)) ? (X) + world->cheight : (((X) >= (world->cheight >> 1)) ? (X) - world->cheight : (X)))
 
-#define Num_asteroidConcs() (world->NumAsteroidConcs)
+// #define Num_asteroidConcs() (world->NumAsteroidConcs)
+static inline int Num_asteroidConcs()
+{
+    return world->asteroidConcs.size();
+}
 
 #define Num_bases() (world->NumBases)
 // static inline int Num_bases()
@@ -592,7 +533,12 @@ static inline int Num_cannons()
 }
 
 #define Num_ecms() (world->NumEcms)
-#define Num_frictionAreas() (world->NumFrictionAreas)
+
+// #define Num_frictionAreas() (world->NumFrictionAreas)
+static inline int Num_frictionAreas()
+{
+    return world->frictionAreas.size();
+}
 
 // #define Num_fuels() (world->NumFuels)
 static inline int Num_fuels()
@@ -600,8 +546,17 @@ static inline int Num_fuels()
     return world->fuels.size();
 }
 
-#define Num_gravs() (world->NumGravs)
-#define Num_itemConcs() (world->NumItemConcentrators)
+// #define Num_gravs() (world->NumGravs)
+static inline int Num_gravs()
+{
+    return world->gravs.size();
+}
+
+// #define Num_itemConcs() (world->NumItemConcentrators)
+static inline int Num_itemConcs()
+{
+    return world->itemConcentrators.size();
+}
 
 // #define Num_targets() (world->NumTargets)
 static inline int Num_targets()

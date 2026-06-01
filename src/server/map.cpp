@@ -96,6 +96,8 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     t.conn_mask = (unsigned)-1;
     t.team = team;
 
+    // world->fuels[ind] = t;
+    // world->NumFuels++;
     world->cannons.push_back(t);
 
     // world->cannons[ind] = t;
@@ -312,7 +314,7 @@ static void alloc_old_checks(void)
 
 int World_place_check(clpos_t pos, int ind)
 {
-    check_t t;
+    // check_t t;
 
     // if (!BIT(world->rules->mode, TIMING))
     // {
@@ -365,61 +367,40 @@ int World_place_check(clpos_t pos, int ind)
 int World_place_item_concentrator(clpos_t pos)
 {
     item_concentrator_t t;
-    // int ind = Num_itemConcs();
-
-    // t.pos = pos;
-    // Arraylist_add(world->itemConcs, &t);
-
-    // return ind;
-
-    // TODO
-    return -1;
+    int ind = Num_itemConcs();
+    t.pos = pos;
+    world->itemConcentrators.push_back(t);
+    return ind;
 }
 
 int World_place_asteroid_concentrator(clpos_t pos)
 {
     asteroid_concentrator_t t;
-    // int ind = Num_asteroidConcs();
-
-    // t.pos = pos;
-    // Arraylist_add(world->asteroidConcs, &t);
-
-    // return ind;
-
-    // TODO
-    return -1;
+    int ind = Num_asteroidConcs();
+    t.pos = pos;
+    world->asteroidConcs.push_back(t);
+    return ind;
 }
 
 int World_place_grav(clpos_t pos, double force, int type)
 {
-    // grav_t t;
-    // int ind = Num_gravs();
-
-    // t.pos = pos;
-    // t.force = force;
-    // t.type = type;
-    // Arraylist_add(world->gravs, &t);
-
-    // return ind;
-
-    // TODO
-    return -1;
+    grav_t t;
+    int ind = Num_gravs();
+    t.pos = pos;
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.force = force;
+    world->gravs.push_back(t);
+    return ind;
 }
 
 int World_place_friction_area(clpos_t pos, double fric)
 {
-    // friction_area_t t;
-    // int ind = Num_frictionAreas();
-
-    // t.pos = pos;
-    // t.friction_setting = fric;
-    // /*t.friction = ... ; handled in timing setup */
-    // Arraylist_add(world->frictionAreas, &t);
-
-    // return ind;
-
-    // TODO
-    return -1;
+    friction_area_t t;
+    int ind = Num_frictionAreas();
+    t.pos = pos;
+    t.friction_setting = fric;
+    world->frictionAreas.push_back(t);
+    return ind;
 }
 
 shape_t filled_wire;
@@ -461,7 +442,8 @@ static void Init_map(void)
     world->cheight = PIXEL_TO_CLICK(world->height);
     world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 
-    world->NumAsteroidConcs = 0;
+    // world->NumAsteroidConcs = 0;
+    world->asteroidConcs.clear();
 
     world->NumBases = 0;
     // world->bases.clear();
@@ -474,9 +456,13 @@ static void Init_map(void)
     // world->NumFuels = 0;
     world->fuels.clear();
 
-    world->NumFrictionAreas = 0;
-    world->NumGravs = 0;
-    world->NumItemConcentrators = 0;
+    // world->NumFrictionAreas = 0;
+    world->frictionAreas.clear();
+
+    // world->NumGravs = 0;
+    world->gravs.clear();
+    // world->NumItemConcentrators = 0;
+    world->itemConcentrators.clear();
 
     // world->NumTargets = 0;
     world->targets.clear();
@@ -491,27 +477,15 @@ void World_free(void)
     XFREE(world->block);
     XFREE(world->itemID);
     XFREE(world->gravity);
-
-    XFREE(world->asteroidConcs);
-
+    world->asteroidConcs.clear();
     XFREE(world->bases);
-    // world->bases.clear();
-
-    // XFREE(world->cannons);
     world->cannons.clear();
-
     XFREE(world->ecms);
-
-    // XFREE(world->fuels);
     world->fuels.clear();
-
-    XFREE(world->frictionAreas);
-    XFREE(world->gravs);
-    XFREE(world->itemConcentrators);
-
-    // XFREE(world->targets);
+    world->frictionAreas.clear();
+    world->gravs.clear();
+    world->itemConcentrators.clear();
     world->targets.clear();
-
     XFREE(world->transporters);
     XFREE(world->treasures);
     XFREE(world->wormholes);
@@ -530,15 +504,15 @@ static void Alloc_map(void)
         (uint16_t **)malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
     world->gravity =
         (vector_t **)malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
-    world->gravs = NULL;
+    // world->gravs = NULL;
     world->bases = NULL;
     // world->fuels = NULL;
     // world->cannons = NULL;
     world->wormholes = NULL;
-    world->itemConcentrators = NULL;
-    world->asteroidConcs = NULL;
+    // world->itemConcentrators = NULL;
+    // world->asteroidConcs = NULL;
     world->ecms = NULL;
-    world->frictionAreas = NULL;
+    // world->frictionAreas = NULL;
     world->transporters = NULL;
     if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
     {
