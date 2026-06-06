@@ -886,7 +886,6 @@ static void Option_parse_node(hash_node *np)
     case valList:
     {
         std::vector<std::string> *list_ptr = (std::vector<std::string> *)desc->variable;
-        printf("case valList: value = '%s'\n", value);
         Convert_string_to_list(value, list_ptr);
         break;
     }

@@ -163,8 +163,10 @@ bool team_dead(int team);
 /*
  * Prototypes for map.c
  */
+int World_init(void);
 void World_free(void);
 bool Grok_map(void);
+bool Grok_map_options(void);
 
 int World_place_base(clpos_t pos, int dir, int team, int order);
 int World_place_cannon(clpos_t pos, int dir, int team);
@@ -250,12 +252,12 @@ char *Describe_shot(int type, int status, modifiers_t mods, int hit);
 void Fire_ecm(player_t *pl);
 void Fire_general_ecm(int id, int team, clpos_t pos);
 void Update_connector_force(ballobject_t *ball);
+void Fire_shot(player_t *pl, int type, int dir);
 void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target_id);
 void Fire_normal_shots(player_t *pl);
 void Fire_main_shot(player_t *pl, int type, int dir);
-void Fire_shot(player_t *pl, int type, int dir);
 void Fire_left_shot(player_t *pl, int type, int dir, int gun);
 void Fire_right_shot(player_t *pl, int type, int dir, int gun);
 void Fire_left_rshot(player_t *pl, int type, int dir, int gun);
@@ -276,7 +278,7 @@ void Do_general_transporter(int id, clpos_t pos, player_t *victim, int *itemp, l
 void do_hyperjump(player_t *pl);
 void do_lose_item(player_t *pl);
 void Update_torpedo(torpobject_t *torp);
-void Update_missile(missileobject_t *missile);
+void Update_missile(missileobject_t *shot);
 void Update_mine(mineobject_t *mine);
 void Make_debris(clpos_t pos,
                  vector_t vel,

@@ -53,48 +53,120 @@
 world_t World, *world = &World;
 bool is_polygon_map = false;
 
-static void Init_map(void);
-static void Alloc_map(void);
 static void Generate_random_map(void);
+
+/*
+ * Use wildmap to generate a random map.
+ */
+static void Generate_random_map(void)
+{
+    int width, height;
+
+    options.edgeWrap = true;
+    width = world->x;
+    height = world->y;
+
+    Wildmap(width, height, world->name, world->author, &options.mapData, &width, &height);
+
+    world->x = width;
+    world->y = height;
+    world->diagonal = (int)LENGTH(world->x, world->y);
+
+    world->width = world->x * BLOCK_SZ;
+    world->height = world->y * BLOCK_SZ;
+    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
+
+    world->cwidth = PIXEL_TO_CLICK(world->width);
+    world->cheight = PIXEL_TO_CLICK(world->height);
+    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
+}
 
 static void Find_base_order(void);
 
-#ifdef DEBUG
-static void Print_map(void) /* Debugging only. */
+static void Check_map_object_counters(void)
 {
-    int x, y;
+    int i;
 
-    for (y = world->y - 1; y >= 0; y--)
+    /*assert(world->NumCannons == 0);*/
+    /*assert(world->NumGravs == 0);*/
+    /*assert(world->NumWormholes == 0);*/
+    /*assert(world->NumTreasures == 0);*/
+    /*assert(world->NumTargets == 0);*/
+    /*assert(world->NumBases == 0);*/
+    /*assert(world->NumItemConcs == 0);
+      assert(world->NumAsteroidConcs == 0);
+      assert(world->NumFrictionAreas == 0);*/
+    /*assert(world->NumEcms == 0);*/
+    /*assert(world->NumTransporters == 0);*/
+
+    for (i = 0; i < MAX_TEAMS; i++)
     {
-        for (x = 0; x < world->x; x++)
-            switch (world->block[x][y])
-            {
-            case SPACE:
-                putchar(' ');
-                break;
-            case BASE:
-                putchar('_');
-                break;
-            default:
-                putchar('X');
-                break;
-            }
-        putchar('\n');
+        assert(world->teams[i].NumMembers == 0);
+        assert(world->teams[i].NumRobots == 0);
+        assert(world->teams[i].NumBases == 0);
+        assert(world->teams[i].NumTreasures == 0);
+        assert(world->teams[i].NumEmptyTreasures == 0);
+        assert(world->teams[i].TreasuresDestroyed == 0);
+        assert(world->teams[i].TreasuresLeft == 0);
+        assert(world->teams[i].SwapperId == NO_ID);
     }
 }
-#endif
+
+static void shrink(void **pp, size_t size)
+{
+    void *p;
+
+    p = realloc(*pp, size);
+    if (!p)
+    {
+        warn("Realloc failed!");
+        exit(1);
+    }
+    *pp = p;
+}
+
+#define SHRINK(T, P, N, M)                          \
+    {                                               \
+        if ((M) > (N))                              \
+        {                                           \
+            shrink((void **)&(P), (N) * sizeof(T)); \
+            M = (N);                                \
+        }                                           \
+    }
+
+static void Realloc_map_objects(void)
+{
+    /*SHRINK(cannon_t, world->cannons, world->NumCannons, world->MaxCannons);*/
+    /*SHRINK(fuel_t, world->fuels, world->NumFuels, world->MaxFuels);*/
+    /*SHRINK(grav_t, world->gravs, world->NumGravs, world->MaxGravs);*/
+    /*SHRINK(wormhole_t, world->wormholes,
+      world->NumWormholes, world->MaxWormholes);*/
+    /*SHRINK(treasure_t, world->treasures,
+      world->NumTreasures, world->MaxTreasures);*/
+    /*SHRINK(target_t, world->targets, world->NumTargets, world->MaxTargets);*/
+    /*SHRINK(base_t, world->bases, world->NumBases, world->MaxBases);*/
+    /*SHRINK(item_concentrator_t, world->itemConcs,
+      world->NumItemConcs, world->MaxItemConcs);
+      SHRINK(asteroid_concentrator_t, world->asteroidConcs,
+      world->NumAsteroidConcs, world->MaxAsteroidConcs);
+      SHRINK(friction_area_t, world->frictionAreas,
+      world->NumFrictionAreas, world->MaxFrictionAreas);*/
+}
 
 int World_place_cannon(clpos_t pos, int dir, int team)
 {
-    cannon_t t;
-    int ind = Num_cannons();
+    cannon_t t, *cannon;
+    int ind = Num_cannons(), i;
+
+    t.pos = pos;
     t.dir = dir;
+    t.team = team;
+    t.dead_ticks = 0;
+    t.conn_mask = ~0;
+    t.group = NO_GROUP;
+
     t.blk_pos = Clpos_to_blkpos(pos);
     t.pix_pos = Clpos_to_position(pos);
-    t.pos = pos;
-    t.dead_ticks = 0;
-    t.conn_mask = (unsigned)-1;
-    t.team = team;
 
     // world->fuels[ind] = t;
     // world->NumFuels++;
@@ -108,12 +180,6 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     // cannon_t t, *cannon;
     // int ind = Num_cannons(), i;
 
-    // t.pos = pos;
-    // t.dir = dir;
-    // t.team = team;
-    // t.dead_ticks = 0;
-    // t.conn_mask = ~0;
-    // t.group = NO_GROUP;
     // t.score = CANNON_SCORE;
     // t.id = ind + MIN_CANNON_ID;
     // assert(Is_cannon_id(t.id));
@@ -137,17 +203,16 @@ int World_place_fuel(clpos_t pos, int team)
 {
     fuel_t t;
     int ind = Num_fuels();
-    t.blk_pos = Clpos_to_blkpos(pos);
-    t.pix_pos = Clpos_to_position(pos);
+
     t.pos = pos;
     t.fuel = START_STATION_FUEL;
-    // t.conn_mask = ~0;
-    t.conn_mask = (unsigned)-1;
+    t.conn_mask = ~0;
     t.last_change = frame_loops;
     t.team = team;
 
-    // world->fuels[ind] = t;
-    // world->NumFuels++;
+    t.blk_pos = Clpos_to_blkpos(pos);
+    t.pix_pos = Clpos_to_position(pos);
+
     world->fuels.push_back(t);
 
     return ind;
@@ -155,17 +220,17 @@ int World_place_fuel(clpos_t pos, int team)
 
 int World_place_base(clpos_t pos, int dir, int team, int order)
 {
-    // base_t t;
-    // int ind = world->NumBases, i;
+    base_t t;
+    int ind = Num_bases(), i;
 
-    // t.pos = pos;
+    t.pos = pos;
     // t.order = order;
-    // /*
-    //  * The direction of the base should be so that it points
-    //  * up with respect to the gravity in the region.  This
-    //  * is fixed in Find_base_direction() when the gravity has
-    //  * been computed.
-    //  */
+    /*
+     * The direction of the base should be so that it points
+     * up with respect to the gravity in the region.  This
+     * is fixed in Find_base_direction() when the gravity has
+     * been computed.
+     */
     // if (dir < 0 || dir >= RES)
     // {
     //     warn("Base with direction %d in map.", dir);
@@ -368,8 +433,10 @@ int World_place_item_concentrator(clpos_t pos)
 {
     item_concentrator_t t;
     int ind = Num_itemConcs();
+
     t.pos = pos;
     world->itemConcentrators.push_back(t);
+
     return ind;
 }
 
@@ -377,8 +444,10 @@ int World_place_asteroid_concentrator(clpos_t pos)
 {
     asteroid_concentrator_t t;
     int ind = Num_asteroidConcs();
+
     t.pos = pos;
     world->asteroidConcs.push_back(t);
+
     return ind;
 }
 
@@ -386,10 +455,12 @@ int World_place_grav(clpos_t pos, double force, int type)
 {
     grav_t t;
     int ind = Num_gravs();
+
     t.pos = pos;
     t.blk_pos = Clpos_to_blkpos(pos);
     t.force = force;
     world->gravs.push_back(t);
+
     return ind;
 }
 
@@ -426,6 +497,49 @@ static void Filled_wire_init(void)
     filled_coords[2].cy = h - 1;
     filled_coords[3].cx = -h;
     filled_coords[3].cy = h - 1;
+}
+
+int World_init(void)
+{
+    warn("World_init called");
+
+    int i;
+
+    memset(world, 0, sizeof(world_t));
+
+#if 0
+    if ((world->asteroidConcs = Arraylist_alloc(sizeof(asteroid_concentrator_t))) == NULL)
+        return -1;
+    if ((world->bases = Arraylist_alloc(sizeof(base_t))) == NULL)
+        return -1;
+    if ((world->cannons = Arraylist_alloc(sizeof(cannon_t))) == NULL)
+        return -1;
+    if ((world->ecms = Arraylist_alloc(sizeof(ecm_t))) == NULL)
+        return -1;
+    if ((world->frictionAreas = Arraylist_alloc(sizeof(friction_area_t))) == NULL)
+        return -1;
+    if ((world->fuels = Arraylist_alloc(sizeof(fuel_t))) == NULL)
+        return -1;
+    if ((world->itemConcs = Arraylist_alloc(sizeof(item_concentrator_t))) == NULL)
+        return -1;
+    if ((world->gravs = Arraylist_alloc(sizeof(grav_t))) == NULL)
+        return -1;
+    if ((world->targets = Arraylist_alloc(sizeof(target_t))) == NULL)
+        return -1;
+    if ((world->treasures = Arraylist_alloc(sizeof(treasure_t))) == NULL)
+        return -1;
+    if ((world->transporters = Arraylist_alloc(sizeof(transporter_t))) == NULL)
+        return -1;
+    if ((world->wormholes = Arraylist_alloc(sizeof(wormhole_t))) == NULL)
+        return -1;
+#endif
+
+    for (i = 0; i < MAX_TEAMS; i++)
+        Team_by_index(i)->SwapperId = NO_ID;
+
+    Filled_wire_init();
+
+    return 0;
 }
 
 static void Init_map(void)
@@ -632,6 +746,8 @@ static bool Grok_map_size(void)
 
 bool Grok_map(void)
 {
+    warn("Grok_map: start");
+
     int i, x, y, c;
     char *s;
 
@@ -683,11 +799,8 @@ bool Grok_map(void)
     x = -1;
     y = world->y - 1;
 
-    xpprintf("grok map: set world rules\n");
     Set_world_rules();
-    xpprintf("grok map: set world items\n");
     Set_world_items();
-    xpprintf("grok map: set world asteroids\n");
     Set_world_asteroids();
 
     if (BIT(world->rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
@@ -707,8 +820,10 @@ bool Grok_map(void)
     /* kps - what are these doing here ? */
     if (options.maxRobots == -1)
         options.maxRobots = Num_bases();
+
     if (options.minRobots == -1)
         options.minRobots = options.maxRobots;
+
     if (BIT(world->rules->mode, TIMING))
         Find_base_order();
 
@@ -721,142 +836,6 @@ bool Grok_map(void)
     xpprintf("grok map: returning true\n");
 
     return true;
-}
-
-/*
- * Use wildmap to generate a random map.
- */
-static void Generate_random_map(void)
-{
-    int width, height;
-
-    options.edgeWrap = true;
-    width = world->x;
-    height = world->y;
-
-    Wildmap(width, height, world->name, world->author, &options.mapData, &width, &height);
-
-    world->x = width;
-    world->y = height;
-    world->diagonal = (int)LENGTH(world->x, world->y);
-
-    world->width = world->x * BLOCK_SZ;
-    world->height = world->y * BLOCK_SZ;
-    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
-
-    world->cwidth = PIXEL_TO_CLICK(world->width);
-    world->cheight = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
-}
-
-/*
- * Find the correct direction of the base, according to the gravity in
- * the base region.
- *
- * If a base attractor is adjacent to a base then the base will point
- * to the attractor.
- */
-void Find_base_direction(void)
-{
-    int i;
-
-    for (i = 0; i < Num_bases(); i++)
-    {
-        int x = world->bases[i].blk_pos.bx,
-            y = world->bases[i].blk_pos.by,
-            dir,
-            att;
-        double dx = world->gravity[x][y].x,
-               dy = world->gravity[x][y].y;
-
-        if (dx == 0.0 && dy == 0.0)
-        {                 /* Undefined direction? */
-            dir = DIR_UP; /* Should be set to direction of gravity! */
-        }
-        else
-        {
-            dir = (int)findDir(-dx, -dy);
-            dir = ((dir + RES / 8) / (RES / 4)) * (RES / 4); /* round it */
-            dir = MOD2(dir, RES);
-        }
-        att = -1;
-        /*BASES SNAP TO UPWARDS ATTRACTOR FIRST*/
-        if (y == world->y - 1 && world->block[x][0] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
-            if (att == -1 || dir == DIR_UP)
-            {
-                att = DIR_UP;
-            }
-        }
-        if (y < world->y - 1 && world->block[x][y + 1] == BASE_ATTRACTOR)
-        {
-            if (att == -1 || dir == DIR_UP)
-            {
-                att = DIR_UP;
-            }
-        }
-        /*THEN DOWNWARDS ATTRACTORS*/
-        if (y == 0 && world->block[x][world->y - 1] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
-            if (att == -1 || dir == DIR_DOWN)
-            {
-                att = DIR_DOWN;
-            }
-        }
-        if (y > 0 && world->block[x][y - 1] == BASE_ATTRACTOR)
-        {
-            if (att == -1 || dir == DIR_DOWN)
-            {
-                att = DIR_DOWN;
-            }
-        }
-        /*THEN RIGHTWARDS ATTRACTORS*/
-        if (x == world->x - 1 && world->block[0][y] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
-            if (att == -1 || dir == DIR_RIGHT)
-            {
-                att = DIR_RIGHT;
-            }
-        }
-        if (x < world->x - 1 && world->block[x + 1][y] == BASE_ATTRACTOR)
-        {
-            if (att == -1 || dir == DIR_RIGHT)
-            {
-                att = DIR_RIGHT;
-            }
-        }
-        /*THEN LEFTWARDS ATTRACTORS*/
-        if (x == 0 && world->block[world->x - 1][y] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
-            if (att == -1 || dir == DIR_LEFT)
-            {
-                att = DIR_LEFT;
-            }
-        }
-        if (x > 0 && world->block[x - 1][y] == BASE_ATTRACTOR)
-        {
-            if (att == -1 || dir == DIR_LEFT)
-            {
-                att = DIR_LEFT;
-            }
-        }
-        if (att != -1)
-        {
-            dir = att;
-        }
-        world->bases[i].dir = dir;
-    }
-    for (i = 0; i < world->x; i++)
-    {
-        int j;
-        for (j = 0; j < world->y; j++)
-        {
-            if (world->block[i][j] == BASE_ATTRACTOR)
-            {
-                world->block[i][j] = SPACE;
-            }
-        }
-    }
 }
 
 /*
@@ -980,6 +959,20 @@ void remove_temp_wormhole(int ind)
     }
     world->wormholes = (wormhole_t *)realloc(world->wormholes,
                                              world->NumWormholes * sizeof(wormhole_t));
+}
+
+/*
+ * Find the correct direction of the base, according to the gravity in
+ * the base region.
+ *
+ * If a base attractor is adjacent to a base then the base will point
+ * to the attractor.
+ */
+void Find_base_direction(void)
+{
+    /* kps - this might go wrong if we run in -options.polygonMode ? */
+    if (!is_polygon_map)
+        Xpmap_find_base_direction();
 }
 
 double Wrap_findDir(double dx, double dy)

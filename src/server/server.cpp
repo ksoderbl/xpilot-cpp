@@ -105,6 +105,21 @@ int main(int argc, char **argv)
     int timer_tick_rate;
     char *addr;
 
+    /* world is a global now */
+    world = &World;
+
+    if (sock_startup() < 0)
+    {
+        warn("Error initializing sockets\n");
+        return 1;
+    }
+
+    if (World_init() < 0)
+    {
+        warn("Error initializing world\n");
+        return 1;
+    }
+
     /*
      * Make output always linebuffered.  By default pipes
      * and remote shells cause stdout to be fully buffered.

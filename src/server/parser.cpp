@@ -441,19 +441,14 @@ bool Parser(int argc, char **argv)
     /*
      * Parse the options database and 'internalise' it.
      */
-    xpprintf("parser: parse options\n");
     Options_parse();
 
-    xpprintf("parser: free options\n");
     Options_free();
 
     /*
      * Construct the World structure from the options.
      */
-    xpprintf("parser: grok map\n");
-    bool ok = Grok_map();
-    xpprintf("parser: grok map returned %d\n", ok);
-    return ok;
+    return Grok_map();
 }
 
 /*

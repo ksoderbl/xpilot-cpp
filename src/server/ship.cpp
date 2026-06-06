@@ -770,7 +770,7 @@ void Explode_fighter(player_t *pl)
 
     int debris_range = (max_debris - min_debris);
 
-    warn("Explode_fighter: debris_range=%d, mass=%f", debris_range, pl->mass);
+    // warn("Explode_fighter: debris_range=%d, mass=%f", debris_range, pl->mass);
 
     Make_debris(pl->pos,
                 pl->vel,
