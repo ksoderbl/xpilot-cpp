@@ -1,1 +1,4 @@
-xpilot-cpp-server -fps 12 +reporttometaserver   -map lib/maps/dodgers2.xp
+xpilot-cpp-server \
+-fps 12 \
++reporttometaserver \
+-map /usr/local/share/xpilot-cpp/maps/dodgers2.xp
