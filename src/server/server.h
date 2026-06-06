@@ -138,7 +138,7 @@ void release_ID(int id);
  * Prototypes for walls2.c
  */
 void Groups_init(void);
-void Walls_init(void);
+void Walls_init2(void);
 void Treasure_init(void);
 void Move_init2(void);
 void Move_object2(object_t *obj);

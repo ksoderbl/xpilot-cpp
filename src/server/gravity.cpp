@@ -217,6 +217,7 @@ static void Compute_local_gravity(void)
 
 void Compute_gravity(void)
 {
-    Compute_global_gravity();
-    Compute_local_gravity();
+    // TODO
+    // Compute_global_gravity();
+    // Compute_local_gravity();
 }

@@ -157,7 +157,10 @@ int main(int argc, char **argv)
     xpprintf("find base direction\n");
     Find_base_direction();
     xpprintf("walls init\n");
-    Walls_init();
+    if (!is_polygon_map)
+        Walls_init();
+    else
+        Walls_init2();
 
     /* Allocate memory for players, shots and messages */
     Alloc_players(Num_bases() + MAX_PSEUDO_PLAYERS);
