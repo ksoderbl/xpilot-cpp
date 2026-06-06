@@ -1,68 +1,71 @@
-# Prerequisites
-*.d
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# Old stuff below
+# # Prerequisites
+# *.d
 
-# Precompiled Headers
-*.gch
-*.pch
+# # Object files
+# *.o
+# *.ko
+# *.obj
+# *.elf
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# # Linker output
+# *.ilk
+# *.map
+# *.exp
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# # Precompiled Headers
+# *.gch
+# *.pch
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-src/client/sdl/xpilot-cpp-client-sdl
-src/client/x11/xpilot-cpp-client-x11
-src/server/xpilot-cpp-server
-src/replay/xpilot-cpp-replay
-src/mapedit/xpilot-cpp-mapedit
+# # Libraries
+# *.lib
+# *.a
+# *.la
+# *.lo
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# # Shared objects (inc. Windows DLLs)
+# *.dll
+# *.so
+# *.so.*
+# *.dylib
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# # Executables
+# *.exe
+# *.out
+# *.app
+# *.i*86
+# *.x86_64
+# *.hex
+# src/client/sdl/xpilot-cpp-client-sdl
+# src/client/x11/xpilot-cpp-client-x11
+# src/server/xpilot-cpp-server
+# src/replay/xpilot-cpp-replay
+# src/mapedit/xpilot-cpp-mapedit
 
-# Generated makefiles
-Makefile
+# # Debug files
+# *.dSYM/
+# *.su
+# *.idb
+# *.pdb
 
-# Other
-.deps
-.vscode
-autom4te.cache
-*~
-config.log
-config.status
+# # Kernel Module Compile Results
+# *.mod*
+# *.cmd
+# .tmp_versions/
+# modules.order
+# Module.symvers
+# Mkfile.old
+# dkms.conf
+
+# # Generated makefiles
+# Makefile
+
+# # Other
+# .deps
+# .vscode
+# autom4te.cache
+# *~
+# config.log
+# config.status
