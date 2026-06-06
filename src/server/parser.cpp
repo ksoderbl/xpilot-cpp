@@ -438,17 +438,26 @@ bool Parser(int argc, char **argv)
         }
     }
 
+    warn("parser: Calling Options_parse");
     /*
      * Parse the options database and 'internalise' it.
      */
     Options_parse();
+
+    warn("parser: Calling Options_free");
 
     Options_free();
 
     /*
      * Construct the World structure from the options.
      */
-    return Grok_map();
+    warn("parser: Calling Grok map");
+
+    bool ok = Grok_map();
+
+    warn("parser: Calling Grok map returned %d", ok);
+
+    return ok;
 }
 
 /*

@@ -53,34 +53,6 @@
 world_t World, *world = &World;
 bool is_polygon_map = false;
 
-static void Generate_random_map(void);
-
-/*
- * Use wildmap to generate a random map.
- */
-static void Generate_random_map(void)
-{
-    int width, height;
-
-    options.edgeWrap = true;
-    width = world->x;
-    height = world->y;
-
-    Wildmap(width, height, world->name, world->author, &options.mapData, &width, &height);
-
-    world->x = width;
-    world->y = height;
-    world->diagonal = (int)LENGTH(world->x, world->y);
-
-    world->width = world->x * BLOCK_SZ;
-    world->height = world->y * BLOCK_SZ;
-    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
-
-    world->cwidth = PIXEL_TO_CLICK(world->width);
-    world->cheight = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
-}
-
 static void Find_base_order(void);
 
 static void Check_map_object_counters(void)
@@ -278,8 +250,11 @@ int World_place_treasure(clpos_t pos, int team, bool empty,
     t.empty = empty;
 
     // Arraylist_add(world->treasures, &t);
-    world->treasures[ind] = t;
-    world->NumTreasures++;
+    // world->treasures[ind] = t;
+    // world->NumTreasures++;
+
+    world->treasures.push_back(t);
+
     return ind;
 
     // treasure_t t;
@@ -542,50 +517,6 @@ int World_init(void)
     return 0;
 }
 
-static void Init_map(void)
-{
-    world->x = 256;
-    world->y = 256;
-    world->diagonal = (int)LENGTH(world->x, world->y);
-
-    world->width = world->x * BLOCK_SZ;
-    world->height = world->y * BLOCK_SZ;
-    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
-
-    world->cwidth = PIXEL_TO_CLICK(world->width);
-    world->cheight = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
-
-    // world->NumAsteroidConcs = 0;
-    world->asteroidConcs.clear();
-
-    world->NumBases = 0;
-    // world->bases.clear();
-
-    // world->NumCannons = 0;
-    world->cannons.clear();
-
-    world->NumEcms = 0;
-
-    // world->NumFuels = 0;
-    world->fuels.clear();
-
-    // world->NumFrictionAreas = 0;
-    world->frictionAreas.clear();
-
-    // world->NumGravs = 0;
-    world->gravs.clear();
-    // world->NumItemConcentrators = 0;
-    world->itemConcentrators.clear();
-
-    // world->NumTargets = 0;
-    world->targets.clear();
-
-    world->NumTransporters = 0;
-    world->NumTreasures = 0;
-    world->NumWormholes = 0;
-}
-
 void World_free(void)
 {
     XFREE(world->block);
@@ -601,7 +532,7 @@ void World_free(void)
     world->itemConcentrators.clear();
     world->targets.clear();
     XFREE(world->transporters);
-    XFREE(world->treasures);
+    world->treasures.clear();
     XFREE(world->wormholes);
     /*XFREE(world->gravs);*/
     /*XFREE(world->bases);*/
@@ -619,44 +550,26 @@ static bool World_alloc(void)
     int x;
     uint8_t *map_line;
     uint8_t **map_pointer;
-    uint16_t *item_line;
-    uint16_t **item_pointer;
     vector_t *grav_line;
     vector_t **grav_pointer;
-
     assert(world->block == NULL);
     assert(world->gravity == NULL);
 
-    // if (world->block || world->gravity)
-    //     World_free();
-
     world->block = (uint8_t **)
         malloc(sizeof(uint8_t *) * world->x + world->x * sizeof(uint8_t) * world->y);
-    world->itemID = (uint16_t **)
-        malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
     world->gravity = (vector_t **)
         malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
-    // world->gravs = NULL;
-    world->bases = NULL;
-    // world->fuels = NULL;
-    // world->cannons = NULL;
-    world->wormholes = NULL;
-    // world->itemConcentrators = NULL;
-    // world->asteroidConcs = NULL;
-    world->ecms = NULL;
-    // world->frictionAreas = NULL;
-    world->transporters = NULL;
 
     /*assert(world->gravs == NULL);*/
     /*assert(world->bases == NULL);*/
     /*assert(world->fuels == NULL);*/
     /*assert(world->cannons == NULL);*/
-    // assert(world->checks == NULL);
+    assert(world->checks == NULL);
     /*assert(world->wormholes == NULL);*/
     /*assert(world->itemConcs == NULL);*/
     /*assert(world->asteroidConcs == NULL);*/
 
-    if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
+    if (world->block == NULL || world->gravity == NULL)
     {
         World_free();
         error("Couldn't allocate memory for map");
@@ -665,8 +578,7 @@ static bool World_alloc(void)
 
     map_pointer = world->block;
     map_line = (uint8_t *)((uint8_t **)map_pointer + world->x);
-    item_pointer = world->itemID;
-    item_line = (uint16_t *)((uint16_t **)item_pointer + world->x);
+
     grav_pointer = world->gravity;
     grav_line = (vector_t *)((vector_t **)grav_pointer + world->x);
 
@@ -675,9 +587,6 @@ static bool World_alloc(void)
         *map_pointer = map_line;
         map_pointer += 1;
         map_line += world->y;
-        *item_pointer = item_line;
-        item_pointer += 1;
-        item_line += world->y;
         *grav_pointer = grav_line;
         grav_pointer += 1;
         grav_line += world->y;
@@ -785,11 +694,14 @@ bool Grok_map_options(void)
     return true;
 }
 
-static bool Grok_map2(void);
-
 bool Grok_map(void)
 {
-    Grok_map2();
+    if (!is_polygon_map)
+        return Xpmap_grok_map2();
+
+    warn("Grok_map: polygon map!");
+
+    // TODO
 
     return true;
 }
@@ -818,54 +730,6 @@ int Find_closest_team(clpos_t pos)
     }
 
     return team;
-}
-
-/*
- * Determine the order in which players are placed
- * on starting positions after race mode reset.
- */
-static void Find_base_order(void)
-{
-    int i, j, k, n;
-    int ccx, ccy;
-    double dist;
-
-    if (!BIT(world->rules->mode, TIMING))
-    {
-        world->baseorder = NULL;
-        return;
-    }
-    if ((n = Num_bases()) <= 0)
-    {
-        error("Cannot support race mode in a map without bases");
-        exit(-1);
-    }
-
-    if ((world->baseorder = (baseorder_t *)
-             malloc(n * sizeof(baseorder_t))) == NULL)
-    {
-        error("Out of memory - baseorder");
-        exit(-1);
-    }
-
-    ccx = world->checks[0].x * BLOCK_CLICKS;
-    ccy = world->checks[0].y * BLOCK_CLICKS;
-    for (i = 0; i < n; i++)
-    {
-        dist = Wrap_length(world->bases[i].pos.cx - ccx,
-                           world->bases[i].pos.cy - ccy) /
-               CLICK;
-        for (j = 0; j < i; j++)
-        {
-            if (world->baseorder[j].dist > dist)
-                break;
-        }
-        for (k = i - 1; k >= j; k--)
-            world->baseorder[k + 1] = world->baseorder[k];
-
-        world->baseorder[j].base_idx = i;
-        world->baseorder[j].dist = dist;
-    }
 }
 
 /*
@@ -901,98 +765,4 @@ double Wrap_length(int dcx, int dcy)
     dcx = WRAP_DCX(dcx);
     dcy = WRAP_DCY(dcy);
     return LENGTH(dcx, dcy);
-}
-
-static bool Grok_map2(void)
-{
-    warn("Grok_map: start");
-
-    int i, x, y, c;
-    char *s;
-
-    xpprintf("grok map: init map\n");
-    Init_map();
-
-    if (options.mapWidth <= 0 || options.mapWidth > OLD_MAX_MAP_SIZE ||
-        options.mapHeight <= 0 || options.mapHeight > OLD_MAX_MAP_SIZE)
-    {
-        warn("mapWidth or mapHeight exceeds map size limit [1, %d]",
-             OLD_MAX_MAP_SIZE);
-        free(options.mapData);
-        options.mapData = NULL;
-    }
-    else
-    {
-        world->x = options.mapWidth;
-        world->y = options.mapHeight;
-    }
-    if (options.extraBorder)
-    {
-        world->x += 2;
-        world->y += 2;
-    }
-    world->diagonal = (int)LENGTH(world->x, world->y);
-
-    world->width = world->x * BLOCK_SZ;
-    world->height = world->y * BLOCK_SZ;
-    world->pixel_hypotenuse = (int)LENGTH(world->width, world->height);
-
-    world->cwidth = PIXEL_TO_CLICK(world->width);
-    world->cheight = PIXEL_TO_CLICK(world->height);
-    world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
-
-    strlcpy(world->name, options.mapName, sizeof(world->name));
-    strlcpy(world->author, options.mapAuthor, sizeof(world->author));
-
-    if (!options.mapData)
-    {
-        warn("Generating random map");
-        Generate_random_map();
-        if (!options.mapData)
-            return false;
-    }
-
-    xpprintf("grok map: alloc map\n");
-    World_alloc();
-
-    x = -1;
-    y = world->y - 1;
-
-    Set_world_rules();
-    Set_world_items();
-    Set_world_asteroids();
-
-    if (BIT(world->rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
-    {
-        warn("Cannot teamplay while in race mode -- ignoring teamplay");
-        CLR_BIT(world->rules->mode, TEAM_PLAY);
-    }
-
-    xpprintf("grok map: reading mapdata\n");
-
-    Xpmap_grok_map_data();
-
-    xpprintf("grok map: allocate objects\n");
-
-    Xpmap_tags_to_internal_data();
-
-    /* kps - what are these doing here ? */
-    if (options.maxRobots == -1)
-        options.maxRobots = Num_bases();
-
-    if (options.minRobots == -1)
-        options.minRobots = options.maxRobots;
-
-    if (BIT(world->rules->mode, TIMING))
-        Find_base_order();
-
-    xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
-             world->name, Num_bases(), world->x, world->y,
-             BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
-
-    D(Print_map());
-
-    xpprintf("grok map: returning true\n");
-
-    return true;
 }

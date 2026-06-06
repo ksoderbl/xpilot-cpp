@@ -208,6 +208,7 @@ void Xpmap_tags_to_internal_data(void);
 void Xpmap_find_map_object_teams(void);
 void Xpmap_find_base_direction(void);
 void Xpmap_blocks_to_polygons(void);
+bool Xpmap_grok_map2(void);
 
 /*
  * Prototypes for xp2map.c

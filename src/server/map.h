@@ -363,8 +363,9 @@ struct world
 
     int NumTransporters;
     transporter_t *transporters;
-    int NumTreasures;
-    treasure_t *treasures;
+    // int NumTreasures;
+    // treasure_t *treasures;
+    std::vector<treasure_t> treasures;
 
     int NumWormholes;
     wormhole_t *wormholes;
@@ -567,7 +568,13 @@ static inline int Num_targets()
 }
 
 #define Num_transporters() (world->NumTransporters)
-#define Num_treasures() (world->NumTreasures)
+
+// #define Num_treasures() (world->NumTreasures)
+static inline int Num_treasures()
+{
+    return world->treasures.size();
+}
+
 #define Num_wormholes() (world->NumWormholes)
 
 #define AsteroidConc_by_index(i) ((asteroid_concentrator_t *)(&world->asteroidConcs[i]))

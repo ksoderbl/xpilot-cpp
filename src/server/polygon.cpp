@@ -137,13 +137,14 @@ void P_start_polygon(clpos_t pos, int style)
 {
     poly_t t;
 
-    if (!World_contains_clpos(pos))
-    {
-        warn("Polygon start point (%d, %d) is not inside the map"
-             "(0 <= x < %d, 0 <= y < %d)",
-             pos.cx, pos.cy, world->cwidth, world->cheight);
-        exit(1);
-    }
+    // TODO
+    // if (!World_contains_clpos(pos))
+    // {
+    //     warn("Polygon start point (%d, %d) is not inside the map"
+    //          "(0 <= x < %d, 0 <= y < %d)",
+    //          pos.cx, pos.cy, world->cwidth, world->cheight);
+    //     exit(1);
+    // }
     if (style == -1)
     {
         warn("Currently you must give polygon style, no default");
