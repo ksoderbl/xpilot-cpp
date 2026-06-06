@@ -277,7 +277,7 @@
 #define ENERGY_RANGE_FACTOR (2.5 / FUEL_SCALE_FACT)
 
 /* map dimension limitation: ((0x7FFF - 1280) / 35) */
-#define MAX_MAP_SIZE 900
+#define OLD_MAX_MAP_SIZE 900
 
 #define WORM_BRAKE_FACTOR 1
 #define WORMCOUNT 64
@@ -290,10 +290,10 @@
  * the end position is the path that was moved (there are some fudge
  * factors in the length). For this to hold, the map must be somewhat
  * larger than 2 * 32000 clicks = 1000 pixels. */
-// #define MIN_MAP_SIZE 1100
+#define NEW_MIN_MAP_SIZE 1100
 /* map dimension limitation: (0x7FFF - 1280) */
 /* Where does 1280 come from? uau */
-// #define MAX_MAP_SIZE 31500
+#define NEW_MAX_MAP_SIZE 31500
 
 #define POLYGON_MAX_OFFSET 30000
 #define NO_GROUP (-1)

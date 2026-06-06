@@ -491,19 +491,28 @@ void World_free(void)
     XFREE(world->wormholes);
 }
 
-static void Alloc_map(void)
+static bool World_alloc(void)
 {
     int x;
+    uint8_t *map_line;
+    uint8_t **map_pointer;
+    uint16_t *item_line;
+    uint16_t **item_pointer;
+    vector_t *grav_line;
+    vector_t **grav_pointer;
 
-    if (world->block || world->gravity)
-        World_free();
+    assert(world->block == NULL);
+    assert(world->gravity == NULL);
 
-    world->block =
-        (uint8_t **)malloc(sizeof(uint8_t *) * world->x + world->x * sizeof(uint8_t) * world->y);
-    world->itemID =
-        (uint16_t **)malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
-    world->gravity =
-        (vector_t **)malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
+    // if (world->block || world->gravity)
+    //     World_free();
+
+    world->block = (uint8_t **)
+        malloc(sizeof(uint8_t *) * world->x + world->x * sizeof(uint8_t) * world->y);
+    world->itemID = (uint16_t **)
+        malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
+    world->gravity = (vector_t **)
+        malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
     // world->gravs = NULL;
     world->bases = NULL;
     // world->fuels = NULL;
@@ -514,42 +523,111 @@ static void Alloc_map(void)
     world->ecms = NULL;
     // world->frictionAreas = NULL;
     world->transporters = NULL;
+
+    /*assert(world->gravs == NULL);*/
+    /*assert(world->bases == NULL);*/
+    /*assert(world->fuels == NULL);*/
+    /*assert(world->cannons == NULL);*/
+    // assert(world->checks == NULL);
+    /*assert(world->wormholes == NULL);*/
+    /*assert(world->itemConcs == NULL);*/
+    /*assert(world->asteroidConcs == NULL);*/
+
     if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
     {
         World_free();
-        error("Couldn't allocate memory for map (%d bytes)",
-              world->x * (world->y * (sizeof(uint8_t) + sizeof(vector_t)) + sizeof(vector_t *) + sizeof(uint8_t *)));
-        exit(-1);
+        error("Couldn't allocate memory for map");
+        return false;
     }
-    else
+
+    map_pointer = world->block;
+    map_line = (uint8_t *)((uint8_t **)map_pointer + world->x);
+    item_pointer = world->itemID;
+    item_line = (uint16_t *)((uint16_t **)item_pointer + world->x);
+    grav_pointer = world->gravity;
+    grav_line = (vector_t *)((vector_t **)grav_pointer + world->x);
+
+    for (x = 0; x < world->x; x++)
     {
-        uint8_t *map_line;
-        uint8_t **map_pointer;
-        uint16_t *item_line;
-        uint16_t **item_pointer;
-        vector_t *grav_line;
-        vector_t **grav_pointer;
-
-        map_pointer = world->block;
-        map_line = (uint8_t *)((uint8_t **)map_pointer + world->x);
-        item_pointer = world->itemID;
-        item_line = (uint16_t *)((uint16_t **)item_pointer + world->x);
-        grav_pointer = world->gravity;
-        grav_line = (vector_t *)((vector_t **)grav_pointer + world->x);
-
-        for (x = 0; x < world->x; x++)
-        {
-            *map_pointer = map_line;
-            map_pointer += 1;
-            map_line += world->y;
-            *item_pointer = item_line;
-            item_pointer += 1;
-            item_line += world->y;
-            *grav_pointer = grav_line;
-            grav_pointer += 1;
-            grav_line += world->y;
-        }
+        *map_pointer = map_line;
+        map_pointer += 1;
+        map_line += world->y;
+        *item_pointer = item_line;
+        item_pointer += 1;
+        item_line += world->y;
+        *grav_pointer = grav_line;
+        grav_pointer += 1;
+        grav_line += world->y;
     }
+
+    return true;
+}
+
+/*
+ * This function can be called after the map options have been read.
+ */
+static bool Grok_map_size(void)
+{
+    bool bad = false;
+    int w = options.mapWidth, h = options.mapHeight;
+
+    if (!is_polygon_map)
+    {
+        w *= BLOCK_SZ;
+        h *= BLOCK_SZ;
+    }
+
+    if (w < NEW_MIN_MAP_SIZE)
+    {
+        warn("mapWidth too small, minimum is %d pixels (%d blocks).\n",
+             NEW_MIN_MAP_SIZE, NEW_MIN_MAP_SIZE / BLOCK_SZ + 1);
+        bad = true;
+    }
+    if (w > NEW_MAX_MAP_SIZE)
+    {
+        warn("mapWidth too big, maximum is %d pixels (%d blocks).\n",
+             NEW_MAX_MAP_SIZE, NEW_MAX_MAP_SIZE / BLOCK_SZ);
+        bad = true;
+    }
+
+    if (h < NEW_MIN_MAP_SIZE)
+    {
+        warn("mapHeight too small, minimum is %d pixels (%d blocks).\n",
+             NEW_MIN_MAP_SIZE, NEW_MIN_MAP_SIZE / BLOCK_SZ + 1);
+        bad = true;
+    }
+    if (h > NEW_MAX_MAP_SIZE)
+    {
+        warn("mapWidth too big, maximum is %d pixels (%d blocks).\n",
+             NEW_MAX_MAP_SIZE, NEW_MAX_MAP_SIZE / BLOCK_SZ);
+        bad = true;
+    }
+
+    if (bad)
+        return false;
+
+    /* pixel sizes */
+    world->width = w;
+    world->height = h;
+    if (!is_polygon_map && options.extraBorder)
+    {
+        world->width += 2 * BLOCK_SZ;
+        world->height += 2 * BLOCK_SZ;
+    }
+    world->pixel_hypotenuse = LENGTH(world->width, world->height);
+
+    /* click sizes */
+    world->cwidth = world->width * CLICK;
+    world->cheight = world->height * CLICK;
+
+    /* block sizes */
+    world->x = (world->width - 1) / BLOCK_SZ + 1; /* !@# */
+    world->y = (world->height - 1) / BLOCK_SZ + 1;
+    world->diagonal = LENGTH(world->x, world->y);
+    world->bwidth_floor = world->width / BLOCK_SZ;
+    world->bheight_floor = world->height / BLOCK_SZ;
+
+    return true;
 }
 
 bool Grok_map(void)
@@ -560,11 +638,11 @@ bool Grok_map(void)
     xpprintf("grok map: init map\n");
     Init_map();
 
-    if (options.mapWidth <= 0 || options.mapWidth > MAX_MAP_SIZE ||
-        options.mapHeight <= 0 || options.mapHeight > MAX_MAP_SIZE)
+    if (options.mapWidth <= 0 || options.mapWidth > OLD_MAX_MAP_SIZE ||
+        options.mapHeight <= 0 || options.mapHeight > OLD_MAX_MAP_SIZE)
     {
         warn("mapWidth or mapHeight exceeds map size limit [1, %d]",
-             MAX_MAP_SIZE);
+             OLD_MAX_MAP_SIZE);
         free(options.mapData);
         options.mapData = NULL;
     }
@@ -600,7 +678,7 @@ bool Grok_map(void)
     }
 
     xpprintf("grok map: alloc map\n");
-    Alloc_map();
+    World_alloc();
 
     x = -1;
     y = world->y - 1;
