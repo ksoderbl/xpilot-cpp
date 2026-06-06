@@ -503,6 +503,10 @@ typedef struct options
     double ballConnectorLength;
     bool connectorIsString; /* can the connector get shorter? */
 
+    char *rankFileName;
+    char *rankWebpageFileName;
+    char *rankWebpageCSS;
+
     // friction only affects ships
     double frictionSetting;
 
@@ -593,14 +597,11 @@ typedef struct options
     int recordMode;
     int recordFlushInterval;
 
+    char *dataURL;
     char *recordFileName;
 
     double ballRadius;
     bool multipleConnectors;
-
-    char *rankFileName;
-    char *rankWebpageFileName;
-    char *rankWebpageCSS;
 
     double turnPushPersistence;
     double turnGrip;

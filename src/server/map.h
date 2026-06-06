@@ -368,6 +368,8 @@ struct world
 
     int NumWormholes;
     wormhole_t *wormholes;
+
+    bool have_options;
 };
 
 static inline void World_set_block(blkpos_t blk, int type)

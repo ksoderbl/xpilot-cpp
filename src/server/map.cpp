@@ -603,6 +603,15 @@ void World_free(void)
     XFREE(world->transporters);
     XFREE(world->treasures);
     XFREE(world->wormholes);
+    /*XFREE(world->gravs);*/
+    /*XFREE(world->bases);*/
+    /*XFREE(world->cannons);*/
+    // XFREE(world->checks);
+    /*XFREE(world->fuels);*/
+    /*XFREE(world->wormholes);*/
+    /*XFREE(world->itemConcs);
+    XFREE(world->asteroidConcs);
+    XFREE(world->frictionAreas);*/
 }
 
 static bool World_alloc(void)
@@ -744,7 +753,157 @@ static bool Grok_map_size(void)
     return true;
 }
 
+bool Grok_map_options(void)
+{
+    if (world->have_options)
+        return true;
+
+    Check_map_object_counters();
+
+    if (!Grok_map_size())
+        return false;
+
+    strlcpy(world->name, options.mapName, sizeof(world->name));
+    strlcpy(world->author, options.mapAuthor, sizeof(world->author));
+    strlcpy(world->dataURL, options.dataURL, sizeof(world->dataURL));
+
+    if (!World_alloc())
+        return false;
+
+    Set_world_rules();
+    Set_world_items();
+    Set_world_asteroids();
+
+    if (BIT(world->rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
+    {
+        warn("Cannot teamplay while in race mode -- ignoring teamplay");
+        CLR_BIT(world->rules->mode, TEAM_PLAY);
+    }
+
+    world->have_options = true;
+
+    return true;
+}
+
+static bool Grok_map2(void);
+
 bool Grok_map(void)
+{
+    Grok_map2();
+
+    return true;
+}
+
+/*
+ * Return the team that is closest to this click position.
+ */
+int Find_closest_team(clpos_t pos)
+{
+    int team = TEAM_NOT_SET, i;
+    double closest = FLT_MAX, l;
+
+    for (i = 0; i < Num_bases(); i++)
+    {
+        base_t *base = Base_by_index(i);
+
+        if (base->team == TEAM_NOT_SET)
+            continue;
+
+        l = Wrap_length(pos.cx - base->pos.cx, pos.cy - base->pos.cy);
+        if (l < closest)
+        {
+            team = world->bases[i].team;
+            closest = l;
+        }
+    }
+
+    return team;
+}
+
+/*
+ * Determine the order in which players are placed
+ * on starting positions after race mode reset.
+ */
+static void Find_base_order(void)
+{
+    int i, j, k, n;
+    int ccx, ccy;
+    double dist;
+
+    if (!BIT(world->rules->mode, TIMING))
+    {
+        world->baseorder = NULL;
+        return;
+    }
+    if ((n = Num_bases()) <= 0)
+    {
+        error("Cannot support race mode in a map without bases");
+        exit(-1);
+    }
+
+    if ((world->baseorder = (baseorder_t *)
+             malloc(n * sizeof(baseorder_t))) == NULL)
+    {
+        error("Out of memory - baseorder");
+        exit(-1);
+    }
+
+    ccx = world->checks[0].x * BLOCK_CLICKS;
+    ccy = world->checks[0].y * BLOCK_CLICKS;
+    for (i = 0; i < n; i++)
+    {
+        dist = Wrap_length(world->bases[i].pos.cx - ccx,
+                           world->bases[i].pos.cy - ccy) /
+               CLICK;
+        for (j = 0; j < i; j++)
+        {
+            if (world->baseorder[j].dist > dist)
+                break;
+        }
+        for (k = i - 1; k >= j; k--)
+            world->baseorder[k + 1] = world->baseorder[k];
+
+        world->baseorder[j].base_idx = i;
+        world->baseorder[j].dist = dist;
+    }
+}
+
+/*
+ * Find the correct direction of the base, according to the gravity in
+ * the base region.
+ *
+ * If a base attractor is adjacent to a base then the base will point
+ * to the attractor.
+ */
+void Find_base_direction(void)
+{
+    /* kps - this might go wrong if we run in -options.polygonMode ? */
+    if (!is_polygon_map)
+        Xpmap_find_base_direction();
+}
+
+double Wrap_findDir(double dx, double dy)
+{
+    dx = WRAP_DX(dx);
+    dy = WRAP_DY(dy);
+    return findDir(dx, dy);
+}
+
+double Wrap_cfindDir(int dcx, int dcy)
+{
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return findDir((double)dcx, (double)dcy);
+}
+
+double Wrap_length(int dcx, int dcy)
+{
+    dcx = WRAP_DCX(dcx);
+    dcy = WRAP_DCY(dcy);
+    return LENGTH(dcx, dcy);
+}
+
+static bool Grok_map2(void)
 {
     warn("Grok_map: start");
 
@@ -836,162 +995,4 @@ bool Grok_map(void)
     xpprintf("grok map: returning true\n");
 
     return true;
-}
-
-/*
- * Return the team that is closest to this click position.
- */
-int Find_closest_team(clpos_t pos)
-{
-    int team = TEAM_NOT_SET, i;
-    double closest = FLT_MAX, l;
-
-    for (i = 0; i < Num_bases(); i++)
-    {
-        base_t *base = Base_by_index(i);
-
-        if (base->team == TEAM_NOT_SET)
-            continue;
-
-        l = Wrap_length(pos.cx - base->pos.cx, pos.cy - base->pos.cy);
-        if (l < closest)
-        {
-            team = world->bases[i].team;
-            closest = l;
-        }
-    }
-
-    return team;
-}
-
-/*
- * Determine the order in which players are placed
- * on starting positions after race mode reset.
- */
-static void Find_base_order(void)
-{
-    int i, j, k, n;
-    int ccx, ccy;
-    double dist;
-
-    if (!BIT(world->rules->mode, TIMING))
-    {
-        world->baseorder = NULL;
-        return;
-    }
-    if ((n = Num_bases()) <= 0)
-    {
-        error("Cannot support race mode in a map without bases");
-        exit(-1);
-    }
-
-    if ((world->baseorder = (baseorder_t *)
-             malloc(n * sizeof(baseorder_t))) == NULL)
-    {
-        error("Out of memory - baseorder");
-        exit(-1);
-    }
-
-    ccx = world->checks[0].x * BLOCK_CLICKS;
-    ccy = world->checks[0].y * BLOCK_CLICKS;
-    for (i = 0; i < n; i++)
-    {
-        dist = Wrap_length(world->bases[i].pos.cx - ccx,
-                           world->bases[i].pos.cy - ccy) /
-               CLICK;
-        for (j = 0; j < i; j++)
-        {
-            if (world->baseorder[j].dist > dist)
-                break;
-        }
-        for (k = i - 1; k >= j; k--)
-            world->baseorder[k + 1] = world->baseorder[k];
-
-        world->baseorder[j].base_idx = i;
-        world->baseorder[j].dist = dist;
-    }
-}
-
-void add_temp_wormholes(int xin, int yin, int xout, int yout)
-{
-    wormhole_t inhole, outhole, *wwhtemp;
-
-    if ((wwhtemp = (wormhole_t *)realloc(world->wormholes,
-                                         (world->NumWormholes + 2) * sizeof(wormhole_t))) == NULL)
-    {
-        error("No memory for temporary wormholes.");
-        return;
-    }
-    world->wormholes = wwhtemp;
-
-    inhole.blk_pos.bx = xin;
-    inhole.blk_pos.by = yin;
-    outhole.blk_pos.bx = xout;
-    outhole.blk_pos.by = yout;
-    inhole.countdown = outhole.countdown = options.wormTime;
-    inhole.lastdest = world->NumWormholes + 1;
-    inhole.temporary = outhole.temporary = 1;
-    inhole.type = WORM_IN;
-    outhole.type = WORM_OUT;
-    inhole.lastblock = world->block[xin][yin];
-    outhole.lastblock = world->block[xout][yout];
-    inhole.lastID = world->itemID[xin][yin];
-    outhole.lastID = world->itemID[xout][yout];
-    world->wormholes[world->NumWormholes] = inhole;
-    world->wormholes[world->NumWormholes + 1] = outhole;
-    world->block[xin][yin] = world->block[xout][yout] = WORMHOLE;
-    world->itemID[xin][yin] = world->NumWormholes;
-    world->itemID[xout][yout] = world->NumWormholes + 1;
-    world->NumWormholes += 2;
-}
-
-void remove_temp_wormhole(int ind)
-{
-    wormhole_t hole;
-
-    hole = world->wormholes[ind];
-    world->block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
-    world->itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
-    world->NumWormholes--;
-    if (ind != world->NumWormholes)
-    {
-        world->wormholes[ind] = world->wormholes[world->NumWormholes];
-    }
-    world->wormholes = (wormhole_t *)realloc(world->wormholes,
-                                             world->NumWormholes * sizeof(wormhole_t));
-}
-
-/*
- * Find the correct direction of the base, according to the gravity in
- * the base region.
- *
- * If a base attractor is adjacent to a base then the base will point
- * to the attractor.
- */
-void Find_base_direction(void)
-{
-    /* kps - this might go wrong if we run in -options.polygonMode ? */
-    if (!is_polygon_map)
-        Xpmap_find_base_direction();
-}
-
-double Wrap_findDir(double dx, double dy)
-{
-    dx = WRAP_DX(dx);
-    dy = WRAP_DY(dy);
-    return findDir(dx, dy);
-}
-
-double Wrap_cfindDir(int dcx, int dcy)
-{
-    dcx = WRAP_DCX(dcx);
-    dcy = WRAP_DCY(dcy);
-    return findDir((double)dcx, (double)dcy);
-}
-
-double Wrap_length(int dcx, int dcy)
-{
-    dcx = WRAP_DCX(dcx);
-    dcy = WRAP_DCY(dcy);
-    return LENGTH(dcx, dcy);
 }
