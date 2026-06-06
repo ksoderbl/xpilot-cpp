@@ -524,19 +524,7 @@ static void PlayerCollision(void)
         }
 
         PlayerObjectCollision(pl);
-
-        /* Player checkpoint */
-        if (BIT(world->rules->mode, TIMING) && BIT(pl->obj_status, PAUSE | GAME_OVER) == 0)
-        {
-            if (pl->round != 0)
-                pl->time++;
-
-            if (BIT(pl->obj_status, PLAYING | KILLED) == PLAYING &&
-                Wrap_length(pl->pos.cx - world->checks[pl->check].x * BLOCK_CLICKS, pl->pos.cy - world->checks[pl->check].y * BLOCK_CLICKS) < options.checkpointRadius * BLOCK_CLICKS &&
-                !Player_is_tank(pl) &&
-                !options.ballrace)
-                Player_pass_checkpoint(pl);
-        }
+        PlayerCheckpointCollision(pl);
     }
 }
 

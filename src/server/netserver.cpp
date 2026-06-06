@@ -1625,7 +1625,7 @@ int Send_timing(connection_t *connp, int id, int check, int round)
         return 0;
     }
     if (is_polygon_map)
-        num_checks = world->NumChecks;
+        num_checks = Num_checks();
     return Packet_printf(&connp->c, "%c%hd%hu", PKT_TIMING,
                          id, round * num_checks + check);
 }

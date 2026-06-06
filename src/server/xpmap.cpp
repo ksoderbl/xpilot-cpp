@@ -725,7 +725,7 @@ setup_t *Xpmap_init_setup(void)
                 break;
 
             case CHECK:
-                for (i = 0; i < world->NumChecks; i++)
+                for (i = 0; i < Num_checks(); i++)
                 {
                     check_t *check = Check_by_index(i);
                     blkpos_t bpos = Clpos_to_blkpos(check->pos);
@@ -735,7 +735,7 @@ setup_t *Xpmap_init_setup(void)
                     *mapptr = SETUP_CHECK + i;
                     break;
                 }
-                if (i >= world->NumChecks)
+                if (i >= Num_checks())
                 {
                     warn("Bad checkpoint at (%d,%d).", x, y);
                     *mapptr = SETUP_SPACE;
@@ -956,8 +956,8 @@ void Xpmap_grok_map_data(void)
         case 'X':
         case 'Y':
         case 'Z':
-            if (BIT(world->rules->mode, TIMING))
-                world->NumChecks++;
+            // if (BIT(world->rules->mode, TIMING))
+            //     world->NumChecks++;
             break;
         default:
             break;
@@ -1585,7 +1585,7 @@ void Xpmap_tags_to_internal_data(void)
             }
         }
 
-        if (BIT(world->rules->mode, TIMING) && world->NumChecks == 0)
+        if (BIT(world->rules->mode, TIMING) && Num_checks() == 0)
         {
             xpprintf("No checkpoints found while race mode (timing) was set.\n");
             xpprintf("Turning off race mode.\n");
@@ -2436,8 +2436,8 @@ static void Find_base_order(void)
         exit(-1);
     }
 
-    ccx = world->checks[0].x * BLOCK_CLICKS;
-    ccy = world->checks[0].y * BLOCK_CLICKS;
+    ccx = world->checks[0].pos.cx;
+    ccy = world->checks[0].pos.cy;
     for (i = 0; i < n; i++)
     {
         dist = Wrap_length(world->bases[i].pos.cx - ccx,

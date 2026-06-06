@@ -204,6 +204,7 @@ void Go_home(player_t *pl)
 
     int i, x, y, dir, check;
     double vx, vy, velo;
+    clpos_t pos, initpos;
 
     if (Player_is_tank(pl))
     {
@@ -213,14 +214,13 @@ void Go_home(player_t *pl)
         return;
     }
 
-    if (BIT(world->rules->mode, TIMING) && pl->round && !BIT(pl->obj_status, GAME_OVER))
+    if (BIT(world->rules->mode, TIMING) && pl->round && !(Player_is_waiting(pl) || Player_is_dead(pl)))
     {
         if (pl->check)
             check = pl->check - 1;
         else
-            check = world->NumChecks - 1;
-        x = world->checks[check].x;
-        y = world->checks[check].y;
+            check = Num_checks() - 1;
+        pos = Check_by_index(check)->pos;
         vx = (rfrac() - 0.5) * 0.1;
         vy = (rfrac() - 0.5) * 0.1;
         velo = LENGTH(vx, vy);
@@ -229,18 +229,22 @@ void Go_home(player_t *pl)
     }
     else
     {
-        x = world->bases[pl->home_base_ind].blk_pos.bx;
-        y = world->bases[pl->home_base_ind].blk_pos.by;
-        dir = world->bases[pl->home_base_ind].dir;
+        base_t *base = &world->bases[pl->home_base_ind];
+        pos = base->pos;
+        dir = base->dir;
         vx = vy = velo = 0;
     }
+    // else
+    // {
+    //     pos.cx = pos.cy = dir = 0;
+    //     vx = vy = velo = 0.0;
+    // }
 
     pl->dir = dir;
     pl->float_dir = dir;
-    clpos_t pos;
-    pos.cx = FLOAT_TO_CLICK((x + 0.5) * BLOCK_SZ + vx);
-    pos.cy = FLOAT_TO_CLICK((y + 0.5) * BLOCK_SZ + vy);
-    Player_position_init_clpos(pl, pos);
+    initpos.cx = (click_t)(pos.cx + CLICK * vx);
+    initpos.cy = (click_t)(pos.cy + CLICK * vy);
+    Object_position_init_clpos(OBJ_PTR(pl), initpos);
     pl->vel.x = vx;
     pl->vel.y = vy;
     pl->velocity = velo;
@@ -711,7 +715,7 @@ void Update_score_table(void)
                 check = (pl->round == 0)
                             ? 0
                         : (pl->check == 0)
-                            ? (world->NumChecks - 1)
+                            ? (Num_checks() - 1)
                             : (pl->check - 1);
                 for (i = 0; i < NumPlayers; i++)
                 {

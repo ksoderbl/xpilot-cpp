@@ -53,16 +53,16 @@ static bool tick = false;         /* new tick of game time this frame */
 
 static inline void update_object_speed(object_t *obj)
 {
-    if (BIT(obj->obj_status, GRAVITY))
-    {
-        obj->vel.x += obj->acc.x + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].x;
-        obj->vel.y += obj->acc.y + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].y;
-    }
-    else
-    {
-        obj->vel.x += obj->acc.x;
-        obj->vel.y += obj->acc.y;
-    }
+    // if (BIT(obj->obj_status, GRAVITY))
+    // {
+    //     obj->vel.x += obj->acc.x + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].x;
+    //     obj->vel.y += obj->acc.y + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].y;
+    // }
+    // else
+    // {
+    obj->vel.x += obj->acc.x;
+    obj->vel.y += obj->acc.y;
+    // }
 }
 
 static char msg[MSG_LEN];
@@ -77,7 +77,9 @@ static void Transport_to_home(player_t *pl)
      * acceleration G, during the second part we make this a negative one -G.
      * This results in a visually pleasing take off and landing.
      */
-    double bx, by, dx, dy, t, m;
+    clpos_t startpos;
+    double bx, by;
+    double dx, dy, t, m;
     const int T = RECOVERY_DELAY;
 
     /*
@@ -96,17 +98,21 @@ static void Transport_to_home(player_t *pl)
         if (pl->check)
             check = pl->check - 1;
         else
-            check = world->NumChecks - 1;
-        bx = (world->checks[check].x + 0.5) * BLOCK_SZ;
-        by = (world->checks[check].y + 0.5) * BLOCK_SZ;
+            check = Num_checks() - 1;
+        // bx = (world->checks[check].x + 0.5) * BLOCK_SZ;
+        // by = (world->checks[check].y + 0.5) * BLOCK_SZ;
+        startpos = Check_by_index(check)->pos;
     }
     else
     {
-        bx = (world->bases[pl->home_base_ind].blk_pos.bx + 0.5) * BLOCK_SZ;
-        by = (world->bases[pl->home_base_ind].blk_pos.by + 0.5) * BLOCK_SZ;
+        // bx = (world->bases[pl->home_base_ind].blk_pos.bx + 0.5) * BLOCK_SZ;
+        // by = (world->bases[pl->home_base_ind].blk_pos.by + 0.5) * BLOCK_SZ;
+        startpos = world->bases[pl->home_base_ind].pos;
     }
-    dx = WRAP_DX(bx - pl->pix_pos.x);
-    dy = WRAP_DY(by - pl->pix_pos.y);
+    // dx = WRAP_DX(bx - pl->pix_pos.x);
+    // dy = WRAP_DY(by - pl->pix_pos.y);
+    dx = WRAP_DCX(startpos.cx - pl->pos.cx);
+    dy = WRAP_DCY(startpos.cy - pl->pos.cy);
     t = pl->count + 0.5f;
     if (2 * t <= T)
         m = 2 / t;
@@ -115,8 +121,8 @@ static void Transport_to_home(player_t *pl)
         t = T - t;
         m = (4 * t) / (T * T - 2 * t * t);
     }
-    pl->vel.x = dx * m;
-    pl->vel.y = dy * m;
+    pl->vel.x = dx * m / CLICK;
+    pl->vel.y = dy * m / CLICK;
 }
 
 /*

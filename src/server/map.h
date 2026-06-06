@@ -323,8 +323,11 @@ struct world
 
     int NumTeamBases; /* How many 'different' teams are allowed */
     baseorder_t *baseorder;
-    int NumChecks;
-    ipos_t checks[OLD_MAX_CHECKS];
+
+    // int NumChecks;
+    // ipos_t checks[OLD_MAX_CHECKS];
+
+    std::vector<check_t> checks;
 
     // int NumAsteroidConcs;
     // asteroid_concentrator_t *asteroidConcs;
@@ -577,6 +580,11 @@ static inline int Num_treasures()
 
 #define Num_wormholes() (world->NumWormholes)
 
+static inline int Num_checks()
+{
+    return world->checks.size();
+}
+
 #define AsteroidConc_by_index(i) ((asteroid_concentrator_t *)(&world->asteroidConcs[i]))
 #define Base_by_index(i) ((base_t *)(&world->bases[i]))
 #define Cannon_by_index(i) ((cannon_t *)(&world->cannons[i]))
@@ -594,12 +602,9 @@ static target_t *Target_by_index(int i)
 #define Wormhole_by_index(i) ((wormhole_t *)(&world->wormholes[i]))
 #define Transporter_by_index(i) ((transporter_t *)(&world->transporters[i]))
 
-static inline check_t *Check_by_index(int ind)
+static inline check_t *Check_by_index(int i)
 {
-    // TODO
-    // if (ind >= 0 && ind < world->NumChecks)
-    //     return &world->checks[ind];
-    return NULL;
+    return &world->checks[i];
 }
 
 /*

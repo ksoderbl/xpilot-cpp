@@ -564,7 +564,7 @@ static bool World_alloc(void)
     /*assert(world->bases == NULL);*/
     /*assert(world->fuels == NULL);*/
     /*assert(world->cannons == NULL);*/
-    assert(world->checks == NULL);
+    // assert(world->checks == NULL);
     /*assert(world->wormholes == NULL);*/
     /*assert(world->itemConcs == NULL);*/
     /*assert(world->asteroidConcs == NULL);*/
@@ -701,7 +701,45 @@ bool Grok_map(void)
 
     warn("Grok_map: polygon map!");
 
-    // TODO
+    warn("Grok_map_options");
+
+    if (!Grok_map_options())
+        return false;
+
+    warn("Verify_wormhole_consistency");
+
+    if (!Verify_wormhole_consistency())
+        return false;
+
+    if (BIT(world->rules->mode, TIMING) && Num_checks() == 0)
+    {
+        warn("No checkpoints found while race mode (timing) was set.");
+        warn("Turning off race mode.");
+        CLR_BIT(world->rules->mode, TIMING);
+    }
+
+    /* kps - what are these doing here ? */
+    if (options.maxRobots == -1)
+        options.maxRobots = Num_bases();
+
+    if (options.minRobots == -1)
+        options.minRobots = options.maxRobots;
+
+    Realloc_map_objects();
+
+    if (Num_bases() <= 0)
+        fatal("Map has no bases!");
+
+    xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
+             "Team play: %s\n",
+             world->name, Num_bases(), world->width, world->height,
+             BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
+
+    // if (!is_polygon_map)
+    //     Xpmap_blocks_to_polygons();
+
+    Compute_gravity();
+    Find_base_direction();
 
     return true;
 }

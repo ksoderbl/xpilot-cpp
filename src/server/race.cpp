@@ -485,7 +485,7 @@ void Player_pass_checkpoint(player_t *pl)
 #endif
     }
 
-    if (++pl->check == world->NumChecks)
+    if (++pl->check == Num_checks())
         pl->check = 0;
     pl->last_check_dir = pl->dir;
 

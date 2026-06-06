@@ -1742,13 +1742,12 @@ int Polys_to_client(uint8_t **start)
         STORE2(fs->pos.cx >> CLICK_SHIFT);
         STORE2(fs->pos.cy >> CLICK_SHIFT);
     }
-    STORE1(world->NumChecks);
-    // TODO
-    // for (i = 0; i < world->NumChecks; i++)
-    // {
-    //     STORE2(world->checks[i].pos.cx >> CLICK_SHIFT);
-    //     STORE2(world->checks[i].pos.cy >> CLICK_SHIFT);
-    // }
+    STORE1(Num_checks());
+    for (i = 0; i < Num_checks(); i++)
+    {
+        STORE2(world->checks[i].pos.cx >> CLICK_SHIFT);
+        STORE2(world->checks[i].pos.cy >> CLICK_SHIFT);
+    }
     return offset;
 }
 
