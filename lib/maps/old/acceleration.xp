@@ -1,0 +1,910 @@
+wreckage: false
+useWreckage: false
+noquit:false
+maxunshieldedwallbouncespeed:90
+maxunshieldedplayerwallbounceangle:180
+maxshieldedplayerwallbounceangle:180
+maxshieldedwallbouncespeed:100
+robots:0
+allowplayercrashes:yes
+allowplayerkilling:yes
+allowshields:no
+playerstartsshielded:yes
+playerwallbouncebrakefactor:0.5
+targetkillteam:yes
+teamassign:yes
+teamimmunity:yes
+limitedlives:yes
+allownukes:yes
+playersonradar:yes
+missilesonradar:yes
+shieldeditempickup:no
+treasuresonradar:no
+shieldedmining:yes
+laserisstungun:no
+movingitemprob:0.5
+dropitemonkillprob:0.5
+destroyitemincollisionprob:0.3
+itemenergypackprob:0.8
+itemtankprob:0.5
+itemecmprob:0.9
+itemmineprob:0.8
+itemmissileprob:0.5
+itemcloakprob:0.01
+itemsensorprob:0.7
+itemwideangleprob:0.1
+itemrearshotprob:0.01
+itemafterburnerprob:0.6
+itemtransporterprob:0.4
+itemlaserprob:0.7
+itememergencythrustprob:0.2
+itememergencyshieldprob:0.6
+itemtractorbeamprob:0.7
+itemautopilotprob:0.0
+itemprobmult:0.0000
+maxitemdensity:0.1
+initialfuel:1000
+initialtanks:0
+initialecms:0
+initialmines:0
+initialmissiles:0
+initialcloaks:0
+initialsensors:0
+initialwideangles:0
+initialrearshots:0
+initialtransporters:0
+initiallasers:0
+initialemergencythrusts:0
+initialemergencyshields:0
+initialafterburners:2
+initialautopilots:1
+emcsreprogrammines:yes
+playerminimumstartfuel:500
+targetteamcollision:no
+allowplayerbounces:no
+itemswallbounce:no
+shotswallbounce:no
+ballswallbounce:yes
+sparkswallbounce:yes
+debriswallbounce:no
+allowclusters:no
+allowmodifiers:yes
+allowlasermodifiers:yes
+allowshipshapes:yes
+playersonradar:yes
+missilesonradar:yes
+minesonradar:yes
+nukesonradar:yes
+distinguishmissiles:yes
+identifymines:yes
+nukeminsmarts:3
+nukeminmines:3
+emcsreprogrammines:yes
+maxmissilesperpack:1
+minefusetime:420
+detonateitemonkillprob:0.5
+rogueheatprob:0.01
+roguemineprob:0.02
+
+limitedlives : yes
+mapwidth : 100
+mapheight : 802
+mapname : Acceleration Test
+mapauthor : kps
+edgewrap : no
+teamplay : yes
+oneplayeronly : no
+worldlives : 3
+limitedvisibility : no
+gravity : 0
+maxplayershots : 12
+shotsgravity : yes
+
+ballradius: 0
+kineticenergyfueldrain: false
+baselesspausing: true
+
+mapData: \multiline: EndOfMapdata
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                             2                                                    x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+x                                                                                                  x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EndOfMapdata

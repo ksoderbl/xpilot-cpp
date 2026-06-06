@@ -1,0 +1,209 @@
+teamcup:yes
+usewreckage: no
+numberofrounds:12
+noquit:false
+maxunshieldedwallbouncespeed:90
+maxunshieldedplayerwallbounceangle:180
+maxshieldedplayerwallbounceangle:180
+maxshieldedwallbouncespeed:100
+framespersecond:12
+robots:0
+allowplayercrashes:yes
+allowplayerkilling:yes
+allowshields:no
+playerstartsshielded:yes
+playerwallbouncebrakefactor:0.5
+targetkillteam:yes
+teamassign:yes
+teamimmunity:yes
+limitedlives:yes
+allownukes:yes
+playersonradar:yes
+missilesonradar:yes
+shieldeditempickup:no
+treasuresonradar:no
+shieldedmining:yes
+laserisstungun:no
+movingitemprob:0.5
+dropitemonkillprob:0.5
+destroyitemincollisionprob:0.3
+itemenergypackprob:0.8
+itemtankprob:0.5
+itemecmprob:0.9
+itemmineprob:0.8
+itemmissileprob:0.5
+itemcloakprob:0.01
+itemsensorprob:0.7
+itemwideangleprob:0.1
+itemrearshotprob:0.01
+itemafterburnerprob:0.6
+itemtransporterprob:0.4
+itemlaserprob:0.7
+itememergencythrustprob:0.2
+itememergencyshieldprob:0.6
+itemtractorbeamprob:0.7
+itemautopilotprob:0.0
+itemprobmult:0.0000
+maxitemdensity:0.1
+initialfuel:150
+initialtanks:0
+initialecms:0
+initialmines:0
+initialmissiles:0
+initialcloaks:0
+initialsensors:0
+initialwideangles:0
+initialrearshots:0
+initialtransporters:0
+initiallasers:0
+initialemergencythrusts:0
+initialemergencyshields:0
+initialafterburners:2
+initialautopilots:1
+emcsreprogrammines:yes
+playerminimumstartfuel:500
+targetteamcollision:no
+allowplayerbounces:no
+itemswallbounce:no
+shotswallbounce:no
+ballswallbounce:yes
+sparkswallbounce:yes
+debriswallbounce:no
+allowclusters:no
+allowmodifiers:yes
+allowlasermodifiers:yes
+allowshipshapes:yes
+playersonradar:yes
+missilesonradar:yes
+minesonradar:yes
+nukesonradar:yes
+distinguishmissiles:yes
+identifymines:yes
+nukeminsmarts:3
+nukeminmines:3
+emcsreprogrammines:yes
+maxmissilesperpack:1
+minefusetime:420
+detonateitemonkillprob:0.5
+rogueheatprob:0.01
+roguemineprob:0.02
+robotTeam:0
+reserveRobotTeam:no
+allowviewing:yes
+
+limitedlives : yes
+mapwidth : 100
+mapheight : 100
+mapname : TeamCup 2001 - Xpilot-Tournament Map (Blood's Music)
+mapauthor : "Patrick Kenny - pkenny@eecs.umich.edu"
+edgewrap : yes
+teamplay : yes
+oneplayeronly : no
+worldlives : 3
+limitedvisibility : no
+gravity : 0
+maxplayershots : 12
+shotsgravity : yes
+
+mapData: \multiline: EndOfMapdata
+                                       a                                                            
+                                        a   w                     q                                 
+                                          a  w                             #                        
+                                           a   w                 q          w                       
+         q w                                a   w                      #             q w            
+         a  w                                a                  q    s   a  s                       
+          a  w                                a s              q    s               q               
+           a    w      q w                                    q                        s            
+            a     w   q  s                                    #    #               q  s             
+             a          s                                     a    s              q                 
+               a                                               a              qw q   s              
+                 a      w                                       a s                 s               
+                   a    s                                                     a   s                 
+                     a s                                                                            
+                                                                                                    
+      q  w                                                                                          
+      a    w                      q  w              q   w                                           
+                                 q  # # w           a    w                                          
+       a   s                    q  s   a w           *a  #w                                         
+         a w                   qs        aw         4  a                                            
+          a  w                                                                                q     
+                                                          s                                  q      
+           a  w                               q  w  2    s                                     s    
+            a s                              4#  s22                                        q s     
+                          4                  a# s 22   q#                                  q        
+                      q  ##w     4                      #       q w                          s      
+                      #     w  q##w                   q #      q    w                     q s       
+                                                     q                  w                q s        
+                      a           s               q#                                                
+                         a            4        q                        s               q s         
+                          a       w  q#w     q           w                                          
+                          q                 q                     s  a s                as          
+                         q              w                 w    a s                                  
+                      q#     #                                                                      
+                           s  a             a      #       w                                        
+                      a   s    a        s     a   s    a   #                                        
+                       a#s      a#     #       #        a   w                                       
+                                   a          q          a  s                                       
+                                    a  s         s                                                  
+                                              a#s                                                   
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                             q  w                                                                   
+                        q                    q # w                                       q  w       
+                                #           q     w                          q w  q w        w      
+                        #       s          q                                 a       w  q     w     
+                       q             q w q                                     a                w   
+                      q         w    a#                                          a    s a        w  
+                     q           w     a          s                                  #     a        
+                                           a     #             q w                a  s      a       
+                     a  # s  a    w         a    s           q    w        qw                a      
+       q  w                         w        a  s            a     w      q                   a   w 
+       a   w                                                   a            s                   a   
+          a                   a     s                          q   s     q                       #  
+           a        q   w      a#s                            q   s      a s                     as 
+                    #    w                  q    w            a  s                                  
+          qw        a     w                q      w                                                 
+       a   s         a     w              q                  q s                                    
+          s           a                q          s            w                                    
+                       a  s            #         s           a  w                                   
+#       as                             a        #             a                                   q 
+                                         a       w             a w                          q  w q  
+s                                         a                     a  w                       q        
+                    q#w                      a   s               a  w                      #        
+                       w                                                             qw    a       s
+                   q    w                                                              w    a     s 
+                  q      w                                         a  w                 w       s   
+                 q            #w                                     a w             a       a      
+       qw     #       00000     w         q  w            q  w        a                             
+      q  w    a       00000        w          w         q     w                                     
+          w    a                   #      a    w                                                w   
+      a         a#s     a#         s             # w    a     s                               #  w  
+       #  #              a      s          #        w       as                                a  #  
+       a                  a                            w                                       a s  
+          s                a               a            w              q w                          
+        as                  a  #            a             w   *           w                         
+                     w       a s             a             w           a   w                        
+                   a                          a             w  q          a                         
+                    a                          a                s           w                       
+                                                              s              w      q               
+                                                #           s                 w  q                  
+                                                                           a    #     s             
+                                               q                                 a                  
+       #w                                     q     s   a   w   2                 a#                
+         w                                         s     a#     #                  a                
+       a   w                                     s        a    s                                    
+         a   w                                a#s             s                                     
+          a   w                                            a s                      a    w          
+            a   w                                                q w2  q w           a              
+             a                                                  q  ##                   a           
+               a w                                             q         s                          
+                a#                                                   s              q w             
+                                                               a    #              2                
+                                                                                  q#  s             
+                                                                a                 #                 
+                                                                 a   w            a #s              
+                                                                  a    w 2                          
+                                       q   w                       #     ##w                        
+EndOfMapdata
