@@ -1,17 +1,9 @@
+file(GLOB MAPEDIT_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
 add_executable(xpilot-cpp-mapedit
-    events.cpp
-    expose.cpp
-    file.cpp
-    forms.cpp
-    grow.cpp
-    help.cpp
-    main.cpp
-    round.cpp
-    T_Form.cpp
-    T_Handler.cpp
-    tools.cpp
-    T_Popup.cpp
-    T_Toolkit.cpp
+    ${MAPEDIT_SOURCES}
 )
 
 target_include_directories(xpilot-cpp-mapedit
@@ -33,4 +25,6 @@ target_link_libraries(xpilot-cpp-mapedit
         m
 )
 
-install(TARGETS xpilot-cpp-mapedit RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS xpilot-cpp-mapedit
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

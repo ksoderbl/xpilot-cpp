@@ -1,26 +1,9 @@
+file(GLOB X11_CLIENT_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
 add_executable(xpilot-cpp-client-x11
-    about.cpp
-    bitmaps.cpp
-    colors.cpp
-    configure.cpp
-    dbuff.cpp
-    guimap.cpp
-    guiobjects.cpp
-    join.cpp
-    paintdata.cpp
-    painthud.cpp
-    paintradar.cpp
-    record.cpp
-    sim.cpp
-    talk.cpp
-    welcome.cpp
-    widget.cpp
-    xdefault.cpp
-    xevent.cpp
-    xeventhandlers.cpp
-    xinit.cpp
-    xpaint.cpp
-    xpilot.cpp
+    ${X11_CLIENT_SOURCES}
 )
 
 target_include_directories(xpilot-cpp-client-x11
@@ -44,4 +27,6 @@ target_link_libraries(xpilot-cpp-client-x11
         m
 )
 
-install(TARGETS xpilot-cpp-client-x11 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS xpilot-cpp-client-x11
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

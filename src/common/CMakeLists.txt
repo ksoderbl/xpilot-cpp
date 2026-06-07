@@ -1,18 +1,9 @@
+file(GLOB XPCOMMON_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
 add_library(xpcommon STATIC
-    recordfile.cpp
-    checknames.cpp
-    net.cpp
-    portability.cpp
-    randommt.cpp
-    shipshape.cpp
-    socklib.cpp
-    strcasecmp.cpp
-    strdup.cpp
-    strlcpy.cpp
-    xpconfig.cpp
-    xperror.cpp
-    xpmath.cpp
-    xpmemory.cpp
+    ${XPCOMMON_SOURCES}
 )
 
 target_include_directories(xpcommon
@@ -32,4 +23,6 @@ target_link_libraries(xpcommon
         m
 )
 
-set_target_properties(xpcommon PROPERTIES OUTPUT_NAME xpcommon)
+set_target_properties(xpcommon PROPERTIES
+    OUTPUT_NAME xpcommon
+)

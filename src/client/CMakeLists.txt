@@ -1,24 +1,9 @@
+file(GLOB XPCLIENT_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
 add_library(xpclient STATIC
-    caudio.cpp
-    client.cpp
-    clientcommand.cpp
-    datagram.cpp
-    debugaudio.cpp
-    default.cpp
-    event.cpp
-    gfx2d.cpp
-    mapdata.cpp
-    messages.cpp
-    meta.cpp
-    netclient.cpp
-    option.cpp
-    paint.cpp
-    paintmap.cpp
-    paintobjects.cpp
-    query.cpp
-    talkmacros.cpp
-    textinterface.cpp
-    usleep.cpp
+    ${XPCLIENT_SOURCES}
 )
 
 target_include_directories(xpclient

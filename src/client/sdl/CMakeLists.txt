@@ -1,28 +1,20 @@
-add_executable(xpilot-cpp-client-sdl
-    DT_drawtext.cpp
-    SDL_console.cpp
-    SDL_gfxPrimitives.cpp
-    console.cpp
-    glwidgets.cpp
-    images.cpp
-    main.cpp
-    radar.cpp
-    sdlevent.cpp
-    sdlgui.cpp
-    sdlinit.cpp
-    sdlkeys.cpp
-    sdlmeta.cpp
-    sdlpaint.cpp
-    sdlwindow.cpp
-    text.cpp
-    todo.cpp
+file(GLOB SDL_CLIENT_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
 if(XPILOT_USE_SDL_GAMELOOP)
-    target_sources(xpilot-cpp-client-sdl PRIVATE gameloop.cpp)
+    list(REMOVE_ITEM SDL_CLIENT_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/gameloop_x.cpp"
+    )
 else()
-    target_sources(xpilot-cpp-client-sdl PRIVATE gameloop_x.cpp)
+    list(REMOVE_ITEM SDL_CLIENT_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/gameloop.cpp"
+    )
 endif()
+
+add_executable(xpilot-cpp-client-sdl
+    ${SDL_CLIENT_SOURCES}
+)
 
 target_include_directories(xpilot-cpp-client-sdl
     PRIVATE
@@ -67,4 +59,6 @@ target_link_libraries(xpilot-cpp-client-sdl
         m
 )
 
-install(TARGETS xpilot-cpp-client-sdl RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS xpilot-cpp-client-sdl
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

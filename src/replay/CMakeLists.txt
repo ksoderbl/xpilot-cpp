@@ -1,6 +1,9 @@
+file(GLOB REPLAY_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
 add_executable(xpilot-cpp-replay
-    buttons.cpp
-    xpilot-replay.cpp
+    ${REPLAY_SOURCES}
 )
 
 target_include_directories(xpilot-cpp-replay
@@ -23,4 +26,6 @@ target_link_libraries(xpilot-cpp-replay
         m
 )
 
-install(TARGETS xpilot-cpp-replay RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS xpilot-cpp-replay
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
