@@ -67,6 +67,21 @@ endif()
 #     -Wuseless-cast
 # )
 
+add_compile_options(
+    # -Wall
+    # -Wextra
+    # -Wformat=2
+    # -Wundef
+    # -Wshadow
+    # -Wpointer-arith
+    # -Wcast-qual
+    # -Wwrite-strings
+    # -Wmissing-declarations
+    # -Wuninitialized
+    # -Winit-self
+    # -Wno-unused-parameter
+)
+
 # Later we need only:
 # -Wconversion
 # -Wsign-conversion

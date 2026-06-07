@@ -1,57 +1,8 @@
-add_executable(xpilot-cpp-server
-    alliance.cpp
-    asteroid.cpp
-    cannon.cpp
-    cell.cpp
-    cmdline.cpp
-    collision.cpp
-    command.cpp
-    contact.cpp
-    event.cpp
-    fileparser.cpp
-    frame.cpp
-    gravity.cpp
-    id.cpp
-    item.cpp
-    laser.cpp
-    map.cpp
-    metaserver.cpp
-    modifiers.cpp
-    netserver.cpp
-    object.cpp
-    option.cpp
-    parser.cpp
-    player.cpp
-    polygon.cpp
-    race.cpp
-    rank.cpp
-    recwrap.cpp
-    robot.cpp
-    robotdef.cpp
-    rules.cpp
-    saudio.cpp
-    sched.cpp
-    score.cpp
-    server.cpp
-    ship.cpp
-    shot.cpp
-    showtime.cpp
-    srecord.cpp
-    stratbot.cpp
-    suibotdef.cpp
-    target.cpp
-    teamcup.cpp
-    treasure.cpp
-    tuner.cpp
-    update.cpp
-    walls.cpp
-    walls1.cpp
-    walls2.cpp
-    wildmap.cpp
-    wormhole.cpp
-    xp2map.cpp
-    xpmap.cpp
+file(GLOB SERVER_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
+
+add_executable(xpilot-cpp-server ${SERVER_SOURCES})
 
 target_include_directories(xpilot-cpp-server
     PRIVATE
