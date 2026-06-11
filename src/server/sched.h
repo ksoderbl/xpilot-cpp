@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SCHED_H
-#define SCHED_H
+#pragma once
 
 void block_timer(void);
 void allow_timer(void);
@@ -33,5 +32,3 @@ void install_input(void (*func)(int, void *), int fd, void *arg);
 void remove_input(int fd);
 void sched(void);
 void stop_sched(void);
-
-#endif

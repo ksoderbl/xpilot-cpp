@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PAINTDATA_H
-#define PAINTDATA_H
+#pragma once
 
 #include "const.h"
 #include "types.h"
@@ -46,5 +45,3 @@ extern int Arc_add_rgb(unsigned long color, /* Used if fullColor is on. */
 extern void Segment_start(void);
 extern void Segment_end(void);
 extern int Segment_add(int color, int x1, int y1, int x2, int y2);
-
-#endif

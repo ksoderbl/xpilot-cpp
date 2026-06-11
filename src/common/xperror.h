@@ -23,15 +23,14 @@
 /*
  * Adapted from 'The UNIX Programming Environment' by Kernighan & Pike
  * and an example from the manualpage for vprintf by
- * Gaute Nessan, University of Tromsoe (gaute@staff.cs.uit.no).
+ * Gaute Nessan, University of Tromsoe
  *
- * Modified by Bjoern Stabell <bjoern@xpilot.org>.
- * Dick Balaska <dick@xpilot.org> added the memory/leak checking.
- * Bert Gijsbers <bert@xpilot.org> added warn, fatal, coredump.
+ * Modified by Bjoern Stabell
+ * Dick Balaska added the memory/leak checking.
+ * Bert Gijsbers added warn, fatal, coredump.
  */
 
-#ifndef XPERROR_H
-#define XPERROR_H
+#pragma once
 
 #include <cerrno>
 #include <cstdarg>
@@ -44,5 +43,3 @@ extern void warn(const char *fmt, ...);
 extern void error(const char *fmt, ...);
 
 extern void init_error(const char *prog);
-
-#endif /* XPERROR_H */

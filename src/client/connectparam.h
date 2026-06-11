@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CONNECTPARAM_H
-#define CONNECTPARAM_H
+#pragma once
 
 #include "pack.h"
 #include "socklib.h"
@@ -41,5 +40,3 @@ typedef struct Connect_param
     unsigned server_version;
     int team;
 } Connect_param_t;
-
-#endif

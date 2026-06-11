@@ -21,10 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef STRDUP_H
-#define STRDUP_H
+#pragma once
 
 extern char *xp_strdup(const char *);
 extern char *xp_safe_strdup(const char *old_string);
-
-#endif

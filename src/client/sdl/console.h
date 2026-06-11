@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -32,4 +31,3 @@ int Console_process(SDL_Event *e);
 void Console_cleanup(void);
 void Console_print(const char *str, ...);
 void Paste_String_to_Console(char *text);
-#endif

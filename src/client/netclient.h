@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef NETCLIENT_H
-#define NETCLIENT_H
+#pragma once
 
 #include "setup.h"
 #include "types.h"
@@ -148,5 +147,3 @@ int Receive_magic(void);
 int Send_audio_request(int on);
 int Send_fps_request(int fps);
 int Receive_loseitem(void);
-
-#endif

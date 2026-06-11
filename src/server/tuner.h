@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TUNER_H
-#define TUNER_H
+#pragma once
 
 void tuner_plock(void);
 void tuner_shipmass(void);
@@ -46,5 +45,3 @@ void tuner_racelaps(void);
 void tuner_allowalliances(void);
 void tuner_announcealliances(void);
 void tuner_fps(void);
-
-#endif

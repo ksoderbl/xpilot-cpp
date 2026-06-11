@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MESSAGES_H
-#define MESSAGES_H
+#pragma once
 
 #include "const.h"
 
@@ -107,5 +106,3 @@ extern void Clear_alert_messages(void);
 void Add_pending_messages(void);
 void Add_roundend_messages(other_t **order);
 void Print_messages_to_stdout(void);
-
-#endif

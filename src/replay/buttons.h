@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BUTTONS_H
-#define BUTTONS_H
+#pragma once
 
 union button_image
 {
@@ -56,5 +55,3 @@ void NonreleaseableButton(Button);
 void ChangeButtonGroup(Button, int);
 void MoveButton(Button, int, int);
 void GetButtonSize(Button, int *, int *);
-
-#endif

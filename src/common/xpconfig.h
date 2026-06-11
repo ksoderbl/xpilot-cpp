@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XPCONFIG_H
-#define XPCONFIG_H
+#pragma once
 
 // generated file
 #include "config.h"
@@ -143,5 +142,3 @@ char *Conf_contactaddress(void);
 char *Conf_robotfile(void);
 char *Conf_zcat_ext(void);
 char *Conf_zcat_format(void);
-
-#endif /* XPCONFIG_H */

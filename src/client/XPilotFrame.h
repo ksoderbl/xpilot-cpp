@@ -1,17 +1,17 @@
-#ifndef XPILOTFRAME_H
-#define XPILOTFRAME_H
+#pragma once
 
 #include <vector>
 
-class Position {
+class Position
+{
 public:
     Position();
     Position(double x, double y);
     double x, y;
 };
 
-
-class Ball {
+class Ball
+{
 public:
     Ball(double x, double y, int id, int style);
     Position pos;
@@ -19,28 +19,32 @@ public:
     int style;
 };
 
-class Connector {
+class Connector
+{
 public:
     Connector(double x0, double y0, double x1, double y1, bool tractor);
     Position pos0, pos1;
     bool tractor;
 };
 
-class Ecm {
+class Ecm
+{
 public:
     Ecm(double x, double y, int size);
     Position pos;
     int size;
 };
 
-class ItemType {
+class ItemType
+{
 public:
     ItemType(double x, double y, int type);
     Position pos;
     int type;
 };
 
-class Laser {
+class Laser
+{
 public:
     Laser(double x, double y, int len, int dir, int color);
     Position pos;
@@ -49,7 +53,8 @@ public:
     int color;
 };
 
-class Mine {
+class Mine
+{
 public:
     Mine(double x, double y, int teammine, int id);
     Position pos;
@@ -57,7 +62,8 @@ public:
     int id;
 };
 
-class Missile {
+class Missile
+{
 public:
     Missile(double x, double y, int len, int dir);
     Position pos;
@@ -65,13 +71,15 @@ public:
     int dir;
 };
 
-class Refuel {
+class Refuel
+{
 public:
     Refuel(double x0, double y0, double x1, double y1);
     Position pos0, pos1;
 };
 
-class Ship {
+class Ship
+{
 public:
     Ship(double x, double y, int id, double angle, bool shield, bool cloak, bool eshield, bool phased, bool deflector);
     Position pos;
@@ -81,20 +89,22 @@ public:
     bool phased, deflector;
 };
 
-class Transporter {
+class Transporter
+{
 public:
     Transporter(double x0, double y0, double x1, double y1);
     Position pos0, pos1;
 };
 
-class Wormhole {
+class Wormhole
+{
 public:
     Wormhole(double x, double y);
     Position pos;
 };
 
-
-class Frame {
+class Frame
+{
 public:
     std::vector<Ball> balls;
     std::vector<Connector> connectors;
@@ -112,7 +122,3 @@ public:
 };
 
 extern Frame frame;
-
-
-
-#endif

@@ -20,8 +20,7 @@
     reflex-2000@gmx.net
 */
 
-#ifndef Drawtext_h
-#define Drawtext_h
+#pragma once
 
 #include <SDL2/SDL.h> /* SDL_Surface, etc. */
 
@@ -50,6 +49,4 @@ extern "C"
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

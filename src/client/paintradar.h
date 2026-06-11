@@ -21,10 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PAINTRADAR_H
-#define PAINTRADAR_H
+#pragma once
 
 void Radar_show_target(int x, int y);
 void Radar_hide_target(int x, int y);
-
-#endif

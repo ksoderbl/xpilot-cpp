@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#pragma once
 
 /*
  * This include file holds defines and types related to the
@@ -115,5 +114,3 @@ typedef struct
     char *host;                  /* hostname of players host */
     int features;                /* supported features */
 } connection_t;
-
-#endif

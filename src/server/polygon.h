@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef POLYGON_H
-#define POLYGON_H
+#pragma once
 
 #include <cstdint>
 
@@ -148,5 +147,3 @@ int P_get_edge_id(const char *s);
 int P_get_poly_id(const char *s);
 /*void P_grouphack(int type, void (*f)(int group, void *mapobj));*/
 void P_set_hitmask(int group, hitmask_t hitmask);
-
-#endif

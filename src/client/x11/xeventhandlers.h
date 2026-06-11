@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XEVENTHANDLERS_H
-#define XEVENTHANDLERS_H
+#pragma once
 
 #include <X11/Xlib.h>
 /* avoid trouble with Atoms and 64 bit archs */
@@ -40,5 +39,3 @@ void KeyChanged_event(XEvent *event);
 void ButtonPress_event(XEvent *xevent);
 void MotionNotify_event(XEvent *event);
 int ButtonRelease_event(XEvent *event);
-
-#endif

@@ -22,12 +22,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VERSION_H
-#define VERSION_H
+#pragma once
 
 #define VERSION "4.5.5"
 #define TITLE "XPilotCPP 4.5.5"
 #define AUTHORS "Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska"
 #define COPYRIGHT "Copyright © 1991-2002 by Bjørn Stabell, Ken Ronny Schouten, Bert Gijsbers & Dick Balaska"
-
-#endif /* VERSION_H */

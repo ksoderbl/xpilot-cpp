@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CLIENT_H
-#define CLIENT_H
+#pragma once
 
 #include "shipshape.h"
 #include "item.h"
@@ -546,7 +545,7 @@ extern int clientPortStart; /* First UDP port for clients */
 extern int clientPortEnd;   /* Last one (these are for firewalls) */
 extern int baseWarningType; /* Which type of base warning you prefer */
 extern int maxCharsInNames;
-extern uint8_t lose_item;    /* flag and index to drop item */
+extern int lose_item;        /* flag and index to drop item */
 extern int lose_item_active; /* one of the lose keys is pressed */
 
 #ifdef SOUND
@@ -888,5 +887,3 @@ extern int Welcome_screen(Connect_param_t *conpar);
  * widget.c
  */
 extern void Widget_cleanup(void);
-
-#endif

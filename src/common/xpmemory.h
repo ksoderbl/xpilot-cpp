@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XPMEMORY_H
-#define XPMEMORY_H
+#pragma once
 
 #include <cstdlib>
 
@@ -30,5 +29,3 @@ void *xp_safe_malloc(size_t size);
 void *xp_safe_realloc(void *oldptr, size_t size);
 void *xp_safe_calloc(size_t nmemb, size_t size);
 void xp_safe_free(void *p);
-
-#endif

@@ -20,8 +20,7 @@
     reflex-2000@gmx.net
 */
 
-#ifndef SDL_CONSOLE_H
-#define SDL_CONSOLE_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -239,7 +238,5 @@ extern "C"
 #ifdef MACOSX_FRAMEWORKS
 #include <SDL2/SDL_close_code.h>
 #endif
-
-#endif /* SDL_CONSOLE_H */
 
 /* end of SDL_console.h ... */

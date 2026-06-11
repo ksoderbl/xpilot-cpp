@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHIPSHAPE_H
-#define SHIPSHAPE_H
+#pragma once
 
 #include "types.h"
 #include "click.h"
@@ -190,5 +189,3 @@ Ship_get_m_rack_position(shipshape_t *ship, int rack, int dir)
 {
     return clpos2position(Ship_get_m_rack_clpos(ship, rack, dir));
 }
-
-#endif

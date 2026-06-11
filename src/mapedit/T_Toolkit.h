@@ -24,8 +24,7 @@
  *      William Docter
  */
 
-#ifndef T_TOOLKIT_H
-#define T_TOOLKIT_H
+#pragma once
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -63,5 +62,3 @@ extern XFontStruct *T_Font;
 extern const char *T_Background, *T_Foreground, *T_Shadow, *T_Highlight;
 extern Atom ProtocolAtom;
 extern Atom KillAtom;
-
-#endif

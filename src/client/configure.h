@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CONFIGURE_H
-#define CONFIGURE_H
+#pragma once
 
 #define CONFIG_NONE 0
 #define CONFIG_DEFAULT 1
@@ -33,5 +32,3 @@ int Config(bool, int);
 void Config_redraw(void);
 void Config_resize(void);
 void Config_destroy(void);
-
-#endif

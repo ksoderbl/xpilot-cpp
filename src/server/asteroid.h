@@ -22,8 +22,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ASTEROID_H
-#define ASTEROID_H
+#pragma once
 
 #include <vector>
 
@@ -84,5 +83,3 @@ static inline shape_t *Asteroid_get_shape_by_size(int size)
         return NULL;
     }
 }
-
-#endif

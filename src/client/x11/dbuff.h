@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DBUFF_H
-#define DBUFF_H
+#pragma once
 
 typedef enum
 {
@@ -50,5 +49,3 @@ dbuff_state_t *start_dbuff(Display *display, Colormap cmap,
                            int num_planes, XColor *colors);
 void dbuff_switch(dbuff_state_t *state);
 void end_dbuff(dbuff_state_t *state);
-
-#endif

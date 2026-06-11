@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef NET_H
-#define NET_H
+#pragma once
 
 #include "socklib.h"
 
@@ -87,5 +86,3 @@ int Sockbuf_copy(sockbuf_t *dest, sockbuf_t *src, int len);
 
 int Packet_printf(sockbuf_t *, const char *fmt, ...);
 int Packet_scanf(sockbuf_t *, const char *fmt, ...);
-
-#endif

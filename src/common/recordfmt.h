@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECORDFMT_H
-#define RECORDFMT_H
+#pragma once
 
 /*
  * Protocol version history:
@@ -64,5 +63,3 @@
 #define RC_GC_XO (1 << 9)
 #define RC_GC_YO (1 << 10)
 #define RC_GC_TI (1 << 11)
-
-#endif

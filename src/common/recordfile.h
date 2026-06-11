@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECORDFILE_H
-#define RECORDFILE_H
+#pragma once
 
 #include <cstdio>
 #include <cstdint>
@@ -70,5 +69,3 @@ void RWriteString(char *str, FILE *fp);
 void RWriteStdString(std::string &str, FILE *fp);
 
 void RWriteHeader(struct XPRHeader &hdr, FILE *fp);
-
-#endif

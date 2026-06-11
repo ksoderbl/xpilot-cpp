@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Erik Andersson <deity_at_home.se>
+ * Copyright (C) 2003-2004 Erik Andersson
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GLWIDGETS_H
-#define GLWIDGETS_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -560,5 +559,3 @@ GLWidget *Init_LabelButtonWidget(const char *text,
 /**************************/
 /* End: LabelButtonWidget */
 /**************************/
-
-#endif

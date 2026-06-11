@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XPMAP_H
-#define XPMAP_H
+#pragma once
 
 #define XPMAP_SPACE ' '
 #define XPMAP_SPACE_ALT '.'
@@ -96,5 +95,3 @@
 #define XPMAP_CHECK_23 'X'
 #define XPMAP_CHECK_24 'Y'
 #define XPMAP_CHECK_25 'Z'
-
-#endif

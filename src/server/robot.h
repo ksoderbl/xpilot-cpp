@@ -22,8 +22,7 @@
  */
 /* Robot code originally submitted by Maurice Abraham. */
 
-#ifndef ROBOT_H
-#define ROBOT_H
+#pragma once
 
 #include "pack.h"
 
@@ -197,5 +196,3 @@ int Robot_war_on_player(player_t *robot);
 void Robot_go_home(player_t *robot);
 void Robot_program(player_t *robot, int victim_id);
 void Robot_message(player_t *robot, const char *message);
-
-#endif

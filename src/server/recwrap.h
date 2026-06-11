@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RECWRAP_H
-#define RECWRAP_H
+#pragma once
 
 #include "net.h"
 
@@ -33,5 +32,3 @@ int sock_get_errorRec(sock_t *sock);
 int Sockbuf_flushRec(sockbuf_t *sbuf);
 int Sockbuf_writeRec(sockbuf_t *sbuf, char *buf, int len);
 int Sockbuf_readRec(sockbuf_t *sbuf);
-
-#endif /* RECWRAP_H */

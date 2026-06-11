@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SETUP_H
-#define SETUP_H
+#pragma once
 
 #include "const.h"
 
@@ -139,5 +138,3 @@ typedef struct
 } setup_t;
 
 // extern setup_t *Setup;
-
-#endif

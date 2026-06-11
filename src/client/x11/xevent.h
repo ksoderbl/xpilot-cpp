@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XEVENT_H
-#define XEVENT_H
+#pragma once
 
 extern int talk_key_repeating;
 extern XEvent talk_key_repeat_event;
@@ -39,5 +38,3 @@ void Talk_event(XEvent *event);
 void xevent_keyboard(int queued);
 void xevent_pointer(void);
 int x_event(int new_input);
-
-#endif

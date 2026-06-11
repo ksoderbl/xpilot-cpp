@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOCKLIB_H
-#define SOCKLIB_H
+#pragma once
 
 #include <cstdlib>
 
@@ -111,5 +110,3 @@ int sock_set_receive_buffer_size(sock_t *sock, int size);
 int sock_set_send_buffer_size(sock_t *sock, int size);
 int sock_set_timeout(sock_t *sock, int seconds, int useconds);
 int sock_readable(sock_t *sock);
-
-#endif

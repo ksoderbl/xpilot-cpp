@@ -18,11 +18,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SDLMETA_H
-#define SDLMETA_H
+#pragma once
 
 #include "connectparam.h"
 
 int Meta_window(Connect_param_t *conpar);
-
-#endif

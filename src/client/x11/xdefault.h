@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XDEFAULT_H
-#define XDEFAULT_H
+#pragma once
 
 typedef struct
 {
@@ -36,5 +35,3 @@ typedef struct
 
 extern old_option_t oldOptions[];
 extern int optionsCount; /* NELEM(options) */
-
-#endif

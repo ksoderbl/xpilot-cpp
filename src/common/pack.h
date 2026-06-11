@@ -23,8 +23,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PACK_H
-#define PACK_H
+#pragma once
 
 #define CAP_LETTER(c) ((c) = ((c) >= 'a' && (c) <= 'z') ? (c) - 'a' + 'A' : (c))
 
@@ -190,5 +189,3 @@
 #define E_VERSION 0x0C      /* Incompatible version */
 #define E_NOENT 0x0D        /* No such variable */
 #define E_UNDEFINED 0x0E    /* Operation undefined */
-
-#endif

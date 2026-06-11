@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PAINT_H
-#define PAINT_H
+#pragma once
 
 #include "types.h"
 
@@ -140,5 +139,3 @@ void Store_hud_options(void);
 void Store_paintradar_options(void);
 
 void Game_over_action(uint8_t stat);
-
-#endif

@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef IMAGES_H
-#define IMAGES_H
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -104,5 +103,3 @@ image_t *Image_get(int ind);
 image_t *Image_get_texture(int ind);
 void Image_use_texture(int ind);
 void Image_no_texture(void);
-
-#endif

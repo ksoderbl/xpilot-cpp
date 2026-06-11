@@ -21,11 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RANDOMMT_H
-#define RANDOMMT_H
+#pragma once
 
 extern void seedMT(unsigned int seed);
 extern unsigned int reloadMT(void);
 extern unsigned int randomMT(void);
-
-#endif

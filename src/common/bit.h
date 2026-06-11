@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BIT_H
-#define BIT_H
+#pragma once
 
 #include <cstdint>
 
@@ -39,5 +38,3 @@ typedef uint8_t bitv_t;
 #define BITV_CLR(X, N) ((X)[(N) / BITV_SIZE] &= ~(1 << (N) % BITV_SIZE))
 #define BITV_ISSET(X, N) ((X)[(N) / BITV_SIZE] & (1 << (N) % BITV_SIZE))
 #define BITV_TOGGLE(X, N) ((X)[(N) / BITV_SIZE] ^= 1 << (N) % BITV_SIZE)
-
-#endif

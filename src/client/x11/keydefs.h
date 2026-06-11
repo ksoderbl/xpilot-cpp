@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef KEYDEFS_H
-#define KEYDEFS_H
+#pragma once
 
 #include <X11/Xlib.h>
 
@@ -38,5 +37,3 @@ extern keydefs_t *keyDefs;
 
 extern char *Get_keyHelpString(keys_t key);
 extern const char *Get_keyResourceString(keys_t key);
-
-#endif
