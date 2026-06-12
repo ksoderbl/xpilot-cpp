@@ -28,11 +28,9 @@
 #include <sys/types.h>
 
 #include <unistd.h>
-// #include <X11/Xlib.h>
-// #include <X11/Xos.h>
 
 #include "commonmacros.h"
-#include "xpmath.h"
+#include "commonproto.h"
 
 #include "paint.h"
 

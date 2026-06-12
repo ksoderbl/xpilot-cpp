@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "server.h"
 

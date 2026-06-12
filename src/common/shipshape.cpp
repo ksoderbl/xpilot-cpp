@@ -29,7 +29,7 @@
 #include <cmath>
 
 #include "commonmacros.h"
-#include "xpmath.h"
+#include "commonproto.h"
 #include "shipshape.h"
 
 #include "version.h"

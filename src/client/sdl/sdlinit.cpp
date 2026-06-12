@@ -33,9 +33,9 @@
 #include "xpconfig.h"
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "xperror.h"
 #include "xpmemory.h"
-#include "strdup.h"
 
 #include "paint.h"
 

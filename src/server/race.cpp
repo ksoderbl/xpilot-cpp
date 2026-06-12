@@ -28,6 +28,7 @@
 #include <cerrno>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
 
 #include "server.h"
@@ -42,7 +43,6 @@
 #include "saudio.h"
 #include "xperror.h"
 #include "object.h"
-#include "xpmath.h"
 #include "robot.h"
 
 void Race_compute_game_status(void)

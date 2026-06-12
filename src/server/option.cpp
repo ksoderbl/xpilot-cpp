@@ -34,8 +34,7 @@
 #include <unistd.h>
 
 #include "commonmacros.h"
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 #include "xpmemory.h"
 
 #include "server.h"

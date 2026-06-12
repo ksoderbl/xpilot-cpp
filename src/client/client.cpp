@@ -32,13 +32,12 @@
 
 #include "bit.h"
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
 #include "rules.h"
 #include "setup.h"
 #include "shipshape.h"
-#include "strlcpy.h"
 #include "types.h"
-#include "xpmath.h"
 
 #include "client.h"
 #include "clientcommand.h"

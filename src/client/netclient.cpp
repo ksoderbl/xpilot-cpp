@@ -38,11 +38,11 @@
 
 #include "bit.h"
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
 #include "item.h"
 #include "net.h"
 #include "setup.h"
-#include "strlcpy.h"
 #include "pack.h"
 #include "packet.h"
 #include "portability.h"

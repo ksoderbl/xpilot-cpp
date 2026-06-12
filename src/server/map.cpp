@@ -31,7 +31,7 @@
 #include <sys/file.h>
 
 #include "commonmacros.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "cannon.h"
 #include "server.h"
@@ -43,7 +43,6 @@
 #include "map.h"
 #include "bit.h"
 #include "xperror.h"
-#include "xpmath.h"
 
 #define GRAV_RANGE 10
 

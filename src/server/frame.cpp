@@ -35,7 +35,7 @@
 
 #include "commonmacros.h"
 #include "const.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "modifiers.h"
 #include "server.h"
@@ -48,7 +48,6 @@
 #include "netserver.h"
 #include "saudio.h"
 #include "xperror.h"
-#include "xpmath.h"
 #include "player.h"
 #include "robot.h"
 

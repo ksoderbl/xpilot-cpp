@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMONMACROS_H
-#define COMMONMACROS_H
+#pragma once
 
 #include <cstdlib>
 #include "xperror.h"
@@ -150,5 +149,3 @@ static inline int timeval_sub(struct timeval *tv2,
 
     return 1000000 * s + us;
 }
-
-#endif

@@ -42,7 +42,7 @@
 #include "score.h"
 #include "netserver.h"
 #include "xperror.h"
-#include "xpmath.h"
+#include "commonproto.h"
 #include "robot.h"
 
 #define CONFUSED_TIME 3

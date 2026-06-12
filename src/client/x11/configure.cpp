@@ -35,9 +35,8 @@
 #include <X11/Xutil.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
-#include "strdup.h"
-#include "strlcpy.h"
 
 #include "client.h"
 #include "messages.h"

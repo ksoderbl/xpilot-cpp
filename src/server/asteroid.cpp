@@ -33,6 +33,8 @@
 #include <cmath>
 #include <climits>
 
+#include "commonproto.h"
+
 #include "server.h"
 
 #define SERVER
@@ -42,7 +44,6 @@
 #include "const.h"
 #include "keys.h"
 #include "xpconfig.h"
-#include "xpmath.h"
 
 #include "asteroid.h"
 #include "map.h"

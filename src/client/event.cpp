@@ -30,12 +30,11 @@
 #include "bit.h"
 #include "checknames.h"
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "pack.h"
 #include "packet.h"
 #include "portability.h"
 #include "socklib.h"
-#include "strdup.h"
-#include "strlcpy.h"
 #include "xpconfig.h"
 
 #include "client.h"

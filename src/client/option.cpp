@@ -34,15 +34,13 @@
 #include <cctype>
 #include <sys/types.h>
 
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonmacros.h"
+#include "commonproto.h"
 
 #include "xperror.h"
 #include "const.h"
-#include "xpmath.h"
 #include "version.h"
 #include "messages.h"
-#include "commonmacros.h"
 
 #include "client.h"
 #include "option.h"

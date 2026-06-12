@@ -23,6 +23,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "commonproto.h"
+
 #include "portability.h"
 #include "socklib.h"
 #include "xperror.h"

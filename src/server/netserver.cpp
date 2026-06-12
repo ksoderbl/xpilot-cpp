@@ -109,8 +109,7 @@
 
 #include "commonmacros.h"
 #include "const.h"
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "modifiers.h"
 

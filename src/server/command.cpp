@@ -32,8 +32,7 @@
 #include "xpconfig.h"
 
 #include "commonmacros.h"
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "rank.h"
 #include "server.h"

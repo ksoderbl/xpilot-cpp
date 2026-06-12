@@ -27,22 +27,20 @@
 #include <cerrno>
 
 #include "commonmacros.h"
-#include "randommt.h"
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "client.h"
 #include "option.h"
 
 #include "xpconfig.h"
 #include "const.h"
-#include "netclient.h" /* Net_talk(char *str) */
+#include "netclient.h"
 #include "setup.h"
 #include "bit.h"
 #include "xperror.h"
 #include "portability.h"
 #include "talk.h"
-#include "rules.h" /* TEAM_PLAY, LIMITED_LIVES */
+#include "rules.h"
 
 char *talk_fast_msgs[TALK_FAST_NR_OF_MSGS]; /* talk macros */
 

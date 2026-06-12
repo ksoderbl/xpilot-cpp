@@ -34,7 +34,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "client.h"
 #include "netclient.h"
@@ -59,7 +59,6 @@
 #include "astershape.h"
 #include "guiobjects.h"
 #include "pack.h"
-#include "xpmath.h"
 
 static bool texturedShips = false; /* Turned this off because the images drawn
                                     * don't match the actual shipshape used

@@ -28,12 +28,12 @@
 #include <X11/Xlib.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 
 #include "paint.h"
 #include "paintdata.h"
 #include "gfx2d.h"
 #include "xpmemory.h"
-#include "strdup.h"
 
 #include "xperror.h"
 #include "const.h"

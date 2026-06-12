@@ -28,8 +28,8 @@
 #include <cerrno>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
-#include "strlcpy.h"
 
 #include "server.h"
 
@@ -44,7 +44,6 @@
 #include "saudio.h"
 #include "xperror.h"
 #include "object.h"
-#include "xpmath.h"
 #include "rank.h"
 #include "robot.h"
 

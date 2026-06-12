@@ -28,6 +28,7 @@
 #include <cmath>
 #include <climits>
 
+#include "commonproto.h"
 #include "const.h"
 
 #include "server.h"
@@ -42,7 +43,6 @@
 #include "object.h"
 #include "netserver.h"
 #include "xperror.h"
-#include "xpmath.h"
 #include "asteroid.h"
 #include "rank.h"
 

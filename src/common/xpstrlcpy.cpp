@@ -21,7 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #ifndef HAVE_STRLCPY
 /*

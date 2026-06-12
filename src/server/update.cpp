@@ -26,7 +26,7 @@
 #include <cmath>
 
 #include "click.h"
-#include "xpmath.h"
+#include "commonproto.h"
 #include "xperror.h"
 
 #include "server.h"

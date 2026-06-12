@@ -27,7 +27,7 @@
 #include <cerrno>
 #include <cmath>
 
-#include "randommt.h"
+#include "commonproto.h"
 
 #include "version.h"
 #include "xpconfig.h"

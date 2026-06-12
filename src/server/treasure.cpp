@@ -27,6 +27,7 @@
 #include <climits>
 #include <cmath>
 
+#include "commonproto.h"
 #include "xperror.h"
 
 #include "server.h"
@@ -38,7 +39,6 @@
 #include "saudio.h"
 #include "score.h"
 #include "object.h"
-#include "xpmath.h"
 #include "rank.h"
 
 void Make_treasure_ball(treasure_t *t)

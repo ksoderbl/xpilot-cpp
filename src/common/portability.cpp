@@ -41,7 +41,7 @@
 #endif
 #endif
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "xpconfig.h"
 #include "portability.h"

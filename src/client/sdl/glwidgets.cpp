@@ -22,9 +22,9 @@
 #include <SDL2/SDL_opengl.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
 #include "rules.h"
-#include "xpmath.h"
 
 #include "netclient.h"
 #include "paint.h"

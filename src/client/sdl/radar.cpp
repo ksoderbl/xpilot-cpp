@@ -25,9 +25,9 @@
 
 #include "bit.h"
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "rules.h"
 #include "setup.h"
-#include "xpmath.h"
 
 #include "client.h"
 #include "netclient.h"

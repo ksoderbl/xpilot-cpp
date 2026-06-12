@@ -37,8 +37,7 @@
 #include <pwd.h>
 #include <sys/param.h>
 
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #ifdef PLOCKSERVER
 #if defined(__linux__)
@@ -66,7 +65,6 @@
 #include "xperror.h"
 #include "portability.h"
 #include "server.h"
-#include "xpmath.h"
 #include "walls1.h"
 #include "rank.h"
 

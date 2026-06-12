@@ -38,7 +38,7 @@
 
 #include "const.h"
 #include "net.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 #include "xperror.h"
 
 static struct Meta metas[NUM_METAS] = {

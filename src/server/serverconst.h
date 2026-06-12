@@ -24,7 +24,6 @@
 #pragma once
 
 #include "const.h"
-#include "randommt.h"
 
 #include "object.h"
 #include "option.h"

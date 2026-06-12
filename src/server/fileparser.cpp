@@ -32,7 +32,6 @@
 #include <unistd.h>
 
 #include "commonmacros.h"
-#include "strdup.h"
 
 #include "server.h"
 

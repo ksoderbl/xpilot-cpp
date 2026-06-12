@@ -34,8 +34,7 @@
 #include <sys/time.h>
 
 #include "commonmacros.h"
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 #include "xpmemory.h"
 
 #include "score.h"

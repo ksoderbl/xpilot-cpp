@@ -34,7 +34,7 @@
 #include <netdb.h>
 #include <sys/time.h>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "xpconfig.h"
 #include "const.h"

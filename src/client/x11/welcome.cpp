@@ -39,9 +39,8 @@
 #include <sys/time.h>
 #include <X11/Xlib.h>
 
+#include "commonproto.h"
 #include "const.h"
-#include "strdup.h"
-#include "strlcpy.h"
 
 #include "xpconfig.h"
 #include "xpaint.h"

@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 
 #include "server.h"
 
@@ -49,7 +50,6 @@
 #include "robot.h"
 #include "xperror.h"
 #include "portability.h"
-#include "xpmath.h"
 #include "object.h"
 #include "walls1.h"
 

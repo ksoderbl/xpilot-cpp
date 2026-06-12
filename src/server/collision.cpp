@@ -46,7 +46,7 @@
 #include "portability.h"
 #include "object.h"
 #include "asteroid.h"
-#include "xpmath.h"
+#include "commonproto.h"
 
 #include "player.h"
 #include "robot.h"

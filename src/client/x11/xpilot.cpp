@@ -34,8 +34,8 @@
 #include <sys/param.h>
 #include <netdb.h>
 
-#include "randommt.h"
-#include "strlcpy.h"
+#include "commonproto.h"
+
 #include "version.h"
 #include "xpconfig.h"
 #include "const.h"

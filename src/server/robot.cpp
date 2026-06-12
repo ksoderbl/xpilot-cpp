@@ -33,7 +33,7 @@
 
 #include "commonmacros.h"
 #include "const.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -49,7 +49,6 @@
 #include "robot.h"
 #include "xperror.h"
 #include "server.h"
-#include "xpmath.h"
 
 #define DEFAULT_ROBOT_TYPE "default"
 

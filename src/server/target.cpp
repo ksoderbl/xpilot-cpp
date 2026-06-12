@@ -30,8 +30,8 @@
 #include <cmath>
 #include <climits>
 
+#include "commonproto.h"
 #include "const.h"
-#include "xpmath.h"
 #include "xperror.h"
 #include "server.h"
 

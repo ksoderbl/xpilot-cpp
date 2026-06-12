@@ -27,7 +27,7 @@
 #include <cstring>
 #include <cctype>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "xpconfig.h"
 #include "const.h"

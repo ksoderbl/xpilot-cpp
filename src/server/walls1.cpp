@@ -29,7 +29,7 @@
 #include <climits>
 
 #include "const.h"
-#include "xpmath.h"
+#include "commonproto.h"
 #include "xperror.h"
 #include "server.h"
 

@@ -35,7 +35,7 @@
 
 #include "commonmacros.h"
 #include "const.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #define SERVER
 #include "xpconfig.h"
@@ -50,7 +50,6 @@
 #include "robot.h"
 #include "xperror.h"
 #include "server.h"
-#include "xpmath.h"
 #include "walls2.h"
 
 #define ROB_LOOK_AH 2

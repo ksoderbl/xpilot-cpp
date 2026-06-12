@@ -32,12 +32,11 @@
 #include <unistd.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
 #include "portability.h"
-#include "strlcpy.h"
 #include "xpconfig.h"
 #include "xperror.h"
-#include "xpmath.h"
 
 #include "gfx2d.h"
 

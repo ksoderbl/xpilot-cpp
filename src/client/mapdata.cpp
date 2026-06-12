@@ -33,9 +33,9 @@
 #include <zlib.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "portability.h"
 #include "socklib.h"
-#include "strlcpy.h"
 #include "xperror.h"
 
 #include "gfx2d.h"

@@ -29,7 +29,7 @@
 #include <climits>
 
 #include "const.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "score.h"
 #include "server.h"
@@ -42,7 +42,6 @@
 #include "xperror.h"
 #include "object.h"
 #include "netserver.h"
-#include "xpmath.h"
 
 /******************************
  * Functions for ship movement.

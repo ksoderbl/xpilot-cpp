@@ -33,12 +33,13 @@
 #include <GL/glu.h>
 
 #include "bit.h"
+#include "commonproto.h"
+
 #include "paint.h"
 #include "rules.h"
 #include "setup.h"
 #include "wreckshape.h"
 #include "xperror.h"
-#include "xpmath.h"
 
 #include "client.h"
 #include "guiobjects.h"

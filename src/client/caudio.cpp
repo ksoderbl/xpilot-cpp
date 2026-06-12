@@ -40,9 +40,9 @@
 #include "caudio.h"
 #include "xpconfig.h"
 #include "const.h"
-#include "strdup.h"
 #include "types.h"
 
+#include "commonproto.h"
 #include "commonmacros.h"
 #include "xperror.h"
 

@@ -46,7 +46,7 @@
 #include "socklib.h"
 
 #include "commonmacros.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 /* Debug macro */
 #ifdef DEBUG

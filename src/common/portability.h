@@ -24,8 +24,7 @@
 /*
  * Include portability related stuff in one file.
  */
-#ifndef PORTABILITY_H
-#define PORTABILITY_H
+#pragma once
 
 #define PATHNAME_SEP '/'
 
@@ -34,5 +33,3 @@
  */
 extern int Get_process_id(void); /* getpid */
 extern void Get_login_name(char *buf, int size);
-
-#endif /* PORTABILITY_H */

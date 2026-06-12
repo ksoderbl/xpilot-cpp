@@ -26,7 +26,7 @@
 #include <cstring>
 #include <cstdio>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #define SERVER
 #include "xpconfig.h"

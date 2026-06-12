@@ -25,7 +25,7 @@
 #include <cstring>
 
 #include "commonmacros.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "cannon.h"
 #include "server.h"

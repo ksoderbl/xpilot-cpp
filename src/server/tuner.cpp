@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "commonproto.h"
+
 #include "cannon.h"
 #include "server.h"
 
@@ -31,7 +33,6 @@
 #include "serverconst.h"
 
 #include "xperror.h"
-#include "xpmath.h"
 #include "sched.h"
 #include "walls1.h"
 #include "robot.h"

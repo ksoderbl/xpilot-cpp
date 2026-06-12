@@ -22,8 +22,8 @@
 #include <SDL2/SDL_opengl.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
-#include "strdup.h"
 
 #include "client.h"
 #include "gfx2d.h"

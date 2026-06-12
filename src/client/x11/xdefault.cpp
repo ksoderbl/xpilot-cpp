@@ -39,9 +39,8 @@
 #include <sys/param.h>
 
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
-#include "strdup.h"
-#include "strlcpy.h"
 #include "xpmemory.h"
 
 #include "configure.h"
@@ -68,7 +67,6 @@
 #include "talk.h"
 #include "xdefault.h"
 #include "checknames.h"
-#include "xpmath.h"
 #include "record.h"
 
 bool pre_exists = False;

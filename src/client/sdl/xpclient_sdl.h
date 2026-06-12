@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XPCLIENT_SDL_H
-#define XPCLIENT_SDL_H
+#pragma once
 
 // // #include "xpclient.h"
 // #ifdef _WINDOWS
@@ -79,5 +78,3 @@ extern void Options_cleanup(void);
 extern void Store_sdlinit_options(void);
 extern void Store_sdlgui_options(void);
 extern void Store_radar_options(void);
-
-#endif /* XPCLIENT_SDL_H */

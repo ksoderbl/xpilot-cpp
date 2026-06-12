@@ -36,9 +36,9 @@
 
 #include "bit.h"
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "const.h"
 #include "keys.h"
-#include "strlcpy.h"
 #include "xpconfig.h"
 #include "xperror.h"
 

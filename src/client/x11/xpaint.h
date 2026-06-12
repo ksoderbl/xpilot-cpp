@@ -27,8 +27,9 @@
 
 #include <X11/Xlib.h>
 
+#include "commonproto.h"
+
 #include "paint.h"
-#include "strlcpy.h"
 
 #include "types.h"
 #include "xperror.h"

@@ -29,7 +29,7 @@
 #include <cstring>
 #include <cstdint>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "cannon.h"
 
@@ -40,7 +40,6 @@
 #include "setup.h"
 #include "xpconfig.h"
 #include "xperror.h"
-#include "xpmath.h"
 #include "xpmap.h"
 
 #include "map.h"

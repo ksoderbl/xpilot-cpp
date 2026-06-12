@@ -27,8 +27,7 @@
 #include <cstring>
 #include <cerrno>
 
-#include "strdup.h"
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "server.h"
 
@@ -40,7 +39,6 @@
 #include "xperror.h"
 #include "portability.h"
 #include "checknames.h"
-#include "xpmath.h"
 
 /*
  * Print the option list in "-help" format.

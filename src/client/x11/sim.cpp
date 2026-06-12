@@ -35,8 +35,8 @@
 #include <X11/Xlib.h>
 
 #include "xpconfig.h"
+#include "commonproto.h"
 #include "const.h"
-#include "xpmath.h"
 #include "setup.h"
 #include "xperror.h"
 #include "rules.h"

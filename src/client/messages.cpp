@@ -34,8 +34,8 @@
 
 #include "bit.h"
 #include "commonmacros.h"
+#include "commonproto.h"
 #include "rules.h"
-#include "strlcpy.h"
 #include "xpconfig.h"
 #include "xperror.h"
 

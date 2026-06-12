@@ -36,7 +36,7 @@
 #include "item.h"
 #include "rules.h"
 #include "types.h"
-#include "xpmath.h"
+#include "commonproto.h"
 
 #define SPACE 0
 #define BASE 1

@@ -13,7 +13,7 @@
 #include <cerrno>
 #include <cstdarg>
 
-#include "strlcpy.h"
+#include "commonproto.h"
 
 #include "xpconfig.h"
 #include "const.h"

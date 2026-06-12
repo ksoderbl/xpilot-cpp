@@ -29,8 +29,8 @@
 #include <cmath>
 #include <climits>
 
+#include "commonproto.h"
 #include "const.h"
-#include "randommt.h"
 #include "xperror.h"
 
 #include "score.h"
@@ -44,7 +44,6 @@
 #include "object.h"
 #include "cannon.h"
 #include "saudio.h"
-#include "xpmath.h"
 #include "polygon.h"
 
 #ifdef SOUND
