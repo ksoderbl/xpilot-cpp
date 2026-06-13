@@ -54,7 +54,7 @@
 #include "version.h"
 #include "xpconfig.h"
 #include "xpaint.h"
-#include "pack.h"
+#include "clientpack.h"
 #include "bit.h"
 #include "keys.h"
 #include "netclient.h"

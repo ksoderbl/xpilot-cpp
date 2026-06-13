@@ -119,7 +119,7 @@
 #include "serverconst.h"
 
 #include "map.h"
-#include "pack.h"
+#include "serverpack.h"
 #include "bit.h"
 #include "types.h"
 #include "socklib.h"

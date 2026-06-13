@@ -1,7 +1,10 @@
 /*
- * XPilotNG/SDL, an SDL/OpenGL XPilot client.
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- * Copyright (C) 2003-2004 Juha Lindström
+ *      Bjørn Stabell
+ *      Ken Ronny Schouten
+ *      Bert Gijsbers
+ *      Dick Balaska
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +23,10 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
+#include "pack.h"
 
-#define NUM_MOUSE_BUTTONS 5
-
-SDL_Keycode Get_key_by_name(const char *name);
-char *Get_name_by_key(SDL_Keycode key);
+/*
+ * Which server versions can this client join.
+ */
+#define MIN_SERVER_VERSION 0x4F09
+#define MAX_SERVER_VERSION MY_VERSION

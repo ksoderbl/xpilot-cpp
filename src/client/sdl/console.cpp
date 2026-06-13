@@ -19,6 +19,7 @@
  */
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 
 #include "console.h"
 #include "SDL_console.h"

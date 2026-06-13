@@ -44,7 +44,7 @@
 
 #include "socklib.h"
 #include "map.h"
-#include "pack.h"
+#include "serverpack.h"
 #include "metaserver.h"
 #include "saudio.h"
 #include "xperror.h"

@@ -44,7 +44,7 @@
 #include "netclient.h"
 #include "xpaint.h"
 #include "xinit.h"
-#include "pack.h"
+#include "clientpack.h"
 #include "client.h"
 #include "portability.h"
 

@@ -30,7 +30,7 @@
 #include "checknames.h"
 #include "commonmacros.h"
 #include "commonproto.h"
-#include "pack.h"
+#include "clientpack.h"
 #include "portability.h"
 #include "socklib.h"
 #include "xpconfig.h"

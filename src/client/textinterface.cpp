@@ -39,7 +39,7 @@
 #include "xpconfig.h"
 #include "const.h"
 #include "types.h"
-#include "pack.h"
+#include "clientpack.h"
 #include "bit.h"
 #include "xperror.h"
 #include "socklib.h"

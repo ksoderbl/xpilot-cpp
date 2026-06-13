@@ -46,7 +46,7 @@
 #include "bit.h"
 #include "saudio.h"
 #include "netserver.h"
-#include "pack.h"
+#include "serverpack.h"
 #include "robot.h"
 #include "xperror.h"
 #include "portability.h"

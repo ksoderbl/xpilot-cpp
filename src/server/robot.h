@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "pack.h"
+#include "serverpack.h"
 
 #include "player.h"
 

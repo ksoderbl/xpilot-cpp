@@ -41,7 +41,7 @@
 #include "saudio.h"
 #include "item.h"
 #include "netserver.h"
-#include "pack.h"
+#include "serverpack.h"
 #include "xperror.h"
 #include "portability.h"
 #include "object.h"

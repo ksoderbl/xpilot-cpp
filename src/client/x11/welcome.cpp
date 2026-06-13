@@ -50,7 +50,7 @@
 #include "dbuff.h"
 #include "socklib.h"
 #include "net.h"
-#include "pack.h"
+#include "clientpack.h"
 #include "connectparam.h"
 #include "client.h"
 #include "portability.h"

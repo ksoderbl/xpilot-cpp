@@ -43,7 +43,7 @@
 #include "item.h"
 #include "net.h"
 #include "clientsetup.h"
-#include "pack.h"
+#include "clientpack.h"
 #include "packet.h"
 #include "portability.h"
 #include "socklib.h"

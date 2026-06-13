@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "pack.h"
+#include "clientpack.h"
 #include "socklib.h"
 
 typedef struct Connect_param

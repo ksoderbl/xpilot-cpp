@@ -124,19 +124,19 @@
 #define VERSION2MAGIC(V) ((((V) & 0xFFFF) << 16) | (MAGIC & 0xFFFF))
 #define MY_VERSION MAGIC2VERSION(MAGIC)
 
-/*
- * Which client versions can join this server.
- */
-#ifdef SERVER
-#define MIN_CLIENT_VERSION 0x4203
-#define MAX_CLIENT_VERSION MY_VERSION
-#endif
+// /*
+//  * Which client versions can join this server.
+//  */
+// #ifdef SERVER
+// #define MIN_CLIENT_VERSION 0x4203
+// #define MAX_CLIENT_VERSION MY_VERSION
+// #endif
 
-/*
- * Which server versions can this client join.
- */
-#define MIN_SERVER_VERSION 0x4F09
-#define MAX_SERVER_VERSION MY_VERSION
+// /*
+//  * Which server versions can this client join.
+//  */
+// #define MIN_SERVER_VERSION 0x4F09
+// #define MAX_SERVER_VERSION MY_VERSION
 
 /*
  * We want to keep support for servers using the old map format in the client,

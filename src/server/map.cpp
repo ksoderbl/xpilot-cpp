@@ -740,6 +740,21 @@ bool Grok_map(void)
     Compute_gravity();
     Find_base_direction();
 
+    // Print out amount of map objects.
+    printf("===========\n");
+    printf("Asteroid concentrators: %d\n", Num_asteroidConcs());
+    printf("Bases.................: %d\n", Num_bases());
+    printf("Cannons...............: %d\n", Num_cannons());
+    printf("ECMs..................: %d\n", Num_ecms());
+    printf("Fuels.................: %d\n", Num_fuels());
+    printf("Friction areas........: %d\n", Num_frictionAreas());
+    printf("Gravs.................: %d\n", Num_gravs());
+    printf("Item concentrators....: %d\n", Num_itemConcs());
+    printf("Targets...............: %d\n", Num_targets());
+    printf("Transporters..........: %d\n", Num_transporters());
+    printf("Treasures.............: %d\n", Num_treasures());
+    printf("Wormholes.............: %d\n", Num_wormholes());
+
     return true;
 }
 

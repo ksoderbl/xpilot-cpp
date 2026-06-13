@@ -46,7 +46,7 @@
 #include "serverconst.h"
 #include "socklib.h"
 #include "map.h"
-#include "pack.h"
+#include "serverpack.h"
 #include "bit.h"
 #include "net.h"
 #include "netserver.h"

@@ -29,8 +29,6 @@
 
 #include "server.h"
 
-#define SERVER
-
 char *showtime(void)
 {
     time_t now;

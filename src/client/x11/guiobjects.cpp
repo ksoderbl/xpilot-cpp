@@ -58,7 +58,7 @@
 #include "wreckshape.h"
 #include "astershape.h"
 #include "guiobjects.h"
-#include "pack.h"
+#include "clientpack.h"
 
 static bool texturedShips = false; /* Turned this off because the images drawn
                                     * don't match the actual shipshape used

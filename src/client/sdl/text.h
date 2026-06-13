@@ -18,8 +18,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXT_H
-#define TEXT_H
+#pragma once
 
 #include <string>
 #include <utility>
@@ -166,4 +165,3 @@ name_tex_t *others_name_texs;*/
 extern string_tex_t meter_texs[];
 #define MAX_HUD_TEXS 10
 extern string_tex_t HUD_texs[];
-#endif
