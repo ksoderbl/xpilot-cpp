@@ -789,7 +789,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         if ((color = shot->color) == BLACK)
         {
-            xpprintf("black %d,%d\n", shot->type, shot->id);
+            printf("black %d,%d\n", shot->type, shot->id);
             color = WHITE;
         }
         switch (shot->type)

@@ -795,7 +795,7 @@ void Rank_write_rankfile(void)
 
     remove(tmp_file);
 
-    /*xpprintf("%s Rank file with %d entries written successfully.\n",
+    /*printf("%s Rank file with %d entries written successfully.\n",
       showtime(), rank_entries);*/
 
     return;

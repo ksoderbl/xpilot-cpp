@@ -763,9 +763,9 @@ static void Robot_create(void)
     Robot_talks(ROBOT_TALK_ENTER, robot->name, "");
 
     if (options.logRobots)
-        xpprintf("%s %s (%d, %s) starts at startpos %d.\n",
-                 showtime(), robot->name, NumPlayers, robot->username,
-                 robot->home_base_ind);
+        printf("%s %s (%d, %s) starts at startpos %d.\n",
+               showtime(), robot->name, NumPlayers, robot->username,
+               robot->home_base_ind);
 
     if (NumPlayers == 1)
     {

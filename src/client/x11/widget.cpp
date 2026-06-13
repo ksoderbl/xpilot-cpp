@@ -88,9 +88,9 @@ typedef struct widget_form
 
 typedef struct widget_label
 {
-    char *str;      /* Owned label string */
-    int x_offset,   /* String horizontal offset */
-        y_offset;   /* String vertical offset */
+    char *str;    /* Owned label string */
+    int x_offset, /* String horizontal offset */
+        y_offset; /* String vertical offset */
 } widget_label_t;
 
 typedef struct widget_bool
@@ -111,17 +111,17 @@ typedef struct widget_menu
 
 typedef struct widget_entry
 {
-    bool inside;     /* If pointer inside window */
-    char *str;       /* Owned label string */
+    bool inside; /* If pointer inside window */
+    char *str;   /* Owned label string */
     int (*callback)(int, void *, const char **);
     void *user_data;
 } widget_entry_t;
 
 typedef struct widget_activate
 {
-    bool pressed;    /* If button press active */
-    bool inside;     /* If pointer inside window */
-    char *str;       /* Owned label string */
+    bool pressed; /* If button press active */
+    bool inside;  /* If pointer inside window */
+    char *str;    /* Owned label string */
     int (*callback)(int, void *, const char **);
     void *user_data;
 } widget_activate_t;
@@ -1385,7 +1385,7 @@ int Widget_event(XEvent *event)
     widget_arrow_t *arroww;
     widget_slider_t *sliderw;
 
-    /* xpprintf("Widget_event type=%d w=%d\n",
+    /* printf("Widget_event type=%d w=%d\n",
        event->type, event->xany.window); */
 
     if (!widgets)

@@ -22,10 +22,10 @@
  */
 /* Options parsing code contributed by Ted Lemon <mellon@ncd.com> */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
 
 #include "option.h"
 
@@ -64,10 +64,22 @@ struct options options;
 void tuner_none(void) { ; }
 void tuner_dummy(void) { ; }
 
-static void Tune_robot_user_name(void) { Fix_user_name(options.robotUserName); }
-static void Tune_robot_host_name(void) { Fix_host_name(options.robotHostName); }
-static void Tune_tank_user_name(void) { Fix_user_name(options.tankUserName); }
-static void Tune_tank_host_name(void) { Fix_host_name(options.tankHostName); }
+static void Tune_robot_user_name(void)
+{
+    Fix_user_name(options.robotUserName);
+}
+static void Tune_robot_host_name(void)
+{
+    Fix_host_name(options.robotHostName);
+}
+static void Tune_tank_user_name(void)
+{
+    Fix_user_name(options.tankUserName);
+}
+static void Tune_tank_host_name(void)
+{
+    Fix_host_name(options.tankHostName);
+}
 
 static option_desc opts[] = {
     {"help",
@@ -92,7 +104,7 @@ static option_desc opts[] = {
      NULL,
      valVoid,
      tuner_none,
-     "Print all options with their default values in defaultsfile format.\n",
+     "Print all options and their default values in defaultsfile format.\n",
      OPT_NONE},
     {"expand",
      "expand",

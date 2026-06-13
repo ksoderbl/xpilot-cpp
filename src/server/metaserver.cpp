@@ -121,7 +121,7 @@ void Meta_init(void)
     if (!options.reportToMetaServer)
         return;
 
-    xpprintf("%s Locating Internet Meta server... ", showtime());
+    printf("%s Locating Internet Meta server... ", showtime());
     fflush(stdout);
 
     for (i = 0; i < NELEM(meta_servers); i++)
@@ -131,13 +131,13 @@ void Meta_init(void)
             strlcpy(meta_servers[i].addr, addr, sizeof(meta_servers[i].addr));
 
         if (addr)
-            xpprintf("found %d", i + 1);
+            printf("found %d", i + 1);
         else
-            xpprintf("%d not found", i + 1);
+            printf("%d not found", i + 1);
         if (i + 1 == NELEM(meta_servers))
-            xpprintf("\n");
+            printf("\n");
         else
-            xpprintf("... ");
+            printf("... ");
         fflush(stdout);
     }
 }

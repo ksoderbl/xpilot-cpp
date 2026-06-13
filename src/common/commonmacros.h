@@ -24,6 +24,9 @@
 #pragma once
 
 #include <cstdlib>
+
+#include <sys/time.h>
+
 #include "xperror.h"
 
 /*
@@ -117,11 +120,6 @@
             ptr = NULL; \
         }               \
     } while (0)
-
-/* Use this to remove unused parameter warning. */
-#define UNUSED_PARAM(x) x = x
-
-#include <sys/time.h>
 
 static inline double timeval_to_seconds(struct timeval *tvp)
 {

@@ -50,10 +50,7 @@
 **        No typedefs in external interface.
 */
 
-/* Our exported interface: */
-void seedMT(unsigned int seed);
-unsigned int reloadMT(void);
-unsigned int randomMT(void);
+#include "randommt.h"
 
 /*
 ** uint32 must be an unsigned integer type capable of holding at least 32

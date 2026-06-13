@@ -129,16 +129,16 @@ int main(int argc, char **argv)
      * --- Output copyright notice ---
      */
 
-    xpprintf("  " COPYRIGHT ".\n"
-             "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
-             "for details see the\n"
-             "  provided LICENSE file.\n\n");
+    printf("  " COPYRIGHT ".\n"
+           "  " TITLE " comes with ABSOLUTELY NO WARRANTY; "
+           "for details see the\n"
+           "  provided LICENSE file.\n\n");
 
     init_error(argv[0]);
 
     seedMT((unsigned)time((time_t *)0) * Get_process_id());
 
-    xpprintf("parser\n");
+    printf("parser\n");
     if (!Parser(argc, argv))
         exit(1);
 
@@ -148,13 +148,13 @@ int main(int argc, char **argv)
     /* Lock the server into memory */
     plock_server(options.pLockServer);
     /* Make trigonometric tables */
-    // xpprintf("make table\n");
+    // printf("make table\n");
     // Make_table();
-    xpprintf("compute gravity\n");
+    printf("compute gravity\n");
     Compute_gravity();
-    xpprintf("find base direction\n");
+    printf("find base direction\n");
     Find_base_direction();
-    xpprintf("walls init\n");
+    printf("walls init\n");
     if (!is_polygon_map)
         Walls_init();
     else
@@ -220,8 +220,8 @@ int main(int argc, char **argv)
      */
     serverStartTime = time(NULL);
 
-    xpprintf("%s Server runs at %d frames per second\n",
-             showtime(), options.framesPerSecond);
+    printf("%s Server runs at %d frames per second\n",
+           showtime(), options.framesPerSecond);
 
     // printf("timerResolution: %d\n", options.timerResolution);
     if (options.timerResolution > 0)
@@ -230,9 +230,9 @@ int main(int argc, char **argv)
         timer_tick_rate = FPS;
     install_timer_tick(Main_loop, timer_tick_rate);
 
-    xpprintf("calling sched\n");
+    printf("calling sched\n");
     sched();
-    xpprintf("sched returned!?\n");
+    printf("sched returned!?\n");
     End_game();
 
     return 1;
@@ -278,8 +278,8 @@ void Main_loop(void)
                 NoPlayersEnteredYet = false;
                 if (options.gameDuration > 0.0)
                 {
-                    xpprintf("%s Server will stop in %g minutes.\n",
-                             showtime(), options.gameDuration);
+                    printf("%s Server will stop in %g minutes.\n",
+                           showtime(), options.gameDuration);
                     gameOverTime = (time_t)(options.gameDuration * 60) + time(NULL);
                 }
             }
@@ -754,7 +754,7 @@ void Game_Over(void)
             snprintf(msg, sizeof(msg), "Best team (%.2f Pts): Team %d",
                      maxsc, win_team);
             Set_message(msg);
-            xpprintf("%s\n", msg);
+            printf("%s\n", msg);
         }
 
         if (lose_team != TEAM_NOT_SET && lose_team != win_team)
@@ -762,7 +762,7 @@ void Game_Over(void)
             snprintf(msg, sizeof(msg), "Worst team (%.2f Pts): Team %d",
                      minsc, lose_team);
             Set_message(msg);
-            xpprintf("%s\n", msg);
+            printf("%s\n", msg);
         }
     }
 
@@ -796,13 +796,13 @@ void Game_Over(void)
     {
         snprintf(msg, sizeof(msg), "Best human player: %s", win_pl->name);
         Set_message(msg);
-        xpprintf("%s\n", msg);
+        printf("%s\n", msg);
     }
     if (lose_pl && lose_pl != win_pl)
     {
         snprintf(msg, sizeof(msg), "Worst human player: %s", lose_pl->name);
         Set_message(msg);
-        xpprintf("%s\n", msg);
+        printf("%s\n", msg);
     }
 }
 
@@ -906,7 +906,7 @@ int plock_server(bool on)
     return on ? 1 : 0;
 #else
     if (on)
-        xpprintf("Can't plock: Server was not compiled with plock support\n");
+        printf("Can't plock: Server was not compiled with plock support\n");
     return 0;
 #endif
 }

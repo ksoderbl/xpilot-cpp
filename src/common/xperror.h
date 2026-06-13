@@ -23,9 +23,9 @@
 /*
  * Adapted from 'The UNIX Programming Environment' by Kernighan & Pike
  * and an example from the manualpage for vprintf by
- * Gaute Nessan, University of Tromsoe
+ * Gaute Nessan, University of Tromsoe.
  *
- * Modified by Bjoern Stabell
+ * Modified by Bjoern Stabell.
  * Dick Balaska added the memory/leak checking.
  * Bert Gijsbers added warn, fatal, coredump.
  */

@@ -1409,8 +1409,8 @@ void Delete_shot(int ind)
         break;
 
     default:
-        xpprintf("%s Delete_shot(): Unkown shot type %d.\n",
-                 showtime(), shot->type);
+        printf("%s Delete_shot(): Unkown shot type %d.\n",
+               showtime(), shot->type);
         printf("%s Delete_shot(): Unkown shot type %d.\n",
                showtime(), shot->type);
         break;

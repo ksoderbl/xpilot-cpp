@@ -21,15 +21,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-/*
- * Include portability related stuff in one file.
- */
 #pragma once
+
+#include <cstddef>
 
 #define PATHNAME_SEP '/'
 
-/*
- * Prototypes for OS function wrappers in portability.c.
- */
 extern int Get_process_id(void); /* getpid */
-extern void Get_login_name(char *buf, int size);
+extern void Get_login_name(char *buf, size_t size);

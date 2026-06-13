@@ -30,18 +30,15 @@
 #include "config.h"
 
 /* randommt.cpp */
-extern void seedMT(unsigned int seed);
-extern unsigned int reloadMT(void);
-extern unsigned int randomMT(void);
+#include "randommt.h"
 
 /* xpmath.cpp */
 extern double rfrac(void);
 extern int mod(int x, int y);
-extern void Make_table(void);
+// extern void Make_table(void);
 extern int ON(const char *optval);
 extern int OFF(const char *optval);
 extern double findDir(double x, double y);
-extern int f2i(double f);
 extern double findDir(double x, double y);
 // void Make_table(void);
 extern double tcos(double x);

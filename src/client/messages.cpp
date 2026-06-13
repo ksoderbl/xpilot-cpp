@@ -990,7 +990,7 @@ void Add_message(const char *message)
         (messagesToStdout == 1 &&
          message[0] &&
          message[strlen(message) - 1] == ']'))
-        xpprintf("%s\n", message);
+        printf("%s\n", message);
 }
 
 void Add_newbie_message(const char *message)
@@ -1129,18 +1129,18 @@ void Print_messages_to_stdout(void)
 {
     int i;
 
-    xpprintf("[talk messages]\n");
+    printf("[talk messages]\n");
     for (i = 0; i < maxMessages; i++)
     {
         if (TalkMsg[i] && TalkMsg[i]->len > 0)
-            xpprintf("  %s\n", TalkMsg[i]->txt);
+            printf("  %s\n", TalkMsg[i]->txt);
     }
 
-    xpprintf("[server messages]\n");
+    printf("[server messages]\n");
     for (i = maxMessages - 1; i >= 0; i--)
     {
         if (GameMsg[i] && GameMsg[i]->len > 0)
-            xpprintf("  %s\n", GameMsg[i]->txt);
+            printf("  %s\n", GameMsg[i]->txt);
     }
-    xpprintf("\n");
+    printf("\n");
 }

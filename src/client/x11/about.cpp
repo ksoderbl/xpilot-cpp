@@ -488,7 +488,7 @@ int Keys_callback(int widget_desc, void *data, const char **unused)
         if ((end - buf) + (maxkeylen + strlen(help) + 4) >= bufsize)
         {
             bufsize += 4096;
-            xpprintf("realloc: %d\n", bufsize);
+            printf("realloc: %d\n", bufsize);
             if (!(buf = XREALLOC(char, buf, bufsize)))
             {
                 error("No memory for key list");

@@ -77,7 +77,7 @@ static void Parse_help(char *progname)
                option_descs[j].name);
         if (strcasecmp(option_descs[j].commandLineOption,
                        option_descs[j].name))
-            xpprintf(" or %s", option_descs[j].commandLineOption);
+            printf(" or %s", option_descs[j].commandLineOption);
         printf(" %s\n",
                option_descs[j].type == valInt ? "<integer>" : option_descs[j].type == valReal ? "<real>"
                                                           : option_descs[j].type == valString ? "<string>"
@@ -137,14 +137,14 @@ static void Parser_dump_options(char *progname)
         if (option_descs[j].type != valVoid)
         {
             int len = strlen(option_descs[j].name);
-            xpprintf("%s:%*s%s\n", option_descs[j].name,
-                     (len < 40) ? (40 - len) : 1, "",
-                     (option_descs[j].defaultValue != NULL)
-                         ? option_descs[j].defaultValue
-                         : "");
+            printf("%s:%*s%s\n", option_descs[j].name,
+                   (len < 40) ? (40 - len) : 1, "",
+                   (option_descs[j].defaultValue != NULL)
+                       ? option_descs[j].defaultValue
+                       : "");
         }
     }
-    xpprintf("\n");
+    printf("\n");
 }
 
 /*
@@ -175,10 +175,10 @@ static void Parser_dump_flags(char *progname)
         if ((strlen(msg) >= 2))
             msg[strlen(msg) - 2] = '\0';
         strlcat(msg, "}", sizeof(msg));
-        xpprintf("%s:%*s%s\n", option_descs[j].name,
-                 (len < 40) ? (40 - len) : 1, "", msg);
+        printf("%s:%*s%s\n", option_descs[j].name,
+               (len < 40) ? (40 - len) : 1, "", msg);
     }
-    xpprintf("\n");
+    printf("\n");
 }
 
 /*
@@ -191,17 +191,17 @@ static void Parser_dump_config(char *progname)
 
     option_descs = Get_option_descs(&option_count);
 
-    xpprintf("\n");
-    xpprintf("# %s option dump\n", progname);
-    xpprintf("# \n");
-    xpprintf("# CONF_DATADIR = %s\n", Conf_datadir());
-    xpprintf("# CONF_DEFAULTS_FILE_NAME = %s\n", Conf_defaults_file_name());
-    xpprintf("# CONF_PASSWORD_FILE_NAME = %s\n", Conf_password_file_name());
-    xpprintf("# CONF_MAPDIR = %s\n", Conf_mapdir());
-    xpprintf("# CONF_DEFAULT_MAP = %s\n", Conf_default_map());
-    xpprintf("# CONF_SERVERMOTDFILE = %s\n", Conf_servermotdfile());
-    xpprintf("# CONF_ROBOTFILE = %s\n", Conf_robotfile());
-    xpprintf("# \n");
+    printf("\n");
+    printf("# %s option dump\n", progname);
+    printf("# \n");
+    printf("# CONF_DATADIR = %s\n", Conf_datadir());
+    printf("# CONF_DEFAULTS_FILE_NAME = %s\n", Conf_defaults_file_name());
+    printf("# CONF_PASSWORD_FILE_NAME = %s\n", Conf_password_file_name());
+    printf("# CONF_MAPDIR = %s\n", Conf_mapdir());
+    printf("# CONF_DEFAULT_MAP = %s\n", Conf_default_map());
+    printf("# CONF_SERVERMOTDFILE = %s\n", Conf_servermotdfile());
+    printf("# CONF_ROBOTFILE = %s\n", Conf_robotfile());
+    printf("# \n");
 }
 
 /*
@@ -349,7 +349,7 @@ bool Parser(int argc, char **argv)
     if (Init_options() == false)
         return false;
 
-    xpprintf("parser: loop\n");
+    printf("parser: loop\n");
     for (i = 1; i < argc; i++)
     {
         if (Parse_check_info_request(argv, i))
@@ -394,7 +394,7 @@ bool Parser(int argc, char **argv)
     /*
      * Read local defaults file
      */
-    xpprintf("parser: Read local defaults file\n");
+    printf("parser: Read local defaults file\n");
     if ((fname = Option_get_value("defaultsFileName", NULL)) != NULL)
         parseDefaultsFile(fname);
     else
@@ -414,25 +414,25 @@ bool Parser(int argc, char **argv)
      * If "mapFileName" is defined and it is not equal to "wild"
      * then read it's contents from file.  Else read a default map.
      */
-    xpprintf("parser: Read map data\n");
+    printf("parser: Read map data\n");
     if (!(fname = Option_get_value("mapData", NULL)))
     {
         if ((fname = Option_get_value("mapFileName", NULL)) != NULL)
         {
             if (strcasecmp(fname, "wild") && !parseMapFile(fname))
             {
-                xpprintf("Unable to read %s, trying to open %s\n",
-                         fname, Conf_default_map());
+                printf("Unable to read %s, trying to open %s\n",
+                       fname, Conf_default_map());
                 if (!parseMapFile(Conf_default_map()))
-                    xpprintf("Unable to read %s\n", Conf_default_map());
+                    printf("Unable to read %s\n", Conf_default_map());
             }
         }
         else
         {
-            xpprintf("Map not specified, trying to open %s\n",
-                     Conf_default_map());
+            printf("Map not specified, trying to open %s\n",
+                   Conf_default_map());
             if (!parseMapFile(Conf_default_map()))
-                xpprintf("Unable to read %s\n", Conf_default_map());
+                printf("Unable to read %s\n", Conf_default_map());
         }
     }
 

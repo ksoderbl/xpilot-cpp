@@ -345,7 +345,7 @@ static int input_inited = false;
 
 static void io_dummy(int fd, void *arg)
 {
-    xpprintf("io_dummy called!  (%d, %p)\n", fd, arg);
+    printf("io_dummy called!  (%d, %p)\n", fd, arg);
 }
 
 void install_input(void (*func)(int, void *), int fd, void *arg)

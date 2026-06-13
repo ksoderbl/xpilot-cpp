@@ -112,7 +112,7 @@ static int Get_contact_message(sockbuf_t *sbuf,
         {
             if (len == 0)
                 continue;
-            xpprintf("Error from sock_receive_any, contact message failed.\n");
+            printf("Error from sock_receive_any, contact message failed.\n");
             /* exit(1);  no good since meta gui. */
             return 0;
         }
@@ -255,7 +255,7 @@ static bool Process_commands(sockbuf_t *ibuf,
     static char localhost[] = "127.0.0.1";
 
     if (auto_connect && !list_servers && !auto_shutdown)
-        xpprintf("*** Connected to %s\n", conpar->server_name);
+        printf("*** Connected to %s\n", conpar->server_name);
 
     for (;;)
     {

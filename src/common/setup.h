@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "const.h"
 
 /*
@@ -136,5 +138,3 @@ typedef struct
     uint8_t map_data[4];     /* compressed map data */
     /* plus more mapdata here (HACK) */
 } setup_t;
-
-// extern setup_t *Setup;

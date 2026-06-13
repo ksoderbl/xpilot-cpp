@@ -729,10 +729,10 @@ bool Grok_map(void)
     if (Num_bases() <= 0)
         fatal("Map has no bases!");
 
-    xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
-             "Team play: %s\n",
-             world->name, Num_bases(), world->width, world->height,
-             BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
+    printf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
+           "Team play: %s\n",
+           world->name, Num_bases(), world->width, world->height,
+           BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
 
     // if (!is_polygon_map)
     //     Xpmap_blocks_to_polygons();

@@ -126,12 +126,12 @@ static void Map_extra_error(int line_num)
         prev_line_num = line_num;
         if (++error_count <= max_error)
         {
-            xpprintf("Map file contains extranous characters on line %d\n",
-                     line_num);
+            printf("Map file contains extranous characters on line %d\n",
+                   line_num);
         }
         else if (error_count - max_error == 1)
         {
-            xpprintf("And so on...\n");
+            printf("And so on...\n");
         }
     }
 }
@@ -146,11 +146,11 @@ static void Map_missing_error(int line_num)
         prev_line_num = line_num;
         if (++error_count <= max_error)
         {
-            xpprintf("Not enough map data on map data line %d\n", line_num);
+            printf("Not enough map data on map data line %d\n", line_num);
         }
         else if (error_count - max_error == 1)
         {
-            xpprintf("And so on...\n");
+            printf("And so on...\n");
         }
     }
 }
@@ -772,8 +772,8 @@ setup_t *Xpmap_init_setup(void)
     }
 
     if (type != SETUP_MAP_UNCOMPRESSED)
-        xpprintf("%s Block map compression ratio is %-4.2f%%\n",
-                 showtime(), 100.0 * size / numblocks);
+        printf("%s Block map compression ratio is %-4.2f%%\n",
+               showtime(), 100.0 * size / numblocks);
 
     if ((setup = (setup_t *)malloc(sizeof(setup_t) + size)) == NULL)
     {
@@ -1155,7 +1155,7 @@ void Xpmap_tags_to_internal_data(void)
         error("WARNING: map has no bases!");
     }
 
-    xpprintf("grok map: allocate ecms, friction areas and transporters\n");
+    printf("grok map: allocate ecms, friction areas and transporters\n");
 
     // Allocate space for Ecms, FrictionAreas and Transporters
     // ecm_t *Ecms[MAX_TOTAL_ECMS];
@@ -1545,7 +1545,7 @@ void Xpmap_tags_to_internal_data(void)
             }
         }
 
-        xpprintf("grok map: wormhole hacks\n");
+        printf("grok map: wormhole hacks\n");
         /*
          * Verify that the wormholes are consistent, i.e. that if
          * we have no 'out' wormholes, make sure that we don't have
@@ -1559,7 +1559,7 @@ void Xpmap_tags_to_internal_data(void)
 
             int i;
 
-            xpprintf("Inconsistent use of wormholes, removing them.\n");
+            printf("Inconsistent use of wormholes, removing them.\n");
             for (i = 0; i < world->NumWormholes; i++)
             {
                 world->block
@@ -1580,18 +1580,18 @@ void Xpmap_tags_to_internal_data(void)
                 while (world->wormholes[j].type == WORM_IN)
                     j = (int)(rfrac() * world->NumWormholes);
                 world->wormholes[i].lastdest = j;
-                // xpprintf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
+                // printf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
             }
         }
 
         if (BIT(world->rules->mode, TIMING) && Num_checks() == 0)
         {
-            xpprintf("No checkpoints found while race mode (timing) was set.\n");
-            xpprintf("Turning off race mode.\n");
+            printf("No checkpoints found while race mode (timing) was set.\n");
+            printf("Turning off race mode.\n");
             CLR_BIT(world->rules->mode, TIMING);
         }
 
-        xpprintf("grok map: teamplay hacks\n");
+        printf("grok map: teamplay hacks\n");
         /*
          * Determine which team a treasure belongs to.
          */
@@ -2285,7 +2285,7 @@ void Xpmap_blocks_to_polygons(void)
     for (i = 0; i < Num_frictionAreas(); i++)
         Xpmap_friction_area_to_polygon(i);
 
-    /*xpprintf("Created %d polygons.\n", num_polys);*/
+    /*printf("Created %d polygons.\n", num_polys);*/
 }
 
 static void Init_map(void)
@@ -2462,7 +2462,7 @@ bool Xpmap_grok_map2(void)
     int i, x, y, c;
     char *s;
 
-    xpprintf("grok map: init map\n");
+    printf("grok map: init map\n");
     Init_map();
 
     if (options.mapWidth <= 0 || options.mapWidth > OLD_MAX_MAP_SIZE ||
@@ -2504,7 +2504,7 @@ bool Xpmap_grok_map2(void)
             return false;
     }
 
-    xpprintf("grok map: alloc map\n");
+    printf("grok map: alloc map\n");
     Xpmap_world_alloc();
 
     x = -1;
@@ -2520,11 +2520,11 @@ bool Xpmap_grok_map2(void)
         CLR_BIT(world->rules->mode, TEAM_PLAY);
     }
 
-    xpprintf("grok map: reading mapdata\n");
+    printf("grok map: reading mapdata\n");
 
     Xpmap_grok_map_data();
 
-    xpprintf("grok map: allocate objects\n");
+    printf("grok map: allocate objects\n");
 
     Xpmap_tags_to_internal_data();
 
@@ -2538,13 +2538,13 @@ bool Xpmap_grok_map2(void)
     if (BIT(world->rules->mode, TIMING))
         Find_base_order();
 
-    xpprintf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
-             world->name, Num_bases(), world->x, world->y,
-             BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
+    printf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
+           world->name, Num_bases(), world->x, world->y,
+           BIT(world->rules->mode, TEAM_PLAY) ? "on" : "off");
 
     D(Print_map());
 
-    xpprintf("grok map: returning true\n");
+    printf("grok map: returning true\n");
 
     return true;
 }

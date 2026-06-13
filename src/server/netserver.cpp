@@ -423,13 +423,13 @@ void Destroy_connection(connection_t *connp, const char *reason)
         sock_get_error(sock);
         sock_write(sock, pkt, len);
     }
-    xpprintf("%s Goodbye %s=%s@%s|%s (\"%s\")\n",
-             showtime(),
-             connp->nick ? connp->nick : "",
-             connp->user ? connp->user : "",
-             connp->host ? connp->host : "",
-             connp->dpy ? connp->dpy : "",
-             reason);
+    printf("%s Goodbye %s=%s@%s|%s (\"%s\")\n",
+           showtime(),
+           connp->nick ? connp->nick : "",
+           connp->user ? connp->user : "",
+           connp->host ? connp->host : "",
+           connp->dpy ? connp->dpy : "",
+           reason);
 
     Conn_set_state(connp, CONN_FREE, CONN_FREE);
 
@@ -634,8 +634,8 @@ int Setup_connection(char *user, char *nick, char *dpy, int team,
 
     if (free_conn_index >= max_connections)
     {
-        xpprintf("%s Full house for %s(%s)@%s(%s)\n",
-                 showtime(), user, nick, host, dpy);
+        printf("%s Full house for %s(%s)@%s(%s)\n",
+               showtime(), user, nick, host, dpy);
         return -1;
     }
     connp = &Conn[free_conn_index];
@@ -825,12 +825,12 @@ static int Handle_listening(connection_t *connp)
         }
     }
 
-    xpprintf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
-             connp->user, connp->host, connp->dpy, connp->addr, connp->his_port);
+    printf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
+           connp->user, connp->host, connp->dpy, connp->addr, connp->his_port);
     if (connp->version != MY_VERSION)
-        xpprintf(" (version %04x)\n", connp->version);
+        printf(" (version %04x)\n", connp->version);
     else
-        xpprintf("\n");
+        printf("\n");
 
     if (connp->r.ptr[0] != PKT_VERIFY)
     {
@@ -851,8 +851,8 @@ static int Handle_listening(connection_t *connp)
     Fix_nick_name(nick);
     if (strcmp(user, connp->user))
     {
-        xpprintf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
-                 showtime(), user, nick, connp->user, connp->nick);
+        printf("%s Client verified incorrectly (%s,%s)(%s,%s)\n",
+               showtime(), user, nick, connp->user, connp->nick);
         Send_reply(connp, PKT_VERIFY, PKT_FAILURE);
         Send_reliable(connp);
         Destroy_connection(connp, "verify incorrect");
@@ -1103,8 +1103,8 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         return -1;
     }
 
-    xpprintf("%s %s (%d) starts at startpos %d.\n", showtime(),
-             pl->name, NumPlayers, pl->home_base_ind);
+    printf("%s %s (%d) starts at startpos %d.\n", showtime(),
+           pl->name, NumPlayers, pl->home_base_ind);
 
     /*
      * Tell him about himself first.
@@ -1321,7 +1321,7 @@ static void Handle_input(int fd, void *arg)
              * OPTIMIZED RECORDING MIGHT NOT WORK CORRECTLY
              */
             Sockbuf_clear(&connp->r);
-            xpprintf("Incomplete packet\n");
+            printf("Incomplete packet\n");
             break;
         }
         if (connp->state == CONN_PLAYING)

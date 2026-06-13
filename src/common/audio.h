@@ -20,7 +20,7 @@
  * along with this program; if not, see
  * <https://www.gnu.org/licenses/>.
  */
-/* This piece of code was provided by Greg Renda (greg@ncd.com). */
+/* This piece of code was provided by Greg Renda. */
 
 #pragma once
 

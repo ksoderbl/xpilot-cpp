@@ -33,14 +33,6 @@
 #include <unistd.h>
 #include <pwd.h>
 
-#ifdef PLOCKSERVER
-#if defined(__linux__)
-#include <sys/mman.h>
-#else
-#include <sys/lock.h>
-#endif
-#endif
-
 #include "commonproto.h"
 
 #include "xpconfig.h"
@@ -51,9 +43,15 @@ int Get_process_id(void)
     return getpid();
 }
 
-void Get_login_name(char *buf, int size)
+void Get_login_name(char *buf, size_t size)
 {
     /* Unix */
-    struct passwd *pwent = getpwuid(geteuid());
-    strlcpy(buf, pwent->pw_name, size);
+    struct passwd *p;
+
+    setpwent();
+    if ((p = getpwuid(geteuid())) != NULL)
+        strlcpy(buf, p->pw_name, size);
+    else
+        strlcpy(buf, "nameless", size);
+    endpwent();
 }

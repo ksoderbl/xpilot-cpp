@@ -286,7 +286,7 @@ int Init_window(void)
         error("cannot find your game font '%s'.\n"
               "Please check that it exists!",
               gamefontname);
-        xpprintf("Reverting to defaultfont '%s'\n", defaultfontname);
+        printf("Reverting to defaultfont '%s'\n", defaultfontname);
         gf_exists = false;
     }
     if (!file_exists(defaultfontname))

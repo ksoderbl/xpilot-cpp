@@ -90,14 +90,6 @@
 #define CONF_SOUNDFILE CONF_DATADIR "sounds.sounds"
 #endif
 
-#ifndef CONF_ZCAT_EXT
-#define CONF_ZCAT_EXT ".gz"
-#endif
-
-#ifndef CONF_ZCAT_FORMAT
-#define CONF_ZCAT_FORMAT "gzip -d -c < %s"
-#endif
-
 #ifndef CONF_CONTACTADDRESS
 #define CONF_CONTACTADDRESS "xpilot@xpilot.org"
 #endif
@@ -121,7 +113,8 @@
 #define D(x)
 #endif
 
-#define xpprintf printf
+#define CONF_ZCAT_EXT ".gz"
+#define CONF_ZCAT_FORMAT "gzip -d -c < %s"
 
 void Conf_print(void);
 char *Conf_datadir(void);

@@ -58,11 +58,6 @@ int mod(int x, int y)
     return x;
 }
 
-int f2i(double f)
-{
-    return (f < 0) ? -(int)(0.5f - f) : (int)(f + 0.5f);
-}
-
 double findDir(double x, double y)
 {
     double angle;

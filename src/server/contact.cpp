@@ -327,10 +327,10 @@ void Contact(int fd, void *arg)
     ibuf.len = bytes;
 
     strlcpy(host_addr, sock_get_last_addr(&contactSocket), sizeof(host_addr));
-    xpprintf("%s Checking Address:(%s)\n", showtime(), host_addr);
+    printf("%s Checking Address:(%s)\n", showtime(), host_addr);
     if (Check_address(host_addr))
     {
-        xpprintf("%s Host blocked!:(%s)\n", showtime(), host_addr);
+        printf("%s Host blocked!:(%s)\n", showtime(), host_addr);
         return;
     }
 
@@ -455,8 +455,8 @@ void Contact(int fd, void *arg)
          * Someone asked for information.
          */
 
-        xpprintf("%s %s@%s asked for info about current game.\n",
-                 showtime(), user_name, host_addr);
+        printf("%s %s@%s asked for info about current game.\n",
+               showtime(), user_name, host_addr);
         Sockbuf_clear(&ibuf);
         Packet_printf(&ibuf, "%u%c%c", my_magic, reply_to, SUCCESS);
         assert(ibuf.size - ibuf.len >= 0);
@@ -604,8 +604,8 @@ void Contact(int fd, void *arg)
          */
         bool bad = false, full, change;
 
-        xpprintf("%s %s@%s asked for an option list.\n",
-                 showtime(), user_name, host_addr);
+        printf("%s %s@%s asked for an option list.\n",
+               showtime(), user_name, host_addr);
         i = 0;
         do
         {

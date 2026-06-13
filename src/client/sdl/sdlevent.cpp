@@ -228,11 +228,11 @@ int Process_event(SDL_Event *evt)
         }
         else
         {
-            /*xpprintf("mouse motion xrel=%i yrel=%i\n",evt->motion.xrel,evt->motion.yrel);*/
+            /*printf("mouse motion xrel=%i yrel=%i\n",evt->motion.xrel,evt->motion.yrel);*/
             /*for (i = 0;i<NUM_MOUSE_BUTTONS;++i)*/ /* dragdrop for all mouse buttons*/
             if (clicktarget[0])
             { /*is button one pressed?*/
-                /*xpprintf("SDL_MOUSEBUTTONDOWN drag: area found!\n");*/
+                /*printf("SDL_MOUSEBUTTONDOWN drag: area found!\n");*/
                 if (clicktarget[0]->motion)
                 {
                     clicktarget[0]->motion(evt->motion.xrel, evt->motion.yrel,

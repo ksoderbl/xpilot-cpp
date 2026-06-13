@@ -52,10 +52,10 @@ void Make_treasure_ball(treasure_t *t)
         return;
     if (t->have)
     {
-        xpprintf("%s Failed Make_treasure_ball(treasure=%ld):\n",
-                 showtime(), (long)t);
-        xpprintf("\ttreasure: destroyed = %d, team = %d, have = %d\n",
-                 t->destroyed, t->team, t->have);
+        printf("%s Failed Make_treasure_ball(treasure=%ld):\n",
+               showtime(), (long)t);
+        printf("\ttreasure: destroyed = %d, team = %d, have = %d\n",
+               t->destroyed, t->team, t->have);
         return;
     }
 
