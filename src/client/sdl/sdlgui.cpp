@@ -37,7 +37,7 @@
 
 #include "paint.h"
 #include "rules.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "wreckshape.h"
 #include "xperror.h"
 

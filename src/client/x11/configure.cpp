@@ -52,7 +52,7 @@
 #include "netclient.h"
 #include "widget.h"
 #include "configure.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "xperror.h"
 #include "portability.h"
 

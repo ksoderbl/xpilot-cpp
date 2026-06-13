@@ -38,7 +38,7 @@
 #include "keys.h"
 #include "packet.h"
 #include "bit.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "widget.h"
 #include "xperror.h"
 #include "record.h"

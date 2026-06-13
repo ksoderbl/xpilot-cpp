@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "setup.h"
+#include "clientsetup.h"
 #include "types.h"
 
 #define MIN_RECEIVE_WINDOW_SIZE 1

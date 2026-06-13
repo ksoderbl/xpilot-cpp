@@ -44,7 +44,7 @@
 #include "keys.h"
 #include "packet.h"
 #include "bit.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "netclient.h"
 #include "widget.h"
 #include "xperror.h"

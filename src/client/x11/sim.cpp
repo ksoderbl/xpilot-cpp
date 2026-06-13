@@ -37,7 +37,7 @@
 #include "xpconfig.h"
 #include "commonproto.h"
 #include "const.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "xperror.h"
 #include "rules.h"
 #include "bit.h"

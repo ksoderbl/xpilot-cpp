@@ -48,7 +48,7 @@
 #include "xpconfig.h"
 #include "xperror.h"
 #include "xpaint.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "record.h"
 #include "recordfmt.h"
 #include "xinit.h"

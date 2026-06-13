@@ -49,7 +49,7 @@
 #include "xperror.h"
 #include "xpmemory.h"
 #include "rules.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "version.h"
 
 #include "client.h"

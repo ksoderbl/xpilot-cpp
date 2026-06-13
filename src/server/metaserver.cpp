@@ -50,7 +50,7 @@
 #include "xperror.h"
 #include "netserver.h"
 
-#define META_VERSION VERSION
+#define META_VERSION VERSION "cpp"
 
 struct MetaServer
 {
@@ -71,14 +71,12 @@ extern int NumPlayers, NumRobots, NumPseudoPlayers, NumQueuedPlayers;
 extern int login_in_progress;
 extern time_t serverStartTime;
 
-void Meta_send(char *mesg, int len)
+void Meta_send(char *mesg, size_t len)
 {
     int i;
 
     if (!options.reportToMetaServer)
-    {
         return;
-    }
 
     for (i = 0; i < NELEM(meta_servers); i++)
     {

@@ -35,7 +35,7 @@
 #include "xpconfig.h"
 #include "const.h"
 #include "netclient.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "bit.h"
 #include "xperror.h"
 #include "portability.h"

@@ -42,7 +42,7 @@
 #include "const.h"
 #include "item.h"
 #include "net.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "pack.h"
 #include "packet.h"
 #include "portability.h"

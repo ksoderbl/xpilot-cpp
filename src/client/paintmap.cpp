@@ -41,7 +41,7 @@
 #include "types.h"
 #include "keys.h"
 #include "rules.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "client.h"
 #include "guimap.h"
 

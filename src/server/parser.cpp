@@ -20,7 +20,7 @@
  * along with this program; if not, see
  * <https://www.gnu.org/licenses/>.
  */
-/* Original options parsing code contributed by Ted Lemon <mellon@ncd.com> */
+/* Original options parsing code contributed by Ted Lemon */
 
 #include <cstdlib>
 #include <cstdio>

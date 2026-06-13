@@ -43,7 +43,7 @@
 #include "types.h"
 #include "keys.h"
 #include "rules.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "portability.h"
 #include "guiobjects.h"
 #include "guimap.h"

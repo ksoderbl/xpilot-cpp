@@ -35,7 +35,7 @@
 #include "commonproto.h"
 #include "const.h"
 #include "rules.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "shipshape.h"
 #include "types.h"
 

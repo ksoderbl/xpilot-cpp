@@ -52,7 +52,7 @@
 #include "types.h"
 #include "keys.h"
 #include "rules.h"
-#include "setup.h"
+#include "clientsetup.h"
 #include "dbuff.h"
 #include "xpaint.h"
 #include "paintdata.h"
