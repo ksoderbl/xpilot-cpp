@@ -1165,63 +1165,19 @@ void Xpmap_tags_to_internal_data(void)
                     break;
 
                 case XPMAP_WORMHOLE_NORMAL:
-                    // Xpmap_place_wormhole(blk, WORM_NORMAL);
-                    // world->itemID[x][y] = Num_wormholes();
-                    // worm_norm++;
-                    // break;
+                    world->itemID[x][y] = Num_wormholes();
+                    Xpmap_place_wormhole(blk, WORM_NORMAL);
+                    worm_norm++;
+                    break;
                 case XPMAP_WORMHOLE_IN:
-                    // Xpmap_place_wormhole(blk, WORM_IN);
-                    // world->itemID[x][y] = Num_wormholes();
-                    // worm_in++;
-                    // break;
+                    world->itemID[x][y] = Num_wormholes();
+                    Xpmap_place_wormhole(blk, WORM_IN);
+                    worm_in++;
+                    break;
                 case XPMAP_WORMHOLE_OUT:
-                    // Xpmap_place_wormhole(blk, WORM_OUT);
-                    // world->itemID[x][y] = Num_wormholes();
-                    // worm_out++;
-                    // break;
-
-                    // world->block[x][y] = WORMHOLE;
-                    // world->itemID[x][y] = world->NumWormholes;
-                    // world->wormholes[world->NumWormholes].blk_pos = Clpos_to_blkpos(pos);
-                    // world->wormholes[world->NumWormholes].pos = pos;
-                    // world->wormholes[world->NumWormholes].countdown = 0;
-                    // world->wormholes[world->NumWormholes].lastdest = -1;
-                    // world->wormholes[world->NumWormholes].temporary = 0;
-                    // world->wormholes[world->NumWormholes].lastblock = SPACE;
-                    // world->wormholes[world->NumWormholes].lastID = -1;
-                    // if (c == '@')
-                    // {
-                    //     world->wormholes[world->NumWormholes].type = WORM_NORMAL;
-                    //     worm_norm++;
-                    // }
-                    // else if (c == '(')
-                    // {
-                    //     world->wormholes[world->NumWormholes].type = WORM_IN;
-                    //     worm_in++;
-                    // }
-                    // else
-                    // {
-                    //     world->wormholes[world->NumWormholes].type = WORM_OUT;
-                    //     worm_out++;
-                    // }
-                    // world->NumWormholes++;
-
-                    // if (c == '@')
-                    // {
-                    //     World_place_wormhole(pos, WORM_NORMAL);
-                    //     worm_norm++;
-                    // }
-                    // else if (c == '(')
-                    // {
-                    //     World_place_wormhole(pos, WORM_IN);
-                    //     worm_in++;
-                    // }
-                    // else
-                    // {
-                    //     World_place_wormhole(pos, WORM_OUT);
-                    //     worm_out++;
-                    // }
-
+                    world->itemID[x][y] = Num_wormholes();
+                    Xpmap_place_wormhole(blk, WORM_OUT);
+                    worm_out++;
                     break;
 
                 case XPMAP_CHECK_0:
@@ -1285,44 +1241,46 @@ void Xpmap_tags_to_internal_data(void)
             }
         }
 
-        // printf("grok map: wormhole hacks\n");
-        // /*
-        //  * Verify that the wormholes are consistent, i.e. that if
-        //  * we have no 'out' wormholes, make sure that we don't have
-        //  * any 'in' wormholes, and (less critical) if we have no 'in'
-        //  * wormholes, make sure that we don't have any 'out' wormholes.
-        //  */
-        // if ((worm_norm) ? (worm_norm + worm_out < 2)
-        //     : (worm_in) ? (worm_out < 1)
-        //                 : (worm_out > 0))
-        // {
+        printf("grok map: wormhole hacks\n");
+        /*
+         * Verify that the wormholes are consistent, i.e. that if
+         * we have no 'out' wormholes, make sure that we don't have
+         * any 'in' wormholes, and (less critical) if we have no 'in'
+         * wormholes, make sure that we don't have any 'out' wormholes.
+         */
+        if ((worm_norm) ? (worm_norm + worm_out < 2)
+            : (worm_in) ? (worm_out < 1)
+                        : (worm_out > 0))
+        {
 
-        //     int i;
+            int i;
 
-        //     printf("Inconsistent use of wormholes, removing them.\n");
-        //     for (i = 0; i < Num_wormholes(); i++)
-        //     {
-        //         world->block
-        //             [world->wormholes[i].blk_pos.bx]
-        //             [world->wormholes[i].blk_pos.by] = SPACE;
-        //         world->itemID
-        //             [world->wormholes[i].blk_pos.bx]
-        //             [world->wormholes[i].blk_pos.by] = (uint16_t)-1;
-        //     }
-        //     world->NumWormholes = 0;
-        // }
+            printf("Inconsistent use of wormholes, removing them.\n");
+            for (i = 0; i < Num_wormholes(); i++)
+            {
+                // world->block
+                //     [world->wormholes[i].blk_pos.bx]
+                //     [world->wormholes[i].blk_pos.by] = SPACE;
+                World_set_block(world->wormholes[i].blk_pos, SPACE);
+                world->itemID
+                    [world->wormholes[i].blk_pos.bx]
+                    [world->wormholes[i].blk_pos.by] = (uint16_t)-1;
+            }
+            // world->NumWormholes = 0;
+            world->wormholes.clear();
+        }
 
-        // if (!options.wormTime)
-        // {
-        //     for (i = 0; i < Num_wormholes(); i++)
-        //     {
-        //         int j = (int)(rfrac() * Num_wormholes());
-        //         while (world->wormholes[j].type == WORM_IN)
-        //             j = (int)(rfrac() * Num_wormholes());
-        //         world->wormholes[i].lastdest = j;
-        //         // printf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
-        //     }
-        // }
+        if (!options.wormTime)
+        {
+            for (i = 0; i < Num_wormholes(); i++)
+            {
+                int j = (int)(rfrac() * Num_wormholes());
+                while (world->wormholes[j].type == WORM_IN)
+                    j = (int)(rfrac() * Num_wormholes());
+                world->wormholes[i].lastdest = j;
+                // printf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
+            }
+        }
 
         if (BIT(world->rules->mode, TIMING) && Num_checks() == 0)
         {

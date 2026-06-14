@@ -126,26 +126,16 @@ void Object_finish_warp(object_t *obj)
 {
 }
 
-/*
-TODO:
 void add_temp_wormholes(int xin, int yin, int xout, int yout)
 {
-    wormhole_t inhole, outhole, *wwhtemp;
-
-    if ((wwhtemp = (wormhole_t *)realloc(world->wormholes,
-                                         (world->NumWormholes + 2) * sizeof(wormhole_t))) == NULL)
-    {
-        error("No memory for temporary wormholes.");
-        return;
-    }
-    world->wormholes = wwhtemp;
+    wormhole_t inhole, outhole;
 
     inhole.blk_pos.bx = xin;
     inhole.blk_pos.by = yin;
     outhole.blk_pos.bx = xout;
     outhole.blk_pos.by = yout;
     inhole.countdown = outhole.countdown = options.wormTime;
-    inhole.lastdest = world->NumWormholes + 1;
+    inhole.lastdest = Num_wormholes() + 1;
     inhole.temporary = outhole.temporary = 1;
     inhole.type = WORM_IN;
     outhole.type = WORM_OUT;
@@ -153,12 +143,14 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     outhole.lastblock = world->block[xout][yout];
     inhole.lastID = world->itemID[xin][yin];
     outhole.lastID = world->itemID[xout][yout];
-    world->wormholes[world->NumWormholes] = inhole;
-    world->wormholes[world->NumWormholes + 1] = outhole;
+    int ind = Num_wormholes();
+    // world->wormholes[Num_wormholes()] = inhole;
+    // world->wormholes[Num_wormholes() + 1] = outhole;
+    world->wormholes.push_back(inhole);
+    world->wormholes.push_back(outhole);
     world->block[xin][yin] = world->block[xout][yout] = WORMHOLE;
-    world->itemID[xin][yin] = world->NumWormholes;
-    world->itemID[xout][yout] = world->NumWormholes + 1;
-    world->NumWormholes += 2;
+    world->itemID[xin][yin] = ind;
+    world->itemID[xout][yout] = ind + 1;
 }
 
 void remove_temp_wormhole(int ind)
@@ -170,12 +162,12 @@ void remove_temp_wormhole(int ind)
     world->block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
     world->itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
 
-    world->NumWormholes--;
-    if (ind != world->NumWormholes)
-    {
-        world->wormholes[ind] = world->wormholes[world->NumWormholes];
-    }
-    world->wormholes = (wormhole_t *)realloc(world->wormholes,
-                                             world->NumWormholes * sizeof(wormhole_t));
+    // world->NumWormholes--;
+    // if (ind != world->NumWormholes)
+    // {
+    //     world->wormholes[ind] = world->wormholes[world->NumWormholes];
+    // }
+    // world->wormholes = (wormhole_t *)realloc(world->wormholes,
+    //                                          world->NumWormholes * sizeof(wormhole_t));
+    world->wormholes.erase(world->wormholes.begin() + ind);
 }
-*/

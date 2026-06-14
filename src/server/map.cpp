@@ -332,7 +332,7 @@ int World_place_wormhole(clpos_t pos, wormtype_t type)
     t.countdown = 0;
     t.lastdest = NO_IND;
     t.temporary = false;
-    // t.type = type;
+    t.type = type;
     t.lastblock = SPACE;
     t.lastID = NO_ID;
     t.group = NO_GROUP;

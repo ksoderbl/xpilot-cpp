@@ -853,14 +853,13 @@ void Move_segment(move_state_t *ms)
                  * Warp the object to the same destination as the
                  * player has been warped to.
                  */
-                // TODO
-                // int last = world->wormholes[hole].lastdest;
-                // if (last >= 0 && (world->wormholes[hole].countdown > 0 || !options.wormTime) && last < world->NumWormholes && world->wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
-                // {
-                //     ms->done.cx += (world->wormholes[last].blk_pos.bx - world->wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
-                //     ms->done.cy += (world->wormholes[last].blk_pos.by - world->wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
-                //     break;
-                // }
+                int last = world->wormholes[hole].lastdest;
+                if (last >= 0 && (world->wormholes[hole].countdown > 0 || !options.wormTime) && last < Num_wormholes() && world->wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
+                {
+                    ms->done.cx += (world->wormholes[last].blk_pos.bx - world->wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
+                    ms->done.cy += (world->wormholes[last].blk_pos.by - world->wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
+                    break;
+                }
             }
             break;
 
