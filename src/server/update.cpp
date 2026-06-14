@@ -625,6 +625,9 @@ static void Ecm_update(void)
     int i;
     double ecmSizeFactor = 0.5;
 
+    if (Num_ecms() > 0)
+        warn("Ecm_Update: ecms: %d", Num_ecms());
+
     // Update ECM blasts
     for (i = 0; i < Num_ecms(); i++)
     {
@@ -639,8 +642,9 @@ static void Ecm_update(void)
                 if (pl)
                     pl->ecmcount--;
             }
-            --world->NumEcms;
-            world->ecms[i] = world->ecms[world->NumEcms];
+            // --world->NumEcms;
+            // world->ecms[i] = world->ecms[world->NumEcms];
+            world->ecms.erase(world->ecms.begin() + i);
             i--;
         }
     }
@@ -650,14 +654,18 @@ static void Transporter_update(void)
 {
     int i;
 
+    if (Num_transporters() > 0)
+        warn("Num_transporters: transporters: %d", Num_transporters());
+
     for (i = 0; i < Num_transporters(); i++)
     {
         transporter_t *trans = Transporter_by_index(i);
 
         if (--trans->count <= 0)
         {
-            --world->NumTransporters;
-            world->transporters[i] = world->transporters[world->NumTransporters];
+            // --world->NumTransporters;
+            // world->transporters[i] = world->transporters[world->NumTransporters];
+            world->transporters.erase(world->transporters.begin() + i);
             i--;
         }
     }
@@ -1013,188 +1021,190 @@ static void Update_players(void)
 
         Player_set_mass(pl);
 
-        if (BIT(pl->obj_status, WARPING))
-        {
-            position_t w;
-            int wx, wy, proximity,
-                nearestFront, nearestRear,
-                proxFront, proxRear, j;
+        // TODO: wormhole update
 
-            if (pl->wormHoleHit >= world->NumWormholes)
-            {
-                /* could happen if the player hit a temporary wormhole
-                   that was removed while the player was warping */
-                CLR_BIT(pl->obj_status, WARPING);
-                break;
-            }
+        //         if (BIT(pl->obj_status, WARPING))
+        //         {
+        //             position_t w;
+        //             int wx, wy, proximity,
+        //                 nearestFront, nearestRear,
+        //                 proxFront, proxRear, j;
 
-            if (pl->wormHoleHit != -1)
-            {
-                if (world->wormholes[pl->wormHoleHit].countdown > 0)
-                {
-                    j = world->wormholes[pl->wormHoleHit].lastdest;
-                }
-                else if (rfrac() < 0.10)
-                {
-                    do
-                        j = (int)(rfrac() * world->NumWormholes);
-                    while (world->wormholes[j].type == WORM_IN || pl->wormHoleHit == j || world->wormholes[j].temporary);
-                }
-                else
-                {
-                    nearestFront = nearestRear = -1;
-                    proxFront = proxRear = 10000000;
+        //             if (pl->wormHoleHit >= world->NumWormholes)
+        //             {
+        //                 /* could happen if the player hit a temporary wormhole
+        //                    that was removed while the player was warping */
+        //                 CLR_BIT(pl->obj_status, WARPING);
+        //                 break;
+        //             }
 
-                    for (j = 0; j < world->NumWormholes; j++)
-                    {
-                        if (j == pl->wormHoleHit || world->wormholes[j].type == WORM_IN || world->wormholes[j].temporary)
-                            continue;
+        //             if (pl->wormHoleHit != -1)
+        //             {
+        //                 if (world->wormholes[pl->wormHoleHit].countdown > 0)
+        //                 {
+        //                     j = world->wormholes[pl->wormHoleHit].lastdest;
+        //                 }
+        //                 else if (rfrac() < 0.10)
+        //                 {
+        //                     do
+        //                         j = (int)(rfrac() * world->NumWormholes);
+        //                     while (world->wormholes[j].type == WORM_IN || pl->wormHoleHit == j || world->wormholes[j].temporary);
+        //                 }
+        //                 else
+        //                 {
+        //                     nearestFront = nearestRear = -1;
+        //                     proxFront = proxRear = 10000000;
 
-                        wx = (world->wormholes[j].blk_pos.bx -
-                              world->wormholes[pl->wormHoleHit].blk_pos.bx) *
-                             BLOCK_SZ;
-                        wy = (world->wormholes[j].blk_pos.by -
-                              world->wormholes[pl->wormHoleHit].blk_pos.by) *
-                             BLOCK_SZ;
-                        wx = WRAP_DX(wx);
-                        wy = WRAP_DX(wy);
+        //                     for (j = 0; j < world->NumWormholes; j++)
+        //                     {
+        //                         if (j == pl->wormHoleHit || world->wormholes[j].type == WORM_IN || world->wormholes[j].temporary)
+        //                             continue;
 
-                        proximity = (int)(pl->vel.y * wx + pl->vel.x * wy);
-                        proximity = ABS(proximity);
+        //                         wx = (world->wormholes[j].blk_pos.bx -
+        //                               world->wormholes[pl->wormHoleHit].blk_pos.bx) *
+        //                              BLOCK_SZ;
+        //                         wy = (world->wormholes[j].blk_pos.by -
+        //                               world->wormholes[pl->wormHoleHit].blk_pos.by) *
+        //                              BLOCK_SZ;
+        //                         wx = WRAP_DX(wx);
+        //                         wy = WRAP_DX(wy);
 
-                        if (pl->vel.x * wx + pl->vel.y * wy < 0)
-                        {
-                            if (proximity < proxRear)
-                            {
-                                nearestRear = j;
-                                proxRear = proximity;
-                            }
-                        }
-                        else if (proximity < proxFront)
-                        {
-                            nearestFront = j;
-                            proxFront = proximity;
-                        }
-                    }
+        //                         proximity = (int)(pl->vel.y * wx + pl->vel.x * wy);
+        //                         proximity = ABS(proximity);
 
-#define RANDOM_REAR_WORM
-#ifndef RANDOM_REAR_WORM
-                    j = nearestFront < 0 ? nearestRear : nearestFront;
-#else  /* RANDOM_REAR_WORM */
-                    if (nearestFront >= 0)
-                    {
-                        j = nearestFront;
-                    }
-                    else
-                    {
-                        do
-                            j = (int)(rfrac() * world->NumWormholes);
-                        while (world->wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
-                    }
-#endif /* RANDOM_REAR_WORM */
-                }
+        //                         if (pl->vel.x * wx + pl->vel.y * wy < 0)
+        //                         {
+        //                             if (proximity < proxRear)
+        //                             {
+        //                                 nearestRear = j;
+        //                                 proxRear = proximity;
+        //                             }
+        //                         }
+        //                         else if (proximity < proxFront)
+        //                         {
+        //                             nearestFront = j;
+        //                             proxFront = proximity;
+        //                         }
+        //                     }
 
-                sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
+        // #define RANDOM_REAR_WORM
+        // #ifndef RANDOM_REAR_WORM
+        //                     j = nearestFront < 0 ? nearestRear : nearestFront;
+        // #else  /* RANDOM_REAR_WORM */
+        //                     if (nearestFront >= 0)
+        //                     {
+        //                         j = nearestFront;
+        //                     }
+        //                     else
+        //                     {
+        //                         do
+        //                             j = (int)(rfrac() * world->NumWormholes);
+        //                         while (world->wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
+        //                     }
+        // #endif /* RANDOM_REAR_WORM */
+        //                 }
 
-                w.x = (world->wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
-                w.y = (world->wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
-            }
-            else
-            { /* wormHoleHit == -1 */
-                int counter;
-                for (counter = 20; counter > 0; counter--)
-                {
-                    w.x = (int)(rfrac() * world->width);
-                    w.y = (int)(rfrac() * world->height);
-                    if (BIT(1U << world->block[(int)(w.x / BLOCK_SZ)]
-                                              [(int)(w.y / BLOCK_SZ)],
-                            SPACE_BLOCKS))
-                    {
-                        break;
-                    }
-                }
-                if (!counter)
-                {
-                    w.x = CLICK_TO_PIXEL(pl->pos.cx);
-                    w.y = CLICK_TO_PIXEL(pl->pos.cy);
-                }
-                if (counter && options.wormTime && BIT(1U << world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << world->block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
-                {
-                    add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
-                                       OBJ_Y_IN_BLOCKS(pl),
-                                       (int)(w.x / BLOCK_SZ),
-                                       (int)(w.y / BLOCK_SZ));
-                }
-                j = -2;
-                sound_play_sensors(pl->pos, HYPERJUMP_SOUND);
-            }
+        //                 sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 
-            /*
-             * Don't connect to balls while warping.
-             */
-            if (BIT(pl->used, USES_CONNECTOR))
-                pl->ball = NULL;
+        //                 w.x = (world->wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
+        //                 w.y = (world->wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
+        //             }
+        //             else
+        //             { /* wormHoleHit == -1 */
+        //                 int counter;
+        //                 for (counter = 20; counter > 0; counter--)
+        //                 {
+        //                     w.x = (int)(rfrac() * world->width);
+        //                     w.y = (int)(rfrac() * world->height);
+        //                     if (BIT(1U << world->block[(int)(w.x / BLOCK_SZ)]
+        //                                               [(int)(w.y / BLOCK_SZ)],
+        //                             SPACE_BLOCKS))
+        //                     {
+        //                         break;
+        //                     }
+        //                 }
+        //                 if (!counter)
+        //                 {
+        //                     w.x = CLICK_TO_PIXEL(pl->pos.cx);
+        //                     w.y = CLICK_TO_PIXEL(pl->pos.cy);
+        //                 }
+        //                 if (counter && options.wormTime && BIT(1U << world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << world->block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+        //                 {
+        //                     add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
+        //                                        OBJ_Y_IN_BLOCKS(pl),
+        //                                        (int)(w.x / BLOCK_SZ),
+        //                                        (int)(w.y / BLOCK_SZ));
+        //                 }
+        //                 j = -2;
+        //                 sound_play_sensors(pl->pos, HYPERJUMP_SOUND);
+        //             }
 
-            if (BIT(pl->have, HAS_BALL))
-            {
-                /*
-                 * Take every ball associated with player through worm hole.
-                 * NB. the connector can cross a wall boundary this is
-                 * allowed, so long as the ball itself doesn't collide.
-                 */
-                int k;
-                for (k = 0; k < NumObjs; k++)
-                {
-                    object_t *b = Obj[k];
-                    if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
-                    {
-                        position_t ballpos;
-                        ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
-                        ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
-                        ballpos.x = WRAP_XPIXEL(ballpos.x);
-                        ballpos.y = WRAP_YPIXEL(ballpos.y);
-                        if (ballpos.x < 0 || ballpos.x >= world->width || ballpos.y < 0 || ballpos.y >= world->height)
-                        {
-                            b->life = 0;
-                        }
-                        else
-                        {
-                            clpos_t ball_clpos;
-                            ball_clpos.cx = FLOAT_TO_CLICK(ballpos.x);
-                            ball_clpos.cy = FLOAT_TO_CLICK(ballpos.y);
-                            Object_position_set_clpos(b, ball_clpos);
-                            Object_position_remember(b);
-                            b->vel.x *= WORM_BRAKE_FACTOR;
-                            b->vel.y *= WORM_BRAKE_FACTOR;
-                            Cell_add_object(b);
-                        }
-                    }
-                }
-            }
+        //             /*
+        //              * Don't connect to balls while warping.
+        //              */
+        //             if (BIT(pl->used, USES_CONNECTOR))
+        //                 pl->ball = NULL;
 
-            pl->wormHoleDest = j;
-            clpos_t pos;
-            pos.cx = FLOAT_TO_CLICK(w.x);
-            pos.cy = FLOAT_TO_CLICK(w.y);
-            Player_position_init_clpos(pl, pos);
-            pl->vel.x *= WORM_BRAKE_FACTOR;
-            pl->vel.y *= WORM_BRAKE_FACTOR;
-            pl->forceVisible += 15;
+        //             if (BIT(pl->have, HAS_BALL))
+        //             {
+        //                 /*
+        //                  * Take every ball associated with player through worm hole.
+        //                  * NB. the connector can cross a wall boundary this is
+        //                  * allowed, so long as the ball itself doesn't collide.
+        //                  */
+        //                 int k;
+        //                 for (k = 0; k < NumObjs; k++)
+        //                 {
+        //                     object_t *b = Obj[k];
+        //                     if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
+        //                     {
+        //                         position_t ballpos;
+        //                         ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
+        //                         ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
+        //                         ballpos.x = WRAP_XPIXEL(ballpos.x);
+        //                         ballpos.y = WRAP_YPIXEL(ballpos.y);
+        //                         if (ballpos.x < 0 || ballpos.x >= world->width || ballpos.y < 0 || ballpos.y >= world->height)
+        //                         {
+        //                             b->life = 0;
+        //                         }
+        //                         else
+        //                         {
+        //                             clpos_t ball_clpos;
+        //                             ball_clpos.cx = FLOAT_TO_CLICK(ballpos.x);
+        //                             ball_clpos.cy = FLOAT_TO_CLICK(ballpos.y);
+        //                             Object_position_set_clpos(b, ball_clpos);
+        //                             Object_position_remember(b);
+        //                             b->vel.x *= WORM_BRAKE_FACTOR;
+        //                             b->vel.y *= WORM_BRAKE_FACTOR;
+        //                             Cell_add_object(b);
+        //                         }
+        //                     }
+        //                 }
+        //             }
 
-            if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
-            {
-                world->wormholes[pl->wormHoleHit].lastdest = j;
-                if (!world->wormholes[j].temporary)
-                {
-                    world->wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
-                }
-            }
+        //             pl->wormHoleDest = j;
+        //             clpos_t pos;
+        //             pos.cx = FLOAT_TO_CLICK(w.x);
+        //             pos.cy = FLOAT_TO_CLICK(w.y);
+        //             Player_position_init_clpos(pl, pos);
+        //             pl->vel.x *= WORM_BRAKE_FACTOR;
+        //             pl->vel.y *= WORM_BRAKE_FACTOR;
+        //             pl->forceVisible += 15;
 
-            CLR_BIT(pl->obj_status, WARPING);
-            SET_BIT(pl->obj_status, WARPED);
+        //             if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
+        //             {
+        //                 world->wormholes[pl->wormHoleHit].lastdest = j;
+        //                 if (!world->wormholes[j].temporary)
+        //                 {
+        //                     world->wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
+        //                 }
+        //             }
 
-            sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
-        }
+        //             CLR_BIT(pl->obj_status, WARPING);
+        //             SET_BIT(pl->obj_status, WARPED);
+
+        //             sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
+        //         }
 
         if (!Player_is_paused(pl))
         {
@@ -1278,13 +1288,14 @@ void Update_objects(void)
      */
     Update_players();
 
-    for (int i = world->NumWormholes - 1; i >= 0; i--)
-    {
-        if (world->wormholes[i].countdown > 0)
-            world->wormholes[i].countdown--;
-        if (world->wormholes[i].temporary && world->wormholes[i].countdown <= 0)
-            remove_temp_wormhole(i);
-    }
+    // TODO
+    // for (int i = world->NumWormholes - 1; i >= 0; i--)
+    // {
+    //     if (world->wormholes[i].countdown > 0)
+    //         world->wormholes[i].countdown--;
+    //     if (world->wormholes[i].temporary && world->wormholes[i].countdown <= 0)
+    //         remove_temp_wormhole(i);
+    // }
 
     // xpinfo("visibility");
 

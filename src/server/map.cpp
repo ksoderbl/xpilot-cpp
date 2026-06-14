@@ -193,7 +193,6 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
 {
     base_t t;
     int ind = Num_bases(), i;
-
     t.pos = pos;
     // t.order = order;
     /*
@@ -308,29 +307,15 @@ int World_place_wormhole(clpos_t pos, wormtype_t type)
     t.blk_pos = Clpos_to_blkpos(pos);
     t.pos = pos;
     t.countdown = 0;
-    t.lastdest = -1;
+    t.lastdest = NO_IND;
     t.temporary = false;
-    t.lastblock = SPACE;
-    t.lastID = -1;
-
-    // Arraylist_add(world->wormholes, &t);
-    world->wormholes[ind] = t;
-    world->NumWormholes++;
-    return ind;
-
-    // wormhole_t t;
-    // int ind = Num_wormholes();
-
-    // t.pos = pos;
-    // t.countdown = 0;
-    // t.lastdest = NO_IND;
     // t.type = type;
-    // t.lastblock = SPACE;
-    // t.lastID = NO_ID;
-    // t.group = NO_GROUP;
-    // Arraylist_add(world->wormholes, &t);
+    t.lastblock = SPACE;
+    t.lastID = NO_ID;
+    t.group = NO_GROUP;
 
-    // return ind;
+    world->wormholes.push_back(t);
+    return ind;
 }
 
 /*
@@ -409,7 +394,7 @@ int World_place_item_concentrator(clpos_t pos)
     int ind = Num_itemConcs();
 
     t.pos = pos;
-    world->itemConcentrators.push_back(t);
+    world->itemConcs.push_back(t);
 
     return ind;
 }
@@ -522,26 +507,17 @@ void World_free(void)
     XFREE(world->itemID);
     XFREE(world->gravity);
     world->asteroidConcs.clear();
-    XFREE(world->bases);
+    world->bases.clear();
     world->cannons.clear();
-    XFREE(world->ecms);
+    world->ecms.clear();
     world->fuels.clear();
     world->frictionAreas.clear();
     world->gravs.clear();
-    world->itemConcentrators.clear();
+    world->itemConcs.clear();
     world->targets.clear();
-    XFREE(world->transporters);
+    world->transporters.clear();
     world->treasures.clear();
-    XFREE(world->wormholes);
-    /*XFREE(world->gravs);*/
-    /*XFREE(world->bases);*/
-    /*XFREE(world->cannons);*/
-    // XFREE(world->checks);
-    /*XFREE(world->fuels);*/
-    /*XFREE(world->wormholes);*/
-    /*XFREE(world->itemConcs);
-    XFREE(world->asteroidConcs);
-    XFREE(world->frictionAreas);*/
+    world->wormholes.clear();
 }
 
 static bool World_alloc(void)

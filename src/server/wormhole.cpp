@@ -126,6 +126,8 @@ void Object_finish_warp(object_t *obj)
 {
 }
 
+/*
+TODO:
 void add_temp_wormholes(int xin, int yin, int xout, int yout)
 {
     wormhole_t inhole, outhole, *wwhtemp;
@@ -164,8 +166,10 @@ void remove_temp_wormhole(int ind)
     wormhole_t hole;
 
     hole = world->wormholes[ind];
+
     world->block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
     world->itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
+
     world->NumWormholes--;
     if (ind != world->NumWormholes)
     {
@@ -174,3 +178,4 @@ void remove_temp_wormhole(int ind)
     world->wormholes = (wormhole_t *)realloc(world->wormholes,
                                              world->NumWormholes * sizeof(wormhole_t));
 }
+*/

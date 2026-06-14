@@ -85,6 +85,26 @@ static void Xpmap_friction_area_to_polygon(int fa_ind);
 
 static bool compress_maps = true;
 
+static void Map_extra_error(int line_num)
+{
+    static int prev_line_num, error_count;
+    const int max_error = 5;
+
+    if (line_num > prev_line_num)
+    {
+        prev_line_num = line_num;
+        if (++error_count <= max_error)
+        {
+            printf("Map file contains extranous characters on line %d\n",
+                   line_num);
+        }
+        else if (error_count - max_error == 1)
+        {
+            printf("And so on...\n");
+        }
+    }
+}
+
 static void Xpmap_extra_error(int line_num)
 {
     static int prev_line_num, error_count;
@@ -113,45 +133,6 @@ static void Xpmap_missing_error(int line_num)
             warn("Not enough map data on map data line %d", line_num);
         else if (error_count - max_error == 1)
             warn("And so on...");
-    }
-}
-
-static void Map_extra_error(int line_num)
-{
-    static int prev_line_num, error_count;
-    const int max_error = 5;
-
-    if (line_num > prev_line_num)
-    {
-        prev_line_num = line_num;
-        if (++error_count <= max_error)
-        {
-            printf("Map file contains extranous characters on line %d\n",
-                   line_num);
-        }
-        else if (error_count - max_error == 1)
-        {
-            printf("And so on...\n");
-        }
-    }
-}
-
-static void Map_missing_error(int line_num)
-{
-    static int prev_line_num, error_count;
-    const int max_error = 5;
-
-    if (line_num > prev_line_num)
-    {
-        prev_line_num = line_num;
-        if (++error_count <= max_error)
-        {
-            printf("Not enough map data on map data line %d\n", line_num);
-        }
-        else if (error_count - max_error == 1)
-        {
-            printf("And so on...\n");
-        }
     }
 }
 
@@ -827,10 +808,8 @@ void Xpmap_grok_map_data(void)
                 continue;
             }
             else
-            {
                 /* make extra border of solid rock */
-                c = 'x';
-            }
+                c = XPMAP_FILLED;
         }
         else
         {
@@ -840,26 +819,22 @@ void Xpmap_grok_map_data(void)
                 if (x < world->x)
                 {
                     /* not enough map data on this line */
-                    Map_missing_error(world->y - y);
-                    c = ' ';
+                    Xpmap_missing_error(world->y - y);
+                    c = XPMAP_SPACE;
                 }
                 else
-                {
                     c = '\n';
-                }
             }
             else
             {
                 if (c == '\n' && x < world->x)
                 {
                     /* not enough map data on this line */
-                    Map_missing_error(world->y - y);
-                    c = ' ';
+                    Xpmap_missing_error(world->y - y);
+                    c = XPMAP_SPACE;
                 }
                 else
-                {
                     s++;
-                }
             }
         }
         if (x >= world->x || c == '\n')
@@ -868,103 +843,17 @@ void Xpmap_grok_map_data(void)
             x = -1;
             if (c != '\n')
             { /* Get rest of line */
-                Map_extra_error(world->y - y);
+                Xpmap_extra_error(world->y - y);
                 while (c != '\n' && c != EOF)
-                {
                     c = *s++;
-                }
             }
             continue;
         }
 
-        switch (world->block[x][y] = c)
-        {
-        case 'r':
-        case 'd':
-        case 'f':
-        case 'c':
-            // world->NumCannons++;
-            break;
-        case '*':
-        case '^':
-            // world->NumTreasures++;
-            break;
-        case '#':
-            // world->NumFuels++;
-            break;
-        case '!':
-            // world->NumTargets++;
-            break;
-        case '%':
-            // world->NumItemConcentrators++;
-            break;
-        case '&':
-            // world->NumAsteroidConcs++;
-            break;
-        case '_':
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            world->NumBases++;
-            break;
-        case '+':
-        case '-':
-        case '>':
-        case '<':
-        case 'i':
-        case 'm':
-        case 'j':
-        case 'k':
-            // world->NumGravs++;
-            break;
-        case '@':
-        case '(':
-        case ')':
-            world->NumWormholes++;
-            break;
-        case 'A':
-        case 'B':
-        case 'C':
-        case 'D':
-        case 'E':
-        case 'F':
-        case 'G':
-        case 'H':
-        case 'I':
-        case 'J':
-        case 'K':
-        case 'L':
-        case 'M':
-        case 'N':
-        case 'O':
-        case 'P':
-        case 'Q':
-        case 'R':
-        case 'S':
-        case 'T':
-        case 'U':
-        case 'V':
-        case 'W':
-        case 'X':
-        case 'Y':
-        case 'Z':
-            // if (BIT(world->rules->mode, TIMING))
-            //     world->NumChecks++;
-            break;
-        default:
-            break;
-        }
+        world->block[x][y] = c;
     }
 
-    free(options.mapData);
-    options.mapData = NULL;
+    XFREE(options.mapData);
 }
 
 /*
@@ -1085,135 +974,50 @@ static void Xpmap_place_block(blkpos_t blk, int type)
     World_set_block(blk, type);
 }
 
+static int World_place_base_on_xpmap(blkpos_t blk, int team, int x, int y)
+{
+    World_set_block(blk, BASE);
+
+    world->itemID[x][y] = Num_bases();
+
+    base_t t;
+    int ind = Num_bases();
+
+    t.blk_pos = blk;
+    t.pos = Block_get_center_clpos(blk);
+
+    /*
+     * The direction of the base should be so that it points
+     * up with respect to the gravity in the region.  This
+     * is fixed in Find_base_dir() when the gravity has
+     * been computed.
+     */
+    t.dir = DIR_UP;
+    if (BIT(world->rules->mode, TEAM_PLAY))
+    {
+        if (team >= 0 && team <= 0)
+            t.team = team;
+        else
+            t.team = 0;
+
+        world->teams[t.team].NumBases++;
+        if (world->teams[t.team].NumBases == 1)
+            world->NumTeamBases++;
+    }
+    else
+        t.team = TEAM_NOT_SET;
+
+    world->bases.push_back(t);
+    return ind;
+}
+
 void Xpmap_tags_to_internal_data(void)
 {
     int i, x, y, c;
     char *s;
 
-    /*
-     * Get space for special objects.
-     */
-    // if (world->NumCannons > 0 && (world->cannons = (cannon_t *)
-    //                                   malloc(world->NumCannons * sizeof(cannon_t))) == NULL)
-    // {
-    //     error("Out of memory - cannons");
-    //     exit(-1);
-    // }
-    // if (world->NumFuels > 0 && (world->fuels = (fuel_t *)
-    //                                 malloc(world->NumFuels * sizeof(fuel_t))) == NULL)
-    // {
-    //     error("Out of memory - fuel depots");
-    //     exit(-1);
-    // }
-    // if (world->NumGravs > 0 && (world->gravs = (grav_t *)
-    //                                 malloc(world->NumGravs * sizeof(grav_t))) == NULL)
-    // {
-    //     error("Out of memory - gravs");
-    //     exit(-1);
-    // }
-    if (world->NumWormholes > 0 && (world->wormholes = (wormhole_t *)
-                                        malloc(world->NumWormholes * sizeof(wormhole_t))) == NULL)
-    {
-        error("Out of memory - wormholes");
-        exit(-1);
-    }
-    // if (world->NumTreasures > 0 && (world->treasures = (treasure_t *)
-    //                                     malloc(world->NumTreasures * sizeof(treasure_t))) == NULL)
-    // {
-    //     error("Out of memory - treasures");
-    //     exit(-1);
-    // }
-    // if (world->NumTargets > 0 && (world->targets = (target_t *)
-    //                                   malloc(world->NumTargets * sizeof(target_t))) == NULL)
-    // {
-    //     error("Out of memory - targets");
-    //     exit(-1);
-    // }
-    // if (world->NumItemConcentrators > 0 && (world->itemConcentrators = (item_concentrator_t *)
-    //                                             malloc(world->NumItemConcentrators * sizeof(item_concentrator_t))) == NULL)
-    // {
-    //     error("Out of memory - item concentrators");
-    //     exit(-1);
-    // }
-    // if (world->NumAsteroidConcs > 0 && (world->asteroidConcs = (asteroid_concentrator_t *)
-    //                                         malloc(world->NumAsteroidConcs * sizeof(asteroid_concentrator_t))) == NULL)
-    // {
-    //     error("Out of memory - asteroid concentrators");
-    //     exit(-1);
-    // }
-    if (world->NumBases > 0)
-    {
-        if ((world->bases = (base_t *)
-                 malloc(world->NumBases * sizeof(base_t))) == NULL)
-        {
-            error("Out of memory - bases");
-            exit(-1);
-        }
-    }
-    else
-    {
-        error("WARNING: map has no bases!");
-    }
-
-    printf("grok map: allocate ecms, friction areas and transporters\n");
-
-    // Allocate space for Ecms, FrictionAreas and Transporters
-    // ecm_t *Ecms[MAX_TOTAL_ECMS];
-    // transporter_t *Transporters[MAX_TOTAL_TRANSPORTERS];
-    if (MAX_TOTAL_ECMS > 0 && (world->ecms = (ecm_t *)
-                                   malloc(MAX_TOTAL_ECMS * sizeof(ecm_t))) == NULL)
-    {
-        error("Out of memory - ecms");
-        exit(-1);
-    }
-    // if (MAX_TOTAL_FRICTIONAREAS > 0 && (world->frictionAreas = (friction_area_t *)
-    //                                         malloc(MAX_TOTAL_FRICTIONAREAS * sizeof(friction_area_t))) == NULL)
-    // {
-    //     error("Out of memory - friction areas");
-    //     exit(-1);
-    // }
-    if (MAX_TOTAL_TRANSPORTERS > 0 && (world->transporters = (transporter_t *)
-                                           malloc(MAX_TOTAL_TRANSPORTERS * sizeof(transporter_t))) == NULL)
-    {
-        error("Out of memory - transporters");
-        exit(-1);
-    }
-
-    /*
-     * Now reset all counters since we will recount everything
-     * and reuse these counters while inserting the objects
-     * into structures.
-     */
-    // world->NumAsteroidConcs = 0;
-    world->asteroidConcs.clear();
-
-    world->NumBases = 0;
-    // world->bases.clear();
-
-    // world->NumCannons = 0;
-    world->cannons.clear();
-
-    world->NumEcms = 0;
-
-    // world->NumFuels = 0;
-    world->fuels.clear();
-
-    // world->NumFrictionAreas = 0;
-    world->frictionAreas.clear();
-    // world->NumGravs = 0;
-    world->gravs.clear();
-    // world->NumItemConcentrators = 0;
-    world->itemConcentrators.clear();
-
-    // world->NumTargets = 0;
-    world->targets.clear();
-
-    world->NumTransporters = 0;
-
-    // world->NumTreasures = 0;
-    world->treasures.clear();
-
-    world->NumWormholes = 0;
+    // TODO
+    // error("WARNING: map has no bases!");
 
     for (i = 0; i < MAX_TEAMS; i++)
     {
@@ -1367,37 +1171,39 @@ void Xpmap_tags_to_internal_data(void)
                 case XPMAP_BASE_TEAM_7:
                 case XPMAP_BASE_TEAM_8:
                 case XPMAP_BASE_TEAM_9:
-                    world->block[x][y] = BASE;
-                    // line[y] = BASE;
-                    world->itemID[x][y] = Num_bases();
-                    world->bases[Num_bases()].blk_pos = Clpos_to_blkpos(pos);
-                    world->bases[Num_bases()].pos = pos;
-                    /*
-                     * The direction of the base should be so that it points
-                     * up with respect to the gravity in the region.  This
-                     * is fixed in Find_base_dir() when the gravity has
-                     * been computed.
-                     */
-                    world->bases[Num_bases()].dir = DIR_UP;
-                    if (BIT(world->rules->mode, TEAM_PLAY))
-                    {
-                        if (c >= '0' && c <= '9')
-                        {
-                            world->bases[Num_bases()].team = c - '0';
-                        }
-                        else
-                        {
-                            world->bases[Num_bases()].team = 0;
-                        }
-                        world->teams[world->bases[Num_bases()].team].NumBases++;
-                        if (world->teams[world->bases[Num_bases()].team].NumBases == 1)
-                            world->NumTeamBases++;
-                    }
-                    else
-                    {
-                        world->bases[Num_bases()].team = TEAM_NOT_SET;
-                    }
-                    world->NumBases++;
+                    // world->block[x][y] = BASE;
+                    // // line[y] = BASE;
+                    // world->itemID[x][y] = Num_bases();
+                    // world->bases[Num_bases()].blk_pos = Clpos_to_blkpos(pos);
+                    // world->bases[Num_bases()].pos = pos;
+                    // /*
+                    //  * The direction of the base should be so that it points
+                    //  * up with respect to the gravity in the region.  This
+                    //  * is fixed in Find_base_dir() when the gravity has
+                    //  * been computed.
+                    //  */
+                    // world->bases[Num_bases()].dir = DIR_UP;
+                    // if (BIT(world->rules->mode, TEAM_PLAY))
+                    // {
+                    //     if (c >= '0' && c <= '9')
+                    //     {
+                    //         world->bases[Num_bases()].team = c - '0';
+                    //     }
+                    //     else
+                    //     {
+                    //         world->bases[Num_bases()].team = 0;
+                    //     }
+                    //     world->teams[world->bases[Num_bases()].team].NumBases++;
+                    //     if (world->teams[world->bases[Num_bases()].team].NumBases == 1)
+                    //         world->NumTeamBases++;
+                    // }
+                    // else
+                    // {
+                    //     world->bases[Num_bases()].team = TEAM_NOT_SET;
+                    // }
+                    // world->NumBases++;
+                    // Xpmap_place_base(blk, (int)(c - XPMAP_BASE_TEAM_0));
+                    World_place_base_on_xpmap(blk, (int)(c - XPMAP_BASE_TEAM_0), x, y);
                     break;
 
                 case XPMAP_POS_GRAV:
@@ -1440,31 +1246,32 @@ void Xpmap_tags_to_internal_data(void)
                     // world->itemID[x][y] = Num_wormholes();
                     // worm_out++;
                     // break;
-                    world->block[x][y] = WORMHOLE;
-                    world->itemID[x][y] = world->NumWormholes;
-                    world->wormholes[world->NumWormholes].blk_pos = Clpos_to_blkpos(pos);
-                    world->wormholes[world->NumWormholes].pos = pos;
-                    world->wormholes[world->NumWormholes].countdown = 0;
-                    world->wormholes[world->NumWormholes].lastdest = -1;
-                    world->wormholes[world->NumWormholes].temporary = 0;
-                    world->wormholes[world->NumWormholes].lastblock = SPACE;
-                    world->wormholes[world->NumWormholes].lastID = -1;
-                    if (c == '@')
-                    {
-                        world->wormholes[world->NumWormholes].type = WORM_NORMAL;
-                        worm_norm++;
-                    }
-                    else if (c == '(')
-                    {
-                        world->wormholes[world->NumWormholes].type = WORM_IN;
-                        worm_in++;
-                    }
-                    else
-                    {
-                        world->wormholes[world->NumWormholes].type = WORM_OUT;
-                        worm_out++;
-                    }
-                    world->NumWormholes++;
+
+                    // world->block[x][y] = WORMHOLE;
+                    // world->itemID[x][y] = world->NumWormholes;
+                    // world->wormholes[world->NumWormholes].blk_pos = Clpos_to_blkpos(pos);
+                    // world->wormholes[world->NumWormholes].pos = pos;
+                    // world->wormholes[world->NumWormholes].countdown = 0;
+                    // world->wormholes[world->NumWormholes].lastdest = -1;
+                    // world->wormholes[world->NumWormholes].temporary = 0;
+                    // world->wormholes[world->NumWormholes].lastblock = SPACE;
+                    // world->wormholes[world->NumWormholes].lastID = -1;
+                    // if (c == '@')
+                    // {
+                    //     world->wormholes[world->NumWormholes].type = WORM_NORMAL;
+                    //     worm_norm++;
+                    // }
+                    // else if (c == '(')
+                    // {
+                    //     world->wormholes[world->NumWormholes].type = WORM_IN;
+                    //     worm_in++;
+                    // }
+                    // else
+                    // {
+                    //     world->wormholes[world->NumWormholes].type = WORM_OUT;
+                    //     worm_out++;
+                    // }
+                    // world->NumWormholes++;
 
                     // if (c == '@')
                     // {
@@ -1545,44 +1352,44 @@ void Xpmap_tags_to_internal_data(void)
             }
         }
 
-        printf("grok map: wormhole hacks\n");
-        /*
-         * Verify that the wormholes are consistent, i.e. that if
-         * we have no 'out' wormholes, make sure that we don't have
-         * any 'in' wormholes, and (less critical) if we have no 'in'
-         * wormholes, make sure that we don't have any 'out' wormholes.
-         */
-        if ((worm_norm) ? (worm_norm + worm_out < 2)
-            : (worm_in) ? (worm_out < 1)
-                        : (worm_out > 0))
-        {
+        // printf("grok map: wormhole hacks\n");
+        // /*
+        //  * Verify that the wormholes are consistent, i.e. that if
+        //  * we have no 'out' wormholes, make sure that we don't have
+        //  * any 'in' wormholes, and (less critical) if we have no 'in'
+        //  * wormholes, make sure that we don't have any 'out' wormholes.
+        //  */
+        // if ((worm_norm) ? (worm_norm + worm_out < 2)
+        //     : (worm_in) ? (worm_out < 1)
+        //                 : (worm_out > 0))
+        // {
 
-            int i;
+        //     int i;
 
-            printf("Inconsistent use of wormholes, removing them.\n");
-            for (i = 0; i < world->NumWormholes; i++)
-            {
-                world->block
-                    [world->wormholes[i].blk_pos.bx]
-                    [world->wormholes[i].blk_pos.by] = SPACE;
-                world->itemID
-                    [world->wormholes[i].blk_pos.bx]
-                    [world->wormholes[i].blk_pos.by] = (uint16_t)-1;
-            }
-            world->NumWormholes = 0;
-        }
+        //     printf("Inconsistent use of wormholes, removing them.\n");
+        //     for (i = 0; i < Num_wormholes(); i++)
+        //     {
+        //         world->block
+        //             [world->wormholes[i].blk_pos.bx]
+        //             [world->wormholes[i].blk_pos.by] = SPACE;
+        //         world->itemID
+        //             [world->wormholes[i].blk_pos.bx]
+        //             [world->wormholes[i].blk_pos.by] = (uint16_t)-1;
+        //     }
+        //     world->NumWormholes = 0;
+        // }
 
-        if (!options.wormTime)
-        {
-            for (i = 0; i < world->NumWormholes; i++)
-            {
-                int j = (int)(rfrac() * world->NumWormholes);
-                while (world->wormholes[j].type == WORM_IN)
-                    j = (int)(rfrac() * world->NumWormholes);
-                world->wormholes[i].lastdest = j;
-                // printf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
-            }
-        }
+        // if (!options.wormTime)
+        // {
+        //     for (i = 0; i < Num_wormholes(); i++)
+        //     {
+        //         int j = (int)(rfrac() * Num_wormholes());
+        //         while (world->wormholes[j].type == WORM_IN)
+        //             j = (int)(rfrac() * Num_wormholes());
+        //         world->wormholes[i].lastdest = j;
+        //         // printf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
+        //     }
+        // }
 
         if (BIT(world->rules->mode, TIMING) && Num_checks() == 0)
         {
@@ -2302,37 +2109,18 @@ static void Init_map(void)
     world->cheight = PIXEL_TO_CLICK(world->height);
     world->click_hypotenuse = LENGTH(world->cwidth, world->cheight);
 
-    // world->NumAsteroidConcs = 0;
     world->asteroidConcs.clear();
-
-    world->NumBases = 0;
-    // world->bases.clear();
-
-    // world->NumCannons = 0;
+    world->bases.clear();
     world->cannons.clear();
-
-    world->NumEcms = 0;
-
-    // world->NumFuels = 0;
+    world->ecms.clear();
     world->fuels.clear();
-
-    // world->NumFrictionAreas = 0;
     world->frictionAreas.clear();
-
-    // world->NumGravs = 0;
     world->gravs.clear();
-    // world->NumItemConcentrators = 0;
-    world->itemConcentrators.clear();
-
-    // world->NumTargets = 0;
+    world->itemConcs.clear();
     world->targets.clear();
-
-    world->NumTransporters = 0;
-
-    // world->NumTreasures = 0;
+    world->transporters.clear();
     world->treasures.clear();
-
-    world->NumWormholes = 0;
+    world->wormholes.clear();
 }
 
 static bool Xpmap_world_alloc(void)
@@ -2357,25 +2145,6 @@ static bool Xpmap_world_alloc(void)
         malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
     world->gravity = (vector_t **)
         malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
-    // world->gravs = NULL;
-    world->bases = NULL;
-    // world->fuels = NULL;
-    // world->cannons = NULL;
-    world->wormholes = NULL;
-    // world->itemConcentrators = NULL;
-    // world->asteroidConcs = NULL;
-    world->ecms = NULL;
-    // world->frictionAreas = NULL;
-    world->transporters = NULL;
-
-    /*assert(world->gravs == NULL);*/
-    /*assert(world->bases == NULL);*/
-    /*assert(world->fuels == NULL);*/
-    /*assert(world->cannons == NULL);*/
-    // assert(world->checks == NULL);
-    /*assert(world->wormholes == NULL);*/
-    /*assert(world->itemConcs == NULL);*/
-    /*assert(world->asteroidConcs == NULL);*/
 
     if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
     {

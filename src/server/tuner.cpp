@@ -209,26 +209,27 @@ void tuner_wormtime(void)
 {
     int i;
 
-    if (options.wormTime < 0)
-        options.wormTime = 0;
+    // TODO
+    // if (options.wormTime < 0)
+    //     options.wormTime = 0;
 
-    if (options.wormTime)
-    {
-        for (i = 0; i < world->NumWormholes; i++)
-        {
-            world->wormholes[i].countdown = options.wormTime;
-        }
-    }
-    else
-    {
-        for (i = 0; i < world->NumWormholes; i++)
-        {
-            if (world->wormholes[i].temporary)
-                remove_temp_wormhole(i);
-            else
-                world->wormholes[i].countdown = WORMCOUNT;
-        }
-    }
+    // if (options.wormTime)
+    // {
+    //     for (i = 0; i < world->NumWormholes; i++)
+    //     {
+    //         world->wormholes[i].countdown = options.wormTime;
+    //     }
+    // }
+    // else
+    // {
+    //     for (i = 0; i < world->NumWormholes; i++)
+    //     {
+    //         if (world->wormholes[i].temporary)
+    //             remove_temp_wormhole(i);
+    //         else
+    //             world->wormholes[i].countdown = WORMCOUNT;
+    //     }
+    // }
 }
 
 void tuner_modifiers(void)

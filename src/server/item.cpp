@@ -684,13 +684,19 @@ void Do_general_transporter(int id, clpos_t pos,
     else
     {
         sound_play_sensors(pos, TRANSPORTER_SUCCESS_SOUND);
-        if (world->NumTransporters < MAX_TOTAL_TRANSPORTERS)
+        if (Num_transporters() < MAX_TOTAL_TRANSPORTERS)
         {
-            world->transporters[world->NumTransporters].pos = pos;
-            world->transporters[world->NumTransporters].victim_id = victim->id;
-            world->transporters[world->NumTransporters].id = (pl ? pl->id : NO_ID);
-            world->transporters[world->NumTransporters].count = 5;
-            world->NumTransporters++;
+            transporter_t t;
+            t.pos = pos;
+            t.victim_id = victim->id;
+            t.id = (pl ? pl->id : NO_ID);
+            t.count = 5;
+            world->transporters.push_back(t);
+            // world->transporters[world->NumTransporters].pos = pos;
+            // world->transporters[world->NumTransporters].victim_id = victim->id;
+            // world->transporters[world->NumTransporters].id = (pl ? pl->id : NO_ID);
+            // world->transporters[world->NumTransporters].count = 5;
+            // world->NumTransporters++;
         }
     }
 
@@ -945,37 +951,49 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     smartobject_t *smart;
     mineobject_t *mine;
     double closest_mine_range = world->pixel_hypotenuse;
-    int i, j;
+    int i, j, ecm_ind;
     double range, perim, damage;
     player_t *pl = Player_by_id(id), *p;
     ecm_t *ecm;
+    ecm_t t;
 
-    if (world->NumEcms >= MAX_TOTAL_ECMS)
+    if (Num_ecms() >= MAX_TOTAL_ECMS)
         return;
     // Ecms[world->NumEcms] = (ecm_t *)malloc(sizeof(ecm_t));
     // if (Ecms[world->NumEcms] == NULL)
     //     return;
-    ecm = &world->ecms[world->NumEcms];
-    ecm->pos = pos;
-    ecm->id = (pl ? pl->id : NO_ID);
-    ecm->size = (int)ECM_DISTANCE;
-    world->NumEcms++;
+    // ecm = &world->ecms[world->NumEcms];
+    // ecm->pos = pos;
+    // ecm->id = (pl ? pl->id : NO_ID);
+    // ecm->size = (int)ECM_DISTANCE;
+    // world->NumEcms++;
+    t.pos = pos;
+    t.id = (pl ? pl->id : NO_ID);
+    t.size = (int)ECM_DISTANCE;
+    world->ecms.push_back(t);
+    ecm_ind = Num_ecms();
+    if (ecm_ind < 0)
+        return;
+
     if (pl)
     {
+        ecm_t *ecm = Ecm_by_index(ecm_ind);
+
         pl->ecmcount++;
         pl->item[ITEM_ECM]--;
         Player_add_fuel(pl, ED_ECM);
-        sound_play_sensors(pos, ECM_SOUND);
+        sound_play_sensors(ecm->pos, ECM_SOUND);
     }
 
     for (i = 0; i < NumObjs; i++)
     {
         shot = Obj[i];
 
-        if (!BIT(shot->type, OBJ_SMART_SHOT_BIT | OBJ_MINE_BIT))
+        if (!(shot->type == OBJ_SMART_SHOT || shot->type == OBJ_MINE))
             continue;
-        if ((range = Wrap_length(CLICK_TO_FLOAT(pos.cx - shot->pos.cx),
-                                 CLICK_TO_FLOAT(pos.cy - shot->pos.cy))) > ECM_DISTANCE)
+        if ((range = (Wrap_length(pos.cx - shot->pos.cx,
+                                  pos.cy - shot->pos.cy) /
+                      CLICK)) > ECM_DISTANCE)
             continue;
 
         /*

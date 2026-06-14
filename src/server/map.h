@@ -328,50 +328,18 @@ struct world
     // ipos_t checks[OLD_MAX_CHECKS];
 
     std::vector<check_t> checks;
-
-    // int NumAsteroidConcs;
-    // asteroid_concentrator_t *asteroidConcs;
     std::vector<asteroid_concentrator_t> asteroidConcs;
-
-    int NumBases;
-    base_t *bases;
-    // std::vector<base_t> bases;
-
-    // int NumCannons;
-    // cannon_t *cannons;
+    std::vector<base_t> bases;
     std::vector<cannon_t> cannons;
-
-    int NumEcms;
-    ecm_t *ecms;
-
-    // int NumFuels;
-    // fuel_t *fuels;
+    std::vector<ecm_t> ecms;
     std::vector<fuel_t> fuels;
-
-    // int NumFrictionAreas;
-    // friction_area_t *frictionAreas;
     std::vector<friction_area_t> frictionAreas;
-
-    // int NumGravs;
-    // grav_t *gravs;
     std::vector<grav_t> gravs;
-
-    // int NumItemConcentrators;
-    // item_concentrator_t *itemConcentrators;
-    std::vector<item_concentrator_t> itemConcentrators;
-
-    // int NumTargets;
-    // target_t *targets;
+    std::vector<item_concentrator_t> itemConcs;
     std::vector<target_t> targets;
-
-    int NumTransporters;
-    transporter_t *transporters;
-    // int NumTreasures;
-    // treasure_t *treasures;
+    std::vector<transporter_t> transporters;
     std::vector<treasure_t> treasures;
-
-    int NumWormholes;
-    wormhole_t *wormholes;
+    std::vector<wormhole_t> wormholes;
 
     bool have_options;
 };
@@ -520,87 +488,131 @@ static inline int WRAP_YCLICK(int cy)
 #define CENTER_YCLICK(X) \
     (((X) < -(world->cheight >> 1)) ? (X) + world->cheight : (((X) >= (world->cheight >> 1)) ? (X) - world->cheight : (X)))
 
-// #define Num_asteroidConcs() (world->NumAsteroidConcs)
 static inline int Num_asteroidConcs()
 {
     return world->asteroidConcs.size();
 }
 
-#define Num_bases() (world->NumBases)
-// static inline int Num_bases()
-// {
-//     return Num_bases();
-// }
+static inline int Num_bases()
+{
+    return world->bases.size();
+}
 
-// #define Num_cannons() (world->NumCannons)
 static inline int Num_cannons()
 {
     return world->cannons.size();
 }
 
-#define Num_ecms() (world->NumEcms)
+static inline int Num_ecms()
+{
+    return world->ecms.size();
+}
 
-// #define Num_frictionAreas() (world->NumFrictionAreas)
 static inline int Num_frictionAreas()
 {
     return world->frictionAreas.size();
 }
 
-// #define Num_fuels() (world->NumFuels)
 static inline int Num_fuels()
 {
     return world->fuels.size();
 }
 
-// #define Num_gravs() (world->NumGravs)
 static inline int Num_gravs()
 {
     return world->gravs.size();
 }
 
-// #define Num_itemConcs() (world->NumItemConcentrators)
 static inline int Num_itemConcs()
 {
-    return world->itemConcentrators.size();
+    return world->itemConcs.size();
 }
 
-// #define Num_targets() (world->NumTargets)
 static inline int Num_targets()
 {
     return world->targets.size();
 }
 
-#define Num_transporters() (world->NumTransporters)
+static inline int Num_transporters()
+{
+    return world->transporters.size();
+}
 
-// #define Num_treasures() (world->NumTreasures)
 static inline int Num_treasures()
 {
     return world->treasures.size();
 }
 
-#define Num_wormholes() (world->NumWormholes)
+static inline int Num_wormholes()
+{
+    return world->wormholes.size();
+}
 
 static inline int Num_checks()
 {
     return world->checks.size();
 }
 
-#define AsteroidConc_by_index(i) ((asteroid_concentrator_t *)(&world->asteroidConcs[i]))
-#define Base_by_index(i) ((base_t *)(&world->bases[i]))
-#define Cannon_by_index(i) ((cannon_t *)(&world->cannons[i]))
-#define Ecm_by_index(i) ((ecm_t *)(&world->ecms[i]))
-#define FrictionArea_by_index(i) ((friction_area_t *)(&world->frictionAreas[i]))
-#define Fuel_by_index(i) ((fuel_t *)(&world->fuels[i]))
-#define Grav_by_index(i) ((grav_t *)(&world->gravs[i]))
-#define ItemConc_by_index(i) ((item_concentrator_t *)(&world->itemConcentrators[i]))
-// #define Target_by_index(i) ((target_t *)(&world->targets[i]))
+// by_index functions
+static asteroid_concentrator_t *AsteroidConc_by_index(int i)
+{
+    return &world->asteroidConcs[i];
+}
+
+static base_t *Base_by_index(int i)
+{
+    return &world->bases[i];
+}
+
+static cannon_t *Cannon_by_index(int i)
+{
+    return &world->cannons[i];
+}
+
+static ecm_t *Ecm_by_index(int i)
+{
+    return &world->ecms[i];
+}
+
+static friction_area_t *FrictionArea_by_index(int i)
+{
+    return &world->frictionAreas[i];
+}
+
+static fuel_t *Fuel_by_index(int i)
+{
+    return &world->fuels[i];
+}
+
+static grav_t *Grav_by_index(int i)
+{
+    return &world->gravs[i];
+}
+
+static item_concentrator_t *ItemConc_by_index(int i)
+{
+    return &world->itemConcs[i];
+}
+
 static target_t *Target_by_index(int i)
 {
     return &world->targets[i];
 }
-#define Treasure_by_index(i) ((treasure_t *)(&world->treasures[i]))
-#define Wormhole_by_index(i) ((wormhole_t *)(&world->wormholes[i]))
-#define Transporter_by_index(i) ((transporter_t *)(&world->transporters[i]))
+
+static treasure_t *Treasure_by_index(int i)
+{
+    return &world->treasures[i];
+}
+
+static wormhole_t *Wormhole_by_index(int i)
+{
+    return &world->wormholes[i];
+}
+
+static transporter_t *Transporter_by_index(int i)
+{
+    return &world->transporters[i];
+}
 
 static inline check_t *Check_by_index(int i)
 {

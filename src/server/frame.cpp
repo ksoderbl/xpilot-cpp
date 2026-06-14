@@ -660,10 +660,10 @@ static void Frame_map(connection_t *conn, player_t *pl)
     packet_count = 0;
     max_packet = MAX(5, bytes_left / wormhole_packet_size);
     i = MAX(0, pl->last_wormhole_update);
-    for (k = 0; k < world->NumWormholes; k++)
+    for (k = 0; k < Num_wormholes(); k++)
     {
         wormhole_t *worm;
-        if (++i >= world->NumWormholes)
+        if (++i >= Num_wormholes())
             i = 0;
         worm = &world->wormholes[i];
         if (options.wormholeVisible &&
