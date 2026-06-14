@@ -193,8 +193,11 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
 {
     base_t t;
     int ind = Num_bases(), i;
+
+    t.blk_pos = Clpos_to_blkpos(pos);
+
     t.pos = pos;
-    // t.order = order;
+    t.order = order;
     /*
      * The direction of the base should be so that it points
      * up with respect to the gravity in the region.  This
@@ -232,8 +235,30 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
 
     // return ind;
 
-    // TODO
-    return -1;
+    /*
+     * The direction of the base should be so that it points
+     * up with respect to the gravity in the region.  This
+     * is fixed in Find_base_dir() when the gravity has
+     * been computed.
+     */
+    t.dir = dir;
+    if (BIT(world->rules->mode, TEAM_PLAY))
+    {
+        if (team < 0 || team >= MAX_TEAMS)
+            team = 0;
+
+        t.team = team;
+        world->teams[team].NumBases++;
+        if (world->teams[team].NumBases == 1)
+            world->NumTeamBases++;
+    }
+    else
+        t.team = TEAM_NOT_SET;
+    t.ind = Num_bases();
+
+    world->bases.push_back(t);
+
+    return ind;
 }
 
 int World_place_treasure(clpos_t pos, int team, bool empty,

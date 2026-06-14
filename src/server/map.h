@@ -124,6 +124,7 @@ typedef struct grav
     blkpos_t blk_pos;
     clpos_t pos;
     double force;
+    int type;
 } grav_t;
 
 typedef struct base
@@ -133,6 +134,8 @@ typedef struct base
     int dir;
     int ind;
     int team;
+    int order;
+    int initial_items[NUM_ITEMS];
 } base_t;
 
 typedef struct baseorder

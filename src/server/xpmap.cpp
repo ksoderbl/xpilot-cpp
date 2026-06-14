@@ -974,43 +974,6 @@ static void Xpmap_place_block(blkpos_t blk, int type)
     World_set_block(blk, type);
 }
 
-static int World_place_base_on_xpmap(blkpos_t blk, int team, int x, int y)
-{
-    World_set_block(blk, BASE);
-
-    world->itemID[x][y] = Num_bases();
-
-    base_t t;
-    int ind = Num_bases();
-
-    t.blk_pos = blk;
-    t.pos = Block_get_center_clpos(blk);
-
-    /*
-     * The direction of the base should be so that it points
-     * up with respect to the gravity in the region.  This
-     * is fixed in Find_base_dir() when the gravity has
-     * been computed.
-     */
-    t.dir = DIR_UP;
-    if (BIT(world->rules->mode, TEAM_PLAY))
-    {
-        if (team >= 0 && team <= 0)
-            t.team = team;
-        else
-            t.team = 0;
-
-        world->teams[t.team].NumBases++;
-        if (world->teams[t.team].NumBases == 1)
-            world->NumTeamBases++;
-    }
-    else
-        t.team = TEAM_NOT_SET;
-
-    world->bases.push_back(t);
-    return ind;
-}
-
 void Xpmap_tags_to_internal_data(void)
 {
     int i, x, y, c;
@@ -1158,7 +1121,7 @@ void Xpmap_tags_to_internal_data(void)
                     Xpmap_place_asteroid_concentrator(blk);
                     break;
                 case XPMAP_BASE_ATTRACTOR:
-                    world->block[x][y] = BASE_ATTRACTOR;
+                    Xpmap_place_block(blk, BASE_ATTRACTOR);
                     break;
                 case XPMAP_BASE:
                 case XPMAP_BASE_TEAM_0:
@@ -1171,39 +1134,7 @@ void Xpmap_tags_to_internal_data(void)
                 case XPMAP_BASE_TEAM_7:
                 case XPMAP_BASE_TEAM_8:
                 case XPMAP_BASE_TEAM_9:
-                    // world->block[x][y] = BASE;
-                    // // line[y] = BASE;
-                    // world->itemID[x][y] = Num_bases();
-                    // world->bases[Num_bases()].blk_pos = Clpos_to_blkpos(pos);
-                    // world->bases[Num_bases()].pos = pos;
-                    // /*
-                    //  * The direction of the base should be so that it points
-                    //  * up with respect to the gravity in the region.  This
-                    //  * is fixed in Find_base_dir() when the gravity has
-                    //  * been computed.
-                    //  */
-                    // world->bases[Num_bases()].dir = DIR_UP;
-                    // if (BIT(world->rules->mode, TEAM_PLAY))
-                    // {
-                    //     if (c >= '0' && c <= '9')
-                    //     {
-                    //         world->bases[Num_bases()].team = c - '0';
-                    //     }
-                    //     else
-                    //     {
-                    //         world->bases[Num_bases()].team = 0;
-                    //     }
-                    //     world->teams[world->bases[Num_bases()].team].NumBases++;
-                    //     if (world->teams[world->bases[Num_bases()].team].NumBases == 1)
-                    //         world->NumTeamBases++;
-                    // }
-                    // else
-                    // {
-                    //     world->bases[Num_bases()].team = TEAM_NOT_SET;
-                    // }
-                    // world->NumBases++;
-                    // Xpmap_place_base(blk, (int)(c - XPMAP_BASE_TEAM_0));
-                    World_place_base_on_xpmap(blk, (int)(c - XPMAP_BASE_TEAM_0), x, y);
+                    Xpmap_place_base(blk, (int)(c - XPMAP_BASE_TEAM_0));
                     break;
 
                 case XPMAP_POS_GRAV:
@@ -1549,65 +1480,51 @@ void Xpmap_find_base_direction(void)
             dir = MOD2(dir, RES);
         }
         att = -1;
-        /*BASES SNAP TO UPWARDS ATTRACTOR FIRST*/
+
+        /* first check upwards attractor */
         if (y == world->y - 1 && world->block[x][0] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
+        {
             if (att == -1 || dir == DIR_UP)
-            {
                 att = DIR_UP;
-            }
         }
         if (y < world->y - 1 && world->block[x][y + 1] == BASE_ATTRACTOR)
         {
             if (att == -1 || dir == DIR_UP)
-            {
                 att = DIR_UP;
-            }
         }
-        /*THEN DOWNWARDS ATTRACTORS*/
+
+        /* then downwards */
         if (y == 0 && world->block[x][world->y - 1] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
+        {
             if (att == -1 || dir == DIR_DOWN)
-            {
                 att = DIR_DOWN;
-            }
         }
         if (y > 0 && world->block[x][y - 1] == BASE_ATTRACTOR)
         {
             if (att == -1 || dir == DIR_DOWN)
-            {
                 att = DIR_DOWN;
-            }
         }
-        /*THEN RIGHTWARDS ATTRACTORS*/
+        /* then rightwards */
         if (x == world->x - 1 && world->block[0][y] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
+        {
             if (att == -1 || dir == DIR_RIGHT)
-            {
                 att = DIR_RIGHT;
-            }
         }
         if (x < world->x - 1 && world->block[x + 1][y] == BASE_ATTRACTOR)
         {
             if (att == -1 || dir == DIR_RIGHT)
-            {
                 att = DIR_RIGHT;
-            }
         }
-        /*THEN LEFTWARDS ATTRACTORS*/
+        /* then leftwards */
         if (x == 0 && world->block[world->x - 1][y] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
-        { /*check wrapped*/
+        {
             if (att == -1 || dir == DIR_LEFT)
-            {
                 att = DIR_LEFT;
-            }
         }
         if (x > 0 && world->block[x - 1][y] == BASE_ATTRACTOR)
         {
             if (att == -1 || dir == DIR_LEFT)
-            {
                 att = DIR_LEFT;
-            }
         }
         if (att != -1)
         {
