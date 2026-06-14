@@ -85,26 +85,6 @@ static void Xpmap_friction_area_to_polygon(int fa_ind);
 
 static bool compress_maps = true;
 
-static void Map_extra_error(int line_num)
-{
-    static int prev_line_num, error_count;
-    const int max_error = 5;
-
-    if (line_num > prev_line_num)
-    {
-        prev_line_num = line_num;
-        if (++error_count <= max_error)
-        {
-            printf("Map file contains extranous characters on line %d\n",
-                   line_num);
-        }
-        else if (error_count - max_error == 1)
-        {
-            printf("And so on...\n");
-        }
-    }
-}
-
 static void Xpmap_extra_error(int line_num)
 {
     static int prev_line_num, error_count;
@@ -850,7 +830,16 @@ void Xpmap_grok_map_data(void)
             continue;
         }
 
-        world->block[x][y] = c;
+        switch (world->block[x][y] = c)
+        {
+        case '@':
+        case '(':
+        case ')':
+            world->NumWormholes++;
+            break;
+        default:
+            break;
+        }
     }
 
     XFREE(options.mapData);
@@ -981,6 +970,32 @@ void Xpmap_tags_to_internal_data(void)
 
     // TODO
     // error("WARNING: map has no bases!");
+
+    if (world->NumWormholes > 0 && (world->wormholes = (wormhole_t *)
+                                        malloc(world->NumWormholes * sizeof(wormhole_t))) == NULL)
+    {
+        error("Out of memory - wormholes");
+        exit(-1);
+    }
+
+    /*
+     * Now reset all counters since we will recount everything
+     * and reuse these counters while inserting the objects
+     * into structures.
+     */
+    world->asteroidConcs.clear();
+    world->bases.clear();
+    world->cannons.clear();
+    world->ecms.clear();
+    world->fuels.clear();
+    world->frictionAreas.clear();
+    world->gravs.clear();
+    world->itemConcs.clear();
+    world->targets.clear();
+    world->transporters.clear();
+    world->treasures.clear();
+
+    world->NumWormholes = 0;
 
     for (i = 0; i < MAX_TEAMS; i++)
     {
@@ -1136,6 +1151,8 @@ void Xpmap_tags_to_internal_data(void)
                 case XPMAP_BASE_TEAM_7:
                 case XPMAP_BASE_TEAM_8:
                 case XPMAP_BASE_TEAM_9:
+                    world->block[x][y] = BASE;
+                    world->itemID[x][y] = Num_bases();
                     Xpmap_place_base(blk, (int)(c - XPMAP_BASE_TEAM_0));
                     break;
 
@@ -1165,19 +1182,62 @@ void Xpmap_tags_to_internal_data(void)
                     break;
 
                 case XPMAP_WORMHOLE_NORMAL:
-                    world->itemID[x][y] = Num_wormholes();
-                    Xpmap_place_wormhole(blk, WORM_NORMAL);
-                    worm_norm++;
-                    break;
+                    // Xpmap_place_wormhole(blk, WORM_NORMAL);
+                    // world->itemID[x][y] = Num_wormholes();
+                    // worm_norm++;
+                    // break;
                 case XPMAP_WORMHOLE_IN:
-                    world->itemID[x][y] = Num_wormholes();
-                    Xpmap_place_wormhole(blk, WORM_IN);
-                    worm_in++;
-                    break;
+                    // Xpmap_place_wormhole(blk, WORM_IN);
+                    // world->itemID[x][y] = Num_wormholes();
+                    // worm_in++;
+                    // break;
                 case XPMAP_WORMHOLE_OUT:
-                    world->itemID[x][y] = Num_wormholes();
-                    Xpmap_place_wormhole(blk, WORM_OUT);
-                    worm_out++;
+                    // Xpmap_place_wormhole(blk, WORM_OUT);
+                    // world->itemID[x][y] = Num_wormholes();
+                    // worm_out++;
+                    // break;
+                    world->block[x][y] = WORMHOLE;
+                    world->itemID[x][y] = world->NumWormholes;
+                    world->wormholes[world->NumWormholes].blk_pos = Clpos_to_blkpos(pos);
+                    world->wormholes[world->NumWormholes].pos = pos;
+                    world->wormholes[world->NumWormholes].countdown = 0;
+                    world->wormholes[world->NumWormholes].lastdest = -1;
+                    world->wormholes[world->NumWormholes].temporary = 0;
+                    world->wormholes[world->NumWormholes].lastblock = SPACE;
+                    world->wormholes[world->NumWormholes].lastID = -1;
+                    if (c == '@')
+                    {
+                        world->wormholes[world->NumWormholes].type = WORM_NORMAL;
+                        worm_norm++;
+                    }
+                    else if (c == '(')
+                    {
+                        world->wormholes[world->NumWormholes].type = WORM_IN;
+                        worm_in++;
+                    }
+                    else
+                    {
+                        world->wormholes[world->NumWormholes].type = WORM_OUT;
+                        worm_out++;
+                    }
+                    world->NumWormholes++;
+
+                    // if (c == '@')
+                    // {
+                    //     World_place_wormhole(pos, WORM_NORMAL);
+                    //     worm_norm++;
+                    // }
+                    // else if (c == '(')
+                    // {
+                    //     World_place_wormhole(pos, WORM_IN);
+                    //     worm_in++;
+                    // }
+                    // else
+                    // {
+                    //     World_place_wormhole(pos, WORM_OUT);
+                    //     worm_out++;
+                    // }
+
                     break;
 
                 case XPMAP_CHECK_0:
@@ -1256,27 +1316,25 @@ void Xpmap_tags_to_internal_data(void)
             int i;
 
             printf("Inconsistent use of wormholes, removing them.\n");
-            for (i = 0; i < Num_wormholes(); i++)
+            for (i = 0; i < world->NumWormholes; i++)
             {
-                // world->block
-                //     [world->wormholes[i].blk_pos.bx]
-                //     [world->wormholes[i].blk_pos.by] = SPACE;
-                World_set_block(world->wormholes[i].blk_pos, SPACE);
+                world->block
+                    [world->wormholes[i].blk_pos.bx]
+                    [world->wormholes[i].blk_pos.by] = SPACE;
                 world->itemID
                     [world->wormholes[i].blk_pos.bx]
                     [world->wormholes[i].blk_pos.by] = (uint16_t)-1;
             }
-            // world->NumWormholes = 0;
-            world->wormholes.clear();
+            world->NumWormholes = 0;
         }
 
         if (!options.wormTime)
         {
-            for (i = 0; i < Num_wormholes(); i++)
+            for (i = 0; i < world->NumWormholes; i++)
             {
-                int j = (int)(rfrac() * Num_wormholes());
+                int j = (int)(rfrac() * world->NumWormholes);
                 while (world->wormholes[j].type == WORM_IN)
-                    j = (int)(rfrac() * Num_wormholes());
+                    j = (int)(rfrac() * world->NumWormholes);
                 world->wormholes[i].lastdest = j;
                 // printf("Wormhole %d type is %d\n", i, world->wormholes[i].type);
             }
@@ -1488,7 +1546,6 @@ void Xpmap_find_base_direction(void)
             if (att == -1 || dir == DIR_LEFT)
                 att = DIR_LEFT;
         }
-
         if (att != -1)
             dir = att;
         base->dir = dir;
@@ -1995,7 +2052,8 @@ static void Init_map(void)
     world->targets.clear();
     world->transporters.clear();
     world->treasures.clear();
-    world->wormholes.clear();
+
+    world->NumWormholes = 0;
 }
 
 static bool Xpmap_world_alloc(void)
@@ -2020,6 +2078,8 @@ static bool Xpmap_world_alloc(void)
         malloc(sizeof(uint16_t *) * world->x + world->x * sizeof(uint16_t) * world->y);
     world->gravity = (vector_t **)
         malloc(sizeof(vector_t *) * world->x + world->x * sizeof(vector_t) * world->y);
+
+    world->wormholes = NULL;
 
     if (world->block == NULL || world->itemID == NULL || world->gravity == NULL)
     {

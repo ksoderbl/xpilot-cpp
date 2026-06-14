@@ -337,7 +337,8 @@ int World_place_wormhole(clpos_t pos, wormtype_t type)
     t.lastID = NO_ID;
     t.group = NO_GROUP;
 
-    world->wormholes.push_back(t);
+    world->wormholes[ind] = t;
+    world->NumWormholes++;
     return ind;
 }
 
@@ -540,7 +541,7 @@ void World_free(void)
     world->targets.clear();
     world->transporters.clear();
     world->treasures.clear();
-    world->wormholes.clear();
+    XFREE(world->wormholes);
 }
 
 static bool World_alloc(void)

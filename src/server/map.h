@@ -342,7 +342,9 @@ struct world
     std::vector<target_t> targets;
     std::vector<transporter_t> transporters;
     std::vector<treasure_t> treasures;
-    std::vector<wormhole_t> wormholes;
+
+    int NumWormholes;
+    wormhole_t *wormholes;
 
     bool have_options;
 };
@@ -546,10 +548,7 @@ static inline int Num_treasures()
     return world->treasures.size();
 }
 
-static inline int Num_wormholes()
-{
-    return world->wormholes.size();
-}
+#define Num_wormholes() (world->NumWormholes)
 
 static inline int Num_checks()
 {
@@ -607,15 +606,17 @@ static treasure_t *Treasure_by_index(int i)
     return &world->treasures[i];
 }
 
-static wormhole_t *Wormhole_by_index(int i)
-{
-    return &world->wormholes[i];
-}
+// static wormhole_t *Wormhole_by_index(int i)
+// {
+//     return &world->wormholes[i];
+// }
 
 static transporter_t *Transporter_by_index(int i)
 {
     return &world->transporters[i];
 }
+
+#define Wormhole_by_index(i) ((wormhole_t *)(&world->wormholes[i]))
 
 static inline check_t *Check_by_index(int i)
 {
