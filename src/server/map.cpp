@@ -58,18 +58,6 @@ static void Check_map_object_counters(void)
 {
     int i;
 
-    /*assert(world->NumCannons == 0);*/
-    /*assert(world->NumGravs == 0);*/
-    /*assert(world->NumWormholes == 0);*/
-    /*assert(world->NumTreasures == 0);*/
-    /*assert(world->NumTargets == 0);*/
-    /*assert(world->NumBases == 0);*/
-    /*assert(world->NumItemConcs == 0);
-      assert(world->NumAsteroidConcs == 0);
-      assert(world->NumFrictionAreas == 0);*/
-    /*assert(world->NumEcms == 0);*/
-    /*assert(world->NumTransporters == 0);*/
-
     for (i = 0; i < MAX_TEAMS; i++)
     {
         assert(world->teams[i].NumMembers == 0);
@@ -104,25 +92,6 @@ static void shrink(void **pp, size_t size)
             M = (N);                                \
         }                                           \
     }
-
-static void Realloc_map_objects(void)
-{
-    /*SHRINK(cannon_t, world->cannons, world->NumCannons, world->MaxCannons);*/
-    /*SHRINK(fuel_t, world->fuels, world->NumFuels, world->MaxFuels);*/
-    /*SHRINK(grav_t, world->gravs, world->NumGravs, world->MaxGravs);*/
-    /*SHRINK(wormhole_t, world->wormholes,
-      world->NumWormholes, world->MaxWormholes);*/
-    /*SHRINK(treasure_t, world->treasures,
-      world->NumTreasures, world->MaxTreasures);*/
-    /*SHRINK(target_t, world->targets, world->NumTargets, world->MaxTargets);*/
-    /*SHRINK(base_t, world->bases, world->NumBases, world->MaxBases);*/
-    /*SHRINK(item_concentrator_t, world->itemConcs,
-      world->NumItemConcs, world->MaxItemConcs);
-      SHRINK(asteroid_concentrator_t, world->asteroidConcs,
-      world->NumAsteroidConcs, world->MaxAsteroidConcs);
-      SHRINK(friction_area_t, world->frictionAreas,
-      world->NumFrictionAreas, world->MaxFrictionAreas);*/
-}
 
 int World_place_cannon(clpos_t pos, int dir, int team)
 {
@@ -204,43 +173,17 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
      * is fixed in Find_base_direction() when the gravity has
      * been computed.
      */
-    // if (dir < 0 || dir >= RES)
-    // {
-    //     warn("Base with direction %d in map.", dir);
-    //     warn("Valid base directions are from 0 to %d.", RES - 1);
-    //     while (dir < 0)
-    //         dir += RES;
-    //     while (dir >= RES)
-    //         dir -= RES;
-    //     warn("Using direction %d for this base.", dir);
-    // }
+    if (dir < 0 || dir >= RES)
+    {
+        warn("Base with direction %d in map.", dir);
+        warn("Valid base directions are from 0 to %d.", RES - 1);
+        while (dir < 0)
+            dir += RES;
+        while (dir >= RES)
+            dir -= RES;
+        warn("Using direction %d for this base.", dir);
+    }
 
-    // t.dir = dir;
-    // if (BIT(world->rules->mode, TEAM_PLAY))
-    // {
-    //     if (team < 0 || team >= MAX_TEAMS)
-    //         team = 0;
-    //     t.team = team;
-    //     world->teams[team].NumBases++;
-    //     if (world->teams[team].NumBases == 1)
-    //         world->NumTeamBases++;
-    // }
-    // else
-    //     t.team = TEAM_NOT_SET;
-    // t.ind = world->NumBases;
-
-    // for (i = 0; i < NUM_ITEMS; i++)
-    //     t.initial_items[i] = -1;
-    // Arraylist_add(world->bases, &t);
-
-    // return ind;
-
-    /*
-     * The direction of the base should be so that it points
-     * up with respect to the gravity in the region.  This
-     * is fixed in Find_base_dir() when the gravity has
-     * been computed.
-     */
     t.dir = dir;
     if (BIT(world->rules->mode, TEAM_PLAY))
     {
@@ -270,33 +213,18 @@ int World_place_treasure(clpos_t pos, int team, bool empty,
     t.pos = pos;
     t.have = false;
     t.destroyed = 0;
+    t.team = team;
     t.empty = empty;
 
-    // Arraylist_add(world->treasures, &t);
-    // world->treasures[ind] = t;
-    // world->NumTreasures++;
-
-    world->treasures.push_back(t);
-
-    return ind;
-
-    // treasure_t t;
-    // int ind = Num_treasures();
-
-    // t.pos = pos;
-    // t.have = false;
-    // t.destroyed = 0;
-    // t.team = team;
-    // t.empty = empty;
     // t.ball_style = ball_style;
     // if (team != TEAM_NOT_SET)
     // {
     //     world->teams[team].NumTreasures++;
     //     world->teams[team].TreasuresLeft++;
     // }
-    // Arraylist_add(world->treasures, &t);
+    world->treasures.push_back(t);
 
-    // return ind;
+    return ind;
 }
 
 int World_place_target(clpos_t pos, int team)
@@ -484,38 +412,9 @@ static void Filled_wire_init(void)
 
 int World_init(void)
 {
-    warn("World_init called");
-
     int i;
 
     memset(world, 0, sizeof(world_t));
-
-#if 0
-    if ((world->asteroidConcs = Arraylist_alloc(sizeof(asteroid_concentrator_t))) == NULL)
-        return -1;
-    if ((world->bases = Arraylist_alloc(sizeof(base_t))) == NULL)
-        return -1;
-    if ((world->cannons = Arraylist_alloc(sizeof(cannon_t))) == NULL)
-        return -1;
-    if ((world->ecms = Arraylist_alloc(sizeof(ecm_t))) == NULL)
-        return -1;
-    if ((world->frictionAreas = Arraylist_alloc(sizeof(friction_area_t))) == NULL)
-        return -1;
-    if ((world->fuels = Arraylist_alloc(sizeof(fuel_t))) == NULL)
-        return -1;
-    if ((world->itemConcs = Arraylist_alloc(sizeof(item_concentrator_t))) == NULL)
-        return -1;
-    if ((world->gravs = Arraylist_alloc(sizeof(grav_t))) == NULL)
-        return -1;
-    if ((world->targets = Arraylist_alloc(sizeof(target_t))) == NULL)
-        return -1;
-    if ((world->treasures = Arraylist_alloc(sizeof(treasure_t))) == NULL)
-        return -1;
-    if ((world->transporters = Arraylist_alloc(sizeof(transporter_t))) == NULL)
-        return -1;
-    if ((world->wormholes = Arraylist_alloc(sizeof(wormhole_t))) == NULL)
-        return -1;
-#endif
 
     for (i = 0; i < MAX_TEAMS; i++)
         Team_by_index(i)->SwapperId = NO_ID;
@@ -723,8 +622,6 @@ bool Grok_map(void)
 
     if (options.minRobots == -1)
         options.minRobots = options.maxRobots;
-
-    Realloc_map_objects();
 
     if (Num_bases() <= 0)
         fatal("Map has no bases!");
