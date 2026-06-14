@@ -316,10 +316,8 @@ int World_place_target(clpos_t pos, int team)
     t.conn_mask = ~0;
     t.update_mask = 0;
     t.last_change = frame_loops;
-    // t.group = NO_GROUP;
+    t.group = NO_GROUP;
 
-    // world->targets[ind] = t;
-    // world->NumTargets++;
     world->targets.push_back(t);
 
     return ind;

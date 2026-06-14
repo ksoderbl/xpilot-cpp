@@ -1109,10 +1109,10 @@ void Xpmap_tags_to_internal_data(void)
                     // world->targets[world->NumTargets].update_mask = 0;
                     // world->targets[world->NumTargets].last_change = frame_loops;
                     // world->NumTargets++;
-                    World_place_target(pos, 0);
+                    // World_place_target(pos, 0);
                     // pos.cx = x * BLOCK_CLICKS;
                     // pos.cy = y * BLOCK_CLICKS;
-
+                    Xpmap_place_target(blk);
                     break;
                 case XPMAP_ITEM_CONCENTRATOR:
                     Xpmap_place_item_concentrator(blk);
@@ -1124,6 +1124,8 @@ void Xpmap_tags_to_internal_data(void)
                     Xpmap_place_block(blk, BASE_ATTRACTOR);
                     break;
                 case XPMAP_BASE:
+                    Xpmap_place_base(blk, TEAM_NOT_SET);
+                    break;
                 case XPMAP_BASE_TEAM_0:
                 case XPMAP_BASE_TEAM_1:
                 case XPMAP_BASE_TEAM_2:
@@ -1461,27 +1463,29 @@ void Xpmap_find_base_direction(void)
     for (i = 0; i < Num_bases(); i++)
     {
         base_t *base = Base_by_index(i);
+        int x, y, dir, att;
+        vector_t gravity = {0.0, 0.0};
+        // vector_t gravity = World_gravity(base->pos);
 
-        int x = world->bases[i].blk_pos.bx,
-            y = world->bases[i].blk_pos.by,
-            dir,
-            att;
-        double dx = world->gravity[x][y].x,
-               dy = world->gravity[x][y].y;
-
-        if (dx == 0.0 && dy == 0.0)
-        {                 /* Undefined direction? */
-            dir = DIR_UP; /* Should be set to direction of gravity! */
-        }
+        if (gravity.x == 0.0 && gravity.y == 0.0)
+            /*
+             * Undefined direction
+             * Should be set to direction of gravity!
+             */
+            dir = DIR_UP;
         else
         {
-            dir = (int)findDir(-dx, -dy);
+            double a = findDir(-gravity.x, -gravity.y);
+            dir = MOD2((int)(a + 0.5), RES);
             dir = ((dir + RES / 8) / (RES / 4)) * (RES / 4); /* round it */
             dir = MOD2(dir, RES);
         }
         att = -1;
 
-        /* first check upwards attractor */
+        x = CLICK_TO_BLOCK(base->pos.cx);
+        y = CLICK_TO_BLOCK(base->pos.cy);
+
+        /* First check upwards attractor */
         if (y == world->y - 1 && world->block[x][0] == BASE_ATTRACTOR && BIT(world->rules->mode, WRAP_PLAY))
         {
             if (att == -1 || dir == DIR_UP)
@@ -1526,21 +1530,17 @@ void Xpmap_find_base_direction(void)
             if (att == -1 || dir == DIR_LEFT)
                 att = DIR_LEFT;
         }
+
         if (att != -1)
-        {
             dir = att;
-        }
-        world->bases[i].dir = dir;
+        base->dir = dir;
     }
-    for (i = 0; i < world->x; i++)
+    for (blk.bx = 0; blk.bx < world->x; blk.bx++)
     {
-        int j;
-        for (j = 0; j < world->y; j++)
+        for (blk.by = 0; blk.by < world->y; blk.by++)
         {
-            if (world->block[i][j] == BASE_ATTRACTOR)
-            {
-                world->block[i][j] = SPACE;
-            }
+            if (World_get_block(blk) == BASE_ATTRACTOR)
+                World_set_block(blk, SPACE);
         }
     }
 }
