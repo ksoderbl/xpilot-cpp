@@ -87,7 +87,7 @@ typedef struct
 #define PACKET_DROP 1
 #define PACKET_DRAW 2
 
-#define MAX_SCORE_OBJECTS 10
+// #define MAX_SCORE_OBJECTS 10
 
 #define MAX_SPARK_SIZE 8
 #define MIN_SPARK_SIZE 1

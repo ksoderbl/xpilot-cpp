@@ -23,11 +23,14 @@
 
 #pragma once
 
+#include "const.h"
 #include "shipshape.h"
-#include "item.h"
-#include "connectparam.h"
-#include "option.h"
-#include "types.h"
+// #include "item.h"
+// #include "connectparam.h"
+// #include "option.h"
+// #include "types.h"
+
+#define MAX_SCORE_OBJECTS 10
 
 typedef struct
 {
@@ -259,6 +262,13 @@ typedef struct
 } score_object_t;
 
 /* mapdata accessible to outside world */
+
+extern double teamscores[MAX_TEAMS];
+
+extern cannontime_t *cannons;
+extern int num_cannons;
+extern target_t *targets;
+extern int num_targets;
 
 extern int num_playing_teams;
 
