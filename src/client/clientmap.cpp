@@ -23,32 +23,6 @@
 
 #include "clientmap.h"
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cerrno>
-#include <cmath>
-#include <ctime>
-
-#include <sys/time.h>
-
-// #include "bit.h"
-// #include "commonmacros.h"
-// #include "commonproto.h"
-#include "const.h"
-// #include "rules.h"
-// #include "clientsetup.h"
-// #include "shipshape.h"
-// #include "types.h"
-
-// #include "client.h"
-// #include "clientcommand.h"
-// #include "messages.h"
-// #include "netclient.h"
-// #include "paint.h"
-// #include "paintradar.h"
-// #include "talk.h"
-
 double teamscores[MAX_TEAMS];
 cannontime_t *cannons = NULL;
 int num_cannons = 0;
