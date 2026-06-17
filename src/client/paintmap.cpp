@@ -174,7 +174,6 @@ void Paint_objects(void)
 
     for (i = 0; i < num_polygons; i++)
     {
-
         Compute_bounds(&min, &max, &polygons[i].bounds);
 
         for (xoff = min.x; xoff <= max.x; xoff++)
@@ -186,18 +185,17 @@ void Paint_objects(void)
         }
     }
 
-    for (i = 0; i < num_fuels; i++)
+    for (const auto &fs : clMap.fuels)
     {
-
-        Compute_bounds(&min, &max, &fuels[i].bounds);
+        Compute_bounds(&min, &max, &fs.bounds);
 
         for (xoff = min.x; xoff <= max.x; xoff++)
         {
             for (yoff = min.y; yoff <= max.y; yoff++)
             {
-                Gui_paint_fuel(fuels[i].bounds.x + xoff * Setup->width,
-                               fuels[i].bounds.y + yoff * Setup->height,
-                               fuels[i].fuel);
+                Gui_paint_fuel(fs.bounds.x + xoff * Setup->width,
+                               fs.bounds.y + yoff * Setup->height,
+                               fs.fuel);
             }
         }
     }

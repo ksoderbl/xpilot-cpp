@@ -270,12 +270,12 @@ extern int num_targets;
 
 extern int num_playing_teams;
 
-extern fuelstation_t *fuels;
-extern int num_fuels;
-
 class ClientMap
 {
 public:
+    // fuelstation_t *fuels;
+    // int num_fuels;
+    std::vector<fuelstation_t> fuels;
     // homebase_t *bases;
     // int num_bases;
     std::vector<homebase_t> bases;
