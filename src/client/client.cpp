@@ -388,7 +388,7 @@ int Handle_cannon(int ind, int dead_time)
 
 int Handle_target(int ind, int dead_time, double damage)
 {
-    if (ind < 0 || clMap.targets.size())
+    if (ind < 0 || ind >= clMap.targets.size())
     {
         warn("Bad target index (%d)", ind);
         return 0;
