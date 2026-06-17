@@ -345,13 +345,13 @@ static void Msg_scan_death(int id)
     if (BIT(Setup->mode, LIMITED_LIVES) && other->life == 0)
         return;
 
-    for (i = 0; i < num_bases; i++)
+    for (i = 0; i < clMap.bases.size(); i++)
     {
         // warn("Msg_scan_death: i=%d, id=%d, bases[i].id=%d", i, id, bases[i].id);
-        if (bases[i].id == id)
+        if (clMap.bases[i].id == id)
         {
             // warn("Msg_scan_death: i=%d, end_loops=%ld", i, end_loops);
-            bases[i].appeartime = (long)(end_loops + 3 * clientFPS);
+            clMap.bases[i].appeartime = (long)(end_loops + 3 * clientFPS);
             // warn("Msg_scan_death: i=%d, bases[i].appeartime=%ld", i, bases[i].appeartime);
             break;
         }

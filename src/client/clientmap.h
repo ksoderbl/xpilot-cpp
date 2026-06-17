@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "const.h"
 #include "shipshape.h"
 
@@ -270,8 +272,17 @@ extern int num_playing_teams;
 
 extern fuelstation_t *fuels;
 extern int num_fuels;
-extern homebase_t *bases;
-extern int num_bases;
+
+class ClientMap
+{
+public:
+    // homebase_t *bases;
+    // int num_bases;
+    std::vector<homebase_t> bases;
+};
+
+extern ClientMap clMap;
+
 extern checkpoint_t *checks;
 extern int num_checks;
 extern xp_polygon_t *polygons;

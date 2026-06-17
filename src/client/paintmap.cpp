@@ -202,19 +202,18 @@ void Paint_objects(void)
         }
     }
 
-    for (i = 0; i < num_bases; i++)
+    for (const auto &base : clMap.bases)
     {
-
-        Compute_bounds(&min, &max, &bases[i].bounds);
+        Compute_bounds(&min, &max, &base.bounds);
 
         for (xoff = min.x; xoff <= max.x; xoff++)
         {
             for (yoff = min.y; yoff <= max.y; yoff++)
             {
-                Gui_paint_base(bases[i].bounds.x + xoff * Setup->width,
-                               bases[i].bounds.y + yoff * Setup->height,
-                               bases[i].id, bases[i].team,
-                               bases[i].type);
+                Gui_paint_base(base.bounds.x + xoff * Setup->width,
+                               base.bounds.y + yoff * Setup->height,
+                               base.id, base.team,
+                               base.type);
             }
         }
     }

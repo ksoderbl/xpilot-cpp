@@ -415,20 +415,20 @@ static homebase_t *Homebase_by_pos(int x, int y)
     int i, lo, hi, pos;
 
     lo = 0;
-    hi = num_bases - 1;
+    hi = clMap.bases.size() - 1;
     pos = x * Setup->y + y;
     while (lo < hi)
     {
         i = (lo + hi) >> 1;
-        if (pos > bases[i].pos)
+        if (pos > clMap.bases[i].pos)
             lo = i + 1;
         else
             hi = i;
     }
-    if (lo == hi && pos == bases[lo].pos)
-        return &bases[lo];
+    if (lo == hi && pos == clMap.bases[lo].pos)
+        return &clMap.bases[lo];
     warn("No homebase at (%d,%d)", x, y);
-    return NULL;
+    return nullptr;
 }
 
 int Base_info_by_pos(int x, int y, int *idp, int *teamp)
@@ -446,17 +446,17 @@ int Handle_base(int id, int ind)
 {
     int i;
 
-    if (ind < 0 || ind >= num_bases)
+    if (ind < 0 || ind >= clMap.bases.size())
     {
         warn("Bad homebase index (%d)", ind);
         return -1;
     }
-    for (i = 0; i < num_bases; i++)
+    for (homebase_t &base : clMap.bases)
     {
-        if (bases[i].id == id)
-            bases[i].id = -1;
+        if (base.id == id)
+            base.id = -1;
     }
-    bases[ind].id = id;
+    clMap.bases[ind].id = id;
 
     return 0;
 }
@@ -1030,35 +1030,37 @@ static int init_polymap(void)
         poly->bounds.w = max.x - min.x;
         poly->bounds.h = max.y - min.y;
     }
-    num_bases = *ptr++ & 0xff;
-    bases = XMALLOC(homebase_t, num_bases);
-    if (bases == NULL)
-    {
-        error("No memory for Map bases (%d)", num_bases);
-        exit(1);
-    }
+    int num_bases = *ptr++ & 0xff;
+    // bases = XMALLOC(homebase_t, num_bases);
+    // if (bases == NULL)
+    // {
+    //     error("No memory for Map bases (%d)", num_bases);
+    //     exit(1);
+    // }
     for (i = 0; i < num_bases; i++)
     {
+        homebase_t base;
         /* base.pos is not used */
-        bases[i].id = -1;
-        bases[i].team = *ptr++ & 0xff;
+        base.id = -1;
+        base.team = *ptr++ & 0xff;
         cx = get_ushort(&ptr);
         cy = get_ushort(&ptr);
-        bases[i].bounds.x = cx - BLOCK_SZ / 2;
-        bases[i].bounds.y = cy - BLOCK_SZ / 2;
-        bases[i].bounds.w = BLOCK_SZ;
-        bases[i].bounds.h = BLOCK_SZ;
+        base.bounds.x = cx - BLOCK_SZ / 2;
+        base.bounds.y = cy - BLOCK_SZ / 2;
+        base.bounds.w = BLOCK_SZ;
+        base.bounds.h = BLOCK_SZ;
         if (*ptr < 16)
-            bases[i].type = SETUP_BASE_RIGHT;
+            base.type = SETUP_BASE_RIGHT;
         else if (*ptr < 48)
-            bases[i].type = SETUP_BASE_UP;
+            base.type = SETUP_BASE_UP;
         else if (*ptr < 80)
-            bases[i].type = SETUP_BASE_LEFT;
+            base.type = SETUP_BASE_LEFT;
         else if (*ptr < 112)
-            bases[i].type = SETUP_BASE_DOWN;
+            base.type = SETUP_BASE_DOWN;
         else
-            bases[i].type = SETUP_BASE_RIGHT;
-        bases[i].appeartime = 0;
+            base.type = SETUP_BASE_RIGHT;
+        base.appeartime = 0;
+        clMap.bases.push_back(base);
         ptr++;
     }
     num_fuels = get_ushort(&ptr);
@@ -1120,12 +1122,11 @@ static int init_blockmap(void)
     uint8_t types[256];
 
     num_fuels = 0;
-    num_bases = 0;
     num_cannons = 0;
     num_targets = 0;
     num_checks = 0;
     fuels = NULL;
-    bases = NULL;
+    clMap.bases.clear();
     cannons = NULL;
     targets = NULL;
     checks = NULL;
@@ -1155,9 +1156,9 @@ static int init_blockmap(void)
         case 3:
             num_targets++;
             break;
-        case 4:
-            num_bases++;
-            break;
+        // case 4:
+        //     num_bases++;
+        //     break;
         case 5:
             num_checks++;
             break;
@@ -1165,16 +1166,16 @@ static int init_blockmap(void)
             break;
         }
     }
-    if (num_bases != 0)
-    {
-        bases = XMALLOC(homebase_t, num_bases);
-        if (bases == NULL)
-        {
-            error("No memory for Map bases (%d)", num_bases);
-            return -1;
-        }
-        num_bases = 0;
-    }
+    // if (num_bases != 0)
+    // {
+    //     bases = XMALLOC(homebase_t, num_bases);
+    //     if (bases == NULL)
+    //     {
+    //         error("No memory for Map bases (%d)", num_bases);
+    //         return -1;
+    //     }
+    //     num_bases = 0;
+    // }
     if (num_fuels != 0)
     {
         fuels = XMALLOC(fuelstation_t, num_fuels);
@@ -1239,12 +1240,13 @@ static int init_blockmap(void)
             num_targets++;
             break;
         case 4:
-            bases[num_bases].pos = i;
-            bases[num_bases].id = -1;
-            bases[num_bases].team = type % 10;
-            bases[num_bases].type = type - (type % 10);
-            bases[num_bases].appeartime = 0;
-            num_bases++;
+            homebase_t base;
+            base.pos = i;
+            base.id = -1;
+            base.team = type % 10;
+            base.type = type - (type % 10);
+            base.appeartime = 0;
+            clMap.bases.push_back(base);
             Setup->map_data[i] = type - (type % 10);
             break;
         case 5:
@@ -1266,11 +1268,12 @@ static int Map_init(void)
 
 static int Map_cleanup(void)
 {
-    if (num_bases > 0)
-    {
-        XFREE(bases);
-        num_bases = 0;
-    }
+    // if (num_bases > 0)
+    // {
+    //     XFREE(bases);
+    //     num_bases = 0;
+    // }
+    clMap.bases.clear();
     if (num_fuels > 0)
     {
         XFREE(fuels);
@@ -1295,13 +1298,13 @@ homebase_t *Homebase_by_id(int id)
 
     if (id != -1)
     {
-        for (i = 0; i < num_bases; i++)
+        for (homebase_t &base : clMap.bases)
         {
-            if (bases[i].id == id)
-                return &bases[i];
+            if (base.id == id)
+                return &base;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 other_t *Other_by_id(int id)

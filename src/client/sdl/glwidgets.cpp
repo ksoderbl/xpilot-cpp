@@ -4083,9 +4083,9 @@ static void ConfMenuWidget_Join(void *data)
         memset(has_base, 0, sizeof(has_base));
         if ((Setup->mode & TEAM_PLAY) != 0)
         {
-            for (i = 0; i < num_bases; i++)
+            for (homebase_t &base : clMap.bases)
             {
-                t = bases[i].team;
+                t = base.team;
                 if (t >= 0 && t < MAX_TEAMS)
                     has_base[t] = true;
             }
