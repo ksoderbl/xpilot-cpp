@@ -1032,12 +1032,6 @@ static int init_polymap(void)
         poly->bounds.h = max.y - min.y;
     }
     int num_bases = *ptr++ & 0xff;
-    // bases = XMALLOC(homebase_t, num_bases);
-    // if (bases == NULL)
-    // {
-    //     error("No memory for Map bases (%d)", num_bases);
-    //     exit(1);
-    // }
     for (i = 0; i < num_bases; i++)
     {
         homebase_t base;
@@ -1065,15 +1059,6 @@ static int init_polymap(void)
         ptr++;
     }
     int num_fuels = get_ushort(&ptr);
-    // if (num_fuels != 0)
-    // {
-    //     fuels = XMALLOC(fuelstation_t, num_fuels);
-    //     if (fuels == NULL)
-    //     {
-    //         error("No memory for Map fuels (%d)", num_fuels);
-    //         exit(1);
-    //     }
-    // }
     for (i = 0; i < num_fuels; i++)
     {
         fuelstation_t fs;
@@ -1148,18 +1133,12 @@ static int init_blockmap(void)
     {
         switch (types[Setup->map_data[i]])
         {
-        // case 1:
-        //     num_fuels++;
-        //     break;
         case 2:
             num_cannons++;
             break;
         case 3:
             num_targets++;
             break;
-        // case 4:
-        //     num_bases++;
-        //     break;
         case 5:
             num_checks++;
             break;
@@ -1167,26 +1146,6 @@ static int init_blockmap(void)
             break;
         }
     }
-    // if (num_bases != 0)
-    // {
-    //     bases = XMALLOC(homebase_t, num_bases);
-    //     if (bases == NULL)
-    //     {
-    //         error("No memory for Map bases (%d)", num_bases);
-    //         return -1;
-    //     }
-    //     num_bases = 0;
-    // }
-    // if (num_fuels != 0)
-    // {
-    //     fuels = XMALLOC(fuelstation_t, num_fuels);
-    //     if (fuels == NULL)
-    //     {
-    //         error("No memory for Map fuels (%d)", num_fuels);
-    //         return -1;
-    //     }
-    //     num_fuels = 0;
-    // }
     if (num_targets != 0)
     {
         targets = XMALLOC(target_t, num_targets);
