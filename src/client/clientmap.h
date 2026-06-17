@@ -272,6 +272,10 @@ public:
     std::vector<target_t> targets;
     std::vector<fuelstation_t> fuels;
     std::vector<homebase_t> bases;
+
+    std::vector<refuel_t> refuels;
+    std::vector<connector_t> connectors;
+    std::vector<trans_t> transporters;
 };
 
 extern ClientMap clMap;
@@ -291,10 +295,10 @@ extern int num_polygon_styles, max_polygon_styles;
 
 extern other_t *Others;
 extern int num_others, max_others;
-extern refuel_t *refuel_ptr;
-extern int num_refuel, max_refuel;
-extern connector_t *connector_ptr;
-extern int num_connector, max_connector;
+// extern refuel_t *refuel_ptr;
+// extern int num_refuel, max_refuel;
+// extern connector_t *connector_ptr;
+// extern int num_connector, max_connector;
 extern laser_t *laser_ptr;
 extern int num_laser, max_laser;
 extern missile_t *missile_ptr;
@@ -309,8 +313,8 @@ extern itemtype_t *itemtype_ptr;
 extern int num_itemtype, max_itemtype;
 extern ecm_t *ecm_ptr;
 extern int num_ecm, max_ecm;
-extern trans_t *trans_ptr;
-extern int num_trans, max_trans;
+// extern trans_t *trans_ptr;
+// extern int num_trans, max_trans;
 extern paused_t *paused_ptr;
 extern int num_paused, max_paused;
 extern appearing_t *appearing_ptr;

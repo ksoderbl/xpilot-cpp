@@ -502,18 +502,18 @@ static void Paint_refuel(void)
 {
     int i, x0, y0, x1, y1;
 
-    if (num_refuel > 0)
+    if (clMap.refuels.size() > 0)
     {
-        for (i = 0; i < num_refuel; i++)
+        for (const auto &refuel : clMap.refuels)
         {
-            x0 = refuel_ptr[i].x0;
-            y0 = refuel_ptr[i].y0;
-            x1 = refuel_ptr[i].x1;
-            y1 = refuel_ptr[i].y1;
+            x0 = refuel.x0;
+            y0 = refuel.y0;
+            x1 = refuel.x1;
+            y1 = refuel.y1;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
                 Gui_paint_refuel(x0, y0, x1, y1);
         }
-        RELEASE(refuel_ptr, num_refuel, max_refuel);
+        clMap.refuels.clear();
     }
 }
 
@@ -521,19 +521,19 @@ static void Paint_connectors(void)
 {
     int i, x0, y0, x1, y1;
 
-    if (num_connector > 0)
+    if (clMap.connectors.size() > 0)
     {
-        for (i = 0; i < num_connector; i++)
+        for (const auto &connector : clMap.connectors)
         {
-            x0 = connector_ptr[i].x0;
-            y0 = connector_ptr[i].y0;
-            x1 = connector_ptr[i].x1;
-            y1 = connector_ptr[i].y1;
+            x0 = connector.x0;
+            y0 = connector.y0;
+            x1 = connector.x1;
+            y1 = connector.y1;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
                 Gui_paint_connector(x0, y0, x1, y1,
-                                    connector_ptr[i].tractor);
+                                    connector.tractor);
         }
-        RELEASE(connector_ptr, num_connector, max_connector);
+        clMap.connectors.clear();
     }
 }
 
@@ -541,27 +541,27 @@ static void Paint_transporters(void)
 {
     int i, x0, y0, x1, y1;
 
-    if (num_trans > 0)
+    if (clMap.transporters.size() > 0)
     {
-        for (i = 0; i < num_trans; i++)
+        for (const auto &transporter : clMap.transporters)
         {
-            x0 = trans_ptr[i].x1;
-            y0 = trans_ptr[i].y1;
-            x1 = trans_ptr[i].x2;
-            y1 = trans_ptr[i].y2;
+            x0 = transporter.x1;
+            y0 = transporter.y1;
+            x1 = transporter.x2;
+            y1 = transporter.y2;
             if (wrap(&x0, &y0) && wrap(&x1, &y1))
                 Gui_paint_transporter(x0, y0, x1, y1);
         }
-        RELEASE(trans_ptr, num_trans, max_trans);
+        clMap.transporters.clear();
     }
 }
 
 static void Paint_all_connectors(void)
 {
 
-    if (num_refuel > 0 ||
-        num_connector > 0 ||
-        num_trans > 0)
+    if (clMap.refuels.size() > 0 ||
+        clMap.connectors.size() > 0 ||
+        clMap.transporters.size() > 0)
     {
 
         Gui_paint_all_connectors_begin();
