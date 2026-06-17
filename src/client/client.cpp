@@ -299,12 +299,13 @@ double Fuel_by_pos(int x, int y)
 
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
 {
-    if (ind < 0 || ind >= num_targets)
+    if (ind < 0 || ind >= clMap.targets.size())
         return -1;
-    *xp = targets[ind].pos / Setup->y;
-    *yp = targets[ind].pos % Setup->y;
-    *dead_time = targets[ind].dead_time;
-    *damage = targets[ind].damage;
+    target_t &target = clMap.targets[ind];
+    *xp = target.pos / Setup->y;
+    *yp = target.pos % Setup->y;
+    *dead_time = target.dead_time;
+    *damage = target.damage;
     return 0;
 }
 
@@ -313,20 +314,20 @@ int Target_alive(int x, int y, double *damage)
     int i, lo, hi, pos;
 
     lo = 0;
-    hi = num_targets - 1;
+    hi = clMap.targets.size() - 1;
     pos = x * Setup->y + y;
     while (lo < hi)
     {
         i = (lo + hi) >> 1;
-        if (pos > targets[i].pos)
+        if (pos > clMap.targets[i].pos)
             lo = i + 1;
         else
             hi = i;
     }
-    if (lo == hi && pos == targets[lo].pos)
+    if (lo == hi && pos == clMap.targets[lo].pos)
     {
-        *damage = targets[lo].damage;
-        return targets[lo].dead_time;
+        *damage = clMap.targets[lo].damage;
+        return clMap.targets[lo].dead_time;
     }
     warn("No targets at (%d,%d)", x, y);
     return -1;
@@ -348,18 +349,18 @@ static cannontime_t *Cannon_by_pos(int x, int y)
     int i, lo, hi, pos;
 
     lo = 0;
-    hi = num_cannons - 1;
+    hi = clMap.cannons.size() - 1;
     pos = x * Setup->y + y;
     while (lo < hi)
     {
         i = (lo + hi) >> 1;
-        if (pos > cannons[i].pos)
+        if (pos > clMap.cannons[i].pos)
             lo = i + 1;
         else
             hi = i;
     }
-    if (lo == hi && pos == cannons[lo].pos)
-        return &cannons[lo];
+    if (lo == hi && pos == clMap.cannons[lo].pos)
+        return &clMap.cannons[lo];
     warn("No cannon at (%d,%d)", x, y);
     return NULL;
 }
@@ -376,37 +377,40 @@ int Cannon_dead_time_by_pos(int x, int y, int *dot)
 
 int Handle_cannon(int ind, int dead_time)
 {
-    if (ind < 0 || ind >= num_cannons)
+    if (ind < 0 || ind >= clMap.cannons.size())
     {
         warn("Bad cannon index (%d)", ind);
         return 0;
     }
-    cannons[ind].dead_time = dead_time;
+    clMap.cannons[ind].dead_time = dead_time;
     return 0;
 }
 
-int Handle_target(int num, int dead_time, double damage)
+int Handle_target(int ind, int dead_time, double damage)
 {
-    if (num < 0 || num >= num_targets)
+    if (ind < 0 || clMap.targets.size())
     {
-        warn("Bad target index (%d)", num);
+        warn("Bad target index (%d)", ind);
         return 0;
     }
     if (dead_time == 0 && (damage <= 0.0 || damage > TARGET_DAMAGE))
-        warn("BUG target %d, dead %d, damage %f", num, dead_time, damage);
-    if (targets[num].dead_time > 0 && dead_time == 0)
+        warn("BUG target %d, dead %d, damage %f", ind, dead_time, damage);
+
+    target_t &target = clMap.targets[ind];
+
+    if (target.dead_time > 0 && dead_time == 0)
     {
-        int pos = targets[num].pos;
+        int pos = target.pos;
         Radar_show_target(pos / Setup->y, pos % Setup->y);
     }
-    else if (targets[num].dead_time == 0 && dead_time > 0)
+    else if (target.dead_time == 0 && dead_time > 0)
     {
-        int pos = targets[num].pos;
+        int pos = target.pos;
         Radar_hide_target(pos / Setup->y, pos % Setup->y);
     }
 
-    targets[num].dead_time = dead_time;
-    targets[num].damage = damage;
+    target.dead_time = dead_time;
+    target.damage = damage;
 
     return 0;
 }
@@ -601,16 +605,16 @@ void Map_dots(void)
                 }
             }
         }
-        for (i = 0; i < num_cannons; i++)
+        for (auto &cannon : clMap.cannons)
         {
-            x = cannons[i].pos / Setup->y;
-            y = cannons[i].pos % Setup->y;
+            x = cannon.pos / Setup->y;
+            y = cannon.pos % Setup->y;
             if ((x == 0 || y == 0) && BIT(Setup->mode, WRAP_PLAY))
-                cannons[i].dot = 1;
+                cannon.dot = 1;
             else if (backgroundPointDist > 0 && x % backgroundPointDist == 0 && y % backgroundPointDist == 0)
-                cannons[i].dot = 1;
+                cannon.dot = 1;
             else
-                cannons[i].dot = 0;
+                cannon.dot = 0;
         }
     }
 }
@@ -1108,13 +1112,11 @@ static int init_blockmap(void)
         type;
     uint8_t types[256];
 
-    num_cannons = 0;
-    num_targets = 0;
     num_checks = 0;
     clMap.fuels.clear();
     clMap.bases.clear();
-    cannons = NULL;
-    targets = NULL;
+    clMap.cannons.clear();
+    clMap.targets.clear();
     checks = NULL;
     memset(types, 0, sizeof types);
     types[SETUP_FUEL] = 1;
@@ -1133,38 +1135,12 @@ static int init_blockmap(void)
     {
         switch (types[Setup->map_data[i]])
         {
-        case 2:
-            num_cannons++;
-            break;
-        case 3:
-            num_targets++;
-            break;
         case 5:
             num_checks++;
             break;
         default:
             break;
         }
-    }
-    if (num_targets != 0)
-    {
-        targets = XMALLOC(target_t, num_targets);
-        if (targets == NULL)
-        {
-            error("No memory for Map targets (%d)", num_targets);
-            return -1;
-        }
-        num_targets = 0;
-    }
-    if (num_cannons != 0)
-    {
-        cannons = XMALLOC(cannontime_t, num_cannons);
-        if (cannons == NULL)
-        {
-            error("No memory for Map cannons (%d)", num_cannons);
-            return -1;
-        }
-        num_cannons = 0;
     }
     if (num_checks != 0)
     {
@@ -1189,16 +1165,18 @@ static int init_blockmap(void)
             clMap.fuels.push_back(fs);
             break;
         case 2:
-            cannons[num_cannons].pos = i;
-            cannons[num_cannons].dead_time = 0;
-            cannons[num_cannons].dot = 0;
-            num_cannons++;
+            cannontime_t cannon;
+            cannon.pos = i;
+            cannon.dead_time = 0;
+            cannon.dot = 0;
+            clMap.cannons.push_back(cannon);
             break;
         case 3:
-            targets[num_targets].pos = i;
-            targets[num_targets].dead_time = 0;
-            targets[num_targets].damage = TARGET_DAMAGE;
-            num_targets++;
+            target_t target;
+            target.pos = i;
+            target.dead_time = 0;
+            target.damage = TARGET_DAMAGE;
+            clMap.targets.push_back(target);
             break;
         case 4:
             homebase_t base;
@@ -1231,16 +1209,8 @@ static int Map_cleanup(void)
 {
     clMap.bases.clear();
     clMap.fuels.clear();
-    if (num_targets > 0)
-    {
-        XFREE(targets);
-        num_targets = 0;
-    }
-    if (num_cannons > 0)
-    {
-        XFREE(cannons);
-        num_cannons = 0;
-    }
+    clMap.targets.clear();
+    clMap.cannons.clear();
     return 0;
 }
 

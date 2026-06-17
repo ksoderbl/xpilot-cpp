@@ -218,7 +218,6 @@ void Paint_objects(void)
 
     for (i = 0; i < num_checks; i++)
     {
-
         Compute_bounds(&min, &max, &checks[i].bounds);
 
         for (xoff = min.x; xoff <= max.x; xoff++)

@@ -26,15 +26,7 @@
 ClientMap clMap;
 
 double teamscores[MAX_TEAMS];
-cannontime_t *cannons = NULL;
-int num_cannons = 0;
-target_t *targets = NULL;
-int num_targets = 0;
 
-// fuelstation_t *fuels = NULL;
-// int num_fuels = 0;
-// homebase_t *bases = NULL;
-// int num_bases = 0;
 checkpoint_t *checks = NULL;
 int num_checks = 0;
 xp_polygon_t *polygons = NULL;

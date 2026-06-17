@@ -263,21 +263,14 @@ typedef struct
 
 extern double teamscores[MAX_TEAMS];
 
-extern cannontime_t *cannons;
-extern int num_cannons;
-extern target_t *targets;
-extern int num_targets;
-
 extern int num_playing_teams;
 
 class ClientMap
 {
 public:
-    // fuelstation_t *fuels;
-    // int num_fuels;
+    std::vector<cannontime_t> cannons;
+    std::vector<target_t> targets;
     std::vector<fuelstation_t> fuels;
-    // homebase_t *bases;
-    // int num_bases;
     std::vector<homebase_t> bases;
 };
 
