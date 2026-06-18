@@ -286,6 +286,8 @@ public:
 
     std::vector<paused_t> pausers;
 
+    std::vector<vbase_t> vbases;
+
     std::vector<wreckage_t> wreckages;
     std::vector<asteroid_t> asteroids;
     std::vector<wormhole_t> wormholes;
@@ -336,8 +338,8 @@ extern vcannon_t *vcannon_ptr;
 extern int num_vcannon, max_vcannon;
 extern vfuel_t *vfuel_ptr;
 extern int num_vfuel, max_vfuel;
-extern vbase_t *vbase_ptr;
-extern int num_vbase, max_vbase;
+// extern vbase_t *vbase_ptr;
+// extern int num_vbase, max_vbase;
 extern debris_t *debris_ptr[DEBRIS_TYPES];
 extern int num_debris[DEBRIS_TYPES],
     max_debris[DEBRIS_TYPES];

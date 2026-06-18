@@ -1545,7 +1545,7 @@ int Handle_start(long server_loops)
     num_radar = 0;
     num_vcannon = 0;
     num_vfuel = 0;
-    num_vbase = 0;
+    clMap.vbases.clear();
     num_vdecor = 0;
     for (i = 0; i < DEBRIS_TYPES; i++)
         num_debris[i] = 0;
@@ -2157,7 +2157,7 @@ int Handle_vbase(int x, int y, int xi, int yi, int type)
     t.xi = xi;
     t.yi = yi;
     t.type = type;
-    STORE(vbase_t, vbase_ptr, num_vbase, max_vbase, t);
+    clMap.vbases.push_back(t);
     return 0;
 }
 
@@ -2329,11 +2329,7 @@ void Client_cleanup(void)
         max_vfuel = 0;
         XFREE(vfuel_ptr);
     }
-    if (max_vbase > 0 && vbase_ptr)
-    {
-        max_vbase = 0;
-        XFREE(vbase_ptr);
-    }
+    clMap.vbases.clear();
     if (max_vdecor > 0 && vdecor_ptr)
     {
         max_vdecor = 0;

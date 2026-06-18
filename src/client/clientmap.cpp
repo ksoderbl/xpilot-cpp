@@ -49,8 +49,6 @@ vcannon_t *vcannon_ptr;
 int num_vcannon, max_vcannon;
 vfuel_t *vfuel_ptr;
 int num_vfuel, max_vfuel;
-vbase_t *vbase_ptr;
-int num_vbase, max_vbase;
 debris_t *debris_ptr[DEBRIS_TYPES];
 int num_debris[DEBRIS_TYPES],
     max_debris[DEBRIS_TYPES];

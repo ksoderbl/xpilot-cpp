@@ -76,16 +76,17 @@ void Paint_vfuel(void)
 void Paint_vbase(void)
 {
     int i, id, team;
-    if (num_vbase > 0)
+
+    if (clMap.vbases.size() > 0)
     {
-        for (i = 0; i < num_vbase; i++)
+        for (const auto &vbase : clMap.vbases)
         {
-            Base_info_by_pos(vbase_ptr[i].xi, vbase_ptr[i].yi, &id, &team);
+            Base_info_by_pos(vbase.xi, vbase.yi, &id, &team);
             // warn("Paint_vbase: id %d, team %d", id, team);
-            Gui_paint_base(vbase_ptr[i].x, vbase_ptr[i].y, id, team,
-                           vbase_ptr[i].type);
+            Gui_paint_base(vbase.x, vbase.y, id, team,
+                           vbase.type);
         }
-        RELEASE(vbase_ptr, num_vbase, max_vbase);
+        clMap.vbases.clear();
     }
 }
 
