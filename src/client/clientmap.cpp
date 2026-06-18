@@ -43,8 +43,6 @@ other_t *Others = NULL;
 int num_others = 0, max_others = 0;
 appearing_t *appearing_ptr;
 int num_appearing, max_appearing;
-radar_t *radar_ptr;
-int num_radar, max_radar;
 debris_t *debris_ptr[DEBRIS_TYPES];
 int num_debris[DEBRIS_TYPES],
     max_debris[DEBRIS_TYPES];

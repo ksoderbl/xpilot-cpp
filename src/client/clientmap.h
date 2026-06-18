@@ -286,6 +286,7 @@ public:
 
     std::vector<paused_t> pausers;
 
+    std::vector<radar_t> radarObjects;
     std::vector<vcannon_t> vcannons;
     std::vector<vfuel_t> vfuels;
     std::vector<vbase_t> vbases;
@@ -334,8 +335,8 @@ extern int num_others, max_others;
 // extern int num_paused, max_paused;
 extern appearing_t *appearing_ptr;
 extern int num_appearing, max_appearing;
-extern radar_t *radar_ptr;
-extern int num_radar, max_radar;
+// extern radar_t *radar_ptr;
+// extern int num_radar, max_radar;
 // extern vcannon_t *vcannon_ptr;
 // extern int num_vcannon, max_vcannon;
 // extern vfuel_t *vfuel_ptr;

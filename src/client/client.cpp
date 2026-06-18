@@ -1541,8 +1541,7 @@ int Handle_start(long server_loops)
     clMap.ecms.clear();
     clMap.transporters.clear();
     clMap.pausers.clear();
-
-    num_radar = 0;
+    clMap.radarObjects.clear();
     clMap.vcannons.clear();
     clMap.vfuels.clear();
     clMap.vbases.clear();
@@ -2058,7 +2057,7 @@ int Handle_radar(int x, int y, int size)
     t.x = x;
     t.y = y;
     t.size = size;
-    STORE(radar_t, radar_ptr, num_radar, max_radar, t);
+    clMap.radarObjects.push_back(t);
     return 0;
 }
 
@@ -2314,11 +2313,7 @@ void Client_cleanup(void)
         max_appearing = 0;
         XFREE(appearing_ptr);
     }
-    if (max_radar > 0 && radar_ptr)
-    {
-        max_radar = 0;
-        XFREE(radar_ptr);
-    }
+    clMap.radarObjects.clear();
     clMap.vcannons.clear();
     clMap.vfuels.clear();
     clMap.vbases.clear();

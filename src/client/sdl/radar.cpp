@@ -266,15 +266,15 @@ static void Radar_paint_objects(GLWidget *radar)
 {
     int i, x, y, s;
 
-    for (i = 0; i < num_radar; i++)
+    for (const auto &radarObject : clMap.radarObjects)
     {
-        x = radar_ptr[i].x;
-        y = radar_ptr[i].y;
-        s = radar_ptr[i].size;
+        x = radarObject.x;
+        y = radarObject.y;
+        s = radarObject.size;
         to_screen(radar, &x, &y, RadarWidth, RadarHeight);
         x -= s / 2;
         y -= s / 2;
-        if (radar_ptr[i].type == RadarFriend)
+        if (radarObject.type == RadarFriend)
             glColor3ub(0, 0xff, 0);
         else
             glColor3ub(0xff, 0xff, 0xff);
@@ -286,8 +286,8 @@ static void Radar_paint_objects(GLWidget *radar)
         glEnd();
     }
 
-    if (num_radar)
-        RELEASE(radar_ptr, num_radar, max_radar);
+    if (clMap.radarObjects.size() > 0)
+        clMap.radarObjects.clear();
 }
 
 /*

@@ -406,17 +406,17 @@ void Paint_hudradar(void)
     float xf = (float)hrw / (float)Setup->width,
           yf = (float)hrh / (float)Setup->height;
 
-    for (i = 0; i < num_radar; i++)
+    for (const auto &radarObject : clMap.radarObjects)
     {
-        int sz = radar_ptr[i].size;
+        int sz = radarObject.size;
 
         /* skip non-enemy objects */
         if ((sz & 0x80) == 0)
         {
-            int x = radar_ptr[i].x * hrscale -
+            int x = radarObject.x * hrscale -
                     (world.x + ext_view_width / 2) * xf;
 
-            int y = radar_ptr[i].y * hrscale -
+            int y = radarObject.y * hrscale -
                     (world.y + ext_view_height / 2) * yf;
 
             /* skip objects that would be drawn over our ship */
@@ -459,8 +459,7 @@ void Paint_hudradar(void)
 }
 
 /* from xpilot ng version 4.7.1, slightly modified */
-static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
-                           int sz)
+static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
 {
     int i, x, y, size;
     int hrw = (int)(hrscale * 256);
@@ -469,11 +468,11 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit,
     double yf = (double)hrh / (double)Setup->height;
     bool enemy;
 
-    for (i = 0; i < num_radar; i++)
+    for (const auto &radarObject : clMap.radarObjects)
     {
-        x = (int)(radar_ptr[i].x * hrscale - (world.x + ext_view_width / 2) * xf);
-        y = (int)(radar_ptr[i].y * hrscale - (world.y + ext_view_height / 2) * yf);
-        size = radar_ptr[i].size;
+        x = (int)(radarObject.x * hrscale - (world.x + ext_view_width / 2) * xf);
+        y = (int)(radarObject.y * hrscale - (world.y + ext_view_height / 2) * yf);
+        size = radarObject.size;
 
         if ((size & 0x80) == 0)
             enemy = true;

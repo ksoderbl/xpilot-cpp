@@ -1853,10 +1853,10 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
     double xf = (double)hrw / (double)Setup->width;
     double yf = (double)hrh / (double)Setup->height;
 
-    for (i = 0; i < num_radar; i++)
+    for (const auto &radarObject : clMap.radarObjects)
     {
-        x = (int)(radar_ptr[i].x * hrscale - (world.x + ext_view_width / 2) * xf);
-        y = (int)(radar_ptr[i].y * hrscale - (world.y + ext_view_height / 2) * yf);
+        x = (int)(radarObject.x * hrscale - (world.x + ext_view_width / 2) * xf);
+        y = (int)(radarObject.y * hrscale - (world.y + ext_view_height / 2) * yf);
 
         if (x < -hrw / 2)
             x += hrw;
@@ -1870,11 +1870,10 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
 
         if (!((x <= xlimit) && (x >= -xlimit) && (y <= ylimit) && (y >= -ylimit)))
         {
-
             x = x + draw_width / 2;
             y = -y + draw_height / 2;
 
-            if (radar_ptr[i].type == RadarEnemy)
+            if (radarObject.type == RadarEnemy)
             {
                 c = hudRadarEnemyColorRGBA;
                 shape = hudRadarEnemyShape;
@@ -1885,7 +1884,7 @@ static void Paint_hudradar(double hrscale, double xlimit, double ylimit, int sz)
                 shape = hudRadarOtherShape;
             }
             size = sz;
-            if (radar_ptr[i].size == 0)
+            if (radarObject.size == 0)
             {
                 size >>= 1;
                 if (hudRadarObjectColorRGBA)

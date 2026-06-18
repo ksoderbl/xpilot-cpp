@@ -158,10 +158,10 @@ static void Paint_objects_radar(void)
 {
     int i, x, y, xw, yw, color;
 
-    for (i = 0; i < num_radar; i++)
+    for (auto &radarObject : clMap.radarObjects)
     {
-        int rs = radar_ptr[i].size;
-        unsigned s = (rs <= 0 ? 1 : radar_ptr[i].size);
+        int rs = radarObject.size;
+        unsigned s = (rs <= 0 ? 1 : radarObject.size);
 
         /* draw players from the same team in a different color. */
         if ((s & 0x80) != 0)
@@ -174,8 +174,8 @@ static void Paint_objects_radar(void)
         if (s <= 0)
             s = 1;
 
-        x = radar_ptr[i].x - s / 2 - slidingradar_x;
-        y = RadarHeight - radar_ptr[i].y - 1 - s / 2 - slidingradar_y;
+        x = radarObject.x - s / 2 - slidingradar_x;
+        y = RadarHeight - radarObject.y - 1 - s / 2 - slidingradar_y;
 
         if (x <= 0)
             x += 256;
@@ -209,8 +209,8 @@ static void Paint_objects_radar(void)
         }
         XSetForeground(dpy, radarGC, colors[WHITE].pixel);
     }
-    if (num_radar)
-        RELEASE(radar_ptr, num_radar, max_radar);
+    if (clMap.radarObjects.size() > 0)
+        clMap.radarObjects.clear();
 }
 
 void Paint_radar(void)
