@@ -52,20 +52,17 @@ extern setup_t *Setup;
 
 void Paint_vcannon(void)
 {
-    int i;
-    if (num_vcannon > 0)
+    if (clMap.vcannons.size() > 0)
     {
-        for (i = 0; i < num_vcannon; i++)
-            Gui_paint_cannon(vcannon_ptr[i].x, vcannon_ptr[i].y,
-                             vcannon_ptr[i].type);
-        RELEASE(vcannon_ptr, num_vcannon, max_vcannon);
+        for (const auto &vcannon : clMap.vcannons)
+            Gui_paint_cannon(vcannon.x, vcannon.y,
+                             vcannon.type);
+        clMap.vcannons.clear();
     }
 }
 
 void Paint_vfuel(void)
 {
-    int i;
-
     if (clMap.vfuels.size() > 0)
     {
         for (const auto &vfuel : clMap.vfuels)
@@ -76,7 +73,7 @@ void Paint_vfuel(void)
 
 void Paint_vbase(void)
 {
-    int i, id, team;
+    int id, team;
 
     if (clMap.vbases.size() > 0)
     {

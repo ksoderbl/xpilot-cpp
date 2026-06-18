@@ -1543,7 +1543,7 @@ int Handle_start(long server_loops)
     clMap.pausers.clear();
 
     num_radar = 0;
-    num_vcannon = 0;
+    clMap.vcannons.clear();
     clMap.vfuels.clear();
     clMap.vbases.clear();
     num_vdecor = 0;
@@ -2133,7 +2133,7 @@ int Handle_vcannon(int x, int y, int type)
     t.x = x;
     t.y = y;
     t.type = type;
-    STORE(vcannon_t, vcannon_ptr, num_vcannon, max_vcannon, t);
+    clMap.vcannons.push_back(t);
     return 0;
 }
 
@@ -2319,11 +2319,7 @@ void Client_cleanup(void)
         max_radar = 0;
         XFREE(radar_ptr);
     }
-    if (max_vcannon > 0 && vcannon_ptr)
-    {
-        max_vcannon = 0;
-        XFREE(vcannon_ptr);
-    }
+    clMap.vcannons.clear();
     clMap.vfuels.clear();
     clMap.vbases.clear();
     if (max_vdecor > 0 && vdecor_ptr)

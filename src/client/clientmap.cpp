@@ -45,8 +45,6 @@ appearing_t *appearing_ptr;
 int num_appearing, max_appearing;
 radar_t *radar_ptr;
 int num_radar, max_radar;
-vcannon_t *vcannon_ptr;
-int num_vcannon, max_vcannon;
 debris_t *debris_ptr[DEBRIS_TYPES];
 int num_debris[DEBRIS_TYPES],
     max_debris[DEBRIS_TYPES];
