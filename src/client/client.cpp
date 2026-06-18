@@ -1544,7 +1544,7 @@ int Handle_start(long server_loops)
 
     num_radar = 0;
     num_vcannon = 0;
-    num_vfuel = 0;
+    clMap.vfuels.clear();
     clMap.vbases.clear();
     num_vdecor = 0;
     for (i = 0; i < DEBRIS_TYPES; i++)
@@ -2144,7 +2144,7 @@ int Handle_vfuel(int x, int y, double fuel)
     t.x = x;
     t.y = y;
     t.fuel = fuel;
-    STORE(vfuel_t, vfuel_ptr, num_vfuel, max_vfuel, t);
+    clMap.vfuels.push_back(t);
     return 0;
 }
 
@@ -2324,11 +2324,7 @@ void Client_cleanup(void)
         max_vcannon = 0;
         XFREE(vcannon_ptr);
     }
-    if (max_vfuel > 0 && vfuel_ptr)
-    {
-        max_vfuel = 0;
-        XFREE(vfuel_ptr);
-    }
+    clMap.vfuels.clear();
     clMap.vbases.clear();
     if (max_vdecor > 0 && vdecor_ptr)
     {

@@ -47,8 +47,6 @@ radar_t *radar_ptr;
 int num_radar, max_radar;
 vcannon_t *vcannon_ptr;
 int num_vcannon, max_vcannon;
-vfuel_t *vfuel_ptr;
-int num_vfuel, max_vfuel;
 debris_t *debris_ptr[DEBRIS_TYPES];
 int num_debris[DEBRIS_TYPES],
     max_debris[DEBRIS_TYPES];

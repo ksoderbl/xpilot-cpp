@@ -65,11 +65,12 @@ void Paint_vcannon(void)
 void Paint_vfuel(void)
 {
     int i;
-    if (num_vfuel > 0)
+
+    if (clMap.vfuels.size() > 0)
     {
-        for (i = 0; i < num_vfuel; i++)
-            Gui_paint_fuel(vfuel_ptr[i].x, vfuel_ptr[i].y, vfuel_ptr[i].fuel);
-        RELEASE(vfuel_ptr, num_vfuel, max_vfuel);
+        for (const auto &vfuel : clMap.vfuels)
+            Gui_paint_fuel(vfuel.x, vfuel.y, vfuel.fuel);
+        clMap.vfuels.clear();
     }
 }
 
