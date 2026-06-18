@@ -223,24 +223,24 @@ static void Paint_wreckages(void)
     int wtype, size, rot;
     bool deadly;
 
-    if (num_wreckage > 0)
+    if (clMap.wreckages.size() > 0)
     {
-        for (i = 0; i < num_wreckage; i++)
+        for (const auto &wreckage : clMap.wreckages)
         {
-            x = wreckage_ptr[i].x;
-            y = wreckage_ptr[i].y;
+            x = wreckage.x;
+            y = wreckage.y;
             if (wrap(&x, &y))
             {
-                deadly = (wreckage_ptr[i].wrecktype & 0x80);
+                deadly = (wreckage.wrecktype & 0x80);
 
-                wtype = (wreckage_ptr[i].wrecktype & 0x7F) % NUM_WRECKAGE_SHAPES;
-                rot = wreckage_ptr[i].rotation;
-                size = wreckage_ptr[i].size;
+                wtype = (wreckage.wrecktype & 0x7F) % NUM_WRECKAGE_SHAPES;
+                rot = wreckage.rotation;
+                size = wreckage.size;
 
                 Gui_paint_wreck(x, y, deadly, wtype, rot, size);
             }
         }
-        RELEASE(wreckage_ptr, num_wreckage, max_wreckage);
+        clMap.wreckages.clear();
     }
 }
 
@@ -249,24 +249,24 @@ static void Paint_asteroids(void)
     int i, x, y;
     int type, size, rot;
 
-    if (num_asteroids > 0)
+    if (clMap.asteroids.size() > 0)
     {
         Gui_paint_asteroids_begin();
-        for (i = 0; i < num_asteroids; i++)
+        for (const auto &asteroid : clMap.asteroids)
         {
-            x = asteroid_ptr[i].x;
-            y = asteroid_ptr[i].y;
+            x = asteroid.x;
+            y = asteroid.y;
             if (wrap(&x, &y))
             {
-                type = asteroid_ptr[i].type;
-                rot = asteroid_ptr[i].rotation;
-                size = asteroid_ptr[i].size;
+                type = asteroid.type;
+                rot = asteroid.rotation;
+                size = asteroid.size;
 
                 Gui_paint_asteroid(x, y, type, rot, size);
             }
         }
         Gui_paint_asteroids_end();
-        RELEASE(asteroid_ptr, num_asteroids, max_asteroids);
+        clMap.asteroids.clear();
     }
 }
 
@@ -274,16 +274,16 @@ static void Paint_wormholes(void)
 {
     int i, x, y;
 
-    if (num_wormholes > 0)
+    if (clMap.wormholes.size() > 0)
     {
-        for (i = 0; i < num_wormholes; i++)
+        for (const auto &wormhole : clMap.wormholes)
         {
-            x = wormhole_ptr[i].x;
-            y = wormhole_ptr[i].y;
+            x = wormhole.x;
+            y = wormhole.y;
             if (wrap(&x, &y))
                 Gui_paint_setup_worm(x, y);
         }
-        RELEASE(wormhole_ptr, num_wormholes, max_wormholes);
+        clMap.wormholes.clear();
     }
 }
 

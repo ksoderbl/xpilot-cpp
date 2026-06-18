@@ -285,6 +285,10 @@ public:
     std::vector<trans_t> transporters;
 
     std::vector<paused_t> pausers;
+
+    std::vector<wreckage_t> wreckages;
+    std::vector<asteroid_t> asteroids;
+    std::vector<wormhole_t> wormholes;
 };
 
 extern ClientMap clMap;
@@ -342,9 +346,9 @@ extern int num_fastshot[DEBRIS_TYPES * 2],
     max_fastshot[DEBRIS_TYPES * 2];
 extern vdecor_t *vdecor_ptr;
 extern int num_vdecor, max_vdecor;
-extern wreckage_t *wreckage_ptr;
-extern int num_wreckage, max_wreckage;
-extern asteroid_t *asteroid_ptr;
-extern int num_asteroids, max_asteroids;
-extern wormhole_t *wormhole_ptr;
-extern int num_wormholes, max_wormholes;
+// extern wreckage_t *wreckage_ptr;
+// extern int num_wreckage, max_wreckage;
+// extern asteroid_t *asteroid_ptr;
+// extern int num_asteroids, max_asteroids;
+// extern wormhole_t *wormhole_ptr;
+// extern int num_wormholes, max_wormholes;

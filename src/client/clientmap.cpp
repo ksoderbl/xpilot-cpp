@@ -59,9 +59,3 @@ int num_fastshot[DEBRIS_TYPES * 2],
     max_fastshot[DEBRIS_TYPES * 2];
 vdecor_t *vdecor_ptr;
 int num_vdecor, max_vdecor;
-wreckage_t *wreckage_ptr;
-int num_wreckage, max_wreckage;
-asteroid_t *asteroid_ptr;
-int num_asteroids, max_asteroids;
-wormhole_t *wormhole_ptr;
-int num_wormholes, max_wormholes;

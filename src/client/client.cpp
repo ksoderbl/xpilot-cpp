@@ -1963,7 +1963,7 @@ int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
     t.wrecktype = wrecktype;
     t.size = size;
     t.rotation = rotation;
-    STORE(wreckage_t, wreckage_ptr, num_wreckage, max_wreckage, t);
+    clMap.wreckages.push_back(t);
     return 0;
 }
 
@@ -1979,7 +1979,7 @@ int Handle_asteroid(int x, int y, int type, int size, int rotation)
     t.type = type;
     t.size = size;
     t.rotation = rotation;
-    STORE(asteroid_t, asteroid_ptr, num_asteroids, max_asteroids, t);
+    clMap.asteroids.push_back(t);
     return 0;
 }
 
@@ -1989,7 +1989,7 @@ int Handle_wormhole(int x, int y)
 
     t.x = x - BLOCK_SZ / 2;
     t.y = y - BLOCK_SZ / 2;
-    STORE(wormhole_t, wormhole_ptr, num_wormholes, max_wormholes, t);
+    clMap.wormholes.push_back(t);
     return 0;
 }
 
@@ -2340,21 +2340,9 @@ void Client_cleanup(void)
         XFREE(vdecor_ptr);
     }
     clMap.itemtypes.clear();
-    if (max_wreckage > 0 && wreckage_ptr)
-    {
-        max_wreckage = 0;
-        XFREE(wreckage_ptr);
-    }
-    if (max_asteroids > 0 && asteroid_ptr)
-    {
-        max_asteroids = 0;
-        XFREE(asteroid_ptr);
-    }
-    if (max_wormholes > 0 && wormhole_ptr)
-    {
-        max_wormholes = 0;
-        XFREE(wormhole_ptr);
-    }
+    clMap.wreckages.clear();
+    clMap.asteroids.clear();
+    clMap.wormholes.clear();
 
     Map_cleanup();
     Paint_cleanup();
