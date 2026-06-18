@@ -41,18 +41,6 @@ int score_object = 0;
 
 other_t *Others = NULL;
 int num_others = 0, max_others = 0;
-missile_t *missile_ptr;
-int num_missile, max_missile;
-ball_t *ball_ptr;
-int num_ball, max_ball;
-ship_t *ship_ptr;
-int num_ship, max_ship;
-mine_t *mine_ptr;
-int num_mine, max_mine;
-itemtype_t *itemtype_ptr;
-int num_itemtype, max_itemtype;
-ecm_t *ecm_ptr;
-int num_ecm, max_ecm;
 paused_t *paused_ptr;
 int num_paused, max_paused;
 appearing_t *appearing_ptr;

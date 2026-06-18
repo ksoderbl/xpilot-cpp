@@ -1533,12 +1533,12 @@ int Handle_start(long server_loops)
 
     clMap.refuels.clear();
     clMap.connectors.clear();
-    num_missile = 0;
-    num_ball = 0;
-    num_ship = 0;
-    num_mine = 0;
-    num_itemtype = 0;
-    num_ecm = 0;
+    clMap.missiles.clear();
+    clMap.balls.clear();
+    clMap.ships.clear();
+    clMap.missiles.clear();
+    clMap.itemtypes.clear();
+    clMap.ecms.clear();
     clMap.transporters.clear();
     num_paused = 0;
     num_radar = 0;
@@ -1794,7 +1794,7 @@ int Handle_missile(int x, int y, int len, int dir)
     t.y = y;
     t.dir = dir;
     t.len = len;
-    STORE(missile_t, missile_ptr, num_missile, max_missile, t);
+    clMap.missiles.push_back(t);
     return 0;
 }
 
@@ -1806,7 +1806,7 @@ int Handle_ball(int x, int y, int id, int style)
     t.y = y;
     t.id = id;
     t.style = style;
-    STORE(ball_t, ball_ptr, num_ball, max_ball, t);
+    clMap.balls.push_back(t);
     return 0;
 }
 
@@ -1856,7 +1856,7 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak,
     t.eshield = eshield;
     t.phased = phased;
     t.deflector = deflector;
-    STORE(ship_t, ship_ptr, num_ship, max_ship, t);
+    clMap.ships.push_back(t);
 
     /* if we see a ship in the center of the display, we may be watching
      * it, especially if it's us!  consider any ship there to be our eyes
@@ -1888,7 +1888,7 @@ int Handle_mine(int x, int y, int teammine, int id)
     t.y = y;
     t.teammine = teammine;
     t.id = id;
-    STORE(mine_t, mine_ptr, num_mine, max_mine, t);
+    clMap.mines.push_back(t);
     return 0;
 }
 
@@ -1899,7 +1899,7 @@ int Handle_item(int x, int y, int type)
     t.x = x;
     t.y = y;
     t.type = type;
-    STORE(itemtype_t, itemtype_ptr, num_itemtype, max_itemtype, t);
+    clMap.itemtypes.push_back(t);
     return 0;
 }
 
@@ -2011,7 +2011,7 @@ int Handle_ecm(int x, int y, int size)
     t.x = x;
     t.y = y;
     t.size = size;
-    STORE(ecm_t, ecm_ptr, num_ecm, max_ecm, t);
+    clMap.ecms.push_back(t);
     return 0;
 }
 
@@ -2301,31 +2301,11 @@ void Client_cleanup(void)
     clMap.refuels.clear();
     clMap.connectors.clear();
     clMap.lasers.clear();
-    if (max_missile > 0 && missile_ptr)
-    {
-        max_missile = 0;
-        XFREE(missile_ptr);
-    }
-    if (max_ball > 0 && ball_ptr)
-    {
-        max_ball = 0;
-        XFREE(ball_ptr);
-    }
-    if (max_ship > 0 && ship_ptr)
-    {
-        max_ship = 0;
-        XFREE(ship_ptr);
-    }
-    if (max_mine > 0 && mine_ptr)
-    {
-        max_mine = 0;
-        XFREE(mine_ptr);
-    }
-    if (max_ecm > 0 && ecm_ptr)
-    {
-        max_ecm = 0;
-        XFREE(ecm_ptr);
-    }
+    clMap.missiles.clear();
+    clMap.balls.clear();
+    clMap.ships.clear();
+    clMap.mines.clear();
+    clMap.ecms.clear();
     clMap.transporters.clear();
     if (max_paused > 0 && paused_ptr)
     {
@@ -2362,11 +2342,7 @@ void Client_cleanup(void)
         max_vdecor = 0;
         XFREE(vdecor_ptr);
     }
-    if (max_itemtype > 0 && itemtype_ptr)
-    {
-        max_itemtype = 0;
-        XFREE(itemtype_ptr);
-    }
+    clMap.itemtypes.clear();
     if (max_wreckage > 0 && wreckage_ptr)
     {
         max_wreckage = 0;

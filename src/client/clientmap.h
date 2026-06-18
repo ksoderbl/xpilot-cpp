@@ -276,7 +276,12 @@ public:
     std::vector<refuel_t> refuels;
     std::vector<connector_t> connectors;
     std::vector<laser_t> lasers;
-
+    std::vector<missile_t> missiles;
+    std::vector<ball_t> balls;
+    std::vector<ship_t> ships;
+    std::vector<mine_t> mines;
+    std::vector<itemtype_t> itemtypes;
+    std::vector<ecm_t> ecms;
     std::vector<trans_t> transporters;
 };
 
@@ -291,8 +296,6 @@ extern int num_edge_styles, max_edge_styles;
 extern polygon_style_t *polygon_styles;
 extern int num_polygon_styles, max_polygon_styles;
 
-/* dynamic global game data */
-
 // TODO: use e.g. std::vectors here
 
 extern other_t *Others;
@@ -303,18 +306,18 @@ extern int num_others, max_others;
 // extern int num_connector, max_connector;
 // extern laser_t *laser_ptr;
 // extern int num_laser, max_laser;
-extern missile_t *missile_ptr;
-extern int num_missile, max_missile;
-extern ball_t *ball_ptr;
-extern int num_ball, max_ball;
-extern ship_t *ship_ptr;
-extern int num_ship, max_ship;
-extern mine_t *mine_ptr;
-extern int num_mine, max_mine;
-extern itemtype_t *itemtype_ptr;
-extern int num_itemtype, max_itemtype;
-extern ecm_t *ecm_ptr;
-extern int num_ecm, max_ecm;
+// extern missile_t *missile_ptr;
+// extern int num_missile, max_missile;
+// extern ball_t *ball_ptr;
+// extern int num_ball, max_ball;
+// extern ship_t *ship_ptr;
+// extern int num_ship, max_ship;
+// extern mine_t *mine_ptr;
+// extern int num_mine, max_mine;
+// extern itemtype_t *itemtype_ptr;
+// extern int num_itemtype, max_itemtype;
+// extern ecm_t *ecm_ptr;
+// extern int num_ecm, max_ecm;
 // extern trans_t *trans_ptr;
 // extern int num_trans, max_trans;
 extern paused_t *paused_ptr;
