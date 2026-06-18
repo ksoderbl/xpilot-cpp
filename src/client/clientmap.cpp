@@ -41,8 +41,6 @@ int score_object = 0;
 
 other_t *Others = NULL;
 int num_others = 0, max_others = 0;
-paused_t *paused_ptr;
-int num_paused, max_paused;
 appearing_t *appearing_ptr;
 int num_appearing, max_appearing;
 radar_t *radar_ptr;

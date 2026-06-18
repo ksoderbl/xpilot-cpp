@@ -411,16 +411,16 @@ static void Paint_paused(void)
 {
     int i, x, y;
 
-    if (num_paused > 0)
+    if (clMap.pausers.size() > 0)
     {
-        for (i = 0; i < num_paused; i++)
+        for (const auto &paused : clMap.pausers)
         {
-            x = paused_ptr[i].x;
-            y = paused_ptr[i].y;
+            x = paused.x;
+            y = paused.y;
             if (wrap(&x, &y))
-                Gui_paint_paused(x, y, paused_ptr[i].count);
+                Gui_paint_paused(x, y, paused.count);
         }
-        RELEASE(paused_ptr, num_paused, max_paused);
+        clMap.pausers.clear();
     }
 }
 

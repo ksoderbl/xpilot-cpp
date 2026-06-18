@@ -283,6 +283,8 @@ public:
     std::vector<itemtype_t> itemtypes;
     std::vector<ecm_t> ecms;
     std::vector<trans_t> transporters;
+
+    std::vector<paused_t> pausers;
 };
 
 extern ClientMap clMap;
@@ -320,8 +322,8 @@ extern int num_others, max_others;
 // extern int num_ecm, max_ecm;
 // extern trans_t *trans_ptr;
 // extern int num_trans, max_trans;
-extern paused_t *paused_ptr;
-extern int num_paused, max_paused;
+// extern paused_t *paused_ptr;
+// extern int num_paused, max_paused;
 extern appearing_t *appearing_ptr;
 extern int num_appearing, max_appearing;
 extern radar_t *radar_ptr;

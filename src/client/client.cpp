@@ -1540,7 +1540,8 @@ int Handle_start(long server_loops)
     clMap.itemtypes.clear();
     clMap.ecms.clear();
     clMap.transporters.clear();
-    num_paused = 0;
+    clMap.pausers.clear();
+
     num_radar = 0;
     num_vcannon = 0;
     num_vfuel = 0;
@@ -2034,7 +2035,7 @@ int Handle_paused(int x, int y, int count)
     t.x = x;
     t.y = y;
     t.count = count;
-    STORE(paused_t, paused_ptr, num_paused, max_paused, t);
+    clMap.pausers.push_back(t);
     return 0;
 }
 
@@ -2307,11 +2308,7 @@ void Client_cleanup(void)
     clMap.mines.clear();
     clMap.ecms.clear();
     clMap.transporters.clear();
-    if (max_paused > 0 && paused_ptr)
-    {
-        max_paused = 0;
-        XFREE(paused_ptr);
-    }
+    clMap.pausers.clear();
     if (max_appearing > 0 && appearing_ptr)
     {
         max_appearing = 0;
