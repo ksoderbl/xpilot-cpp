@@ -275,6 +275,8 @@ public:
 
     std::vector<refuel_t> refuels;
     std::vector<connector_t> connectors;
+    std::vector<laser_t> lasers;
+
     std::vector<trans_t> transporters;
 };
 
@@ -299,8 +301,8 @@ extern int num_others, max_others;
 // extern int num_refuel, max_refuel;
 // extern connector_t *connector_ptr;
 // extern int num_connector, max_connector;
-extern laser_t *laser_ptr;
-extern int num_laser, max_laser;
+// extern laser_t *laser_ptr;
+// extern int num_laser, max_laser;
 extern missile_t *missile_ptr;
 extern int num_missile, max_missile;
 extern ball_t *ball_ptr;

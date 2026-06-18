@@ -317,24 +317,24 @@ static void Paint_lasers(void)
 {
     int color, i, x1, y1, len, dir;
 
-    if (num_laser > 0)
+    if (clMap.lasers.size() > 0)
     {
         Gui_paint_lasers_begin();
 
-        for (i = 0; i < num_laser; i++)
+        for (const auto &laser : clMap.lasers)
         {
-            x1 = laser_ptr[i].x;
-            y1 = laser_ptr[i].y;
-            len = laser_ptr[i].len;
-            dir = laser_ptr[i].dir;
-            color = laser_ptr[i].color;
+            x1 = laser.x;
+            y1 = laser.y;
+            len = laser.len;
+            dir = laser.dir;
+            color = laser.color;
 
             if (wrap(&x1, &y1))
                 Gui_paint_laser(color, x1, y1, len, dir);
         }
         Gui_paint_lasers_end();
 
-        RELEASE(laser_ptr, num_laser, max_laser);
+        clMap.lasers.clear();
     }
 }
 

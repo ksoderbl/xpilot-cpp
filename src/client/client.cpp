@@ -1782,7 +1782,7 @@ int Handle_laser(int color, int x, int y, int len, int dir)
     t.y = y;
     t.len = len;
     t.dir = dir;
-    STORE(laser_t, laser_ptr, num_laser, max_laser, t);
+    clMap.lasers.push_back(t);
     return 0;
 }
 
@@ -2298,23 +2298,9 @@ void Client_cleanup(void)
         max_others = 0;
     }
 
-    // if (max_refuel > 0 && refuel_ptr)
-    // {
-    //     max_refuel = 0;
-    //     XFREE(refuel_ptr);
-    // }
     clMap.refuels.clear();
-    // if (max_connector > 0 && connector_ptr)
-    // {
-    //     max_connector = 0;
-    //     XFREE(connector_ptr);
-    // }
     clMap.connectors.clear();
-    if (max_laser > 0 && laser_ptr)
-    {
-        max_laser = 0;
-        XFREE(laser_ptr);
-    }
+    clMap.lasers.clear();
     if (max_missile > 0 && missile_ptr)
     {
         max_missile = 0;
@@ -2340,11 +2326,6 @@ void Client_cleanup(void)
         max_ecm = 0;
         XFREE(ecm_ptr);
     }
-    // if (max_trans > 0 && trans_ptr)
-    // {
-    //     max_trans = 0;
-    //     XFREE(trans_ptr);
-    // }
     clMap.transporters.clear();
     if (max_paused > 0 && paused_ptr)
     {
