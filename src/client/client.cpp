@@ -2182,11 +2182,13 @@ bool Using_score_decimals(void)
 
 int Client_init(char *server, unsigned server_version)
 {
+    warn("Client_init, server %s, server_version 0x%08x", server, server_version);
+
     version = server_version;
     if (server_version < 0x4F09)
-        oldServer = 1;
+        oldServer = true;
     else
-        oldServer = 0;
+        oldServer = false;
 
     if (Paint_init() == -1)
         return -1;

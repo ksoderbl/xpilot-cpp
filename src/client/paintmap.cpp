@@ -277,22 +277,24 @@ void Paint_world(void)
         fill_bottom_left = -1,
         fill_bottom_right = -1;
     uint8_t *mapptr, *mapbase;
-    // static int wallTileReady = 0;
-    // static Pixmap wallTile = None;
-    // int wallTileDoit = false;
-    // XPoint points[5];
 
-    //     if (instruments.texturedWalls) {
-    //         if (!wallTileReady) {
-    //             wallTile = Texture_wall();
-    //             wallTileReady = (wallTile == None) ? -1 : 1;
-    //         }
-    //         if (wallTileReady == 1) {
-    //             wallTileDoit = true;
-    //             XSetTile(dpy, gc, wallTile);
-    //             XSetTSOrigin(dpy, gc, -WINSCALE(realWorld.x), WINSCALE(realWorld.y));
-    //         }
-    //     }
+    if (!BIT(Setup->mode, WRAP_PLAY))
+    {
+        if (world.x <= 0)
+            Gui_paint_border(0, 0, 0, Setup->height);
+        if (world.x + ext_view_width >= Setup->width)
+            Gui_paint_border(Setup->width, 0, Setup->width, Setup->height);
+        if (world.y <= 0)
+            Gui_paint_border(0, 0, Setup->width, 0);
+        if (world.y + ext_view_height >= Setup->height)
+            Gui_paint_border(0, Setup->height, Setup->width, Setup->height);
+    }
+
+    if (!oldServer)
+    {
+        Paint_background_dots();
+        return;
+    }
 
     xb = ((world.x < 0) ? (world.x - (BLOCK_SZ - 1)) : world.x) / BLOCK_SZ;
     yb = ((world.y < 0) ? (world.y - (BLOCK_SZ - 1)) : world.y) / BLOCK_SZ;
@@ -308,22 +310,6 @@ void Paint_world(void)
             xe = Setup->x - 1;
         if (ye >= Setup->y)
             ye = Setup->y - 1;
-        if (world.x <= 0)
-        {
-            Gui_paint_border(0, 0, 0, Setup->height);
-        }
-        if (world.x + ext_view_width >= Setup->width)
-        {
-            Gui_paint_border(Setup->width, 0, Setup->width, Setup->height);
-        }
-        if (world.y <= 0)
-        {
-            Gui_paint_border(0, 0, Setup->width, 0);
-        }
-        if (world.y + ext_view_height >= Setup->height)
-        {
-            Gui_paint_border(0, Setup->height, Setup->width, Setup->height);
-        }
     }
 
     y = yb * BLOCK_SZ;

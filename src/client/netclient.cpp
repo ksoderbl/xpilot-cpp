@@ -342,20 +342,22 @@ int Net_setup(void)
                 /*
                  * Do some consistency checks on the server setup structure.
                  */
-                if (Setup->map_data_len <= 0 || Setup->x <= 0 || Setup->y <= 0 || Setup->map_data_len > Setup->x * Setup->y)
+                if (Setup->map_data_len <= 0 || Setup->width <= 0 || Setup->height <= 0 || (oldServer && Setup->map_data_len > Setup->x * Setup->y))
                 {
                     warn("Got bad map specs from server (%d,%d,%d)",
                          Setup->map_data_len, Setup->width, Setup->height);
                     return -1;
                 }
-                Setup->width = Setup->x * BLOCK_SZ;
-                Setup->height = Setup->y * BLOCK_SZ;
-                if (Setup->map_order != SETUP_MAP_ORDER_XY && Setup->map_order != SETUP_MAP_UNCOMPRESSED)
+                // Setup->width = Setup->x * BLOCK_SZ;
+                // Setup->height = Setup->y * BLOCK_SZ;
+                if (oldServer && Setup->map_order != SETUP_MAP_ORDER_XY && Setup->map_order != SETUP_MAP_UNCOMPRESSED)
                 {
                     warn("Unknown map order type (%d)", Setup->map_order);
                     return -1;
                 }
-                size = sizeof(setup_t) + Setup->x * Setup->y;
+                size = sizeof(setup_t) + Setup->map_data_len;
+                if (oldServer)
+                    size = sizeof(setup_t) + Setup->x * Setup->y;
                 if ((Setup = (setup_t *)realloc(ptr, size)) == NULL)
                 {
                     error("No memory for setup and map");
@@ -434,7 +436,7 @@ int Net_setup(void)
             }
         }
     }
-    if (Setup->map_order != SETUP_MAP_UNCOMPRESSED)
+    if (oldServer && Setup->map_order != SETUP_MAP_UNCOMPRESSED)
     {
         if (Uncompress_map() == -1)
             return -1;
