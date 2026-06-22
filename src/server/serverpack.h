@@ -25,6 +25,14 @@
 
 #include "pack.h"
 
+extern bool is_polygon_map;
+
+#define MAGIC (is_polygon_map                       \
+                   ? VERSION2MAGIC(POLYGON_VERSION) \
+                   : VERSION2MAGIC(OLD_VERSION))
+
+#define MY_VERSION MAGIC2VERSION(MAGIC)
+
 /*
  * Which client versions can join this server.
  */

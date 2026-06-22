@@ -625,8 +625,8 @@ static void Ecm_update(void)
     int i;
     double ecmSizeFactor = 0.5;
 
-    if (Num_ecms() > 0)
-        warn("Ecm_Update: ecms: %d", Num_ecms());
+    // if (Num_ecms() > 0)
+    //     warn("Ecm_Update: ecms: %d", Num_ecms());
 
     // Update ECM blasts
     for (i = 0; i < Num_ecms(); i++)
@@ -654,8 +654,8 @@ static void Transporter_update(void)
 {
     int i;
 
-    if (Num_transporters() > 0)
-        warn("Num_transporters: transporters: %d", Num_transporters());
+    // if (Num_transporters() > 0)
+    //     warn("Num_transporters: transporters: %d", Num_transporters());
 
     for (i = 0; i < Num_transporters(); i++)
     {

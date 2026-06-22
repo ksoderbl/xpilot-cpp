@@ -25,6 +25,12 @@
 
 #include "pack.h"
 
+extern int protocolVersion;
+
+#define MAGIC (VERSION2MAGIC(protocolVersion))
+
+#define MY_VERSION MAGIC2VERSION(MAGIC)
+
 /*
  * Which server versions can this client join.
  */
