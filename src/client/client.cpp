@@ -1844,34 +1844,39 @@ int Handle_item(int x, int y, int type)
     return 0;
 }
 
+// TODO: could have a separate list for teamshots?
 int Handle_fastshot(int type, uint8_t *p, int n)
 {
-    warn("Handle_fastshot: type %d, n %d", type, n);
-    if (n > max_fastshot[type])
+    // warn("Handle_fastshot: type %d, n %d", type, n);
+    if (type < 0 || type >= static_cast<int>(FASTSHOT_TYPES))
     {
-        if (max_fastshot[type] == 0)
-        {
-            fastshot_ptr[type] = (debris_t *)malloc(n * sizeof(*fastshot_ptr[type]));
-        }
-        else
-        {
-            fastshot_ptr[type] = (debris_t *)realloc(fastshot_ptr[type], n * sizeof(*fastshot_ptr[type]));
-        }
-        if (fastshot_ptr[type] == NULL)
-        {
-            error("No memory for debris");
-            num_fastshot[type] = max_fastshot[type] = 0;
-            return -1;
-        }
-        max_fastshot[type] = n;
+        error("Invalid fastshot type %d", type);
+        return -1;
     }
-    else if (n <= 0)
+
+    if (n <= 0)
     {
-        printf("debris %d < 0\n", n);
+        if (n < 0)
+            printf("fastshot %d < 0\n", n);
+
+        clMap.fastshotTypes[type].clear();
         return 0;
     }
-    num_fastshot[type] = n;
-    memcpy(fastshot_ptr[type], p, n * sizeof(*fastshot_ptr[type]));
+
+    auto &fastshotList = clMap.fastshotTypes[type];
+
+    try
+    {
+        fastshotList.resize(static_cast<std::size_t>(n));
+    }
+    catch (const std::bad_alloc &)
+    {
+        error("No memory for fastshot");
+        fastshotList.clear();
+        return -1;
+    }
+
+    std::memcpy(fastshotList.data(), p, static_cast<std::size_t>(n) * sizeof(fastshot_t));
     return 0;
 }
 

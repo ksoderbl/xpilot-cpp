@@ -362,41 +362,80 @@ static void Paint_lasers(void)
 
 static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
 {
-    int x, y, j, color;
+    // int x, y, j, color;
 
-    if (num_fastshot[i] > 0)
+    // if (num_fastshot[i] > 0)
+    // {
+    //     x = BASE_X(i);
+    //     y = BASE_Y(i);
+    //     color = COLOR(i);
+    //     if (color != WHITE && color != BLUE)
+    //         color = WHITE;
+    //     for (j = 0; j < num_fastshot[i]; j++)
+    //         Gui_paint_fastshot(color,
+    //                            x + fastshot_ptr[i][j].x,
+    //                            y - fastshot_ptr[i][j].y);
+    //     RELEASE(fastshot_ptr[i], num_fastshot[i], max_fastshot[i]);
+    // }
+
+    auto &fastshotList = clMap.fastshotTypes[i];
+
+    if (fastshotList.empty())
+        return;
+
+    const int x = BASE_X(i);
+    const int y = BASE_Y(i);
+    int color = COLOR(i);
+    if (color != WHITE && color != BLUE)
+        color = WHITE;
+
+    for (const fastshot_t &fastshot : fastshotList)
     {
-        x = BASE_X(i);
-        y = BASE_Y(i);
-        color = COLOR(i);
-        if (color != WHITE && color != BLUE)
-            color = WHITE;
-        for (j = 0; j < num_fastshot[i]; j++)
-            Gui_paint_fastshot(color,
-                               x + fastshot_ptr[i][j].x,
-                               y - fastshot_ptr[i][j].y);
-        RELEASE(fastshot_ptr[i], num_fastshot[i], max_fastshot[i]);
+        Gui_paint_fastshot(color,
+                           x + fastshot.x,
+                           y - fastshot.y);
     }
+
+    fastshotList.clear();
 }
 
 static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
 {
-    int x, y, j /*, color */;
+    // int x, y, j /*, color */;
 
-    (void)areas;
-    /*
-     * Teamshots are in range DEBRIS_TYPES to DEBRIS_TYPES*2-1 in fastshot.
-     */
-    if (num_fastshot[t_] > 0)
+    // (void)areas;
+    // /*
+    //  * Teamshots are in range DEBRIS_TYPES to DEBRIS_TYPES*2-1 in fastshot.
+    //  */
+    // if (num_fastshot[t_] > 0)
+    // {
+    //     x = BASE_X(i);
+    //     y = BASE_Y(i);
+    //     /*color = COLOR(i);*/
+    //     for (j = 0; j < num_fastshot[t_]; j++)
+    //         Gui_paint_teamshot(x + fastshot_ptr[t_][j].x,
+    //                            y - fastshot_ptr[t_][j].y);
+    //     RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
+    // }
+
+    auto &fastshotList = clMap.fastshotTypes[t_];
+
+    if (fastshotList.empty())
+        return;
+
+    const int x = BASE_X(i);
+    const int y = BASE_Y(i);
+    // const int color = COLOR(i);
+    // if (color != WHITE && color != BLUE)
+    //     color = WHITE;
+
+    for (const fastshot_t &fastshot : fastshotList)
     {
-        x = BASE_X(i);
-        y = BASE_Y(i);
-        /*color = COLOR(i);*/
-        for (j = 0; j < num_fastshot[t_]; j++)
-            Gui_paint_teamshot(x + fastshot_ptr[t_][j].x,
-                               y - fastshot_ptr[t_][j].y);
-        RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
+        Gui_paint_teamshot(x + fastshot.x,
+                           y - fastshot.y);
     }
+
+    fastshotList.clear();
 }
 
 void Paint_shots(void)

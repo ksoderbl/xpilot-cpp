@@ -137,12 +137,7 @@
 #define TEAM_NOT_SET_STR "4095"
 
 constexpr std::size_t DEBRIS_TYPES = (8 * 4 * 4);
-
-#ifdef __GNUC__
-#define INLINE inline
-#else
-#define INLINE
-#endif /* __GNUC__ */
+constexpr std::size_t FASTSHOT_TYPES = (2 * DEBRIS_TYPES);
 
 #undef rand
 #define rand() please dont use rand.
