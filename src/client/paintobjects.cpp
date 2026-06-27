@@ -399,7 +399,7 @@ static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
     fastshotList.clear();
 }
 
-static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
+static void Paint_teamshots(int i, int x_areas, int y_areas, int areas)
 {
     // int x, y, j /*, color */;
 
@@ -418,24 +418,21 @@ static void Paint_teamshots(int i, int t_, int x_areas, int y_areas, int areas)
     //     RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
     // }
 
-    auto &fastshotList = clMap.fastshotTypes[t_];
+    auto &teamshotList = clMap.teamshotTypes[i];
 
-    if (fastshotList.empty())
+    if (teamshotList.empty())
         return;
 
     const int x = BASE_X(i);
     const int y = BASE_Y(i);
-    // const int color = COLOR(i);
-    // if (color != WHITE && color != BLUE)
-    //     color = WHITE;
 
-    for (const fastshot_t &fastshot : fastshotList)
+    for (const teamshot_t &teamshot : teamshotList)
     {
-        Gui_paint_teamshot(x + fastshot.x,
-                           y - fastshot.y);
+        Gui_paint_teamshot(x + teamshot.x,
+                           y - teamshot.y);
     }
 
-    fastshotList.clear();
+    teamshotList.clear();
 }
 
 void Paint_shots(void)
@@ -465,9 +462,8 @@ void Paint_shots(void)
 
     for (i = 0; i < max_; i++)
     {
-        t_ = i + DEBRIS_TYPES;
         Paint_fastshots(i, x_areas, y_areas, areas);
-        Paint_teamshots(i, t_, x_areas, y_areas, areas);
+        Paint_teamshots(i, x_areas, y_areas, areas);
     }
 
     Paint_missiles();

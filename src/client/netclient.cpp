@@ -2053,7 +2053,14 @@ int Receive_fastshot(void)
     n = (*rbuf.ptr++ & 0xFF);
     if (rbuf.ptr - rbuf.buf + (n * 2) > rbuf.len)
         return 0;
-    r = Handle_fastshot(type, (uint8_t *)rbuf.ptr, n);
+
+    // warn("Receive_fastshot: type %d, n %d", type, n);
+
+    if (type < DEBRIS_TYPES)
+        r = Handle_fastshot(type, (uint8_t *)rbuf.ptr, n);
+    else
+        r = Handle_teamshot(type - DEBRIS_TYPES, (uint8_t *)rbuf.ptr, n);
+
     rbuf.ptr += n * 2;
 
     return (r == -1) ? -1 : 1;

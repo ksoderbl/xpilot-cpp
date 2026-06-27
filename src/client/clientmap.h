@@ -229,6 +229,11 @@ typedef struct
 
 typedef struct
 {
+    uint8_t x, y;
+} teamshot_t;
+
+typedef struct
+{
     short x, y, xi, yi, type;
 } vdecor_t;
 
@@ -301,7 +306,8 @@ public:
 
     // array with DEBRIS_TYPE number of vectors containing debris_t
     std::array<std::vector<debris_t>, DEBRIS_TYPES> debrisTypes;
-    std::array<std::vector<fastshot_t>, FASTSHOT_TYPES> fastshotTypes;
+    std::array<std::vector<fastshot_t>, DEBRIS_TYPES> fastshotTypes;
+    std::array<std::vector<teamshot_t>, DEBRIS_TYPES> teamshotTypes;
 };
 
 extern ClientMap clMap;

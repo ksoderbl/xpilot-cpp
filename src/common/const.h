@@ -21,8 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CONST_H
-#define CONST_H
+#pragma once
 
 #include <climits>
 #include <cmath>
@@ -137,7 +136,6 @@
 #define TEAM_NOT_SET_STR "4095"
 
 constexpr std::size_t DEBRIS_TYPES = (8 * 4 * 4);
-constexpr std::size_t FASTSHOT_TYPES = (2 * DEBRIS_TYPES);
 
 #undef rand
 #define rand() please dont use rand.
@@ -176,5 +174,3 @@ constexpr std::size_t FASTSHOT_TYPES = (2 * DEBRIS_TYPES);
 #define STYLE_TEXTURED (1U << 1)
 #define STYLE_INVISIBLE (1U << 2)
 #define STYLE_INVISIBLE_RADAR (1U << 3)
-
-#endif

@@ -1844,11 +1844,11 @@ int Handle_item(int x, int y, int type)
     return 0;
 }
 
-// TODO: could have a separate list for teamshots?
 int Handle_fastshot(int type, uint8_t *p, int n)
 {
     // warn("Handle_fastshot: type %d, n %d", type, n);
-    if (type < 0 || type >= static_cast<int>(FASTSHOT_TYPES))
+
+    if (type < 0 || type >= static_cast<int>(DEBRIS_TYPES))
     {
         error("Invalid fastshot type %d", type);
         return -1;
@@ -1877,6 +1877,42 @@ int Handle_fastshot(int type, uint8_t *p, int n)
     }
 
     std::memcpy(fastshotList.data(), p, static_cast<std::size_t>(n) * sizeof(fastshot_t));
+    return 0;
+}
+
+int Handle_teamshot(int type, uint8_t *p, int n)
+{
+    // warn("Handle_teamshot: type %d, n %d", type, n);
+
+    if (type < 0 || type >= static_cast<int>(DEBRIS_TYPES))
+    {
+        error("Invalid teamshot type %d", type);
+        return -1;
+    }
+
+    if (n <= 0)
+    {
+        if (n < 0)
+            printf("teamshot %d < 0\n", n);
+
+        clMap.teamshotTypes[type].clear();
+        return 0;
+    }
+
+    auto &teamshotList = clMap.teamshotTypes[type];
+
+    try
+    {
+        teamshotList.resize(static_cast<std::size_t>(n));
+    }
+    catch (const std::bad_alloc &)
+    {
+        error("No memory for teamshot");
+        teamshotList.clear();
+        return -1;
+    }
+
+    std::memcpy(teamshotList.data(), p, static_cast<std::size_t>(n) * sizeof(teamshot_t));
     return 0;
 }
 
