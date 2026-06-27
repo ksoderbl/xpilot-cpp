@@ -24,6 +24,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 
 #include "const.h"
 #include "shipshape.h"
@@ -272,7 +273,6 @@ public:
     std::vector<target_t> targets;
     std::vector<fuelstation_t> fuels;
     std::vector<homebase_t> bases;
-
     std::vector<refuel_t> refuels;
     std::vector<connector_t> connectors;
     std::vector<laser_t> lasers;
@@ -293,6 +293,9 @@ public:
     std::vector<wreckage_t> wreckages;
     std::vector<asteroid_t> asteroids;
     std::vector<wormhole_t> wormholes;
+
+    // array with DEBRIS_TYPE number of vectors containing debris_t
+    std::array<std::vector<debris_t>, DEBRIS_TYPES> debrisTypes;
 };
 
 extern ClientMap clMap;
@@ -342,12 +345,17 @@ extern int num_others, max_others;
 // extern int num_vfuel, max_vfuel;
 // extern vbase_t *vbase_ptr;
 // extern int num_vbase, max_vbase;
+
 extern debris_t *debris_ptr[DEBRIS_TYPES];
+
 extern int num_debris[DEBRIS_TYPES],
     max_debris[DEBRIS_TYPES];
+
 extern debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
+
 extern int num_fastshot[DEBRIS_TYPES * 2],
     max_fastshot[DEBRIS_TYPES * 2];
+
 // extern vdecor_t *vdecor_ptr;
 // extern int num_vdecor, max_vdecor;
 // extern wreckage_t *wreckage_ptr;

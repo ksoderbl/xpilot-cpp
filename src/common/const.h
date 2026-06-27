@@ -136,7 +136,7 @@
 #define TEAM_NOT_SET 0xffff
 #define TEAM_NOT_SET_STR "4095"
 
-#define DEBRIS_TYPES (8 * 4 * 4)
+constexpr std::size_t DEBRIS_TYPES = (8 * 4 * 4);
 
 #ifdef __GNUC__
 #define INLINE inline

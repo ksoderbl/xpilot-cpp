@@ -186,19 +186,18 @@ static void Paint_mines(void)
     }
 }
 
-static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
-{
-    int color, i, j, x, y;
-
-#if 0
-/* before "sparkColors" option: */
-#define DEBRIS_COLOR(color) \
-    ((num_spark_colors > 4) ? (5 + (((color & 1) << 2) | (color >> 1))) : ((num_spark_colors >= 3) ? (5 + color) : (color)))
-#else
 /* adjusted for "sparkColors" option: */
 #define DEBRIS_COLOR(color) \
     ((num_spark_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color))
-#endif
+
+static inline int Debris_color(int color)
+{
+    return ((num_spark_colors > 4) ? ((((color & 1) << 2) | (color >> 1))) : (color));
+}
+
+static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
+{
+    int color, i, j, x, y;
 
     for (i = 0; i < max_; i++)
     {
@@ -208,6 +207,9 @@ static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
             y = BASE_Y(i);
             color = COLOR(i);
             color = DEBRIS_COLOR(color);
+            int color2 = Debris_color(color);
+            // warn("color, color2 = %d, %d", color, color2);
+
             for (j = 0; j < num_debris[i]; j++)
                 Gui_paint_spark(color,
                                 x + debris_ptr[i][j].x,
@@ -389,6 +391,11 @@ void Paint_shots(void)
     y_areas = (active_view_height + 255) >> 8;
     areas = x_areas * y_areas;
     max_ = areas * (num_spark_colors >= 3 ? num_spark_colors : 4);
+
+    // warn("Paint_shots: x_areas: %d", x_areas);
+    // warn("Paint_shots: y_areas: %d", y_areas);
+    // warn("Paint_shots: areas_: %d", areas);
+    // warn("Paint_shots: max_: %d", max_);
 
     Paint_debris(x_areas, y_areas, areas, max_);
 
