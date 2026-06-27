@@ -1844,76 +1844,58 @@ int Handle_item(int x, int y, int type)
     return 0;
 }
 
-int Handle_fastshot(int type, uint8_t *p, int n)
+template <typename ShotT, std::size_t N>
+static int Handle_shot_vector(std::array<std::vector<ShotT>, N> &shotTypes,
+                              int type,
+                              uint8_t *p,
+                              int n,
+                              const char *name)
 {
-    // warn("Handle_fastshot: type %d, n %d", type, n);
-
-    if (type < 0 || type >= static_cast<int>(DEBRIS_TYPES))
+    if (type < 0 || type >= static_cast<int>(N))
     {
-        error("Invalid fastshot type %d", type);
+        error("Invalid %s type %d", name, type);
         return -1;
     }
+
+    auto &shotList = shotTypes[static_cast<std::size_t>(type)];
 
     if (n <= 0)
     {
         if (n < 0)
-            printf("fastshot %d < 0\n", n);
+            printf("%s %d < 0\n", name, n);
 
-        clMap.fastshotTypes[type].clear();
+        shotList.clear();
         return 0;
     }
 
-    auto &fastshotList = clMap.fastshotTypes[type];
-
     try
     {
-        fastshotList.resize(static_cast<std::size_t>(n));
+        shotList.resize(static_cast<std::size_t>(n));
     }
     catch (const std::bad_alloc &)
     {
-        error("No memory for fastshot");
-        fastshotList.clear();
+        error("No memory for %s", name);
+        shotList.clear();
         return -1;
     }
 
-    std::memcpy(fastshotList.data(), p, static_cast<std::size_t>(n) * sizeof(fastshot_t));
+    std::memcpy(shotList.data(),
+                p,
+                static_cast<std::size_t>(n) * sizeof(ShotT));
+
     return 0;
+}
+
+int Handle_fastshot(int type, uint8_t *p, int n)
+{
+    // warn("Handle_fastshot: type %d, n %d", type, n);
+    return Handle_shot_vector(clMap.fastshotTypes, type, p, n, "fastshot");
 }
 
 int Handle_teamshot(int type, uint8_t *p, int n)
 {
     // warn("Handle_teamshot: type %d, n %d", type, n);
-
-    if (type < 0 || type >= static_cast<int>(DEBRIS_TYPES))
-    {
-        error("Invalid teamshot type %d", type);
-        return -1;
-    }
-
-    if (n <= 0)
-    {
-        if (n < 0)
-            printf("teamshot %d < 0\n", n);
-
-        clMap.teamshotTypes[type].clear();
-        return 0;
-    }
-
-    auto &teamshotList = clMap.teamshotTypes[type];
-
-    try
-    {
-        teamshotList.resize(static_cast<std::size_t>(n));
-    }
-    catch (const std::bad_alloc &)
-    {
-        error("No memory for teamshot");
-        teamshotList.clear();
-        return -1;
-    }
-
-    std::memcpy(teamshotList.data(), p, static_cast<std::size_t>(n) * sizeof(teamshot_t));
-    return 0;
+    return Handle_shot_vector(clMap.teamshotTypes, type, p, n, "teamshot");
 }
 
 int Handle_debris(int type, uint8_t *p, int n)
