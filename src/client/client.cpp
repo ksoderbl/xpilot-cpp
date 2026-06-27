@@ -21,6 +21,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include <array>
+#include <vector>
+#include <cstring>
+#include <new>
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -1480,8 +1485,10 @@ int Handle_start(long server_loops)
     clMap.vfuels.clear();
     clMap.vbases.clear();
     clMap.vdecors.clear();
-    for (i = 0; i < DEBRIS_TYPES; i++)
-        num_debris[i] = 0;
+    // for (i = 0; i < DEBRIS_TYPES; i++)
+    //     num_debris[i] = 0;
+    for (auto &debrisList : clMap.debrisTypes)
+        debrisList.clear();
 
     damaged = 0;
     destruct = 0;
@@ -1839,6 +1846,7 @@ int Handle_item(int x, int y, int type)
 
 int Handle_fastshot(int type, uint8_t *p, int n)
 {
+    warn("Handle_fastshot: type %d, n %d", type, n);
     if (n > max_fastshot[type])
     {
         if (max_fastshot[type] == 0)
@@ -1869,31 +1877,38 @@ int Handle_fastshot(int type, uint8_t *p, int n)
 
 int Handle_debris(int type, uint8_t *p, int n)
 {
-    if (n > max_debris[type])
+    // warn("Handle_debris: type %d, n %d", type, n);
+
+    if (type < 0 || type >= static_cast<int>(DEBRIS_TYPES))
     {
-        if (max_debris[type] == 0)
-        {
-            debris_ptr[type] = (debris_t *)malloc(n * sizeof(*debris_ptr[type]));
-        }
-        else
-        {
-            debris_ptr[type] = (debris_t *)realloc(debris_ptr[type], n * sizeof(*debris_ptr[type]));
-        }
-        if (debris_ptr[type] == NULL)
-        {
-            error("No memory for debris");
-            num_debris[type] = max_debris[type] = 0;
-            return -1;
-        }
-        max_debris[type] = n;
+        error("Invalid debris type %d", type);
+        return -1;
     }
-    else if (n <= 0)
+
+    if (n <= 0)
     {
-        printf("debris %d < 0\n", n);
+        if (n < 0)
+            printf("debris %d < 0\n", n);
+
+        clMap.debrisTypes[type].clear();
         return 0;
     }
-    num_debris[type] = n;
-    memcpy(debris_ptr[type], p, n * sizeof(*debris_ptr[type]));
+
+    auto &debrisList = clMap.debrisTypes[type];
+
+    try
+    {
+        debrisList.resize(static_cast<std::size_t>(n));
+    }
+    catch (const std::bad_alloc &)
+    {
+        error("No memory for debris");
+        debrisList.clear();
+        return -1;
+    }
+
+    std::memcpy(debrisList.data(), p, static_cast<std::size_t>(n) * sizeof(debris_t));
+
     return 0;
 }
 

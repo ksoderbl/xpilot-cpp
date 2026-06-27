@@ -199,23 +199,44 @@ static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
 {
     int color, i, j, x, y;
 
-    for (i = 0; i < max_; i++)
-    {
-        if (num_debris[i] > 0)
-        {
-            x = BASE_X(i);
-            y = BASE_Y(i);
-            color = COLOR(i);
-            color = DEBRIS_COLOR(color);
-            int color2 = Debris_color(color);
-            // warn("color, color2 = %d, %d", color, color2);
+    // for (i = 0; i < max_; i++)
+    // {
+    //     if (num_debris[i] > 0)
+    //     {
+    //         x = BASE_X(i);
+    //         y = BASE_Y(i);
+    //         color = COLOR(i);
+    //         color = DEBRIS_COLOR(color);
+    //         int color2 = Debris_color(color);
+    //         // warn("color, color2 = %d, %d", color, color2);
 
-            for (j = 0; j < num_debris[i]; j++)
-                Gui_paint_spark(color,
-                                x + debris_ptr[i][j].x,
-                                y - debris_ptr[i][j].y);
-            RELEASE(debris_ptr[i], num_debris[i], max_debris[i]);
+    //         for (j = 0; j < num_debris[i]; j++)
+    //             Gui_paint_spark(color,
+    //                             x + debris_ptr[i][j].x,
+    //                             y - debris_ptr[i][j].y);
+    //         RELEASE(debris_ptr[i], num_debris[i], max_debris[i]);
+    //     }
+    // }
+
+    for (int i = 0; i < max_; i++)
+    {
+        auto &debrisList = clMap.debrisTypes[i];
+
+        if (debrisList.empty())
+            continue;
+
+        const int x = BASE_X(i);
+        const int y = BASE_Y(i);
+        const int color = Debris_color(COLOR(i));
+
+        for (const debris_t &debris : debrisList)
+        {
+            Gui_paint_spark(color,
+                            x + debris.x,
+                            y - debris.y);
         }
+
+        debrisList.clear();
     }
 }
 

@@ -346,10 +346,10 @@ extern int num_others, max_others;
 // extern vbase_t *vbase_ptr;
 // extern int num_vbase, max_vbase;
 
-extern debris_t *debris_ptr[DEBRIS_TYPES];
+// extern debris_t *debris_ptr[DEBRIS_TYPES];
 
-extern int num_debris[DEBRIS_TYPES],
-    max_debris[DEBRIS_TYPES];
+// extern int num_debris[DEBRIS_TYPES],
+//     max_debris[DEBRIS_TYPES];
 
 extern debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 

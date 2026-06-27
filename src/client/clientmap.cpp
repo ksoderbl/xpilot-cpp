@@ -41,9 +41,6 @@ int score_object = 0;
 
 other_t *Others = NULL;
 int num_others = 0, max_others = 0;
-debris_t *debris_ptr[DEBRIS_TYPES];
-int num_debris[DEBRIS_TYPES],
-    max_debris[DEBRIS_TYPES];
 debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
 int num_fastshot[DEBRIS_TYPES * 2],
     max_fastshot[DEBRIS_TYPES * 2];
