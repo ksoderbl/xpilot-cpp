@@ -1837,44 +1837,8 @@ int Handle_item(int x, int y, int type)
     return 0;
 }
 
-// #define STORE_DEBRIS(typ_e, _p, _n)                               \
-//     if (_n > max_)                                                \
-//     {                                                             \
-//         if (max_ == 0)                                            \
-//         {                                                         \
-//             ptr_ = (debris_t *)malloc(n * sizeof(*ptr_));         \
-//         }                                                         \
-//         else                                                      \
-//         {                                                         \
-//             ptr_ = (debris_t *)realloc(ptr_, _n * sizeof(*ptr_)); \
-//         }                                                         \
-//         if (ptr_ == NULL)                                         \
-//         {                                                         \
-//             error("No memory for debris");                        \
-//             num_ = max_ = 0;                                      \
-//             return -1;                                            \
-//         }                                                         \
-//         max_ = _n;                                                \
-//     }                                                             \
-//     else if (_n <= 0)                                             \
-//     {                                                             \
-//         printf("debris %d < 0\n", _n);                            \
-//         return 0;                                                 \
-//     }                                                             \
-//     num_ = _n;                                                    \
-//     memcpy(ptr_, _p, _n * sizeof(*ptr_));                         \
-//     return 0;
-
 int Handle_fastshot(int type, uint8_t *p, int n)
 {
-    // #define num_ (num_fastshot[type])
-    // #define max_ (max_fastshot[type])
-    // #define ptr_ (fastshot_ptr[type])
-    //     STORE_DEBRIS(type, p, n);
-    // #undef num_
-    // #undef max_
-    // #undef ptr_
-
     if (n > max_fastshot[type])
     {
         if (max_fastshot[type] == 0)
@@ -1905,14 +1869,6 @@ int Handle_fastshot(int type, uint8_t *p, int n)
 
 int Handle_debris(int type, uint8_t *p, int n)
 {
-    // #define num_ (num_debris[type])
-    // #define max_ (max_debris[type])
-    // #define ptr_ (debris_ptr[type])
-    //     STORE_DEBRIS(type, p, n);
-    // #undef num_
-    // #undef max_
-    // #undef ptr_
-
     if (n > max_debris[type])
     {
         if (max_debris[type] == 0)
