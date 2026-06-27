@@ -272,8 +272,6 @@ typedef struct
 
 /* mapdata accessible to outside world */
 
-extern double teamscores[MAX_TEAMS];
-
 extern int num_playing_teams;
 
 class ClientMap

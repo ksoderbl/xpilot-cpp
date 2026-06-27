@@ -196,8 +196,6 @@ char audioServer[MAX_CHARS]; /* audio server */
 int maxVolume;               /* maximum volume (in percent) */
 #endif                       /* SOUND */
 
-// static double teamscores[MAX_TEAMS];
-
 // score_object_t score_objects[MAX_SCORE_OBJECTS];
 // int score_object = 0;
 
@@ -1399,12 +1397,7 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
 
 int Handle_team_score(int team, double score)
 {
-    if (teamscores[team] != score)
-    {
-        teamscores[team] = score;
-        scoresChanged = true;
-    }
-
+    warn("Handle_team_score: team: %d, score: %f", team, score);
     return 0;
 }
 

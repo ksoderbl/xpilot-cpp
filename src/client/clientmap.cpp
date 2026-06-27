@@ -25,8 +25,6 @@
 
 ClientMap clMap;
 
-double teamscores[MAX_TEAMS];
-
 checkpoint_t *checks = NULL;
 int num_checks = 0;
 xp_polygon_t *polygons = NULL;
