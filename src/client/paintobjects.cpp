@@ -428,17 +428,17 @@ static void Paint_appearing(void)
 {
     int i, x, y;
 
-    if (num_appearing > 0)
+    if (clMap.appearers.size() > 0)
     {
-        for (i = 0; i < num_appearing; i++)
+        for (const auto &appearing : clMap.appearers)
         {
-            x = appearing_ptr[i].x;
-            y = appearing_ptr[i].y;
+            x = appearing.x;
+            y = appearing.y;
             if (wrap(&x, &y))
-                Gui_paint_appearing(x, y, appearing_ptr[i].id,
-                                    appearing_ptr[i].count);
+                Gui_paint_appearing(x, y, appearing.id,
+                                    appearing.count);
         }
-        RELEASE(appearing_ptr, num_appearing, max_appearing);
+        clMap.appearers.clear();
     }
 }
 

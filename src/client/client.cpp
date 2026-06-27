@@ -1545,7 +1545,7 @@ int Handle_start(long server_loops)
     clMap.vcannons.clear();
     clMap.vfuels.clear();
     clMap.vbases.clear();
-    num_vdecor = 0;
+    clMap.vdecors.clear();
     for (i = 0; i < DEBRIS_TYPES; i++)
         num_debris[i] = 0;
 
@@ -2046,7 +2046,7 @@ int Handle_appearing(int x, int y, int id, int count)
     t.y = y;
     t.id = id;
     t.count = count;
-    STORE(appearing_t, appearing_ptr, num_appearing, max_appearing, t);
+    clMap.appearers.push_back(t);
     return 0;
 }
 
@@ -2169,7 +2169,7 @@ int Handle_vdecor(int x, int y, int xi, int yi, int type)
     t.xi = xi;
     t.yi = yi;
     t.type = type;
-    STORE(vdecor_t, vdecor_ptr, num_vdecor, max_vdecor, t);
+    clMap.vdecors.push_back(t);
     return 0;
 }
 
@@ -2310,20 +2310,12 @@ void Client_cleanup(void)
     clMap.ecms.clear();
     clMap.transporters.clear();
     clMap.pausers.clear();
-    if (max_appearing > 0 && appearing_ptr)
-    {
-        max_appearing = 0;
-        XFREE(appearing_ptr);
-    }
+    clMap.appearers.clear();
     clMap.radarObjects.clear();
     clMap.vcannons.clear();
     clMap.vfuels.clear();
     clMap.vbases.clear();
-    if (max_vdecor > 0 && vdecor_ptr)
-    {
-        max_vdecor = 0;
-        XFREE(vdecor_ptr);
-    }
+    clMap.vdecors.clear();
     clMap.itemtypes.clear();
     clMap.wreckages.clear();
     clMap.asteroids.clear();
