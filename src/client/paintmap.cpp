@@ -172,20 +172,21 @@ static void Compute_bounds(ipos_t *min, ipos_t *max, const irec_t *b)
 
 void Paint_objects(void)
 {
-    int i, xoff, yoff;
+    int i = 0, xoff, yoff;
     ipos_t min, max;
 
-    for (i = 0; i < num_polygons; i++)
+    for (const auto &polygon : clMap.polygons)
     {
-        Compute_bounds(&min, &max, &polygons[i].bounds);
+        Compute_bounds(&min, &max, &polygon.bounds);
 
         for (xoff = min.x; xoff <= max.x; xoff++)
         {
             for (yoff = min.y; yoff <= max.y; yoff++)
             {
-                Gui_paint_polygon(i, xoff, yoff);
+                Gui_paint_polygon(polygon, i, xoff, yoff);
             }
         }
+        i++;
     }
 
     for (const auto &fs : clMap.fuels)

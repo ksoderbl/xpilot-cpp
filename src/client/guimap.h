@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "clientmap.h"
+
 void Gui_paint_cannon(int x, int y, int type);
 void Gui_paint_fuel(int x, int y, double fuel);
 void Gui_paint_base(int x, int y, int xi, int yi, int type);
@@ -51,6 +53,6 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own);
 void Gui_paint_walls(int x, int y, int type);
 void Gui_paint_filled_slice(int bl, int tl, int tr, int br, int y);
 
-void Gui_paint_polygon(int i, int xoff, int yoff);
+void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff);
 
 void Store_guimap_options(void);

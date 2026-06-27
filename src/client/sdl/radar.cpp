@@ -219,33 +219,31 @@ static void Radar_paint_world_polygons(GLWidget *radar, SDL_Surface *s)
         SDL_LockSurface(s);
     SDL_FillRect(s, NULL, RGBA(bgRadarColorValue));
 
-    for (i = 0; i < num_polygons; i++)
+    for (auto &polygon : clMap.polygons)
     {
-
-        if (BIT(polygon_styles[polygons[i].style].flags,
+        if (BIT(polygon_styles[polygon.style].flags,
                 STYLE_INVISIBLE_RADAR))
             continue;
-        Compute_bounds_radar(&min, &max, &polygons[i].bounds);
+        Compute_bounds_radar(&min, &max, &polygon.bounds);
 
         for (xoff = min.x; xoff <= max.x; xoff++)
         {
             for (yoff = min.y; yoff <= max.y; yoff++)
             {
-
-                int x = polygons[i].points[0].x + xoff * Setup->width;
-                int y = -polygons[i].points[0].y + (1 - yoff) * Setup->height;
+                int x = polygon.points[0].x + xoff * Setup->width;
+                int y = -polygon.points[0].y + (1 - yoff) * Setup->height;
                 vx[0] = (x * radar->bounds.w) / Setup->width;
                 vy[0] = (y * radar->bounds.h) / Setup->height;
 
-                for (j = 1; j < polygons[i].num_points; j++)
+                for (j = 1; j < polygon.num_points; j++)
                 {
-                    x += polygons[i].points[j].x;
-                    y -= polygons[i].points[j].y;
+                    x += polygon.points[j].x;
+                    y -= polygon.points[j].y;
                     vx[j] = (x * radar->bounds.w) / Setup->width;
                     vy[j] = (y * radar->bounds.h) / Setup->height;
                 }
 
-                color = polygon_styles[polygons[i].style].rgb;
+                color = polygon_styles[polygon.style].rgb;
                 filledPolygonRGBA(s, vx, vy, j,
                                   (color >> 16) & 0xff,
                                   (color >> 8) & 0xff,

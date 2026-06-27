@@ -1281,17 +1281,15 @@ void Gui_paint_setup_treasure(int x, int y, int treasure, bool own)
     }
 }
 
-void Gui_paint_polygon(int i, int xoff, int yoff)
+void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
 {
     static XPoint points[10000];
 
     int j, x, y, sindex, width, did_fill;
     ipos_t ship;
-    xp_polygon_t polygon;
     polygon_style_t style;
     bool textured, filled;
 
-    polygon = polygons[i];
     style = polygon_styles[polygon.style];
 
     if (BIT(style.flags, STYLE_INVISIBLE))

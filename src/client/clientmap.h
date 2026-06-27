@@ -306,14 +306,16 @@ public:
     std::array<std::vector<debris_t>, DEBRIS_TYPES> debrisTypes;
     std::array<std::vector<fastshot_t>, DEBRIS_TYPES> fastshotTypes;
     std::array<std::vector<teamshot_t>, DEBRIS_TYPES> teamshotTypes;
+
+    std::vector<xp_polygon_t> polygons;
 };
 
 extern ClientMap clMap;
 
 extern checkpoint_t *checks;
 extern int num_checks;
-extern xp_polygon_t *polygons;
-extern int num_polygons, max_polygons;
+// extern xp_polygon_t *polygons;
+// extern int num_polygons, max_polygons;
 extern edge_style_t *edge_styles;
 extern int num_edge_styles, max_edge_styles;
 extern polygon_style_t *polygon_styles;

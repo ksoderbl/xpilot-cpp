@@ -681,12 +681,11 @@ static void Paint_world_radar_new(void)
     XSetForeground(dpy, radarGC, colors[wallRadarColor].pixel);
 
     /* loop through all the polygons */
-    for (i = 0; i < num_polygons; i++)
+    for (auto &polygon : clMap.polygons)
     {
-        if (BIT(polygon_styles[polygons[i].style].flags,
-                STYLE_INVISIBLE_RADAR))
+        if (BIT(polygon_styles[polygon.style].flags, STYLE_INVISIBLE_RADAR))
             continue;
-        Compute_radar_bounds(&min, &max, &polygons[i].bounds);
+        Compute_radar_bounds(&min, &max, &polygon.bounds);
         for (xoff = min.x; xoff <= max.x; xoff++)
         {
             for (yoff = min.y; yoff <= max.y; yoff++)
@@ -697,17 +696,17 @@ static void Paint_world_radar_new(void)
                 y = yoff * Setup->height;
 
                 /* loop through the points in the current polygon */
-                for (j = 0; j < polygons[i].num_points; j++)
+                for (j = 0; j < polygon.num_points; j++)
                 {
-                    x += polygons[i].points[j].x;
-                    y += polygons[i].points[j].y;
+                    x += polygon.points[j].x;
+                    y += polygon.points[j].y;
                     poly[j].x = (x * 256) / Setup->width;
                     poly[j].y = (int)RadarHeight - ((y * (int)RadarHeight) / Setup->height);
                 }
 
-                XSetForeground(dpy, radarGC, fullColor ? polygon_styles[polygons[i].style].color : colors[wallRadarColor].pixel);
+                XSetForeground(dpy, radarGC, fullColor ? polygon_styles[polygon.style].color : colors[wallRadarColor].pixel);
                 XFillPolygon(dpy, radarPixmap2, radarGC, poly,
-                             polygons[i].num_points,
+                             polygon.num_points,
                              Nonconvex, CoordModeOrigin);
             }
         }

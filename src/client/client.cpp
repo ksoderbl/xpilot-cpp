@@ -884,19 +884,20 @@ static int init_polymap(void)
 
     parse_styles(&ptr);
 
-    num_polygons = get_ushort(&ptr);
-    polygons = XMALLOC(xp_polygon_t, num_polygons);
-    if (polygons == NULL)
-    {
-        error("no memory for polygons");
-        exit(1);
-    }
+    int num_polygons = get_ushort(&ptr);
+    // polygons = XMALLOC(xp_polygon_t, num_polygons);
+    // if (polygons == NULL)
+    // {
+    //     error("no memory for polygons");
+    //     exit(1);
+    // }
+    warn("init_polymap: num_polygons: %d", num_polygons);
+    clMap.polygons.resize(num_polygons);
 
-    for (i = 0; i < num_polygons; i++)
+    for (auto &poly : clMap.polygons)
     {
-        poly = &polygons[i];
-        poly->style = *ptr++ & 0xff;
-        current_estyle = polygon_styles[poly->style].def_edge_style;
+        poly.style = *ptr++ & 0xff;
+        current_estyle = polygon_styles[poly.style].def_edge_style;
         dx = 0;
         dy = 0;
         ecount = get_ushort(&ptr);
@@ -964,13 +965,13 @@ static int init_polymap(void)
             if (styles)
                 styles[j] = current_estyle;
         }
-        poly->points = points;
-        poly->edge_styles = styles;
-        poly->num_points = pc;
-        poly->bounds.x = min.x;
-        poly->bounds.y = min.y;
-        poly->bounds.w = max.x - min.x;
-        poly->bounds.h = max.y - min.y;
+        poly.points = points;
+        poly.edge_styles = styles;
+        poly.num_points = pc;
+        poly.bounds.x = min.x;
+        poly.bounds.y = min.y;
+        poly.bounds.w = max.x - min.x;
+        poly.bounds.h = max.y - min.y;
     }
     int num_bases = *ptr++ & 0xff;
     for (i = 0; i < num_bases; i++)
@@ -1971,7 +1972,12 @@ int Handle_polystyle(int polyind, int newstyle)
 {
     xp_polygon_t *poly;
 
-    poly = &polygons[polyind];
+    if (polyind < 0 || polyind > clMap.polygons.size())
+    {
+        return -1;
+    }
+
+    poly = &clMap.polygons[polyind];
     poly->style = newstyle;
     /*warn("polygon %d style set to %d", polyind, newstyle);*/
 

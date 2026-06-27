@@ -27,8 +27,8 @@ ClientMap clMap;
 
 checkpoint_t *checks = NULL;
 int num_checks = 0;
-xp_polygon_t *polygons = NULL;
-int num_polygons = 0;
+// xp_polygon_t *polygons = NULL;
+// int num_polygons = 0;
 edge_style_t *edge_styles = NULL;
 int num_edge_styles = 0;
 polygon_style_t *polygon_styles = NULL;

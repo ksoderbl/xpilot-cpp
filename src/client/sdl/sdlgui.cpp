@@ -247,7 +247,7 @@ static void tessellate_polygon(GLUtriangulatorObj *tess, int ind)
     GLdouble v[3] = {0, 0, 0};
     ipos_t p[MAX_VERTICES];
 
-    polygon = polygons[ind];
+    polygon = clMap.polygons[ind];
     p_style = polygon_styles[polygon.style];
 
     p[0].x = p[0].y = 0;
@@ -359,6 +359,7 @@ int Gui_init(void)
         return -1;
     }
 
+    int num_polygons = clMap.polygons.size();
     if (num_polygons == 0)
         return 0;
 
@@ -401,7 +402,7 @@ int Gui_init(void)
 void Gui_cleanup(void)
 {
     if (polyListBase)
-        glDeleteLists(polyListBase, num_polygons);
+        glDeleteLists(polyListBase, clMap.polygons.size());
     asteroid_cleanup();
 }
 
@@ -895,15 +896,13 @@ void Gui_paint_filled_slice(int bl, int tl, int tr, int br, int y)
     glEnd();
 }
 
-void Gui_paint_polygon(int i, int xoff, int yoff)
+void Gui_paint_polygon(const xp_polygon_t &polygon, int i, int xoff, int yoff)
 {
-    xp_polygon_t polygon;
     polygon_style_t p_style;
     edge_style_t e_style;
     int width;
     bool did_fill = false;
 
-    polygon = polygons[i];
     p_style = polygon_styles[polygon.style];
     e_style = edge_styles[p_style.def_edge_style];
 
