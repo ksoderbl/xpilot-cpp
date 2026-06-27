@@ -458,8 +458,8 @@ void Paint_score_table(void)
 #endif
     }
 
-    // if (roundend)
-    //     Add_roundend_messages(order);
+    if (roundend)
+        Add_roundend_messages(order);
 
     free(order);
 
