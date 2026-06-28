@@ -199,7 +199,7 @@ void Paint_objects(void)
             {
                 Gui_paint_fuel(fs.bounds.x + xoff * Setup->width,
                                fs.bounds.y + yoff * Setup->height,
-                               fs.fuel);
+                               fs.fuel_times_256);
             }
         }
     }
@@ -511,12 +511,12 @@ void Paint_world(void)
                     Gui_paint_walls(x, y, type);
 
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                        Handle_vfuel(x, y, Fuel_by_pos(xi, yi));
+                        Handle_vfuel(x, y, Fuel_times_256_by_pos(xi, yi));
                 }
                 else
                 {
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                        Handle_vfuel(x, y, Fuel_by_pos(xi, yi));
+                        Handle_vfuel(x, y, Fuel_times_256_by_pos(xi, yi));
                     else if (type & BLUE_OPEN)
                     {
                         if (type & BLUE_BELOW)

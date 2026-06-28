@@ -262,7 +262,7 @@ static void Simulate_frames(void)
                     0.0, 0.0, 0.0, 1, 0, 0, 0, 0,
                     newitems, 0,
                     1000,
-                    MAX_PLAYER_FUEL,
+                    MAX_PLAYER_FUEL_TIMES_256,
                     1400,
                     0);
         for (j = 0; j < N_FAKE_SHIPS; ++j)

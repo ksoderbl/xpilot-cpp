@@ -145,7 +145,7 @@ int World_place_fuel(clpos_t pos, int team)
     int ind = Num_fuels();
 
     t.pos = pos;
-    t.fuel = START_STATION_FUEL;
+    t.fuel_times_256 = START_STATION_FUEL_TIMES_256;
     t.conn_mask = ~0;
     t.last_change = frame_loops;
     t.team = team;

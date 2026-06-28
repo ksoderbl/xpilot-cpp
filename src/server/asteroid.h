@@ -46,8 +46,8 @@
 /* number of hits asteroid can take before breaking */
 #define ASTEROID_HITS(size) (1 << ((size) - 1))
 /* fuel cost to lifetime reduction conversion */
-#define ASTEROID_FUEL_HIT(fuel, size) (((fuel) * ASTEROID_LIFE) / \
-                                       (FUEL_SCALE_FACT * 25 * ASTEROID_HITS(size)))
+#define ASTEROID_FUEL_HIT(fuel_times_256, size) (((fuel_times_256) * ASTEROID_LIFE) / \
+                                                 (FUEL_SCALE_FACT * 25 * ASTEROID_HITS(size)))
 /* initial speed of asteroid */
 #define ASTEROID_START_SPEED (8 + rfrac() * 10)
 /* minimum distance asteroids start away from any player */

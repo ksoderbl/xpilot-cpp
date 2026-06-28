@@ -54,7 +54,7 @@ void Fire_laser(player_t *pl)
 {
     if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
     {
-        if (pl->fuel.sum <= -ED_LASER)
+        if (pl->fuel.sum_times_256 <= -ED_LASER_HIT_TIMES_256)
             CLR_BIT(pl->used, HAS_LASER);
         else
         {
@@ -80,7 +80,7 @@ void Fire_general_laser(int id, int team, clpos_t pos, int dir,
 
     if (pl)
     {
-        Player_add_fuel(pl, ED_LASER);
+        Player_add_fuel_times_256(pl, ED_LASER_TIMES_256);
         sound_play_sensors(pos, FIRE_LASER_SOUND);
         life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
     }
@@ -322,7 +322,7 @@ static void Laser_pulse_hits_player(
     }
     else
     {
-        Player_add_fuel(vicpl, ED_LASER_HIT);
+        Player_add_fuel_times_256(vicpl, ED_LASER_HIT_TIMES_256);
         if (!BIT(vicpl->used, HAS_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
             SET_BIT(vicpl->obj_status, KILLED);
@@ -672,7 +672,7 @@ void Laser_pulse_collision(void)
                     if (sqr(adx) + sqr(ady) <= sqr(ast->pl_radius))
                     {
                         obj->life = 0;
-                        ast->life += ASTEROID_FUEL_HIT(ED_LASER_HIT,
+                        ast->life += ASTEROID_FUEL_HIT(ED_LASER_HIT_TIMES_256,
                                                        WIRE_PTR(ast)->wire_size);
                         if (ast->life < 0)
                             ast->life = 0;

@@ -103,7 +103,7 @@ void Cannon_update(bool tick)
                 /* this gives the cannon an item about once every minute */
                 if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * FPS)) < (options.cannonItemProbMult * world->items[item].cannonprob))
                 {
-                    Cannon_add_item(c, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL >> FUEL_SCALE_BITS : 1));
+                    Cannon_add_item(c, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL_TIMES_256 >> FUEL_SCALE_BITS : 1));
                 }
             }
         }
@@ -161,8 +161,8 @@ void Cannon_add_item(cannon_t *c, int item_type, int amount)
         LIMIT(c->item[ITEM_TANK], 0, world->items[ITEM_TANK].limit);
         /* FALLTHROUGH */
     case ITEM_FUEL:
-        c->item[ITEM_FUEL] += (int)(amount / (ENERGY_PACK_FUEL >> FUEL_SCALE_BITS) + 0.5);
-        LIMIT(c->item[ITEM_FUEL], 0, (int)(world->items[ITEM_FUEL].limit / (ENERGY_PACK_FUEL >> FUEL_SCALE_BITS) + 0.5));
+        c->item[ITEM_FUEL] += (int)(amount / (ENERGY_PACK_FUEL_TIMES_256 >> FUEL_SCALE_BITS) + 0.5);
+        LIMIT(c->item[ITEM_FUEL], 0, (int)(world->items[ITEM_FUEL].limit / (ENERGY_PACK_FUEL_TIMES_256 >> FUEL_SCALE_BITS) + 0.5));
         break;
     default:
         c->item[item_type] += amount;

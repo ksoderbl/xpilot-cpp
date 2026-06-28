@@ -487,7 +487,7 @@ void Tractor_beam(player_t *pl)
 {
     // // player_t *pl = PlayersArray[ind];
     double maxdist, percent;
-    long cost;
+    long cost_times_256;
     player_t *locked_pl = Player_by_id(pl->lock.pl_id);
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
@@ -498,8 +498,8 @@ void Tractor_beam(player_t *pl)
         return;
     }
     percent = TRACTOR_PERCENT(pl->lock.distance, maxdist);
-    cost = (long)TRACTOR_COST(percent);
-    if (pl->fuel.sum < -cost)
+    cost_times_256 = (long)TRACTOR_COST(percent);
+    if (pl->fuel.sum_times_256 < -cost_times_256)
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -532,7 +532,7 @@ void General_tractor_beam(int id, clpos_t pos,
     sound_play_sensors(pos, (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
 
     if (pl)
-        Player_add_fuel(pl, cost);
+        Player_add_fuel_times_256(pl, cost);
 
     // TODO
     theta = (int)Wrap_findDir(CLICK_TO_PIXEL(pos.cx - victim->pos.cx), CLICK_TO_PIXEL(pos.cy - victim->pos.cy));
@@ -556,13 +556,13 @@ void Do_deflector(player_t *pl)
     int i, obj_count;
     long dist, dx, dy;
 
-    if (pl->fuel.sum < -ED_DEFLECTOR)
+    if (pl->fuel.sum_times_256 < -ED_DEFLECTOR_TIMES_256)
     {
         if (BIT(pl->used, USES_DEFLECTOR))
             Deflector(pl, false);
         return;
     }
-    Player_add_fuel(pl, ED_DEFLECTOR);
+    Player_add_fuel_times_256(pl, ED_DEFLECTOR_TIMES_256);
 
     Cell_get_objects(pl->pos,
                      (int)(range / BLOCK_SZ + 1), 200,
@@ -620,7 +620,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum_times_256 < -ED_TRANSPORTER_TIMES_256 || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     /* find victim */
@@ -642,7 +642,7 @@ void Do_transporter(player_t *pl)
     if (!victim)
     {
         sound_play_sensors(pl->pos, TRANSPORTER_FAIL_SOUND);
-        Player_add_fuel(pl, ED_TRANSPORTER);
+        Player_add_fuel_times_256(pl, ED_TRANSPORTER_TIMES_256);
         pl->item[ITEM_TRANSPORTER]--;
         return;
     }
@@ -666,7 +666,7 @@ void Do_general_transporter(int id, clpos_t pos,
     for (i = 0; i < 50; i++)
     {
         item = (int)(rfrac() * NUM_ITEMS);
-        if (victim->item[item] || (item == ITEM_TANK && victim->fuel.num_tanks) || (item == ITEM_FUEL && victim->fuel.sum))
+        if (victim->item[item] || (item == ITEM_TANK && victim->fuel.num_tanks) || (item == ITEM_FUEL && victim->fuel.sum_times_256))
             break;
     }
 
@@ -819,22 +819,22 @@ void Do_general_transporter(int id, clpos_t pos,
         /* for tanks, amount is the amount of fuel in the stolen tank */
         what = "a tank";
         i = (int)(rfrac() * victim->fuel.num_tanks) + 1;
-        amount = victim->fuel.tank[i];
+        amount = victim->fuel.tank_times_256[i];
         Player_remove_tank(victim, i);
         break;
     case ITEM_FUEL:
     {
-        /* choose percantage between 10 and 50. */
+        /* choose percentage between 10 and 50. */
         double percent = 10.0f + 40.0f * rfrac();
-        amount = (long)(victim->fuel.sum * percent / 100);
+        long amount_times_256 = (long)(victim->fuel.sum_times_256 * percent / 100);
         sprintf(msg, "%s stole %ld units (%d%%) of fuel from %s.",
                 (pl ? pl->name : "A cannon"),
-                amount >> FUEL_SCALE_BITS,
+                amount_times_256 >> FUEL_SCALE_BITS,
                 (int)(percent + 0.5),
                 victim->name);
-    }
-        Player_add_fuel(victim, -amount);
+        Player_add_fuel_times_256(victim, -amount_times_256);
         break;
+    }
     }
 
     /* inform the world about the robbery */
@@ -855,7 +855,7 @@ void Do_general_transporter(int id, clpos_t pos,
 
     /* don't forget the penalty for robbery */
     pl->item[ITEM_TRANSPORTER]--;
-    Player_add_fuel(pl, ED_TRANSPORTER);
+    Player_add_fuel_times_256(pl, ED_TRANSPORTER_TIMES_256);
 
     /* update thief */
     if (!(item == ITEM_FUEL || item == ITEM_TANK))
@@ -903,7 +903,7 @@ void Do_general_transporter(int id, clpos_t pos,
             Player_add_tank(pl, amount);
         break;
     case ITEM_FUEL:
-        Player_add_fuel(pl, amount);
+        Player_add_fuel_times_256(pl, amount);
         break;
     default:
         break;
@@ -981,7 +981,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
         pl->ecmcount++;
         pl->item[ITEM_ECM]--;
-        Player_add_fuel(pl, ED_ECM);
+        Player_add_fuel_times_256(pl, ED_ECM_TIMES_256);
         sound_play_sensors(ecm->pos, ECM_SOUND);
     }
 
@@ -1227,7 +1227,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
 void Fire_ecm(player_t *pl)
 {
-    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
+    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum_times_256 <= -ED_ECM_TIMES_256 || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
         return;
 
     Fire_general_ecm(pl->id, pl->team, pl->pos);

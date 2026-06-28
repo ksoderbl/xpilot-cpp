@@ -156,10 +156,10 @@ void Object_hits_target(
     {
     case OBJ_SHOT:
         drainfactor = 1;
-        targ->damage += (int)(ED_SHOT_HIT * drainfactor * SHOT_MULT(obj));
+        targ->damage += (int)(ED_SHOT_HIT_TIMES_256 * drainfactor * SHOT_MULT(obj));
         break;
     case OBJ_PULSE:
-        targ->damage += (int)(ED_LASER_HIT);
+        targ->damage += (int)(ED_LASER_HIT_TIMES_256);
         break;
     case OBJ_SMART_SHOT:
     case OBJ_TORPEDO:
@@ -174,7 +174,7 @@ void Object_hits_target(
             targ->damage = 0;
         else
             // targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
-            targ->damage += (int)(ED_SMART_SHOT_HIT / (Mods_get(obj->mods, ModsMini) + 1));
+            targ->damage += (int)(ED_SMART_SHOT_HIT_TIMES_256 / (Mods_get(obj->mods, ModsMini) + 1));
         break;
     case OBJ_MINE:
         if (!obj->mass)

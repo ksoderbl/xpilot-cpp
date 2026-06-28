@@ -1191,7 +1191,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all fuelstations are filled.
          */
-        if (fs->fuel == MAX_STATION_FUEL)
+        if (fs->fuel_times_256 == MAX_STATION_FUEL_TIMES_256)
             SET_BIT(fs->conn_mask, conn_bit);
         else
             CLR_BIT(fs->conn_mask, conn_bit);
@@ -1496,8 +1496,8 @@ int Send_self(connection_t *connp,
                       pl->check,
 
                       pl->fuel.current,
-                      ((long)pl->fuel.sum) >> FUEL_SCALE_BITS,
-                      ((long)pl->fuel.max) >> FUEL_SCALE_BITS,
+                      ((long)pl->fuel.sum_times_256) >> FUEL_SCALE_BITS,
+                      ((long)pl->fuel.max_times_256) >> FUEL_SCALE_BITS,
 
                       connp->view_width, connp->view_height,
                       connp->debris_colors,

@@ -955,10 +955,10 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_HYPERJUMP:
-                if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
+                if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum_times_256 > -ED_HYPERJUMP_TIMES_256)
                 {
                     pl->item[ITEM_HYPERJUMP]--;
-                    Player_add_fuel(pl, ED_HYPERJUMP);
+                    Player_add_fuel_times_256(pl, ED_HYPERJUMP_TIMES_256);
                     do_hyperjump(pl);
                 }
                 break;

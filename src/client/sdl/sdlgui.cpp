@@ -431,7 +431,7 @@ void Gui_paint_cannon(int x, int y, int type)
     }
 }
 
-void Gui_paint_fuel(int x, int y, double fuel)
+void Gui_paint_fuel(int x, int y, double fuel_times_256)
 {
 #define FUEL_BORDER 3
 
@@ -453,12 +453,12 @@ void Gui_paint_fuel(int x, int y, double fuel)
     if (frame >= img->num_frames)
         frame = (2 * img->num_frames - 1) - frame;
 
-    size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
+    size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel_times_256 / MAX_STATION_FUEL_TIMES_256);
 
     Image_paint(IMG_FUELCELL, x, y, 0, fuelColorRGBA);
 
     area.x = 0;
-    area.y = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * (1 - fuel / MAX_STATION_FUEL));
+    area.y = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * (1 - fuel_times_256 / MAX_STATION_FUEL_TIMES_256));
     area.w = BLOCK_SZ - 2 * FUEL_BORDER;
     area.h = size;
     Image_paint_area(IMG_FUEL,

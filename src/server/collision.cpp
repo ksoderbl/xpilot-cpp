@@ -326,12 +326,12 @@ static void PlayerCollision(void)
                 {
                     if (!Player_uses_emergency_shield(pl))
                     {
-                        Player_add_fuel(pl, ED_PL_CRASH);
+                        Player_add_fuel_times_256(pl, ED_PL_CRASH_TIMES_256);
                         Item_damage(pl, options.destroyItemInCollisionProb);
                     }
                     if (!Player_uses_emergency_shield(pl_j))
                     {
-                        Player_add_fuel(pl_j, ED_PL_CRASH);
+                        Player_add_fuel_times_256(pl_j, ED_PL_CRASH_TIMES_256);
                         Item_damage(pl_j, options.destroyItemInCollisionProb);
                     }
                     pl->forceVisible = 20;
@@ -342,10 +342,10 @@ static void PlayerCollision(void)
                 if (!BIT(world->rules->mode, CRASH_WITH_PLAYER))
                     continue;
 
-                if (pl->fuel.sum <= 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
+                if (pl->fuel.sum_times_256 <= 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
                     SET_BIT(pl->obj_status, KILLED);
 
-                if (pl_j->fuel.sum <= 0 || (!BIT(pl_j->used, HAS_SHIELD) && !Player_has_armor(pl_j)))
+                if (pl_j->fuel.sum_times_256 <= 0 || (!BIT(pl_j->used, HAS_SHIELD) && !Player_has_armor(pl_j)))
                     SET_BIT(pl_j->obj_status, KILLED);
 
                 if (!BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
@@ -762,7 +762,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
     Obj_repel(OBJ_PTR(pl), OBJ_PTR(ball), radius);
     if (!Player_uses_emergency_shield(pl))
     {
-        Player_add_fuel(pl, ED_BALL_HIT);
+        Player_add_fuel_times_256(pl, ED_BALL_HIT_TIMES_256);
         if (options.treasureCollisionDestroys)
         {
             if (BIT(world->rules->mode, TEAM_PLAY) && pl->team == ball->ball_treasure->team)
@@ -770,7 +770,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
             ball->life = 0;
         }
     }
-    if (pl->fuel.sum > 0)
+    if (pl->fuel.sum_times_256 > 0)
     {
         if (!options.treasureCollisionMayKill || BIT(pl->used, HAS_SHIELD))
             return;
@@ -939,7 +939,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         sound_play_sensors(pl->pos, CLOAKING_DEVICE_PICKUP_SOUND);
         break;
     case ITEM_FUEL:
-        Player_add_fuel(pl, ENERGY_PACK_FUEL);
+        Player_add_fuel_times_256(pl, ENERGY_PACK_FUEL_TIMES_256);
         sound_play_sensors(pl->pos, ENERGY_PACK_PICKUP_SOUND);
         break;
     case ITEM_MINE:
@@ -992,9 +992,9 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 
     case ITEM_TANK:
         if (pl->fuel.num_tanks < world->items[ITEM_TANK].limit)
-            Player_add_tank(pl, TANK_FUEL(pl->fuel.num_tanks + 1));
+            Player_add_tank(pl, TANK_FUEL_TIMES_256(pl->fuel.num_tanks + 1));
         else
-            Player_add_fuel(pl, TANK_FUEL(MAX_TANKS));
+            Player_add_fuel_times_256(pl, TANK_FUEL_TIMES_256(MAX_TANKS));
         sound_play_sensors(pl->pos, TANK_PICKUP_SOUND);
         break;
     case NUM_ITEMS:
@@ -1081,8 +1081,8 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
     char msg[MSG_LEN];
 
     if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
-        Player_add_fuel(pl, -cost);
-    if (pl->fuel.sum == 0 || (obj->type == OBJ_WRECKAGE_BIT && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
+        Player_add_fuel_times_256(pl, -cost);
+    if (pl->fuel.sum_times_256 == 0 || (obj->type == OBJ_WRECKAGE_BIT && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
     {
         SET_BIT(pl->obj_status, KILLED);
         sprintf(msg, "%s succumbed to an explosion.", pl->name);
@@ -1122,7 +1122,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     long tmp = (long)(2 * ast->mass * v);
     long cost = ABS(tmp);
 
-    ast->life += ASTEROID_FUEL_HIT(ED_PL_CRASH, ast->wire_size);
+    ast->life += ASTEROID_FUEL_HIT(ED_PL_CRASH_TIMES_256, ast->wire_size);
     if (ast->life < 0)
         ast->life = 0;
     if (ast->life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
@@ -1131,9 +1131,9 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
         Handle_Scoring(SCORE_ASTEROID_KILL, pl, NULL, ast, NULL);
     }
     if (!Player_uses_emergency_shield(pl))
-        Player_add_fuel(pl, -cost);
+        Player_add_fuel_times_256(pl, -cost);
 
-    if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
+    if (options.asteroidCollisionMayKill && (pl->fuel.sum_times_256 == 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
     {
         int sc;
         SET_BIT(pl->obj_status, KILLED);
@@ -1211,11 +1211,11 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                                             obj->mods, 1),
                               kp->name);
             }
-            drain = (long)(ED_SMART_SHOT_HIT /
+            drain = (long)(ED_SMART_SHOT_HIT_TIMES_256 /
                            // ((obj->mods.mini + 1) * (obj->mods.power + 1)));
                            ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1)));
             if (!Player_uses_emergency_shield(pl))
-                Player_add_fuel(pl, drain);
+                Player_add_fuel_times_256(pl, drain);
             pl->forceVisible += 2;
             break;
 
@@ -1229,8 +1229,8 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                 // a fast shot hitting a shielded ship may drain all fuel,
                 // causing the ship to float, dead in space.
                 drainfactor = 1;
-                drain = ED_SHOT_HIT * drainfactor * SHOT_MULT(obj);
-                Player_add_fuel(pl, drain);
+                drain = ED_SHOT_HIT_TIMES_256 * drainfactor * SHOT_MULT(obj);
+                Player_add_fuel_times_256(pl, drain);
             }
             pl->forceVisible = (int)(pl->forceVisible + SHOT_MULT(obj));
             break;
@@ -1239,7 +1239,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             warn("Player hit by unknown object type %d.", obj->type);
             break;
         }
-        if (pl->fuel.sum <= 0)
+        if (pl->fuel.sum_times_256 <= 0)
             CLR_BIT(pl->used, HAS_SHIELD);
         if (!BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
             Player_hit_armor(pl);
@@ -1334,7 +1334,7 @@ static void AsteroidCollision(void)
     int j, radius, obj_count;
     object_t *ast;
     object_t *obj = NULL, **obj_list;
-    double damage = 0.0;
+    double damage_times_256 = 0.0;
     bool sound = false;
 
     std::vector<wireobject_t *> &asteroids = Asteroid_get_list();
@@ -1396,13 +1396,13 @@ static void AsteroidCollision(void)
                 Obj_repel(ast, obj, radius);
                 if (options.treasureCollisionDestroys)
                     obj->life = 0;
-                damage = ED_BALL_HIT;
+                damage_times_256 = ED_BALL_HIT_TIMES_256;
                 sound = true;
                 break;
             case OBJ_ASTEROID:
                 obj->life -= ASTEROID_FUEL_HIT(ABS(2 * ast->mass * VECTOR_LENGTH(ast->vel)),
                                                WIRE_PTR(obj)->wire_size);
-                damage = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
+                damage_times_256 = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
                 Delta_mv_elastic(ast, obj);
                 /* avoid doing collision twice */
                 obj->fuselife = obj->life - 1;
@@ -1411,12 +1411,12 @@ static void AsteroidCollision(void)
             case OBJ_SPARK:
                 obj->life = 0;
                 Delta_mv(ast, obj);
-                damage = 0;
+                damage_times_256 = 0;
                 break;
             case OBJ_DEBRIS:
             case OBJ_WRECKAGE:
                 obj->life = 0;
-                damage = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
+                damage_times_256 = -ABS(2 * obj->mass * VECTOR_LENGTH(obj->vel));
                 Delta_mv(ast, obj);
                 break;
             case OBJ_MINE:
@@ -1427,7 +1427,7 @@ static void AsteroidCollision(void)
             case OBJ_CANNON_SHOT:
                 obj->life = 0;
                 Delta_mv(ast, obj);
-                damage = ED_SHOT_HIT;
+                damage_times_256 = ED_SHOT_HIT_TIMES_256;
                 sound = true;
                 break;
             case OBJ_SMART_SHOT:
@@ -1436,19 +1436,19 @@ static void AsteroidCollision(void)
                 obj->life = 0;
                 Delta_mv(ast, obj);
                 // damage = ED_SMART_SHOT_HIT / ((obj->mods.mini + 1) * (obj->mods.power + 1));
-                damage = ED_SMART_SHOT_HIT / ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1));
+                damage_times_256 = ED_SMART_SHOT_HIT_TIMES_256 / ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1));
                 sound = true;
                 break;
             default:
                 Delta_mv(ast, obj);
-                damage = 0;
+                damage_times_256 = 0;
                 break;
             }
 
             if (ast->life > 0)
             {
                 if (ast->life <= ast->fuselife)
-                    ast->life += ASTEROID_FUEL_HIT(damage, WIRE_PTR(ast)->wire_size);
+                    ast->life += ASTEROID_FUEL_HIT(damage_times_256, WIRE_PTR(ast)->wire_size);
                 if (sound)
                     sound_play_sensors(ast->pos, ASTEROID_HIT_SOUND);
                 if (ast->life < 0)

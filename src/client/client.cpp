@@ -225,13 +225,13 @@ static fuelstation_t *Fuelstation_by_pos(int x, int y)
     return nullptr;
 }
 
-double Fuel_by_pos(int x, int y)
+double Fuel_times_256_by_pos(int x, int y)
 {
     fuelstation_t *fuelp;
 
     if ((fuelp = Fuelstation_by_pos(x, y)) == nullptr)
         return 0;
-    return fuelp->fuel;
+    return fuelp->fuel_times_256;
 }
 
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
@@ -277,7 +277,7 @@ int Handle_fuel(int ind, double fuel)
         warn("Bad fuelstation index (%d)", ind);
         return -1;
     }
-    clMap.fuels[ind].fuel = fuel * FUEL_SCALE_FACT;
+    clMap.fuels[ind].fuel_times_256 = fuel * FUEL_SCALE_FACT;
     return 0;
 }
 
@@ -1006,7 +1006,7 @@ static int init_polymap(void)
         fuelstation_t fs;
         cx = get_ushort(&ptr);
         cy = get_ushort(&ptr);
-        fs.fuel = MAX_STATION_FUEL;
+        fs.fuel_times_256 = MAX_STATION_FUEL_TIMES_256;
         fs.bounds.x = cx - BLOCK_SZ / 2;
         fs.bounds.y = cy - BLOCK_SZ / 2;
         fs.bounds.w = BLOCK_SZ;
@@ -1099,7 +1099,7 @@ static int init_blockmap(void)
         case 1:
             fuelstation_t fs;
             fs.pos = i;
-            fs.fuel = MAX_STATION_FUEL;
+            fs.fuel_times_256 = MAX_STATION_FUEL_TIMES_256;
             clMap.fuels.push_back(fs);
             break;
         case 2:
@@ -1580,6 +1580,8 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 double newFuelSum, double newFuelMax, int newPacketSize,
                 int status)
 {
+    warn("Handle_self: newFuelSum: %f, newFuelMax: %f", newFuelSum, newFuelMax);
+
     selfPos.x = x;
     selfPos.y = y;
     selfVel.x = vx;

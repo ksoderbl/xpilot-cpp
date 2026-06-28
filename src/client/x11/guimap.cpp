@@ -231,7 +231,7 @@ void Gui_paint_cannon(int x, int y, int type)
     }
 }
 
-void Gui_paint_fuel(int x, int y, double fuel)
+void Gui_paint_fuel(int x, int y, double fuel_times_256)
 {
     /* fuel box drawing can be disabled */
     if (fuelColor == BLACK)
@@ -256,7 +256,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
         }
         SET_FG(colors[fuelColor].pixel);
         // LIMIT(fuel, 0, MAX_STATION_FUEL);
-        size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
+        size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel_times_256 / MAX_STATION_FUEL_TIMES_256);
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          SCALEX(x + FUEL_BORDER),
                          SCALEY(y + FUEL_BORDER + size),
@@ -295,7 +295,7 @@ void Gui_paint_fuel(int x, int y, double fuel)
         if (image >= fuel_images)
             image = (2 * fuel_images - 1) - image;
 
-        size = (int)((BLOCK_SZ - 2 * BITMAP_FUEL_BORDER) * fuel / MAX_STATION_FUEL);
+        size = (int)((BLOCK_SZ - 2 * BITMAP_FUEL_BORDER) * fuel_times_256 / MAX_STATION_FUEL_TIMES_256);
 
         Bitmap_paint(drawPixmap, BM_FUELCELL,
                      SCALEX(x), SCALEY(y + BLOCK_SZ), 0);
