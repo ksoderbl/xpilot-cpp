@@ -798,7 +798,7 @@ static void Do_repair(player_t *pl)
 {
     target_t *targ = &world->targets[pl->repair_target];
     if (Wrap_length(pl->pos.cx - targ->pos.cx, pl->pos.cy - targ->pos.cy) / CLICK > 90.0 ||
-        targ->damage >= TARGET_DAMAGE ||
+        targ->damage_times_256 >= TARGET_DAMAGE_TIMES_256 ||
         targ->dead_ticks > 0 ||
         BIT(pl->used, USES_PHASING_DEVICE))
         CLR_BIT(pl->used, USES_REPAIR);
@@ -811,13 +811,13 @@ static void Do_repair(player_t *pl)
         {
             if (pl->fuel.tank_times_256[pl->fuel.current] > REFUEL_RATE_TIMES_256 * timeStep)
             {
-                targ->damage += TARGET_FUEL_REPAIR_PER_FRAME * timeStep;
+                targ->damage_times_256 += TARGET_FUEL_REPAIR_PER_FRAME_TIMES_256 * timeStep;
                 targ->conn_mask = 0;
                 targ->last_change = frame_loops;
                 Player_add_fuel_times_256(pl, -REFUEL_RATE_TIMES_256 * timeStep);
-                if (targ->damage > TARGET_DAMAGE)
+                if (targ->damage_times_256 > TARGET_DAMAGE_TIMES_256)
                 {
-                    targ->damage = TARGET_DAMAGE;
+                    targ->damage_times_256 = TARGET_DAMAGE_TIMES_256;
                     break;
                 }
             }

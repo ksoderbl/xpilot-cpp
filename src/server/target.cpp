@@ -86,7 +86,7 @@ void Target_update(void)
                             // t->update_mask = (unsigned)-1;
                             // t->last_change = frame_loops;
                             // t->dead_ticks = 0;
-                            t->damage = TARGET_DAMAGE;
+                            t->damage_times_256 = TARGET_DAMAGE_TIMES_256;
                             World_restore_target(targ);
                         }
                     }
@@ -94,13 +94,12 @@ void Target_update(void)
             }
             continue;
         }
-        else if (targ->damage == TARGET_DAMAGE)
+        else if (targ->damage_times_256 == TARGET_DAMAGE_TIMES_256)
             continue;
 
-        targ->damage += TARGET_REPAIR_PER_FRAME;
-        if (targ->damage >= TARGET_DAMAGE)
-
-            targ->damage = TARGET_DAMAGE;
+        targ->damage_times_256 += TARGET_REPAIR_PER_FRAME_TIMES_256;
+        if (targ->damage_times_256 >= TARGET_DAMAGE_TIMES_256)
+            targ->damage_times_256 = TARGET_DAMAGE_TIMES_256;
 
         else if (targ->last_change + TARGET_UPDATE_DELAY < frame_loops)
             /*
@@ -119,7 +118,7 @@ void Object_hits_target(
     // move_state_t *ms,
     object_t *obj,
     target_t *targ,
-    long player_cost)
+    long player_cost_times_256)
 {
     // target_t *targ = &world->targets[ms->target];
     // object_t *obj = ms->mip->obj;
@@ -156,10 +155,10 @@ void Object_hits_target(
     {
     case OBJ_SHOT:
         drainfactor = 1;
-        targ->damage += (int)(ED_SHOT_HIT_TIMES_256 * drainfactor * SHOT_MULT(obj));
+        targ->damage_times_256 += (int)(ED_SHOT_HIT_TIMES_256 * drainfactor * SHOT_MULT(obj));
         break;
     case OBJ_PULSE:
-        targ->damage += (int)(ED_LASER_HIT_TIMES_256);
+        targ->damage_times_256 += (int)(ED_LASER_HIT_TIMES_256);
         break;
     case OBJ_SMART_SHOT:
     case OBJ_TORPEDO:
@@ -171,10 +170,10 @@ void Object_hits_target(
         }
         // if (BIT(obj->mods.nuclear, MODS_NUCLEAR))
         if (Mods_get(obj->mods, ModsNuclear) & MODS_NUCLEAR)
-            targ->damage = 0;
+            targ->damage_times_256 = 0;
         else
             // targ->damage += (int)(ED_SMART_SHOT_HIT / (obj->mods.mini + 1));
-            targ->damage += (int)(ED_SMART_SHOT_HIT_TIMES_256 / (Mods_get(obj->mods, ModsMini) + 1));
+            targ->damage_times_256 += (int)(ED_SMART_SHOT_HIT_TIMES_256 / (Mods_get(obj->mods, ModsMini) + 1));
         break;
     case OBJ_MINE:
         if (!obj->mass)
@@ -183,12 +182,12 @@ void Object_hits_target(
             return;
         }
         // targ->damage -= TARGET_DAMAGE / (obj->mods.mini + 1);
-        targ->damage -= TARGET_DAMAGE / (Mods_get(obj->mods, ModsMini) + 1);
+        targ->damage_times_256 -= TARGET_DAMAGE_TIMES_256 / (Mods_get(obj->mods, ModsMini) + 1);
         break;
     case OBJ_PLAYER:
-        if (player_cost <= 0 || player_cost > TARGET_DAMAGE / 4)
-            player_cost = TARGET_DAMAGE / 4;
-        targ->damage -= player_cost;
+        if (player_cost_times_256 <= 0 || player_cost_times_256 > TARGET_DAMAGE_TIMES_256 / 4)
+            player_cost_times_256 = TARGET_DAMAGE_TIMES_256 / 4;
+        targ->damage_times_256 -= player_cost_times_256;
         break;
 
     default:
@@ -198,11 +197,11 @@ void Object_hits_target(
 
     targ->conn_mask = 0;
     targ->last_change = frame_loops;
-    if (targ->damage > 0)
+    if (targ->damage_times_256 > 0)
         return;
 
     targ->update_mask = (unsigned)-1;
-    targ->damage = TARGET_DAMAGE;
+    targ->damage_times_256 = TARGET_DAMAGE_TIMES_256;
     targ->dead_ticks = options.targetDeadTime;
 
     /*

@@ -1202,7 +1202,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all targets are not damaged.
          */
-        if (targ->dead_ticks == 0 && targ->damage == TARGET_DAMAGE)
+        if (targ->dead_ticks == 0 && targ->damage_times_256 == TARGET_DAMAGE_TIMES_256)
         {
             SET_BIT(targ->conn_mask, conn_bit);
             CLR_BIT(targ->update_mask, conn_bit);
@@ -1826,10 +1826,10 @@ int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id)
                          teammine, id);
 }
 
-int Send_target(connection_t *connp, int num, int dead_ticks, double damage)
+int Send_target(connection_t *connp, int num, int dead_ticks, double damage_times_256)
 {
     return Packet_printf(&connp->w, "%c%hu%hu%hu", PKT_TARGET,
-                         num, dead_ticks, (int)damage);
+                         num, dead_ticks, (int)damage_times_256);
 }
 
 // version 0x4501

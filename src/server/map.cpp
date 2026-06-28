@@ -240,7 +240,7 @@ int World_place_target(clpos_t pos, int team)
      */
     t.team = team;
     t.dead_ticks = 0;
-    t.damage = TARGET_DAMAGE;
+    t.damage_times_256 = TARGET_DAMAGE_TIMES_256;
     t.conn_mask = ~0;
     t.update_mask = 0;
     t.last_change = frame_loops;

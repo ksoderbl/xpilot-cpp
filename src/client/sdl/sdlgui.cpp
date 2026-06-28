@@ -811,7 +811,7 @@ void Gui_paint_decor_dot(int x, int y, int size)
     glEnd();
 }
 
-void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
+void Gui_paint_setup_target(int x, int y, int team, double damage_times_256, bool own)
 {
     int damage_y;
 
@@ -820,9 +820,9 @@ void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
     {
         mapprint(&mapfont, whiteRGBA, RIGHT, UP, x + BLOCK_SZ, y, "%d", team);
     }
-    if (damage != TARGET_DAMAGE)
+    if (damage_times_256 != TARGET_DAMAGE_TIMES_256)
     {
-        damage_y = y + (int)((BLOCK_SZ - 3) * (damage / TARGET_DAMAGE));
+        damage_y = y + (int)((BLOCK_SZ - 3) * (damage_times_256 / TARGET_DAMAGE_TIMES_256));
         set_alphacolor(own ? blueRGBA : redRGBA);
         glBegin(GL_LINE_LOOP);
         glVertex2i(x, y + 3);

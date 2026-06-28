@@ -1168,7 +1168,7 @@ void Gui_paint_decor_dot(int x, int y, int size)
                   size, size);
 }
 
-void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
+void Gui_paint_setup_target(int x, int y, int team, double damage_times_256, bool own)
 {
     int size, a1, a2, b1, b2, color;
     char s[2];
@@ -1203,9 +1203,9 @@ void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
                       s, 1);
     }
 
-    if (damage != TARGET_DAMAGE)
+    if (damage_times_256 != TARGET_DAMAGE_TIMES_256)
     {
-        size = (int)((damage * BLOCK_SZ) / (TARGET_DAMAGE * 2));
+        size = (int)((damage_times_256 * BLOCK_SZ) / (TARGET_DAMAGE_TIMES_256 * 2));
         a1 = x + size;
         a2 = y + size;
         b1 = x + (BLOCK_SZ - size);

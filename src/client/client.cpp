@@ -234,7 +234,7 @@ double Fuel_times_256_by_pos(int x, int y)
     return fuelp->fuel_times_256;
 }
 
-int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage_times_256)
 {
     if (ind < 0 || ind >= clMap.targets.size())
         return -1;
@@ -242,11 +242,11 @@ int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
     *xp = target.pos / Setup->y;
     *yp = target.pos % Setup->y;
     *dead_time = target.dead_time;
-    *damage = target.damage;
+    *damage_times_256 = target.damage_times_256;
     return 0;
 }
 
-int Target_alive(int x, int y, double *damage)
+int Target_alive(int x, int y, double *damage_times_256)
 {
     int i, lo, hi, pos;
 
@@ -263,7 +263,7 @@ int Target_alive(int x, int y, double *damage)
     }
     if (lo == hi && pos == clMap.targets[lo].pos)
     {
-        *damage = clMap.targets[lo].damage;
+        *damage_times_256 = clMap.targets[lo].damage_times_256;
         return clMap.targets[lo].dead_time;
     }
     warn("No targets at (%d,%d)", x, y);
@@ -323,15 +323,15 @@ int Handle_cannon(int ind, int dead_time)
     return 0;
 }
 
-int Handle_target(int ind, int dead_time, double damage)
+int Handle_target(int ind, int dead_time, double damage_times_256)
 {
     if (ind < 0 || ind >= clMap.targets.size())
     {
         warn("Bad target index (%d)", ind);
         return 0;
     }
-    if (dead_time == 0 && (damage <= 0.0 || damage > TARGET_DAMAGE))
-        warn("BUG target %d, dead %d, damage %f", ind, dead_time, damage);
+    if (dead_time == 0 && (damage_times_256 <= 0.0 || damage_times_256 > TARGET_DAMAGE_TIMES_256))
+        warn("BUG target %d, dead %d, damage_times_256 %f", ind, dead_time, damage_times_256);
 
     target_t &target = clMap.targets[ind];
 
@@ -347,7 +347,7 @@ int Handle_target(int ind, int dead_time, double damage)
     }
 
     target.dead_time = dead_time;
-    target.damage = damage;
+    target.damage_times_256 = damage_times_256;
 
     return 0;
 }
@@ -1113,7 +1113,7 @@ static int init_blockmap(void)
             target_t target;
             target.pos = i;
             target.dead_time = 0;
-            target.damage = TARGET_DAMAGE;
+            target.damage_times_256 = TARGET_DAMAGE_TIMES_256;
             clMap.targets.push_back(target);
             break;
         case 4:

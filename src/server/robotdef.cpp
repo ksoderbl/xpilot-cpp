@@ -1986,7 +1986,7 @@ static void Robot_default_play(player_t *pl)
         {
             target_t *targ = Target_by_index(j);
 
-            if (targ->team == pl->team && targ->damage < TARGET_DAMAGE && targ->dead_ticks >= 0)
+            if (targ->team == pl->team && targ->damage_times_256 < TARGET_DAMAGE_TIMES_256 && targ->dead_ticks >= 0)
             {
                 if (Wrap_length(pl->pos.cx - targ->pos.cx,
                                 pl->pos.cy - targ->pos.cy) <= 90.0 * CLICK)
