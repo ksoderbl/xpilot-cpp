@@ -2056,6 +2056,9 @@ int Receive_fastshot(void)
 
     // warn("Receive_fastshot: type %d, n %d", type, n);
 
+    /*
+     * Teamshots are in range DEBRIS_TYPES to DEBRIS_TYPES*2-1 in fastshot.
+     */
     if (type < DEBRIS_TYPES)
         r = Handle_fastshot(type, (uint8_t *)rbuf.ptr, n);
     else
