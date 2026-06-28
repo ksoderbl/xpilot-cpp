@@ -2119,13 +2119,15 @@ int Handle_vcannon(int x, int y, int type)
     return 0;
 }
 
-int Handle_vfuel(int x, int y, double fuel)
+int Handle_vfuel(int x, int y, double fuel_times_256)
 {
+    warn("Handle_vfuel: x: %d, y: %d, fuel_times_256: %f", x, y, fuel_times_256);
+
     vfuel_t t;
 
     t.x = x;
     t.y = y;
-    t.fuel = fuel;
+    t.fuel_times_256 = fuel_times_256;
     clMap.vfuels.push_back(t);
     return 0;
 }

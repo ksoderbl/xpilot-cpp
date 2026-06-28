@@ -209,7 +209,7 @@ typedef struct
 typedef struct
 {
     short x, y;
-    double fuel;
+    double fuel_times_256;
 } vfuel_t;
 
 typedef struct
