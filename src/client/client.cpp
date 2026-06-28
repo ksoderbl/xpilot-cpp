@@ -96,15 +96,15 @@ short lock_id;   /* Id of player locked onto */
 short lock_dir;  /* Direction of lock */
 short lock_dist; /* Distance to player locked onto */
 
-int eyesId;           /* Player we get frame updates for */
-other_t *eyes = NULL; /* Player we get frame updates for */
-bool snooping;        /* are we snooping on someone else? */
+int eyesId;              /* Player we get frame updates for */
+other_t *eyes = nullptr; /* Player we get frame updates for */
+bool snooping;           /* are we snooping on someone else? */
 int eyeTeam = TEAM_NOT_SET;
 
-other_t *self = NULL; /* player info */
-short selfVisible;    /* Are we alive and playing? */
-short damaged;        /* Damaged by ECM */
-short destruct;       /* If self destructing */
+other_t *self = nullptr; /* player info */
+short selfVisible;       /* Are we alive and playing? */
+short damaged;           /* Damaged by ECM */
+short destruct;          /* If self destructing */
 short shutdown_delay;
 short shutdown_count;
 short thrusttime;
@@ -137,7 +137,7 @@ double fuelCritical; /* Fuel critical level */
 double fuelWarning;  /* Fuel warning level */
 double fuelNotify;   /* Fuel notify level */
 
-char *shipShape = NULL;         /* Shape of player's ship */
+char *shipShape = nullptr;      /* Shape of player's ship */
 double power;                   /* Force of thrust */
 double power_s;                 /* Saved power fiks */
 double turnspeed;               /* How fast player acc-turns */
@@ -229,7 +229,7 @@ double Fuel_by_pos(int x, int y)
 {
     fuelstation_t *fuelp;
 
-    if ((fuelp = Fuelstation_by_pos(x, y)) == NULL)
+    if ((fuelp = Fuelstation_by_pos(x, y)) == nullptr)
         return 0;
     return fuelp->fuel;
 }
@@ -299,14 +299,14 @@ static cannontime_t *Cannon_by_pos(int x, int y)
     if (lo == hi && pos == clMap.cannons[lo].pos)
         return &clMap.cannons[lo];
     warn("No cannon at (%d,%d)", x, y);
-    return NULL;
+    return nullptr;
 }
 
 int Cannon_dead_time_by_pos(int x, int y, int *dot)
 {
     cannontime_t *cannonp;
 
-    if ((cannonp = Cannon_by_pos(x, y)) == NULL)
+    if ((cannonp = Cannon_by_pos(x, y)) == nullptr)
         return -1;
     *dot = cannonp->dot;
     return cannonp->dead_time;
@@ -377,7 +377,7 @@ int Base_info_by_pos(int x, int y, int *idp, int *teamp)
 {
     homebase_t *basep;
 
-    if ((basep = Homebase_by_pos(x, y)) == NULL)
+    if ((basep = Homebase_by_pos(x, y)) == nullptr)
         return -1;
     *idp = basep->id;
     *teamp = basep->team;
@@ -815,14 +815,14 @@ static void parse_styles(char **callptr)
     num_bmaps = *ptr++ & 0xff;
 
     polygon_styles = XMALLOC(polygon_style_t, MAX(1, num_polygon_styles));
-    if (polygon_styles == NULL)
+    if (polygon_styles == nullptr)
     {
         error("no memory for polygon styles");
         exit(1);
     }
 
     edge_styles = XMALLOC(edge_style_t, MAX(1, num_edge_styles));
-    if (edge_styles == NULL)
+    if (edge_styles == nullptr)
     {
         error("no memory for edge styles");
         exit(1);
@@ -886,7 +886,7 @@ static int init_polymap(void)
 
     int num_polygons = get_ushort(&ptr);
     // polygons = XMALLOC(xp_polygon_t, num_polygons);
-    // if (polygons == NULL)
+    // if (polygons == nullptr)
     // {
     //     error("no memory for polygons");
     //     exit(1);
@@ -908,21 +908,21 @@ static int init_polymap(void)
             edgechange = INT_MAX;
         ptr += ecount * 2;
         pc = get_ushort(&ptr);
-        if ((points = XMALLOC(ipos_t, pc)) == NULL)
+        if ((points = XMALLOC(ipos_t, pc)) == nullptr)
         {
             error("no memory for points");
             exit(1);
         }
         if (ecount)
         {
-            if ((styles = XMALLOC(int, pc)) == NULL)
+            if ((styles = XMALLOC(int, pc)) == nullptr)
             {
                 error("no memory for special edges");
                 exit(1);
             }
         }
         else
-            styles = NULL;
+            styles = nullptr;
         startx = get_ushort(&ptr);
         starty = get_ushort(&ptr);
         points[0].x = cx = min.x = max.x = startx;
@@ -1016,7 +1016,7 @@ static int init_polymap(void)
     if (num_checks != 0)
     {
         checks = XMALLOC(checkpoint_t, num_checks);
-        if (checks == NULL)
+        if (checks == nullptr)
         {
             error("No memory for checkpoints (%d)", num_checks);
             exit(1);
@@ -1055,7 +1055,7 @@ static int init_blockmap(void)
     clMap.bases.clear();
     clMap.cannons.clear();
     clMap.targets.clear();
-    checks = NULL;
+    checks = nullptr;
     memset(types, 0, sizeof types);
     types[SETUP_FUEL] = 1;
     types[SETUP_CANNON_UP] = 2;
@@ -1083,7 +1083,7 @@ static int init_blockmap(void)
     if (num_checks != 0)
     {
         checks = XMALLOC(checkpoint_t, num_checks);
-        if (checks == NULL)
+        if (checks == nullptr)
         {
             error("No memory for Map checks (%d)", num_checks);
             return -1;
@@ -1179,16 +1179,16 @@ other_t *Other_by_id(int id)
                 return &Others[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 other_t *Other_by_name(const char *name, bool show_error_msg)
 {
     int i;
-    other_t *found_other = NULL, *other;
+    other_t *found_other = nullptr, *other;
     size_t len;
 
-    if (name == NULL || (len = strlen(name)) == 0)
+    if (name == nullptr || (len = strlen(name)) == 0)
         goto match_none;
 
     /* Look for an exact match on player nickname. */
@@ -1241,13 +1241,13 @@ match_none:
 {
     if (show_error_msg)
         Add_message("Name does not match any player. [*Client reply*]");
-    return NULL;
+    return nullptr;
 }
 match_several:
 {
     if (show_error_msg)
         Add_message("Name matches several players. [*Client reply*]");
-    return NULL;
+    return nullptr;
 }
 }
 
@@ -1255,8 +1255,8 @@ shipshape_t *Ship_by_id(int id)
 {
     other_t *other;
 
-    if ((other = Other_by_id(id)) == NULL)
-        return Parse_shape_str(NULL);
+    if ((other = Other_by_id(id)) == nullptr)
+        return Parse_shape_str(nullptr);
     return other->ship;
 }
 
@@ -1265,15 +1265,15 @@ int Handle_leave(int id)
     other_t *other;
     char msg[MSG_LEN];
 
-    if ((other = Other_by_id(id)) != NULL)
+    if ((other = Other_by_id(id)) != nullptr)
     {
         if (other == self)
         {
             warn("Self left?!");
-            self = NULL;
+            self = nullptr;
         }
         Free_ship_shape(other->ship);
-        other->ship = NULL;
+        other->ship = nullptr;
         /*
          * Silent about tanks and robots.
          */
@@ -1306,7 +1306,7 @@ int Handle_player(int id, int player_team, int mychar,
         warn("Illegal team %d for received player, setting to 0", player_team);
         player_team = 0;
     }
-    if ((other = Other_by_id(id)) == NULL)
+    if ((other = Other_by_id(id)) == nullptr)
     {
         if (num_others >= max_others)
         {
@@ -1315,9 +1315,9 @@ int Handle_player(int id, int player_team, int mychar,
                 Others = XMALLOC(other_t, max_others);
             else
                 Others = XREALLOC(other_t, Others, max_others);
-            if (Others == NULL)
+            if (Others == nullptr)
                 fatal("Not enough memory for player info");
-            if (self != NULL)
+            if (self != nullptr)
                 /* We've made 'self' the first member of Others[]. */
                 self = &Others[0];
         }
@@ -1326,7 +1326,7 @@ int Handle_player(int id, int player_team, int mychar,
 
     // warn("Handle_player: id %d, connectParam.nick_name '%s'", id, connectParam.nick_name);
 
-    if (self == NULL && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
+    if (self == nullptr && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
     {
         if (other != &Others[0])
         {
@@ -1358,7 +1358,7 @@ int Handle_team(int id, int pl_team)
     other_t *other;
 
     other = Other_by_id(id);
-    if (other == NULL)
+    if (other == nullptr)
     {
         warn("Received packet to change team for nonexistent id %d", id);
         return 0;
@@ -1378,7 +1378,7 @@ int Handle_score(int id, double score, int life, int mychar, int alliance)
 {
     other_t *other;
 
-    if ((other = Other_by_id(id)) == NULL)
+    if ((other = Other_by_id(id)) == nullptr)
     {
         warn("Can't update score for non-existing player %d,%d,%d",
              id, (int)score, life);
@@ -1406,7 +1406,7 @@ int Handle_timing(int id, int check, int round, long tloops)
 {
     other_t *other;
 
-    if ((other = Other_by_id(id)) == NULL)
+    if ((other = Other_by_id(id)) == nullptr)
     {
         warn("Can't update timing for non-existing player %d,%d,%d",
              id, check, round);
@@ -1488,7 +1488,7 @@ int Handle_start(long server_loops)
     destruct = 0;
     shutdown_delay = 0;
     shutdown_count = -1;
-    eyesId = (self != NULL) ? self->id : 0;
+    eyesId = (self != nullptr) ? self->id : 0;
     eyes = Other_by_id(eyesId);
     thrusttime = -1;
     shieldtime = -1;
@@ -1504,12 +1504,12 @@ static void update_timing(void)
     static double time_counter = 0.0;
 
     frame_counter++;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     if (now.tv_sec != old_tv.tv_sec)
     {
         double usecs, fps;
 
-        currentTime = time(NULL);
+        currentTime = time(nullptr);
         usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
         fps = (1e6 * frame_counter) / usecs;
         old_tv = now;
@@ -1797,14 +1797,14 @@ int Handle_ship(int x, int y, int id, int dir, int shield, int cloak,
      * it, especially if it's us!  consider any ship there to be our eyes
      * until we see a ship that really is us.
      * BG: XXX there was a bug here.  self was dereferenced at "self->id"
-     * while self could be NULL here.
+     * while self could be nullptr here.
      */
     if (!selfVisible && ((x == selfPos.x && y == selfPos.y) || (self && id == self->id)))
     {
         int radarx, radary;
         eyesId = id;
         eyes = Other_by_id(eyesId);
-        if (eyes != NULL)
+        if (eyes != nullptr)
             eyeTeam = eyes->team;
         selfVisible = (self && (id == self->id));
         radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
@@ -2073,7 +2073,7 @@ int Handle_message(char *msg)
 
         other = Other_by_name(ignoree, false);
 
-        if (other == NULL)
+        if (other == nullptr)
         { /* Not in list, probably servermessage */
             Add_message(msg);
             return 0;
@@ -2337,7 +2337,7 @@ int Client_check_pointer_move_interval(void)
      * Let's see if we've sent any pointer move this interval,
      * if not and there is something to send, do that now.
      */
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     interval_num = ((int)now.tv_usec) / mouseMovementInterval;
     if (interval_num != last_send_interval_num && cumulativeMouseMovement != 0)
     {
