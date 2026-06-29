@@ -544,23 +544,24 @@ static void do_Autopilot(player_t *pl)
 static void Fuel_update(void)
 {
     int i;
-    int fuel_times_256;
+    double fuel_times_256;
     int frames_per_update;
 
     if (NumPlayers == 0)
         return;
 
     // Let the fuel stations regenerate some fuel.
-    fuel_times_256 = (int)(NumPlayers * STATION_REGENERATION_TIMES_256);
-    frames_per_update = MAX_STATION_FUEL_TIMES_256 / (fuel_times_256 * BLOCK_SZ);
+    fuel_times_256 = NumPlayers * STATION_REGENERATION * 256 * timeStep;
+    frames_per_update = MAX_STATION_FUEL / (fuel_times_256 / 256 * BLOCK_SZ);
+
     for (i = 0; i < Num_fuels(); i++)
     {
         fuel_t *fs = Fuel_by_index(i);
 
-        if (fs->fuel_times_256 == MAX_STATION_FUEL_TIMES_256)
+        if (fs->fuel_times_256 == MAX_STATION_FUEL * 256)
             continue;
-        if ((fs->fuel_times_256 += fuel_times_256) >= MAX_STATION_FUEL_TIMES_256)
-            fs->fuel_times_256 = MAX_STATION_FUEL_TIMES_256;
+        if ((fs->fuel_times_256 += fuel_times_256) >= MAX_STATION_FUEL * 256)
+            fs->fuel_times_256 = MAX_STATION_FUEL * 256;
         else if (fs->last_change + frames_per_update > frame_loops)
             /*
              * We don't send fuelstation info to the clients every frame
@@ -778,16 +779,16 @@ static void Do_refuel(player_t *pl)
 
         do
         {
-            if (fs->fuel_times_256 > REFUEL_RATE_TIMES_256 * timeStep)
+            if (fs->fuel_times_256 > REFUEL_RATE * 256 * timeStep)
             {
-                fs->fuel_times_256 -= REFUEL_RATE_TIMES_256 * timeStep;
+                fs->fuel_times_256 -= REFUEL_RATE * 256 * timeStep;
                 fs->conn_mask = 0;
                 fs->last_change = frame_loops;
-                Player_add_fuel_times_256(pl, REFUEL_RATE_TIMES_256 * timeStep);
+                Player_add_fuel(pl, REFUEL_RATE * timeStep);
             }
             else
             {
-                Player_add_fuel_times_256(pl, fs->fuel_times_256);
+                Player_add_fuel(pl, fs->fuel_times_256 / 256);
                 fs->fuel_times_256 = 0;
                 fs->conn_mask = 0;
                 fs->last_change = frame_loops;
@@ -821,12 +822,12 @@ static void Do_repair(player_t *pl)
 
         do
         {
-            if (pl->fuel.tank_times_256[pl->fuel.current] > REFUEL_RATE_TIMES_256 * timeStep)
+            if (pl->fuel.tank_times_256[pl->fuel.current] > REFUEL_RATE * 256 * timeStep)
             {
                 targ->damage_times_256 += TARGET_FUEL_REPAIR_PER_FRAME_TIMES_256 * timeStep;
                 targ->conn_mask = 0;
                 targ->last_change = frame_loops;
-                Player_add_fuel_times_256(pl, -REFUEL_RATE_TIMES_256 * timeStep);
+                Player_add_fuel(pl, -REFUEL_RATE * timeStep);
                 if (targ->damage_times_256 > TARGET_DAMAGE_TIMES_256)
                 {
                     targ->damage_times_256 = TARGET_DAMAGE_TIMES_256;
@@ -991,7 +992,7 @@ static void Update_players(void)
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             CLR_BIT(pl->used, USES_DEFLECTOR);
         }
-        if (pl->fuel.sum_times_256 > (pl->fuel.max_times_256 - REFUEL_RATE_TIMES_256 * timeStep))
+        if (pl->fuel.sum_times_256 > (pl->fuel.max_times_256 - REFUEL_RATE * 256 * timeStep))
             CLR_BIT(pl->used, USES_REFUEL);
 
         /*

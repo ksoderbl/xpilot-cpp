@@ -145,7 +145,8 @@ int World_place_fuel(clpos_t pos, int team)
     int ind = Num_fuels();
 
     t.pos = pos;
-    t.fuel_times_256 = START_STATION_FUEL_TIMES_256;
+    t.fuel = START_STATION_FUEL;
+    t.fuel_times_256 = START_STATION_FUEL * 256;
     t.conn_mask = ~0;
     t.last_change = frame_loops;
     t.team = team;
@@ -240,7 +241,7 @@ int World_place_target(clpos_t pos, int team)
      */
     t.team = team;
     t.dead_ticks = 0;
-    t.damage_times_256 = TARGET_DAMAGE_TIMES_256;
+    t.damage_times_256 = TARGET_DAMAGE * 256;
     t.conn_mask = ~0;
     t.update_mask = 0;
     t.last_change = frame_loops;

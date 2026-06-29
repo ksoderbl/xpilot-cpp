@@ -275,16 +275,16 @@ void Update_tanks(pl_fuel_t *ft)
     if (ft->num_tanks)
     {
         int t, check;
-        double low_level;
+        double low_level_times_256;
         double fuel_times_256;
         double *f;
 
         /* Set low_level to minimum fuel in each tank */
-        low_level = ft->sum_times_256 / (ft->num_tanks + 1) - 1;
-        if (low_level < 0.0)
-            low_level = 0.0;
-        if (TANK_REFILL_LIMIT_TIMES_256 < low_level)
-            low_level = TANK_REFILL_LIMIT_TIMES_256;
+        low_level_times_256 = ft->sum_times_256 / (ft->num_tanks + 1) - 1;
+        if (low_level_times_256 < 0.0)
+            low_level_times_256 = 0.0;
+        if (TANK_REFILL_LIMIT * 256 < low_level_times_256)
+            low_level_times_256 = TANK_REFILL_LIMIT * 256;
 
         t = ft->num_tanks;
         check = MAX_TANKS << 2;
@@ -293,7 +293,7 @@ void Update_tanks(pl_fuel_t *ft)
 
         while (t >= 0 && check--)
         {
-            double m_times_256 = TANK_CAP_TIMES_256(t);
+            double m_times_256 = TANK_CAP(t) * 256;
 
             /* Add the previous over/underflow and do a new cut */
             *f += fuel_times_256;
@@ -313,16 +313,16 @@ void Update_tanks(pl_fuel_t *ft)
             /* If there is no over/underflow, let the fuel run to main-tank */
             if (!fuel_times_256)
             {
-                if (t && t != ft->current && *f >= low_level + REFUEL_RATE_TIMES_256 && *(f - 1) <= TANK_CAP_TIMES_256(t - 1) - REFUEL_RATE_TIMES_256)
+                if (t && t != ft->current && *f >= low_level_times_256 + REFUEL_RATE * 256 && *(f - 1) <= TANK_CAP(t - 1) * 256 - REFUEL_RATE * 256)
                 {
 
-                    *f -= REFUEL_RATE_TIMES_256;
-                    fuel_times_256 = REFUEL_RATE_TIMES_256;
+                    *f -= REFUEL_RATE * 256;
+                    fuel_times_256 = REFUEL_RATE * 256;
                 }
-                else if (t && *f < low_level)
+                else if (t && *f < low_level_times_256)
                 {
-                    *f += REFUEL_RATE_TIMES_256;
-                    fuel_times_256 = -REFUEL_RATE_TIMES_256;
+                    *f += REFUEL_RATE * 256;
+                    fuel_times_256 = -REFUEL_RATE * 256;
                 }
             }
             if (fuel_times_256 && t == 0)
@@ -347,10 +347,10 @@ void Update_tanks(pl_fuel_t *ft)
             {
                 if (fuel_times_256)
                 {
-                    if (fuel_times_256 > TANK_CAP_TIMES_256(t))
+                    if (fuel_times_256 > TANK_CAP(t) * 256)
                     {
-                        ft->tank_times_256[t] = TANK_CAP_TIMES_256(t);
-                        fuel_times_256 -= TANK_CAP_TIMES_256(t);
+                        ft->tank_times_256[t] = TANK_CAP(t) * 256;
+                        fuel_times_256 -= TANK_CAP(t) * 256;
                     }
                     else
                     {
@@ -361,7 +361,7 @@ void Update_tanks(pl_fuel_t *ft)
                 }
                 else
                     ft->tank_times_256[t] = 0;
-                ft->max_times_256 += TANK_CAP_TIMES_256(t);
+                ft->max_times_256 += TANK_CAP(t) * 256;
                 t++;
             }
         }
@@ -439,7 +439,7 @@ void Tank_handle_detach(player_t *pl)
     /* Fuel is the one from chosen tank */
     tank->fuel.sum_times_256 =
         tank->fuel.tank_times_256[0] = pl->fuel.tank_times_256[ct];
-    tank->fuel.max_times_256 = TANK_CAP_TIMES_256(ct);
+    tank->fuel.max_times_256 = TANK_CAP(ct) * 256;
     tank->fuel.current = 0;
     tank->fuel.num_tanks = 0;
 

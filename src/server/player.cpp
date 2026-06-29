@@ -337,7 +337,7 @@ void Compute_sensor_range(player_t *pl)
 /*
  * Give ship one more tank, if possible.
  */
-void Player_add_tank(player_t *pl, double tank_fuel_times_256)
+void Player_add_tank_fuel_times_256(player_t *pl, double tank_fuel_times_256)
 {
     double tank_cap_times_256, add_fuel_times_256;
 
@@ -346,7 +346,7 @@ void Player_add_tank(player_t *pl, double tank_fuel_times_256)
     if (pl->fuel.num_tanks < MAX_TANKS)
     {
         pl->fuel.num_tanks++;
-        tank_cap_times_256 = TANK_CAP_TIMES_256(pl->fuel.num_tanks);
+        tank_cap_times_256 = 256 * TANK_CAP(pl->fuel.num_tanks);
         add_fuel_times_256 = tank_fuel_times_256;
         LIMIT(add_fuel_times_256, 0.0, tank_cap_times_256);
         pl->fuel.sum_times_256 += add_fuel_times_256;
@@ -371,7 +371,7 @@ void Player_remove_tank(player_t *pl, int which_tank)
         LIMIT(tank_ind, 1, pl->fuel.num_tanks);
         pl->emptymass -= TANK_MASS;
         tank_fuel_times_256 = pl->fuel.tank_times_256[tank_ind];
-        tank_cap_times_256 = TANK_CAP_TIMES_256(tank_ind);
+        tank_cap_times_256 = TANK_CAP(tank_ind) * 256;
         pl->fuel.max_times_256 -= tank_cap_times_256;
         pl->fuel.sum_times_256 -= tank_fuel_times_256;
         pl->fuel.num_tanks--;
@@ -418,7 +418,7 @@ void Player_set_mass(player_t *pl)
  * Give player the initial number of tanks and amount of fuel.
  * Upto the maximum allowed.
  */
-static void Player_init_fuel(player_t *pl, double total_fuel_times_256)
+static void Player_init_fuel_times_256(player_t *pl, double total_fuel_times_256)
 {
     // xpinfo("Player_init_fuel: total_fuel: %f", total_fuel);
 
@@ -427,7 +427,7 @@ static void Player_init_fuel(player_t *pl, double total_fuel_times_256)
 
     pl->fuel.num_tanks = 0;
     pl->fuel.current = 0;
-    pl->fuel.max_times_256 = TANK_CAP_TIMES_256(0);
+    pl->fuel.max_times_256 = TANK_CAP(0) * 256;
 
     // xpinfo("Player_init_fuel: pl->fuel.max: %f", pl->fuel.max);
 
@@ -443,7 +443,7 @@ static void Player_init_fuel(player_t *pl, double total_fuel_times_256)
 
     for (i = 1; i <= world->items[ITEM_TANK].initial; i++)
     {
-        Player_add_tank(pl, fuel_times_256);
+        Player_add_tank_fuel_times_256(pl, fuel_times_256);
         fuel_times_256 -= pl->fuel.tank_times_256[i];
     }
 }
@@ -471,7 +471,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
     }
 
     pl->fuel.sum_times_256 = world->items[ITEM_FUEL].initial << FUEL_SCALE_BITS;
-    Player_init_fuel(pl, pl->fuel.sum_times_256);
+    Player_init_fuel_times_256(pl, pl->fuel.sum_times_256);
 
     if (options.allowShipShapes == true && ship)
         pl->ship = ship;
@@ -1770,7 +1770,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     minfuel_times_256 = (world->items[ITEM_FUEL].initial * FUEL_SCALE_FACT);
     minfuel_times_256 += (int)(rfrac() * (1 + minfuel_times_256) * 0.2);
     pl->fuel.sum_times_256 = MAX(pl->fuel.sum_times_256, minfuel_times_256);
-    Player_init_fuel(pl, pl->fuel.sum_times_256);
+    Player_init_fuel_times_256(pl, pl->fuel.sum_times_256);
 
     if (!Player_is_paused(pl))
     {

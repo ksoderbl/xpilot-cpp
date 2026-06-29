@@ -121,7 +121,8 @@ void Place_general_mine(int id, int team, int status,
     // char msg[MSG_LEN];
     int used, i, minis;
     int life;
-    long drain_times_256;
+    double drain_times_256;
+    double drain;
     double mass;
     vector_t mv;
     player_t *pl = Player_by_id(id);
@@ -181,15 +182,14 @@ void Place_general_mine(int id, int team, int status,
 
     if (pl)
     {
-        drain_times_256 = ED_MINE_TIMES_256;
+        drain = ED_MINE;
         if (Mods_get(mods, ModsCluster))
-            drain_times_256 += (long)(CLUSTER_MASS_DRAIN_TIMES_256(mass));
-        if (pl->fuel.sum_times_256 < -drain_times_256)
+            drain += CLUSTER_MASS_DRAIN(mass);
+        if (pl->fuel.sum_times_256 < -drain * 256)
         {
             Set_player_message_f(pl,
-                                 "You need at least %ld fuel units to %s %s!",
-                                 (-drain_times_256) >> FUEL_SCALE_BITS,
-                                 (BIT(status, GRAVITY) ? "throw" : "drop"),
+                                 "You need at least %.1f fuel units to %s %s!",
+                                 -drain, (BIT(status, GRAVITY) ? "throw" : "drop"),
                                  Describe_shot(OBJ_MINE, status, mods, 0));
             return;
         }
@@ -211,7 +211,7 @@ void Place_general_mine(int id, int team, int status,
                 }
             }
         }
-        Player_add_fuel_times_256(pl, drain_times_256);
+        Player_add_fuel(pl, drain);
         pl->item[ITEM_MINE] -= used;
 
         if (used > 1)
@@ -229,7 +229,6 @@ void Place_general_mine(int id, int team, int status,
     }
 
     minis = Mods_get(mods, ModsMini) + 1;
-    ;
     SET_BIT(status, OWNERIMMUNE);
 
     for (i = 0; i < minis; i++)
@@ -512,7 +511,7 @@ void Fire_general_shot(int id, int team, bool cannon,
     int pl_range, pl_radius, rack_no = 0, racks_left = 0, r, on_this_rack = 0;
     int side = 0, fired = 0;
     int life = options.shotLife;
-    long drain_times_256;
+    double drain;
     double mass = options.shotMass,
            speed = options.shotSpeed,
            turnspeed = 0,
@@ -626,11 +625,11 @@ void Fire_general_shot(int id, int team, bool cannon,
         pl_range /= Mods_get(mods, ModsMini) + 1;
         pl_radius = MISSILE_LEN;
 
-        drain_times_256 = used * ED_SMART_SHOT_TIMES_256;
+        drain = used * ED_SMART_SHOT;
         if (Mods_get(mods, ModsCluster))
         {
             if (pl)
-                drain_times_256 += (long)(CLUSTER_MASS_DRAIN_TIMES_256(mass));
+                drain += CLUSTER_MASS_DRAIN(mass);
         }
 
         if (pl && BIT(pl->obj_status, KILLED))
@@ -687,15 +686,14 @@ void Fire_general_shot(int id, int team, bool cannon,
 
         if (pl)
         {
-            if (pl->fuel.sum_times_256 < -drain_times_256)
+            if (pl->fuel.sum_times_256 < -drain * 256)
             {
                 Set_player_message_f(pl,
-                                     "You need at least %ld fuel units to fire %s!",
-                                     (-drain_times_256) >> FUEL_SCALE_BITS,
-                                     Describe_shot(type, status, mods, 0));
+                                     "You need at least %.1f fuel units to fire %s!",
+                                     -drain, Describe_shot(type, status, mods, 0));
                 return;
             }
-            Player_add_fuel_times_256(pl, drain_times_256);
+            Player_add_fuel(pl, drain);
             pl->item[ITEM_MISSILE] -= used;
 
             if (used > 1)

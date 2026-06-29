@@ -173,15 +173,24 @@
 #define ED_LASER_TIMES_256 (-10.0 * FUEL_SCALE_FACT)
 #define ED_LASER_HIT_TIMES_256 (-100.0 * FUEL_SCALE_FACT)
 
+constexpr double ED_SHOT = -0.2;
+constexpr double ED_SMART_SHOT = -30.0;
+constexpr double ED_MINE = -60.0;
+constexpr double ED_ECM = -60.0;
+constexpr double ED_TRANSPORTER = -60.0;
+constexpr double ED_HYPERJUMP = -60.0;
 constexpr double ED_SHIELD = -0.20;
 constexpr double ED_PHASING_DEVICE = -0.40;
 constexpr double ED_CLOAKING_DEVICE = -0.07;
-constexpr double ED_SHOT = -0.2;
 constexpr double ED_DEFLECTOR = -0.15;
+constexpr double ED_SHOT_HIT = -25.0;
+constexpr double ED_SMART_SHOT_HIT = -120.0;
 constexpr double ED_PL_CRASH = -100.0;
 constexpr double ED_BALL_HIT = -50.0;
 constexpr double ED_LASER = -10.0;
 constexpr double ED_LASER_HIT = -100.0;
+
+#define ENERGY_PACK_FUEL (500.0 + rfrac() * 511.0)
 
 #define LG2_MAX_AFTERBURNER 4
 #define ALT_SPARK_MASS_FACT 4.2
@@ -200,9 +209,15 @@ constexpr double ED_LASER_HIT = -100.0;
 
 #define MAX_TANKS 8
 #define TANK_MASS (options.shipMass / 10)
-#define TANK_CAP_TIMES_256(n) (!(n) ? MAX_PLAYER_FUEL_TIMES_256 : (MAX_PLAYER_FUEL_TIMES_256 / 3))
-#define TANK_FUEL_TIMES_256(n) ((TANK_CAP_TIMES_256(n) * (5 + (randomMT() & 3))) / 32)
-#define TANK_REFILL_LIMIT_TIMES_256 (MIN_PLAYER_FUEL_TIMES_256 / 8)
+
+#define TANK_CAP(n) (!(n) ? MAX_PLAYER_FUEL : (MAX_PLAYER_FUEL / 3))
+#define TANK_FUEL(n) ((TANK_CAP(n) * (5 + (randomMT() & 3))) / 32)
+#define TANK_REFILL_LIMIT (MIN_PLAYER_FUEL / 8)
+
+// #define TANK_CAP_TIMES_256(n) (!(n) ? (MAX_PLAYER_FUEL * 256) : (MAX_PLAYER_FUEL * 256 / 3))
+// #define TANK_FUEL_TIMES_256(n) ((TANK_CAP_TIMES_256(n) * (5 + (randomMT() & 3))) / 32)
+// #define TANK_REFILL_LIMIT_TIMES_256 (MIN_PLAYER_FUEL * 256 / 8)
+
 #define TANK_THRUST_FACT 0.7
 #define TANK_NOTHRUST_TIME (HEAT_CLOSE_TIMEOUT / 2 + 2)
 #define TANK_THRUST_TIME (TANK_NOTHRUST_TIME / 2 + 1)
@@ -253,7 +268,7 @@ constexpr double ED_LASER_HIT = -100.0;
 #define HEAT_WIDE_ERROR 16
 
 #define CLUSTER_MASS_SHOTS(mass) ((mass) * 0.9 / options.shotMass)
-#define CLUSTER_MASS_DRAIN_TIMES_256(mass) (CLUSTER_MASS_SHOTS(mass) * ED_SHOT_TIMES_256)
+#define CLUSTER_MASS_DRAIN(mass) (CLUSTER_MASS_SHOTS(mass) * ED_SHOT)
 
 #define SMART_SHOT_LEN 12
 #define HEAT_SHOT_LEN 15
@@ -277,6 +292,12 @@ constexpr double ED_LASER_HIT = -100.0;
 #define WARN_TIME 2
 
 #define SHIELD_TIME (2 * 12)
+
+constexpr double START_STATION_FUEL = MAX_STATION_FUEL;
+constexpr double STATION_REGENERATION = 0.06;
+// constexpr double MAX_PLAYER_FUEL = 2600.0; // in const.h
+constexpr double MIN_PLAYER_FUEL = 350.0;
+constexpr double REFUEL_RATE = 5.0;
 
 #define ALLIANCE_NOT_SET (-1)
 

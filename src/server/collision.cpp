@@ -939,7 +939,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         sound_play_sensors(pl->pos, CLOAKING_DEVICE_PICKUP_SOUND);
         break;
     case ITEM_FUEL:
-        Player_add_fuel_times_256(pl, ENERGY_PACK_FUEL_TIMES_256);
+        Player_add_fuel(pl, ENERGY_PACK_FUEL);
         sound_play_sensors(pl->pos, ENERGY_PACK_PICKUP_SOUND);
         break;
     case ITEM_MINE:
@@ -992,9 +992,9 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 
     case ITEM_TANK:
         if (pl->fuel.num_tanks < world->items[ITEM_TANK].limit)
-            Player_add_tank(pl, TANK_FUEL_TIMES_256(pl->fuel.num_tanks + 1));
+            Player_add_tank_fuel_times_256(pl, 256 * TANK_FUEL(pl->fuel.num_tanks + 1));
         else
-            Player_add_fuel_times_256(pl, TANK_FUEL_TIMES_256(MAX_TANKS));
+            Player_add_fuel(pl, TANK_FUEL(MAX_TANKS));
         sound_play_sensors(pl->pos, TANK_PICKUP_SOUND);
         break;
     case NUM_ITEMS:
@@ -1211,7 +1211,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                                             obj->mods, 1),
                               kp->name);
             }
-            drain = (long)(ED_SMART_SHOT_HIT_TIMES_256 /
+            drain = (long)(ED_SMART_SHOT_HIT * 256 /
                            // ((obj->mods.mini + 1) * (obj->mods.power + 1)));
                            ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1)));
             if (!Player_uses_emergency_shield(pl))
@@ -1396,7 +1396,7 @@ static void AsteroidCollision(void)
                 Obj_repel(ast, obj, radius);
                 if (options.treasureCollisionDestroys)
                     obj->life = 0;
-                damage_times_256 = ED_BALL_HIT_TIMES_256;
+                damage_times_256 = ED_BALL_HIT * 256;
                 sound = true;
                 break;
             case OBJ_ASTEROID:
@@ -1427,7 +1427,7 @@ static void AsteroidCollision(void)
             case OBJ_CANNON_SHOT:
                 obj->life = 0;
                 Delta_mv(ast, obj);
-                damage_times_256 = ED_SHOT_HIT_TIMES_256;
+                damage_times_256 = ED_SHOT_HIT * 256;
                 sound = true;
                 break;
             case OBJ_SMART_SHOT:
@@ -1436,7 +1436,7 @@ static void AsteroidCollision(void)
                 obj->life = 0;
                 Delta_mv(ast, obj);
                 // damage = ED_SMART_SHOT_HIT / ((obj->mods.mini + 1) * (obj->mods.power + 1));
-                damage_times_256 = ED_SMART_SHOT_HIT_TIMES_256 / ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1));
+                damage_times_256 = ED_SMART_SHOT_HIT * 256 / ((Mods_get(obj->mods, ModsMini) + 1) * (Mods_get(obj->mods, ModsPower) + 1));
                 sound = true;
                 break;
             default:

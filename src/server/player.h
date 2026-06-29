@@ -724,7 +724,7 @@ void Go_home(player_t *pl);
 Item_t Item_by_option_name(const char *name);
 void Base_set_option(base_t *base, const char *name, const char *value);
 void Compute_sensor_range(player_t *pl);
-void Player_add_tank(player_t *pl, double tank_fuel);
+void Player_add_tank_fuel_times_256(player_t *pl, double tank_fuel_times_256);
 void Player_remove_tank(player_t *pl, int which_tank);
 void Player_hit_armor(player_t *pl);
 void Player_used_kill(player_t *pl);

@@ -1191,7 +1191,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all fuelstations are filled.
          */
-        if (fs->fuel_times_256 == MAX_STATION_FUEL_TIMES_256)
+        if (fs->fuel_times_256 == MAX_STATION_FUEL * 256)
             SET_BIT(fs->conn_mask, conn_bit);
         else
             CLR_BIT(fs->conn_mask, conn_bit);
@@ -1202,7 +1202,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all targets are not damaged.
          */
-        if (targ->dead_ticks == 0 && targ->damage_times_256 == TARGET_DAMAGE_TIMES_256)
+        if (targ->dead_ticks == 0 && targ->damage_times_256 == TARGET_DAMAGE * 256)
         {
             SET_BIT(targ->conn_mask, conn_bit);
             CLR_BIT(targ->update_mask, conn_bit);
