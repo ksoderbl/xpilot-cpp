@@ -66,7 +66,7 @@ void Paint_vfuel(void)
     if (clMap.vfuels.size() > 0)
     {
         for (const auto &vfuel : clMap.vfuels)
-            Gui_paint_fuel(vfuel.x, vfuel.y, vfuel.fuel_times_256 / 256);
+            Gui_paint_fuel(vfuel.x, vfuel.y, vfuel.fuel);
         clMap.vfuels.clear();
     }
 }
@@ -199,7 +199,7 @@ void Paint_objects(void)
             {
                 Gui_paint_fuel(fs.bounds.x + xoff * Setup->width,
                                fs.bounds.y + yoff * Setup->height,
-                               fs.fuel_times_256 / 256);
+                               fs.fuel);
             }
         }
     }

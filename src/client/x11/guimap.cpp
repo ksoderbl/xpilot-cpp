@@ -234,6 +234,8 @@ void Gui_paint_cannon(int x, int y, int type)
 
 void Gui_paint_fuel(int x, int y, double fuel)
 {
+    // warn("Gui_paint_fuel: x: %d, y: %d, fuel: %f", x, y, fuel);
+
     /* fuel box drawing can be disabled */
     if (fuelColor == BLACK)
         return;

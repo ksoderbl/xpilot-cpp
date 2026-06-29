@@ -231,7 +231,9 @@ double Fuel_by_pos(int x, int y)
 
     if ((fuelp = Fuelstation_by_pos(x, y)) == nullptr)
         return 0;
-    return fuelp->fuel_times_256 / 256;
+    double f = fuelp->fuel;
+    // warn("Fuel_by_pos: x: %d, y: %d, f: %f", x, y, f);
+    return f;
 }
 
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage_times_256)
@@ -277,7 +279,7 @@ int Handle_fuel(int ind, double fuel)
         warn("Bad fuelstation index (%d)", ind);
         return -1;
     }
-    clMap.fuels[ind].fuel_times_256 = fuel * FUEL_SCALE_FACT;
+    clMap.fuels[ind].fuel = fuel;
     return 0;
 }
 
@@ -1006,7 +1008,7 @@ static int init_polymap(void)
         fuelstation_t fs;
         cx = get_ushort(&ptr);
         cy = get_ushort(&ptr);
-        fs.fuel_times_256 = MAX_STATION_FUEL_TIMES_256;
+        fs.fuel = MAX_STATION_FUEL;
         fs.bounds.x = cx - BLOCK_SZ / 2;
         fs.bounds.y = cy - BLOCK_SZ / 2;
         fs.bounds.w = BLOCK_SZ;
@@ -1099,7 +1101,7 @@ static int init_blockmap(void)
         case 1:
             fuelstation_t fs;
             fs.pos = i;
-            fs.fuel_times_256 = MAX_STATION_FUEL_TIMES_256;
+            fs.fuel = MAX_STATION_FUEL;
             clMap.fuels.push_back(fs);
             break;
         case 2:
@@ -1580,7 +1582,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 double newFuelSum, double newFuelMax, int newPacketSize,
                 int status)
 {
-    warn("Handle_self: newFuelSum: %f, newFuelMax: %f", newFuelSum, newFuelMax);
+    // warn("Handle_self: newFuelSum: %f, newFuelMax: %f", newFuelSum, newFuelMax);
 
     selfPos.x = x;
     selfPos.y = y;
@@ -2121,13 +2123,13 @@ int Handle_vcannon(int x, int y, int type)
 
 int Handle_vfuel(int x, int y, double fuel)
 {
-    warn("Handle_vfuel: x: %d, y: %d, fuel: %f", x, y, fuel);
+    // warn("Handle_vfuel: x: %d, y: %d, fuel: %f", x, y, fuel);
 
     vfuel_t t;
 
     t.x = x;
     t.y = y;
-    t.fuel_times_256 = fuel * 256;
+    t.fuel = fuel;
     clMap.vfuels.push_back(t);
     return 0;
 }
