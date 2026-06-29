@@ -512,7 +512,7 @@ void Paint_world(void)
 
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
                     {
-                        double fuel = Fuel_times_256_by_pos(xi, yi) / 256;
+                        double fuel = Fuel_by_pos(xi, yi);
                         Handle_vfuel(x, y, fuel);
                     }
                 }
@@ -520,7 +520,7 @@ void Paint_world(void)
                 {
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
                     {
-                        double fuel = Fuel_times_256_by_pos(xi, yi) / 256;
+                        double fuel = Fuel_by_pos(xi, yi);
                         Handle_vfuel(x, y, fuel);
                     }
                     else if (type & BLUE_OPEN)

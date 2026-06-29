@@ -225,15 +225,6 @@ static fuelstation_t *Fuelstation_by_pos(int x, int y)
     return nullptr;
 }
 
-double Fuel_times_256_by_pos(int x, int y)
-{
-    fuelstation_t *fuelp;
-
-    if ((fuelp = Fuelstation_by_pos(x, y)) == nullptr)
-        return 0;
-    return fuelp->fuel_times_256;
-}
-
 double Fuel_by_pos(int x, int y)
 {
     fuelstation_t *fuelp;

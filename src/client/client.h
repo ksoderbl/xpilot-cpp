@@ -691,7 +691,6 @@ void Print_messages_to_stdout(void);
 /*
  * client.cpp
  */
-double Fuel_times_256_by_pos(int x, int y);
 double Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, double *damage);
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage);
