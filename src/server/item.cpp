@@ -30,12 +30,12 @@
 
 #include "const.h"
 
-#include "object.h"
+// #include "object.h"
 #include "server.h"
 #include "walls1.h"
 
 #define SERVER
-#include "xpconfig.h"
+// #include "xpconfig.h"
 #include "serverconst.h"
 
 #include "saudio.h"
@@ -485,9 +485,8 @@ void Detonate_items(player_t *pl)
 
 void Tractor_beam(player_t *pl)
 {
-    // // player_t *pl = PlayersArray[ind];
     double maxdist, percent;
-    long cost_times_256;
+    double cost_times_256;
     player_t *locked_pl = Player_by_id(pl->lock.pl_id);
 
     maxdist = TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]);
@@ -498,7 +497,7 @@ void Tractor_beam(player_t *pl)
         return;
     }
     percent = TRACTOR_PERCENT(pl->lock.distance, maxdist);
-    cost_times_256 = (long)TRACTOR_COST(percent);
+    cost_times_256 = TRACTOR_COST_TIMES_256(percent);
     if (pl->fuel.sum_times_256 < -cost_times_256)
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
@@ -516,7 +515,7 @@ void General_tractor_beam(int id, clpos_t pos,
     double maxdist = TRACTOR_MAX_RANGE(items),
            maxforce = TRACTOR_MAX_FORCE(items),
            percent, force, dist;
-    long cost;
+    double cost_times_256;
     int theta;
     player_t *pl = Player_by_id(id);
     /*cannon_t *cannon = Cannon_by_id(id);*/
@@ -526,13 +525,13 @@ void General_tractor_beam(int id, clpos_t pos,
     if (dist > maxdist)
         return;
     percent = TRACTOR_PERCENT(dist, maxdist);
-    cost = (long)TRACTOR_COST(percent);
+    cost_times_256 = TRACTOR_COST_TIMES_256(percent);
     force = TRACTOR_FORCE(pressor, percent, maxforce);
 
     sound_play_sensors(pos, (pressor ? PRESSOR_BEAM_SOUND : TRACTOR_BEAM_SOUND));
 
     if (pl)
-        Player_add_fuel_times_256(pl, cost);
+        Player_add_fuel_times_256(pl, cost_times_256);
 
     // TODO
     theta = (int)Wrap_findDir(CLICK_TO_PIXEL(pos.cx - victim->pos.cx), CLICK_TO_PIXEL(pos.cy - victim->pos.cy));
@@ -556,13 +555,13 @@ void Do_deflector(player_t *pl)
     int i, obj_count;
     long dist, dx, dy;
 
-    if (pl->fuel.sum_times_256 < -ED_DEFLECTOR_TIMES_256)
+    if (pl->fuel.sum_times_256 < -ED_DEFLECTOR * 256)
     {
         if (BIT(pl->used, USES_DEFLECTOR))
             Deflector(pl, false);
         return;
     }
-    Player_add_fuel_times_256(pl, ED_DEFLECTOR_TIMES_256);
+    Player_add_fuel(pl, ED_DEFLECTOR);
 
     Cell_get_objects(pl->pos,
                      (int)(range / BLOCK_SZ + 1), 200,

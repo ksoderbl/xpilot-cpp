@@ -326,12 +326,12 @@ static void PlayerCollision(void)
                 {
                     if (!Player_uses_emergency_shield(pl))
                     {
-                        Player_add_fuel_times_256(pl, ED_PL_CRASH_TIMES_256);
+                        Player_add_fuel(pl, ED_PL_CRASH);
                         Item_damage(pl, options.destroyItemInCollisionProb);
                     }
                     if (!Player_uses_emergency_shield(pl_j))
                     {
-                        Player_add_fuel_times_256(pl_j, ED_PL_CRASH_TIMES_256);
+                        Player_add_fuel(pl_j, ED_PL_CRASH);
                         Item_damage(pl_j, options.destroyItemInCollisionProb);
                     }
                     pl->forceVisible = 20;
@@ -762,7 +762,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
     Obj_repel(OBJ_PTR(pl), OBJ_PTR(ball), radius);
     if (!Player_uses_emergency_shield(pl))
     {
-        Player_add_fuel_times_256(pl, ED_BALL_HIT_TIMES_256);
+        Player_add_fuel(pl, ED_BALL_HIT);
         if (options.treasureCollisionDestroys)
         {
             if (BIT(world->rules->mode, TEAM_PLAY) && pl->team == ball->ball_treasure->team)
@@ -1119,8 +1119,8 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
 static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
 {
     double v = VECTOR_LENGTH(ast->vel);
-    long tmp = (long)(2 * ast->mass * v);
-    long cost = ABS(tmp);
+    double tmp = 2 * ast->mass * v;
+    double cost = ABS(tmp);
 
     ast->life += ASTEROID_FUEL_HIT(ED_PL_CRASH_TIMES_256, ast->wire_size);
     if (ast->life < 0)
@@ -1163,7 +1163,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
 {
     int sc;
     int drainfactor;
-    long drain;
+    double drain;
     player_t *kp = NULL;
 
     /*
@@ -1229,8 +1229,8 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                 // a fast shot hitting a shielded ship may drain all fuel,
                 // causing the ship to float, dead in space.
                 drainfactor = 1;
-                drain = ED_SHOT_HIT_TIMES_256 * drainfactor * SHOT_MULT(obj);
-                Player_add_fuel_times_256(pl, drain);
+                drain = ED_SHOT * drainfactor * SHOT_MULT(obj);
+                Player_add_fuel(pl, drain);
             }
             pl->forceVisible = (int)(pl->forceVisible + SHOT_MULT(obj));
             break;

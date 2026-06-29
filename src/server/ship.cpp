@@ -240,7 +240,7 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
  * Add fuel to fighter's tanks.
  * Maybe use more than one of tank to store the fuel.
  */
-static void Add_fuel_times_256(pl_fuel_t *ft, long fuel_times_256)
+static void Add_fuel_times_256(pl_fuel_t *ft, double fuel_times_256)
 {
     // warn("Add_fuel: amount: %ld", fuel);
 
@@ -254,9 +254,16 @@ static void Add_fuel_times_256(pl_fuel_t *ft, long fuel_times_256)
 
 void Player_add_fuel_times_256(player_t *pl, double amount_times_256)
 {
-    warn("Player_add_fuel: amount_times_256: %f", amount_times_256);
+    warn("Player_add_fuel_times_256: amount_times_256: %f", amount_times_256);
 
     Add_fuel_times_256(&(pl->fuel), (long)amount_times_256);
+}
+
+void Player_add_fuel(player_t *pl, double amount)
+{
+    warn("Player_add_fuel: amount: %f", amount);
+
+    Add_fuel_times_256(&(pl->fuel), amount * 256);
 }
 
 /*

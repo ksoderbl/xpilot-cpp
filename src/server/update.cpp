@@ -737,6 +737,18 @@ static void Use_items(player_t *pl)
             Fire_laser(pl);
     }
 
+    /*
+     * Compute energy drainage
+     */
+    if (BIT(pl->used, HAS_SHIELD))
+        Player_add_fuel(pl, ED_SHIELD);
+
+    if (Player_is_phasing(pl))
+        Player_add_fuel(pl, ED_PHASING_DEVICE);
+
+    if (Player_is_cloaked(pl))
+        Player_add_fuel(pl, ED_CLOAKING_DEVICE);
+
     if (BIT(pl->used, USES_DEFLECTOR))
         Do_deflector(pl);
 }
@@ -914,6 +926,7 @@ static void Update_players(void)
             }
         }
 
+        // if (!Player_is_active(pl))
         if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
             continue;
 
@@ -962,18 +975,6 @@ static void Update_players(void)
             pl->turnvel = 0;
 
         Turn_player(pl);
-
-        /*
-         * Compute energy drainage
-         */
-        if (BIT(pl->used, HAS_SHIELD))
-            Player_add_fuel_times_256(pl, ED_SHIELD_TIMES_256);
-
-        if (Player_is_phasing(pl))
-            Player_add_fuel_times_256(pl, ED_PHASING_DEVICE_TIMES_256);
-
-        if (Player_is_cloaked(pl))
-            Player_add_fuel_times_256(pl, ED_CLOAKING_DEVICE_TIMES_256);
 
         Update_visibility(pl, i);
 

@@ -558,7 +558,7 @@ void Fire_general_shot(int id, int team, bool cannon,
         {
             if (pl->fuel.sum_times_256 < -ED_SHOT_TIMES_256)
                 return;
-            Player_add_fuel_times_256(pl, ED_SHOT_TIMES_256);
+            Player_add_fuel(pl, ED_SHOT);
             sound_play_sensors(pl->pos, FIRE_SHOT_SOUND);
             Rank_fire_shot(pl);
         }

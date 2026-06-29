@@ -238,6 +238,7 @@ void Item_damage(player_t *pl, double prob);
 void Tank_handle_detach(player_t *pl);
 void Update_tanks(pl_fuel_t *);
 void Player_add_fuel_times_256(player_t *pl, double amount);
+void Player_add_fuel(player_t *pl, double amount);
 void Place_item(player_t *pl, int type);
 int Choose_random_item(void);
 void Tractor_beam(player_t *pl);

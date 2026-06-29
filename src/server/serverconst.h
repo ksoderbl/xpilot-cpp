@@ -165,15 +165,23 @@
 #define ED_SHIELD_TIMES_256 (-0.20 * FUEL_SCALE_FACT)
 #define ED_PHASING_DEVICE_TIMES_256 (-0.40 * FUEL_SCALE_FACT)
 #define ED_CLOAKING_DEVICE_TIMES_256 (-0.07 * FUEL_SCALE_FACT)
-#define ED_DEFLECTOR_TIMES_256 (-0.15 * FUEL_SCALE_FACT)
+// #define ED_DEFLECTOR_TIMES_256 (-0.15 * FUEL_SCALE_FACT)
 #define ED_SHOT_HIT_TIMES_256 (-25.0 * FUEL_SCALE_FACT)
 #define ED_SMART_SHOT_HIT_TIMES_256 (-120.0 * FUEL_SCALE_FACT)
 #define ED_PL_CRASH_TIMES_256 (-100.0 * FUEL_SCALE_FACT)
 #define ED_BALL_HIT_TIMES_256 (-50.0 * FUEL_SCALE_FACT)
 #define ED_LASER_TIMES_256 (-10.0 * FUEL_SCALE_FACT)
-/* was 90 -> 2 -> 40 -> 20 -> 10 */
 #define ED_LASER_HIT_TIMES_256 (-100.0 * FUEL_SCALE_FACT)
-/* was 120 -> 80 -> 40 -> 50 -> 60 -> 100 */
+
+constexpr double ED_SHIELD = -0.20;
+constexpr double ED_PHASING_DEVICE = -0.40;
+constexpr double ED_CLOAKING_DEVICE = -0.07;
+constexpr double ED_SHOT = -0.2;
+constexpr double ED_DEFLECTOR = -0.15;
+constexpr double ED_PL_CRASH = -100.0;
+constexpr double ED_BALL_HIT = -50.0;
+constexpr double ED_LASER = -10.0;
+constexpr double ED_LASER_HIT = -100.0;
 
 #define LG2_MAX_AFTERBURNER 4
 #define ALT_SPARK_MASS_FACT 4.2
@@ -261,7 +269,8 @@
 #define TRACTOR_MAX_FORCE(items) (-40 + (items) * -20)
 #define TRACTOR_PERCENT(dist, maxdist) \
     (1.0 - (0.5 * (dist) / (maxdist)))
-#define TRACTOR_COST(percent) (-1.5 * FUEL_SCALE_FACT * (percent))
+#define TRACTOR_COST_TIMES_256(percent) (-1.5 * FUEL_SCALE_FACT * (percent))
+#define TRACTOR_COST(percent) (-1.5 * (percent))
 #define TRACTOR_FORCE(tr_pr, percent, maxforce) \
     ((percent) * (maxforce) * ((tr_pr) ? -1 : 1))
 

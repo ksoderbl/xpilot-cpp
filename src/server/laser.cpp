@@ -80,7 +80,7 @@ void Fire_general_laser(int id, int team, clpos_t pos, int dir,
 
     if (pl)
     {
-        Player_add_fuel_times_256(pl, ED_LASER_TIMES_256);
+        Player_add_fuel(pl, ED_LASER);
         sound_play_sensors(pos, FIRE_LASER_SOUND);
         life = (int)PULSE_LIFE(pl->item[ITEM_LASER]);
     }
@@ -322,7 +322,7 @@ static void Laser_pulse_hits_player(
     }
     else
     {
-        Player_add_fuel_times_256(vicpl, ED_LASER_HIT_TIMES_256);
+        Player_add_fuel(vicpl, ED_LASER_HIT);
         if (!BIT(vicpl->used, HAS_SHIELD) && !BIT(vicpl->have, HAS_ARMOR))
         {
             SET_BIT(vicpl->obj_status, KILLED);

@@ -58,10 +58,9 @@ typedef struct
 
 typedef struct
 {
-    int pos;               /* Block index */
-    // double fuel_times_256; /* Amount of fuel available */
-    double fuel;           /* Amount of fuel available */
-    irec_t bounds;         /* Location on map */
+    int pos;       /* Block index */
+    double fuel;   /* Amount of fuel available */
+    irec_t bounds; /* Location on map */
 } fuelstation_t;
 
 typedef struct
@@ -210,7 +209,6 @@ typedef struct
 typedef struct
 {
     short x, y;
-    double fuel_times_256;
     double fuel;
 } vfuel_t;
 
