@@ -511,12 +511,18 @@ void Paint_world(void)
                     Gui_paint_walls(x, y, type);
 
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                        Handle_vfuel(x, y, Fuel_times_256_by_pos(xi, yi));
+                    {
+                        double fuel_times_256 = Fuel_times_256_by_pos(xi, yi);
+                        Handle_vfuel_times_256(x, y, fuel_times_256);
+                    }
                 }
                 else
                 {
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
-                        Handle_vfuel(x, y, Fuel_times_256_by_pos(xi, yi));
+                    {
+                        double fuel_times_256 = Fuel_times_256_by_pos(xi, yi);
+                        Handle_vfuel_times_256(x, y, fuel_times_256);
+                    }
                     else if (type & BLUE_OPEN)
                     {
                         if (type & BLUE_BELOW)

@@ -234,6 +234,15 @@ double Fuel_times_256_by_pos(int x, int y)
     return fuelp->fuel_times_256;
 }
 
+double Fuel_by_pos(int x, int y)
+{
+    fuelstation_t *fuelp;
+
+    if ((fuelp = Fuelstation_by_pos(x, y)) == nullptr)
+        return 0;
+    return fuelp->fuel_times_256 / 256;
+}
+
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage_times_256)
 {
     if (ind < 0 || ind >= clMap.targets.size())
@@ -2119,15 +2128,28 @@ int Handle_vcannon(int x, int y, int type)
     return 0;
 }
 
-int Handle_vfuel(int x, int y, double fuel_times_256)
+int Handle_vfuel_times_256(int x, int y, double fuel_times_256)
 {
-    warn("Handle_vfuel: x: %d, y: %d, fuel_times_256: %f", x, y, fuel_times_256);
+    warn("Handle_vfuel_times_256: x: %d, y: %d, fuel_times_256: %f", x, y, fuel_times_256);
 
     vfuel_t t;
 
     t.x = x;
     t.y = y;
     t.fuel_times_256 = fuel_times_256;
+    clMap.vfuels.push_back(t);
+    return 0;
+}
+
+int Handle_vfuel(int x, int y, double fuel)
+{
+    warn("Handle_vfuel: x: %d, y: %d, fuel: %f", x, y, fuel);
+
+    vfuel_t t;
+
+    t.x = x;
+    t.y = y;
+    t.fuel_times_256 = fuel * 256;
     clMap.vfuels.push_back(t);
     return 0;
 }

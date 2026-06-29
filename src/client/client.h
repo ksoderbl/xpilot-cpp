@@ -689,9 +689,10 @@ void Add_roundend_messages(other_t **order);
 void Print_messages_to_stdout(void);
 
 /*
- * client.c
+ * client.cpp
  */
 double Fuel_times_256_by_pos(int x, int y);
+double Fuel_by_pos(int x, int y);
 int Target_alive(int x, int y, double *damage);
 int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage);
 int Handle_fuel(int ind, double fuel);
@@ -757,6 +758,7 @@ int Handle_appearing(int x, int y, int id, int count);
 int Handle_radar(int x, int y, int size);
 int Handle_fastradar(int x, int y, int size);
 int Handle_vcannon(int x, int y, int type);
+int Handle_vfuel_times_256(int x, int y, double fuel_times_256);
 int Handle_vfuel(int x, int y, double fuel);
 int Handle_vbase(int x, int y, int xi, int yi, int type);
 int Handle_vdecor(int x, int y, int xi, int yi, int type);

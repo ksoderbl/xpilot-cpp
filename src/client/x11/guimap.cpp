@@ -52,6 +52,7 @@
 #include "xinit.h"
 #include "bitmaps.h"
 #include "guimap.h"
+#include "guiobjects.h"
 
 /* XXX better include a header. */
 extern int wallColor;  /* Color index for wall drawing */
@@ -237,6 +238,8 @@ void Gui_paint_fuel(int x, int y, double fuel_times_256)
     if (fuelColor == BLACK)
         return;
 
+    double fuel = fuel_times_256 / 256;
+
     if (!texturedObjects)
     {
 #define FUEL_BORDER 2
@@ -247,7 +250,6 @@ void Gui_paint_fuel(int x, int y, double fuel_times_256)
         static int text_is_bigger;
         static double lastScaleFactor;
 
-        // if (!text_width || lastScaleFactor != clData.scaleFactor)
         if (!text_width || lastScaleFactor != clData.scaleFactor)
         {
             lastScaleFactor = clData.scaleFactor;
@@ -255,8 +257,7 @@ void Gui_paint_fuel(int x, int y, double fuel_times_256)
             text_is_bigger = (text_width + 4 > WINSCALE(BLOCK_SZ) + 1) || (gameFont->ascent + gameFont->descent) > WINSCALE(BLOCK_SZ) + 2;
         }
         SET_FG(colors[fuelColor].pixel);
-        // LIMIT(fuel, 0, MAX_STATION_FUEL);
-        size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel_times_256 / MAX_STATION_FUEL_TIMES_256);
+        size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          SCALEX(x + FUEL_BORDER),
                          SCALEY(y + FUEL_BORDER + size),
@@ -295,7 +296,7 @@ void Gui_paint_fuel(int x, int y, double fuel_times_256)
         if (image >= fuel_images)
             image = (2 * fuel_images - 1) - image;
 
-        size = (int)((BLOCK_SZ - 2 * BITMAP_FUEL_BORDER) * fuel_times_256 / MAX_STATION_FUEL_TIMES_256);
+        size = (int)((BLOCK_SZ - 2 * BITMAP_FUEL_BORDER) * fuel / MAX_STATION_FUEL);
 
         Bitmap_paint(drawPixmap, BM_FUELCELL,
                      SCALEX(x), SCALEY(y + BLOCK_SZ), 0);
@@ -348,19 +349,19 @@ void Gui_paint_base(int x, int y, int id, int team, int type)
         if (loops < base->appeartime)
             do_basewarning = true;
 
-        // if (version < 0x4F12 && do_basewarning)
-        // {
-        //     if (baseWarningType & 1)
-        //     {
-        //         /* We assume the ship will appear after 3 seconds. */
-        //         int count = (int)(360 * (base->appeartime - loops) / (3 * clientFPS));
-        //         LIMIT(count, 0, 360);
-        //         /* red box basewarning */
-        //         if (count > 0 && (baseWarningType & 1))
-        //             Gui_paint_appearing(x + BLOCK_SZ / 2, y + BLOCK_SZ / 2,
-        //                                 id, count);
-        //     }
-        // }
+        if (version < 0x4F12 && do_basewarning)
+        {
+            if (baseWarningType & 1)
+            {
+                /* We assume the ship will appear after 3 seconds. */
+                int count = (int)(360 * (base->appeartime - loops) / (3 * clientFPS));
+                LIMIT(count, 0, 360);
+                /* red box basewarning */
+                if (count > 0 && (baseWarningType & 1))
+                    Gui_paint_appearing(x + BLOCK_SZ / 2, y + BLOCK_SZ / 2,
+                                        id, count);
+            }
+        }
     }
 
     /* Mara's flashy basewarning */

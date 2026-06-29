@@ -438,6 +438,7 @@ void Gui_paint_fuel(int x, int y, double fuel_times_256)
     int size, frame;
     irec_t area;
     image_t *img;
+    double fuel = fuel_times_256 / 256;
 
     img = Image_get(IMG_FUEL);
     if (img == NULL)
@@ -453,12 +454,12 @@ void Gui_paint_fuel(int x, int y, double fuel_times_256)
     if (frame >= img->num_frames)
         frame = (2 * img->num_frames - 1) - frame;
 
-    size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel_times_256 / MAX_STATION_FUEL_TIMES_256);
+    size = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * fuel / MAX_STATION_FUEL);
 
     Image_paint(IMG_FUELCELL, x, y, 0, fuelColorRGBA);
 
     area.x = 0;
-    area.y = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * (1 - fuel_times_256 / MAX_STATION_FUEL_TIMES_256));
+    area.y = (int)((BLOCK_SZ - 2 * FUEL_BORDER) * (1 - fuel / MAX_STATION_FUEL));
     area.w = BLOCK_SZ - 2 * FUEL_BORDER;
     area.h = size;
     Image_paint_area(IMG_FUEL,
