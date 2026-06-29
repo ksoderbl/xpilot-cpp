@@ -431,14 +431,13 @@ void Gui_paint_cannon(int x, int y, int type)
     }
 }
 
-void Gui_paint_fuel(int x, int y, double fuel_times_256)
+void Gui_paint_fuel(int x, int y, double fuel)
 {
 #define FUEL_BORDER 3
 
     int size, frame;
     irec_t area;
     image_t *img;
-    double fuel = fuel_times_256 / 256;
 
     img = Image_get(IMG_FUEL);
     if (img == NULL)

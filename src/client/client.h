@@ -758,7 +758,6 @@ int Handle_appearing(int x, int y, int id, int count);
 int Handle_radar(int x, int y, int size);
 int Handle_fastradar(int x, int y, int size);
 int Handle_vcannon(int x, int y, int type);
-int Handle_vfuel_times_256(int x, int y, double fuel_times_256);
 int Handle_vfuel(int x, int y, double fuel);
 int Handle_vbase(int x, int y, int xi, int yi, int type);
 int Handle_vdecor(int x, int y, int xi, int yi, int type);

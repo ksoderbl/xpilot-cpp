@@ -66,7 +66,7 @@ void Paint_vfuel(void)
     if (clMap.vfuels.size() > 0)
     {
         for (const auto &vfuel : clMap.vfuels)
-            Gui_paint_fuel(vfuel.x, vfuel.y, vfuel.fuel_times_256);
+            Gui_paint_fuel(vfuel.x, vfuel.y, vfuel.fuel_times_256 / 256);
         clMap.vfuels.clear();
     }
 }
@@ -199,7 +199,7 @@ void Paint_objects(void)
             {
                 Gui_paint_fuel(fs.bounds.x + xoff * Setup->width,
                                fs.bounds.y + yoff * Setup->height,
-                               fs.fuel_times_256);
+                               fs.fuel_times_256 / 256);
             }
         }
     }
@@ -512,16 +512,16 @@ void Paint_world(void)
 
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
                     {
-                        double fuel_times_256 = Fuel_times_256_by_pos(xi, yi);
-                        Handle_vfuel_times_256(x, y, fuel_times_256);
+                        double fuel = Fuel_times_256_by_pos(xi, yi) / 256;
+                        Handle_vfuel(x, y, fuel);
                     }
                 }
                 else
                 {
                     if ((type & BLUE_FUEL) == BLUE_FUEL)
                     {
-                        double fuel_times_256 = Fuel_times_256_by_pos(xi, yi);
-                        Handle_vfuel_times_256(x, y, fuel_times_256);
+                        double fuel = Fuel_times_256_by_pos(xi, yi) / 256;
+                        Handle_vfuel(x, y, fuel);
                     }
                     else if (type & BLUE_OPEN)
                     {

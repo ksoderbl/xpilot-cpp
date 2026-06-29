@@ -232,13 +232,11 @@ void Gui_paint_cannon(int x, int y, int type)
     }
 }
 
-void Gui_paint_fuel(int x, int y, double fuel_times_256)
+void Gui_paint_fuel(int x, int y, double fuel)
 {
     /* fuel box drawing can be disabled */
     if (fuelColor == BLACK)
         return;
-
-    double fuel = fuel_times_256 / 256;
 
     if (!texturedObjects)
     {
