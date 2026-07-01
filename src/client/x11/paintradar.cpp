@@ -631,7 +631,6 @@ void Paint_world_radar_old(void)
     for (i = 0;; i++)
     {
         int dead_time;
-        // int targ_damage;
         double targ_damage;
         if (Target_by_index(i, &xi, &yi, &dead_time, &targ_damage) == -1)
             break;

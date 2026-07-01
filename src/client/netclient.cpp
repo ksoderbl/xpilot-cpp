@@ -2471,13 +2471,14 @@ int Receive_target(void)
     int n;
     uint16_t num,
         dead_time,
-        damage;
+        damage_times_256;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
-                          &num, &dead_time, &damage)) <= 0)
+                          &num, &dead_time, &damage_times_256)) <= 0)
         return n;
-    if ((n = Handle_target(num, dead_time, (double)damage)) == -1)
+    // warn("Receive_target, num, dead_time, damage_times_256 = %d, %d, %d", num, dead_time, damage_times_256);
+    if ((n = Handle_target(num, dead_time, (double)damage_times_256 / 256.0)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
         Packet_printf(&wbuf, "%c%ld%hu", PKT_ACK_TARGET, last_loops, num);

@@ -466,7 +466,6 @@ void Paint_world(void)
                 case SETUP_TARGET + 9:
                 {
                     int team, own;
-                    // int damage;
                     double damage;
 
                     if (Target_alive(xi, yi, &damage) != 0)
@@ -475,7 +474,7 @@ void Paint_world(void)
                     team = type - SETUP_TARGET;
                     own = (eyeTeam == team);
 
-                    Gui_paint_setup_target(x, y, team, (double)damage, own);
+                    Gui_paint_setup_target(x, y, team, damage, own);
                 }
                 break;
 

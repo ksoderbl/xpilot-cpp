@@ -84,7 +84,7 @@ typedef struct
 {
     int pos;                 /* Block index */
     short dead_time;         /* Frames inactive */
-    double damage_times_256; /* Damage to target */
+    double damage;           /* Damage to target */
 } target_t;
 
 typedef struct
