@@ -498,7 +498,7 @@ void Tractor_beam(player_t *pl)
     }
     percent = TRACTOR_PERCENT(pl->lock.distance, maxdist);
     cost = TRACTOR_COST(percent);
-    if (pl->fuel.sum_times_256 < -cost * 256)
+    if (pl->fuel.sum < -cost)
     {
         CLR_BIT(pl->used, USES_TRACTOR_BEAM);
         return;
@@ -555,7 +555,7 @@ void Do_deflector(player_t *pl)
     int i, obj_count;
     long dist, dx, dy;
 
-    if (pl->fuel.sum_times_256 < -ED_DEFLECTOR * 256)
+    if (pl->fuel.sum < -ED_DEFLECTOR)
     {
         if (BIT(pl->used, USES_DEFLECTOR))
             Deflector(pl, false);
@@ -619,7 +619,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum_times_256 < -ED_TRANSPORTER * 256 || BIT(pl->used, USES_PHASING_DEVICE))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
         return;
 
     /* find victim */
@@ -651,13 +651,13 @@ void Do_transporter(player_t *pl)
 }
 
 void Do_general_transporter(int id, clpos_t pos,
-                            player_t *victim, int *itemp, long *amountp)
+                            player_t *victim, int *itemp, double *amountp)
 {
     char msg[MSG_LEN];
     const char *what = NULL;
     int i;
     int item = ITEM_FUEL;
-    long amount;
+    double amount;
     player_t *pl = Player_by_id(id);
     /*cannon_t *cannon = Cannon_by_id(id);*/
 
@@ -665,7 +665,7 @@ void Do_general_transporter(int id, clpos_t pos,
     for (i = 0; i < 50; i++)
     {
         item = (int)(rfrac() * NUM_ITEMS);
-        if (victim->item[item] || (item == ITEM_TANK && victim->fuel.num_tanks) || (item == ITEM_FUEL && victim->fuel.sum_times_256))
+        if (victim->item[item] || (item == ITEM_TANK && victim->fuel.num_tanks) || (item == ITEM_FUEL && victim->fuel.sum))
             break;
     }
 
@@ -818,22 +818,23 @@ void Do_general_transporter(int id, clpos_t pos,
         /* for tanks, amount is the amount of fuel in the stolen tank */
         what = "a tank";
         i = (int)(rfrac() * victim->fuel.num_tanks) + 1;
-        amount = victim->fuel.tank_times_256[i];
+        amount = victim->fuel.tank[i];
         Player_remove_tank(victim, i);
         break;
     case ITEM_FUEL:
     {
         /* choose percentage between 10 and 50. */
-        double percent = 10.0f + 40.0f * rfrac();
-        long amount_times_256 = (long)(victim->fuel.sum_times_256 * percent / 100);
-        sprintf(msg, "%s stole %ld units (%d%%) of fuel from %s.",
+        double percent = 10.0 + 40.0 * rfrac();
+        amount = victim->fuel.sum * percent / 100.0;
+        sprintf(msg, "%s stole %.1f units (%.1f%%) of fuel from %s.",
                 (pl ? pl->name : "A cannon"),
-                amount_times_256 >> FUEL_SCALE_BITS,
-                (int)(percent + 0.5),
-                victim->name);
-        Player_add_fuel_times_256(victim, -amount_times_256);
-        break;
+                amount, percent, victim->name);
     }
+        Player_add_fuel(victim, -amount);
+        break;
+    default:
+        warn("Do_general_transporter: unknown item type.");
+        break;
     }
 
     /* inform the world about the robbery */
@@ -847,8 +848,6 @@ void Do_general_transporter(int id, clpos_t pos,
     {
         *itemp = item;
         *amountp = amount;
-        if (item == ITEM_FUEL || item == ITEM_TANK)
-            *amountp >>= FUEL_SCALE_BITS;
         return;
     }
 
@@ -858,7 +857,7 @@ void Do_general_transporter(int id, clpos_t pos,
 
     /* update thief */
     if (!(item == ITEM_FUEL || item == ITEM_TANK))
-        pl->item[item] += amount;
+        pl->item[item] += (int)amount;
     switch (item)
     {
     case ITEM_AFTERBURNER:
@@ -899,10 +898,10 @@ void Do_general_transporter(int id, clpos_t pos,
     case ITEM_TANK:
         /* for tanks, amount is the amount of fuel in the stolen tank */
         if (pl->fuel.num_tanks < MAX_TANKS)
-            Player_add_tank_fuel_times_256(pl, amount);
+            Player_add_tank(pl, amount);
         break;
     case ITEM_FUEL:
-        Player_add_fuel_times_256(pl, amount);
+        Player_add_fuel(pl, amount);
         break;
     default:
         break;
@@ -930,8 +929,9 @@ void do_lose_item(player_t *pl)
         error("BUG: do_lose_item %d", item);
         return;
     }
-    if (BIT(1U << pl->lose_item, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+    if (item == ITEM_FUEL || item == ITEM_TANK)
         return;
+
     if (pl->item[item] <= 0)
         return;
 
@@ -1226,7 +1226,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
 void Fire_ecm(player_t *pl)
 {
-    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum_times_256 <= -ED_ECM * 256 || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
+    if (pl->item[ITEM_ECM] == 0 || pl->fuel.sum <= -ED_ECM || pl->ecmcount >= MAX_PLAYER_ECMS || Player_is_phasing(pl))
         return;
 
     Fire_general_ecm(pl->id, pl->team, pl->pos);

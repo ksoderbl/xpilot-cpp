@@ -647,7 +647,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
                                  fs->pos.cx,
                                  fs->pos.cy))
                 {
-                    Send_fuel(conn, i, (int)fs->fuel_times_256 * (1.0 / FUEL_SCALE_FACT));
+                    Send_fuel(conn, i, fs->fuel);
                     pl->last_fuel_update = i;
                     bytes_left -= max_packet * fuel_packet_size;
                     if (++packet_count >= max_packet)

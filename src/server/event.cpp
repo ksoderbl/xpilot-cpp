@@ -955,7 +955,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_HYPERJUMP:
-                if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum_times_256 > -ED_HYPERJUMP * 256)
+                if (pl->item[ITEM_HYPERJUMP] > 0 && pl->fuel.sum > -ED_HYPERJUMP)
                 {
                     pl->item[ITEM_HYPERJUMP]--;
                     Player_add_fuel(pl, ED_HYPERJUMP);

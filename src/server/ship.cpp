@@ -240,30 +240,23 @@ void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
  * Add fuel to fighter's tanks.
  * Maybe use more than one of tank to store the fuel.
  */
-static void Add_fuel_times_256(pl_fuel_t *ft, double fuel_times_256)
+static void Add_fuel(pl_fuel_t *ft, double fuel)
 {
     // warn("Add_fuel: amount: %ld", fuel);
 
-    if (ft->sum_times_256 + fuel_times_256 > ft->max_times_256)
-        fuel_times_256 = ft->max_times_256 - ft->sum_times_256;
-    else if (ft->sum_times_256 + fuel_times_256 < 0.0)
-        fuel_times_256 = -ft->sum_times_256;
-    ft->sum_times_256 += fuel_times_256;
-    ft->tank_times_256[ft->current] += fuel_times_256;
-}
-
-void Player_add_fuel_times_256(player_t *pl, double amount_times_256)
-{
-    warn("Player_add_fuel_times_256: amount_times_256: %f", amount_times_256);
-
-    Add_fuel_times_256(&(pl->fuel), (long)amount_times_256);
+    if (ft->sum + fuel > ft->max)
+        fuel = ft->max - ft->sum;
+    else if (ft->sum + fuel < 0.0)
+        fuel = -ft->sum;
+    ft->sum += fuel;
+    ft->tank[ft->current] += fuel;
 }
 
 void Player_add_fuel(player_t *pl, double amount)
 {
     warn("Player_add_fuel: amount: %f", amount);
 
-    Add_fuel_times_256(&(pl->fuel), amount * 256);
+    Add_fuel(&(pl->fuel), amount);
 }
 
 /*
@@ -275,60 +268,61 @@ void Update_tanks(pl_fuel_t *ft)
     if (ft->num_tanks)
     {
         int t, check;
-        double low_level_times_256;
-        double fuel_times_256;
+        double low_level;
+        double fuel;
         double *f;
+        double frame_refuel = REFUEL_RATE * timeStep;
 
         /* Set low_level to minimum fuel in each tank */
-        low_level_times_256 = ft->sum_times_256 / (ft->num_tanks + 1) - 1;
-        if (low_level_times_256 < 0.0)
-            low_level_times_256 = 0.0;
-        if (TANK_REFILL_LIMIT * 256 < low_level_times_256)
-            low_level_times_256 = TANK_REFILL_LIMIT * 256;
+        low_level = ft->sum / (ft->num_tanks + 1) - 1;
+        if (low_level < 0.0)
+            low_level = 0.0;
+        if (TANK_REFILL_LIMIT < low_level)
+            low_level = TANK_REFILL_LIMIT;
 
         t = ft->num_tanks;
         check = MAX_TANKS << 2;
-        fuel_times_256 = 0;
-        f = ft->tank_times_256 + t;
+        fuel = 0;
+        f = ft->tank + t;
 
         while (t >= 0 && check--)
         {
-            double m_times_256 = TANK_CAP(t) * 256;
+            double m = TANK_CAP(t);
 
             /* Add the previous over/underflow and do a new cut */
-            *f += fuel_times_256;
-            if (*f > m_times_256)
+            *f += fuel;
+            if (*f > m)
             {
-                fuel_times_256 = *f - m_times_256;
-                *f = m_times_256;
+                fuel = *f - m;
+                *f = m;
             }
             else if (*f < 0)
             {
-                fuel_times_256 = *f;
+                fuel = *f;
                 *f = 0;
             }
             else
-                fuel_times_256 = 0;
+                fuel = 0;
 
             /* If there is no over/underflow, let the fuel run to main-tank */
-            if (!fuel_times_256)
+            if (!fuel)
             {
-                if (t && t != ft->current && *f >= low_level_times_256 + REFUEL_RATE * 256 && *(f - 1) <= TANK_CAP(t - 1) * 256 - REFUEL_RATE * 256)
+                if (t && t != ft->current && *f >= low_level + frame_refuel && *(f - 1) <= TANK_CAP(t - 1) - frame_refuel)
                 {
-
-                    *f -= REFUEL_RATE * 256;
-                    fuel_times_256 = REFUEL_RATE * 256;
+                    *f -= frame_refuel;
+                    fuel = frame_refuel;
                 }
-                else if (t && *f < low_level_times_256)
+                else if (t && *f < low_level)
                 {
-                    *f += REFUEL_RATE * 256;
-                    fuel_times_256 = -REFUEL_RATE * 256;
+                    *f += frame_refuel;
+                    // TODO: ng has fuel = frame_refuel here
+                    fuel = -frame_refuel;
                 }
             }
-            if (fuel_times_256 && t == 0)
+            if (fuel && t == 0)
             {
                 t = ft->num_tanks;
-                f = ft->tank_times_256 + t;
+                f = ft->tank + t;
             }
             else
             {
@@ -339,35 +333,35 @@ void Update_tanks(pl_fuel_t *ft)
         if (!check)
         {
             error("fuel problem");
-            fuel_times_256 = ft->sum_times_256;
-            ft->sum_times_256 =
-                ft->max_times_256 = 0;
+            fuel = ft->sum;
+            ft->sum =
+                ft->max = 0;
             t = 0;
             while (t <= ft->num_tanks)
             {
-                if (fuel_times_256)
+                if (fuel)
                 {
-                    if (fuel_times_256 > TANK_CAP(t) * 256)
+                    if (fuel > TANK_CAP(t))
                     {
-                        ft->tank_times_256[t] = TANK_CAP(t) * 256;
-                        fuel_times_256 -= TANK_CAP(t) * 256;
+                        ft->tank[t] = TANK_CAP(t);
+                        fuel -= TANK_CAP(t);
                     }
                     else
                     {
-                        ft->tank_times_256[t] = fuel_times_256;
-                        fuel_times_256 = 0;
+                        ft->tank[t] = fuel;
+                        fuel = 0;
                     }
-                    ft->sum_times_256 += ft->tank_times_256[t];
+                    ft->sum += ft->tank[t];
                 }
                 else
-                    ft->tank_times_256[t] = 0;
-                ft->max_times_256 += TANK_CAP(t) * 256;
+                    ft->tank[t] = 0;
+                ft->max += TANK_CAP(t);
                 t++;
             }
         }
     }
     else
-        ft->tank_times_256[0] = ft->sum_times_256;
+        ft->tank[0] = ft->sum;
 }
 
 /*
@@ -437,15 +431,15 @@ void Tank_handle_detach(player_t *pl)
     updateScores = true;
 
     /* Fuel is the one from chosen tank */
-    tank->fuel.sum_times_256 =
-        tank->fuel.tank_times_256[0] = pl->fuel.tank_times_256[ct];
-    tank->fuel.max_times_256 = TANK_CAP(ct) * 256;
+    tank->fuel.sum =
+        tank->fuel.tank[0] = pl->fuel.tank[ct];
+    tank->fuel.max = TANK_CAP(ct);
     tank->fuel.current = 0;
     tank->fuel.num_tanks = 0;
 
     /* Mass is only tank + fuel */
     tank->emptymass = options.shipMass;
-    tank->mass = tank->emptymass + FUEL_MASS(tank->fuel.sum_times_256);
+    tank->mass = tank->emptymass + FUEL_MASS(tank->fuel.sum);
     tank->power *= TANK_THRUST_FACT;
 
     /* Reset visibility. */
@@ -768,7 +762,7 @@ void Explode_fighter(player_t *pl)
 
     sound_play_sensors(pl->pos, PLAYER_EXPLOSION_SOUND);
 
-    min_debris = (int)(1 + (pl->fuel.sum_times_256 / (8.0 * FUEL_SCALE_FACT)));
+    min_debris = (int)(1 + (pl->fuel.sum / 8.0));
     max_debris = (int)(min_debris + (pl->mass * 2.0));
     /* reduce debris since we also create wreckage objects */
     min_debris >>= 1;

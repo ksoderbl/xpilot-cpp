@@ -1191,7 +1191,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all fuelstations are filled.
          */
-        if (fs->fuel_times_256 == MAX_STATION_FUEL * 256)
+        if (fs->fuel == MAX_STATION_FUEL)
             SET_BIT(fs->conn_mask, conn_bit);
         else
             CLR_BIT(fs->conn_mask, conn_bit);
@@ -1496,8 +1496,8 @@ int Send_self(connection_t *connp,
                       pl->check,
 
                       pl->fuel.current,
-                      ((long)pl->fuel.sum_times_256) >> FUEL_SCALE_BITS,
-                      ((long)pl->fuel.max_times_256) >> FUEL_SCALE_BITS,
+                      (int)(pl->fuel.sum + 0.5),
+                      (int)(pl->fuel.max + 0.5),
 
                       connp->view_width, connp->view_height,
                       connp->debris_colors,
@@ -1554,7 +1554,10 @@ int Send_player(connection_t *connp, int id)
                       buf);
     if (n > 0)
     {
-        n = Packet_printf(&connp->c, "%S", ext);
+        if (!FEATURE(connp, F_EXPLICITSELF))
+            n = Packet_printf(&connp->c, "%S", ext);
+        else
+            n = Packet_printf(&connp->c, "%S%c", ext, himself);
         if (n <= 0)
             connp->c.len = sbuf_len;
     }
@@ -1593,21 +1596,29 @@ int Send_score(connection_t *connp, int id, double score,
         return 0;
     }
 
-    int allchar = ' ';
-
-    if (alliance != ALLIANCE_NOT_SET)
+    if (!FEATURE(connp, F_FLOATSCORE))
+        /* older clients don't get alliance info or decimals of the score */
+        return Packet_printf(&connp->c, "%c%hd%hd%hd%c", PKT_SCORE,
+                             id, (int)(score + (score > 0 ? 0.5 : -0.5)),
+                             life, mychar);
+    else
     {
-        if (options.announceAlliances)
-            allchar = alliance + '0';
-        else
+        int allchar = ' ';
+
+        if (alliance != ALLIANCE_NOT_SET)
         {
-            if (Player_by_id(connp->id)->alliance == alliance)
-                allchar = '+';
+            if (options.announceAlliances)
+                allchar = alliance + '0';
+            else
+            {
+                if (Player_by_id(connp->id)->alliance == alliance)
+                    allchar = '+';
+            }
         }
+        return Packet_printf(&connp->c, "%c%hd%d%hd%c%c", PKT_SCORE, id,
+                             (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
+                             life, mychar, allchar);
     }
-    return Packet_printf(&connp->c, "%c%hd%d%hd%c%c", PKT_SCORE, id,
-                         (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
-                         life, mychar, allchar);
 }
 
 /*
@@ -1664,18 +1675,20 @@ int Send_score_object(connection_t *connp, double score, clpos_t pos,
         return 0;
     }
 
-    // if (!FEATURE(connp, F_FLOATSCORE))
-    //     return Packet_printf(&connp->c, "%c%hd%hu%hu%s", PKT_SCORE_OBJECT,
-    //                          (int)(score + (score > 0 ? 0.5 : -0.5)),
-    //                          bpos.bx, bpos.by, string);
-    // else
-    return Packet_printf(&connp->c, "%c%d%hu%hu%s", PKT_SCORE_OBJECT,
-                         (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
-                         bpos.bx, bpos.by, string);
+    if (!FEATURE(connp, F_FLOATSCORE))
+        return Packet_printf(&connp->c, "%c%hd%hu%hu%s", PKT_SCORE_OBJECT,
+                             (int)(score + (score > 0 ? 0.5 : -0.5)),
+                             bpos.bx, bpos.by, string);
+    else
+        return Packet_printf(&connp->c, "%c%d%hu%hu%s", PKT_SCORE_OBJECT,
+                             (int)(score * 100 + (score > 0 ? 0.5 : -0.5)),
+                             bpos.bx, bpos.by, string);
 }
 
 int Send_cannon(connection_t *connp, int num, int dead_ticks)
 {
+    if (FEATURE(connp, F_POLY))
+        return 0;
     return Packet_printf(&connp->w, "%c%hu%hu", PKT_CANNON, num, dead_ticks);
 }
 
@@ -1761,10 +1774,8 @@ int Send_asteroid(connection_t *connp, clpos_t pos,
     // warn("Send_asteroid, 2: x = %d, y = %d, type = %d, size = %d, rot = %d",
     //      x, y, type, size, rot);
 
-    /*
     if (!FEATURE(connp, F_ASTEROID))
         return Send_ecm(connp, pos, 2 * (int)ASTEROID_RADIUS(size) / CLICK);
-        */
 
     type_size = ((type & 0x0F) << 4) | (size & 0x0F);
 
@@ -1808,12 +1819,10 @@ int Send_missile(connection_t *connp, clpos_t pos, int len, int dir)
 
 int Send_ball(connection_t *connp, clpos_t pos, int id, int style)
 {
-    /*
     if (FEATURE(connp, F_BALLSTYLE))
         return Packet_printf(&connp->w, "%c%hd%hd%hd%c", PKT_BALL,
                              CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy),
                              id, style);
-*/
 
     return Packet_printf(&connp->w, "%c%hd%hd%hd", PKT_BALL,
                          CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), id);
@@ -1828,15 +1837,26 @@ int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id)
 
 int Send_target(connection_t *connp, int num, int dead_ticks, double damage_times_256)
 {
+    if (FEATURE(connp, F_POLY))
+        return 0;
     return Packet_printf(&connp->w, "%c%hu%hu%hu", PKT_TARGET,
                          num, dead_ticks, (int)damage_times_256);
 }
 
-// version 0x4501
+int Send_polystyle(connection_t *connp, int polyind, int newstyle)
+{
+    if (!FEATURE(connp, F_POLYSTYLE))
+        return 0;
+    return Packet_printf(&connp->w, "%c%hu%hu", PKT_POLYSTYLE,
+                         polyind, newstyle);
+}
+
 int Send_wormhole(connection_t *connp, clpos_t pos)
 {
     int x = CLICK_TO_PIXEL(pos.cx), y = CLICK_TO_PIXEL(pos.cy);
 
+    if (!FEATURE(connp, F_TEMPWORM))
+        return Send_ecm(connp, pos, BLOCK_SZ - 2);
     return Packet_printf(&connp->w, "%c%hd%hd", PKT_WORMHOLE, x, y);
 }
 

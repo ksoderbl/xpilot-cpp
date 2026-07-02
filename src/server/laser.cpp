@@ -54,7 +54,8 @@ void Fire_laser(player_t *pl)
 {
     if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
     {
-        if (pl->fuel.sum_times_256 <= -ED_LASER_HIT * 256)
+        // TODO: should this not be ED_LASER ?
+        if (pl->fuel.sum <= -ED_LASER_HIT)
             CLR_BIT(pl->used, HAS_LASER);
         else
         {

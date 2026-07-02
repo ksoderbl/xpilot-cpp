@@ -544,24 +544,24 @@ static void do_Autopilot(player_t *pl)
 static void Fuel_update(void)
 {
     int i;
-    double fuel_times_256;
+    double fuel;
     int frames_per_update;
 
     if (NumPlayers == 0)
         return;
 
     // Let the fuel stations regenerate some fuel.
-    fuel_times_256 = NumPlayers * STATION_REGENERATION * 256 * timeStep;
-    frames_per_update = MAX_STATION_FUEL / (fuel_times_256 / 256 * BLOCK_SZ);
+    fuel = (NumPlayers * STATION_REGENERATION * timeStep);
+    frames_per_update = (int)(MAX_STATION_FUEL / (fuel * BLOCK_SZ));
 
     for (i = 0; i < Num_fuels(); i++)
     {
         fuel_t *fs = Fuel_by_index(i);
 
-        if (fs->fuel_times_256 == MAX_STATION_FUEL * 256)
+        if (fs->fuel == MAX_STATION_FUEL)
             continue;
-        if ((fs->fuel_times_256 += fuel_times_256) >= MAX_STATION_FUEL * 256)
-            fs->fuel_times_256 = MAX_STATION_FUEL * 256;
+        if ((fs->fuel += fuel) >= MAX_STATION_FUEL)
+            fs->fuel = MAX_STATION_FUEL;
         else if (fs->last_change + frames_per_update > frame_loops)
             /*
              * We don't send fuelstation info to the clients every frame
@@ -710,7 +710,7 @@ static void Use_items(player_t *pl)
 
     if (Player_uses_emergency_thrust(pl))
     {
-        if (pl->fuel.sum_times_256 > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
+        if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
         {
             if (pl->item[ITEM_EMERGENCY_THRUST])
                 Emergency_thrust(pl, true);
@@ -721,7 +721,7 @@ static void Use_items(player_t *pl)
 
     if (BIT(pl->used, USES_EMERGENCY_SHIELD))
     {
-        if (pl->fuel.sum_times_256 > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
+        if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
         {
             if (pl->item[ITEM_EMERGENCY_SHIELD])
                 Emergency_shield(pl, true);
@@ -762,13 +762,8 @@ static void Do_refuel(player_t *pl)
     fuel_t *fs = Fuel_by_index(pl->fs);
 
     if ((Wrap_length(pl->pos.cx - fs->pos.cx,
-                     pl->pos.cy - fs->pos.cy) /
-             CLICK >
-         90.0) ||
-        (pl->fuel.sum_times_256 >= pl->fuel.max_times_256) ||
-        (world->block[fs->blk_pos.bx][fs->blk_pos.by] != FUEL) ||
-        BIT(pl->used, USES_PHASING_DEVICE) ||
-        (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
+                     pl->pos.cy - fs->pos.cy) > 90.0 * CLICK) ||
+        (pl->fuel.sum >= pl->fuel.max) || Player_is_phasing(pl) || (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
     {
         CLR_BIT(pl->used, USES_REFUEL);
     }
@@ -779,17 +774,17 @@ static void Do_refuel(player_t *pl)
 
         do
         {
-            if (fs->fuel_times_256 > REFUEL_RATE * 256 * timeStep)
+            if (fs->fuel > REFUEL_RATE * timeStep)
             {
-                fs->fuel_times_256 -= REFUEL_RATE * 256 * timeStep;
+                fs->fuel -= REFUEL_RATE * timeStep;
                 fs->conn_mask = 0;
                 fs->last_change = frame_loops;
                 Player_add_fuel(pl, REFUEL_RATE * timeStep);
             }
             else
             {
-                Player_add_fuel(pl, fs->fuel_times_256 / 256);
-                fs->fuel_times_256 = 0;
+                Player_add_fuel(pl, fs->fuel);
+                fs->fuel = 0;
                 fs->conn_mask = 0;
                 fs->last_change = frame_loops;
                 CLR_BIT(pl->used, USES_REFUEL);
@@ -822,7 +817,7 @@ static void Do_repair(player_t *pl)
 
         do
         {
-            if (pl->fuel.tank_times_256[pl->fuel.current] > REFUEL_RATE * 256 * timeStep)
+            if (pl->fuel.tank[pl->fuel.current] > REFUEL_RATE * timeStep)
             {
                 targ->damage_times_256 += TARGET_FUEL_REPAIR_PER_FRAME_TIMES_256 * timeStep;
                 targ->conn_mask = 0;
@@ -985,14 +980,14 @@ static void Update_players(void)
         if (Player_is_repairing(pl))
             Do_repair(pl);
 
-        if (pl->fuel.sum_times_256 <= 0)
+        if (pl->fuel.sum <= 0)
         {
             Thrust(pl, false);
             CLR_BIT(pl->used, USES_SHIELD);
             CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             CLR_BIT(pl->used, USES_DEFLECTOR);
         }
-        if (pl->fuel.sum_times_256 > (pl->fuel.max_times_256 - REFUEL_RATE * 256 * timeStep))
+        if (pl->fuel.sum > (pl->fuel.max - REFUEL_RATE * timeStep))
             CLR_BIT(pl->used, USES_REFUEL);
 
         /*
@@ -1014,7 +1009,7 @@ static void Update_players(void)
             }
             pl->acc.x = power * tcos(pl->dir) / inert;
             pl->acc.y = power * tsin(pl->dir) / inert;
-            Player_add_fuel_times_256(pl, -f * FUEL_SCALE_FACT); /* Decrement fuel */
+            Player_add_fuel(pl, -f); /* Decrement fuel */
         }
         else
         {

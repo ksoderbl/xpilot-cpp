@@ -185,7 +185,7 @@ void Place_general_mine(int id, int team, int status,
         drain = ED_MINE;
         if (Mods_get(mods, ModsCluster))
             drain += CLUSTER_MASS_DRAIN(mass);
-        if (pl->fuel.sum_times_256 < -drain * 256)
+        if (pl->fuel.sum < -drain)
         {
             Set_player_message_f(pl,
                                  "You need at least %.1f fuel units to %s %s!",
@@ -555,7 +555,7 @@ void Fire_general_shot(int id, int team, bool cannon,
         pl_range = pl_radius = 0;
         if (pl)
         {
-            if (pl->fuel.sum_times_256 < -ED_SHOT_TIMES_256)
+            if (pl->fuel.sum < -ED_SHOT)
                 return;
             Player_add_fuel(pl, ED_SHOT);
             sound_play_sensors(pl->pos, FIRE_SHOT_SOUND);
@@ -686,7 +686,7 @@ void Fire_general_shot(int id, int team, bool cannon,
 
         if (pl)
         {
-            if (pl->fuel.sum_times_256 < -drain * 256)
+            if (pl->fuel.sum < -drain)
             {
                 Set_player_message_f(pl,
                                      "You need at least %.1f fuel units to fire %s!",

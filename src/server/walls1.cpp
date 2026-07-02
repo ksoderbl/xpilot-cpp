@@ -2618,12 +2618,12 @@ void Move_player(player_t *pl)
                  * Clumsy touches (head first) with wall are more costly.
                  */
                 cost = (cost * (RES / 2 + abs_delta_dir)) / RES;
-                if (BIT(pl->used, (HAS_SHIELD | HAS_EMERGENCY_SHIELD)) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+                if (!Player_uses_emergency_shield(pl))
                 {
-                    Player_add_fuel_times_256(pl, -((cost << FUEL_SCALE_BITS) * options.wallBounceFuelDrainMult));
+                    Player_add_fuel(pl, -cost * options.wallBounceFuelDrainMult);
                     Item_damage(pl, options.wallBounceDestroyItemProb);
                 }
-                if (!pl->fuel.sum_times_256 && options.wallBounceFuelDrainMult != 0)
+                if (!pl->fuel.sum && options.wallBounceFuelDrainMult != 0)
                 {
                     crash = worst;
                     ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallNoFuel);

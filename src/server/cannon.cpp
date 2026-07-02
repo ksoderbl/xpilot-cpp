@@ -672,7 +672,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         if (Wrap_length(pl->pos.cx - c->pos.cx, pl->pos.cy - c->pos.cy) < TRANSPORTER_DISTANCE * CLICK)
         {
             int item = -1;
-            long amount = 0;
+            double amount = 0;
             Do_general_transporter(NO_ID, c->pos, pl, &item, &amount);
             if (item != -1)
                 Cannon_add_item(c, item, amount);
