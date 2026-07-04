@@ -432,7 +432,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     safe_width = (my_data->defense / 200) * SHIP_SZ;
     /* Prevent overflow. */
     velocity = (pl->velocity <= SPEED_LIMIT) ? pl->velocity : SPEED_LIMIT;
-    stop_dist = (long)((RES * velocity) / (MAX_PLAYER_TURNSPEED * pl->turnresistance) + (velocity * velocity * pl->mass) / (2 * MAX_PLAYER_POWER) + safe_width);
+    stop_dist = (long)((ANGLE_RESOLUTION * velocity) / (MAX_PLAYER_TURNSPEED * pl->turnresistance) + (velocity * velocity * pl->mass) / (2 * MAX_PLAYER_POWER) + safe_width);
     /*
      * Limit the look ahead.  For very high speeds the current code
      * is ineffective and much too inefficient.
@@ -453,7 +453,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         travel_dir = (int)findDir(pl->vel.x, pl->vel.y);
     }
 
-    aux_dir = MOD2(travel_dir + RES / 4, RES);
+    aux_dir = MOD2(travel_dir + ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION);
     px[0] = CLICK_TO_PIXEL(pl->pos.cx);                /* ship center x */
     py[0] = CLICK_TO_PIXEL(pl->pos.cy);                /* ship center y */
     px[1] = (int)(px[0] + safe_width * tcos(aux_dir)); /* ship left side x */
@@ -506,8 +506,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             {
                 gravity_dir = (int)findDir(gravity->x - pl->pix_pos.x,
                                            gravity->y - pl->pix_pos.y);
-                if (MOD2(gravity_dir - travel_dir, RES) <= RES / 4 ||
-                    MOD2(gravity_dir - travel_dir, RES) >= 3 * RES / 4)
+                if (MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) <= ANGLE_RESOLUTION / 4 ||
+                    MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) >= 3 * ANGLE_RESOLUTION / 4)
                 {
                     evade = true;
                     if (i == 1)
@@ -525,13 +525,13 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         shot = Obj[mine_i];
         aux_dir = (int)Wrap_findDir(shot->pix_pos.x + shot->vel.x - pl->pix_pos.x,
                                     shot->pix_pos.y + shot->vel.y - pl->pix_pos.y);
-        delta_dir = MOD2(aux_dir - travel_dir, RES);
-        if (delta_dir < RES / 4)
+        delta_dir = MOD2(aux_dir - travel_dir, ANGLE_RESOLUTION);
+        if (delta_dir < ANGLE_RESOLUTION / 4)
         {
             left_ok = false;
             evade = true;
         }
-        if (delta_dir > RES * 3 / 4)
+        if (delta_dir > ANGLE_RESOLUTION * 3 / 4)
         {
             right_ok = false;
             evade = true;
@@ -542,13 +542,13 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         ship = PlayersArray[ship_i];
         aux_dir = (int)Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x + ship->vel.x * 2,
                                     ship->pix_pos.y - pl->pix_pos.y + ship->vel.y * 2);
-        delta_dir = MOD2(aux_dir - travel_dir, RES);
-        if (delta_dir < RES / 4)
+        delta_dir = MOD2(aux_dir - travel_dir, ANGLE_RESOLUTION);
+        if (delta_dir < ANGLE_RESOLUTION / 4)
         {
             left_ok = false;
             evade = true;
         }
-        if (delta_dir > RES * 3 / 4)
+        if (delta_dir > ANGLE_RESOLUTION * 3 / 4)
         {
             right_ok = false;
             evade = true;
@@ -561,12 +561,12 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         return false;
 
     delta_dir = 0;
-    while (!left_ok && !right_ok && delta_dir < 7 * RES / 8)
+    while (!left_ok && !right_ok && delta_dir < 7 * ANGLE_RESOLUTION / 8)
     {
-        delta_dir += RES / 16;
+        delta_dir += ANGLE_RESOLUTION / 16;
 
         left_ok = true;
-        aux_dir = MOD2(travel_dir + delta_dir, RES);
+        aux_dir = MOD2(travel_dir + delta_dir, ANGLE_RESOLUTION);
         for (dist = 0; dist < stop_dist + BLOCK_SZ / 2; dist += BLOCK_SZ / 2)
         {
             dx = (long)((px[0] + dist * tcos(aux_dir)) / BLOCK_SZ);
@@ -599,8 +599,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             {
                 gravity_dir = (int)findDir(gravity->x - pl->pix_pos.x,
                                            gravity->y - pl->pix_pos.y);
-                if (MOD2(gravity_dir - travel_dir, RES) <= RES / 4 ||
-                    MOD2(gravity_dir - travel_dir, RES) >= 3 * RES / 4)
+                if (MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) <= ANGLE_RESOLUTION / 4 ||
+                    MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) >= 3 * ANGLE_RESOLUTION / 4)
                 {
 
                     left_ok = false;
@@ -610,7 +610,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         }
 
         right_ok = true;
-        aux_dir = MOD2(travel_dir - delta_dir, RES);
+        aux_dir = MOD2(travel_dir - delta_dir, ANGLE_RESOLUTION);
         for (dist = 0; dist < stop_dist + BLOCK_SZ / 2; dist += BLOCK_SZ / 2)
         {
             dx = (long)((px[0] + dist * tcos(aux_dir)) / BLOCK_SZ);
@@ -643,8 +643,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             {
                 gravity_dir = (int)findDir(gravity->x - pl->pix_pos.x,
                                            gravity->y - pl->pix_pos.y);
-                if (MOD2(gravity_dir - travel_dir, RES) <= RES / 4 ||
-                    MOD2(gravity_dir - travel_dir, RES) >= 3 * RES / 4)
+                if (MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) <= ANGLE_RESOLUTION / 4 ||
+                    MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) >= 3 * ANGLE_RESOLUTION / 4)
                 {
 
                     right_ok = false;
@@ -657,7 +657,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     pl->turnspeed = MAX_PLAYER_TURNSPEED;
     pl->power = MAX_PLAYER_POWER;
 
-    delta_dir = MOD2(pl->dir - travel_dir, RES);
+    delta_dir = MOD2(pl->dir - travel_dir, ANGLE_RESOLUTION);
 
     if (my_data->robot_mode != RM_EVADE_LEFT && my_data->robot_mode != RM_EVADE_RIGHT)
     {
@@ -666,25 +666,25 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
         else if (right_ok && !left_ok)
             my_data->robot_mode = RM_EVADE_RIGHT;
         else
-            my_data->robot_mode = (delta_dir < RES / 2 ? RM_EVADE_LEFT : RM_EVADE_RIGHT);
+            my_data->robot_mode = (delta_dir < ANGLE_RESOLUTION / 2 ? RM_EVADE_LEFT : RM_EVADE_RIGHT);
     }
     /*-BA If facing the way we want to go, thrust
      *-BA If too far off, stop thrusting
      *-BA If in between, keep doing whatever we are already doing
      *-BA In all cases continue to straighten up
      */
-    if (delta_dir < RES / 4 || delta_dir > 3 * RES / 4)
+    if (delta_dir < ANGLE_RESOLUTION / 4 || delta_dir > 3 * ANGLE_RESOLUTION / 4)
     {
         pl->turnacc = (my_data->robot_mode == RM_EVADE_LEFT ? pl->turnspeed : (-pl->turnspeed));
         Thrust(pl, false);
     }
-    else if (delta_dir < 3 * RES / 8 || delta_dir > 5 * RES / 8)
+    else if (delta_dir < 3 * ANGLE_RESOLUTION / 8 || delta_dir > 5 * ANGLE_RESOLUTION / 8)
         pl->turnacc = (my_data->robot_mode == RM_EVADE_LEFT ? pl->turnspeed : (-pl->turnspeed));
     else
     {
         pl->turnacc = 0;
         Thrust(pl, true);
-        my_data->robot_mode = (delta_dir < RES / 2
+        my_data->robot_mode = (delta_dir < ANGLE_RESOLUTION / 2
                                    ? RM_EVADE_LEFT
                                    : RM_EVADE_RIGHT);
     }
@@ -839,7 +839,7 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         vector_t *grav = &world->gravity
                               [OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
         item_dir = (int)findDir(grav->x, grav->y);
-        item_dir = MOD2(item_dir + RES / 2, RES);
+        item_dir = MOD2(item_dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
     }
     else
     {
@@ -891,18 +891,18 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
     pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
     pl->power = (BIT(world->rules->mode, TIMING) ? MAX_PLAYER_POWER : MAX_PLAYER_POWER / 2);
 
-    delta_dir = MOD2(item_dir - travel_dir, RES);
-    if (delta_dir >= RES / 4 && delta_dir <= 3 * RES / 4)
+    delta_dir = MOD2(item_dir - travel_dir, ANGLE_RESOLUTION);
+    if (delta_dir >= ANGLE_RESOLUTION / 4 && delta_dir <= 3 * ANGLE_RESOLUTION / 4)
     {
 
         if (new_mode == RM_HARVEST ||
             (new_mode == RM_NAVIGATE &&
              (clear_path || dist > 8 * BLOCK_SZ)))
             /* reverse direction of travel */
-            item_dir = MOD2(travel_dir + (delta_dir > RES / 2
-                                              ? -5 * RES / 8
-                                              : 5 * RES / 8),
-                            RES);
+            item_dir = MOD2(travel_dir + (delta_dir > ANGLE_RESOLUTION / 2
+                                              ? -5 * ANGLE_RESOLUTION / 8
+                                              : 5 * ANGLE_RESOLUTION / 8),
+                            ANGLE_RESOLUTION);
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
         slowing = true;
 
@@ -921,7 +921,7 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
 
         /* too close, so move away */
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
-        item_dir = MOD2(item_dir + RES / 2, RES);
+        item_dir = MOD2(item_dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
         slowing = true;
     }
     else
@@ -930,28 +930,28 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
     if (new_mode == RM_NAVIGATE && !clear_path)
     {
         if (dist <= 8 * BLOCK_SZ && dist > 4 * BLOCK_SZ)
-            item_dir = MOD2(item_dir + (delta_dir > RES / 2
-                                            ? -3 * RES / 4
-                                            : 3 * RES / 4),
-                            RES);
+            item_dir = MOD2(item_dir + (delta_dir > ANGLE_RESOLUTION / 2
+                                            ? -3 * ANGLE_RESOLUTION / 4
+                                            : 3 * ANGLE_RESOLUTION / 4),
+                            ANGLE_RESOLUTION);
         else if (dist <= 4 * BLOCK_SZ)
-            item_dir = MOD2(item_dir + RES / 2, RES);
+            item_dir = MOD2(item_dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
         slowing = true;
     }
 
-    delta_dir = MOD2(item_dir - pl->dir, RES);
+    delta_dir = MOD2(item_dir - pl->dir, ANGLE_RESOLUTION);
 
-    if (delta_dir > RES / 8 && delta_dir < 7 * RES / 8)
+    if (delta_dir > ANGLE_RESOLUTION / 8 && delta_dir < 7 * ANGLE_RESOLUTION / 8)
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
-    else if (delta_dir > RES / 16 && delta_dir < 15 * RES / 16)
+    else if (delta_dir > ANGLE_RESOLUTION / 16 && delta_dir < 15 * ANGLE_RESOLUTION / 16)
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
-    else if (delta_dir > RES / 64 && delta_dir < 63 * RES / 64)
+    else if (delta_dir > ANGLE_RESOLUTION / 64 && delta_dir < 63 * ANGLE_RESOLUTION / 64)
         pl->turnspeed = MAX_PLAYER_TURNSPEED;
     else
         pl->turnspeed = 0.0;
 
-    pl->turnacc = (delta_dir < RES / 2 ? pl->turnspeed : (-pl->turnspeed));
+    pl->turnacc = (delta_dir < ANGLE_RESOLUTION / 2 ? pl->turnspeed : (-pl->turnspeed));
 
     if (slowing || BIT(pl->used, HAS_SHIELD))
         Thrust(pl, true);
@@ -964,21 +964,21 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         if (pl->velocity > my_data->robot_normal_speed)
             Thrust(pl, false);
     }
-    else if ((new_mode != RM_ATTACK && new_mode != RM_NAVIGATE) || item_dist < 8 * BLOCK_SZ || (new_mode == RM_NAVIGATE && delta_dir > 3 * RES / 8 && delta_dir < 5 * RES / 8))
+    else if ((new_mode != RM_ATTACK && new_mode != RM_NAVIGATE) || item_dist < 8 * BLOCK_SZ || (new_mode == RM_NAVIGATE && delta_dir > 3 * ANGLE_RESOLUTION / 8 && delta_dir < 5 * ANGLE_RESOLUTION / 8))
     {
         if (pl->velocity < 2 * my_data->robot_normal_speed)
             Thrust(pl, true);
         if (pl->velocity > 3 * my_data->robot_normal_speed)
             Thrust(pl, false);
     }
-    else if (new_mode == RM_ATTACK || (new_mode == RM_NAVIGATE && (dist < 12 * BLOCK_SZ || (delta_dir > RES / 8 && delta_dir < 7 * RES / 8))))
+    else if (new_mode == RM_ATTACK || (new_mode == RM_NAVIGATE && (dist < 12 * BLOCK_SZ || (delta_dir > ANGLE_RESOLUTION / 8 && delta_dir < 7 * ANGLE_RESOLUTION / 8))))
     {
         if (pl->velocity < my_data->robot_attack_speed / 2)
             Thrust(pl, true);
         if (pl->velocity > my_data->robot_attack_speed)
             Thrust(pl, false);
     }
-    else if (clear_path && (delta_dir < RES / 8 || delta_dir > 7 * RES / 8) && item_dist > 18 * BLOCK_SZ)
+    else if (clear_path && (delta_dir < ANGLE_RESOLUTION / 8 || delta_dir > 7 * ANGLE_RESOLUTION / 8) && item_dist > 18 * BLOCK_SZ)
     {
         if (pl->velocity < my_data->robot_max_speed - my_data->robot_normal_speed)
             Thrust(pl, true);
@@ -1024,10 +1024,10 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
                 if (ship_dist < PULSE_SPEED * PULSE_LIFE(pl->item[ITEM_LASER]) + SHIP_SZ)
                 {
                     dir3 = Wrap_findDir(x3 - x1, y3 - y1);
-                    x4 = x3 + tcos(MOD2((int)(dir3 - RES / 4), RES)) * SHIP_SZ;
-                    y4 = y3 + tsin(MOD2((int)(dir3 - RES / 4), RES)) * SHIP_SZ;
-                    x5 = x3 + tcos(MOD2((int)(dir3 + RES / 4), RES)) * SHIP_SZ;
-                    y5 = y3 + tsin(MOD2((int)(dir3 + RES / 4), RES)) * SHIP_SZ;
+                    x4 = x3 + tcos(MOD2((int)(dir3 - ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+                    y4 = y3 + tsin(MOD2((int)(dir3 - ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+                    x5 = x3 + tcos(MOD2((int)(dir3 + ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+                    y5 = y3 + tsin(MOD2((int)(dir3 + ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
                     dir4 = Wrap_findDir(x4 - x1, y4 - y1);
                     dir5 = Wrap_findDir(x5 - x1, y5 - y1);
                     if ((dir4 > dir5)
@@ -1056,8 +1056,8 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
                 dir = (long)(findDir(pl->pix_pos.x - ship->pix_pos.x,
                                      pl->pix_pos.y - ship->pix_pos.y) -
                              findDir(xvd, yvd));
-                dir = MOD2(dir, RES);
-                away = (dir >= RES / 4 && dir <= 3 * RES / 4);
+                dir = MOD2(dir, ANGLE_RESOLUTION);
+                away = (dir >= ANGLE_RESOLUTION / 4 && dir <= 3 * ANGLE_RESOLUTION / 4);
 
                 /*
                  * vel  - The relative velocity of ship to us.
@@ -1192,11 +1192,11 @@ static bool Check_robot_hunt(player_t *pl)
         travel_dir = (int)findDir(pl->vel.x, pl->vel.y);
     }
 
-    delta_dir = MOD2(ship_dir - travel_dir, RES);
+    delta_dir = MOD2(ship_dir - travel_dir, ANGLE_RESOLUTION);
     tooslow = (pl->velocity < my_data->robot_attack_speed / 2);
     toofast = (pl->velocity > my_data->robot_attack_speed);
 
-    if (!tooslow && !toofast && (delta_dir <= RES / 16 || delta_dir >= 15 * RES / 16))
+    if (!tooslow && !toofast && (delta_dir <= ANGLE_RESOLUTION / 16 || delta_dir >= 15 * ANGLE_RESOLUTION / 16))
     {
 
         pl->turnacc = 0;
@@ -1205,23 +1205,23 @@ static bool Check_robot_hunt(player_t *pl)
         return true;
     }
 
-    adj_dir = (delta_dir < RES / 2 ? RES / 4 : (-RES / 4));
+    adj_dir = (delta_dir < ANGLE_RESOLUTION / 2 ? ANGLE_RESOLUTION / 4 : (-ANGLE_RESOLUTION / 4));
 
     if (tooslow)
         adj_dir = adj_dir / 2; /* point forwards more */
     if (toofast)
         adj_dir = 3 * adj_dir / 2; /* point backwards more */
 
-    adj_dir = MOD2(travel_dir + adj_dir, RES);
-    delta_dir = MOD2(adj_dir - pl->dir, RES);
+    adj_dir = MOD2(travel_dir + adj_dir, ANGLE_RESOLUTION);
+    delta_dir = MOD2(adj_dir - pl->dir, ANGLE_RESOLUTION);
 
-    if (delta_dir >= RES / 16 && delta_dir <= 15 * RES / 16)
+    if (delta_dir >= ANGLE_RESOLUTION / 16 && delta_dir <= 15 * ANGLE_RESOLUTION / 16)
     {
         pl->turnspeed = MAX_PLAYER_TURNSPEED / 4;
-        pl->turnacc = (delta_dir < RES / 2 ? pl->turnspeed : (-pl->turnspeed));
+        pl->turnacc = (delta_dir < ANGLE_RESOLUTION / 2 ? pl->turnspeed : (-pl->turnspeed));
     }
 
-    if (delta_dir < RES / 8 || delta_dir > 7 * RES / 8)
+    if (delta_dir < ANGLE_RESOLUTION / 8 || delta_dir > 7 * ANGLE_RESOLUTION / 8)
         Thrust(pl, true);
     else
         Thrust(pl, false);
@@ -1455,8 +1455,8 @@ static bool Ball_handler(player_t *pl)
         dbdir = findDir(ball->vel.x, ball->vel.y);
         dtdir = Wrap_cfindDir(closest_treasure->pos.cx - ball->pos.cx,
                               closest_treasure->pos.cy - ball->pos.cy);
-        bdir = MOD2((int)(dbdir + 0.5), RES);
-        tdir = MOD2((int)(dtdir + 0.5), RES);
+        bdir = MOD2((int)(dbdir + 0.5), ANGLE_RESOLUTION);
+        tdir = MOD2((int)(dtdir + 0.5), ANGLE_RESOLUTION);
         bbpos = Clpos_to_blkpos(ball->pos);
         xdist = (closest_treasure->pos.cx / BLOCK_CLICKS) - bbpos.bx;
         ydist = (closest_treasure->pos.cy / BLOCK_CLICKS) - bbpos.by;
@@ -1832,7 +1832,7 @@ static void Robot_default_play_check_objects(player_t *pl,
             int delta_dir = 0;
             wireobject_t *wire = WIRE_PTR(shot);
 
-            if (*mine_dist > (wire->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_cfindDir(shot->pos.cx - pl->pos.cx, shot->pos.cy - pl->pos.cy)) < wire->wire_size * (RES / 10) || delta_dir > RES - wire->wire_size * (RES / 10)))
+            if (*mine_dist > (wire->wire_size == 1 ? 2 : 4) * BLOCK_SZ && *mine_dist < 8 * BLOCK_SZ && (delta_dir = (pl->dir - Wrap_cfindDir(shot->pos.cx - pl->pos.cx, shot->pos.cy - pl->pos.cy)) < wire->wire_size * (ANGLE_RESOLUTION / 10) || delta_dir > ANGLE_RESOLUTION - wire->wire_size * (ANGLE_RESOLUTION / 10)))
                 SET_BIT(pl->used, HAS_SHOT);
         }
     }
@@ -1880,8 +1880,8 @@ static void Robot_default_play_check_lasers(player_t *pl)
             dx = (long)WRAP_DX(pl->pix_pos.x - pulse->pix_pos.x);
             dy = (long)WRAP_DY(pl->pix_pos.y - pulse->pix_pos.y);
             distance2 = sqr(dx) + sqr(dy);
-            if ((distance2 < sqr(PULSE_LENGTH) || (distance2 < sqr(2 * PULSE_LENGTH) && ABS(findDir(dx, dy) - pulse->dir) < RES / 8)) && (int)(rfrac() * 100) <
-                                                                                                                                             (85 + (my_data->defense / 7) - (my_data->attack / 50)))
+            if ((distance2 < sqr(PULSE_LENGTH) || (distance2 < sqr(2 * PULSE_LENGTH) && ABS(findDir(dx, dy) - pulse->dir) < ANGLE_RESOLUTION / 8)) && (int)(rfrac() * 100) <
+                                                                                                                                                          (85 + (my_data->defense / 7) - (my_data->attack / 50)))
             {
                 SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
@@ -2143,12 +2143,12 @@ static void Robot_default_play(player_t *pl)
         ship = Player_by_id(pl->lock.pl_id);
         delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
                                                  ship->pix_pos.y - pl->pix_pos.y));
-        delta_dir = MOD2(delta_dir, RES);
+        delta_dir = MOD2(delta_dir, ANGLE_RESOLUTION);
         if (BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
             (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) ||
             !Detect_ship(pl, ship) || (pl->fuel.sum <= my_data->fuel_l3 && !BIT(world->rules->mode, TIMING)) ||
-            (BIT(world->rules->mode, TIMING) && (delta_dir < 3 * RES / 4 ||
-                                                 delta_dir > RES / 4)) ||
+            (BIT(world->rules->mode, TIMING) && (delta_dir < 3 * ANGLE_RESOLUTION / 4 ||
+                                                 delta_dir > ANGLE_RESOLUTION / 4)) ||
             Team_immune(pl->id, ship->id))
         {
             /* unset the player lock */
@@ -2188,14 +2188,14 @@ static void Robot_default_play(player_t *pl)
             delta_dir =
                 (int)(pl->dir - Wrap_cfindDir(item->pos.cx - pl->pos.cx,
                                               item->pos.cy - pl->pos.cy));
-            delta_dir = MOD2(delta_dir, RES);
+            delta_dir = MOD2(delta_dir, ANGLE_RESOLUTION);
         }
         else
         {
-            delta_dir = RES;
+            delta_dir = ANGLE_RESOLUTION;
             item_imp = ROBOT_IGNORE_ITEM;
         }
-        if ((item_imp == ROBOT_MUST_HAVE_ITEM && item_dist > 4 * BLOCK_SZ) || (item_imp == ROBOT_HANDY_ITEM && item_dist > 2 * BLOCK_SZ) || (item_imp == ROBOT_IGNORE_ITEM) || (delta_dir < 3 * RES / 4 && delta_dir > RES / 4))
+        if ((item_imp == ROBOT_MUST_HAVE_ITEM && item_dist > 4 * BLOCK_SZ) || (item_imp == ROBOT_HANDY_ITEM && item_dist > 2 * BLOCK_SZ) || (item_imp == ROBOT_IGNORE_ITEM) || (delta_dir < 3 * ANGLE_RESOLUTION / 4 && delta_dir > ANGLE_RESOLUTION / 4))
         {
             navigate_checked = true;
             if (Check_robot_target(pl, Check_by_index(pl->check)->pos,
@@ -2293,8 +2293,8 @@ static void Robot_default_play(player_t *pl)
         my_data->robot_mode = RM_ROBOT_CLIMB;
         pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
         pl->power = MAX_PLAYER_POWER / 2;
-        if (ABS(pl->dir - RES / 4) > RES / 16)
-            pl->turnacc = (pl->dir < RES / 4 || pl->dir >= 3 * RES / 4
+        if (ABS(pl->dir - ANGLE_RESOLUTION / 4) > ANGLE_RESOLUTION / 16)
+            pl->turnacc = (pl->dir < ANGLE_RESOLUTION / 4 || pl->dir >= 3 * ANGLE_RESOLUTION / 4
                                ? pl->turnspeed
                                : (-pl->turnspeed));
         else

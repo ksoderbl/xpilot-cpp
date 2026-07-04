@@ -655,7 +655,7 @@ int Init_wreckage(void)
     /*
      * Allocate memory for all the wreckage points.
      */
-    point_size = sizeof(position_t) * RES;
+    point_size = sizeof(position_t) * ANGLE_RESOLUTION;
     total_size = point_size * NUM_WRECKAGE_POINTS * NUM_WRECKAGE_SHAPES;
     if ((dynmem = (char *)malloc(total_size)) == NULL)
     {

@@ -1008,7 +1008,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
             if (click_inview(cv, cx, cy))
-                dir = MOD2(pulse->dir + RES / 2, RES);
+                dir = MOD2(pulse->dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
             else
                 continue;
         }

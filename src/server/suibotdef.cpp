@@ -315,7 +315,7 @@ static inline int decide_travel_dir(player_t *pl)
     else
         gdir = findDir(pl->vel.x, pl->vel.y);
 
-    return MOD2((int)(gdir + 0.5), RES);
+    return MOD2((int)(gdir + 0.5), ANGLE_RESOLUTION);
 }
 
 static void Robot_take_off_from_base(player_t *pl)
@@ -609,7 +609,7 @@ bool Robot_evade_shot(player_t *pl)
             pl->pos.cx,
             pl->pos.cy))
     {
-        direction_evade1 += RES;
+        direction_evade1 += ANGLE_RESOLUTION;
         //    printf("Wall!\n");
     }
 
@@ -627,7 +627,7 @@ void Robot_move_randomly(player_t *pl)
 
     /* Move randomly */
     if (rfrac() < 0.25)
-        pl->turnvel = ((rfrac() * RES) - RES / 2) * 0.3;
+        pl->turnvel = ((rfrac() * ANGLE_RESOLUTION) - ANGLE_RESOLUTION / 2) * 0.3;
 
     if (pl->velocity > options.maxUnshieldedWallBounceSpeed)
     { /* not too fast...*/

@@ -255,7 +255,7 @@ void Place_item(player_t *pl, int item)
 
             if (con)
             {
-                int dir = (int)(rfrac() * RES);
+                int dir = (int)(rfrac() * ANGLE_RESOLUTION);
                 dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_SZ) + 1));
                 dist = PIXEL_TO_CLICK(dist);
                 // dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_CLICKS) + 1));
@@ -305,7 +305,7 @@ void Place_item(player_t *pl, int item)
             else
             {
                 double v = rfrac() * 6;
-                int dir = (int)(rfrac() * RES);
+                int dir = (int)(rfrac() * ANGLE_RESOLUTION);
 
                 vel.x += tcos(dir) * v;
                 vel.y += tsin(dir) * v;
@@ -429,7 +429,7 @@ void Detonate_items(player_t *pl)
     {
         if (rfrac() < options.detonateItemOnKillProb)
         {
-            int dir = (int)(rfrac() * RES);
+            int dir = (int)(rfrac() * ANGLE_RESOLUTION);
             double speed = rfrac() * 4.0;
             vector_t vel;
 
@@ -478,7 +478,7 @@ void Detonate_items(player_t *pl)
             if (Mods_get(mods, ModsNuclear) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
                 Mods_set(&mods, ModsNuclear, 0);
             Fire_general_shot(owner_pl->id, pl->team, false, pl->pos,
-                              type, (int)(rfrac() * RES), mods, NO_ID);
+                              type, (int)(rfrac() * ANGLE_RESOLUTION), mods, NO_ID);
         }
     }
 }
@@ -598,11 +598,11 @@ void Do_deflector(player_t *pl)
         if (dist < range && dist > 0)
         {
             int dir = (int)findDir(dx, dy);
-            int idir = MOD2((int)(dir - findDir(obj->vel.x, obj->vel.y)), RES);
+            int idir = MOD2((int)(dir - findDir(obj->vel.x, obj->vel.y)), ANGLE_RESOLUTION);
 
-            if (idir > RES * 0.25 && idir < RES * 0.75)
+            if (idir > ANGLE_RESOLUTION * 0.25 && idir < ANGLE_RESOLUTION * 0.75)
             {
-                double force = ((double)(range - dist) / range) * ((double)(range - dist) / range) * maxforce * ((RES * 0.25) - ABS(idir - RES * 0.5)) / (RES * 0.25);
+                double force = ((double)(range - dist) / range) * ((double)(range - dist) / range) * maxforce * ((ANGLE_RESOLUTION * 0.25) - ABS(idir - ANGLE_RESOLUTION * 0.5)) / (ANGLE_RESOLUTION * 0.25);
                 double dv = force / ABS(obj->mass);
 
                 obj->vel.x += tcos(dir) * dv;

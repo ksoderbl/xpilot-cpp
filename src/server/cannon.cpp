@@ -194,7 +194,7 @@ void Cannon_throw_items(cannon_t *c)
                 item->color = RED;
                 item->obj_status = GRAVITY;
                 dir = (int)(c->dir - (CANNON_SPREAD * 0.5) + (rfrac() * CANNON_SPREAD));
-                dir = MOD2(dir, RES);
+                dir = MOD2(dir, ANGLE_RESOLUTION);
                 item->id = NO_ID;
                 item->team = TEAM_NOT_SET;
                 Object_position_init_clpos(OBJ_PTR(item), c->pos);
@@ -494,8 +494,8 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
                 tdx = WRAP_DX(npx - cpx);
                 tdy = WRAP_DY(npy - cpy);
                 tdir = (int)findDir(tdx, tdy);
-                ddir = MOD2(tdir - c->dir, RES);
-                if ((ddir < (CANNON_SPREAD * 0.5) || ddir > RES - (CANNON_SPREAD * 0.5)) && (int)LENGTH(tdx, tdy) < closest)
+                ddir = MOD2(tdir - c->dir, ANGLE_RESOLUTION);
+                if ((ddir < (CANNON_SPREAD * 0.5) || ddir > ANGLE_RESOLUTION - (CANNON_SPREAD * 0.5)) && (int)LENGTH(tdx, tdy) < closest)
                 {
                     *dir = tdir;
                     found = true;
@@ -526,10 +526,10 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         *dir += (int)((rfrac() - 0.5f) * CANNON_SPREAD);
         break;
     case 2:
-        ddir = MOD2(*dir - c->dir, RES);
-        if (ddir > (CANNON_SPREAD * 0.5) && ddir < RES / 2)
+        ddir = MOD2(*dir - c->dir, ANGLE_RESOLUTION);
+        if (ddir > (CANNON_SPREAD * 0.5) && ddir < ANGLE_RESOLUTION / 2)
             *dir = (int)(c->dir + (CANNON_SPREAD * 0.5) + 3);
-        else if (ddir < RES - (CANNON_SPREAD * 0.5) && ddir > RES / 2)
+        else if (ddir < ANGLE_RESOLUTION - (CANNON_SPREAD * 0.5) && ddir > ANGLE_RESOLUTION / 2)
             *dir = (int)(c->dir - (CANNON_SPREAD * 0.5) - 3);
         *dir += (int)(rfrac() * 7) - 3;
         break;
@@ -537,7 +537,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         /* nothing to be done for mode 3 */
         break;
     }
-    *dir = MOD2(*dir, RES);
+    *dir = MOD2(*dir, ANGLE_RESOLUTION);
 }
 
 /* does the actual firing. also determines in which way to use weapons that
@@ -735,7 +735,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         for (i = 0; i < (1 + 2 * c->item[ITEM_WIDEANGLE]); i++)
         {
             int a_dir = dir + (4 - smartness) * (-c->item[ITEM_WIDEANGLE] + i);
-            a_dir = MOD2(a_dir, RES);
+            a_dir = MOD2(a_dir, ANGLE_RESOLUTION);
             Fire_general_shot(NO_ID, c->team, true, c->pos,
                               OBJ_CANNON_SHOT, a_dir, mods, NO_ID);
         }
@@ -744,8 +744,8 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
            target. */
         for (i = 0; i < c->item[ITEM_REARSHOT]; i++)
         {
-            int a_dir = (int)(dir + (RES / 2) + (4 - smartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
-            a_dir = MOD2(a_dir, RES);
+            int a_dir = (int)(dir + (ANGLE_RESOLUTION / 2) + (4 - smartness) * (-((c->item[ITEM_REARSHOT] - 1) * 0.5) + i));
+            a_dir = MOD2(a_dir, ANGLE_RESOLUTION);
             Fire_general_shot(NO_ID, c->team, true, c->pos,
                               OBJ_CANNON_SHOT, a_dir, mods, NO_ID);
         }
@@ -800,7 +800,7 @@ void Cannon_dies(cannon_t *c, player_t *pl)
                 6,
                 20, 40,
                 (int)(20 + 20 * rfrac()),
-                (int)(c->dir - (RES * 0.2)), (int)(c->dir + (RES * 0.2)),
+                (int)(c->dir - (ANGLE_RESOLUTION * 0.2)), (int)(c->dir + (ANGLE_RESOLUTION * 0.2)),
                 20.0, 50.0,
                 8.0, 68.0);
     Make_wreckage(c->pos,
@@ -811,7 +811,7 @@ void Cannon_dies(cannon_t *c, player_t *pl)
                   28.0,
                   GRAVITY,
                   10,
-                  (int)(c->dir - (RES * 0.2)), (int)(c->dir + (RES * 0.2)),
+                  (int)(c->dir - (ANGLE_RESOLUTION * 0.2)), (int)(c->dir + (ANGLE_RESOLUTION * 0.2)),
                   10.0, 25.0,
                   8.0, 68.0);
 

@@ -69,7 +69,7 @@ double findDir(double x, double y)
 
     if (angle < 0)
         angle++;
-    return angle * RES;
+    return angle * ANGLE_RESOLUTION;
 }
 
 double rfrac(void)
@@ -92,13 +92,13 @@ double rfrac(void)
 //     }
 // }
 
-// The angle x goes from 0 to RES for a full circle.
+// The angle x goes from 0 to ANGLE_RESOLUTION for a full circle.
 double tcos(double x)
 {
-    return cos(x * (2.0 * PI / RES));
+    return cos(x * (2.0 * PI / ANGLE_RESOLUTION));
 }
 
 double tsin(double x)
 {
-    return sin(x * (2.0 * PI / RES));
+    return sin(x * (2.0 * PI / ANGLE_RESOLUTION));
 }

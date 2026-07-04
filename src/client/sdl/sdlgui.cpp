@@ -993,7 +993,7 @@ void Gui_paint_ball(int x, int y, int style)
         Image_paint(IMG_BALL, x - BALL_RADIUS, y - BALL_RADIUS, 0, rgba);
     else
     {
-        int i, numvert = 16, ang = RES / numvert;
+        int i, numvert = 16, ang = ANGLE_RESOLUTION / numvert;
         /* kps hack, feel free to improve */
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);

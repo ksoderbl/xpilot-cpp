@@ -57,11 +57,11 @@
 #define LINE_MAX 2048
 #endif
 
-#define RES 128
+#define ANGLE_RESOLUTION 128
 
 #define BLOCK_SZ 35
 
-#define TABLE_SIZE RES
+#define TABLE_SIZE ANGLE_RESOLUTION
 
 #define NELEM(a) ((int)(sizeof(a) / sizeof((a)[0])))
 

@@ -104,7 +104,7 @@ int Init_asteroids(void)
     /*
      * Allocate memory for all the asteroid points.
      */
-    point_size = sizeof(position_t) * RES;
+    point_size = sizeof(position_t) * ANGLE_RESOLUTION;
     total_size = point_size * NUM_ASTEROID_POINTS * NUM_ASTEROID_SHAPES;
     if ((dynmem = (char *)malloc(total_size)) == NULL)
     {

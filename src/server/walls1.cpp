@@ -327,8 +327,8 @@ void Move_init(void)
     LIMIT(options.wallBounceFuelDrainMult, 0, 1000);
     wallBounceExplosionMult = sqrt(options.wallBounceFuelDrainMult);
 
-    mp.max_shielded_angle = (int)(options.maxShieldedWallBounceAngle * RES / 360);
-    mp.max_unshielded_angle = (int)(options.maxUnshieldedWallBounceAngle * RES / 360);
+    mp.max_shielded_angle = (int)(options.maxShieldedWallBounceAngle * ANGLE_RESOLUTION / 360);
+    mp.max_unshielded_angle = (int)(options.maxUnshieldedWallBounceAngle * ANGLE_RESOLUTION / 360);
 
     mp.obj_bounce_mask = 0;
     if (options.sparksWallBounce)
@@ -367,7 +367,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = -ms->vel.x;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(RES / 2 - ms->dir, RES);
+                ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else
@@ -376,7 +376,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = 0;
             if (!ms->mip->pl)
             {
-                ms->dir = (ms->vel.y < 0) ? (3 * RES / 4) : RES / 4;
+                ms->dir = (ms->vel.y < 0) ? (3 * ANGLE_RESOLUTION / 4) : ANGLE_RESOLUTION / 4;
             }
         }
     }
@@ -388,7 +388,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = -ms->vel.x;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(RES / 2 - ms->dir, RES);
+                ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else
@@ -397,7 +397,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.x = 0;
             if (!ms->mip->pl)
             {
-                ms->dir = (ms->vel.y < 0) ? (3 * RES / 4) : RES / 4;
+                ms->dir = (ms->vel.y < 0) ? (3 * ANGLE_RESOLUTION / 4) : ANGLE_RESOLUTION / 4;
             }
         }
     }
@@ -409,7 +409,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = -ms->vel.y;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(RES - ms->dir, RES);
+                ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else
@@ -418,7 +418,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = 0;
             if (!ms->mip->pl)
             {
-                ms->dir = (ms->vel.x < 0) ? (RES / 2) : 0;
+                ms->dir = (ms->vel.x < 0) ? (ANGLE_RESOLUTION / 2) : 0;
             }
         }
     }
@@ -430,7 +430,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = -ms->vel.y;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(RES - ms->dir, RES);
+                ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else
@@ -439,7 +439,7 @@ static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = 0;
             if (!ms->mip->pl)
             {
-                ms->dir = (ms->vel.x < 0) ? (RES / 2) : 0;
+                ms->dir = (ms->vel.x < 0) ? (ANGLE_RESOLUTION / 2) : 0;
             }
         }
     }
@@ -459,7 +459,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         ms->vel.x = -ms->vel.x;
         if (!ms->mip->pl)
         {
-            ms->dir = MOD2(RES / 2 - ms->dir, RES);
+            ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
         }
     }
     else if (bounce == BounceHorHi)
@@ -468,7 +468,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         ms->vel.x = -ms->vel.x;
         if (!ms->mip->pl)
         {
-            ms->dir = MOD2(RES / 2 - ms->dir, RES);
+            ms->dir = MOD2(ANGLE_RESOLUTION / 2 - ms->dir, ANGLE_RESOLUTION);
         }
     }
     else if (bounce == BounceVerLo)
@@ -477,7 +477,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         ms->vel.y = -ms->vel.y;
         if (!ms->mip->pl)
         {
-            ms->dir = MOD2(RES - ms->dir, RES);
+            ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
         }
     }
     else if (bounce == BounceVerHi)
@@ -486,7 +486,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
         ms->vel.y = -ms->vel.y;
         if (!ms->mip->pl)
         {
-            ms->dir = MOD2(RES - ms->dir, RES);
+            ms->dir = MOD2(ANGLE_RESOLUTION - ms->dir, ANGLE_RESOLUTION);
         }
     }
     else
@@ -501,7 +501,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = -v.x;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(3 * RES / 4 - ms->dir, RES);
+                ms->dir = MOD2(3 * ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else if (bounce == BounceLeftUp)
@@ -512,7 +512,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = v.x;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(RES / 4 - ms->dir, RES);
+                ms->dir = MOD2(ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else if (bounce == BounceRightDown)
@@ -523,7 +523,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = v.x;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(RES / 4 - ms->dir, RES);
+                ms->dir = MOD2(ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
             }
         }
         else if (bounce == BounceRightUp)
@@ -534,7 +534,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
             ms->vel.y = -v.x;
             if (!ms->mip->pl)
             {
-                ms->dir = MOD2(3 * RES / 4 - ms->dir, RES);
+                ms->dir = MOD2(3 * ANGLE_RESOLUTION / 4 - ms->dir, ANGLE_RESOLUTION);
             }
         }
     }
@@ -1878,7 +1878,7 @@ static void Object_crash(move_state_t *ms)
                         RED,
                         1,
                         5, 10,
-                        MOD2(ms->dir - RES/4, RES), MOD2(ms->dir + RES/4, RES),
+                        MOD2(ms->dir - ANGLE_RESOLUTION/4, ANGLE_RESOLUTION), MOD2(ms->dir + ANGLE_RESOLUTION/4, ANGLE_RESOLUTION),
                         15, 25,
                         5, 15);
         }
@@ -2260,7 +2260,7 @@ void Move_player(player_t *pl)
     int i;
     int dist;
     move_info_t mi;
-    move_state_t ms[RES];
+    move_state_t ms[ANGLE_RESOLUTION];
     int worst = 0;
     int crash;
     int bounce;
@@ -2270,7 +2270,7 @@ void Move_player(player_t *pl)
     clvec_t todo;
     clvec_t done;
     vector_t vel;
-    vector_t r[RES];
+    vector_t r[ANGLE_RESOLUTION];
     ivec_t sign;  /* sign (-1 or 1) of direction */
     ipos_t block; /* block index */
     bool pos_update = false;
@@ -2313,7 +2313,7 @@ void Move_player(player_t *pl)
         }
     }
 
-    cor_res = MOD2(options.coriolis * RES / 360, RES);
+    cor_res = MOD2(options.coriolis * ANGLE_RESOLUTION / 360, ANGLE_RESOLUTION);
     oldvx = pl->vel.x;
     oldvy = pl->vel.y;
     pl->vel.x = (1.0f - fric) * (oldvx * tcos(cor_res) + oldvy * tsin(cor_res));
@@ -2519,7 +2519,7 @@ void Move_player(player_t *pl)
                     {
                         max_speed = 100;
                     }
-                    max_angle = RES;
+                    max_angle = ANGLE_RESOLUTION;
                 }
 
                 ms[worst].vel.x *= options.playerWallBrakeFactor;
@@ -2545,42 +2545,42 @@ void Move_player(player_t *pl)
                 switch (ms[worst].bounce)
                 {
                 case BounceHorLo:
-                    wall_dir = 4 * RES / 8;
+                    wall_dir = 4 * ANGLE_RESOLUTION / 8;
                     break;
                 case BounceHorHi:
-                    wall_dir = 0 * RES / 8;
+                    wall_dir = 0 * ANGLE_RESOLUTION / 8;
                     break;
                 case BounceVerLo:
-                    wall_dir = 6 * RES / 8;
+                    wall_dir = 6 * ANGLE_RESOLUTION / 8;
                     break;
                 default:
                 case BounceVerHi:
-                    wall_dir = 2 * RES / 8;
+                    wall_dir = 2 * ANGLE_RESOLUTION / 8;
                     break;
                 case BounceLeftDown:
-                    wall_dir = 1 * RES / 8;
+                    wall_dir = 1 * ANGLE_RESOLUTION / 8;
                     break;
                 case BounceLeftUp:
-                    wall_dir = 7 * RES / 8;
+                    wall_dir = 7 * ANGLE_RESOLUTION / 8;
                     break;
                 case BounceRightDown:
-                    wall_dir = 3 * RES / 8;
+                    wall_dir = 3 * ANGLE_RESOLUTION / 8;
                     break;
                 case BounceRightUp:
-                    wall_dir = 5 * RES / 8;
+                    wall_dir = 5 * ANGLE_RESOLUTION / 8;
                     break;
                 }
                 if (pl->dir >= wall_dir)
                 {
-                    delta_dir = (pl->dir - wall_dir <= RES / 2)
+                    delta_dir = (pl->dir - wall_dir <= ANGLE_RESOLUTION / 2)
                                     ? -(pl->dir - wall_dir)
-                                    : (wall_dir + RES - pl->dir);
+                                    : (wall_dir + ANGLE_RESOLUTION - pl->dir);
                 }
                 else
                 {
-                    delta_dir = (wall_dir - pl->dir <= RES / 2)
+                    delta_dir = (wall_dir - pl->dir <= ANGLE_RESOLUTION / 2)
                                     ? (wall_dir - pl->dir)
-                                    : -(pl->dir + RES - wall_dir);
+                                    : -(pl->dir + ANGLE_RESOLUTION - wall_dir);
                 }
                 abs_delta_dir = ABS(delta_dir);
                 /* only use armor if neccessary */
@@ -2596,16 +2596,16 @@ void Move_player(player_t *pl)
                     ms[worst].crash = (ms[worst].target >= 0 ? CrashTarget : CrashWallAngle);
                     break;
                 }
-                if (abs_delta_dir <= RES / 16)
+                if (abs_delta_dir <= ANGLE_RESOLUTION / 16)
                 {
                     pl->float_dir += (1.0f - options.playerWallBrakeFactor) * delta_dir;
-                    if (pl->float_dir >= RES)
+                    if (pl->float_dir >= ANGLE_RESOLUTION)
                     {
-                        pl->float_dir -= RES;
+                        pl->float_dir -= ANGLE_RESOLUTION;
                     }
                     else if (pl->float_dir < 0)
                     {
-                        pl->float_dir += RES;
+                        pl->float_dir += ANGLE_RESOLUTION;
                     }
                 }
 
@@ -2615,7 +2615,7 @@ void Move_player(player_t *pl)
                  * which don't collide with player.
                  * Clumsy touches (head first) with wall are more costly.
                  */
-                cost = (cost * (RES / 2 + abs_delta_dir)) / RES;
+                cost = (cost * (ANGLE_RESOLUTION / 2 + abs_delta_dir)) / ANGLE_RESOLUTION;
                 if (!Player_uses_emergency_shield(pl))
                 {
                     Player_add_fuel(pl, -cost * options.wallBounceFuelDrainMult);
@@ -2645,7 +2645,7 @@ void Move_player(player_t *pl)
                                 1,
                                 min_debris, max_debris,
                                 num_debris,
-                                wall_dir - (RES / 4), wall_dir + (RES / 4),
+                                wall_dir - (ANGLE_RESOLUTION / 4), wall_dir + (ANGLE_RESOLUTION / 4),
                                 20.0, 20 + (intensity >> 2),
                                 10.0, 10 + (intensity >> 1));
                     sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
@@ -2731,9 +2731,9 @@ void Turn_player(player_t *pl)
 {
     int i;
     move_info_t mi;
-    move_state_t ms[RES];
+    move_state_t ms[ANGLE_RESOLUTION];
     int dir;
-    int new_dir = MOD2((int)(pl->float_dir + 0.5), RES);
+    int new_dir = MOD2((int)(pl->float_dir + 0.5), ANGLE_RESOLUTION);
     int sign;
     int crash = -1;
     int nothing_done = 0;
@@ -2771,11 +2771,11 @@ void Turn_player(player_t *pl)
 
     if (new_dir > pl->dir)
     {
-        sign = (new_dir - pl->dir <= RES + pl->dir - new_dir) ? 1 : -1;
+        sign = (new_dir - pl->dir <= ANGLE_RESOLUTION + pl->dir - new_dir) ? 1 : -1;
     }
     else
     {
-        sign = (pl->dir - new_dir <= RES + new_dir - pl->dir) ? -1 : 1;
+        sign = (pl->dir - new_dir <= ANGLE_RESOLUTION + new_dir - pl->dir) ? -1 : 1;
     }
 
 #if 0
@@ -2792,7 +2792,7 @@ void Turn_player(player_t *pl)
     pos.cy = pl->pos.cy;
     for (; pl->dir != new_dir; turns_done++)
     {
-        dir = MOD2(pl->dir + sign, RES);
+        dir = MOD2(pl->dir + sign, ANGLE_RESOLUTION);
         if (!mi.edge_wrap)
         {
             if (pos.cx <= 22 * CLICK)

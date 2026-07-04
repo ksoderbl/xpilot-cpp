@@ -273,8 +273,8 @@ static void Laser_pulse_hits_player(
         pulse->dir = (int)Wrap_findDir(vicpl->pix_pos.x - pulse->pix_pos.x,
                                        vicpl->pix_pos.y - pulse->pix_pos.y) *
                          2 -
-                     RES / 2 - pulse->dir;
-        pulse->dir = MOD2(pulse->dir, RES);
+                     ANGLE_RESOLUTION / 2 - pulse->dir;
+        pulse->dir = MOD2(pulse->dir, ANGLE_RESOLUTION);
         pulse->life += vicpl->item[ITEM_MIRROR];
         pulse->len = PULSE_LENGTH;
         pulse->refl = true;

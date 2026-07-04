@@ -49,8 +49,8 @@
 
 void Thrust(player_t *pl)
 {
-    const int min_dir = (int)(pl->dir + RES / 2 - RES * 0.2 - 1);
-    const int max_dir = (int)(pl->dir + RES / 2 + RES * 0.2 + 1);
+    const int min_dir = (int)(pl->dir + ANGLE_RESOLUTION / 2 - ANGLE_RESOLUTION * 0.2 - 1);
+    const int max_dir = (int)(pl->dir + ANGLE_RESOLUTION / 2 + ANGLE_RESOLUTION * 0.2 + 1);
     const double max_speed = 1 + (pl->power * 0.14);
     const int max_life = 3 + (int)(pl->power * 0.35);
     static int keep_rand;
@@ -609,8 +609,8 @@ void Make_debris(clpos_t pos,
         debris->id = owner_id;
         debris->team = owner_team;
         Object_position_init_clpos(debris, pos);
-        dir = MOD2(min_dir + (int)(rfrac() * (max_dir - min_dir)), RES);
-        dirplus = MOD2(dir + 1, RES);
+        dir = MOD2(min_dir + (int)(rfrac() * (max_dir - min_dir)), ANGLE_RESOLUTION);
+        dirplus = MOD2(dir + 1, ANGLE_RESOLUTION);
         diroff = rfrac();
         dx = tcos(dir) + (tcos(dirplus) - tcos(dir)) * diroff;
         dy = tsin(dir) + (tsin(dirplus) - tsin(dir)) * diroff;
@@ -712,8 +712,8 @@ void Make_wreckage(clpos_t pos,
         Object_position_init_clpos(OBJ_PTR(wreckage), pos);
 
         /* Direction */
-        dir = MOD2(min_dir + (int)(rfrac() * MOD2(max_dir - min_dir, RES)),
-                   RES);
+        dir = MOD2(min_dir + (int)(rfrac() * MOD2(max_dir - min_dir, ANGLE_RESOLUTION)),
+                   ANGLE_RESOLUTION);
 
         /* Velocity and acceleration */
         speed = min_speed + rfrac() * (max_speed - min_speed);
@@ -737,7 +737,7 @@ void Make_wreckage(clpos_t pos,
 
         /* Wreckage type, rotation, and size */
         wreckage->wire_turnspeed = 0.02 + rfrac() * 0.35;
-        wreckage->wire_rotation = (int)(rfrac() * RES);
+        wreckage->wire_rotation = (int)(rfrac() * ANGLE_RESOLUTION);
         size = (int)(256.0 * 1.5 * mass / total_mass);
         if (size > 255)
             size = 255;
@@ -783,7 +783,7 @@ void Explode_fighter(player_t *pl)
                 8,
                 min_debris, max_debris,
                 (int)(min_debris + debris_range * rfrac()),
-                0, RES - 1,
+                0, ANGLE_RESOLUTION - 1,
                 20.0, 20 + (((int)(pl->mass)) >> 1),
                 5, (int)(5 + (pl->mass * 1.5)));
 
@@ -795,7 +795,7 @@ void Explode_fighter(player_t *pl)
                   2.0 * pl->mass,
                   GRAVITY,
                   10,
-                  0, RES - 1,
+                  0, ANGLE_RESOLUTION - 1,
                   10.0, 10 + (((int)(pl->mass)) >> 1),
                   5, (int)(5 + (pl->mass * 1.5)));
 }

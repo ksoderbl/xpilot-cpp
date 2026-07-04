@@ -100,9 +100,9 @@
 #define ASTEROID_CONCENTRATOR_BIT (1 << ASTEROID_CONCENTRATOR)
 
 #define DIR_RIGHT 0
-#define DIR_UP (RES / 4)
-#define DIR_LEFT (RES / 2)
-#define DIR_DOWN (3 * RES / 4)
+#define DIR_UP (ANGLE_RESOLUTION / 4)
+#define DIR_LEFT (ANGLE_RESOLUTION / 2)
+#define DIR_DOWN (3 * ANGLE_RESOLUTION / 4)
 
 typedef struct world world_t;
 extern world_t World, *world;

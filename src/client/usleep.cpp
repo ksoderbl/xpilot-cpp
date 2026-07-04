@@ -18,7 +18,7 @@
 int micro_delay(unsigned usec)
 {
 #if 0 /* SYSV */
-    poll((struct poll *) 0, (size_t) 0, usec / 1000);    /* ms RES */
+    poll((struct poll *) 0, (size_t) 0, usec / 1000);    /* ms ANGLE_RESOLUTION */
 #endif
     struct timeval timeout;
     timeout.tv_usec = usec % (unsigned long)1000000;

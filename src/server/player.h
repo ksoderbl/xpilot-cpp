@@ -753,8 +753,8 @@ static inline void Player_set_float_dir(player_t *pl, double new_float_dir)
     // if (options.ngControls && new_float_dir != pl->float_dir)
     // {
     //     pl->float_dir = new_float_dir;
-    //     pl->float_dir_cos = cos(pl->float_dir * 2.0 * PI / RES);
-    //     pl->float_dir_sin = sin(pl->float_dir * 2.0 * PI / RES);
+    //     pl->float_dir_cos = cos(pl->float_dir * 2.0 * PI / ANGLE_RESOLUTION);
+    //     pl->float_dir_sin = sin(pl->float_dir * 2.0 * PI / ANGLE_RESOLUTION);
     // }
     // else
     pl->float_dir = new_float_dir;

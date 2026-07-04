@@ -224,7 +224,7 @@ void Go_home(player_t *pl)
         vy = (rfrac() - 0.5) * 0.1;
         velo = LENGTH(vx, vy);
         dir = pl->last_check_dir;
-        dir = MOD2(dir + (int)((rfrac() - 0.5) * (RES / 8)), RES);
+        dir = MOD2(dir + (int)((rfrac() - 0.5) * (ANGLE_RESOLUTION / 8)), ANGLE_RESOLUTION);
     }
     else
     {

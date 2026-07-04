@@ -173,14 +173,14 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
      * is fixed in Find_base_direction() when the gravity has
      * been computed.
      */
-    if (dir < 0 || dir >= RES)
+    if (dir < 0 || dir >= ANGLE_RESOLUTION)
     {
         warn("Base with direction %d in map.", dir);
-        warn("Valid base directions are from 0 to %d.", RES - 1);
+        warn("Valid base directions are from 0 to %d.", ANGLE_RESOLUTION - 1);
         while (dir < 0)
-            dir += RES;
-        while (dir >= RES)
-            dir -= RES;
+            dir += ANGLE_RESOLUTION;
+        while (dir >= ANGLE_RESOLUTION)
+            dir -= ANGLE_RESOLUTION;
         warn("Using direction %d for this base.", dir);
     }
 

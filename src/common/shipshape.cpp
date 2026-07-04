@@ -104,12 +104,12 @@ clpos_t *Shape_get_points(shape_t *s, int dir)
     return s->cashed_pts;
 }
 
-void Rotate_point(clpos_t pt[RES])
+void Rotate_point(clpos_t pt[ANGLE_RESOLUTION])
 {
     int i;
     double cx, cy;
 
-    for (i = 1; i < RES; i++)
+    for (i = 1; i < ANGLE_RESOLUTION; i++)
     {
         // pt[i].x = tcos(i) * pt[0].x - tsin(i) * pt[0].y;
         // pt[i].y = tsin(i) * pt[0].x + tcos(i) * pt[0].y;
@@ -120,11 +120,11 @@ void Rotate_point(clpos_t pt[RES])
     }
 }
 
-void Rotate_position(position_t pt[RES])
+void Rotate_position(position_t pt[ANGLE_RESOLUTION])
 {
     int i;
 
-    for (i = 1; i < RES; i++)
+    for (i = 1; i < ANGLE_RESOLUTION; i++)
     {
         pt[i].x = tcos(i) * pt[0].x - tsin(i) * pt[0].y;
         pt[i].y = tsin(i) * pt[0].x + tcos(i) * pt[0].y;
@@ -163,7 +163,7 @@ static void Rotate_ship(shipshape_t *ship)
 shipshape_t *Default_ship(void)
 {
     static shipshape_t sh;
-    static clpos_t pts[6][RES];
+    static clpos_t pts[6][ANGLE_RESOLUTION];
 
     if (!sh.num_points)
     {
@@ -1118,7 +1118,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             return -1;
     }
 
-    i = sizeof(position_t) * RES;
+    i = sizeof(position_t) * ANGLE_RESOLUTION;
     ship->pts[0] = (clpos_t *)malloc(ship->num_points * i);
     if (ship->num_l_gun)
     {
@@ -1175,28 +1175,28 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     }
 
     for (i = 1; i < ship->num_points; i++)
-        ship->pts[i] = &ship->pts[i - 1][RES];
+        ship->pts[i] = &ship->pts[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_l_gun; i++)
-        ship->l_gun[i] = &ship->l_gun[i - 1][RES];
+        ship->l_gun[i] = &ship->l_gun[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_r_gun; i++)
-        ship->r_gun[i] = &ship->r_gun[i - 1][RES];
+        ship->r_gun[i] = &ship->r_gun[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_l_rgun; i++)
-        ship->l_rgun[i] = &ship->l_rgun[i - 1][RES];
+        ship->l_rgun[i] = &ship->l_rgun[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_r_rgun; i++)
-        ship->r_rgun[i] = &ship->r_rgun[i - 1][RES];
+        ship->r_rgun[i] = &ship->r_rgun[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_l_light; i++)
-        ship->l_light[i] = &ship->l_light[i - 1][RES];
+        ship->l_light[i] = &ship->l_light[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_r_light; i++)
-        ship->r_light[i] = &ship->r_light[i - 1][RES];
+        ship->r_light[i] = &ship->r_light[i - 1][ANGLE_RESOLUTION];
 
     for (i = 1; i < ship->num_m_rack; i++)
-        ship->m_rack[i] = &ship->m_rack[i - 1][RES];
+        ship->m_rack[i] = &ship->m_rack[i - 1][ANGLE_RESOLUTION];
 
     for (i = 0; i < ship->num_points; i++)
         Ship_set_point_ipos(ship, i, pt[i]);

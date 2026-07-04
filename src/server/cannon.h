@@ -76,7 +76,7 @@ extern long CANNON_USE_ITEM;
 #define CANNON_PULSES 1
 
 /* sector in which cannonfire is possible */
-#define CANNON_SPREAD (RES / 3)
+#define CANNON_SPREAD (ANGLE_RESOLUTION / 3)
 
 /* cannon smartness is 0 to this value */
 #define CANNON_SMARTNESS_MAX 3

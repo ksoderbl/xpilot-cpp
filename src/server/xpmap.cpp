@@ -628,9 +628,9 @@ setup_t *Xpmap_init_setup(void)
                 base_i++;
                 /* other code should take care of this */
                 assert(dir >= 0);
-                assert(dir < RES);
+                assert(dir < ANGLE_RESOLUTION);
                 /* round to nearest direction */
-                dir = (((dir + (RES / 8)) / (RES / 4)) * (RES / 4)) % RES;
+                dir = (((dir + (ANGLE_RESOLUTION / 8)) / (ANGLE_RESOLUTION / 4)) * (ANGLE_RESOLUTION / 4)) % ANGLE_RESOLUTION;
                 assert(dir == DIR_UP || dir == DIR_RIGHT || dir == DIR_DOWN || dir == DIR_LEFT);
                 switch (dir)
                 {
@@ -1492,9 +1492,9 @@ void Xpmap_find_base_direction(void)
         else
         {
             double a = findDir(-gravity.x, -gravity.y);
-            dir = MOD2((int)(a + 0.5), RES);
-            dir = ((dir + RES / 8) / (RES / 4)) * (RES / 4); /* round it */
-            dir = MOD2(dir, RES);
+            dir = MOD2((int)(a + 0.5), ANGLE_RESOLUTION);
+            dir = ((dir + ANGLE_RESOLUTION / 8) / (ANGLE_RESOLUTION / 4)) * (ANGLE_RESOLUTION / 4); /* round it */
+            dir = MOD2(dir, ANGLE_RESOLUTION);
         }
         att = -1;
 

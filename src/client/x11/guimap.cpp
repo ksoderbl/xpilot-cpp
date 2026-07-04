@@ -1070,16 +1070,16 @@ void Gui_paint_setup_item_concentrator(int x, int y)
             /* I'll bet you didn't know that floating point math
                is faster than integer math on a pentium
                (and for some reason the UNIX way rounds off too much) */
-            rdir = MOD2(rot_dir + tris[i].dir_off, RES);
+            rdir = MOD2(rot_dir + tris[i].dir_off, ANGLE_RESOLUTION);
             cx = (int)(X(x + BLOCK_SZ / 2) + tris[i].displ * tcos(rdir));
             cy = (int)(Y(y + BLOCK_SZ / 2) + tris[i].displ * tsin(rdir));
-            tdir = MOD2(tris[i].rot_dir, RES);
+            tdir = MOD2(tris[i].rot_dir, ANGLE_RESOLUTION);
             pts[0].x = WINSCALE(cx + (int)(tris[i].radius * tcos(tdir)));
             pts[0].y = WINSCALE(cy + (int)(tris[i].radius * tsin(tdir)));
-            pts[1].x = WINSCALE(cx + (int)(tris[i].radius * tcos(MOD2(tdir + RES / 3, RES))));
-            pts[1].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + RES / 3, RES))));
-            pts[2].x = WINSCALE(cx + (int)(tris[i].radius * tcos(MOD2(tdir + 2 * RES / 3, RES))));
-            pts[2].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + 2 * RES / 3, RES))));
+            pts[1].x = WINSCALE(cx + (int)(tris[i].radius * tcos(MOD2(tdir + ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
+            pts[1].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
+            pts[2].x = WINSCALE(cx + (int)(tris[i].radius * tcos(MOD2(tdir + 2 * ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
+            pts[2].y = WINSCALE(cy + (int)(tris[i].radius * tsin(MOD2(tdir + 2 * ANGLE_RESOLUTION / 3, ANGLE_RESOLUTION))));
             /* Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
                     i, cx, cy, pts[0].x, pts[0].y,
                     pts[1].x, pts[1].y, pts[2].x, pts[2].y,
@@ -1135,18 +1135,18 @@ void Gui_paint_setup_asteroid_concentrator(int x, int y)
             /* I'll bet you didn't know that floating point math
                is faster than integer math on a pentium
                (and for some reason the UNIX way rounds off too much) */
-            rdir = MOD2(rot_dir + sqrs[i].dir_off, RES);
+            rdir = MOD2(rot_dir + sqrs[i].dir_off, ANGLE_RESOLUTION);
             cx = (int)(X(x + BLOCK_SZ / 2) + sqrs[i].displ * tcos(rdir));
             cy = (int)(Y(y + BLOCK_SZ / 2) + sqrs[i].displ * tsin(rdir));
-            tdir = MOD2(sqrs[i].rot_dir, RES);
+            tdir = MOD2(sqrs[i].rot_dir, ANGLE_RESOLUTION);
             pts[0].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(tdir)));
             pts[0].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(tdir)));
-            pts[1].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + RES / 4, RES))));
-            pts[1].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + RES / 4, RES))));
-            pts[2].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + 2 * RES / 4, RES))));
-            pts[2].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 2 * RES / 4, RES))));
-            pts[3].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + 3 * RES / 4, RES))));
-            pts[3].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 3 * RES / 4, RES))));
+            pts[1].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
+            pts[1].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
+            pts[2].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + 2 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
+            pts[2].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 2 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
+            pts[3].x = WINSCALE(cx + (int)(sqrs[i].size * tcos(MOD2(tdir + 3 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
+            pts[3].y = WINSCALE(cy + (int)(sqrs[i].size * tsin(MOD2(tdir + 3 * ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION))));
             /* Trace("DC: %d cx=%d/%d %d/%d %d/%d %d/%d %d/%d\n",
                     i, cx, cy, pts[0].x, pts[0].y,
                     pts[1].x, pts[1].y, pts[2].x, pts[2].y,

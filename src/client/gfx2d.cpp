@@ -411,7 +411,7 @@ RGB_COLOR Picture_get_rotated_pixel(const xp_picture_t *picture,
     int angle;
     double rot_x, rot_y;
 
-    angle = ((image * RES) / picture->count) % 128;
+    angle = ((image * ANGLE_RESOLUTION) / picture->count) % 128;
 
     x -= picture->width / 2;
     y -= picture->height / 2;

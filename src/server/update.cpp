@@ -449,10 +449,10 @@ static void do_Autopilot(player_t *pl)
     {
         vad = (int)findDir(-pl->vel.x, -pl->vel.y);
     }
-    vad = MOD2(vad - pl->dir, RES);
-    if (vad > RES / 2)
+    vad = MOD2(vad - pl->dir, ANGLE_RESOLUTION);
+    if (vad > ANGLE_RESOLUTION / 2)
     {
-        vad = RES - vad;
+        vad = ANGLE_RESOLUTION - vad;
         dir = -1;
     }
     else
@@ -525,7 +525,7 @@ static void do_Autopilot(player_t *pl)
      * high at the moment, it gets the ship slowing down even though it
      * will impart some sideways velocity.
      */
-    if (pl->turnspeed != turnspeed && vad > RES / 32)
+    if (pl->turnspeed != turnspeed && vad > ANGLE_RESOLUTION / 32)
     {
         Thrust(pl, false);
         return;
@@ -611,7 +611,7 @@ static void Misc_object_update(void)
             wireobject_t *wireobj = WIRE_PTR(obj);
 
             wireobj->wire_rotation =
-                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * timeStep * RES)) % RES;
+                (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * timeStep * ANGLE_RESOLUTION)) % ANGLE_RESOLUTION;
         }
 
         update_object_speed(obj);
@@ -958,9 +958,9 @@ static void Update_players(void)
         pl->float_dir += pl->turnvel;
 
         while (pl->float_dir < 0)
-            pl->float_dir += RES;
-        while (pl->float_dir >= RES)
-            pl->float_dir -= RES;
+            pl->float_dir += ANGLE_RESOLUTION;
+        while (pl->float_dir >= ANGLE_RESOLUTION)
+            pl->float_dir -= ANGLE_RESOLUTION;
 
         /*
          * turnresistance is zero: client requests linear turning behaviour

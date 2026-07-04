@@ -1767,16 +1767,16 @@ static int predict_self_dir(int received_dir)
         count++;
     }
 
-    dir_delta = pointer_delta / (RES / 2);
+    dir_delta = pointer_delta / (ANGLE_RESOLUTION / 2);
     new_dir = (received_dir - dir_delta);
     while (new_dir < 0)
-        new_dir += RES;
-    while (new_dir >= RES)
-        new_dir -= RES;
+        new_dir += ANGLE_RESOLUTION;
+    while (new_dir >= ANGLE_RESOLUTION)
+        new_dir -= ANGLE_RESOLUTION;
     int_new_dir = (int)(new_dir + 0.5);
-    while (int_new_dir >= RES)
-        /* might be == RES */
-        int_new_dir -= RES;
+    while (int_new_dir >= ANGLE_RESOLUTION)
+        /* might be == ANGLE_RESOLUTION */
+        int_new_dir -= ANGLE_RESOLUTION;
 
     return int_new_dir;
 }

@@ -40,7 +40,7 @@
 /* mass of asteroid size n */
 #define ASTEROID_MASS(size) (ASTEROID_BASE_MASS * pow(2.0 + ASTEROID_DUST_MASS, (size) - 1.0))
 /* maximum angle between asteroids produced by breaking */
-#define ASTEROID_DELTA_DIR (RES / 8)
+#define ASTEROID_DELTA_DIR (ANGLE_RESOLUTION / 8)
 /* lifetime of asteroid before breaking */
 #define ASTEROID_LIFE 1000
 /* number of hits asteroid can take before breaking */

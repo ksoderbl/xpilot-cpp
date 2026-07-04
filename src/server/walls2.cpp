@@ -3027,7 +3027,7 @@ void Move_player2(player_t *pl)
 
 void Turn_player(player_t *pl, bool push)
 {
-    int new_dir = MOD2((int)(pl->float_dir + 0.5), RES);
+    int new_dir = MOD2((int)(pl->float_dir + 0.5), ANGLE_RESOLUTION);
     int next_dir, sign, group;
     hitmask_t hitmask;
     struct collans ans;
@@ -3062,28 +3062,28 @@ void Turn_player(player_t *pl, bool push)
 
     if (new_dir > pl->dir)
     {
-        if (new_dir - pl->dir <= RES + pl->dir - new_dir)
+        if (new_dir - pl->dir <= ANGLE_RESOLUTION + pl->dir - new_dir)
         {
             sign = 1;
-            relturn = (new_dir - pl->dir) / (double)RES;
+            relturn = (new_dir - pl->dir) / (double)ANGLE_RESOLUTION;
         }
         else
         {
             sign = -1;
-            relturn = (RES + pl->dir - new_dir) / (double)RES;
+            relturn = (ANGLE_RESOLUTION + pl->dir - new_dir) / (double)ANGLE_RESOLUTION;
         }
     }
     else
     {
-        if (pl->dir - new_dir <= RES + new_dir - pl->dir)
+        if (pl->dir - new_dir <= ANGLE_RESOLUTION + new_dir - pl->dir)
         {
             sign = -1;
-            relturn = (pl->dir - new_dir) / (double)RES;
+            relturn = (pl->dir - new_dir) / (double)ANGLE_RESOLUTION;
         }
         else
         {
             sign = 1;
-            relturn = (RES + new_dir - pl->dir) / (double)RES;
+            relturn = (ANGLE_RESOLUTION + new_dir - pl->dir) / (double)ANGLE_RESOLUTION;
         }
     }
 
@@ -3091,7 +3091,7 @@ void Turn_player(player_t *pl, bool push)
 
     while (pl->dir != new_dir)
     {
-        next_dir = MOD2(pl->dir + sign, RES);
+        next_dir = MOD2(pl->dir + sign, ANGLE_RESOLUTION);
         group = Shape_morph((shape_t *)pl->ship, pl->dir, (shape_t *)pl->ship,
                             next_dir, hitmask, OBJ_PTR(pl),
                             pl->pos.cx, pl->pos.cy, &ans);
