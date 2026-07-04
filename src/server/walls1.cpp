@@ -1857,8 +1857,7 @@ static void Object_crash(move_state_t *ms)
 
     case CrashTarget:
         obj->life = 0;
-        // Object_hits_target(ms, -1);
-        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1);
+        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1.0);
         break;
 
     case CrashWall:
@@ -2124,8 +2123,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
         sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
-        // Object_hits_target(ms, -1);
-        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1);
+        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1.0);
         break;
 
     case CrashTreasure:
@@ -2504,7 +2502,7 @@ void Move_player(player_t *pl)
                 int v = (int)speed >> 2;
                 int m = (int)(pl->mass - pl->emptymass * 0.75);
                 double b = 1 - 0.5f * options.playerWallBrakeFactor;
-                long cost = (long)(b * m * v);
+                double cost = b * m * v;
                 int delta_dir,
                     abs_delta_dir,
                     wall_dir;
@@ -2653,9 +2651,7 @@ void Move_player(player_t *pl)
                     sound_play_sensors(pl->pos, PLAYER_BOUNCED_SOUND);
                     if (ms[worst].target >= 0)
                     {
-                        cost <<= FUEL_SCALE_BITS;
-                        cost = (long)(cost * (options.wallBounceFuelDrainMult / 4.0));
-                        // Object_hits_target(&ms[worst], cost);
+                        cost = cost * (options.wallBounceFuelDrainMult / 4.0);
                         Object_hits_target(ms[worst].mip->obj, &world->targets[ms[worst].target], cost);
                     }
                 }

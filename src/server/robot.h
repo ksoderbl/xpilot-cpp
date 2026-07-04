@@ -159,9 +159,9 @@ typedef struct robot_default_data
     int longterm_mode;        /* long term robot mode */
     int lock_last_seen;       /* last time robot saw target */
     position_t lock_last_pos; /* last known position of target */
-    double fuel_l1_times_256; /* Fuel critical level */
-    double fuel_l2_times_256; /* Fuel warning level */
-    double fuel_l3_times_256; /* Fuel notify level */
+    double fuel_l1;           /* Fuel critical level */
+    double fuel_l2;           /* Fuel warning level */
+    double fuel_l3;           /* Fuel notify level */
 } robot_default_data_t;
 
 /*

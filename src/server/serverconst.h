@@ -284,7 +284,6 @@ constexpr double ED_LASER_HIT = -100.0;
 #define TRACTOR_MAX_FORCE(items) (-40 + (items) * -20)
 #define TRACTOR_PERCENT(dist, maxdist) \
     (1.0 - (0.5 * (dist) / (maxdist)))
-#define TRACTOR_COST_TIMES_256(percent) (-1.5 * FUEL_SCALE_FACT * (percent))
 #define TRACTOR_COST(percent) (-1.5 * (percent))
 #define TRACTOR_FORCE(tr_pr, percent, maxforce) \
     ((percent) * (maxforce) * ((tr_pr) ? -1 : 1))
@@ -298,6 +297,10 @@ constexpr double STATION_REGENERATION = 0.06;
 // constexpr double MAX_PLAYER_FUEL = 2600.0; // in const.h
 constexpr double MIN_PLAYER_FUEL = 350.0;
 constexpr double REFUEL_RATE = 5.0;
+
+#define TARGET_FUEL_REPAIR_PER_FRAME (TARGET_DAMAGE / (12 * 10))
+#define TARGET_REPAIR_PER_FRAME (TARGET_DAMAGE / (12 * 600))
+#define TARGET_UPDATE_DELAY (TARGET_DAMAGE / (TARGET_REPAIR_PER_FRAME * BLOCK_SZ))
 
 #define ALLIANCE_NOT_SET (-1)
 

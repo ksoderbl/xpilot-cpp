@@ -106,6 +106,7 @@ typedef struct
     int view_width, view_height; /* Viewable area dimensions */
     int debris_colors;           /* Max. debris intensities */
     int spark_rand;              /* Sparkling effect */
+    int last_mouse_pos;          /* value of last pointer pkt */
     char *user;                  /* username of player */
     char *nick;                  /* nickname of player */
     char *dpy;                   /* display of player */

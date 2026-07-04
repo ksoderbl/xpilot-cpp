@@ -236,7 +236,7 @@ typedef struct target
     clpos_t pos;
     int team;
     int dead_ticks;
-    int damage_times_256;
+    double damage;
     uint32_t conn_mask;
     uint32_t update_mask;
     long last_change;

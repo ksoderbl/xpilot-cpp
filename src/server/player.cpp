@@ -830,11 +830,11 @@ void Reset_all_players(void)
             {
                 target_t *targ = Target_by_index(i);
 
-                if (targ->damage_times_256 != TARGET_DAMAGE_TIMES_256 || targ->dead_ticks > 0)
+                if (targ->damage != TARGET_DAMAGE || targ->dead_ticks > 0)
                 {
                     world->block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
                     targ->dead_ticks = 0;
-                    targ->damage_times_256 = TARGET_DAMAGE_TIMES_256;
+                    targ->damage = TARGET_DAMAGE;
                     targ->conn_mask = 0;
                     targ->update_mask = (unsigned)-1;
                     targ->last_change = frame_loops;

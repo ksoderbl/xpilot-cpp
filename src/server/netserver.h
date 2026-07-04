@@ -43,6 +43,7 @@ int Send_self(connection_t *connp, player_t *pl,
               char *mods);
 int Send_leave(connection_t *connp, int id);
 int Send_player(connection_t *connp, int id);
+int Send_team(connection_t *connp, int id, int team);
 int Send_score(connection_t *connp, int id, double score,
                int life, int mychar, int alliance);
 int Send_score_object(connection_t *connp, double score, clpos_t pos, const char *string);
@@ -70,8 +71,7 @@ int Send_item(connection_t *connp, clpos_t pos, int type);
 int Send_paused(connection_t *connp, clpos_t pos, int count);
 int Send_appearing(connection_t *connp, clpos_t pos, int id, int count);
 int Send_ecm(connection_t *connp, clpos_t pos, int size);
-int Send_ship(connection_t *connp, clpos_t pos, int id, int dir, bool shield, bool cloak, bool eshield,
-              bool phased, bool deflector);
+int Send_ship(connection_t *connp, clpos_t pos, int id, int dir, int shield, int cloak, int eshield, int phased, int deflector);
 int Send_refuel(connection_t *connp, clpos_t pos1, clpos_t pos2);
 int Send_connector(connection_t *connp, clpos_t pos1, clpos_t pos2, int tractor);
 int Send_laser(connection_t *connp, int color, clpos_t pos, int len, int dir);

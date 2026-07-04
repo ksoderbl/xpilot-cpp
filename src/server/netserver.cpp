@@ -1202,7 +1202,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         /*
          * The client assumes at startup that all targets are not damaged.
          */
-        if (targ->dead_ticks == 0 && targ->damage_times_256 == TARGET_DAMAGE * 256)
+        if (targ->dead_ticks == 0 && targ->damage == TARGET_DAMAGE)
         {
             SET_BIT(targ->conn_mask, conn_bit);
             CLR_BIT(targ->update_mask, conn_bit);
@@ -1835,12 +1835,12 @@ int Send_mine(connection_t *connp, clpos_t pos, int teammine, int id)
                          teammine, id);
 }
 
-int Send_target(connection_t *connp, int num, int dead_ticks, double damage_times_256)
+int Send_target(connection_t *connp, int num, int dead_ticks, double damage)
 {
     if (FEATURE(connp, F_POLY))
         return 0;
     return Packet_printf(&connp->w, "%c%hu%hu%hu", PKT_TARGET,
-                         num, dead_ticks, (int)damage_times_256);
+                         num, dead_ticks, (int)(damage * 256.0));
 }
 
 int Send_polystyle(connection_t *connp, int polyind, int newstyle)
@@ -1898,15 +1898,18 @@ int Send_trans(connection_t *connp, clpos_t pos1, clpos_t pos2)
 }
 
 int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
-              bool shield, bool cloak, bool emergency_shield, bool phased, bool deflector)
+              int shield, int cloak, int emergency_shield, int phased,
+              int deflector)
 {
-    uint8_t flags =
-        (static_cast<uint8_t>(shield) << 0) |
-        (static_cast<uint8_t>(cloak) << 1) |
-        (static_cast<uint8_t>(emergency_shield) << 2) |
-        (static_cast<uint8_t>(phased) << 3) |
-        (static_cast<uint8_t>(deflector) << 4);
+    // uint8_t flags =
+    //     (static_cast<uint8_t>(shield) << 0) |
+    //     (static_cast<uint8_t>(cloak) << 1) |
+    //     (static_cast<uint8_t>(emergency_shield) << 2) |
+    //     (static_cast<uint8_t>(phased) << 3) |
+    //     (static_cast<uint8_t>(deflector) << 4);
 
+    if (!FEATURE(connp, F_SEPARATEPHASING))
+        cloak |= phased;
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd"
                          "%c"
@@ -1914,7 +1917,7 @@ int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
                          PKT_SHIP,
                          CLICK_TO_PIXEL(pos.cx), CLICK_TO_PIXEL(pos.cy), id,
                          dir,
-                         flags);
+                         (shield != 0) | ((cloak != 0) << 1) | ((emergency_shield != 0) << 2) | ((phased != 0) << 3) | ((deflector != 0) << 4));
 }
 
 int Send_refuel(connection_t *connp, clpos_t pos1, clpos_t pos2)
@@ -1948,10 +1951,9 @@ int Send_radar(connection_t *connp, int x, int y, int size)
 {
     /* Only since 4.2.1 can clients correctly handle teammates in green. */
     /* Except the original patch from kth.se was 4.1.0 "experimental 1" */
-    /*
     if (!FEATURE(connp, F_TEAMRADAR))
         size &= ~0x80;
-        */
+
     return Packet_printf(&connp->w, "%c%hd%hd%c", PKT_RADAR, x, y, size);
 }
 
@@ -2991,6 +2993,15 @@ static int Receive_pointer_move(connection_t *connp)
     /* kps - ??? */
     if (Player_is_hoverpaused(pl))
         return 1;
+
+    if (FEATURE(connp, F_CUMULATIVETURN))
+    {
+        int16_t delta;
+
+        delta = movement - connp->last_mouse_pos;
+        connp->last_mouse_pos = movement;
+        movement = delta;
+    }
 
     if (Player_uses_autopilot(pl))
         Autopilot(pl, false);

@@ -596,7 +596,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         targ = Target_by_index(i);
         if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && clpos_inview(&cv, targ->pos)))
         {
-            Send_target(conn, i, (int)targ->dead_ticks, targ->damage_times_256);
+            Send_target(conn, i, (int)targ->dead_ticks, targ->damage);
             pl->last_target_update = i;
             bytes_left -= target_packet_size;
             if (++packet_count >= max_packet)
