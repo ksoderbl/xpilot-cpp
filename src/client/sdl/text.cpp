@@ -44,14 +44,6 @@
 
 /* modified for xpilot by Erik Andersson */
 
-#ifdef _WINDOWS
-#include <windows.h>
-#define vsnprintf _vsnprintf
-#ifndef GL_BGR
-#define GL_BGR 0x80E0 /* OpenGL 1.2, for which I did not have headers */
-#endif
-#endif
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <GL/glu.h>

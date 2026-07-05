@@ -32,10 +32,6 @@
 
 #include "client.h"
 
-#ifdef _WINDOWS
-#define __FUNCTION__ ""
-#define vsnprintf _vsnprintf
-#endif
 #define PRINT_ERROR(X) fprintf(stderr, "ERROR in %s:%s(): %s\n", __FILE__, __FUNCTION__, X)
 
 /* This contains a pointer to the "topmost" console. The console that

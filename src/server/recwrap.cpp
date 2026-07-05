@@ -306,9 +306,6 @@ int Sockbuf_readRec(sockbuf_t *sbuf)
             {
                 return 0;
             }
-#ifdef _WINDOWS
-            errno = WSAGetLastError();
-#endif
             if (errno == EINTR)
             {
                 errno = 0;

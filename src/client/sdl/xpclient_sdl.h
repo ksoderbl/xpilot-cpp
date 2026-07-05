@@ -21,9 +21,6 @@
 #pragma once
 
 // // #include "xpclient.h"
-// #ifdef _WINDOWS
-// #include <windows.h>
-// #endif
 
 // /* determine if we use usual style including */
 // #ifndef MACOSX_FRAMEWORKS

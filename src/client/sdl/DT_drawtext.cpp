@@ -48,9 +48,6 @@
 
 #include "DT_drawtext.h"
 
-#ifdef _WINDOWS
-#define __FUNCTION__ ""
-#endif
 #define PRINT_ERROR(X) fprintf(stderr, "ERROR in %s:%s(): %s\n", __FILE__, __FUNCTION__, X)
 
 static BitFont *BitFonts = NULL; /* Linked list of fonts */

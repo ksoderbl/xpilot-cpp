@@ -210,11 +210,6 @@ int Init_window(void)
 
     /* legacy flags: keep around, but don't pass to SDL2 to create the GL window */
     videoFlags = 0;
-#ifndef _WINDOWS
-    /* Resizable window in SDL2 is a window flag. Keep legacy marker off here. */
-#else
-    videoFlags |= SDL_FULLSCREEN;
-#endif
 
     /* SDL2: choose a sane default "depth" for old code paths */
     draw_depth = 32;
@@ -222,10 +217,7 @@ int Init_window(void)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     /* SDL2 window flags */
-    Uint32 windowFlags = SDL_WINDOW_OPENGL;
-#ifndef _WINDOWS
-    windowFlags |= SDL_WINDOW_RESIZABLE;
-#endif
+    Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
     if (videoFlags & SDL_FULLSCREEN)
     {

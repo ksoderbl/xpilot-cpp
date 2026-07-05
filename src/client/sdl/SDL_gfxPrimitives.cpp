@@ -13,13 +13,6 @@
 
 #include "const.h"
 
-#ifdef _WINDOWS
-/* removes lots of the following warnings
- * integral size mismatch in argument; conversion supplied
- */
-#pragma warning(disable : 4761)
-#endif
-
 /* -===================- */
 
 /* ----- Defines for pixel clipping tests */
