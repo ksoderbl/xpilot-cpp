@@ -94,20 +94,20 @@ add_compile_options(
 
 add_subdirectory(src)
 
-# Runtime data files from lib/Makefile.am
+# Runtime data files
 install(
     FILES
-        lib/defaults.txt
-        lib/password.txt
-        lib/robots.txt
-        lib/shipshapes.txt
+        share/defaults.txt
+        share/password.txt
+        share/robots.txt
+        share/shipshapes.txt
     DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}
 )
 
 install(
     DIRECTORY
-        lib/fonts
-        lib/maps
-        lib/textures
+        share/fonts
+        share/maps
+        share/textures
     DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}
 )
