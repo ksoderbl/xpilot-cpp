@@ -27,6 +27,7 @@
 #include <csignal>
 #include <cerrno>
 #include <ctime>
+#include <cassert>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -2419,9 +2420,7 @@ int Receive_team_score(void)
 
 int Receive_timing(void)
 {
-    int n,
-        check,
-        round;
+    int n, check, round;
     short id;
     uint16_t timing;
     uint8_t ch;
@@ -2469,9 +2468,7 @@ int Receive_cannon(void)
 int Receive_target(void)
 {
     int n;
-    uint16_t num,
-        dead_time,
-        damage_times_256;
+    uint16_t num, dead_time, damage_times_256;
     uint8_t ch;
 
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
@@ -2527,10 +2524,8 @@ int Receive_magic(void)
 int Receive_string(void)
 {
     int n;
-    uint8_t ch,
-        type;
-    uint16_t arg1,
-        arg2;
+    uint8_t ch, type;
+    uint16_t arg1, arg2;
 
     if ((n = Packet_scanf(&cbuf, "%c%c%hu%hu", &ch, &type, &arg1, &arg2)) <= 0)
         return n;
@@ -2572,8 +2567,7 @@ int Receive_reliable(void)
     int n;
     short len;
     uint8_t ch;
-    long rel,
-        rel_loops;
+    long rel, rel_loops;
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%ld%ld",
                           &ch, &len, &rel, &rel_loops)) == -1)

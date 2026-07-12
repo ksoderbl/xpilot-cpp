@@ -27,34 +27,10 @@
 #include <array>
 
 #include "const.h"
+#include "other.h"
 #include "shipshape.h"
 
 #define MAX_SCORE_OBJECTS 10
-
-typedef struct
-{
-    double ratio;
-    double score;
-    short id;
-    uint16_t team;
-    short check;
-    short round;
-    long timing_loops;
-    short timing;
-    short life;
-    short mychar;
-    short alliance;
-    short name_width;         /* In pixels */
-    short name_len;           /* In bytes */
-    short max_chars_in_names; /* name_width was calculated
-                     for this value of maxCharsInNames */
-    short ignorelevel;
-    shipshape_t *ship;
-    char nick_name[MAX_CHARS];
-    char user_name[MAX_CHARS];
-    char host_name[MAX_CHARS];
-    char id_string[MAX_CHARS];
-} other_t;
 
 typedef struct
 {
@@ -82,9 +58,9 @@ typedef struct
 
 typedef struct
 {
-    int pos;                 /* Block index */
-    short dead_time;         /* Frames inactive */
-    double damage;           /* Damage to target */
+    int pos;         /* Block index */
+    short dead_time; /* Frames inactive */
+    double damage;   /* Damage to target */
 } target_t;
 
 typedef struct
@@ -321,58 +297,78 @@ extern int num_edge_styles, max_edge_styles;
 extern polygon_style_t *polygon_styles;
 extern int num_polygon_styles, max_polygon_styles;
 
-/* dynamic global game data */
-
-extern other_t *Others;
-extern int num_others, max_others;
-// extern refuel_t *refuel_ptr;
-// extern int num_refuel, max_refuel;
-// extern connector_t *connector_ptr;
-// extern int num_connector, max_connector;
-// extern laser_t *laser_ptr;
-// extern int num_laser, max_laser;
-// extern missile_t *missile_ptr;
-// extern int num_missile, max_missile;
-// extern ball_t *ball_ptr;
-// extern int num_ball, max_ball;
-// extern ship_t *ship_ptr;
-// extern int num_ship, max_ship;
-// extern mine_t *mine_ptr;
-// extern int num_mine, max_mine;
-// extern itemtype_t *itemtype_ptr;
-// extern int num_itemtype, max_itemtype;
-// extern ecm_t *ecm_ptr;
-// extern int num_ecm, max_ecm;
-// extern trans_t *trans_ptr;
-// extern int num_trans, max_trans;
-// extern paused_t *paused_ptr;
-// extern int num_paused, max_paused;
-// extern appearing_t *appearing_ptr;
-// extern int num_appearing, max_appearing;
-// extern radar_t *radar_ptr;
-// extern int num_radar, max_radar;
-// extern vcannon_t *vcannon_ptr;
-// extern int num_vcannon, max_vcannon;
-// extern vfuel_t *vfuel_ptr;
-// extern int num_vfuel, max_vfuel;
-// extern vbase_t *vbase_ptr;
-// extern int num_vbase, max_vbase;
-
-// extern debris_t *debris_ptr[DEBRIS_TYPES];
-
-// extern int num_debris[DEBRIS_TYPES],
-//     max_debris[DEBRIS_TYPES];
-
-// extern debris_t *fastshot_ptr[DEBRIS_TYPES * 2];
-
-// extern int num_fastshot[DEBRIS_TYPES * 2],
-//     max_fastshot[DEBRIS_TYPES * 2];
-
-// extern vdecor_t *vdecor_ptr;
-// extern int num_vdecor, max_vdecor;
-// extern wreckage_t *wreckage_ptr;
-// extern int num_wreckage, max_wreckage;
-// extern asteroid_t *asteroid_ptr;
-// extern int num_asteroids, max_asteroids;
-// extern wormhole_t *wormhole_ptr;
-// extern int num_wormholes, max_wormholes;
+double Fuel_by_pos(int x, int y);
+int Target_alive(int x, int y, double *damage);
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage);
+int Handle_fuel(int ind, double fuel);
+int Cannon_dead_time_by_pos(int x, int y, int *dot);
+int Handle_cannon(int ind, int dead_time);
+int Handle_target(int num, int dead_time, double damage);
+int Base_info_by_pos(int x, int y, int *id, int *team);
+int Handle_base(int id, int ind);
+int Check_pos_by_index(int ind, int *xp, int *yp);
+int Check_index_by_pos(int x, int y);
+homebase_t *Homebase_by_id(int id);
+int Handle_leave(int id);
+int Handle_player(int id, int team, int mychar,
+                  char *nick_name, char *user_name, char *host_name,
+                  char *shape, int myself);
+int Handle_team(int id, int pl_team);
+int Handle_score(int id, double score, int life, int mychar, int alliance);
+int Handle_score_object(double score, int x, int y, char *msg);
+int Handle_team_score(int team, double score);
+int Handle_timing(int id, int check, int round, long loops);
+int Handle_seek(int programmer_id, int robot_id, int sought_id);
+int Handle_start(long server_loops);
+int Handle_end(long server_loops);
+int Handle_self(int x, int y, int vx, int vy, int newHeading,
+                double newPower, double newTurnspeed, double newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                uint8_t *newNumItems, int newCurrentTank,
+                double newFuelSum, double newFuelMax, int newPacketSize,
+                int status);
+int Handle_self_items(uint8_t *newNumItems);
+int Handle_modifiers(char *m);
+int Handle_damaged(int dam);
+int Handle_destruct(int count);
+int Handle_shutdown(int count, int delay);
+int Handle_thrusttime(int count, int max);
+int Handle_shieldtime(int count, int max);
+int Handle_phasingtime(int count, int max);
+int Handle_rounddelay(int count, int max);
+int Handle_refuel(int x0, int y0, int x1, int y1);
+int Handle_connector(int x0, int y0, int x1, int y1, int tractor);
+int Handle_laser(int color, int x, int y, int len, int dir);
+int Handle_missile(int x, int y, int dir, int len);
+int Handle_ball(int x, int y, int id, int style);
+int Handle_ship(int x, int y, int id, int dir, int shield, int cloak,
+                int eshield, int phased, int deflector);
+int Handle_mine(int x, int y, int teammine, int id);
+int Handle_item(int x, int y, int type);
+int Handle_fastshot(int type, uint8_t *p, int n);
+int Handle_teamshot(int type, uint8_t *p, int n);
+int Handle_debris(int type, uint8_t *p, int n);
+int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation);
+int Handle_asteroid(int x, int y, int type, int size, int rotation);
+int Handle_wormhole(int x, int y);
+int Handle_polystyle(int polyind, int newstyle);
+int Handle_ecm(int x, int y, int size);
+int Handle_trans(int x1, int y1, int x2, int y2);
+int Handle_paused(int x, int y, int count);
+int Handle_appearing(int x, int y, int id, int count);
+int Handle_radar(int x, int y, int size);
+int Handle_fastradar(int x, int y, int size);
+int Handle_vcannon(int x, int y, int type);
+int Handle_vfuel(int x, int y, double fuel);
+int Handle_vbase(int x, int y, int xi, int yi, int type);
+int Handle_vdecor(int x, int y, int xi, int yi, int type);
+int Handle_message(char *msg);
+int Handle_eyes(int id);
+int Handle_time_left(long sec);
+void Map_dots(void);
+void Map_restore(int startx, int starty, int width, int height);
+void Map_blue(int startx, int starty, int width, int height);
+bool Using_score_decimals(void);
+int Map_init(void);
+int Map_cleanup(void);

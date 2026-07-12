@@ -199,25 +199,6 @@ static void Paint_debris(int x_areas, int y_areas, int areas, int max_)
 {
     int color, i, j, x, y;
 
-    // for (i = 0; i < max_; i++)
-    // {
-    //     if (num_debris[i] > 0)
-    //     {
-    //         x = BASE_X(i);
-    //         y = BASE_Y(i);
-    //         color = COLOR(i);
-    //         color = DEBRIS_COLOR(color);
-    //         int color2 = Debris_color(color);
-    //         // warn("color, color2 = %d, %d", color, color2);
-
-    //         for (j = 0; j < num_debris[i]; j++)
-    //             Gui_paint_spark(color,
-    //                             x + debris_ptr[i][j].x,
-    //                             y - debris_ptr[i][j].y);
-    //         RELEASE(debris_ptr[i], num_debris[i], max_debris[i]);
-    //     }
-    // }
-
     for (int i = 0; i < max_; i++)
     {
         auto &debrisList = clMap.debrisTypes[i];
@@ -362,22 +343,6 @@ static void Paint_lasers(void)
 
 static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
 {
-    // int x, y, j, color;
-
-    // if (num_fastshot[i] > 0)
-    // {
-    //     x = BASE_X(i);
-    //     y = BASE_Y(i);
-    //     color = COLOR(i);
-    //     if (color != WHITE && color != BLUE)
-    //         color = WHITE;
-    //     for (j = 0; j < num_fastshot[i]; j++)
-    //         Gui_paint_fastshot(color,
-    //                            x + fastshot_ptr[i][j].x,
-    //                            y - fastshot_ptr[i][j].y);
-    //     RELEASE(fastshot_ptr[i], num_fastshot[i], max_fastshot[i]);
-    // }
-
     auto &fastshotList = clMap.fastshotTypes[i];
 
     if (fastshotList.empty())
@@ -401,23 +366,6 @@ static void Paint_fastshots(int i, int x_areas, int y_areas, int areas)
 
 static void Paint_teamshots(int i, int x_areas, int y_areas, int areas)
 {
-    // int x, y, j /*, color */;
-
-    // (void)areas;
-    // /*
-    //  * Teamshots are in range DEBRIS_TYPES to DEBRIS_TYPES*2-1 in fastshot.
-    //  */
-    // if (num_fastshot[t_] > 0)
-    // {
-    //     x = BASE_X(i);
-    //     y = BASE_Y(i);
-    //     /*color = COLOR(i);*/
-    //     for (j = 0; j < num_fastshot[t_]; j++)
-    //         Gui_paint_teamshot(x + fastshot_ptr[t_][j].x,
-    //                            y - fastshot_ptr[t_][j].y);
-    //     RELEASE(fastshot_ptr[t_], num_fastshot[t_], max_fastshot[t_]);
-    // }
-
     auto &teamshotList = clMap.teamshotTypes[i];
 
     if (teamshotList.empty())

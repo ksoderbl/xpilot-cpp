@@ -124,7 +124,7 @@ static int Query_subnet(sock_t *sock,
          * are still transmitting packets for non-existing servers
          * and the server packet colliding with one of our packets.
          */
-        micro_delay((unsigned)10000);
+        usleep(10000);
     }
 
     return 0;

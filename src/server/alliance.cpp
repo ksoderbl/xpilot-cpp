@@ -290,6 +290,7 @@ static void Set_alliance_message(alliance_t *alliance, const char *msg)
     for (i = 0; i < NumPlayers; i++)
     {
         player_t *pl2 = Player_by_index(i);
+
         if (Player_is_human(pl2))
         {
             if (pl2->alliance == alliance->id)

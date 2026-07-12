@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "record.h"
+
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -40,16 +42,17 @@
 #include "commonproto.h"
 #include "const.h"
 #include "xpmemory.h"
+#include "xpconfig.h"
+#include "xperror.h"
 
+#include "clientsetup.h"
+#include "messages.h"
+#include "netclient.h"
 #include "option.h"
 #include "paint.h"
 #include "netclient.h"
 
-#include "xpconfig.h"
-#include "xperror.h"
 #include "xpaint.h"
-#include "clientsetup.h"
-#include "record.h"
 #include "recordfmt.h"
 #include "xinit.h"
 

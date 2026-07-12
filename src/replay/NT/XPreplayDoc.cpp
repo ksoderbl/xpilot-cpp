@@ -21,13 +21,13 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNCREATE(CXPreplayDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CXPreplayDoc, CDocument)
-	//{{AFX_MSG_MAP(CXPreplayDoc)
-	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, OnUpdateFileSave)
-	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_AS, OnUpdateFileSaveAs)
-	ON_UPDATE_COMMAND_UI(ID_FILE_PROPERTIES, OnUpdateFileProperties)
-	ON_COMMAND(ID_FILE_PROPERTIES, OnFileProperties)
-	//}}AFX_MSG_MAP
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FRAMECOUNTER, OnUpdatePage)
+//{{AFX_MSG_MAP(CXPreplayDoc)
+ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, OnUpdateFileSave)
+ON_UPDATE_COMMAND_UI(ID_FILE_SAVE_AS, OnUpdateFileSaveAs)
+ON_UPDATE_COMMAND_UI(ID_FILE_PROPERTIES, OnUpdateFileProperties)
+ON_COMMAND(ID_FILE_PROPERTIES, OnFileProperties)
+//}}AFX_MSG_MAP
+ON_UPDATE_COMMAND_UI(ID_INDICATOR_FRAMECOUNTER, OnUpdatePage)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ CXPreplayDoc::CXPreplayDoc()
 
 CXPreplayDoc::~CXPreplayDoc()
 {
-	if(docOpened)
+	if (docOpened)
 	{
 		FreeFrames();
 		FreeRC();
@@ -65,22 +65,20 @@ BOOL CXPreplayDoc::OnNewDocument()
 	return TRUE;
 }
 
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CXPreplayDoc serialization
 
-void CXPreplayDoc::Serialize(CArchive& ar)
+void CXPreplayDoc::Serialize(CArchive &ar)
 {
-	static CString	filename;
+	static CString filename;
 	if (ar.IsStoring())
-	{							//saving
+	{ // saving
 		BeginWaitCursor();
-		struct frame	*frm;
-		DWORD	min, max, offset;
-		CFile	file;
+		struct frame *frm;
+		DWORD min, max, offset;
+		CFile file;
 
-		if(!file.Open((LPCTSTR)filename, CFile::modeRead))
+		if (!file.Open((LPCTSTR)filename, CFile::modeRead))
 		{
 			MessageBox(NULL, "Save failed, unable to open sourcefile", "Error", MB_OK | MB_ICONSTOP);
 			return;
@@ -88,44 +86,44 @@ void CXPreplayDoc::Serialize(CArchive& ar)
 
 		frm = rc.head;
 
-		char	*headerbuf;
+		char *headerbuf;
 		headerbuf = new char[frm->filepos];
 		file.Read(headerbuf, frm->filepos);
 		ar.Write(headerbuf, frm->filepos);
 		delete[] headerbuf;
 
-		while(minSelection != frm->number)
+		while (minSelection != frm->number)
 			frm = frm->next;
 
 		min = frm->filepos;
 
-		while(maxSelection != frm->number)
+		while (maxSelection != frm->number)
 			frm = frm->next;
 
-		if(frm == rc.tail)
+		if (frm == rc.tail)
 			max = file.GetLength();
 		else
 			max = frm->next->filepos;
 
 		file.Seek(min, CFile::begin);
 
-		char	buffer[4096];
-		for(DWORD i = min; i < max - 4096; i+= 4096)
+		char buffer[4096];
+		for (DWORD i = min; i < max - 4096; i += 4096)
 		{
 			file.Read(buffer, 4096);
 			ar.Write(buffer, 4096);
 		}
-		file.Read(buffer, max - i);	// leftovers
+		file.Read(buffer, max - i); // leftovers
 		ar.Write(buffer, max - i);
 
 		file.Close();
 
-//		Now that the file is written, show the new file
+		//		Now that the file is written, show the new file
 
 		frm = rc.head;
 		offset = frm->filepos;
 
-		while(frm->number != minSelection)
+		while (frm->number != minSelection)
 		{
 			FreeShapes(frm);
 			frm = frm->next;
@@ -138,7 +136,7 @@ void CXPreplayDoc::Serialize(CArchive& ar)
 
 		frm = rc.tail;
 
-		while(frm->number != maxSelection)
+		while (frm->number != maxSelection)
 		{
 			FreeShapes(frm);
 			frm = frm->prev;
@@ -149,7 +147,7 @@ void CXPreplayDoc::Serialize(CArchive& ar)
 
 		frm = rc.head;
 		frame_count = 0;
-		while(frm)
+		while (frm)
 		{
 			frm->number = frame_count++;
 			frm->filepos -= offset;
@@ -164,9 +162,9 @@ void CXPreplayDoc::Serialize(CArchive& ar)
 		EndWaitCursor();
 	}
 	else
-	{							// loading
+	{ // loading
 		BeginWaitCursor();
-		if(docOpened)
+		if (docOpened)
 		{
 			docOpened = 0;
 			FreeFrames();
@@ -183,7 +181,7 @@ void CXPreplayDoc::Serialize(CArchive& ar)
 		rc.eof = false;
 
 		ReadHeader(ar);
-		while(!rc.eof)
+		while (!rc.eof)
 		{
 			ReadNextFrame(ar);
 		}
@@ -205,7 +203,7 @@ void CXPreplayDoc::AssertValid() const
 	CDocument::AssertValid();
 }
 
-void CXPreplayDoc::Dump(CDumpContext& dc) const
+void CXPreplayDoc::Dump(CDumpContext &dc) const
 {
 	CDocument::Dump(dc);
 }
@@ -214,26 +212,26 @@ void CXPreplayDoc::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // CXPreplayDoc commands
 
-void CXPreplayDoc::OnUpdateFileSave(CCmdUI* pCmdUI) 
+void CXPreplayDoc::OnUpdateFileSave(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(docOpened);
 }
 
-void CXPreplayDoc::OnUpdateFileSaveAs(CCmdUI* pCmdUI) 
+void CXPreplayDoc::OnUpdateFileSaveAs(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(docOpened);
 }
 
-void CXPreplayDoc::ReadHeader(CArchive& ar)
+void CXPreplayDoc::ReadHeader(CArchive &ar)
 {
-	char		magic[5];
-	unsigned char	minor;
-	unsigned char	major;
-	char		dot;
-	char		nl;
-	char		byte;
-	bool		manycolors = false;
-	CString	errormessage;
+	char magic[5];
+	unsigned char minor;
+	unsigned char major;
+	char dot;
+	char nl;
+	char byte;
+	bool manycolors = false;
+	CString errormessage;
 
 	ar >> magic[0];
 	ar >> magic[1];
@@ -257,7 +255,7 @@ void CXPreplayDoc::ReadHeader(CArchive& ar)
 	if (major != RC_MAJORVERSION || minor > RC_MINORVERSION)
 	{
 		errormessage.Format("Incompatible version. (file: %c.%c)(program: %c.%c)",
-			major, minor, RC_MAJORVERSION, RC_MINORVERSION);
+							major, minor, RC_MAJORVERSION, RC_MINORVERSION);
 		MessageBox(NULL, (LPCTSTR)errormessage, "Read error", MB_OK | MB_ICONHAND);
 		return;
 	}
@@ -273,20 +271,20 @@ void CXPreplayDoc::ReadHeader(CArchive& ar)
 	ar >> rc.maxColors;
 
 	rc.colors = new struct colors[rc.maxColors];
-	for(int i = 0; i < rc.maxColors; i++)
+	for (int i = 0; i < rc.maxColors; i++)
 	{
 		ar >> rc.colors[i].pixel;
 		ar >> rc.colors[i].red;
 		ar >> rc.colors[i].green;
 		ar >> rc.colors[i].blue;
 
-		if(rc.colors[i].red > 255 || rc.colors[i].green > 255 || rc.colors[i].blue > 255)
+		if (rc.colors[i].red > 255 || rc.colors[i].green > 255 || rc.colors[i].blue > 255)
 			manycolors = true;
 	}
 
-	for(i = 0; i < rc.maxColors; i++)
+	for (i = 0; i < rc.maxColors; i++)
 	{
-		if(manycolors)
+		if (manycolors)
 		{
 			rc.colors[i].red /= 256;
 			rc.colors[i].green /= 256;
@@ -310,16 +308,16 @@ void CXPreplayDoc::ReadHeader(CArchive& ar)
 	PropDlg.m_recorddate = rc.recorddate;
 }
 
-char *CXPreplayDoc::ReadString(CArchive& ar)
+char *CXPreplayDoc::ReadString(CArchive &ar)
 {
-	unsigned short len;
+	uint16_t len;
 	char *string;
 
 	ar >> len;
 	string = new char[len + 1];
 
 	string[len] = '\0';
-	for(int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
 		ar >> string[i];
 	}
@@ -327,9 +325,9 @@ char *CXPreplayDoc::ReadString(CArchive& ar)
 	return string;
 }
 
-void CXPreplayDoc::ReadFont(CArchive& ar, char **fontname, int *fontsize)
+void CXPreplayDoc::ReadFont(CArchive &ar, char **fontname, int *fontsize)
 {
-	unsigned short len;
+	uint16_t len;
 	char *string;
 	char *pointer;
 	int i;
@@ -338,21 +336,21 @@ void CXPreplayDoc::ReadFont(CArchive& ar, char **fontname, int *fontsize)
 	string = new char[len + 1];
 
 	string[len] = '\0';
-	for(i = 0; i < len; i++)
+	for (i = 0; i < len; i++)
 	{
 		ar >> string[i];
 	}
 
-	for(i = 1; i < len + 1; i++)
+	for (i = 1; i < len + 1; i++)
 	{
-		if(string[i] == '-')
+		if (string[i] == '-')
 			break;
 	}
 	pointer = string + ++i;
 
-	for(; i < len + 1; i++)
+	for (; i < len + 1; i++)
 	{
-		if(string[i] == '-')
+		if (string[i] == '-')
 			break;
 	}
 	string[i] = '\0';
@@ -361,21 +359,21 @@ void CXPreplayDoc::ReadFont(CArchive& ar, char **fontname, int *fontsize)
 	strcpy(*fontname, pointer);
 
 	int count = 0;
-	for(; i < len + 1; i++)
+	for (; i < len + 1; i++)
 	{
-		if(string[i] == '-')
+		if (string[i] == '-')
 			count++;
 
-		if(count == 4)
+		if (count == 4)
 			break;
 	}
 	i++;
 
-	char	tmp[5];
+	char tmp[5];
 	int j = 0;
-	for(; i < len + 1; i++, j++)
+	for (; i < len + 1; i++, j++)
 	{
-		if(string[i] == '-')
+		if (string[i] == '-')
 			break;
 
 		tmp[j] = string[i];
@@ -386,18 +384,21 @@ void CXPreplayDoc::ReadFont(CArchive& ar, char **fontname, int *fontsize)
 	delete[] string;
 }
 
-void CXPreplayDoc::ReadNextFrame(CArchive& ar)
+void CXPreplayDoc::ReadNextFrame(CArchive &ar)
 {
-	char			c;
-	struct frame	*f = NULL;
+	char c;
+	struct frame *f = NULL;
 
 	if (rc.eof)
 	{
 		return;
 	}
 
-	try{ar >> c;}
-	catch(CArchiveException *e)
+	try
+	{
+		ar >> c;
+	}
+	catch (CArchiveException *e)
 	{
 		rc.eof = true;
 		return;
@@ -417,7 +418,7 @@ void CXPreplayDoc::ReadNextFrame(CArchive& ar)
 	f = new struct frame;
 
 	ar.Flush();
-	f->filepos = ar.GetFile()->GetPosition() - 1;	// starting at RC_NEWFRAME
+	f->filepos = ar.GetFile()->GetPosition() - 1; // starting at RC_NEWFRAME
 	ar >> f->width;
 	ar >> f->height;
 	f->shapes = NULL;
@@ -446,34 +447,37 @@ void CXPreplayDoc::ReadNextFrame(CArchive& ar)
 
 void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 {
-	char			c = 0, prev_c;
-	struct rShape	*shp = NULL,
-					*shphead = NULL,
-					*newshp;
-	CPoint		*xpp;
-	CRect		*xrp;
-	rArc		*xap;
-	rSegment		*xsp;
-	char		*cp;
-	bool			done = false;
-	unsigned char	byte;
-	unsigned short	ushort;
-	unsigned char	width, height;	// for the Arcs
-	short	angle1, angle2;	// for the Arcs
+	char c = 0, prev_c;
+	struct rShape *shp = NULL,
+				  *shphead = NULL,
+				  *newshp;
+	CPoint *xpp;
+	CRect *xrp;
+	rArc *xap;
+	rSegment *xsp;
+	char *cp;
+	bool done = false;
+	unsigned char byte;
+	uint16_t ushort;
+	unsigned char width, height; // for the Arcs
+	short angle1, angle2;		 // for the Arcs
 
-    while (!done)
+	while (!done)
 	{
 		prev_c = c;
-		try{ar >> c;}
-		catch(CArchiveException *e)
+		try
+		{
+			ar >> c;
+		}
+		catch (CArchiveException *e)
 		{
 			MessageBox(NULL, "Premature End-Of-File encountered. Truncating.", "Read error", MB_OK | MB_ICONWARNING);
 			done = true;
 			rc.eof = true;
-		    continue;
+			continue;
 		}
 
-		switch(c)
+		switch (c)
 		{
 		case RC_ENDFRAME:
 			done = true;
@@ -527,10 +531,10 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 
 				ar >> angle1;
 				ar >> angle2;
-				shp->shape.arc.x3 = shp->shape.arc.x1 + width/2 + (int)(100*cos((double)angle1 / 3666.93));
-				shp->shape.arc.y3 = shp->shape.arc.y1 + height/2 + (int)(100*sin((double)angle1 / 3666.93));
-				shp->shape.arc.x4 = shp->shape.arc.x1 + width/2 + (int)(100*cos((angle1 + angle2 + 64) / 3666.93));
-				shp->shape.arc.y4 = shp->shape.arc.y1 + height/2 + (int)(100*sin((angle1 + angle2 + 64) / 3666.93));
+				shp->shape.arc.x3 = shp->shape.arc.x1 + width / 2 + (int)(100 * cos((double)angle1 / 3666.93));
+				shp->shape.arc.y3 = shp->shape.arc.y1 + height / 2 + (int)(100 * sin((double)angle1 / 3666.93));
+				shp->shape.arc.x4 = shp->shape.arc.x1 + width / 2 + (int)(100 * cos((angle1 + angle2 + 64) / 3666.93));
+				shp->shape.arc.y4 = shp->shape.arc.y1 + height / 2 + (int)(100 * sin((angle1 + angle2 + 64) / 3666.93));
 				break;
 
 			case RC_DRAWLINES:
@@ -552,11 +556,11 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 				}
 				ar >> byte;
 				shp->shape.lines.mode = byte;
-				if(byte)
+				if (byte)
 				{
-					for(int i = 1; i < shp->shape.lines.npoints; i++)
+					for (int i = 1; i < shp->shape.lines.npoints; i++)
 					{
-						shp->shape.lines.points[i] += shp->shape.lines.points[i-1];
+						shp->shape.lines.points[i] += shp->shape.lines.points[i - 1];
 					}
 				}
 				break;
@@ -579,9 +583,9 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 				SetMaxX(shp->shape.rectangle.x);
 				SetMaxY(shp->shape.rectangle.y);
 				ar >> byte;
-				shp->shape.rectangle.width = (unsigned short)byte;
+				shp->shape.rectangle.width = (uint16_t)byte;
 				ar >> byte;
-				shp->shape.rectangle.height = (unsigned short)byte;
+				shp->shape.rectangle.height = (uint16_t)byte;
 				SetMaxX(shp->shape.rectangle.x + shp->shape.rectangle.width);
 				SetMaxY(shp->shape.rectangle.y + shp->shape.rectangle.height);
 				break;
@@ -636,20 +640,20 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 			case RC_FILLRECTANGLES:
 				ar >> ushort;
 				shp->shape.rectangles.nrectangles = ushort;
-				xrp = new CRect[ushort+1];
+				xrp = new CRect[ushort + 1];
 				shp->shape.rectangles.rectangles = xrp;
 				while (ushort--)
 				{
 					short x, y;
-					unsigned short width, height;
+					uint16_t width, height;
 					ar >> x;
 					ar >> y;
 					SetMaxX(x);
 					SetMaxY(y);
 					ar >> byte;
-					width = (unsigned short)byte;
+					width = (uint16_t)byte;
 					ar >> byte;
-					height = (unsigned short)byte;
+					height = (uint16_t)byte;
 
 					xrp->left = x;
 					xrp->top = y;
@@ -682,19 +686,19 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 
 					ar >> angle1;
 					ar >> angle2;
-					if(angle2 == 19200)
+					if (angle2 == 19200)
 					{
-						xap->x3 = xap->x1 + width/2 + (int)(100*cos((angle1 + angle2 + 64) / 3666.93));
-						xap->y3 = xap->y1 + height/2 + (int)(100*sin((angle1 + angle2 + 64) / 3666.93));
-						xap->x4 = xap->x1 + width/2 + (int)(100*cos((double)angle1 / 3666.93));
-						xap->y4 = xap->y1 + height/2 + (int)(100*sin((double)angle1 / 3666.93));
+						xap->x3 = xap->x1 + width / 2 + (int)(100 * cos((angle1 + angle2 + 64) / 3666.93));
+						xap->y3 = xap->y1 + height / 2 + (int)(100 * sin((angle1 + angle2 + 64) / 3666.93));
+						xap->x4 = xap->x1 + width / 2 + (int)(100 * cos((double)angle1 / 3666.93));
+						xap->y4 = xap->y1 + height / 2 + (int)(100 * sin((double)angle1 / 3666.93));
 					}
 					else
 					{
-						xap->x3 = xap->x1 + width/2 + (int)(100*cos((double)angle1 / 3666.93));
-						xap->y3 = xap->y1 + height/2 + (int)(100*sin((double)angle1 / 3666.93));
-						xap->x4 = xap->x1 + width/2 + (int)(100*cos((angle1 + angle2 + 64) / 3666.93));
-						xap->y4 = xap->y1 + height/2 + (int)(100*sin((angle1 + angle2 + 64) / 3666.93));
+						xap->x3 = xap->x1 + width / 2 + (int)(100 * cos((double)angle1 / 3666.93));
+						xap->y3 = xap->y1 + height / 2 + (int)(100 * sin((double)angle1 / 3666.93));
+						xap->x4 = xap->x1 + width / 2 + (int)(100 * cos((angle1 + angle2 + 64) / 3666.93));
+						xap->y4 = xap->y1 + height / 2 + (int)(100 * sin((angle1 + angle2 + 64) / 3666.93));
 					}
 					xap++;
 				}
@@ -703,7 +707,7 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 			case RC_DRAWSEGMENTS:
 				ar >> ushort;
 				shp->shape.segments.nsegments = ushort;
-				xsp = new rSegment[ushort+1];
+				xsp = new rSegment[ushort + 1];
 				shp->shape.segments.segments = xsp;
 				while (ushort--)
 				{
@@ -735,26 +739,25 @@ void CXPreplayDoc::ReadFrameData(CArchive &ar, struct frame *f)
 			done = true;
 			continue;
 		}
+	}
 
-    }
-
-    if (c != RC_ENDFRAME)
+	if (c != RC_ENDFRAME)
 	{
 		return;
-    }
+	}
 
-    f->shapes = shphead;
+	f->shapes = shphead;
 }
 
 CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 {
-	char			c;
-	unsigned short	input_mask;
-	unsigned char	byte;
-	CXPreplayDoc::miniGC	*gc;
-	static bool		dashes = false;
-	static int		prev_width = 1;
-	static int		prev_color = 1;
+	char c;
+	uint16_t input_mask;
+	unsigned char byte;
+	CXPreplayDoc::miniGC *gc;
+	static bool dashes = false;
+	static int prev_width = 1;
+	static int prev_color = 1;
 
 	ar >> c;
 
@@ -792,7 +795,7 @@ CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 		}
 		if (input_mask & RC_GC_BG)
 		{
-			ar >> byte;		// skip
+			ar >> byte; // skip
 		}
 		if (input_mask & RC_GC_LW)
 		{
@@ -804,21 +807,21 @@ CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 		{
 			ar >> byte;
 
-			if(byte == 1)
+			if (byte == 1)
 				dashes = true;
 
-			if(byte == 0)
+			if (byte == 0)
 				dashes = false;
 		}
 		gc->dashes = dashes;
 
 		if (input_mask & RC_GC_DO)
 		{
-			ar >> byte;		// skip
+			ar >> byte; // skip
 		}
 		if (input_mask & RC_GC_FU)
 		{
-			ar >> byte;		// skip
+			ar >> byte; // skip
 		}
 		if (input_mask & RC_GC_DA)
 		{
@@ -829,7 +832,7 @@ CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 			{
 				for (int i = 0; i < num_dashes; i++)
 				{
-					ar >> byte;		// skip
+					ar >> byte; // skip
 				}
 			}
 		}
@@ -837,21 +840,21 @@ CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 		{
 			if (input_mask & RC_GC_FS)
 			{
-				ar >> byte;		// skip
+				ar >> byte; // skip
 			}
 			if (input_mask & RC_GC_XO)
 			{
 				long temp;
-				ar >> temp;		// skip
+				ar >> temp; // skip
 			}
 			if (input_mask & RC_GC_YO)
 			{
 				long temp;
-				ar >> temp;		// skip
+				ar >> temp; // skip
 			}
 			if (input_mask & RC_GC_TI)
 			{
-				SkipTile(ar);	// Maybe for a later version. :-)
+				SkipTile(ar); // Maybe for a later version. :-)
 			}
 		}
 	}
@@ -861,11 +864,11 @@ CXPreplayDoc::miniGC *CXPreplayDoc::ReadGCValues(CArchive &ar)
 
 void CXPreplayDoc::SkipTile(CArchive &ar)
 {
-	unsigned short			width, height;
-	unsigned short			x, y;
-	unsigned char		ch;
-	unsigned char		tile_id;
-	static short	count = 0;
+	uint16_t width, height;
+	uint16_t x, y;
+	unsigned char ch;
+	unsigned char tile_id;
+	static short count = 0;
 
 	ar >> ch;
 	ar >> tile_id;
@@ -899,33 +902,33 @@ void CXPreplayDoc::SkipTile(CArchive &ar)
 
 inline void CXPreplayDoc::SetMaxX(int x)
 {
-	if(x > max.x)
+	if (x > max.x)
 		max.x = x;
 }
 
 inline void CXPreplayDoc::SetMaxY(int y)
 {
-	if(y > max.y)
+	if (y > max.y)
 		max.y = y;
 }
 
-void CXPreplayDoc::OnUpdateFileProperties(CCmdUI* pCmdUI) 
+void CXPreplayDoc::OnUpdateFileProperties(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(docOpened);
 }
 
-void CXPreplayDoc::OnFileProperties() 
+void CXPreplayDoc::OnFileProperties()
 {
 	PropDlg.DoModal();
 }
 
 void CXPreplayDoc::FreeFrames()
 {
-	struct frame	*frm, *oldfrm;
+	struct frame *frm, *oldfrm;
 
 	frm = rc.head;
 
-	while(frm)
+	while (frm)
 	{
 		FreeShapes(frm);
 		oldfrm = frm;
@@ -936,12 +939,12 @@ void CXPreplayDoc::FreeFrames()
 
 void CXPreplayDoc::FreeShapes(struct frame *f)
 {
-	struct rShape	*shp, *oldshp;
+	struct rShape *shp, *oldshp;
 
 	shp = f->shapes;
-	while(shp)
+	while (shp)
 	{
-			switch(shp->type)
+		switch (shp->type)
 		{
 		case RC_DRAWLINES:
 			delete[] shp->shape.lines.points;
@@ -982,9 +985,9 @@ void CXPreplayDoc::FreeRC(void)
 
 void CXPreplayDoc::OnUpdatePage(CCmdUI *pCmdUI)
 {
-	if(docOpened)
+	if (docOpened)
 	{
-		CString	panetext;
+		CString panetext;
 		panetext.Format("frame %d of %d", rc.cur->number + 1, frame_count);
 		pCmdUI->SetText(panetext);
 	}

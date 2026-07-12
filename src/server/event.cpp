@@ -973,7 +973,7 @@ int Handle_keyboard(player_t *pl)
                 {
                     if (++pl->lose_item >= NUM_ITEMS)
                         pl->lose_item = 0;
-                    if (BIT(1U << pl->lose_item, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+                    if (pl->lose_item == ITEM_FUEL || pl->lose_item == ITEM_TANK)
                         /* can't lose fuel or tanks. */
                         continue;
                     if (pl->item[pl->lose_item] > 0)

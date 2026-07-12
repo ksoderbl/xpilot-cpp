@@ -93,8 +93,6 @@
 /*
  * messages.cpp
  */
-bool Bms_test_state(msg_bms_t bms);
-void Bms_set_state(msg_bms_t bms);
 int Alloc_msgs(void);
 void Free_msgs(void);
 int Alloc_history(void);

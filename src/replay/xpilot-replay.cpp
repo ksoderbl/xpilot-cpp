@@ -109,8 +109,8 @@ struct rArc
 {
     short x;
     short y;
-    unsigned short width;
-    unsigned short height;
+    uint16_t width;
+    uint16_t height;
     short angle1;
     short angle2;
 };
@@ -118,7 +118,7 @@ struct rArc
 struct rLines
 {
     XPoint *points;
-    unsigned short npoints;
+    uint16_t npoints;
     short mode;
 };
 
@@ -142,7 +142,7 @@ struct rString
 struct rPolygon
 {
     XPoint *points;
-    unsigned short npoints;
+    uint16_t npoints;
     uint8_t shape;
     uint8_t mode;
 };
@@ -158,25 +158,25 @@ struct rRectangle
 {
     short x;
     short y;
-    unsigned short width;
-    unsigned short height;
+    uint16_t width;
+    uint16_t height;
 };
 
 struct rRectangles
 {
-    unsigned short nrectangles;
+    uint16_t nrectangles;
     XRectangle *rectangles;
 };
 
 struct rArcs
 {
-    unsigned short narcs;
+    uint16_t narcs;
     XArc *arcs;
 };
 
 struct rSegments
 {
-    unsigned short nsegments;
+    uint16_t nsegments;
     XSegment *segments;
 };
 
@@ -213,15 +213,15 @@ struct shape
 
 struct frame
 {
-    struct frame *next;    /* to next on frame list */
-    struct frame *prev;    /* to previous on frame list */
-    struct frame *older;   /* to next on LRU list */
-    struct frame *newer;   /* to previous on LRU list */
-    long filepos;          /* position in record file */
-    unsigned short width;  /* width of view window */
-    unsigned short height; /* height of view window */
-    struct shape *shapes;  /* head of shape list */
-    int number;            /* frame sequence number */
+    struct frame *next;   /* to next on frame list */
+    struct frame *prev;   /* to previous on frame list */
+    struct frame *older;  /* to next on LRU list */
+    struct frame *newer;  /* to previous on LRU list */
+    long filepos;         /* position in record file */
+    uint16_t width;       /* width of view window */
+    uint16_t height;      /* height of view window */
+    struct shape *shapes; /* head of shape list */
+    int number;           /* frame sequence number */
 };
 
 typedef struct tile_list
@@ -255,40 +255,40 @@ struct recordwin
 
 struct xprc
 {
-    char *filename;             /* name of input */
-    FILE *fp;                   /* FILE pointer for input */
-    int seekable;               /* only seek if file is regular */
-    int eof;                    /* if EOF encountered */
-    int majorversion;           /* major version of protocol */
-    int minorversion;           /* minor version of protocol */
-    char *nickname;             /* XPilot nick name of player */
-    char *realname;             /* login name of player */
-    char *hostname;             /* hostname of player */
-    char *servername;           /* hostname of server */
-    int fps;                    /* frames per second of game */
-    char *recorddate;           /* date of game played */
-    uint8_t maxColors;          /* number of colors used */
-    XColor *colors;             /* pointer to color info */
-    unsigned long *pixels;      /* pointer to my pixel values */
-    char *gameFontName;         /* name of font used */
-    char *msgFontName;          /* name of font used */
-    struct frame *head;         /* to first frame */
-    struct frame *tail;         /* to last frame read sofar */
-    struct frame *cur;          /* current frame drawn */
-    struct frame *newest;       /* to first frame in LRU list */
-    struct frame *oldest;       /* to last frame in LRU list */
-    struct frame *save_first;   /* first frame to include in saving */
-    struct frame *save_last;    /* last frame to include in saving */
-    XFontStruct *gameFont;      /* X font for game situations */
-    XFontStruct *msgFont;       /* X font for messages */
-    unsigned short view_width;  /* initial width of viewing area */
-    unsigned short view_height; /* initial height of viewing area */
-    Window topview;             /* Window to display frames in */
-    GC gc;                      /* GC to use for frame display */
-    double scale;               /* scale reduction when saving */
-    double gamma;               /* gamma correction when saving */
-    struct errorwin *ewin;      /* Error display window */
-    tile_list_t *tlist;         /* list of pixmaps */
+    char *filename;           /* name of input */
+    FILE *fp;                 /* FILE pointer for input */
+    int seekable;             /* only seek if file is regular */
+    int eof;                  /* if EOF encountered */
+    int majorversion;         /* major version of protocol */
+    int minorversion;         /* minor version of protocol */
+    char *nickname;           /* XPilot nick name of player */
+    char *realname;           /* login name of player */
+    char *hostname;           /* hostname of player */
+    char *servername;         /* hostname of server */
+    int fps;                  /* frames per second of game */
+    char *recorddate;         /* date of game played */
+    uint8_t maxColors;        /* number of colors used */
+    XColor *colors;           /* pointer to color info */
+    unsigned long *pixels;    /* pointer to my pixel values */
+    char *gameFontName;       /* name of font used */
+    char *msgFontName;        /* name of font used */
+    struct frame *head;       /* to first frame */
+    struct frame *tail;       /* to last frame read sofar */
+    struct frame *cur;        /* current frame drawn */
+    struct frame *newest;     /* to first frame in LRU list */
+    struct frame *oldest;     /* to last frame in LRU list */
+    struct frame *save_first; /* first frame to include in saving */
+    struct frame *save_last;  /* last frame to include in saving */
+    XFontStruct *gameFont;    /* X font for game situations */
+    XFontStruct *msgFont;     /* X font for messages */
+    uint16_t view_width;      /* initial width of viewing area */
+    uint16_t view_height;     /* initial height of viewing area */
+    Window topview;           /* Window to display frames in */
+    GC gc;                    /* GC to use for frame display */
+    double scale;             /* scale reduction when saving */
+    double gamma;             /* gamma correction when saving */
+    struct errorwin *ewin;    /* Error display window */
+    tile_list_t *tlist;       /* list of pixmaps */
 };
 
 enum LabelDataTypes
@@ -574,9 +574,9 @@ static uint8_t RReadByte(FILE *fp)
 /*
  * Read one 16-bit unsigned word from the recorded input stream.
  */
-static unsigned short RReadUShort(FILE *fp)
+static uint16_t RReadUShort(FILE *fp)
 {
-    unsigned short i;
+    uint16_t i;
 
     i = (getc(fp) & 0xFF);
     i |= (getc(fp) & 0xFF) << 8;
@@ -812,7 +812,7 @@ static struct rGC *RReadGCValues(struct xprc *rc)
 {
     int c = getc(rc->fp);
     struct rGC gc, *gcp;
-    unsigned short input_mask;
+    uint16_t input_mask;
 
     memset(&gc, 0, sizeof(gc));
 

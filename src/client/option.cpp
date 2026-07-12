@@ -375,7 +375,7 @@ keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
     return ret;
 }
 
-static int Store_keydef(int ks, keys_t key)
+static void Store_keydef(int ks, keys_t key)
 {
     int i;
     xp_keydefs_t keydef;
@@ -393,7 +393,7 @@ static int Store_keydef(int ks, keys_t key)
             /*
              * already exists, no need to store
              */
-            return 0;
+            return;
         }
     }
 
@@ -412,7 +412,6 @@ static int Store_keydef(int ks, keys_t key)
             assert(kd->keysym == XP_KS_UNKNOWN);
             /*warn("Store_keydef: Found dummy at index %d", i);*/
             *kd = keydef;
-            return 0;
         }
     }
 
@@ -420,7 +419,6 @@ static int Store_keydef(int ks, keys_t key)
      * no lazily deleted entry, ok, just store it then
      */
     STORE(xp_keydefs_t, keydefs, num_keydefs, max_keydefs, keydef);
-    return 0;
 }
 
 static void Remove_key_from_keydefs(keys_t key)

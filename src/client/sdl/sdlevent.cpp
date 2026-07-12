@@ -29,6 +29,7 @@
 #endif
 
 #include "client.h"
+#include "messages.h"
 #include "netclient.h"
 #include "paint.h"
 

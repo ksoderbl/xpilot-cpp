@@ -32,7 +32,7 @@
 #include "const.h"
 #include "xperror.h"
 
-#include "client.h"
+#include "messages.h"
 
 const char c_commands[][16] = {
     "ignore",

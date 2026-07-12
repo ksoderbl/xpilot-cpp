@@ -17,82 +17,82 @@ protected: // create from serialization only
 	CXPreplayDoc();
 	DECLARE_DYNCREATE(CXPreplayDoc)
 
-// Attributes
+	// Attributes
 public:
 	CString test;
 
 	struct miniGC
 	{
-		int	color;
+		int color;
 		bool dashes;
-		int	width;
+		int width;
 	};
 
 	struct rArc
 	{
-		short	x1, y1,
-				x2, y2,
-				x3, y3,
-				x4, y4;
+		short x1, y1,
+			x2, y2,
+			x3, y3,
+			x4, y4;
 	};
 
 	struct rLines
 	{
-		CPoint		*points;
-		unsigned short	npoints;
-		short		mode;
+		CPoint *points;
+		uint16_t npoints;
+		short mode;
 	};
 
 	struct rLine
 	{
-		short		x1;
-		short		y1;
-		short		x2;
-		short		y2;
+		short x1;
+		short y1;
+		short x2;
+		short y2;
 	};
 
 	struct rString
 	{
-		short		x;
-		short		y;
-		unsigned char	font;
-		short		length;
-		char		*string;
+		short x;
+		short y;
+		unsigned char font;
+		short length;
+		char *string;
 	};
 
 	struct rPolygon
 	{
-		CPoint		*points;
-		unsigned short	npoints;
-		unsigned char	shape;
-		unsigned char	mode;
+		CPoint *points;
+		uint16_t npoints;
+		unsigned char shape;
+		unsigned char mode;
 	};
 
 	struct rSymbol
 	{
-		unsigned char	type;
-		short		x;
-		short		y;
+		unsigned char type;
+		short x;
+		short y;
 	};
 
 	struct rRectangle
 	{
-		short		x;
-		short		y;
-		unsigned short	width;
-		unsigned short	height;
+		short x;
+		short y;
+		uint16_t width;
+		uint16_t height;
 	};
 
 	struct rRectangles
 	{
-		unsigned short	nrectangles;
-		CRect		*rectangles;
+		uint16_t nrectangles;
+		CRect *rectangles;
 	};
 
 	struct rArcs
 	{
-		unsigned short	narcs;
-		struct rArc		*arcs;
+		uint16_t narcs;
+		struct rArc *arcs;
 	};
 
 	struct rSegment
@@ -105,133 +105,130 @@ public:
 
 	struct rSegments
 	{
-		unsigned short	nsegments;
-		struct rSegment		*segments;
+		uint16_t nsegments;
+		struct rSegment *segments;
 	};
 
 	struct rDamage
 	{
-		unsigned char	damaged;
+		unsigned char damaged;
 	};
-
 
 	union shapep
 	{
-		struct rArc		arc;
-		struct rLines	lines;
-		struct rLine	line;
-		struct rString	string;
-		struct rPolygon	polygon;
-		struct rSymbol	symbol;
-		struct rRectangle	rectangle;
-		struct rRectangles	rectangles;
-		struct rArcs	arcs;
-		struct rSegments	segments;
-		struct rDamage	damage;
+		struct rArc arc;
+		struct rLines lines;
+		struct rLine line;
+		struct rString string;
+		struct rPolygon polygon;
+		struct rSymbol symbol;
+		struct rRectangle rectangle;
+		struct rRectangles rectangles;
+		struct rArcs arcs;
+		struct rSegments segments;
+		struct rDamage damage;
 	};
 
 	struct rShape
 	{
-		struct rShape	*next;		/* to next shape on frame list */
-		char		type;		/* which drawing call */
-		union shapep	shape;		/* actual shape data */
-		struct miniGC	*gc;
+		struct rShape *next; /* to next shape on frame list */
+		char type;			 /* which drawing call */
+		union shapep shape;	 /* actual shape data */
+		struct miniGC *gc;
 	};
 
 	struct frame
 	{
-		struct frame	*next;		/* to next on frame list */
-		struct frame	*prev;		/* to previous on frame list */
-		DWORD		filepos;	/* position in record file */
-		unsigned short	width;		/* width of view window */
-		unsigned short	height;		/* height of view window */
-		struct rShape	*shapes;	/* head of shape list */
-		int			number;		/* frame sequence number */
+		struct frame *next;	   /* to next on frame list */
+		struct frame *prev;	   /* to previous on frame list */
+		DWORD filepos;		   /* position in record file */
+		uint16_t width;		   /* width of view window */
+		uint16_t height;	   /* height of view window */
+		struct rShape *shapes; /* head of shape list */
+		int number;			   /* frame sequence number */
 	};
 
 	struct colors
 	{
-		unsigned long	pixel;	// for XWindows when saving recording
-		unsigned short	red;
-		unsigned short	green;
-		unsigned short	blue;
-		COLORREF		color;
+		unsigned long pixel; // for XWindows when saving recording
+		uint16_t red;
+		uint16_t green;
+		uint16_t blue;
+		COLORREF color;
 	};
 
 	struct xprc
 	{
-		int			seekable;	/* only seek if file is regular */
-		bool			eof;		/* if EOF encountered */
-		int			majorversion;	/* major version of protocol */
-		int			minorversion;	/* minor version of protocol */
-		char		*nickname;	/* XPilot nick name of player */
-		char		*realname;	/* login name of player */
-		char		*hostname;	/* hostname of player */
-		char		*servername;	/* hostname of server */
-		int			fps;		/* frames per second of game */
-		char		*recorddate;	/* date of game played */
-		unsigned char	maxColors;	/* number of colors used */
-		struct colors	*colors;	/* pointer to color info */
-		unsigned long	*pixels;	/* pointer to my pixel values */
-		struct frame	*head;		/* to first frame */
-		struct frame	*tail;		/* to last frame read sofar */
-		struct frame	*cur;		/* current frame drawn */
-		char		*gameFont;	/* Font for game situations */
-		char		*msgFont;	/* Font for messages */
-		int			gameFontSize;
-		int			msgFontSize;
-		unsigned short	view_width;	/* initial width of viewing area */
-		unsigned short	view_height;	/* initial height of viewing area */
+		int seekable;			 /* only seek if file is regular */
+		bool eof;				 /* if EOF encountered */
+		int majorversion;		 /* major version of protocol */
+		int minorversion;		 /* minor version of protocol */
+		char *nickname;			 /* XPilot nick name of player */
+		char *realname;			 /* login name of player */
+		char *hostname;			 /* hostname of player */
+		char *servername;		 /* hostname of server */
+		int fps;				 /* frames per second of game */
+		char *recorddate;		 /* date of game played */
+		unsigned char maxColors; /* number of colors used */
+		struct colors *colors;	 /* pointer to color info */
+		unsigned long *pixels;	 /* pointer to my pixel values */
+		struct frame *head;		 /* to first frame */
+		struct frame *tail;		 /* to last frame read sofar */
+		struct frame *cur;		 /* current frame drawn */
+		char *gameFont;			 /* Font for game situations */
+		char *msgFont;			 /* Font for messages */
+		int gameFontSize;
+		int msgFontSize;
+		uint16_t view_width;  /* initial width of viewing area */
+		uint16_t view_height; /* initial height of viewing area */
 	} rc;
 
-
 public:
-	short	docOpened;
-	CPoint	max;
-	int	frame_count;
-	int	minSelection;
-	int	maxSelection;
+	short docOpened;
+	CPoint max;
+	int frame_count;
+	int minSelection;
+	int maxSelection;
 
 private:
 	CProperties PropDlg;
 	bool dashes;
 
-	void ReadNextFrame(CArchive& ar);
+	void ReadNextFrame(CArchive &ar);
 	void ReadFrameData(CArchive &ar, struct frame *f);
 	struct miniGC *ReadGCValues(CArchive &ar);
 	void SkipTile(CArchive &ar);
 	inline void SetMaxX(int x);
 	inline void SetMaxY(int y);
-	void ReadHeader(CArchive& ar);
-	char *ReadString(CArchive& ar);
-	void ReadFont(CArchive& ar, char **fontname, int *fontsize);
+	void ReadHeader(CArchive &ar);
+	char *ReadString(CArchive &ar);
+	void ReadFont(CArchive &ar, char **fontname, int *fontsize);
 	void FreeFrames(void);
 	void FreeShapes(struct frame *f);
 	void FreeRC(void);
-// Overrides
+	// Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CXPreplayDoc)
-	public:
+public:
 	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
+	virtual void Serialize(CArchive &ar);
 	//}}AFX_VIRTUAL
 
-// Implementation
+	// Implementation
 public:
 	virtual ~CXPreplayDoc();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	virtual void Dump(CDumpContext &dc) const;
 #endif
 
 protected:
-
-// Generated message map functions
+	// Generated message map functions
 protected:
 	//{{AFX_MSG(CXPreplayDoc)
-	afx_msg void OnUpdateFileSave(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateFileSaveAs(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateFileProperties(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateFileSave(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateFileSaveAs(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateFileProperties(CCmdUI *pCmdUI);
 	afx_msg void OnFileProperties();
 	//}}AFX_MSG
 	afx_msg void OnUpdatePage(CCmdUI *pCmdUI);

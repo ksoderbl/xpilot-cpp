@@ -23,12 +23,14 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 
 #include "bit.h"
 #include "const.h"
 #include "rules.h"
 #include "xperror.h"
 
+#include "clientsetup.h"
 #include "netclient.h"
 #include "paint.h"
 

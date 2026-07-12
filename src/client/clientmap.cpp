@@ -23,17 +23,1904 @@
 
 #include "clientmap.h"
 
+#include <climits>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+#include <sys/time.h>
+
+#include "bit.h"
+#include "commonmacros.h"
+#include "rules.h"
+#include "xperror.h"
+
+#include "client.h"
+#include "clientcommand.h"
+#include "clientsetup.h"
+#include "messages.h"
+#include "netclient.h"
+#include "paint.h"
+#include "paintradar.h"
+
 ClientMap clMap;
 
-checkpoint_t *checks = NULL;
+checkpoint_t *checks = nullptr;
 int num_checks = 0;
-edge_style_t *edge_styles = NULL;
+edge_style_t *edge_styles = nullptr;
 int num_edge_styles = 0;
-polygon_style_t *polygon_styles = NULL;
+polygon_style_t *polygon_styles = nullptr;
 int num_polygon_styles = 0;
 
 score_object_t score_objects[MAX_SCORE_OBJECTS];
 int score_object = 0;
 
-other_t *Others = NULL;
-int num_others = 0, max_others = 0;
+// TODO: use some sane data structure here
+static fuelstation_t *Fuelstation_by_pos(int x, int y)
+{
+    int i, lo, hi, pos;
+
+    lo = 0;
+    hi = clMap.fuels.size() - 1;
+    pos = x * Setup->y + y;
+    while (lo < hi)
+    {
+        i = (lo + hi) >> 1;
+        if (pos > clMap.fuels[i].pos)
+            lo = i + 1;
+        else
+            hi = i;
+    }
+    if (lo == hi && pos == clMap.fuels[lo].pos)
+        return &clMap.fuels[lo];
+    warn("No fuelstation at (%d,%d)", x, y);
+    return nullptr;
+}
+
+double Fuel_by_pos(int x, int y)
+{
+    fuelstation_t *fuelp;
+
+    if ((fuelp = Fuelstation_by_pos(x, y)) == nullptr)
+        return 0;
+    double f = fuelp->fuel;
+    // warn("Fuel_by_pos: x: %d, y: %d, f: %f", x, y, f);
+    return f;
+}
+
+int Target_by_index(int ind, int *xp, int *yp, int *dead_time, double *damage)
+{
+    if (ind < 0 || ind >= clMap.targets.size())
+        return -1;
+    target_t &target = clMap.targets[ind];
+    *xp = target.pos / Setup->y;
+    *yp = target.pos % Setup->y;
+    *dead_time = target.dead_time;
+    *damage = target.damage;
+    return 0;
+}
+
+int Target_alive(int x, int y, double *damage)
+{
+    int i, lo, hi, pos;
+
+    lo = 0;
+    hi = clMap.targets.size() - 1;
+    pos = x * Setup->y + y;
+    while (lo < hi)
+    {
+        i = (lo + hi) >> 1;
+        if (pos > clMap.targets[i].pos)
+            lo = i + 1;
+        else
+            hi = i;
+    }
+    if (lo == hi && pos == clMap.targets[lo].pos)
+    {
+        *damage = clMap.targets[lo].damage;
+        return clMap.targets[lo].dead_time;
+    }
+    warn("No targets at (%d,%d)", x, y);
+    return -1;
+}
+
+int Handle_fuel(int ind, double fuel)
+{
+    if (ind < 0 || ind >= clMap.fuels.size())
+    {
+        warn("Bad fuelstation index (%d)", ind);
+        return -1;
+    }
+    clMap.fuels[ind].fuel = fuel;
+    return 0;
+}
+
+static cannontime_t *Cannon_by_pos(int x, int y)
+{
+    int i, lo, hi, pos;
+
+    lo = 0;
+    hi = clMap.cannons.size() - 1;
+    pos = x * Setup->y + y;
+    while (lo < hi)
+    {
+        i = (lo + hi) >> 1;
+        if (pos > clMap.cannons[i].pos)
+            lo = i + 1;
+        else
+            hi = i;
+    }
+    if (lo == hi && pos == clMap.cannons[lo].pos)
+        return &clMap.cannons[lo];
+    warn("No cannon at (%d,%d)", x, y);
+    return nullptr;
+}
+
+int Cannon_dead_time_by_pos(int x, int y, int *dot)
+{
+    cannontime_t *cannonp;
+
+    if ((cannonp = Cannon_by_pos(x, y)) == nullptr)
+        return -1;
+    *dot = cannonp->dot;
+    return cannonp->dead_time;
+}
+
+int Handle_cannon(int ind, int dead_time)
+{
+    if (ind < 0 || ind >= clMap.cannons.size())
+    {
+        warn("Bad cannon index (%d)", ind);
+        return 0;
+    }
+    clMap.cannons[ind].dead_time = dead_time;
+    return 0;
+}
+
+int Handle_target(int ind, int dead_time, double damage)
+{
+    if (ind < 0 || ind >= clMap.targets.size())
+    {
+        warn("Bad target index (%d)", ind);
+        return 0;
+    }
+    if (dead_time == 0 && (damage <= 0.0 || damage > TARGET_DAMAGE))
+        warn("BUG target %d, dead %d, damage %f", ind, dead_time, damage);
+
+    target_t &target = clMap.targets[ind];
+
+    if (target.dead_time > 0 && dead_time == 0)
+    {
+        int pos = target.pos;
+        Radar_show_target(pos / Setup->y, pos % Setup->y);
+    }
+    else if (target.dead_time == 0 && dead_time > 0)
+    {
+        int pos = target.pos;
+        Radar_hide_target(pos / Setup->y, pos % Setup->y);
+    }
+
+    target.dead_time = dead_time;
+    target.damage = damage;
+
+    return 0;
+}
+
+static homebase_t *Homebase_by_pos(int x, int y)
+{
+    int i, lo, hi, pos;
+
+    lo = 0;
+    hi = clMap.bases.size() - 1;
+    pos = x * Setup->y + y;
+    while (lo < hi)
+    {
+        i = (lo + hi) >> 1;
+        if (pos > clMap.bases[i].pos)
+            lo = i + 1;
+        else
+            hi = i;
+    }
+    if (lo == hi && pos == clMap.bases[lo].pos)
+        return &clMap.bases[lo];
+    warn("No homebase at (%d,%d)", x, y);
+    return nullptr;
+}
+
+int Base_info_by_pos(int x, int y, int *idp, int *teamp)
+{
+    homebase_t *basep;
+
+    if ((basep = Homebase_by_pos(x, y)) == nullptr)
+        return -1;
+    *idp = basep->id;
+    *teamp = basep->team;
+    return 0;
+}
+
+int Handle_base(int id, int ind)
+{
+    int i;
+
+    if (ind < 0 || ind >= clMap.bases.size())
+    {
+        warn("Bad homebase index (%d)", ind);
+        return -1;
+    }
+    for (homebase_t &base : clMap.bases)
+    {
+        if (base.id == id)
+            base.id = -1;
+    }
+    clMap.bases[ind].id = id;
+
+    return 0;
+}
+
+int Check_pos_by_index(int ind, int *xp, int *yp)
+{
+    if (ind < 0 || ind >= num_checks)
+    {
+        warn("Bad checkpoint index (%d)", ind);
+        *xp = 0;
+        *yp = 0;
+        return -1;
+    }
+    *xp = checks[ind].pos / Setup->y;
+    *yp = checks[ind].pos % Setup->y;
+    return 0;
+}
+
+int Check_index_by_pos(int x, int y)
+{
+    int i, pos;
+
+    pos = x * Setup->y + y;
+    for (i = 0; i < num_checks; i++)
+    {
+        if (pos == checks[i].pos)
+            return i;
+    }
+    warn("Can't find checkpoint (%d,%d)", x, y);
+    return 0;
+}
+
+/*
+ * Convert a 'space' map block into a dot.
+ */
+static void Map_make_dot(uint8_t *data)
+{
+    if (*data == SETUP_SPACE)
+        *data = SETUP_SPACE_DOT;
+    else if (*data == SETUP_DECOR_FILLED)
+        *data = SETUP_DECOR_DOT_FILLED;
+    else if (*data == SETUP_DECOR_RU)
+        *data = SETUP_DECOR_DOT_RU;
+    else if (*data == SETUP_DECOR_RD)
+        *data = SETUP_DECOR_DOT_RD;
+    else if (*data == SETUP_DECOR_LU)
+        *data = SETUP_DECOR_DOT_LU;
+    else if (*data == SETUP_DECOR_LD)
+        *data = SETUP_DECOR_DOT_LD;
+}
+
+/*
+ * Optimize the drawing of all blue space dots by converting
+ * certain map objects into a specialised form of their type.
+ */
+void Map_dots(void)
+{
+    int i,
+        x,
+        y,
+        start;
+    uint8_t dot[256];
+
+    /*
+     * Lookup table to recognize dots.
+     */
+    memset(dot, 0, sizeof dot);
+    dot[SETUP_SPACE_DOT] = 1;
+    dot[SETUP_DECOR_DOT_FILLED] = 1;
+    dot[SETUP_DECOR_DOT_RU] = 1;
+    dot[SETUP_DECOR_DOT_RD] = 1;
+    dot[SETUP_DECOR_DOT_LU] = 1;
+    dot[SETUP_DECOR_DOT_LD] = 1;
+
+    /*
+     * Restore the map to unoptimized form.
+     */
+    for (i = Setup->x * Setup->y; i-- > 0;)
+    {
+        if (dot[Setup->map_data[i]])
+        {
+            if (Setup->map_data[i] == SETUP_SPACE_DOT)
+                Setup->map_data[i] = SETUP_SPACE;
+            else if (Setup->map_data[i] == SETUP_DECOR_DOT_FILLED)
+                Setup->map_data[i] = SETUP_DECOR_FILLED;
+            else if (Setup->map_data[i] == SETUP_DECOR_DOT_RU)
+                Setup->map_data[i] = SETUP_DECOR_RU;
+            else if (Setup->map_data[i] == SETUP_DECOR_DOT_RD)
+                Setup->map_data[i] = SETUP_DECOR_RD;
+            else if (Setup->map_data[i] == SETUP_DECOR_DOT_LU)
+                Setup->map_data[i] = SETUP_DECOR_LU;
+            else if (Setup->map_data[i] == SETUP_DECOR_DOT_LD)
+                Setup->map_data[i] = SETUP_DECOR_LD;
+        }
+    }
+
+    /*
+     * Lookup table to test for map data which can be turned into a dot.
+     */
+    memset(dot, 0, sizeof dot);
+    dot[SETUP_SPACE] = 1;
+    if (!instruments.showDecor)
+    {
+        dot[SETUP_DECOR_FILLED] = 1;
+        dot[SETUP_DECOR_RU] = 1;
+        dot[SETUP_DECOR_RD] = 1;
+        dot[SETUP_DECOR_LU] = 1;
+        dot[SETUP_DECOR_LD] = 1;
+    }
+
+    /*
+     * Optimize.
+     */
+    if (backgroundPointSize > 0)
+    {
+        if (BIT(Setup->mode, WRAP_PLAY))
+        {
+            for (x = 0; x < Setup->x; x++)
+            {
+                if (dot[Setup->map_data[x * Setup->y]])
+                    Map_make_dot(&Setup->map_data[x * Setup->y]);
+            }
+            for (y = 0; y < Setup->y; y++)
+            {
+                if (dot[Setup->map_data[y]])
+                    Map_make_dot(&Setup->map_data[y]);
+            }
+            start = backgroundPointDist;
+        }
+        else
+            start = 0;
+
+        if (backgroundPointDist > 0)
+        {
+            for (x = start; x < Setup->x; x += backgroundPointDist)
+            {
+                for (y = start; y < Setup->y; y += backgroundPointDist)
+                {
+                    if (dot[Setup->map_data[x * Setup->y + y]])
+                        Map_make_dot(&Setup->map_data[x * Setup->y + y]);
+                }
+            }
+        }
+        for (auto &cannon : clMap.cannons)
+        {
+            x = cannon.pos / Setup->y;
+            y = cannon.pos % Setup->y;
+            if ((x == 0 || y == 0) && BIT(Setup->mode, WRAP_PLAY))
+                cannon.dot = 1;
+            else if (backgroundPointDist > 0 && x % backgroundPointDist == 0 && y % backgroundPointDist == 0)
+                cannon.dot = 1;
+            else
+                cannon.dot = 0;
+        }
+    }
+}
+
+/*
+ * Optimize the drawing of all blue map objects by converting
+ * their map type to a bitmask with bits for each blue segment.
+ */
+void Map_restore(int startx, int starty, int width, int height)
+{
+    int i, j,
+        x, y,
+        map_index,
+        type;
+
+    /*
+     * Restore an optimized map to its original unoptimized state.
+     */
+    x = startx;
+    for (i = 0; i < width; i++, x++)
+    {
+        if (x < 0)
+            x += Setup->x;
+        else if (x >= Setup->x)
+            x -= Setup->x;
+
+        y = starty;
+        for (j = 0; j < height; j++, y++)
+        {
+            if (y < 0)
+                y += Setup->y;
+            else if (y >= Setup->y)
+                y -= Setup->y;
+
+            map_index = x * Setup->y + y;
+
+            type = Setup->map_data[map_index];
+            if ((type & BLUE_BIT) == 0)
+            {
+                if (type == SETUP_FILLED_NO_DRAW)
+                    Setup->map_data[map_index] = SETUP_FILLED;
+            }
+            else if ((type & BLUE_FUEL) == BLUE_FUEL)
+                Setup->map_data[map_index] = SETUP_FUEL;
+            else if (type & BLUE_OPEN)
+            {
+                if (type & BLUE_BELOW)
+                    Setup->map_data[map_index] = SETUP_REC_RD;
+                else
+                    Setup->map_data[map_index] = SETUP_REC_LU;
+            }
+            else if (type & BLUE_CLOSED)
+            {
+                if (type & BLUE_BELOW)
+                    Setup->map_data[map_index] = SETUP_REC_LD;
+                else
+                    Setup->map_data[map_index] = SETUP_REC_RU;
+            }
+            else
+                Setup->map_data[map_index] = SETUP_FILLED;
+        }
+    }
+}
+
+void Map_blue(int startx, int starty, int width, int height)
+{
+    int i, j,
+        x, y,
+        map_index,
+        type,
+        newtype;
+    uint8_t blue[256];
+    bool outline = false;
+
+    if (instruments.outlineWorld ||
+        instruments.filledWorld ||
+        instruments.texturedWalls)
+        outline = true;
+    /*
+     * Optimize the map for blue.
+     */
+    memset(blue, 0, sizeof blue);
+    blue[SETUP_FILLED] = BLUE_LEFT | BLUE_UP | BLUE_RIGHT | BLUE_DOWN;
+    blue[SETUP_FILLED_NO_DRAW] = blue[SETUP_FILLED];
+    blue[SETUP_FUEL] = blue[SETUP_FILLED];
+    blue[SETUP_REC_RU] = BLUE_RIGHT | BLUE_UP;
+    blue[SETUP_REC_RD] = BLUE_RIGHT | BLUE_DOWN;
+    blue[SETUP_REC_LU] = BLUE_LEFT | BLUE_UP;
+    blue[SETUP_REC_LD] = BLUE_LEFT | BLUE_DOWN;
+    blue[BLUE_BIT | BLUE_OPEN] =
+        blue[BLUE_BIT | BLUE_OPEN | BLUE_LEFT] =
+            blue[BLUE_BIT | BLUE_OPEN | BLUE_UP] =
+                blue[BLUE_BIT | BLUE_OPEN | BLUE_LEFT | BLUE_UP] =
+                    blue[SETUP_REC_LU];
+    blue[BLUE_BIT | BLUE_OPEN | BLUE_BELOW] =
+        blue[BLUE_BIT | BLUE_OPEN | BLUE_BELOW | BLUE_RIGHT] =
+            blue[BLUE_BIT | BLUE_OPEN | BLUE_BELOW | BLUE_DOWN] =
+                blue[BLUE_BIT | BLUE_OPEN | BLUE_BELOW | BLUE_RIGHT | BLUE_DOWN] =
+                    blue[SETUP_REC_RD];
+    blue[BLUE_BIT | BLUE_CLOSED] =
+        blue[BLUE_BIT | BLUE_CLOSED | BLUE_RIGHT] =
+            blue[BLUE_BIT | BLUE_CLOSED | BLUE_UP] =
+                blue[BLUE_BIT | BLUE_CLOSED | BLUE_RIGHT | BLUE_UP] =
+                    blue[SETUP_REC_RU];
+    blue[BLUE_BIT | BLUE_CLOSED | BLUE_BELOW] =
+        blue[BLUE_BIT | BLUE_CLOSED | BLUE_BELOW | BLUE_LEFT] =
+            blue[BLUE_BIT | BLUE_CLOSED | BLUE_BELOW | BLUE_DOWN] =
+                blue[BLUE_BIT | BLUE_CLOSED | BLUE_BELOW | BLUE_LEFT | BLUE_DOWN] =
+                    blue[SETUP_REC_LD];
+    for (i = BLUE_BIT; i < (int)(sizeof blue); i++)
+    {
+        if ((i & BLUE_FUEL) == BLUE_FUEL || (i & (BLUE_OPEN | BLUE_CLOSED)) == 0)
+            blue[i] = blue[SETUP_FILLED];
+    }
+
+    x = startx;
+    for (i = 0; i < width; i++, x++)
+    {
+        if (x < 0)
+            x += Setup->x;
+        else if (x >= Setup->x)
+            x -= Setup->x;
+
+        y = starty;
+        for (j = 0; j < height; j++, y++)
+        {
+            if (y < 0)
+                y += Setup->y;
+            else if (y >= Setup->y)
+                y -= Setup->y;
+
+            map_index = x * Setup->y + y;
+
+            type = Setup->map_data[map_index];
+            newtype = 0;
+            switch (type)
+            {
+            case SETUP_FILLED:
+            case SETUP_FILLED_NO_DRAW:
+            case SETUP_FUEL:
+                newtype = BLUE_BIT;
+                if (type == SETUP_FUEL)
+                {
+                    newtype |= BLUE_FUEL;
+                }
+                if ((x == 0)
+                        ? (!BIT(Setup->mode, WRAP_PLAY) ||
+                           !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
+                        : !(blue[Setup->map_data[(x - 1) * Setup->y + y]] & BLUE_RIGHT))
+                    newtype |= BLUE_LEFT;
+                if ((y == 0)
+                        ? (!BIT(Setup->mode, WRAP_PLAY) ||
+                           !(blue[Setup->map_data[x * Setup->y + Setup->y - 1]] & BLUE_UP))
+                        : !(blue[Setup->map_data[x * Setup->y + (y - 1)]] & BLUE_UP))
+                    newtype |= BLUE_DOWN;
+                if (!outline || ((x == Setup->x - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
+                                     : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
+                    newtype |= BLUE_RIGHT;
+                if (!outline || ((y == Setup->y - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
+                                     : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
+                    newtype |= BLUE_UP;
+                break;
+
+            case SETUP_REC_LU:
+                newtype = BLUE_BIT | BLUE_OPEN;
+                if (x == 0
+                        ? (!BIT(Setup->mode, WRAP_PLAY) ||
+                           !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
+                        : !(blue[Setup->map_data[(x - 1) * Setup->y + y]] & BLUE_RIGHT))
+                    newtype |= BLUE_LEFT;
+                if (!outline || ((y == Setup->y - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
+                                     : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
+                    newtype |= BLUE_UP;
+                break;
+
+            case SETUP_REC_RU:
+                newtype = BLUE_BIT | BLUE_CLOSED;
+                if (!outline || ((x == Setup->x - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
+                                     : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
+                    newtype |= BLUE_RIGHT;
+                if (!outline || ((y == Setup->y - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[x * Setup->y]] & BLUE_DOWN))
+                                     : !(blue[Setup->map_data[x * Setup->y + (y + 1)]] & BLUE_DOWN)))
+                    newtype |= BLUE_UP;
+                break;
+
+            case SETUP_REC_LD:
+                newtype = BLUE_BIT | BLUE_BELOW | BLUE_CLOSED;
+                if ((x == 0)
+                        ? (!BIT(Setup->mode, WRAP_PLAY) ||
+                           !(blue[Setup->map_data[(Setup->x - 1) * Setup->y + y]] & BLUE_RIGHT))
+                        : !(blue[Setup->map_data[(x - 1) * Setup->y + y]] & BLUE_RIGHT))
+                    newtype |= BLUE_LEFT;
+                if ((y == 0)
+                        ? (!BIT(Setup->mode, WRAP_PLAY) ||
+                           !(blue[Setup->map_data[x * Setup->y + Setup->y - 1]] & BLUE_UP))
+                        : !(blue[Setup->map_data[x * Setup->y + (y - 1)]] & BLUE_UP))
+                    newtype |= BLUE_DOWN;
+                break;
+
+            case SETUP_REC_RD:
+                newtype = BLUE_BIT | BLUE_BELOW | BLUE_OPEN;
+                if (!outline || ((x == Setup->x - 1)
+                                     ? (!BIT(Setup->mode, WRAP_PLAY) || !(blue[Setup->map_data[y]] & BLUE_LEFT))
+                                     : !(blue[Setup->map_data[(x + 1) * Setup->y + y]] & BLUE_LEFT)))
+                    newtype |= BLUE_RIGHT;
+                if ((y == 0)
+                        ? (!BIT(Setup->mode, WRAP_PLAY) ||
+                           !(blue[Setup->map_data[x * Setup->y + Setup->y - 1]] & BLUE_UP))
+                        : !(blue[Setup->map_data[x * Setup->y + (y - 1)]] & BLUE_UP))
+                    newtype |= BLUE_DOWN;
+                break;
+
+            default:
+                continue;
+            }
+            if (newtype != 0)
+            {
+                if (newtype == BLUE_BIT)
+                    newtype = SETUP_FILLED_NO_DRAW;
+                Setup->map_data[map_index] = newtype;
+            }
+        }
+    }
+}
+
+/* Get signed short and advance ptr */
+static int get_short(char **ptr)
+{
+    *ptr += 2;
+    return ((signed char)*(*ptr - 2) << 8) + (uint8_t)(*(*ptr - 1));
+}
+
+/* Unsigned version */
+static unsigned int get_ushort(char **ptr)
+{
+    *ptr += 2;
+    return ((uint8_t)*(*ptr - 2) << 8) + (uint8_t)*(*ptr - 1);
+}
+
+static int get_32bit(char **ptr)
+{
+    int res;
+
+    res = get_ushort(ptr) << 16;
+    return res + get_ushort(ptr);
+}
+
+static void parse_styles(char **callptr)
+{
+    int i, num_bmaps;
+    char *ptr;
+
+    ptr = *callptr;
+    num_polygon_styles = *ptr++ & 0xff;
+    num_edge_styles = *ptr++ & 0xff;
+    num_bmaps = *ptr++ & 0xff;
+
+    polygon_styles = XMALLOC(polygon_style_t, MAX(1, num_polygon_styles));
+    if (polygon_styles == nullptr)
+    {
+        error("no memory for polygon styles");
+        exit(1);
+    }
+
+    edge_styles = XMALLOC(edge_style_t, MAX(1, num_edge_styles));
+    if (edge_styles == nullptr)
+    {
+        error("no memory for edge styles");
+        exit(1);
+    }
+
+    for (i = 0; i < num_polygon_styles; i++)
+    {
+        polygon_styles[i].rgb = get_32bit(&ptr);
+        polygon_styles[i].texture = *ptr++ & 0xff;
+        polygon_styles[i].def_edge_style = *ptr++ & 0xff;
+        polygon_styles[i].flags = *ptr++ & 0xff;
+    }
+
+    if (num_polygon_styles == 0)
+    {
+        /* default polygon style */
+        polygon_styles[0].flags = 0;
+        polygon_styles[0].def_edge_style = 0;
+        num_polygon_styles = 1;
+    }
+
+    for (i = 0; i < num_edge_styles; i++)
+    {
+        edge_styles[i].width = *ptr++; /* -1 means hidden */
+        edge_styles[i].rgb = get_32bit(&ptr);
+        /* kps - what the **** is this ? */
+        /* baron - it's line style from XSetLineAttributes */
+        /* 0 = LineSolid, 1 = LineOnOffDash, 2 = LineDoubleDash */
+        edge_styles[i].style =
+            (*ptr == 1) ? 1 : (*ptr == 2) ? 2
+                                          : 0;
+        ptr++;
+    }
+
+    for (i = 0; i < num_bmaps; i++)
+    {
+        char fname[30];
+        int flags;
+
+        strlcpy(fname, ptr, 30);
+        ptr += strlen(fname) + 1;
+        flags = *ptr++ & 0xff;
+        Bitmap_add(fname, 1, flags);
+    }
+    *callptr = ptr;
+}
+
+static int init_polymap(void)
+{
+    int i, j, startx, starty, ecount, edgechange, current_estyle;
+    int dx, dy, cx, cy, pc;
+    int *styles;
+    xp_polygon_t *poly;
+    ipos_t *points, min, max;
+    char *ptr, *edgeptr;
+
+    oldServer = false;
+    ptr = (char *)Setup->map_data;
+
+    parse_styles(&ptr);
+
+    int num_polygons = get_ushort(&ptr);
+    // polygons = XMALLOC(xp_polygon_t, num_polygons);
+    // if (polygons == nullptr)
+    // {
+    //     error("no memory for polygons");
+    //     exit(1);
+    // }
+    warn("init_polymap: num_polygons: %d", num_polygons);
+    clMap.polygons.resize(num_polygons);
+
+    for (auto &poly : clMap.polygons)
+    {
+        poly.style = *ptr++ & 0xff;
+        current_estyle = polygon_styles[poly.style].def_edge_style;
+        dx = 0;
+        dy = 0;
+        ecount = get_ushort(&ptr);
+        edgeptr = ptr;
+        if (ecount)
+            edgechange = get_ushort(&edgeptr);
+        else
+            edgechange = INT_MAX;
+        ptr += ecount * 2;
+        pc = get_ushort(&ptr);
+        if ((points = XMALLOC(ipos_t, pc)) == nullptr)
+        {
+            error("no memory for points");
+            exit(1);
+        }
+        if (ecount)
+        {
+            if ((styles = XMALLOC(int, pc)) == nullptr)
+            {
+                error("no memory for special edges");
+                exit(1);
+            }
+        }
+        else
+            styles = nullptr;
+        startx = get_ushort(&ptr);
+        starty = get_ushort(&ptr);
+        points[0].x = cx = min.x = max.x = startx;
+        points[0].y = cy = min.y = max.y = starty;
+
+        if (!edgechange)
+        {
+            current_estyle = get_ushort(&edgeptr);
+            ecount--;
+            if (ecount)
+                edgechange = get_ushort(&edgeptr);
+        }
+        if (styles)
+            styles[0] = current_estyle;
+
+        for (j = 1; j < pc; j++)
+        {
+            dx = get_short(&ptr);
+            dy = get_short(&ptr);
+            cx += dx;
+            cy += dy;
+            if (min.x > cx)
+                min.x = cx;
+            if (min.y > cy)
+                min.y = cy;
+            if (max.x < cx)
+                max.x = cx;
+            if (max.y < cy)
+                max.y = cy;
+            points[j].x = dx;
+            points[j].y = dy;
+
+            if (edgechange == j)
+            {
+                current_estyle = get_ushort(&edgeptr);
+                ecount--;
+                if (ecount)
+                    edgechange = get_ushort(&edgeptr);
+            }
+            if (styles)
+                styles[j] = current_estyle;
+        }
+        poly.points = points;
+        poly.edge_styles = styles;
+        poly.num_points = pc;
+        poly.bounds.x = min.x;
+        poly.bounds.y = min.y;
+        poly.bounds.w = max.x - min.x;
+        poly.bounds.h = max.y - min.y;
+    }
+    int num_bases = *ptr++ & 0xff;
+    for (i = 0; i < num_bases; i++)
+    {
+        homebase_t base;
+        /* base.pos is not used */
+        base.id = -1;
+        base.team = *ptr++ & 0xff;
+        cx = get_ushort(&ptr);
+        cy = get_ushort(&ptr);
+        base.bounds.x = cx - BLOCK_SZ / 2;
+        base.bounds.y = cy - BLOCK_SZ / 2;
+        base.bounds.w = BLOCK_SZ;
+        base.bounds.h = BLOCK_SZ;
+        if (*ptr < 16)
+            base.type = SETUP_BASE_RIGHT;
+        else if (*ptr < 48)
+            base.type = SETUP_BASE_UP;
+        else if (*ptr < 80)
+            base.type = SETUP_BASE_LEFT;
+        else if (*ptr < 112)
+            base.type = SETUP_BASE_DOWN;
+        else
+            base.type = SETUP_BASE_RIGHT;
+        base.appeartime = 0;
+        clMap.bases.push_back(base);
+        ptr++;
+    }
+    int num_fuels = get_ushort(&ptr);
+    for (i = 0; i < num_fuels; i++)
+    {
+        fuelstation_t fs;
+        cx = get_ushort(&ptr);
+        cy = get_ushort(&ptr);
+        fs.fuel = MAX_STATION_FUEL;
+        fs.bounds.x = cx - BLOCK_SZ / 2;
+        fs.bounds.y = cy - BLOCK_SZ / 2;
+        fs.bounds.w = BLOCK_SZ;
+        fs.bounds.h = BLOCK_SZ;
+    }
+    num_checks = *ptr++ & 0xff;
+    if (num_checks != 0)
+    {
+        checks = XMALLOC(checkpoint_t, num_checks);
+        if (checks == nullptr)
+        {
+            error("No memory for checkpoints (%d)", num_checks);
+            exit(1);
+        }
+    }
+    for (i = 0; i < num_checks; i++)
+    {
+        cx = get_ushort(&ptr);
+        cy = get_ushort(&ptr);
+        checks[i].bounds.x = cx - BLOCK_SZ / 2;
+        checks[i].bounds.y = cy - BLOCK_SZ / 2;
+        checks[i].bounds.w = BLOCK_SZ;
+        checks[i].bounds.h = BLOCK_SZ;
+    }
+
+    /*
+     * kps - hack.
+     * Player can disable downloading of textures by having texturedWalls off.
+     */
+    if (instruments.texturedWalls && Setup->data_url[0])
+        Mapdata_setup(Setup->data_url);
+    Colors_init_style_colors();
+
+    return 0;
+}
+
+static int init_blockmap(void)
+{
+    int i,
+        max,
+        type;
+    uint8_t types[256];
+
+    num_checks = 0;
+    clMap.fuels.clear();
+    clMap.bases.clear();
+    clMap.cannons.clear();
+    clMap.targets.clear();
+    checks = nullptr;
+    memset(types, 0, sizeof types);
+    types[SETUP_FUEL] = 1;
+    types[SETUP_CANNON_UP] = 2;
+    types[SETUP_CANNON_RIGHT] = 2;
+    types[SETUP_CANNON_DOWN] = 2;
+    types[SETUP_CANNON_LEFT] = 2;
+    for (i = SETUP_TARGET; i < SETUP_TARGET + 10; i++)
+        types[i] = 3;
+    for (i = SETUP_BASE_LOWEST; i <= SETUP_BASE_HIGHEST; i++)
+        types[i] = 4;
+    for (i = 0; i < OLD_MAX_CHECKS; i++)
+        types[SETUP_CHECK + i] = 5;
+    max = Setup->x * Setup->y;
+    for (i = 0; i < max; i++)
+    {
+        switch (types[Setup->map_data[i]])
+        {
+        case 5:
+            num_checks++;
+            break;
+        default:
+            break;
+        }
+    }
+    if (num_checks != 0)
+    {
+        checks = XMALLOC(checkpoint_t, num_checks);
+        if (checks == nullptr)
+        {
+            error("No memory for Map checks (%d)", num_checks);
+            return -1;
+        }
+        num_checks = 0;
+    }
+
+    for (i = 0; i < max; i++)
+    {
+        type = Setup->map_data[i];
+        switch (types[type])
+        {
+        case 1:
+            fuelstation_t fs;
+            fs.pos = i;
+            fs.fuel = MAX_STATION_FUEL;
+            clMap.fuels.push_back(fs);
+            break;
+        case 2:
+            cannontime_t cannon;
+            cannon.pos = i;
+            cannon.dead_time = 0;
+            cannon.dot = 0;
+            clMap.cannons.push_back(cannon);
+            break;
+        case 3:
+            target_t target;
+            target.pos = i;
+            target.dead_time = 0;
+            target.damage = TARGET_DAMAGE;
+            clMap.targets.push_back(target);
+            break;
+        case 4:
+            homebase_t base;
+            base.pos = i;
+            base.id = -1;
+            base.team = type % 10;
+            base.type = type - (type % 10);
+            base.appeartime = 0;
+            clMap.bases.push_back(base);
+            Setup->map_data[i] = type - (type % 10);
+            break;
+        case 5:
+            checks[type - SETUP_CHECK].pos = i;
+            num_checks++;
+            Setup->map_data[i] = SETUP_CHECK;
+            break;
+        default:
+            break;
+        }
+    }
+    return 0;
+}
+
+int Map_init(void)
+{
+    return oldServer ? init_blockmap() : init_polymap();
+}
+
+int Map_cleanup(void)
+{
+    clMap.bases.clear();
+    clMap.fuels.clear();
+    clMap.targets.clear();
+    clMap.cannons.clear();
+    return 0;
+}
+
+homebase_t *Homebase_by_id(int id)
+{
+    int i;
+
+    if (id != -1)
+    {
+        for (homebase_t &base : clMap.bases)
+        {
+            if (base.id == id)
+                return &base;
+        }
+    }
+    return nullptr;
+}
+
+int Handle_leave(int id)
+{
+    other_t *other;
+    char msg[MSG_LEN];
+
+    if ((other = Other_by_id(id)) != nullptr)
+    {
+        if (other == self)
+        {
+            warn("Self left?!");
+            self = nullptr;
+        }
+        Free_ship_shape(other->ship);
+        other->ship = nullptr;
+        /*
+         * Silent about tanks and robots.
+         */
+        if (other->mychar != 'T' && other->mychar != 'R')
+        {
+            sprintf(msg, "%s left this world.", other->nick_name);
+            Add_message(msg);
+        }
+        num_others--;
+        while (other < &Others[num_others])
+        {
+            *other = other[1];
+            other++;
+        }
+        scoresChanged = true;
+    }
+    return 0;
+}
+
+int Handle_player(int id, int player_team, int mychar,
+                  char *nick_name, char *user_name, char *host_name,
+                  char *shape, int myself)
+{
+    warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name, myself);
+
+    other_t *other;
+
+    if (BIT(Setup->mode, TEAM_PLAY) && (player_team < 0 || player_team >= MAX_TEAMS))
+    {
+        warn("Illegal team %d for received player, setting to 0", player_team);
+        player_team = 0;
+    }
+    if ((other = Other_by_id(id)) == nullptr)
+    {
+        if (num_others >= max_others)
+        {
+            max_others += 5;
+            if (num_others == 0)
+                Others = XMALLOC(other_t, max_others);
+            else
+                Others = XREALLOC(other_t, Others, max_others);
+            if (Others == nullptr)
+                fatal("Not enough memory for player info");
+            if (self != nullptr)
+                /* We've made 'self' the first member of Others[]. */
+                self = &Others[0];
+        }
+        other = &Others[num_others++];
+    }
+
+    // warn("Handle_player: id %d, connectParam.nick_name '%s'", id, connectParam.nick_name);
+
+    if (self == nullptr && (myself || (version < 0x4F10 && strcmp(connectParam.nick_name, nick_name) == 0)))
+    {
+        if (other != &Others[0])
+        {
+            /* Make 'self' the first member of Others[]. */
+            *other = Others[0];
+            other = &Others[0];
+        }
+        self = other;
+    }
+    warn("Handle_player: self = %p", self);
+    memset(other, 0, sizeof(other_t));
+    other->id = id;
+    other->team = player_team;
+    other->mychar = mychar;
+    strlcpy(other->nick_name, nick_name, sizeof(other->nick_name));
+    strlcpy(other->user_name, user_name, sizeof(other->user_name));
+    strlcpy(other->host_name, host_name, sizeof(other->host_name));
+    strlcpy(other->id_string, nick_name, sizeof(other->id_string));
+    other->max_chars_in_names = -1;
+    scoresChanged = true;
+    other->ship = Convert_shape_str(shape);
+    Calculate_shield_radius(other->ship);
+
+    return 0;
+}
+
+int Handle_team(int id, int pl_team)
+{
+    other_t *other;
+
+    other = Other_by_id(id);
+    if (other == nullptr)
+    {
+        warn("Received packet to change team for nonexistent id %d", id);
+        return 0;
+    }
+    if (BIT(Setup->mode, TEAM_PLAY) && (pl_team < 0 || pl_team >= MAX_TEAMS))
+    {
+        warn("Illegal team %d received for player id %d", pl_team, id);
+        return 0;
+    }
+    other->team = pl_team;
+    scoresChanged = true;
+
+    return 0;
+}
+
+int Handle_score(int id, double score, int life, int mychar, int alliance)
+{
+    other_t *other;
+
+    if ((other = Other_by_id(id)) == nullptr)
+    {
+        warn("Can't update score for non-existing player %d,%d,%d",
+             id, (int)score, life);
+        return 0;
+    }
+    else if (other->score != score || other->life != life || other->mychar != mychar || other->alliance != alliance)
+    {
+        other->score = score;
+        other->life = life;
+        other->mychar = mychar;
+        other->alliance = alliance;
+        scoresChanged = true;
+    }
+
+    return 0;
+}
+
+int Handle_team_score(int team, double score)
+{
+    warn("Handle_team_score: team: %d, score: %f", team, score);
+    return 0;
+}
+
+int Handle_timing(int id, int check, int round, long tloops)
+{
+    other_t *other;
+
+    if ((other = Other_by_id(id)) == nullptr)
+    {
+        warn("Can't update timing for non-existing player %d,%d,%d",
+             id, check, round);
+        return 0;
+    }
+    else if (other->check != check || other->round != round)
+    {
+        other->check = check;
+        other->round = round;
+        other->timing = round * num_checks + check;
+        other->timing_loops = last_loops;
+        scoresChanged = true;
+    }
+
+    return 0;
+}
+
+int Handle_score_object(double score, int x, int y, char *msg)
+{
+    score_object_t *sobj = &score_objects[score_object];
+
+    sobj->score = (int)score;
+    sobj->x = x;
+    sobj->y = y;
+    sobj->count = 1;
+
+    /* Initialize sobj->hud_msg (is shown on the HUD) */
+    if (msg[0] != '\0')
+    {
+        sprintf(sobj->hud_msg, "%s %d", msg, (int)score);
+        sobj->hud_msg_len = strlen(sobj->hud_msg);
+        // sobj->hud_msg_width = XTextWidth(gameFont,
+        //                                  sobj->hud_msg, sobj->hud_msg_len);
+        sobj->hud_msg_width = -1;
+    }
+    else
+        sobj->hud_msg_len = 0;
+
+    /* Initialize sobj->msg data (is shown on game area) */
+    sprintf(sobj->msg, "%d", (int)score);
+
+    sobj->msg_len = strlen(sobj->msg);
+    // sobj->msg_width = XTextWidth(gameFont, sobj->msg, sobj->msg_len);
+    sobj->msg_width = -1;
+
+    /* Update global index variable */
+    score_object = (score_object + 1) % MAX_SCORE_OBJECTS;
+
+    return 0;
+}
+
+int Handle_start(long server_loops)
+{
+    int i;
+
+    start_loops = server_loops;
+
+    clMap.refuels.clear();
+    clMap.connectors.clear();
+    clMap.missiles.clear();
+    clMap.balls.clear();
+    clMap.ships.clear();
+    clMap.missiles.clear();
+    clMap.itemtypes.clear();
+    clMap.ecms.clear();
+    clMap.transporters.clear();
+    clMap.pausers.clear();
+    clMap.radarObjects.clear();
+    clMap.vcannons.clear();
+    clMap.vfuels.clear();
+    clMap.vbases.clear();
+    clMap.vdecors.clear();
+    // for (i = 0; i < DEBRIS_TYPES; i++)
+    //     num_debris[i] = 0;
+    for (auto &debrisList : clMap.debrisTypes)
+        debrisList.clear();
+
+    damaged = 0;
+    destruct = 0;
+    shutdown_delay = 0;
+    shutdown_count = -1;
+    eyesId = (self != nullptr) ? self->id : 0;
+    eyes = Other_by_id(eyesId);
+    thrusttime = -1;
+    shieldtime = -1;
+    phasingtime = -1;
+    return 0;
+}
+
+static void update_timing(void)
+{
+    static int frame_counter = 0;
+    static struct timeval old_tv = {0, 0};
+    struct timeval now;
+    static double time_counter = 0.0;
+
+    frame_counter++;
+    gettimeofday(&now, nullptr);
+    if (now.tv_sec != old_tv.tv_sec)
+    {
+        double usecs, fps;
+
+        currentTime = time(nullptr);
+        usecs = 1e6 + (now.tv_usec - old_tv.tv_usec);
+        fps = (1e6 * frame_counter) / usecs;
+        old_tv = now;
+        newSecond = true;
+        clientFPS = MAX(1.0, fps);
+        timePerFrame = 1.0 / clientFPS;
+        frame_counter = 0;
+        if (!played_this_round && self && !strchr("PW", self->mychar))
+            played_this_round = true;
+    }
+    else
+        newSecond = false;
+
+    /*
+     * Instead of using loops to determining if things are drawn this frame,
+     * twelveHz should be used. We don't want things to be drawn too fast
+     * at high fps.
+     */
+    time_counter += timePerFrame;
+    LIMIT(time_counter, 0.0, (2.0 / 12.0));
+    if (time_counter >= (1.0 / 12.0))
+    {
+        twelveHz++;
+        time_counter -= (1.0 / 12.0);
+    }
+}
+
+int Handle_end(long server_loops)
+{
+    end_loops = server_loops;
+    snooping = (self && eyesId != self->id) ? true : false;
+    update_timing();
+    Paint_frame();
+#ifdef SOUND
+    audioUpdate();
+#endif
+    return 0;
+}
+
+int Handle_self_items(uint8_t *newNumItems)
+{
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
+    return 0;
+}
+
+static void update_status(int status)
+{
+    static int old_status = 0;
+
+    if (BIT(old_status, OLD_GAME_OVER) && !BIT(status, OLD_GAME_OVER) && !BIT(status, OLD_PAUSE))
+        Raise_window();
+
+    /* Player appeared? */
+    if (BIT(old_status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) != OLD_PLAYING)
+    {
+        if (BIT(status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) == OLD_PLAYING)
+            Reset_shields();
+    }
+
+    old_status = status;
+}
+
+int Handle_self(int x, int y, int vx, int vy, int newHeading,
+                double newPower, double newTurnspeed, double newTurnresistance,
+                int newLockId, int newLockDist, int newLockBearing,
+                int newNextCheckPoint, int newAutopilotLight,
+                uint8_t *newNumItems, int newCurrentTank,
+                double newFuelSum, double newFuelMax, int newPacketSize,
+                int status)
+{
+    // warn("Handle_self: newFuelSum: %f, newFuelMax: %f", newFuelSum, newFuelMax);
+
+    selfPos.x = x;
+    selfPos.y = y;
+    selfVel.x = vx;
+    selfVel.y = vy;
+    heading = newHeading;
+    displayedPower = newPower;
+    displayedTurnspeed = newTurnspeed;
+    displayedTurnresistance = newTurnresistance;
+    lock_id = newLockId;
+    lock_dist = newLockDist;
+    lock_dir = newLockBearing;
+    nextCheckPoint = newNextCheckPoint;
+    autopilotLight = newAutopilotLight;
+    memcpy(numItems, newNumItems, NUM_ITEMS * sizeof(uint8_t));
+    fuelCurrent = newCurrentTank;
+    if (newFuelSum > fuelSum && selfVisible)
+        fuelTime = FUEL_NOTIFY_TIME;
+    fuelSum = newFuelSum;
+    fuelMax = newFuelMax;
+    selfVisible = 0;
+    if (newPacketSize + 16 < packet_size)
+        packet_size -= 16;
+    else
+        packet_size = newPacketSize;
+
+    world.x = selfPos.x - (ext_view_width / 2);
+    world.y = selfPos.y - (ext_view_height / 2);
+    realWorld = world;
+    if (BIT(Setup->mode, WRAP_PLAY))
+    {
+        if (world.x < 0 && world.x + ext_view_width < Setup->width)
+            world.x += Setup->width;
+        else if (world.x > 0 && world.x + ext_view_width >= Setup->width)
+            realWorld.x -= Setup->width;
+        if (world.y < 0 && world.y + ext_view_height < Setup->height)
+            world.y += Setup->height;
+        else if (world.y > 0 && world.y + ext_view_height >= Setup->height)
+            realWorld.y -= Setup->height;
+    }
+    update_status(status);
+    return 0;
+}
+
+int Handle_eyes(int id)
+{
+    eyesId = id;
+    eyes = Other_by_id(eyesId);
+    return 0;
+}
+
+int Handle_damaged(int dam)
+{
+    damaged = dam;
+    return 0;
+}
+
+int Handle_modifiers(char *m)
+{
+    strlcpy(mods, m, MAX_CHARS);
+    return 0;
+}
+
+int Handle_destruct(int count)
+{
+    destruct = count;
+    return 0;
+}
+
+int Handle_shutdown(int count, int delay)
+{
+    shutdown_count = count;
+    shutdown_delay = delay;
+    return 0;
+}
+
+int Handle_thrusttime(int count, int max)
+{
+    thrusttime = count;
+    thrusttimemax = max;
+    return 0;
+}
+
+int Handle_shieldtime(int count, int max)
+{
+    shieldtime = count;
+    shieldtimemax = max;
+    return 0;
+}
+
+int Handle_phasingtime(int count, int max)
+{
+    phasingtime = count;
+    phasingtimemax = max;
+    return 0;
+}
+
+int Handle_rounddelay(int count, int max)
+{
+    roundDelay = count;
+    roundDelayMax = max;
+    return 0;
+}
+
+int Handle_refuel(int x0, int y0, int x1, int y1)
+{
+    refuel_t t;
+
+    t.x0 = x0;
+    t.x1 = x1;
+    t.y0 = y0;
+    t.y1 = y1;
+    clMap.refuels.push_back(t);
+    return 0;
+}
+
+int Handle_connector(int x0, int y0, int x1, int y1, int tractor)
+{
+    connector_t t;
+
+    t.x0 = x0;
+    t.x1 = x1;
+    t.y0 = y0;
+    t.y1 = y1;
+    t.tractor = tractor;
+    clMap.connectors.push_back(t);
+    return 0;
+}
+
+int Handle_laser(int color, int x, int y, int len, int dir)
+{
+    laser_t t;
+
+    t.color = color;
+    t.x = x;
+    t.y = y;
+    t.len = len;
+    t.dir = dir;
+    clMap.lasers.push_back(t);
+    return 0;
+}
+
+int Handle_missile(int x, int y, int len, int dir)
+{
+    missile_t t;
+
+    t.x = x;
+    t.y = y;
+    t.dir = dir;
+    t.len = len;
+    clMap.missiles.push_back(t);
+    return 0;
+}
+
+int Handle_ball(int x, int y, int id, int style)
+{
+    ball_t t;
+
+    t.x = x;
+    t.y = y;
+    t.id = id;
+    t.style = style;
+    clMap.balls.push_back(t);
+    return 0;
+}
+
+static int predict_self_dir(int received_dir)
+{
+    double pointer_delta = 0, dir_delta, new_dir;
+    int ind = pointer_move_next - 1;
+    int count = 0, int_new_dir;
+
+    if (ind < 0)
+        ind = MAX_POINTER_MOVES - 1;
+
+    while (pointer_moves[ind].id > last_keyboard_ack && count < 50)
+    {
+        pointer_delta += pointer_moves[ind].movement * pointer_moves[ind].turnspeed;
+        ind--;
+        if (ind < 0)
+            ind = MAX_POINTER_MOVES - 1;
+        count++;
+    }
+
+    dir_delta = pointer_delta / (ANGLE_RESOLUTION / 2);
+    new_dir = (received_dir - dir_delta);
+    while (new_dir < 0)
+        new_dir += ANGLE_RESOLUTION;
+    while (new_dir >= ANGLE_RESOLUTION)
+        new_dir -= ANGLE_RESOLUTION;
+    int_new_dir = (int)(new_dir + 0.5);
+    while (int_new_dir >= ANGLE_RESOLUTION)
+        /* might be == ANGLE_RESOLUTION */
+        int_new_dir -= ANGLE_RESOLUTION;
+
+    return int_new_dir;
+}
+
+int Handle_ship(int x, int y, int id, int dir, int shield, int cloak,
+                int eshield, int phased, int deflector)
+{
+    ship_t t;
+
+    t.x = x;
+    t.y = y;
+    t.id = id;
+    t.dir = dir;
+    t.shield = shield;
+    t.cloak = cloak;
+    t.eshield = eshield;
+    t.phased = phased;
+    t.deflector = deflector;
+    clMap.ships.push_back(t);
+
+    /* if we see a ship in the center of the display, we may be watching
+     * it, especially if it's us!  consider any ship there to be our eyes
+     * until we see a ship that really is us.
+     * BG: XXX there was a bug here.  self was dereferenced at "self->id"
+     * while self could be nullptr here.
+     */
+    if (!selfVisible && ((x == selfPos.x && y == selfPos.y) || (self && id == self->id)))
+    {
+        int radarx, radary;
+        eyesId = id;
+        eyes = Other_by_id(eyesId);
+        if (eyes != nullptr)
+            eyeTeam = eyes->team;
+        selfVisible = (self && (id == self->id));
+        radarx = (int)((double)(x * RadarWidth) / Setup->width + 0.5);
+        radary = (int)((double)(y * RadarHeight) / Setup->height + 0.5);
+        return Handle_radar(radarx, radary, 3);
+    }
+
+    return 0;
+}
+
+int Handle_mine(int x, int y, int teammine, int id)
+{
+    mine_t t;
+
+    t.x = x;
+    t.y = y;
+    t.teammine = teammine;
+    t.id = id;
+    clMap.mines.push_back(t);
+    return 0;
+}
+
+int Handle_item(int x, int y, int type)
+{
+    itemtype_t t;
+
+    t.x = x;
+    t.y = y;
+    t.type = type;
+    clMap.itemtypes.push_back(t);
+    return 0;
+}
+
+template <typename ShotT, std::size_t N>
+static int Handle_shot_vector(std::array<std::vector<ShotT>, N> &shotTypes,
+                              int type,
+                              uint8_t *p,
+                              int n,
+                              const char *name)
+{
+    if (type < 0 || type >= static_cast<int>(N))
+    {
+        error("Invalid %s type %d", name, type);
+        return -1;
+    }
+
+    auto &shotList = shotTypes[static_cast<std::size_t>(type)];
+
+    if (n <= 0)
+    {
+        if (n < 0)
+            printf("%s %d < 0\n", name, n);
+
+        shotList.clear();
+        return 0;
+    }
+
+    try
+    {
+        shotList.resize(static_cast<std::size_t>(n));
+    }
+    catch (const std::bad_alloc &)
+    {
+        error("No memory for %s", name);
+        shotList.clear();
+        return -1;
+    }
+
+    std::memcpy(shotList.data(),
+                p,
+                static_cast<std::size_t>(n) * sizeof(ShotT));
+
+    return 0;
+}
+
+int Handle_fastshot(int type, uint8_t *p, int n)
+{
+    // warn("Handle_fastshot: type %d, n %d", type, n);
+    return Handle_shot_vector(clMap.fastshotTypes, type, p, n, "fastshot");
+}
+
+int Handle_teamshot(int type, uint8_t *p, int n)
+{
+    // warn("Handle_teamshot: type %d, n %d", type, n);
+    return Handle_shot_vector(clMap.teamshotTypes, type, p, n, "teamshot");
+}
+
+int Handle_debris(int type, uint8_t *p, int n)
+{
+    // warn("Handle_debris: type %d, n %d", type, n);
+
+    if (type < 0 || type >= static_cast<int>(DEBRIS_TYPES))
+    {
+        error("Invalid debris type %d", type);
+        return -1;
+    }
+
+    if (n <= 0)
+    {
+        if (n < 0)
+            printf("debris %d < 0\n", n);
+
+        clMap.debrisTypes[type].clear();
+        return 0;
+    }
+
+    auto &debrisList = clMap.debrisTypes[type];
+
+    try
+    {
+        debrisList.resize(static_cast<std::size_t>(n));
+    }
+    catch (const std::bad_alloc &)
+    {
+        error("No memory for debris");
+        debrisList.clear();
+        return -1;
+    }
+
+    std::memcpy(debrisList.data(), p, static_cast<std::size_t>(n) * sizeof(debris_t));
+
+    return 0;
+}
+
+int Handle_wreckage(int x, int y, int wrecktype, int size, int rotation)
+{
+    wreckage_t t;
+
+    t.x = x;
+    t.y = y;
+    t.wrecktype = wrecktype;
+    t.size = size;
+    t.rotation = rotation;
+    clMap.wreckages.push_back(t);
+    return 0;
+}
+
+int Handle_asteroid(int x, int y, int type, int size, int rotation)
+{
+    // warn("Handle_asteroid: x = %d, y = %d, type = %d, size = %d, rotation = %d",
+    //      x, y, type, size, rotation);
+
+    asteroid_t t;
+
+    t.x = x;
+    t.y = y;
+    t.type = type;
+    t.size = size;
+    t.rotation = rotation;
+    clMap.asteroids.push_back(t);
+    return 0;
+}
+
+int Handle_wormhole(int x, int y)
+{
+    wormhole_t t;
+
+    t.x = x - BLOCK_SZ / 2;
+    t.y = y - BLOCK_SZ / 2;
+    clMap.wormholes.push_back(t);
+    return 0;
+}
+
+int Handle_polystyle(int polyind, int newstyle)
+{
+    xp_polygon_t *poly;
+
+    if (polyind < 0 || polyind > clMap.polygons.size())
+    {
+        return -1;
+    }
+
+    poly = &clMap.polygons[polyind];
+    poly->style = newstyle;
+    /*warn("polygon %d style set to %d", polyind, newstyle);*/
+
+    UpdateRadar = true;
+    return 0;
+}
+
+int Handle_ecm(int x, int y, int size)
+{
+    ecm_t t;
+
+    t.x = x;
+    t.y = y;
+    t.size = size;
+    clMap.ecms.push_back(t);
+    return 0;
+}
+
+int Handle_trans(int x1, int y1, int x2, int y2)
+{
+    trans_t t;
+
+    t.x1 = x1;
+    t.y1 = y1;
+    t.x2 = x2;
+    t.y2 = y2;
+    clMap.transporters.push_back(t);
+    return 0;
+}
+
+int Handle_paused(int x, int y, int count)
+{
+    paused_t t;
+
+    t.x = x;
+    t.y = y;
+    t.count = count;
+    clMap.pausers.push_back(t);
+    return 0;
+}
+
+int Handle_appearing(int x, int y, int id, int count)
+{
+    appearing_t t;
+
+    t.x = x;
+    t.y = y;
+    t.id = id;
+    t.count = count;
+    clMap.appearers.push_back(t);
+    return 0;
+}
+
+int Handle_radar(int x, int y, int size)
+{
+    radar_t t;
+
+    t.x = x;
+    t.y = y;
+    t.size = size;
+    clMap.radarObjects.push_back(t);
+    return 0;
+}
+
+int Handle_message(char *msg)
+{
+    int i;
+    char ignoree[MAX_CHARS];
+    other_t *other;
+
+    if (msg[strlen(msg) - 1] == ']')
+    {
+        for (i = strlen(msg) - 1; i > 0; i--)
+        {
+            if (msg[i - 1] == ' ' && msg[i] == '[')
+                break;
+        }
+
+        if (i == 0)
+        { /* Odd, but let it pass */
+            Add_message(msg);
+            return 0;
+        }
+
+        strcpy(ignoree, &msg[i + 1]);
+
+        for (i = 0; i < (int)strlen(ignoree); i++)
+        {
+            if (ignoree[i] == ']')
+                break;
+        }
+        ignoree[i] = '\0';
+
+        other = Other_by_name(ignoree, false);
+
+        if (other == nullptr)
+        { /* Not in list, probably servermessage */
+            Add_message(msg);
+            return 0;
+        }
+
+        if (other->ignorelevel <= 0)
+        {
+            Add_message(msg);
+            return 0;
+        }
+
+        if (other->ignorelevel >= 2)
+            return 0;
+
+        /* ignorelevel must be 1 */
+
+        crippleTalk(msg);
+        Add_message(msg);
+    }
+    else
+        Add_message(msg);
+    return 0;
+}
+
+int Handle_time_left(long sec)
+{
+    if (sec >= 0 && sec < 10 && (time_left > sec || sec == 0))
+        Play_beep();
+    time_left = (sec >= 0) ? sec : 0;
+    return 0;
+}
+
+int Handle_vcannon(int x, int y, int type)
+{
+    vcannon_t t;
+
+    t.x = x;
+    t.y = y;
+    t.type = type;
+    clMap.vcannons.push_back(t);
+    return 0;
+}
+
+int Handle_vfuel(int x, int y, double fuel)
+{
+    // warn("Handle_vfuel: x: %d, y: %d, fuel: %f", x, y, fuel);
+
+    vfuel_t t;
+
+    t.x = x;
+    t.y = y;
+    t.fuel = fuel;
+    clMap.vfuels.push_back(t);
+    return 0;
+}
+
+int Handle_vbase(int x, int y, int xi, int yi, int type)
+{
+    vbase_t t;
+
+    t.x = x;
+    t.y = y;
+    t.xi = xi;
+    t.yi = yi;
+    t.type = type;
+    clMap.vbases.push_back(t);
+    return 0;
+}
+
+int Handle_vdecor(int x, int y, int xi, int yi, int type)
+{
+    vdecor_t t;
+
+    t.x = x;
+    t.y = y;
+    t.xi = xi;
+    t.yi = yi;
+    t.type = type;
+    clMap.vdecors.push_back(t);
+    return 0;
+}
+
+bool Using_score_decimals(void)
+{
+    // if (showScoreDecimals > 0 && version >= 0x4500 && (version < 0x4F09 || version >= 0x4F11))
+    //     return true;
+    return false;
+}
