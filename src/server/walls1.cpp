@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "walls1.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -42,7 +44,6 @@
 #include "score.h"
 #include "saudio.h"
 #include "item.h"
-#include "walls1.h"
 #include "click.h"
 #include "object.h"
 #include "robot.h"
@@ -58,7 +59,6 @@ unsigned SPACE_BLOCKS = (SPACE_BIT | BASE_BIT | WORMHOLE_BIT |
                          DECOR_FILLED_BIT | CHECK_BIT | ITEM_CONCENTRATOR_BIT |
                          FRICTION_BIT | ASTEROID_CONCENTRATOR_BIT);
 
-static struct move_parameters mp;
 static double wallBounceExplosionMult;
 static char msg[MSG_LEN];
 
@@ -1835,7 +1835,7 @@ static void Cannon_dies(move_state_t *ms)
     }
 }
 
-static void Object_crash(move_state_t *ms)
+static void Object_crash1(move_state_t *ms)
 {
     object_t *obj = ms->mip->obj;
 
@@ -2067,13 +2067,13 @@ void Move_object(object_t *obj)
     obj->vel = ms.vel;
     obj->missile_dir = ms.dir;
     if (ms.crash)
-        Object_crash(&ms);
+        Object_crash1(&ms);
     if (pos_update)
         Object_position_remember(obj);
     Cell_add_object(obj);
 }
 
-static void Player_crash(move_state_t *ms, int pt, bool turning)
+static void Player_crash1(move_state_t *ms, int pt, bool turning)
 {
     player_t *pl = ms->mip->pl;
     int ind = GetInd(pl->id);
@@ -2087,7 +2087,7 @@ static void Player_crash(move_state_t *ms, int pt, bool turning)
 
     default:
     case NotACrash:
-        warn("Player_crash not a crash %d", ms->crash);
+        warn("Player_crash1 not a crash %d", ms->crash);
         break;
 
     case CrashWormHole:
@@ -2721,7 +2721,7 @@ void Move_player(player_t *pl)
     pl->velocity = VECTOR_LENGTH(pl->vel);
 
     if (ms[worst].crash)
-        Player_crash(&ms[worst], worst, false);
+        Player_crash1(&ms[worst], worst, false);
 
     if (pos_update)
         Player_position_remember(pl);
@@ -2942,6 +2942,6 @@ void Turn_player(player_t *pl)
 
     if (crash != -1)
     {
-        Player_crash(&ms[crash], crash, true);
+        Player_crash1(&ms[crash], crash, true);
     }
 }

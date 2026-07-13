@@ -90,6 +90,7 @@ typedef struct
 // {
 //     const move_info_t *mip;
 //     move_crash_t crash;
+//     move_bounce_t bounce;
 //     clpos_t pos;
 //     vector_t vel;
 //     clvec_t todo;
@@ -98,7 +99,8 @@ typedef struct
 //     int cannon;
 //     int wormhole;
 //     int target;
-//     int treasure;
+//     // int treasure;
+//     treasure_t *treasure_ptr;
 // } move_state_t;
 
 typedef struct

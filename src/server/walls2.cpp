@@ -52,8 +52,8 @@
 #include "asteroid.h"
 #include "srecord.h"
 #include "rank.h"
+#include "move.h"
 
-struct move_parameters mp;
 static char msg[MSG_LEN];
 
 /* polygon map related stuff */
