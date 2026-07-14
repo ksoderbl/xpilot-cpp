@@ -23,10 +23,8 @@
 
 #pragma once
 
-#include "connection.h"
 #include "player.h"
 
-int Get_motd(char *buf, int offset, int maxlen, int *size_ptr);
 int Setup_net_server(void);
 void Destroy_connection(connection_t *connp, const char *reason);
 int Check_connection(char *real, char *nick, char *dpy, char *addr);
@@ -79,7 +77,7 @@ int Send_radar(connection_t *connp, int x, int y, int size);
 int Send_fastradar(connection_t *connp, uint8_t *buf, unsigned n);
 int Send_damaged(connection_t *connp, int damaged);
 int Send_message(connection_t *connp, const char *msg);
-int Send_loseitem(int lose_item_index, connection_t *connp);
+int Send_loseitem(connection_t *connp, int lose_item_index);
 int Send_start_of_frame(connection_t *connp);
 int Send_end_of_frame(connection_t *connp);
 int Send_reliable(connection_t *connp);

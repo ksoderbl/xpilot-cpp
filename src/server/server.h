@@ -378,7 +378,7 @@ void Meta_send(char *mesg, size_t len);
 int Meta_from(char *addr, int port);
 void Meta_gone(void);
 void Meta_init(void);
-void Meta_update(int change);
+void Meta_update(bool change);
 
 /*
  * Prototypes for frame.c

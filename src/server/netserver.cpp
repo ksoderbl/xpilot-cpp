@@ -885,21 +885,37 @@ static int Handle_setup(connection_t *connp)
         return -1;
     }
 
-    S = Oldsetup;
+    if (FEATURE(connp, F_POLY))
+        S = Setup;
+    else
+        S = Oldsetup;
 
     if (connp->setup == 0)
     {
-        n = Packet_printf(&connp->c,
-                          "%ld"
-                          "%ld%hd"
-                          "%hd%hd"
-                          "%hd%hd"
-                          "%s%s",
-                          S->map_data_len,
-                          S->mode, S->lives,
-                          S->x, S->y,
-                          S->frames_per_second, S->map_order,
-                          S->name, S->author);
+        if (!FEATURE(connp, F_POLY) || !is_polygon_map)
+            n = Packet_printf(&connp->c,
+                              "%ld"
+                              "%ld%hd"
+                              "%hd%hd"
+                              "%hd%hd"
+                              "%s%s",
+                              S->map_data_len,
+                              S->mode, S->lives,
+                              S->x, S->y,
+                              options.framesPerSecond, S->map_order,
+                              S->name, S->author);
+        else
+            n = Packet_printf(&connp->c,
+                              "%ld"
+                              "%ld%hd"
+                              "%hd%hd"
+                              "%hd%s"
+                              "%s%S",
+                              S->map_data_len,
+                              S->mode, S->lives,
+                              S->width, S->height,
+                              options.framesPerSecond, S->name,
+                              S->author, S->data_url);
         if (n <= 0)
         {
             Destroy_connection(connp, "setup 0 write error");
@@ -1384,7 +1400,7 @@ int Input(void)
     if (num_logins | num_logouts)
     {
         /* Tell the meta server */
-        Meta_update(1);
+        Meta_update(true);
         num_logins = 0;
         num_logouts = 0;
     }
@@ -2017,7 +2033,7 @@ int Send_message(connection_t *connp, const char *msg)
     return Packet_printf(&connp->c, "%c%S", PKT_MESSAGE, msg);
 }
 
-int Send_loseitem(int lose_item_index, connection_t *connp)
+int Send_loseitem(connection_t *connp, int lose_item_index)
 {
     return Packet_printf(&connp->w, "%c%c", PKT_LOSEITEM, lose_item_index);
 }
@@ -2851,7 +2867,7 @@ static int Receive_motd(connection_t *connp)
  * If this MOTD buffer hasn't been accessed for a while
  * then on the next access the MOTD file is checked for changes.
  */
-int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
+static int Get_motd(char *buf, int offset, int maxlen, int *size_ptr)
 {
     static size_t motd_size;
     static char *motd_buf;
@@ -3047,16 +3063,11 @@ static int Receive_fps_request(connection_t *connp)
     if (connp->id != NO_ID)
     {
         pl = Player_by_id(connp->id);
-        pl->player_fps = fps;
-        // TODO: Fix this stuff
-        if (fps > FPS)
-            pl->player_fps = FPS;
-        if (fps < (FPS / 2))
-            pl->player_fps = (FPS + 1) / 2;
         if (fps == 0)
-            pl->player_fps = FPS;
-        if ((fps == 20) && options.ignore20MaxFPS)
-            pl->player_fps = FPS;
+            fps = 1;
+        if (!FEATURE(connp, F_POLY) && (fps == 20) && options.ignore20MaxFPS)
+            fps = MAX_SERVER_FPS;
+        pl->player_fps = fps;
     }
 
     return 1;

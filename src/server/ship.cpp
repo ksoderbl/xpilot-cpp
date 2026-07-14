@@ -254,7 +254,7 @@ static void Add_fuel(pl_fuel_t *ft, double fuel)
 
 void Player_add_fuel(player_t *pl, double amount)
 {
-    warn("Player_add_fuel: amount: %f", amount);
+    // warn("Player_add_fuel: amount: %f", amount);
 
     Add_fuel(&(pl->fuel), amount);
 }

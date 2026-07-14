@@ -1244,7 +1244,7 @@ static void Frame_lose_item_state(player_t *pl)
 {
     if (pl->lose_item_state != 0)
     {
-        Send_loseitem(pl->lose_item, pl->conn);
+        Send_loseitem(pl->conn, pl->lose_item);
         if (pl->lose_item_state == 1)
             pl->lose_item_state = -5;
         if (pl->lose_item_state < 0)

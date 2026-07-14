@@ -252,7 +252,7 @@ void Main_loop(void)
     // }
 
     if ((main_loops & 0x3F) == 0)
-        Meta_update(0);
+        Meta_update(false);
 
     /*
      * Check for possible shutdown, the server will

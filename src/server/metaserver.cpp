@@ -140,7 +140,7 @@ void Meta_init(void)
     }
 }
 
-void Meta_update(int change)
+void Meta_update(bool change)
 {
 #ifdef SOUND
 #define SOUND_SUPPORT_STR "yes"
