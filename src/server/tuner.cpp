@@ -25,16 +25,14 @@
 #include <ctime>
 
 #include "commonproto.h"
-
-#include "cannon.h"
-#include "server.h"
+#include "xperror.h"
 
 #define SERVER
+#include "cannon.h"
+#include "server.h"
 #include "serverconst.h"
-
-#include "xperror.h"
 #include "sched.h"
-#include "walls1.h"
+#include "move.h"
 #include "robot.h"
 #include "modifiers.h"
 

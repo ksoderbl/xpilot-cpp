@@ -44,8 +44,8 @@
 #include "cannon.h"
 #include "asteroid.h"
 #include "netserver.h"
-#include "walls1.h"
 #include "robot.h"
+#include "walls.h"
 
 int roundtime = -1;               /* time left this round */
 static double time_to_tick = 1.0; /* game time till next tick */
@@ -969,7 +969,7 @@ static void Update_players(void)
         if (!pl->turnresistance)
             pl->turnvel = 0;
 
-        Turn_player(pl);
+        Turn_player(pl, false); // TODO: false = don't care
 
         Update_visibility(pl, i);
 

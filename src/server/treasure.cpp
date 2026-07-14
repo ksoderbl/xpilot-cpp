@@ -183,7 +183,7 @@ static int Punish_team2(player_t *pl, treasure_t *td, clpos_t pos)
     return 1;
 }
 
-void Ball_hits_goal(ballobject_t *ball, group_t *gp)
+void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
 {
     player_t *owner;
     treasure_t *td;
@@ -191,7 +191,7 @@ void Ball_hits_goal(ballobject_t *ball, group_t *gp)
 
     if (gp->type != TREASURE)
     {
-        warn("Ball_hits_goal: not a treasure! Possible map bug.");
+        warn("Ball_hits_goal2: not a treasure! Possible map bug.");
         return;
     }
 

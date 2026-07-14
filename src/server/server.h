@@ -134,24 +134,6 @@ int request_ID(void);
 void release_ID(int id);
 
 /*
- * Prototypes for walls2.c
- */
-void Groups_init(void);
-void Walls_init2(void);
-void Treasure_init(void);
-void Move_init2(void);
-void Move_object2(object_t *obj);
-void Move_player2(player_t *pl);
-void Turn_player2(player_t *pl, bool push);
-int is_inside(int x, int y, hitmask_t hitmask, const object_t *obj);
-int shape_is_inside(int cx, int cy, hitmask_t hitmask, const object_t *obj,
-                    shape_t *s, int dir);
-int Polys_to_client(uint8_t **);
-void Ball_line_init(void);
-void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt);
-void Object_crash2(object_t *obj, int crashtype, int mapobj_ind);
-
-/*
  * Prototypes for event.c
  */
 int Handle_keyboard(player_t *pl);
@@ -506,15 +488,6 @@ void Target_set_hitmask(int group, target_t *targ);
 void Target_init(void);
 void World_restore_target(target_t *targ);
 void World_remove_target(target_t *targ);
-
-/*
- * Prototypes for treasure.c
- */
-void Make_treasure_ball(treasure_t *t);
-void Ball_hits_goal(ballobject_t *ball, group_t *groupptr);
-void Ball_is_replaced(ballobject_t *ball);
-void Ball_is_destroyed(ballobject_t *ball);
-bool Balltarget_hitfunc(group_t *groupptr, const move_t *move);
 
 /*
  * Prototypes for wormhole.c

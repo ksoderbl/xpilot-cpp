@@ -51,7 +51,7 @@
 #include "xperror.h"
 #include "portability.h"
 #include "object.h"
-#include "walls1.h"
+#include "walls.h"
 
 #define ROB_LOOK_AH 2
 

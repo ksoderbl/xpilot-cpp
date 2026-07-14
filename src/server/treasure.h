@@ -23,30 +23,14 @@
 
 #pragma once
 
-#include "click.h"
-#include "move.h"
+// TODO: Define treasure_t or Treasure here
+#include "map.h"
 #include "object.h"
-#include "player.h"
+#include "polygon.h"
 
-// TOOD: should be in walls1?
-extern unsigned SPACE_BLOCKS;
-
-/*
- * Wall collision detection and bouncing.
- *
- * The wall collision detection routines depend on repeatability
- * (getting the same result even after some "neutral" calculations)
- * and an exact determination whether a point is in space,
- * inside the wall (crash!) or on the edge.
- * This will be hard to achieve if only floating point would be used.
- * However, a resolution of a pixel is a bit rough and ugly.
- * Therefore a fixed point sub-pixel resolution is used called clicks.
- */
-
-void Walls_init(void);
-void Move_object(object_t *obj);
-void Move_player(player_t *pl);
-void Move_init(void);
-void Turn_player(player_t *pl, bool push);
-
-void Ball_line_init(void);
+void Treasure_init(void);
+void Make_treasure_ball(treasure_t *t);
+void Ball_hits_goal2(ballobject_t *ball, group_t *groupptr);
+void Ball_is_replaced(ballobject_t *ball);
+void Ball_is_destroyed(ballobject_t *ball);
+bool Balltarget_hitfunc(group_t *groupptr, const move_t *move);

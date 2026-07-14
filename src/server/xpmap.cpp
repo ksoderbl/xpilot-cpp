@@ -47,6 +47,8 @@
 #include "server.h"
 #include "wormhole.h"
 
+#include "walls2.h"
+
 static void Generate_random_map(void);
 
 /*
@@ -748,7 +750,6 @@ setup_t *Xpmap_init_setup(void)
     setup->setup_size = ((char *)&setup->map_data[0] - (char *)setup) + size;
     setup->map_data_len = size;
     setup->map_order = type;
-    setup->frames_per_second = FPS; // TODO: Remove?
     setup->lives = world->rules->lives;
     setup->mode = world->rules->mode;
     setup->x = world->x;

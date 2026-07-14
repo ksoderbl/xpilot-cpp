@@ -49,6 +49,8 @@
 #include "robot.h"
 #include "target.h"
 
+#define DOUBLE_TO_INT(D) ((D) < 0 ? -(int)(0.5 - (D)) : (int)((D) + 0.5))
+
 #define WALLDIST_MASK \
     (FILLED_BIT | REC_LU_BIT | REC_LD_BIT | REC_RU_BIT | REC_RD_BIT | FUEL_BIT | CANNON_BIT | TREASURE_BIT | TARGET_BIT | CHECK_BIT | WORMHOLE_BIT)
 
@@ -59,8 +61,9 @@ unsigned SPACE_BLOCKS = (SPACE_BIT | BASE_BIT | WORMHOLE_BIT |
                          DECOR_FILLED_BIT | CHECK_BIT | ITEM_CONCENTRATOR_BIT |
                          FRICTION_BIT | ASTEROID_CONCENTRATOR_BIT);
 
-static double wallBounceExplosionMult;
 static char msg[MSG_LEN];
+
+extern double wallBounceExplosionMult;
 
 /*
  * Two dimensional array giving for each point the distance
@@ -304,57 +307,10 @@ static void Walldist_init(void)
     Walldist_dump();
 }
 
-void Walls_init(void)
+void Walls_init1(void)
 {
     Walldist_alloc();
     Walldist_init();
-}
-
-void Move_init(void)
-{
-    mp.click_width = PIXEL_TO_CLICK(world->width);
-    mp.click_height = PIXEL_TO_CLICK(world->height);
-
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
-
-    LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
-    LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);
-    LIMIT(options.playerWallBrakeFactor, 0, 1);
-    LIMIT(options.objectWallBounceBrakeFactor, 0, 1);
-    LIMIT(options.objectWallBounceLifeFactor, 0, 1);
-    LIMIT(options.wallBounceFuelDrainMult, 0, 1000);
-    wallBounceExplosionMult = sqrt(options.wallBounceFuelDrainMult);
-
-    mp.max_shielded_angle = (int)(options.maxShieldedWallBounceAngle * ANGLE_RESOLUTION / 360);
-    mp.max_unshielded_angle = (int)(options.maxUnshieldedWallBounceAngle * ANGLE_RESOLUTION / 360);
-
-    mp.obj_bounce_mask = 0;
-    if (options.sparksWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT);
-    if (options.debrisWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT);
-    if (options.shotsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT);
-    if (options.itemsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT);
-    if (options.missilesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT);
-    if (options.minesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT);
-    if (options.ballsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT);
-    if (options.asteroidsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT);
-
-    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT |
-                         OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT |
-                         OBJ_ASTEROID_BIT;
-    if (options.cannonsUseItems)
-        mp.obj_cannon_mask |= OBJ_ITEM_BIT;
-    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT | OBJ_SPARK_BIT;
-    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT | OBJ_PULSE_BIT;
 }
 
 static void Bounce_edge(move_state_t *ms, move_bounce_t bounce)
@@ -559,7 +515,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
  *  - whether the point bounced, in which case no pixels will have been
  *    traversed, only a change in direction. (ms->bounce, ms->vel, ms->todo)
  */
-void Move_segment(move_state_t *ms)
+void Move_segment1(move_state_t *ms)
 {
     int i;
     int block_type;                        /* type of block we're going through */
@@ -1927,7 +1883,7 @@ static void Object_crash1(move_state_t *ms)
     }
 }
 
-void Move_object(object_t *obj)
+void Move_object1(object_t *obj)
 {
     int nothing_done = 0;
     int dist;
@@ -1978,7 +1934,7 @@ void Move_object(object_t *obj)
 
     for (;;)
     {
-        Move_segment(&ms);
+        Move_segment1(&ms);
         if (!(ms.done.cx | ms.done.cy))
         {
             pos_update |= (ms.crash | ms.bounce);
@@ -2253,7 +2209,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
     }
 }
 
-void Move_player(player_t *pl)
+void Move_player1(player_t *pl)
 {
     // player_t *pl = PlayersArray[ind];
     int nothing_done = 0;
@@ -2439,7 +2395,7 @@ void Move_player(player_t *pl)
         crash = -1;
         for (i = 0; i < pl->ship->num_points; i++)
         {
-            Move_segment(&ms[i]);
+            Move_segment1(&ms[i]);
 
             bool pos_update2 = pos_update;
 
@@ -2727,7 +2683,7 @@ void Move_player(player_t *pl)
         Player_position_remember(pl);
 }
 
-void Turn_player(player_t *pl)
+void Turn_player1(player_t *pl)
 {
     int i;
     move_info_t mi;
@@ -2873,7 +2829,7 @@ void Turn_player(player_t *pl)
 
             do
             {
-                Move_segment(&ms[i]);
+                Move_segment1(&ms[i]);
 
                 bool val1 = ms[i].crash | ms[i].bounce;
                 bool isCrash = (ms[i].crash != NotACrash);

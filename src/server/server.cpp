@@ -39,14 +39,6 @@
 
 #include "commonproto.h"
 
-#ifdef PLOCKSERVER
-#if defined(__linux__)
-#include <sys/mman.h>
-#else
-#include <sys/lock.h>
-#endif
-#endif
-
 #include "cannon.h"
 #include "score.h"
 #include "server.h"
@@ -65,10 +57,13 @@
 #include "xperror.h"
 #include "portability.h"
 #include "server.h"
-#include "walls1.h"
 #include "rank.h"
 
-char server_version[] = VERSION;
+#include "target.h"
+#include "treasure.h"
+#include "walls.h"
+
+// char server_version[] = VERSION;
 
 /*
  * Global variables
@@ -155,10 +150,7 @@ int main(int argc, char **argv)
     printf("find base direction\n");
     Find_base_direction();
     printf("walls init\n");
-    if (!is_polygon_map)
-        Walls_init();
-    else
-        Walls_init2();
+    Walls_init();
 
     /* Allocate memory for players, shots and messages */
     Alloc_players(Num_bases() + MAX_PSEUDO_PLAYERS);
@@ -534,7 +526,7 @@ void Server_info(char *str, size_t max_size)
             "WORLD (%3dx%3d)..: %s\n"
             "      AUTHOR.....: %s\n"
             "PLAYERS (%2d/%2d)..:\n",
-            server_version,
+            VERSION,
             (game_lock && ShutdownServer == -1) ? "locked" : (!game_lock && ShutdownServer != -1) ? "shutting down"
                                                          : (game_lock && ShutdownServer != -1)    ? "locked and shutting down"
                                                                                                   : "ok",

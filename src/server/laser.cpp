@@ -46,9 +46,9 @@
 #include "object.h"
 #include "asteroid.h"
 #include "commonproto.h"
-#include "walls1.h"
 #include "robot.h"
 #include "cannon.h"
+#include "walls.h"
 
 void Fire_laser(player_t *pl)
 {

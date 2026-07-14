@@ -40,9 +40,6 @@
  * Therefore a fixed point sub-pixel resolution is used called clicks.
  */
 
-#define FLOAT_TO_INT(F) ((F) < 0 ? -(int)(0.5f - (F)) : (int)((F) + 0.5f))
-#define DOUBLE_TO_INT(D) ((D) < 0 ? -(int)(0.5 - (D)) : (int)((D) + 0.5))
-
 typedef enum
 {
     NotACrash = 0,
@@ -135,3 +132,5 @@ struct move_parameters
 };
 
 extern struct move_parameters mp;
+
+void Move_init(void);

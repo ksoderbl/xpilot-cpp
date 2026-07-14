@@ -25,6 +25,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "walls2.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -53,6 +55,7 @@
 #include "srecord.h"
 #include "rank.h"
 #include "move.h"
+#include "treasure.h"
 
 static char msg[MSG_LEN];
 
@@ -157,45 +160,6 @@ static inline bool can_hit(group_t *gp, const move_t *move)
     if (gp->hitfunc == NULL)
         return true;
     return gp->hitfunc(gp, move);
-}
-
-void Move_init2(void)
-{
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
-
-    LIMIT(options.playerWallBounceBrakeFactor, 0, 1);
-    LIMIT(options.playerWallFriction, 0, FLT_MAX);
-    LIMIT(options.objectWallBounceBrakeFactor, 0, 1);
-    LIMIT(options.objectWallBounceLifeFactor, 0, 1);
-
-    mp.obj_bounce_mask = 0;
-    if (options.sparksWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SPARK_BIT);
-    if (options.debrisWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_DEBRIS_BIT);
-    if (options.shotsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_SHOT_BIT | OBJ_CANNON_SHOT_BIT);
-    if (options.itemsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ITEM_BIT);
-    if (options.missilesWallBounce)
-        SET_BIT(mp.obj_bounce_mask,
-                OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT);
-    if (options.minesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_MINE_BIT);
-    if (options.ballsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_BALL_BIT);
-    if (options.asteroidsWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_ASTEROID_BIT);
-    if (options.pulsesWallBounce)
-        SET_BIT(mp.obj_bounce_mask, OBJ_PULSE_BIT);
-
-    mp.obj_cannon_mask = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ASTEROID_BIT;
-    if (options.cannonsPickupItems)
-        mp.obj_cannon_mask |= OBJ_ITEM_BIT;
-    mp.obj_target_mask = mp.obj_cannon_mask | OBJ_BALL_BIT | OBJ_SPARK_BIT;
-    mp.obj_treasure_mask = mp.obj_bounce_mask | OBJ_BALL_BIT | OBJ_PULSE_BIT;
 }
 
 void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
@@ -530,7 +494,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     if (type == TREASURE)
     {
         if (obj->type == OBJ_BALL)
-            Ball_hits_goal(BALL_PTR(obj), groupptr_by_id(group));
+            Ball_hits_goal2(BALL_PTR(obj), groupptr_by_id(group));
         obj->life = 0;
         return 0;
     }
@@ -632,7 +596,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     return 1;
 }
 
-static void Bounce_player(player_t *pl, move_t *move, int line, int point)
+static void Bounce_player2(player_t *pl, move_t *move, int line, int point)
 {
     double c, s;   /* cosine and sine of 2 times line angle */
     double cl, sl; /* cosine and sine of line angle */
@@ -2546,7 +2510,7 @@ static void Corner_init(void)
 #undef DISIZE
 }
 
-void Ball_line_init(void)
+void Ball_line_init2(void)
 {
     int i;
     static clpos_t coords[MAX_SHIP_PTS];
@@ -2641,7 +2605,7 @@ void Walls_init2(void)
      * sides of a moving polygon shape. */
     Corner_init();
 
-    Ball_line_init();
+    Ball_line_init2();
 
     /* Initialize the data structures used when determining whether a given
      * arbitrary point on the map is inside something. */
@@ -2982,7 +2946,7 @@ void Move_player2(player_t *pl)
             {
                 if (SIDE(pl->vel.x, pl->vel.y, ans.line) < 0)
                 {
-                    Bounce_player(pl, &mv, ans.line, ans.point);
+                    Bounce_player2(pl, &mv, ans.line, ans.point);
                     if (Player_is_killed(pl))
                         break;
                 }
@@ -2991,7 +2955,7 @@ void Move_player2(player_t *pl)
                 {
                     if (SIDE(pl->vel.x, pl->vel.y, ans.line) < 0)
                     {
-                        Bounce_player(pl, &mv, ans.line, ans.point);
+                        Bounce_player2(pl, &mv, ans.line, ans.point);
                         if (Player_is_killed(pl))
                             break;
                     }
@@ -3025,7 +2989,7 @@ void Move_player2(player_t *pl)
     return;
 }
 
-void Turn_player(player_t *pl, bool push)
+void Turn_player2(player_t *pl, bool push)
 {
     int new_dir = MOD2((int)(pl->float_dir + 0.5), ANGLE_RESOLUTION);
     int next_dir, sign, group;
@@ -3214,9 +3178,9 @@ void Turn_player(player_t *pl, bool push)
                 move.delta.cx = 0;
                 move.delta.cy = 0;
                 if (ans.line != -1)
-                    Bounce_player(pl, &move, ans.line, 0);
+                    Bounce_player2(pl, &move, ans.line, 0);
                 else
-                    Bounce_player(pl, &move, ans.point, 0);
+                    Bounce_player2(pl, &move, ans.point, 0);
             }
 
             velot = velon * options.playerWallFriction * ((-pdc) * cl + (-pds) * sl);

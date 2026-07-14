@@ -32,7 +32,7 @@
 
 // #include "object.h"
 #include "server.h"
-#include "walls1.h"
+#include "walls.h"
 
 #define SERVER
 // #include "xpconfig.h"

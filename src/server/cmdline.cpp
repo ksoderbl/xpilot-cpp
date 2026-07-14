@@ -40,8 +40,9 @@
 #include "portability.h"
 #include "checknames.h"
 #include "tuner.h"
-#include "walls1.h"
+#include "walls.h"
 #include "sched.h"
+#include "move.h"
 
 double friction;
 double coriolisCosine, coriolisSine; /* cos and sin of cor. angle */

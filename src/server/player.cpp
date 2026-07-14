@@ -46,6 +46,7 @@
 #include "object.h"
 #include "rank.h"
 #include "robot.h"
+#include "treasure.h"
 
 bool updateScores = true;
 

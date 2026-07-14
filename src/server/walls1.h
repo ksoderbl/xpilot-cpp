@@ -27,15 +27,12 @@
 #include "player.h"
 #include "move.h"
 
-extern unsigned SPACE_BLOCKS;
-
 /*
  * Prototypes for walls1.cpp
  */
-void Walls_init(void);
-void Treasure_init(void);
-void Move_init(void);
-void Move_object(object_t *obj);
-void Move_player(player_t *pl);
-void Turn_player(player_t *pl);
-void Move_segment(move_state_t *ms);
+void Walls_init1(void);
+void Move_init1(void);
+void Move_object1(object_t *obj);
+void Move_player1(player_t *pl);
+void Turn_player1(player_t *pl);
+void Move_segment1(move_state_t *ms);
