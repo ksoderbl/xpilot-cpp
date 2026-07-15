@@ -365,7 +365,7 @@ static void Player_toggle_pause(player_t *pl)
              * Turn hover pause on, together with shields.
              */
             pl->count = 5 * FPS;
-            CLR_BIT(pl->obj_status, SELF_DESTRUCT);
+            Player_self_destruct(pl, false);
             SET_BIT(pl->pl_status, HOVERPAUSE);
 
             if (Player_uses_emergency_thrust(pl))
@@ -374,7 +374,7 @@ static void Player_toggle_pause(player_t *pl)
             if (BIT(pl->used, USES_EMERGENCY_SHIELD))
                 Emergency_shield(pl, false);
 
-            if (!BIT(pl->used, USES_AUTOPILOT))
+            if (!Player_uses_autopilot(pl))
                 Autopilot(pl, true);
 
             if (Player_is_phasing(pl))
@@ -460,7 +460,8 @@ void Pause_player(player_t *pl, bool on)
         /* Turn pause mode on */
         pl->count = 10 * FPS;
         pl->updateVisibility = true;
-        CLR_BIT(pl->obj_status, SELF_DESTRUCT | PLAYING);
+        Player_self_destruct(pl, false);
+        CLR_BIT(pl->obj_status, PLAYING);
         SET_BIT(pl->obj_status, PAUSE);
         pl->mychar = 'P';
         updateScores = true;
@@ -901,9 +902,10 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_SELF_DESTRUCT:
-                TOGGLE_BIT(pl->obj_status, SELF_DESTRUCT);
-                if (BIT(pl->obj_status, SELF_DESTRUCT))
-                    pl->count = 150;
+                if (Player_is_self_destructing(pl))
+                    Player_self_destruct(pl, false);
+                else
+                    Player_self_destruct(pl, true);
                 break;
 
             case KEY_PAUSE:

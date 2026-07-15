@@ -560,8 +560,8 @@ static int Frame_status(connection_t *conn, player_t *pl)
         Send_shieldtime(conn,
                         pl->emergency_shield_left,
                         pl->emergency_shield_max);
-    if (BIT(pl->obj_status, SELF_DESTRUCT) && pl->count > 0)
-        Send_destruct(conn, pl->count);
+    if (Player_is_self_destructing(pl))
+        Send_destruct(conn, (int)pl->self_destruct_count);
     if (Player_is_phasing(pl))
         Send_phasingtime(conn,
                          pl->phasing_left,

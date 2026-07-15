@@ -911,8 +911,15 @@ static void Update_players(void)
                 SET_BIT(pl->obj_status, PLAYING);
                 Go_home(pl);
             }
-            if (BIT(pl->obj_status, SELF_DESTRUCT))
+        }
+
+        if (Player_is_self_destructing(pl))
+        {
+            pl->self_destruct_count -= timeStep;
+            // warn("Player %s self destruct count is %f", pl->name, pl->self_destruct_count);
+            if (pl->self_destruct_count <= 0)
             {
+                Handle_Scoring(SCORE_SELF_DESTRUCT, pl, NULL, NULL, NULL);
                 Player_set_state(pl, PL_STATE_KILLED);
                 Set_message_f("%s has committed suicide.", pl->name);
                 Throw_items(pl);

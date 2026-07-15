@@ -1930,17 +1930,9 @@ static void Robot_default_play(player_t *pl)
         Deflector(pl, true);
 
     if (pl->fuel.sum <= (BIT(world->rules->mode, TIMING) ? 0 : my_data->fuel_l1))
-    {
-        if (!BIT(pl->obj_status, SELF_DESTRUCT))
-        {
-            SET_BIT(pl->obj_status, SELF_DESTRUCT);
-            pl->count = 150;
-        }
-    }
+        Player_self_destruct(pl, true);
     else
-    {
-        CLR_BIT(pl->obj_status, SELF_DESTRUCT);
-    }
+        Player_self_destruct(pl, false);
 
     /* blinded by ECM. since we're not supposed to see anything,
        put up shields and return */
