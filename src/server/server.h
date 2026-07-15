@@ -210,7 +210,7 @@ void Free_options(void);
 /*
  * Prototypes for play.c
  */
-void Thrust(player_t *pl);
+void Make_thrust_sparks(player_t *pl);
 void Recoil(object_t *ship, object_t *shot);
 void Record_shove(player_t *pl, player_t *pusher, long time);
 void Delta_mv(object_t *ship, object_t *obj);
@@ -271,8 +271,7 @@ void Make_debris(clpos_t pos,
                  int status,
                  int color,
                  int radius,
-                 int min_debris, int max_debris, // these will be removed
-                 int num_debris_todo,
+                 int num_debris,
                  int min_dir, int max_dir,
                  double min_speed, double max_speed,
                  double min_life, double max_life);

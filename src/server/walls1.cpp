@@ -2599,7 +2599,6 @@ void Move_player1(player_t *pl)
                                 GRAVITY | OWNERIMMUNE | FROMBOUNCE,
                                 RED,
                                 1,
-                                min_debris, max_debris,
                                 num_debris,
                                 wall_dir - (ANGLE_RESOLUTION / 4), wall_dir + (ANGLE_RESOLUTION / 4),
                                 20.0, 20 + (intensity >> 2),

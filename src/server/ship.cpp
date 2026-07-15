@@ -47,7 +47,7 @@
  * Functions for ship movement.
  */
 
-void Thrust(player_t *pl)
+void Make_thrust_sparks(player_t *pl)
 {
     const int min_dir = (int)(pl->dir + ANGLE_RESOLUTION / 2 - ANGLE_RESOLUTION * 0.2 - 1);
     const int max_dir = (int)(pl->dir + ANGLE_RESOLUTION / 2 + ANGLE_RESOLUTION * 0.2 + 1);
@@ -74,6 +74,10 @@ void Thrust(player_t *pl)
                      ? AFTER_BURN_SPARKS(tot_sparks - 1, afterburners) + 1
                      : 0;
 
+    int red_sparks = tot_sparks - alt_sparks;
+
+    // warn("Make_thrust_sparks: tot_sparks, red_sparks, alt_sparks: %d, %d, %d", tot_sparks, red_sparks, alt_sparks);
+
     Make_debris(pos,
                 pl->vel,
                 pl->id,
@@ -83,8 +87,7 @@ void Thrust(player_t *pl)
                 GRAVITY | OWNERIMMUNE,
                 RED,
                 8,
-                tot_sparks - alt_sparks, tot_sparks - alt_sparks,
-                tot_sparks - alt_sparks,
+                red_sparks,
                 min_dir, max_dir,
                 1.0, max_speed,
                 3.0, max_life);
@@ -98,7 +101,6 @@ void Thrust(player_t *pl)
                 GRAVITY | OWNERIMMUNE,
                 BLUE,
                 8,
-                alt_sparks, alt_sparks,
                 alt_sparks,
                 min_dir, max_dir,
                 1.0, max_speed,
@@ -522,14 +524,13 @@ void Make_debris(clpos_t pos,
                  int status,
                  int color,
                  int radius,
-                 int min_debris, int max_debris, // these will be removed
-                 int num_debris_todo,
+                 int num_debris,
                  int min_dir, int max_dir,
                  double min_speed, double max_speed,
                  double min_life, double max_life)
 {
     object_t *debris;
-    int i, num_debris, life;
+    int i, life;
     modifiers_t mods;
 
     if (BIT(world->rules->mode, WRAP_PLAY))
@@ -566,32 +567,6 @@ void Make_debris(clpos_t pos,
         Mods_set(&mods, ModsCluster, 1);
         if (!options.shotsGravity)
             CLR_BIT(status, GRAVITY);
-    }
-
-    num_debris = min_debris + (int)(rfrac() * (max_debris - min_debris));
-
-    // if (num_debris_todo != num_debris)
-    // {
-    //     xpinfo("Make_debris: === NOT EQUAL! ====");
-    //     xpinfo("Make_debris: min  = %d", min_debris);
-    //     xpinfo("Make_debris: todo = %d", num_debris_todo);
-    //     xpinfo("Make_debris: num  = %d", num_debris);
-    //     xpinfo("Make_debris: max  = %d", max_debris);
-    // }
-
-    if (num_debris < min_debris || num_debris > max_debris)
-    {
-        xpinfo("Make_debris: === BUG ====");
-        xpinfo("Make_debris: min = %d", min_debris);
-        xpinfo("Make_debris: num = %d", num_debris);
-        xpinfo("Make_debris: max = %d", max_debris);
-    }
-    if (num_debris_todo < min_debris || num_debris_todo > max_debris)
-    {
-        xpinfo("Make_debris: === TODO ===");
-        xpinfo("Make_debris: min = %d", min_debris);
-        xpinfo("Make_debris: todo= %d", num_debris_todo);
-        xpinfo("Make_debris: max = %d", max_debris);
     }
 
     if (num_debris > MAX_TOTAL_SHOTS - NumObjs)
@@ -781,7 +756,6 @@ void Explode_fighter(player_t *pl)
                 GRAVITY,
                 RED,
                 8,
-                min_debris, max_debris,
                 (int)(min_debris + debris_range * rfrac()),
                 0, ANGLE_RESOLUTION - 1,
                 20.0, 20 + (((int)(pl->mass)) >> 1),

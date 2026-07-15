@@ -1211,7 +1211,7 @@ static void Update_players(void)
         if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
         {
             if (BIT(pl->obj_status, THRUSTING))
-                Thrust(pl);
+                Make_thrust_sparks(pl);
         }
 
         Compute_sensor_range(pl);

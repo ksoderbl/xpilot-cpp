@@ -210,7 +210,6 @@ void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
                 GRAVITY,
                 RED,
                 6,
-                75, 150,
                 (int)(75 + 75 * rfrac()),
                 0, ANGLE_RESOLUTION - 1,
                 20.0, 70.0,
