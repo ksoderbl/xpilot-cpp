@@ -1190,8 +1190,8 @@ void Gui_paint_setup_target(int x, int y, int team, double damage, bool own)
     rd.drawRectangle(dpy, drawPixmap, gameGC,
                      WINSCALE(X(x + (BLOCK_SZ + 2) / 4)),
                      WINSCALE(Y(y + 3 * BLOCK_SZ / 4)),
-                     UWINSCALE(BLOCK_SZ / 2),
-                     UWINSCALE(BLOCK_SZ / 2));
+                     WINSCALE(BLOCK_SZ / 2),
+                     WINSCALE(BLOCK_SZ / 2));
 
     if (BIT(Setup->mode, TEAM_PLAY))
     {

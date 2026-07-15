@@ -91,8 +91,6 @@ extern double timePerFrame;
 
 extern double WINSCALE(double x);
 
-#define UWINSCALE(x) ((unsigned)WINSCALE(x))
-
 #define SCALEX(co) ((int)(WINSCALE(co) - WINSCALE(world.x)))
 #define SCALEY(co) ((int)(WINSCALE(world.y + ext_view_height) - WINSCALE(co)))
 #define X(co) ((int)((co) - world.x))

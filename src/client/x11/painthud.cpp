@@ -956,15 +956,15 @@ void Paint_HUD(void)
         rd.drawRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
                          WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET) - 1,
-                         UWINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)) + 3,
-                         UWINSCALE(HUD_FUEL_GAUGE_SIZE) + 3);
+                         WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)) + 3,
+                         WINSCALE(HUD_FUEL_GAUGE_SIZE) + 3);
 
         size = (int)((HUD_FUEL_GAUGE_SIZE * fuelSum) / fuelMax);
         rd.fillRectangle(dpy, drawPixmap, gameGC,
                          WINSCALE(hud_pos_x + hudSize - HUD_OFFSET + FUEL_GAUGE_OFFSET) + 1,
                          WINSCALE(hud_pos_y - hudSize + HUD_OFFSET + FUEL_GAUGE_OFFSET + HUD_FUEL_GAUGE_SIZE - size) + 1,
-                         UWINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)),
-                         UWINSCALE(size));
+                         WINSCALE(HUD_OFFSET - (2 * FUEL_GAUGE_OFFSET)),
+                         WINSCALE(size));
     }
 }
 
