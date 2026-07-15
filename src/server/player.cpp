@@ -1864,18 +1864,20 @@ static char *state2str(int state)
 
     if (state == PL_STATE_UNDEFINED)
         strlcat(buf, "PL_STATE_UNDEFINED", sizeof(buf));
-    if (state == PL_STATE_WAITING)
+    else if (state == PL_STATE_WAITING)
         strlcat(buf, "PL_STATE_WAITING", sizeof(buf));
-    if (state == PL_STATE_APPEARING)
+    else if (state == PL_STATE_APPEARING)
         strlcat(buf, "PL_STATE_APPEARING", sizeof(buf));
-    if (state == PL_STATE_ALIVE)
+    else if (state == PL_STATE_ALIVE)
         strlcat(buf, "PL_STATE_ALIVE", sizeof(buf));
-    if (state == PL_STATE_KILLED)
+    else if (state == PL_STATE_KILLED)
         strlcat(buf, "PL_STATE_KILLED", sizeof(buf));
-    if (state == PL_STATE_DEAD)
+    else if (state == PL_STATE_DEAD)
         strlcat(buf, "PL_STATE_DEAD", sizeof(buf));
-    if (state == PL_STATE_PAUSED)
+    else if (state == PL_STATE_PAUSED)
         strlcat(buf, "PL_STATE_PAUSED", sizeof(buf));
+    else
+        strlcat(buf, "UNKNOWN STATE (BUG)", sizeof(buf));
 
     return buf;
 }
@@ -1888,6 +1890,8 @@ void Player_print_state(player_t *pl, const char *funcname)
 
 void Player_set_state(player_t *pl, int state)
 {
+    warn("Player_set_state: Player: %s, state: %s", pl->name, state2str(state));
+
     pl->pl_state = state;
 
     switch (state)
@@ -1908,6 +1912,7 @@ void Player_set_state(player_t *pl, int state)
         pl->pl_old_status = OLD_PLAYING;
         break;
     case PL_STATE_KILLED:
+        SET_BIT(pl->obj_status, KILLED); // TODO: Remove
         break;
     case PL_STATE_DEAD:
         Player_set_mychar(pl, 'D');

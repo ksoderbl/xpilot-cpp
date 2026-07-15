@@ -38,7 +38,7 @@ void Walls_init(void)
 
 void Move_object(object_t *obj)
 {
-    warn("Move_object: is_polygon_map: %s", is_polygon_map ? "true" : "false");
+    // warn("Move_object: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)
         Move_object1(obj);
     else
@@ -47,7 +47,7 @@ void Move_object(object_t *obj)
 
 void Move_player(player_t *pl)
 {
-    warn("Move_player: is_polygon_map: %s", is_polygon_map ? "true" : "false");
+    // warn("Move_player: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)
         Move_player1(pl);
     else
@@ -65,7 +65,7 @@ void Ball_line_init(void)
 
 void Turn_player(player_t *pl, bool push)
 {
-    warn("Turn_player: is_polygon_map: %s", is_polygon_map ? "true" : "false");
+    // warn("Turn_player: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)
         Turn_player1(pl);
     else

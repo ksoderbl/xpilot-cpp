@@ -274,7 +274,7 @@ static void PlayerCollision(void)
 
         if (!World_contains_clpos(pl->pos))
         {
-            SET_BIT(pl->obj_status, KILLED);
+            Player_set_state(pl, PL_STATE_KILLED);
             Set_message_f("%s left the known universe.", pl->name);
             sc = Rate(WALL_SCORE, pl->score);
             Score(pl, -sc, pl->pos, pl->name);
@@ -343,10 +343,10 @@ static void PlayerCollision(void)
                     continue;
 
                 if (pl->fuel.sum <= 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
-                    SET_BIT(pl->obj_status, KILLED);
+                    Player_set_state(pl, PL_STATE_KILLED);
 
                 if (pl_j->fuel.sum <= 0 || (!BIT(pl_j->used, HAS_SHIELD) && !Player_has_armor(pl_j)))
-                    SET_BIT(pl_j->obj_status, KILLED);
+                    Player_set_state(pl_j, PL_STATE_KILLED);
 
                 if (!BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
                     Player_hit_armor(pl);
@@ -820,7 +820,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
             Robot_war(pl, kp);
         }
     }
-    SET_BIT(pl->obj_status, KILLED);
+    Player_set_state(pl, PL_STATE_KILLED);
 }
 
 static void Player_collides_with_item(player_t *pl, itemobject_t *item)
@@ -1093,7 +1093,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
         Player_add_fuel(pl, -cost);
     if (pl->fuel.sum == 0.0 || (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
     {
-        SET_BIT(pl->obj_status, KILLED);
+        Player_set_state(pl, PL_STATE_KILLED);
         sprintf(msg, "%s succumbed to an explosion.", pl->name);
         player_t *kp = NULL;
         if (obj->id != NO_ID)
@@ -1144,7 +1144,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     if (options.asteroidCollisionMayKill && (pl->fuel.sum == 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl))))
     {
         int sc;
-        SET_BIT(pl->obj_status, KILLED);
+        Player_set_state(pl, PL_STATE_KILLED);
         if (pl->velocity > v)
             /* player moves faster than asteroid */
             Set_message_f("%s smashed into an asteroid.", pl->name);
@@ -1331,7 +1331,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
                               pl, -sc, kp->name);
                 Robot_war(pl, kp);
             }
-            SET_BIT(pl->obj_status, KILLED);
+            Player_set_state(pl, PL_STATE_KILLED);
             return;
 
         default:
