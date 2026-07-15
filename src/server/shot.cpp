@@ -1753,6 +1753,7 @@ void Update_missile(missileobject_t *missile)
             int dx, dy;
         } sur[8] = {
             {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+        blkpos_t sbpos;
 
 #define BLOCK_PARTS 2
         vx = missile->vel.x;
@@ -1811,8 +1812,9 @@ void Update_missile(missileobject_t *missile)
         }
 
         i = ((int)(missile->missile_dir * 8 / ANGLE_RESOLUTION) & 7) + 8;
-        xi = OBJ_X_IN_BLOCKS(missile);
-        yi = OBJ_Y_IN_BLOCKS(missile);
+        sbpos = Clpos_to_blkpos(missile->pos);
+        xi = sbpos.bx;
+        yi = sbpos.by;
 
         for (j = 2, angle = -1, freemax = 0; j >= -2; --j)
         {

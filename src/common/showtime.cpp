@@ -27,8 +27,6 @@
 
 #include <sys/time.h>
 
-#include "server.h"
-
 char *showtime(void)
 {
     time_t now;
