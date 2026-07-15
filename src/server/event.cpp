@@ -27,6 +27,7 @@
 #include <cmath>
 
 #include "click.h"
+#include "xperror.h"
 
 #include "server.h"
 
@@ -295,6 +296,111 @@ static void Player_repair(player_t *pl)
                 dist = l;
             }
         }
+    }
+}
+
+/* Player pressed pause key. */
+static void Player_toggle_pause(player_t *pl)
+{
+    int i, j, k, key, xi, yi;
+    double minv;
+
+    if (BIT(pl->obj_status, PAUSE))
+        i = PAUSE;
+    else if (BIT(pl->pl_status, HOVERPAUSE))
+        i = HOVERPAUSE;
+    else
+    {
+        xi = OBJ_X_IN_BLOCKS(pl);
+        yi = OBJ_Y_IN_BLOCKS(pl);
+        j = world->bases[pl->home_base_ind].blk_pos.bx;
+        k = world->bases[pl->home_base_ind].blk_pos.by;
+        if (j == xi && k == yi)
+        {
+            minv = 3.0f;
+            i = PAUSE;
+        }
+        else
+        {
+            /*
+             * Hover pause doesn't work within two squares of the
+             * players home base, they would want the better pause.
+             */
+            if (ABS(j - xi) <= 2 && ABS(k - yi) <= 2)
+                return; // break;
+            minv = 5.0f;
+            i = HOVERPAUSE;
+        }
+        minv += VECTOR_LENGTH(world->gravity[xi][yi]);
+        if (pl->velocity > minv)
+            return; // break;
+    }
+
+    switch (i)
+    {
+    case PAUSE:
+        if (BIT(pl->pl_status, HOVERPAUSE))
+            return; // break;
+
+        if (Player_uses_autopilot(pl))
+            Autopilot(pl, false);
+
+        /* toggle pause mode */
+        Pause_player(pl, !Player_is_paused(pl));
+        // if (BIT(pl->obj_status, PLAYING))
+        // {
+        //     BITV_SET(pl->last_keyv, key);
+        //     BITV_SET(pl->prev_keyv, key);
+        //     return 1;
+        // }
+        break;
+
+    case HOVERPAUSE:
+        if (Player_is_paused(pl))
+            break;
+
+        if (!BIT(pl->pl_status, HOVERPAUSE))
+        {
+            /*
+             * Turn hover pause on, together with shields.
+             */
+            pl->count = 5 * FPS;
+            CLR_BIT(pl->obj_status, SELF_DESTRUCT);
+            SET_BIT(pl->pl_status, HOVERPAUSE);
+
+            if (Player_uses_emergency_thrust(pl))
+                Emergency_thrust(pl, false);
+
+            if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+                Emergency_shield(pl, false);
+
+            if (!BIT(pl->used, USES_AUTOPILOT))
+                Autopilot(pl, true);
+
+            if (Player_is_phasing(pl))
+                Phasing(pl, false);
+
+            /*
+             * Don't allow firing while paused. Similar
+             * reasons exist for refueling, connector and
+             * tractor beams.  Other items are allowed (esp.
+             * cloaking).
+             */
+            Player_used_kill(pl);
+            if (BIT(pl->have, HAS_SHIELD))
+                SET_BIT(pl->used, HAS_SHIELD);
+        }
+        else if (pl->count <= 0)
+        {
+            Autopilot(pl, false);
+            CLR_BIT(pl->pl_status, HOVERPAUSE);
+            if (!BIT(pl->have, HAS_SHIELD))
+                CLR_BIT(pl->used, USES_SHIELD);
+        }
+        break;
+    default:
+        warn("Player_toggle_pause: BUG: unknown pause type.");
+        break;
     }
 }
 
@@ -801,100 +907,7 @@ int Handle_keyboard(player_t *pl)
                 break;
 
             case KEY_PAUSE:
-                if (BIT(pl->obj_status, PAUSE))
-                    i = PAUSE;
-                else if (BIT(pl->pl_status, HOVERPAUSE))
-                    i = HOVERPAUSE;
-                else
-                {
-                    xi = OBJ_X_IN_BLOCKS(pl);
-                    yi = OBJ_Y_IN_BLOCKS(pl);
-                    j = world->bases[pl->home_base_ind].blk_pos.bx;
-                    k = world->bases[pl->home_base_ind].blk_pos.by;
-                    if (j == xi && k == yi)
-                    {
-                        minv = 3.0f;
-                        i = PAUSE;
-                    }
-                    else
-                    {
-                        /*
-                         * Hover pause doesn't work within two squares of the
-                         * players home base, they would want the better pause.
-                         */
-                        if (ABS(j - xi) <= 2 && ABS(k - yi) <= 2)
-                            break;
-                        minv = 5.0f;
-                        i = HOVERPAUSE;
-                    }
-                    minv += VECTOR_LENGTH(world->gravity[xi][yi]);
-                    if (pl->velocity > minv)
-                        break;
-                }
-
-                switch (i)
-                {
-                case PAUSE:
-                    if (BIT(pl->pl_status, HOVERPAUSE))
-                        break;
-
-                    if (Player_uses_autopilot(pl))
-                        Autopilot(pl, false);
-
-                    /* toggle pause mode */
-                    Pause_player(pl, !Player_is_paused(pl));
-                    if (BIT(pl->obj_status, PLAYING))
-                    {
-                        BITV_SET(pl->last_keyv, key);
-                        BITV_SET(pl->prev_keyv, key);
-                        return 1;
-                    }
-                    break;
-
-                case HOVERPAUSE:
-                    if (Player_is_paused(pl))
-                        break;
-
-                    if (!BIT(pl->pl_status, HOVERPAUSE))
-                    {
-                        /*
-                         * Turn hover pause on, together with shields.
-                         */
-                        pl->count = 5 * FPS;
-                        CLR_BIT(pl->obj_status, SELF_DESTRUCT);
-                        SET_BIT(pl->pl_status, HOVERPAUSE);
-
-                        if (Player_uses_emergency_thrust(pl))
-                            Emergency_thrust(pl, false);
-
-                        if (BIT(pl->used, USES_EMERGENCY_SHIELD))
-                            Emergency_shield(pl, false);
-
-                        if (!BIT(pl->used, USES_AUTOPILOT))
-                            Autopilot(pl, true);
-
-                        if (Player_is_phasing(pl))
-                            Phasing(pl, false);
-
-                        /*
-                         * Don't allow firing while paused. Similar
-                         * reasons exist for refueling, connector and
-                         * tractor beams.  Other items are allowed (esp.
-                         * cloaking).
-                         */
-                        Player_used_kill(pl);
-                        if (BIT(pl->have, HAS_SHIELD))
-                            SET_BIT(pl->used, HAS_SHIELD);
-                    }
-                    else if (pl->count <= 0)
-                    {
-                        Autopilot(pl, false);
-                        CLR_BIT(pl->pl_status, HOVERPAUSE);
-                        if (!BIT(pl->have, HAS_SHIELD))
-                            CLR_BIT(pl->used, USES_SHIELD);
-                    }
-                    break;
-                }
+                Player_toggle_pause(pl);
                 break;
 
             case KEY_SWAP_SETTINGS:
