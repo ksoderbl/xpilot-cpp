@@ -65,7 +65,7 @@ void Target_update(void)
 
         if (targ->dead_ticks > 0)
         {
-            if (!--targ->dead_ticks)
+            if ((targ->dead_ticks -= timeStep) <= 0)
             {
                 // world->block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
                 // targ->conn_mask = 0;
@@ -97,7 +97,7 @@ void Target_update(void)
         else if (targ->damage == TARGET_DAMAGE)
             continue;
 
-        targ->damage += TARGET_REPAIR_PER_FRAME;
+        targ->damage += TARGET_REPAIR_PER_TICK * timeStep;
         if (targ->damage >= TARGET_DAMAGE)
             targ->damage = TARGET_DAMAGE;
 
@@ -113,7 +113,160 @@ void Target_update(void)
     }
 }
 
-void Object_hits_target(object_t *obj, target_t *targ, double player_cost)
+void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
+{
+    int j;
+    player_t *kp;
+    double win_score = 0.0, lose_score = 0.0, drainfactor;
+    int win_team_members = 0, lose_team_members = 0,
+        targets_remaining = 0, targets_total = 0;
+    vector_t zero_vel = {0.0, 0.0};
+    bool somebody = false;
+
+    /* a normal shot or a direct mine hit work, cannons don't */
+    /* KK: should shots/mines by cannons of opposing teams work? */
+    /* also players suiciding on target will cause damage */
+    if (!BIT(OBJ_TYPEBIT(obj->type),
+             KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
+        return;
+
+    if (obj->id == NO_ID)
+        return;
+    assert(obj->id >= 0);
+    kp = Player_by_id(obj->id);
+
+    /* Targets are always team immune. */
+    if (targ->team != TEAM_NOT_SET && targ->team == obj->team)
+        return;
+
+    switch (obj->type)
+    {
+    case OBJ_SHOT:
+        // TODO
+        // if (options.shotHitFuelDrainUsesKineticEnergy)
+        // {
+        //     drainfactor = VECTOR_LENGTH(obj->vel);
+        //     drainfactor = (drainfactor * drainfactor * ABS(obj->mass)) / (options.shotSpeed * options.shotSpeed * options.shotMass);
+        // }
+        // else
+        drainfactor = 1.0;
+        targ->damage += ED_SHOT_HIT * drainfactor * SHOT_MULT(obj);
+        break;
+    case OBJ_PULSE:
+        targ->damage += ED_LASER_HIT;
+        break;
+    case OBJ_SMART_SHOT:
+    case OBJ_TORPEDO:
+    case OBJ_HEAT_SHOT:
+        if (!obj->mass)
+            /* happens at end of round reset. */
+            return;
+        if (Mods_get(obj->mods, ModsNuclear))
+            targ->damage = 0.0;
+        else
+            targ->damage += ED_SMART_SHOT_HIT /
+                            (Mods_get(obj->mods, ModsMini) + 1);
+        break;
+    case OBJ_MINE:
+        if (!obj->mass)
+            /* happens at end of round reset. */
+            return;
+        targ->damage -= TARGET_DAMAGE / (Mods_get(obj->mods, ModsMini) + 1);
+        break;
+    case OBJ_PLAYER:
+        if (player_cost <= 0.0 || player_cost > TARGET_DAMAGE / 4.0)
+            player_cost = TARGET_DAMAGE / 4.0;
+        targ->damage -= player_cost;
+        break;
+
+    default:
+        /*???*/
+        break;
+    }
+
+    targ->conn_mask = 0;
+    targ->last_change = frame_loops;
+    if (targ->damage > 0.0)
+        return;
+
+    World_remove_target(targ);
+
+    Make_debris(targ->pos,
+                zero_vel,
+                NO_ID,
+                targ->team,
+                OBJ_DEBRIS,
+                4.5,
+                GRAVITY,
+                RED,
+                6,
+                (int)(75 + 75 * rfrac()),
+                0, ANGLE_RESOLUTION - 1,
+                20.0, 70.0,
+                10.0, 100.0);
+
+    if (BIT(world->rules->mode, TEAM_PLAY))
+    {
+        for (j = 0; j < NumPlayers; j++)
+        {
+            player_t *pl = Player_by_index(j);
+
+            if (Player_is_tank(pl) || (Player_is_paused(pl) && pl->pause_count <= 0) || Player_is_waiting(pl))
+                continue;
+
+            if (pl->team == targ->team)
+            {
+                lose_score += Get_Score(pl);
+                lose_team_members++;
+                if (!Player_is_dead(pl))
+                    somebody = true;
+            }
+            else if (pl->team == kp->team)
+            {
+                win_score += Get_Score(pl);
+                win_team_members++;
+            }
+        }
+    }
+    if (somebody)
+    {
+        for (j = 0; j < Num_targets(); j++)
+        {
+            target_t *t = Target_by_index(j);
+
+            if (t->team == targ->team)
+            {
+                targets_total++;
+                if (t->dead_ticks <= 0)
+                    targets_remaining++;
+            }
+        }
+    }
+    if (!somebody)
+        return;
+
+    Handle_Scoring(SCORE_TARGET, kp, NULL, targ, NULL);
+
+    sound_play_sensors(targ->pos, DESTROY_TARGET_SOUND);
+
+    if (targets_remaining > 0)
+    {
+        /*
+         * If players can't collide with their own targets, we
+         * assume there are many used as shields.  Don't litter
+         * the game with the message below.
+         */
+        if (options.targetTeamCollision && targets_total < 10)
+            Set_message_f("%s blew up one of team %d's targets.",
+                          kp->name, targ->team);
+        return;
+    }
+
+    Set_message_f("%s blew up team %d's %starget.",
+                  kp->name, targ->team, (targets_total > 1) ? "last " : "");
+}
+
+void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
 {
     int j, sc, por, bx, by;
     int win_score = 0,
@@ -325,10 +478,6 @@ hitmask_t Target_hitmask(target_t *targ)
 
     /* note that targets are always team immune */
     return HITMASK(targ->team);
-}
-
-void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
-{
 }
 
 void Target_set_hitmask(int group, target_t *targ)

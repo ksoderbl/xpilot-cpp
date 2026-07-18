@@ -23,9 +23,17 @@
 
 #pragma once
 
-#include "object.h"
 #include "map.h"
+#include "object.h"
+#include "polygon.h"
 
 void Target_update(void);
 
-void Object_hits_target(object_t *obj, target_t *targ, double player_cost);
+void Target_update(void);
+void Object_hits_target1(object_t *obj, target_t *targ, double player_cost);
+void Object_hits_target2(object_t *obj, target_t *targ, double player_cost);
+hitmask_t Target_hitmask(target_t *targ);
+void Target_set_hitmask(int group, target_t *targ);
+void Target_init(void);
+void World_restore_target(target_t *targ);
+void World_remove_target(target_t *targ);

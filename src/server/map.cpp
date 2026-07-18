@@ -30,19 +30,19 @@
 #include <sys/stat.h>
 #include <sys/file.h>
 
+#include "bit.h"
 #include "commonmacros.h"
 #include "commonproto.h"
-
-#include "cannon.h"
-#include "server.h"
+#include "xperror.h"
 
 #define SERVER
 #include "xpconfig.h"
-#include "serverconst.h"
 
+#include "cannon.h"
 #include "map.h"
-#include "bit.h"
-#include "xperror.h"
+#include "server.h"
+#include "serverconst.h"
+#include "wormhole.h"
 
 #define GRAV_RANGE 10
 

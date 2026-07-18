@@ -88,7 +88,9 @@ void Cannon_throw_items(cannon_t *cannon);
 void Cannon_check_defense(cannon_t *cannon);
 void Cannon_check_fire(cannon_t *cannon);
 
-void Object_hits_cannon(object_t *obj, cannon_t *c);
+void Object_hits_cannon1(object_t *obj, cannon_t *c);
+void Object_hits_cannon2(object_t *obj, cannon_t *c);
+
 void Cannon_dies(cannon_t *cannon, player_t *pl);
 
 // static inline cannon_t *Cannon_by_id(int id)

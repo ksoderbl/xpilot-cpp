@@ -54,8 +54,10 @@
 #include "asteroid.h"
 #include "srecord.h"
 #include "rank.h"
-#include "move.h"
+#include "target.h"
 #include "treasure.h"
+#include "wormhole.h"
+#include "move.h"
 
 static char msg[MSG_LEN];
 
@@ -171,7 +173,7 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
         break;
 
     case CrashWormHole:
-        Object_hits_wormhole(obj, mapobj_ind);
+        Object_hits_wormhole2(obj, mapobj_ind);
         break;
 
     case CrashTreasure:
@@ -199,7 +201,7 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
 
     case CrashCannon:
         obj->life = 0;
-        Object_hits_cannon(obj, Cannon_by_index(mapobj_ind));
+        Object_hits_cannon2(obj, Cannon_by_index(mapobj_ind));
         break;
 
     case CrashUnknown:
@@ -224,7 +226,7 @@ void Player_crash2(player_t *pl, int crashtype, int mapobj_ind, int pt)
         break;
 
     case CrashWormHole:
-        Object_hits_wormhole(OBJ_PTR(pl), mapobj_ind);
+        Object_hits_wormhole2(OBJ_PTR(pl), mapobj_ind);
         break;
 
     case CrashWall:

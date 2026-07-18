@@ -68,7 +68,13 @@ bool Wormhole_hitfunc(group_t *gp, const move_t *move)
     return true;
 }
 
-void Object_hits_wormhole(object_t *obj, int ind)
+void Object_hits_wormhole1(object_t *obj, int ind)
+{
+    SET_BIT(obj->obj_status, WARPING);
+    // obj->wormHoleHit = ind;//TODO
+}
+
+void Object_hits_wormhole2(object_t *obj, int ind)
 {
     SET_BIT(obj->obj_status, WARPING);
     // obj->wormHoleHit = ind;//TODO

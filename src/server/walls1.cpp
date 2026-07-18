@@ -48,6 +48,7 @@
 #include "object.h"
 #include "robot.h"
 #include "target.h"
+#include "wormhole.h"
 
 #define DOUBLE_TO_INT(D) ((D) < 0 ? -(int)(0.5 - (D)) : (int)((D) + 0.5))
 
@@ -1813,7 +1814,7 @@ static void Object_crash1(move_state_t *ms)
 
     case CrashTarget:
         obj->life = 0;
-        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1.0);
+        Object_hits_target1(ms->mip->obj, &world->targets[ms->target], -1.0);
         break;
 
     case CrashWall:
@@ -2079,7 +2080,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
         sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
-        Object_hits_target(ms->mip->obj, &world->targets[ms->target], -1.0);
+        Object_hits_target1(ms->mip->obj, &world->targets[ms->target], -1.0);
         break;
 
     case CrashTreasure:
@@ -2606,7 +2607,7 @@ void Move_player1(player_t *pl)
                     if (ms[worst].target >= 0)
                     {
                         cost = cost * (options.wallBounceFuelDrainMult / 4.0);
-                        Object_hits_target(ms[worst].mip->obj, &world->targets[ms[worst].target], cost);
+                        Object_hits_target1(ms[worst].mip->obj, &world->targets[ms[worst].target], cost);
                     }
                 }
             }
