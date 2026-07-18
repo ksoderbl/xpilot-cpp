@@ -31,12 +31,12 @@ extern long KILLING_SHOTS;
 
 static void Move_init1(void)
 {
-    mp.click_width = PIXEL_TO_CLICK(world->width);
-    mp.click_height = PIXEL_TO_CLICK(world->height);
+    mp.click_width = PIXEL_TO_CLICK(World.width);
+    mp.click_height = PIXEL_TO_CLICK(World.height);
 
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
+    LIMIT(options.maxObjectWallBounceSpeed, 0, World.pixel_hypotenuse);
+    LIMIT(options.maxShieldedWallBounceSpeed, 0, World.pixel_hypotenuse);
+    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, World.pixel_hypotenuse);
 
     LIMIT(options.maxShieldedWallBounceAngle, 0, 180);
     LIMIT(options.maxUnshieldedWallBounceAngle, 0, 180);
@@ -78,9 +78,9 @@ static void Move_init1(void)
 
 static void Move_init2(void)
 {
-    LIMIT(options.maxObjectWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxShieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
-    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, world->pixel_hypotenuse);
+    LIMIT(options.maxObjectWallBounceSpeed, 0, World.pixel_hypotenuse);
+    LIMIT(options.maxShieldedWallBounceSpeed, 0, World.pixel_hypotenuse);
+    LIMIT(options.maxUnshieldedWallBounceSpeed, 0, World.pixel_hypotenuse);
 
     LIMIT(options.playerWallBounceBrakeFactor, 0, 1);
     LIMIT(options.playerWallFriction, 0, FLT_MAX);

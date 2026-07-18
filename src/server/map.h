@@ -105,7 +105,7 @@
 #define DIR_DOWN (3 * ANGLE_RESOLUTION / 4)
 
 typedef struct world world_t;
-extern world_t World, *world;
+extern world_t World;
 extern bool is_polygon_map;
 
 typedef struct fuel
@@ -140,7 +140,7 @@ typedef struct base
 
 typedef struct baseorder
 {
-    int base_idx; /* Index in world->bases[] */
+    int base_idx; /* Index in World.bases[] */
     double dist;  /* Distance to first checkpoint */
 } baseorder_t;
 
@@ -351,30 +351,30 @@ struct world
 
 static inline void World_set_block(blkpos_t blk, int type)
 {
-    assert(!(blk.bx < 0 || blk.bx >= world->x || blk.by < 0 || blk.by >= world->y));
-    world->block[blk.bx][blk.by] = type;
+    assert(!(blk.bx < 0 || blk.bx >= World.x || blk.by < 0 || blk.by >= World.y));
+    World.block[blk.bx][blk.by] = type;
 }
 
 static inline int World_get_block(blkpos_t blk)
 {
-    assert(!(blk.bx < 0 || blk.bx >= world->x || blk.by < 0 || blk.by >= world->y));
-    return world->block[blk.bx][blk.by];
+    assert(!(blk.bx < 0 || blk.bx >= World.x || blk.by < 0 || blk.by >= World.y));
+    return World.block[blk.bx][blk.by];
 }
 
 static inline bool World_contains_clpos(clpos_t pos)
 {
-    if (pos.cx < 0 || pos.cx >= world->cwidth)
+    if (pos.cx < 0 || pos.cx >= World.cwidth)
         return false;
-    if (pos.cy < 0 || pos.cy >= world->cheight)
+    if (pos.cy < 0 || pos.cy >= World.cheight)
         return false;
     return true;
 }
 
 static inline bool World_contains_clicks(int cx, int cy)
 {
-    if (cx < 0 || cx >= world->cwidth)
+    if (cx < 0 || cx >= World.cwidth)
         return false;
-    if (cy < 0 || cy >= world->cheight)
+    if (cy < 0 || cy >= World.cheight)
         return false;
     return true;
 }
@@ -383,8 +383,8 @@ static inline clpos_t World_get_random_clpos(void)
 {
     clpos_t pos;
 
-    pos.cx = (int)(rfrac() * world->cwidth);
-    pos.cy = (int)(rfrac() * world->cheight);
+    pos.cx = (int)(rfrac() * World.cwidth);
+    pos.cy = (int)(rfrac() * World.cheight);
 
     return pos;
 }
@@ -392,9 +392,9 @@ static inline clpos_t World_get_random_clpos(void)
 static inline int World_wrap_xclick(int cx)
 {
     while (cx < 0)
-        cx += world->cwidth;
-    while (cx >= world->cwidth)
-        cx -= world->cwidth;
+        cx += World.cwidth;
+    while (cx >= World.cwidth)
+        cx -= World.cwidth;
 
     return cx;
 }
@@ -402,9 +402,9 @@ static inline int World_wrap_xclick(int cx)
 static inline int World_wrap_yclick(int cy)
 {
     while (cy < 0)
-        cy += world->cheight;
-    while (cy >= world->cheight)
-        cy -= world->cheight;
+        cy += World.cheight;
+    while (cy >= World.cheight)
+        cy -= World.cheight;
 
     return cy;
 }
@@ -463,164 +463,164 @@ static inline int WRAP_YCLICK(int cy)
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
  */
-#define WRAP_DCX(dcx)                           \
-    (BIT(world->rules->mode, WRAP_PLAY)         \
-         ? ((dcx) < -(world->cwidth >> 1)       \
-                ? (dcx) + world->cwidth         \
-                : ((dcx) > (world->cwidth >> 1) \
-                       ? (dcx) - world->cwidth  \
-                       : (dcx)))                \
+#define WRAP_DCX(dcx)                          \
+    (BIT(World.rules->mode, WRAP_PLAY)         \
+         ? ((dcx) < -(World.cwidth >> 1)       \
+                ? (dcx) + World.cwidth         \
+                : ((dcx) > (World.cwidth >> 1) \
+                       ? (dcx) - World.cwidth  \
+                       : (dcx)))               \
          : (dcx))
 
-#define WRAP_DCY(dcy)                            \
-    (BIT(world->rules->mode, WRAP_PLAY)          \
-         ? ((dcy) < -(world->cheight >> 1)       \
-                ? (dcy) + world->cheight         \
-                : ((dcy) > (world->cheight >> 1) \
-                       ? (dcy) - world->cheight  \
-                       : (dcy)))                 \
+#define WRAP_DCY(dcy)                           \
+    (BIT(World.rules->mode, WRAP_PLAY)          \
+         ? ((dcy) < -(World.cheight >> 1)       \
+                ? (dcy) + World.cheight         \
+                : ((dcy) > (World.cheight >> 1) \
+                       ? (dcy) - World.cheight  \
+                       : (dcy)))                \
          : (dcy))
 
 #define TWRAP_XCLICK(x_) \
-    ((x_) > 0 ? (x_) % world->cwidth : ((x_) % world->cwidth + world->cwidth))
+    ((x_) > 0 ? (x_) % World.cwidth : ((x_) % World.cwidth + World.cwidth))
 
 #define TWRAP_YCLICK(y_) \
-    ((y_) > 0 ? (y_) % world->cheight : ((y_) % world->cheight + world->cheight))
+    ((y_) > 0 ? (y_) % World.cheight : ((y_) % World.cheight + World.cheight))
 
 #define CENTER_XCLICK(X) \
-    (((X) < -(world->cwidth >> 1)) ? (X) + world->cwidth : (((X) >= (world->cwidth >> 1)) ? (X) - world->cwidth : (X)))
+    (((X) < -(World.cwidth >> 1)) ? (X) + World.cwidth : (((X) >= (World.cwidth >> 1)) ? (X) - World.cwidth : (X)))
 
 #define CENTER_YCLICK(X) \
-    (((X) < -(world->cheight >> 1)) ? (X) + world->cheight : (((X) >= (world->cheight >> 1)) ? (X) - world->cheight : (X)))
+    (((X) < -(World.cheight >> 1)) ? (X) + World.cheight : (((X) >= (World.cheight >> 1)) ? (X) - World.cheight : (X)))
 
 static inline int Num_asteroidConcs()
 {
-    return world->asteroidConcs.size();
+    return World.asteroidConcs.size();
 }
 
 static inline int Num_bases()
 {
-    return world->bases.size();
+    return World.bases.size();
 }
 
 static inline int Num_cannons()
 {
-    return world->cannons.size();
+    return World.cannons.size();
 }
 
 static inline int Num_ecms()
 {
-    return world->ecms.size();
+    return World.ecms.size();
 }
 
 static inline int Num_frictionAreas()
 {
-    return world->frictionAreas.size();
+    return World.frictionAreas.size();
 }
 
 static inline int Num_fuels()
 {
-    return world->fuels.size();
+    return World.fuels.size();
 }
 
 static inline int Num_gravs()
 {
-    return world->gravs.size();
+    return World.gravs.size();
 }
 
 static inline int Num_itemConcs()
 {
-    return world->itemConcs.size();
+    return World.itemConcs.size();
 }
 
 static inline int Num_targets()
 {
-    return world->targets.size();
+    return World.targets.size();
 }
 
 static inline int Num_transporters()
 {
-    return world->transporters.size();
+    return World.transporters.size();
 }
 
 static inline int Num_treasures()
 {
-    return world->treasures.size();
+    return World.treasures.size();
 }
 
-#define Num_wormholes() (world->NumWormholes)
+#define Num_wormholes() (World.NumWormholes)
 
 static inline int Num_checks()
 {
-    return world->checks.size();
+    return World.checks.size();
 }
 
 // by_index functions
 static asteroid_concentrator_t *AsteroidConc_by_index(int i)
 {
-    return &world->asteroidConcs[i];
+    return &World.asteroidConcs[i];
 }
 
 static base_t *Base_by_index(int i)
 {
-    return &world->bases[i];
+    return &World.bases[i];
 }
 
 static cannon_t *Cannon_by_index(int i)
 {
-    return &world->cannons[i];
+    return &World.cannons[i];
 }
 
 static ecm_t *Ecm_by_index(int i)
 {
-    return &world->ecms[i];
+    return &World.ecms[i];
 }
 
 static friction_area_t *FrictionArea_by_index(int i)
 {
-    return &world->frictionAreas[i];
+    return &World.frictionAreas[i];
 }
 
 static fuel_t *Fuel_by_index(int i)
 {
-    return &world->fuels[i];
+    return &World.fuels[i];
 }
 
 static grav_t *Grav_by_index(int i)
 {
-    return &world->gravs[i];
+    return &World.gravs[i];
 }
 
 static item_concentrator_t *ItemConc_by_index(int i)
 {
-    return &world->itemConcs[i];
+    return &World.itemConcs[i];
 }
 
 static target_t *Target_by_index(int i)
 {
-    return &world->targets[i];
+    return &World.targets[i];
 }
 
 static treasure_t *Treasure_by_index(int i)
 {
-    return &world->treasures[i];
+    return &World.treasures[i];
 }
 
 // static wormhole_t *Wormhole_by_index(int i)
 // {
-//     return &world->wormholes[i];
+//     return &World.wormholes[i];
 // }
 
 static transporter_t *Transporter_by_index(int i)
 {
-    return &world->transporters[i];
+    return &World.transporters[i];
 }
 
-#define Wormhole_by_index(i) ((wormhole_t *)(&world->wormholes[i]))
+#define Wormhole_by_index(i) ((wormhole_t *)(&World.wormholes[i]))
 
 static inline check_t *Check_by_index(int i)
 {
-    return &world->checks[i];
+    return &World.checks[i];
 }
 
 /*
@@ -629,6 +629,6 @@ static inline check_t *Check_by_index(int i)
 static inline team_t *Team_by_index(int ind)
 {
     if (ind >= 0 && ind < MAX_TEAMS)
-        return &world->teams[ind];
+        return &World.teams[ind];
     return NULL;
 }

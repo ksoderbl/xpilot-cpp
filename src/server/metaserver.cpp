@@ -186,7 +186,7 @@ void Meta_update(bool change)
         if (Player_is_human(pl) && !Player_is_paused(pl))
         {
             num_active_players++;
-            if (BIT(world->rules->mode, TEAM_PLAY))
+            if (BIT(World.rules->mode, TEAM_PLAY))
             {
                 active_per_team[i]++;
             }
@@ -200,7 +200,7 @@ void Meta_update(bool change)
 
     /* calculate number of available homebases per team. */
     freebases[0] = '\0';
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         j = 0;
         for (i = 0; i < MAX_TEAMS; i++)
@@ -209,10 +209,10 @@ void Meta_update(bool change)
             {
                 continue;
             }
-            if (world->teams[i].NumBases > 0)
+            if (World.teams[i].NumBases > 0)
             {
                 sprintf(&freebases[j], "%d=%d,", i,
-                        world->teams[i].NumBases - active_per_team[i]);
+                        World.teams[i].NumBases - active_per_team[i]);
                 j += strlen(&freebases[j]);
             }
         }
@@ -246,10 +246,10 @@ void Meta_update(bool change)
             "add queue %d\n"
             "add sound " SOUND_SUPPORT_STR "\n",
             Server.host, num_active_players,
-            META_VERSION, world->name, world->x, world->y, world->author,
+            META_VERSION, World.name, World.x, World.y, World.author,
             Num_bases(), FPS, options.contactPort,
-            game_mode, world->NumTeamBases, freebases,
-            BIT(world->rules->mode, TIMING) ? 1 : 0,
+            game_mode, World.NumTeamBases, freebases,
+            BIT(World.rules->mode, TIMING) ? 1 : 0,
             (long)(time(NULL) - serverStartTime),
             queue_length);
 
@@ -275,7 +275,7 @@ void Meta_update(bool change)
                         pl->hostname);
                 len += strlen(&string[len]);
 
-                if (BIT(world->rules->mode, TEAM_PLAY))
+                if (BIT(World.rules->mode, TEAM_PLAY))
                 {
                     sprintf(string + len, "{%d}", pl->team);
                     len += strlen(&string[len]);

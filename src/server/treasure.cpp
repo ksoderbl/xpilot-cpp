@@ -148,7 +148,7 @@ static int Punish_team2(player_t *pl, treasure_t *td, clpos_t pos)
 
     Handle_Scoring(SCORE_TREASURE, pl, NULL, td, NULL);
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         for (i = 0; i < NumPlayers; i++)
         {
@@ -207,7 +207,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
     /*
      * If it's not team play, nothing interesting happens.
      */
-    if (!BIT(world->rules->mode, TEAM_PLAY))
+    if (!BIT(World.rules->mode, TEAM_PLAY))
         return;
 
     td = ball->ball_treasure;
@@ -249,7 +249,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
         for (i = 0; i < MAX_TEAMS; i++)
         {
 
-            if (world->teams[i].NumMembers == 0 || i == owner->team)
+            if (World.teams[i].NumMembers == 0 || i == owner->team)
                 continue;
             opponent_teams++;
             td->team = i; /* give ball to team that has to be punished*/
@@ -258,20 +258,20 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
                 CLR_BIT(ball->obj_status, RECREATE);
                 /*undo treasure counts from Punish_team so we don't
                   have to touch that function and possibly break it*/
-                world->teams[owner->team].TreasuresDestroyed--;
-                world->teams[td->team].TreasuresLeft++;
+                World.teams[owner->team].TreasuresDestroyed--;
+                World.teams[td->team].TreasuresLeft++;
             }
         }
         td->team = options.specialBallTeam;
-        world->teams[options.specialBallTeam].TreasuresLeft--;
-        world->teams[owner->team].TreasuresDestroyed++;
-        world->teams[options.specialBallTeam].TreasuresDestroyed++;
+        World.teams[options.specialBallTeam].TreasuresLeft--;
+        World.teams[owner->team].TreasuresDestroyed++;
+        World.teams[options.specialBallTeam].TreasuresDestroyed++;
 
         if (!opponent_teams)
         {
             SET_BIT(ball->obj_status, RECREATE);
             if (Punish_team2(owner, td, ball->pos))
-                world->teams[options.specialBallTeam].TreasuresLeft++;
+                World.teams[options.specialBallTeam].TreasuresLeft++;
         }
         return;
     }
@@ -285,8 +285,8 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
             CLR_BIT(ball->obj_status, RECREATE);
             /*undo treasure counts from Punish_team so we don't
               have to touch that function and possibly break it*/
-            world->teams[td->team].TreasuresLeft++;
-            world->teams[options.specialBallTeam].TreasuresLeft--;
+            World.teams[td->team].TreasuresLeft++;
+            World.teams[options.specialBallTeam].TreasuresLeft--;
         }
 
         td->team = options.specialBallTeam;
@@ -331,7 +331,7 @@ bool Balltarget_hitfunc(group_t *gp, const move_t *move)
     // if (in_legacy_mode_ball_hack)
     //     return true;
 
-    // if (BIT(world->rules->mode, TEAM_PLAY))
+    // if (BIT(World.rules->mode, TEAM_PLAY))
     // {
     //     /*
     //      * The only case a ball does not hit a balltarget is when
@@ -371,7 +371,7 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
     if (td->team == pl->team)
         return 0;
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         for (i = 0; i < NumPlayers; i++)
         {
@@ -405,8 +405,8 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
     }
 
     td->destroyed++;
-    world->teams[td->team].TreasuresLeft--;
-    world->teams[pl->team].TreasuresDestroyed++;
+    World.teams[td->team].TreasuresLeft--;
+    World.teams[pl->team].TreasuresDestroyed++;
 
     sc = 3 * Rate(win_score, lose_score);
     por = (sc * lose_team_members) / (2 * win_team_members + 1);

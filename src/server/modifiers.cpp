@@ -275,22 +275,22 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
         allow = true;
     else if (modifier == ModsNuclear)
     {
-        if (BIT(world->rules->mode, ALLOW_NUKES))
+        if (BIT(World.rules->mode, ALLOW_NUKES))
             allow = true;
     }
     else if (modifier == ModsCluster)
     {
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS))
+        if (BIT(World.rules->mode, ALLOW_CLUSTERS))
             allow = true;
     }
     else if (modifier == ModsLaser)
     {
-        if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
+        if (BIT(World.rules->mode, ALLOW_LASER_MODIFIERS))
             allow = true;
     }
     else
     {
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
             allow = true;
     }
 
@@ -492,13 +492,13 @@ std::string Mods_to_string2(modifiers_t mods)
 
 void Mods_filter(modifiers_t *mods)
 {
-    if (!BIT(world->rules->mode, ALLOW_NUKES))
+    if (!BIT(World.rules->mode, ALLOW_NUKES))
         Mods_set(mods, ModsNuclear, 0);
 
-    if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
+    if (!BIT(World.rules->mode, ALLOW_CLUSTERS))
         Mods_set(mods, ModsCluster, 0);
 
-    if (!BIT(world->rules->mode, ALLOW_MODIFIERS))
+    if (!BIT(World.rules->mode, ALLOW_MODIFIERS))
     {
         Mods_set(mods, ModsImplosion, 0);
         Mods_set(mods, ModsVelocity, 0);
@@ -507,7 +507,7 @@ void Mods_filter(modifiers_t *mods)
         Mods_set(mods, ModsPower, 0);
     }
 
-    if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
+    if (!BIT(World.rules->mode, ALLOW_LASER_MODIFIERS))
         Mods_set(mods, ModsLaser, 0);
 }
 
@@ -538,7 +538,7 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
         return;
 
     Mods_clear(&mods);
-    if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+    if (BIT(World.rules->mode, ALLOW_MODIFIERS))
     {
         for (cp = str; *cp; cp++)
         {
@@ -546,7 +546,7 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
             {
             case 'F':
             case 'f':
-                if (!BIT(world->rules->mode, ALLOW_NUKES))
+                if (!BIT(World.rules->mode, ALLOW_NUKES))
                     break;
                 if (*(cp + 1) == 'N' || *(cp + 1) == 'n')
                     // SET_BIT(mods.nuclear, MODS_FULLNUCLEAR);
@@ -554,13 +554,13 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
                 break;
             case 'N':
             case 'n':
-                if (!BIT(world->rules->mode, ALLOW_NUKES))
+                if (!BIT(World.rules->mode, ALLOW_NUKES))
                     break;
                 Mods_set(&mods, ModsNuclear, MODS_NUCLEAR);
                 break;
             case 'C':
             case 'c':
-                if (!BIT(world->rules->mode, ALLOW_CLUSTERS))
+                if (!BIT(World.rules->mode, ALLOW_CLUSTERS))
                     break;
                 Mods_set(&mods, ModsCluster, 1);
                 break;
@@ -599,7 +599,7 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
             case 'L':
             case 'l':
                 cp++;
-                if (!BIT(world->rules->mode, ALLOW_LASER_MODIFIERS))
+                if (!BIT(World.rules->mode, ALLOW_LASER_MODIFIERS))
                     break;
                 if (*cp == 'S' || *cp == 's')
                     Mods_set(&mods, ModsLaser, MODS_LASER_STUN);

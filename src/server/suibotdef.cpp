@@ -1024,7 +1024,7 @@ void Robot_attack_player(player_t *pl, player_t *opponent)
 
 //     if (itemtype == ITEM_AUTOPILOT)
 //         return ROBOT_IGNORE_ITEM; /* never useful for robots */
-//     if (pl->item[itemtype] >= world->items[itemtype].limit)
+//     if (pl->item[itemtype] >= World.items[itemtype].limit)
 //         return ROBOT_IGNORE_ITEM; /* already full */
 //     if ((IsDefensiveItem(itemtype) && CountDefensiveItems(pl) >= options.maxDefensiveItems) || (IsOffensiveItem(itemtype) && CountOffensiveItems(pl) >= options.maxOffensiveItems))
 //         return ROBOT_IGNORE_ITEM;
@@ -1032,14 +1032,14 @@ void Robot_attack_player(player_t *pl, player_t *opponent)
 //     {
 //         if (pl->fuel.sum >= pl->fuel.max * 0.90)
 //             return ROBOT_IGNORE_ITEM; /* already (almost) full */
-//         else if ((pl->fuel.sum < (BIT(world->rules->mode, TIMING))
+//         else if ((pl->fuel.sum < (BIT(World.rules->mode, TIMING))
 //                       ? my_data->fuel_l1
 //                       : my_data->fuel_l2))
 //             return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
 //         else
 //             return ROBOT_HANDY_ITEM;
 //     }
-//     if (BIT(world->rules->mode, TIMING))
+//     if (BIT(World.rules->mode, TIMING))
 //     {
 //         switch (itemtype)
 //         {
@@ -1170,7 +1170,7 @@ static void Robot_suibot_play(player_t *pl)
 
     Thrust(pl, false);
 
-    ship_dist_closest = 2 * world->pixel_hypotenuse;
+    ship_dist_closest = 2 * World.pixel_hypotenuse;
     for (ship_i = 0; ship_i < NumPlayers; ship_i++)
     {
         player_t *ship = Player_by_index(ship_i);
@@ -1255,7 +1255,7 @@ static void Robot_suibot_play(player_t *pl)
     {
         if (Wall_in_between_points((pl->pos.cx), (pl->pos.cy), (ball->pos.cx),
                                    (ball->pos.cy)))
-            ball_dist = 2 * world->pixel_hypotenuse;
+            ball_dist = 2 * World.pixel_hypotenuse;
     }
 
     if (ship_dist_closest < maxdist && ship_dist_closest < (2.5 * ball_dist) && (Wall_in_between_points((pl->pos.cx), (pl->pos.cy), (closest_opponent->pos.cx), (closest_opponent->pos.cy)) == 0) && (!BIT(pl->have, HAS_BALL)))
@@ -1320,10 +1320,10 @@ static void Robot_suibot_round_tick(void)
         * (NUM_IDS - NumRobots)) / NUM_IDS);*/
 
     /* limit distance to allowable enemies. */
-    Max_enemy_distance = world->pixel_hypotenuse;
-    if (world->pixel_hypotenuse > Visibility_distance)
-        Max_enemy_distance = world->pixel_hypotenuse;
+    Max_enemy_distance = World.pixel_hypotenuse;
+    if (World.pixel_hypotenuse > Visibility_distance)
+        Max_enemy_distance = World.pixel_hypotenuse;
     /*    min_enemy_distance
-            + (((world->pixel_hypotenuse - min_enemy_distance)
+            + (((World.pixel_hypotenuse - min_enemy_distance)
             * (NUM_IDS - NumRobots)) / NUM_IDS);*/
 }

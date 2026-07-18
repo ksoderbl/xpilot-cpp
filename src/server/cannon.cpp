@@ -78,7 +78,7 @@ void Cannon_update(bool tick)
         {
             if ((c->dead_ticks -= timeStep) <= 0)
             {
-                // world->block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
+                // World.block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
                 // c->conn_mask = 0;
                 // c->last_change = frame_loops;
                 World_restore_cannon(c);
@@ -101,7 +101,7 @@ void Cannon_update(bool tick)
             {
                 int item = (int)(rfrac() * NUM_ITEMS);
                 /* this gives the cannon an item about once every minute */
-                if (world->items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * 12)) < (options.cannonItemProbMult * world->items[item].cannonprob))
+                if (World.items[item].cannonprob > 0 && options.cannonItemProbMult > 0 && (int)(rfrac() * (60 * 12)) < (options.cannonItemProbMult * World.items[item].cannonprob))
                     Cannon_add_item(c, item, (item == ITEM_FUEL ? ENERGY_PACK_FUEL : 1));
             }
         }
@@ -156,17 +156,17 @@ void Cannon_add_item(cannon_t *c, int item_type, int amount)
     {
     case ITEM_TANK:
         c->item[ITEM_TANK]++;
-        LIMIT(c->item[ITEM_TANK], 0, world->items[ITEM_TANK].limit);
+        LIMIT(c->item[ITEM_TANK], 0, World.items[ITEM_TANK].limit);
         /* FALLTHROUGH */
     case ITEM_FUEL:
         c->item[ITEM_FUEL] += (int)(amount / ENERGY_PACK_FUEL + 0.5);
         LIMIT(c->item[ITEM_FUEL],
               0,
-              (int)(world->items[ITEM_FUEL].limit / ENERGY_PACK_FUEL + 0.5));
+              (int)(World.items[ITEM_FUEL].limit / ENERGY_PACK_FUEL + 0.5));
         break;
     default:
         c->item[item_type] += amount;
-        LIMIT(c->item[item_type], 0, world->items[item_type].limit);
+        LIMIT(c->item[item_type], 0, World.items[item_type].limit);
         break;
     }
 }
@@ -181,10 +181,10 @@ void Cannon_throw_items(cannon_t *c)
     {
         if (i == ITEM_FUEL)
             continue;
-        c->item[i] -= world->items[i].initial;
+        c->item[i] -= World.items[i].initial;
         while (c->item[i] > 0)
         {
-            int amount = world->items[i].max_per_pack - (int)(rfrac() * (1 + world->items[i].max_per_pack - world->items[i].min_per_pack));
+            int amount = World.items[i].max_per_pack - (int)(rfrac() * (1 + World.items[i].max_per_pack - World.items[i].min_per_pack));
             LIMIT(amount, 0, c->item[i]);
             if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (item = ITEM_PTR(Object_allocate())) != NULL)
             {
@@ -209,7 +209,7 @@ void Cannon_throw_items(cannon_t *c)
                 item->item_count = amount;
                 item->pl_range = ITEM_SIZE / 2;
                 item->pl_radius = ITEM_SIZE / 2;
-                world->items[i].num++;
+                World.items[i].num++;
                 Cell_add_object(OBJ_PTR(item));
             }
             c->item[i] -= amount;
@@ -228,7 +228,7 @@ void Cannon_init(cannon_t *c)
     {
         c->item[i] = 0;
         if (options.cannonsUseItems)
-            Cannon_add_item(c, i, (int)(rfrac() * (world->items[i].initial + 1)));
+            Cannon_add_item(c, i, (int)(rfrac() * (World.items[i].initial + 1)));
     }
     c->damaged = 0;
     c->tractor_target_id = NO_ID;
@@ -311,7 +311,7 @@ static int Cannon_in_danger(cannon_t *c)
             continue;
         if (BIT(shot->obj_status, FROMCANNON))
             continue;
-        if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity && shot->team == c->team)
+        if (BIT(World.rules->mode, TEAM_PLAY) && options.teamImmunity && shot->team == c->team)
             continue;
 
         npx = shot->pix_pos.x;
@@ -461,7 +461,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 
         /* mode 3 also checks if a player is using a phasing device */
         if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE | KILLED) != PLAYING ||
-            (BIT(world->rules->mode, TEAM_PLAY) && pl->team == c->team) ||
+            (BIT(World.rules->mode, TEAM_PLAY) && pl->team == c->team) ||
             (!pl->forceVisible && BIT(pl->used, USES_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
             (smartness > 2 && BIT(pl->used, USES_PHASING_DEVICE)))
             continue;
@@ -556,9 +556,9 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     switch (weapon)
     {
     case CW_MINE:
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.25))
+        if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.25))
             Mods_set(&mods, ModsCluster, 1);
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
         {
             if (rfrac() >= 0.2)
                 Mods_set(&mods, ModsImplosion, 1);
@@ -578,7 +578,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         else
         { /* throw mine at player */
             vector_t vel;
-            if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+            if (BIT(World.rules->mode, ALLOW_MODIFIERS))
             {
                 // mods.mini = (int)(rfrac() * MODS_MINI_MAX) + 1;
                 Mods_set(&mods, ModsMini,
@@ -597,9 +597,9 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         c->item[ITEM_MINE]--;
         break;
     case CW_MISSILE:
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.333))
+        if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() < 0.333))
             Mods_set(&mods, ModsCluster, 1);
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
         {
             if (rfrac() >= 0.25)
                 Mods_set(&mods, ModsImplosion, 1);
@@ -649,7 +649,7 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
     case CW_LASER:
         /* stun and blinding lasers are very dangerous,
            so we don't use them often */
-        if (BIT(world->rules->mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - smartness)) >= 1)
+        if (BIT(World.rules->mode, ALLOW_LASER_MODIFIERS) && (rfrac() * (8 - smartness)) >= 1)
             Mods_set(&mods, ModsLaser, (int)(rfrac() * (MODS_LASER_MAX + 1)));
         Fire_general_laser(NO_ID, c->team, c->pos, dir, mods);
         sound_play_sensors(c->pos, FIRE_LASER_SOUND);
@@ -804,7 +804,7 @@ void Cannon_dies(cannon_t *c, player_t *pl)
 {
     vector_t zero_vel = {0.0, 0.0};
 
-    // world->block[c->blk_pos.bx][c->blk_pos.by] = SPACE;
+    // World.block[c->blk_pos.bx][c->blk_pos.by] = SPACE;
     World_remove_cannon(c);
     Cannon_throw_items(c);
     Cannon_init(c);
@@ -844,7 +844,7 @@ hitmask_t Cannon_hitmask(cannon_t *cannon)
 {
     if (cannon->dead_ticks > 0)
         return ALL_BITS;
-    if (BIT(world->rules->mode, TEAM_PLAY) && options.teamImmunity)
+    if (BIT(World.rules->mode, TEAM_PLAY) && options.teamImmunity)
         return HITMASK(cannon->team);
     return 0;
 }

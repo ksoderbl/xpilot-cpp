@@ -123,7 +123,7 @@ void Alloc_shots(int number)
     anyobject_t *x;
     int i;
 
-#if 1
+#if 0
     SHOWTYPESIZE(object_t);
     SHOWTYPESIZE(ballobject_t);
     SHOWTYPESIZE(mineobject_t);
@@ -174,7 +174,7 @@ void Object_position_set_clpos(object_t *obj, clpos_t pos)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cx >= world->cwidth)
+    if (pos.cx >= World.cwidth)
     {
         printf("BUG!  Illegal object position (cx > world width): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -186,7 +186,7 @@ void Object_position_set_clpos(object_t *obj, clpos_t pos)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cy >= world->cheight)
+    if (pos.cy >= World.cheight)
     {
         printf("BUG!  Illegal object position (cy > world height): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -218,7 +218,7 @@ void Player_position_set_clicks(player_t *pl, clpos_t pos)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cx >= world->cwidth)
+    if (pos.cx >= World.cwidth)
     {
         printf("BUG!  Illegal player position (cx > world width): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -230,7 +230,7 @@ void Player_position_set_clicks(player_t *pl, clpos_t pos)
         // *(double *)(-1) = 4321.0;
         // abort();
     }
-    if (pos.cy >= world->cheight)
+    if (pos.cy >= World.cheight)
     {
         printf("BUG!  Illegal player position (cy > world height): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
@@ -253,8 +253,8 @@ void Player_position_limit(player_t *pl)
     clpos_t pos = pl->pos;
     clpos_t opos = pos;
 
-    LIMIT(pos.cx, 0, world->cwidth - 1);
-    LIMIT(pos.cy, 0, world->cheight - 1);
+    LIMIT(pos.cx, 0, World.cwidth - 1);
+    LIMIT(pos.cy, 0, World.cheight - 1);
     if (pos.cx != opos.cx || pos.cy != opos.cy)
     {
         Player_position_set_clicks(pl, pos);

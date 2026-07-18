@@ -82,19 +82,19 @@ static void Walldist_alloc(void)
     uint8_t **wall_ptr;
 
     walldist = (uint8_t **)malloc(
-        world->x * sizeof(uint8_t *) + world->x * world->y);
+        World.x * sizeof(uint8_t *) + World.x * World.y);
     if (!walldist)
     {
         error("No memory for walldist");
         exit(1);
     }
     wall_ptr = walldist;
-    wall_line = (uint8_t *)(wall_ptr + world->x);
-    for (x = 0; x < world->x; x++)
+    wall_line = (uint8_t *)(wall_ptr + World.x);
+    for (x = 0; x < World.x; x++)
     {
         *wall_ptr = wall_line;
         wall_ptr += 1;
-        wall_line += world->y;
+        wall_line += World.y;
     }
 }
 
@@ -122,7 +122,7 @@ static void Walldist_dump(void)
         error("%s", name);
         return;
     }
-    line = (uint8_t *)malloc(3 * world->x);
+    line = (uint8_t *)malloc(3 * World.x);
     if (!line)
     {
         error("No memory for walldist dump");
@@ -130,11 +130,11 @@ static void Walldist_dump(void)
         return;
     }
     fprintf(fp, "P6\n");
-    fprintf(fp, "%d %d\n", world->x, world->y);
+    fprintf(fp, "%d %d\n", World.x, World.y);
     fprintf(fp, "%d\n", 255);
-    for (y = world->y - 1; y >= 0; y--)
+    for (y = World.y - 1; y >= 0; y--)
     {
-        for (x = 0; x < world->x; x++)
+        for (x = 0; x < World.x; x++)
         {
             if (walldist[x][y] == 0)
             {
@@ -161,7 +161,7 @@ static void Walldist_dump(void)
                 line[x * 3 + 2] = walldist[x][y];
             }
         }
-        fwrite(line, world->x, 3, fp);
+        fwrite(line, World.x, 3, fp);
     }
     free(line);
     fclose(fp);
@@ -175,7 +175,7 @@ static void Walldist_init(void)
     int x, y, dx, dy, wx, wy;
     int dist;
     int mindist;
-    int maxdist = 2 * MIN(world->x, world->y);
+    int maxdist = 2 * MIN(World.x, World.y);
     int newdist;
 
     typedef struct Qelmt
@@ -189,17 +189,17 @@ static void Walldist_init(void)
     {
         maxdist = 255;
     }
-    q = (Qelmt_t *)malloc(world->x * world->y * sizeof(Qelmt_t));
+    q = (Qelmt_t *)malloc(World.x * World.y * sizeof(Qelmt_t));
     if (!q)
     {
         error("No memory for walldist init");
         exit(1);
     }
-    for (x = 0; x < world->x; x++)
+    for (x = 0; x < World.x; x++)
     {
-        for (y = 0; y < world->y; y++)
+        for (y = 0; y < World.y; y++)
         {
-            if (BIT((1 << world->block[x][y]), WALLDIST_MASK) && (world->block[x][y] != WORMHOLE || world->wormholes[wormXY(x, y)].type != WORM_OUT))
+            if (BIT((1 << World.block[x][y]), WALLDIST_MASK) && (World.block[x][y] != WORMHOLE || World.wormholes[wormXY(x, y)].type != WORM_OUT))
             {
                 walldist[x][y] = 0;
                 q[qback].x = x;
@@ -212,13 +212,13 @@ static void Walldist_init(void)
             }
         }
     }
-    if (!BIT(world->rules->mode, WRAP_PLAY))
+    if (!BIT(World.rules->mode, WRAP_PLAY))
     {
-        for (x = 0; x < world->x; x++)
+        for (x = 0; x < World.x; x++)
         {
-            for (y = 0; y < world->y; y += (!x || x == world->x - 1)
-                                               ? 1
-                                               : (world->y - (world->y > 1)))
+            for (y = 0; y < World.y; y += (!x || x == World.x - 1)
+                                              ? 1
+                                              : (World.y - (World.y > 1)))
             {
                 if (walldist[x][y] > 1)
                 {
@@ -234,7 +234,7 @@ static void Walldist_init(void)
     {
         x = q[qfront].x;
         y = q[qfront].y;
-        if (++qfront == world->x * world->y)
+        if (++qfront == World.x * World.y)
         {
             qfront = 0;
         }
@@ -246,12 +246,12 @@ static void Walldist_init(void)
         }
         for (dx = -1; dx <= 1; dx++)
         {
-            if (BIT(world->rules->mode, WRAP_PLAY) || (x + dx >= 0 && x + dx < world->x))
+            if (BIT(World.rules->mode, WRAP_PLAY) || (x + dx >= 0 && x + dx < World.x))
             {
                 wx = WRAP_XBLOCK(x + dx);
                 for (dy = -1; dy <= 1; dy++)
                 {
-                    if (BIT(world->rules->mode, WRAP_PLAY) || (y + dy >= 0 && y + dy < world->y))
+                    if (BIT(World.rules->mode, WRAP_PLAY) || (y + dy >= 0 && y + dy < World.y))
                     {
                         wy = WRAP_YBLOCK(y + dy);
                         if (walldist[wx][wy] > mindist)
@@ -259,28 +259,28 @@ static void Walldist_init(void)
                             newdist = mindist;
                             if (dist == 0)
                             {
-                                if (world->block[x][y] == REC_LD)
+                                if (World.block[x][y] == REC_LD)
                                 {
                                     if (dx == +1 && dy == +1)
                                     {
                                         newdist = mindist + 1;
                                     }
                                 }
-                                else if (world->block[x][y] == REC_RD)
+                                else if (World.block[x][y] == REC_RD)
                                 {
                                     if (dx == -1 && dy == +1)
                                     {
                                         newdist = mindist + 1;
                                     }
                                 }
-                                else if (world->block[x][y] == REC_LU)
+                                else if (World.block[x][y] == REC_LU)
                                 {
                                     if (dx == +1 && dy == -1)
                                     {
                                         newdist = mindist + 1;
                                     }
                                 }
-                                else if (world->block[x][y] == REC_RU)
+                                else if (World.block[x][y] == REC_RU)
                                 {
                                     if (dx == -1 && dy == -1)
                                     {
@@ -293,7 +293,7 @@ static void Walldist_init(void)
                                 walldist[wx][wy] = newdist;
                                 q[qback].x = wx;
                                 q[qback].y = wy;
-                                if (++qback == world->x * world->y)
+                                if (++qback == World.x * World.y)
                                 {
                                     qback = 0;
                                 }
@@ -632,7 +632,7 @@ void Move_segment1(move_state_t *ms)
         {
             if (mi->edge_wrap)
             {
-                block.x += world->x;
+                block.x += World.x;
             }
             else
             {
@@ -653,7 +653,7 @@ void Move_segment1(move_state_t *ms)
         {
             if (mi->edge_wrap)
             {
-                block.y += world->y;
+                block.y += World.y;
             }
             else
             {
@@ -746,7 +746,7 @@ void Move_segment1(move_state_t *ms)
     delta.cx = leave.cx - enter.cx;
     delta.cy = leave.cy - enter.cy;
 
-    block_type = world->block[block.x][block.y];
+    block_type = World.block[block.x][block.y];
 
     /*
      * We test for several different bouncing directions against the wall.
@@ -772,7 +772,7 @@ void Move_segment1(move_state_t *ms)
                 break;
             }
             hole = wormXY(block.x, block.y);
-            if (world->wormholes[hole].type == WORM_OUT)
+            if (World.wormholes[hole].type == WORM_OUT)
             {
                 break;
             }
@@ -782,10 +782,10 @@ void Move_segment1(move_state_t *ms)
                 blk2.y = OBJ_Y_IN_BLOCKS(mi->pl);
                 if (BIT(mi->pl->obj_status, WARPED))
                 {
-                    if (world->block[blk2.x][blk2.y] == WORMHOLE)
+                    if (World.block[blk2.x][blk2.y] == WORMHOLE)
                     {
                         int oldhole = wormXY(blk2.x, blk2.y);
-                        if (world->wormholes[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
+                        if (World.wormholes[oldhole].type == WORM_NORMAL && mi->pl->wormHoleDest == oldhole)
                         {
                             /*
                              * Don't warp again if we are still on the
@@ -810,11 +810,11 @@ void Move_segment1(move_state_t *ms)
                  * Warp the object to the same destination as the
                  * player has been warped to.
                  */
-                int last = world->wormholes[hole].lastdest;
-                if (last >= 0 && (world->wormholes[hole].countdown > 0 || !options.wormTime) && last < world->NumWormholes && world->wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
+                int last = World.wormholes[hole].lastdest;
+                if (last >= 0 && (World.wormholes[hole].countdown > 0 || !options.wormTime) && last < World.NumWormholes && World.wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.cx += (world->wormholes[last].blk_pos.bx - world->wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
-                    ms->done.cy += (world->wormholes[last].blk_pos.by - world->wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
+                    ms->done.cx += (World.wormholes[last].blk_pos.bx - World.wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
+                    ms->done.cy += (World.wormholes[last].blk_pos.by - World.wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
                     break;
                 }
             }
@@ -825,25 +825,25 @@ void Move_segment1(move_state_t *ms)
             {
                 break;
             }
-            if (BIT(mi->obj->obj_status, FROMCANNON) && !BIT(world->rules->mode, TEAM_PLAY))
+            if (BIT(mi->obj->obj_status, FROMCANNON) && !BIT(World.rules->mode, TEAM_PLAY))
             {
                 break;
             }
             for (i = 0;; i++)
             {
-                if (world->cannons[i].blk_pos.bx == block.x && world->cannons[i].blk_pos.by == block.y)
+                if (World.cannons[i].blk_pos.bx == block.x && World.cannons[i].blk_pos.by == block.y)
                 {
                     break;
                 }
             }
             ms->cannon = i;
 
-            if (BIT(world->cannons[i].used, HAS_PHASING_DEVICE))
+            if (BIT(World.cannons[i].used, HAS_PHASING_DEVICE))
             {
                 break;
             }
 
-            if (BIT(world->rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) && mi->obj->team == world->cannons[i].team)
+            if (BIT(World.rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) && mi->obj->team == World.cannons[i].team)
             {
                 break;
             }
@@ -864,7 +864,7 @@ void Move_segment1(move_state_t *ms)
                 mirx.cy = 0;
                 miry.cx = 0;
                 miry.cy = 0;
-                switch (world->cannons[i].dir)
+                switch (World.cannons[i].dir)
                 {
                 case DIR_UP:
                     mx.x = 1;
@@ -1047,7 +1047,7 @@ void Move_segment1(move_state_t *ms)
 
                     for (i = 0;; i++)
                     {
-                        if (world->treasures[i].blk_pos.bx == block.x && world->treasures[i].blk_pos.by == block.y)
+                        if (World.treasures[i].blk_pos.bx == block.x && World.treasures[i].blk_pos.by == block.y)
                         {
                             break;
                         }
@@ -1076,14 +1076,14 @@ void Move_segment1(move_state_t *ms)
                          * nothing interesting happens.
                          */
                         player_t *pl = NULL;
-                        // treasure_t *tt = &world->treasures[ms->treasure];
+                        // treasure_t *tt = &World.treasures[ms->treasure];
                         treasure_t *tt = ms->treasure_ptr;
 
                         if (ball->ball_owner != NO_ID)
                             pl = Player_by_id(ball->ball_owner);
 
-                        // if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != world->treasures[ball->treasure].team))
-                        if (!BIT(world->rules->mode, TEAM_PLAY) || !pl || (pl->team != ball->ball_treasure->team))
+                        // if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != World.treasures[ball->treasure].team))
+                        if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != ball->ball_treasure->team))
                         {
                             ball->life = LONG_MAX;
                             ms->crash = NotACrash;
@@ -1104,8 +1104,8 @@ void Move_segment1(move_state_t *ms)
                         ball->life = 0;
                         return;
                     }
-                    // if (BIT(world->rules->mode, TEAM_PLAY) && world->treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
-                    if (BIT(world->rules->mode, TEAM_PLAY) && ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
+                    // if (BIT(World.rules->mode, TEAM_PLAY) && World.treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
+                    if (BIT(World.rules->mode, TEAM_PLAY) && ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
                     {
                         treasure_t *tt = ms->treasure_ptr;
                         /*
@@ -1136,15 +1136,15 @@ void Move_segment1(move_state_t *ms)
                      *     added itemID array for extra speed, (at cost of some memory.)
                      *
                      *for (i = 0; ; i++) {
-                     *    if (world->targets[i].pos.x == block.x
-                     *        && world->targets[i].pos.y == block.y) {
+                     *    if (World.targets[i].pos.x == block.x
+                     *        && World.targets[i].pos.y == block.y) {
                      *        break;
                      *     }
                      * }
                      *
                      * ms->target = i;
                      */
-                    ms->target = i = world->itemID[block.x][block.y];
+                    ms->target = i = World.itemID[block.x][block.y];
 
                     if (!options.targetTeamCollision)
                     {
@@ -1169,7 +1169,7 @@ void Move_segment1(move_state_t *ms)
                         {
                             team = mi->obj->team;
                         }
-                        if (team == world->targets[i].team)
+                        if (team == World.targets[i].team)
                         {
                             break;
                         }
@@ -1587,10 +1587,10 @@ void Move_segment1(move_state_t *ms)
                         {
                             continue;
                         }
-                        blk2.x += world->x;
+                        blk2.x += World.x;
                     }
                     blk2.y = block.y;
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_RU_BIT | REC_RD_BIT))
                     {
                         continue;
@@ -1599,16 +1599,16 @@ void Move_segment1(move_state_t *ms)
 
                 case BounceHorHi:
                     blk2.x = block.x + 1;
-                    if (blk2.x >= world->x)
+                    if (blk2.x >= World.x)
                     {
                         if (!mi->edge_wrap)
                         {
                             continue;
                         }
-                        blk2.x -= world->x;
+                        blk2.x -= World.x;
                     }
                     blk2.y = block.y;
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_LU_BIT | REC_LD_BIT))
                     {
                         continue;
@@ -1624,9 +1624,9 @@ void Move_segment1(move_state_t *ms)
                         {
                             continue;
                         }
-                        blk2.y += world->y;
+                        blk2.y += World.y;
                     }
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_RU_BIT | REC_LU_BIT))
                     {
                         continue;
@@ -1636,15 +1636,15 @@ void Move_segment1(move_state_t *ms)
                 case BounceVerHi:
                     blk2.x = block.x;
                     blk2.y = block.y + 1;
-                    if (blk2.y >= world->y)
+                    if (blk2.y >= World.y)
                     {
                         if (!mi->edge_wrap)
                         {
                             continue;
                         }
-                        blk2.y -= world->y;
+                        blk2.y -= World.y;
                     }
-                    if (BIT(1 << world->block[blk2.x][blk2.y],
+                    if (BIT(1 << World.block[blk2.x][blk2.y],
                             block_mask | REC_RD_BIT | REC_LD_BIT))
                     {
                         continue;
@@ -1756,7 +1756,7 @@ static void Cannon_dies(move_state_t *ms)
 {
     warn("walls: cannon dies!");
 
-    cannon_t *cannon = &world->cannons[ms->cannon];
+    cannon_t *cannon = &World.cannons[ms->cannon];
     int cx = cannon->pos.cx;
     int cy = cannon->pos.cy;
     int killer = -1;
@@ -1784,7 +1784,7 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (options.cannonPoints > 0)
         {
-            if (Get_Score(pl) <= options.cannonMaxScore && !(BIT(world->rules->mode, TEAM_PLAY) && pl->team == cannon->team))
+            if (Get_Score(pl) <= options.cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
             {
                 Score(pl, options.cannonPoints, cannon->pos, "");
             }
@@ -1814,7 +1814,7 @@ static void Object_crash1(move_state_t *ms)
 
     case CrashTarget:
         obj->life = 0;
-        Object_hits_target1(ms->mip->obj, &world->targets[ms->target], -1.0);
+        Object_hits_target1(ms->mip->obj, &World.targets[ms->target], -1.0);
         break;
 
     case CrashWall:
@@ -1913,7 +1913,7 @@ void Move_object1(object_t *obj)
 
     mi.pl = NULL;
     mi.obj = obj;
-    mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = BIT(mp.obj_bounce_mask, obj->type);
     mi.cannon_crashes = BIT(mp.obj_cannon_mask, obj->type);
@@ -2080,7 +2080,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
         howfmt = "%s smashed%s against a target";
         hudmsg = "[Target]";
         sound_play_sensors(pl->pos, PLAYER_HIT_WALL_SOUND);
-        Object_hits_target1(ms->mip->obj, &world->targets[ms->target], -1.0);
+        Object_hits_target1(ms->mip->obj, &World.targets[ms->target], -1.0);
         break;
 
     case CrashTreasure:
@@ -2097,7 +2097,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos, PLAYER_HIT_CANNON_SOUND);
         }
-        if (!BIT(world->cannons[ms->cannon].used, USES_EMERGENCY_SHIELD))
+        if (!BIT(World.cannons[ms->cannon].used, USES_EMERGENCY_SHIELD))
         {
             Cannon_dies(ms);
         }
@@ -2258,7 +2258,7 @@ void Move_player1(player_t *pl)
     }
     else
     {
-        switch (world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)])
+        switch (World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)])
         {
         case FRICTION:
             fric = options.blockFriction;
@@ -2295,7 +2295,7 @@ void Move_player1(player_t *pl)
 
     mi.pl = pl;
     mi.obj = (object_t *)pl;
-    mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;
@@ -2607,7 +2607,7 @@ void Move_player1(player_t *pl)
                     if (ms[worst].target >= 0)
                     {
                         cost = cost * (options.wallBounceFuelDrainMult / 4.0);
-                        Object_hits_target1(ms[worst].mip->obj, &world->targets[ms[worst].target], cost);
+                        Object_hits_target1(ms[worst].mip->obj, &World.targets[ms[worst].target], cost);
                     }
                 }
             }
@@ -2715,7 +2715,7 @@ void Turn_player1(player_t *pl)
 
     mi.pl = pl;
     mi.obj = (object_t *)pl;
-    mi.edge_wrap = BIT(world->rules->mode, WRAP_PLAY);
+    mi.edge_wrap = BIT(World.rules->mode, WRAP_PLAY);
     mi.edge_bounce = options.edgeBounce;
     mi.wall_bounce = true;
     mi.cannon_crashes = true;

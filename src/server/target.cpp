@@ -67,7 +67,7 @@ void Target_update(void)
         {
             if ((targ->dead_ticks -= timeStep) <= 0)
             {
-                // world->block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
+                // World.block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
                 // targ->conn_mask = 0;
                 // targ->update_mask = (unsigned)-1;
                 // targ->last_change = frame_loops;
@@ -81,7 +81,7 @@ void Target_update(void)
 
                         if (t->team == targ->team)
                         {
-                            // world->block[t->blk_pos.bx][t->blk_pos.by] = TARGET;
+                            // World.block[t->blk_pos.bx][t->blk_pos.by] = TARGET;
                             // t->conn_mask = 0;
                             // t->update_mask = (unsigned)-1;
                             // t->last_change = frame_loops;
@@ -205,7 +205,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
                 20.0, 70.0,
                 10.0, 100.0);
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         for (j = 0; j < NumPlayers; j++)
         {
@@ -352,7 +352,7 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
      */
     bx = targ->blk_pos.bx;
     by = targ->blk_pos.by;
-    world->block[bx][by] = SPACE;
+    World.block[bx][by] = SPACE;
 
     Make_debris(targ->pos,
                 zero_vel,
@@ -368,7 +368,7 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
                 20.0, 70.0,
                 10.0, 100.0);
 
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         for (j = 0; j < NumPlayers; j++)
         {
@@ -396,10 +396,10 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
     {
         for (j = 0; j < Num_targets(); j++)
         {
-            if (world->targets[j].team == targ->team)
+            if (World.targets[j].team == targ->team)
             {
                 targets_total++;
-                if (world->targets[j].dead_ticks == 0)
+                if (World.targets[j].dead_ticks == 0)
                     targets_remaining++;
             }
         }

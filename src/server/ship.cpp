@@ -533,7 +533,7 @@ void Make_debris(clpos_t pos,
     int i, life;
     modifiers_t mods;
 
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
         pos = World_wrap_clpos(pos);
 
     if (!World_contains_clpos(pos))
@@ -553,10 +553,10 @@ void Make_debris(clpos_t pos,
             max_life = options.shotLife;
         }
     }
-    if (min_speed * max_life > world->pixel_hypotenuse)
-        min_speed = world->pixel_hypotenuse / max_life;
-    if (max_speed * min_life > world->pixel_hypotenuse)
-        max_speed = world->pixel_hypotenuse / min_life;
+    if (min_speed * max_life > World.pixel_hypotenuse)
+        min_speed = World.pixel_hypotenuse / max_life;
+    if (max_speed * min_life > World.pixel_hypotenuse)
+        max_speed = World.pixel_hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -597,9 +597,9 @@ void Make_debris(clpos_t pos,
         debris->mass = mass;
         debris->type = type;
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > world->pixel_hypotenuse)
+        if (life * speed > World.pixel_hypotenuse)
         {
-            life = (long)(world->pixel_hypotenuse / speed);
+            life = (long)(World.pixel_hypotenuse / speed);
         }
         debris->life = life;
         debris->fuselife = life;
@@ -630,7 +630,7 @@ void Make_wreckage(clpos_t pos,
 
     if (!options.useWreckage)
         return;
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
         pos = World_wrap_clpos(pos);
 
     if (!World_contains_clpos(pos))
@@ -647,10 +647,10 @@ void Make_wreckage(clpos_t pos,
         }
     }
 
-    if (min_speed * max_life > world->pixel_hypotenuse)
-        min_speed = world->pixel_hypotenuse / max_life;
-    if (max_speed * min_life > world->pixel_hypotenuse)
-        max_speed = world->pixel_hypotenuse / min_life;
+    if (min_speed * max_life > World.pixel_hypotenuse)
+        min_speed = World.pixel_hypotenuse / max_life;
+    if (max_speed * min_life > World.pixel_hypotenuse)
+        max_speed = World.pixel_hypotenuse / min_life;
     if (max_speed < min_speed)
         max_speed = min_speed;
 
@@ -703,9 +703,9 @@ void Make_wreckage(clpos_t pos,
 
         /* Lifespan  */
         life = (int)(min_life + rfrac() * (max_life - min_life) + 1);
-        if (life * speed > world->pixel_hypotenuse)
+        if (life * speed > World.pixel_hypotenuse)
         {
-            life = (long)(world->pixel_hypotenuse / speed);
+            life = (long)(World.pixel_hypotenuse / speed);
         }
         wreckage->life = life;
         wreckage->fuselife = wreckage->life;

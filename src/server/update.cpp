@@ -55,8 +55,8 @@ static inline void update_object_speed(object_t *obj)
 {
     // if (BIT(obj->obj_status, GRAVITY))
     // {
-    //     obj->vel.x += obj->acc.x + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].x;
-    //     obj->vel.y += obj->acc.y + world->gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].y;
+    //     obj->vel.x += obj->acc.x + World.gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].x;
+    //     obj->vel.y += obj->acc.y + World.gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].y;
     // }
     // else
     // {
@@ -91,7 +91,7 @@ static void Transport_to_home(player_t *pl)
     }
         */
 
-    if (BIT(world->rules->mode, TIMING) && pl->round)
+    if (BIT(World.rules->mode, TIMING) && pl->round)
     {
         int check;
 
@@ -99,15 +99,15 @@ static void Transport_to_home(player_t *pl)
             check = pl->check - 1;
         else
             check = Num_checks() - 1;
-        // bx = (world->checks[check].x + 0.5) * BLOCK_SZ;
-        // by = (world->checks[check].y + 0.5) * BLOCK_SZ;
+        // bx = (World.checks[check].x + 0.5) * BLOCK_SZ;
+        // by = (World.checks[check].y + 0.5) * BLOCK_SZ;
         startpos = Check_by_index(check)->pos;
     }
     else
     {
-        // bx = (world->bases[pl->home_base_ind].blk_pos.bx + 0.5) * BLOCK_SZ;
-        // by = (world->bases[pl->home_base_ind].blk_pos.by + 0.5) * BLOCK_SZ;
-        startpos = world->bases[pl->home_base_ind].pos;
+        // bx = (World.bases[pl->home_base_ind].blk_pos.bx + 0.5) * BLOCK_SZ;
+        // by = (World.bases[pl->home_base_ind].blk_pos.by + 0.5) * BLOCK_SZ;
+        startpos = World.bases[pl->home_base_ind].pos;
     }
     // dx = WRAP_DX(bx - pl->pix_pos.x);
     // dy = WRAP_DY(by - pl->pix_pos.y);
@@ -411,8 +411,8 @@ static void do_Autopilot(player_t *pl)
 
     ix = OBJ_X_IN_BLOCKS(pl);
     iy = OBJ_Y_IN_BLOCKS(pl);
-    gx = world->gravity[ix][iy].x;
-    gy = world->gravity[ix][iy].y;
+    gx = World.gravity[ix][iy].x;
+    gy = World.gravity[ix][iy].y;
 
     /*
      * Due to rounding errors if the velocity is very small we were probably
@@ -643,9 +643,9 @@ static void Ecm_update(void)
                 if (pl)
                     pl->ecmcount--;
             }
-            // --world->NumEcms;
-            // world->ecms[i] = world->ecms[world->NumEcms];
-            world->ecms.erase(world->ecms.begin() + i);
+            // --World.NumEcms;
+            // World.ecms[i] = World.ecms[World.NumEcms];
+            World.ecms.erase(World.ecms.begin() + i);
             i--;
         }
     }
@@ -664,9 +664,9 @@ static void Transporter_update(void)
 
         if (--trans->count <= 0)
         {
-            // --world->NumTransporters;
-            // world->transporters[i] = world->transporters[world->NumTransporters];
-            world->transporters.erase(world->transporters.begin() + i);
+            // --World.NumTransporters;
+            // World.transporters[i] = World.transporters[World.NumTransporters];
+            World.transporters.erase(World.transporters.begin() + i);
             i--;
         }
     }
@@ -763,7 +763,7 @@ static void Do_refuel(player_t *pl)
 
     if ((Wrap_length(pl->pos.cx - fs->pos.cx,
                      pl->pos.cy - fs->pos.cy) > 90.0 * CLICK) ||
-        (pl->fuel.sum >= pl->fuel.max) || Player_is_phasing(pl) || (BIT(world->rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
+        (pl->fuel.sum >= pl->fuel.max) || Player_is_phasing(pl) || (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
     {
         CLR_BIT(pl->used, USES_REFUEL);
     }
@@ -1043,15 +1043,15 @@ static void Update_players(void)
 
             if (pl->wormHoleHit != -1)
             {
-                if (world->wormholes[pl->wormHoleHit].countdown > 0)
+                if (World.wormholes[pl->wormHoleHit].countdown > 0)
                 {
-                    j = world->wormholes[pl->wormHoleHit].lastdest;
+                    j = World.wormholes[pl->wormHoleHit].lastdest;
                 }
                 else if (rfrac() < 0.10)
                 {
                     do
                         j = (int)(rfrac() * Num_wormholes());
-                    while (world->wormholes[j].type == WORM_IN || pl->wormHoleHit == j || world->wormholes[j].temporary);
+                    while (World.wormholes[j].type == WORM_IN || pl->wormHoleHit == j || World.wormholes[j].temporary);
                 }
                 else
                 {
@@ -1060,14 +1060,14 @@ static void Update_players(void)
 
                     for (j = 0; j < Num_wormholes(); j++)
                     {
-                        if (j == pl->wormHoleHit || world->wormholes[j].type == WORM_IN || world->wormholes[j].temporary)
+                        if (j == pl->wormHoleHit || World.wormholes[j].type == WORM_IN || World.wormholes[j].temporary)
                             continue;
 
-                        wx = (world->wormholes[j].blk_pos.bx -
-                              world->wormholes[pl->wormHoleHit].blk_pos.bx) *
+                        wx = (World.wormholes[j].blk_pos.bx -
+                              World.wormholes[pl->wormHoleHit].blk_pos.bx) *
                              BLOCK_SZ;
-                        wy = (world->wormholes[j].blk_pos.by -
-                              world->wormholes[pl->wormHoleHit].blk_pos.by) *
+                        wy = (World.wormholes[j].blk_pos.by -
+                              World.wormholes[pl->wormHoleHit].blk_pos.by) *
                              BLOCK_SZ;
                         wx = WRAP_DX(wx);
                         wy = WRAP_DX(wy);
@@ -1102,25 +1102,25 @@ static void Update_players(void)
                     {
                         do
                             j = (int)(rfrac() * Num_wormholes());
-                        while (world->wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
+                        while (World.wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
                     }
 #endif /* RANDOM_REAR_WORM */
                 }
 
                 sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 
-                w.x = (world->wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
-                w.y = (world->wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
+                w.x = (World.wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
+                w.y = (World.wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
             }
             else
             { /* wormHoleHit == -1 */
                 int counter;
                 for (counter = 20; counter > 0; counter--)
                 {
-                    w.x = (int)(rfrac() * world->width);
-                    w.y = (int)(rfrac() * world->height);
-                    if (BIT(1U << world->block[(int)(w.x / BLOCK_SZ)]
-                                              [(int)(w.y / BLOCK_SZ)],
+                    w.x = (int)(rfrac() * World.width);
+                    w.y = (int)(rfrac() * World.height);
+                    if (BIT(1U << World.block[(int)(w.x / BLOCK_SZ)]
+                                             [(int)(w.y / BLOCK_SZ)],
                             SPACE_BLOCKS))
                     {
                         break;
@@ -1131,7 +1131,7 @@ static void Update_players(void)
                     w.x = CLICK_TO_PIXEL(pl->pos.cx);
                     w.y = CLICK_TO_PIXEL(pl->pos.cy);
                 }
-                if (counter && options.wormTime && BIT(1U << world->block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << world->block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+                if (counter && options.wormTime && BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
                 {
                     add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
                                        OBJ_Y_IN_BLOCKS(pl),
@@ -1166,7 +1166,7 @@ static void Update_players(void)
                         ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
                         ballpos.x = WRAP_XPIXEL(ballpos.x);
                         ballpos.y = WRAP_YPIXEL(ballpos.y);
-                        if (ballpos.x < 0 || ballpos.x >= world->width || ballpos.y < 0 || ballpos.y >= world->height)
+                        if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
                         {
                             b->life = 0;
                         }
@@ -1196,10 +1196,10 @@ static void Update_players(void)
 
             if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
             {
-                world->wormholes[pl->wormHoleHit].lastdest = j;
-                if (!world->wormholes[j].temporary)
+                World.wormholes[pl->wormHoleHit].lastdest = j;
+                if (!World.wormholes[j].temporary)
                 {
-                    world->wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
+                    World.wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
                 }
             }
 
@@ -1263,7 +1263,7 @@ void Update_objects(void)
      * Special items.
      */
     for (i = 0; i < NUM_ITEMS; i++)
-        if (world->items[i].num < world->items[i].max && world->items[i].chance > 0 && (rfrac() * world->items[i].chance) < 1.0f)
+        if (World.items[i].num < World.items[i].max && World.items[i].chance > 0 && (rfrac() * World.items[i].chance) < 1.0f)
             Place_item(NULL, i);
 
     Fuel_update();
@@ -1293,9 +1293,9 @@ void Update_objects(void)
 
     for (int i = Num_wormholes() - 1; i >= 0; i--)
     {
-        if (world->wormholes[i].countdown > 0)
-            world->wormholes[i].countdown--;
-        if (world->wormholes[i].temporary && world->wormholes[i].countdown <= 0)
+        if (World.wormholes[i].countdown > 0)
+            World.wormholes[i].countdown--;
+        if (World.wormholes[i].temporary && World.wormholes[i].countdown <= 0)
             remove_temp_wormhole(i);
     }
 

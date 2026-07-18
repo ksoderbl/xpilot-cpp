@@ -133,7 +133,7 @@ void Place_general_mine(int id, int team, int status,
     if (NumObjs + Mods_get(mods, ModsMini) >= MAX_TOTAL_SHOTS)
         return;
 
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
         pos = World_wrap_clpos(pos);
 
     if (!World_contains_clpos(pos))
@@ -202,8 +202,8 @@ void Place_general_mine(int id, int team, int status,
 
                 if (pl_i->id != pl->id && !Team_immune(pl_i->id, pl->id) && !Player_is_tank(pl_i))
                 {
-                    int dx = CLICK_TO_PIXEL(pos.cx - world->bases[pl_i->home_base_ind].pos.cx);
-                    int dy = CLICK_TO_PIXEL(pos.cy - world->bases[pl_i->home_base_ind].pos.cy);
+                    int dx = CLICK_TO_PIXEL(pos.cx - World.bases[pl_i->home_base_ind].pos.cx);
+                    int dy = CLICK_TO_PIXEL(pos.cy - World.bases[pl_i->home_base_ind].pos.cy);
                     if (sqr(dx) + sqr(dy) <= sqr(options.baseMineRange))
                     {
                         Set_player_message(pl, "No base mining!");
@@ -303,7 +303,7 @@ void Detonate_mines(player_t *pl)
 {
     int i, closest = -1;
     double dist;
-    double min_dist = world->pixel_hypotenuse + 1;
+    double min_dist = World.pixel_hypotenuse + 1;
 
     if (Player_is_phasing(pl))
         return;
@@ -648,7 +648,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                 lock = target_id;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)))
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules->mode, LIMITED_VISIBILITY)))
                 {
                     lock = NO_ID;
                 }
@@ -668,7 +668,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                 lock = target_id;
             else
             {
-                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(world->rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
+                if (!BIT(pl->lock.tagged, LOCK_PLAYER) || ((pl->lock.distance > pl->sensor_range) && BIT(World.rules->mode, LIMITED_VISIBILITY)) || !pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                     return;
                 lock = pl->lock.pl_id;
             }
@@ -1400,7 +1400,7 @@ void Delete_shot(int ind)
 
         if (item->info != item->item_type)
             warn("item->info != item->item_type");
-        world->items[item->item_type].num--;
+        World.items[item->item_type].num--;
 
         break;
 
@@ -1422,16 +1422,16 @@ void Delete_shot(int ind)
     if (addMine || addHeat)
     {
         Mods_clear(&mods);
-        if (BIT(world->rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333))
+        if (BIT(World.rules->mode, ALLOW_CLUSTERS) && (rfrac() <= 0.333))
             Mods_set(&mods, ModsCluster, 1);
 
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333))
+        if (BIT(World.rules->mode, ALLOW_MODIFIERS) && (rfrac() <= 0.333))
             Mods_set(&mods, ModsImplosion, 1);
 
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
             Mods_set(&mods, ModsVelocity, (int)(rfrac() * (MODS_VELOCITY_MAX + 1)));
 
-        if (BIT(world->rules->mode, ALLOW_MODIFIERS))
+        if (BIT(World.rules->mode, ALLOW_MODIFIERS))
             Mods_set(&mods, ModsPower, (int)(rfrac() * (MODS_POWER_MAX + 1)));
 
         if (addMine)
@@ -1769,18 +1769,18 @@ void Update_missile(missileobject_t *missile)
         {
             xi = (int)((x += vx) / BLOCK_SZ);
             yi = (int)((y += vy) / BLOCK_SZ);
-            if (BIT(world->rules->mode, WRAP_PLAY))
+            if (BIT(World.rules->mode, WRAP_PLAY))
             {
                 if (xi < 0)
-                    xi += world->x;
-                else if (xi >= world->x)
-                    xi -= world->x;
+                    xi += World.x;
+                else if (xi >= World.x)
+                    xi -= World.x;
                 if (yi < 0)
-                    yi += world->y;
-                else if (yi >= world->y)
-                    yi -= world->y;
+                    yi += World.y;
+                else if (yi >= World.y)
+                    yi -= World.y;
             }
-            if (xi < 0 || xi >= world->x || yi < 0 || yi >= world->y)
+            if (xi < 0 || xi >= World.x || yi < 0 || yi >= World.y)
                 break;
 
             /*
@@ -1788,7 +1788,7 @@ void Update_missile(missileobject_t *missile)
              * Someone please write polygon based missile navigation code.
              */
 
-            switch (world->block[xi][yi])
+            switch (World.block[xi][yi])
             {
             case TARGET:
             case TREASURE:
@@ -1825,9 +1825,9 @@ void Update_missile(missileobject_t *missile)
                 xt = xi + sur[(i + j + si) & 7].dx;
                 yt = yi + sur[(i + j + si) & 7].dy;
 
-                if (xt >= 0 && xt < world->x && yt >= 0 && yt < world->y)
+                if (xt >= 0 && xt < World.x && yt >= 0 && yt < World.y)
                 {
-                    switch (world->block[xt][yt])
+                    switch (World.block[xt][yt])
                     {
                     case TARGET:
                     case TREASURE:

@@ -207,7 +207,7 @@ static void Laser_pulse_find_victims(
         /* special case for cannon pulses */
         if (pulse->id == NO_ID &&
             options.teamImmunity &&
-            BIT(world->rules->mode, TEAM_PLAY) &&
+            BIT(World.rules->mode, TEAM_PLAY) &&
             pulse->team == vic->team)
             continue;
 
@@ -522,16 +522,16 @@ void Laser_pulse_collision(void)
 
         pulse->pix_pos.x += tcos(pulse->dir) * PULSE_SPEED;
         pulse->pix_pos.y += tsin(pulse->dir) * PULSE_SPEED;
-        if (BIT(world->rules->mode, WRAP_PLAY))
+        if (BIT(World.rules->mode, WRAP_PLAY))
         {
             if (pulse->pix_pos.x < 0)
-                pulse->pix_pos.x += world->width;
-            else if (pulse->pix_pos.x >= world->width)
-                pulse->pix_pos.x -= world->width;
+                pulse->pix_pos.x += World.width;
+            else if (pulse->pix_pos.x >= World.width)
+                pulse->pix_pos.x -= World.width;
             if (pulse->pix_pos.y < 0)
-                pulse->pix_pos.y += world->height;
-            else if (pulse->pix_pos.y >= world->height)
-                pulse->pix_pos.y -= world->height;
+                pulse->pix_pos.y += World.height;
+            else if (pulse->pix_pos.y >= World.height)
+                pulse->pix_pos.y -= World.height;
             x1 = pulse->pix_pos.x;
             y1 = pulse->pix_pos.y;
             x2 = x1 + tcos(pulse->dir) * pulse->len;
@@ -541,7 +541,7 @@ void Laser_pulse_collision(void)
         {
             x1 = pulse->pix_pos.x;
             y1 = pulse->pix_pos.y;
-            if (x1 < 0 || x1 >= world->width || y1 < 0 || y1 >= world->height)
+            if (x1 < 0 || x1 >= World.width || y1 < 0 || y1 >= World.height)
             {
                 pulse->len = 0;
                 continue;
@@ -552,9 +552,9 @@ void Laser_pulse_collision(void)
                 pulse->len = (int)(pulse->len * (0 - x1) / (x2 - x1));
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
             }
-            if (x2 >= world->width)
+            if (x2 >= World.width)
             {
-                pulse->len = (int)(pulse->len * (world->width - 1 - x1) / (x2 - x1));
+                pulse->len = (int)(pulse->len * (World.width - 1 - x1) / (x2 - x1));
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
             }
             y2 = y1 + tsin(pulse->dir) * pulse->len;
@@ -564,9 +564,9 @@ void Laser_pulse_collision(void)
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
                 y2 = y1 + tsin(pulse->dir) * pulse->len;
             }
-            if (y2 > world->height)
+            if (y2 > World.height)
             {
-                pulse->len = (int)(pulse->len * (world->height - 1 - y1) / (y2 - y1));
+                pulse->len = (int)(pulse->len * (World.height - 1 - y1) / (y2 - y1));
                 x2 = x1 + tcos(pulse->dir) * pulse->len;
                 y2 = y1 + tsin(pulse->dir) * pulse->len;
             }
@@ -637,27 +637,27 @@ void Laser_pulse_collision(void)
             Move_object(obj);
             if (obj->life == 0)
                 break;
-            if (BIT(world->rules->mode, WRAP_PLAY))
+            if (BIT(World.rules->mode, WRAP_PLAY))
             {
                 if (x < 0)
                 {
-                    x += world->width;
-                    x1 += world->width;
+                    x += World.width;
+                    x1 += World.width;
                 }
-                else if (x >= world->width)
+                else if (x >= World.width)
                 {
-                    x -= world->width;
-                    x1 -= world->width;
+                    x -= World.width;
+                    x1 -= World.width;
                 }
                 if (y < 0)
                 {
-                    y += world->height;
-                    y1 += world->height;
+                    y += World.height;
+                    y1 += World.height;
                 }
-                else if (y >= world->height)
+                else if (y >= World.height)
                 {
-                    y -= world->height;
-                    y1 -= world->height;
+                    y -= World.height;
+                    y1 -= World.height;
                 }
             }
 

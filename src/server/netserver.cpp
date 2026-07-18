@@ -137,6 +137,8 @@
 #include "score.h"
 #include "polygon.h"
 
+#include "walls2.h" // For Polys_to_client, should be somewhere else.
+
 #define MAX_SELECT_FD (sizeof(int) * 8 - 1)
 #define MAX_RELIABLE_DATA_PACKET_SIZE 1024
 
@@ -258,8 +260,30 @@ static int Init_setup(void)
             return -1;
     }
 
-    // TODO: support for xpilot-ng polygon maps.
-    return -1;
+    size = Polys_to_client(&mapdata);
+    printf("%s Server->client polygon map transfer size is %d bytes.\n",
+           showtime(), size);
+
+    if ((Setup = (setup_t *)malloc(sizeof(setup_t) + size)) == NULL)
+    {
+        error("No memory to hold setup");
+        free(mapdata);
+        return -1;
+    }
+    memset(Setup, 0, sizeof(setup_t) + size);
+    memcpy(Setup->map_data, mapdata, size);
+    free(mapdata);
+    Setup->setup_size = ((char *)&Setup->map_data[0] - (char *)Setup) + size;
+    Setup->map_data_len = size;
+    Setup->lives = World.rules->lives;
+    Setup->mode = World.rules->mode;
+    Setup->width = World.width;
+    Setup->height = World.height;
+    strlcpy(Setup->name, World.name, sizeof(Setup->name));
+    strlcpy(Setup->author, World.author, sizeof(Setup->author));
+    strlcpy(Setup->data_url, options.dataURL, sizeof(Setup->data_url));
+
+    return 0;
 }
 
 /*
@@ -1046,16 +1070,16 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         warn("%s", errmsg);
         return -1;
     }
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         if (connp->team < 0 || connp->team >= MAX_TEAMS || (options.reserveRobotTeam && (connp->team == options.robotTeam)))
             connp->team = TEAM_NOT_SET;
-        else if (world->teams[connp->team].NumBases <= 0)
+        else if (World.teams[connp->team].NumBases <= 0)
             connp->team = TEAM_NOT_SET;
         else
         {
             Check_team_members(connp->team);
-            if (world->teams[connp->team].NumMembers - world->teams[connp->team].NumRobots >= world->teams[connp->team].NumBases)
+            if (World.teams[connp->team].NumMembers - World.teams[connp->team].NumRobots >= World.teams[connp->team].NumBases)
                 connp->team = TEAM_NOT_SET;
         }
         if (connp->team == TEAM_NOT_SET)
@@ -1101,7 +1125,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         Pick_startpos(pl);
         Go_home(pl);
         if (pl->team != TEAM_NOT_SET)
-            world->teams[pl->team].NumMembers++;
+            World.teams[pl->team].NumMembers++;
     }
     NumPlayers++;
     request_ID();
@@ -1161,14 +1185,14 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     if (NumPlayers == 1)
         Set_message_f("Welcome to \"%s\", made by %s.",
-                      world->name, world->author);
-    else if (BIT(world->rules->mode, TEAM_PLAY))
+                      World.name, World.author);
+    else if (BIT(World.rules->mode, TEAM_PLAY))
         Set_message_f("%s (%s, team %d) has entered \"%s\", made by %s.",
                       pl->name, pl->username, pl->team,
-                      world->name, world->author);
+                      World.name, World.author);
     else
         Set_message_f("%s (%s) has entered \"%s\", made by %s.",
-                      pl->name, pl->username, world->name, world->author);
+                      pl->name, pl->username, World.name, World.author);
 
     if (options.greeting)
         Set_player_message_f(pl, "%s [*Server greeting*]", options.greeting);
@@ -1251,11 +1275,11 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     if (options.resetOnHuman > 0 && ((NumPlayers - NumPseudoPlayers - NumRobots) <= options.resetOnHuman))
     {
-        if (BIT(world->rules->mode, TIMING))
+        if (BIT(World.rules->mode, TIMING))
             Race_game_over();
-        else if (BIT(world->rules->mode, TEAM_PLAY))
+        else if (BIT(World.rules->mode, TEAM_PLAY))
             Team_game_over(-1, "");
-        else if (BIT(world->rules->mode, LIMITED_LIVES))
+        else if (BIT(World.rules->mode, LIMITED_LIVES))
             Individual_game_over(-1);
     }
 
@@ -1267,7 +1291,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             roundtime = -1;
 
         Set_message_f("Player entered. Delaying 0 seconds until next %s.",
-                      (BIT(world->rules->mode, TIMING) ? "race" : "round"));
+                      (BIT(World.rules->mode, TIMING) ? "race" : "round"));
     }
 
     return 0;

@@ -349,7 +349,6 @@ bool Parser(int argc, char **argv)
     if (Init_options() == false)
         return false;
 
-    printf("parser: loop\n");
     for (i = 1; i < argc; i++)
     {
         if (Parse_check_info_request(argv, i))
@@ -394,7 +393,6 @@ bool Parser(int argc, char **argv)
     /*
      * Read local defaults file
      */
-    printf("parser: Read local defaults file\n");
     if ((fname = Option_get_value("defaultsFileName", NULL)) != NULL)
         parseDefaultsFile(fname);
     else
@@ -414,7 +412,6 @@ bool Parser(int argc, char **argv)
      * If "mapFileName" is defined and it is not equal to "wild"
      * then read it's contents from file.  Else read a default map.
      */
-    printf("parser: Read map data\n");
     if (!(fname = Option_get_value("mapData", NULL)))
     {
         if ((fname = Option_get_value("mapFileName", NULL)) != NULL)
@@ -436,26 +433,17 @@ bool Parser(int argc, char **argv)
         }
     }
 
-    warn("parser: Calling Options_parse");
     /*
      * Parse the options database and 'internalise' it.
      */
     Options_parse();
-
-    warn("parser: Calling Options_free");
 
     Options_free();
 
     /*
      * Construct the World structure from the options.
      */
-    warn("parser: Calling Grok map");
-
-    bool ok = Grok_map();
-
-    warn("parser: Calling Grok map returned %d", ok);
-
-    return ok;
+    return Grok_map();
 }
 
 /*

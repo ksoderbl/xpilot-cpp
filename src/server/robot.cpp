@@ -723,12 +723,12 @@ static void Robot_create(void)
     robot->power = MAX_PLAYER_POWER;
     robot->power_s = MAX_PLAYER_POWER;
     robot->check = 0;
-    if (BIT(world->rules->mode, TEAM_PLAY))
+    if (BIT(World.rules->mode, TEAM_PLAY))
     {
         robot->team = Pick_team(PL_TYPE_ROBOT);
         warn("Robot team: %d", robot->team);
-        world->teams[robot->team].NumMembers++;
-        world->teams[robot->team].NumRobots++;
+        World.teams[robot->team].NumMembers++;
+        World.teams[robot->team].NumRobots++;
     }
     if (robot->mychar != 'W')
         robot->mychar = 'R';
@@ -774,7 +774,7 @@ static void Robot_create(void)
         else
             roundtime = -1;
         Set_message_f("Player entered. Delaying 0 seconds until next %s.",
-                      (BIT(world->rules->mode, TIMING) ? "race" : "round"));
+                      (BIT(World.rules->mode, TIMING) ? "race" : "round"));
     }
 
     updateScores = true;
@@ -947,7 +947,7 @@ static bool Robot_check_leave(player_t *pl)
     if (!options.robotsLeave)
         return false;
 
-    if (pl->life > 0 && !BIT(world->rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
+    if (pl->life > 0 && !BIT(World.rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, PLAYING) || pl->count <= 0))
     {
         if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
         {
@@ -1017,7 +1017,7 @@ void Robot_update(bool tick)
     num_playing_ships = num_any_ships - NumPseudoPlayers;
     if ((num_playing_ships < options.maxRobots ||
          NumRobots < options.minRobots) &&
-        num_playing_ships < Num_bases() && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(world->rules->mode, TEAM_PLAY) && options.restrictRobots && world->teams[options.robotTeam].NumMembers >= world->teams[options.robotTeam].NumBases))
+        num_playing_ships < Num_bases() && num_any_ships < NUM_IDS && NumRobots < MAX_ROBOTS && !(BIT(World.rules->mode, TEAM_PLAY) && options.restrictRobots && World.teams[options.robotTeam].NumMembers >= World.teams[options.robotTeam].NumBases))
     {
 
         if (++new_robot_delay >= ROBOT_CREATE_DELAY)

@@ -85,7 +85,7 @@ static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
         return true;
 
     /* if there is no team play then we can always lock on anyone. */
-    if (!BIT(world->rules->mode, TEAM_PLAY))
+    if (!BIT(World.rules->mode, TEAM_PLAY))
         return true;
 
     /* we can always lock on players from our own team. */
@@ -201,19 +201,19 @@ static void Player_change_home(player_t *pl)
     int xi = OBJ_X_IN_BLOCKS(pl);
     int yi = OBJ_Y_IN_BLOCKS(pl);
 
-    if (world->block[xi][yi] == BASE)
+    if (World.block[xi][yi] == BASE)
     {
         msg[0] = '\0';
         for (i = 0; i < Num_bases(); i++)
         {
-            if (world->bases[i].blk_pos.bx == xi && world->bases[i].blk_pos.by == yi)
+            if (World.bases[i].blk_pos.bx == xi && World.bases[i].blk_pos.by == yi)
             {
 
                 if (i == pl->home_base_ind)
                 {
                     break;
                 }
-                if (world->bases[i].team != TEAM_NOT_SET && world->bases[i].team != pl->team)
+                if (World.bases[i].team != TEAM_NOT_SET && World.bases[i].team != pl->team)
                     break;
                 pl->home_base_ind = i;
                 sprintf(msg, "%s has changed home base.",
@@ -313,8 +313,8 @@ static void Player_toggle_pause(player_t *pl)
     {
         xi = OBJ_X_IN_BLOCKS(pl);
         yi = OBJ_Y_IN_BLOCKS(pl);
-        j = world->bases[pl->home_base_ind].blk_pos.bx;
-        k = world->bases[pl->home_base_ind].blk_pos.by;
+        j = World.bases[pl->home_base_ind].blk_pos.bx;
+        k = World.bases[pl->home_base_ind].blk_pos.by;
         if (j == xi && k == yi)
         {
             minv = 3.0f;
@@ -331,7 +331,7 @@ static void Player_toggle_pause(player_t *pl)
             minv = 5.0f;
             i = HOVERPAUSE;
         }
-        minv += VECTOR_LENGTH(world->gravity[xi][yi]);
+        minv += VECTOR_LENGTH(World.gravity[xi][yi]);
         if (pl->velocity > minv)
             return; // break;
     }
@@ -477,7 +477,7 @@ void Pause_player(player_t *pl, bool on)
 
             CLR_BIT(pl->obj_status, PAUSE);
             updateScores = true;
-            if (BIT(world->rules->mode, LIMITED_LIVES))
+            if (BIT(World.rules->mode, LIMITED_LIVES))
             {
                 for (i = 0; i < NumPlayers; i++)
                 {
@@ -487,7 +487,7 @@ void Pause_player(player_t *pl, bool on)
                      * then it's too late to join. */
                     if (pl_i->id == pl->id)
                         continue;
-                    if (pl_i->life < world->rules->lives && !Players_are_teammates(pl, pl_i))
+                    if (pl_i->life < World.rules->lives && !Players_are_teammates(pl, pl_i))
                     {
                         toolate = true;
                         break;
@@ -505,10 +505,10 @@ void Pause_player(player_t *pl, bool on)
                 pl->mychar = ' ';
                 Go_home(pl);
                 SET_BIT(pl->obj_status, PLAYING);
-                if (BIT(world->rules->mode, LIMITED_LIVES))
-                    pl->life = world->rules->lives;
+                if (BIT(World.rules->mode, LIMITED_LIVES))
+                    pl->life = World.rules->lives;
             }
-            if (BIT(world->rules->mode, TIMING))
+            if (BIT(World.rules->mode, TIMING))
                 Player_reset_timing(pl);
         }
     }

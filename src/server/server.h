@@ -58,7 +58,7 @@ extern shape_t ball_wire, wormhole_wire, filled_wire;
 
 static inline vector_t World_gravity(clpos_t pos)
 {
-    return world->gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
+    return World.gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
 }
 
 /*

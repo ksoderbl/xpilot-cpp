@@ -197,9 +197,9 @@ static inline bool click_inview(click_visibility_t &cv, int cx, int cy)
 #define DEBRIS_STORE(xd, yd, color, offset)                                                                             \
     int i;                                                                                                              \
     if (xd < 0)                                                                                                         \
-        xd += world->width;                                                                                             \
+        xd += World.width;                                                                                              \
     if (yd < 0)                                                                                                         \
-        yd += world->height;                                                                                            \
+        yd += World.height;                                                                                             \
     if ((unsigned)xd >= (unsigned)view_width || (unsigned)yd >= (unsigned)view_height)                                  \
     {                                                                                                                   \
         /*                                                                                                              \
@@ -296,11 +296,11 @@ static void fastshot_store(int cx, int cy, int color, int offset)
     int i;
     if (xf < 0)
     {
-        xf += world->width;
+        xf += World.width;
     }
     if (yf < 0)
     {
-        yf += world->height;
+        yf += World.height;
     }
     if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
     {
@@ -348,11 +348,11 @@ static void debris_store(int cx, int cy, int color)
     int offset = 0;
     if (xf < 0)
     {
-        xf += world->width;
+        xf += World.width;
     }
     if (yf < 0)
     {
-        yf += world->height;
+        yf += World.height;
     }
     if ((unsigned)xf >= (unsigned)view_width || (unsigned)yf >= (unsigned)view_height)
     {
@@ -416,7 +416,7 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
     shuffle_t *radar_shuffle;
     size_t shuffle_bufsize;
 
-    radar_height = (radar_width * world->height) / world->width;
+    radar_height = (radar_width * World.height) / World.width;
 
     if (num_radar > MIN(256, MAX_SHUFFLE_INDEX))
         num_radar = MIN(256, MAX_SHUFFLE_INDEX);
@@ -440,10 +440,10 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
         for (i = 0; i < num_radar; i++)
         {
             p = &radar_ptr[radar_shuffle[i]];
-            radar_x = (radar_width * p->x) / world->width;
-            radar_y = (radar_height * p->y) / world->height;
-            send_x = (world->width * radar_x) / radar_width;
-            send_y = (world->height * radar_y) / radar_height;
+            radar_x = (radar_width * p->x) / World.width;
+            radar_y = (radar_height * p->y) / World.height;
+            send_x = (World.width * radar_x) / radar_width;
+            send_y = (World.height * radar_y) / radar_height;
             Send_radar(conn, send_x, send_y, p->size);
         }
     }
@@ -459,8 +459,8 @@ static void Frame_radar_buffer_send(connection_t *conn, player_t *pl)
         for (i = 0; i < num_radar; i++)
         {
             p = &radar_ptr[radar_shuffle[i]];
-            radar_x = (radar_width * p->x) / world->width;
-            radar_y = (radar_height * p->y) / world->height;
+            radar_x = (radar_width * p->x) / World.width;
+            radar_y = (radar_height * p->y) / World.height;
             if (radar_y >= 1024)
                 continue;
             buf[buf_index++] = (uint8_t)(radar_x);
@@ -509,7 +509,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
         lock_id = pl->lock.pl_id;
         lock_ind = GetInd(lock_id);
 
-        if ((!BIT(world->rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
+        if ((!BIT(World.rules->mode, LIMITED_VISIBILITY) || pl->lock.distance <= pl->sensor_range)
 #ifndef SHOW_CLOAKERS_RANGE
             && (pl->visibility[lock_ind].canSee ||
                 Player_owns_tank(pl, lock_pl) ||
@@ -640,8 +640,8 @@ static void Frame_map(connection_t *conn, player_t *pl)
         fs = Fuel_by_index(i);
         if (BIT(fs->conn_mask, conn_bit) == 0)
         {
-            if (world->block[fs->blk_pos.bx]
-                            [fs->blk_pos.by] == FUEL)
+            if (World.block[fs->blk_pos.bx]
+                           [fs->blk_pos.by] == FUEL)
             {
                 if (click_inview(cv,
                                  fs->pos.cx,
@@ -665,7 +665,7 @@ static void Frame_map(connection_t *conn, player_t *pl)
         wormhole_t *worm;
         if (++i >= Num_wormholes())
             i = 0;
-        worm = &world->wormholes[i];
+        worm = &World.wormholes[i];
         if (options.wormholeVisible &&
             worm->temporary &&
             (worm->type == WORM_IN || worm->type == WORM_NORMAL) &&
@@ -857,7 +857,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) || (shot->id == NO_ID && BIT(world->rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) || (shot->id == NO_ID && BIT(World.rules->mode, TEAM_PLAY) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -973,16 +973,16 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             continue;
         cx = FLOAT_TO_CLICK(pulse->pix_pos.x);
         cy = FLOAT_TO_CLICK(pulse->pix_pos.y);
-        if (BIT(world->rules->mode, WRAP_PLAY))
+        if (BIT(World.rules->mode, WRAP_PLAY))
         {
             if (cx < 0)
-                cx += world->cwidth;
-            else if (cx >= world->cwidth)
-                cx -= world->cwidth;
+                cx += World.cwidth;
+            else if (cx >= World.cwidth)
+                cx -= World.cwidth;
             if (cy < 0)
-                cy += world->cheight;
-            else if (cy >= world->cheight)
-                cy -= world->cheight;
+                cy += World.cheight;
+            else if (cy >= World.cheight)
+                cy -= World.cheight;
         }
 
         double x = CLICK_TO_FLOAT(cx);
@@ -994,16 +994,16 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         {
             x += tcos(pulse->dir) * pulse->len;
             y += tsin(pulse->dir) * pulse->len;
-            if (BIT(world->rules->mode, WRAP_PLAY))
+            if (BIT(World.rules->mode, WRAP_PLAY))
             {
                 if (x < 0)
-                    x += world->width;
-                else if (x >= world->width)
-                    x -= world->width;
+                    x += World.width;
+                else if (x >= World.width)
+                    x -= World.width;
                 if (y < 0)
-                    y += world->height;
-                else if (y >= world->height)
-                    y -= world->height;
+                    y += World.height;
+                else if (y >= World.height)
+                    y -= World.height;
             }
             cx = FLOAT_TO_CLICK(x);
             cy = FLOAT_TO_CLICK(y);
@@ -1206,7 +1206,7 @@ static void Frame_radar(connection_t *conn, player_t *pl)
     }
 #endif
 
-    if (options.playersOnRadar || BIT(world->rules->mode, TEAM_PLAY) || NumPseudoPlayers > 0 || NumAlliances > 0)
+    if (options.playersOnRadar || BIT(World.rules->mode, TEAM_PLAY) || NumPseudoPlayers > 0 || NumAlliances > 0)
     {
         for (k = 0; k < num_player_shuffle; k++)
         {
@@ -1225,8 +1225,8 @@ static void Frame_radar(connection_t *conn, player_t *pl)
                 || (!Players_are_teammates(pl_i, pl) && !Players_are_allies(pl, pl_i) && !Player_owns_tank(pl, pl_i) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
             pos = pl_i->pos;
-            if (BIT(world->rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - pos.cx,
-                                                                           pl->pos.cy - pos.cy) > pl->sensor_range * CLICK)
+            if (BIT(World.rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - pos.cx,
+                                                                          pl->pos.cy - pos.cy) > pl->sensor_range * CLICK)
                 continue;
             if (Player_uses_compass(pl) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd(pl->lock.pl_id) == i && frame_loops_slow % 5 >= 3)
                 continue;
@@ -1266,16 +1266,16 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
     cv.unrealWorld.cx = pl->pos.cx - view_cwidth / 2; /* Scroll */
     cv.unrealWorld.cy = pl->pos.cy - view_cheight / 2;
     cv.realWorld = cv.unrealWorld;
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
     {
-        if (cv.unrealWorld.cx < 0 && cv.unrealWorld.cx + view_cwidth < world->cwidth)
-            cv.unrealWorld.cx += world->cwidth;
-        else if (cv.unrealWorld.cx > 0 && cv.unrealWorld.cx + view_cwidth >= world->cwidth)
-            cv.realWorld.cx -= world->cwidth;
-        if (cv.unrealWorld.cy < 0 && cv.unrealWorld.cy + view_cheight < world->cheight)
-            cv.unrealWorld.cy += world->cheight;
-        else if (cv.unrealWorld.cy > 0 && cv.unrealWorld.cy + view_cheight >= world->cheight)
-            cv.realWorld.cy -= world->cheight;
+        if (cv.unrealWorld.cx < 0 && cv.unrealWorld.cx + view_cwidth < World.cwidth)
+            cv.unrealWorld.cx += World.cwidth;
+        else if (cv.unrealWorld.cx > 0 && cv.unrealWorld.cx + view_cwidth >= World.cwidth)
+            cv.realWorld.cx -= World.cwidth;
+        if (cv.unrealWorld.cy < 0 && cv.unrealWorld.cy + view_cheight < World.cheight)
+            cv.unrealWorld.cy += World.cheight;
+        else if (cv.unrealWorld.cy > 0 && cv.unrealWorld.cy + view_cheight >= World.cheight)
+            cv.realWorld.cy -= World.cheight;
     }
 }
 
@@ -1368,7 +1368,7 @@ void Frame_update(void)
         {
             if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
                 (Player_is_paused(pl) &&
-                 ((BIT(world->rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
+                 ((BIT(World.rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
                   pl->isowner ||
                   options.allowViewing)))
                 ind = GetInd(pl->lock.pl_id);

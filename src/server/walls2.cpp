@@ -1711,8 +1711,8 @@ int Polys_to_client(uint8_t **start)
     STORE1(Num_checks());
     for (i = 0; i < Num_checks(); i++)
     {
-        STORE2(world->checks[i].pos.cx >> CLICK_SHIFT);
-        STORE2(world->checks[i].pos.cy >> CLICK_SHIFT);
+        STORE2(World.checks[i].pos.cx >> CLICK_SHIFT);
+        STORE2(World.checks[i].pos.cy >> CLICK_SHIFT);
     }
     return offset;
 }
@@ -2059,8 +2059,8 @@ static void allocate_inside(void)
 static double edge_distance(int bx, int by, int ox, int oy, int dx, int dy,
                             int *dir)
 {
-    int last_width = (world->cwidth - 1) % B_CLICKS + 1;
-    int last_height = (world->cheight - 1) % B_CLICKS + 1;
+    int last_width = (World.cwidth - 1) % B_CLICKS + 1;
+    int last_height = (World.cheight - 1) % B_CLICKS + 1;
     double xdist, ydist, dist;
 
     ox = CENTER_XCLICK(ox - bx * B_CLICKS);
@@ -2592,8 +2592,8 @@ void Walls_init2(void)
     double x, y, l2;
     int i;
 
-    mapx = (world->cwidth + B_MASK) >> B_SHIFT;
-    mapy = (world->cheight + B_MASK) >> B_SHIFT;
+    mapx = (World.cwidth + B_MASK) >> B_SHIFT;
+    mapy = (World.cheight + B_MASK) >> B_SHIFT;
 
     /* Break polygons down to a list of separate lines. */
     Poly_to_lines();

@@ -1972,7 +1972,7 @@ static option_desc opts[] = {
     {"asteroidProb",
      "asteroidProb",
      "5e-7",
-     &world->asteroids.prob,
+     &World.asteroids.prob,
      valReal,
      Tune_asteroid_prob,
      "Probability for an asteroid to appear.\n",

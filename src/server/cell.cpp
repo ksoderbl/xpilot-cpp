@@ -106,19 +106,19 @@ static void Init_cell_dist(void)
 
     Free_cell_dist();
 
-    if (BIT(world->rules->mode, WRAP_PLAY))
+    if (BIT(World.rules->mode, WRAP_PLAY))
     {
-        cell_max_right = MIN(MAX_CELL_DIST, (world->x / 2));
-        cell_max_left = MIN(MAX_CELL_DIST, ((world->x - 1) / 2));
-        cell_max_up = MIN(MAX_CELL_DIST, (world->y / 2));
-        cell_max_down = MIN(MAX_CELL_DIST, ((world->y - 1) / 2));
+        cell_max_right = MIN(MAX_CELL_DIST, (World.x / 2));
+        cell_max_left = MIN(MAX_CELL_DIST, ((World.x - 1) / 2));
+        cell_max_up = MIN(MAX_CELL_DIST, (World.y / 2));
+        cell_max_down = MIN(MAX_CELL_DIST, ((World.y - 1) / 2));
     }
     else
     {
-        cell_max_right = MIN(MAX_CELL_DIST, (world->x - 1));
-        cell_max_left = MIN(MAX_CELL_DIST, (world->x - 1));
-        cell_max_up = MIN(MAX_CELL_DIST, (world->y - 1));
-        cell_max_down = MIN(MAX_CELL_DIST, (world->y - 1));
+        cell_max_right = MIN(MAX_CELL_DIST, (World.x - 1));
+        cell_max_left = MIN(MAX_CELL_DIST, (World.x - 1));
+        cell_max_up = MIN(MAX_CELL_DIST, (World.y - 1));
+        cell_max_down = MIN(MAX_CELL_DIST, (World.y - 1));
     }
     cell_dist_width = cell_max_left + 1 + cell_max_right;
     cell_dist_height = cell_max_down + 1 + cell_max_up;
@@ -161,18 +161,18 @@ void Alloc_cells(void)
 
     Free_cells();
 
-    size = sizeof(cell_node_t *) * world->x;
-    size += sizeof(cell_node_t) * world->x * world->y;
+    size = sizeof(cell_node_t *) * World.x;
+    size += sizeof(cell_node_t) * World.x * World.y;
     if (!(Cells = (cell_node_t **)malloc(size)))
     {
         error("No Cell mem");
         End_game();
     }
-    cell_ptr = (cell_node_t *)&Cells[world->x];
-    for (x = 0; x < world->x; x++)
+    cell_ptr = (cell_node_t *)&Cells[World.x];
+    for (x = 0; x < World.x; x++)
     {
         Cells[x] = cell_ptr;
-        for (y = 0; y < world->y; y++)
+        for (y = 0; y < World.y; y++)
         {
             /* init list to point to itself. */
             cell_ptr->next = cell_ptr;
@@ -264,7 +264,7 @@ void Cell_get_objects(clpos_t pos,
     x = bpos.bx;
     y = bpos.by;
 
-    wrap = (BIT(world->rules->mode, WRAP_PLAY) != 0);
+    wrap = (BIT(World.rules->mode, WRAP_PLAY) != 0);
     dist = (double)(range * SQRT2);
     count = 0;
     for (i = 0; i < (int)cell_dist_size && count < max_obj_count; i++)
@@ -278,28 +278,28 @@ void Cell_get_objects(clpos_t pos,
             if (xw < 0)
             {
                 if (wrap)
-                    xw += world->x;
+                    xw += World.x;
                 else
                     continue;
             }
-            else if (xw >= world->x)
+            else if (xw >= World.x)
             {
                 if (wrap)
-                    xw -= world->x;
+                    xw -= World.x;
                 else
                     continue;
             }
             if (yw < 0)
             {
                 if (wrap)
-                    yw += world->y;
+                    yw += World.y;
                 else
                     continue;
             }
-            else if (yw >= world->y)
+            else if (yw >= World.y)
             {
                 if (wrap)
-                    yw -= world->y;
+                    yw -= World.y;
                 else
                     continue;
             }

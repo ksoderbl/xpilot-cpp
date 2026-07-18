@@ -37,7 +37,49 @@ void Wormhole_line_init(void)
 
 bool Verify_wormhole_consistency(void)
 {
-    return false;
+
+    int i, worm_in = 0, worm_out = 0, worm_norm = 0;
+
+    /* count wormhole types */
+    for (i = 0; i < Num_wormholes(); i++)
+    {
+        int type = Wormhole_by_index(i)->type;
+
+        if (type == WORM_NORMAL)
+            worm_norm++;
+        else if (type == WORM_IN)
+            worm_in++;
+        else if (type == WORM_OUT)
+            worm_out++;
+    }
+
+    /*
+     * Verify that the wormholes are consistent, i.e. that if
+     * we have no 'out' wormholes, make sure that we don't have
+     * any 'in' wormholes, and (less critical) if we have no 'in'
+     * wormholes, make sure that we don't have any 'out' wormholes.
+     */
+    if ((worm_norm) ? (worm_norm + worm_out < 2)
+        : (worm_in) ? (worm_out < 1)
+                    : (worm_out > 0))
+    {
+
+        int i;
+
+        printf("Inconsistent use of wormholes, removing them.\n");
+        for (i = 0; i < World.NumWormholes; i++)
+        {
+            World.block
+                [World.wormholes[i].blk_pos.bx]
+                [World.wormholes[i].blk_pos.by] = SPACE;
+            World.itemID
+                [World.wormholes[i].blk_pos.bx]
+                [World.wormholes[i].blk_pos.by] = (uint16_t)-1;
+        }
+        World.NumWormholes = 0;
+    }
+
+    return true;
 }
 
 /*
@@ -136,47 +178,47 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
 {
     wormhole_t inhole, outhole, *wwhtemp;
 
-    if ((wwhtemp = (wormhole_t *)realloc(world->wormholes,
-                                         (world->NumWormholes + 2) * sizeof(wormhole_t))) == NULL)
+    if ((wwhtemp = (wormhole_t *)realloc(World.wormholes,
+                                         (World.NumWormholes + 2) * sizeof(wormhole_t))) == NULL)
     {
         error("No memory for temporary wormholes.");
         return;
     }
-    world->wormholes = wwhtemp;
+    World.wormholes = wwhtemp;
 
     inhole.blk_pos.bx = xin;
     inhole.blk_pos.by = yin;
     outhole.blk_pos.bx = xout;
     outhole.blk_pos.by = yout;
     inhole.countdown = outhole.countdown = options.wormTime;
-    inhole.lastdest = world->NumWormholes + 1;
+    inhole.lastdest = World.NumWormholes + 1;
     inhole.temporary = outhole.temporary = 1;
     inhole.type = WORM_IN;
     outhole.type = WORM_OUT;
-    inhole.lastblock = world->block[xin][yin];
-    outhole.lastblock = world->block[xout][yout];
-    inhole.lastID = world->itemID[xin][yin];
-    outhole.lastID = world->itemID[xout][yout];
-    world->wormholes[world->NumWormholes] = inhole;
-    world->wormholes[world->NumWormholes + 1] = outhole;
-    world->block[xin][yin] = world->block[xout][yout] = WORMHOLE;
-    world->itemID[xin][yin] = world->NumWormholes;
-    world->itemID[xout][yout] = world->NumWormholes + 1;
-    world->NumWormholes += 2;
+    inhole.lastblock = World.block[xin][yin];
+    outhole.lastblock = World.block[xout][yout];
+    inhole.lastID = World.itemID[xin][yin];
+    outhole.lastID = World.itemID[xout][yout];
+    World.wormholes[World.NumWormholes] = inhole;
+    World.wormholes[World.NumWormholes + 1] = outhole;
+    World.block[xin][yin] = World.block[xout][yout] = WORMHOLE;
+    World.itemID[xin][yin] = World.NumWormholes;
+    World.itemID[xout][yout] = World.NumWormholes + 1;
+    World.NumWormholes += 2;
 }
 
 void remove_temp_wormhole(int ind)
 {
     wormhole_t hole;
 
-    hole = world->wormholes[ind];
-    world->block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
-    world->itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
-    world->NumWormholes--;
-    if (ind != world->NumWormholes)
+    hole = World.wormholes[ind];
+    World.block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
+    World.itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
+    World.NumWormholes--;
+    if (ind != World.NumWormholes)
     {
-        world->wormholes[ind] = world->wormholes[world->NumWormholes];
+        World.wormholes[ind] = World.wormholes[World.NumWormholes];
     }
-    world->wormholes = (wormhole_t *)realloc(world->wormholes,
-                                             world->NumWormholes * sizeof(wormhole_t));
+    World.wormholes = (wormhole_t *)realloc(World.wormholes,
+                                            World.NumWormholes * sizeof(wormhole_t));
 }
