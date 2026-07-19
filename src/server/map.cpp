@@ -823,16 +823,6 @@ bool Grok_map(void)
         x = -1;
         y = World.y - 1;
 
-        Set_world_rules();
-        Set_world_items();
-        Set_world_asteroids();
-
-        if (BIT(World.rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
-        {
-            warn("Cannot teamplay while in race mode -- ignoring teamplay");
-            CLR_BIT(World.rules->mode, TEAM_PLAY);
-        }
-
         printf("grok map: reading mapdata\n");
 
         Xpmap_grok_map_data();
@@ -841,61 +831,42 @@ bool Grok_map(void)
 
         Xpmap_tags_to_internal_data();
 
-        /* kps - what are these doing here ? */
-        if (options.maxRobots == -1)
-            options.maxRobots = Num_bases();
-
-        if (options.minRobots == -1)
-            options.minRobots = options.maxRobots;
-
         if (BIT(World.rules->mode, TIMING))
             Find_base_order();
 
-        printf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
-               World.name, Num_bases(), World.x, World.y,
-               BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
-
         D(Print_map());
     }
-    else
+
+    if (!Verify_wormhole_consistency())
+        return false;
+
+    if (BIT(World.rules->mode, TIMING) && Num_checks() == 0)
     {
-        warn("Grok_map_options");
-        if (!Grok_map_options())
-            return false;
-
-        warn("Verify_wormhole_consistency");
-
-        if (!Verify_wormhole_consistency())
-            return false;
-
-        if (BIT(World.rules->mode, TIMING) && Num_checks() == 0)
-        {
-            warn("No checkpoints found while race mode (timing) was set.");
-            warn("Turning off race mode.");
-            CLR_BIT(World.rules->mode, TIMING);
-        }
-
-        /* kps - what are these doing here ? */
-        if (options.maxRobots == -1)
-            options.maxRobots = Num_bases();
-
-        if (options.minRobots == -1)
-            options.minRobots = options.maxRobots;
-
-        if (Num_bases() <= 0)
-            fatal("Map has no bases!");
-
-        printf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
-               "Team play: %s\n",
-               World.name, Num_bases(), World.width, World.height,
-               BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
-
-        // if (!is_polygon_map)
-        //     Xpmap_blocks_to_polygons();
-
-        Compute_gravity();
-        Find_base_direction();
+        warn("No checkpoints found while race mode (timing) was set.");
+        warn("Turning off race mode.");
+        CLR_BIT(World.rules->mode, TIMING);
     }
+
+    /* kps - what are these doing here ? */
+    if (options.maxRobots == -1)
+        options.maxRobots = Num_bases();
+
+    if (options.minRobots == -1)
+        options.minRobots = options.maxRobots;
+
+    if (Num_bases() <= 0)
+        fatal("Map has no bases!");
+
+    printf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
+           "Team play: %s\n",
+           World.name, Num_bases(), World.width, World.height,
+           BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
+
+    if (!is_polygon_map)
+        Xpmap_blocks_to_polygons();
+
+    Compute_gravity();
+    Find_base_direction();
 
     // Print out amount of map objects.
     printf("===========\n");
@@ -911,8 +882,6 @@ bool Grok_map(void)
     printf("Transporters..........: %d\n", Num_transporters());
     printf("Treasures.............: %d\n", Num_treasures());
     printf("Wormholes.............: %d\n", Num_wormholes());
-
-    printf("grok map: returning true\n");
 
     return true;
 }
