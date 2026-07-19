@@ -22,15 +22,15 @@
  */
 /*
  * The scaling and gamma correction subroutines are adaptations from pbmplus:
- **
- ** Copyright (C) 1989, 1991 by Jef Poskanzer.
- **
- ** Permission to use, copy, modify, and distribute this software and its
- ** documentation for any purpose and without fee is hereby granted, provided
- ** that the above copyright notice appear in all copies and that both that
- ** copyright notice and this permission notice appear in supporting
- ** documentation.  This software is provided "as is" without express or
- ** implied warranty.
+ *
+ * Copyright (C) 1989, 1991 by Jef Poskanzer.
+ *
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation for any purpose and without fee is hereby granted, provided
+ * that the above copyright notice appear in all copies and that both that
+ * copyright notice and this permission notice appear in supporting
+ * documentation.  This software is provided "as is" without express or
+ * implied warranty.
  */
 
 #include <unistd.h>
@@ -50,6 +50,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include "commonmacros.h"
 #include "recordfile.h"
 #include "recordfmt.h"
 #include "item.h"
@@ -89,8 +90,8 @@
 
 struct rGC
 {
-    struct rGC *next; /* linked list */
-    long mask;        /* XGCValues mask */
+    struct rGC *next;   /* linked list */
+    unsigned long mask; /* XGCValues mask */
     unsigned long foreground;
     unsigned long background;
     uint8_t line_width;
@@ -135,7 +136,7 @@ struct rString
     short x;
     short y;
     uint8_t font;
-    short length;
+    size_t length;
     char *string;
 };
 
@@ -289,6 +290,7 @@ struct xprc
     double gamma;             /* gamma correction when saving */
     struct errorwin *ewin;    /* Error display window */
     tile_list_t *tlist;       /* list of pixmaps */
+    int linewidth;            /* linewidth */
 };
 
 enum LabelDataTypes
@@ -356,9 +358,9 @@ static void saveStartToEndXPR(void *);
 static struct button_init
 {
     uint8_t *data;
-    char colour;
-    int width;
-    int height;
+    char color;
+    unsigned width;
+    unsigned height;
     void (*callback)(void *);
     int flags;
     int group;
@@ -420,6 +422,7 @@ struct xui
 static char small_font[] = "-*-helvetica-medium-r-*--14-*-*-*-*-*-iso8859-1";
 static char small_bold_font[] =
     "-*-helvetica-bold-r-*--14-*-*-*-*-*-iso8859-1";
+static char alternative_font[] = "fixed";
 
 static int Argc;
 static char **Argv;
@@ -454,19 +457,17 @@ static void openErrorWindow(struct errorwin *, const char *, ...);
 static void MemPrint(void)
 {
     if (!debug)
-    {
         return;
-    }
     printf("after %d frames (%d in core):\n", frame_count, frames_in_core);
-    printf("        string:          %10ld\n", mem_typed_used[MEM_STRING]);
-    printf("        frame:           %10ld\n", mem_typed_used[MEM_FRAME]);
-    printf("        shape:           %10ld\n", mem_typed_used[MEM_SHAPE]);
-    printf("        point:           %10ld\n", mem_typed_used[MEM_POINT]);
-    printf("        gc:              %10ld\n", mem_typed_used[MEM_GC]);
-    printf("        misc:            %10ld\n", mem_typed_used[MEM_MISC]);
-    printf("        user-interface:  %10ld\n", mem_typed_used[MEM_UI]);
-    printf("        all types:       %10ld\n", mem_all_types_used);
-    printf("        total program:   %10ld\n", mem_program_used);
+    printf("    string:          %10ld\n", mem_typed_used[MEM_STRING]);
+    printf("    frame:           %10ld\n", mem_typed_used[MEM_FRAME]);
+    printf("    shape:           %10ld\n", mem_typed_used[MEM_SHAPE]);
+    printf("    point:           %10ld\n", mem_typed_used[MEM_POINT]);
+    printf("    gc:              %10ld\n", mem_typed_used[MEM_GC]);
+    printf("    misc:            %10ld\n", mem_typed_used[MEM_MISC]);
+    printf("    user-interface:  %10ld\n", mem_typed_used[MEM_UI]);
+    printf("    all types:       %10ld\n", mem_all_types_used);
+    printf("    total program:   %10ld\n", mem_program_used);
 }
 
 /*
@@ -481,20 +482,14 @@ static void MemStats(char *p, size_t size, enum MemTypes mt)
     long prev_mem_program_used = mem_program_used;
 
     if (!mem_lowest || p < mem_lowest)
-    {
         mem_lowest = p;
-    }
     if (!mem_highest || p + size > mem_highest)
-    {
         mem_highest = p + size;
-    }
     mem_typed_used[mt] += size;
     mem_all_types_used += size;
     mem_program_used = mem_highest - mem_lowest;
     if (mem_program_used >> 20 != prev_mem_program_used >> 20)
-    {
         MemPrint();
-    }
 }
 
 /*
@@ -535,9 +530,8 @@ void *MyMalloc(size_t size, enum MemTypes mt)
         }
         max_mem = mem_typed_used[MEM_FRAME] / 2;
         if (purge_argument != NULL)
-        {
             Purge(purge_argument);
-        }
+
         if (!(p = malloc(size)))
         {
             fprintf(stderr, "Not enough memory after allocating %ld bytes.\n",
@@ -548,20 +542,6 @@ void *MyMalloc(size_t size, enum MemTypes mt)
     MemStats((char *)p, size, mt);
     return p;
 }
-
-#if 0
-/*
- * Wrapper for strdup(3).
- * This one uses MyMalloc() instead of malloc()
- */
-static char *MyStrDup(const char *str)
-{
-    size_t size = strlen(str) + 1;
-    char *dup = (char *) MyMalloc(size, MEM_STRING);
-    memcpy(dup, str, size);
-    return dup;
-}
-#endif
 
 /*
  * Read one 8-bit byte from the recorded input stream.
@@ -637,15 +617,13 @@ static char *RReadString(FILE *fp)
 {
     char *s;
     int i;
-    int len;
+    size_t len;
 
     len = RReadUShort(fp);
     s = (char *)MyMalloc(len + 1, MEM_STRING);
     s[len] = '\0';
-    for (i = 0; i < len; i++)
-    {
+    for (i = 0; i < (int)len; i++)
         s[i] = getc(fp);
-    }
     return s;
 }
 
@@ -655,10 +633,8 @@ static char *RReadString(FILE *fp)
 static int RReadHeader(struct xprc *rc)
 {
     char magic[5];
-    uint8_t minor;
-    uint8_t major;
-    char dot;
-    char nl;
+    uint8_t minor, major, fps;
+    char dot, nl;
     int i;
 
     magic[0] = getc(rc->fp);
@@ -693,7 +669,9 @@ static int RReadHeader(struct xprc *rc)
     rc->realname = RReadString(rc->fp);
     rc->hostname = RReadString(rc->fp);
     rc->servername = RReadString(rc->fp);
-    rc->fps = RReadByte(rc->fp);
+    fps = RReadByte(rc->fp);
+    if (rc->fps == 0)
+        rc->fps = fps;
     rc->recorddate = RReadString(rc->fp);
     rc->maxColors = (uint8_t)getc(rc->fp);
     rc->colors = (XColor *)MyMalloc(rc->maxColors * sizeof(XColor), MEM_MISC);
@@ -729,7 +707,7 @@ static Pixmap RReadTile(struct xprc *rc)
 {
     tile_list_t *lptr;
     unsigned width, height;
-    unsigned x, y;
+    int x, y;
     unsigned depth;
     XImage *img;
     uint8_t ch;
@@ -741,15 +719,11 @@ static Pixmap RReadTile(struct xprc *rc)
     if (ch == RC_TILE)
     {
         if (tile_id == 0)
-        {
             return None;
-        }
         for (lptr = rc->tlist; lptr != NULL; lptr = lptr->next)
         {
             if (lptr->tile_id == tile_id)
-            {
                 return lptr->tile;
-            }
         }
         return None;
     }
@@ -792,7 +766,7 @@ static Pixmap RReadTile(struct xprc *rc)
     XPutImage(dpy, tile, rc->gc, img, 0, 0, 0, 0, width, height);
     XDestroyImage(img);
 
-    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
+    if (!(lptr = XMALLOC(tile_list_t, 1)))
     {
         perror("memory");
         exit(1);
@@ -817,9 +791,8 @@ static struct rGC *RReadGCValues(struct xprc *rc)
     memset(&gc, 0, sizeof(gc));
 
     if (c == RC_NOGC)
-    {
         gc.mask = 0;
-    }
+
     else if (c != RC_GC)
     {
         openErrorWindow(rc->ewin, "GC expected on position %ld, not %d",
@@ -848,6 +821,8 @@ static struct rGC *RReadGCValues(struct xprc *rc)
         {
             gc.mask |= GCLineWidth;
             gc.line_width = RReadByte(rc->fp);
+            if (rc->linewidth)
+                gc.line_width = rc->linewidth;
         }
         if (input_mask & RC_GC_LS)
         {
@@ -869,16 +844,12 @@ static struct rGC *RReadGCValues(struct xprc *rc)
             int i;
             gc.num_dashes = RReadByte(rc->fp);
             if (gc.num_dashes == 0)
-            {
                 gc.dash_list = NULL;
-            }
             else
             {
                 gc.dash_list = (char *)MyMalloc(gc.num_dashes, MEM_GC);
                 for (i = 0; i < gc.num_dashes; i++)
-                {
                     gc.dash_list[i] = RReadByte(rc->fp);
-                }
             }
         }
         if (input_mask & RC_GC_B2)
@@ -906,6 +877,11 @@ static struct rGC *RReadGCValues(struct xprc *rc)
         }
     }
 
+    /*
+     * kps - This linked list of GCs is very inefficient for some
+     * big recordings.
+     */
+#ifdef USE_GCLIST
     for (gcp = gclist; gcp != NULL; gcp = gcp->next)
     {
         if (gcp->mask != gc.mask)
@@ -940,10 +916,13 @@ static struct rGC *RReadGCValues(struct xprc *rc)
         }
         return gcp;
     }
+#endif
     gcp = (struct rGC *)MyMalloc(sizeof(*gcp), MEM_GC);
     memcpy(gcp, &gc, sizeof(*gcp));
+#ifdef USE_GCLIST
     gcp->next = gclist;
     gclist = gcp;
+#endif
 
     return gcp;
 }
@@ -951,21 +930,17 @@ static struct rGC *RReadGCValues(struct xprc *rc)
 static void RemoveFrameFromLRU(struct xprc *rc, struct frame *f)
 {
     if (f->older != NULL)
-    {
         f->older->newer = f->newer;
-    }
+
     if (rc->newest == f)
-    {
         rc->newest = f->older;
-    }
+
     if (f->newer != NULL)
-    {
         f->newer->older = f->older;
-    }
+
     if (rc->oldest == f)
-    {
         rc->oldest = f->newer;
-    }
+
     f->newer = NULL;
     f->older = NULL;
 }
@@ -974,14 +949,12 @@ static void AddFrameToLRU(struct xprc *rc, struct frame *f)
 {
     f->newer = NULL;
     f->older = rc->newest;
+
     if (rc->newest)
-    {
         rc->newest->newer = f;
-    }
     else
-    {
         rc->oldest = f;
-    }
+
     rc->newest = f;
 }
 
@@ -1003,7 +976,6 @@ static void FreeShapes(struct shape *shp)
 
     while (shp)
     {
-
         nextshp = shp->next;
         shp->next = NULL;
 
@@ -1045,9 +1017,15 @@ static void FreeShapes(struct shape *shp)
                    shp->shape.segments.nsegments * sizeof(XSegment),
                    MEM_POINT);
             break;
+
+        default:
+            break;
         }
 
         shp->type = 0;
+#ifndef USE_GCLIST
+        MyFree(shp->gc, sizeof(struct rGC), MEM_GC);
+#endif
         MyFree(shp, sizeof(struct shape), MEM_SHAPE);
         shp = nextshp;
     }
@@ -1059,9 +1037,8 @@ static void FreeShapes(struct shape *shp)
 static void FreeFrameData(struct frame *f)
 {
     if (!f)
-    {
         return;
-    }
+
     FreeShapes(f->shapes);
     f->shapes = NULL;
 
@@ -1074,30 +1051,24 @@ static void FreeFrameData(struct frame *f)
 static void FreeFrame(struct xprc *rc, struct frame *f)
 {
     if (!f)
-    {
         return;
-    }
+
     FreeFrameData(f);
     if (f->next)
-    {
         f->next->prev = f->prev;
-    }
+
     if (f->prev)
-    {
         f->prev->next = f->next;
-    }
+
     if (f == rc->head)
-    {
         rc->head = f->next;
-    }
+
     if (f == rc->tail)
-    {
         rc->tail = f->prev;
-    }
+
     if (f == rc->cur)
-    {
         rc->cur = (f->next != NULL) ? f->next : f->prev;
-    }
+
     f->next = NULL;
     f->prev = NULL;
     RemoveFrameFromLRU(rc, f);
@@ -1110,9 +1081,7 @@ static void FreeFrame(struct xprc *rc, struct frame *f)
 static void FreeXPRCData(struct xprc *rc)
 {
     while (rc->head)
-    {
         FreeFrame(rc, rc->head);
-    }
 }
 
 /*
@@ -1137,10 +1106,9 @@ static void Purge(struct xprc *rc)
         goal = (3 * max_mem) / 4;
     }
     if (!(keep_frame = rc->newest) || !(keep_frame = keep_frame->older))
-    {
         /* should at least keep two frames. */
         return;
-    }
+
     while (mem_all_types_used > goal && rc->oldest != keep_frame && max_purge > 0)
     {
         f = rc->oldest;
@@ -1209,8 +1177,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
         case RC_DRAWARCS:
         case RC_DRAWSEGMENTS:
         case RC_DAMAGED:
-            newshp = (struct shape *)MyMalloc(sizeof(struct shape),
-                                              MEM_SHAPE);
+            newshp = (struct shape *)MyMalloc(sizeof(struct shape), MEM_SHAPE);
             newshp->next = NULL;
             newshp->type = 0;
             if ((newshp->gc = RReadGCValues(rc)) == NULL)
@@ -1277,7 +1244,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
                 shp->shape.string.y = RReadShort(rc->fp);
                 shp->shape.string.font = RReadByte(rc->fp);
                 shp->shape.string.length = c = RReadUShort(rc->fp);
-                shp->shape.string.string = cp = (char *)MyMalloc(c, MEM_STRING);
+                shp->shape.string.string = cp = (char *)MyMalloc((size_t)c, MEM_STRING);
                 while (c--)
                     *cp++ = getc(rc->fp);
                 break;
@@ -1376,9 +1343,7 @@ static int readFrameData(struct xprc *rc, struct frame *f)
     AddFrameToLRU(rc, f);
 
     if (mem_all_types_used >= max_mem)
-    {
         Purge(rc);
-    }
 
     return 0;
 }
@@ -1389,9 +1354,8 @@ static int readNewFrame(struct xprc *rc)
     struct frame *f = NULL;
 
     if (rc->eof)
-    {
         return -1;
-    }
+
     if ((c = getc(rc->fp)) == EOF)
     {
         rc->eof = True;
@@ -1481,8 +1445,14 @@ static XFontStruct *loadQueryFont(const char *fontName, GC gc)
 
     if ((font = XLoadQueryFont(dpy, fontName)) == NULL)
     {
-        fprintf(stderr, "Can't load font \"%s\".\n", fontName);
-        font = XQueryFont(dpy, XGContextFromGC(gc));
+        fprintf(stderr, "Can't load font \"%s\", using \"%s\" instead.\n",
+                fontName, alternative_font);
+        if ((font = XLoadQueryFont(dpy, alternative_font)) == NULL)
+        {
+            fprintf(stderr, "Can't load alternative font \"%s\".\n",
+                    alternative_font);
+            font = XQueryFont(dpy, XGContextFromGC(gc));
+        }
     }
     return font;
 }
@@ -1539,18 +1509,12 @@ static void allocViewColors(struct xprc *rc)
                                 : WhitePixel(dpy, screen_num);
         }
         else if (i > 0 && myColor.pixel == BlackPixel(dpy, screen_num) && colormap == DefaultColormap(dpy, screen_num))
-        {
             rc->pixels[i] = WhitePixel(dpy, screen_num);
-        }
         else
-        {
             rc->pixels[i] = myColor.pixel;
-        }
     }
     for (i = 0; i < rc->maxColors; i++)
-    {
         rc->pixels[i + rc->maxColors] = rc->pixels[BLACK] ^ rc->pixels[i];
-    }
 }
 
 static unsigned long allocColor(const char *name)
@@ -1638,7 +1602,7 @@ static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
             XDrawString(dpy, drawable, rc->gc,
                         sp->shape.string.x, sp->shape.string.y,
                         sp->shape.string.string,
-                        sp->shape.string.length);
+                        (int)sp->shape.string.length);
             break;
 
         case RC_FILLARC:
@@ -1694,11 +1658,11 @@ static void drawShapes(struct frame *f, XID drawable, struct xprc *rc)
 
         case RC_DAMAGED:
             if (sp->shape.damage.damaged)
-            {
                 XFillRectangle(dpy, drawable, rc->gc,
-                               0, 0,
-                               f->width, f->height);
-            }
+                               0, 0, f->width, f->height);
+            break;
+
+        default:
             break;
         }
     }
@@ -1708,14 +1672,14 @@ static void OverWriteMsg(struct xprc *rc, const char *msg)
 {
     XFontStruct *font = rc->gameFont;
     int len = strlen(msg);
-    int text_w = XTextWidth(font, msg, len);
-    int text_h = font->ascent + font->descent;
+    unsigned int text_w = XTextWidth(font, msg, len);
+    unsigned int text_h = font->ascent + font->descent;
     int text_x = (rc->cur->width - text_w) / 2;
     int text_y = (rc->cur->height - text_h) / 2;
-    int area_w = (text_w < rc->cur->width / 2)
-                     ? (rc->cur->width / 2)
-                     : text_w;
-    int area_h = rc->cur->height / 4;
+    unsigned int area_w = (text_w < rc->cur->width / 2)
+                              ? (rc->cur->width / 2)
+                              : text_w;
+    unsigned int area_h = rc->cur->height / 4;
     int area_x = (rc->cur->width - area_w) / 2;
     int area_y = (rc->cur->height - area_h) / 2;
 
@@ -1740,20 +1704,16 @@ static void redrawWindow(struct xprc *rc)
     XWindowAttributes attrib;
 
     if (!rc->cur->shapes)
-    {
         readFrameData(rc, rc->cur);
-    }
     else if (rc->seekable)
-    {
         TouchFrame(rc, rc->cur);
-    }
 
     forceRedraw = False;
 
     XGetWindowAttributes(dpy, rc->topview, &attrib);
 
-    if (attrib.width != rc->cur->width ||
-        attrib.height != rc->cur->height)
+    if (attrib.width != (int)rc->cur->width ||
+        attrib.height != (int)rc->cur->height)
     {
         XWindowChanges values;
 
@@ -2293,9 +2253,7 @@ static void redrawMain(struct xui *ui, struct xprc *rc)
     int i;
 
     for (i = 0; i < NUM_LABELS; i++)
-    {
         redrawLabel(ui, rc, &(ui->labels[i]));
-    }
 }
 
 static void redrawError(struct errorwin *ewin)
@@ -2321,13 +2279,13 @@ static void redrawError(struct errorwin *ewin)
     }
 }
 
-static void BuildGamma(uint8_t tbl[256], double gamma)
+static void BuildGamma(uint8_t tbl[256], double gamma_val)
 {
     int i, v;
     double one_over_gamma, ind;
-    /* extern double        pow(double, double); */
+    /* extern double    pow(double, double); */
 
-    one_over_gamma = 1.0 / gamma;
+    one_over_gamma = 1.0 / gamma_val;
     for (i = 0; i <= 255; i++)
     {
         ind = (double)i / 255.0;
@@ -2336,14 +2294,12 @@ static void BuildGamma(uint8_t tbl[256], double gamma)
     }
     if (debug)
     {
-        printf("gamma table for gamma correction factor %f:\n", gamma);
+        printf("gamma table for gamma correction factor %f:\n", gamma_val);
         for (i = 0; i <= 255; i++)
         {
             printf("%02x  ", tbl[i]);
             if (!((i + 1) & 0x0F))
-            {
                 printf("\n");
-            }
         }
     }
 }
@@ -2358,8 +2314,8 @@ static void GammaCorrect(uint8_t *data, int size, uint8_t tbl[256])
     }
 }
 
-static void ScalePPM(uint8_t *rgbdata, int cols, int rows,
-                     double scale, double gamma, FILE *fp)
+static void ScalePPM(uint8_t *rgbdata, unsigned cols, unsigned rows,
+                     double scale, double gamma_val, FILE *fp)
 {
 #define SCALE 4096
 #define HALFSCALE 2048
@@ -2369,8 +2325,9 @@ static void ScalePPM(uint8_t *rgbdata, int cols, int rows,
     uint8_t *newxelrow;
     uint8_t *xP;
     uint8_t *nxP;
-    int rowsread, newrows, newcols;
-    int row, col, needtoreadrow;
+    size_t rowsread, newrows, newcols;
+    unsigned row, col;
+    int needtoreadrow;
     double xscale, yscale;
     long sxscale, syscale;
     long fracrowtofill, fracrowleft;
@@ -2383,13 +2340,11 @@ static void ScalePPM(uint8_t *rgbdata, int cols, int rows,
     size_t size_tempxelrow, size_newxelrow, size_rsgsbs;
     uint8_t gammatbl[256];
 
-    if (gamma > 0)
-    {
-        BuildGamma(gammatbl, gamma);
-    }
+    if (gamma_val > 0)
+        BuildGamma(gammatbl, gamma_val);
 
-    newcols = (int)(cols * scale + 0.999);
-    newrows = (int)(rows * scale + 0.999);
+    newcols = (size_t)(cols * scale + 0.999);
+    newrows = (size_t)(rows * scale + 0.999);
     xscale = (double)newcols / (double)cols;
     yscale = (double)newrows / (double)rows;
     sxscale = (long)(xscale * SCALE);
@@ -2405,9 +2360,7 @@ static void ScalePPM(uint8_t *rgbdata, int cols, int rows,
     fracrowtofill = SCALE;
     fracrowleft = syscale;
     for (col = 0; col < cols; col++)
-    {
         rs[col] = gs[col] = bs[col] = HALFSCALE;
-    }
 
     fprintf(fp, "P6\n");
     fprintf(fp, "%d %d\n", newcols, newrows);
@@ -2487,9 +2440,7 @@ static void ScalePPM(uint8_t *rgbdata, int cols, int rows,
             while (fraccolleft >= fraccoltofill)
             {
                 if (needcol)
-                {
                     r = g = b = HALFSCALE;
-                }
                 r += fraccoltofill * xP[0];
                 g += fraccoltofill * xP[1];
                 b += fraccoltofill * xP[2];
@@ -2544,10 +2495,8 @@ static void ScalePPM(uint8_t *rgbdata, int cols, int rows,
             *nxP++ = g;
             *nxP++ = b;
         }
-        if (gamma > 0)
-        {
-            GammaCorrect(newxelrow, 3 * newcols, gammatbl);
-        }
+        if (gamma_val > 0)
+            GammaCorrect(newxelrow, (int)(3 * newcols), gammatbl);
         fwrite(newxelrow, 1, 3 * newcols, fp);
     }
 
@@ -2575,17 +2524,13 @@ static void SaveFramesPPM(struct xprc *rc)
     char buf[256];
 
     if (!begin)
-    {
         openErrorWindow(rc->ewin, "The first frame to save hasn't been set.");
-    }
     else if (!end)
-    {
         openErrorWindow(rc->ewin, "The last frame to save hasn't been set.");
-    }
+
     if (!begin || !end)
-    {
         return;
-    }
+
     if (begin->number > end->number)
     {
         openErrorWindow(rc->ewin, "First save frame exceeds last save frame, "
@@ -2603,7 +2548,7 @@ static void SaveFramesPPM(struct xprc *rc)
 
     pixmap = XCreatePixmap(dpy, RootWindow(dpy, screen_num),
                            rc->view_width, rc->view_height,
-                           DefaultDepth(dpy, screen_num));
+                           (unsigned)DefaultDepth(dpy, screen_num));
     if (pixmap == BadAlloc || pixmap == BadValue)
     {
         openErrorWindow(rc->ewin, "Can't allocate a pixmap. Unable to save");
@@ -2611,12 +2556,14 @@ static void SaveFramesPPM(struct xprc *rc)
     }
     if (rc->scale > 0)
     {
-        rgbdata = (uint8_t *)MyMalloc(3 * rc->view_width * rc->view_height, MEM_MISC);
+        rgbdata = (uint8_t *)
+            MyMalloc((size_t)(3 * rc->view_width * rc->view_height), MEM_MISC);
         line = NULL;
     }
     else
     {
-        line = (uint8_t *)MyMalloc(3 * rc->view_width, MEM_MISC);
+        line = (uint8_t *)
+            MyMalloc((size_t)(3 * rc->view_width), MEM_MISC);
         rgbdata = NULL;
     }
 
@@ -2632,9 +2579,7 @@ static void SaveFramesPPM(struct xprc *rc)
                        rc->view_width, rc->view_height);
         XFlush(dpy);
         if (!save->shapes)
-        {
             readFrameData(rc, save);
-        }
         drawShapes(save, pixmap, rc);
         XFlush(dpy);
 
@@ -2647,9 +2592,7 @@ static void SaveFramesPPM(struct xprc *rc)
                 break;
             }
             else
-            {
                 setvbuf(fp, NULL, _IOFBF, (size_t)(8 * 1024));
-            }
         }
         else
         {
@@ -2674,22 +2617,16 @@ static void SaveFramesPPM(struct xprc *rc)
         for (y = 0; y < rc->view_height; y++)
         {
             if (rc->scale > 0)
-            {
                 ptr = line = rgbdata + (3 * y * rc->view_width);
-            }
             else
-            {
                 ptr = line;
-            }
             for (x = 0; x < rc->view_width; x++)
             {
                 pixel = XGetPixel(img, x, y);
                 for (i = 0;;)
                 {
                     if (pixel == rc->pixels[i])
-                    {
                         break;
-                    }
                     if (++i >= rc->maxColors)
                     {
                         /* impossible? */
@@ -2702,13 +2639,9 @@ static void SaveFramesPPM(struct xprc *rc)
                 *ptr++ = rc->colors[i].blue >> 8;
             }
             if (rc->scale > 0)
-            {
                 line = ptr;
-            }
             else
-            {
-                fwrite(line, 1, 3 * rc->view_width, fp);
-            }
+                fwrite(line, 1, (size_t)(3 * rc->view_width), fp);
         }
         XDestroyImage(img);
 
@@ -2723,25 +2656,19 @@ static void SaveFramesPPM(struct xprc *rc)
         }
 
         if (!compress)
-        {
             fclose(fp);
-        }
         else
-        {
             pclose(fp);
-        }
 
         done = (save == end);
     }
 
     if (rc->scale > 0)
-    {
-        MyFree(rgbdata, 3 * rc->view_width * rc->view_height, MEM_MISC);
-    }
+        MyFree(rgbdata, (size_t)(3 * rc->view_width * rc->view_height),
+               MEM_MISC);
     else
-    {
-        MyFree(line, 3 * rc->view_width, MEM_MISC);
-    }
+        MyFree(line, (size_t)(3 * rc->view_width), MEM_MISC);
+
     XFreePixmap(dpy, pixmap);
 
     if (done)
@@ -2775,9 +2702,7 @@ static int pixel2index(struct xprc *rc, unsigned long pixel)
     for (i = 0; i < 2 * rc->maxColors; i++)
     {
         if (rc->pixels[i] == pixel)
-        {
             return i;
-        }
     }
     fprintf(stderr, "Can't find matching pixel\n");
     return 0;
@@ -2794,17 +2719,14 @@ static XImage *pixmap2image(Pixmap pixmap)
                       &x, &y,
                       &width, &height,
                       &border_width, &depth))
-    {
         return NULL;
-    }
     img = XGetImage(dpy, pixmap,
                     0, 0,
                     width, height,
                     AllPlanes, ZPixmap);
     if (!img)
-    {
         return NULL;
-    }
+
     return img;
 }
 
@@ -2817,9 +2739,7 @@ static void RWriteTile(struct xprc *rc, struct rGC *gcp, FILE *fp)
     for (tptr = rc->tlist; tptr; tptr = tptr->next)
     {
         if (tptr->tile == gcp->tile)
-        {
             break;
-        }
     }
     if (!tptr || tptr->tile_id == 0 || tptr->tile == None)
     {
@@ -2852,9 +2772,7 @@ static void RWriteTile(struct xprc *rc, struct rGC *gcp, FILE *fp)
             for (i = 0; i < rc->maxColors - 1; i++)
             {
                 if (pixel == rc->pixels[i])
-                {
                     break;
-                }
             }
             RWriteByte(i, fp);
         }
@@ -2877,111 +2795,63 @@ static void RWriteGC(struct xprc *rc, struct rGC *gcp, FILE *fp)
     RWriteByte(RC_GC, fp);
 
     if (gcp->mask & GCForeground)
-    {
         mask |= RC_GC_FG;
-    }
     if (gcp->mask & GCBackground)
-    {
         mask |= RC_GC_BG;
-    }
     if (gcp->mask & GCLineWidth)
-    {
         mask |= RC_GC_LW;
-    }
     if (gcp->mask & GCLineStyle)
-    {
         mask |= RC_GC_LS;
-    }
     if (gcp->mask & GCDashOffset)
-    {
         mask |= RC_GC_DO;
-    }
     if (gcp->mask & GCFunction)
-    {
         mask |= RC_GC_FU;
-    }
     if (gcp->num_dashes > 0 || (gcp->mask & GCDashOffset))
     {
         mask |= RC_GC_DA;
         if (gcp->mask & GCDashOffset)
-        {
             mask |= RC_GC_DO;
-        }
     }
     if (gcp->mask & GCFillStyle)
-    {
         mask |= RC_GC_FS;
-    }
     if (gcp->mask & GCTileStipXOrigin)
-    {
         mask |= RC_GC_XO;
-    }
     if (gcp->mask & GCTileStipYOrigin)
-    {
         mask |= RC_GC_YO;
-    }
     if (gcp->mask & GCTile)
-    {
         mask |= RC_GC_TI;
-    }
     if ((mask & 0xFF00) != 0)
-    {
         mask |= RC_GC_B2;
-    }
 
     RWriteByte(mask, fp);
     if (mask & RC_GC_B2)
-    {
         RWriteByte(mask >> 8, fp);
-    }
     if (mask & RC_GC_FG)
-    {
         RWriteByte(pixel2index(rc, gcp->foreground), fp);
-    }
     if (mask & RC_GC_BG)
-    {
         RWriteByte(pixel2index(rc, gcp->background), fp);
-    }
     if (mask & RC_GC_LW)
-    {
         RWriteByte(gcp->line_width, fp);
-    }
     if (mask & RC_GC_LS)
-    {
         RWriteByte(gcp->line_style, fp);
-    }
     if (mask & RC_GC_DO)
-    {
         RWriteByte(gcp->dash_offset, fp);
-    }
     if (mask & RC_GC_FU)
-    {
         RWriteByte(gcp->function, fp);
-    }
     if (mask & RC_GC_DA)
     {
         RWriteByte(gcp->num_dashes, fp);
         for (i = 0; i < gcp->num_dashes; i++)
-        {
             RWriteByte(gcp->dash_list[i], fp);
-        }
     }
     if (mask & RC_GC_FS)
-    {
         RWriteByte(gcp->fill_style, fp);
-    }
     if (mask & RC_GC_XO)
-    {
         RWriteLong(gcp->ts_x_origin, fp);
-    }
     if (mask & RC_GC_YO)
-    {
         RWriteLong(gcp->ts_y_origin, fp);
-    }
     if (mask & RC_GC_TI)
-    {
         RWriteTile(rc, gcp, fp);
-    }
 }
 
 static void WriteHeader(struct xprc *rc, FILE *fp)
