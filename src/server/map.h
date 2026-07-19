@@ -345,6 +345,11 @@ struct world
 
     int NumWormholes;
     wormhole_t *wormholes;
+
+    std::vector<wormhole_t> wormholesVector;
+
+    // Make sure we don't call Grok_map_options twice.
+    bool have_options;
 };
 
 static inline void World_set_block(blkpos_t blk, int type)

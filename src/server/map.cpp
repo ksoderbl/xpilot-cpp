@@ -300,8 +300,8 @@ int World_place_wormhole(clpos_t pos, wormtype_t type)
     t.lastID = NO_ID;
     t.group = NO_GROUP;
 
-    // World.wormholes[ind] = t;
-    // World.NumWormholes++;
+    World.wormholesVector.push_back(t);
+
     return ind;
 }
 
@@ -654,6 +654,9 @@ static bool Grok_map_size(void)
 
 bool Grok_map_options(void)
 {
+    if (World.have_options)
+        return true;
+
     warn("Grok_map_options ----------------->");
 
     if (!Grok_map_size())
@@ -683,6 +686,8 @@ bool Grok_map_options(void)
     }
 
     warn("Grok_map_options -----------------> RETURNING OK");
+
+    World.have_options = true;
 
     return true;
 }

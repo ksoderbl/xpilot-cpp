@@ -335,6 +335,13 @@ int P_start_wormhole(int wormhole_ind)
 {
     wormhole_t *wormhole = Wormhole_by_index(wormhole_ind);
 
+    warn("P_start_wormhole, wormhole: %p", wormhole);
+    if (wormhole == nullptr)
+    {
+        warn("wormhole at index %d is nullptr", wormhole_ind);
+        return -1;
+    }
+
     wormhole->group = Create_group(WORMHOLE,
                                    TEAM_NOT_SET,
                                    Wormhole_hitmask(wormhole),
