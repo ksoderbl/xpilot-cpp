@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Takes map as argument, for example:
-# bash start-server.sh lib/maps/j-a-r-n-o.nl/newdarkhellteams.xp 
+# bash start-server.sh share/maps/j-a-r-n-o.nl/newdarkhellteams.xp
 # Needs to have xpilot-cpp-server installed.
 
 # Build and install xpilot-cpp-server using:

@@ -601,14 +601,12 @@ bool Grok_map_options(void)
 bool Grok_map(void)
 {
     warn("Grok_map: ========================== START");
+    warn("Grok_map: is_polygon_map: %s", is_polygon_map ? "true" : "false");
 
     if (!is_polygon_map)
         return Xpmap_grok_map2();
 
-    warn("Grok_map: polygon map!");
-
     warn("Grok_map_options");
-
     if (!Grok_map_options())
         return false;
 

@@ -635,7 +635,7 @@ void modifiersUnitTest(void)
     char modsstr[MAX_CHARS];
 
     Mods_to_string(mods, modsstr, sizeof(modsstr));
-    xpinfo("modifiersUnitTest Mods_to_string  returned \"%s\"", modsstr);
+    // xpinfo("modifiersUnitTest Mods_to_string  returned \"%s\"", modsstr);
 
     // if (!strcmp(modsstr, "Z3"))
     // {
@@ -649,15 +649,15 @@ void modifiersUnitTest(void)
     std::string s1 = std::string(modsstr);
     std::string s2 = Mods_to_string2(mods);
 
-    xpinfo("modifiersUnitTest: s1 = \"%s\"", s1.c_str());
-    xpinfo("modifiersUnitTest: s2 = \"%s\"", s2.c_str());
+    // xpinfo("modifiersUnitTest: s1 = \"%s\"", s1.c_str());
+    // xpinfo("modifiersUnitTest: s2 = \"%s\"", s2.c_str());
 
     if (s2 == s1)
     {
-        xpinfo("SUCCESS");
+        // xpinfo("SUCCESS");
     }
     else
     {
-        warn("FAIL");
+        warn("modifiersUnitTest: FAIL");
     }
 }

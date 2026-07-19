@@ -346,8 +346,12 @@ bool Parser(int argc, char **argv)
     options.mapWidth = 0;
     options.mapHeight = 0;
 
+    warn("Parser: Calling Init_options");
+
     if (Init_options() == false)
         return false;
+
+    warn("Parser: Calling Init_options returned");
 
     for (i = 1; i < argc; i++)
     {
@@ -390,6 +394,8 @@ bool Parser(int argc, char **argv)
             warn("Unknown option '%s'", argv[i]);
     }
 
+    warn("Parser: Read local defaults file");
+
     /*
      * Read local defaults file
      */
@@ -398,6 +404,8 @@ bool Parser(int argc, char **argv)
     else
         parseDefaultsFile(Conf_defaults_file_name());
 
+    warn("Parser: Read local password file");
+
     /*
      * Read local password file
      */
@@ -405,6 +413,8 @@ bool Parser(int argc, char **argv)
         parsePasswordFile(fname);
     else
         parsePasswordFile(Conf_password_file_name());
+
+    warn("Parser: Read map data");
 
     /*
      * Read map file if map data not found yet.
@@ -433,17 +443,32 @@ bool Parser(int argc, char **argv)
         }
     }
 
+    warn("Parser: Read map data done");
+
     /*
      * Parse the options database and 'internalise' it.
      */
+
+    warn("Parser: Calling Options_parse");
+
     Options_parse();
 
+    warn("Parser: Calling Options_parse returned");
+
+    warn("Parser: Calling Options_free");
+
     Options_free();
+
+    warn("Parser: Calling Options_free returned");
 
     /*
      * Construct the World structure from the options.
      */
-    return Grok_map();
+    warn("Parser: Calling Grok_map");
+    bool ok = Grok_map();
+    warn("Parser: Calling Grok_map returned %s", ok ? "OK" : "NOT OK");
+
+    return ok;
 }
 
 /*

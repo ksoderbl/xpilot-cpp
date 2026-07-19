@@ -130,9 +130,10 @@ int main(int argc, char **argv)
 
     seedMT((unsigned)time((time_t *)0) * Get_process_id());
 
-    printf("parser\n");
+    warn("Calling argv Parser");
     if (!Parser(argc, argv))
         exit(1);
+    warn("Calling argv Parser returned");
 
     // Unit tests
     modifiersUnitTest();

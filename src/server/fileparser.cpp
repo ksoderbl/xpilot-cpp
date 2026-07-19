@@ -371,16 +371,19 @@ static void parseLine(char **map_ptr, optOrigin opt_origin)
  */
 static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
 {
+    warn("parseOpenFile");
+
     int n;
     size_t map_offset, map_size;
     char *map_buf;
 
     LineNumber = 1;
 
-    /*
-     * In case first map fails and this is another
-     */
-    is_polygon_map = false;
+    // This is a bug, because this function is called also for other files than map files
+    // /*
+    //  * In case first map fails and this is another
+    //  */
+    // is_polygon_map = false;
 
     /*
      * First try the xp2 map format
@@ -388,8 +391,16 @@ static bool parseOpenFile(FILE *ifile, optOrigin opt_origin)
     if (isXp2MapFile(ifile))
     {
         is_polygon_map = true;
-        return parseXp2MapFile(FileName, opt_origin);
+        warn("parseOpenFile: calling parseXp2MapFile");
+
+        bool ok = parseXp2MapFile(FileName, opt_origin);
+
+        warn("parseOpenFile: calling parseXp2MapFile returned %s", ok ? "true" : "false");
+
+        return ok;
     }
+
+    // warn("parseOpenFile: XP map! (is_polygon_map = %s)", is_polygon_map ? true : false);
 
     /*
      * Using a 200 map sample, the average map size is 37k. This chunk
