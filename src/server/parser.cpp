@@ -394,8 +394,6 @@ bool Parser(int argc, char **argv)
             warn("Unknown option '%s'", argv[i]);
     }
 
-    warn("Parser: Read local defaults file");
-
     /*
      * Read local defaults file
      */
@@ -404,8 +402,6 @@ bool Parser(int argc, char **argv)
     else
         parseDefaultsFile(Conf_defaults_file_name());
 
-    warn("Parser: Read local password file");
-
     /*
      * Read local password file
      */
@@ -413,8 +409,6 @@ bool Parser(int argc, char **argv)
         parsePasswordFile(fname);
     else
         parsePasswordFile(Conf_password_file_name());
-
-    warn("Parser: Read map data");
 
     /*
      * Read map file if map data not found yet.
@@ -442,24 +436,12 @@ bool Parser(int argc, char **argv)
                 printf("Unable to read %s\n", Conf_default_map());
         }
     }
-
-    warn("Parser: Read map data done");
-
     /*
      * Parse the options database and 'internalise' it.
      */
-
-    warn("Parser: Calling Options_parse");
-
     Options_parse();
 
-    warn("Parser: Calling Options_parse returned");
-
-    warn("Parser: Calling Options_free");
-
     Options_free();
-
-    warn("Parser: Calling Options_free returned");
 
     /*
      * Construct the World structure from the options.
@@ -497,7 +479,6 @@ int Tune_option(char *name, char *val)
     case valInt:
         if (Convert_string_to_int(val, &ival) != true)
             return 0;
-
         *(int *)opt->variable = ival;
         (*opt->tuner)();
         return 1;
@@ -508,7 +489,6 @@ int Tune_option(char *name, char *val)
             *(bool *)opt->variable = false;
         else
             return 0;
-
         (*opt->tuner)();
         return 1;
     case valReal:

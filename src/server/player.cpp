@@ -342,8 +342,6 @@ void Player_add_tank(player_t *pl, double tank_fuel)
 {
     double tank_cap, add_fuel;
 
-    // xpinfo("Player_add_tank: tank_fuel: %f", tank_fuel);
-
     if (pl->fuel.num_tanks < MAX_TANKS)
     {
         pl->fuel.num_tanks++;
@@ -421,21 +419,13 @@ void Player_set_mass(player_t *pl)
  */
 static void Player_init_fuel(player_t *pl, double total_fuel)
 {
-    // xpinfo("Player_init_fuel: total_fuel: %f", total_fuel);
-
     double fuel = total_fuel;
     int i;
 
     pl->fuel.num_tanks = 0;
     pl->fuel.current = 0;
     pl->fuel.max = TANK_CAP(0);
-
-    // xpinfo("Player_init_fuel: pl->fuel.max: %f", pl->fuel.max);
-
     pl->fuel.sum = MIN(fuel, pl->fuel.max);
-
-    // xpinfo("Player_init_fuel: pl->fuel.sum: %f", pl->fuel.sum);
-
     pl->fuel.tank[0] = pl->fuel.sum;
     pl->emptymass = options.shipMass;
     pl->item[ITEM_TANK] = pl->fuel.num_tanks;
@@ -449,38 +439,95 @@ static void Player_init_fuel(player_t *pl, double total_fuel)
     }
 }
 
-int Init_player(int ind, shipshape_t *ship, int type)
+#if 0
+/*
+ * Set initial items for a player.
+ * Number of initial items can depend on which base the player starts from.
+ */
+void Player_init_items(player_t *pl)
 {
-    player_t *pl = Player_by_index(ind);
+    int i, num_tanks;
+    double total_fuel;
+    base_t *base = pl->home_base;
 
-    bool too_late = false;
+    for (i = 0; i < NUM_ITEMS; i++) {
+    if (i == ITEM_FUEL || i == ITEM_TANK))
+        continue;
+
+    if (base && base->initial_items[i] >= 0)
+        pl->item[i] = base->initial_items[i];
+    else
+        pl->item[i] = World.items[i].initial;
+    }
+
+    if (base && base->initial_items[ITEM_TANK] >= 0)
+    num_tanks = base->initial_items[ITEM_TANK];
+    else
+    num_tanks = World.items[ITEM_TANK].initial;
+
+    if (base && base->initial_items[ITEM_FUEL] >= 0)
+    total_fuel = (double)base->initial_items[ITEM_FUEL];
+    else
+    total_fuel = (double)World.items[ITEM_FUEL].initial;
+
+    Player_init_fuel(pl, num_tanks, total_fuel);
+}
+#endif
+
+void Player_init_items(player_t *pl)
+{
     int i;
 
-    pl->vel.x = pl->vel.y = 0.0;
-    pl->acc.x = pl->acc.y = 0.0;
-    pl->float_dir = pl->dir = DIR_UP;
-    pl->turnvel = 0.0;
-    pl->oldturnvel = 0.0;
-    pl->turnacc = 0.0;
-    pl->mass = options.shipMass;
-    pl->emptymass = options.shipMass;
-
+    /*
+     * Give player an initial set of items.
+     */
     for (i = 0; i < NUM_ITEMS; i++)
     {
-        if (!BIT(1U << i, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+        if (i == ITEM_FUEL || i == ITEM_TANK)
+            pl->item[i] = 0;
+        else
             pl->item[i] = World.items[i].initial;
     }
 
-    pl->fuel.sum = World.items[ITEM_FUEL].initial;
-    Player_init_fuel(pl, pl->fuel.sum);
+    Player_init_fuel(pl, (double)World.items[ITEM_FUEL].initial);
 
-    if (options.allowShipShapes == true && ship)
+    /*
+     * Remember the amount of initial items. This way we can
+     * later figure out what items the player has picked up.
+     */
+    for (i = 0; i < NUM_ITEMS; i++)
+        pl->initial_item[i] = pl->item[i];
+}
+
+int Init_player(int ind, shipshape_t *ship, int type)
+{
+    player_t *pl = Player_by_index(ind);
+    visibility_t *v = pl->visibility;
+    int i;
+
+    memset(pl, 0, sizeof(player_t));
+    pl->visibility = v;
+
+    /*
+     * Make sure floats, doubles and pointers are correctly zeroed.
+     */
+    assert(pl->wall_time == 0);
+    assert(pl->turnspeed == 0);
+    assert(pl->conn == NULL);
+
+    pl->dir = DIR_UP;
+    Player_set_float_dir(pl, (double)pl->dir);
+    pl->mass = options.shipMass;
+    pl->emptymass = options.shipMass;
+
+    bool too_late = false;
+
+    Player_init_items(pl);
+
+    if (options.allowShipShapes && ship)
         pl->ship = ship;
     else
     {
-        /*
-                pl->ship = Default_ship();
-        */
         shipshape_t *tryship = Parse_shape_str(options.defaultShipShape);
 
         if (tryship)
@@ -489,27 +536,10 @@ int Init_player(int ind, shipshape_t *ship, int type)
             pl->ship = Default_ship();
     }
 
-    pl->power = 45.0;
-    pl->turnspeed = 30.0;
-    pl->turnresistance = 0.12;
-    pl->power_s = 35.0;
-    pl->turnspeed_s = 25.0;
-    pl->turnresistance_s = 0.12;
-
-    pl->check = 0;
-    pl->round = 0;
-    pl->time = 0;
-    pl->last_lap_time = 0;
-    pl->last_lap = 0;
-    pl->best_lap = 0;
     pl->count = -1;
-    pl->shield_time = 0;
-    pl->last_wall_touch = 0;
 
-    /*
     pl->power = pl->power_s = MAX_PLAYER_POWER;
     pl->turnspeed = pl->turnspeed_s = MIN_PLAYER_TURNSPEED;
-    */
 
     pl->type = OBJ_PLAYER;
     pl->pl_type = type;
@@ -520,29 +550,9 @@ int Init_player(int ind, shipshape_t *ship, int type)
     else if (type == PL_TYPE_TANK)
         pl->pl_type_mychar = 'T';
 
-    pl->shots = 0;
-    pl->missile_rack = 0;
-    pl->forceVisible = 0;
+    /*Player_init_items(pl);*/
     Compute_sensor_range(pl);
-    pl->shot_time = 0;
     pl->color = WHITE;
-    pl->score = 0;
-    pl->prev_score = 0;
-    pl->prev_check = 0;
-    pl->prev_round = 0;
-    pl->fs = 0;
-    pl->repair_target = 0;
-    pl->name[0] = '\0';
-    pl->num_pulses = 0;
-    pl->emergency_thrust_left = 0;
-    pl->emergency_thrust_max = 0;
-    pl->emergency_shield_left = 0;
-    pl->emergency_shield_max = 0;
-    pl->phasing_left = 0;
-    pl->phasing_max = 0;
-    pl->ecmcount = 0;
-    pl->damaged = 0;
-    pl->stunned = 0;
 
     pl->obj_status = PLAYING | GRAVITY | DEF_BITS;
     pl->have = DEF_HAVE;
@@ -554,8 +564,9 @@ int Init_player(int ind, shipshape_t *ship, int type)
     Mods_clear(&pl->mods);
     for (i = 0; i < NUM_MODBANKS; i++)
         Mods_clear(&pl->modbank[i]);
+
     for (i = 0; i < LOCKBANK_MAX; i++)
-        pl->lockbank[i] = NOT_CONNECTED;
+        pl->lockbank[i] = NO_ID;
 
     {
         static uint16_t pseudo_team_no = 0;
