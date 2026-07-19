@@ -951,7 +951,7 @@ void Fire_general_shot(int id, int team, bool cannon,
         shot->type = type;
         shot->id = (pl ? pl->id : NO_ID);
         shot->team = team;
-        shot->color = (pl ? pl->color : WHITE);
+        shot->color = WHITE;
 
         if (shot->type == OBJ_TORPEDO)
         {
@@ -991,6 +991,7 @@ void Fire_general_shot(int id, int team, bool cannon,
         shotpos = pos;
         if (pl && type != OBJ_SHOT)
         {
+            clpos_t m_rack;
             if (r == on_this_rack)
             {
                 /*
@@ -1004,15 +1005,14 @@ void Fire_general_shot(int id, int team, bool cannon,
                     rack_no = 0;
                 r = 0;
             }
-            clpos_t m_rack;
             m_rack = Ship_get_m_rack_clpos(pl->ship, rack_no, pl->dir);
             shotpos.cx += m_rack.cx;
             shotpos.cy += m_rack.cy;
+            /*side = CLICK_TO_PIXEL(pl->ship->m_rack[rack_no][0].cy);*/
             side = CLICK_TO_PIXEL(
                 Ship_get_m_rack_clpos(pl->ship, rack_no, 0).cy);
         }
         shotpos = World_wrap_clpos(shotpos);
-
         Object_position_init_clpos(shot, shotpos);
 
         if (type == OBJ_SHOT || !pl)
@@ -1157,8 +1157,6 @@ void Fire_normal_shots(player_t *pl)
 /* Removes shot from array */
 void Delete_shot(int ind)
 {
-    // warn("Delete_shot: ind = %d", ind);
-
     object_t *shot = Obj[ind]; /* Used when swapping places */
     ballobject_t *ball;
     itemobject_t *item;
@@ -1167,8 +1165,6 @@ void Delete_shot(int ind)
     modifiers_t mods;
     int i, intensity, type, color, num_debris, status;
     double modv, speed_modv, life_modv, num_modv, mass, min_life, max_life;
-
-    // warn("Delete_shot: shot->type = %d", shot->type);
 
     switch (shot->type)
     {
@@ -1183,18 +1179,11 @@ void Delete_shot(int ind)
         break;
 
     case OBJ_BALL:
-        // warn("Delete_shot: BALL!");
         ball = BALL_PTR(shot);
-        warn("Delete_shot: Ball with id %d", ball->id);
         if (ball->id != NO_ID)
-        {
-            player_t *ball_pl = Player_by_id(ball->id);
-            warn("Delete_shot: Ball pl %p", ball_pl);
-            Detach_ball(ball_pl, ball);
-        }
+            Detach_ball(Player_by_id(ball->id), ball);
         else
         {
-            warn("Delete_shot: Ball->id is NO_ID");
             /*
              * Maybe some player is still busy trying to connect to this ball.
              */
@@ -1206,7 +1195,6 @@ void Delete_shot(int ind)
                     pl_i->ball = NULL;
             }
         }
-        warn("Delete_shot: Ball->ball_owner id is %d", ball->ball_owner);
         if (ball->ball_owner == NO_ID)
         {
             /*
@@ -1217,13 +1205,10 @@ void Delete_shot(int ind)
             warn("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
             warn("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
             ball->ball_treasure->have = false;
-            warn("Delete_shot: Ball set bit RECREATE");
             SET_BIT(ball->obj_status, RECREATE);
-            warn("Delete_shot: Ball set bit RECREATE done");
         }
         if (BIT(ball->obj_status, RECREATE))
         {
-            warn("Delete_shot: Ball RECREATE");
             addBall = true;
             if (BIT(ball->obj_status, NOEXPLOSION))
                 break;
@@ -1269,16 +1254,8 @@ void Delete_shot(int ind)
         if (Mods_get(shot->mods, ModsCluster))
         {
             type = OBJ_SHOT;
-            if (shot->id != NO_ID)
-            {
-                player_t *pl = Player_by_id(shot->id);
-                color = pl->color;
-            }
-            else
-                color = WHITE;
-
+            color = WHITE;
             mass = options.shotMass * 3;
-            // modv = 1 << shot->mods.velocity;
             modv = 1 << Mods_get(shot->mods, ModsVelocity);
             num_modv = 4;
             if (Mods_get(shot->mods, ModsNuclear))
@@ -1314,16 +1291,14 @@ void Delete_shot(int ind)
                 nuke_factor = NUKE_MINE_EXPL_MULT * shot->mass / MINE_MASS;
             else
                 nuke_factor = NUKE_SMART_EXPL_MULT * shot->mass / MISSILE_MASS;
+
             nuke_factor *= ((Mods_get(shot->mods, ModsMini) + 1) / SHOT_MULT(shot));
             intensity = (int)(intensity * nuke_factor);
         }
 
         if (Mods_get(shot->mods, ModsImplosion))
-            /*intensity >>= 1;*/
             mass = -mass;
 
-        // if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_HEAT_SHOT_BIT | OBJ_SMART_SHOT_BIT))
-        //     intensity /= (1 + shot->mods.power);
         if (shot->type == OBJ_TORPEDO || shot->type == OBJ_HEAT_SHOT || shot->type == OBJ_SMART_SHOT)
             intensity /= (1 + Mods_get(shot->mods, ModsPower));
 
@@ -1351,12 +1326,10 @@ void Delete_shot(int ind)
                     num_debris,
                     0, ANGLE_RESOLUTION - 1,
                     20 * speed_modv, (intensity >> 2) * speed_modv,
-                    (int)min_life,
-                    (int)max_life);
+                    min_life, max_life);
         break;
 
     case OBJ_SHOT:
-        // if (shot->id == NO_ID || BIT(shot->obj_status, FROMCANNON) || BIT(shot->mods.warhead, CLUSTER))
         if (shot->id == NO_ID || BIT(shot->obj_status, FROMCANNON) || Mods_get(shot->mods, ModsCluster))
             break;
         pl = Player_by_id(shot->id);
