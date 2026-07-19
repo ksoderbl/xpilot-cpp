@@ -54,6 +54,54 @@ bool is_polygon_map = false;
 
 static void Find_base_order(void);
 
+/*
+ * Determine the order in which players are placed
+ * on starting positions after race mode reset.
+ */
+static void Find_base_order(void)
+{
+    int i, j, k, n;
+    int ccx, ccy;
+    double dist;
+
+    if (!BIT(World.rules->mode, TIMING))
+    {
+        World.baseorder = NULL;
+        return;
+    }
+    if ((n = Num_bases()) <= 0)
+    {
+        error("Cannot support race mode in a map without bases");
+        exit(-1);
+    }
+
+    if ((World.baseorder = (baseorder_t *)
+             malloc(n * sizeof(baseorder_t))) == NULL)
+    {
+        error("Out of memory - baseorder");
+        exit(-1);
+    }
+
+    ccx = World.checks[0].pos.cx;
+    ccy = World.checks[0].pos.cy;
+    for (i = 0; i < n; i++)
+    {
+        dist = Wrap_length(World.bases[i].pos.cx - ccx,
+                           World.bases[i].pos.cy - ccy) /
+               CLICK;
+        for (j = 0; j < i; j++)
+        {
+            if (World.baseorder[j].dist > dist)
+                break;
+        }
+        for (k = i - 1; k >= j; k--)
+            World.baseorder[k + 1] = World.baseorder[k];
+
+        World.baseorder[j].base_idx = i;
+        World.baseorder[j].dist = dist;
+    }
+}
+
 static void Check_map_object_counters(void)
 {
     int i;
@@ -598,50 +646,198 @@ bool Grok_map_options(void)
     return true;
 }
 
+static void Init_map(void);
+
+static void Init_map(void)
+{
+    World.x = 256;
+    World.y = 256;
+    World.diagonal = (int)LENGTH(World.x, World.y);
+
+    World.width = World.x * BLOCK_SZ;
+    World.height = World.y * BLOCK_SZ;
+    World.pixel_hypotenuse = (int)LENGTH(World.width, World.height);
+
+    World.cwidth = PIXEL_TO_CLICK(World.width);
+    World.cheight = PIXEL_TO_CLICK(World.height);
+    World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
+
+    World.asteroidConcs.clear();
+    World.bases.clear();
+    World.cannons.clear();
+    World.ecms.clear();
+    World.fuels.clear();
+    World.frictionAreas.clear();
+    World.gravs.clear();
+    World.itemConcs.clear();
+    World.targets.clear();
+    World.transporters.clear();
+    World.treasures.clear();
+
+    World.NumWormholes = 0;
+}
+
+static void Generate_random_map(void);
+
+/*
+ * Use wildmap to generate a random map.
+ */
+static void Generate_random_map(void)
+{
+    int width, height;
+
+    options.edgeWrap = true;
+    width = World.x;
+    height = World.y;
+
+    Wildmap(width, height, World.name, World.author, &options.mapData, &width, &height);
+
+    World.x = width;
+    World.y = height;
+    World.diagonal = (int)LENGTH(World.x, World.y);
+
+    World.width = World.x * BLOCK_SZ;
+    World.height = World.y * BLOCK_SZ;
+    World.pixel_hypotenuse = (int)LENGTH(World.width, World.height);
+
+    World.cwidth = PIXEL_TO_CLICK(World.width);
+    World.cheight = PIXEL_TO_CLICK(World.height);
+    World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
+}
+
 bool Grok_map(void)
 {
     warn("Grok_map: ========================== START");
     warn("Grok_map: is_polygon_map: %s", is_polygon_map ? "true" : "false");
 
     if (!is_polygon_map)
-        return Xpmap_grok_map2();
-
-    warn("Grok_map_options");
-    if (!Grok_map_options())
-        return false;
-
-    warn("Verify_wormhole_consistency");
-
-    if (!Verify_wormhole_consistency())
-        return false;
-
-    if (BIT(World.rules->mode, TIMING) && Num_checks() == 0)
     {
-        warn("No checkpoints found while race mode (timing) was set.");
-        warn("Turning off race mode.");
-        CLR_BIT(World.rules->mode, TIMING);
+        warn("Grok_map: start");
+
+        int i, x, y, c;
+        char *s;
+
+        printf("grok map: init map\n");
+        Init_map();
+
+        if (options.mapWidth <= 0 || options.mapWidth > OLD_MAX_MAP_SIZE ||
+            options.mapHeight <= 0 || options.mapHeight > OLD_MAX_MAP_SIZE)
+        {
+            warn("mapWidth or mapHeight exceeds map size limit [1, %d]",
+                 OLD_MAX_MAP_SIZE);
+            free(options.mapData);
+            options.mapData = NULL;
+        }
+        else
+        {
+            World.x = options.mapWidth;
+            World.y = options.mapHeight;
+        }
+        if (options.extraBorder)
+        {
+            World.x += 2;
+            World.y += 2;
+        }
+        World.diagonal = (int)LENGTH(World.x, World.y);
+
+        World.width = World.x * BLOCK_SZ;
+        World.height = World.y * BLOCK_SZ;
+        World.pixel_hypotenuse = (int)LENGTH(World.width, World.height);
+
+        World.cwidth = PIXEL_TO_CLICK(World.width);
+        World.cheight = PIXEL_TO_CLICK(World.height);
+        World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
+
+        strlcpy(World.name, options.mapName, sizeof(World.name));
+        strlcpy(World.author, options.mapAuthor, sizeof(World.author));
+
+        if (!options.mapData)
+        {
+            warn("Generating random map");
+            Generate_random_map();
+            if (!options.mapData)
+                return false;
+        }
+
+        printf("grok map: alloc map\n");
+        Xpmap_world_alloc();
+
+        x = -1;
+        y = World.y - 1;
+
+        Set_world_rules();
+        Set_world_items();
+        Set_world_asteroids();
+
+        if (BIT(World.rules->mode, TEAM_PLAY | TIMING) == (TEAM_PLAY | TIMING))
+        {
+            warn("Cannot teamplay while in race mode -- ignoring teamplay");
+            CLR_BIT(World.rules->mode, TEAM_PLAY);
+        }
+
+        printf("grok map: reading mapdata\n");
+
+        Xpmap_grok_map_data();
+
+        printf("grok map: allocate objects\n");
+
+        Xpmap_tags_to_internal_data();
+
+        /* kps - what are these doing here ? */
+        if (options.maxRobots == -1)
+            options.maxRobots = Num_bases();
+
+        if (options.minRobots == -1)
+            options.minRobots = options.maxRobots;
+
+        if (BIT(World.rules->mode, TIMING))
+            Find_base_order();
+
+        printf("World....: %s\nBases....: %d\nMapsize..: %dx%d\nTeam play: %s\n",
+               World.name, Num_bases(), World.x, World.y,
+               BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
+
+        D(Print_map());
     }
+    else
+    {
+        warn("Grok_map_options");
+        if (!Grok_map_options())
+            return false;
 
-    /* kps - what are these doing here ? */
-    if (options.maxRobots == -1)
-        options.maxRobots = Num_bases();
+        warn("Verify_wormhole_consistency");
 
-    if (options.minRobots == -1)
-        options.minRobots = options.maxRobots;
+        if (!Verify_wormhole_consistency())
+            return false;
 
-    if (Num_bases() <= 0)
-        fatal("Map has no bases!");
+        if (BIT(World.rules->mode, TIMING) && Num_checks() == 0)
+        {
+            warn("No checkpoints found while race mode (timing) was set.");
+            warn("Turning off race mode.");
+            CLR_BIT(World.rules->mode, TIMING);
+        }
 
-    printf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
-           "Team play: %s\n",
-           World.name, Num_bases(), World.width, World.height,
-           BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
+        /* kps - what are these doing here ? */
+        if (options.maxRobots == -1)
+            options.maxRobots = Num_bases();
 
-    // if (!is_polygon_map)
-    //     Xpmap_blocks_to_polygons();
+        if (options.minRobots == -1)
+            options.minRobots = options.maxRobots;
 
-    Compute_gravity();
-    Find_base_direction();
+        if (Num_bases() <= 0)
+            fatal("Map has no bases!");
+
+        printf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
+               "Team play: %s\n",
+               World.name, Num_bases(), World.width, World.height,
+               BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
+
+        // if (!is_polygon_map)
+        //     Xpmap_blocks_to_polygons();
+
+        Compute_gravity();
+        Find_base_direction();
+    }
 
     // Print out amount of map objects.
     printf("===========\n");
@@ -657,6 +853,8 @@ bool Grok_map(void)
     printf("Transporters..........: %d\n", Num_transporters());
     printf("Treasures.............: %d\n", Num_treasures());
     printf("Wormholes.............: %d\n", Num_wormholes());
+
+    printf("grok map: returning true\n");
 
     return true;
 }
