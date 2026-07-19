@@ -99,18 +99,12 @@ static void Transport_to_home(player_t *pl)
             check = pl->check - 1;
         else
             check = Num_checks() - 1;
-        // bx = (World.checks[check].x + 0.5) * BLOCK_SZ;
-        // by = (World.checks[check].y + 0.5) * BLOCK_SZ;
         startpos = Check_by_index(check)->pos;
     }
     else
     {
-        // bx = (World.bases[pl->home_base_ind].blk_pos.bx + 0.5) * BLOCK_SZ;
-        // by = (World.bases[pl->home_base_ind].blk_pos.by + 0.5) * BLOCK_SZ;
         startpos = World.bases[pl->home_base_ind].pos;
     }
-    // dx = WRAP_DX(bx - pl->pix_pos.x);
-    // dy = WRAP_DY(by - pl->pix_pos.y);
     dx = WRAP_DCX(startpos.cx - pl->pos.cx);
     dy = WRAP_DCY(startpos.cy - pl->pos.cy);
     t = pl->count + 0.5f;

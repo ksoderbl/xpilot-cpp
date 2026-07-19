@@ -115,7 +115,8 @@ void Break_asteroid(wireobject_t *asteroid)
     double mass, mass3;
     double speed, speed1, speed2, radius;
     int dir, dir1, dir2, split_dir;
-    int x1, y1, x2, y2;
+    // int x1, y1, x2, y2;
+    clpos_t pos1, pos2;
 
     if (asteroid->wire_size == 1)
     {
@@ -162,16 +163,14 @@ void Break_asteroid(wireobject_t *asteroid)
         velx2 = tcos(dir2) * speed2;
         vely2 = tsin(dir2) * speed2; */
         split_dir = MOD2(dir - ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION);
-        radius = ASTEROID_RADIUS(asteroid->wire_size - 1);
-        x1 = WRAP_XPIXEL(asteroid->pix_pos.x + tcos(split_dir) * radius);
-        y1 = WRAP_YPIXEL(asteroid->pix_pos.y + tsin(split_dir) * radius);
-        x2 = WRAP_XPIXEL(asteroid->pix_pos.x - tcos(split_dir) * radius);
-        y2 = WRAP_YPIXEL(asteroid->pix_pos.y - tsin(split_dir) * radius);
+        radius = ASTEROID_RADIUS(asteroid->wire_size - 1) * CLICK;
         clpos_t pos1, pos2;
-        pos1.cx = PIXEL_TO_CLICK(x1);
-        pos1.cy = PIXEL_TO_CLICK(y1);
-        pos2.cx = PIXEL_TO_CLICK(x2);
-        pos2.cy = PIXEL_TO_CLICK(y2);
+        pos1.cx = (click_t)(asteroid->pos.cx + tcos(split_dir) * radius);
+        pos1.cy = (click_t)(asteroid->pos.cy + tsin(split_dir) * radius);
+        pos1 = World_wrap_clpos(pos1);
+        pos2.cx = (click_t)(asteroid->pos.cx - tcos(split_dir) * radius);
+        pos2.cy = (click_t)(asteroid->pos.cy - tsin(split_dir) * radius);
+        pos2 = World_wrap_clpos(pos2);
         Make_asteroid(pos1, asteroid->wire_size - 1, dir1, speed1);
         Make_asteroid(pos2, asteroid->wire_size - 1, dir2, speed2);
         Make_wreckage(asteroid->pos,

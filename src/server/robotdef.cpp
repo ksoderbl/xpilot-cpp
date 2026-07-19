@@ -522,9 +522,12 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
 
     if (mine_i >= 0)
     {
+        double adir;
+
         shot = Obj[mine_i];
-        aux_dir = (int)Wrap_findDir(shot->pix_pos.x + shot->vel.x - pl->pix_pos.x,
-                                    shot->pix_pos.y + shot->vel.y - pl->pix_pos.y);
+        adir = Wrap_cfindDir(shot->pos.cx + PIXEL_TO_CLICK(shot->vel.x) - pl->pos.cx,
+                             shot->pos.cy + PIXEL_TO_CLICK(shot->vel.y) - pl->pos.cy);
+        aux_dir = MOD2((int)(adir + 0.5), ANGLE_RESOLUTION);
         delta_dir = MOD2(aux_dir - travel_dir, ANGLE_RESOLUTION);
         if (delta_dir < ANGLE_RESOLUTION / 4)
         {
@@ -539,9 +542,12 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
     }
     if (ship_i >= 0)
     {
-        ship = PlayersArray[ship_i];
-        aux_dir = (int)Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x + ship->vel.x * 2,
-                                    ship->pix_pos.y - pl->pix_pos.y + ship->vel.y * 2);
+        double adir;
+
+        ship = Player_by_index(ship_i);
+        adir = Wrap_cfindDir(ship->pos.cx - pl->pos.cx + PIXEL_TO_CLICK(ship->vel.x * 2),
+                             ship->pos.cy - pl->pos.cy + PIXEL_TO_CLICK(ship->vel.y * 2));
+        aux_dir = (int)(adir + 0.5);
         delta_dir = MOD2(aux_dir - travel_dir, ANGLE_RESOLUTION);
         if (delta_dir < ANGLE_RESOLUTION / 4)
         {

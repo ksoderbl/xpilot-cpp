@@ -37,7 +37,7 @@
 #include "const.h"
 #include "xperror.h"
 
-static bool debugShapeParsing = true;
+static bool debugShapeParsing = false;
 static bool verboseShapeParsing = true;
 static bool shapeLimits = true;
 
@@ -266,8 +266,9 @@ static int Grid_get_value(grid_t *grid_p, int x, int y)
 static bool Grid_point_is_outside_ship(grid_t *grid_p, ipos_t pt)
 {
     int value = Grid_get_value(grid_p, pt.x, pt.y);
-    warn("Grid_point_is_outside_ship: %d,%d = %d", pt.x, pt.y, value);
-    return value == 2;
+    // warn("Grid_get_value: %d,%d = %d", pt.x, pt.y, value);
+    bool is_outside = value == 2;
+    return is_outside;
 }
 
 static int shape2wire(char *ship_shape_str, shipshape_t *ship)

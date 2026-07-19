@@ -292,8 +292,7 @@ static int Cannon_in_danger(cannon_t *c)
     const int max_objs = 100;
     int obj_count, i, danger = false;
     int npx, npy, tdx, tdy;
-    int cpx = (int)c->pix_pos.x;
-    int cpy = (int)c->pix_pos.y;
+    int cpx = CLICK_TO_PIXEL(c->pos.cx), cpy = CLICK_TO_PIXEL(c->pos.cy);
 
     if (options.cannonSmartness == 0)
         return false;
@@ -314,16 +313,16 @@ static int Cannon_in_danger(cannon_t *c)
         if (BIT(World.rules->mode, TEAM_PLAY) && options.teamImmunity && shot->team == c->team)
             continue;
 
-        npx = shot->pix_pos.x;
-        npy = shot->pix_pos.y;
+        npx = CLICK_TO_PIXEL(shot->pos.cx);
+        npy = CLICK_TO_PIXEL(shot->pos.cy);
         if (options.cannonSmartness > 1)
         {
-            npx += shot->vel.x;
-            npy += shot->vel.y;
+            npx += (int)shot->vel.x;
+            npy += (int)shot->vel.y;
             if (options.cannonSmartness > 2)
             {
-                npx += shot->acc.x;
-                npy += shot->acc.y;
+                npx += (int)shot->acc.x;
+                npy += (int)shot->acc.y;
             }
         }
         tdx = WRAP_DX(npx - cpx);
@@ -398,20 +397,20 @@ static int Cannon_select_weapon(cannon_t *c)
  */
 static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 {
-    int speed = options.shotSpeed;
-    int range = CANNON_SHOT_LIFE_MAX * speed;
+    double speed = options.shotSpeed;
+    double range = CANNON_SHOT_LIFE_MAX * speed;
     int cpx = (int)c->pix_pos.x;
     int cpy = (int)c->pix_pos.y;
     int visualrange = (int)(CANNON_DISTANCE + 2 * c->item[ITEM_SENSOR] * BLOCK_SZ);
     bool found = false, ready = false;
-    int closest = range;
+    double closest = range;
     int ddir, i, smartness = options.cannonSmartness;
 
     switch (weapon)
     {
     case CW_MINE:
-        speed = (int)(speed * 0.5 + 0.1 * smartness);
-        range = (int)(range * 0.5 + 0.1 * smartness);
+        speed = speed * 0.5 + 0.1 * smartness;
+        range = range * 0.5 + 0.1 * smartness;
         break;
     case CW_LASER:
         speed = PULSE_SPEED;
@@ -420,9 +419,9 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
     case CW_ECM:
         /* smarter cannons wait a little longer before firing an ECM */
         if (smartness > 1)
-            range = (int)((ECM_DISTANCE / smartness + (int)(rfrac() * (int)(ECM_DISTANCE - ECM_DISTANCE / smartness))));
+            range = ((ECM_DISTANCE / smartness + (rfrac() * (int)(ECM_DISTANCE - ECM_DISTANCE / smartness))));
         else
-            range = (int)ECM_DISTANCE;
+            range = ECM_DISTANCE;
         break;
     case CW_TRACTORBEAM:
         range = TRACTOR_MAX_RANGE(c->item[ITEM_TRACTOR_BEAM]);
@@ -431,31 +430,32 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         /* smarter cannons have a smaller chance of using a transporter when
            target is out of range */
         if (smartness > 2 || (int)(rfrac() * sqr(smartness + 1)))
-            range = (int)TRANSPORTER_DISTANCE;
+            range = TRANSPORTER_DISTANCE;
         break;
     case CW_GASJET:
         if (c->item[ITEM_EMERGENCY_THRUST])
         {
-            speed *= 2;
-            range *= 2;
+            speed *= 2.0;
+            range *= 2.0;
         }
         break;
     default:
+        /* no need to do anything special for this weapon. */
         break;
     }
 
     for (i = 0; i < NumPlayers && !ready; i++)
     {
         player_t *pl = Player_by_index(i);
-        int tdist, tdx, tdy;
+        double tdist, tdx, tdy;
 
-        tdx = WRAP_DX(pl->pix_pos.x - cpx);
+        tdx = WRAP_DCX(pl->pos.cx - c->pos.cx) / CLICK;
         if (ABS(tdx) >= visualrange)
             continue;
-        tdy = WRAP_DY(pl->pix_pos.y - cpy);
+        tdy = WRAP_DCY(pl->pos.cy - c->pos.cy) / CLICK;
         if (ABS(tdy) >= visualrange)
             continue;
-        tdist = (int)LENGTH(tdx, tdy);
+        tdist = LENGTH(tdx, tdy);
         if (tdist > visualrange)
             continue;
 
@@ -479,23 +479,25 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         case 2:
             if (tdist < closest)
             {
-                *dir = (int)findDir(tdx, tdy);
+                double a = findDir(tdx, tdy);
+                *dir = (int)a;
                 found = true;
             }
             break;
         case 3:
             if (tdist < range)
             {
-                double time = tdist / speed;
-                int npx = (int)(pl->pix_pos.x + pl->vel.x * time + pl->acc.x * time * time);
-                int npy = (int)(pl->pix_pos.y + pl->vel.y * time + pl->acc.y * time * time);
+                double a, t = tdist / speed; /* time */
+                int npx = (int)(pl->pos.cx + pl->vel.x * t * CLICK + pl->acc.x * t * t * CLICK);
+                int npy = (int)(pl->pos.cy + pl->vel.y * t * CLICK + pl->acc.y * t * t * CLICK);
                 int tdir;
 
-                tdx = WRAP_DX(npx - cpx);
-                tdy = WRAP_DY(npy - cpy);
-                tdir = (int)findDir(tdx, tdy);
+                tdx = WRAP_DCX(npx - c->pos.cx) / CLICK;
+                tdy = WRAP_DCY(npy - c->pos.cy) / CLICK;
+                a = findDir(tdx, tdy);
+                t = (int)a;
                 ddir = MOD2(tdir - c->dir, ANGLE_RESOLUTION);
-                if ((ddir < (CANNON_SPREAD * 0.5) || ddir > ANGLE_RESOLUTION - (CANNON_SPREAD * 0.5)) && (int)LENGTH(tdx, tdy) < closest)
+                if ((ddir < (CANNON_SPREAD * 0.5) || ddir > ANGLE_RESOLUTION - (CANNON_SPREAD * 0.5)) && LENGTH(tdx, tdy) < closest)
                 {
                     *dir = tdir;
                     found = true;
@@ -544,8 +546,6 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
    have more than one possible use. */
 static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
 {
-    int cpx = (int)c->pix_pos.x;
-    int cpy = (int)c->pix_pos.y;
     modifiers_t mods;
     int i, smartness = options.cannonSmartness;
     int speed = options.shotSpeed;
