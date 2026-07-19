@@ -574,8 +574,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
 
 static void Frame_map(connection_t *conn, player_t *pl)
 {
-    int i, k;
-    int conn_bit = (1 << conn->ind);
+    int i, k, conn_bit = (1 << conn->ind);
     const int fuel_packet_size = 5;
     const int cannon_packet_size = 5;
     const int target_packet_size = 7;
@@ -1105,6 +1104,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             if (clpos_inview(&cv, fs->pos))
                 Send_refuel(conn, fs->pos, pl_i->pos);
         }
+
         if (Player_is_repairing(pl_i))
         {
             target_t *targ = Target_by_index(pl_i->repair_target);
@@ -1113,6 +1113,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
                 /* same packet as refuel */
                 Send_refuel(conn, pl_i->pos, targ->pos);
         }
+
         if (Player_uses_tractor_beam(pl_i))
         {
             player_t *t = Player_by_id(pl_i->lock.pl_id);
