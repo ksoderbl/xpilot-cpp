@@ -23,6 +23,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 
 #include <expat.h>
 #include <zlib.h>
@@ -32,7 +33,7 @@
 
 #include "cannon.h"
 #include "map.h"
-#include "polygon.h"
+// #include "polygon.h"
 #include "server.h"
 
 #define DEFAULT_POS {-1, -1}
@@ -566,8 +567,7 @@ static void tagend(void *data, const char *el)
         parsing_general_options = false;
         /* ok, got to the end of options */
         Options_parse();
-        /* kps - this can fail - fix */
-        // Grok_map_options();// TODO
+        Grok_map_options();
     }
     return;
 }

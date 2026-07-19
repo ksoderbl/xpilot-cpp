@@ -181,7 +181,6 @@ int Wildmap(
  * Prototypes for xpmap.c
  */
 void Create_blockmap_from_polygons(void);
-bool Xpmap_world_alloc(void);
 setup_t *Xpmap_init_setup(void);
 void Xpmap_print(void);
 void Xpmap_grok_map_data(void);
@@ -190,6 +189,10 @@ void Xpmap_tags_to_internal_data(void);
 void Xpmap_find_map_object_teams(void);
 void Xpmap_find_base_direction(void);
 void Xpmap_blocks_to_polygons(void);
+
+void Xpmap_grok_map_data2(void);
+void Xpmap_tags_to_internal_data2(void);
+void Xpmap_find_map_object_teams2(void);
 
 /*
  * Prototypes for xp2map.c

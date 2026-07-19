@@ -102,23 +102,6 @@ static void Find_base_order(void)
     }
 }
 
-static void Check_map_object_counters(void)
-{
-    int i;
-
-    for (i = 0; i < MAX_TEAMS; i++)
-    {
-        assert(World.teams[i].NumMembers == 0);
-        assert(World.teams[i].NumRobots == 0);
-        assert(World.teams[i].NumBases == 0);
-        assert(World.teams[i].NumTreasures == 0);
-        assert(World.teams[i].NumEmptyTreasures == 0);
-        assert(World.teams[i].TreasuresDestroyed == 0);
-        assert(World.teams[i].TreasuresLeft == 0);
-        assert(World.teams[i].SwapperId == NO_ID);
-    }
-}
-
 static void shrink(void **pp, size_t size)
 {
     void *p;
@@ -502,26 +485,22 @@ static bool World_alloc(void)
     int x;
     uint8_t *map_line;
     uint8_t **map_pointer;
+    uint16_t *item_line;
+    uint16_t **item_pointer;
     vector_t *grav_line;
     vector_t **grav_pointer;
+
     assert(World.block == NULL);
     assert(World.gravity == NULL);
 
     World.block = (uint8_t **)
         malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
+    World.itemID = (uint16_t **)
+        malloc(sizeof(uint16_t *) * World.x + World.x * sizeof(uint16_t) * World.y);
     World.gravity = (vector_t **)
         malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
 
-    /*assert(World.gravs == NULL);*/
-    /*assert(World.bases == NULL);*/
-    /*assert(World.fuels == NULL);*/
-    /*assert(World.cannons == NULL);*/
-    // assert(World.checks == NULL);
-    /*assert(World.wormholes == NULL);*/
-    /*assert(World.itemConcs == NULL);*/
-    /*assert(World.asteroidConcs == NULL);*/
-
-    if (World.block == NULL || World.gravity == NULL)
+    if (World.block == NULL || World.itemID == NULL || World.gravity == NULL)
     {
         World_free();
         error("Couldn't allocate memory for map");
@@ -530,7 +509,8 @@ static bool World_alloc(void)
 
     map_pointer = World.block;
     map_line = (uint8_t *)((uint8_t **)map_pointer + World.x);
-
+    item_pointer = World.itemID;
+    item_line = (uint16_t *)((uint16_t **)item_pointer + World.x);
     grav_pointer = World.gravity;
     grav_line = (vector_t *)((vector_t **)grav_pointer + World.x);
 
@@ -539,6 +519,9 @@ static bool World_alloc(void)
         *map_pointer = map_line;
         map_pointer += 1;
         map_line += World.y;
+        *item_pointer = item_line;
+        item_pointer += 1;
+        item_line += World.y;
         *grav_pointer = grav_line;
         grav_pointer += 1;
         grav_line += World.y;
@@ -546,6 +529,61 @@ static bool World_alloc(void)
 
     return true;
 }
+
+// static bool Xpmap_world_alloc(void)
+// {
+//     int x;
+//     uint8_t *map_line;
+//     uint8_t **map_pointer;
+//     uint16_t *item_line;
+//     uint16_t **item_pointer;
+//     vector_t *grav_line;
+//     vector_t **grav_pointer;
+
+//     assert(World.block == NULL);
+//     assert(World.gravity == NULL);
+
+//     // if (World.block || World.gravity)
+//     //     World_free();
+
+//     World.block = (uint8_t **)
+//         malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
+//     World.itemID = (uint16_t **)
+//         malloc(sizeof(uint16_t *) * World.x + World.x * sizeof(uint16_t) * World.y);
+//     World.gravity = (vector_t **)
+//         malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
+
+//     World.wormholes = NULL;
+
+//     if (World.block == NULL || World.itemID == NULL || World.gravity == NULL)
+//     {
+//         World_free();
+//         error("Couldn't allocate memory for map");
+//         return false;
+//     }
+
+//     map_pointer = World.block;
+//     map_line = (uint8_t *)((uint8_t **)map_pointer + World.x);
+//     item_pointer = World.itemID;
+//     item_line = (uint16_t *)((uint16_t **)item_pointer + World.x);
+//     grav_pointer = World.gravity;
+//     grav_line = (vector_t *)((vector_t **)grav_pointer + World.x);
+
+//     for (x = 0; x < World.x; x++)
+//     {
+//         *map_pointer = map_line;
+//         map_pointer += 1;
+//         map_line += World.y;
+//         *item_pointer = item_line;
+//         item_pointer += 1;
+//         item_line += World.y;
+//         *grav_pointer = grav_line;
+//         grav_pointer += 1;
+//         grav_line += World.y;
+//     }
+
+//     return true;
+// }
 
 /*
  * This function can be called after the map options have been read.
@@ -616,20 +654,23 @@ static bool Grok_map_size(void)
 
 bool Grok_map_options(void)
 {
-    if (World.have_options)
-        return true;
-
-    Check_map_object_counters();
+    warn("Grok_map_options ----------------->");
 
     if (!Grok_map_size())
+    {
+        warn("Grok_map_options -----------------> Grok_map_size failed");
         return false;
+    }
 
     strlcpy(World.name, options.mapName, sizeof(World.name));
     strlcpy(World.author, options.mapAuthor, sizeof(World.author));
     strlcpy(World.dataURL, options.dataURL, sizeof(World.dataURL));
 
     if (!World_alloc())
+    {
+        warn("Grok_map_options -----------------> Grok_alloc failed");
         return false;
+    }
 
     Set_world_rules();
     Set_world_items();
@@ -641,7 +682,7 @@ bool Grok_map_options(void)
         CLR_BIT(World.rules->mode, TEAM_PLAY);
     }
 
-    World.have_options = true;
+    warn("Grok_map_options -----------------> RETURNING OK");
 
     return true;
 }
@@ -705,14 +746,31 @@ static void Generate_random_map(void)
     World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
 }
 
+void Xpmap_grok_map_data2(void)
+{
+}
+
+void Xpmap_tags_to_internal_data2(void)
+{
+}
+
+void Xpmap_find_map_object_teams2(void)
+{
+}
+
 bool Grok_map(void)
 {
     warn("Grok_map: ========================== START");
     warn("Grok_map: is_polygon_map: %s", is_polygon_map ? "true" : "false");
 
+    if (!Grok_map_options())
+        return false;
+
     if (!is_polygon_map)
     {
-        warn("Grok_map: start");
+        Xpmap_grok_map_data2();
+        Xpmap_tags_to_internal_data2();
+        Xpmap_find_map_object_teams2();
 
         int i, x, y, c;
         char *s;
@@ -759,8 +817,8 @@ bool Grok_map(void)
                 return false;
         }
 
-        printf("grok map: alloc map\n");
-        Xpmap_world_alloc();
+        // printf("grok map: alloc map\n");
+        // Xpmap_world_alloc();
 
         x = -1;
         y = World.y - 1;

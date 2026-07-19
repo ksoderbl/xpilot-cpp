@@ -1497,6 +1497,7 @@ void Xpmap_find_base_direction(void)
             if (att == -1 || dir == DIR_DOWN)
                 att = DIR_DOWN;
         }
+
         /* then rightwards */
         if (x == World.x - 1 && World.block[0][y] == BASE_ATTRACTOR && BIT(World.rules->mode, WRAP_PLAY))
         {
@@ -1508,6 +1509,7 @@ void Xpmap_find_base_direction(void)
             if (att == -1 || dir == DIR_RIGHT)
                 att = DIR_RIGHT;
         }
+
         /* then leftwards */
         if (x == 0 && World.block[World.x - 1][y] == BASE_ATTRACTOR && BIT(World.rules->mode, WRAP_PLAY))
         {
@@ -1519,6 +1521,7 @@ void Xpmap_find_base_direction(void)
             if (att == -1 || dir == DIR_LEFT)
                 att = DIR_LEFT;
         }
+
         if (att != -1)
             dir = att;
         base->dir = dir;
@@ -1998,59 +2001,4 @@ void Xpmap_blocks_to_polygons(void)
         Xpmap_friction_area_to_polygon(i);
 
     /*printf("Created %d polygons.\n", num_polys);*/
-}
-
-bool Xpmap_world_alloc(void)
-{
-    int x;
-    uint8_t *map_line;
-    uint8_t **map_pointer;
-    uint16_t *item_line;
-    uint16_t **item_pointer;
-    vector_t *grav_line;
-    vector_t **grav_pointer;
-
-    assert(World.block == NULL);
-    assert(World.gravity == NULL);
-
-    // if (World.block || World.gravity)
-    //     World_free();
-
-    World.block = (uint8_t **)
-        malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
-    World.itemID = (uint16_t **)
-        malloc(sizeof(uint16_t *) * World.x + World.x * sizeof(uint16_t) * World.y);
-    World.gravity = (vector_t **)
-        malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
-
-    World.wormholes = NULL;
-
-    if (World.block == NULL || World.itemID == NULL || World.gravity == NULL)
-    {
-        World_free();
-        error("Couldn't allocate memory for map");
-        return false;
-    }
-
-    map_pointer = World.block;
-    map_line = (uint8_t *)((uint8_t **)map_pointer + World.x);
-    item_pointer = World.itemID;
-    item_line = (uint16_t *)((uint16_t **)item_pointer + World.x);
-    grav_pointer = World.gravity;
-    grav_line = (vector_t *)((vector_t **)grav_pointer + World.x);
-
-    for (x = 0; x < World.x; x++)
-    {
-        *map_pointer = map_line;
-        map_pointer += 1;
-        map_line += World.y;
-        *item_pointer = item_line;
-        item_pointer += 1;
-        item_line += World.y;
-        *grav_pointer = grav_line;
-        grav_pointer += 1;
-        grav_line += World.y;
-    }
-
-    return true;
 }
