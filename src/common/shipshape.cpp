@@ -131,12 +131,13 @@ void Rotate_position(position_t pt[ANGLE_RESOLUTION])
     }
 }
 
-static void Rotate_ship(shipshape_t *ship)
+void Rotate_ship(shipshape_t *ship)
 {
     int i;
 
     for (i = 0; i < ship->num_points; i++)
         Rotate_point(&ship->pts[i][0]);
+
     Rotate_point(&ship->engine[0]);
     Rotate_point(&ship->m_gun[0]);
     for (i = 0; i < ship->num_l_gun; i++)
@@ -172,43 +173,43 @@ shipshape_t *Default_ship(void)
         sh.num_points = 3;
 
         sh.pts[0] = &pts[0][0];
-        pos.x = 15;
+        pos.x = 14;
         pos.y = 0;
         Ship_set_point_ipos(&sh, 0, pos);
 
         sh.pts[1] = &pts[1][0];
-        pos.x = -9;
+        pos.x = -8;
         pos.y = 8;
         Ship_set_point_ipos(&sh, 1, pos);
 
         sh.pts[2] = &pts[2][0];
-        pos.x = -9;
+        pos.x = -8;
         pos.y = -8;
         Ship_set_point_ipos(&sh, 2, pos);
 
-        pos.x = -9;
+        pos.x = -8;
         pos.y = 0;
         Ship_set_engine_ipos(&sh, pos);
 
-        pos.x = 15;
+        pos.x = 14;
         pos.y = 0;
         Ship_set_m_gun_ipos(&sh, pos);
 
         sh.num_l_light = 1;
         sh.l_light[0] = &pts[3][0];
-        pos.x = -9;
+        pos.x = -8;
         pos.y = 8;
         Ship_set_l_light_ipos(&sh, 0, pos);
 
         sh.num_r_light = 1;
         sh.r_light[0] = &pts[4][0];
-        pos.x = -9;
+        pos.x = -8;
         pos.y = -8;
         Ship_set_r_light_ipos(&sh, 0, pos);
 
         sh.num_m_rack = 1;
         sh.m_rack[0] = &pts[5][0];
-        pos.x = 15;
+        pos.x = 14;
         pos.y = 0;
         Ship_set_m_rack_ipos(&sh, 0, pos);
 
@@ -688,13 +689,13 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
     }
 
     /* Check for some things being set, and give them defaults if not */
-
     if (ship->num_points < 3)
     {
         if (verboseShapeParsing)
             warn("A shipshape must have at least 3 valid points.");
         return -1;
     }
+
     /* If no main gun set, put at foremost point */
     if (!mainGunSet)
     {
@@ -719,6 +720,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         l_light[0] = pt[max];
         ship->num_l_light = 1;
     }
+
     /* If no right light set, put at rightmost point */
     if (!ship->num_r_light)
     {
@@ -731,6 +733,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         r_light[0] = pt[max];
         ship->num_r_light = 1;
     }
+
     /* If no engine position, put at rear of ship */
     if (!engineSet)
     {
@@ -745,6 +748,7 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         engine.y = 0;
         engineSet = true;
     }
+
     /* If no missile racks, put at main gun position*/
     if (!ship->num_m_rack)
     {
@@ -1000,7 +1004,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
         if (Grid_point_is_outside_ship(&grid, m_gun))
         {
             if (verboseShapeParsing)
-                warn("Main gun outside ship\n");
+                warn("Main gun (at (%d,%d)) is outside ship.",
+                     m_gun.x, m_gun.y);
             invalid++;
         }
         for (i = 0; i < ship->num_l_gun; i++)
@@ -1008,7 +1013,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, l_gun[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Left gun %d outside ship\n", i);
+                    warn("Left gun at (%d,%d) is outside ship.",
+                         l_gun[i].x, l_gun[i].y);
                 invalid++;
             }
         }
@@ -1017,7 +1023,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, r_gun[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Right gun %d outside ship\n", i);
+                    warn("Right gun at (%d,%d) is outside ship.",
+                         r_gun[i].x, r_gun[i].y);
                 invalid++;
             }
         }
@@ -1026,7 +1033,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, l_rgun[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Left rear gun %d outside ship\n", i);
+                    warn("Left rear gun at (%d,%d) is outside ship.",
+                         l_rgun[i].x, l_rgun[i].y);
                 invalid++;
             }
         }
@@ -1035,7 +1043,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, r_rgun[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Right rear gun %d outside ship\n", i);
+                    warn("Right rear gun at (%d,%d) is outside ship.",
+                         r_rgun[i].x, r_rgun[i].y);
                 invalid++;
             }
         }
@@ -1044,7 +1053,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, m_rack[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Missile rack %d outside ship\n", i);
+                    warn("Missile rack at (%d,%d) is outside ship.",
+                         m_rack[i].x, m_rack[i].y);
                 invalid++;
             }
         }
@@ -1053,7 +1063,8 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, l_light[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Left light %d outside ship\n", i);
+                    warn("Left light at (%d,%d) is outside ship.",
+                         l_light[i].x, l_light[i].y);
                 invalid++;
             }
         }
@@ -1062,14 +1073,16 @@ static int shape2wire(char *ship_shape_str, shipshape_t *ship)
             if (Grid_point_is_outside_ship(&grid, r_light[i]))
             {
                 if (verboseShapeParsing)
-                    warn("Right light %d outside ship\n", i);
+                    warn("Right light at (%d,%d) is outside ship.",
+                         r_light[i].x, r_light[i].y);
                 invalid++;
             }
         }
         if (Grid_point_is_outside_ship(&grid, engine))
         {
             if (verboseShapeParsing)
-                warn("Engine outside of ship\n");
+                warn("Engine (at (%d,%d)) is outside ship.",
+                     engine.x, engine.y);
             invalid++;
             /* this could happen in case of an old format ship shape. */
             if (shape_version == 0x3100 && invalid == 1)
