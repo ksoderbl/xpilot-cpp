@@ -674,7 +674,7 @@ void Config_init(void)
 {
     int i, max_ids;
 
-    for (i = 0; i < num_options; i++)
+    for (i = 0; i < optionsVector.size(); i++)
     {
         xp_option_t *opt = Option_by_index(i);
 

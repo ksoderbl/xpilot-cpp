@@ -4350,7 +4350,7 @@ GLWidget *Init_ConfMenuWidget(Uint16 x, Uint16 y)
         return NULL;
     }
 
-    for (i = 0; i < num_options; ++i)
+    for (i = 0; i < optionsVector.size(); ++i)
     {
         opt = Option_by_index(i);
         item = Init_OptionWidget(opt, &cm_name_color, &nullRGBA);

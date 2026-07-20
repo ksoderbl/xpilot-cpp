@@ -857,7 +857,7 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
     {
         if (!strncasecmp(ptr, "key", 3))
             ptr += 3;
-        for (j = 0; j < num_options; j++)
+        for (j = 0; j < optionsVector.size(); j++)
         {
             xp_option_t *opt_j = Option_by_index(j);
             const char *opt_j_name;
@@ -872,7 +872,7 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
                 break;
             }
         }
-        if (j == num_options)
+        if (j == optionsVector.size())
             warn("Unknown key \"%s\" for %s.", ptr, Option_get_name(opt));
     }
 

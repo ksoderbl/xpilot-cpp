@@ -595,6 +595,12 @@ static int Colors_init_bitmap_colors(void)
 
     warn("Colors_init_bitmap_colors: visualPtr = %p", visualPtr);
 
+    if (visualPtr == nullptr)
+    {
+        warn("Colors_init_bitmap_colors: Need visual!");
+        return -1;
+    }
+
     switch (visualPtr->c_class)
     {
     case PseudoColor:
@@ -648,12 +654,16 @@ void Colors_init_style_colors(void)
  */
 int Colors_init_bitmaps(void)
 {
+    warn("=> Colors_init_bitmaps, fullColor = %d", fullColor);
+
     /* kps hack */
     // if (dbuf_state == NULL)
     //     return 0;
 
     if (fullColor)
     {
+        warn("=> Colors_init_bitmaps, calling Colors_init_bitmap_colors");
+
         if (Colors_init_bitmap_colors() == -1)
         {
             fullColor = false;
@@ -661,9 +671,15 @@ int Colors_init_bitmaps(void)
         }
     }
 
+    warn("=> Colors_init_bitmaps, calling Colors_init_style_colors");
+
     Colors_init_style_colors();
 
-    return (fullColor) ? 0 : -1;
+    int retval = (fullColor) ? 0 : -1;
+
+    warn("=> Colors_init_bitmaps, returning %d", retval);
+
+    return retval;
 }
 
 /*

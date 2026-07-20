@@ -234,6 +234,9 @@ static bool Set_texturedObjects(xp_option_t *opt, bool val);
 
 static bool Set_fullColor(xp_option_t *opt, bool val)
 {
+    warn("=> Set_fullcolor, val = %d", val);
+
+    // TODO: this if statement should go away
     if (val == fullColor)
         return true;
 

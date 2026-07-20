@@ -21,6 +21,7 @@
 #pragma once
 
 #include <cassert>
+#include <vector>
 
 #include "keys.h"
 
@@ -144,8 +145,9 @@ struct xp_option
 };
 
 /* number of options in global option array */
-extern int num_options;
-extern xp_option_t *options;
+// extern int num_options;
+// extern xp_option_t *options;
+extern std::vector<xp_option> optionsVector;
 
 extern void Parse_options(int *argcp, char **argvp);
 
@@ -228,9 +230,9 @@ static inline void *Option_get_private_data(xp_option_t *opt)
 
 static inline xp_option_t *Option_by_index(int ind)
 {
-    if (ind < 0 || ind >= num_options)
-        return NULL;
-    return &options[ind];
+    if (ind < 0 || ind >= optionsVector.size())
+        return nullptr;
+    return &optionsVector[ind];
 }
 
 /*
