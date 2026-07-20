@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "xpilot-replay.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -29,7 +31,6 @@
 #include <X11/Xlib.h>
 
 #include "buttons.h"
-#include "xpilot-replay.h"
 
 #include "tools/grey.xbm"
 
@@ -42,8 +43,8 @@ struct button
     unsigned int width;
     unsigned int height;
     union button_image image;
-    int imagewidth;
-    int imageheight;
+    unsigned int imagewidth;
+    unsigned int imageheight;
     int flags;
     int group;
     void (*callback)(void *);
@@ -95,7 +96,8 @@ static void SetButtonFont(Display *display)
 Button CreateButton(Display *display, Window parent,
                     int x, int y,
                     unsigned int width, unsigned int height,
-                    union button_image image, int iw, int ih,
+                    union button_image image,
+                    unsigned iw, unsigned ih,
                     unsigned long foreground,
                     void (*callback)(void *),
                     void *data, int flags, int group)
@@ -111,7 +113,7 @@ Button CreateButton(Display *display, Window parent,
             SetButtonFont(display);
         if (width == 0)
             width = XTextWidth(buttonFont, image.string,
-                               strlen(image.string)) +
+                               (int)strlen(image.string)) +
                     10;
         if (height == 0)
             height = buttonFont->ascent + buttonFont->descent + 10;
@@ -227,11 +229,13 @@ int CheckButtonEvent(XEvent *event)
         if (event->xbutton.button == 1)
             ReleaseButton(b, (event->xbutton.x >= 0 &&
                               event->xbutton.y >= 0 &&
-                              event->xbutton.x < b->width &&
-                              event->xbutton.y < b->height)
+                              event->xbutton.x < (int)b->width &&
+                              event->xbutton.y < (int)b->height)
                                  ? True
                                  : False);
         return (1);
+    default:
+        break;
     }
 
     return (0);
@@ -241,6 +245,7 @@ void RedrawButton(Button b)
 {
     static GC gc = 0;
     static Pixmap grey = 0;
+    int bh = b->height, bw = b->width;
 
     if (gc == 0)
     {
@@ -265,10 +270,11 @@ void RedrawButton(Button b)
 
     if (b->flags & BUTTON_TEXT)
         XDrawString(b->display, b->window, gc, 5, 5 + buttonFont->ascent,
-                    b->image.string, strlen(b->image.string));
+                    b->image.string, (int)strlen(b->image.string));
     else if (b->image.icon != None)
     {
-        int x, y, w, h;
+        int x, y;
+        unsigned w, h;
 
         w = (b->imagewidth);
         if (w > b->width)
@@ -279,8 +285,9 @@ void RedrawButton(Button b)
         x = (b->width - w) >> 1;
         y = (b->height - h) >> 1;
         XCopyPlane(b->display, b->image.icon, b->window, gc,
-                   (b->imagewidth - w) >> 1, (b->imageheight - h) >> 1, w, h,
-                   x, y, 1);
+                   (int)((b->imagewidth - w) >> 1),
+                   (int)((b->imageheight - h) >> 1),
+                   w, h, x, y, 1);
     }
 
     if (b->flags & BUTTON_DISABLED)
@@ -294,42 +301,33 @@ void RedrawButton(Button b)
     if (b->flags & BUTTON_PRESSED)
     {
         XSetForeground(b->display, gc, black);
-        XDrawRectangle(b->display, b->window, gc, 0, 0, b->width - 1,
-                       b->height - 1);
-        XDrawRectangle(b->display, b->window, gc, 1, 1, b->width - 3,
-                       b->height - 3);
+        XDrawRectangle(b->display, b->window, gc,
+                       0, 0, b->width - 1, b->height - 1);
+        XDrawRectangle(b->display, b->window, gc,
+                       1, 1, b->width - 3, b->height - 3);
     }
     else
     {
         XSetForeground(b->display, gc, bottomshadow);
-        XDrawLine(b->display, b->window, gc, 0, b->height - 1, b->width - 1,
-                  b->height - 1);
-        XDrawLine(b->display, b->window, gc, b->width - 1, b->height - 1,
-                  b->width - 1, 0);
+        XDrawLine(b->display, b->window, gc, 0, bh - 1, bw - 1, bh - 1);
+        XDrawLine(b->display, b->window, gc, bw - 1, bh - 1, bw - 1, 0);
         XSetForeground(b->display, gc, topshadow);
-        XDrawLine(b->display, b->window, gc, 0, 0,
-                  b->width - 1, 0);
-        XDrawLine(b->display, b->window, gc, 0, 0, 0, b->height - 1);
+        XDrawLine(b->display, b->window, gc, 0, 0, bw - 1, 0);
+        XDrawLine(b->display, b->window, gc, 0, 0, 0, bh - 1);
         XSetForeground(b->display, gc, bottomshadow);
-        XDrawLine(b->display, b->window, gc, 1, b->height - 2, b->width - 2,
-                  b->height - 2);
-        XDrawLine(b->display, b->window, gc, b->width - 2, b->height - 2,
-                  b->width - 2, 1);
+        XDrawLine(b->display, b->window, gc, 1, bh - 2, bw - 2, bh - 2);
+        XDrawLine(b->display, b->window, gc, bw - 2, bh - 2, bw - 2, 1);
         XSetForeground(b->display, gc, topshadow);
-        XDrawLine(b->display, b->window, gc, 1, 1,
-                  b->width - 2, 1);
-        XDrawLine(b->display, b->window, gc, 1, 1, 1, b->height - 2);
+        XDrawLine(b->display, b->window, gc, 1, 1, bw - 2, 1);
+        XDrawLine(b->display, b->window, gc, 1, 1, 1, bh - 2);
     }
 
     XSetForeground(b->display, gc, bottomshadow);
-    XDrawLine(b->display, b->window, gc, 2, b->height - 3, b->width - 3,
-              b->height - 3);
-    XDrawLine(b->display, b->window, gc, b->width - 3, b->height - 3,
-              b->width - 3, 2);
+    XDrawLine(b->display, b->window, gc, 2, bh - 3, bw - 3, bh - 3);
+    XDrawLine(b->display, b->window, gc, bw - 3, bh - 3, bw - 3, 2);
     XSetForeground(b->display, gc, topshadow);
-    XDrawLine(b->display, b->window, gc, 2, 2,
-              b->width - 3, 2);
-    XDrawLine(b->display, b->window, gc, 2, 2, 2, b->height - 3);
+    XDrawLine(b->display, b->window, gc, 2, 2, bw - 3, 2);
+    XDrawLine(b->display, b->window, gc, 2, 2, 2, bh - 3);
 }
 
 void DisableButton(Button b)

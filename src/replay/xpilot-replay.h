@@ -21,8 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XP_REPLAY_H
-#define XP_REPLAY_H
+#pragma once
+
+#include <cstdlib>
 
 #define BLACK 0
 #define WHITE 1
@@ -42,5 +43,3 @@ enum MemTypes
 };
 
 void *MyMalloc(size_t, enum MemTypes);
-
-#endif

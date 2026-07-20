@@ -33,6 +33,8 @@
  * implied warranty.
  */
 
+#include "xpilot-replay.h"
+
 #include <unistd.h>
 
 #include <cstdlib>
@@ -55,7 +57,6 @@
 #include "recordfmt.h"
 #include "item.h"
 #include "buttons.h"
-#include "xpilot-replay.h"
 
 #include "items/itemRocketPack.xbm"
 #include "items/itemCloakingDevice.xbm"
@@ -432,7 +433,9 @@ static int verbose = 0;    /* want extra info messages */
 static int compress = 0;   /* save files in compressed format */
 static int frame_count;    /* number of frame next read in */
 static int frames_in_core; /* number of frame next read in */
+#ifdef USE_GCLIST
 static struct rGC *gclist; /* list of all GCs used */
+#endif
 static int forceRedraw = False;
 static int quit = 0;
 static struct xprc *purge_argument;
@@ -448,6 +451,7 @@ static long mem_program_used;             /* max. size of malloced mem */
 static long mem_all_types_used;           /* frame memory in use */
 static long mem_typed_used[NUM_MEMTYPES]; /* debugging & analysis */
 static long max_mem = 8 * 1024 * 1024;    /* memory limit (soft) */
+static int loopAtEnd;
 
 static void openErrorWindow(struct errorwin *, const char *, ...);
 
@@ -3280,6 +3284,8 @@ static void dox(struct xui *ui, struct xprc *rc)
                 case 'Q':
                     XFreeGC(dpy, rc->gc);
                     return;
+                default:
+                    break;
                 }
 
             default:
@@ -3287,11 +3293,18 @@ static void dox(struct xui *ui, struct xprc *rc)
             }
         }
 
+        /*
+         * for "-loop" option, act like z was pressed
+         */
+        if (rc->eof == True && loopAtEnd)
+        {
+            rc->eof = False;
+            frameStep = -rc->cur->number;
+        }
+
         gettimeofday(&tv1, NULL);
         if (frameStep != 0)
-        {
             tv0 = tv1;
-        }
         else if (!forceRedraw && currentSpeed != 0)
         {
             long delta_sec = tv1.tv_sec - tv0.tv_sec;
@@ -3311,9 +3324,7 @@ static void dox(struct xui *ui, struct xprc *rc)
                 FD_SET(rfd, &rset);
                 num = select(rfd + 1, &rset, NULL, NULL, &tv1);
                 if (num == 1)
-                {
                     continue;
-                }
                 tv0.tv_usec = tv0.tv_usec + frame_rate;
                 if (tv0.tv_usec >= 1000000)
                 {
