@@ -6,6 +6,8 @@
  *      Bert Gijsbers
  *      Dick Balaska
  *
+ * Copyright (C) 2000-2004 Uoti Urpala
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -303,7 +305,6 @@ int Net_setup(void)
             {
                 if (oldServer)
                 {
-
                     n = Packet_scanf(&cbuf,
                                      "%ld"
                                      "%ld%hd"
@@ -349,8 +350,6 @@ int Net_setup(void)
                          Setup->map_data_len, Setup->width, Setup->height);
                     return -1;
                 }
-                // Setup->width = Setup->x * BLOCK_SZ;
-                // Setup->height = Setup->y * BLOCK_SZ;
                 if (oldServer && Setup->map_order != SETUP_MAP_ORDER_XY && Setup->map_order != SETUP_MAP_UNCOMPRESSED)
                 {
                     warn("Unknown map order type (%d)", Setup->map_order);
@@ -1606,41 +1605,6 @@ int Net_ask_for_motd(long offset, long maxlen)
     return 0;
 }
 
-// static void Check_view_dimensions_old(void)
-// {
-//     int width_wanted = draw_width;
-//     int height_wanted = draw_height;
-//     int srv_width, srv_height;
-
-//     width_wanted = (int)(width_wanted * scaleFactor + 0.5);
-//     height_wanted = (int)(height_wanted * scaleFactor + 0.5);
-
-//     srv_width = width_wanted;
-//     srv_height = height_wanted;
-//     LIMIT(srv_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-//     LIMIT(srv_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
-//     if (ext_view_width != srv_width ||
-//         ext_view_height != srv_height)
-//     {
-//         Send_display();
-//     }
-
-//     active_view_width = ext_view_width;
-//     active_view_height = ext_view_height;
-//     ext_view_x_offset = 0;
-//     ext_view_y_offset = 0;
-//     if (width_wanted > ext_view_width)
-//     {
-//         ext_view_width = width_wanted;
-//         ext_view_x_offset = (width_wanted - active_view_width) / 2;
-//     }
-//     if (height_wanted > ext_view_height)
-//     {
-//         ext_view_height = height_wanted;
-//         ext_view_y_offset = (height_wanted - active_view_height) / 2;
-//     }
-// }
-
 /*
  * Receive the packet with counts for all the items.
  * New since pack version 4203.
@@ -1723,61 +1687,12 @@ int Receive_self(void)
     ext_view_height = sViewHeight;
     // debris_colors = sNumSparkColors;
 
-    if (version < 0x4203)
-    {
-        if (version >= 0x3720)
-        {
-            n = Packet_scanf(&rbuf, "%c%c%c%c",
-                             &(num_items[ITEM_EMERGENCY_SHIELD]),
-                             &(num_items[ITEM_DEFLECTOR]),
-                             &(num_items[ITEM_HYPERJUMP]),
-                             &(num_items[ITEM_PHASING]));
-            if (n <= 0)
-                return n;
-
-            if (version >= 0x4100)
-            {
-                n = Packet_scanf(&rbuf, "%c", &(num_items[ITEM_MIRROR]));
-                if (n <= 0)
-                    return n;
-                if (version >= 0x4201)
-                {
-                    n = Packet_scanf(&rbuf, "%c", &(num_items[ITEM_ARMOR]));
-                    if (n <= 0)
-                        return n;
-                }
-                else
-                    num_items[ITEM_ARMOR] = 0;
-            }
-            else
-            {
-                num_items[ITEM_MIRROR] = 0;
-                num_items[ITEM_ARMOR] = 0;
-            }
-        }
-        else
-        {
-            if (version >= 0x3200)
-            {
-                n = Packet_scanf(&rbuf, "%c",
-                                 &(num_items[ITEM_EMERGENCY_SHIELD]));
-                if (n <= 0)
-                    return n;
-            }
-            else
-                num_items[ITEM_EMERGENCY_SHIELD] = 0;
-            num_items[ITEM_DEFLECTOR] = 0;
-            num_items[ITEM_HYPERJUMP] = 0;
-            num_items[ITEM_PHASING] = 0;
-            num_items[ITEM_MIRROR] = 0;
-            num_items[ITEM_ARMOR] = 0;
-        }
-    }
+    // version >= 0x4203
 
     // if (debris_colors > num_spark_colors)
     //     debris_colors = num_spark_colors;
 
-    Check_view_dimensions_old();
+    Check_view_dimensions1();
     /*
      * These assignments are done here because the server_display
      * structure members are not of the type that Packet_scanf()
@@ -2074,9 +1989,6 @@ int Receive_wreckage(void) /* since 3.8.0 */
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c%c", &ch, &x, &y,
                           &wrecktype, &size, &rot)) <= 0)
         return n;
-    if (version < 0x4202)
-        /* always color red. */
-        wrecktype &= 0x7F;
     if ((n = Handle_wreckage(x, y, wrecktype, size, rot)) == -1)
         return -1;
     return 1;
@@ -2819,7 +2731,7 @@ int Send_display(void)
     {
         ext_view_width = width_wanted;
         ext_view_height = height_wanted;
-        Check_view_dimensions_old();
+        Check_view_dimensions1();
     }
     else if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
                            width_wanted, height_wanted,

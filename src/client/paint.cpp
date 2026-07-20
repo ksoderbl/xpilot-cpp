@@ -148,7 +148,7 @@ static void Init_scale_array(void)
 
 static bool scaleArrayInitialized = false;
 
-int Check_view_dimensions_old(void)
+int Check_view_dimensions1(void)
 {
     // scaleFactor = 1.2;
 
