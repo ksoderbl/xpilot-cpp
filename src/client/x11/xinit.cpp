@@ -405,7 +405,7 @@ int Init_top(void)
                               top_x, top_y,
                               top_width, top_height,
                               0, (int)dispDepth,
-                              InputOutput, visual,
+                              InputOutput, visualPtr,
                               mask, &sattr);
     XSelectInput(dpy, topWindow,
                  KeyPressMask | KeyReleaseMask | FocusChangeMask | StructureNotifyMask);

@@ -44,7 +44,7 @@ extern char sparkColors[MSG_LEN];
 extern int spark_color[MAX_COLORS];
 extern int ButtonHeight;
 extern char visualName[MAX_VISUAL_NAME];
-extern Visual *visual;
+extern Visual *visualPtr;
 extern unsigned dispDepth;
 extern bool texturedObjects;
 extern bool fullColor;

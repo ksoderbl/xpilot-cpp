@@ -339,7 +339,7 @@ static void About_create_window(void)
                                 0, 0,
                                 windowWidth, windowHeight,
                                 2, (int)dispDepth,
-                                InputOutput, visual,
+                                InputOutput, visualPtr,
                                 mask, &sattr);
     XStoreName(dpy, aboutWindow, "XPilot - information");
     XSetIconName(dpy, aboutWindow, "XPilot/info");
