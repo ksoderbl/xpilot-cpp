@@ -472,6 +472,7 @@ int Net_verify(char *user_name, char *nick_name, char *disp)
                 return -1;
             }
             Sockbuf_clear(&wbuf);
+            /* IFWINDOWS( Trace("Verifying to sock=%d\n", wbuf.sock) ); */
             n = Packet_printf(&wbuf, "%c%s%s%s", PKT_VERIFY,
                               user_name, nick_name, disp);
             if (n <= 0 || Sockbuf_flush(&wbuf) <= 0)
@@ -1197,6 +1198,8 @@ static int Net_read(frame_buf_t *frame)
             Sockbuf_clear(&frame->sbuf);
             return 0;
         }
+        /*IFWINDOWS( Trace("Net_read: read %d bytes type=%d\n",
+          frame->sbuf.len, frame->sbuf.ptr[0]) ); */
         if (frame->sbuf.ptr[0] != PKT_START)
             /*
              * Don't know which type of packet this is
@@ -1207,6 +1210,7 @@ static int Net_read(frame_buf_t *frame)
 
         /* Peek at the frame loop number. */
         n = Packet_scanf(&frame->sbuf, "%c%ld", &ch, &loop);
+        /*IFWINDOWS( Trace("Net_read: frame # %d\n", loop) );*/
         frame->sbuf.ptr = frame->sbuf.buf;
         if (n <= 0)
         {
@@ -1232,6 +1236,7 @@ static int Net_read(frame_buf_t *frame)
              */
         }
     }
+    /*IFWINDOWS( Trace("Net_read: wbuf->len=%d\n", wbuf.len) );*/
 }
 
 /*
@@ -1651,6 +1656,7 @@ int Receive_self_items(void)
     n = Packet_scanf(&rbuf, "%c%u", &ch, &mask);
     if (n <= 0)
         return n;
+
     memset(num_items, 0, sizeof num_items);
     for (i = 0; mask != 0; i++)
     {
@@ -1698,33 +1704,9 @@ int Receive_self(void)
     if (n <= 0)
         return n;
 
-    if (version >= 0x4203)
-        memset(num_items, 0, sizeof num_items);
-    else
-    {
-        n = Packet_scanf(&rbuf,
-                         "%c%c%c%c%c"
-                         "%c%c%c%c%c"
-                         "%c%c%c%c",
-                         &(num_items[ITEM_CLOAK]),
-                         &(num_items[ITEM_SENSOR]),
-                         &(num_items[ITEM_MINE]),
-                         &(num_items[ITEM_MISSILE]),
-                         &(num_items[ITEM_ECM]),
+    // version >= 0x4203
+    memset(num_items, 0, sizeof num_items);
 
-                         &(num_items[ITEM_TRANSPORTER]),
-                         &(num_items[ITEM_WIDEANGLE]),
-                         &(num_items[ITEM_REARSHOT]),
-                         &(num_items[ITEM_AFTERBURNER]),
-                         &(num_items[ITEM_TANK]),
-
-                         &(num_items[ITEM_LASER]),
-                         &(num_items[ITEM_EMERGENCY_THRUST]),
-                         &(num_items[ITEM_TRACTOR_BEAM]),
-                         &(num_items[ITEM_AUTOPILOT]));
-        if (n <= 0)
-            return n;
-    }
     n = Packet_scanf(&rbuf,
                      "%c%hd%hd"
                      "%hd%hd%c"
@@ -1802,7 +1784,6 @@ int Receive_self(void)
      * expects, which breaks things on big endian architectures.
      */
 
-    // Game_over_action(sStat);
     Handle_self(x, y, vx, vy, sHeading,
                 (double)sPower,
                 (double)sTurnSpeed,
@@ -1880,6 +1861,7 @@ int Receive_missile(void)
 
     if ((n = Packet_scanf(&rbuf, "%c%hd%hd%c%c", &ch, &x, &y, &len, &dir)) <= 0)
         return n;
+
     if ((n = Handle_missile(x, y, len, dir)) == -1)
         return -1;
     return 1;
@@ -1893,7 +1875,6 @@ int Receive_ball(void)
 
     if (version < 0x4F14)
     {
-
         if ((n = Packet_scanf(&rbuf, "%c%hd%hd%hd", &ch, &x, &y, &id)) <= 0)
             return n;
     }
@@ -2055,8 +2036,6 @@ int Receive_fastshot(void)
     if (rbuf.ptr - rbuf.buf + (n * 2) > rbuf.len)
         return 0;
 
-    // warn("Receive_fastshot: type %d, n %d", type, n);
-
     /*
      * Teamshots are in range DEBRIS_TYPES to DEBRIS_TYPES*2-1 in fastshot.
      */
@@ -2115,9 +2094,6 @@ int Receive_asteroid(void) /* since 4.4.0 */
 
     type = ((type_size >> 4) & 0x0F);
     size = (type_size & 0x0F);
-
-    // warn("Receive_asteroid: x = %d, y = %d, type = %d, size = %d, rot = %d",
-    //      x, y, type, size, rot);
 
     if ((n = Handle_asteroid(x, y, type, size, rot)) == -1)
         return -1;
@@ -2313,7 +2289,7 @@ int Receive_player(void)
     user_name[MAX_NAME_LEN - 1] = '\0';
     host_name[MAX_HOST_LEN - 1] = '\0';
 
-    if (version > 0x3200 && version < 0x4F10)
+    if (version < 0x4F10)
         n = Packet_scanf(&cbuf, "%S", &shape[strlen(shape)]);
     else
         n = Packet_scanf(&cbuf, "%S%c", &shape[strlen(shape)], &myself);
@@ -2322,6 +2298,7 @@ int Receive_player(void)
         cbuf.ptr = cbuf_ptr;
         return n;
     }
+
     if ((n = Handle_player(id, myteam, mychar, nick_name, user_name, host_name,
                            shape, myself)) == -1)
         return -1;
@@ -2474,7 +2451,6 @@ int Receive_target(void)
     if ((n = Packet_scanf(&rbuf, "%c%hu%hu%hu", &ch,
                           &num, &dead_time, &damage_times_256)) <= 0)
         return n;
-    // warn("Receive_target, num, dead_time, damage_times_256 = %d, %d, %d", num, dead_time, damage_times_256);
     if ((n = Handle_target(num, dead_time, (double)damage_times_256 / 256.0)) == -1)
         return -1;
     if (wbuf.len < MAX_MAP_ACK_LEN)
@@ -2577,7 +2553,7 @@ int Receive_reliable(void)
         warn("Incomplete reliable data packet");
         return 0;
     }
-#if DEBUG
+#ifdef DEBUG
     if (reliable_offset >= rel + len)
         printf("Reliable my=%ld pkt=%ld len=%d loops=%ld\n",
                reliable_offset, rel, len, rel_loops);
@@ -2666,15 +2642,9 @@ int Send_keyboard(uint8_t *keyboard_vector)
 {
     int size = KEYBOARD_SIZE;
 
-    if (version < 0x3800)
-    {
-        /* older servers have a keyboard_size of 8 bytes instead of 9. */
-        size--;
-    }
     if (wbuf.size - wbuf.len < size + 1 + 4)
         /* Not enough write buffer space for keyboard state */
         return 0;
-
     Packet_printf(&wbuf, "%c%ld", PKT_KEYBOARD, last_keyboard_change);
     memcpy(&wbuf.buf[wbuf.len], keyboard_vector, (size_t)size);
     wbuf.len += size;
@@ -2696,16 +2666,12 @@ int Send_shape(char *str)
     char buf[MSG_LEN], ext[MSG_LEN];
 
     w = Convert_shape_str(str);
-    Convert_ship_2_string(w, buf, ext, (version < 0x3200) ? 0x3100 : 0x3200);
+    Convert_ship_2_string(w, buf, ext, 0x3200);
     Free_ship_shape(w);
     if (Packet_printf(&wbuf, "%c%S", PKT_SHAPE, buf) <= 0)
         return -1;
-
-    if (version > 0x3200)
-    {
-        if (Packet_printf(&wbuf, "%S", ext) <= 0)
-            return -1;
-    }
+    if (Packet_printf(&wbuf, "%S", ext) <= 0)
+        return -1;
     return 0;
 }
 
@@ -2904,9 +2870,6 @@ int Send_pointer_move(int movement)
     old_tv = tv;
 #endif
 
-    if (version < 0x3202)
-        return 0;
-
     if (dirPrediction)
     {
         pointer_moves[pointer_move_next].movement = movement;
@@ -2933,14 +2896,11 @@ int Send_pointer_move(int movement)
     return 0;
 }
 
-int Send_audio_request(int on)
+int Send_audio_request(bool on)
 {
 #ifdef DEBUG_SOUND
-    printf("Send_audio_request %d\n", on);
+    printf("Send_audio_request %d\n", on ? 1 : 0);
 #endif
-
-    if (version < 0x3250)
-        return 0;
 
 #ifndef SOUND
     on = false;
@@ -2952,9 +2912,6 @@ int Send_audio_request(int on)
 
 int Send_fps_request(int fps)
 {
-    if (version < 0x3280)
-        return 0;
-
     assert(fps > 0);
     assert(fps <= MAX_SUPPORTED_FPS);
     if (Packet_printf(&wbuf, "%c%c", PKT_ASYNC_FPS, fps) == -1)
