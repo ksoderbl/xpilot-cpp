@@ -2098,7 +2098,7 @@ static void Init_topmain(struct xui *ui, struct xprc *rc)
             CreateButton(dpy, ui->topmain, x, y - (buttonInit[i].height >> 1),
                          buttonInit[i].width + 4, buttonInit[i].height + 4, p,
                          buttonInit[i].width, buttonInit[i].height,
-                         (buttonInit[i].colour == 0) ? ui->black : ui->red,
+                         (buttonInit[i].color == 0) ? ui->black : ui->red,
                          buttonInit[i].callback, (void *)ui,
                          buttonInit[i].flags, buttonInit[i].group);
         x += buttonInit[i].width + BUTTON_BORDER + BUTTON_SPACING;

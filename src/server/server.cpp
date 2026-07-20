@@ -381,15 +381,10 @@ void End_game(void)
  */
 int Pick_team(int pick_for_type)
 {
-    int i,
-        least_players,
-        num_available_teams = 0,
-        playing_teams = 0,
-        losing_team;
+    int i, least_players, num_available_teams = 0, playing_teams = 0;
+    int losing_team;
     player_t *pl;
-    int playing[MAX_TEAMS];
-    int free_bases[MAX_TEAMS];
-    int available_teams[MAX_TEAMS];
+    int playing[MAX_TEAMS], free_bases[MAX_TEAMS], available_teams[MAX_TEAMS];
     long team_score[MAX_TEAMS];
     long losing_score;
 

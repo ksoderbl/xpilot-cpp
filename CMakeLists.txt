@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(XPILOT_BUILD_X11_CLIENT "Build the X11 client" ON)
+option(XPILOT_BUILD_X11_REPLAY "Build the X11 replayer" ON)
+option(XPILOT_BUILD_X11_MAPEDIT "Build the X11 mapedit" ON)
 option(XPILOT_BUILD_SDL_CLIENT "Build the SDL client" ON)
 option(XPILOT_USE_SDL_GAMELOOP "Use the generic SDL game loop instead of gameloop_x.cpp" OFF)
 
