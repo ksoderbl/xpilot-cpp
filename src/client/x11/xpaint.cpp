@@ -113,10 +113,13 @@ int Paint_init(void)
 {
     if (Init_wreckage() == -1)
         return -1;
+
     if (Init_asteroids() == -1)
         return -1;
+
     if (Bitmaps_init() == -1)
         return -1;
+
     return 0;
 }
 
@@ -186,7 +189,6 @@ void Paint_frame(void)
         Paint_ships();
         Paint_meters();
         Paint_HUD();
-
         Paint_recording();
         Paint_HUD_values();
 
@@ -319,41 +321,34 @@ void Paint_frame(void)
 
 static void Paint_score_background(void)
 {
-    // if (fullColor &&
-    //     Bitmap_get(playersWindow, BM_SCORE_BG, 0) != NULL &&
-    //     Bitmap_get(playersWindow, BM_LOGO, 0) != NULL)
-    // {
-    // }
+    // warn("Paint_score_background: fullColor: %d", fullColor ? 1 : 0);
 
-    XClearWindow(dpy, playersWindow);
+    if (fullColor &&
+        Bitmap_get(playersWindow, BM_SCORE_BG, 0) != NULL &&
+        Bitmap_get(playersWindow, BM_LOGO, 0) != NULL)
+    {
+        unsigned bgh, lh;
 
-    // if (!texturedObjects)
-    // {
-    //     XClearWindow(dpy, playersWindow);
-    // }
-    // else
-    // {
-    //     XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
+        XSetForeground(dpy, scoreListGC, colors[BLACK].pixel);
 
-    //     Bitmap_paint(playersWindow, BM_SCORE_BG,
-    //                  0, 0,
-    //                  //  players_width, BG_IMAGE_HEIGHT,
-    //                  0);
+        bgh = pixmaps[BM_SCORE_BG].height;
+        lh = pixmaps[BM_LOGO].height;
 
-    //     if (players_height > BG_IMAGE_HEIGHT + LOGO_HEIGHT)
-    //     {
-    //         XFillRectangle(dpy, playersWindow, scoreListGC,
-    //                        0, BG_IMAGE_HEIGHT,
-    //                        players_width,
-    //                        players_height - (BG_IMAGE_HEIGHT + LOGO_HEIGHT));
-    //     }
-    //     Bitmap_paint(playersWindow, BM_LOGO,
-    //                  0, players_height - LOGO_HEIGHT,
-    //                  //  players_width, LOGO_HEIGHT,
-    //                  0);
-
-    //     XFlush(dpy);
-    // }
+        Bitmap_paint(playersWindow, BM_SCORE_BG, 0, 0, 0);
+        if (players_height > bgh + lh)
+            XFillRectangle(dpy, playersWindow, scoreListGC,
+                           0, (int)bgh,
+                           players_width, players_height - (bgh + lh));
+        Bitmap_paint(playersWindow, BM_LOGO, 0, (int)(players_height - lh), 0);
+        XFlush(dpy);
+    }
+    else
+    {
+        XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
+        XFillRectangle(dpy, playersWindow, scoreListGC,
+                       0, 0, players_width, players_height);
+        XFlush(dpy);
+    }
 }
 
 void Paint_score_start(void)
@@ -482,6 +477,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
             color = scoreInactiveSelfColor;
         else
             color = scoreInactiveColor;
+
         XSetForeground(dpy, scoreListGC, colors[color].pixel);
         XDrawString(dpy, playersWindow, scoreListGC,
                     SCORE_BORDER, thisLine,
@@ -569,7 +565,8 @@ static void Paint_clock(bool redraw)
     second = m->tm_sec;
     minute = m->tm_min;
     hour = m->tm_hour;
-    /* warn("drawing clock at %02d:%02d:%02d", hour, minute, second);*/
+    /*warn("drawing clock at %02d:%02d:%02d", hour, minute, second);*/
+
     if (!instruments.clockAMPM)
         sprintf(buf, "%02d:%02d" /*":%02d"*/, hour, minute /*, second*/);
     else
@@ -600,7 +597,6 @@ void ShadowDrawString(Display *display, Window w, GC gc,
                       int x, int y, const char *str,
                       unsigned long fg, unsigned long bg)
 {
-
     XSetForeground(display, gc, bg);
     XDrawString(display, w, gc, x + 1, y + 1, str, (int)strlen(str));
     x--;
