@@ -41,7 +41,7 @@ void Object_position_set_clpos(object_t *obj, clpos_t pos)
     }
     if (pos.cy < 0)
     {
-        printf("BUG!  Illegal oebject position (cy < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
+        printf("BUG!  Illegal object position (cy < 0): (cx = %d, cy = %d)\n", pos.cx, pos.cy);
         // *(double *)(-1) = 4321.0;
         // abort();
     }

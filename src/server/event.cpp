@@ -458,7 +458,9 @@ void Pause_player(player_t *pl, bool on)
     if (on && !Player_is_paused(pl))
     {
         /* Turn pause mode on */
-        pl->count = 10 * FPS;
+        pl->count = 10 * 12;
+        /* player might have paused when recovering */
+        pl->recovery_count = 0;
         pl->updateVisibility = true;
         Player_self_destruct(pl, false);
         CLR_BIT(pl->obj_status, PLAYING);

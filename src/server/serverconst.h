@@ -290,7 +290,10 @@ constexpr double ED_LASER_HIT = -100.0;
 
 #define WARN_TIME 2
 
-#define SHIELD_TIME (2 * 12)
+constexpr int EMERGENCY_SHIELD_TIME = (4 * 12);
+constexpr int SHIELD_TIME = (2 * 12);
+constexpr int PHASING_TIME = (4 * 12);
+constexpr int EMERGENCY_THRUST_TIME = (4 * 12);
 
 constexpr double START_STATION_FUEL = MAX_STATION_FUEL;
 constexpr double STATION_REGENERATION = 0.06;

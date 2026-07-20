@@ -78,9 +78,8 @@ static void Transport_to_home(player_t *pl)
      * This results in a visually pleasing take off and landing.
      */
     clpos_t startpos;
-    double bx, by;
     double dx, dy, t, m;
-    const int T = RECOVERY_DELAY;
+    const double T = RECOVERY_DELAY;
 
     /*
     if (pl->home_base == NULL)
@@ -102,12 +101,12 @@ static void Transport_to_home(player_t *pl)
         startpos = Check_by_index(check)->pos;
     }
     else
-    {
         startpos = World.bases[pl->home_base_ind].pos;
-    }
+
     dx = WRAP_DCX(startpos.cx - pl->pos.cx);
     dy = WRAP_DCY(startpos.cy - pl->pos.cy);
-    t = pl->count + 0.5f;
+    // t = pl->count + 0.5f;
+    t = pl->recovery_count;
     if (2 * t <= T)
         m = 2 / t;
     else
@@ -124,14 +123,11 @@ static void Transport_to_home(player_t *pl)
  */
 void Phasing(player_t *pl, bool on)
 {
-    const int phasing_time = 4 * FPS;
-
     if (on)
     {
         if (pl->phasing_left <= 0)
         {
-            pl->phasing_left = phasing_time;
-            pl->phasing_max = phasing_time;
+            pl->phasing_left = PHASING_TIME;
             pl->item[ITEM_PHASING]--;
         }
         SET_BIT(pl->used, USES_PHASING_DEVICE);
@@ -238,17 +234,14 @@ void Deflector(player_t *pl, bool on)
  */
 void Emergency_thrust(player_t *pl, bool on)
 {
-    const int emergency_thrust_time = 4 * FPS;
-
     if (on)
     {
         if (pl->emergency_thrust_left <= 0)
         {
-            pl->emergency_thrust_left = emergency_thrust_time;
-            pl->emergency_thrust_max = emergency_thrust_time;
+            pl->emergency_thrust_left = EMERGENCY_THRUST_TIME;
             pl->item[ITEM_EMERGENCY_THRUST]--;
         }
-        if (!BIT(pl->used, USES_EMERGENCY_THRUST))
+        if (!Player_uses_emergency_thrust(pl))
         {
             SET_BIT(pl->used, USES_EMERGENCY_THRUST);
             sound_play_sensors(pl->pos, EMERGENCY_THRUST_ON_SOUND);
@@ -274,16 +267,13 @@ void Emergency_thrust(player_t *pl, bool on)
  */
 void Emergency_shield(player_t *pl, bool on)
 {
-    const int emergency_shield_time = 4 * FPS; /* 8 -> 4 */
-
     if (on)
     {
         if (BIT(pl->have, HAS_EMERGENCY_SHIELD))
         {
             if (pl->emergency_shield_left <= 0)
             {
-                pl->emergency_shield_left = emergency_shield_time;
-                pl->emergency_shield_max = emergency_shield_time;
+                pl->emergency_shield_left = EMERGENCY_SHIELD_TIME;
                 pl->item[ITEM_EMERGENCY_SHIELD]--;
             }
             if (options.cloakedShield || !BIT(pl->used, USES_CLOAKING_DEVICE))
@@ -885,25 +875,54 @@ static void Update_players(void)
         if (pl->damaged > 0)
             pl->damaged--;
 
-        if (pl->count > 0)
+        // if (pl->count > 0)
+        // {
+        //     pl->count--;
+        //     if (!BIT(pl->obj_status, PLAYING))
+        //     {
+        //         Transport_to_home(pl);
+        //         Move_player(pl);
+        //         continue;
+        //     }
+        // }
+
+        // if (pl->count == 0)
+        // {
+        //     pl->count = -1;
+
+        //     if (!BIT(pl->obj_status, PLAYING))
+        //     {
+        //         SET_BIT(pl->obj_status, PLAYING);
+        //         Go_home(pl);
+        //     }
+        // }
+
+        if (pl->pause_count > 0)
         {
-            pl->count--;
-            if (!BIT(pl->obj_status, PLAYING))
-            {
-                Transport_to_home(pl);
-                Move_player(pl);
-                continue;
-            }
         }
 
-        if (pl->count == 0)
+        if (pl->recovery_count > 0)
         {
-            pl->count = -1;
-
-            if (!BIT(pl->obj_status, PLAYING))
+            pl->recovery_count -= timeStep;
+            warn("Player %s recovery count is %f", pl->name, pl->recovery_count);
+            if (pl->recovery_count <= 0)
             {
-                SET_BIT(pl->obj_status, PLAYING);
-                Go_home(pl);
+                warn("Player %s recovered!", pl->name);
+                pl->recovery_count = 0;
+                if (!BIT(pl->obj_status, PLAYING))
+                {
+                    SET_BIT(pl->obj_status, PLAYING);
+                    Go_home(pl);
+                }
+            }
+            else
+            {
+                if (!BIT(pl->obj_status, PLAYING))
+                {
+                    Transport_to_home(pl);
+                    Move_player(pl);
+                    continue;
+                }
             }
         }
 
