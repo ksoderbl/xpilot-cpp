@@ -383,12 +383,11 @@ xp_option_t xdefault_options[] = {
 
     XP_STRING_OPTION(
         "geometry",
-        "1024x768",
+        "1280x1024",
         NULL, 0,
         Set_geometry, NULL, Get_geometry,
         XP_OPTFLAG_DEFAULT,
-        "Set the window size and position in standard X geometry format.\n"
-        "The maximum allowed window size is 1922x1440.\n"),
+        "Set the window size and position in standard X geometry format.\n"),
 
     XP_STRING_OPTION(
         "display",
