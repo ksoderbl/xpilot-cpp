@@ -2708,7 +2708,7 @@ int Send_talk(void)
     return 0;
 }
 
-int Send_display(void)
+int Send_display1(void)
 {
     int width_wanted = draw_width;
     int height_wanted = draw_height;
@@ -2738,6 +2738,31 @@ int Send_display(void)
         return -1;
 
     old_spark_rand = spark_rand;
+
+    return 0;
+}
+
+int Send_display2(int width, int height, int sparks, int spark_colors)
+{
+    int width_wanted = width;
+    int height_wanted = height;
+
+    if (width_wanted == server_display.view_width &&
+        height_wanted == server_display.view_height &&
+        spark_colors == server_display.num_spark_colors &&
+        sparks == server_display.spark_rand &&
+        last_loops != 0)
+    {
+        return 0;
+    }
+
+    if (Packet_printf(&wbuf, "%c%hd%hd%c%c", PKT_DISPLAY,
+                      width_wanted, height_wanted,
+                      spark_colors,
+                      sparks) == -1)
+        return -1;
+
+    server_display.spark_rand = sparks;
 
     return 0;
 }

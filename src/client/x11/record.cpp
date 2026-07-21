@@ -29,6 +29,7 @@
 #include <cerrno>
 #include <cctype>
 #include <ctime>
+#include <cstdint>
 
 #include <unistd.h>
 #include <X11/X.h>
@@ -41,7 +42,6 @@
 #include "commonmacros.h"
 #include "commonproto.h"
 #include "const.h"
-#include "xpmemory.h"
 #include "xpconfig.h"
 #include "xperror.h"
 
@@ -50,7 +50,6 @@
 #include "netclient.h"
 #include "option.h"
 #include "paint.h"
-#include "netclient.h"
 
 #include "xpaint.h"
 #include "recordfmt.h"
@@ -71,16 +70,16 @@
 /*
  * Functions and variables for recording
  */
-static char *record_filename = NULL; /* Name of recordfile. */
-static FILE *recordFP = NULL;        /* File handle for writing
-                                      * recording frames to. */
-bool recording = false;              /* Are we recording or not. */
-static bool record_start = false;    /* Should we start recording
-                                      * at the next frame. */
-static int record_frame_count = 0;   /* How many recorded frames. */
-static const char *record_dashes;    /* Which dash list to use. */
-static int record_num_dashes;        /* How big is dashes list. */
-static int record_dash_dirty = 0;    /* Has dashes list changed? */
+static char *record_filename = NULL;   /* Name of recordfile. */
+static FILE *recordFP = NULL;          /* File handle for writing
+                                        * recording frames to. */
+bool recording = false;                /* Are we recording or not. */
+static bool record_start = false;      /* Should we start recording
+                                        * at the next frame. */
+static int record_frame_count = 0;     /* How many recorded frames. */
+static const char *record_dashes;      /* Which dash list to use. */
+static int record_num_dashes;          /* How big is dashes list. */
+static bool record_dash_dirty = false; /* Has dashes list changed? */
 
 /*
  * Dummy functions for "recordable drawing" interface, when not recording.
@@ -89,9 +88,9 @@ static void Dummy_newFrame(void) {}
 static void Dummy_endFrame(void) {}
 
 static void Dummy_paintItemSymbol(int type, Drawable drawable,
-                                  GC mygc, int x, int y, int color) {}
-
-extern char hostname[];
+                                  GC mygc, int x, int y, int color)
+{
+}
 
 /*
  * Output the XPilot Recording Header at the beginning
@@ -171,77 +170,101 @@ static int RGetPixelIndex(unsigned long pixel)
     return WHITE;
 }
 
-// static void RWriteTile(Pixmap tile)
-// {
-//     typedef struct tile_list
-//     {
-//         struct tile_list *next;
-//         Pixmap tile;
-//         uint8_t tile_id;
-//     } tile_list_t;
-//     static tile_list_t *list = NULL;
-//     tile_list_t *lptr;
-//     static int next_tile_id = 1;
-//     unsigned x, y;
-//     int i;
-//     XImage *img;
+static XImage *Image_from_pixmap(Pixmap pixmap)
+{
+    XImage *img;
+    Window rootw;
+    int x, y;
+    unsigned width, height, border_width, depth;
 
-//     for (lptr = list; lptr != NULL; lptr = lptr->next)
-//     {
-//         if (lptr->tile == tile)
-//         {
-//             /* tile already sent before. */
-//             RWriteByte(RC_TILE);
-//             RWriteByte(lptr->tile_id);
-//             return;
-//         }
-//     }
+    if (!XGetGeometry(dpy, pixmap, &rootw,
+                      &x, &y,
+                      &width, &height,
+                      &border_width, &depth))
+    {
+        error("Can't get pixmap geometry");
+        return NULL;
+    }
+    img = XGetImage(dpy, pixmap,
+                    0, 0,
+                    width, height,
+                    AllPlanes, ZPixmap);
+    if (!img)
+    {
+        error("Can't get Image from Pixmap");
+        return NULL;
+    }
+    return img;
+}
 
-//     /* a first time tile. */
+static void RWriteTile(Pixmap tile)
+{
+    typedef struct tile_list
+    {
+        struct tile_list *next;
+        Pixmap tile;
+        uint8_t tile_id;
+    } tile_list_t;
+    static tile_list_t *list = NULL;
+    tile_list_t *lptr;
+    static int next_tile_id = 1;
+    int x, y, i;
+    XImage *img;
 
-//     if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
-//     {
-//         error("Not enough memory");
-//         RWriteByte(RC_TILE);
-//         RWriteByte(0);
-//         return;
-//     }
-//     lptr->next = list;
-//     lptr->tile = tile;
-//     lptr->tile_id = next_tile_id;
-//     list = lptr;
+    for (lptr = list; lptr != NULL; lptr = lptr->next)
+    {
+        if (lptr->tile == tile)
+        {
+            /* tile already sent before. */
+            RWriteByte(RC_TILE, recordFP);
+            RWriteByte(lptr->tile_id, recordFP);
+            return;
+        }
+    }
 
-//     if (!(img = xpm_image_from_pixmap(tile)))
-//     {
-//         RWriteByte(RC_TILE);
-//         RWriteByte(0);
-//         lptr->tile_id = 0;
-//         return;
-//     }
-//     RWriteByte(RC_NEW_TILE);
-//     RWriteByte(lptr->tile_id);
-//     RWriteUShort(img->width);
-//     RWriteUShort(img->height);
-//     for (y = 0; y < img->height; y++)
-//     {
-//         for (x = 0; x < img->width; x++)
-//         {
-//             unsigned long pixel = XGetPixel(img, x, y);
-//             for (i = 0; i < maxColors - 1; i++)
-//             {
-//                 if (pixel == colors[i].pixel)
-//                 {
-//                     break;
-//                 }
-//             }
-//             RWriteByte(i);
-//         }
-//     }
+    /* a first time tile. */
 
-//     XDestroyImage(img);
+    if (!(lptr = (tile_list_t *)malloc(sizeof(tile_list_t))))
+    {
+        error("Not enough memory");
+        RWriteByte(RC_TILE, recordFP);
+        RWriteByte(0, recordFP);
+        return;
+    }
+    lptr->next = list;
+    lptr->tile = tile;
+    lptr->tile_id = next_tile_id;
+    list = lptr;
 
-//     next_tile_id++;
-// }
+    if (!(img = Image_from_pixmap(tile)))
+    {
+        RWriteByte(RC_TILE, recordFP);
+        RWriteByte(0, recordFP);
+        lptr->tile_id = 0;
+        return;
+    }
+    RWriteByte(RC_NEW_TILE, recordFP);
+    RWriteByte(lptr->tile_id, recordFP);
+    RWriteUShort(img->width, recordFP);
+    RWriteUShort(img->height, recordFP);
+    for (y = 0; y < img->height; y++)
+    {
+        for (x = 0; x < img->width; x++)
+        {
+            unsigned long pixel = XGetPixel(img, x, y);
+            for (i = 0; i < maxColors - 1; i++)
+            {
+                if (pixel == colors[i].pixel)
+                    break;
+            }
+            RWriteByte(i, recordFP);
+        }
+    }
+
+    XDestroyImage(img);
+
+    next_tile_id++;
+}
 
 static void RWriteGC(GC gc, unsigned long req_mask)
 {
@@ -421,9 +444,7 @@ static void RWriteGC(GC gc, unsigned long req_mask)
         int i;
         RWriteByte(record_num_dashes, recordFP);
         for (i = 0; i < record_num_dashes; i++)
-        {
             RWriteByte(record_dashes[i], recordFP);
-        }
     }
     if (write_mask & RTILEGC)
     {
@@ -433,18 +454,16 @@ static void RWriteGC(GC gc, unsigned long req_mask)
             RWriteLong(values.ts_x_origin, recordFP);
         if (write_mask & GCTileStipYOrigin)
             RWriteLong(values.ts_y_origin, recordFP);
-        // if (write_mask & GCTile)
-        // {
-        //     RWriteTile(values.tile);
-        // }
+        if (write_mask & GCTile)
+            RWriteTile(values.tile);
     }
 }
 
 static void RNewFrame(void)
 {
-    static int before;
+    static bool before = false;
 
-    if (!before++)
+    if (!before)
     {
         WriteHeader();
         record_dashes = dashes;
@@ -452,6 +471,7 @@ static void RNewFrame(void)
         record_dash_dirty = true;
     }
 
+    before = true;
     recording = true;
 
     RWriteByte(RC_NEWFRAME, recordFP);
@@ -530,8 +550,7 @@ static int RDrawLines(Display *display, Drawable drawable, GC gc,
 }
 
 static int RDrawLine(Display *display, Drawable drawable, GC gc,
-                     int x1, int y1,
-                     int x2, int y2)
+                     int x1, int y1, int x2, int y2)
 {
     XDrawLine(display, drawable, gc, x1, y1, x2, y2);
     if (drawable == drawPixmap)
@@ -816,6 +835,8 @@ long Record_size(void)
  */
 void Record_toggle(void)
 {
+    warn("Record_toggle called!");
+
     if (record_filename != NULL && strlen(record_filename) > 0)
     {
         if (!record_start)
@@ -835,6 +856,7 @@ void Record_toggle(void)
         }
         else
             record_start = false;
+
         if (record_start)
             rd = Rdrawing;
         else

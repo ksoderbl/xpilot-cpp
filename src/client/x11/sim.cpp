@@ -42,11 +42,13 @@
 #include "rules.h"
 #include "bit.h"
 #include "netclient.h"
-#include "xpaint.h"
-#include "xinit.h"
 #include "clientpack.h"
 #include "client.h"
 #include "portability.h"
+
+#include "xevent.h"
+#include "xpaint.h"
+#include "xinit.h"
 
 typedef struct rpos_s
 {
@@ -231,7 +233,7 @@ static void Simulate_frames(void)
 
     Handle_message((char *)"Starting Test");
     // Game_over_action(PLAYING);
-    Send_display();
+    Send_display1();
 
     bzero(newitems, sizeof(newitems));
     newitems[ITEM_AFTERBURNER] = 2;
@@ -253,7 +255,7 @@ static void Simulate_frames(void)
             old_i = i;
         }
         Handle_start(i);
-        Send_display();
+        Send_display1();
         Handle_self((int)fake_ships[0].x,
                     (int)fake_ships[0].y,
                     (int)fake_ships[0].vx,

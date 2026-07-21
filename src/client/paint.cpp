@@ -176,7 +176,7 @@ int Check_view_dimensions1(void)
     LIMIT(srv_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
     LIMIT(srv_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
     if (ext_view_width != srv_width || ext_view_height != srv_height)
-        Send_display();
+        Send_display1();
 
     active_view_width = ext_view_width;
     active_view_height = ext_view_height;
@@ -192,6 +192,53 @@ int Check_view_dimensions1(void)
         ext_view_height = height_wanted;
         ext_view_y_offset = (height_wanted - active_view_height) / 2;
     }
+
+    return 0;
+}
+
+int Check_view_dimensions2(void)
+{
+    int width_wanted, height_wanted;
+    int srv_width, srv_height;
+
+    width_wanted = (int)(draw_width * clData.scaleFactor + 0.5);
+    height_wanted = (int)(draw_height * clData.scaleFactor + 0.5);
+
+    srv_width = width_wanted;
+    srv_height = height_wanted;
+    LIMIT(srv_height, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    LIMIT(srv_width, MIN_VIEW_SIZE, MAX_VIEW_SIZE);
+    if (server_display.view_width != srv_width ||
+        server_display.view_height != srv_height ||
+        server_display.num_spark_colors != num_spark_colors ||
+        server_display.spark_rand != spark_rand)
+    {
+        if (Send_display2(srv_width,
+                          srv_height,
+                          spark_rand,
+                          num_spark_colors))
+            return -1;
+    }
+    spark_rand = server_display.spark_rand;
+    active_view_width = server_display.view_width;
+    active_view_height = server_display.view_height;
+    ext_view_x_offset = 0;
+    ext_view_y_offset = 0;
+    if (width_wanted > active_view_width)
+    {
+        ext_view_width = width_wanted;
+        ext_view_x_offset = (width_wanted - active_view_width) / 2;
+    }
+    else
+        ext_view_width = active_view_width;
+
+    if (height_wanted > active_view_height)
+    {
+        ext_view_height = height_wanted;
+        ext_view_y_offset = (height_wanted - active_view_height) / 2;
+    }
+    else
+        ext_view_height = active_view_height;
 
     return 0;
 }

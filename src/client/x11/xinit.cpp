@@ -698,7 +698,7 @@ void Resize(Window w, unsigned width, unsigned height)
 
     std::cout << "Resize: drawWindow size: " << width << "x" << height << std::endl;
 
-    Send_display();
+    Send_display1();
     Net_flush();
     XResizeWindow(dpy, drawWindow, draw_width, draw_height);
     if (dbuf_state->type == PIXMAP_COPY)

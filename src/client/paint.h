@@ -133,6 +133,7 @@ int Life_color(other_t *other);
 int Life_color_by_life(int life);
 void Play_beep(void);
 int Check_view_dimensions1(void);
+int Check_view_dimensions2(void);
 void Store_hud_options(void);
 void Store_paintradar_options(void);
 
