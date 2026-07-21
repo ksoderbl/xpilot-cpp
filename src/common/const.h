@@ -159,7 +159,7 @@ constexpr std::size_t DEBRIS_TYPES = (8 * 4 * 4);
  */
 #define MIN_VIEW_SIZE 384
 #define MAX_VIEW_SIZE 1024
-#define DEF_VIEW_SIZE 768
+#define DEF_VIEW_SIZE 1024
 
 /*
  * Spark rand limits.

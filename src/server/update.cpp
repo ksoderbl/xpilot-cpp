@@ -105,7 +105,6 @@ static void Transport_to_home(player_t *pl)
 
     dx = WRAP_DCX(startpos.cx - pl->pos.cx);
     dy = WRAP_DCY(startpos.cy - pl->pos.cy);
-    // t = pl->count + 0.5f;
     t = pl->recovery_count;
     if (2 * t <= T)
         m = 2 / t;
@@ -667,7 +666,8 @@ static void Use_items(player_t *pl)
 {
     if (pl->shield_time > 0)
     {
-        if (--pl->shield_time == 0)
+        pl->shield_time = 0;
+        if ((pl->shield_time -= timeStep) <= 0)
         {
             if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                 CLR_BIT(pl->used, USES_SHIELD);
@@ -683,8 +683,9 @@ static void Use_items(player_t *pl)
 
     if (Player_is_phasing(pl))
     {
-        if (--pl->phasing_left <= 0)
+        if ((pl->phasing_left -= timeStep) <= 0)
         {
+            pl->phasing_left = 0;
             if (pl->item[ITEM_PHASING] > 0)
                 Phasing(pl, true);
             else
@@ -694,9 +695,10 @@ static void Use_items(player_t *pl)
 
     if (Player_uses_emergency_thrust(pl))
     {
-        if (pl->fuel.sum > 0 && BIT(pl->obj_status, THRUSTING) && --pl->emergency_thrust_left <= 0)
+        if (pl->fuel.sum > 0 && Player_is_thrusting(pl) && (pl->emergency_thrust_left -= timeStep) <= 0)
         {
-            if (pl->item[ITEM_EMERGENCY_THRUST])
+            pl->emergency_thrust_left = 0;
+            if (pl->item[ITEM_EMERGENCY_THRUST] > 0)
                 Emergency_thrust(pl, true);
             else
                 Emergency_thrust(pl, false);
@@ -705,8 +707,9 @@ static void Use_items(player_t *pl)
 
     if (BIT(pl->used, USES_EMERGENCY_SHIELD))
     {
-        if (pl->fuel.sum > 0 && BIT(pl->used, HAS_SHIELD) && --pl->emergency_shield_left <= 0)
+        if (pl->fuel.sum > 0 && BIT(pl->used, USES_SHIELD) && ((pl->emergency_shield_left -= timeStep) <= 0))
         {
+            pl->emergency_shield_left = 0;
             if (pl->item[ITEM_EMERGENCY_SHIELD])
                 Emergency_shield(pl, true);
             else
@@ -725,17 +728,20 @@ static void Use_items(player_t *pl)
     /*
      * Compute energy drainage
      */
-    if (BIT(pl->used, HAS_SHIELD))
-        Player_add_fuel(pl, ED_SHIELD);
+    {
+        if (BIT(pl->used, USES_SHIELD))
+            Player_add_fuel(pl, ED_SHIELD);
 
-    if (Player_is_phasing(pl))
-        Player_add_fuel(pl, ED_PHASING_DEVICE);
+        if (Player_is_phasing(pl))
+            Player_add_fuel(pl, ED_PHASING_DEVICE);
 
-    if (Player_is_cloaked(pl))
-        Player_add_fuel(pl, ED_CLOAKING_DEVICE);
+        if (Player_is_cloaked(pl))
+            Player_add_fuel(pl, ED_CLOAKING_DEVICE);
 
-    if (BIT(pl->used, USES_DEFLECTOR))
-        Do_deflector(pl);
+        if (BIT(pl->used, USES_DEFLECTOR))
+            // Do_deflector(pl); <- TODO Do_deflector somewhere else
+            Player_add_fuel(pl, ED_DEFLECTOR);
+    }
 }
 
 /*
@@ -789,6 +795,7 @@ static void Do_refuel(player_t *pl)
 static void Do_repair(player_t *pl)
 {
     target_t *targ = Target_by_index(pl->repair_target);
+
     if ((Wrap_length(pl->pos.cx - targ->pos.cx,
                      pl->pos.cy - targ->pos.cy) > 90.0 * CLICK) ||
         targ->damage >= TARGET_DAMAGE || targ->dead_ticks > 0 || Player_is_phasing(pl))
@@ -843,6 +850,7 @@ static void Update_visibility(player_t *pl, int ind)
         {
 
             pl->visibility[j].lastChange = frame_loops;
+
             if ((rfrac() * (pl->item[ITEM_SENSOR] + 1)) > (rfrac() * (pl_j->item[ITEM_CLOAK] + 1)))
                 pl->visibility[j].canSee = true;
             else
@@ -872,8 +880,20 @@ static void Update_players(void)
         LIMIT(pl->turnresistance, MIN_PLAYER_TURNRESISTANCE,
               MAX_PLAYER_TURNRESISTANCE);
 
-        if (pl->damaged > 0)
-            pl->damaged--;
+        if ((pl->damaged -= timeStep) <= 0)
+            pl->damaged = 0;
+
+        if (pl->flooding > FPS + 2)
+        {
+            Set_message_f("%s was kicked out because of flooding. "
+                          "[*Server notice*]",
+                          pl->name);
+            Destroy_connection(pl->conn, "flooding");
+            i--;
+            continue;
+        }
+        else if (pl->flooding > 0)
+            pl->flooding--;
 
         // if (pl->count > 0)
         // {
@@ -885,20 +905,21 @@ static void Update_players(void)
         //         continue;
         //     }
         // }
-
         // if (pl->count == 0)
         // {
         //     pl->count = -1;
-
         //     if (!BIT(pl->obj_status, PLAYING))
         //     {
         //         SET_BIT(pl->obj_status, PLAYING);
         //         Go_home(pl);
         //     }
         // }
-
         if (pl->pause_count > 0)
         {
+            pl->pause_count -= timeStep;
+            warn("Player %s pause count is %f", pl->name, pl->pause_count);
+            if (pl->pause_count <= 0)
+                pl->pause_count = 0;
         }
 
         if (pl->recovery_count > 0)
@@ -908,21 +929,20 @@ static void Update_players(void)
             if (pl->recovery_count <= 0)
             {
                 warn("Player %s recovered!", pl->name);
+                /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
                 if (!BIT(pl->obj_status, PLAYING))
                 {
                     SET_BIT(pl->obj_status, PLAYING);
-                    Go_home(pl);
                 }
+                Go_home(pl);
             }
             else
             {
-                if (!BIT(pl->obj_status, PLAYING))
-                {
-                    Transport_to_home(pl);
-                    Move_player(pl);
-                    continue;
-                }
+                /* Player didn't recover yet. */
+                Transport_to_home(pl);
+                Move_player(pl);
+                continue;
             }
         }
 
@@ -1031,14 +1051,15 @@ static void Update_players(void)
             Player_add_fuel(pl, -f); /* Decrement fuel */
         }
         else
-        {
             pl->acc.x = pl->acc.y = 0.0;
-        }
 
         Player_set_mass(pl);
 
         // TODO: wormhole update
 
+        /*
+         * Handle hyperjumps and wormholes.
+         */
         if (BIT(pl->obj_status, WARPING))
         {
             position_t w;

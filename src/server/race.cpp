@@ -84,7 +84,7 @@ void Race_compute_game_status(void)
     /* Handle finishing of laps */
     for (i = 0; i < NumPlayers; i++) {
     pl = Player_by_index(i);
-   if (!BIT(pl->pl_status, FINISH))
+    if (!BIT(pl->pl_status, FINISH))
         continue;
     pl->last_lap_time = pl->time - pl->last_lap;
     if ((pl->best_lap > pl->last_lap_time || pl->best_lap == 0)
@@ -152,7 +152,7 @@ void Race_compute_game_status(void)
             Player_death_reset(pl);
             Player_set_state(pl, PL_STATE_DEAD);
             if (count == 1) {
-           sprintf(msg, "%s was the last to complete lap "
+            sprintf(msg, "%s was the last to complete lap "
                 "%d and is out of the race.",
                 pl->name, pl_i->round - 1);
             Set_message(msg);
@@ -175,6 +175,7 @@ void Race_compute_game_status(void)
         pl = Player_by_index(i);
         if (Player_is_paused(pl) || Player_is_tank(pl))
             continue;
+
         if (Player_is_waiting(pl))
         {
             num_waiting_players++;
@@ -232,6 +233,7 @@ void Race_compute_game_status(void)
             pl = Player_by_index(i);
             if (Player_is_paused(pl) || Player_is_waiting(pl) || Player_is_tank(pl))
                 continue;
+
             if (BIT(pl->pl_status, FINISH))
             {
                 CLR_BIT(pl->pl_status, FINISH);
@@ -297,15 +299,9 @@ void Race_compute_game_status(void)
 void Race_game_over(void)
 {
     player_t *pl;
-    int i,
-        j,
-        k,
-        bestlap = 0,
-        num_best_players = 0,
-        num_active_players = 0,
-        num_ordered_players = 0;
-    int *order;
-    char msg[MSG_LEN];
+    int i, j, k,
+        bestlap = 0, num_best_players = 0,
+        num_active_players = 0, num_ordered_players = 0, *order;
 
     /*
      * Reassign players's starting positions based upon
@@ -373,6 +369,7 @@ void Race_game_over(void)
             Kill_player(pl, false);
         else
             Player_death_reset(pl, false);
+
         if (pl != Player_by_index(i))
             continue;
 
@@ -458,8 +455,8 @@ void Player_pass_checkpoint(player_t *pl)
                 }
             }
             Player_death_reset(pl, false);
-            pl->mychar = 'D';
-            SET_BIT(pl->pl_status, GAME_OVER | FINISH);
+            Player_set_state(pl, PL_STATE_DEAD);
+            SET_BIT(pl->pl_status, FINISH);
             Set_message_f("%s finished the race. Last lap time: %.2fs. "
                           "Personal race best lap time: %.2fs.",
                           pl->name,

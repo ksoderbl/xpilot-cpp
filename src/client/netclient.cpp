@@ -86,7 +86,6 @@ display_t server_display;
 int receive_window_size = 3;
 long last_loops;
 bool packetMeasurement;
-
 pointer_move_t pointer_moves[MAX_POINTER_MOVES];
 int pointer_move_next;
 long last_keyboard_ack;

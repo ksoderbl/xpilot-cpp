@@ -58,4 +58,4 @@ void ReleaseableButton(Button);
 void NonreleaseableButton(Button);
 void ChangeButtonGroup(Button, int);
 void MoveButton(Button, int, int);
-void GetButtonSize(Button, int *, int *);
+void GetButtonSize(Button, unsigned *, unsigned *);

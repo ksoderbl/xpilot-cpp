@@ -359,19 +359,19 @@ static void Player_toggle_pause(player_t *pl)
         if (Player_is_paused(pl))
             break;
 
-        if (!BIT(pl->pl_status, HOVERPAUSE))
+        if (!Player_is_hoverpaused(pl))
         {
             /*
              * Turn hover pause on, together with shields.
              */
-            pl->count = 5 * FPS;
+            pl->pause_count = 5 * 12;
             Player_self_destruct(pl, false);
             SET_BIT(pl->pl_status, HOVERPAUSE);
 
             if (Player_uses_emergency_thrust(pl))
                 Emergency_thrust(pl, false);
 
-            if (BIT(pl->used, USES_EMERGENCY_SHIELD))
+            if (BIT(pl->used, HAS_EMERGENCY_SHIELD))
                 Emergency_shield(pl, false);
 
             if (!Player_uses_autopilot(pl))
@@ -390,12 +390,12 @@ static void Player_toggle_pause(player_t *pl)
             if (BIT(pl->have, HAS_SHIELD))
                 SET_BIT(pl->used, HAS_SHIELD);
         }
-        else if (pl->count <= 0)
+        else if (pl->pause_count <= 0)
         {
             Autopilot(pl, false);
             CLR_BIT(pl->pl_status, HOVERPAUSE);
             if (!BIT(pl->have, HAS_SHIELD))
-                CLR_BIT(pl->used, USES_SHIELD);
+                CLR_BIT(pl->used, HAS_SHIELD);
         }
         break;
     default:
@@ -456,16 +456,18 @@ void Pause_player(player_t *pl, bool on)
     if (!Player_is_human(pl))
         return;
     if (on && !Player_is_paused(pl))
-    {
-        /* Turn pause mode on */
-        pl->count = 10 * 12;
+    { /* Turn pause mode on */
+
+        /* Minimum pause time is 10 seconds at gamespeed 12. */
+        pl->pause_count = 10 * 12;
         /* player might have paused when recovering */
         pl->recovery_count = 0;
         pl->updateVisibility = true;
         Player_self_destruct(pl, false);
-        CLR_BIT(pl->obj_status, PLAYING);
-        SET_BIT(pl->obj_status, PAUSE);
-        pl->mychar = 'P';
+        // CLR_BIT(pl->obj_status, PLAYING);
+        // SET_BIT(pl->obj_status, PAUSE);
+        // pl->mychar = 'P';
+        Player_set_state(pl, PL_STATE_PAUSED);
         updateScores = true;
         if (BIT(pl->have, HAS_BALL))
             Detach_ball(pl, NULL);
@@ -473,7 +475,7 @@ void Pause_player(player_t *pl, bool on)
     else if (!on && Player_is_paused(pl))
     {
         /* Turn pause mode off */
-        if (pl->count <= 0)
+        if (pl->pause_count <= 0)
         {
             bool toolate = false;
 
@@ -498,15 +500,17 @@ void Pause_player(player_t *pl, bool on)
             }
             if (toolate)
             {
-                pl->life = 0;
-                pl->mychar = 'W';
-                SET_BIT(pl->obj_status, GAME_OVER);
+                // pl->life = 0;
+                // pl->mychar = 'W';
+                // SET_BIT(pl->obj_status, GAME_OVER);
+                Player_set_state(pl, PL_STATE_WAITING);
             }
             else
             {
                 pl->mychar = ' ';
                 Go_home(pl);
-                SET_BIT(pl->obj_status, PLAYING);
+                // SET_BIT(pl->obj_status, PLAYING);
+                Player_set_state(pl, PL_STATE_ALIVE);
                 if (BIT(World.rules->mode, LIMITED_LIVES))
                     pl->life = World.rules->lives;
             }

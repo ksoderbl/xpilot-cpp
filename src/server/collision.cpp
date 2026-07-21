@@ -342,10 +342,10 @@ static void PlayerCollision(void)
                 if (!BIT(World.rules->mode, CRASH_WITH_PLAYER))
                     continue;
 
-                if (pl->fuel.sum <= 0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
+                if (pl->fuel.sum <= 0.0 || (!BIT(pl->used, HAS_SHIELD) && !Player_has_armor(pl)))
                     Player_set_state(pl, PL_STATE_KILLED);
 
-                if (pl_j->fuel.sum <= 0 || (!BIT(pl_j->used, HAS_SHIELD) && !Player_has_armor(pl_j)))
+                if (pl_j->fuel.sum <= 0.0 || (!BIT(pl_j->used, HAS_SHIELD) && !Player_has_armor(pl_j)))
                     Player_set_state(pl_j, PL_STATE_KILLED);
 
                 if (!BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))

@@ -964,12 +964,13 @@ static bool Robot_check_leave(player_t *pl)
             Set_message_f("%s played too badly.", pl->name);
             leave = true;
         }
-        if (leave)
-        {
-            Robot_talks(ROBOT_TALK_LEAVE, pl->name, "");
-            Robot_delete(pl, false);
-            return true;
-        }
+    }
+
+    if (leave)
+    {
+        Robot_talks(ROBOT_TALK_LEAVE, pl->name, "");
+        Robot_delete(pl, false);
+        return true;
     }
 
     return false;

@@ -1069,17 +1069,36 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
         i = player_shuffle_ptr[k];
         pl_i = Player_by_index(i);
+
+        // warn("pl_i is %s", pl_i->name);
+
         if (!BIT(pl_i->obj_status, PLAYING | PAUSE))
-            continue;
-        if (BIT(pl_i->obj_status, GAME_OVER))
-            continue;
-        if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
-            continue;
-        if (Player_is_paused(pl_i))
         {
-            Send_paused(conn, pl_i->pos, pl_i->count);
+            warn("pl_i is %s, not playing or pause, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
         }
+
+        if (BIT(pl_i->obj_status, GAME_OVER))
+        {
+            warn("pl_i is %s, GAME_OVER, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            continue;
+        }
+
+        if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
+        {
+            warn("pl_i is %s,  not in view, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            continue;
+        }
+
+        if (Player_is_paused(pl_i))
+        {
+            warn("Sending paused: pl_i: %s, state %s, pause_count: %d",
+                 pl_i->name, Player_state_str(pl_i->pl_state), (int)pl_i->pause_count);
+            Send_paused(conn, pl_i->pos, (int)pl_i->pause_count);
+            continue;
+        }
+
+        warn("---> pl_i is %s, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
 
         /* Don't transmit information if fighter is invisible */
         if (pl->visibility[i].canSee || pl_i->id == pl->id || Players_are_teammates(pl_i, pl) || Players_are_allies(pl_i, pl))

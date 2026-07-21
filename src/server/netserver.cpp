@@ -849,12 +849,10 @@ static int Handle_listening(connection_t *connp)
         }
     }
 
-    printf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(), connp->nick,
-           connp->user, connp->host, connp->dpy, connp->addr, connp->his_port);
-    if (connp->version != MY_VERSION)
-        printf(" (version %04x)\n", connp->version);
-    else
-        printf("\n");
+    printf("%s Welcome %s=%s@%s|%s (%s/%d)", showtime(),
+           connp->nick, connp->user, connp->host, connp->dpy,
+           connp->addr, connp->his_port);
+    printf(" (version %04x)\n", connp->version);
 
     if (connp->r.ptr[0] != PKT_VERIFY)
     {

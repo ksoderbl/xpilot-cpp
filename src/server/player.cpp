@@ -554,7 +554,11 @@ int Init_player(int ind, shipshape_t *ship, int type)
     Compute_sensor_range(pl);
     pl->color = WHITE;
 
-    pl->obj_status = PLAYING | GRAVITY | DEF_BITS;
+    // pl->obj_status = PLAYING | GRAVITY | DEF_BITS;
+    pl->obj_status = GRAVITY;
+    assert(pl->pl_status == 0);
+    assert(pl->pl_state == PL_STATE_UNDEFINED);
+    Player_set_state(pl, PL_STATE_ALIVE);
     pl->have = DEF_HAVE;
     pl->used = DEF_USED;
 
@@ -603,9 +607,11 @@ int Init_player(int ind, shipshape_t *ship, int type)
         }
         if (too_late)
         {
-            pl->mychar = 'W';
-            pl->prev_life = pl->life = 0;
-            SET_BIT(pl->obj_status, GAME_OVER);
+            // pl->mychar = 'W';
+            // pl->prev_life = pl->life = 0;
+            // SET_BIT(pl->obj_status, GAME_OVER);
+            pl->prev_life = 0; // TODO, what is this?
+            Player_set_state(pl, PL_STATE_WAITING);
         }
     }
 
@@ -1764,7 +1770,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     }
 
     pl->forceVisible = 0;
-    pl->count = MAX(RECOVERY_DELAY, pl->count);
+
     pl->recovery_count = RECOVERY_DELAY;
     pl->ecmcount = 0;
     pl->emergency_thrust_left = 0;
@@ -1865,7 +1871,7 @@ static char *old_status2str(int old_status)
     return buf;
 }
 
-static char *state2str(int state)
+char *Player_state_str(int state)
 {
     static char buf[256];
 
@@ -1894,18 +1900,19 @@ static char *state2str(int state)
 void Player_print_state(player_t *pl, const char *funcname)
 {
     warn("%-20s: %-16s (%c): %-20s %s ", funcname, pl->name, pl->mychar,
-         state2str(pl->pl_state), old_status2str(pl->pl_old_status));
+         Player_state_str(pl->pl_state), old_status2str(pl->pl_old_status));
 }
 
 void Player_set_state(player_t *pl, int state)
 {
-    warn("Player_set_state: Player: %s, state: %s", pl->name, state2str(state));
+    warn("Player_set_state: Player: %s, state: %s", pl->name, Player_state_str(state));
 
     pl->pl_state = state;
 
     switch (state)
     {
     case PL_STATE_WAITING:
+        SET_BIT(pl->obj_status, GAME_OVER); // TODO: Remove
         Player_set_mychar(pl, 'W');
         Player_set_life(pl, 0);
         pl->pl_old_status = OLD_GAME_OVER;
@@ -1917,6 +1924,7 @@ void Player_set_state(player_t *pl, int state)
         pl->recovery_count = RECOVERY_DELAY;
         break;
     case PL_STATE_ALIVE:
+        SET_BIT(pl->obj_status, PLAYING); // TODO: Remove
         Player_set_mychar(pl, pl->pl_type_mychar);
         pl->pl_old_status = OLD_PLAYING;
         break;
@@ -1924,10 +1932,13 @@ void Player_set_state(player_t *pl, int state)
         SET_BIT(pl->obj_status, KILLED); // TODO: Remove
         break;
     case PL_STATE_DEAD:
+        SET_BIT(pl->pl_status, GAME_OVER); // TODO: Remove
         Player_set_mychar(pl, 'D');
         pl->pl_old_status = OLD_GAME_OVER;
         break;
     case PL_STATE_PAUSED:
+        SET_BIT(pl->obj_status, PAUSE);   // TODO: Remove
+        CLR_BIT(pl->obj_status, PLAYING); // TODO: Remove
         Player_set_mychar(pl, 'P');
         Player_set_life(pl, 0);
         pl->pl_old_status = OLD_PAUSE;

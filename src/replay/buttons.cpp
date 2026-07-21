@@ -389,7 +389,7 @@ void MoveButton(Button b, int x, int y)
     XConfigureWindow(b->display, b->window, CWX | CWY, &values);
 }
 
-void GetButtonSize(Button b, int *width, int *height)
+void GetButtonSize(Button b, unsigned *width, unsigned *height)
 {
     *width = b->width;
     *height = b->height;

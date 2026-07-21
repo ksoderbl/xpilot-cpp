@@ -102,9 +102,6 @@ static inline void Set_nuclear_modifier(modifiers_t *mods, int value)
 
 static inline int Get_cluster_modifier(modifiers_t mods)
 {
-    // (BIT(obj->mods.warhead, CLUSTER))
-    // BIT(mods.warhead, CLUSTER)
-    // return mods.warhead;
     return (int)BIT(mods, MODS_C_BIT) ? 1 : 0;
 }
 
@@ -329,10 +326,6 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
         break;
     }
 
-    // SET_BIT(mods.warhead, CLUSTER)
-    // SET_BIT(mods.warhead, IMPLOSION)
-    // SET_BIT(mods.nuclear, MODS_NUCLEAR)
-    // CLR_BIT(obj->mods.warhead, CLUSTER)
     return 0;
 }
 
