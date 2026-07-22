@@ -34,6 +34,7 @@
  * Prototypes for wormhole.cpp
  */
 bool Initiate_hyperjump(player_t *pl);
+void Do_warp(player_t *pl);
 void Player_warp(player_t *pl);
 void Player_finish_warp(player_t *pl);
 void Object_warp(object_t *obj);

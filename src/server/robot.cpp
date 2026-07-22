@@ -363,6 +363,7 @@ void Parse_robot_file(void)
     if (options.robotFile && *options.robotFile)
     {
         FILE *fp = fopen(options.robotFile, "r");
+
         if (fp)
         {
             char buf[1024];

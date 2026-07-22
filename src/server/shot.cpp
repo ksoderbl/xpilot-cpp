@@ -157,7 +157,6 @@ void Place_general_mine(int id, int team, int status,
     {
         if (pl)
         {
-            // used = (BIT(mods.nuclear, MODS_FULLNUCLEAR)
             used = ((Mods_get(mods, ModsNuclear) & MODS_FULLNUCLEAR)
                         ? pl->item[ITEM_MINE]
                         : options.nukeMinMines);
@@ -594,7 +593,6 @@ void Fire_general_shot(int id, int team, bool cannon,
         {
             if (pl)
             {
-                // used = (BIT(mods.nuclear, MODS_FULLNUCLEAR)
                 used = ((Mods_get(mods, ModsNuclear) & MODS_FULLNUCLEAR)
                             ? pl->item[ITEM_MISSILE]
                             : options.nukeMinSmarts);

@@ -27,17 +27,34 @@
 
 #include "server.h"
 
+#include "saudio.h"
+
+#include "walls.h"
+
+shape_t wormhole_wire;
+
 /*
  * Initialization functions.
  */
 
 void Wormhole_line_init(void)
 {
+    int i;
+    static clpos_t coords[MAX_SHIP_PTS];
+
+    wormhole_wire.num_points = MAX_SHIP_PTS;
+    for (i = 0; i < MAX_SHIP_PTS; i++)
+    {
+        wormhole_wire.pts[i] = coords + i;
+        coords[i].cx = (int)(cos(i * 2 * PI / MAX_SHIP_PTS) * WORMHOLE_RADIUS);
+        coords[i].cy = (int)(sin(i * 2 * PI / MAX_SHIP_PTS) * WORMHOLE_RADIUS);
+    }
+
+    return;
 }
 
 bool Verify_wormhole_consistency(void)
 {
-
     int i, worm_in = 0, worm_out = 0, worm_norm = 0;
 
     /* count wormhole types */
@@ -156,6 +173,189 @@ bool Initiate_hyperjump(player_t *pl)
  */
 static void Hyperjump(player_t *pl)
 {
+}
+
+void Do_warp(player_t *pl)
+{
+    position_t w;
+    int wx, wy, proximity,
+        nearestFront, nearestRear,
+        proxFront, proxRear, j;
+
+    if (pl->wormHoleHit >= Num_wormholes())
+    {
+        /* could happen if the player hit a temporary wormhole
+           that was removed while the player was warping */
+        CLR_BIT(pl->obj_status, WARPING);
+        return;
+    }
+
+    if (pl->wormHoleHit != -1)
+    {
+        if (World.wormholes[pl->wormHoleHit].countdown > 0)
+        {
+            j = World.wormholes[pl->wormHoleHit].lastdest;
+        }
+        else if (rfrac() < 0.10)
+        {
+            do
+                j = (int)(rfrac() * Num_wormholes());
+            while (World.wormholes[j].type == WORM_IN || pl->wormHoleHit == j || World.wormholes[j].temporary);
+        }
+        else
+        {
+            nearestFront = nearestRear = -1;
+            proxFront = proxRear = 10000000;
+
+            for (j = 0; j < Num_wormholes(); j++)
+            {
+                if (j == pl->wormHoleHit || World.wormholes[j].type == WORM_IN || World.wormholes[j].temporary)
+                    continue;
+
+                wx = (World.wormholes[j].blk_pos.bx -
+                      World.wormholes[pl->wormHoleHit].blk_pos.bx) *
+                     BLOCK_SZ;
+                wy = (World.wormholes[j].blk_pos.by -
+                      World.wormholes[pl->wormHoleHit].blk_pos.by) *
+                     BLOCK_SZ;
+                wx = WRAP_DX(wx);
+                wy = WRAP_DX(wy);
+
+                proximity = (int)(pl->vel.y * wx + pl->vel.x * wy);
+                proximity = ABS(proximity);
+
+                if (pl->vel.x * wx + pl->vel.y * wy < 0)
+                {
+                    if (proximity < proxRear)
+                    {
+                        nearestRear = j;
+                        proxRear = proximity;
+                    }
+                }
+                else if (proximity < proxFront)
+                {
+                    nearestFront = j;
+                    proxFront = proximity;
+                }
+            }
+
+#define RANDOM_REAR_WORM
+#ifndef RANDOM_REAR_WORM
+            j = nearestFront < 0 ? nearestRear : nearestFront;
+#else  /* RANDOM_REAR_WORM */
+            if (nearestFront >= 0)
+            {
+                j = nearestFront;
+            }
+            else
+            {
+                do
+                    j = (int)(rfrac() * Num_wormholes());
+                while (World.wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
+            }
+#endif /* RANDOM_REAR_WORM */
+        }
+
+        sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
+
+        w.x = (World.wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
+        w.y = (World.wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
+    }
+    else
+    { /* wormHoleHit == -1 */
+        int counter;
+        for (counter = 20; counter > 0; counter--)
+        {
+            w.x = (int)(rfrac() * World.width);
+            w.y = (int)(rfrac() * World.height);
+            if (BIT(1U << World.block[(int)(w.x / BLOCK_SZ)]
+                                     [(int)(w.y / BLOCK_SZ)],
+                    SPACE_BLOCKS))
+            {
+                break;
+            }
+        }
+        if (!counter)
+        {
+            w.x = CLICK_TO_PIXEL(pl->pos.cx);
+            w.y = CLICK_TO_PIXEL(pl->pos.cy);
+        }
+        if (counter && options.wormTime && BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+        {
+            add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
+                               OBJ_Y_IN_BLOCKS(pl),
+                               (int)(w.x / BLOCK_SZ),
+                               (int)(w.y / BLOCK_SZ));
+        }
+        j = -2;
+        sound_play_sensors(pl->pos, HYPERJUMP_SOUND);
+    }
+
+    /*
+     * Don't connect to balls while warping.
+     */
+    if (BIT(pl->used, USES_CONNECTOR))
+        pl->ball = NULL;
+
+    if (BIT(pl->have, HAS_BALL))
+    {
+        /*
+         * Take every ball associated with player through worm hole.
+         * NB. the connector can cross a wall boundary this is
+         * allowed, so long as the ball itself doesn't collide.
+         */
+        int k;
+        for (k = 0; k < NumObjs; k++)
+        {
+            object_t *b = Obj[k];
+            if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
+            {
+                position_t ballpos;
+                ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
+                ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
+                ballpos.x = WRAP_XPIXEL(ballpos.x);
+                ballpos.y = WRAP_YPIXEL(ballpos.y);
+                if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
+                {
+                    b->life = 0;
+                }
+                else
+                {
+                    clpos_t ball_clpos;
+                    ball_clpos.cx = FLOAT_TO_CLICK(ballpos.x);
+                    ball_clpos.cy = FLOAT_TO_CLICK(ballpos.y);
+                    Object_position_set_clpos(b, ball_clpos);
+                    Object_position_remember(b);
+                    b->vel.x *= WORM_BRAKE_FACTOR;
+                    b->vel.y *= WORM_BRAKE_FACTOR;
+                    Cell_add_object(b);
+                }
+            }
+        }
+    }
+
+    pl->wormHoleDest = j;
+    clpos_t pos;
+    pos.cx = FLOAT_TO_CLICK(w.x);
+    pos.cy = FLOAT_TO_CLICK(w.y);
+    Player_position_init_clpos(pl, pos);
+    pl->vel.x *= WORM_BRAKE_FACTOR;
+    pl->vel.y *= WORM_BRAKE_FACTOR;
+    pl->forceVisible += 15;
+
+    if ((j != pl->wormHoleHit) && (pl->wormHoleHit != -1))
+    {
+        World.wormholes[pl->wormHoleHit].lastdest = j;
+        if (!World.wormholes[j].temporary)
+        {
+            World.wormholes[pl->wormHoleHit].countdown = (options.wormTime ? options.wormTime : WORMCOUNT);
+        }
+    }
+
+    CLR_BIT(pl->obj_status, WARPING);
+    SET_BIT(pl->obj_status, WARPED);
+
+    sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 }
 
 void Player_warp(player_t *pl)

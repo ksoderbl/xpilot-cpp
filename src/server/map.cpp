@@ -530,61 +530,6 @@ static bool World_alloc(void)
     return true;
 }
 
-// static bool Xpmap_world_alloc(void)
-// {
-//     int x;
-//     uint8_t *map_line;
-//     uint8_t **map_pointer;
-//     uint16_t *item_line;
-//     uint16_t **item_pointer;
-//     vector_t *grav_line;
-//     vector_t **grav_pointer;
-
-//     assert(World.block == NULL);
-//     assert(World.gravity == NULL);
-
-//     // if (World.block || World.gravity)
-//     //     World_free();
-
-//     World.block = (uint8_t **)
-//         malloc(sizeof(uint8_t *) * World.x + World.x * sizeof(uint8_t) * World.y);
-//     World.itemID = (uint16_t **)
-//         malloc(sizeof(uint16_t *) * World.x + World.x * sizeof(uint16_t) * World.y);
-//     World.gravity = (vector_t **)
-//         malloc(sizeof(vector_t *) * World.x + World.x * sizeof(vector_t) * World.y);
-
-//     World.wormholes = NULL;
-
-//     if (World.block == NULL || World.itemID == NULL || World.gravity == NULL)
-//     {
-//         World_free();
-//         error("Couldn't allocate memory for map");
-//         return false;
-//     }
-
-//     map_pointer = World.block;
-//     map_line = (uint8_t *)((uint8_t **)map_pointer + World.x);
-//     item_pointer = World.itemID;
-//     item_line = (uint16_t *)((uint16_t **)item_pointer + World.x);
-//     grav_pointer = World.gravity;
-//     grav_line = (vector_t *)((vector_t **)grav_pointer + World.x);
-
-//     for (x = 0; x < World.x; x++)
-//     {
-//         *map_pointer = map_line;
-//         map_pointer += 1;
-//         map_line += World.y;
-//         *item_pointer = item_line;
-//         item_pointer += 1;
-//         item_line += World.y;
-//         *grav_pointer = grav_line;
-//         grav_pointer += 1;
-//         grav_line += World.y;
-//     }
-
-//     return true;
-// }
-
 /*
  * This function can be called after the map options have been read.
  */

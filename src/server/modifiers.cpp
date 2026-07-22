@@ -116,7 +116,6 @@ static inline void Set_cluster_modifier(modifiers_t *mods, int value)
 
 static inline int Get_implosion_modifier(modifiers_t mods)
 {
-    // return mods.warhead;
     return (int)BIT(mods, MODS_I_BIT) ? 1 : 0;
 }
 
@@ -131,7 +130,6 @@ static inline void Set_implosion_modifier(modifiers_t *mods, int value)
 
 static inline int Get_velocity_modifier(modifiers_t mods)
 {
-    // return mods.velocity;
     int v0, v1;
 
     v0 = BIT(mods, MODS_V_BIT0) ? 1 : 0;
@@ -155,8 +153,6 @@ static inline void Set_velocity_modifier(modifiers_t *mods, int value)
 
 static inline int Get_mini_modifier(modifiers_t mods)
 {
-    // minis = (mods.mini + 1)
-    // return mods.mini + 1;
     int x0, x1;
 
     x0 = BIT(mods, MODS_X_BIT0) ? 1 : 0;
@@ -180,7 +176,6 @@ static inline void Set_mini_modifier(modifiers_t *mods, int value)
 
 static inline int Get_spread_modifier(modifiers_t mods)
 {
-    // return mods.spread;
     int z0, z1;
 
     z0 = BIT(mods, MODS_Z_BIT0) ? 1 : 0;
@@ -204,7 +199,6 @@ static inline void Set_spread_modifier(modifiers_t *mods, int value)
 
 static inline int Get_power_modifier(modifiers_t mods)
 {
-    // return mods.power;
     int b0, b1;
 
     b0 = BIT(mods, MODS_B_BIT0) ? 1 : 0;
@@ -228,7 +222,6 @@ static inline void Set_power_modifier(modifiers_t *mods, int value)
 
 static inline int Get_laser_modifier(modifiers_t mods)
 {
-    // return mods.laser;
     int ls, lb;
 
     ls = BIT(mods, MODS_LS_BIT) ? 1 : 0;
@@ -322,7 +315,6 @@ int Mods_set(modifiers_t *mods, modifier_t modifier, int val)
         break;
     default:
         warn("No such modifier: %d", modifier);
-        // assert(0);
         break;
     }
 
