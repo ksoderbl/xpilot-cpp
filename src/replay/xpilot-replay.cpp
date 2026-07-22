@@ -55,6 +55,7 @@
 #include "commonmacros.h"
 #include "recordfile.h"
 #include "recordfmt.h"
+#include "version.h"
 #include "item.h"
 #include "buttons.h"
 
@@ -2879,7 +2880,6 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
 
     for (sp = f->shapes; sp != NULL; sp = sp->next)
     {
-
         switch (sp->type)
         {
 
@@ -2932,9 +2932,7 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             RWriteByte(sp->shape.string.font, fp);
             RWriteUShort(sp->shape.string.length, fp);
             for (i = 0; i < sp->shape.string.length; i++)
-            {
                 RWriteByte(sp->shape.string.string[i], fp);
-            }
             break;
 
         case RC_FILLARC:
@@ -3023,6 +3021,9 @@ static void WriteFrame(struct xprc *rc, struct frame *f, FILE *fp)
             RWriteByte(RC_DAMAGED, fp);
             RWriteGC(rc, sp->gc, fp);
             RWriteByte(sp->shape.damage.damaged, fp);
+            break;
+
+        default:
             break;
         }
     }
@@ -3204,9 +3205,26 @@ static void dox(struct xui *ui, struct xprc *rc)
                 switch (c)
                 {
 
+                case ' ':
+                    switch (playState)
+                    {
+                    case STATE_PLAYING:
+                        currentSpeed = 0;
+                        playState = STATE_PAUSED;
+                        forceRedraw = True;
+                        break;
+                    case STATE_PAUSED:
+                        currentSpeed = 1;
+                        playState = STATE_PLAYING;
+                        break;
+                    default:
+                        break;
+                    }
+
+                    break;
+
                 case 'f':
                 case 'F':
-                case ' ':
                     frameStep++;
                     break;
 
@@ -3404,15 +3422,11 @@ static void TestInput(struct xprc *rc)
         if (ch0 == 0x1F && ch1 == 0x9D)
         {
             if (verbose)
-            {
                 fprintf(stderr, "%s: \"%s\" is in compressed format, starting compress...\n",
                         *Argv, rc->filename);
-            }
             lseek(fd, 0L, SEEK_SET);
             if (rc->fp == stdin)
-            {
                 sprintf(buf, "compress -d");
-            }
             else
             {
                 fclose(rc->fp);
@@ -3428,15 +3442,11 @@ static void TestInput(struct xprc *rc)
         if (ch0 == 0x1F && ch1 == 0x8B)
         {
             if (verbose)
-            {
                 fprintf(stderr, "%s: \"%s\" is in gzip format, starting gzip...\n",
                         *Argv, rc->filename);
-            }
             lseek(fd, 0L, SEEK_SET);
             if (rc->fp == stdin)
-            {
                 sprintf(buf, "gzip -d");
-            }
             else
             {
                 fclose(rc->fp);
@@ -3496,14 +3506,24 @@ static void usage(void)
         "        -scale \"factor\"\n"
         "               Set the scale reduction factor for saving operations.\n"
         "               Valid scale factors are in the range [0.01 - 1.0].\n"
+        "        -linewidth \"width\"\n"
+        "               use a fixed linewidth \"width\" for drawing all lines\n"
         "        -gamma \"factor\"\n"
         "               Set the gamma correction factor when saving scaled frames.\n"
         "               Valid gamma correction factors are in the range [0.1 - 10].\n"
         "        -compress\n"
         "               Save frames compressed using the \"compress\" program.\n"
+        "        -fps \"value\", -FPS \"value\"\n"
+        "               Set the number of frames per second used for replay and\n"
+        "               recording.\n"
+        "        -play\n"
+        "               Start playing immediately.\n"
+        "        -loop\n"
+        "               Loop after playing.\n"
         "        -debug\n"
         "        -verbose\n"
         "        -help\n"
+        "        -version\n"
         "    In addition to the pushbuttons you can use the following keys:\n"
         "        f  -  move forwards to the next frame.\n"
         "        b  -  move backwards to the next frame.\n"
@@ -3517,6 +3537,12 @@ static void usage(void)
     exit(0);
 }
 
+static void version(void)
+{
+    printf("xpilot-cpp-replay %s\n", VERSION);
+    exit(0);
+}
+
 int main(int argc, char **argv)
 {
     FILE *fp;
@@ -3524,8 +3550,10 @@ int main(int argc, char **argv)
     char *filename;
     struct xprc *rc;
     struct xui *ui;
+    int fps = 0;
     double scale = 0;
-    double gamma = 0;
+    double gamma_val = 0;
+    int linewidth = 0;
 
     Argc = argc;
     Argv = argv;
@@ -3533,60 +3561,61 @@ int main(int argc, char **argv)
     for (argi = 1; argi < argc; argi++)
     {
         if (argv[argi][0] != '-' || argv[argi][1] == '\0')
-        {
             break;
-        }
         else if (!strcmp(argv[argi], "-debug"))
         {
             debug = 1;
             verbose = 1;
         }
         else if (!strcmp(argv[argi], "-verbose"))
-        {
             verbose = 1;
-        }
         else if (!strcmp(argv[argi], "-compress"))
-        {
             compress = 1;
+        else if (!strcmp(argv[argi], "-fps") || !strcmp(argv[argi], "-FPS"))
+        {
+            if (++argi == argc || sscanf(argv[argi], "%d", &fps) != 1)
+                usage();
+            if (fps < 0)
+                usage();
         }
         else if (!strcmp(argv[argi], "-scale"))
         {
             if (++argi == argc || sscanf(argv[argi], "%lf", &scale) != 1)
-            {
                 usage();
-            }
             if (scale < 0.01 || scale > 1.0)
-            {
                 usage();
-            }
             if (scale >= 1.0)
-            {
                 scale = 0;
-            }
         }
         else if (!strcmp(argv[argi], "-gamma"))
         {
-            if (++argi == argc || sscanf(argv[argi], "%lf", &gamma) != 1)
-            {
+            if (++argi == argc || sscanf(argv[argi], "%lf", &gamma_val) != 1)
                 usage();
-            }
-            if (gamma < 0.1 || gamma > 100)
-            {
+            if (gamma_val < 0.1 || gamma_val > 100)
                 usage();
-            }
-            if (gamma == 1.0)
-            {
-                gamma = 0;
-            }
+            if (gamma_val == 1.0)
+                gamma_val = 0;
         }
+        else if (!strcmp(argv[argi], "-linewidth"))
+        {
+            if (++argi == argc || sscanf(argv[argi], "%d", &linewidth) != 1)
+                usage();
+            if (linewidth < 1 || gamma_val > 100)
+                usage();
+        }
+        else if (!strcmp(argv[argi], "-play"))
+            currentSpeed = 1;
+        else if (!strcmp(argv[argi], "-loop"))
+            loopAtEnd = 1;
+        else if (!strcmp(argv[argi], "-version") ||
+                 !strcmp(argv[argi], "--version"))
+            version();
         else
         {
             if (!strncmp(argv[argi], "-h", 2) ||
                 !strncmp(argv[argi], "--h", 3) ||
                 !strcmp(argv[argi], "-?"))
-            {
                 usage();
-            }
             else if (argi < argc - 1)
             {
                 fprintf(stderr, "%s: Unknown option \"%s\"\n", Argv[0], argv[argi]);
@@ -3594,20 +3623,15 @@ int main(int argc, char **argv)
                 exit(2);
             }
             else
-            {
                 break;
-            }
         }
     }
     if (argi != argc - 1)
-    {
         usage();
-    }
+
     filename = argv[argc - 1];
     if (!strcmp(filename, "-"))
-    {
         fp = stdin;
-    }
     else
     {
         if ((fp = fopen(filename, "r")) == NULL)
@@ -3631,8 +3655,10 @@ int main(int argc, char **argv)
     memset(rc, 0, sizeof(*rc));
     rc->filename = filename;
     rc->fp = fp;
+    rc->fps = fps;
     rc->scale = scale;
-    rc->gamma = gamma;
+    rc->gamma = gamma_val;
+    rc->linewidth = linewidth;
     TestInput(rc);
     purge_argument = rc;
     if (RReadHeader(rc) >= 0)
@@ -3647,9 +3673,7 @@ int main(int argc, char **argv)
     XCloseDisplay(dpy);
 
     if (fp != NULL && fp != stdin)
-    {
         fclose(fp);
-    }
 
     MemPrint();
 
@@ -3659,6 +3683,7 @@ int main(int argc, char **argv)
 /* ARGSUSED */
 static void quitCallback(void *data)
 {
+    (void)data;
     quit = 1;
 }
 
@@ -3699,6 +3724,7 @@ static void pauseCallback(void *data)
 /* ARGSUSED */
 static void rewindCallback(void *data)
 {
+    (void)data;
     switch (playState)
     {
     case STATE_PLAYING:
@@ -3707,12 +3733,15 @@ static void rewindCallback(void *data)
     case STATE_PAUSED:
         frameStep -= 10;
         break;
+    default:
+        break;
     }
 }
 
 /* ARGSUSED */
 static void fastfCallback(void *data)
 {
+    (void)data;
     switch (playState)
     {
     case STATE_PLAYING:
@@ -3721,12 +3750,15 @@ static void fastfCallback(void *data)
     case STATE_PAUSED:
         frameStep += 10;
         break;
+    default:
+        break;
     }
 }
 
 /* ARGSUSED */
 static void playCallback(void *data)
 {
+    (void)data;
     switch (playState)
     {
     case STATE_PLAYING:
@@ -3735,12 +3767,15 @@ static void playCallback(void *data)
     case STATE_PAUSED:
         frameStep++;
         break;
+    default:
+        break;
     }
 }
 
 /* ARGSUSED */
 static void revplayCallback(void *data)
 {
+    (void)data;
     switch (playState)
     {
     case STATE_PLAYING:
@@ -3748,6 +3783,8 @@ static void revplayCallback(void *data)
         break;
     case STATE_PAUSED:
         frameStep--;
+        break;
+    default:
         break;
     }
 }
