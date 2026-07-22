@@ -646,7 +646,6 @@ int Init_player(int ind, shipshape_t *ship, int type)
 
     pl->frame_last_busy = frame_loops;
 
-    pl->isowner = 0;
     pl->isoperator = 0;
 
     return pl->id;

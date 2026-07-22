@@ -1113,20 +1113,24 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     strlcpy(pl->name, connp->nick, MAX_CHARS);
     strlcpy(pl->username, connp->user, MAX_CHARS);
     strlcpy(pl->hostname, connp->host, MAX_CHARS);
-    pl->isowner = (!strcmp(pl->username, Server.owner) &&
-                   !strcmp(connp->addr, "127.0.0.1"));
     if (connp->team != TEAM_NOT_SET)
         pl->team = connp->team;
     pl->version = connp->version;
 
     {
-        Pick_startpos(pl);
-        Go_home(pl);
-        if (pl->team != TEAM_NOT_SET)
-            World.teams[pl->team].NumMembers++;
+        {
+            Pick_startpos(pl);
+            Go_home(pl);
+            if (pl->team != TEAM_NOT_SET)
+                World.teams[pl->team].NumMembers++;
+        }
     }
-    NumPlayers++;
-    request_ID();
+
+    {
+        NumPlayers++;
+        request_ID();
+    }
+
     connp->id = pl->id;
     pl->conn = connp;
     memset(pl->last_keyv, 0, sizeof(pl->last_keyv));
@@ -1141,8 +1145,10 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         return -1;
     }
 
-    printf("%s %s (%d) starts at startpos %d.\n", showtime(),
-           pl->name, NumPlayers, pl->home_base_ind);
+    {
+        printf("%s %s (%d) starts at startpos %d.\n", showtime(),
+               pl->name, NumPlayers, pl->home_base_ind);
+    }
 
     /*
      * Tell him about himself first.
@@ -1150,6 +1156,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     Send_player(pl->conn, pl->id);
     Send_score(pl->conn, pl->id, Get_Score(pl),
                pl->life, pl->mychar, pl->alliance);
+    // if (pl->home_base)
     Send_base(pl->conn, pl->id, pl->home_base_ind);
     /*
      * And tell him about all the others.

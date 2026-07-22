@@ -208,7 +208,6 @@ static void Player_change_home(player_t *pl)
         {
             if (World.bases[i].blk_pos.bx == xi && World.bases[i].blk_pos.by == yi)
             {
-
                 if (i == pl->home_base_ind)
                 {
                     break;

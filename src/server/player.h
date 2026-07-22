@@ -184,14 +184,11 @@ typedef struct
     int shots;                             /* Number of active shots by player */
     int missile_rack;                      /* Next missile rack to be active */
 
-    int num_pulses; /* Number of laser pulses in the air. */
+    int num_pulses; /* Number of laser pulses active. */
 
-    int emergency_thrust_left; /* how much emergency thrust left */
-    int emergency_thrust_max;  /* maximum time left */
-    int emergency_shield_left; /* how much emergency shield left */
-    int emergency_shield_max;  /* maximum time left */
-    int phasing_left;          /* how much time left */
-    int phasing_max;           /* maximum time left */
+    double emergency_thrust_left; /* how much emergency thrust left */
+    double emergency_shield_left; /* how much emergency shield left */
+    double phasing_left;          /* how much time left */
 
     double pause_count;         /* ticks until unpause possible */
     double recovery_count;      /* ticks to recovery */
@@ -285,8 +282,6 @@ typedef struct
 
     int player_fps; /* FPS that this player can do */
     int maxturnsps; /* turns per second limit */
-
-    int isowner; /* If player started this server. */
 
     struct ranknode *rank;
 

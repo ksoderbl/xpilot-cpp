@@ -1074,19 +1074,19 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
         if (!BIT(pl_i->obj_status, PLAYING | PAUSE))
         {
-            warn("pl_i is %s, not playing or pause, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            // warn("pl_i is %s, not playing or pause, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
         }
 
         if (BIT(pl_i->obj_status, GAME_OVER))
         {
-            warn("pl_i is %s, GAME_OVER, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            // warn("pl_i is %s, GAME_OVER, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
         }
 
         if (!click_inview(cv, pl_i->pos.cx, pl_i->pos.cy))
         {
-            warn("pl_i is %s,  not in view, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+            // warn("pl_i is %s,  not in view, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
         }
 
@@ -1098,10 +1098,13 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             continue;
         }
 
-        warn("---> pl_i is %s, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
+        // warn("---> pl_i is %s, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
 
         /* Don't transmit information if fighter is invisible */
-        if (pl->visibility[i].canSee || pl_i->id == pl->id || Players_are_teammates(pl_i, pl) || Players_are_allies(pl_i, pl))
+        if (pl->visibility[i].canSee ||
+            pl_i->id == pl->id ||
+            Players_are_teammates(pl_i, pl) ||
+            Players_are_allies(pl_i, pl))
         {
             /*
              * Transmit ship information
@@ -1340,7 +1343,7 @@ void Frame_update(void)
         conn = pl->conn;
         if (conn == NULL)
             continue;
-        if (BIT(pl->obj_status, PAUSE | GAME_OVER) && !options.allowViewing && !pl->isowner)
+        if (BIT(pl->obj_status, PAUSE | GAME_OVER) && !options.allowViewing)
         {
             /*
              * Lower the frame rate for non-playing players
@@ -1389,7 +1392,6 @@ void Frame_update(void)
             if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
                 (Player_is_paused(pl) &&
                  ((BIT(World.rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
-                  pl->isowner ||
                   options.allowViewing)))
                 ind = GetInd(pl->lock.pl_id);
             else

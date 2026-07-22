@@ -517,7 +517,7 @@ void Player_set_modbank(player_t *pl, int bank, const char *str)
     modifiers_t mods;
     int mini, velocity, spread, power;
 
-    warn("Player_set_modbank: player %s, bank %d, str %s", pl->name, bank, str);
+    // warn("Player_set_modbank: player %s, bank %d, str %s", pl->name, bank, str);
 
     if (bank >= NUM_MODBANKS)
         return;
