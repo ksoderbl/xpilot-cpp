@@ -36,10 +36,9 @@
 #include <cstdarg>
 
 extern void xpinfo(const char *fmt, ...);
-extern void fatal(const char *fmt, ...);
-extern void dumpcore(const char *fmt, ...);
-
 extern void warn(const char *fmt, ...);
 extern void error(const char *fmt, ...);
+extern void fatal(const char *fmt, ...);
+extern void dumpcore(const char *fmt, ...);
 
 extern void init_error(const char *prog);

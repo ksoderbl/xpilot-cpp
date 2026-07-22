@@ -23,8 +23,6 @@
 
 #pragma once
 
-#include <cstdlib>
-
 #define SOCK_HOSTNAME_LENGTH 256
 #define SOCK_FD_INVALID (-1)
 #define SOCK_IS_ERROR (-1)
@@ -77,11 +75,6 @@ typedef struct sock_s
     void *lastaddr;
     char *hostname;
 } sock_t;
-
-#if !defined(select) && defined(__linux__)
-#define select(N, R, W, E, T) select((N), \
-                                     (fd_set *)(R), (fd_set *)(W), (fd_set *)(E), (T))
-#endif
 
 int sock_startup(void);
 void sock_cleanup(void);

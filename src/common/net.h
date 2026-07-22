@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "socklib.h"
 
 #define MIN_SOCKBUF_SIZE 1024

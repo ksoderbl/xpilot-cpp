@@ -21,8 +21,9 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WRECKSHAPE_H
-#define WRECKSHAPE_H
+#pragma once
+
+#include "types.h"
 
 #define NUM_WRECKAGE_SHAPES 3
 #define NUM_WRECKAGE_POINTS 12
@@ -40,5 +41,3 @@
         {4, 9}, {4, 2}, {7, -2}, {7, -5}, {2, -8}, {-4, -7}
 
 extern position_t *wreckageShapes[NUM_WRECKAGE_SHAPES][NUM_WRECKAGE_POINTS];
-
-#endif
