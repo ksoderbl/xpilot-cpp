@@ -91,11 +91,11 @@ static int sock_flags_test_any(sock_t *sock, unsigned bits)
     return (sock->flags & bits) != 0;
 }
 
-static int sock_set_error(sock_t *sock, int error, sock_call_t call, int line)
+static int sock_set_error(sock_t *sock, int err, sock_call_t call, int line)
 {
-    DEB(printf("set error %d, %d, %d.  \"%s\"\n", error, call, line, strerror(error)));
+    DEB(printf("set error %d, %d, %d.  \"%s\"\n", err, call, line, strerror(err)));
 
-    sock->error.error = error;
+    sock->error.error = err;
     sock->error.call = call;
     sock->error.line = line;
 
@@ -141,18 +141,18 @@ static int sock_alloc_lastaddr(sock_t *sock)
     return (sock->lastaddr) ? SOCK_IS_OK : SOCK_IS_ERROR;
 }
 
-int sock_startup()
+static void sock_free_lastaddr(sock_t *sock)
+{
+    XFREE(sock->lastaddr);
+}
+
+int sock_startup(void)
 {
     return 0;
 }
 
 void sock_cleanup(void)
 {
-}
-
-static void sock_free_lastaddr(sock_t *sock)
-{
-    XFREE(sock->lastaddr);
 }
 
 int sock_init(sock_t *sock)
@@ -331,11 +331,14 @@ int sock_open_tcp_connected_non_blocking(sock_t *sock, char *host, int port)
         dest.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr_list[0]))->s_addr;
     }
 
-    if (connect(sock->fd, (struct sockaddr *)&dest, sizeof(struct sockaddr_in)) < 0 && errno != EINPROGRESS)
+    if (connect(sock->fd, (struct sockaddr *)&dest, sizeof(struct sockaddr_in)) < 0)
     {
-        sock_set_error(sock, errno, SOCK_CALL_CONNECT, __LINE__);
-        sock_close(sock);
-        return SOCK_IS_ERROR;
+        if (errno != EINPROGRESS)
+        {
+            sock_set_error(sock, errno, SOCK_CALL_CONNECT, __LINE__);
+            sock_close(sock);
+            return SOCK_IS_ERROR;
+        }
     }
 
     sock_flags_add(sock, SOCK_FLAG_CONNECT);
@@ -477,7 +480,7 @@ int sock_receive_any(sock_t *sock, char *buf, int len)
     int count;
     socklen_t addrlen;
 
-    if (sock_alloc_lastaddr(sock))
+    if (sock_alloc_lastaddr(sock) == SOCK_IS_ERROR)
         return SOCK_IS_ERROR;
     addrlen = sizeof(struct sockaddr_in);
     count = recvfrom(sock->fd, buf, len, 0, (struct sockaddr *)(sock->lastaddr), &addrlen);
@@ -596,9 +599,7 @@ void sock_get_local_hostname(char *name, unsigned size,
     }
 
     if (search_domain_for_xpilot != 1)
-    {
         return;
-    }
 
     /* if name starts with "xpilot" then we're done. */
     xpilot_len = strlen(xpilot);
@@ -648,15 +649,15 @@ int sock_get_port(sock_t *sock)
 
 int sock_get_error(sock_t *sock)
 {
-    int error;
-    socklen_t size = sizeof(error);
+    int err;
+    socklen_t size = sizeof(err);
 
-    if (getsockopt(sock->fd, SOL_SOCKET, SO_ERROR, (void *)&error, &size) < 0)
+    if (getsockopt(sock->fd, SOL_SOCKET, SO_ERROR, (void *)&err, &size) < 0)
     {
         sock_set_error(sock, errno, SOCK_CALL_GETSOCKOPT, __LINE__);
         return SOCK_IS_ERROR;
     }
-    errno = error;
+    errno = err;
     return SOCK_IS_OK;
 }
 

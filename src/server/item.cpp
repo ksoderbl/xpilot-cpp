@@ -475,6 +475,7 @@ void Detonate_items(player_t *pl)
             mods = pl->mods;
             if (Mods_get(mods, ModsNuclear) && pl->item[ITEM_MISSILE] < options.nukeMinSmarts)
                 Mods_set(&mods, ModsNuclear, 0);
+
             Fire_general_shot(owner_pl->id, pl->team, false, pl->pos,
                               type, (int)(rfrac() * ANGLE_RESOLUTION), mods, NO_ID);
         }
@@ -963,7 +964,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     // World.NumEcms++;
     t.pos = pos;
     t.id = (pl ? pl->id : NO_ID);
-    t.size = (int)ECM_DISTANCE;
+    t.size = ECM_DISTANCE;
     World.ecms.push_back(t);
     ecm_ind = Num_ecms();
     if (ecm_ind < 0)

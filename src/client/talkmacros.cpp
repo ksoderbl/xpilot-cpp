@@ -202,7 +202,7 @@ static int Talk_macro_parse_mesg(char *outbuf, char *inbuf, long pos,
                 break;
             case 's':
                 if (pos < max - 1 - 6) /* short - "-16535" max no of chars */
-                    pos += sprintf(outbuf + pos, "%d", player->score);
+                    pos += sprintf(outbuf + pos, "%d", (int)player->score);
                 break;
             case 't':
                 if (BIT(Setup->mode, TEAM_PLAY))

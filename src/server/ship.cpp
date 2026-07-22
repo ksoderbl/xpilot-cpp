@@ -758,8 +758,8 @@ void Explode_fighter(player_t *pl)
                 8,
                 (int)(min_debris + debris_range * rfrac()),
                 0, ANGLE_RESOLUTION - 1,
-                20.0, 20 + (((int)(pl->mass)) >> 1),
-                5, (int)(5 + (pl->mass * 1.5)));
+                20.0, 20.0 + pl->mass * 0.5,
+                5.0, 5.0 + pl->mass * 1.5);
 
     Make_wreckage(pl->pos,
                   pl->vel,
@@ -770,6 +770,6 @@ void Explode_fighter(player_t *pl)
                   GRAVITY,
                   10,
                   0, ANGLE_RESOLUTION - 1,
-                  10.0, 10 + (((int)(pl->mass)) >> 1),
-                  5, (int)(5 + (pl->mass * 1.5)));
+                  10.0, 10.0 + pl->mass * 0.5,
+                  5.0, 5.0 + pl->mass * 1.5);
 }

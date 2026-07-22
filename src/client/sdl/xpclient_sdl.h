@@ -20,41 +20,6 @@
 
 #pragma once
 
-// // #include "xpclient.h"
-
-// /* determine if we use usual style including */
-// #ifndef MACOSX_FRAMEWORKS
-// #define USUAL_SDL_INCLUDE_CONVENTION 1
-// #endif
-
-// #ifdef USUAL_SDL_INCLUDE_CONVENTION
-// #include <GL/gl.h>
-// #include <GL/glu.h>
-// #include "SDL.h"
-// #include "SDL_events.h"
-// #include "SDL_video.h"
-// #include "SDL_version.h"
-// #include "SDL_syswm.h"
-// #ifdef HAVE_SDL_IMAGE
-// #include "SDL_image.h"
-// #endif
-// #include "SDL_ttf.h"
-// #endif
-
-// #ifdef MACOSX_FRAMEWORKS
-// #include <OpenGL/gl.h>
-// #include <OpenGL/glu.h>
-// #include <SDL/SDL.h>
-// #include <SDL/SDL_events.h>
-// #include <SDL/SDL_video.h>
-// #include <SDL/SDL_version.h>
-// #include <SDL/SDL_syswm.h>
-// #ifdef HAVE_SDL_IMAGE
-// #include <SDL_image/SDL_image.h>
-// #endif
-// #include <SDL_ttf/SDL_ttf.h>
-// #endif
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
