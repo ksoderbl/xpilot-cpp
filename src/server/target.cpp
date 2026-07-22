@@ -132,7 +132,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 
     if (obj->id == NO_ID)
         return;
-    assert(obj->id >= 0);
+
     kp = Player_by_id(obj->id);
 
     /* Targets are always team immune. */
@@ -164,8 +164,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
         if (Mods_get(obj->mods, ModsNuclear))
             targ->damage = 0.0;
         else
-            targ->damage += ED_SMART_SHOT_HIT /
-                            (Mods_get(obj->mods, ModsMini) + 1);
+            targ->damage += ED_SMART_SHOT_HIT / (Mods_get(obj->mods, ModsMini) + 1);
         break;
     case OBJ_MINE:
         if (!obj->mass)
@@ -211,7 +210,9 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
         {
             player_t *pl = Player_by_index(j);
 
-            if (Player_is_tank(pl) || (Player_is_paused(pl) && pl->pause_count <= 0) || Player_is_waiting(pl))
+            if (Player_is_tank(pl) ||
+                (Player_is_paused(pl) && pl->pause_count <= 0) ||
+                Player_is_waiting(pl))
                 continue;
 
             if (pl->team == targ->team)
@@ -273,20 +274,19 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
         lose_score = 0;
     int win_team_members = 0,
         lose_team_members = 0,
-        somebody = 0,
         targets_remaining = 0,
         targets_total = 0;
     int drainfactor;
     vector_t zero_vel = {0.0, 0.0};
     player_t *kp;
+    bool somebody = false;
 
     /* a normal shot or a direct mine hit work, cannons don't */
     /* KK: should shots/mines by cannons of opposing teams work? */
     /* also players suiciding on target will cause damage */
     if (!BIT(obj->type, KILLING_SHOTS | OBJ_MINE_BIT | OBJ_PULSE_BIT | OBJ_PLAYER_BIT))
-    {
         return;
-    }
+
     if (obj->id == NO_ID)
         return;
 
@@ -294,14 +294,12 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
 
     /* Targets are always team immune. */
     if (targ->team == obj->team)
-    {
         return;
-    }
 
     switch (obj->type)
     {
     case OBJ_SHOT:
-        drainfactor = 1;
+        drainfactor = 1.0;
         targ->damage += ED_SHOT_HIT * drainfactor * SHOT_MULT(obj);
         break;
     case OBJ_PULSE:
@@ -311,10 +309,8 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
     case OBJ_TORPEDO:
     case OBJ_HEAT_SHOT:
         if (!obj->mass)
-        {
             /* happens at end of round reset. */
             return;
-        }
         if (Mods_get(obj->mods, ModsNuclear) & MODS_NUCLEAR)
             targ->damage = 0.0;
         else
@@ -375,19 +371,20 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
             player_t *pl_j = Player_by_index(j);
 
             if (Player_is_tank(pl_j) ||
-                (BIT(pl_j->obj_status, PAUSE) && pl_j->count <= 0) ||
-                (BIT(pl_j->obj_status, GAME_OVER) && pl_j->mychar == 'W' && pl_j->score == 0))
+                (Player_is_paused(pl_j) && pl_j->pause_count <= 0) ||
+                Player_is_waiting(pl_j))
                 continue;
             if (pl_j->team == targ->team)
             {
-                lose_score += pl_j->score;
+                lose_score += Get_Score(pl_j);
                 lose_team_members++;
-                if (BIT(pl_j->obj_status, GAME_OVER) == 0)
-                    somebody = 1;
+                // if (BIT(pl_j->obj_status, GAME_OVER) == 0)
+                if (!Player_is_dead(pl_j))
+                    somebody = true;
             }
             else if (pl_j->team == kp->team)
             {
-                win_score += pl_j->score;
+                win_score += Get_Score(pl_j);
                 win_team_members++;
             }
         }
@@ -396,10 +393,12 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
     {
         for (j = 0; j < Num_targets(); j++)
         {
-            if (World.targets[j].team == targ->team)
+            target_t *t = Target_by_index(j);
+
+            if (t->team == targ->team)
             {
                 targets_total++;
-                if (World.targets[j].dead_ticks == 0)
+                if (t->dead_ticks == 0)
                     targets_remaining++;
             }
         }
@@ -446,13 +445,15 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
         player_t *pl_j = Player_by_index(j);
 
         if (Player_is_tank(pl_j) ||
-            (BIT(pl_j->obj_status, PAUSE) && pl_j->count <= 0) ||
-            (BIT(pl_j->obj_status, GAME_OVER) && pl_j->mychar == 'W' && pl_j->score == 0))
+            (Player_is_paused(pl_j) && pl_j->pause_count <= 0) ||
+            Player_is_waiting(pl_j))
             continue;
 
         if (pl_j->team == targ->team)
         {
-            if (options.targetKillTeam && targets_remaining == 0 && !BIT(pl_j->obj_status, KILLED | PAUSE | GAME_OVER))
+            if (options.targetKillTeam &&
+                targets_remaining == 0 &&
+                !BIT(pl_j->obj_status, KILLED | PAUSE | GAME_OVER))
                 Player_set_state(pl_j, PL_STATE_KILLED);
             Score(pl_j, -sc, targ->pos, "Target: ");
         }
