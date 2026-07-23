@@ -96,14 +96,15 @@
 // #define COLLISIONSHOVE (1U << 9) /* Collision counts as shove */
 // #define RANDOM_ITEM (1U << 10)   /* Item shows up as random */
 
-#define PLAYING (1L << 0)       /* Not returning to base */
-#define PAUSE (1L << 1)         /* Must stay below 8 */
-#define GAME_OVER (1L << 2)     /* Must stay below 8 */
+#define LEGACY_PLAYING (1L << 0)   /* Not returning to base */
+#define LEGACY_PAUSE (1L << 1)     /* Must stay below 8 */
+#define LEGACY_GAME_OVER (1L << 2) /* Must stay below 8 */
+#define LEGACY_KILLED (1L << 10)
+
 #define THRUSTING (1L << 3)     /* not used by client? */
 #define SELF_DESTRUCT (1L << 4) /* not used by client? */
 #define WANT_AUDIO (1L << 5)    /* whether client has SOUND */
 
-#define KILLED (1L << 10)
 #define GRAVITY (1L << 11)
 #define WARPING (1L << 12)
 #define WARPED (1L << 13)

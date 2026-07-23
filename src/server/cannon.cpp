@@ -115,7 +115,7 @@ void Cannon_update(bool tick)
                             PlayersArray[ind]->pos.cy - c->pos.cy) /
                         CLICK <
                     TRACTOR_MAX_RANGE(c->item[ITEM_TRACTOR_BEAM]) &&
-                BIT(PlayersArray[ind]->obj_status, PLAYING | GAME_OVER | KILLED | PAUSE) == PLAYING)
+                BIT(PlayersArray[ind]->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_KILLED | LEGACY_PAUSE) == LEGACY_PLAYING)
             {
                 General_tractor_beam(NO_ID, c->pos,
                                      c->item[ITEM_TRACTOR_BEAM],
@@ -460,7 +460,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
             continue;
 
         /* mode 3 also checks if a player is using a phasing device */
-        if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE | KILLED) != PLAYING ||
+        if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_PAUSE | LEGACY_KILLED) != LEGACY_PLAYING ||
             (BIT(World.rules->mode, TEAM_PLAY) && pl->team == c->team) ||
             (!pl->forceVisible && BIT(pl->used, USES_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
             (smartness > 2 && BIT(pl->used, USES_PHASING_DEVICE)))

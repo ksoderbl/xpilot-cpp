@@ -1008,13 +1008,13 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
         else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER_HIT > my_data->fuel_l3 && new_mode == RM_ATTACK)
         {
             if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
-                                                             PLAYING | PAUSE | GAME_OVER) == PLAYING)
+                                                             LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
                 ship = Player_by_id(my_data->robot_lock_id);
             else if (BIT(pl->lock.tagged, LOCK_PLAYER))
                 ship = Player_by_id(pl->lock.pl_id);
             else
                 ship = NULL;
-            if (ship && BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING)
+            if (ship && BIT(ship->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
             {
                 double x1, y1, x3, y3, x4, y4, x5, y5;
                 double ship_dist, dir3, dir4, dir5;
@@ -2031,7 +2031,7 @@ static void Robot_default_play(player_t *pl)
         j = GetInd(ship->id);
 
         if (BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
-                PLAYING | GAME_OVER | PAUSE) == PLAYING)
+                LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_PAUSE) == LEGACY_PLAYING)
         {
             if (Detect_ship(pl, ship))
             {
@@ -2142,8 +2142,8 @@ static void Robot_default_play(player_t *pl)
         delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
                                                  ship->pix_pos.y - pl->pix_pos.y));
         delta_dir = MOD2(delta_dir, ANGLE_RESOLUTION);
-        if (BIT(ship->obj_status, PLAYING | PAUSE | GAME_OVER) != PLAYING ||
-            (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, PLAYING | PAUSE | GAME_OVER) == PLAYING) ||
+        if (BIT(ship->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) != LEGACY_PLAYING ||
+            (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING) ||
             !Detect_ship(pl, ship) || (pl->fuel.sum <= my_data->fuel_l3 && !BIT(World.rules->mode, TIMING)) ||
             (BIT(World.rules->mode, TIMING) && (delta_dir < 3 * ANGLE_RESOLUTION / 4 ||
                                                 delta_dir > ANGLE_RESOLUTION / 4)) ||

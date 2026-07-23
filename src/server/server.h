@@ -81,7 +81,13 @@ extern int NumRobots;
 extern int login_in_progress;
 // extern world_t World;
 extern server_t Server;
-extern long DEF_BITS, KILL_BITS, DEF_HAVE, DEF_USED, USED_KILL;
+extern uint32_t DEF_BITS;
+extern uint32_t KILL_BITS;
+extern uint32_t DEF_HAVE;
+extern uint32_t DEF_USED;
+extern uint32_t USED_KILL;
+extern uint32_t KILLING_SHOTS;
+
 // extern int GetInd[];
 extern int ShutdownServer, ShutdownDelay;
 extern long main_loops;
@@ -94,7 +100,7 @@ extern int game_lock;
 extern double friction;
 extern int roundtime;
 extern int roundsPlayed;
-extern long KILLING_SHOTS;
+
 // extern unsigned SPACE_BLOCKS;
 extern double coriolisCosine, coriolisSine;
 

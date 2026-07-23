@@ -932,9 +932,9 @@ static void Update_players(void)
                 warn("Player %s recovered!", pl->name);
                 /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
-                if (!BIT(pl->obj_status, PLAYING))
+                if (!BIT(pl->obj_status, LEGACY_PLAYING))
                 {
-                    SET_BIT(pl->obj_status, PLAYING);
+                    SET_BIT(pl->obj_status, LEGACY_PLAYING);
                 }
                 Go_home(pl);
             }
@@ -963,7 +963,7 @@ static void Update_players(void)
         }
 
         // if (!Player_is_active(pl))
-        if (BIT(pl->obj_status, PLAYING | GAME_OVER | PAUSE) != PLAYING)
+        if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_PAUSE) != LEGACY_PLAYING)
             continue;
 
         if (pl->stunned > 0)

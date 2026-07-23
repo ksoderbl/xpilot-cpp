@@ -62,7 +62,7 @@ bool team_dead(int team)
     for (i = 0; i < NumPlayers; i++)
     {
         if (Player_by_index(i)->team == team &&
-            BIT(Player_by_index(i)->obj_status, PLAYING | GAME_OVER) == PLAYING)
+            BIT(Player_by_index(i)->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER) == LEGACY_PLAYING)
         {
             alive = true;
             break;
@@ -132,7 +132,7 @@ static void Player_lock_next_or_prev(player_t *pl, int key)
         pl_i = Player_by_index(i);
         if (i == j)
             break;
-    } while (i == ind || BIT(pl_i->obj_status, GAME_OVER | PAUSE) ||
+    } while (i == ind || BIT(pl_i->obj_status, LEGACY_GAME_OVER | LEGACY_PAUSE) ||
              !Player_lock_allowed(pl, pl_i));
 
     if (i == ind)
@@ -305,8 +305,8 @@ static void Player_toggle_pause(player_t *pl)
     int i, j, k, key, xi, yi;
     double minv;
 
-    if (BIT(pl->obj_status, PAUSE))
-        i = PAUSE;
+    if (BIT(pl->obj_status, LEGACY_PAUSE))
+        i = LEGACY_PAUSE;
     else if (BIT(pl->pl_status, HOVERPAUSE))
         i = HOVERPAUSE;
     else
@@ -318,7 +318,7 @@ static void Player_toggle_pause(player_t *pl)
         if (j == xi && k == yi)
         {
             minv = 3.0f;
-            i = PAUSE;
+            i = LEGACY_PAUSE;
         }
         else
         {
@@ -338,7 +338,7 @@ static void Player_toggle_pause(player_t *pl)
 
     switch (i)
     {
-    case PAUSE:
+    case LEGACY_PAUSE:
         if (BIT(pl->pl_status, HOVERPAUSE))
             return; // break;
 
@@ -479,7 +479,7 @@ void Pause_player(player_t *pl, bool on)
         {
             bool toolate = false;
 
-            CLR_BIT(pl->obj_status, PAUSE);
+            CLR_BIT(pl->obj_status, LEGACY_PAUSE);
             updateScores = true;
             if (BIT(World.rules->mode, LIMITED_LIVES))
             {

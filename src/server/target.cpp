@@ -453,7 +453,7 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
         {
             if (options.targetKillTeam &&
                 targets_remaining == 0 &&
-                !BIT(pl_j->obj_status, KILLED | PAUSE | GAME_OVER))
+                !BIT(pl_j->obj_status, LEGACY_KILLED | LEGACY_PAUSE | LEGACY_GAME_OVER))
                 Player_set_state(pl_j, PL_STATE_KILLED);
             Score(pl_j, -sc, targ->pos, "Target: ");
         }

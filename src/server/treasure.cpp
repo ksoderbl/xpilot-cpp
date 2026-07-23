@@ -377,13 +377,15 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
         {
             player_t *pl_i = Player_by_index(i);
 
-            if (Player_is_tank(pl_i) || (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) || (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+            if (Player_is_tank(pl_i) ||
+                (BIT(pl_i->obj_status, LEGACY_PAUSE) && pl_i->count <= 0) ||
+                (BIT(pl_i->obj_status, LEGACY_GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
                 continue;
             if (pl_i->team == td->team)
             {
                 lose_score += Get_Score(pl_i);
                 lose_team_members++;
-                if (BIT(pl_i->obj_status, GAME_OVER) == 0)
+                if (BIT(pl_i->obj_status, LEGACY_GAME_OVER) == 0)
                     somebody_flag = 1;
             }
             else if (pl_i->team == pl->team)
@@ -416,8 +418,8 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
         player_t *pl_i = Player_by_index(i);
 
         if (Player_is_tank(pl_i) ||
-            (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) ||
-            (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+            (BIT(pl_i->obj_status, LEGACY_PAUSE) && pl_i->count <= 0) ||
+            (BIT(pl_i->obj_status, LEGACY_GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
             continue;
         if (pl_i->team == td->team)
         {

@@ -761,7 +761,6 @@ void Game_Over(void)
         if (Player_is_paused(pl_i))
             continue;
 
-        SET_BIT(pl_i->obj_status, GAME_OVER); // TODO: REMOVE
         Player_set_state(pl_i, PL_STATE_DEAD);
         if (Player_is_human(pl_i))
         {

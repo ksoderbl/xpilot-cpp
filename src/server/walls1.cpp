@@ -2233,9 +2233,9 @@ void Move_player1(player_t *pl)
     double fric;
     double oldvx, oldvy;
 
-    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+    if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED) != LEGACY_PLAYING)
     {
-        if (!BIT(pl->obj_status, KILLED | PAUSE))
+        if (!BIT(pl->obj_status, LEGACY_KILLED | LEGACY_PAUSE))
         {
             pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
             pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
@@ -2701,7 +2701,7 @@ void Turn_player1(player_t *pl)
     {
         return;
     }
-    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) != PLAYING)
+    if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED) != LEGACY_PLAYING)
     {
         pl->dir = new_dir;
         return;

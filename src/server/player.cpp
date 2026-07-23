@@ -182,9 +182,9 @@ void Pick_startpos(player_t *pl)
                               pl->home_base_ind);
                 }
             }
-            if (BIT(pl->obj_status, PLAYING) == 0)
+            if (BIT(pl->obj_status, LEGACY_PLAYING) == 0)
                 pl->count = RECOVERY_DELAY;
-            else if (BIT(pl->obj_status, PAUSE | GAME_OVER))
+            else if (BIT(pl->obj_status, LEGACY_PAUSE | LEGACY_GAME_OVER))
                 Go_home(pl);
         }
     }
@@ -773,7 +773,7 @@ void Reset_all_players(void)
                 }
             }
         }
-        CLR_BIT(pl->obj_status, GAME_OVER);
+        CLR_BIT(pl->obj_status, LEGACY_GAME_OVER);
 
         pl->kills = 0;
         pl->deaths = 0;
@@ -928,7 +928,8 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Player_by_index(i)) || (BIT(Player_by_index(i)->obj_status, PAUSE) && Player_by_index(i)->count <= 0))
+        if (Player_is_tank(Player_by_index(i)) ||
+            (BIT(Player_by_index(i)->obj_status, LEGACY_PAUSE) && Player_by_index(i)->count <= 0))
             continue;
         *average_score += Player_by_index(i)->score;
         ratio = (double)Player_by_index(i)->kills / (Player_by_index(i)->deaths + 1);
@@ -1082,8 +1083,7 @@ void Team_game_over(int winning_team, const char *reason)
             if (pl_i->team != winning_team)
                 continue;
             if (Player_is_tank(pl_i) ||
-                (BIT(pl_i->obj_status, PAUSE) && pl_i->count <= 0) ||
-                // (BIT(pl_i->obj_status, GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+                (BIT(pl_i->obj_status, LEGACY_PAUSE) && pl_i->count <= 0) ||
                 Player_is_waiting(pl_i))
                 continue;
             for (j = 0; j < num_best_players; j++)
@@ -1805,7 +1805,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
                     }
                 }
                 pl->life = 0;
-                SET_BIT(pl->obj_status, GAME_OVER);
+                SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
                 pl->mychar = 'D';
                 Player_lock_closest(pl, 0);
             }
@@ -1911,7 +1911,7 @@ void Player_set_state(player_t *pl, int state)
     switch (state)
     {
     case PL_STATE_WAITING:
-        SET_BIT(pl->obj_status, GAME_OVER); // TODO: Remove
+        SET_BIT(pl->obj_status, LEGACY_GAME_OVER); // TODO: Remove
         Player_set_mychar(pl, 'W');
         Player_set_life(pl, 0);
         pl->pl_old_status = OLD_GAME_OVER;
@@ -1923,21 +1923,22 @@ void Player_set_state(player_t *pl, int state)
         pl->recovery_count = RECOVERY_DELAY;
         break;
     case PL_STATE_ALIVE:
-        SET_BIT(pl->obj_status, PLAYING); // TODO: Remove
+        SET_BIT(pl->obj_status, LEGACY_PLAYING); // TODO: Remove
         Player_set_mychar(pl, pl->pl_type_mychar);
         pl->pl_old_status = OLD_PLAYING;
         break;
     case PL_STATE_KILLED:
-        SET_BIT(pl->obj_status, KILLED); // TODO: Remove
+        SET_BIT(pl->obj_status, LEGACY_KILLED); // TODO: Remove
         break;
     case PL_STATE_DEAD:
-        SET_BIT(pl->pl_status, GAME_OVER); // TODO: Remove
+        SET_BIT(pl->obj_status, LEGACY_GAME_OVER); // TODO: REMOVE
+        // SET_BIT(pl->pl_status, LEGACY_GAME_OVER);  // TODO: Remove
         Player_set_mychar(pl, 'D');
         pl->pl_old_status = OLD_GAME_OVER;
         break;
     case PL_STATE_PAUSED:
-        SET_BIT(pl->obj_status, PAUSE);   // TODO: Remove
-        CLR_BIT(pl->obj_status, PLAYING); // TODO: Remove
+        SET_BIT(pl->obj_status, LEGACY_PAUSE);   // TODO: Remove
+        CLR_BIT(pl->obj_status, LEGACY_PLAYING); // TODO: Remove
         Player_set_mychar(pl, 'P');
         Player_set_life(pl, 0);
         pl->pl_old_status = OLD_PAUSE;

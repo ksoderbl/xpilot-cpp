@@ -516,7 +516,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
                 Players_are_teammates(pl, lock_pl) ||
                 Players_are_allies(pl, lock_pl))
 #endif
-            && BIT(lock_pl->obj_status, PLAYING | GAME_OVER) == PLAYING &&
+            && BIT(lock_pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER) == LEGACY_PLAYING &&
             (options.playersOnRadar || click_inview(cv, lock_pl->pos.cx, lock_pl->pos.cy)) &&
             pl->lock.distance != 0)
         {
@@ -1072,13 +1072,13 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
         // warn("pl_i is %s", pl_i->name);
 
-        if (!BIT(pl_i->obj_status, PLAYING | PAUSE))
+        if (!BIT(pl_i->obj_status, LEGACY_PLAYING | LEGACY_PAUSE))
         {
             // warn("pl_i is %s, not playing or pause, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
         }
 
-        if (BIT(pl_i->obj_status, GAME_OVER))
+        if (BIT(pl_i->obj_status, LEGACY_GAME_OVER))
         {
             // warn("pl_i is %s, GAME_OVER, state %s", pl_i->name, Player_state_str(pl_i->pl_state));
             continue;
@@ -1343,7 +1343,7 @@ void Frame_update(void)
         conn = pl->conn;
         if (conn == NULL)
             continue;
-        if (BIT(pl->obj_status, PAUSE | GAME_OVER) && !options.allowViewing)
+        if (BIT(pl->obj_status, LEGACY_PAUSE | LEGACY_GAME_OVER) && !options.allowViewing)
         {
             /*
              * Lower the frame rate for non-playing players
@@ -1389,7 +1389,7 @@ void Frame_update(void)
          */
         if (BIT(pl->lock.tagged, LOCK_PLAYER))
         {
-            if ((BIT(pl->obj_status, (GAME_OVER | PLAYING)) == (GAME_OVER | PLAYING)) ||
+            if ((BIT(pl->obj_status, (LEGACY_GAME_OVER | LEGACY_PLAYING)) == (LEGACY_GAME_OVER | LEGACY_PLAYING)) ||
                 (Player_is_paused(pl) &&
                  ((BIT(World.rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
                   options.allowViewing)))

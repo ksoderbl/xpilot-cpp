@@ -139,7 +139,7 @@ void Place_general_mine(int id, int team, int status,
     if (!World_contains_clpos(pos))
         return;
 
-    if (pl && BIT(pl->obj_status, KILLED))
+    if (pl && BIT(pl->obj_status, LEGACY_KILLED))
         life = (int)(rfrac() * FPS);
     else if (BIT(status, FROMCANNON))
         life = CANNON_SHOT_LIFE;
@@ -631,7 +631,7 @@ void Fire_general_shot(int id, int team, bool cannon,
                 drain += CLUSTER_MASS_DRAIN(mass);
         }
 
-        if (pl && BIT(pl->obj_status, KILLED))
+        if (pl && BIT(pl->obj_status, LEGACY_KILLED))
             life = (int)(rfrac() * FPS);
         else if (!cannon)
             life = (options.missileLife ? options.missileLife : MISSILE_LIFETIME);
