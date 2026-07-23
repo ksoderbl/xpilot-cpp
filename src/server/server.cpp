@@ -562,7 +562,7 @@ void Server_info(char *str, size_t max_size)
         }
         else
         {
-            ratio = (double)Get_Score(pl) / (pl->life + 1);
+            ratio = (double)Get_Score(pl) / (pl->pl_life + 1);
         }
         if ((best == NULL || ratio > best_ratio) && !Player_is_paused(pl))
         {
@@ -600,7 +600,7 @@ void Server_info(char *str, size_t max_size)
         sprintf(lblstr, "%c%c %-19s%03d%6d",
                 (pl == best) ? '*' : pl->mychar,
                 (pl->team == TEAM_NOT_SET) ? ' ' : (pl->team + '0'),
-                name, (int)pl->life, (int)Get_Score(pl));
+                name, (int)pl->pl_life, (int)Get_Score(pl));
         sprintf(msg, "%2d... %-36s%s@%s\n",
                 i + 1, lblstr, pl->username,
                 Player_is_human(pl)

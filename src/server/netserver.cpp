@@ -1155,7 +1155,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
      */
     Send_player(pl->conn, pl->id);
     Send_score(pl->conn, pl->id, Get_Score(pl),
-               pl->life, pl->mychar, pl->alliance);
+               pl->pl_life, pl->mychar, pl->alliance);
     // if (pl->home_base)
     Send_base(pl->conn, pl->id, pl->home_base_ind);
     /*
@@ -1168,7 +1168,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         pl_i = Player_by_index(i);
         Send_player(pl->conn, pl_i->id);
         Send_score(pl->conn, pl_i->id, Get_Score(pl_i),
-                   pl_i->life, pl_i->mychar, pl_i->alliance);
+                   pl_i->pl_life, pl_i->mychar, pl_i->alliance);
         if (!Player_is_tank(pl_i))
             Send_base(pl->conn, pl_i->id, pl_i->home_base_ind);
     }
@@ -1183,7 +1183,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         {
             Send_player(pl_i->conn, pl->id);
             Send_score(pl_i->conn, pl->id, Get_Score(pl),
-                       pl->life, pl->mychar, pl->alliance);
+                       pl->pl_life, pl->mychar, pl->alliance);
             Send_base(pl_i->conn, pl->id, pl->home_base_ind);
         }
     }

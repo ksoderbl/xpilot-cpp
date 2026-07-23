@@ -948,9 +948,9 @@ static bool Robot_check_leave(player_t *pl)
     if (!options.robotsLeave)
         return false;
 
-    if (pl->life > 0 && !BIT(World.rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, LEGACY_PLAYING) || pl->count <= 0))
+    if (pl->pl_life > 0 && !BIT(World.rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, LEGACY_PLAYING) || pl->count <= 0))
     {
-        if (options.robotLeaveLife > 0 && pl->life >= options.robotLeaveLife)
+        if (options.robotLeaveLife > 0 && pl->pl_life >= options.robotLeaveLife)
         {
             Set_message_f("%s retired.", pl->name);
             leave = true;
@@ -960,7 +960,7 @@ static bool Robot_check_leave(player_t *pl)
             Set_message_f("%s left out of disappointment.", pl->name);
             leave = true;
         }
-        else if (options.robotLeaveRatio != 0 && Get_Score(pl) / (pl->life + 1) < options.robotLeaveRatio)
+        else if (options.robotLeaveRatio != 0 && Get_Score(pl) / (pl->pl_life + 1) < options.robotLeaveRatio)
         {
             Set_message_f("%s played too badly.", pl->name);
             leave = true;

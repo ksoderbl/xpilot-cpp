@@ -579,8 +579,8 @@ int Init_player(int ind, shipshape_t *ship, int type)
     }
     pl->mychar = ' ';
     pl->prev_mychar = pl->mychar;
-    pl->life = World.rules->lives;
-    pl->prev_life = pl->life;
+    pl->pl_life = World.rules->lives;
+    pl->prev_life = pl->pl_life;
     pl->ball = NULL;
 
     pl->player_fps = FPS;
@@ -599,7 +599,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
             player_t *pl_i = Player_by_index(i);
             /* If a non-team member has lost a life,
              * then it's too late to join. */
-            if (pl_i->life < World.rules->lives && !Players_are_teammates(pl, pl_i))
+            if (pl_i->pl_life < World.rules->lives && !Players_are_teammates(pl, pl_i))
             {
                 too_late = true;
                 break;
@@ -608,7 +608,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
         if (too_late)
         {
             // pl->mychar = 'W';
-            // pl->prev_life = pl->life = 0;
+            // pl->prev_life = pl->pl_life = 0;
             // SET_BIT(pl->obj_status, GAME_OVER);
             pl->prev_life = 0; // TODO, what is this?
             Player_set_state(pl, PL_STATE_WAITING);
@@ -707,12 +707,12 @@ void Update_score_table(void)
     {
         pl = Player_by_index(j);
         if (Get_Score(pl) != pl->prev_score ||
-            pl->life != pl->prev_life ||
+            pl->pl_life != pl->prev_life ||
             pl->mychar != pl->prev_mychar ||
             pl->alliance != pl->prev_alliance)
         {
             pl->prev_score = Get_Score(pl);
-            pl->prev_life = pl->life;
+            pl->prev_life = pl->pl_life;
             pl->prev_mychar = pl->mychar;
             pl->prev_alliance = pl->alliance;
 
@@ -722,7 +722,7 @@ void Update_score_table(void)
 
                 if (pl_i->conn != NULL)
                 {
-                    Send_score(pl_i->conn, pl->id, Get_Score(pl), pl->life,
+                    Send_score(pl_i->conn, pl->id, Get_Score(pl), pl->pl_life,
                                pl->mychar, pl->alliance);
                 }
             }
@@ -793,7 +793,7 @@ void Reset_all_players(void)
         {
             pl->mychar = ' ';
             pl->frame_last_busy = frame_loops;
-            pl->life = World.rules->lives;
+            pl->pl_life = World.rules->lives;
             if (BIT(World.rules->mode, TIMING))
             {
                 pl->count = RECOVERY_DELAY;
@@ -815,7 +815,7 @@ void Reset_all_players(void)
             {
                 ballobject_t *ball = BALL_IND(j);
                 ball->id = NO_ID;
-                ball->life = 0;
+                ball->obj_life = 0;
                 /*
                  * why not -1 ???
                  * naive question, obviously yet another dirty hack
@@ -872,7 +872,7 @@ void Reset_all_players(void)
             object_t *obj = Obj[i];
             if (BIT(obj->type, OBJ_SHOT_BIT | OBJ_MINE_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_CANNON_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_ITEM_BIT))
             {
-                obj->life = 0;
+                obj->obj_life = 0;
                 if (BIT(obj->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT))
                 {
                     /* Take care that no new explosions are made. */
@@ -1514,7 +1514,7 @@ void Delete_player(player_t *pl)
             {
                 if (!options.keepShots)
                 {
-                    obj->life = 0;
+                    obj->obj_life = 0;
                     if (BIT(obj->type,
                             OBJ_CANNON_SHOT_BIT | OBJ_MINE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT))
                     {
@@ -1536,7 +1536,7 @@ void Delete_player(player_t *pl)
                     mine->mine_owner = NO_ID;
                     if (!options.keepShots)
                     {
-                        obj->life = 0;
+                        obj->obj_life = 0;
                         obj->mass = 0;
                     }
                 }
@@ -1545,7 +1545,7 @@ void Delete_player(player_t *pl)
             {
                 if (!options.keepShots)
                 {
-                    obj->life = 0;
+                    obj->obj_life = 0;
                     obj->mass = 0;
                 }
             }
@@ -1797,8 +1797,8 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     uint32_t s = pl->obj_status;
 
-    warn("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s)",
-         pl->name, pl->obj_status, s, bitsToStr(s).c_str());
+    warn("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     pl->obj_status &= ~(LEGACY_KILL_BITS);
 
@@ -1817,8 +1817,8 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     //  WARPING |
     //  WARPED);
 
-    warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s)",
-         pl->name, pl->obj_status, s, bitsToStr(s).c_str());
+    warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     if (BIT(World.rules->mode, LIMITED_LIVES))
     {
@@ -1854,36 +1854,40 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->fuel.sum = MAX(pl->fuel.sum, minfuel_times_256 / 256.0);
     Player_init_fuel(pl, pl->fuel.sum);
 
-    if (!Player_is_paused(pl))
-    {
-        pl->deaths++;
+    // Player is not paused, that was checked earlier.
 
-        if (BIT(World.rules->mode, LIMITED_LIVES))
+    pl->deaths++;
+
+    if (BIT(World.rules->mode, LIMITED_LIVES))
+    {
+        pl->pl_life--;
+        Player_set_life(pl, pl->pl_life - 1);
+
+        if (pl->pl_life == -1)
         {
-            pl->life--;
-            if (pl->life == -1)
+            if (Player_is_robot(pl))
             {
-                if (Player_is_robot(pl))
+                if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) ||
+                    (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
                 {
-                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) ||
-                        (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
-                    {
-                        Robot_delete(pl, false);
-                        return;
-                    }
+                    Robot_delete(pl, false);
+                    return;
                 }
-                pl->life = 0;
-                // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
-                // pl->mychar = 'D';
-                Player_set_state(pl, PL_STATE_DEAD);
-                Player_lock_closest(pl, 0);
             }
-        }
-        else
-        {
-            pl->life++;
+            pl->pl_life = 0;
+            // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
+            // pl->mychar = 'D';
+            Player_set_state(pl, PL_STATE_DEAD);
+            Player_lock_closest(pl, 0);
         }
     }
+    else
+    {
+        pl->pl_life++;
+    }
+
+    warn("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
+         pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
     if (add_rank_death)
     {
@@ -1986,6 +1990,7 @@ void Player_set_state(player_t *pl, int state)
         pl->pl_old_status = OLD_GAME_OVER;
         break;
     case PL_STATE_APPEARING:
+        CLR_BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED); // TODO: Remove
         Player_set_mychar(pl, pl->pl_type_mychar);
         /*Player_set_mychar(pl, 'A');*/
         pl->pl_old_status = 0;

@@ -307,7 +307,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     asteroid->vel.y = tsin(dir) * speed;
     asteroid->acc.x = asteroid->acc.y = 0;
     asteroid->mass = ASTEROID_MASS(size);
-    asteroid->life = ASTEROID_LIFE;
+    asteroid->obj_life = ASTEROID_LIFE;
     asteroid->wire_turnspeed = 0.02 + rfrac() * 0.05;
     asteroid->wire_rotation = (int)(rfrac() * ANGLE_RESOLUTION);
     asteroid->wire_size = size;
@@ -315,7 +315,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
     radius = ASTEROID_RADIUS(size);
     asteroid->pl_range = radius;
     asteroid->pl_radius = radius;
-    asteroid->fuselife = asteroid->life - 1;
+    asteroid->fuselife = asteroid->obj_life - 1;
     asteroid->obj_status = GRAVITY;
     Mods_clear(&asteroid->mods);
 
@@ -452,9 +452,9 @@ void Asteroid_update(void)
         {
             for (wireobject_t *asteroid : Asteroid_vector)
             {
-                if (asteroid->life > 0)
+                if (asteroid->obj_life > 0)
                 {
-                    asteroid->life = 0;
+                    asteroid->obj_life = 0;
                     if (asteroid->wire_size == 1)
                         num--;
                 }
@@ -466,14 +466,14 @@ void Asteroid_update(void)
         /* rotate asteroids */
         for (wireobject_t *asteroid : Asteroid_vector)
         {
-            if (asteroid->life > 0)
+            if (asteroid->obj_life > 0)
                 Asteroid_rotate(asteroid);
         }
 
         /* move asteroids */
         for (wireobject_t *asteroid : Asteroid_vector)
         {
-            if (asteroid->life > 0)
+            if (asteroid->obj_life > 0)
                 Asteroid_move(asteroid);
         }
     }

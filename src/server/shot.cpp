@@ -282,7 +282,7 @@ void Place_general_mine(int id, int team, int status,
         mine->vel.x += vel.x * MINE_SPEED_FACT;
         mine->vel.y += vel.y * MINE_SPEED_FACT;
         mine->mass = mass / minis;
-        mine->life = life / minis;
+        mine->obj_life = life / minis;
         mine->mods = mods;
         mine->pl_range = (int)(MINE_RANGE / minis);
         mine->pl_radius = MINE_RADIUS;
@@ -330,7 +330,7 @@ void Detonate_mines(player_t *pl)
         }
     }
     if (closest != -1)
-        Obj[closest]->life = 0;
+        Obj[closest]->obj_life = 0;
 
     return;
 }
@@ -942,8 +942,8 @@ void Fire_general_shot(int id, int team, bool cannon,
         if ((shot = Object_allocate()) == NULL)
             break;
 
-        shot->life = life / minis;
-        shot->fuselife = shot->life - fuse;
+        shot->obj_life = life / minis;
+        shot->fuselife = shot->obj_life - fuse;
         shot->fuse = fuse;
         shot->mass = mass / minis;
         shot->type = type;
@@ -1347,24 +1347,24 @@ void Delete_shot(int ind)
         switch (item->item_type)
         {
         case ITEM_MISSILE:
-            if (shot->life == 0 && shot->color != WHITE)
+            if (shot->obj_life == 0 && shot->color != WHITE)
             {
                 shot->color = WHITE;
-                shot->life = FPS * WARN_TIME;
+                shot->obj_life = FPS * WARN_TIME;
                 return;
             }
-            if (shot->life == 0 && rfrac() < options.rogueHeatProb)
+            if (shot->obj_life == 0 && rfrac() < options.rogueHeatProb)
                 addHeat = 1;
             break;
 
         case ITEM_MINE:
-            if (!shot->life && shot->color != WHITE)
+            if (!shot->obj_life && shot->color != WHITE)
             {
                 shot->color = WHITE;
-                shot->life = FPS * WARN_TIME;
+                shot->obj_life = FPS * WARN_TIME;
                 return;
             }
-            if (shot->life == 0 && rfrac() < options.rogueMineProb)
+            if (shot->obj_life == 0 && rfrac() < options.rogueMineProb)
                 addMine = 1;
             break;
         }
@@ -1384,7 +1384,7 @@ void Delete_shot(int ind)
     }
 
     Cell_remove_object(shot);
-    shot->life = 0;
+    shot->obj_life = 0;
     shot->type = 0;
     shot->mass = 0;
 

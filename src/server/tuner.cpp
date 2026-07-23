@@ -256,7 +256,7 @@ void tuner_minelife(void)
             // life = (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Obj[i]->mods.mini + 1);
             life = (options.mineLife ? options.mineLife : MINE_LIFETIME) / (Mods_get(Obj[i]->mods, ModsMini) + 1);
 
-            Obj[i]->life = (int)(rfrac() * life);
+            Obj[i]->obj_life = (int)(rfrac() * life);
             /* We wouldn't want all the mines
                to explode simultaneously, now
                would we? */
@@ -283,7 +283,7 @@ void tuner_missilelife(void)
             // life = (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Obj[i]->mods.mini + 1);
             life = (options.mineLife ? options.mineLife : MISSILE_LIFETIME) / (Mods_get(Obj[i]->mods, ModsMini) + 1);
 
-            Obj[i]->life = (int)(rfrac() * life);
+            Obj[i]->obj_life = (int)(rfrac() * life);
             /* Maybe all the missiles are full
                nukes. Going off together might
                not be such a good idea. */

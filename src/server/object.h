@@ -155,7 +155,7 @@ struct cell_node
     vector_t acc;        /* acceleration in x,y */            \
     float mass;          /* mass in unigrams */               \
     modifiers_t mods;    /* Modifiers to this object */       \
-    long life;           /* No of ticks left to live */       \
+    long obj_life;       /* No of ticks left to live */       \
     int type;            /* one bit of OBJ_XXX */             \
     uint8_t color;       /* Color of object */                \
     uint8_t collmode;    /* collision checking mode */        \

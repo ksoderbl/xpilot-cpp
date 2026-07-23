@@ -817,16 +817,16 @@ static void Frame_shots(connection_t *conn, player_t *pl)
                 if (debris_colors > 4)
                 {
                     if (color == BLUE)
-                        color = (int)shot->life / 2;
+                        color = (int)shot->obj_life / 2;
                     else
-                        color = (int)shot->life / 4;
+                        color = (int)shot->obj_life / 4;
                 }
                 else
                 {
                     if (color == BLUE)
-                        color = (int)shot->life / 4;
+                        color = (int)shot->obj_life / 4;
                     else
-                        color = (int)shot->life / 8;
+                        color = (int)shot->obj_life / 8;
                 }
                 if (color >= debris_colors)
                     color = debris_colors - 1;

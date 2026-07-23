@@ -57,18 +57,18 @@ static char msg[MSG_LEN];
 bool team_dead(int team)
 {
     int i;
-    bool alive = false;
 
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_by_index(i)->team == team &&
-            BIT(Player_by_index(i)->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER) == LEGACY_PLAYING)
-        {
-            alive = true;
-            break;
-        }
+        player_t *pl = Player_by_index(i);
+
+        if (pl->team != team)
+            continue;
+
+        if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER) == LEGACY_PLAYING)
+            return false;
     }
-    return (!alive);
+    return true;
 }
 
 /*
@@ -488,7 +488,7 @@ void Pause_player(player_t *pl, bool on)
                      * then it's too late to join. */
                     if (pl_i->id == pl->id)
                         continue;
-                    if (pl_i->life < World.rules->lives && !Players_are_teammates(pl, pl_i))
+                    if (pl_i->pl_life < World.rules->lives && !Players_are_teammates(pl, pl_i))
                     {
                         toolate = true;
                         break;
@@ -497,7 +497,7 @@ void Pause_player(player_t *pl, bool on)
             }
             if (toolate)
             {
-                // pl->life = 0;
+                // pl->pl_life = 0;
                 // pl->mychar = 'W';
                 // SET_BIT(pl->obj_status, GAME_OVER);
                 Player_set_state(pl, PL_STATE_WAITING);
@@ -509,7 +509,7 @@ void Pause_player(player_t *pl, bool on)
                 // SET_BIT(pl->obj_status, PLAYING);
                 Player_set_state(pl, PL_STATE_ALIVE);
                 if (BIT(World.rules->mode, LIMITED_LIVES))
-                    pl->life = World.rules->lives;
+                    pl->pl_life = World.rules->lives;
             }
             if (BIT(World.rules->mode, TIMING))
                 Player_reset_timing(pl);

@@ -364,11 +364,11 @@ static inline bool Player_is_appearing(player_t *pl)
 {
     // return pl->pl_state == PL_STATE_APPEARING ? true : false;
     bool newAppearing = (pl->pl_state == PL_STATE_APPEARING);
-    bool legacyAppearing = (pl->recovery_count > 0.0); // just a guess
+    bool legacyAppearing = (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED) == 0);
 
     if (newAppearing != legacyAppearing)
     {
-        // warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
+        warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
     }
 
     return legacyAppearing;
@@ -381,7 +381,7 @@ static inline bool Player_is_alive(player_t *pl)
 
     if (newAlive != legacyAlive)
     {
-        // warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
+        warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
     }
 
     return legacyAlive;
@@ -399,7 +399,7 @@ static inline bool Player_is_killed(player_t *pl)
 
     if (newKilled != legacyKilled)
     {
-        // warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
+        warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
     }
 
     return legacyKilled;
@@ -418,7 +418,7 @@ static inline bool Player_is_dead(player_t *pl)
 
     if (newDead != legacyDead)
     {
-        // warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
+        warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
     }
 
     return legacyDead;
@@ -436,7 +436,7 @@ static inline bool Player_is_paused(player_t *pl)
 
     if (newPaused != legacyPaused)
     {
-        // warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
+        warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
     }
 
     return legacyPaused;
@@ -463,7 +463,7 @@ static inline bool Player_is_active(player_t *pl)
 
     if (newActive != legacyActive)
     {
-        // warn("Player_is_waiting: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
+        warn("Player_is_waiting: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
     }
 
     return legacyActive;

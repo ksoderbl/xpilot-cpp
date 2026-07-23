@@ -62,7 +62,7 @@ void Make_treasure_ball(treasure_t *t)
     if ((ball = BALL_PTR(Object_allocate())) == NULL)
         return;
 
-    ball->life = LONG_MAX;
+    ball->obj_life = LONG_MAX;
     ball->mass = options.ballMass;
     ball->vel.x = 0; /* make the ball stuck a little */
     ball->vel.y = 0; /* longer to the ground */
@@ -107,7 +107,7 @@ void Ball_is_replaced(ballobject_t *ball)
 {
     player_t *pl = Player_by_id(ball->ball_owner);
 
-    ball->life = 0;
+    ball->obj_life = 0;
     SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
     if (!options.zeroSumScoring)

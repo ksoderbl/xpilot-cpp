@@ -611,7 +611,7 @@ void Laser_pulse_collision(void)
 
         pulseobject_t *pulse_ptr = PULSE_PTR(obj);
         pulse_ptr->type = OBJ_PULSE_BIT;
-        pulse_ptr->life = 1;
+        pulse_ptr->obj_life = 1;
         pulse_ptr->id = pulse->id;
         pulse_ptr->team = pulse->team;
         pulse_ptr->count = 0;
@@ -635,7 +635,7 @@ void Laser_pulse_collision(void)
                less frequently when wrapping. There's still a small
                chance of it happening though. */
             Move_object(obj);
-            if (obj->life == 0)
+            if (obj->obj_life == 0)
                 break;
             if (BIT(World.rules->mode, WRAP_PLAY))
             {
@@ -673,19 +673,19 @@ void Laser_pulse_collision(void)
                     ady = WRAP_DY(ady);
                     if (sqr(adx) + sqr(ady) <= sqr(ast->pl_radius))
                     {
-                        obj->life = 0;
-                        ast->life += ASTEROID_FUEL_HIT(ED_LASER_HIT_TIMES_256,
-                                                       WIRE_PTR(ast)->wire_size);
-                        if (ast->life < 0)
-                            ast->life = 0;
-                        if (ast->life == 0 && pl && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
+                        obj->obj_life = 0;
+                        ast->obj_life += ASTEROID_FUEL_HIT(ED_LASER_HIT_TIMES_256,
+                                                           WIRE_PTR(ast)->wire_size);
+                        if (ast->obj_life < 0)
+                            ast->obj_life = 0;
+                        if (ast->obj_life == 0 && pl && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
                             Score(pl, options.asteroidPoints, ast->pos, "");
                         break;
                     }
                 }
             }
 
-            if (obj->life == 0)
+            if (obj->obj_life == 0)
                 /* pulse hit asteroid */
                 continue;
 
@@ -706,6 +706,6 @@ void Laser_pulse_collision(void)
         free(vicbuf.vic_ptr);
 
     obj->type = OBJ_DEBRIS;
-    obj->life = 0;
+    obj->obj_life = 0;
     Cell_add_object(obj);
 }

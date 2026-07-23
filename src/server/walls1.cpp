@@ -1085,12 +1085,12 @@ void Move_segment1(move_state_t *ms)
                         // if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != World.treasures[ball->treasure].team))
                         if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != ball->ball_treasure->team))
                         {
-                            ball->life = LONG_MAX;
+                            ball->obj_life = LONG_MAX;
                             ms->crash = NotACrash;
                             break;
                         }
 
-                        ball->life = 0;
+                        ball->obj_life = 0;
                         SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
                         Score(pl, 5, tt->pos, "Treasure: ");
@@ -1101,7 +1101,7 @@ void Move_segment1(move_state_t *ms)
                     }
                     if (ball->ball_owner == NO_ID)
                     {
-                        ball->life = 0;
+                        ball->obj_life = 0;
                         return;
                     }
                     // if (BIT(World.rules->mode, TEAM_PLAY) && World.treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
@@ -1112,7 +1112,7 @@ void Move_segment1(move_state_t *ms)
                          * Ball has been brought back to home treasure.
                          * The team should be punished.
                          */
-                        Set_message_f(" < The ball was loose for %ld frames >", LONG_MAX - ball->life);
+                        Set_message_f(" < The ball was loose for %ld frames >", LONG_MAX - ball->obj_life);
                         if (options.captureTheFlag && !tt->have && !tt->empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
@@ -1121,7 +1121,7 @@ void Move_segment1(move_state_t *ms)
                         else if (Punish_team1(Player_by_id(ball->ball_owner), ball->ball_treasure, ball->pos))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
-                    ball->life = 0;
+                    ball->obj_life = 0;
                     return;
                 }
             }
@@ -1809,16 +1809,16 @@ static void Object_crash1(move_state_t *ms)
          */
         if (obj->type == OBJ_BALL)
             break;
-        obj->life = 0;
+        obj->obj_life = 0;
         break;
 
     case CrashTarget:
-        obj->life = 0;
+        obj->obj_life = 0;
         Object_hits_target1(ms->mip->obj, &World.targets[ms->target], -1.0);
         break;
 
     case CrashWall:
-        obj->life = 0;
+        obj->obj_life = 0;
 #if 0
 /* KK: - Added sparks to wallcrashes for objects != OBJ_SPARK_BIT|OBJ_DEBRIS_BIT.
 **       I'm not sure of the amount of sparks or the direction.
@@ -1843,11 +1843,11 @@ static void Object_crash1(move_state_t *ms)
         break;
 
     case CrashUniverse:
-        obj->life = 0;
+        obj->obj_life = 0;
         break;
 
     case CrashCannon:
-        obj->life = 0;
+        obj->obj_life = 0;
         if (BIT(obj->type, OBJ_ITEM_BIT))
         {
             itemobject_t *item = ITEM_PTR(obj);
@@ -1879,7 +1879,7 @@ static void Object_crash1(move_state_t *ms)
         break;
 
     case CrashUnknown:
-        obj->life = 0;
+        obj->obj_life = 0;
         break;
     }
 }
@@ -1965,8 +1965,8 @@ void Move_object1(object_t *obj)
             if (ms.bounce && ms.bounce != BounceEdge)
             {
                 if (obj->type != OBJ_BALL)
-                    obj->life = (long)(obj->life * options.objectWallBounceLifeFactor);
-                if (obj->life <= 0)
+                    obj->obj_life = (long)(obj->obj_life * options.objectWallBounceLifeFactor);
+                if (obj->obj_life <= 0)
                 {
                     break;
                 }
@@ -1984,7 +1984,7 @@ void Move_object1(object_t *obj)
                     CLR_BIT(obj->obj_status, OWNERIMMUNE);
                 if (sqr(ms.vel.x) + sqr(ms.vel.y) > sqr(options.maxObjectWallBounceSpeed))
                 {
-                    obj->life = 0;
+                    obj->obj_life = 0;
                     break;
                 }
                 ms.vel.x *= options.objectWallBounceBrakeFactor;

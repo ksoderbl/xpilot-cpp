@@ -1231,7 +1231,7 @@ void Update_objects(void)
      * Kill shots that ought to be dead.
      */
     for (int i = NumObjs - 1; i >= 0; i--)
-        if (--(Obj[i]->life) <= 0)
+        if (--(Obj[i]->obj_life) <= 0)
             Delete_shot(i);
 
     /*

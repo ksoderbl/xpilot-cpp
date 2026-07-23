@@ -1014,7 +1014,7 @@ static int Cmd_reset(char *arg, player_t *pl, bool oper, char *msg, size_t size)
     for (i = NumObjs - 1; i >= 0; i--)
     {
         object_t *obj = Obj[i];
-        obj->life = 0;
+        obj->obj_life = 0;
         Delete_shot(i);
     }
 

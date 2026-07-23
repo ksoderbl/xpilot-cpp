@@ -503,9 +503,8 @@ void Tank_handle_detach(player_t *pl)
         if (pl_i->conn != NULL)
         {
             Send_player(pl_i->conn, tank->id);
-            Send_score(pl_i->conn, tank->id,
-                       tank->score, (int)tank->life,
-                       tank->mychar, tank->alliance);
+            Send_score(pl_i->conn, tank->id, tank->score,
+                       tank->pl_life, tank->mychar, tank->alliance);
         }
     }
 }
@@ -601,7 +600,7 @@ void Make_debris(clpos_t pos,
         {
             life = (long)(World.pixel_hypotenuse / speed);
         }
-        debris->life = life;
+        debris->obj_life = life;
         debris->fuselife = life;
         debris->pl_range = radius;
         debris->pl_radius = radius;
@@ -707,8 +706,8 @@ void Make_wreckage(clpos_t pos,
         {
             life = (long)(World.pixel_hypotenuse / speed);
         }
-        wreckage->life = life;
-        wreckage->fuselife = wreckage->life;
+        wreckage->obj_life = life;
+        wreckage->fuselife = wreckage->obj_life;
 
         /* Wreckage type, rotation, and size */
         wreckage->wire_turnspeed = 0.02 + rfrac() * 0.35;

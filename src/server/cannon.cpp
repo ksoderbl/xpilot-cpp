@@ -110,12 +110,12 @@ void Cannon_update(bool tick)
         if (c->tractor_count > 0)
         {
             player_t *tpl = Player_by_id(c->tractor_target_id);
-            int ind = GetInd(c->tractor_target_id);
-            if (Wrap_length(PlayersArray[ind]->pos.cx - c->pos.cx,
-                            PlayersArray[ind]->pos.cy - c->pos.cy) /
+            // int ind = GetInd(c->tractor_target_id);
+            if (Wrap_length(tpl->pos.cx - c->pos.cx,
+                            tpl->pos.cy - c->pos.cy) /
                         CLICK <
                     TRACTOR_MAX_RANGE(c->item[ITEM_TRACTOR_BEAM]) &&
-                BIT(PlayersArray[ind]->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_KILLED | LEGACY_PAUSE) == LEGACY_PLAYING)
+                Player_is_alive(tpl))
             {
                 General_tractor_beam(NO_ID, c->pos,
                                      c->item[ITEM_TRACTOR_BEAM],
@@ -204,7 +204,7 @@ void Cannon_throw_items(cannon_t *c)
                 item->acc.x = 0;
                 item->acc.y = 0;
                 item->mass = 10;
-                item->life = 1500 + (int)(rfrac() * 512);
+                item->obj_life = 1500 + (int)(rfrac() * 512);
                 item->count = amount; // TODO: Remove
                 item->item_count = amount;
                 item->pl_range = ITEM_SIZE / 2;
@@ -304,7 +304,7 @@ static int Cannon_in_danger(cannon_t *c)
     {
         shot = obj_list[i];
 
-        if (shot->life <= 0)
+        if (shot->obj_life <= 0)
             continue;
         if (!BIT(shot->type, kill_shots))
             continue;
@@ -462,8 +462,8 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         /* mode 3 also checks if a player is using a phasing device */
         if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_PAUSE | LEGACY_KILLED) != LEGACY_PLAYING ||
             (BIT(World.rules->mode, TEAM_PLAY) && pl->team == c->team) ||
-            (!pl->forceVisible && BIT(pl->used, USES_CLOAKING_DEVICE) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
-            (smartness > 2 && BIT(pl->used, USES_PHASING_DEVICE)))
+            (!pl->forceVisible && Player_is_cloaked(pl) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
+            (smartness > 2 && Player_is_phasing(pl)))
             continue;
 
         switch (smartness)

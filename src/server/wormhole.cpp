@@ -317,7 +317,7 @@ void Do_warp(player_t *pl)
                 ballpos.y = WRAP_YPIXEL(ballpos.y);
                 if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
                 {
-                    b->life = 0;
+                    b->obj_life = 0;
                 }
                 else
                 {

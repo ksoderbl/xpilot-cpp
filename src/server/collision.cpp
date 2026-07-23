@@ -459,7 +459,7 @@ static void PlayerCollision(void)
         else if (pl->ball != NULL)
         {
             ballobject_t *ball = pl->ball;
-            if (ball->life <= 0 || ball->id != NO_ID)
+            if (ball->obj_life <= 0 || ball->id != NO_ID)
                 pl->ball = NULL;
             else
             {
@@ -474,7 +474,7 @@ static void PlayerCollision(void)
                        found through the ball's treasure */
                     ball->team = pl->team;
                     if (ball->ball_owner == NO_ID)
-                        ball->life = LONG_MAX; /* for frame counter */
+                        ball->obj_life = LONG_MAX; /* for frame counter */
                     ball->ball_owner = pl->id;
                     SET_BIT(ball->obj_status, GRAVITY);
                     // World.treasures[ball->treasure].have = false;
@@ -609,7 +609,7 @@ static void PlayerObjectCollision(player_t *pl)
         bool hit;
 
         obj = obj_list[j];
-        if (obj->life <= 0)
+        if (obj->obj_life <= 0)
             continue;
 
         range = SHIP_SZ + obj->pl_range;
@@ -654,7 +654,7 @@ static void PlayerObjectCollision(player_t *pl)
         }
         else if (obj->type == OBJ_HEAT_SHOT || obj->type == OBJ_SMART_SHOT || obj->type == OBJ_TORPEDO || obj->type == OBJ_SHOT || obj->type == OBJ_CANNON_SHOT)
         {
-            if (pl->id == obj->id && obj->life > obj->fuselife)
+            if (pl->id == obj->id && obj->obj_life > obj->fuselife)
                 continue;
         }
         else if (obj->type == OBJ_MINE)
@@ -710,7 +710,7 @@ static void PlayerObjectCollision(player_t *pl)
         case OBJ_ITEM:
             Player_collides_with_item(pl, ITEM_PTR(obj));
             /* if life is non-zero then no collision occurred */
-            if (obj->life != 0)
+            if (obj->obj_life != 0)
                 continue;
             break;
 
@@ -744,7 +744,7 @@ static void PlayerObjectCollision(player_t *pl)
             break;
         }
 
-        obj->life = 0;
+        obj->obj_life = 0;
 
         if (BIT(obj->type, KILLING_SHOTS))
         {
@@ -776,7 +776,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
         {
             if (BIT(World.rules->mode, TEAM_PLAY) && pl->team == ball->ball_treasure->team)
                 Rank_saved_ball(pl);
-            ball->life = 0;
+            ball->obj_life = 0;
         }
     }
     if (pl->fuel.sum > 0)
@@ -1014,7 +1014,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         break;
     }
 
-    item->life = 0;
+    item->obj_life = 0;
 }
 
 static void Player_collides_with_mine(player_t *pl, mineobject_t *mine)
@@ -1118,7 +1118,7 @@ static void Player_collides_with_debris(player_t *pl, object_t *obj)
                           pl, -sc, kp->name);
         }
         Handle_Scoring(SCORE_EXPLOSION, kp, pl, NULL, NULL);
-        obj->life = 0;
+        obj->obj_life = 0;
         return;
     }
     if (obj->type == OBJ_WRECKAGE && options.wreckageCollisionMayKill && !BIT(pl->used, HAS_SHIELD) && Player_has_armor(pl))
@@ -1130,10 +1130,10 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     double v = VECTOR_LENGTH(ast->vel);
     double cost = collision_cost(ast->mass, v);
 
-    ast->life += ASTEROID_FUEL_HIT(ED_PL_CRASH, ast->wire_size);
-    if (ast->life < 0)
-        ast->life = 0;
-    if (ast->life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
+    ast->obj_life += ASTEROID_FUEL_HIT(ED_PL_CRASH, ast->wire_size);
+    if (ast->obj_life < 0)
+        ast->obj_life = 0;
+    if (ast->obj_life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
     {
         Score(pl, options.asteroidPoints, ast->pos, "");
         Handle_Scoring(SCORE_ASTEROID_KILL, pl, NULL, ast, NULL);
@@ -1356,7 +1356,7 @@ static void AsteroidCollision(void)
     {
         ast = OBJ_PTR(wireobject);
 
-        if (ast->life <= 0)
+        if (ast->obj_life <= 0)
             continue;
 
         // TODO: rather do some wrap thing than using assert
@@ -1375,14 +1375,14 @@ static void AsteroidCollision(void)
         {
             obj = obj_list[j];
             assert(obj != NULL);
-            if (obj->life <= 0)
+            if (obj->obj_life <= 0)
                 continue;
 
             /* asteroids don't hit these objects */
             if (BIT(obj->type, OBJ_ITEM_BIT | OBJ_DEBRIS_BIT | OBJ_SPARK_BIT | OBJ_WRECKAGE_BIT) && obj->id == NO_ID && !BIT(obj->obj_status, FROMCANNON))
                 continue;
             /* don't collide while still overlapping  after breaking */
-            if (obj->type == OBJ_ASTEROID && ast->life > ast->fuselife)
+            if (obj->type == OBJ_ASTEROID && ast->obj_life > ast->fuselife)
                 continue;
             /* don't collide with self */
             if (obj == ast)
@@ -1406,38 +1406,38 @@ static void AsteroidCollision(void)
             case OBJ_BALL:
                 Obj_repel(ast, obj, radius);
                 if (options.treasureCollisionDestroys)
-                    obj->life = 0;
+                    obj->obj_life = 0;
                 damage = ED_BALL_HIT;
                 sound = true;
                 break;
             case OBJ_ASTEROID:
-                obj->life -= ASTEROID_FUEL_HIT(
+                obj->obj_life -= ASTEROID_FUEL_HIT(
                     collision_cost(ast->mass, VECTOR_LENGTH(ast->vel)),
                     WIRE_PTR(obj)->wire_size);
                 damage = -collision_cost(obj->mass, VECTOR_LENGTH(obj->vel));
                 Delta_mv_elastic(ast, obj);
                 /* avoid doing collision twice */
-                obj->fuselife = obj->life - 1;
+                obj->fuselife = obj->obj_life - 1;
                 sound = true;
                 break;
             case OBJ_SPARK:
-                obj->life = 0;
+                obj->obj_life = 0;
                 Delta_mv(ast, obj);
                 damage = 0.0;
                 break;
             case OBJ_DEBRIS:
             case OBJ_WRECKAGE:
-                obj->life = 0;
+                obj->obj_life = 0;
                 damage = -collision_cost(obj->mass, VECTOR_LENGTH(obj->vel));
                 Delta_mv(ast, obj);
                 break;
             case OBJ_MINE:
                 if (!BIT(obj->obj_status, CONFUSED))
-                    obj->life = 0;
+                    obj->obj_life = 0;
                 break;
             case OBJ_SHOT:
             case OBJ_CANNON_SHOT:
-                obj->life = 0;
+                obj->obj_life = 0;
                 Delta_mv(ast, obj);
                 damage = ED_SHOT_HIT;
                 sound = true;
@@ -1445,7 +1445,7 @@ static void AsteroidCollision(void)
             case OBJ_SMART_SHOT:
             case OBJ_TORPEDO:
             case OBJ_HEAT_SHOT:
-                obj->life = 0;
+                obj->obj_life = 0;
                 Delta_mv(ast, obj);
                 damage = Missile_hit_drain(MISSILE_PTR(obj));
                 sound = true;
@@ -1456,16 +1456,16 @@ static void AsteroidCollision(void)
                 break;
             }
 
-            if (ast->life > 0)
+            if (ast->obj_life > 0)
             {
-                if (ast->life <= ast->fuselife)
-                    ast->life += ASTEROID_FUEL_HIT(damage,
-                                                   WIRE_PTR(ast)->wire_size);
+                if (ast->obj_life <= ast->fuselife)
+                    ast->obj_life += ASTEROID_FUEL_HIT(damage,
+                                                       WIRE_PTR(ast)->wire_size);
                 if (sound)
                     sound_play_sensors(ast->pos, ASTEROID_HIT_SOUND);
-                if (ast->life < 0)
-                    ast->life = 0;
-                if (ast->life == 0)
+                if (ast->obj_life < 0)
+                    ast->obj_life = 0;
+                if (ast->obj_life == 0)
                 {
                     if (options.asteroidPoints > 0 && (obj->id != NO_ID || (obj->type == OBJ_BALL_BIT && BALL_PTR(obj)->ball_owner != NO_ID)))
                     {
@@ -1508,7 +1508,7 @@ static void BallCollision(void)
 
         /* ignore if: */
         if (ball->type != OBJ_BALL || /* not a ball */
-            ball->life <= 0 ||        /* dying ball */
+            ball->obj_life <= 0 ||    /* dying ball */
             (ball->id != NO_ID && Player_is_phasing(Player_by_id(ball->id))) ||
             /* phased ball */
             ball->ball_treasure->have) /* safe in a treasure */
@@ -1544,7 +1544,7 @@ static void BallCollision(void)
             if (BIT(obj->type, ignored_object_types))
                 continue;
 
-            if (obj->life <= 0)
+            if (obj->obj_life <= 0)
                 continue;
 
             /* have we already done this ball pair? */
@@ -1582,8 +1582,8 @@ static void BallCollision(void)
                      sqr(ball->vel.y - obj->vel.y)) >
                     sqr(options.maxObjectWallBounceSpeed))
                 {
-                    ball->life = 0;
-                    obj->life = 0;
+                    ball->obj_life = 0;
+                    obj->obj_life = 0;
                 }
                 else
                 {
@@ -1603,7 +1603,7 @@ static void BallCollision(void)
             case OBJ_DEBRIS:
             case OBJ_WRECKAGE:
                 Delta_mv(OBJ_PTR(ball), obj);
-                obj->life = 0;
+                obj->obj_life = 0;
                 break;
             default:
                 break;
@@ -1640,8 +1640,8 @@ static void MineCollision(void)
         mine = MINE_IND(i);
 
         /* ignore if: */
-        if (mine->type != OBJ_MINE_BIT || /* not a mine */
-            mine->life <= 0)
+        if (mine->type != OBJ_MINE || /* not a mine */
+            mine->obj_life <= 0)
         { /* dying mine */
             continue;
         }
@@ -1657,7 +1657,7 @@ static void MineCollision(void)
             if (!BIT(obj->type, collide_object_types))
                 continue;
 
-            if (obj->life <= 0)
+            if (obj->obj_life <= 0)
                 continue;
 
             if (!in_range_acd(mine->prevpos.cx, mine->prevpos.cy,
@@ -1670,8 +1670,8 @@ static void MineCollision(void)
             }
 
             /* bang! */
-            obj->life = 0;
-            mine->life = 0;
+            obj->obj_life = 0;
+            mine->obj_life = 0;
             break;
         }
     }

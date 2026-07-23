@@ -72,7 +72,7 @@ object_t *Object_allocate(void)
         Object_incr_count();
 
         obj->type = OBJ_DEBRIS;
-        obj->life = 0;
+        obj->obj_life = 0;
     }
     else
     {
