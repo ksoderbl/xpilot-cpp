@@ -25,6 +25,7 @@
 
 #define SERVER
 
+#include "xperror.h"
 #include "rules.h"
 #include "bit.h"
 #include "click.h"
@@ -41,20 +42,20 @@
 /*
  * These values are set in the player->pl_type field.
  */
-#define PL_TYPE_HUMAN 0
-#define PL_TYPE_ROBOT 1
-#define PL_TYPE_TANK 2
+constexpr int PL_TYPE_HUMAN = 0;
+constexpr int PL_TYPE_ROBOT = 1;
+constexpr int PL_TYPE_TANK = 2;
 
 /*
  * These values are set in the player->pl_state field.
  */
-#define PL_STATE_UNDEFINED 0
-#define PL_STATE_WAITING 1
-#define PL_STATE_APPEARING 2
-#define PL_STATE_ALIVE 3
-#define PL_STATE_KILLED 4
-#define PL_STATE_DEAD 5
-#define PL_STATE_PAUSED 6
+constexpr int PL_STATE_UNDEFINED = 0;
+constexpr int PL_STATE_WAITING = 1;
+constexpr int PL_STATE_APPEARING = 2;
+constexpr int PL_STATE_ALIVE = 3;
+constexpr int PL_STATE_KILLED = 4;
+constexpr int PL_STATE_DEAD = 5;
+constexpr int PL_STATE_PAUSED = 6;
 
 /*
  * Different types of attributes a player can have.
@@ -341,55 +342,110 @@ static inline player_t *Player_by_id(int id)
 
 static inline bool Player_is_waiting(player_t *pl)
 {
-    if (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W')
-        return true;
-    return false;
-    // TODO
-    // return pl->pl_state == PL_STATE_WAITING ? true : false;
+    bool newWaiting = (pl->pl_state == PL_STATE_WAITING);
+    bool oldWaiting = (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W');
+
+    if (newWaiting != oldWaiting)
+    {
+        warn("Player_is_waiting: newWaiting != oldWaiting: Player %s (%d, %d)", pl->name, newWaiting, oldWaiting);
+    }
+
+    return oldWaiting;
+
+    // if (BIT(pl->obj_status, GAME_OVER) && pl->mychar == 'W')
+    //     return true;
+    // return false;
+    // // TODO
+    // // return pl->pl_state == PL_STATE_WAITING ? true : false;
 }
 
+// TODO: Rename this to Player_is_recovering ?
 static inline bool Player_is_appearing(player_t *pl)
 {
-    return pl->pl_state == PL_STATE_APPEARING ? true : false;
+    // return pl->pl_state == PL_STATE_APPEARING ? true : false;
+    bool newAppearing = (pl->pl_state == PL_STATE_APPEARING);
+    bool oldAppearing = (pl->recovery_count > 0.0); // just a guess
+
+    if (newAppearing != oldAppearing)
+    {
+        warn("Player_is_appearing: newAppearing != oldAppearing: Player %s (%d, %d)", pl->name, newAppearing, oldAppearing);
+    }
+
+    return oldAppearing;
 }
 
-// TODO
-// static inline bool Player_is_alive(player_t *pl)
-// {
-//     return pl->pl_state == PL_STATE_ALIVE ? true : false;
-// }
 static inline bool Player_is_alive(player_t *pl)
 {
-    if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
-        return true;
-    return false;
+    bool newAlive = (pl->pl_state == PL_STATE_ALIVE);
+    bool oldAlive = (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING);
+
+    if (newAlive != oldAlive)
+    {
+        warn("Player_is_alive: newAlive != oldAlive: Player %s (%d, %d)", pl->name, newAlive, oldAlive);
+    }
+
+    return oldAlive;
+
+    // if (BIT(pl->obj_status, PLAYING | PAUSE | GAME_OVER | KILLED) == PLAYING)
+    //     return true;
+    // return false;
 }
 
 /* player was killed this frame ? */
 static inline bool Player_is_killed(player_t *pl)
 {
-    // TODO
-    // return pl->pl_state == PL_STATE_KILLED ? true : false;
-    if (BIT(pl->obj_status, KILLED))
-        return true;
-    return false;
+    bool newKilled = (pl->pl_state == PL_STATE_KILLED);
+    bool oldKilled = BIT(pl->obj_status, KILLED);
+
+    if (newKilled != oldKilled)
+    {
+        warn("Player_is_killed: newKilled != oldKilled: Player %s (%d, %d)", pl->name, newKilled, oldKilled);
+    }
+
+    return oldKilled;
+
+    // // TODO
+    // // return pl->pl_state == PL_STATE_KILLED ? true : false;
+    // if (BIT(pl->obj_status, KILLED))
+    //     return true;
+    // return false;
 }
 
 static inline bool Player_is_dead(player_t *pl)
 {
+    bool newDead = (pl->pl_state == PL_STATE_DEAD);
+    bool oldDead = BIT(pl->obj_status, GAME_OVER);
+
+    if (newDead != oldDead)
+    {
+        warn("Player_is_dead: newDead != oldDead: Player %s (%d, %d)", pl->name, newDead, oldDead);
+    }
+
+    return oldDead;
+
     // return pl->pl_state == PL_STATE_DEAD ? true : false;
-    if (BIT(pl->obj_status, GAME_OVER))
-        return true;
-    return false;
+    // if (BIT(pl->obj_status, GAME_OVER))
+    //     return true;
+    // return false;
 }
 
 static inline bool Player_is_paused(player_t *pl)
 {
-    // TODO
-    // return pl->pl_state == PL_STATE_PAUSED ? true : false;
-    if (BIT(pl->obj_status, PAUSE))
-        return true;
-    return false;
+    bool newPaused = (pl->pl_state == PL_STATE_PAUSED);
+    bool oldPaused = BIT(pl->obj_status, PAUSE);
+
+    if (newPaused != oldPaused)
+    {
+        warn("Player_is_paused: newPaused != oldPaused: Player %s (%d, %d)", pl->name, newPaused, oldPaused);
+    }
+
+    return oldPaused;
+
+    // // TODO
+    // // return pl->pl_state == PL_STATE_PAUSED ? true : false;
+    // if (BIT(pl->obj_status, PAUSE))
+    //     return true;
+    // return false;
 }
 
 static inline bool Player_is_hoverpaused(player_t *pl)

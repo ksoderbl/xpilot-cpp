@@ -926,7 +926,7 @@ static void Update_players(void)
         if (pl->recovery_count > 0)
         {
             pl->recovery_count -= timeStep;
-            warn("Player %s recovery count is %f", pl->name, pl->recovery_count);
+            // warn("Player %s recovery count is %f", pl->name, pl->recovery_count);
             if (pl->recovery_count <= 0)
             {
                 warn("Player %s recovered!", pl->name);
