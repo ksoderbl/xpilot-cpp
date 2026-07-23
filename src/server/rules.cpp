@@ -63,9 +63,7 @@ uint32_t KILLING_SHOTS =
      OBJ_HEAT_SHOT_BIT |
      OBJ_PULSE_BIT);
 
-uint32_t DEF_BITS = 0;
-
-uint32_t KILL_BITS =
+uint32_t LEGACY_KILL_BITS =
     (THRUSTING |
      LEGACY_PLAYING |
      LEGACY_KILLED |

@@ -464,9 +464,6 @@ void Pause_player(player_t *pl, bool on)
         pl->recovery_count = 0;
         pl->updateVisibility = true;
         Player_self_destruct(pl, false);
-        // CLR_BIT(pl->obj_status, PLAYING);
-        // SET_BIT(pl->obj_status, PAUSE);
-        // pl->mychar = 'P';
         Player_set_state(pl, PL_STATE_PAUSED);
         updateScores = true;
         if (BIT(pl->have, HAS_BALL))

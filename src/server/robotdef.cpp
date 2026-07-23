@@ -1561,7 +1561,7 @@ static int Robot_default_play_check_map(player_t *pl)
     {
         fuel_t *fs = Fuel_by_index(j);
 
-        if (fs->fuel < 100)
+        if (fs->fuel < 100.0)
             continue;
 
         if (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team)
@@ -1772,7 +1772,15 @@ static void Robot_default_play_check_objects(player_t *pl,
         }
 
         /* Find nearest missile/mine */
-        if (BIT(shot->type, OBJ_TORPEDO_BIT | OBJ_SMART_SHOT_BIT | OBJ_ASTEROID_BIT | OBJ_HEAT_SHOT_BIT | OBJ_BALL_BIT | OBJ_CANNON_SHOT_BIT) || (BIT(shot->type, OBJ_SHOT_BIT) && !BIT(World.rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) || (BIT(shot->type, OBJ_MINE_BIT) && shot->id != pl->id) || (BIT(shot->type, OBJ_WRECKAGE_BIT) && !BIT(World.rules->mode, TIMING)))
+        if (BIT(shot->type, OBJ_TORPEDO_BIT |
+                                OBJ_SMART_SHOT_BIT |
+                                OBJ_ASTEROID_BIT |
+                                OBJ_HEAT_SHOT_BIT |
+                                OBJ_BALL_BIT |
+                                OBJ_CANNON_SHOT_BIT) ||
+            (BIT(shot->type, OBJ_SHOT_BIT) && !BIT(World.rules->mode, TIMING) && shot->id != pl->id && shot->id != NO_ID) ||
+            (BIT(shot->type, OBJ_MINE_BIT) && shot->id != pl->id) ||
+            (BIT(shot->type, OBJ_WRECKAGE_BIT) && !BIT(World.rules->mode, TIMING)))
         {
             if (ABS(dx) < *mine_dist && ABS(dy) < *mine_dist && (distance = LENGTH(dx, dy)) < *mine_dist)
             {
@@ -2138,9 +2146,15 @@ static void Robot_default_play(player_t *pl)
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         int delta_dir;
+        int delta_dir2;
+
         ship = Player_by_id(pl->lock.pl_id);
         delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
                                                  ship->pix_pos.y - pl->pix_pos.y));
+        delta_dir2 = (int)(pl->dir - Wrap_cfindDir(ship->pos.cx - pl->pos.cx,
+                                                   ship->pos.cy - pl->pos.cy));
+        if (delta_dir != delta_dir2)
+            warn("delta_dir = %d, delta_dir2 = %d", delta_dir, delta_dir2);
         delta_dir = MOD2(delta_dir, ANGLE_RESOLUTION);
         if (BIT(ship->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) != LEGACY_PLAYING ||
             (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING) ||
@@ -2159,7 +2173,7 @@ static void Robot_default_play(player_t *pl)
     {
         if (Check_robot_evade(pl, mine_i, ship_i))
         {
-            if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
+            if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
             {
                 SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
@@ -2261,7 +2275,7 @@ static void Robot_default_play(player_t *pl)
 
     if (Check_robot_hunt(pl))
     {
-        if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
+        if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
         {
             SET_BIT(pl->used, HAS_SHIELD);
             if (!options.cloakedShield)
@@ -2273,7 +2287,7 @@ static void Robot_default_play(player_t *pl)
     if (Robot_default_play_check_map(pl) == 1)
         return;
 
-    if (options.allowShields == 0 && options.playerStartsShielded != 0 && BIT(pl->have, HAS_SHIELD))
+    if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
     {
         SET_BIT(pl->used, HAS_SHIELD);
         if (!options.cloakedShield)

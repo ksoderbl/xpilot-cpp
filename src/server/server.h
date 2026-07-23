@@ -81,8 +81,8 @@ extern int NumRobots;
 extern int login_in_progress;
 // extern world_t World;
 extern server_t Server;
-extern uint32_t DEF_BITS;
-extern uint32_t KILL_BITS;
+
+extern uint32_t LEGACY_KILL_BITS;
 extern uint32_t DEF_HAVE;
 extern uint32_t DEF_USED;
 extern uint32_t USED_KILL;

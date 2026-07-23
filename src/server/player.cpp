@@ -554,7 +554,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
     Compute_sensor_range(pl);
     pl->color = WHITE;
 
-    // pl->obj_status = PLAYING | GRAVITY | DEF_BITS;
+    // pl->obj_status = PLAYING | GRAVITY;
     pl->obj_status = GRAVITY;
     assert(pl->pl_status == 0);
     assert(pl->pl_state == PL_STATE_UNDEFINED);
@@ -705,19 +705,24 @@ void Update_score_table(void)
 
     for (j = 0; j < NumPlayers; j++)
     {
-        pl = PlayersArray[j];
-        if (Get_Score(pl) != pl->prev_score || pl->life != pl->prev_life || pl->mychar != pl->prev_mychar || pl->alliance != pl->prev_alliance)
+        pl = Player_by_index(j);
+        if (Get_Score(pl) != pl->prev_score ||
+            pl->life != pl->prev_life ||
+            pl->mychar != pl->prev_mychar ||
+            pl->alliance != pl->prev_alliance)
         {
             pl->prev_score = Get_Score(pl);
             pl->prev_life = pl->life;
             pl->prev_mychar = pl->mychar;
             pl->prev_alliance = pl->alliance;
+
             for (i = 0; i < NumPlayers; i++)
             {
-                if (pl->conn != NULL)
+                player_t *pl_i = Player_by_index(i);
+
+                if (pl_i->conn != NULL)
                 {
-                    Send_score(pl->conn, pl->id,
-                               Get_Score(pl), pl->life,
+                    Send_score(pl_i->conn, pl->id, Get_Score(pl), pl->life,
                                pl->mychar, pl->alliance);
                 }
             }
@@ -1759,8 +1764,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
     pl->emptymass = pl->mass = options.shipMass;
-    pl->obj_status |= DEF_BITS;
-    pl->obj_status &= ~(KILL_BITS);
+    pl->obj_status &= ~(LEGACY_KILL_BITS);
 
     for (i = 0; i < NUM_ITEMS; i++)
     {
@@ -1798,15 +1802,17 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
             {
                 if (Player_is_robot(pl))
                 {
-                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) || (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
+                    if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) ||
+                        (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
                     {
                         Robot_delete(pl, false);
                         return;
                     }
                 }
                 pl->life = 0;
-                SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
-                pl->mychar = 'D';
+                // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
+                // pl->mychar = 'D';
+                Player_set_state(pl, PL_STATE_DEAD);
                 Player_lock_closest(pl, 0);
             }
         }

@@ -161,7 +161,7 @@ typedef struct
     long used; /* Items you use */
     long have; /* Items you have */
 
-    int shield_time;                       /* Shields if no allowShields */
+    double shield_time;                    /* Shields if no allowShields */
     pl_fuel_t fuel;                        /* ship tanks and the stored fuel */
     double emptymass;                      /* Mass of empty ship */
     double float_dir;                      /* Direction, in float var */
@@ -747,9 +747,19 @@ static inline bool Player_is_cloaked(player_t *pl)
 
 static inline bool Player_is_active(player_t *pl)
 {
-    if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
-        return true;
-    return false;
+    bool newActive = (Player_is_alive(pl) || Player_is_killed(pl));
+    bool legacyActive = (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING);
+
+    if (newActive != legacyActive)
+    {
+        warn("Player_is_waiting: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
+    }
+
+    return legacyActive;
+
+    // if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
+    //     return true;
+    // return false;
 }
 
 /* kps - add id.h ? */
