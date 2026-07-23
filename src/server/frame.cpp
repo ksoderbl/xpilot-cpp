@@ -521,8 +521,8 @@ static int Frame_status(connection_t *conn, player_t *pl)
             pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
-            lock_dir = (int)Wrap_findDir((int)(lock_pl->pix_pos.x - pl->pix_pos.x),
-                                         (int)(lock_pl->pix_pos.y - pl->pix_pos.y));
+            lock_dir = (int)Wrap_cfindDir(lock_pl->pos.cx - pl->pos.cx,
+                                          lock_pl->pos.cy - pl->pos.cy);
             lock_dist = (int)pl->lock.distance;
         }
     }

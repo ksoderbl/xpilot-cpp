@@ -189,10 +189,10 @@ static void Laser_pulse_find_victims(
     for (i = 0; i < NumPlayers; i++)
     {
         vic = Player_by_index(i);
-        if (BIT(vic->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_KILLED | LEGACY_PAUSE) != LEGACY_PLAYING)
+        if (!Player_is_alive(vic))
             continue;
 
-        if (BIT(vic->used, USES_PHASING_DEVICE))
+        if (Player_is_phasing(vic))
             continue;
 
         if (vic->id == pulse->id && options.selfImmunity)

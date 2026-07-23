@@ -39,6 +39,8 @@
 #include "serverconst.h"
 #include "modifiers.h"
 
+extern bool updateScores;
+
 /*
  * These values are set in the player->pl_type field.
  */
@@ -485,39 +487,37 @@ extern void Add_Score(player_t *pl, double score);
 
 static inline void Player_add_score(player_t *pl, double points)
 {
-    // TODO
-    //     Add_Score(pl, points);
-    //     pl->update_score = true;
-    //     updateScores = true;
+    Add_Score(pl, points);
+    pl->update_score = true;
+    updateScores = true;
 }
 
 static inline void Player_set_score(player_t *pl, double points)
 {
-    // TODO
-    //     Set_Score(pl, points);
-    //     pl->update_score = true;
-    //     updateScores = true;
+    Set_Score(pl, points);
+    pl->update_score = true;
+    updateScores = true;
 }
 
 static inline void Player_set_mychar(player_t *pl, char mychar)
 {
     pl->mychar = mychar;
-    // pl->update_score = true;
-    // updateScores = true;
+    pl->update_score = true;
+    updateScores = true;
 }
 
 static inline void Player_set_life(player_t *pl, int life)
 {
     pl->pl_life = life;
-    // pl->update_score = true;
-    // updateScores = true;
+    pl->update_score = true;
+    updateScores = true;
 }
 
 static inline void Player_set_alliance(player_t *pl, int alliance)
 {
     pl->alliance = alliance;
-    // pl->update_score = true;
-    // updateScores = true;
+    pl->update_score = true;
+    updateScores = true;
 }
 
 /*

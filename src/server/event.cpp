@@ -302,10 +302,17 @@ static void Player_repair(player_t *pl)
 /* Player pressed pause key. */
 static void Player_toggle_pause(player_t *pl)
 {
+    enum pausetype
+    {
+        unknown,
+        paused,
+        hoverpaused
+    } pausetype = unknown;
+
     int i, j, k, key, xi, yi;
     double minv;
 
-    if (BIT(pl->obj_status, LEGACY_PAUSE))
+    if (Player_is_paused(pl))
         i = LEGACY_PAUSE;
     else if (BIT(pl->pl_status, HOVERPAUSE))
         i = HOVERPAUSE;
@@ -457,7 +464,8 @@ void Pause_player(player_t *pl, bool on)
         return;
     if (on && !Player_is_paused(pl))
     { /* Turn pause mode on */
-
+        if (pl->team != TEAM_NOT_SET)
+            World.teams[pl->team].SwapperId = NO_ID;
         /* Minimum pause time is 10 seconds at gamespeed 12. */
         pl->pause_count = 10 * 12;
         /* player might have paused when recovering */

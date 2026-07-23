@@ -1820,13 +1820,40 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
          pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
 
+    pl->deaths++;
+
     if (BIT(World.rules->mode, LIMITED_LIVES))
     {
-        warn("LIMITED_LIVES!");
+        bool waiting = Player_is_waiting(pl);
+
+        Player_set_life(pl, pl->pl_life - 1);
+        Player_set_state(pl, PL_STATE_APPEARING);
+
+        if (pl->pl_life == -1)
+        {
+            if (Player_is_robot(pl))
+            {
+                if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) ||
+                    (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
+                {
+                    Robot_delete(pl, false);
+                    return;
+                }
+            }
+            Player_set_life(pl, 0);
+            // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
+            // pl->mychar = 'D';
+            if (waiting)
+                Player_set_state(pl, PL_STATE_WAITING);
+            else
+                Player_set_state(pl, PL_STATE_DEAD);
+            Player_lock_closest(pl, 0);
+        }
     }
     else
     {
-        warn("NOT LIMITED_LIVES!");
+        Player_set_life(pl, pl->pl_life + 1);
+        Player_set_state(pl, PL_STATE_APPEARING);
     }
 
     for (i = 0; i < NUM_ITEMS; i++)
@@ -1856,35 +1883,35 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
 
     // Player is not paused, that was checked earlier.
 
-    pl->deaths++;
+    // pl->deaths++;
 
-    if (BIT(World.rules->mode, LIMITED_LIVES))
-    {
-        pl->pl_life--;
-        Player_set_life(pl, pl->pl_life - 1);
+    // if (BIT(World.rules->mode, LIMITED_LIVES))
+    // {
+    //     pl->pl_life--;
+    //     Player_set_life(pl, pl->pl_life - 1);
 
-        if (pl->pl_life == -1)
-        {
-            if (Player_is_robot(pl))
-            {
-                if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) ||
-                    (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
-                {
-                    Robot_delete(pl, false);
-                    return;
-                }
-            }
-            pl->pl_life = 0;
-            // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
-            // pl->mychar = 'D';
-            Player_set_state(pl, PL_STATE_DEAD);
-            Player_lock_closest(pl, 0);
-        }
-    }
-    else
-    {
-        pl->pl_life++;
-    }
+    //     if (pl->pl_life == -1)
+    //     {
+    //         if (Player_is_robot(pl))
+    //         {
+    //             if (!BIT(World.rules->mode, TIMING | TEAM_PLAY) ||
+    //                 (options.robotsLeave && Get_Score(pl) < options.robotLeaveScore))
+    //             {
+    //                 Robot_delete(pl, false);
+    //                 return;
+    //             }
+    //         }
+    //         pl->pl_life = 0;
+    //         // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
+    //         // pl->mychar = 'D';
+    //         Player_set_state(pl, PL_STATE_DEAD);
+    //         Player_lock_closest(pl, 0);
+    //     }
+    // }
+    // else
+    // {
+    //     pl->pl_life++;
+    // }
 
     warn("after2: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s / %s)",
          pl->name, pl->obj_status, s, bitsToStr(pl->obj_status).c_str(), bitsToStr(s).c_str());
