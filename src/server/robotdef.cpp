@@ -2146,15 +2146,10 @@ static void Robot_default_play(player_t *pl)
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         int delta_dir;
-        int delta_dir2;
 
         ship = Player_by_id(pl->lock.pl_id);
-        delta_dir = (int)(pl->dir - Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x,
-                                                 ship->pix_pos.y - pl->pix_pos.y));
-        delta_dir2 = (int)(pl->dir - Wrap_cfindDir(ship->pos.cx - pl->pos.cx,
-                                                   ship->pos.cy - pl->pos.cy));
-        if (delta_dir != delta_dir2)
-            warn("delta_dir = %d, delta_dir2 = %d", delta_dir, delta_dir2);
+        delta_dir = (int)(pl->dir - Wrap_cfindDir(ship->pos.cx - pl->pos.cx,
+                                                  ship->pos.cy - pl->pos.cy));
         delta_dir = MOD2(delta_dir, ANGLE_RESOLUTION);
         if (BIT(ship->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) != LEGACY_PLAYING ||
             (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id != pl->lock.pl_id && BIT(Player_by_id(my_data->robot_lock_id)->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING) ||

@@ -1736,12 +1736,42 @@ void Detach_ball(player_t *pl, ballobject_t *ball)
 
 void Kill_player(player_t *pl, bool add_rank_death)
 {
+    warn("Kill_player: player: %s", pl->name);
+
     Explode_fighter(pl);
     Player_death_reset(pl, add_rank_death);
 }
 
+static std::string bitsToStr(uint32_t s)
+{
+    std::string ret = "";
+
+    if (s & LEGACY_PLAYING)
+        ret += "LEGACY_PLAYING ";
+    if (s & LEGACY_PAUSE)
+        ret += "LEGACY_PAUSE ";
+    if (s & LEGACY_GAME_OVER)
+        ret += "LEGACY_GAME_OVER ";
+    if (s & LEGACY_KILLED)
+        ret += "LEGACY_KILLED ";
+    if (s & THRUSTING)
+        ret += "THRUSTING ";
+    if (s & SELF_DESTRUCT)
+        ret += "SELF_DESTRUCT ";
+    if (s & GRAVITY)
+        ret += "GRAVITY ";
+    if (s & WARPING)
+        ret += "WARPING ";
+    if (s & WARPED)
+        ret += "WARPED ";
+
+    return ret;
+}
+
 void Player_death_reset(player_t *pl, bool add_rank_death)
 {
+    warn("Player_death_reset: player: %s", pl->name);
+
     long minfuel_times_256;
     int i;
 
@@ -1764,7 +1794,40 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     pl->vel.x = pl->vel.y = 0.0;
     pl->acc.x = pl->acc.y = 0.0;
     pl->emptymass = pl->mass = options.shipMass;
+
+    uint32_t s = pl->obj_status;
+
+    warn("before: player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s)",
+         pl->name, pl->obj_status, s, bitsToStr(s).c_str());
+
     pl->obj_status &= ~(LEGACY_KILL_BITS);
+
+    s &= ~THRUSTING;
+    s &= ~LEGACY_PLAYING;
+    s &= ~LEGACY_KILLED;
+    s &= ~SELF_DESTRUCT;
+    s &= ~WARPING;
+    s &= ~WARPED;
+
+    // uint32_t LEGACY_KILL_BITS =
+    // (THRUSTING |
+    //  LEGACY_PLAYING |
+    //  LEGACY_KILLED |
+    //  SELF_DESTRUCT |
+    //  WARPING |
+    //  WARPED);
+
+    warn("after : player %s, pl->obj_status = 0x%08x, s = 0x%08x (%s)",
+         pl->name, pl->obj_status, s, bitsToStr(s).c_str());
+
+    if (BIT(World.rules->mode, LIMITED_LIVES))
+    {
+        warn("LIMITED_LIVES!");
+    }
+    else
+    {
+        warn("NOT LIMITED_LIVES!");
+    }
 
     for (i = 0; i < NUM_ITEMS; i++)
     {

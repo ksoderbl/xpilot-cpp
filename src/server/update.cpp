@@ -1072,9 +1072,9 @@ static void Update_players(void)
             Move_player(pl);
         }
 
-        if ((!BIT(pl->used, USES_CLOAKING_DEVICE) || options.cloakedExhaust) && !BIT(pl->used, USES_PHASING_DEVICE))
+        if ((!Player_is_cloaked(pl) || options.cloakedExhaust) && !Player_is_phasing(pl))
         {
-            if (BIT(pl->obj_status, THRUSTING))
+            if (Player_is_thrusting(pl))
                 Make_thrust_sparks(pl);
         }
 

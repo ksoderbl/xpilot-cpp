@@ -347,7 +347,7 @@ static inline bool Player_is_waiting(player_t *pl)
 
     if (newWaiting != legacyWaiting)
     {
-        warn("Player_is_waiting: newWaiting != legacyWaiting: Player %s (%d, %d)", pl->name, newWaiting, legacyWaiting);
+        // warn("Player_is_waiting: newWaiting != legacyWaiting: Player %s (%d, %d)", pl->name, newWaiting, legacyWaiting);
     }
 
     return legacyWaiting;
@@ -368,7 +368,7 @@ static inline bool Player_is_appearing(player_t *pl)
 
     if (newAppearing != legacyAppearing)
     {
-        warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
+        // warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
     }
 
     return legacyAppearing;
@@ -381,7 +381,7 @@ static inline bool Player_is_alive(player_t *pl)
 
     if (newAlive != legacyAlive)
     {
-        warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
+        // warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
     }
 
     return legacyAlive;
@@ -399,7 +399,7 @@ static inline bool Player_is_killed(player_t *pl)
 
     if (newKilled != legacyKilled)
     {
-        warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
+        // warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
     }
 
     return legacyKilled;
@@ -418,7 +418,7 @@ static inline bool Player_is_dead(player_t *pl)
 
     if (newDead != legacyDead)
     {
-        warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
+        // warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
     }
 
     return legacyDead;
@@ -436,7 +436,7 @@ static inline bool Player_is_paused(player_t *pl)
 
     if (newPaused != legacyPaused)
     {
-        warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
+        // warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
     }
 
     return legacyPaused;
@@ -444,6 +444,31 @@ static inline bool Player_is_paused(player_t *pl)
     // // TODO
     // // return pl->pl_state == PL_STATE_PAUSED ? true : false;
     // if (BIT(pl->obj_status, LEGACY_PAUSE))
+    //     return true;
+    // return false;
+}
+
+// TODO
+// static inline bool Player_is_active(player_t *pl)
+// {
+//     if (Player_is_alive(pl) || Player_is_killed(pl))
+//         return true;
+//     return false;
+// }
+
+static inline bool Player_is_active(player_t *pl)
+{
+    bool newActive = (Player_is_alive(pl) || Player_is_killed(pl));
+    bool legacyActive = (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING);
+
+    if (newActive != legacyActive)
+    {
+        // warn("Player_is_waiting: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
+    }
+
+    return legacyActive;
+
+    // if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
     //     return true;
     // return false;
 }
@@ -735,31 +760,6 @@ static inline bool Player_is_cloaked(player_t *pl)
     if (BIT(pl->used, USES_CLOAKING_DEVICE))
         return true;
     return false;
-}
-
-// TODO
-// static inline bool Player_is_active(player_t *pl)
-// {
-//     if (Player_is_alive(pl) || Player_is_killed(pl))
-//         return true;
-//     return false;
-// }
-
-static inline bool Player_is_active(player_t *pl)
-{
-    bool newActive = (Player_is_alive(pl) || Player_is_killed(pl));
-    bool legacyActive = (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING);
-
-    if (newActive != legacyActive)
-    {
-        warn("Player_is_waiting: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
-    }
-
-    return legacyActive;
-
-    // if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
-    //     return true;
-    // return false;
 }
 
 /* kps - add id.h ? */
