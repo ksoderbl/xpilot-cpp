@@ -310,29 +310,23 @@ void Compute_sensor_range(player_t *pl)
         else
             options.minVisibilityDistance *= BLOCK_SZ;
         if (options.maxVisibilityDistance <= 0.0)
-            options.maxVisibilityDistance = World.pixel_hypotenuse;
+            options.maxVisibilityDistance = World.hypotenuse;
         else
             options.maxVisibilityDistance *= BLOCK_SZ;
 
         if (World.items[ITEM_FUEL].initial > 0.0)
-        {
             EnergyRangeFactor = options.minVisibilityDistance /
                                 (World.items[ITEM_FUEL].initial * (1.0 + ((double)World.items[ITEM_SENSOR].initial * 0.25)));
-            EnergyRangeFactor /= FUEL_SCALE_FACT;
-        }
         else
-        {
             EnergyRangeFactor = ENERGY_RANGE_FACTOR;
-        }
+
         init = 1;
     }
 
-    pl->sensor_range = pl->fuel.sum * 256 * EnergyRangeFactor;
+    pl->sensor_range = pl->fuel.sum * EnergyRangeFactor;
     pl->sensor_range *= (1.0 + ((double)pl->item[ITEM_SENSOR] * 0.25));
-    if (pl->sensor_range < options.minVisibilityDistance)
-        pl->sensor_range = options.minVisibilityDistance;
-    if (pl->sensor_range > options.maxVisibilityDistance)
-        pl->sensor_range = options.maxVisibilityDistance;
+    LIMIT(pl->sensor_range,
+          options.minVisibilityDistance, options.maxVisibilityDistance);
 }
 
 /*

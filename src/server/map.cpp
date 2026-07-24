@@ -579,7 +579,7 @@ static bool Grok_map_size(void)
         World.width += 2 * BLOCK_SZ;
         World.height += 2 * BLOCK_SZ;
     }
-    World.pixel_hypotenuse = LENGTH(World.width, World.height);
+    World.hypotenuse = LENGTH(World.width, World.height);
 
     /* click sizes */
     World.cwidth = World.width * CLICK;
@@ -645,11 +645,10 @@ static void Init_map(void)
 
     World.width = World.x * BLOCK_SZ;
     World.height = World.y * BLOCK_SZ;
-    World.pixel_hypotenuse = (int)LENGTH(World.width, World.height);
+    World.hypotenuse = (int)LENGTH(World.width, World.height);
 
     World.cwidth = PIXEL_TO_CLICK(World.width);
     World.cheight = PIXEL_TO_CLICK(World.height);
-    World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
 
     World.asteroidConcs.clear();
     World.bases.clear();
@@ -687,11 +686,10 @@ static void Generate_random_map(void)
 
     World.width = World.x * BLOCK_SZ;
     World.height = World.y * BLOCK_SZ;
-    World.pixel_hypotenuse = (int)LENGTH(World.width, World.height);
+    World.hypotenuse = (int)LENGTH(World.width, World.height);
 
     World.cwidth = PIXEL_TO_CLICK(World.width);
     World.cheight = PIXEL_TO_CLICK(World.height);
-    World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
 }
 
 void Xpmap_grok_map_data2(void)
@@ -748,11 +746,10 @@ bool Grok_map(void)
 
         World.width = World.x * BLOCK_SZ;
         World.height = World.y * BLOCK_SZ;
-        World.pixel_hypotenuse = (int)LENGTH(World.width, World.height);
+        World.hypotenuse = (int)LENGTH(World.width, World.height);
 
         World.cwidth = PIXEL_TO_CLICK(World.width);
         World.cheight = PIXEL_TO_CLICK(World.height);
-        World.click_hypotenuse = LENGTH(World.cwidth, World.cheight);
 
         strlcpy(World.name, options.mapName, sizeof(World.name));
         strlcpy(World.author, options.mapAuthor, sizeof(World.author));

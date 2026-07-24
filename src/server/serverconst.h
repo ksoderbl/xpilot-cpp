@@ -292,7 +292,7 @@ constexpr double REFUEL_RATE = 5.0;
 
 #define DEBRIS_MASS 4.5
 
-#define ENERGY_RANGE_FACTOR (2.5 / FUEL_SCALE_FACT)
+#define ENERGY_RANGE_FACTOR 2.5
 
 /* map dimension limitation: ((0x7FFF - 1280) / 35) */
 #define OLD_MAX_MAP_SIZE 900

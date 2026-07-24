@@ -1170,7 +1170,7 @@ static void Robot_suibot_play(player_t *pl)
 
     Thrust(pl, false);
 
-    ship_dist_closest = 2 * World.pixel_hypotenuse;
+    ship_dist_closest = 2 * World.hypotenuse;
     for (ship_i = 0; ship_i < NumPlayers; ship_i++)
     {
         player_t *ship = Player_by_index(ship_i);
@@ -1255,7 +1255,7 @@ static void Robot_suibot_play(player_t *pl)
     {
         if (Wall_in_between_points((pl->pos.cx), (pl->pos.cy), (ball->pos.cx),
                                    (ball->pos.cy)))
-            ball_dist = 2 * World.pixel_hypotenuse;
+            ball_dist = 2 * World.hypotenuse;
     }
 
     if (ship_dist_closest < maxdist && ship_dist_closest < (2.5 * ball_dist) && (Wall_in_between_points((pl->pos.cx), (pl->pos.cy), (closest_opponent->pos.cx), (closest_opponent->pos.cy)) == 0) && (!BIT(pl->have, HAS_BALL)))
@@ -1320,10 +1320,10 @@ static void Robot_suibot_round_tick(void)
         * (NUM_IDS - NumRobots)) / NUM_IDS);*/
 
     /* limit distance to allowable enemies. */
-    Max_enemy_distance = World.pixel_hypotenuse;
-    if (World.pixel_hypotenuse > Visibility_distance)
-        Max_enemy_distance = World.pixel_hypotenuse;
+    Max_enemy_distance = World.hypotenuse;
+    if (World.hypotenuse > Visibility_distance)
+        Max_enemy_distance = World.hypotenuse;
     /*    min_enemy_distance
-            + (((World.pixel_hypotenuse - min_enemy_distance)
+            + (((World.hypotenuse - min_enemy_distance)
             * (NUM_IDS - NumRobots)) / NUM_IDS);*/
 }

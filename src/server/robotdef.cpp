@@ -1214,7 +1214,6 @@ static bool Check_robot_hunt(player_t *pl)
 
     if (!tooslow && !toofast && (delta_dir <= ANGLE_RESOLUTION / 16 || delta_dir >= 15 * ANGLE_RESOLUTION / 16))
     {
-
         pl->turnacc = 0;
         Thrust(pl, false);
         my_data->robot_mode = RM_ROBOT_IDLE;
@@ -2036,7 +2035,7 @@ static void Robot_default_play(player_t *pl)
     ship_dist = SHIP_SZ * 6;
     enemy_i = NO_IND;
     if (pl->fuel.sum > my_data->fuel_l3)
-        enemy_dist = (BIT(World.rules->mode, LIMITED_VISIBILITY) ? MAX(pl->fuel.sum * 256 * ENERGY_RANGE_FACTOR,
+        enemy_dist = (BIT(World.rules->mode, LIMITED_VISIBILITY) ? MAX(pl->fuel.sum * ENERGY_RANGE_FACTOR,
                                                                        Visibility_distance)
                                                                  : Max_enemy_distance);
     else
@@ -2343,7 +2342,7 @@ static void Robot_default_round_tick(void)
     Visibility_distance = min_visibility + (((VISIBILITY_DISTANCE - min_visibility) * (NUM_IDS - NumRobots)) / NUM_IDS);
 
     /* limit distance to allowable enemies. */
-    Max_enemy_distance = World.pixel_hypotenuse;
-    if (World.pixel_hypotenuse > Visibility_distance)
-        Max_enemy_distance = min_enemy_distance + (((World.pixel_hypotenuse - min_enemy_distance) * (NUM_IDS - NumRobots)) / NUM_IDS);
+    Max_enemy_distance = World.hypotenuse;
+    if (World.hypotenuse > Visibility_distance)
+        Max_enemy_distance = min_enemy_distance + (((World.hypotenuse - min_enemy_distance) * (NUM_IDS - NumRobots)) / NUM_IDS);
 }

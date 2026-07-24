@@ -950,7 +950,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     mineobject_t *closest_mine = NULL;
     smartobject_t *smart;
     mineobject_t *mine;
-    double closest_mine_range = World.pixel_hypotenuse;
+    double closest_mine_range = World.hypotenuse;
     int i, j, ecm_ind;
     double range, perim, damage;
     player_t *pl = Player_by_id(id), *p;

@@ -294,14 +294,13 @@ extern bool is_polygon_map;
 
 struct world
 {
-    int x, y;                /* Size of world in blocks, rounded up */
-    int bwidth_floor;        /* Width of world in blocks, rounded down */
-    int bheight_floor;       /* Height of world in blocks, rounded down */
-    double diagonal;         /* Diagonal length in blocks */
-    int width, height;       /* Size of world in pixels (optimization) */
-    int pixel_hypotenuse;    /* Diagonal length in pixels (optimization) */
-    int cwidth, cheight;     /* Size of world in clicks */
-    double click_hypotenuse; /* Diagonal length in clicks (optimization) */
+    int x, y;            /* Size of world in blocks, rounded up */
+    int bwidth_floor;    /* Width of world in blocks, rounded down */
+    int bheight_floor;   /* Height of world in blocks, rounded down */
+    double diagonal;     /* Diagonal length in blocks */
+    int width, height;   /* Size of world in pixels (optimization) */
+    double hypotenuse;   /* Diagonal length in pixels (optimization) */
+    int cwidth, cheight; /* Size of world in clicks */
 
     rules_t *rules;
     char name[MAX_CHARS];
