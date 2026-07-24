@@ -1399,9 +1399,10 @@ void Frame_update(void)
         }
         else
             ind = i;
-        pl2 = PlayersArray[ind];
+
+        pl2 = Player_by_index(ind);
         if (pl2->damaged > 0)
-            Send_damaged(conn, pl2->damaged);
+            Send_damaged(conn, (int)pl2->damaged);
         else
         {
             Frame_parameters(conn, pl2);

@@ -1090,10 +1090,12 @@ void Team_game_over(int winning_team, const char *reason)
 
             if (pl_i->team != winning_team)
                 continue;
+
             if (Player_is_tank(pl_i) ||
-                (BIT(pl_i->obj_status, LEGACY_PAUSE) && pl_i->count <= 0) ||
+                (Player_is_paused(pl_i) && pl_i->pause_count <= 0) ||
                 Player_is_waiting(pl_i))
                 continue;
+
             for (j = 0; j < num_best_players; j++)
             {
                 if (i == best_players[j])
