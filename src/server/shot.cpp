@@ -1472,7 +1472,7 @@ void Delete_shot(int ind)
 void Update_connector_force(ballobject_t *ball)
 {
     player_t *pl = Player_by_id(ball->id);
-    vector_t D, D2;
+    vector_t D;
     double length, length2, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
     /* const double        k = 1500.0, b = 2.0; */
@@ -1483,22 +1483,14 @@ void Update_connector_force(ballobject_t *ball)
         return;
 
     /* compute the normalized vector between the ball and the player */
-    double ppx = CLICK_TO_FLOAT(pl->pos.cx);
-    double ppy = CLICK_TO_FLOAT(pl->pos.cy);
-    double bpx = CLICK_TO_FLOAT(ball->pos.cx);
-    double bpy = CLICK_TO_FLOAT(ball->pos.cy);
-
-    D.x = WRAP_DX(ppx - bpx);
-    D.y = WRAP_DY(ppy - bpy);
-    D2.x = WRAP_DCX(pl->pos.cx - ball->pos.cx);
-    D2.y = WRAP_DCY(pl->pos.cy - ball->pos.cy);
-    D2.x = CLICK_TO_FLOAT(D2.x);
-    D2.y = CLICK_TO_FLOAT(D2.y);
+    D.x = WRAP_DCX(pl->pos.cx - ball->pos.cx);
+    D.y = WRAP_DCY(pl->pos.cy - ball->pos.cy);
+    D.x = CLICK_TO_FLOAT(D.x);
+    D.y = CLICK_TO_FLOAT(D.y);
 
     length = VECTOR_LENGTH(D);
-    length2 = VECTOR_LENGTH(D2);
 
-    warn("D.x, D.y, D2.x, D2.y, lenght, length2 = (%f, %f), (%f, %f)", D.x, D.y, D2.x, D2.y, length, length2);
+    // warn("D.x, D.y, length = (%.1f, %.1f), %.1f", D.x, D.y, length);
 
     if (length > 0.0)
     {
