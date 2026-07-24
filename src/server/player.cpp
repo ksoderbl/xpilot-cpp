@@ -613,6 +613,8 @@ int Init_player(int ind, shipshape_t *ship, int type)
             pl->prev_life = 0; // TODO, what is this?
             Player_set_state(pl, PL_STATE_WAITING);
         }
+        // else
+        //     Player_set_state(pl, PL_STATE_APPEARING);
     }
 
     pl->team = TEAM_NOT_SET;
@@ -755,7 +757,6 @@ void Reset_all_players(void)
 {
     player_t *pl;
     int i, j;
-    char msg[MSG_LEN];
 
     updateScores = true;
 
@@ -806,7 +807,6 @@ void Reset_all_players(void)
     }
     if (BIT(World.rules->mode, TEAM_PLAY))
     {
-
         /* Detach any balls and kill ball */
         /* We are starting all over again */
         for (j = NumObjs - 1; j >= 0; j--)
@@ -814,6 +814,7 @@ void Reset_all_players(void)
             if (Obj[j]->type == OBJ_BALL)
             {
                 ballobject_t *ball = BALL_IND(j);
+
                 ball->id = NO_ID;
                 ball->obj_life = 0;
                 /*
@@ -890,6 +891,7 @@ void Reset_all_players(void)
 void Check_team_members(int team)
 {
     player_t *pl;
+    team_t *teamp;
     int members, i;
 
     if (!BIT(World.rules->mode, TEAM_PLAY))
@@ -901,18 +903,19 @@ void Check_team_members(int team)
         if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
             members++;
     }
-    if (World.teams[team].NumMembers != members)
+    teamp = Team_by_index(team);
+    if (teamp->NumMembers != members)
     {
-        error("Server has reset team %d members from %d to %d",
-              team, World.teams[team].NumMembers, members);
+        warn("Server has reset team %d members from %d to %d",
+             team, teamp->NumMembers, members);
         for (i = 0; i < NumPlayers; i++)
         {
             pl = Player_by_index(i);
             if (pl->team != TEAM_NOT_SET && !Player_is_tank(pl) && pl->team == team)
-                error("Team %d currently has player %d: \"%s\"",
-                      team, i + 1, pl->name);
+                warn("Team %d currently has player %d: \"%s\"",
+                     team, i + 1, pl->name);
         }
-        World.teams[team].NumMembers = members;
+        teamp->NumMembers = members;
     }
 }
 
