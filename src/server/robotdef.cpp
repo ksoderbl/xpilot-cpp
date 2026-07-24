@@ -409,10 +409,27 @@ static void Robot_default_invite(player_t *pl, player_t *inviter)
         Refuse_alliance(pl, inviter);
 }
 
+static inline int decide_travel_dir(player_t *pl)
+{
+    int travel_dir;
+
+    if (pl->velocity <= 0.2)
+    {
+        vector_t *grav = &World.gravity
+                              [OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
+        travel_dir = (int)findDir(grav->x, grav->y);
+    }
+    else
+    {
+        travel_dir = (int)findDir(pl->vel.x, pl->vel.y);
+    }
+
+    return travel_dir;
+}
+
 static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
 {
     int i;
-    // player_t *pl = PlayersArray[ind];
     object_t *shot;
     player_t *ship;
     long stop_dist;
@@ -443,16 +460,7 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
 
     evade = false;
 
-    if (pl->velocity <= 0.2)
-    {
-        vector_t *grav = &World.gravity
-                              [OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
-        travel_dir = (int)findDir(grav->x, grav->y);
-    }
-    else
-    {
-        travel_dir = (int)findDir(pl->vel.x, pl->vel.y);
-    }
+    travel_dir = decide_travel_dir(pl);
 
     aux_dir = MOD2(travel_dir + ANGLE_RESOLUTION / 4, ANGLE_RESOLUTION);
     px[0] = CLICK_TO_PIXEL(pl->pos.cx);                /* ship center x */
@@ -972,16 +980,7 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
     if (!clear_path && new_mode != RM_NAVIGATE)
         return false;
 
-    if (pl->velocity <= 0.2)
-    {
-        vector_t *grav = &World.gravity
-                              [OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
-        travel_dir = (int)findDir(grav->x, grav->y);
-    }
-    else
-    {
-        travel_dir = (int)findDir(pl->vel.x, pl->vel.y);
-    }
+    travel_dir = decide_travel_dir(pl);
 
     pl->turnspeed = MAX_PLAYER_TURNSPEED / 2;
     pl->power = (BIT(World.rules->mode, TIMING) ? MAX_PLAYER_POWER : MAX_PLAYER_POWER / 2);
@@ -1207,16 +1206,7 @@ static bool Check_robot_hunt(player_t *pl)
                          ship->pos.cy - pl->pos.cy);
     ship_dir = MOD2((int)(sdir + 0.5), ANGLE_RESOLUTION);
 
-    if (pl->velocity <= 0.2)
-    {
-        vector_t *grav = &World.gravity
-                              [OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)];
-        travel_dir = (int)findDir(grav->x, grav->y);
-    }
-    else
-    {
-        travel_dir = (int)findDir(pl->vel.x, pl->vel.y);
-    }
+    travel_dir = decide_travel_dir(pl);
 
     delta_dir = MOD2(ship_dir - travel_dir, ANGLE_RESOLUTION);
     tooslow = (pl->velocity < my_data->robot_attack_speed / 2);
