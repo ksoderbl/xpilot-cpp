@@ -1959,22 +1959,6 @@ bool Team_immune(int id1, int id2)
     return false;
 }
 
-static char *old_status2str(int old_status)
-{
-    static char buf[256];
-
-    buf[0] = '\0';
-
-    if (old_status & OLD_PLAYING)
-        strlcat(buf, "OLD_PLAYING ", sizeof(buf));
-    if (old_status & OLD_PAUSE)
-        strlcat(buf, "OLD_PAUSE ", sizeof(buf));
-    if (old_status & OLD_GAME_OVER)
-        strlcat(buf, "OLD_GAME_OVER ", sizeof(buf));
-
-    return buf;
-}
-
 char *Player_state_str(int state)
 {
     static char buf[256];
@@ -2003,8 +1987,8 @@ char *Player_state_str(int state)
 
 void Player_print_state(player_t *pl, const char *funcname)
 {
-    warn("%-20s: %-16s (%c): %-20s %s ", funcname, pl->name, pl->mychar,
-         Player_state_str(pl->pl_state), old_status2str(pl->pl_old_status));
+    warn("%-20s: %-16s (%c): %-20s ", funcname, pl->name, pl->mychar,
+         Player_state_str(pl->pl_state));
 }
 
 void Player_set_state(player_t *pl, int state)
@@ -2019,19 +2003,16 @@ void Player_set_state(player_t *pl, int state)
         SET_BIT(pl->obj_status, LEGACY_GAME_OVER); // TODO: Remove
         Player_set_mychar(pl, 'W');
         Player_set_life(pl, 0);
-        pl->pl_old_status = OLD_GAME_OVER;
         break;
     case PL_STATE_APPEARING:
         CLR_BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED); // TODO: Remove
         Player_set_mychar(pl, pl->pl_type_mychar);
         /*Player_set_mychar(pl, 'A');*/
-        pl->pl_old_status = 0;
         pl->recovery_count = RECOVERY_DELAY;
         break;
     case PL_STATE_ALIVE:
         SET_BIT(pl->obj_status, LEGACY_PLAYING); // TODO: Remove
         Player_set_mychar(pl, pl->pl_type_mychar);
-        pl->pl_old_status = OLD_PLAYING;
         break;
     case PL_STATE_KILLED:
         SET_BIT(pl->obj_status, LEGACY_KILLED); // TODO: Remove
@@ -2040,14 +2021,12 @@ void Player_set_state(player_t *pl, int state)
         SET_BIT(pl->obj_status, LEGACY_GAME_OVER); // TODO: REMOVE
         // SET_BIT(pl->pl_status, LEGACY_GAME_OVER);  // TODO: Remove
         Player_set_mychar(pl, 'D');
-        pl->pl_old_status = OLD_GAME_OVER;
         break;
     case PL_STATE_PAUSED:
         SET_BIT(pl->obj_status, LEGACY_PAUSE);   // TODO: Remove
         CLR_BIT(pl->obj_status, LEGACY_PLAYING); // TODO: Remove
         Player_set_mychar(pl, 'P');
         Player_set_life(pl, 0);
-        pl->pl_old_status = OLD_PAUSE;
         break;
     default:
         break;

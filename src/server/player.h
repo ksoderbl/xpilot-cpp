@@ -40,6 +40,7 @@
 #include "modifiers.h"
 
 extern bool updateScores;
+extern long main_loops;
 
 /*
  * These values are set in the player->pl_type field.
@@ -143,11 +144,11 @@ typedef struct
 
     /* up to here the player type should be the same as an object. */
 
-    int pl_type;           /* extended type info (tank, robot) */
-    char pl_type_mychar;   /* Special char for player type */
-    uint8_t pl_old_status; /* OLD_PLAYING etc. */
-    uint16_t pl_state;     /* one of PL_STATE_* */
-    uint32_t pl_status;    /* HOVERPAUSE etc. */
+    int pl_type;         /* extended type info (tank, robot) */
+    char pl_type_mychar; /* Special char for player type */
+
+    uint16_t pl_state;  /* one of PL_STATE_* */
+    uint32_t pl_status; /* HOVERPAUSE etc. */
 
     int pl_life;              /* Lives left (if lives limited) */
     int pl_deaths_since_join; /* Deaths since last joining server */
@@ -349,7 +350,8 @@ static inline bool Player_is_waiting(player_t *pl)
 
     if (newWaiting != legacyWaiting)
     {
-        // warn("Player_is_waiting: newWaiting != legacyWaiting: Player %s (%d, %d)", pl->name, newWaiting, legacyWaiting);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_waiting: newWaiting != legacyWaiting: Player %s (%d, %d)", pl->name, newWaiting, legacyWaiting);
     }
 
     return legacyWaiting;
@@ -370,7 +372,8 @@ static inline bool Player_is_appearing(player_t *pl)
 
     if (newAppearing != legacyAppearing)
     {
-        warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
     }
 
     return legacyAppearing;
@@ -383,7 +386,8 @@ static inline bool Player_is_alive(player_t *pl)
 
     if (newAlive != legacyAlive)
     {
-        warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
     }
 
     return legacyAlive;
@@ -401,7 +405,8 @@ static inline bool Player_is_killed(player_t *pl)
 
     if (newKilled != legacyKilled)
     {
-        warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
     }
 
     return legacyKilled;
@@ -420,7 +425,8 @@ static inline bool Player_is_dead(player_t *pl)
 
     if (newDead != legacyDead)
     {
-        warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
     }
 
     return legacyDead;
@@ -438,7 +444,8 @@ static inline bool Player_is_paused(player_t *pl)
 
     if (newPaused != legacyPaused)
     {
-        warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
     }
 
     return legacyPaused;
@@ -465,7 +472,8 @@ static inline bool Player_is_active(player_t *pl)
 
     if (newActive != legacyActive)
     {
-        warn("Player_is_waiting: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
+        if ((main_loops % 12) == 0)
+            warn("Player_is_active: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
     }
 
     return legacyActive;

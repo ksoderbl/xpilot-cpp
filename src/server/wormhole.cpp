@@ -144,6 +144,45 @@ void Object_hits_wormhole2(object_t *obj, int ind)
  */
 static void Warp_balls(player_t *pl, clpos_t dest)
 {
+    /*
+     * Don't connect to balls while warping.
+     */
+    if (Player_uses_connector(pl))
+        pl->ball = NULL;
+
+    if (BIT(pl->have, HAS_BALL))
+    {
+        /*
+         * Warp every ball associated with player.
+         * NB. the connector can cross a wall boundary this is
+         * allowed, so long as the ball itself doesn't collide.
+         */
+        int k;
+
+        for (k = 0; k < NumObjs; k++)
+        {
+            object_t *b = Obj[k];
+
+            if (b->type == OBJ_BALL && b->id == pl->id)
+            {
+                clpos_t ballpos;
+                ballpos.cx = b->pos.cx + dest.cx - pl->pos.cx;
+                ballpos.cy = b->pos.cy + dest.cy - pl->pos.cy;
+                ballpos = World_wrap_clpos(ballpos);
+                if (!World_contains_clpos(ballpos))
+                {
+                    b->obj_life = 0.0;
+                    continue;
+                }
+
+                Object_position_set_clpos(b, ballpos);
+                Object_position_remember(b);
+                b->vel.x *= WORM_BRAKE_FACTOR;
+                b->vel.y *= WORM_BRAKE_FACTOR;
+                Cell_add_object(b);
+            }
+        }
+    }
 }
 
 static int Find_wormhole_dest(int wh_hit_ind)
@@ -165,7 +204,18 @@ static void Traverse_wormhole(player_t *pl)
  */
 bool Initiate_hyperjump(player_t *pl)
 {
-    return false;
+    if (pl->item[ITEM_HYPERJUMP] <= 0)
+        return false;
+
+    if (pl->fuel.sum < -ED_HYPERJUMP)
+        return false;
+
+    pl->item[ITEM_HYPERJUMP]--;
+    Player_add_fuel(pl, ED_HYPERJUMP);
+    SET_BIT(pl->obj_status, WARPING);
+    pl->wormHoleHit = -1;
+
+    return true;
 }
 
 /*
@@ -291,48 +341,52 @@ void Do_warp(player_t *pl)
         sound_play_sensors(pl->pos, HYPERJUMP_SOUND);
     }
 
-    /*
-     * Don't connect to balls while warping.
-     */
-    if (BIT(pl->used, USES_CONNECTOR))
-        pl->ball = NULL;
+    // /*
+    //  * Don't connect to balls while warping.
+    //  */
+    // if (BIT(pl->used, USES_CONNECTOR))
+    //     pl->ball = NULL;
 
-    if (BIT(pl->have, HAS_BALL))
-    {
-        /*
-         * Take every ball associated with player through worm hole.
-         * NB. the connector can cross a wall boundary this is
-         * allowed, so long as the ball itself doesn't collide.
-         */
-        int k;
-        for (k = 0; k < NumObjs; k++)
-        {
-            object_t *b = Obj[k];
-            if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
-            {
-                position_t ballpos;
-                ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
-                ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
-                ballpos.x = WRAP_XPIXEL(ballpos.x);
-                ballpos.y = WRAP_YPIXEL(ballpos.y);
-                if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
-                {
-                    b->obj_life = 0;
-                }
-                else
-                {
-                    clpos_t ball_clpos;
-                    ball_clpos.cx = FLOAT_TO_CLICK(ballpos.x);
-                    ball_clpos.cy = FLOAT_TO_CLICK(ballpos.y);
-                    Object_position_set_clpos(b, ball_clpos);
-                    Object_position_remember(b);
-                    b->vel.x *= WORM_BRAKE_FACTOR;
-                    b->vel.y *= WORM_BRAKE_FACTOR;
-                    Cell_add_object(b);
-                }
-            }
-        }
-    }
+    // if (BIT(pl->have, HAS_BALL))
+    // {
+    // /*
+    //  * Take every ball associated with player through worm hole.
+    //  * NB. the connector can cross a wall boundary this is
+    //  * allowed, so long as the ball itself doesn't collide.
+    //  */
+    // int k;
+    // for (k = 0; k < NumObjs; k++)
+    // {
+    //     object_t *b = Obj[k];
+    //     if (BIT(b->type, OBJ_BALL_BIT) && b->id == pl->id)
+    //     {
+    //         position_t ballpos;
+    //         ballpos.x = b->pix_pos.x + (w.x - pl->pix_pos.x);
+    //         ballpos.y = b->pix_pos.y + (w.y - pl->pix_pos.y);
+    //         ballpos.x = WRAP_XPIXEL(ballpos.x);
+    //         ballpos.y = WRAP_YPIXEL(ballpos.y);
+    //         if (ballpos.x < 0 || ballpos.x >= World.width || ballpos.y < 0 || ballpos.y >= World.height)
+    //         {
+    //             b->obj_life = 0;
+    //         }
+    //         else
+    //         {
+    //             clpos_t ball_clpos;
+    //             ball_clpos.cx = FLOAT_TO_CLICK(ballpos.x);
+    //             ball_clpos.cy = FLOAT_TO_CLICK(ballpos.y);
+    //             Object_position_set_clpos(b, ball_clpos);
+    //             Object_position_remember(b);
+    //             b->vel.x *= WORM_BRAKE_FACTOR;
+    //             b->vel.y *= WORM_BRAKE_FACTOR;
+    //             Cell_add_object(b);
+    //         }
+    //     }
+    // }
+    clpos_t dest;
+    dest.cx = PIXEL_TO_CLICK(wx);
+    dest.cy = PIXEL_TO_CLICK(wy);
+    Warp_balls(pl, dest);
+    // }
 
     pl->wormHoleDest = j;
     clpos_t pos;
