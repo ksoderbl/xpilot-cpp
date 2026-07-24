@@ -143,23 +143,24 @@ struct cell_node
     cell_node_t *prev;
 };
 
-#define OBJECT_BASE                                           \
-    short id;            /* For shots => id of player */      \
-    uint16_t team;       /* Team of player or cannon */       \
-    clpos_t pos;         /* World coordinates */              \
-    ipos_t pix_pos;      /* World pixel coordinates */        \
-    clpos_t prevpos;     /* previous position */              \
-    clpos_t extmove;     /* For collision detection */        \
-    float wall_time;     /* bounce/crash time within frame */ \
-    vector_t vel;        /* speed in x,y */                   \
-    vector_t acc;        /* acceleration in x,y */            \
-    float mass;          /* mass in unigrams */               \
-    modifiers_t mods;    /* Modifiers to this object */       \
-    long obj_life;       /* No of ticks left to live */       \
-    int type;            /* one bit of OBJ_XXX */             \
-    uint8_t color;       /* Color of object */                \
-    uint8_t collmode;    /* collision checking mode */        \
-    uint8_t missile_dir; /* missile direction */              \
+#define OBJECT_BASE                                                                                \
+    short id;            /* For shots => id of player */                                           \
+    uint16_t team;       /* Team of player or cannon */                                            \
+                         /* Object position pos must only be changed with the proper functions! */ \
+    clpos_t pos;         /* World coordinates */                                                   \
+    ipos_t pix_pos;      /* World pixel coordinates */                                             \
+    clpos_t prevpos;     /* previous position */                                                   \
+    clpos_t extmove;     /* For collision detection */                                             \
+    float wall_time;     /* bounce/crash time within frame */                                      \
+    vector_t vel;        /* speed in x,y */                                                        \
+    vector_t acc;        /* acceleration in x,y */                                                 \
+    float mass;          /* mass in unigrams */                                                    \
+    float obj_life;      /* No of ticks left to live */                                            \
+    modifiers_t mods;    /* Modifiers to this object */                                            \
+    int type;            /* one of OBJ_XXX */                                                      \
+    uint8_t color;       /* Color of object */                                                     \
+    uint8_t collmode;    /* collision checking mode */                                             \
+    uint8_t missile_dir; /* missile direction */                                                   \
     uint32_t obj_status; /* gravity, etc. */
 
 /* up to here all object types are the same as all player types. */
