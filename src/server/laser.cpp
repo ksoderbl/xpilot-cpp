@@ -674,7 +674,7 @@ void Laser_pulse_collision(void)
                     if (sqr(adx) + sqr(ady) <= sqr(ast->pl_radius))
                     {
                         obj->obj_life = 0;
-                        ast->obj_life += ASTEROID_FUEL_HIT(ED_LASER_HIT_TIMES_256,
+                        ast->obj_life += ASTEROID_FUEL_HIT(ED_LASER_HIT,
                                                            WIRE_PTR(ast)->wire_size);
                         if (ast->obj_life < 0)
                             ast->obj_life = 0;
