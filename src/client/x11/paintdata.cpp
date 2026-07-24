@@ -21,9 +21,10 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <X11/Xlib.h>
+#include <array>
+#include <vector>
 
-#include "commonmacros.h"
+#include <X11/Xlib.h>
 
 #include "paint.h"
 
@@ -31,12 +32,9 @@
 #include "record.h"
 #include "xinit.h"
 
-static XRectangle *rect_ptr[MAX_COLORS];
-static int num_rect[MAX_COLORS], max_rect[MAX_COLORS];
-static XArc *arc_ptr[MAX_COLORS];
-static int num_arc[MAX_COLORS], max_arc[MAX_COLORS];
-static XSegment *seg_ptr[MAX_COLORS];
-static int num_seg[MAX_COLORS], max_seg[MAX_COLORS];
+std::array<std::vector<XRectangle>, MAX_COLORS> rectanglesArray;
+std::array<std::vector<XArc>, MAX_COLORS> arcsArray;
+std::array<std::vector<XSegment>, MAX_COLORS> segmentsArray;
 
 typedef struct
 {
@@ -44,8 +42,7 @@ typedef struct
     XArc arc;
 } rgb_arc_t;
 
-static rgb_arc_t *rgb_arc_ptr;
-static int num_rgb_arc, max_rgb_arc;
+std::vector<rgb_arc_t> rgbArcsVector;
 
 unsigned long current_foreground;
 
@@ -54,7 +51,7 @@ void Rectangle_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++)
-        num_rect[i] = 0;
+        rectanglesArray[i].clear();
 }
 
 void Rectangle_end(void)
@@ -63,12 +60,13 @@ void Rectangle_end(void)
 
     for (i = 0; i < maxColors; i++)
     {
-        if (num_rect[i] > 0)
+        if (rectanglesArray[i].size() > 0)
         {
             SET_FG(colors[i].pixel);
+            auto &rectangles = rectanglesArray[i];
             rd.fillRectangles(dpy, drawPixmap, gameGC,
-                              rect_ptr[i], num_rect[i]);
-            RELEASE(rect_ptr[i], num_rect[i], max_rect[i]);
+                              &rectangles[0], rectangles.size());
+            rectanglesArray[i].clear();
         }
     }
 }
@@ -81,8 +79,8 @@ int Rectangle_add(int color, int x, int y, int width, int height)
     t.y = WINSCALE(y);
     t.width = WINSCALE(width);
     t.height = WINSCALE(height);
+    rectanglesArray[color].push_back(t);
 
-    STORE(XRectangle, rect_ptr[color], num_rect[color], max_rect[color], t);
     return 0;
 }
 
@@ -91,8 +89,8 @@ void Arc_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++)
-        num_arc[i] = 0;
-    num_rgb_arc = 0;
+        arcsArray[i].clear();
+    rgbArcsVector.clear();
 }
 
 void Arc_end(void)
@@ -101,27 +99,26 @@ void Arc_end(void)
 
     for (i = 0; i < maxColors; i++)
     {
-        if (num_arc[i] > 0)
+        if (arcsArray[i].size() > 0)
         {
             SET_FG(colors[i].pixel);
-            rd.drawArcs(dpy, drawPixmap, gameGC, arc_ptr[i], num_arc[i]);
-            RELEASE(arc_ptr[i], num_arc[i], max_arc[i]);
+            auto &arcs = arcsArray[i];
+            rd.drawArcs(dpy, drawPixmap, gameGC, &arcs[0], arcs.size());
+            arcsArray[i].clear();
         }
     }
 
     /* fullcolor arcs */
-    for (i = 0; i < num_rgb_arc; i++)
+    for (rgb_arc_t &rgbArc : rgbArcsVector)
     {
-        rgb_arc_t *p = &rgb_arc_ptr[i];
-
-        SET_FG(p->color);
+        SET_FG(rgbArc.color);
         rd.drawArc(dpy, drawPixmap, gameGC,
-                   p->arc.x, p->arc.y,
-                   p->arc.width, p->arc.height,
-                   p->arc.angle1, p->arc.angle2);
+                   rgbArc.arc.x, rgbArc.arc.y,
+                   rgbArc.arc.width, rgbArc.arc.height,
+                   rgbArc.arc.angle1, rgbArc.arc.angle2);
     }
-    if (num_rgb_arc > 0)
-        RELEASE(rgb_arc_ptr, num_rgb_arc, max_rgb_arc);
+    if (rgbArcsVector.size() > 0)
+        rgbArcsVector.clear();
 }
 
 int Arc_add(int color,
@@ -138,7 +135,8 @@ int Arc_add(int color,
 
     t.angle1 = angle1;
     t.angle2 = angle2;
-    STORE(XArc, arc_ptr[color], num_arc[color], max_arc[color], t);
+    arcsArray[color].push_back(t);
+
     return 0;
 }
 
@@ -162,7 +160,8 @@ int Arc_add_rgb(unsigned long color,
 
     t.arc.angle1 = angle1;
     t.arc.angle2 = angle2;
-    STORE(rgb_arc_t, rgb_arc_ptr, num_rgb_arc, max_rgb_arc, t);
+    rgbArcsVector.push_back(t);
+
     return 0;
 }
 
@@ -171,7 +170,7 @@ void Segment_start(void)
     int i;
 
     for (i = 0; i < maxColors; i++)
-        num_seg[i] = 0;
+        segmentsArray[i].clear();
 }
 
 void Segment_end(void)
@@ -180,12 +179,13 @@ void Segment_end(void)
 
     for (i = 0; i < maxColors; i++)
     {
-        if (num_seg[i] > 0)
+        if (segmentsArray[i].size() > 0)
         {
             SET_FG(colors[i].pixel);
-            rd.drawSegments(dpy, drawPixmap, gameGC,
-                            seg_ptr[i], num_seg[i]);
-            RELEASE(seg_ptr[i], num_seg[i], max_seg[i]);
+            // SET_FG(randomMT());
+            auto &segments = segmentsArray[i];
+            rd.drawSegments(dpy, drawPixmap, gameGC, &segments[0], segments.size());
+            segmentsArray[i].clear();
         }
     }
 }
@@ -198,7 +198,8 @@ int Segment_add(int color, int x1, int y1, int x2, int y2)
     t.y1 = WINSCALE(y1);
     t.x2 = WINSCALE(x2);
     t.y2 = WINSCALE(y2);
-    STORE(XSegment, seg_ptr[color], num_seg[color], max_seg[color], t);
+    segmentsArray[color].push_back(t);
+
     return 0;
 }
 
@@ -208,20 +209,9 @@ void paintdataCleanup(void)
 
     for (i = 0; i < MAX_COLORS; i++)
     {
-        if (max_rect[i] > 0 && rect_ptr[i])
-        {
-            max_rect[i] = 0;
-            free(rect_ptr[i]);
-        }
-        if (max_arc[i] > 0 && arc_ptr[i])
-        {
-            max_arc[i] = 0;
-            free(arc_ptr[i]);
-        }
-        if (max_seg[i] > 0 && seg_ptr[i])
-        {
-            max_seg[i] = 0;
-            free(seg_ptr[i]);
-        }
+        rectanglesArray[i].clear();
+        arcsArray[i].clear();
+        segmentsArray[i].clear();
+        rgbArcsVector.clear();
     }
 }
