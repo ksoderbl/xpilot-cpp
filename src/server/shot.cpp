@@ -1473,26 +1473,33 @@ void Update_connector_force(ballobject_t *ball)
 {
     player_t *pl = Player_by_id(ball->id);
     vector_t D, D2;
-    double length, force, ratio, accell, cosine;
+    double length, length2, force, ratio, accell, cosine;
     double pl_damping, ball_damping;
-    /* const double                k = 1500.0, b = 2.0; */
-    /* const double                max_spring_ratio = 0.30; */
+    /* const double        k = 1500.0, b = 2.0; */
+    /* const double        max_spring_ratio = 0.30; */
 
     /* no player connected ? */
     if (!pl)
         return;
 
     /* compute the normalized vector between the ball and the player */
-    D.x = WRAP_DX(pl->pix_pos.x - ball->pix_pos.x);
-    D.y = WRAP_DY(pl->pix_pos.y - ball->pix_pos.y);
-    // D2.x = WRAP_DCX(pl->pos.cx - ball->pos.cx);
-    // D2.y = WRAP_DCY(pl->pos.cy - ball->pos.cy);
-    // D2.x = CLICK_TO_FLOAT(D2.x);
-    // D2.y = CLICK_TO_FLOAT(D2.y);
+    double ppx = CLICK_TO_FLOAT(pl->pos.cx);
+    double ppy = CLICK_TO_FLOAT(pl->pos.cy);
+    double bpx = CLICK_TO_FLOAT(ball->pos.cx);
+    double bpy = CLICK_TO_FLOAT(ball->pos.cy);
 
-    // warn("D.x, D.y, D2.x, D2.y = %f, %f, %f, %f", D.x, D.y, D2.x, D2.y);
+    D.x = WRAP_DX(ppx - bpx);
+    D.y = WRAP_DY(ppy - bpy);
+    D2.x = WRAP_DCX(pl->pos.cx - ball->pos.cx);
+    D2.y = WRAP_DCY(pl->pos.cy - ball->pos.cy);
+    D2.x = CLICK_TO_FLOAT(D2.x);
+    D2.y = CLICK_TO_FLOAT(D2.y);
 
     length = VECTOR_LENGTH(D);
+    length2 = VECTOR_LENGTH(D2);
+
+    warn("D.x, D.y, D2.x, D2.y, lenght, length2 = (%f, %f), (%f, %f)", D.x, D.y, D2.x, D2.y, length, length2);
+
     if (length > 0.0)
     {
         D.x /= length;
@@ -1561,13 +1568,8 @@ void Update_missile(missileobject_t *missile)
 {
     player_t *pl;
     int angle, theta;
-    double range = 0.0;
-    double acc;
-    double x_dif = 0.0;
-    double y_dif = 0.0;
-    double shot_speed;
-
-    acc = SMART_SHOT_ACC;
+    double range = 0.0, acc = SMART_SHOT_ACC;
+    double x_dif = 0.0, y_dif = 0.0, shot_speed, a;
 
     if (missile->type == OBJ_HEAT_SHOT)
     {
@@ -1712,8 +1714,9 @@ void Update_missile(missileobject_t *missile)
             CLICK;
     x_dif += pl->vel.x * (range / shot_speed);
     y_dif += pl->vel.y * (range / shot_speed);
-    theta = (int)Wrap_findDir(pl->pix_pos.x + x_dif - missile->pix_pos.x,
-                              pl->pix_pos.y + y_dif - missile->pix_pos.y);
+    a = Wrap_cfindDir(pl->pos.cx + PIXEL_TO_CLICK(x_dif) - missile->pos.cx,
+                      pl->pos.cy + PIXEL_TO_CLICK(y_dif) - missile->pos.cy);
+    theta = MOD2((int)(a + 0.5), ANGLE_RESOLUTION);
 
     {
         double x, y, vx, vy;
@@ -1833,8 +1836,10 @@ void Update_missile(missileobject_t *missile)
         if (angle >= 0)
         {
             i = angle & 7;
-            theta = (int)Wrap_findDir((yi + sur[i].dy) * BLOCK_SZ - (missile->pix_pos.y + 2 * missile->vel.y),
-                                      (xi + sur[i].dx) * BLOCK_SZ - (missile->pix_pos.x - 2 * missile->vel.x));
+            a = Wrap_findDir(
+                (yi + sur[i].dy) * BLOCK_SZ - (CLICK_TO_PIXEL(missile->pos.cy) + 2 * missile->vel.y),
+                (xi + sur[i].dx) * BLOCK_SZ - (CLICK_TO_PIXEL(missile->pos.cx) - 2 * missile->vel.x));
+            theta = MOD2((int)(a + 0.5), ANGLE_RESOLUTION);
 #ifdef SHOT_EXTRA_SLOWDOWN
             if (!foundw && range > (SHOT_LOOK_AH - i) * BLOCK_SZ)
             {

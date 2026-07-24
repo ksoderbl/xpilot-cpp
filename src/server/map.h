@@ -111,7 +111,6 @@ extern bool is_polygon_map;
 typedef struct fuel
 {
     blkpos_t blk_pos;
-    position_t pix_pos;
     clpos_t pos;
     double fuel;
     uint32_t conn_mask;
@@ -147,7 +146,6 @@ typedef struct baseorder
 typedef struct cannon
 {
     blkpos_t blk_pos;
-    position_t pix_pos;
     clpos_t pos;
     int dir;
     int dead_ticks;

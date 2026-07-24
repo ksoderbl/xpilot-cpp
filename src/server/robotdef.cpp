@@ -505,8 +505,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             gravity = &World.gravity[dx][dy];
             if (sqr(gravity->x) + sqr(gravity->y) >= 0.5)
             {
-                gravity_dir = (int)findDir(gravity->x - pl->pix_pos.x,
-                                           gravity->y - pl->pix_pos.y);
+                gravity_dir = (int)findDir(gravity->x - CLICK_TO_FLOAT(pl->pos.cx),
+                                           gravity->y - CLICK_TO_FLOAT(pl->pos.cy));
                 if (MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) <= ANGLE_RESOLUTION / 4 ||
                     MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) >= 3 * ANGLE_RESOLUTION / 4)
                 {
@@ -604,12 +604,11 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             gravity = &World.gravity[dx][dy];
             if (sqr(gravity->x) + sqr(gravity->y) >= 0.5)
             {
-                gravity_dir = (int)findDir(gravity->x - pl->pix_pos.x,
-                                           gravity->y - pl->pix_pos.y);
+                gravity_dir = (int)findDir(gravity->x - CLICK_TO_FLOAT(pl->pos.cx),
+                                           gravity->y - CLICK_TO_FLOAT(pl->pos.cy));
                 if (MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) <= ANGLE_RESOLUTION / 4 ||
                     MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) >= 3 * ANGLE_RESOLUTION / 4)
                 {
-
                     left_ok = false;
                     continue;
                 }
@@ -648,8 +647,8 @@ static bool Check_robot_evade(player_t *pl, int mine_i, int ship_i)
             gravity = &World.gravity[dx][dy];
             if (sqr(gravity->x) + sqr(gravity->y) >= 0.5)
             {
-                gravity_dir = (int)findDir(gravity->x - pl->pix_pos.x,
-                                           gravity->y - pl->pix_pos.y);
+                gravity_dir = (int)findDir(gravity->x - CLICK_TO_FLOAT(pl->pos.cx),
+                                           gravity->y - CLICK_TO_FLOAT(pl->pos.cy));
                 if (MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) <= ANGLE_RESOLUTION / 4 ||
                     MOD2(gravity_dir - travel_dir, ANGLE_RESOLUTION) >= 3 * ANGLE_RESOLUTION / 4)
                 {
@@ -823,6 +822,95 @@ static inline double Wrap_length_min(double dcx, double dcy, double min)
     len = LENGTH(dcx, dcy);
 
     return MIN(len, min);
+}
+
+static void Robotdef_fire_laser(player_t *pl)
+{
+    robot_default_data_t *my_data = Robot_default_get_data(pl);
+    double x2, y2, x3, y3, x4, y4, x5, y5;
+    double ship_dist, dir3, dir4, dir5;
+    clpos_t m_gun;
+    player_t *ship = nullptr;
+
+    if (BIT(my_data->robot_lock, LOCK_PLAYER) && Player_is_active(Player_by_id(my_data->robot_lock_id)))
+        ship = Player_by_id(my_data->robot_lock_id);
+    else if (BIT(pl->lock.tagged, LOCK_PLAYER))
+        ship = Player_by_id(pl->lock.pl_id);
+
+    if (!ship)
+        return;
+
+    /* kps - this should be Player_is_alive() ? */
+    if (!Player_is_active(ship))
+        return;
+
+    m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+
+    x2 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + CLICK_TO_FLOAT(m_gun.cx);
+    y2 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + CLICK_TO_FLOAT(m_gun.cy);
+    x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
+    y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
+
+    ship_dist = Wrap_length(FLOAT_TO_CLICK(x3 - x2),
+                            FLOAT_TO_CLICK(y3 - y2)) /
+                CLICK;
+
+    if (ship_dist >= PULSE_SPEED * PULSE_LIFE(pl->item[ITEM_LASER]) + SHIP_SZ)
+        return;
+
+    dir3 = Wrap_findDir(x3 - x2, y3 - y2);
+    x4 = x3 + tcos(MOD2((int)(dir3 - ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+    y4 = y3 + tsin(MOD2((int)(dir3 - ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+    x5 = x3 + tcos(MOD2((int)(dir3 + ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+    y5 = y3 + tsin(MOD2((int)(dir3 + ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
+    dir4 = Wrap_findDir(x4 - x2, y4 - y2);
+    dir5 = Wrap_findDir(x5 - x2, y5 - y2);
+    if ((dir4 > dir5)
+            ? (pl->dir >= dir4 || pl->dir <= dir5)
+            : (pl->dir >= dir4 && pl->dir <= dir5))
+        SET_BIT(pl->used, HAS_LASER);
+}
+
+static void Robotdef_do_tractor_beam(player_t *pl)
+{
+    robot_default_data_t *my_data = Robot_default_get_data(pl);
+
+    CLR_BIT(pl->used, USES_TRACTOR_BEAM);
+    pl->tractor_is_pressor = false;
+
+    if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > my_data->fuel_l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
+    {
+
+        double xvd, yvd, vel;
+        int dir, away;
+        player_t *ship = Player_by_id(pl->lock.pl_id);
+
+        xvd = ship->vel.x - pl->vel.x;
+        yvd = ship->vel.y - pl->vel.y;
+        vel = LENGTH(xvd, yvd);
+        dir = (int)(Wrap_cfindDir(pl->pos.cx - ship->pos.cx,
+                                  pl->pos.cy - ship->pos.cy) -
+                    findDir(xvd, yvd));
+        dir = MOD2(dir, ANGLE_RESOLUTION);
+        away = (dir >= ANGLE_RESOLUTION / 4 && dir <= 3 * ANGLE_RESOLUTION / 4);
+
+        /*
+         * vel  - The relative velocity of ship to us.
+         * away - Heading away from us?
+         */
+        if (pl->velocity <= my_data->robot_normal_speed)
+        {
+            if (pl->lock.distance < (SHIP_SZ * 4) || (!away && vel > my_data->robot_attack_speed))
+            {
+                SET_BIT(pl->used, USES_TRACTOR_BEAM);
+                pl->tractor_is_pressor = true;
+            }
+            else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
+                SET_BIT(pl->used, USES_TRACTOR_BEAM);
+        }
+        if (Player_uses_tractor_beam(pl))
+            SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
+    }
 }
 
 static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
@@ -1006,84 +1094,11 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
             Fire_ecm(pl);
         else if (pl->item[ITEM_TRANSPORTER] > 0 && item_dist < TRANSPORTER_DISTANCE && pl->fuel.sum > -ED_TRANSPORTER)
             Do_transporter(pl);
-        else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER_HIT > my_data->fuel_l3 && new_mode == RM_ATTACK)
-        {
-            if (BIT(my_data->robot_lock, LOCK_PLAYER) && BIT(Player_by_id(my_data->robot_lock_id)->obj_status,
-                                                             LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
-                ship = Player_by_id(my_data->robot_lock_id);
-            else if (BIT(pl->lock.tagged, LOCK_PLAYER))
-                ship = Player_by_id(pl->lock.pl_id);
-            else
-                ship = NULL;
-            if (ship && BIT(ship->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER) == LEGACY_PLAYING)
-            {
-                double x1, y1, x3, y3, x4, y4, x5, y5;
-                double ship_dist, dir3, dir4, dir5;
-                clpos_t m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+        else if (pl->item[ITEM_LASER] > pl->num_pulses && pl->fuel.sum + ED_LASER > my_data->fuel_l3 && new_mode == RM_ATTACK)
+            Robotdef_fire_laser(pl);
+        else if (Player_has_tractor_beam(pl))
+            Robotdef_do_tractor_beam(pl);
 
-                x1 = CLICK_TO_FLOAT(pl->pos.cx) + pl->vel.x + CLICK_TO_FLOAT(m_gun.cx);
-                y1 = CLICK_TO_FLOAT(pl->pos.cy) + pl->vel.y + CLICK_TO_FLOAT(m_gun.cy);
-                x3 = CLICK_TO_FLOAT(ship->pos.cx) + ship->vel.x;
-                y3 = CLICK_TO_FLOAT(ship->pos.cy) + ship->vel.y;
-
-                ship_dist = Wrap_length(x3 - x1, y3 - y1);
-
-                if (ship_dist < PULSE_SPEED * PULSE_LIFE(pl->item[ITEM_LASER]) + SHIP_SZ)
-                {
-                    dir3 = Wrap_findDir(x3 - x1, y3 - y1);
-                    x4 = x3 + tcos(MOD2((int)(dir3 - ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
-                    y4 = y3 + tsin(MOD2((int)(dir3 - ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
-                    x5 = x3 + tcos(MOD2((int)(dir3 + ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
-                    y5 = y3 + tsin(MOD2((int)(dir3 + ANGLE_RESOLUTION / 4), ANGLE_RESOLUTION)) * SHIP_SZ;
-                    dir4 = Wrap_findDir(x4 - x1, y4 - y1);
-                    dir5 = Wrap_findDir(x5 - x1, y5 - y1);
-                    if ((dir4 > dir5)
-                            ? (pl->dir >= dir4 || pl->dir <= dir5)
-                            : (pl->dir >= dir4 && pl->dir <= dir5))
-                        SET_BIT(pl->used, HAS_LASER);
-                }
-            }
-        }
-        else if (BIT(pl->have, HAS_TRACTOR_BEAM))
-        {
-            CLR_BIT(pl->used, USES_TRACTOR_BEAM);
-            pl->tractor_is_pressor = false;
-
-            if (BIT(pl->lock.tagged, LOCK_PLAYER) && pl->fuel.sum > my_data->fuel_l3 && pl->lock.distance < TRACTOR_MAX_RANGE(pl->item[ITEM_TRACTOR_BEAM]))
-            {
-
-                double xvd, yvd, vel;
-                long dir;
-                int away;
-
-                ship = Player_by_id(pl->lock.pl_id);
-                xvd = ship->vel.x - pl->vel.x;
-                yvd = ship->vel.y - pl->vel.y;
-                vel = LENGTH(xvd, yvd);
-                dir = (long)(findDir(pl->pix_pos.x - ship->pix_pos.x,
-                                     pl->pix_pos.y - ship->pix_pos.y) -
-                             findDir(xvd, yvd));
-                dir = MOD2(dir, ANGLE_RESOLUTION);
-                away = (dir >= ANGLE_RESOLUTION / 4 && dir <= 3 * ANGLE_RESOLUTION / 4);
-
-                /*
-                 * vel  - The relative velocity of ship to us.
-                 * away - Heading away from us?
-                 */
-                if (pl->velocity <= my_data->robot_normal_speed)
-                {
-                    if (pl->lock.distance < (SHIP_SZ * 4) || (!away && vel > my_data->robot_attack_speed))
-                    {
-                        SET_BIT(pl->used, USES_TRACTOR_BEAM);
-                        pl->tractor_is_pressor = true;
-                    }
-                    else if (away && vel < my_data->robot_max_speed && vel > my_data->robot_normal_speed)
-                        SET_BIT(pl->used, USES_TRACTOR_BEAM);
-                }
-                if (Player_uses_tractor_beam(pl))
-                    SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
-            }
-        }
         if (BIT(pl->used, HAS_LASER))
         {
             pl->turnacc = 0.0;
@@ -1174,11 +1189,13 @@ static bool Check_robot_target(player_t *pl, clpos_t item_pos, int new_mode)
 static bool Check_robot_hunt(player_t *pl)
 {
     player_t *ship;
+    double sdir;
     int ship_dir, travel_dir, delta_dir, adj_dir, toofast, tooslow;
     robot_default_data_t *my_data = Robot_default_get_data(pl);
 
     if (!BIT(my_data->robot_lock, LOCK_PLAYER) || my_data->robot_lock_id == pl->id)
         return false;
+
     if (pl->fuel.sum < my_data->fuel_l3 /*MAX_PLAYER_FUEL/2*/)
         return false;
 
@@ -1186,7 +1203,9 @@ static bool Check_robot_hunt(player_t *pl)
     if (!Detect_ship(pl, ship))
         return false;
 
-    ship_dir = (int)Wrap_findDir(ship->pix_pos.x - pl->pix_pos.x, ship->pix_pos.y - pl->pix_pos.y);
+    sdir = Wrap_cfindDir(ship->pos.cx - pl->pos.cx,
+                         ship->pos.cy - pl->pos.cy);
+    ship_dir = MOD2((int)(sdir + 0.5), ANGLE_RESOLUTION);
 
     if (pl->velocity <= 0.2)
     {
@@ -1239,9 +1258,7 @@ static bool Check_robot_hunt(player_t *pl)
 
 static bool Detect_ship(player_t *pl, player_t *ship)
 {
-    // player_t *ship = PlayersArray[j];
-    int j = GetInd(ship->id);
-    int dx, dy;
+    double distance;
 
     /* can't go after non-playing ships */
     if (!Player_is_alive(ship))
@@ -1252,19 +1269,20 @@ static bool Detect_ship(player_t *pl, player_t *ship)
         return false;
 
     /* trivial */
-    if (pl->visibility[GetInd(ship->id)].canSee)
+    int j = GetInd(ship->id);
+    if (pl->visibility[j].canSee)
         return true;
 
     /*
      * can't see it, so it must be cloaked
      * maybe we can detect it's presence from other clues?
      */
-
-    dx = ship->pix_pos.x - pl->pix_pos.x, dx = WRAP_DX(dx);
-    dy = ship->pix_pos.y - pl->pix_pos.y, dy = WRAP_DY(dy);
+    distance = Wrap_length(ship->pos.cx - pl->pos.cx,
+                           ship->pos.cy - pl->pos.cy) /
+               CLICK;
 
     /* can't detect ships beyond visual range */
-    if (sqr(dx) + sqr(dy) > sqr(Visibility_distance))
+    if (distance > Visibility_distance)
         return false;
 
     if (Player_is_thrusting(ship) && options.cloakedExhaust)
@@ -1868,9 +1886,9 @@ static void Robot_default_play_check_objects(player_t *pl,
 
 static void Robot_default_play_check_lasers(player_t *pl)
 {
-    // player_t *pl = PlayersArray[ind];
     int j;
-    int dx, dy;
+    int dcx, dcy;
+    double dx, dy;
     int distance2;
     /* int                                shield_range; */
     robot_default_data_t *my_data = Robot_default_get_data(pl);
@@ -1891,11 +1909,15 @@ static void Robot_default_play_check_lasers(player_t *pl)
                 continue;
             if (pl->id == pulse->id && options.selfImmunity)
                 continue;
-            dx = (long)WRAP_DX(pl->pix_pos.x - pulse->pix_pos.x);
-            dy = (long)WRAP_DY(pl->pix_pos.y - pulse->pix_pos.y);
+            dcx = WRAP_DCX(pl->pos.cx - pulse->pos.cx);
+            dcy = WRAP_DCY(pl->pos.cy - pulse->pos.cy);
+            dx = CLICK_TO_FLOAT(dcx);
+            dy = CLICK_TO_FLOAT(dcy);
             distance2 = sqr(dx) + sqr(dy);
-            if ((distance2 < sqr(PULSE_LENGTH) || (distance2 < sqr(2 * PULSE_LENGTH) && ABS(findDir(dx, dy) - pulse->dir) < ANGLE_RESOLUTION / 8)) && (int)(rfrac() * 100) <
-                                                                                                                                                          (85 + (my_data->defense / 7) - (my_data->attack / 50)))
+            if ((distance2 < sqr(PULSE_LENGTH) ||
+                 (distance2 < sqr(2 * PULSE_LENGTH) && ABS(findDir(dx, dy) - pulse->dir) < ANGLE_RESOLUTION / 8)) &&
+                (int)(rfrac() * 100) <
+                    (85 + (my_data->defense / 7) - (my_data->attack / 50)))
             {
                 SET_BIT(pl->used, HAS_SHIELD);
                 if (!options.cloakedShield)
@@ -2047,8 +2069,7 @@ static void Robot_default_play(player_t *pl)
                 if (BIT(my_data->robot_lock, LOCK_PLAYER) && my_data->robot_lock_id == ship->id)
                 {
                     my_data->lock_last_seen = my_data->robot_count;
-                    my_data->lock_last_pos.x = ship->pix_pos.x;
-                    my_data->lock_last_pos.y = ship->pix_pos.y;
+                    my_data->lock_last_pos = ship->pos;
                 }
 
                 distance = Wrap_length(ship->pos.cx - pl->pos.cx,

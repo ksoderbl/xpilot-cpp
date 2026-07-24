@@ -53,8 +53,6 @@ void Object_position_set_clpos(object_t *obj, clpos_t pos)
     }
 #endif
     obj->pos = pos;
-    obj->pix_pos.x = CLICK_TO_PIXEL(pos.cx);
-    obj->pix_pos.y = CLICK_TO_PIXEL(pos.cy);
 }
 
 void Object_position_init_clpos(object_t *obj, clpos_t pos)
@@ -97,8 +95,6 @@ void Player_position_set_clicks(player_t *pl, clpos_t pos)
     }
 #endif
     pl->pos = pos;
-    pl->pix_pos.x = CLICK_TO_PIXEL(pos.cx);
-    pl->pix_pos.y = CLICK_TO_PIXEL(pos.cy);
 }
 
 void Player_position_init_clpos(player_t *pl, clpos_t pos)

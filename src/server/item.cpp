@@ -549,7 +549,7 @@ void Do_deflector(player_t *pl)
     double maxforce = pl->item[ITEM_DEFLECTOR] * 0.2;
     object_t *obj, **obj_list;
     int i, obj_count;
-    long dist, dx, dy;
+    double dist, dx, dy;
 
     if (pl->fuel.sum < -ED_DEFLECTOR)
     {
@@ -585,16 +585,21 @@ void Do_deflector(player_t *pl)
         if (obj->type == OBJ_BALL && !BIT(obj->obj_status, GRAVITY))
             continue;
 
-        dx = (obj->pix_pos.x - pl->pix_pos.x);
-        dy = (obj->pix_pos.y - pl->pix_pos.y);
-        dx = WRAP_DX(dx);
-        dy = WRAP_DY(dy);
+        int dcx = WRAP_DCX(obj->pos.cx - pl->pos.cx);
+        int dcy = WRAP_DCY(obj->pos.cy - pl->pos.cy);
 
-        dist = (long)(LENGTH(dx, dy) - SHIP_SZ);
+        dx = CLICK_TO_FLOAT(dcx);
+        dy = CLICK_TO_FLOAT(dcy);
+
+        dist = LENGTH(dx, dy) - SHIP_SZ;
         if (dist < range && dist > 0)
         {
-            int dir = (int)findDir(dx, dy);
-            int idir = MOD2((int)(dir - findDir(obj->vel.x, obj->vel.y)), ANGLE_RESOLUTION);
+            int dir, idir;
+            double a;
+
+            a = findDir(dx, dy);
+            dir = (int)a;
+            idir = MOD2((int)(dir - findDir(obj->vel.x, obj->vel.y)), ANGLE_RESOLUTION);
 
             if (idir > ANGLE_RESOLUTION * 0.25 && idir < ANGLE_RESOLUTION * 0.75)
             {
@@ -615,7 +620,7 @@ void Do_transporter(player_t *pl)
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || BIT(pl->used, USES_PHASING_DEVICE))
+    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || Player_is_phasing(pl))
         return;
 
     /* find victim */

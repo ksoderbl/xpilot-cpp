@@ -756,7 +756,7 @@ static void Frame_shuffle(void)
 
 static void Frame_shots(connection_t *conn, player_t *pl)
 {
-    int x, y, cx, cy;
+    int cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
     int obj_count;
@@ -777,8 +777,6 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         if (i >= obj_count)
             continue;
         shot = obj_list[i];
-        x = shot->pix_pos.x;
-        y = shot->pix_pos.y;
         cx = shot->pos.cx;
         cy = shot->pos.cy;
         pos = shot->pos;
@@ -963,50 +961,26 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 {
     pulse_t *pulse;
     int i, j, k, color, dir;
-    int cx, cy;
+    clpos_t pos;
 
     for (j = 0; j < NumPulses; j++)
     {
         pulse = Pulses[j];
         if (pulse->len <= 0)
             continue;
-        cx = FLOAT_TO_CLICK(pulse->pix_pos.x);
-        cy = FLOAT_TO_CLICK(pulse->pix_pos.y);
+        pos = pulse->pos;
         if (BIT(World.rules->mode, WRAP_PLAY))
-        {
-            if (cx < 0)
-                cx += World.cwidth;
-            else if (cx >= World.cwidth)
-                cx -= World.cwidth;
-            if (cy < 0)
-                cy += World.cheight;
-            else if (cy >= World.cheight)
-                cy -= World.cheight;
-        }
+            pos = World_wrap_clpos(pos);
 
-        double x = CLICK_TO_FLOAT(cx);
-        double y = CLICK_TO_FLOAT(cy);
-
-        if (click_inview(cv, cx, cy))
+        if (clpos_inview(&cv, pos))
             dir = pulse->dir;
         else
         {
-            x += tcos(pulse->dir) * pulse->len;
-            y += tsin(pulse->dir) * pulse->len;
+            pos.cx += tcos(pulse->dir) * pulse->len * CLICK;
+            pos.cy += tsin(pulse->dir) * pulse->len * CLICK;
             if (BIT(World.rules->mode, WRAP_PLAY))
-            {
-                if (x < 0)
-                    x += World.width;
-                else if (x >= World.width)
-                    x -= World.width;
-                if (y < 0)
-                    y += World.height;
-                else if (y >= World.height)
-                    y -= World.height;
-            }
-            cx = FLOAT_TO_CLICK(x);
-            cy = FLOAT_TO_CLICK(y);
-            if (click_inview(cv, cx, cy))
+                pos = World_wrap_clpos(pos);
+            if (clpos_inview(&cv, pos))
                 dir = MOD2(pulse->dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
             else
                 continue;
@@ -1018,9 +992,6 @@ static void Frame_ships(connection_t *conn, player_t *pl)
         else
             color = RED;
 
-        clpos_t pos;
-        pos.cx = cx;
-        pos.cy = cy;
         Send_laser(conn, color, pos, pulse->len, dir);
     }
     for (i = 0; i < Num_ecms(); i++)

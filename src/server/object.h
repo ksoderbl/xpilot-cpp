@@ -148,7 +148,6 @@ struct cell_node
     uint16_t team;       /* Team of player or cannon */                                            \
                          /* Object position pos must only be changed with the proper functions! */ \
     clpos_t pos;         /* World coordinates */                                                   \
-    ipos_t pix_pos;      /* World pixel coordinates */                                             \
     clpos_t prevpos;     /* previous position */                                                   \
     clpos_t extmove;     /* For collision detection */                                             \
     float wall_time;     /* bounce/crash time within frame */                                      \
@@ -424,8 +423,7 @@ union xp_anyobject
  */
 typedef struct
 {
-    position_t pix_pos;
-    // clpos_t pos; // TODO
+    clpos_t pos;
     int dir;
     int len;
     int life;

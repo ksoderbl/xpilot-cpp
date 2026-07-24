@@ -399,8 +399,6 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 {
     double speed = options.shotSpeed;
     double range = CANNON_SHOT_LIFE_MAX * speed;
-    int cpx = (int)c->pix_pos.x;
-    int cpy = (int)c->pix_pos.y;
     int visualrange = (int)(CANNON_DISTANCE + 2 * c->item[ITEM_SENSOR] * BLOCK_SZ);
     bool found = false, ready = false;
     double closest = range;

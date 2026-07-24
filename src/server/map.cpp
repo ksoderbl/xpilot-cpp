@@ -137,7 +137,6 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     t.group = NO_GROUP;
 
     t.blk_pos = Clpos_to_blkpos(pos);
-    t.pix_pos = Clpos_to_position(pos);
 
     // World.fuels[ind] = t;
     // World.NumFuels++;
@@ -182,7 +181,6 @@ int World_place_fuel(clpos_t pos, int team)
     t.team = team;
 
     t.blk_pos = Clpos_to_blkpos(pos);
-    t.pix_pos = Clpos_to_position(pos);
 
     World.fuels.push_back(t);
 
