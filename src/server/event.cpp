@@ -314,9 +314,9 @@ static void Player_toggle_pause(player_t *pl)
     double minv;
 
     if (Player_is_paused(pl))
-        i = LEGACY_PAUSE;
-    else if (BIT(pl->pl_status, HOVERPAUSE))
-        i = HOVERPAUSE;
+        pausetype = paused;
+    else if (Player_is_hoverpaused(pl))
+        pausetype = hoverpaused;
     else
     {
         xi = OBJ_X_IN_BLOCKS(pl);
@@ -325,8 +325,8 @@ static void Player_toggle_pause(player_t *pl)
         k = World.bases[pl->home_base_ind].blk_pos.by;
         if (j == xi && k == yi)
         {
-            minv = 3.0f;
-            i = LEGACY_PAUSE;
+            minv = 3.0;
+            pausetype = paused;
         }
         else
         {
@@ -336,19 +336,19 @@ static void Player_toggle_pause(player_t *pl)
              */
             if (ABS(j - xi) <= 2 && ABS(k - yi) <= 2)
                 return; // break;
-            minv = 5.0f;
-            i = HOVERPAUSE;
+            minv = 5.0;
+            pausetype = hoverpaused;
         }
         minv += VECTOR_LENGTH(World.gravity[xi][yi]);
         if (pl->velocity > minv)
             return; // break;
     }
 
-    switch (i)
+    switch (pausetype)
     {
-    case LEGACY_PAUSE:
-        if (BIT(pl->pl_status, HOVERPAUSE))
-            return; // break;
+    case paused:
+        if (Player_is_hoverpaused(pl))
+            break;
 
         if (Player_uses_autopilot(pl))
             Autopilot(pl, false);
@@ -363,7 +363,7 @@ static void Player_toggle_pause(player_t *pl)
         // }
         break;
 
-    case HOVERPAUSE:
+    case hoverpaused:
         if (Player_is_paused(pl))
             break;
 

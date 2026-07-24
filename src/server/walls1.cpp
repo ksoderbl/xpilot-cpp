@@ -1966,7 +1966,7 @@ void Move_object1(object_t *obj)
             {
                 if (obj->type != OBJ_BALL)
                     obj->obj_life = (long)(obj->obj_life * options.objectWallBounceLifeFactor);
-                if (obj->obj_life <= 0)
+                if (obj->obj_life <= 0.0)
                 {
                     break;
                 }

@@ -609,7 +609,7 @@ static void PlayerObjectCollision(player_t *pl)
         bool hit;
 
         obj = obj_list[j];
-        if (obj->obj_life <= 0)
+        if (obj->obj_life <= 0.0)
             continue;
 
         range = SHIP_SZ + obj->pl_range;
@@ -1356,7 +1356,7 @@ static void AsteroidCollision(void)
     {
         ast = OBJ_PTR(wireobject);
 
-        if (ast->obj_life <= 0)
+        if (ast->obj_life <= 0.0)
             continue;
 
         // TODO: rather do some wrap thing than using assert
@@ -1375,7 +1375,7 @@ static void AsteroidCollision(void)
         {
             obj = obj_list[j];
             assert(obj != NULL);
-            if (obj->obj_life <= 0)
+            if (obj->obj_life <= 0.0)
                 continue;
 
             /* asteroids don't hit these objects */
@@ -1544,7 +1544,7 @@ static void BallCollision(void)
             if (BIT(obj->type, ignored_object_types))
                 continue;
 
-            if (obj->obj_life <= 0)
+            if (obj->obj_life <= 0.0)
                 continue;
 
             /* have we already done this ball pair? */
@@ -1655,7 +1655,7 @@ static void MineCollision(void)
             if (!BIT(obj->type, collide_object_types))
                 continue;
 
-            if (obj->obj_life <= 0)
+            if (obj->obj_life <= 0.0)
                 continue;
 
             if (!in_range_acd(mine->prevpos.cx, mine->prevpos.cy,

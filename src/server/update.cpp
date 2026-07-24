@@ -932,10 +932,13 @@ static void Update_players(void)
                 warn("Player %s recovered!", pl->name);
                 /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
-                if (!BIT(pl->obj_status, LEGACY_PLAYING))
+                if (BIT(World.rules->mode, LIMITED_LIVES))
                 {
-                    SET_BIT(pl->obj_status, LEGACY_PLAYING);
+                    if (!Player_is_dead(pl))
+                        Player_set_state(pl, PL_STATE_ALIVE);
                 }
+                else
+                    Player_set_state(pl, PL_STATE_ALIVE);
                 Go_home(pl);
             }
             else
@@ -962,8 +965,7 @@ static void Update_players(void)
             }
         }
 
-        // if (!Player_is_active(pl))
-        if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER | LEGACY_PAUSE) != LEGACY_PLAYING)
+        if (!Player_is_active(pl))
             continue;
 
         if (pl->stunned > 0)

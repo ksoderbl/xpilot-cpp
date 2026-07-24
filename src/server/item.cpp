@@ -567,7 +567,7 @@ void Do_deflector(player_t *pl)
     {
         obj = obj_list[i];
 
-        if (obj->obj_life <= 0)
+        if (obj->obj_life <= 0.0)
             continue;
 
         if (obj->id == pl->id)

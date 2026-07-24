@@ -529,7 +529,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     if (obj->type != OBJ_BALL && obj->type != OBJ_PULSE)
     {
         obj->obj_life *= options.objectWallBounceLifeFactor;
-        if (obj->obj_life <= 0)
+        if (obj->obj_life <= 0.0)
             return 0;
     }
 

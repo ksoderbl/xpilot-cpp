@@ -68,15 +68,13 @@
 std::vector<wireobject_t *> Asteroid_vector;
 
 /*
-** Prototypes.
-*/
-static void Make_asteroid(clpos_t pos,
-                          int size, int dir,
-                          double speed);
+ * Prototypes.
+ */
+static void Make_asteroid(clpos_t pos, int size, int dir, double speed);
 
 /*
-** Return the asteroid list.
-*/
+ * Return the asteroid list.
+ */
 std::vector<wireobject_t *> &Asteroid_get_list(void)
 {
     return Asteroid_vector;
@@ -93,11 +91,12 @@ static bool Asteroid_remove_from_list(wireobject_t *ast)
 {
     bool result = false;
     const auto it = std::find(Asteroid_vector.begin(), Asteroid_vector.end(), ast);
+
     if (it == Asteroid_vector.end())
-    {
         return false;
-    }
+
     Asteroid_vector.erase(it);
+
     return true;
 }
 
