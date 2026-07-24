@@ -107,7 +107,7 @@ void Ball_is_replaced(ballobject_t *ball)
 {
     player_t *pl = Player_by_id(ball->ball_owner);
 
-    ball->obj_life = 0;
+    ball->obj_life = 0.0;
     SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
 
     if (!options.zeroSumScoring)

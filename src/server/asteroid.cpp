@@ -454,7 +454,7 @@ void Asteroid_update(void)
             {
                 if (asteroid->obj_life > 0)
                 {
-                    asteroid->obj_life = 0;
+                    asteroid->obj_life = 0.0;
                     if (asteroid->wire_size == 1)
                         num--;
                 }

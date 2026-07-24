@@ -182,30 +182,30 @@ void Object_crash2(object_t *obj, int crashtype, int mapobj_ind)
          */
         if (obj->type == OBJ_BALL)
             break;
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         break;
 
     case CrashTarget:
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         Object_hits_target2(obj, Target_by_index(mapobj_ind), -1.0);
         break;
 
     case CrashWall:
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         /* add sparks ??? */
         break;
 
     case CrashUniverse:
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         break;
 
     case CrashCannon:
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         Object_hits_cannon2(obj, Cannon_by_index(mapobj_ind));
         break;
 
     case CrashUnknown:
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         break;
     }
 }
@@ -497,13 +497,13 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
     {
         if (obj->type == OBJ_BALL)
             Ball_hits_goal2(BALL_PTR(obj), groupptr_by_id(group));
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         return 0;
     }
 
     if (type == TARGET)
     {
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         Object_hits_target2(obj, Target_by_index(mapobj_ind), -1.0);
         return 0;
     }
@@ -522,7 +522,7 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
 
     if (!BIT(mp.obj_bounce_mask, OBJ_TYPEBIT(obj->type)))
     {
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         return 0;
     }
 
@@ -542,14 +542,14 @@ static int Bounce_object(object_t *obj, move_t *move, int line, int point)
         obj->type != OBJ_SPARK &&
         sqr(obj->vel.x) + sqr(obj->vel.y) > sqr(options.maxObjectWallBounceSpeed))
     {
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         return 0;
     }
 
     if (obj->type == OBJ_SPARK &&
         sqr(obj->vel.x) + sqr(obj->vel.y) > sqr(options.maxSparkWallBounceSpeed))
     {
-        obj->obj_life = 0;
+        obj->obj_life = 0.0;
         return 0;
     }
 
@@ -2820,7 +2820,7 @@ void Move_object2(object_t *obj)
                     Object_typename(obj), mv.start.cx, mv.start.cy);
             warn(msg);
             Set_message(msg);
-            obj->obj_life = 0;
+            obj->obj_life = 0.0;
             return;
         }
         Move_point(&mv, &ans);

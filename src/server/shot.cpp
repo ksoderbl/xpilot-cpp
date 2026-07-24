@@ -330,7 +330,7 @@ void Detonate_mines(player_t *pl)
         }
     }
     if (closest != -1)
-        Obj[closest]->obj_life = 0;
+        Obj[closest]->obj_life = 0.0;
 
     return;
 }
@@ -1384,7 +1384,7 @@ void Delete_shot(int ind)
     }
 
     Cell_remove_object(shot);
-    shot->obj_life = 0;
+    shot->obj_life = 0.0;
     shot->type = 0;
     shot->mass = 0;
 

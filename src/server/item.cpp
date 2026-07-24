@@ -1070,7 +1070,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
              */
             if (range <= 0 || (int)(rfrac() * 100.0f) < ((int)(10 * (1 - range)) + 5))
             {
-                mine->obj_life = 0;
+                mine->obj_life = 0.0;
                 break;
             }
             mine->mine_count = ((8 * (1 - range)) + 2) * 12;
