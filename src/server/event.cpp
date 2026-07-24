@@ -133,7 +133,8 @@ static void Player_lock_next_or_prev(player_t *pl, int key)
         pl_i = Player_by_index(i);
         if (i == j)
             break;
-    } while (i == ind || BIT(pl_i->obj_status, LEGACY_GAME_OVER | LEGACY_PAUSE) ||
+    } while (i == ind ||
+             BIT(pl_i->obj_status, LEGACY_GAME_OVER | LEGACY_PAUSE) ||
              !Player_lock_allowed(pl, pl_i));
 
     if (i == ind)

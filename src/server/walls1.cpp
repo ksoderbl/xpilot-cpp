@@ -2091,16 +2091,14 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
 
     case CrashCannon:
         warn("walls: case CrashCannon line 2337");
-        if (BIT(pl->used, HAS_SHIELD | HAS_EMERGENCY_SHIELD) != (HAS_SHIELD | HAS_EMERGENCY_SHIELD))
+        if (!Player_uses_emergency_shield(pl))
         {
             howfmt = "%s smashed%s against a cannon";
             hudmsg = "[Cannon]";
             sound_play_sensors(pl->pos, PLAYER_HIT_CANNON_SOUND);
         }
         if (!BIT(World.cannons[ms->cannon].used, USES_EMERGENCY_SHIELD))
-        {
             Cannon_dies(ms);
-        }
         break;
 
     case CrashUniverse:
@@ -2233,7 +2231,7 @@ void Move_player1(player_t *pl)
     double fric;
     double oldvx, oldvy;
 
-    if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED) != LEGACY_PLAYING)
+    if (!Player_is_alive(pl))
     {
         if (!BIT(pl->obj_status, LEGACY_KILLED | LEGACY_PAUSE))
         {
@@ -2698,10 +2696,9 @@ void Turn_player1(player_t *pl)
     vector_t salt;
 
     if (new_dir == pl->dir)
-    {
         return;
-    }
-    if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_PAUSE | LEGACY_GAME_OVER | LEGACY_KILLED) != LEGACY_PLAYING)
+
+    if (!Player_is_alive(pl))
     {
         pl->dir = new_dir;
         return;
@@ -2725,13 +2722,9 @@ void Turn_player1(player_t *pl)
     mi.phased = BIT(pl->used, USES_PHASING_DEVICE);
 
     if (new_dir > pl->dir)
-    {
         sign = (new_dir - pl->dir <= ANGLE_RESOLUTION + pl->dir - new_dir) ? 1 : -1;
-    }
     else
-    {
         sign = (pl->dir - new_dir <= ANGLE_RESOLUTION + new_dir - pl->dir) ? -1 : 1;
-    }
 
 #if 0
     salt.x = (pl->vel.x > 0) ? 0.1f : (pl->vel.x < 0) ? -0.1f : 0;
