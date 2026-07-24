@@ -364,8 +364,8 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
     int i;
     int win_score = 0, lose_score = 0;
     int win_team_members = 0, lose_team_members = 0;
-    int somebody_flag = 0;
     int sc, por;
+    bool somebody = false;
 
     Check_team_members(td->team);
     if (td->team == pl->team)
@@ -378,15 +378,15 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
             player_t *pl_i = Player_by_index(i);
 
             if (Player_is_tank(pl_i) ||
-                (BIT(pl_i->obj_status, LEGACY_PAUSE) && pl_i->count <= 0) ||
-                (BIT(pl_i->obj_status, LEGACY_GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+                Player_is_paused(pl_i) ||
+                Player_is_waiting(pl_i))
                 continue;
             if (pl_i->team == td->team)
             {
                 lose_score += Get_Score(pl_i);
                 lose_team_members++;
-                if (BIT(pl_i->obj_status, LEGACY_GAME_OVER) == 0)
-                    somebody_flag = 1;
+                if (!Player_is_dead(pl_i))
+                    somebody = true;
             }
             else if (pl_i->team == pl->team)
             {
@@ -400,7 +400,7 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
     Set_message_f(" < %s's (%d) team has destroyed team %d treasure >",
                   pl->name, pl->team, td->team);
 
-    if (!somebody_flag)
+    if (!somebody)
     {
         Score(pl, Rate(Get_Score(pl), CANNON_SCORE) / 2, pos, "Treasure:");
         return 0;
@@ -418,8 +418,8 @@ int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos)
         player_t *pl_i = Player_by_index(i);
 
         if (Player_is_tank(pl_i) ||
-            (BIT(pl_i->obj_status, LEGACY_PAUSE) && pl_i->count <= 0) ||
-            (BIT(pl_i->obj_status, LEGACY_GAME_OVER) && pl_i->mychar == 'W' && Get_Score(pl_i) == 0))
+            Player_is_paused(pl_i) ||
+            Player_is_waiting(pl_i))
             continue;
         if (pl_i->team == td->team)
         {
