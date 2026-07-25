@@ -140,9 +140,6 @@ constexpr double SELF_DESTRUCT_DELAY = 150.0;
 
 constexpr std::size_t DEBRIS_TYPES = (8 * 4 * 4);
 
-#undef rand
-#define rand() please dont use rand.
-
 /*
  * The server supports only 4 colors, except for spark/debris, which
  * may have 8 different colors.
