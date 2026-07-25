@@ -52,6 +52,8 @@
 
 void Fire_laser(player_t *pl)
 {
+    world_t *world = &World;
+
     if (pl->item[ITEM_LASER] > pl->num_pulses && pl->velocity < PULSE_SPEED - PULSE_SAMPLE_DISTANCE)
     {
         // TODO: should this not be ED_LASER ?
@@ -63,9 +65,9 @@ void Fire_laser(player_t *pl)
             clpos_t m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
             pos.cx = pl->pos.cx + m_gun.cx + FLOAT_TO_CLICK(pl->vel.x);
             pos.cy = pl->pos.cy + m_gun.cy + FLOAT_TO_CLICK(pl->vel.y);
-            pos.cx = WRAP_XCLICK(pos.cx);
-            pos.cy = WRAP_YCLICK(pos.cy);
-            if (World_contains_clpos(pos))
+            pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
+            pos.cy = WORLD_WRAP_YCLICK(world, pos.cy);
+            if (World_contains_clpos(world, pos))
                 Fire_general_laser(pl->id, pl->team, pos, pl->dir, pl->mods);
         }
     }
@@ -179,6 +181,7 @@ static void Laser_pulse_find_victims(
     double midx,
     double midy)
 {
+    world_t *world = &World;
     int i;
     player_t *vic;
     double dist;
@@ -189,6 +192,7 @@ static void Laser_pulse_find_victims(
     for (i = 0; i < NumPlayers; i++)
     {
         vic = Player_by_index(i);
+
         if (!Player_is_alive(vic))
             continue;
 
@@ -214,7 +218,11 @@ static void Laser_pulse_find_victims(
         if (vic->id == pulse->id && !pulse->refl)
             continue;
 
-        dist = Wrap_length(vic->pos.cx - midcx, vic->pos.cy - midcy) / CLICK;
+        dist = World_wrap_length(
+                   world,
+                   vic->pos.cx - midcx,
+                   vic->pos.cy - midcy) /
+               CLICK;
         if (dist > pulse->len / 2 + SHIP_SZ)
             continue;
 
@@ -249,6 +257,7 @@ static void Laser_pulse_hits_player(
     victim_t *victim,
     bool *refl)
 {
+    world_t *world = &World;
     player_t *pl;
     player_t *vicpl;
     // int ind;
@@ -270,8 +279,10 @@ static void Laser_pulse_hits_player(
 
         pulse->pos.cx = FLOAT_TO_CLICK(px);
         pulse->pos.cy = FLOAT_TO_CLICK(py);
-        pulse->dir = (int)Wrap_cfindDir(vicpl->pos.cx - pulse->pos.cx,
-                                        vicpl->pos.cy - pulse->pos.cy) *
+        pulse->dir = (int)World_wrap_cfindDir(
+                         world,
+                         vicpl->pos.cx - pulse->pos.cx,
+                         vicpl->pos.cy - pulse->pos.cy) *
                          2 -
                      ANGLE_RESOLUTION / 2 - pulse->dir;
         pulse->dir = MOD2(pulse->dir, ANGLE_RESOLUTION);
@@ -383,6 +394,7 @@ static int Laser_pulse_check_player_hits(
     vicbuf_t *vicbuf,
     bool *refl)
 {
+    world_t *world = &World;
     int j;
     int hits = 0;
     /* int                        ind; */
@@ -406,8 +418,10 @@ static int Laser_pulse_check_player_hits(
     for (j = vicbuf->num_vic - 1; j >= 0; --j)
     {
         victim = &(vicbuf->vic_ptr[j]);
-        dist = Wrap_length(cx - victim->pos.cx,
-                           cy - victim->pos.cy) /
+        dist = World_wrap_length(
+                   world,
+                   cx - victim->pos.cx,
+                   cy - victim->pos.cy) /
                CLICK;
         if (dist <= SHIP_SZ)
         {
@@ -438,6 +452,7 @@ static void Laser_pulse_get_object_list(
     double midx,
     double midy)
 {
+    world_t *world = &World;
     double dx, dy;
     int range;
     object_t *ast;
@@ -454,13 +469,11 @@ static void Laser_pulse_get_object_list(
             ast = OBJ_PTR(wireobject);
             dx = midx - CLICK_TO_FLOAT(ast->pos.cx);
             dy = midy - CLICK_TO_FLOAT(ast->pos.cy);
-            dx = WRAP_DX(dx);
-            dy = WRAP_DY(dy);
+            dx = WORLD_WRAP_DX(world, dx);
+            dy = WORLD_WRAP_DY(world, dy);
             range = ast->pl_radius + pulse->len / 2;
             if (sqr(dx) + sqr(dy) < sqr(range))
-            {
                 obj_list.push_back(ast);
-            }
         }
     }
 }
@@ -471,6 +484,7 @@ static void Laser_pulse_get_object_list(
  */
 void Laser_pulse_collision(void)
 {
+    world_t *world = &World;
     int i;
     int p;
     int max, hits;
@@ -521,7 +535,7 @@ void Laser_pulse_collision(void)
 
         if (BIT(World.rules->mode, WRAP_PLAY))
         {
-            pulse->pos = World_wrap_clpos(pulse->pos);
+            pulse->pos = World_wrap_clpos(world, pulse->pos);
 
             x1 = CLICK_TO_FLOAT(pulse->pos.cx);
             y1 = CLICK_TO_FLOAT(pulse->pos.cy);
@@ -572,8 +586,8 @@ void Laser_pulse_collision(void)
         /* calculate delta x and y for pulse start and end position. */
         dx = x2 - x1;
         dy = y2 - y1;
-        dx = WRAP_DX(dx);
-        dy = WRAP_DY(dy);
+        dx = WORLD_WRAP_DX(world, dx);
+        dy = WORLD_WRAP_DY(world, dy);
 
         /* max is the highest absolute delta length of either x or y. */
         max = (int)MAX(ABS(dx), ABS(dy));
@@ -661,8 +675,8 @@ void Laser_pulse_collision(void)
                     double adx, ady;
                     adx = x - CLICK_TO_FLOAT(ast->pos.cx);
                     ady = y - CLICK_TO_FLOAT(ast->pos.cy);
-                    adx = WRAP_DX(adx);
-                    ady = WRAP_DY(ady);
+                    adx = WORLD_WRAP_DX(world, adx);
+                    ady = WORLD_WRAP_DY(world, ady);
 
                     if (sqr(adx) + sqr(ady) <= sqr(ast->pl_radius))
                     {

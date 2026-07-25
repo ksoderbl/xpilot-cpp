@@ -749,6 +749,7 @@ void Update_score_table(void)
 
 void Reset_all_players(void)
 {
+    world_t *world = &World;
     player_t *pl;
     int i, j;
 
@@ -849,7 +850,10 @@ void Reset_all_players(void)
 
                 if (targ->damage != TARGET_DAMAGE || targ->dead_ticks > 0)
                 {
-                    World.block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
+                    // TODO: World_restore_target1
+                    blkpos_t blkpos = Clpos_to_blkpos(targ->pos);
+                    // World.block[targ->blk_pos.bx][targ->blk_pos.by] = TARGET;
+                    World_set_block(world, blkpos, TARGET);
                     targ->dead_ticks = 0;
                     targ->damage = TARGET_DAMAGE;
                     targ->conn_mask = 0;

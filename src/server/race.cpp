@@ -491,7 +491,9 @@ void Player_pass_checkpoint(player_t *pl)
 
 void PlayerCheckpointCollision(player_t *pl)
 {
-    if (!BIT(World.rules->mode, TIMING))
+    world_t *world = &World;
+
+    if (!BIT(world->rules->mode, TIMING))
         return;
 
     if (Player_is_active(pl))
@@ -500,7 +502,13 @@ void PlayerCheckpointCollision(player_t *pl)
 
         if (pl->round != 0)
             pl->time++;
-        if (Player_is_alive(pl) && Wrap_length(pl->pos.cx - check->pos.cx, pl->pos.cy - check->pos.cy) < options.checkpointRadius * BLOCK_CLICKS && !Player_is_tank(pl) && !options.ballrace)
+        if (Player_is_alive(pl) &&
+            World_wrap_length(
+                world,
+                pl->pos.cx - check->pos.cx,
+                pl->pos.cy - check->pos.cy) < options.checkpointRadius * BLOCK_CLICKS &&
+            !Player_is_tank(pl) &&
+            !options.ballrace)
             Player_pass_checkpoint(pl);
     }
 }

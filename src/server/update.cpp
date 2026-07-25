@@ -70,6 +70,7 @@ static char msg[MSG_LEN];
 
 static void Transport_to_home(player_t *pl)
 {
+    world_t *world = &World;
     /*
      * Transport a corpse from the place where it died back to its homebase,
      * or if in race mode, back to the last passed check point.
@@ -104,8 +105,8 @@ static void Transport_to_home(player_t *pl)
     else
         startpos = World.bases[pl->home_base_ind].pos;
 
-    dx = WRAP_DCX(startpos.cx - pl->pos.cx);
-    dy = WRAP_DCY(startpos.cy - pl->pos.cy);
+    dx = WORLD_WRAP_DCX(world, startpos.cx - pl->pos.cx);
+    dy = WORLD_WRAP_DCY(world, startpos.cy - pl->pos.cy);
     t = pl->recovery_count;
     if (2 * t <= T)
         m = 2 / t;
@@ -750,14 +751,17 @@ static void Use_items(player_t *pl)
  */
 static void Do_refuel(player_t *pl)
 {
+    world_t *world = &World;
     fuel_t *fs = Fuel_by_index(pl->fs);
 
-    if ((Wrap_length(pl->pos.cx - fs->pos.cx,
-                     pl->pos.cy - fs->pos.cy) > 90.0 * CLICK) ||
-        (pl->fuel.sum >= pl->fuel.max) || Player_is_phasing(pl) || (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
-    {
+    if ((World_wrap_length(
+             world,
+             pl->pos.cx - fs->pos.cx,
+             pl->pos.cy - fs->pos.cy) > 90.0 * CLICK) ||
+        (pl->fuel.sum >= pl->fuel.max) ||
+        Player_is_phasing(pl) ||
+        (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
         CLR_BIT(pl->used, USES_REFUEL);
-    }
     else
     {
         int n = pl->fuel.num_tanks;
@@ -795,11 +799,15 @@ static void Do_refuel(player_t *pl)
  */
 static void Do_repair(player_t *pl)
 {
+    world_t *world = &World;
     target_t *targ = Target_by_index(pl->repair_target);
 
-    if ((Wrap_length(pl->pos.cx - targ->pos.cx,
-                     pl->pos.cy - targ->pos.cy) > 90.0 * CLICK) ||
-        targ->damage >= TARGET_DAMAGE || targ->dead_ticks > 0 || Player_is_phasing(pl))
+    if ((World_wrap_length(world,
+                           pl->pos.cx - targ->pos.cx,
+                           pl->pos.cy - targ->pos.cy) > 90.0 * CLICK) ||
+        targ->damage >= TARGET_DAMAGE ||
+        targ->dead_ticks > 0 ||
+        Player_is_phasing(pl))
         CLR_BIT(pl->used, USES_REPAIR);
     else
     {
@@ -1091,8 +1099,7 @@ static void Update_players(void)
  */
 void Update_objects(void)
 {
-    // xpinfo("in update_objects");
-
+    world_t *world = &World;
     int i;
     player_t *pl;
     object_t *obj;
@@ -1181,8 +1188,10 @@ void Update_objects(void)
         {
             player_t *lock_pl = Player_by_id(pl->lock.pl_id);
             pl->lock.distance =
-                Wrap_length(pl->pos.cx - lock_pl->pos.cx,
-                            pl->pos.cy - lock_pl->pos.cy) /
+                World_wrap_length(
+                    world,
+                    pl->pos.cx - lock_pl->pos.cx,
+                    pl->pos.cy - lock_pl->pos.cy) /
                 CLICK;
         }
     }

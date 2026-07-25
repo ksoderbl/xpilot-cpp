@@ -68,6 +68,7 @@ long CANNON_USE_ITEM = (ITEM_BIT_FUEL | ITEM_BIT_WIDEANGLE | ITEM_BIT_REARSHOT |
 
 void Cannon_update(bool tick)
 {
+    world_t *world = &World;
     int i;
 
     for (i = 0; i < Num_cannons(); i++)
@@ -81,7 +82,7 @@ void Cannon_update(bool tick)
                 // World.block[c->blk_pos.bx][c->blk_pos.by] = CANNON;
                 // c->conn_mask = 0;
                 // c->last_change = frame_loops;
-                World_restore_cannon(c);
+                World_restore_cannon(world, c);
             }
             continue;
         }
@@ -111,8 +112,10 @@ void Cannon_update(bool tick)
         {
             player_t *tpl = Player_by_id(c->tractor_target_id);
             // int ind = GetInd(c->tractor_target_id);
-            if (Wrap_length(tpl->pos.cx - c->pos.cx,
-                            tpl->pos.cy - c->pos.cy) /
+            if (World_wrap_length(
+                    world,
+                    tpl->pos.cx - c->pos.cx,
+                    tpl->pos.cy - c->pos.cy) /
                         CLICK <
                     TRACTOR_MAX_RANGE(c->item[ITEM_TRACTOR_BEAM]) &&
                 Player_is_alive(tpl))
@@ -286,6 +289,7 @@ static int Cannon_select_defense(cannon_t *c)
    modes 1 - 3 use progressively more accurate detection. */
 static int Cannon_in_danger(cannon_t *c)
 {
+    world_t *world = &World;
     const int range = 4 * BLOCK_SZ;
     const uint32_t kill_shots = (KILLING_SHOTS) | OBJ_MINE_BIT | OBJ_SHOT_BIT | OBJ_PULSE_BIT | OBJ_SMART_SHOT_BIT | OBJ_HEAT_SHOT_BIT | OBJ_TORPEDO_BIT | OBJ_ASTEROID_BIT;
     object_t *shot, **obj_list;
@@ -315,6 +319,7 @@ static int Cannon_in_danger(cannon_t *c)
 
         npx = CLICK_TO_PIXEL(shot->pos.cx);
         npy = CLICK_TO_PIXEL(shot->pos.cy);
+
         if (options.cannonSmartness > 1)
         {
             npx += (int)shot->vel.x;
@@ -325,8 +330,9 @@ static int Cannon_in_danger(cannon_t *c)
                 npy += (int)shot->acc.y;
             }
         }
-        tdx = WRAP_DX(npx - cpx);
-        tdy = WRAP_DY(npy - cpy);
+        tdx = WORLD_WRAP_DX(world, npx - cpx);
+        tdy = WORLD_WRAP_DY(world, npy - cpy);
+
         if (LENGTH(tdx, tdy) <= ((4.5 - options.cannonSmartness) * BLOCK_SZ))
         {
             danger = true;
@@ -397,6 +403,7 @@ static int Cannon_select_weapon(cannon_t *c)
  */
 static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 {
+    world_t *world = &World;
     double speed = options.shotSpeed;
     double range = CANNON_SHOT_LIFE_MAX * speed;
     int visualrange = (int)(CANNON_DISTANCE + 2 * c->item[ITEM_SENSOR] * BLOCK_SZ);
@@ -447,10 +454,10 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
         player_t *pl = Player_by_index(i);
         double tdist, tdx, tdy;
 
-        tdx = WRAP_DCX(pl->pos.cx - c->pos.cx) / CLICK;
+        tdx = WORLD_WRAP_DCX(world, pl->pos.cx - c->pos.cx) / CLICK;
         if (ABS(tdx) >= visualrange)
             continue;
-        tdy = WRAP_DCY(pl->pos.cy - c->pos.cy) / CLICK;
+        tdy = WORLD_WRAP_DCY(world, pl->pos.cy - c->pos.cy) / CLICK;
         if (ABS(tdy) >= visualrange)
             continue;
         tdist = LENGTH(tdx, tdy);
@@ -490,8 +497,8 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
                 int npy = (int)(pl->pos.cy + pl->vel.y * t * CLICK + pl->acc.y * t * t * CLICK);
                 int tdir;
 
-                tdx = WRAP_DCX(npx - c->pos.cx) / CLICK;
-                tdy = WRAP_DCY(npy - c->pos.cy) / CLICK;
+                tdx = WORLD_WRAP_DCX(world, npx - c->pos.cx) / CLICK;
+                tdy = WORLD_WRAP_DCY(world, npy - c->pos.cy) / CLICK;
                 a = findDir(tdx, tdy);
                 t = (int)a;
                 ddir = MOD2(tdir - c->dir, ANGLE_RESOLUTION);
@@ -544,6 +551,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
    have more than one possible use. */
 static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
 {
+    world_t *world = &World;
     modifiers_t mods;
     int i, smartness = options.cannonSmartness;
     int speed = options.shotSpeed;
@@ -667,7 +675,10 @@ static void Cannon_fire(cannon_t *c, int weapon, player_t *pl, int dir)
         break;
     case CW_TRANSPORTER:
         c->item[ITEM_TRANSPORTER]--;
-        if (Wrap_length(pl->pos.cx - c->pos.cx, pl->pos.cy - c->pos.cy) < TRANSPORTER_DISTANCE * CLICK)
+        if (World_wrap_length(
+                world,
+                pl->pos.cx - c->pos.cx,
+                pl->pos.cy - c->pos.cy) < TRANSPORTER_DISTANCE * CLICK)
         {
             int item = -1;
             double amount = 0;
@@ -800,10 +811,11 @@ void Object_hits_cannon1(object_t *obj, cannon_t *c)
 
 void Cannon_dies(cannon_t *c, player_t *pl)
 {
+    world_t *world = &World;
     vector_t zero_vel = {0.0, 0.0};
 
     // World.block[c->blk_pos.bx][c->blk_pos.by] = SPACE;
-    World_remove_cannon(c);
+    World_remove_cannon(world, c);
     Cannon_throw_items(c);
     Cannon_init(c);
     sound_play_sensors(c->pos, CANNON_EXPLOSION_SOUND);
@@ -854,12 +866,12 @@ void Cannon_set_hitmask(int group, cannon_t *cannon)
     P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
 }
 
-void World_restore_cannon(cannon_t *cannon)
+void World_restore_cannon(world_t *world, cannon_t *cannon)
 {
     blkpos_t blk = Clpos_to_blkpos(cannon->pos);
     int i;
 
-    World_set_block(blk, CANNON);
+    World_set_block(world, blk, CANNON);
 
     // for (i = 0; i < num_polys; i++)
     // {
@@ -880,7 +892,7 @@ void World_restore_cannon(cannon_t *cannon)
     // P_set_hitmask(cannon->group, Cannon_hitmask(cannon));
 }
 
-void World_remove_cannon(cannon_t *cannon)
+void World_remove_cannon(world_t *world, cannon_t *cannon)
 {
     blkpos_t blk = Clpos_to_blkpos(cannon->pos);
     int i;
@@ -888,7 +900,7 @@ void World_remove_cannon(cannon_t *cannon)
     // cannon->dead_ticks = options.cannonDeadTicks;
     cannon->conn_mask = 0;
 
-    World_set_block(blk, SPACE);
+    World_set_block(world, blk, SPACE);
 
     // for (i = 0; i < num_polys; i++)
     // {

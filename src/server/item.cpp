@@ -148,6 +148,7 @@ int Choose_random_item(void)
 
 void Place_item(player_t *pl, int item)
 {
+    world_t *world = &World;
     int num_lose, num_per_pack, place_count, dist;
     int bx, by;
     long grav, rand_item;
@@ -219,8 +220,8 @@ void Place_item(player_t *pl, int item)
             else
                 pos.cy += (BLOCK_CLICKS + (int)(rfrac() * 8 * CLICK));
         }
-        pos = World_wrap_clpos(pos);
-        if (!World_contains_clpos(pos))
+        pos = World_wrap_clpos(world, pos);
+        if (!World_contains_clpos(world, pos))
             return;
     }
     else
@@ -261,14 +262,13 @@ void Place_item(player_t *pl, int item)
                 // dist = (int)(rfrac() * ((options.itemConcentratorRadius * BLOCK_CLICKS) + 1));
                 pos.cx = (click_t)(con->pos.cx + dist * tcos(dir));
                 pos.cy = (click_t)(con->pos.cy + dist * tsin(dir));
-                pos = World_wrap_clpos(pos);
-                if (!World_contains_clpos(pos))
+                pos = World_wrap_clpos(world, pos);
+                if (!World_contains_clpos(world, pos))
                     continue;
             }
             else
-            {
-                pos = World_get_random_clpos();
-            }
+                pos = World_get_random_clpos(world);
+
             blkpos_t blk_pos = Clpos_to_blkpos(pos);
             bx = blk_pos.bx;
             by = blk_pos.by;
@@ -330,9 +330,10 @@ void Place_item(player_t *pl, int item)
 void Make_item(clpos_t pos, vector_t vel,
                int type, int num_per_pack, int status)
 {
+    world_t *world = &World;
     itemobject_t *item;
 
-    if (!World_contains_clpos(pos))
+    if (!World_contains_clpos(world, pos))
         return;
 
     if (World.items[type].num >= World.items[type].max)
@@ -507,14 +508,17 @@ void Tractor_beam(player_t *pl)
 void General_tractor_beam(int id, clpos_t pos,
                           int items, player_t *victim, bool pressor)
 {
+    world_t *world = &World;
     double maxdist = TRACTOR_MAX_RANGE(items);
     double maxforce = TRACTOR_MAX_FORCE(items), percent, force, dist, cost, a;
     int theta;
     player_t *pl = Player_by_id(id);
     /*cannon_t *cannon = Cannon_by_id(id);*/
 
-    dist = Wrap_length(pos.cx - victim->pos.cx,
-                       pos.cy - victim->pos.cy) /
+    dist = World_wrap_length(
+               world,
+               pos.cx - victim->pos.cx,
+               pos.cy - victim->pos.cy) /
            CLICK;
     if (dist > maxdist)
         return;
@@ -528,8 +532,9 @@ void General_tractor_beam(int id, clpos_t pos,
     if (pl)
         Player_add_fuel(pl, cost);
 
-    a = Wrap_cfindDir(pos.cx - victim->pos.cx,
-                      pos.cy - victim->pos.cy);
+    a = World_wrap_cfindDir(
+        world, pos.cx - victim->pos.cx,
+        pos.cy - victim->pos.cy);
     theta = (int)a;
 
     if (pl)
@@ -545,6 +550,7 @@ void General_tractor_beam(int id, clpos_t pos,
 
 void Do_deflector(player_t *pl)
 {
+    world_t *world = &World;
     double range = (pl->item[ITEM_DEFLECTOR] * 0.5 + 1) * BLOCK_SZ;
     double maxforce = pl->item[ITEM_DEFLECTOR] * 0.2;
     object_t *obj, **obj_list;
@@ -585,8 +591,8 @@ void Do_deflector(player_t *pl)
         if (obj->type == OBJ_BALL && !BIT(obj->obj_status, GRAVITY))
             continue;
 
-        int dcx = WRAP_DCX(obj->pos.cx - pl->pos.cx);
-        int dcy = WRAP_DCY(obj->pos.cy - pl->pos.cy);
+        int dcx = WORLD_WRAP_DCX(world, obj->pos.cx - pl->pos.cx);
+        int dcy = WORLD_WRAP_DCY(world, obj->pos.cy - pl->pos.cy);
 
         dx = CLICK_TO_FLOAT(dcx);
         dy = CLICK_TO_FLOAT(dcy);
@@ -615,12 +621,15 @@ void Do_deflector(player_t *pl)
 
 void Do_transporter(player_t *pl)
 {
+    world_t *world = &World;
     player_t *victim = NULL;
     int i;
     double dist, closest = TRANSPORTER_DISTANCE;
 
     /* if not available, fail silently */
-    if (!pl->item[ITEM_TRANSPORTER] || pl->fuel.sum < -ED_TRANSPORTER || Player_is_phasing(pl))
+    if (!pl->item[ITEM_TRANSPORTER] ||
+        pl->fuel.sum < -ED_TRANSPORTER ||
+        Player_is_phasing(pl))
         return;
 
     /* find victim */
@@ -628,10 +637,15 @@ void Do_transporter(player_t *pl)
     {
         player_t *pl_i = Player_by_index(i);
 
-        if (pl_i == pl || !Player_is_active(pl_i) || Team_immune(pl->id, pl_i->id) || Player_is_tank(pl_i) || Player_is_phasing(pl_i))
+        if (pl_i == pl ||
+            !Player_is_active(pl_i) ||
+            Team_immune(pl->id, pl_i->id) ||
+            Player_is_tank(pl_i) ||
+            Player_is_phasing(pl_i))
             continue;
-        dist = Wrap_length(pl->pos.cx - pl_i->pos.cx,
-                           pl->pos.cy - pl_i->pos.cy);
+        dist = World_wrap_length(world,
+                                 pl->pos.cx - pl_i->pos.cx,
+                                 pl->pos.cy - pl_i->pos.cy);
         if (dist < closest)
         {
             closest = dist;
@@ -946,6 +960,7 @@ void do_lose_item(player_t *pl)
 
 void Fire_general_ecm(int id, int team, clpos_t pos)
 {
+    world_t *world = &World;
     object_t *shot;
     mineobject_t *closest_mine = NULL;
     smartobject_t *smart;
@@ -991,8 +1006,10 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
         if (!(shot->type == OBJ_SMART_SHOT || shot->type == OBJ_MINE))
             continue;
-        if ((range = (Wrap_length(pos.cx - shot->pos.cx,
-                                  pos.cy - shot->pos.cy) /
+        if ((range = (World_wrap_length(
+                          world,
+                          pos.cx - shot->pos.cx,
+                          pos.cy - shot->pos.cy) /
                       CLICK)) > ECM_DISTANCE)
             continue;
 
@@ -1118,8 +1135,10 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
             if (BIT(World.rules->mode, TEAM_PLAY) && c->team == team)
                 continue;
-            range = Wrap_length(pos.cx - c->pos.cx,
-                                pos.cy - c->pos.cy) /
+            range = World_wrap_length(
+                        world,
+                        pos.cx - c->pos.cx,
+                        pos.cy - c->pos.cy) /
                     CLICK;
             if (range > ECM_DISTANCE)
                 continue;
@@ -1152,8 +1171,10 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
 
         if (Player_is_active(p))
         {
-            range = Wrap_length(pos.cx - p->pos.cx,
-                                pos.cy - p->pos.cy) /
+            range = World_wrap_length(
+                        world,
+                        pos.cx - p->pos.cx,
+                        pos.cy - p->pos.cy) /
                     CLICK;
             if (range > ECM_DISTANCE)
                 continue;

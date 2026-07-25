@@ -57,6 +57,7 @@
  */
 void Target_update(void)
 {
+    world_t *world = &World;
     int i, j;
 
     for (i = 0; i < Num_targets(); i++)
@@ -71,7 +72,7 @@ void Target_update(void)
                 // targ->conn_mask = 0;
                 // targ->update_mask = (unsigned)-1;
                 // targ->last_change = frame_loops;
-                World_restore_target(targ);
+                World_restore_target(world, targ);
 
                 if (options.targetSync)
                 {
@@ -87,7 +88,7 @@ void Target_update(void)
                             // t->last_change = frame_loops;
                             // t->dead_ticks = 0;
                             t->damage = TARGET_DAMAGE;
-                            World_restore_target(targ);
+                            World_restore_target(world, targ);
                         }
                     }
                 }
@@ -115,6 +116,7 @@ void Target_update(void)
 
 void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 {
+    world_t *world = &World;
     int j;
     player_t *kp;
     double win_score = 0.0, lose_score = 0.0, drainfactor;
@@ -188,7 +190,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
     if (targ->damage > 0.0)
         return;
 
-    World_remove_target(targ);
+    World_remove_target(world, targ);
 
     Make_debris(targ->pos,
                 zero_vel,
@@ -269,6 +271,7 @@ void Object_hits_target2(object_t *obj, target_t *targ, double player_cost)
 
 void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
 {
+    world_t *world = &World;
     int j, sc, por, bx, by;
     int win_score = 0,
         lose_score = 0;
@@ -346,9 +349,9 @@ void Object_hits_target1(object_t *obj, target_t *targ, double player_cost)
      * Destroy target.
      * Turn it into a space to simplify other calculations.
      */
-    bx = targ->blk_pos.bx;
-    by = targ->blk_pos.by;
-    World.block[bx][by] = SPACE;
+    blkpos_t blkpos = Clpos_to_blkpos(targ->pos);
+    // World.block[blkpos.bx][blkpos.by] = SPACE;
+    World_set_block(world, blkpos, SPACE);
 
     Make_debris(targ->pos,
                 zero_vel,
@@ -503,11 +506,11 @@ void Target_init(void)
 #endif
 }
 
-void World_restore_target(target_t *targ)
+void World_restore_target(world_t *world, target_t *targ)
 {
     blkpos_t blk = Clpos_to_blkpos(targ->pos);
 
-    World_set_block(blk, TARGET);
+    World_set_block(world, blk, TARGET);
 
     targ->conn_mask = 0;
     targ->update_mask = ~0;
@@ -515,6 +518,6 @@ void World_restore_target(target_t *targ)
     targ->dead_ticks = 0;
 }
 
-void World_remove_target(target_t *targ)
+void World_remove_target(world_t *world, target_t *targ)
 {
 }

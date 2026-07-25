@@ -518,6 +518,7 @@ static void Bounce_wall(move_state_t *ms, move_bounce_t bounce)
  */
 void Move_segment1(move_state_t *ms)
 {
+    world_t *world = &World;
     int i;
     int block_type;                        /* type of block we're going through */
     int inside;                            /* inside the block or else on edge */
@@ -547,7 +548,6 @@ void Move_segment1(move_state_t *ms)
     enter = ms->pos;
     if (enter.cx < 0 || enter.cx >= mp.click_width || enter.cy < 0 || enter.cy >= mp.click_height)
     {
-
         if (!mi->edge_wrap)
         {
             ms->crash = CrashUniverse;
@@ -811,10 +811,16 @@ void Move_segment1(move_state_t *ms)
                  * player has been warped to.
                  */
                 int last = World.wormholes[hole].lastdest;
-                if (last >= 0 && (World.wormholes[hole].countdown > 0 || !options.wormTime) && last < World.NumWormholes && World.wormholes[last].type != WORM_IN && last != hole && (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
+                if (last >= 0 &&
+                    (World.wormholes[hole].countdown > 0 || !options.wormTime) &&
+                    last < World.NumWormholes && World.wormholes[last].type != WORM_IN &&
+                    last != hole &&
+                    (OBJ_X_IN_BLOCKS(mi->obj) != block.x || OBJ_Y_IN_BLOCKS(mi->obj) != block.y))
                 {
-                    ms->done.cx += (World.wormholes[last].blk_pos.bx - World.wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
-                    ms->done.cy += (World.wormholes[last].blk_pos.by - World.wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
+                    // ms->done.cx += (World.wormholes[last].blk_pos.bx - World.wormholes[hole].blk_pos.bx) * BLOCK_CLICKS;
+                    // ms->done.cy += (World.wormholes[last].blk_pos.by - World.wormholes[hole].blk_pos.by) * BLOCK_CLICKS;
+                    ms->done.cx += (World.wormholes[last].pos.cx - World.wormholes[hole].pos.cx);
+                    ms->done.cy += (World.wormholes[last].pos.cy - World.wormholes[hole].pos.cy);
                     break;
                 }
             }
@@ -822,31 +828,30 @@ void Move_segment1(move_state_t *ms)
 
         case CANNON:
             if (!mi->cannon_crashes)
-            {
                 break;
-            }
-            if (BIT(mi->obj->obj_status, FROMCANNON) && !BIT(World.rules->mode, TEAM_PLAY))
-            {
+
+            if (BIT(mi->obj->obj_status, FROMCANNON) &&
+                !BIT(World.rules->mode, TEAM_PLAY))
                 break;
-            }
+
             for (i = 0;; i++)
             {
-                if (World.cannons[i].blk_pos.bx == block.x && World.cannons[i].blk_pos.by == block.y)
-                {
+                cannon_t *cannon = Cannon_by_index(i);
+                blkpos_t blkpos = Clpos_to_blkpos(cannon->pos);
+                if (blkpos.bx == block.x &&
+                    blkpos.by == block.y)
                     break;
-                }
             }
             ms->cannon = i;
 
             if (BIT(World.cannons[i].used, HAS_PHASING_DEVICE))
-            {
                 break;
-            }
 
-            if (BIT(World.rules->mode, TEAM_PLAY) && (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) && mi->obj->team == World.cannons[i].team)
-            {
+            if (BIT(World.rules->mode, TEAM_PLAY) &&
+                (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) &&
+                mi->obj->team == World.cannons[i].team)
                 break;
-            }
+
             {
                 /*
                  * Calculate how far the point can travel in the cannon block
@@ -916,9 +921,7 @@ void Move_segment1(move_state_t *ms)
                     if (end.cx <= BLOCK_CLICKS / 2)
                     {
                         if (3 * end.cy > 2 * end.cx)
-                        {
                             break;
-                        }
                     }
                 }
                 else
@@ -931,9 +934,7 @@ void Move_segment1(move_state_t *ms)
                     if (end.cx > BLOCK_CLICKS / 2)
                     {
                         if (3 * end.cy > 2 * (BLOCK_CLICKS - end.cx))
-                        {
                             break;
-                        }
                     }
                 }
 
@@ -1041,16 +1042,15 @@ void Move_segment1(move_state_t *ms)
                     mid.cx = (offset.cx + off2.cx) / 2;
                     mid.cy = (offset.cy + off2.cy) / 2;
                     if (offset.cy > r && off2.cy > r && sqr(mid.cx - r) + sqr(mid.cy - r) > sqr(r) && sqr(off2.cx - r) + sqr(off2.cy - r) > sqr(r) && sqr(offset.cx - r) + sqr(offset.cy - r) > sqr(r))
-                    {
                         break;
-                    }
 
                     for (i = 0;; i++)
                     {
-                        if (World.treasures[i].blk_pos.bx == block.x && World.treasures[i].blk_pos.by == block.y)
-                        {
+                        treasure_t *treasure = Treasure_by_index(i);
+                        blkpos_t blkpos = Clpos_to_blkpos(treasure->pos);
+                        if (blkpos.bx == block.x &&
+                            blkpos.by == block.y)
                             break;
-                        }
                     }
                     ms->treasure_ptr = Treasure_by_index(i);
                     ms->crash = CrashTreasure;
@@ -1061,9 +1061,7 @@ void Move_segment1(move_state_t *ms)
                      * belong to.
                      */
                     if (mi->obj->type != OBJ_BALL)
-                    {
                         return;
-                    }
 
                     ball = BALL_PTR(mi->obj);
                     if (ms->treasure_ptr == ball->ball_treasure)
@@ -1150,29 +1148,20 @@ void Move_segment1(move_state_t *ms)
                     {
                         int team;
                         if (mi->pl)
-                        {
                             team = mi->pl->team;
-                        }
                         else if (BIT(mi->obj->type, OBJ_BALL_BIT))
                         {
                             ballobject_t *ball = BALL_PTR(mi->obj);
                             if (ball->ball_owner != NO_ID)
-                            {
                                 team = Player_by_id(ball->ball_owner)->team;
-                            }
                             else
-                            {
                                 team = TEAM_NOT_SET;
-                            }
                         }
                         else
-                        {
                             team = mi->obj->team;
-                        }
+
                         if (team == World.targets[i].team)
-                        {
                             break;
-                        }
                     }
                     if (!mi->pl)
                     {
@@ -1886,6 +1875,7 @@ static void Object_crash1(move_state_t *ms)
 
 void Move_object1(object_t *obj)
 {
+    world_t *world = &World;
     int nothing_done = 0;
     int dist;
     move_info_t mi;
@@ -1903,8 +1893,8 @@ void Move_object1(object_t *obj)
             clpos_t pos;
             pos.cx = obj->pos.cx + FLOAT_TO_CLICK(obj->vel.x);
             pos.cy = obj->pos.cy + FLOAT_TO_CLICK(obj->vel.y);
-            pos.cx = WRAP_XCLICK(pos.cx);
-            pos.cy = WRAP_YCLICK(pos.cy);
+            pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
+            pos.cy = WORLD_WRAP_YCLICK(world, pos.cy);
             Object_position_set_clpos(obj, pos);
             Cell_add_object(obj);
             return;
@@ -2230,6 +2220,7 @@ void Move_player1(player_t *pl)
     bool pos_update = false;
     double fric;
     double oldvx, oldvy;
+    world_t *world = &World;
 
     if (!Player_is_alive(pl))
     {
@@ -2237,8 +2228,8 @@ void Move_player1(player_t *pl)
         {
             pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
             pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
-            pos.cx = WRAP_XCLICK(pos.cx);
-            pos.cy = WRAP_YCLICK(pos.cy);
+            pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
+            pos.cy = WORLD_WRAP_YCLICK(world, pos.cy);
             if (pos.cx != pl->pos.cx || pos.cy != pl->pos.cy)
             {
                 Player_position_remember(pl);
@@ -2283,8 +2274,8 @@ void Move_player1(player_t *pl)
         {
             pos.cx = pl->pos.cx + FLOAT_TO_CLICK(pl->vel.x);
             pos.cy = pl->pos.cy + FLOAT_TO_CLICK(pl->vel.y);
-            pos.cx = WRAP_XCLICK(pos.cx);
-            pos.cy = WRAP_YCLICK(pos.cy);
+            pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
+            pos.cy = WORLD_WRAP_YCLICK(world, pos.cy);
             Player_position_set_clicks(pl, pos);
             pl->velocity = VECTOR_LENGTH(pl->vel);
             return;
@@ -2328,8 +2319,8 @@ void Move_player1(player_t *pl)
         clpos_t p = Ship_get_point_clpos(pl->ship, 0, ms[0].dir);
         pos.cx = ms[0].pos.cx - p.cx;
         pos.cy = ms[0].pos.cy - p.cy;
-        pos.cx = WRAP_XCLICK(pos.cx);
-        pos.cy = WRAP_YCLICK(pos.cy);
+        pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
+        pos.cy = WORLD_WRAP_YCLICK(world, pos.cy);
         block.x = pos.cx / BLOCK_CLICKS;
         block.y = pos.cy / BLOCK_CLICKS;
 
@@ -2667,8 +2658,8 @@ void Move_player1(player_t *pl)
     // pos.cy = ms[worst].pos.cy - FLOAT_TO_CLICK(pl->ship->pts[worst][pl->dir].y);
     pos.cx = ms[worst].pos.cx - p.cx;
     pos.cy = ms[worst].pos.cy - p.cy;
-    pos.cx = WRAP_XCLICK(pos.cx);
-    pos.cy = WRAP_YCLICK(pos.cy);
+    pos.cx = WORLD_WRAP_XCLICK(world, pos.cx);
+    pos.cy = WORLD_WRAP_YCLICK(world, pos.cy);
     Player_position_set_clicks(pl, pos);
     pl->vel = ms[worst].vel;
     pl->velocity = VECTOR_LENGTH(pl->vel);

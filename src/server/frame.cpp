@@ -487,6 +487,7 @@ static void Frame_radar_buffer_free(void)
 
 static int Frame_status(connection_t *conn, player_t *pl)
 {
+    world_t *world = &World;
     static char modsstr[MAX_CHARS];
     int n, lock_ind, lock_id = NO_ID, lock_dist = 0, lock_dir = 0;
     int showautopilot;
@@ -521,8 +522,10 @@ static int Frame_status(connection_t *conn, player_t *pl)
             pl->lock.distance != 0)
         {
             SET_BIT(pl->lock.tagged, LOCK_VISIBLE);
-            lock_dir = (int)Wrap_cfindDir(lock_pl->pos.cx - pl->pos.cx,
-                                          lock_pl->pos.cy - pl->pos.cy);
+            lock_dir = (int)World_wrap_cfindDir(
+                world,
+                lock_pl->pos.cx - pl->pos.cx,
+                lock_pl->pos.cy - pl->pos.cy);
             lock_dist = (int)pl->lock.distance;
         }
     }
@@ -574,6 +577,7 @@ static int Frame_status(connection_t *conn, player_t *pl)
 
 static void Frame_map(connection_t *conn, player_t *pl)
 {
+    world_t *world = &World;
     int i, k, conn_bit = (1 << conn->ind);
     const int fuel_packet_size = 5;
     const int cannon_packet_size = 5;
@@ -593,7 +597,8 @@ static void Frame_map(connection_t *conn, player_t *pl)
         if (++i >= Num_targets())
             i = 0;
         targ = Target_by_index(i);
-        if (BIT(targ->update_mask, conn_bit) || (BIT(targ->conn_mask, conn_bit) == 0 && clpos_inview(&cv, targ->pos)))
+        if (BIT(targ->update_mask, conn_bit) ||
+            (BIT(targ->conn_mask, conn_bit) == 0 && clpos_inview(&cv, targ->pos)))
         {
             Send_target(conn, i, (int)targ->dead_ticks, targ->damage);
             pl->last_target_update = i;
@@ -639,19 +644,15 @@ static void Frame_map(connection_t *conn, player_t *pl)
         fs = Fuel_by_index(i);
         if (BIT(fs->conn_mask, conn_bit) == 0)
         {
-            if (World.block[fs->blk_pos.bx]
-                           [fs->blk_pos.by] == FUEL)
+            if (click_inview(cv,
+                             fs->pos.cx,
+                             fs->pos.cy))
             {
-                if (click_inview(cv,
-                                 fs->pos.cx,
-                                 fs->pos.cy))
-                {
-                    Send_fuel(conn, i, fs->fuel);
-                    pl->last_fuel_update = i;
-                    bytes_left -= max_packet * fuel_packet_size;
-                    if (++packet_count >= max_packet)
-                        break;
-                }
+                Send_fuel(conn, i, fs->fuel);
+                pl->last_fuel_update = i;
+                bytes_left -= max_packet * fuel_packet_size;
+                if (++packet_count >= max_packet)
+                    break;
             }
         }
     }
@@ -756,6 +757,7 @@ static void Frame_shuffle(void)
 
 static void Frame_shots(connection_t *conn, player_t *pl)
 {
+    world_t *world = &World;
     int cx, cy;
     int i, k, color;
     int fuzz = 0, teamshot, len;
@@ -907,10 +909,13 @@ static void Frame_shots(connection_t *conn, player_t *pl)
             mineobject_t *mine = MINE_PTR(shot);
 
             /* calculate whether ownership of mine can be determined */
-            if (options.identifyMines && (Wrap_length(pl->pos.cx - mine->pos.cx,
-                                                      pl->pos.cy - mine->pos.cy) /
-                                              CLICK <
-                                          (SHIP_SZ + MINE_SENSE_BASE_RANGE + pl->item[ITEM_SENSOR] * MINE_SENSE_RANGE_FACTOR)))
+            if (options.identifyMines &&
+                (World_wrap_length(
+                     world,
+                     pl->pos.cx - mine->pos.cx,
+                     pl->pos.cy - mine->pos.cy) /
+                     CLICK <
+                 (SHIP_SZ + MINE_SENSE_BASE_RANGE + pl->item[ITEM_SENSOR] * MINE_SENSE_RANGE_FACTOR)))
             {
                 id = mine->id;
                 if (id == NO_ID)
@@ -959,6 +964,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
 static void Frame_ships(connection_t *conn, player_t *pl)
 {
+    world_t *world = &World;
     pulse_t *pulse;
     int i, j, k, color, dir;
     clpos_t pos;
@@ -970,7 +976,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             continue;
         pos = pulse->pos;
         if (BIT(World.rules->mode, WRAP_PLAY))
-            pos = World_wrap_clpos(pos);
+            pos = World_wrap_clpos(world, pos);
 
         if (clpos_inview(&cv, pos))
             dir = pulse->dir;
@@ -979,7 +985,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
             pos.cx += tcos(pulse->dir) * pulse->len * CLICK;
             pos.cy += tsin(pulse->dir) * pulse->len * CLICK;
             if (BIT(World.rules->mode, WRAP_PLAY))
-                pos = World_wrap_clpos(pos);
+                pos = World_wrap_clpos(world, pos);
             if (clpos_inview(&cv, pos))
                 dir = MOD2(pulse->dir + ANGLE_RESOLUTION / 2, ANGLE_RESOLUTION);
             else
@@ -1134,6 +1140,7 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
 static void Frame_radar(connection_t *conn, player_t *pl)
 {
+    world_t *world = &World;
     int i, k, mask, shownuke, size;
     object_t *shot;
     clpos_t pos;
@@ -1193,8 +1200,10 @@ static void Frame_radar(connection_t *conn, player_t *pl)
             }
 
             pos = shot->pos;
-            if (Wrap_length(pl->pos.cx - pos.cx,
-                            pl->pos.cy - pos.cy) <= pl->sensor_range * CLICK)
+            if (World_wrap_length(
+                    world,
+                    pl->pos.cx - pos.cx,
+                    pl->pos.cy - pos.cy) <= pl->sensor_range * CLICK)
                 Frame_radar_buffer_add(pos, size);
         }
     }
@@ -1219,10 +1228,15 @@ static void Frame_radar(connection_t *conn, player_t *pl)
                 || (!Players_are_teammates(pl_i, pl) && !Players_are_allies(pl, pl_i) && !Player_owns_tank(pl, pl_i) && (!options.playersOnRadar || !pl->visibility[i].canSee)))
                 continue;
             pos = pl_i->pos;
-            if (BIT(World.rules->mode, LIMITED_VISIBILITY) && Wrap_length(pl->pos.cx - pos.cx,
-                                                                          pl->pos.cy - pos.cy) > pl->sensor_range * CLICK)
+            if (BIT(World.rules->mode, LIMITED_VISIBILITY) &&
+                World_wrap_length(
+                    world,
+                    pl->pos.cx - pos.cx,
+                    pl->pos.cy - pos.cy) > pl->sensor_range * CLICK)
                 continue;
-            if (Player_uses_compass(pl) && BIT(pl->lock.tagged, LOCK_PLAYER) && GetInd(pl->lock.pl_id) == i && frame_loops_slow % 5 >= 3)
+            if (Player_uses_compass(pl) &&
+                BIT(pl->lock.tagged, LOCK_PLAYER) &&
+                GetInd(pl->lock.pl_id) == i && frame_loops_slow % 5 >= 3)
                 continue;
             size = 3;
             if (Players_are_teammates(pl_i, pl) || Players_are_allies(pl, pl_i) || Player_owns_tank(pl, pl_i))

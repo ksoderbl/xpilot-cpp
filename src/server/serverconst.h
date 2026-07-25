@@ -77,22 +77,22 @@
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
  */
-#define WRAP_DX(dx)                          \
-    (BIT(World.rules->mode, WRAP_PLAY)       \
-         ? ((dx) < -(World.width >> 1)       \
-                ? (dx) + World.width         \
-                : ((dx) > (World.width >> 1) \
-                       ? (dx) - World.width  \
-                       : (dx)))              \
+#define WORLD_WRAP_DX(world, dx)              \
+    (BIT(world->rules->mode, WRAP_PLAY)       \
+         ? ((dx) < -(world->width >> 1)       \
+                ? (dx) + world->width         \
+                : ((dx) > (world->width >> 1) \
+                       ? (dx) - world->width  \
+                       : (dx)))               \
          : (dx))
 
-#define WRAP_DY(dy)                           \
-    (BIT(World.rules->mode, WRAP_PLAY)        \
-         ? ((dy) < -(World.height >> 1)       \
-                ? (dy) + World.height         \
-                : ((dy) > (World.height >> 1) \
-                       ? (dy) - World.height  \
-                       : (dy)))               \
+#define WORLD_WRAP_DY(world, dy)               \
+    (BIT(world->rules->mode, WRAP_PLAY)        \
+         ? ((dy) < -(world->height >> 1)       \
+                ? (dy) + world->height         \
+                : ((dy) > (world->height >> 1) \
+                       ? (dy) - world->height  \
+                       : (dy)))                \
          : (dy))
 
 #define PSEUDO_TEAM(pl1, pl2) \

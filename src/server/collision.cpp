@@ -261,6 +261,7 @@ void Check_collision(void)
 
 static void PlayerCollision(void)
 {
+    world_t *world = &World;
     int i, j;
     int sc, sc2;
     player_t *pl;
@@ -272,7 +273,7 @@ static void PlayerCollision(void)
         if (!Player_is_alive(pl))
             continue;
 
-        if (!World_contains_clpos(pl->pos))
+        if (!World_contains_clpos(world, pl->pos))
         {
             Player_set_state(pl, PL_STATE_KILLED);
             Set_message_f("%s left the known universe.", pl->name);
@@ -463,8 +464,10 @@ static void PlayerCollision(void)
                 pl->ball = NULL;
             else
             {
-                double distance = Wrap_length(pl->pos.cx - ball->pos.cx,
-                                              pl->pos.cy - ball->pos.cy) /
+                double distance = World_wrap_length(
+                                      world,
+                                      pl->pos.cx - ball->pos.cx,
+                                      pl->pos.cy - ball->pos.cy) /
                                   CLICK;
                 if (distance >= options.ballConnectorLength)
                 {
@@ -498,8 +501,10 @@ static void PlayerCollision(void)
 
                 if (obj->type == OBJ_BALL && obj->id == NO_ID)
                 {
-                    dist = Wrap_length(pl->pos.cx - obj->pos.cx,
-                                       pl->pos.cy - obj->pos.cy);
+                    dist = World_wrap_length(
+                        world,
+                        pl->pos.cx - obj->pos.cx,
+                        pl->pos.cy - obj->pos.cy);
                     if (dist < mindist)
                     {
                         ballobject_t *ball = BALL_PTR(obj);
@@ -1487,6 +1492,7 @@ static void AsteroidCollision(void)
 /* do ball - object and ball - checkpoint collisions */
 static void BallCollision(void)
 {
+    world_t *world = &World;
     int i, j, obj_count;
     int ignored_object_types;
     object_t **obj_list;
@@ -1523,8 +1529,10 @@ static void BallCollision(void)
             {
                 clpos_t cpos = Check_by_index(owner->check)->pos;
 
-                if (Wrap_length(ball->pos.cx - cpos.cx,
-                                ball->pos.cy - cpos.cy) < options.checkpointRadius * BLOCK_CLICKS)
+                if (World_wrap_length(
+                        world,
+                        ball->pos.cx - cpos.cx,
+                        ball->pos.cy - cpos.cy) < options.checkpointRadius * BLOCK_CLICKS)
                     Player_pass_checkpoint(owner);
             }
         }

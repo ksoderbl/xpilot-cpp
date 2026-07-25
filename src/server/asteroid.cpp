@@ -111,6 +111,7 @@ static bool Asteroid_remove_from_list(wireobject_t *ast)
  */
 void Break_asteroid(wireobject_t *asteroid)
 {
+    world_t *world = &World;
     double mass, mass3;
     double speed, speed1, speed2, radius;
     int dir, dir1, dir2, split_dir;
@@ -166,10 +167,10 @@ void Break_asteroid(wireobject_t *asteroid)
         clpos_t pos1, pos2;
         pos1.cx = (click_t)(asteroid->pos.cx + tcos(split_dir) * radius);
         pos1.cy = (click_t)(asteroid->pos.cy + tsin(split_dir) * radius);
-        pos1 = World_wrap_clpos(pos1);
+        pos1 = World_wrap_clpos(world, pos1);
         pos2.cx = (click_t)(asteroid->pos.cx - tcos(split_dir) * radius);
         pos2.cy = (click_t)(asteroid->pos.cy - tsin(split_dir) * radius);
-        pos2 = World_wrap_clpos(pos2);
+        pos2 = World_wrap_clpos(world, pos2);
         Make_asteroid(pos1, asteroid->wire_size - 1, dir1, speed1);
         Make_asteroid(pos2, asteroid->wire_size - 1, dir2, speed2);
         Make_wreckage(asteroid->pos,
@@ -242,6 +243,7 @@ void Break_asteroid(wireobject_t *asteroid)
  */
 static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
 {
+    world_t *world = &World;
     wireobject_t *asteroid;
     double radius;
     int bx;
@@ -254,21 +256,20 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
         return;
 
     if (BIT(World.rules->mode, WRAP_PLAY))
-        pos = World_wrap_clpos(pos);
+        pos = World_wrap_clpos(world, pos);
 
-    if (!World_contains_clpos(pos))
+    if (!World_contains_clpos(world, pos))
         return;
 
     bx = CLICK_TO_BLOCK(pos.cx);
     by = CLICK_TO_BLOCK(pos.cy);
     if (BIT(World.block[bx][by], FILLED_BIT | FUEL_BIT | TARGET_BIT | TREASURE_BIT))
-    {
         return;
-    }
     else if (BIT(World.block[bx][by], REC_LU | REC_RU | REC_LD | REC_RD))
     {
         double cx_in_b = pos.cx - bx * BLOCK_CLICKS,
                cy_in_b = pos.cy - by * BLOCK_CLICKS;
+
         switch (World.block[bx][by])
         {
         case REC_LU:
@@ -333,6 +334,7 @@ static void Make_asteroid(clpos_t pos, int size, int dir, double speed)
  */
 static void Place_asteroid(void)
 {
+    world_t *world = &World;
     int place_count, dir, dist, i;
     int bx, by;
     unsigned space;
@@ -368,13 +370,13 @@ static void Place_asteroid(void)
             pos.cy = (int)(con->pos.cy + dist * tsin(dir) * PIXEL_CLICKS);
 
             if (BIT(World.rules->mode, WRAP_PLAY))
-                pos = World_wrap_clpos(pos);
+                pos = World_wrap_clpos(world, pos);
 
-            if (!World_contains_clpos(pos))
+            if (!World_contains_clpos(world, pos))
                 continue;
         }
         else
-            pos = World_get_random_clpos();
+            pos = World_get_random_clpos(world);
 
         bx = CLICK_TO_BLOCK(pos.cx);
         by = CLICK_TO_BLOCK(pos.cy);
@@ -393,8 +395,8 @@ static void Place_asteroid(void)
                 {
                     ocx = pl->pos.cx;
                     ocy = pl->pos.cy;
-                    dcx = WRAP_XCLICK(pos.cx - ocx);
-                    dcy = WRAP_YCLICK(pos.cy - ocy);
+                    dcx = WORLD_WRAP_XCLICK(world, pos.cx - ocx);
+                    dcy = WORLD_WRAP_YCLICK(world, pos.cy - ocy);
                     int dpx = CLICK_TO_PIXEL(dcx);
                     int dpy = CLICK_TO_PIXEL(dcy);
                     if (sqr(dpx) + sqr(dpy) < sqr(ASTEROID_MIN_DIST))

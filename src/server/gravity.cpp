@@ -27,6 +27,7 @@
 
 static void Compute_global_gravity(void)
 {
+    world_t *world = &World;
     int xi, yi, dx, dy;
     double xforce, yforce, strength, theta;
     vector_t *grav;
@@ -53,12 +54,12 @@ static void Compute_global_gravity(void)
         {
             grav = World.gravity[xi];
             dx = (xi - options.gravityPoint.x) * BLOCK_SZ;
-            dx = WRAP_DX(dx);
+            dx = WORLD_WRAP_DX(world, dx);
 
             for (yi = 0; yi < World.y; yi++, grav++)
             {
                 dy = (yi - options.gravityPoint.y) * BLOCK_SZ;
-                dy = WRAP_DX(dy);
+                dy = WORLD_WRAP_DY(world, dy);
 
                 if (dx == 0 && dy == 0)
                 {
@@ -127,8 +128,10 @@ static void Compute_local_gravity(void)
     }
     for (i = 0; i < Num_gravs(); i++)
     {
-        gx = World.gravs[i].blk_pos.bx;
-        gy = World.gravs[i].blk_pos.by;
+        // gx = World.gravs[i].blk_pos.bx;
+        // gy = World.gravs[i].blk_pos.by;
+        gx = CLICK_TO_BLOCK(World.gravs[i].pos.cx);
+        gy = CLICK_TO_BLOCK(World.gravs[i].pos.cy);
         force = World.gravs[i].force;
 
         if ((first_xi = gx - GRAV_RANGE) < min_xi)

@@ -148,6 +148,7 @@ static void Player_lock_next_or_prev(player_t *pl, int key)
 
 int Player_lock_closest(player_t *pl, bool next)
 {
+    world_t *world = &World;
     int i;
     double dist = 0.0, best, l;
     player_t *lock_pl = NULL, *new_pl = NULL;
@@ -158,8 +159,10 @@ int Player_lock_closest(player_t *pl, bool next)
     if (BIT(pl->lock.tagged, LOCK_PLAYER))
     {
         lock_pl = Player_by_id(pl->lock.pl_id);
-        dist = Wrap_length(lock_pl->pos.cx - pl->pos.cx,
-                           lock_pl->pos.cy - pl->pos.cy);
+        dist = World_wrap_length(
+            world,
+            lock_pl->pos.cx - pl->pos.cx,
+            lock_pl->pos.cy - pl->pos.cy);
     }
     else
     {
@@ -180,8 +183,10 @@ int Player_lock_closest(player_t *pl, bool next)
             Players_are_teammates(pl, pl_i) ||
             Players_are_allies(pl, pl_i))
             continue;
-        l = Wrap_length(pl_i->pos.cx - pl->pos.cx,
-                        pl_i->pos.cy - pl->pos.cy);
+        l = World_wrap_length(
+            world,
+            pl_i->pos.cx - pl->pos.cx,
+            pl_i->pos.cy - pl->pos.cy);
         if (l >= dist && l < best)
         {
             best = l;
@@ -199,6 +204,7 @@ int Player_lock_closest(player_t *pl, bool next)
 
 static void Player_change_home(player_t *pl)
 {
+    world_t *world = &World;
     int i;
 
     int xi = OBJ_X_IN_BLOCKS(pl);
@@ -209,7 +215,10 @@ static void Player_change_home(player_t *pl)
         msg[0] = '\0';
         for (i = 0; i < Num_bases(); i++)
         {
-            if (World.bases[i].blk_pos.bx == xi && World.bases[i].blk_pos.by == yi)
+            base_t *base = Base_by_index(i);
+            blkpos_t blkpos = Clpos_to_blkpos(base->pos);
+
+            if (blkpos.bx == xi && blkpos.by == yi)
             {
                 if (i == pl->home_base_ind)
                 {
@@ -251,6 +260,7 @@ static void Player_change_home(player_t *pl)
 
 static void Player_refuel(player_t *pl)
 {
+    world_t *world = &World;
     int i;
     double l, dist = 1e19;
 
@@ -262,8 +272,10 @@ static void Player_refuel(player_t *pl)
     {
         fuel_t *fs = Fuel_by_index(i);
 
-        l = Wrap_length(pl->pos.cx - fs->pos.cx,
-                        pl->pos.cy - fs->pos.cy);
+        l = World_wrap_length(
+            world,
+            pl->pos.cx - fs->pos.cx,
+            pl->pos.cy - fs->pos.cy);
         if (!Player_is_refueling(pl) || l < dist)
         {
             SET_BIT(pl->used, USES_REFUEL);
@@ -276,6 +288,7 @@ static void Player_refuel(player_t *pl)
 /* Repair target or possibly something else. */
 static void Player_repair(player_t *pl)
 {
+    world_t *world = &World;
     int i;
     double l, dist = 1e19;
 
@@ -289,8 +302,9 @@ static void Player_repair(player_t *pl)
 
         if (targ->team == pl->team && targ->dead_ticks <= 0)
         {
-            l = Wrap_length(pl->pos.cx - targ->pos.cx,
-                            pl->pos.cy - targ->pos.cy);
+            l = World_wrap_length(world,
+                                  pl->pos.cx - targ->pos.cx,
+                                  pl->pos.cy - targ->pos.cy);
             if (!Player_is_repairing(pl) || l < dist)
             {
                 SET_BIT(pl->used, USES_REPAIR);
@@ -322,8 +336,8 @@ static void Player_toggle_pause(player_t *pl)
     {
         xi = OBJ_X_IN_BLOCKS(pl);
         yi = OBJ_Y_IN_BLOCKS(pl);
-        j = World.bases[pl->home_base_ind].blk_pos.bx;
-        k = World.bases[pl->home_base_ind].blk_pos.by;
+        j = CLICK_TO_BLOCK(World.bases[pl->home_base_ind].pos.cx);
+        k = CLICK_TO_BLOCK(World.bases[pl->home_base_ind].pos.cy);
         if (j == xi && k == yi)
         {
             minv = 3.0;

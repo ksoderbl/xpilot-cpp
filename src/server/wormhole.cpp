@@ -86,12 +86,11 @@ bool Verify_wormhole_consistency(void)
         printf("Inconsistent use of wormholes, removing them.\n");
         for (i = 0; i < World.NumWormholes; i++)
         {
-            World.block
-                [World.wormholes[i].blk_pos.bx]
-                [World.wormholes[i].blk_pos.by] = SPACE;
-            World.itemID
-                [World.wormholes[i].blk_pos.bx]
-                [World.wormholes[i].blk_pos.by] = (uint16_t)-1;
+            wormhole_t *wormhole = Wormhole_by_index(i);
+            blkpos_t blkpos = Clpos_to_blkpos(wormhole->pos);
+
+            World.block[blkpos.bx][blkpos.by] = SPACE;
+            World.itemID[blkpos.bx][blkpos.by] = (uint16_t)-1;
         }
         World.NumWormholes = 0;
     }
@@ -144,6 +143,8 @@ void Object_hits_wormhole2(object_t *obj, int ind)
  */
 static void Warp_balls(player_t *pl, clpos_t dest)
 {
+    world_t *world = &World;
+
     /*
      * Don't connect to balls while warping.
      */
@@ -168,8 +169,8 @@ static void Warp_balls(player_t *pl, clpos_t dest)
                 clpos_t ballpos;
                 ballpos.cx = b->pos.cx + dest.cx - pl->pos.cx;
                 ballpos.cy = b->pos.cy + dest.cy - pl->pos.cy;
-                ballpos = World_wrap_clpos(ballpos);
-                if (!World_contains_clpos(ballpos))
+                ballpos = World_wrap_clpos(world, ballpos);
+                if (!World_contains_clpos(world, ballpos))
                 {
                     b->obj_life = 0.0;
                     continue;
@@ -227,6 +228,7 @@ static void Hyperjump(player_t *pl)
 
 void Do_warp(player_t *pl)
 {
+    world_t *world = &World;
     position_t w;
     int wx, wy, proximity,
         nearestFront, nearestRear,
@@ -242,6 +244,8 @@ void Do_warp(player_t *pl)
 
     if (pl->wormHoleHit != -1)
     {
+        wormhole_t *wormhole = nullptr;
+
         if (World.wormholes[pl->wormHoleHit].countdown > 0)
         {
             j = World.wormholes[pl->wormHoleHit].lastdest;
@@ -259,17 +263,17 @@ void Do_warp(player_t *pl)
 
             for (j = 0; j < Num_wormholes(); j++)
             {
-                if (j == pl->wormHoleHit || World.wormholes[j].type == WORM_IN || World.wormholes[j].temporary)
+                wormhole = Wormhole_by_index(j);
+
+                if (j == pl->wormHoleHit || wormhole->type == WORM_IN || wormhole->temporary)
                     continue;
 
-                wx = (World.wormholes[j].blk_pos.bx -
-                      World.wormholes[pl->wormHoleHit].blk_pos.bx) *
-                     BLOCK_SZ;
-                wy = (World.wormholes[j].blk_pos.by -
-                      World.wormholes[pl->wormHoleHit].blk_pos.by) *
-                     BLOCK_SZ;
-                wx = WRAP_DX(wx);
-                wy = WRAP_DX(wy);
+                // wx = (wormhole->blk_pos.bx - World.wormholes[pl->wormHoleHit].blk_pos.bx) * BLOCK_SZ;
+                // wy = (wormhole->blk_pos.by - World.wormholes[pl->wormHoleHit].blk_pos.by) * BLOCK_SZ;
+                wx = CLICK_TO_PIXEL(wormhole->pos.cx - World.wormholes[pl->wormHoleHit].pos.cx);
+                wy = CLICK_TO_PIXEL(wormhole->pos.cy - World.wormholes[pl->wormHoleHit].pos.cy);
+                wx = WORLD_WRAP_DX(world, wx);
+                wy = WORLD_WRAP_DY(world, wy);
 
                 proximity = (int)(pl->vel.y * wx + pl->vel.x * wy);
                 proximity = ABS(proximity);
@@ -300,19 +304,27 @@ void Do_warp(player_t *pl)
             else
             {
                 do
+                {
                     j = (int)(rfrac() * Num_wormholes());
-                while (World.wormholes[j].type == WORM_IN || j == pl->wormHoleHit);
+                    wormhole = Wormhole_by_index(j);
+                } while (wormhole->type == WORM_IN || j == pl->wormHoleHit);
             }
 #endif /* RANDOM_REAR_WORM */
         }
 
         sound_play_sensors(pl->pos, WORM_HOLE_SOUND);
 
-        w.x = (World.wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
-        w.y = (World.wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
+        wormhole = Wormhole_by_index(j);
+        warn("Wormhole index is %d", j);
+
+        // w.x = (World.wormholes[j].blk_pos.bx + 0.5) * BLOCK_SZ;
+        // w.y = (World.wormholes[j].blk_pos.by + 0.5) * BLOCK_SZ;
+        w.x = CLICK_TO_PIXEL(wormhole->pos.cx);
+        w.y = CLICK_TO_PIXEL(wormhole->pos.cy);
     }
     else
-    { /* wormHoleHit == -1 */
+    {
+        /* wormHoleHit == -1 */
         int counter;
         for (counter = 20; counter > 0; counter--)
         {
@@ -330,7 +342,10 @@ void Do_warp(player_t *pl)
             w.x = CLICK_TO_PIXEL(pl->pos.cx);
             w.y = CLICK_TO_PIXEL(pl->pos.cy);
         }
-        if (counter && options.wormTime && BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) && BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
+        if (counter &&
+            options.wormTime &&
+            BIT(1U << World.block[OBJ_X_IN_BLOCKS(pl)][OBJ_Y_IN_BLOCKS(pl)], SPACE_BIT) &&
+            BIT(1U << World.block[(int)(w.x / BLOCK_SZ)][(int)(w.y / BLOCK_SZ)], SPACE_BIT))
         {
             add_temp_wormholes(OBJ_X_IN_BLOCKS(pl),
                                OBJ_Y_IN_BLOCKS(pl),
@@ -440,10 +455,16 @@ void add_temp_wormholes(int xin, int yin, int xout, int yout)
     }
     World.wormholes = wwhtemp;
 
-    inhole.blk_pos.bx = xin;
-    inhole.blk_pos.by = yin;
-    outhole.blk_pos.bx = xout;
-    outhole.blk_pos.by = yout;
+    blkpos_t inblk, outblk;
+
+    inblk.bx = xin;
+    inblk.by = yin;
+    outblk.bx = xout;
+    outblk.by = yout;
+
+    inhole.pos = Block_get_center_clpos(inblk);
+    outhole.pos = Block_get_center_clpos(outblk);
+
     inhole.countdown = outhole.countdown = options.wormTime;
     inhole.lastdest = World.NumWormholes + 1;
     inhole.temporary = outhole.temporary = 1;
@@ -466,8 +487,9 @@ void remove_temp_wormhole(int ind)
     wormhole_t hole;
 
     hole = World.wormholes[ind];
-    World.block[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastblock;
-    World.itemID[hole.blk_pos.bx][hole.blk_pos.by] = hole.lastID;
+    blkpos_t blkpos = Clpos_to_blkpos(hole.pos);
+    World.block[blkpos.bx][blkpos.by] = hole.lastblock;
+    World.itemID[blkpos.bx][blkpos.by] = hole.lastID;
     World.NumWormholes--;
     if (ind != World.NumWormholes)
     {

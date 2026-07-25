@@ -196,6 +196,7 @@ void Cell_init_object(object_t *obj)
 
 void Cell_add_object(object_t *obj)
 {
+    world_t *world = &World;
     blkpos_t bpos = Clpos_to_blkpos(obj->pos);
     cell_node_t *obj_node_ptr, *cell_node_ptr;
     cell_node_t *prev, *next;
@@ -211,7 +212,7 @@ void Cell_add_object(object_t *obj)
     next->prev = prev;
     prev->next = next;
 
-    if (!World_contains_clpos(obj->pos))
+    if (!World_contains_clpos(world, obj->pos))
     {
         /* put obj on list with only itself. */
         obj_node_ptr->next = obj_node_ptr;

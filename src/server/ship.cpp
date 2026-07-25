@@ -191,11 +191,12 @@ void Delta_mv_elastic(object_t *obj1, object_t *obj2)
 
 void Obj_repel(object_t *obj1, object_t *obj2, int repel_dist)
 {
+    world_t *world = &World;
     double xd, yd, force, dm, dvx1, dvy1, dvx2, dvy2, a;
     int obj_theta;
 
-    xd = WRAP_DCX(obj2->pos.cx - obj1->pos.cx);
-    yd = WRAP_DCY(obj2->pos.cy - obj1->pos.cy);
+    xd = WORLD_WRAP_DCX(world, obj2->pos.cx - obj1->pos.cx);
+    yd = WORLD_WRAP_DCY(world, obj2->pos.cy - obj1->pos.cy);
     force = CLICK_TO_PIXEL((int)(repel_dist - LENGTH(xd, yd)));
 
     if (force <= 0)
@@ -529,14 +530,15 @@ void Make_debris(clpos_t pos,
                  double min_speed, double max_speed,
                  double min_life, double max_life)
 {
+    world_t *world = &World;
     object_t *debris;
     int i, life;
     modifiers_t mods;
 
     if (BIT(World.rules->mode, WRAP_PLAY))
-        pos = World_wrap_clpos(pos);
+        pos = World_wrap_clpos(world, pos);
 
-    if (!World_contains_clpos(pos))
+    if (!World_contains_clpos(world, pos))
         return;
 
     if (max_life < min_life)
@@ -627,13 +629,14 @@ void Make_wreckage(clpos_t pos,
     int i, life, size;
     modifiers_t mods;
     double mass, sum_mass = 0.0;
+    world_t *world = &World;
 
     if (!options.useWreckage)
         return;
     if (BIT(World.rules->mode, WRAP_PLAY))
-        pos = World_wrap_clpos(pos);
+        pos = World_wrap_clpos(world, pos);
 
-    if (!World_contains_clpos(pos))
+    if (!World_contains_clpos(world, pos))
         return;
 
     if (max_life < min_life)

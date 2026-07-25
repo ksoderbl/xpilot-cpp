@@ -60,6 +60,7 @@ static void Find_base_order(void);
  */
 static void Find_base_order(void)
 {
+    world_t *world = &World;
     int i, j, k, n;
     int ccx, ccy;
     double dist;
@@ -86,8 +87,10 @@ static void Find_base_order(void)
     ccy = World.checks[0].pos.cy;
     for (i = 0; i < n; i++)
     {
-        dist = Wrap_length(World.bases[i].pos.cx - ccx,
-                           World.bases[i].pos.cy - ccy) /
+        dist = World_wrap_length(
+                   world,
+                   World.bases[i].pos.cx - ccx,
+                   World.bases[i].pos.cy - ccy) /
                CLICK;
         for (j = 0; j < i; j++)
         {
@@ -124,7 +127,7 @@ static void shrink(void **pp, size_t size)
         }                                           \
     }
 
-int World_place_cannon(clpos_t pos, int dir, int team)
+int World_place_cannon(world_t *world, clpos_t pos, int dir, int team)
 {
     cannon_t t, *cannon;
     int ind = Num_cannons(), i;
@@ -136,11 +139,9 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     t.conn_mask = ~0;
     t.group = NO_GROUP;
 
-    t.blk_pos = Clpos_to_blkpos(pos);
-
     // World.fuels[ind] = t;
     // World.NumFuels++;
-    World.cannons.push_back(t);
+    world->cannons.push_back(t);
 
     // World.cannons[ind] = t;
     Cannon_init(Cannon_by_index(ind));
@@ -169,7 +170,7 @@ int World_place_cannon(clpos_t pos, int dir, int team)
     // return ind;
 }
 
-int World_place_fuel(clpos_t pos, int team)
+int World_place_fuel(world_t *world, clpos_t pos, int team)
 {
     fuel_t t;
     int ind = Num_fuels();
@@ -180,19 +181,15 @@ int World_place_fuel(clpos_t pos, int team)
     t.last_change = frame_loops;
     t.team = team;
 
-    t.blk_pos = Clpos_to_blkpos(pos);
-
-    World.fuels.push_back(t);
+    world->fuels.push_back(t);
 
     return ind;
 }
 
-int World_place_base(clpos_t pos, int dir, int team, int order)
+int World_place_base(world_t *world, clpos_t pos, int dir, int team, int order)
 {
     base_t t;
     int ind = Num_bases(), i;
-
-    t.blk_pos = Clpos_to_blkpos(pos);
 
     t.pos = pos;
     t.order = order;
@@ -232,17 +229,17 @@ int World_place_base(clpos_t pos, int dir, int team, int order)
         t.team = TEAM_NOT_SET;
     t.ind = Num_bases();
 
-    World.bases.push_back(t);
+    world->bases.push_back(t);
 
     return ind;
 }
 
-int World_place_treasure(clpos_t pos, int team, bool empty,
+int World_place_treasure(world_t *world, clpos_t pos, int team, bool empty,
                          int ball_style)
 {
     treasure_t t;
     int ind = Num_treasures();
-    t.blk_pos = Clpos_to_blkpos(pos);
+
     t.pos = pos;
     t.have = false;
     t.destroyed = 0;
@@ -255,17 +252,16 @@ int World_place_treasure(clpos_t pos, int team, bool empty,
     //     World.teams[team].NumTreasures++;
     //     World.teams[team].TreasuresLeft++;
     // }
-    World.treasures.push_back(t);
+    world->treasures.push_back(t);
 
     return ind;
 }
 
-int World_place_target(clpos_t pos, int team)
+int World_place_target(world_t *world, clpos_t pos, int team)
 {
     target_t t;
     int ind = Num_targets();
 
-    t.blk_pos = Clpos_to_blkpos(pos);
     t.pos = pos;
     /*
      * If we have a block based map, the team is determined in
@@ -279,16 +275,16 @@ int World_place_target(clpos_t pos, int team)
     t.last_change = frame_loops;
     t.group = NO_GROUP;
 
-    World.targets.push_back(t);
+    world->targets.push_back(t);
 
     return ind;
 }
 
-int World_place_wormhole(clpos_t pos, wormtype_t type)
+int World_place_wormhole(world_t *world, clpos_t pos, wormtype_t type)
 {
     wormhole_t t;
     int ind = Num_wormholes();
-    t.blk_pos = Clpos_to_blkpos(pos);
+
     t.pos = pos;
     t.countdown = 0;
     t.lastdest = NO_IND;
@@ -298,7 +294,7 @@ int World_place_wormhole(clpos_t pos, wormtype_t type)
     t.lastID = NO_ID;
     t.group = NO_GROUP;
 
-    World.wormholesVector.push_back(t);
+    world->wormholesVector.push_back(t);
 
     return ind;
 }
@@ -321,7 +317,7 @@ static void alloc_old_checks(void)
     // World.NumChecks = 0;
 }
 
-int World_place_check(clpos_t pos, int ind)
+int World_place_check(world_t *world, clpos_t pos, int ind)
 {
     // check_t t;
 
@@ -373,48 +369,49 @@ int World_place_check(clpos_t pos, int ind)
     return -1;
 }
 
-int World_place_item_concentrator(clpos_t pos)
+int World_place_item_concentrator(world_t *world, clpos_t pos)
 {
     item_concentrator_t t;
     int ind = Num_itemConcs();
 
     t.pos = pos;
-    World.itemConcs.push_back(t);
+    world->itemConcs.push_back(t);
 
     return ind;
 }
 
-int World_place_asteroid_concentrator(clpos_t pos)
+int World_place_asteroid_concentrator(world_t *world, clpos_t pos)
 {
     asteroid_concentrator_t t;
     int ind = Num_asteroidConcs();
 
     t.pos = pos;
-    World.asteroidConcs.push_back(t);
+    world->asteroidConcs.push_back(t);
 
     return ind;
 }
 
-int World_place_grav(clpos_t pos, double force, int type)
+int World_place_grav(world_t *world, clpos_t pos, double force, int type)
 {
     grav_t t;
     int ind = Num_gravs();
 
     t.pos = pos;
-    t.blk_pos = Clpos_to_blkpos(pos);
     t.force = force;
-    World.gravs.push_back(t);
+    world->gravs.push_back(t);
 
     return ind;
 }
 
-int World_place_friction_area(clpos_t pos, double fric)
+int World_place_friction_area(world_t *world, clpos_t pos, double fric)
 {
     friction_area_t t;
     int ind = Num_frictionAreas();
+
     t.pos = pos;
     t.friction_setting = fric;
-    World.frictionAreas.push_back(t);
+    world->frictionAreas.push_back(t);
+
     return ind;
 }
 
@@ -836,6 +833,7 @@ bool Grok_map(void)
  */
 int Find_closest_team(clpos_t pos)
 {
+    world_t *world = &World;
     int team = TEAM_NOT_SET, i;
     double closest = FLT_MAX, l;
 
@@ -846,7 +844,7 @@ int Find_closest_team(clpos_t pos)
         if (base->team == TEAM_NOT_SET)
             continue;
 
-        l = Wrap_length(pos.cx - base->pos.cx, pos.cy - base->pos.cy);
+        l = World_wrap_length(world, pos.cx - base->pos.cx, pos.cy - base->pos.cy);
         if (l < closest)
         {
             team = World.bases[i].team;
@@ -871,23 +869,23 @@ void Find_base_direction(void)
         Xpmap_find_base_direction();
 }
 
-double Wrap_findDir(double dx, double dy)
+double World_wrap_findDir(world_t *world, double dx, double dy)
 {
-    dx = WRAP_DX(dx);
-    dy = WRAP_DY(dy);
+    dx = WORLD_WRAP_DX(world, dx);
+    dy = WORLD_WRAP_DY(world, dy);
     return findDir(dx, dy);
 }
 
-double Wrap_cfindDir(int dcx, int dcy)
+double World_wrap_cfindDir(world_t *world, int dcx, int dcy)
 {
-    dcx = WRAP_DCX(dcx);
-    dcy = WRAP_DCY(dcy);
+    dcx = WORLD_WRAP_DCX(world, dcx);
+    dcy = WORLD_WRAP_DCY(world, dcy);
     return findDir((double)dcx, (double)dcy);
 }
 
-double Wrap_length(int dcx, int dcy)
+double World_wrap_length(world_t *world, int dcx, int dcy)
 {
-    dcx = WRAP_DCX(dcx);
-    dcy = WRAP_DCY(dcy);
+    dcx = WORLD_WRAP_DCX(world, dcx);
+    dcy = WORLD_WRAP_DCY(world, dcy);
     return LENGTH(dcx, dcy);
 }

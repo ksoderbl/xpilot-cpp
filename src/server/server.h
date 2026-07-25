@@ -155,23 +155,23 @@ void World_free(void);
 bool Grok_map(void);
 bool Grok_map_options(void);
 
-int World_place_base(clpos_t pos, int dir, int team, int order);
-int World_place_cannon(clpos_t pos, int dir, int team);
-int World_place_check(clpos_t pos, int ind);
-int World_place_fuel(clpos_t pos, int team);
-int World_place_grav(clpos_t pos, double force, int type);
-int World_place_target(clpos_t pos, int team);
-int World_place_treasure(clpos_t pos, int team, bool empty, int ball_style);
-int World_place_wormhole(clpos_t pos, wormtype_t type);
-int World_place_item_concentrator(clpos_t pos);
-int World_place_asteroid_concentrator(clpos_t pos);
-int World_place_friction_area(clpos_t pos, double fric);
+int World_place_base(world_t *world, clpos_t pos, int dir, int team, int order);
+int World_place_cannon(world_t *world, clpos_t pos, int dir, int team);
+int World_place_check(world_t *world, clpos_t pos, int ind);
+int World_place_fuel(world_t *world, clpos_t pos, int team);
+int World_place_grav(world_t *world, clpos_t pos, double force, int type);
+int World_place_target(world_t *world, clpos_t pos, int team);
+int World_place_treasure(world_t *world, clpos_t pos, int team, bool empty, int ball_style);
+int World_place_wormhole(world_t *world, clpos_t pos, wormtype_t type);
+int World_place_item_concentrator(world_t *world, clpos_t pos);
+int World_place_asteroid_concentrator(world_t *world, clpos_t pos);
+int World_place_friction_area(world_t *world, clpos_t pos, double fric);
 
 void Find_base_direction(void);
 void Compute_gravity(void);
-double Wrap_findDir(double dx, double dy);
-double Wrap_cfindDir(int dx, int dy);
-double Wrap_length(int dx, int dy);
+double World_wrap_findDir(world_t *world, double dx, double dy);
+double World_wrap_cfindDir(world_t *world, int dx, int dy);
+double World_wrap_length(world_t *world, int dx, int dy);
 int Find_closest_team(clpos_t pos);
 
 int Wildmap(

@@ -110,7 +110,6 @@ extern bool is_polygon_map;
 
 typedef struct fuel
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     double fuel;
     uint32_t conn_mask;
@@ -120,7 +119,6 @@ typedef struct fuel
 
 typedef struct grav
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     double force;
     int type;
@@ -128,7 +126,6 @@ typedef struct grav
 
 typedef struct base
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     int dir;
     int ind;
@@ -145,7 +142,6 @@ typedef struct baseorder
 
 typedef struct cannon
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     int dir;
     int dead_ticks;
@@ -206,7 +202,6 @@ typedef enum
 
 typedef struct wormhole
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     int lastdest;   /* last destination wormhole */
     int countdown;  /* if >0 warp to lastdest else random */
@@ -219,7 +214,6 @@ typedef struct wormhole
 
 typedef struct treasure
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     bool have;      /* true if this treasure has ball in it */
     int team;       /* team of this treasure */
@@ -230,7 +224,6 @@ typedef struct treasure
 
 typedef struct target
 {
-    blkpos_t blk_pos;
     clpos_t pos;
     int team;
     int dead_ticks;
@@ -349,70 +342,70 @@ struct world
     bool have_options;
 };
 
-static inline void World_set_block(blkpos_t blk, int type)
+static inline void World_set_block(world_t *world, blkpos_t blk, int type)
 {
-    assert(!(blk.bx < 0 || blk.bx >= World.x || blk.by < 0 || blk.by >= World.y));
-    World.block[blk.bx][blk.by] = type;
+    assert(!(blk.bx < 0 || blk.bx >= world->x || blk.by < 0 || blk.by >= world->y));
+    world->block[blk.bx][blk.by] = type;
 }
 
-static inline int World_get_block(blkpos_t blk)
+static inline int World_get_block(world_t *world, blkpos_t blk)
 {
-    assert(!(blk.bx < 0 || blk.bx >= World.x || blk.by < 0 || blk.by >= World.y));
-    return World.block[blk.bx][blk.by];
+    assert(!(blk.bx < 0 || blk.bx >= world->x || blk.by < 0 || blk.by >= world->y));
+    return world->block[blk.bx][blk.by];
 }
 
-static inline bool World_contains_clpos(clpos_t pos)
+static inline bool World_contains_clpos(world_t *world, clpos_t pos)
 {
-    if (pos.cx < 0 || pos.cx >= World.cwidth)
+    if (pos.cx < 0 || pos.cx >= world->cwidth)
         return false;
-    if (pos.cy < 0 || pos.cy >= World.cheight)
-        return false;
-    return true;
-}
-
-static inline bool World_contains_clicks(int cx, int cy)
-{
-    if (cx < 0 || cx >= World.cwidth)
-        return false;
-    if (cy < 0 || cy >= World.cheight)
+    if (pos.cy < 0 || pos.cy >= world->cheight)
         return false;
     return true;
 }
 
-static inline clpos_t World_get_random_clpos(void)
+static inline bool World_contains_clicks(world_t *world, int cx, int cy)
+{
+    if (cx < 0 || cx >= world->cwidth)
+        return false;
+    if (cy < 0 || cy >= world->cheight)
+        return false;
+    return true;
+}
+
+static inline clpos_t World_get_random_clpos(world_t *world)
 {
     clpos_t pos;
 
-    pos.cx = (int)(rfrac() * World.cwidth);
-    pos.cy = (int)(rfrac() * World.cheight);
+    pos.cx = (int)(rfrac() * world->cwidth);
+    pos.cy = (int)(rfrac() * world->cheight);
 
     return pos;
 }
 
-static inline int World_wrap_xclick(int cx)
+static inline int World_wrap_xclick(world_t *world, int cx)
 {
     while (cx < 0)
-        cx += World.cwidth;
-    while (cx >= World.cwidth)
-        cx -= World.cwidth;
+        cx += world->cwidth;
+    while (cx >= world->cwidth)
+        cx -= world->cwidth;
 
     return cx;
 }
 
-static inline int World_wrap_yclick(int cy)
+static inline int World_wrap_yclick(world_t *world, int cy)
 {
     while (cy < 0)
-        cy += World.cheight;
-    while (cy >= World.cheight)
-        cy -= World.cheight;
+        cy += world->cheight;
+    while (cy >= world->cheight)
+        cy -= world->cheight;
 
     return cy;
 }
 
-static inline clpos_t World_wrap_clpos(clpos_t pos)
+static inline clpos_t World_wrap_clpos(world_t *world, clpos_t pos)
 {
-    pos.cx = World_wrap_xclick(pos.cx);
-    pos.cy = World_wrap_yclick(pos.cy);
+    pos.cx = World_wrap_xclick(world, pos.cx);
+    pos.cy = World_wrap_yclick(world, pos.cy);
 
     return pos;
 }
@@ -424,16 +417,16 @@ static inline clpos_t World_wrap_clpos(clpos_t pos)
  * Note that even when wrap play is off, ships will wrap around the map
  * if there is not walls that hinder it.
  */
-static inline int WRAP_XCLICK(int cx)
+static inline int WORLD_WRAP_XCLICK(world_t *world, int cx)
 {
     // TODO: Check WRAP_PLAY ?
-    return World_wrap_xclick(cx);
+    return World_wrap_xclick(world, cx);
 }
 
-static inline int WRAP_YCLICK(int cy)
+static inline int WORLD_WRAP_YCLICK(world_t *world, int cy)
 {
     // TODO: Check WRAP_PLAY ?
-    return World_wrap_yclick(cy);
+    return World_wrap_yclick(world, cy);
 }
 
 /*
@@ -441,28 +434,28 @@ static inline int WRAP_YCLICK(int cy)
  * If the absolute value of a difference is bigger than
  * half the map size then it is wrapped.
  */
-#define WRAP_DCX(dcx)                          \
-    (BIT(World.rules->mode, WRAP_PLAY)         \
-         ? ((dcx) < -(World.cwidth >> 1)       \
-                ? (dcx) + World.cwidth         \
-                : ((dcx) > (World.cwidth >> 1) \
-                       ? (dcx) - World.cwidth  \
-                       : (dcx)))               \
+#define WORLD_WRAP_DCX(world, dcx)              \
+    (BIT(world->rules->mode, WRAP_PLAY)         \
+         ? ((dcx) < -(world->cwidth >> 1)       \
+                ? (dcx) + world->cwidth         \
+                : ((dcx) > (world->cwidth >> 1) \
+                       ? (dcx) - world->cwidth  \
+                       : (dcx)))                \
          : (dcx))
 
-#define WRAP_DCY(dcy)                           \
-    (BIT(World.rules->mode, WRAP_PLAY)          \
-         ? ((dcy) < -(World.cheight >> 1)       \
-                ? (dcy) + World.cheight         \
-                : ((dcy) > (World.cheight >> 1) \
-                       ? (dcy) - World.cheight  \
-                       : (dcy)))                \
+#define WORLD_WRAP_DCY(world, dcy)               \
+    (BIT(world->rules->mode, WRAP_PLAY)          \
+         ? ((dcy) < -(world->cheight >> 1)       \
+                ? (dcy) + world->cheight         \
+                : ((dcy) > (world->cheight >> 1) \
+                       ? (dcy) - world->cheight  \
+                       : (dcy)))                 \
          : (dcy))
 
-#define TWRAP_XCLICK(x_) \
+#define TWORLD_WRAP_XCLICK(world, x_) \
     ((x_) > 0 ? (x_) % World.cwidth : ((x_) % World.cwidth + World.cwidth))
 
-#define TWRAP_YCLICK(y_) \
+#define TWORLD_WRAP_YCLICK(world, y_) \
     ((y_) > 0 ? (y_) % World.cheight : ((y_) % World.cheight + World.cheight))
 
 #define CENTER_XCLICK(X) \
