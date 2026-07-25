@@ -430,11 +430,24 @@ static void sched_select_error(void)
 
 /*
  * I/O + timer dispatcher.
- * Windows pumps this one time
  */
+
+#define MORE_IO_PASSES
+
+#ifdef MORE_IO_PASSES
+#include <algorithm>
+constexpr int MIN_IO_PASSES = 4;
+constexpr int MAX_IO_PASSES = 16;
+#endif
+
 void sched(void)
 {
-    int i, n, io_todo = 3;
+    int i, n;
+#ifdef MORE_IO_PASSES
+    int io_todo = MIN_IO_PASSES;
+#else
+    int io_todo = 3;
+#endif
     struct timeval tv, *tvp = &tv;
 
     if (sched_running)
@@ -452,7 +465,15 @@ void sched(void)
 
         if (io_todo == 0 && timers_used < timer_ticks)
         {
+#ifdef MORE_IO_PASSES
+            long pending_ticks = timer_ticks - timers_used;
+            io_todo = std::clamp(
+                MIN_IO_PASSES + static_cast<int>(pending_ticks - 1),
+                MIN_IO_PASSES,
+                MAX_IO_PASSES);
+#else
             io_todo = 1 + (timer_ticks - timers_used);
+#endif
             tvp = &tv;
 
             if (timer_handler)
