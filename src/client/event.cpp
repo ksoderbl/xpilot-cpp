@@ -180,7 +180,7 @@ static bool Key_check_talk_macro(keys_t key)
 
 static bool Key_press_id_mode(void)
 {
-    warn("Key_press_id_mode");
+    // warn("Key_press_id_mode");
     showUserName = showUserName ? false : true;
     scoresChanged = true;
     return false; /* server doesn't need to know */
@@ -188,7 +188,7 @@ static bool Key_press_id_mode(void)
 
 static bool Key_press_autoshield_hack(void)
 {
-    warn("Key_press_autoshield_hack");
+    // warn("Key_press_autoshield_hack");
     if (auto_shield && BITV_ISSET(keyv, KEY_SHIELD))
         BITV_CLR(keyv, KEY_SHIELD);
     return false;
@@ -196,7 +196,7 @@ static bool Key_press_autoshield_hack(void)
 
 static bool Key_press_shield(keys_t key)
 {
-    warn("Key_press_shield");
+    // warn("Key_press_shield");
     if (toggle_shield)
     {
         shields = !shields;
@@ -214,14 +214,14 @@ static bool Key_press_shield(keys_t key)
 
 static bool Key_press_fuel(void)
 {
-    warn("Key_press_fuel");
+    // warn("Key_press_fuel");
     fuelTime = FUEL_NOTIFY_TIME;
     return false;
 }
 
 static bool Key_press_swap_settings(void)
 {
-    warn("Key_press_swap_settings");
+    // warn("Key_press_swap_settings");
     double tmp;
 #define SWAP(a, b) (tmp = (a), (a) = (b), (b) = tmp)
 
@@ -236,7 +236,7 @@ static bool Key_press_swap_settings(void)
 
 static bool Key_press_swap_scalefactor(void)
 {
-    warn("Key_press_swap_scalefactor");
+    // warn("Key_press_swap_scalefactor");
     double a = clData.altScaleFactor;
 
     Set_altScaleFactor(NULL, clData.scaleFactor);
@@ -247,7 +247,7 @@ static bool Key_press_swap_scalefactor(void)
 
 static bool Key_press_increase_power(void)
 {
-    warn("Key_press_increase_power");
+    // warn("Key_press_increase_power");
     power = power * 1.10;
     power = MIN(power, MAX_PLAYER_POWER);
     Send_power(power);
@@ -259,7 +259,7 @@ static bool Key_press_increase_power(void)
 
 static bool Key_press_decrease_power(void)
 {
-    warn("Key_press_decrease_power");
+    // warn("Key_press_decrease_power");
     power = power / 1.10;
     power = MAX(power, MIN_PLAYER_POWER);
     Send_power(power);
@@ -271,7 +271,7 @@ static bool Key_press_decrease_power(void)
 
 static bool Key_press_increase_turnspeed(void)
 {
-    warn("Key_press_increase_turnspeed");
+    // warn("Key_press_increase_turnspeed");
     turnspeed = turnspeed * 1.05;
     turnspeed = MIN(turnspeed, MAX_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
@@ -283,7 +283,7 @@ static bool Key_press_increase_turnspeed(void)
 
 static bool Key_press_decrease_turnspeed(void)
 {
-    warn("Key_press_decrease_turnspeed");
+    // warn("Key_press_decrease_turnspeed");
     turnspeed = turnspeed / 1.05;
     turnspeed = MAX(turnspeed, MIN_PLAYER_TURNSPEED);
     Send_turnspeed(turnspeed);
@@ -295,7 +295,7 @@ static bool Key_press_decrease_turnspeed(void)
 
 static bool Key_press_talk(void)
 {
-    warn("Key_press_talk");
+    // warn("Key_press_talk");
     int i;
 
     /*
@@ -312,49 +312,49 @@ static bool Key_press_talk(void)
 
 static bool Key_press_show_items(void)
 {
-    warn("Key_press_show_items");
+    // warn("Key_press_show_items");
     instruments.showItems = !instruments.showItems;
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_show_messages(void)
 {
-    warn("Key_press_show_messages");
+    // warn("Key_press_show_messages");
     instruments.showMessages = !instruments.showMessages;
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_pointer_control(void)
 {
-    warn("Key_press_pointer_control");
+    // warn("Key_press_pointer_control");
     Pointer_control_set_state(!clData.pointerControl);
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_fullscreen(void)
 {
-    warn("Key_press_toggle_fullscreen");
+    // warn("Key_press_toggle_fullscreen");
     Toggle_fullscreen();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_radar_score(void)
 {
-    warn("Key_press_toggle_radar_score");
+    // warn("Key_press_toggle_radar_score");
     Toggle_radar_and_scorelist();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_record(void)
 {
-    warn("Key_press_toggle_record");
+    // warn("Key_press_toggle_record");
     Record_toggle();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_toggle_sound(void)
 {
-    warn("Key_press_toggle_sound");
+    // warn("Key_press_toggle_sound");
 #ifdef SOUND
     sound = !sound;
 #endif
@@ -363,14 +363,14 @@ static bool Key_press_toggle_sound(void)
 
 static bool Key_press_msgs_stdout(void)
 {
-    warn("Key_press_msgs_stdout");
+    // warn("Key_press_msgs_stdout");
     Print_messages_to_stdout();
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_select_lose_item(void)
 {
-    warn("Key_press_select_lose_item");
+    // warn("Key_press_select_lose_item");
     if (lose_item_active == 1)
         lose_item_active = 2;
     else
@@ -380,7 +380,7 @@ static bool Key_press_select_lose_item(void)
 
 static bool Key_press_yes(void)
 {
-    warn("Key_press_yes");
+    // warn("Key_press_yes");
     /* Handled in other code */
     assert(!clData.quitMode);
 
@@ -389,13 +389,13 @@ static bool Key_press_yes(void)
 
 static bool Key_press_no(void)
 {
-    warn("Key_press_no");
+    // warn("Key_press_no");
     return false; /* server doesn't need to know */
 }
 
 static bool Key_press_exit(void)
 {
-    warn("Key_press_exit");
+    // warn("Key_press_exit");
     int i;
 
     /* exit pointer control if exit key pressed in pointer control mode */
@@ -493,7 +493,7 @@ static bool Quit_mode_key_press(keys_t key)
 
 bool Key_press(keys_t key)
 {
-    warn("Key_press");
+    // warn("Key_press");
 
     bool countchange;
     int keycount, i;
@@ -630,7 +630,7 @@ bool Key_press(keys_t key)
 
 bool Key_release(keys_t key)
 {
-    warn("Key_release");
+    // warn("Key_release");
 
     bool countchange;
     int keycount;

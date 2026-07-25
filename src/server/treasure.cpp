@@ -43,7 +43,7 @@
 
 void Make_treasure_ball(treasure_t *t)
 {
-    warn("Make_treasure_ball: treasure is %p", t);
+    // warn("Make_treasure_ball: treasure is %p", t);
 
     ballobject_t *ball;
     clpos_t pos = t->pos;
@@ -80,8 +80,8 @@ void Make_treasure_ball(treasure_t *t)
     ball->obj_status = RECREATE;
     ball->ball_treasure = t;
     ball->ball_treasure_copy = t;
-    warn("Make_treasure_ball: ball_treasure is      %p", ball->ball_treasure);
-    warn("Make_treasure_ball: ball_treasure_copy is %p", ball->ball_treasure_copy);
+    // warn("Make_treasure_ball: ball_treasure is      %p", ball->ball_treasure);
+    // warn("Make_treasure_ball: ball_treasure_copy is %p", ball->ball_treasure_copy);
     ball->ball_loose_ticks = 0;
     ball->ball_style = t->ball_style;
     Cell_add_object(OBJ_PTR(ball));

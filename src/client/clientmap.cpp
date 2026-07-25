@@ -1057,7 +1057,7 @@ int Handle_player(int id, int player_team, int mychar,
                   char *nick_name, char *user_name, char *host_name,
                   char *shape, int myself)
 {
-    warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name, myself);
+    // warn("Handle_player: id %d, nick %s, myself = %d", id, nick_name, myself);
 
     other_t *other;
 
@@ -1096,7 +1096,7 @@ int Handle_player(int id, int player_team, int mychar,
         }
         self = other;
     }
-    warn("Handle_player: self = %p", self);
+    // warn("Handle_player: self = %p", self);
     memset(other, 0, sizeof(other_t));
     other->id = id;
     other->team = player_team;

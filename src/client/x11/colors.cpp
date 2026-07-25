@@ -654,7 +654,7 @@ void Colors_init_style_colors(void)
  */
 int Colors_init_bitmaps(void)
 {
-    warn("=> Colors_init_bitmaps, fullColor = %d", fullColor);
+    // warn("=> Colors_init_bitmaps, fullColor = %d", fullColor);
 
     /* kps hack */
     // if (dbuf_state == NULL)
@@ -662,7 +662,7 @@ int Colors_init_bitmaps(void)
 
     if (fullColor)
     {
-        warn("=> Colors_init_bitmaps, calling Colors_init_bitmap_colors");
+        // warn("=> Colors_init_bitmaps, calling Colors_init_bitmap_colors");
 
         if (Colors_init_bitmap_colors() == -1)
         {

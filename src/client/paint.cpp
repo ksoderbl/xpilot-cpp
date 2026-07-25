@@ -72,8 +72,8 @@ double WINSCALE(double x)
     else
         retval = (int)floor(x * clData.scale + 0.5);
 
-    if (oldx != retval)
-        warn("WINSCALE, x = %f, old = %d", x, oldx);
+    // if (oldx != retval)
+    //     warn("WINSCALE, x = %f, old = %d", x, oldx);
 
     return retval; // TODO: apply scale factor
 }
