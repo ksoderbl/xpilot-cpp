@@ -422,7 +422,7 @@ static void Player_toggle_pause(player_t *pl)
         }
         break;
     default:
-        warn("Player_toggle_pause: BUG: unknown pause type.");
+        // warn("Player_toggle_pause: BUG: unknown pause type.");
         break;
     }
 }

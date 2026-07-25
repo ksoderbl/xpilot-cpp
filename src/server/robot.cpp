@@ -727,7 +727,7 @@ static void Robot_create(void)
     if (BIT(World.rules->mode, TEAM_PLAY))
     {
         robot->team = Pick_team(PL_TYPE_ROBOT);
-        warn("Robot team: %d", robot->team);
+        // warn("Robot team: %d", robot->team);
         World.teams[robot->team].NumMembers++;
         World.teams[robot->team].NumRobots++;
     }

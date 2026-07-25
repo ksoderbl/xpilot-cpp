@@ -926,7 +926,7 @@ static void Update_players(void)
         if (pl->pause_count > 0)
         {
             pl->pause_count -= timeStep;
-            warn("Player %s pause count is %f", pl->name, pl->pause_count);
+            // warn("Player %s pause count is %f", pl->name, pl->pause_count);
             if (pl->pause_count <= 0)
                 pl->pause_count = 0;
         }
@@ -937,7 +937,7 @@ static void Update_players(void)
             // warn("Player %s recovery count is %f", pl->name, pl->recovery_count);
             if (pl->recovery_count <= 0)
             {
-                warn("Player %s recovered!", pl->name);
+                // warn("Player %s recovered!", pl->name);
                 /* Player has recovered (unless he is already dead). */
                 pl->recovery_count = 0;
                 if (BIT(World.rules->mode, LIMITED_LIVES))

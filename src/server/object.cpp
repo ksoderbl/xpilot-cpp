@@ -118,7 +118,7 @@ static anyobject_t *objArray;
 
 void Alloc_shots(int number)
 {
-    xpinfo("Alloc_shots: number = %d", number);
+    // xpinfo("Alloc_shots: number = %d", number);
 
     anyobject_t *x;
     int i;
@@ -138,8 +138,8 @@ void Alloc_shots(int number)
     SHOWTYPESIZE(player_t);
 #endif
 
-    xpinfo("Alloc_shots: sizeof(anyobject_t) = %d", sizeof(anyobject_t));
-    xpinfo("Alloc_shots: total allocation = %d bytes", number * sizeof(anyobject_t));
+    // xpinfo("Alloc_shots: sizeof(anyobject_t) = %d", sizeof(anyobject_t));
+    // xpinfo("Alloc_shots: total allocation = %d bytes", number * sizeof(anyobject_t));
 
     x = (anyobject_t *)calloc(number, sizeof(anyobject_t));
     // x = XCALLOC(anyobject_t, number);

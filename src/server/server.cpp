@@ -220,7 +220,7 @@ int main(int argc, char **argv)
         timer_tick_rate = FPS;
     install_timer_tick(Main_loop, timer_tick_rate);
 
-    printf("calling sched\n");
+    // printf("calling sched\n");
     sched();
     printf("sched returned!?\n");
     End_game();

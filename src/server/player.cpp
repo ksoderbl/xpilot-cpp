@@ -1739,7 +1739,7 @@ void Detach_ball(player_t *pl, ballobject_t *ball)
 
 void Kill_player(player_t *pl, bool add_rank_death)
 {
-    warn("Kill_player: player: %s", pl->name);
+    // warn("Kill_player: player: %s", pl->name);
 
     Explode_fighter(pl);
     Player_death_reset(pl, add_rank_death);

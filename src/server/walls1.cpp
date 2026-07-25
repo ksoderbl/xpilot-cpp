@@ -2034,7 +2034,7 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
 
     default:
     case NotACrash:
-        warn("Player_crash1 not a crash %d", ms->crash);
+        // warn("Player_crash1 not a crash %d", ms->crash);
         break;
 
     case CrashWormHole:

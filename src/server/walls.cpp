@@ -29,7 +29,7 @@
 
 void Walls_init(void)
 {
-    warn("Walls_init: is_polygon_map: %s", is_polygon_map ? "true" : "false");
+    // warn("Walls_init: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)
         Walls_init1();
     else
@@ -56,7 +56,7 @@ void Move_player(player_t *pl)
 
 void Ball_line_init(void)
 {
-    warn("Ball_line_init: is_polygon_map: %s", is_polygon_map ? "true" : "false");
+    // warn("Ball_line_init: is_polygon_map: %s", is_polygon_map ? "true" : "false");
     if (!is_polygon_map)
         warn("NOP");
     else

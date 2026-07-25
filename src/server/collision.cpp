@@ -1015,7 +1015,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         /* impossible */
         break;
     default:
-        warn("Player_collides_with_item: unknown item.");
+        // warn("Player_collides_with_item: unknown item.");
         break;
     }
 
@@ -1252,7 +1252,7 @@ static void Player_collides_with_killing_shot(player_t *pl, object_t *obj)
             break;
 
         default:
-            warn("Player hit by unknown object type %d.", obj->type);
+            // warn("Player hit by unknown object type %d.", obj->type);
             break;
         }
         if (pl->fuel.sum <= 0)

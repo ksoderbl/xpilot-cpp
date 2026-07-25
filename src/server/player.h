@@ -350,8 +350,8 @@ static inline bool Player_is_waiting(player_t *pl)
 
     if (newWaiting != legacyWaiting)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_waiting: newWaiting != legacyWaiting: Player %s (%d, %d)", pl->name, newWaiting, legacyWaiting);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_waiting: newWaiting != legacyWaiting: Player %s (%d, %d)", pl->name, newWaiting, legacyWaiting);
     }
 
     return legacyWaiting;
@@ -372,8 +372,8 @@ static inline bool Player_is_appearing(player_t *pl)
 
     if (newAppearing != legacyAppearing)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_appearing: newAppearing != legacyAppearing: Player %s (%d, %d)", pl->name, newAppearing, legacyAppearing);
     }
 
     return legacyAppearing;
@@ -386,8 +386,8 @@ static inline bool Player_is_alive(player_t *pl)
 
     if (newAlive != legacyAlive)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_alive: newAlive != legacyAlive: Player %s (%d, %d)", pl->name, newAlive, legacyAlive);
     }
 
     return legacyAlive;
@@ -405,8 +405,8 @@ static inline bool Player_is_killed(player_t *pl)
 
     if (newKilled != legacyKilled)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_killed: newKilled != legacyKilled: Player %s (%d, %d)", pl->name, newKilled, legacyKilled);
     }
 
     return legacyKilled;
@@ -425,8 +425,8 @@ static inline bool Player_is_dead(player_t *pl)
 
     if (newDead != legacyDead)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_dead: newDead != legacyDead: Player %s (%d, %d)", pl->name, newDead, legacyDead);
     }
 
     return legacyDead;
@@ -444,8 +444,8 @@ static inline bool Player_is_paused(player_t *pl)
 
     if (newPaused != legacyPaused)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_paused: newPaused != legacyPaused: Player %s (%d, %d)", pl->name, newPaused, legacyPaused);
     }
 
     return legacyPaused;
@@ -472,8 +472,8 @@ static inline bool Player_is_active(player_t *pl)
 
     if (newActive != legacyActive)
     {
-        if ((main_loops % 12) == 0)
-            warn("Player_is_active: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
+        // if ((main_loops % 12) == 0)
+        // warn("Player_is_active: newActive != legacyActive: Player %s (%d, %d)", pl->name, newActive, legacyActive);
     }
 
     return legacyActive;

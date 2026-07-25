@@ -465,28 +465,28 @@ int Colors_init(void)
 
     colormap = 0;
 
-    printf("Colors_init: maxColors 0: %d\n", maxColors);
+    // printf("Colors_init: maxColors 0: %d\n", maxColors);
 
     Choose_visual();
 
-    printf("Colors_init: Using visual %s\n", Visual_class_name(visualPtr->c_class));
+    // printf("Colors_init: Using visual %s\n", Visual_class_name(visualPtr->c_class));
 
     /*
      * Get misc. display info.
      */
     {
-        printf("Colors_init: maxColors 1: %d\n", maxColors);
-        printf("Colors_init: visualPtr->map_entries: %d\n", visualPtr->map_entries);
+        // printf("Colors_init: maxColors 1: %d\n", maxColors);
+        // printf("Colors_init: visualPtr->map_entries: %d\n", visualPtr->map_entries);
         maxColors = (maxColors >= 16 && visualPtr->map_entries >= 16) ? 16
                     : (maxColors >= 8 && visualPtr->map_entries >= 8) ? 8
                                                                       : 4;
-        printf("Colors_init: maxColors 2: %d\n", maxColors);
+        // printf("Colors_init: maxColors 2: %d\n", maxColors);
     }
 
     num_planes = (maxColors == 16)  ? 4
                  : (maxColors == 8) ? 3
                                     : 2;
-    printf("Colors_init: num_planes: %d\n", num_planes);
+    // printf("Colors_init: num_planes: %d\n", num_planes);
 
     if (Parse_colors(DefaultColormap(dpy, DefaultScreen(dpy))) == -1)
     {
@@ -494,7 +494,7 @@ int Colors_init(void)
         return -1;
     }
 
-    printf("Colors_init: colormap: %d\n", colormap);
+    // printf("Colors_init: colormap: %d\n", colormap);
 
     if (colormap != 0)
         Fill_colormap();
@@ -671,13 +671,13 @@ int Colors_init_bitmaps(void)
         }
     }
 
-    warn("=> Colors_init_bitmaps, calling Colors_init_style_colors");
+    // warn("=> Colors_init_bitmaps, calling Colors_init_style_colors");
 
     Colors_init_style_colors();
 
     int retval = (fullColor) ? 0 : -1;
 
-    warn("=> Colors_init_bitmaps, returning %d", retval);
+    // warn("=> Colors_init_bitmaps, returning %d", retval);
 
     return retval;
 }
@@ -1040,9 +1040,9 @@ void Init_spark_colors(void)
     unsigned col;
     int i;
 
-    printf("Init_spark_colors: original sparkColors %s", sparkColors);
+    // printf("Init_spark_colors: original sparkColors %s", sparkColors);
     strlcpy(sparkColors, "8,5,3,10", sizeof sparkColors);
-    printf("Init_spark_colors: changed  sparkColors %s", sparkColors);
+    // printf("Init_spark_colors: changed  sparkColors %s", sparkColors);
 
     num_spark_colors = 0;
     /*
@@ -1067,12 +1067,12 @@ void Init_spark_colors(void)
             src--;
 
             int ret = sscanf(buf, "%u", &col);
-            printf("buf %s, col %d, ret %d", buf, col, ret);
+            // printf("buf %s, col %d, ret %d", buf, col, ret);
             if (ret == 1)
             {
                 if (col < (unsigned)maxColors)
                 {
-                    printf("color: %d", col);
+                    // printf("color: %d", col);
                     spark_color[num_spark_colors++] = col;
                 }
             }
