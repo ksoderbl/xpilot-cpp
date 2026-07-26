@@ -385,7 +385,7 @@ static bool Wall_in_between_points(int cx1, int cy1, int cx2, int cy2)
 
     while (mv.delta.cx || mv.delta.cy)
     {
-        // Move_point(&mv, &answer); // TODO: uncomment this
+        Move_point(&mv, &answer);
         if (answer.line != -1)
             return true;
         mv.start.cx = WORLD_WRAP_XCLICK(world, mv.start.cx + answer.moved.cx);
@@ -396,58 +396,59 @@ static bool Wall_in_between_points(int cx1, int cy1, int cx2, int cy2)
     return false;
 }
 
-// bool Robot_evade_shot(player_t *pl);
+bool Robot_evade_shot(player_t *pl);
 
-// typedef struct
-// {
-//     double hit_time;
-//     double sqdistance;
-// } object_proximity_t;
+typedef struct
+{
+    double hit_time;
+    double sqdistance;
+} object_proximity_t;
 
-// static bool Get_object_proximity(player_t *pl, object_t *shot, double sqmaxdist, int maxtime, object_proximity_t *object_proximity)
-// {
-//     /* get square of closest distance between player and object
-//      * compare with sqmaxdist and maxtime and return sqdistance and time
-//      * if both are smaller than the maximal wanted values
-//      */
-//     double delta_velx, delta_vely, delta_x, delta_y, sqdistance;
-//     double time_until_closest, shortest_hit_time;
+static bool Get_object_proximity(player_t *pl, object_t *shot, double sqmaxdist, int maxtime, object_proximity_t *object_proximity)
+{
+    world_t *world = &World;
+    /* get square of closest distance between player and object
+     * compare with sqmaxdist and maxtime and return sqdistance and time
+     * if both are smaller than the maximal wanted values
+     */
+    double delta_velx, delta_vely, delta_x, delta_y, sqdistance;
+    double time_until_closest, shortest_hit_time;
 
-//     /* calculate relative positions and velocities */
-//     delta_velx = (shot->vel.x - pl->vel.x);
-//     delta_vely = (shot->vel.y - pl->vel.y);
-//     delta_x = WRAP_DCX(shot->pos.cx - pl->pos.cx);
-//     delta_y = WRAP_DCY(shot->pos.cy - pl->pos.cy);
+    /* calculate relative positions and velocities */
+    delta_velx = (shot->vel.x - pl->vel.x);
+    delta_vely = (shot->vel.y - pl->vel.y);
+    delta_x = WORLD_WRAP_DCX(world, shot->pos.cx - pl->pos.cx);
+    delta_y = WORLD_WRAP_DCY(world, shot->pos.cy - pl->pos.cy);
 
-//     /* prevent possible division by 0 */
-//     if (delta_velx == 0 && delta_vely == 0)
-//         return false;
+    /* prevent possible division by 0 */
+    if (delta_velx == 0 && delta_vely == 0)
+        return false;
 
-//     /* get time of encounter from deviation of distance function */
-//     time_until_closest =
-//         -(delta_x * delta_velx + delta_y * delta_vely) /
-//         ((sqr(delta_velx) + sqr(delta_vely)));
+    /* get time of encounter from deviation of distance function */
+    time_until_closest =
+        -(delta_x * delta_velx + delta_y * delta_vely) /
+        ((sqr(delta_velx) + sqr(delta_vely)));
 
-//     /* ignore if there is enough time to deal with this object  later */
-//     if ((time_until_closest < 0) || (time_until_closest > maxtime))
-//         /*option instead of fixed value: options.dodgetime))*/
-//         // kps, was return; -> error: return-statement with no value, in function returning ‘bool’ [-fpermissive]
-//         return false;
+    /* ignore if there is enough time to deal with this object  later */
+    if ((time_until_closest < 0) || (time_until_closest > maxtime))
+        /*option instead of fixed value: options.dodgetime))*/
+        // kps, was return; -> error: return-statement with no value, in function returning ‘bool’ [-fpermissive]
+        return false;
 
-//     /* get the square of the distance */
-//     sqdistance =
-//         (sqr(delta_velx) + sqr(delta_vely)) * sqr(time_until_closest) +
-//         2 * (delta_velx * delta_x + delta_vely * delta_y) * time_until_closest +
-//         sqr(delta_x) + sqr(delta_y);
+    /* get the square of the distance */
+    sqdistance =
+        (sqr(delta_velx) + sqr(delta_vely)) * sqr(time_until_closest) +
+        2 * (delta_velx * delta_x + delta_vely * delta_y) * time_until_closest +
+        sqr(delta_x) + sqr(delta_y);
 
-//     if (sqdistance > sqmaxdist)
-//         return false;
+    if (sqdistance > sqmaxdist)
+        return false;
 
-//     object_proximity->hit_time = time_until_closest;
-//     object_proximity->sqdistance = sqdistance;
+    object_proximity->hit_time = time_until_closest;
+    object_proximity->sqdistance = sqdistance;
 
-//     return true;
-// }
+    return true;
+}
 
 bool Robot_evade_shot(player_t *pl)
 {
@@ -810,12 +811,11 @@ void Robot_attack_player(player_t *pl, player_t *opponent)
     /* check if we can fire or have to wait because of repeat rate */
     /* same check as in Fire_normal_shots(pl)                      */
 
-    // TODO: uncomment this
-    // if (frame_time <= pl->shot_time + options.fireRepeatRate - timeStep + 1e-3)
-    // {
-    //     Robot_ram_object(pl, OBJ_PTR(opponent));
-    //     return;
-    // }
+    if (frame_time <= pl->shot_time + options.fireRepeatRate - timeStep + 1e-3)
+    {
+        Robot_ram_object(pl, OBJ_PTR(opponent));
+        return;
+    }
 
     dcx = WORLD_WRAP_DCX(world, opponent->pos.cx - pl->pos.cx);
     dcy = WORLD_WRAP_DCY(world, opponent->pos.cy - pl->pos.cy);
@@ -912,211 +912,225 @@ void Robot_attack_player(player_t *pl, player_t *opponent)
     Thrust(pl, true);
 }
 
-// /*
-//  * Calculate minimum of length of hypotenuse in triangle with sides
-//  * 'dcx' and 'dcy' and 'min', taking into account wrapping.
-//  * Unit is clicks.
-//  */
-// static inline double Wrap_length_min(double dcx, double dcy, double min)
-// {
-//     double len;
+/*
+ * Calculate minimum of length of hypotenuse in triangle with sides
+ * 'dcx' and 'dcy' and 'min', taking into account wrapping.
+ * Unit is clicks.
+ */
+static inline double Wrap_length_min(world_t *world, double dcx, double dcy, double min)
+{
+    double len;
 
-//     dcx = WRAP_DCX(dcx), dcx = ABS(dcx);
-//     if (dcx >= min)
-//         return min;
-//     dcy = WRAP_DCY(dcy), dcy = ABS(dcy);
-//     if (dcy >= min)
-//         return min;
+    dcx = WORLD_WRAP_DCX(world, dcx);
+    dcx = ABS(dcx);
+    if (dcx >= min)
+        return min;
+    dcy = WORLD_WRAP_DCY(world, dcy);
+    dcy = ABS(dcy);
+    if (dcy >= min)
+        return min;
 
-//     len = LENGTH(dcx, dcy);
+    len = LENGTH(dcx, dcy);
 
-//     return MIN(len, min);
-// }
+    return MIN(len, min);
+}
 
-// static void Robotdef_fire_laser(player_t *pl)
-// {
-//     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
-//     double x2, y2, x3, y3, x4, y4, x5, y5;
-//     double ship_dist, dir3, dir4, dir5;
-//     clpos_t m_gun;
-//     player_t *ship;
+static void Robotdef_fire_laser(player_t *pl)
+{
+    world_t *world = &World;
+    robot_default_data_t *my_data = Robot_suibot_get_data(pl);
+    double x2, y2, x3, y3, x4, y4, x5, y5;
+    double ship_dist, dir3, dir4, dir5;
+    clpos_t m_gun;
+    player_t *ship;
 
-//     if (BIT(my_data->robot_lock, LOCK_PLAYER) && Player_is_active(Player_by_id(my_data->robot_lock_id)))
-//         ship = Player_by_id(my_data->robot_lock_id);
-//     else if (BIT(pl->lock.tagged, LOCK_PLAYER))
-//         ship = Player_by_id(pl->lock.pl_id);
-//     else
-//         return;
+    if (BIT(my_data->robot_lock, LOCK_PLAYER) && Player_is_active(Player_by_id(my_data->robot_lock_id)))
+        ship = Player_by_id(my_data->robot_lock_id);
+    else if (BIT(pl->lock.tagged, LOCK_PLAYER))
+        ship = Player_by_id(pl->lock.pl_id);
+    else
+        return;
 
-//     /* kps - this should be Player_is_alive() ? */
-//     if (!Player_is_active(ship))
-//         return;
+    /* kps - this should be Player_is_alive() ? */
+    if (!Player_is_active(ship))
+        return;
 
-//     m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
-//     x2 = CLICK_TO_PIXEL(pl->pos.cx) + pl->vel.x + CLICK_TO_PIXEL(m_gun.cx);
-//     y2 = CLICK_TO_PIXEL(pl->pos.cy) + pl->vel.y + CLICK_TO_PIXEL(m_gun.cy);
-//     x3 = CLICK_TO_PIXEL(ship->pos.cx) + ship->vel.x;
-//     y3 = CLICK_TO_PIXEL(ship->pos.cy) + ship->vel.y;
+    m_gun = Ship_get_m_gun_clpos(pl->ship, pl->dir);
+    x2 = CLICK_TO_PIXEL(pl->pos.cx) + pl->vel.x + CLICK_TO_PIXEL(m_gun.cx);
+    y2 = CLICK_TO_PIXEL(pl->pos.cy) + pl->vel.y + CLICK_TO_PIXEL(m_gun.cy);
+    x3 = CLICK_TO_PIXEL(ship->pos.cx) + ship->vel.x;
+    y3 = CLICK_TO_PIXEL(ship->pos.cy) + ship->vel.y;
 
-//     ship_dist = Wrap_length(PIXEL_TO_CLICK(x3 - x2),
-//                             PIXEL_TO_CLICK(y3 - y2)) /
-//                 CLICK;
+    ship_dist = World_wrap_length(
+                    world,
+                    PIXEL_TO_CLICK(x3 - x2),
+                    PIXEL_TO_CLICK(y3 - y2)) /
+                CLICK;
 
-//     if (ship_dist >= options.pulseSpeed * options.pulseLife + SHIP_SZ)
-//         return;
+    // TODO: uncomment when we have options.pulseSpeed and options.pulseLife
+    // if (ship_dist >= options.pulseSpeed * options.pulseLife + SHIP_SZ)
+    //     return;
 
-//     dir3 = Wrap_findDir(x3 - x2, y3 - y2);
-//     Robot_set_pointing_direction(pl, dir3);
+    dir3 = World_wrap_findDir(world, x3 - x2, y3 - y2);
+    Robot_set_pointing_direction(pl, dir3);
 
-//     SET_BIT(pl->used, HAS_LASER);
-// }
+    SET_BIT(pl->used, HAS_LASER);
+}
 
-// static bool Detect_ship(player_t *pl, player_t *ship)
-// {
-//     double distance;
+static bool Detect_ship(player_t *pl, player_t *ship)
+{
+    world_t *world = &World;
+    double distance;
 
-//     /* can't go after non-playing ships */
-//     if (!Player_is_alive(ship))
-//         return false;
+    /* can't go after non-playing ships */
+    if (!Player_is_alive(ship))
+        return false;
 
-//     /* can't do anything with phased ships */
-//     if (Player_is_phasing(ship))
-//         return false;
+    /* can't do anything with phased ships */
+    if (Player_is_phasing(ship))
+        return false;
 
-//     /* trivial */
-//     if (pl->visibility[GetInd(ship->id)].canSee)
-//         return true;
+    /* trivial */
+    if (pl->visibility[GetInd(ship->id)].canSee)
+        return true;
 
-//     /*
-//      * can't see it, so it must be cloaked
-//      * maybe we can detect it's presence from other clues?
-//      */
-//     distance = Wrap_length(ship->pos.cx - pl->pos.cx,
-//                            ship->pos.cy - pl->pos.cy) /
-//                CLICK;
-//     /* can't detect ships beyond visual range */
-//     if (distance > Visibility_distance)
-//         return false;
+    /*
+     * can't see it, so it must be cloaked
+     * maybe we can detect it's presence from other clues?
+     */
+    distance = World_wrap_length(
+                   world,
+                   ship->pos.cx - pl->pos.cx,
+                   ship->pos.cy - pl->pos.cy) /
+               CLICK;
+    /* can't detect ships beyond visual range */
+    if (distance > Visibility_distance)
+        return false;
 
-//     if (Player_is_thrusting(ship) && options.cloakedExhaust)
-//         return true;
+    if (Player_is_thrusting(ship) && options.cloakedExhaust)
+        return true;
 
-//     if (BIT(ship->used, HAS_SHOT) || BIT(ship->used, HAS_LASER) || Player_is_refueling(ship) || Player_is_repairing(ship) || Player_uses_connector(ship) || Player_uses_tractor_beam(ship))
-//         return true;
+    if (BIT(ship->used, HAS_SHOT) ||
+        BIT(ship->used, HAS_LASER) ||
+        Player_is_refueling(ship) ||
+        Player_is_repairing(ship) ||
+        Player_uses_connector(ship) ||
+        Player_uses_tractor_beam(ship))
+        return true;
 
-//     if (BIT(ship->have, HAS_BALL))
-//         return true;
+    if (BIT(ship->have, HAS_BALL))
+        return true;
 
-//     /* the sky seems clear.. */
-//     return false;
-// }
+    /* the sky seems clear.. */
+    return false;
+}
 
-// /*
-//  * Determine how important an item is to a given player.
-//  * Return one of the following 3 values:
-//  */
-// #define ROBOT_MUST_HAVE_ITEM 2 /* must have */
-// #define ROBOT_HANDY_ITEM 1     /* handy */
-// #define ROBOT_IGNORE_ITEM 0    /* ignore */
-// /*
-//  */
-// static int Rank_item_value(player_t *pl, enum Item itemtype)
-// {
-//     robot_default_data_t *my_data = Robot_suibot_get_data(pl);
+/*
+ * Determine how important an item is to a given player.
+ * Return one of the following 3 values:
+ */
+#define ROBOT_MUST_HAVE_ITEM 2 /* must have */
+#define ROBOT_HANDY_ITEM 1     /* handy */
+#define ROBOT_IGNORE_ITEM 0    /* ignore */
+/*
+ */
+static int Rank_item_value(player_t *pl, enum Item itemtype)
+{
+    robot_default_data_t *my_data = Robot_suibot_get_data(pl);
 
-//     if (itemtype == ITEM_AUTOPILOT)
-//         return ROBOT_IGNORE_ITEM; /* never useful for robots */
-//     if (pl->item[itemtype] >= World.items[itemtype].limit)
-//         return ROBOT_IGNORE_ITEM; /* already full */
-//     if ((IsDefensiveItem(itemtype) && CountDefensiveItems(pl) >= options.maxDefensiveItems) || (IsOffensiveItem(itemtype) && CountOffensiveItems(pl) >= options.maxOffensiveItems))
-//         return ROBOT_IGNORE_ITEM;
-//     if (itemtype == ITEM_FUEL)
-//     {
-//         if (pl->fuel.sum >= pl->fuel.max * 0.90)
-//             return ROBOT_IGNORE_ITEM; /* already (almost) full */
-//         else if ((pl->fuel.sum < (BIT(World.rules->mode, TIMING))
-//                       ? my_data->fuel_l1
-//                       : my_data->fuel_l2))
-//             return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
-//         else
-//             return ROBOT_HANDY_ITEM;
-//     }
-//     if (BIT(World.rules->mode, TIMING))
-//     {
-//         switch (itemtype)
-//         {
-//         case ITEM_FUEL:             /* less refuel stops */
-//         case ITEM_REARSHOT:         /* shoot competitors behind you */
-//         case ITEM_AFTERBURNER:      /* the more speed the better */
-//         case ITEM_TRANSPORTER:      /* steal fuel when you overtake someone */
-//         case ITEM_MINE:             /* blows others off the track */
-//         case ITEM_ECM:              /* blinded players smash into walls */
-//         case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
-//         case ITEM_EMERGENCY_SHIELD: /* could be useful when ramming */
-//             return ROBOT_MUST_HAVE_ITEM;
-//         case ITEM_WIDEANGLE:    /* not important in racemode */
-//         case ITEM_CLOAK:        /* not important in racemode */
-//         case ITEM_SENSOR:       /* who cares about seeing others? */
-//         case ITEM_TANK:         /* makes you heavier */
-//         case ITEM_MISSILE:      /* likely to hit self */
-//         case ITEM_LASER:        /* cost too much fuel */
-//         case ITEM_TRACTOR_BEAM: /* pushes/pulls owner off the track too */
-//         case ITEM_AUTOPILOT:    /* probably not useful */
-//         case ITEM_DEFLECTOR:    /* cost too much fuel */
-//         case ITEM_HYPERJUMP:    /* likely to end up in wrong place */
-//         case ITEM_PHASING:      /* robots don't know how to use them yet */
-//         case ITEM_MIRROR:       /* not important in racemode */
-//         case ITEM_ARMOR:        /* makes you heavier */
-//             return ROBOT_IGNORE_ITEM;
-//         default: /* unknown */
-//             warn("Rank_item_value: unknown item %ld.", itemtype);
-//             return ROBOT_IGNORE_ITEM;
-//         }
-//     }
-//     else
-//     {
-//         switch (itemtype)
-//         {
-//         case ITEM_EMERGENCY_SHIELD:
-//         case ITEM_DEFLECTOR:
-//         case ITEM_ARMOR:
-//             if (BIT(pl->have, HAS_SHIELD))
-//                 return ROBOT_HANDY_ITEM;
-//             else
-//                 return ROBOT_MUST_HAVE_ITEM;
+    if (itemtype == ITEM_AUTOPILOT)
+        return ROBOT_IGNORE_ITEM; /* never useful for robots */
+    if (pl->item[itemtype] >= World.items[itemtype].limit)
+        return ROBOT_IGNORE_ITEM; /* already full */
+    if ((IsDefensiveItem(itemtype) && CountDefensiveItems(pl) >= options.maxDefensiveItems) || (IsOffensiveItem(itemtype) && CountOffensiveItems(pl) >= options.maxOffensiveItems))
+        return ROBOT_IGNORE_ITEM;
+    if (itemtype == ITEM_FUEL)
+    {
+        if (pl->fuel.sum >= pl->fuel.max * 0.90)
+            return ROBOT_IGNORE_ITEM; /* already (almost) full */
+        else if ((pl->fuel.sum < (BIT(World.rules->mode, TIMING))
+                      ? my_data->fuel_l1
+                      : my_data->fuel_l2))
+            return ROBOT_MUST_HAVE_ITEM; /* ahh fuel at last */
+        else
+            return ROBOT_HANDY_ITEM;
+    }
+    if (BIT(World.rules->mode, TIMING))
+    {
+        switch (itemtype)
+        {
+        case ITEM_FUEL:             /* less refuel stops */
+        case ITEM_REARSHOT:         /* shoot competitors behind you */
+        case ITEM_AFTERBURNER:      /* the more speed the better */
+        case ITEM_TRANSPORTER:      /* steal fuel when you overtake someone */
+        case ITEM_MINE:             /* blows others off the track */
+        case ITEM_ECM:              /* blinded players smash into walls */
+        case ITEM_EMERGENCY_THRUST: /* makes you go really fast */
+        case ITEM_EMERGENCY_SHIELD: /* could be useful when ramming */
+            return ROBOT_MUST_HAVE_ITEM;
+        case ITEM_WIDEANGLE:    /* not important in racemode */
+        case ITEM_CLOAK:        /* not important in racemode */
+        case ITEM_SENSOR:       /* who cares about seeing others? */
+        case ITEM_TANK:         /* makes you heavier */
+        case ITEM_MISSILE:      /* likely to hit self */
+        case ITEM_LASER:        /* cost too much fuel */
+        case ITEM_TRACTOR_BEAM: /* pushes/pulls owner off the track too */
+        case ITEM_AUTOPILOT:    /* probably not useful */
+        case ITEM_DEFLECTOR:    /* cost too much fuel */
+        case ITEM_HYPERJUMP:    /* likely to end up in wrong place */
+        case ITEM_PHASING:      /* robots don't know how to use them yet */
+        case ITEM_MIRROR:       /* not important in racemode */
+        case ITEM_ARMOR:        /* makes you heavier */
+            return ROBOT_IGNORE_ITEM;
+        default: /* unknown */
+            warn("Rank_item_value: unknown item %ld.", itemtype);
+            return ROBOT_IGNORE_ITEM;
+        }
+    }
+    else
+    {
+        switch (itemtype)
+        {
+        case ITEM_EMERGENCY_SHIELD:
+        case ITEM_DEFLECTOR:
+        case ITEM_ARMOR:
+            if (BIT(pl->have, HAS_SHIELD))
+                return ROBOT_HANDY_ITEM;
+            else
+                return ROBOT_MUST_HAVE_ITEM;
 
-//         case ITEM_REARSHOT:
-//         case ITEM_WIDEANGLE:
-//             if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
-//                 return ROBOT_HANDY_ITEM;
-//             else
-//                 return ROBOT_MUST_HAVE_ITEM;
+        case ITEM_REARSHOT:
+        case ITEM_WIDEANGLE:
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
+                return ROBOT_HANDY_ITEM;
+            else
+                return ROBOT_MUST_HAVE_ITEM;
 
-//         case ITEM_MISSILE:
-//             if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
-//                 return ROBOT_IGNORE_ITEM;
-//             else
-//                 return ROBOT_MUST_HAVE_ITEM;
+        case ITEM_MISSILE:
+            if (options.maxPlayerShots <= 0 || options.shotLife <= 0 || !options.allowPlayerKilling)
+                return ROBOT_IGNORE_ITEM;
+            else
+                return ROBOT_MUST_HAVE_ITEM;
 
-//         case ITEM_MINE:
-//         case ITEM_CLOAK:
-//             return ROBOT_MUST_HAVE_ITEM;
+        case ITEM_MINE:
+        case ITEM_CLOAK:
+            return ROBOT_MUST_HAVE_ITEM;
 
-//         case ITEM_LASER:
-//             if (options.allowPlayerKilling)
-//                 return ROBOT_MUST_HAVE_ITEM;
-//             else
-//                 return ROBOT_HANDY_ITEM;
+        case ITEM_LASER:
+            if (options.allowPlayerKilling)
+                return ROBOT_MUST_HAVE_ITEM;
+            else
+                return ROBOT_HANDY_ITEM;
 
-//         case ITEM_PHASING: /* robots don't know how to use them yet */
-//             return ROBOT_IGNORE_ITEM;
+        case ITEM_PHASING: /* robots don't know how to use them yet */
+            return ROBOT_IGNORE_ITEM;
 
-//         default:
-//             break;
-//         }
-//     }
-//     return ROBOT_HANDY_ITEM;
-// }
+        default:
+            break;
+        }
+    }
+    return ROBOT_HANDY_ITEM;
+}
 
 static void Robot_suibot_play(player_t *pl)
 {
