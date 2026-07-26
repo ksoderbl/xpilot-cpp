@@ -476,8 +476,10 @@ static void PlayerCollision(void)
                        not the team the ball belongs to. the latter is
                        found through the ball's treasure */
                     ball->team = pl->team;
-                    if (ball->ball_owner == NO_ID)
-                        ball->obj_life = LONG_MAX; /* for frame counter */
+                    // if (ball->ball_owner == NO_ID)
+                    //     ball->obj_life = LONG_MAX; /* for frame counter */
+                    if (ball->ball_treasure->have)
+                        ball->ball_loose_ticks = 0;
                     ball->ball_owner = pl->id;
                     SET_BIT(ball->obj_status, GRAVITY);
                     // World.treasures[ball->treasure].have = false;

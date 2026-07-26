@@ -1103,14 +1103,19 @@ void Move_segment1(move_state_t *ms)
                         return;
                     }
                     // if (Team_play(world) && World.treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
-                    if (Team_play(world) && ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
+                    if (Team_play(world) &&
+                        ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
                     {
                         treasure_t *tt = ms->treasure_ptr;
                         /*
                          * Ball has been brought back to home treasure.
                          * The team should be punished.
                          */
-                        Set_message_f(" < The ball was loose for %ld frames >", LONG_MAX - ball->obj_life);
+                        // warn("LONG_MAX = %ld", LONG_MAX);
+                        // warn("ball->obj_life = %f", ball->obj_life);
+                        // warn("ball->ball_loose_ticks = %f", ball->ball_loose_ticks);
+
+                        Set_message_f(" < The ball was loose for %f frames >", ball->ball_loose_ticks);
                         if (options.captureTheFlag && !tt->have && !tt->empty)
                         {
                             strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
@@ -1774,8 +1779,8 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (options.cannonPoints > 0)
         {
-            if (Get_Score(pl) <= options.cannonMaxScore && 
-            !(Team_play(world) && pl->team == cannon->team))
+            if (Get_Score(pl) <= options.cannonMaxScore &&
+                !(Team_play(world) && pl->team == cannon->team))
             {
                 Score(pl, options.cannonPoints, cannon->pos, "");
             }

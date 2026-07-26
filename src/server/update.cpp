@@ -583,12 +583,19 @@ static void Misc_object_update(void)
 
         else if (obj->type == OBJ_BALL)
         {
-            if (obj->id != NO_ID)
-            {
-                ballobject_t *ball = BALL_PTR(obj);
+            ballobject_t *ball = BALL_PTR(obj);
 
-                Update_connector_force(ball);
-            }
+            // warn("Ball, obj->id = %d", obj->id);
+
+            // We should do this only if ball is loose.
+            ball->ball_loose_ticks += timeStep;
+
+            // Someone is connected to ball.
+            // if (ball->ball_owner != NO_ID)
+            // warn("obj->id = %d, ball->ball_owner = %d, ball->ball_loose_ticks = %f",
+            //      obj->id, ball->ball_owner, ball->ball_loose_ticks);
+
+            Update_connector_force(ball);
         }
 
         else if (obj->type == OBJ_WRECKAGE)

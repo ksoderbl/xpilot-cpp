@@ -150,11 +150,11 @@ struct cell_node
     clpos_t pos;         /* World coordinates */                                                   \
     clpos_t prevpos;     /* previous position */                                                   \
     clpos_t extmove;     /* For collision detection */                                             \
-    float wall_time;     /* bounce/crash time within frame */                                      \
+    double wall_time;    /* bounce/crash time within frame */                                      \
     vector_t vel;        /* speed in x,y */                                                        \
     vector_t acc;        /* acceleration in x,y */                                                 \
-    float mass;          /* mass in unigrams */                                                    \
-    float obj_life;      /* No of ticks left to live */                                            \
+    double mass;         /* mass in unigrams */                                                    \
+    double obj_life;     /* No of ticks left to live */                                            \
     modifiers_t mods;    /* Modifiers to this object */                                            \
     int type;            /* one of OBJ_XXX */                                                      \
     uint8_t color;       /* Color of object */                                                     \
@@ -169,7 +169,7 @@ struct cell_node
     int pl_range;     /* distance for collision */   \
     int pl_radius;    /* distance for hit */         \
     long fuselife;    /* fuse duration ticks */      \
-    float fuse;       /* ticks until fused, TODO */
+    double fuse;      /* ticks until fused, TODO */
 
 /*
  * Generic object
@@ -177,7 +177,6 @@ struct cell_node
 typedef struct xp_object object_t;
 struct xp_object
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
@@ -192,12 +191,11 @@ struct xp_object
 typedef struct xp_mineobject mineobject_t;
 struct xp_mineobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
 
-    float mine_count;                        /* Misc snafus */
+    double mine_count;                       /* Misc snafus */
     long mine_info; /* Miscellaneous info */ // TODO: REMOVE
 
     int mine_owner;       /* Who's object is this ? */
@@ -208,9 +206,9 @@ struct xp_mineobject
 #define MINE_PTR(ptr) ((mineobject_t *)(ptr))
 };
 
-#define MISSILE_EXTEND                              \
-    float missile_max_speed; /* speed limitation */ \
-    float missile_turnspeed; /* how fast to turn */
+#define MISSILE_EXTEND                               \
+    double missile_max_speed; /* speed limitation */ \
+    double missile_turnspeed; /* how fast to turn */
 
 /* up to here all missiles types are the same. */
 
@@ -220,7 +218,6 @@ struct xp_mineobject
 typedef struct xp_missileobject missileobject_t;
 struct xp_missileobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
@@ -237,7 +234,6 @@ struct xp_missileobject
 typedef struct xp_smartobject smartobject_t;
 struct xp_smartobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
@@ -250,10 +246,10 @@ struct xp_smartobject
     long info; /* Miscellaneous info */ // TODO: REMOVE
     int count;                          // TODO: REMOVE
 
-    float smart_ecm_range; /* Range from last ecm center*/
-    float smart_count;     /* Misc snafus */
-    short smart_lock_id;   /* snafu */
-    short smart_relock_id; /* smart re-lock id */
+    double smart_ecm_range; /* Range from last ecm center*/
+    double smart_count;     /* Misc snafus */
+    short smart_lock_id;    /* snafu */
+    short smart_relock_id;  /* smart re-lock id */
 
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
@@ -265,7 +261,6 @@ struct xp_smartobject
 typedef struct xp_torpobject torpobject_t;
 struct xp_torpobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
@@ -275,8 +270,8 @@ struct xp_torpobject
     int count; /* Misc timings */       // TODO: REMOVE
     long info; /* Miscellaneous info */ // TODO: REMOVE
 
-    int torp_spread_left; /* how much spread time left: TODO: float */
-    float torp_count;     /* Misc snafus */
+    int torp_spread_left; /* how much spread time left: TODO: double */
+    double torp_count;    /* Misc snafus */
 
 #define TORP_IND(ind) ((torpobject_t *)Obj[(ind)])
 #define TORP_PTR(ptr) ((torpobject_t *)(ptr))
@@ -288,7 +283,6 @@ struct xp_torpobject
 typedef struct xp_heatobject heatobject_t;
 struct xp_heatobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
@@ -298,7 +292,7 @@ struct xp_heatobject
     int count; /* Misc timings */       // TODO: REMOVE
     long info; /* Miscellaneous info */ // TODO: REMOVE
 
-    float heat_count;   /* Misc snafus */
+    double heat_count;  /* Misc snafus */
     short heat_lock_id; /* snafu */
 
 #define HEAT_IND(ind) ((heatobject_t *)Obj[(ind)])
@@ -311,7 +305,6 @@ struct xp_heatobject
 typedef struct xp_ballobject ballobject_t;
 struct xp_ballobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
@@ -343,12 +336,11 @@ struct xp_ballobject
 typedef struct xp_wireobject wireobject_t;
 struct xp_wireobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
 
-    float wire_turnspeed; /* how fast to turn */
+    double wire_turnspeed; /* how fast to turn */
 
     uint8_t wire_type;     /* Type of object */
     uint8_t wire_size;     /* Size of object */
@@ -364,14 +356,13 @@ struct xp_wireobject
 typedef struct xp_pulseobject pulseobject_t;
 struct xp_pulseobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND
 
     int count; /* Misc timings */ // TODO: REMOVE
 
-    float pulse_len;   /* Length of the pulse */
+    double pulse_len;  /* Length of the pulse */
     uint8_t pulse_dir; /* Direction of the pulse */
     bool pulse_refl;   /* Pulse was reflected ? */
 
@@ -385,7 +376,6 @@ struct xp_pulseobject
 typedef struct xp_itemobject itemobject_t;
 struct xp_itemobject
 {
-
     OBJECT_BASE
 
     OBJECT_EXTEND

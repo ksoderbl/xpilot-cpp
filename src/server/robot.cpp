@@ -797,7 +797,7 @@ void Robot_delete(player_t *pl, bool kicked)
     if (pl == NULL)
     {
         player_t *low_pl = NULL;
-        double low_score = (double)LONG_MAX;
+        double low_score = (double)FLT_MAX;
 
         /*
          * Find the robot with the lowest score.
