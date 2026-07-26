@@ -47,8 +47,6 @@
 #include "paintdata.h"
 #include "xinit.h"
 
-extern double tbl_sin[];
-extern double tbl_cos[];
 extern setup_t *Setup;
 
 Pixmap radarPixmap, radarPixmap2; /* Pixmaps for the radar (implements */

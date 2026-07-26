@@ -35,12 +35,10 @@
 /* xpmath.cpp */
 extern double rfrac(void);
 extern int mod(int x, int y);
-// extern void Make_table(void);
 extern int ON(const char *optval);
 extern int OFF(const char *optval);
 extern double findDir(double x, double y);
 extern double findDir(double x, double y);
-// void Make_table(void);
 extern double tcos(double x);
 extern double tsin(double x);
 

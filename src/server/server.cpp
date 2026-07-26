@@ -140,9 +140,6 @@ int main(int argc, char **argv)
 
     /* Lock the server into memory */
     plock_server(options.pLockServer);
-    /* Make trigonometric tables */
-    // printf("make table\n");
-    // Make_table();
     printf("compute gravity\n");
     Compute_gravity();
     printf("find base direction\n");
