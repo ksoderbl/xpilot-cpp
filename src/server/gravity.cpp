@@ -21,7 +21,16 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "server.h"
+#include <cmath>
+
+#include "bit.h"
+#include "click.h"
+#include "const.h"
+#include "types.h"
+
+#include "map.h"
+#include "option.h"
+#include "serverconst.h"
 
 #define GRAV_RANGE 10
 
@@ -128,11 +137,11 @@ static void Compute_local_gravity(void)
     }
     for (i = 0; i < Num_gravs(); i++)
     {
-        // gx = World.gravs[i].blk_pos.bx;
-        // gy = World.gravs[i].blk_pos.by;
-        gx = CLICK_TO_BLOCK(World.gravs[i].pos.cx);
-        gy = CLICK_TO_BLOCK(World.gravs[i].pos.cy);
-        force = World.gravs[i].force;
+        grav_t *g = Grav_by_index(i);
+
+        gx = CLICK_TO_BLOCK(g->pos.cx);
+        gy = CLICK_TO_BLOCK(g->pos.cy);
+        force = g->force;
 
         if ((first_xi = gx - GRAV_RANGE) < min_xi)
             first_xi = min_xi;
@@ -142,7 +151,9 @@ static void Compute_local_gravity(void)
             first_yi = min_yi;
         if ((last_yi = gy + GRAV_RANGE) > max_yi)
             last_yi = max_yi;
-        gtype = World.block[gx][gy];
+
+        gtype = g->type;
+
         mod_xi = (first_xi < 0) ? (first_xi + World.x) : first_xi;
         dx = gx - first_xi;
         fx = force;
@@ -220,7 +231,6 @@ static void Compute_local_gravity(void)
 
 void Compute_gravity(void)
 {
-    // TODO
-    // Compute_global_gravity();
-    // Compute_local_gravity();
+    Compute_global_gravity();
+    Compute_local_gravity();
 }
