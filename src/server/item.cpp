@@ -354,7 +354,7 @@ void Make_item(clpos_t pos, vector_t vel,
     item->acc.x =
         item->acc.y = 0.0;
     item->mass = 10.0;
-    item->obj_life = 1500 + (int)(rfrac() * 512);
+    item->obj_life = 1500 + rfrac() * 512;
     item->count = num_per_pack; // TODO: remove
     item->item_count = num_per_pack;
     item->pl_range = ITEM_SIZE / 2;

@@ -1140,7 +1140,7 @@ static void Player_collides_with_asteroid(player_t *pl, wireobject_t *ast)
     double cost = collision_cost(ast->mass, v);
 
     ast->obj_life += ASTEROID_FUEL_HIT(ED_PL_CRASH, ast->wire_size);
-    if (ast->obj_life < 0)
+    if (ast->obj_life < 0.0)
         ast->obj_life = 0.0;
     if (ast->obj_life == 0 && options.asteroidPoints > 0 && pl->score <= options.asteroidMaxScore)
     {
@@ -1472,7 +1472,7 @@ static void AsteroidCollision(void)
                                                        WIRE_PTR(ast)->wire_size);
                 if (sound)
                     sound_play_sensors(ast->pos, ASTEROID_HIT_SOUND);
-                if (ast->obj_life < 0)
+                if (ast->obj_life < 0.0)
                     ast->obj_life = 0.0;
                 if (ast->obj_life == 0)
                 {

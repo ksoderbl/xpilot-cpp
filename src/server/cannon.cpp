@@ -207,7 +207,7 @@ void Cannon_throw_items(cannon_t *c)
                 item->acc.x = 0;
                 item->acc.y = 0;
                 item->mass = 10;
-                item->obj_life = 1500 + (int)(rfrac() * 512);
+                item->obj_life = 1500 + rfrac() * 512;
                 item->count = amount; // TODO: Remove
                 item->item_count = amount;
                 item->pl_range = ITEM_SIZE / 2;
@@ -406,7 +406,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
     world_t *world = &World;
     double speed = options.shotSpeed;
     double range = CANNON_SHOT_LIFE_MAX * speed;
-    int visualrange = (int)(CANNON_DISTANCE + 2 * c->item[ITEM_SENSOR] * BLOCK_SZ);
+    double visualrange = (CANNON_DISTANCE + 2 * c->item[ITEM_SENSOR] * BLOCK_SZ);
     bool found = false, ready = false;
     double closest = range;
     int ddir, i, smartness = options.cannonSmartness;
