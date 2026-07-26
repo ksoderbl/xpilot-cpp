@@ -1924,28 +1924,12 @@ void Move_object1(object_t *obj)
     for (;;)
     {
         Move_segment1(&ms);
+
         if (!(ms.done.cx | ms.done.cy))
         {
-            pos_update |= (ms.crash | ms.bounce);
-
-            bool pos_update2 = false;
-
-            if (ms.crash != NotACrash)
-                pos_update2 = true;
-
-            if (ms.bounce != NotABounce)
-                pos_update2 = true;
-
-            // if (pos_update)
-            //     warn("POS_UPDATE!");
-            if (pos_update == pos_update2)
-            {
-                // warn("SUCCESS!");
-            }
-            else
-            {
-                warn("FAIL: pos_update = %d, pos_update2 = %d", pos_update, pos_update2);
-            }
+            // pos_update |= (ms.crash | ms.bounce);
+            bool crashOrBounce = (ms.crash != NotACrash) || (ms.bounce != NotABounce);
+            pos_update |= crashOrBounce;
 
             if (ms.crash)
                 break;
@@ -2294,6 +2278,7 @@ void Move_player1(player_t *pl)
     vel = pl->vel;
     todo.cx = FLOAT_TO_CLICK(vel.x);
     todo.cy = FLOAT_TO_CLICK(vel.y);
+
     for (i = 0; i < pl->ship->num_points; i++)
     {
         // double x = pl->ship->pts[i][pl->dir].x;
@@ -2384,26 +2369,9 @@ void Move_player1(player_t *pl)
         {
             Move_segment1(&ms[i]);
 
-            bool pos_update2 = pos_update;
-
-            pos_update |= (ms[i].crash | ms[i].bounce);
-
-            if (ms[i].crash != NotACrash)
-                pos_update2 = true;
-
-            if (ms[i].bounce != NotABounce)
-                pos_update2 = true;
-
-            // if (pos_update)
-            //     warn("POS_UPDATE!");
-            if (pos_update == pos_update2)
-            {
-                // warn("SUCCESS! (i = %d)", i);
-            }
-            else
-            {
-                warn("FAIL: i = %d, pos_update = %d, pos_update2 = %d", i, pos_update, pos_update2);
-            }
+            // pos_update |= (ms[i].crash | ms[i].bounce);
+            bool crashOrBounce = (ms[i].crash != NotACrash) || (ms[i].bounce != NotABounce);
+            pos_update |= crashOrBounce;
 
             if (ms[i].crash)
             {
@@ -2812,23 +2780,10 @@ void Turn_player1(player_t *pl)
             {
                 Move_segment1(&ms[i]);
 
-                bool val1 = ms[i].crash | ms[i].bounce;
-                bool isCrash = (ms[i].crash != NotACrash);
-                bool isBounce = (ms[i].bounce != NotABounce);
+                bool crashOrBounce = (ms[i].crash != NotACrash) || (ms[i].bounce != NotABounce);
 
-                // if (val1 || isCrash || isBounce)
-                //     warn("i=%d, val1=%d, isCrash=%d, isBounce=%d", i, val1, isCrash, isBounce);
-
-                if (val1 == (isCrash || isBounce))
-                {
-                    // warn("SUCCESS!");
-                }
-                else
-                {
-                    warn("FAIL!");
-                }
-
-                if (ms[i].crash | ms[i].bounce)
+                // if (ms[i].crash | ms[i].bounce)
+                if (crashOrBounce)
                 {
                     if (ms[i].crash)
                     {

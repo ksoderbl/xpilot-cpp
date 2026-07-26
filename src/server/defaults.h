@@ -41,22 +41,25 @@ enum valType
 enum _optOrigin
 {
     OPT_INIT = 0,
+    OPT_NONE = 0,
     OPT_MAP = 1,
     OPT_DEFAULTS = 2,
     OPT_COMMAND = 4,
-    OPT_PASSWORD = 8
+    OPT_ORIGIN_ANY = 7, /* allow any of {map,defaults,command} */
+    OPT_PASSWORD = 8,
+    OPT_VISIBLE = 16 /* can we query this option value? */
 };
 typedef enum _optOrigin optOrigin;
 
-/*
- * extended bitflags for option origin.
- */
-enum _optOriginAny
-{
-    OPT_NONE = 0,       /* not settable */
-    OPT_ORIGIN_ANY = 7, /* allow any of {map,defaults,command} */
-    OPT_VISIBLE = 16    /* can we query this option value? */
-};
+// /*
+//  * extended bitflags for option origin.
+//  */
+// enum _optOriginAny
+// {
+//     OPT_NONE = 0,       /* not settable */
+//     OPT_ORIGIN_ANY = 7, /* allow any of {map,defaults,command} */
+//     OPT_VISIBLE = 16    /* can we query this option value? */
+// };
 
 typedef struct _option_desc
 {

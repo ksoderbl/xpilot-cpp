@@ -26,6 +26,7 @@
 #include "types.h"
 #include "click.h"
 #include "const.h"
+#include "xperror.h"
 
 /*
  * Please don't change any of these maxima.
@@ -91,6 +92,11 @@ extern clpos_t *Shape_get_points(shape_t *s, int dir);
 static inline clpos_t
 Ship_get_point_clpos(shipshape_t *ship, int i, int dir)
 {
+    // warn("Ship_get_point_clpos: i=%d, dir=%d", i, dir);
+    // clpos_t pos;
+    // pos.cx = 0;
+    // pos.cy = 0;
+    // return pos;
     return ship->pts[i][dir];
 }
 static inline clpos_t

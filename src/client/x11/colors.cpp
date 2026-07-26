@@ -1102,7 +1102,7 @@ void Init_spark_colors(void)
 static bool Set_sparkColors(xp_option_t *opt, const char *val)
 {
     strlcpy(sparkColors, val, sizeof sparkColors);
-    printf("sparkColors: %s", val);
+    // warn("Set_sparkColors: sparkColors: %s", val);
     Init_spark_colors();
     /* might fail to set what we wanted, but return ok nonetheless */
     return true;
