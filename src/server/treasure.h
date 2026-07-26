@@ -31,6 +31,10 @@
 void Treasure_init(void);
 void Make_treasure_ball(treasure_t *t);
 void Ball_hits_goal2(ballobject_t *ball, group_t *groupptr);
-void Ball_is_replaced(ballobject_t *ball);
-void Ball_is_destroyed(ballobject_t *ball);
+void Ball_is_replaced2(ballobject_t *ball);
+void Ball_is_destroyed2(ballobject_t *ball);
 bool Balltarget_hitfunc(group_t *groupptr, const move_t *move);
+
+int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos);
+void Ball_is_replaced1(ballobject_t *ball);
+void Ball_is_destroyed1(ballobject_t *ball);

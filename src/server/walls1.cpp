@@ -48,6 +48,7 @@
 #include "object.h"
 #include "robot.h"
 #include "target.h"
+#include "treasure.h"
 #include "wormhole.h"
 
 #define DOUBLE_TO_INT(D) ((D) < 0 ? -(int)(0.5 - (D)) : (int)((D) + 0.5))
@@ -1041,7 +1042,11 @@ void Move_segment1(move_state_t *ms)
                     off2.cy = offset.cy + delta.cy;
                     mid.cx = (offset.cx + off2.cx) / 2;
                     mid.cy = (offset.cy + off2.cy) / 2;
-                    if (offset.cy > r && off2.cy > r && sqr(mid.cx - r) + sqr(mid.cy - r) > sqr(r) && sqr(off2.cx - r) + sqr(off2.cy - r) > sqr(r) && sqr(offset.cx - r) + sqr(offset.cy - r) > sqr(r))
+                    if (offset.cy > r &&
+                        off2.cy > r &&
+                        sqr(mid.cx - r) + sqr(mid.cy - r) > sqr(r) &&
+                        sqr(off2.cx - r) + sqr(off2.cy - r) > sqr(r) &&
+                        sqr(offset.cx - r) + sqr(offset.cy - r) > sqr(r))
                         break;
 
                     for (i = 0;; i++)
@@ -1064,15 +1069,12 @@ void Move_segment1(move_state_t *ms)
                         return;
 
                     ball = BALL_PTR(mi->obj);
+
+                    player_t *owner = Player_by_id(ball->ball_owner);
+                    treasure_t *td = ball->ball_treasure;
+
                     if (ms->treasure_ptr == ball->ball_treasure)
                     {
-                        /*
-                         * Ball has been replaced back in the hoop from whence
-                         * it came.  If the player is on the same team as the
-                         * hoop, then it should be replaced into the hoop without
-                         * exploding and gets the player some points.  Otherwise
-                         * nothing interesting happens.
-                         */
                         player_t *pl = NULL;
                         // treasure_t *tt = &World.treasures[ms->treasure];
                         treasure_t *tt = ms->treasure_ptr;
@@ -1080,7 +1082,6 @@ void Move_segment1(move_state_t *ms)
                         if (ball->ball_owner != NO_ID)
                             pl = Player_by_id(ball->ball_owner);
 
-                        // if (!Team_play(world) || !pl || (pl->team != World.treasures[ball->treasure].team))
                         if (!Team_play(world) || !pl || (pl->team != ball->ball_treasure->team))
                         {
                             ball->obj_life = LONG_MAX;
@@ -1088,13 +1089,7 @@ void Move_segment1(move_state_t *ms)
                             break;
                         }
 
-                        ball->obj_life = 0.0;
-                        SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
-
-                        Score(pl, 5, tt->pos, "Treasure: ");
-                        sprintf(msg, " < %s (team %d) has replaced the treasure >",
-                                pl->name, pl->team);
-                        Set_message(msg);
+                        Ball_is_replaced1(ball);
                         break;
                     }
                     if (ball->ball_owner == NO_ID)
@@ -1102,26 +1097,22 @@ void Move_segment1(move_state_t *ms)
                         ball->obj_life = 0.0;
                         return;
                     }
-                    // if (Team_play(world) && World.treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
-                    if (Team_play(world) &&
-                        ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
+
+                    /*
+                     * If it's not team play, nothing interesting happens.
+                     */
+                    if (!Team_play(world))
+                        return;
+
+                    if (ms->treasure_ptr->team == owner->team)
                     {
                         treasure_t *tt = ms->treasure_ptr;
-                        /*
-                         * Ball has been brought back to home treasure.
-                         * The team should be punished.
-                         */
-                        // warn("LONG_MAX = %ld", LONG_MAX);
-                        // warn("ball->obj_life = %f", ball->obj_life);
-                        // warn("ball->ball_loose_ticks = %f", ball->ball_loose_ticks);
 
-                        Set_message_f(" < The ball was loose for %f frames >", ball->ball_loose_ticks);
+                        Ball_is_destroyed1(ball);
+
                         if (options.captureTheFlag && !tt->have && !tt->empty)
-                        {
-                            strcpy(msg, "Your treasure must be safe before you can cash an opponent's!");
-                            Set_player_message(Player_by_id(ball->ball_owner), msg);
-                        }
-                        else if (Punish_team1(Player_by_id(ball->ball_owner), ball->ball_treasure, ball->pos))
+                            Set_message(" < Your treasure must be safe before you can cash an opponent's! >");
+                        else if (Punish_team1(owner, td, ball->pos))
                             CLR_BIT(ball->obj_status, RECREATE);
                     }
                     ball->obj_life = 0.0;

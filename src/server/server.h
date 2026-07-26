@@ -259,7 +259,6 @@ bool Friction_area_hitfunc(group_t *groupptr, const move_t *move);
 void Team_immunity_init(void);
 void Hitmasks_init(void);
 
-int Punish_team1(player_t *pl, treasure_t *td, clpos_t pos);
 void Delete_shot(int ind);
 void Fire_laser(player_t *pl);
 void Fire_general_laser(int id, int team, clpos_t pos, int dir, modifiers_t mods);

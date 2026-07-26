@@ -103,7 +103,7 @@ void Treasure_init(void)
  * should be replaced into the hoop without exploding and
  * the player gets some points.
  */
-void Ball_is_replaced(ballobject_t *ball)
+void Ball_is_replaced2(ballobject_t *ball)
 {
     player_t *pl = Player_by_id(ball->ball_owner);
 
@@ -121,7 +121,7 @@ void Ball_is_replaced(ballobject_t *ball)
  * Ball has been brought back to home treasure.
  * The team should be punished.
  */
-void Ball_is_destroyed(ballobject_t *ball)
+void Ball_is_destroyed2(ballobject_t *ball)
 {
     player_t *pl = Player_by_id(ball->ball_owner);
     double ticks = ball->ball_loose_ticks;
@@ -218,7 +218,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
     owner = Player_by_id(ball->ball_owner);
     if (td->team == gp->team && td->team == owner->team)
     {
-        Ball_is_replaced(ball);
+        Ball_is_replaced2(ball);
         return;
     }
     if (gp->team == owner->team &&
@@ -226,7 +226,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
     {
         treasure_t *tt = Treasure_by_index(gp->mapobj_ind);
 
-        Ball_is_destroyed(ball);
+        Ball_is_destroyed2(ball);
 
         if (options.captureTheFlag && !tt->have && !tt->empty)
             Set_message(" < The treasure must be safe before you "
@@ -248,7 +248,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
         td->team == options.specialBallTeam)
     {
         int opponent_teams = 0;
-        Ball_is_destroyed(ball);
+        Ball_is_destroyed2(ball);
 
         for (i = 0; i < MAX_TEAMS; i++)
         {
@@ -282,7 +282,7 @@ void Ball_hits_goal2(ballobject_t *ball, group_t *gp)
 
     if (td->team == options.specialBallTeam)
     {
-        Ball_is_destroyed(ball);
+        Ball_is_destroyed2(ball);
         td->team = gp->team; /* give ball to team that has to be punished*/
         if (Punish_team2(owner, td, ball->pos))
         {
@@ -357,6 +357,43 @@ bool Balltarget_hitfunc(group_t *gp, const move_t *move)
 
     /* allow grabbing of ball */
     return false;
+}
+
+/*
+ * Ball has been replaced back in the hoop from whence
+ * it came.  If the player is on the same team as the
+ * hoop, then it should be replaced into the hoop without
+ * exploding and gets the player some points.  Otherwise
+ * nothing interesting happens.
+ */
+void Ball_is_replaced1(ballobject_t *ball)
+{
+    player_t *pl = Player_by_id(ball->ball_owner);
+
+    ball->obj_life = 0.0;
+    SET_BIT(ball->obj_status, (NOEXPLOSION | RECREATE));
+
+    Score(pl, 5, ball->pos, "Treasure: ");
+    Set_message_f(" < %s (team %d) has replaced the treasure >", pl->name, pl->team);
+    Rank_saved_ball(pl);
+}
+
+/*
+ * Ball has been brought back to home treasure.
+ * The team should be punished.
+ */
+void Ball_is_destroyed1(ballobject_t *ball)
+{
+    player_t *pl = Player_by_id(ball->ball_owner);
+    double ticks = ball->ball_loose_ticks;
+
+    // int frames = (int)(ticks / timeStep + .5);
+    // warn("LONG_MAX = %ld", LONG_MAX);
+    // warn("ball->obj_life = %f", ball->obj_life);
+    // warn("ball->ball_loose_ticks = %f", ball->ball_loose_ticks);
+
+    Set_message_f(" < The ball was loose for %f frames >", ball->ball_loose_ticks);
+    Rank_ballrun(pl, ticks);
 }
 
 // pl = player who cashed ball
