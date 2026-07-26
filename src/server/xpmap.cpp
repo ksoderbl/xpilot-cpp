@@ -1325,7 +1325,7 @@ void Xpmap_tags_to_internal_data(void)
         /*
          * Determine which team a treasure belongs to.
          */
-        if (BIT(World.rules->mode, TEAM_PLAY))
+        if (Team_play(world))
         {
             uint16_t team = TEAM_NOT_SET;
             for (i = 0; i < Num_treasures(); i++)
@@ -1381,10 +1381,11 @@ void Xpmap_tags_to_internal_data(void)
 
 void Xpmap_find_map_object_teams(void)
 {
+    world_t *world = &World;
     int i;
     clpos_t pos = {0, 0};
 
-    if (!BIT(World.rules->mode, TEAM_PLAY))
+    if (!Team_play(world))
         return;
 
     /* This could return -1 */

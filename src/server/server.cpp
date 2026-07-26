@@ -678,6 +678,7 @@ void Log_game(const char *heading)
 
 void Game_Over(void)
 {
+    world_t *world = &World;
     double maxsc, minsc;
     int i, win_team = TEAM_NOT_SET, lose_team = TEAM_NOT_SET;
     char msg[MSG_LEN];
@@ -690,7 +691,7 @@ void Game_Over(void)
      */
     options.gameDuration = -1.0;
 
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (Team_play(world))
     {
         double teamscore[MAX_TEAMS];
 

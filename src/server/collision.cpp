@@ -518,7 +518,7 @@ static void PlayerCollision(void)
                          * taking and hiding with the ball... this was
                          * considered bad gamesmanship.
                          */
-                        if (!BIT(World.rules->mode, TEAM_PLAY) || ball->ball_owner != NO_ID || pl->team != bteam)
+                        if (!Team_play(world) || ball->ball_owner != NO_ID || pl->team != bteam)
                         {
                             pl->ball = ball;
                             mindist = dist;
@@ -597,6 +597,7 @@ static inline double collision_cost(double mass, double speed)
 
 static void PlayerObjectCollision(player_t *pl)
 {
+    world_t *world = &World;
     int j, obj_count;
     int range, radius;
     object_t *obj, **obj_list;
@@ -643,7 +644,7 @@ static void PlayerObjectCollision(player_t *pl)
             else if (Player_is_paused(Player_by_id(obj->id)))
                 continue;
         }
-        else if (BIT(World.rules->mode, TEAM_PLAY) && options.teamImmunity && obj->team == pl->team
+        else if (Team_play(world) && options.teamImmunity && obj->team == pl->team
                  /* allow players to destroy their team's unowned balls */
                  && obj->type != OBJ_BALL)
             continue;
@@ -765,6 +766,7 @@ static void PlayerObjectCollision(player_t *pl)
 
 static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radius)
 {
+    world_t *world = &World;
     int sc;
     int killer;
 
@@ -779,7 +781,7 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
         Player_add_fuel(pl, ED_BALL_HIT);
         if (options.treasureCollisionDestroys)
         {
-            if (BIT(World.rules->mode, TEAM_PLAY) && pl->team == ball->ball_treasure->team)
+            if (Team_play(world) && pl->team == ball->ball_treasure->team)
                 Rank_saved_ball(pl);
             ball->obj_life = 0.0;
         }

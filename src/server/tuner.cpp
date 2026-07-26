@@ -314,7 +314,9 @@ void tuner_racelaps(void)
 
 void tuner_allowalliances(void)
 {
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    world_t *world = &World;
+
+    if (Team_play(world))
         CLR_BIT(World.rules->mode, ALLIANCES);
 
     if (!BIT(World.rules->mode, ALLIANCES) && NumAlliances > 0)

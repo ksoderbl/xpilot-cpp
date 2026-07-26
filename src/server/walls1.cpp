@@ -831,7 +831,7 @@ void Move_segment1(move_state_t *ms)
                 break;
 
             if (BIT(mi->obj->obj_status, FROMCANNON) &&
-                !BIT(World.rules->mode, TEAM_PLAY))
+                !Team_play(world))
                 break;
 
             for (i = 0;; i++)
@@ -847,7 +847,7 @@ void Move_segment1(move_state_t *ms)
             if (BIT(World.cannons[i].used, HAS_PHASING_DEVICE))
                 break;
 
-            if (BIT(World.rules->mode, TEAM_PLAY) &&
+            if (Team_play(world) &&
                 (options.teamImmunity || BIT(mi->obj->obj_status, FROMCANNON)) &&
                 mi->obj->team == World.cannons[i].team)
                 break;
@@ -1080,8 +1080,8 @@ void Move_segment1(move_state_t *ms)
                         if (ball->ball_owner != NO_ID)
                             pl = Player_by_id(ball->ball_owner);
 
-                        // if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != World.treasures[ball->treasure].team))
-                        if (!BIT(World.rules->mode, TEAM_PLAY) || !pl || (pl->team != ball->ball_treasure->team))
+                        // if (!Team_play(world) || !pl || (pl->team != World.treasures[ball->treasure].team))
+                        if (!Team_play(world) || !pl || (pl->team != ball->ball_treasure->team))
                         {
                             ball->obj_life = LONG_MAX;
                             ms->crash = NotACrash;
@@ -1102,8 +1102,8 @@ void Move_segment1(move_state_t *ms)
                         ball->obj_life = 0.0;
                         return;
                     }
-                    // if (BIT(World.rules->mode, TEAM_PLAY) && World.treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
-                    if (BIT(World.rules->mode, TEAM_PLAY) && ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
+                    // if (Team_play(world) && World.treasures[ms->treasure].team == Player_by_id(ball->ball_owner)->team)
+                    if (Team_play(world) && ms->treasure_ptr->team == Player_by_id(ball->ball_owner)->team)
                     {
                         treasure_t *tt = ms->treasure_ptr;
                         /*
@@ -1745,6 +1745,7 @@ static void Cannon_dies(move_state_t *ms)
 {
     warn("walls: cannon dies!");
 
+    world_t *world = &World;
     cannon_t *cannon = &World.cannons[ms->cannon];
     int cx = cannon->pos.cx;
     int cy = cannon->pos.cy;
@@ -1773,7 +1774,8 @@ static void Cannon_dies(move_state_t *ms)
     {
         if (options.cannonPoints > 0)
         {
-            if (Get_Score(pl) <= options.cannonMaxScore && !(BIT(World.rules->mode, TEAM_PLAY) && pl->team == cannon->team))
+            if (Get_Score(pl) <= options.cannonMaxScore && 
+            !(Team_play(world) && pl->team == cannon->team))
             {
                 Score(pl, options.cannonPoints, cannon->pos, "");
             }

@@ -119,6 +119,7 @@ int Contact_init(void)
  */
 static int Kick_robot_players(int team)
 {
+    world_t *world = &World;
     int i;
 
     if (NumRobots == 0) /* no robots available for kicking */
@@ -126,7 +127,7 @@ static int Kick_robot_players(int team)
 
     if (team == TEAM_NOT_SET)
     {
-        if (BIT(World.rules->mode, TEAM_PLAY) && options.reserveRobotTeam)
+        if (Team_play(world) && options.reserveRobotTeam)
         {
             /* kick robot with lowest score from any team but robot team */
             double low_score = FLT_MAX;
@@ -730,6 +731,7 @@ static void Queue_ack(struct queued_player *qp, int qpos)
 
 void Queue_loop(void)
 {
+    world_t *world = &World;
     struct queued_player *qp, *prev = 0, *next = 0;
     int qpos = 0, login_port;
     static long last_unqueued_loops;
@@ -788,7 +790,7 @@ void Queue_loop(void)
             {
 
                 /* find a team for this fellow. */
-                if (BIT(World.rules->mode, TEAM_PLAY))
+                if (Team_play(world))
                 {
 
                     /* see if he has a reasonable suggestion. */

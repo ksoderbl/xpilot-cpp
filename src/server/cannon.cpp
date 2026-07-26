@@ -314,7 +314,7 @@ static int Cannon_in_danger(cannon_t *c)
             continue;
         if (BIT(shot->obj_status, FROMCANNON))
             continue;
-        if (BIT(World.rules->mode, TEAM_PLAY) && options.teamImmunity && shot->team == c->team)
+        if (Team_play(world) && options.teamImmunity && shot->team == c->team)
             continue;
 
         npx = CLICK_TO_PIXEL(shot->pos.cx);
@@ -466,7 +466,7 @@ static void Cannon_aim(cannon_t *c, int weapon, player_t **pl_p, int *dir)
 
         /* mode 3 also checks if a player is using a phasing device */
         if (!Player_is_alive(pl) ||
-            (BIT(World.rules->mode, TEAM_PLAY) && pl->team == c->team) ||
+            (Team_play(world) && pl->team == c->team) ||
             (!pl->forceVisible && Player_is_cloaked(pl) && (int)(rfrac() * (pl->item[ITEM_CLOAK] + 1)) > (int)(rfrac() * (c->item[ITEM_SENSOR] + 1))) ||
             (smartness > 2 && Player_is_phasing(pl)))
             continue;
@@ -852,9 +852,10 @@ void Cannon_dies(cannon_t *c, player_t *pl)
 
 hitmask_t Cannon_hitmask(cannon_t *cannon)
 {
+    world_t *world = &World;
     if (cannon->dead_ticks > 0)
         return ALL_BITS;
-    if (BIT(World.rules->mode, TEAM_PLAY) && options.teamImmunity)
+    if (Team_play(world) && options.teamImmunity)
         return HITMASK(cannon->team);
     return 0;
 }

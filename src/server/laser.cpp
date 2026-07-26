@@ -211,7 +211,7 @@ static void Laser_pulse_find_victims(
         /* special case for cannon pulses */
         if (pulse->id == NO_ID &&
             options.teamImmunity &&
-            BIT(World.rules->mode, TEAM_PLAY) &&
+            Team_play(world) &&
             pulse->team == vic->team)
             continue;
 

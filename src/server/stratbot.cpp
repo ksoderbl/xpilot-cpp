@@ -283,7 +283,7 @@ static bool Really_empty_space(int ind, int x, int y)
 
     case TARGET:
         if (!targetTeamCollision
-            && BIT(World.rules->mode, TEAM_PLAY)
+            && Team_play(world)
             && World.targets[World.itemID[x][y]].team == pl->team) {
             return true;
         } else {
@@ -292,7 +292,7 @@ static bool Really_empty_space(int ind, int x, int y)
 
     case CANNON:
         if (teamImmunity
-            && BIT(World.rules->mode, TEAM_PLAY)
+            && Team_play(world)
             && World.cannons[World.itemID[x][y]].team == pl->team) {
             return true;
         } else {

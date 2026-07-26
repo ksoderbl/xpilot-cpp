@@ -215,7 +215,7 @@ int World_place_base(world_t *world, clpos_t pos, int dir, int team, int order)
     warn("World.rules = %p", World.rules);
     warn("World.rules->mode = %lx", World.rules->mode);
 
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (Team_play(world))
     {
         if (team < 0 || team >= MAX_TEAMS)
             team = 0;
@@ -703,6 +703,8 @@ void Xpmap_find_map_object_teams2(void)
 
 bool Grok_map(void)
 {
+    world_t *world = &World;
+
     warn("Grok_map: ========================== START");
     warn("Grok_map: is_polygon_map: %s", is_polygon_map ? "true" : "false");
 
@@ -802,7 +804,7 @@ bool Grok_map(void)
     printf("World....: %s\nBases....: %d\nMapsize..: %dx%d pixels\n"
            "Team play: %s\n",
            World.name, Num_bases(), World.width, World.height,
-           BIT(World.rules->mode, TEAM_PLAY) ? "on" : "off");
+           Team_play(world) ? "on" : "off");
 
     if (!is_polygon_map)
         Xpmap_blocks_to_polygons();

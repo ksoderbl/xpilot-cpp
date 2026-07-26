@@ -1039,7 +1039,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
                         continue;
                 }
             }
-            else if ((pl && Team_immune(pl->id, owner_pl->id)) || (BIT(World.rules->mode, TEAM_PLAY) && team == shot->team))
+            else if ((pl && Team_immune(pl->id, owner_pl->id)) || (Team_play(world) && team == shot->team))
                 continue;
         }
 
@@ -1127,13 +1127,13 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
     }
 
     /* in non-team mode cannons are immune to cannon ECMs */
-    if (BIT(World.rules->mode, TEAM_PLAY) || pl)
+    if (Team_play(world) || pl)
     {
         for (i = 0; i < Num_cannons(); i++)
         {
             cannon_t *c = Cannon_by_index(i);
 
-            if (BIT(World.rules->mode, TEAM_PLAY) && c->team == team)
+            if (Team_play(world) && c->team == team)
                 continue;
             range = World_wrap_length(
                         world,
@@ -1160,7 +1160,7 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
          * Team members are always immune from ECM effects from other
          * team members.  Its too nasty otherwise.
          */
-        if (BIT(World.rules->mode, TEAM_PLAY) && p->team == team)
+        if (Team_play(world) && p->team == team)
             continue;
 
         if (pl && Players_are_allies(pl, p))

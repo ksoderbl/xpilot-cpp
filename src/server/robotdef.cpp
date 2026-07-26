@@ -84,7 +84,7 @@
 
 static bool Really_empty_space(player_t *pl, int x, int y)
 {
-    // player_t *pl = PlayersArray[ind];
+    world_t *world = &World;
     int type = World.block[x][y];
 
     if (EMPTY_SPACE(type))
@@ -102,33 +102,21 @@ static bool Really_empty_space(player_t *pl, int x, int y)
 
     case WORMHOLE:
         if (!options.wormholeVisible || World.wormholes[World.itemID[x][y]].type == WORM_OUT)
-        {
             return true;
-        }
         else
-        {
             return false;
-        }
 
     case TARGET:
-        if (!options.targetTeamCollision && BIT(World.rules->mode, TEAM_PLAY) && World.targets[World.itemID[x][y]].team == pl->team)
-        {
+        if (!options.targetTeamCollision && Team_play(world) && World.targets[World.itemID[x][y]].team == pl->team)
             return true;
-        }
         else
-        {
             return false;
-        }
 
     case CANNON:
-        if (options.teamImmunity && BIT(World.rules->mode, TEAM_PLAY) && World.cannons[World.itemID[x][y]].team == pl->team)
-        {
+        if (options.teamImmunity && Team_play(world) && World.cannons[World.itemID[x][y]].team == pl->team)
             return true;
-        }
         else
-        {
             return false;
-        }
 
     default:
         break;
@@ -1590,6 +1578,7 @@ static bool Ball_handler(player_t *pl)
 
 static int Robot_default_play_check_map(player_t *pl)
 {
+    world_t *world = &World;
     int j, cannon_i = NO_IND, fuel_i = NO_IND, target_i = NO_IND;
     double cannon_dist = Visibility_distance;
     double fuel_dist = Visibility_distance;
@@ -1605,7 +1594,7 @@ static int Robot_default_play_check_map(player_t *pl)
         if (fs->fuel < 100.0)
             continue;
 
-        if (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team)
+        if (Team_play(world) && options.teamFuel && fs->team != pl->team)
             continue;
 
         dcx = fs->pos.cx - pl->pos.cx;
@@ -1623,7 +1612,9 @@ static int Robot_default_play_check_map(player_t *pl)
         target_t *targ = Target_by_index(j);
 
         /* Ignore dead or owned targets */
-        if (targ->dead_ticks > 0 || pl->team == targ->team || Team_by_index(targ->team)->NumMembers == 0)
+        if (targ->dead_ticks > 0 ||
+            pl->team == targ->team ||
+            Team_by_index(targ->team)->NumMembers == 0)
             continue;
 
         dcx = targ->pos.cx - pl->pos.cx;
@@ -1636,7 +1627,9 @@ static int Robot_default_play_check_map(player_t *pl)
         }
     }
 
-    if (fuel_i != NO_IND && (target_dist > fuel_dist || !BIT(World.rules->mode, TEAM_PLAY)) && BIT(my_data->longterm_mode, NEED_FUEL))
+    if (fuel_i != NO_IND &&
+        (target_dist > fuel_dist || !Team_play(world)) &&
+        BIT(my_data->longterm_mode, NEED_FUEL))
     {
 
         fuel_checked = true;
@@ -1665,7 +1658,7 @@ static int Robot_default_play_check_map(player_t *pl)
         if (cannon->dead_ticks > 0)
             continue;
 
-        if (BIT(World.rules->mode, TEAM_PLAY) && cannon->team == pl->team)
+        if (Team_play(world) && cannon->team == pl->team)
             continue;
 
         dcx = cannon->pos.cx - pl->pos.cx;
@@ -2018,7 +2011,7 @@ static void Robot_default_play(player_t *pl)
         {
             fuel_t *fs = Fuel_by_index(j);
 
-            if (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team)
+            if (Team_play(world) && options.teamFuel && fs->team != pl->team)
                 continue;
 
             if ((World_wrap_length(
@@ -2042,7 +2035,7 @@ static void Robot_default_play(player_t *pl)
     else if (!Player_is_refueling(pl))
         CLR_BIT(my_data->longterm_mode, NEED_FUEL);
 
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (Team_play(world))
     {
         for (j = 0; j < Num_targets(); j++)
         {
@@ -2186,7 +2179,7 @@ static void Robot_default_play(player_t *pl)
         ship = Player_by_index(enemy_i);
         if (!BIT(pl->lock.tagged, LOCK_PLAYER) ||
             (enemy_dist < pl->lock.distance / 2 && (BIT(World.rules->mode, TIMING) ? (ship->check >= pl->check && ship->round >= pl->round) : 1)) ||
-            (enemy_dist < pl->lock.distance * 2 && BIT(World.rules->mode, TEAM_PLAY) && BIT(ship->have, HAS_BALL)) ||
+            (enemy_dist < pl->lock.distance * 2 && Team_play(world) && BIT(ship->have, HAS_BALL)) ||
             Get_Score(ship) > Get_Score(Player_by_id(pl->lock.pl_id)))
         {
             pl->lock.pl_id = ship->id;
@@ -2302,7 +2295,7 @@ static void Robot_default_play(player_t *pl)
         if (Check_robot_target(pl, d, RM_ATTACK) && !BIT(my_data->longterm_mode, FETCH_TREASURE | TARGET_KILL | NEED_FUEL))
             return;
     }
-    if (BIT(World.rules->mode, TEAM_PLAY) && Num_treasures() > 0 && World.teams[pl->team].NumTreasures > 0 && !navigate_checked && !BIT(my_data->longterm_mode, TARGET_KILL | NEED_FUEL))
+    if (Team_play(world) && Num_treasures() > 0 && World.teams[pl->team].NumTreasures > 0 && !navigate_checked && !BIT(my_data->longterm_mode, TARGET_KILL | NEED_FUEL))
     {
         navigate_checked = true;
         if (Ball_handler(pl))

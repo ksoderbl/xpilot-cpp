@@ -351,6 +351,8 @@ void Set_world_items(void)
 
 void Set_world_rules(void)
 {
+    world_t *world = &World;
+    // What's the point of this, rules could just be inside the world_t?
     static rules_t rules;
 
     rules.mode =
@@ -358,7 +360,7 @@ void Set_world_rules(void)
     rules.lives = options.worldLives;
     World.rules = &rules;
 
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (Team_play(world))
         CLR_BIT(World.rules->mode, ALLIANCES);
 
     if (!BIT(World.rules->mode, PLAYER_KILLINGS))

@@ -31,6 +31,7 @@
 #include <cassert>
 #include <vector>
 
+#include "bit.h"
 #include "click.h"
 #include "const.h"
 #include "item.h"
@@ -602,4 +603,9 @@ static inline team_t *Team_by_index(int ind)
     if (ind >= 0 && ind < MAX_TEAMS)
         return &World.teams[ind];
     return NULL;
+}
+
+static inline bool Team_play(world_t *world)
+{
+    return BIT(world->rules->mode, TEAM_PLAY);
 }

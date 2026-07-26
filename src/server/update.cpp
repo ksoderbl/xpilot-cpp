@@ -760,7 +760,7 @@ static void Do_refuel(player_t *pl)
              pl->pos.cy - fs->pos.cy) > 90.0 * CLICK) ||
         (pl->fuel.sum >= pl->fuel.max) ||
         Player_is_phasing(pl) ||
-        (BIT(World.rules->mode, TEAM_PLAY) && options.teamFuel && fs->team != pl->team))
+        (Team_play(world) && options.teamFuel && fs->team != pl->team))
         CLR_BIT(pl->used, USES_REFUEL);
     else
     {

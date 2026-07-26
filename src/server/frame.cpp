@@ -856,7 +856,7 @@ static void Frame_shots(connection_t *conn, player_t *pl)
 
         case OBJ_SHOT:
         case OBJ_CANNON_SHOT:
-            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) || (shot->id == NO_ID && BIT(World.rules->mode, TEAM_PLAY) && shot->team == pl->team))
+            if (Team_immune(shot->id, pl->id) || (shot->id != NO_ID && Player_is_paused(Player_by_id(shot->id))) || (shot->id == NO_ID && Team_play(world) && shot->team == pl->team))
             {
                 color = BLUE;
                 teamshot = DEBRIS_TYPES;
@@ -1209,7 +1209,7 @@ static void Frame_radar(connection_t *conn, player_t *pl)
     }
 #endif
 
-    if (options.playersOnRadar || BIT(World.rules->mode, TEAM_PLAY) || NumPseudoPlayers > 0 || NumAlliances > 0)
+    if (options.playersOnRadar || Team_play(world) || NumPseudoPlayers > 0 || NumAlliances > 0)
     {
         for (k = 0; k < num_player_shuffle; k++)
         {
@@ -1289,6 +1289,7 @@ static void Frame_parameters(connection_t *conn, player_t *pl)
 
 void Frame_update(void)
 {
+    world_t *world = &World;
     int i, ind, player_fps;
     connection_t *conn;
     player_t *pl, *pl2;
@@ -1376,7 +1377,9 @@ void Frame_update(void)
         {
             if ((BIT(pl->obj_status, (LEGACY_GAME_OVER | LEGACY_PLAYING)) == (LEGACY_GAME_OVER | LEGACY_PLAYING)) ||
                 (Player_is_paused(pl) &&
-                 ((BIT(World.rules->mode, TEAM_PLAY) && pl->team != TEAM_NOT_SET && pl->team == Player_by_id(pl->lock.pl_id)->team) ||
+                 ((Team_play(world) &&
+                   pl->team != TEAM_NOT_SET &&
+                   pl->team == Player_by_id(pl->lock.pl_id)->team) ||
                   options.allowViewing)))
                 ind = GetInd(pl->lock.pl_id);
             else

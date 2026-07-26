@@ -101,7 +101,7 @@
  * Used where we wish to know if a player is simply on the same team.
  */
 // #define Players_are_teammates(pl_i, pl_j) \
-//         (BIT(World.rules->mode, TEAM_PLAY) && (pl_i->team == pl_j->team) && (pl_i->team != TEAM_NOT_SET))
+//         (Team_play(world) && (pl_i->team == pl_j->team) && (pl_i->team != TEAM_NOT_SET))
 
 /*
  * Used where we wish to know if a player is on the same team

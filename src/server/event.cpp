@@ -77,6 +77,8 @@ bool team_dead(int team)
  */
 static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
 {
+    world_t *world = &World;
+
     /* we can never lock on ourselves, nor on NULL. */
     if (lock_pl == NULL || pl->id == lock_pl->id)
         return false;
@@ -86,7 +88,7 @@ static bool Player_lock_allowed(player_t *pl, player_t *lock_pl)
         return true;
 
     /* if there is no team play then we can always lock on anyone. */
-    if (!BIT(World.rules->mode, TEAM_PLAY))
+    if (!Team_play(world))
         return true;
 
     /* we can always lock on players from our own team. */

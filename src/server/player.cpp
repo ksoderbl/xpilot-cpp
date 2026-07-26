@@ -800,7 +800,7 @@ void Reset_all_players(void)
         else if (Player_is_robot(pl))
             pl->mychar = 'R';
     }
-    if (BIT(World.rules->mode, TEAM_PLAY))
+    if (Team_play(world))
     {
         /* Detach any balls and kill ball */
         /* We are starting all over again */
@@ -888,11 +888,12 @@ void Reset_all_players(void)
 
 void Check_team_members(int team)
 {
+    world_t *world = &World;
     player_t *pl;
     team_t *teamp;
     int members, i;
 
-    if (!BIT(World.rules->mode, TEAM_PLAY))
+    if (!Team_play(world))
         return;
 
     for (members = i = 0; i < NumPlayers; i++)
@@ -1194,6 +1195,7 @@ void Individual_game_over(int winner)
 
 void Compute_game_status(void)
 {
+    world_t *world = &World;
     int i;
     player_t *pl;
     char msg[MSG_LEN];
@@ -1203,7 +1205,7 @@ void Compute_game_status(void)
 
     if (BIT(World.rules->mode, TIMING))
         Race_compute_game_status();
-    else if (BIT(World.rules->mode, TEAM_PLAY))
+    else if (Team_play(world))
     {
         /* Do we have a winning team ? */
 
