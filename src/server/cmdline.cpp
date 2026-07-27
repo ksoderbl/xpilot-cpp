@@ -29,6 +29,7 @@
 
 #include "option.h"
 
+#include "contact.h"
 #include "server.h"
 
 #define SERVER

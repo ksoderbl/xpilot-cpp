@@ -35,6 +35,7 @@
 #include "commonproto.h"
 
 #include "alliance.h"
+#include "contact.h"
 #include "frame.h"
 #include "parser.h"
 #include "rank.h"

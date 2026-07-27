@@ -348,15 +348,3 @@ void Server_shutdown(const char *user_name, int delay, const char *reason);
 void Server_log_admin_message(player_t *pl, const char *str);
 int plock_server(bool on);
 void Main_loop(void);
-
-/*
- * Prototypes for contact.c
- */
-void Contact_cleanup(void);
-int Contact_init(void);
-void Contact(int fd, void *arg);
-void Queue_kick(const char *nick);
-void Queue_loop(void);
-int Queue_advance_player(char *name, char *msg, size_t size);
-int Queue_show_list(char *msg, size_t size);
-void Set_deny_hosts(void);

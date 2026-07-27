@@ -40,6 +40,7 @@
 #include "commonproto.h"
 
 #include "cannon.h"
+#include "contact.h"
 #include "frame.h"
 #include "metaserver.h"
 #include "parser.h"

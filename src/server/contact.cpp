@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "contact.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
