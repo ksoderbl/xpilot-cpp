@@ -27,6 +27,8 @@
 #include "commonproto.h"
 #include "xperror.h"
 
+#include "alliance.h"
+
 #define SERVER
 #include "cannon.h"
 #include "server.h"

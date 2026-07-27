@@ -34,6 +34,7 @@
 #include "commonmacros.h"
 #include "commonproto.h"
 
+#include "alliance.h"
 #include "rank.h"
 #include "server.h"
 

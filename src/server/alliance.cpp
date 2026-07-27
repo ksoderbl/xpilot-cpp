@@ -22,6 +22,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "alliance.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>

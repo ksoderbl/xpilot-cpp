@@ -31,6 +31,7 @@
 #include "const.h"
 #include "commonproto.h"
 
+#include "alliance.h"
 #include "score.h"
 #include "server.h"
 

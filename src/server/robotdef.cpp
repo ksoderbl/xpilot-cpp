@@ -41,6 +41,7 @@
 #include "xpconfig.h"
 #include "serverconst.h"
 
+#include "alliance.h"
 #include "map.h"
 #include "score.h"
 #include "bit.h"

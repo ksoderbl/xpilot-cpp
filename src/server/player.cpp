@@ -31,6 +31,7 @@
 #include "commonproto.h"
 #include "const.h"
 
+#include "alliance.h"
 #include "server.h"
 
 #define SERVER

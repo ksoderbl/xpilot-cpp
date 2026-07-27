@@ -488,3 +488,9 @@ static inline double SHOT_MULT(object_t *obj)
         return options.nukeClusterDamage;
     return 1.0;
 }
+
+object_t *Object_allocate(void);
+void Object_free_ind(int ind);
+void Object_free_ptr(object_t *obj);
+void Alloc_shots(int number);
+void Free_shots(void);

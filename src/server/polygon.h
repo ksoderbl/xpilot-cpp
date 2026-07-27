@@ -116,9 +116,6 @@ static inline group_t *groupptr_by_id(int group)
 
 extern int num_polys, num_pstyles, num_estyles, num_bstyles;
 
-/*
- * Prototypes for polygon.c
- */
 void P_edgestyle(const char *id, int width, int color, int style);
 void P_polystyle(const char *id, int color, int texture_id, int defedge_id,
                  int flags);

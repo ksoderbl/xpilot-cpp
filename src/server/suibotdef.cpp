@@ -37,6 +37,8 @@
 #include "const.h"
 #include "commonproto.h"
 
+#include "alliance.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"

@@ -42,3 +42,7 @@ extern int *playback_ei_start;
 extern char *playback_es_start;
 extern int *playback_opttout;
 extern int recOpt;
+
+void Init_recording(void);
+void Handle_recording_buffers(void);
+void Get_recording_data(void);
