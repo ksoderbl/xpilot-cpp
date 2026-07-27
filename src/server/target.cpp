@@ -33,10 +33,11 @@
 #include "commonproto.h"
 #include "const.h"
 #include "xperror.h"
-#include "server.h"
 
 #include "cannon.h"
 #include "frame.h"
+#include "server.h"
+#include "ship.h"
 
 #define SERVER
 #include "xpconfig.h"

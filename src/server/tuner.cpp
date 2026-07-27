@@ -28,6 +28,7 @@
 #include "xperror.h"
 
 #include "alliance.h"
+#include "ship.h"
 
 #define SERVER
 #include "cannon.h"

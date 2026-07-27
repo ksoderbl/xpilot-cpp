@@ -111,6 +111,7 @@
 #include "const.h"
 #include "commonproto.h"
 
+#include "command.h"
 #include "frame.h"
 #include "metaserver.h"
 #include "modifiers.h"

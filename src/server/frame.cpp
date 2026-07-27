@@ -38,6 +38,7 @@
 #include "commonproto.h"
 
 #include "modifiers.h"
+#include "ship.h"
 #include "server.h"
 
 #define SERVER

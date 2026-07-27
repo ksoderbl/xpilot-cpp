@@ -39,6 +39,7 @@
 
 #include "alliance.h"
 #include "frame.h"
+#include "ship.h"
 #include "update.h"
 
 #define SERVER

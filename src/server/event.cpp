@@ -31,6 +31,7 @@
 
 #include "frame.h"
 #include "race.h"
+#include "ship.h"
 #include "update.h"
 #include "server.h"
 

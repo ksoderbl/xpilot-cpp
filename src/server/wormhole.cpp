@@ -26,6 +26,7 @@
 #include "xperror.h"
 
 #include "server.h"
+#include "ship.h"
 
 #include "saudio.h"
 

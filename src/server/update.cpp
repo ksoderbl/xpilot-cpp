@@ -31,6 +31,7 @@
 
 #include "frame.h"
 #include "server.h"
+#include "ship.h"
 #include "target.h"
 
 #define SERVER

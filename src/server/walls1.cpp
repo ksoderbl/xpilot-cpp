@@ -37,6 +37,7 @@
 
 #include "cannon.h"
 #include "frame.h"
+#include "ship.h"
 
 #define SERVER
 #include "xpconfig.h"

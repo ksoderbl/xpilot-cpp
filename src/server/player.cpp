@@ -36,6 +36,7 @@
 #include "update.h"
 #include "race.h"
 #include "server.h"
+#include "ship.h"
 
 #define SERVER
 #include "xpconfig.h"

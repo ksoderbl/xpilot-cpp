@@ -21,9 +21,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "serverrules.h"
+
 #include <cstdlib>
 #include <cstdio>
 
+#include "bit.h"
 #include "server.h"
 
 #define SERVER
@@ -32,7 +35,8 @@
 
 #include "map.h"
 #include "rules.h"
-#include "bit.h"
+#include "ship.h"
+
 #include "cannon.h"
 
 #define MAX_FUEL 10000

@@ -21,18 +21,18 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-
 #include "rank.h"
 
 #include <ctime>
 #include <expat.h>
 #include <unistd.h>
 
-#include "frame.h"
+#include "config.h"
 
 #include "xperror.h"
 
+#include "command.h"
+#include "frame.h"
 #include "server.h"
 
 /* MAX_SCORES = how many players we remember */

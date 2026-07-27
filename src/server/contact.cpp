@@ -39,6 +39,7 @@
 #include "commonproto.h"
 #include "xpmemory.h"
 
+#include "command.h"
 #include "frame.h"
 #include "metaserver.h"
 #include "parser.h"

@@ -32,6 +32,7 @@
 
 // #include "object.h"
 #include "frame.h"
+#include "ship.h"
 #include "server.h"
 #include "update.h"
 #include "walls.h"
