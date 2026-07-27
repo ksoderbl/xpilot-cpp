@@ -32,6 +32,7 @@
 
 #include "frame.h"
 #include "laser.h"
+#include "race.h"
 #include "update.h"
 
 #include "server.h"

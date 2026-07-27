@@ -34,6 +34,7 @@
 #include "alliance.h"
 #include "frame.h"
 #include "update.h"
+#include "race.h"
 #include "server.h"
 
 #define SERVER

@@ -53,7 +53,7 @@ constexpr int CLIENT_RULES_MASK = (WRAP_PLAY | TEAM_PLAY | TIMING | LIMITED_LIVE
  * The bits that the client needs must fit into a byte,
  * so the first 8 bitvalues are reserved for that purpose.
  */
-constexpr uint8_t STATUS_PLAYING = (1U << 0);   /* alive or killed */
-constexpr uint8_t STATUS_PAUSE = (1U << 1);     /* paused */
-constexpr uint8_t STATUS_GAME_OVER = (1U << 2); /* waiting or dead */
-constexpr uint8_t STATUS_THRUSTING = (1L << 3); /* not used by client? */
+constexpr uint32_t PLAYER_STATUS_PLAYING = (1 << 0);   /* alive or killed */
+constexpr uint32_t PLAYER_STATUS_PAUSE = (1 << 1);     /* paused */
+constexpr uint32_t PLAYER_STATUS_GAME_OVER = (1 << 2); /* waiting or dead */
+constexpr uint32_t PLAYER_STATUS_THRUSTING = (1 << 3); /* not used by client? */

@@ -1317,17 +1317,17 @@ int Handle_self_items(uint8_t *newNumItems)
 
 static void update_status(int status)
 {
-    warn("update_status, status = 0x%02x", status);
+    // warn("update_status, status = 0x%02x", status);
 
     static int prev_status = 0;
 
-    if (BIT(prev_status, STATUS_GAME_OVER) && !BIT(status, STATUS_GAME_OVER) && !BIT(status, STATUS_PAUSE))
+    if (BIT(prev_status, PLAYER_STATUS_GAME_OVER) && !BIT(status, PLAYER_STATUS_GAME_OVER) && !BIT(status, PLAYER_STATUS_PAUSE))
         Raise_window();
 
     /* Player appeared? */
-    if (BIT(prev_status, STATUS_PLAYING | STATUS_PAUSE | STATUS_GAME_OVER) != STATUS_PLAYING)
+    if (BIT(prev_status, PLAYER_STATUS_PLAYING | PLAYER_STATUS_PAUSE | PLAYER_STATUS_GAME_OVER) != PLAYER_STATUS_PLAYING)
     {
-        if (BIT(status, STATUS_PLAYING | STATUS_PAUSE | STATUS_GAME_OVER) == STATUS_PLAYING)
+        if (BIT(status, PLAYER_STATUS_PLAYING | PLAYER_STATUS_PAUSE | PLAYER_STATUS_GAME_OVER) == PLAYER_STATUS_PLAYING)
             Reset_shields();
     }
 
@@ -1342,7 +1342,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 double newFuelSum, double newFuelMax, int newPacketSize,
                 int status)
 {
-    warn("Handle_self: status = 0x%08x", status);
+    // warn("Handle_self: status = 0x%08x", status);
 
     selfPos.x = x;
     selfPos.y = y;

@@ -96,30 +96,31 @@
 // #define COLLISIONSHOVE (1U << 9) /* Collision counts as shove */
 // #define RANDOM_ITEM (1U << 10)   /* Item shows up as random */
 
-#define LEGACY_PLAYING (1L << 0)   /* Not returning to base */
-#define LEGACY_PAUSE (1L << 1)     /* Must stay below 8 */
-#define LEGACY_GAME_OVER (1L << 2) /* Must stay below 8 */
-#define LEGACY_KILLED (1L << 10)
+constexpr uint32_t LEGACY_PLAYING = PLAYER_STATUS_PLAYING;     /* Not returning to base */
+constexpr uint32_t LEGACY_PAUSE = PLAYER_STATUS_PAUSE;         /* Must stay below 8 */
+constexpr uint32_t LEGACY_GAME_OVER = PLAYER_STATUS_GAME_OVER; /* Must stay below 8 */
 
-#define THRUSTING (1L << 3)     /* not used by client? */
-#define SELF_DESTRUCT (1L << 4) /* not used by client? */
-#define WANT_AUDIO (1L << 5)    /* whether client has SOUND */
+constexpr uint32_t THRUSTING = PLAYER_STATUS_THRUSTING; /* not used by client? */
+constexpr uint32_t SELF_DESTRUCT = (1 << 4);            /* not used by client? */
+constexpr uint32_t WANT_AUDIO = (1 << 5);               /* whether client has SOUND */
 
-#define GRAVITY (1L << 11)
-#define WARPING (1L << 12)
-#define WARPED (1L << 13)
-#define CONFUSED (1L << 14)
-#define FROMCANNON (1L << 15)     /* Object from cannon */
-#define HOVERPAUSE (1L << 16)     /* Hovering pause */
-#define RECREATE (1L << 17)       /* Recreate ball */
-#define FROMBOUNCE (1L << 18)     /* Spark from wall bounce */
-#define OWNERIMMUNE (1L << 19)    /* Owner is immune to object */
-#define REPROGRAM (1L << 20)      /* Player reprogramming */
-#define NOEXPLOSION (1L << 21)    /* No ball recreate explosion */
-#define COLLISIONSHOVE (1L << 22) /* Collision counts as shove */
-#define FINISH (1L << 23)         /* Reached race finish */
-#define RACE_OVER (1L << 24)      /* After finished and score. */
-#define RANDOM_ITEM (1L << 25)    /* If an item shows up as random */
+constexpr uint32_t LEGACY_KILLED = (1 << 10);
+
+constexpr uint32_t GRAVITY = (1 << 11);
+constexpr uint32_t WARPING = (1 << 12);
+constexpr uint32_t WARPED = (1 << 13);
+constexpr uint32_t CONFUSED = (1 << 14);
+constexpr uint32_t FROMCANNON = (1 << 15);     /* Object from cannon */
+constexpr uint32_t HOVERPAUSE = (1 << 16);     /* Hovering pause */
+constexpr uint32_t RECREATE = (1 << 17);       /* Recreate ball */
+constexpr uint32_t FROMBOUNCE = (1 << 18);     /* Spark from wall bounce */
+constexpr uint32_t OWNERIMMUNE = (1 << 19);    /* Owner is immune to object */
+constexpr uint32_t REPROGRAM = (1 << 20);      /* Player reprogramming */
+constexpr uint32_t NOEXPLOSION = (1 << 21);    /* No ball recreate explosion */
+constexpr uint32_t COLLISIONSHOVE = (1 << 22); /* Collision counts as shove */
+constexpr uint32_t FINISH = (1 << 23);         /* Reached race finish */
+constexpr uint32_t RACE_OVER = (1 << 24);      /* After finished and score. */
+constexpr uint32_t RANDOM_ITEM = (1 << 25);    /* If an item shows up as random */
 
 #define LOCK_NONE 0x00    /* No lock */
 #define LOCK_PLAYER 0x01  /* Locked on player */

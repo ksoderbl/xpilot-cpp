@@ -114,6 +114,7 @@
 #include "frame.h"
 #include "metaserver.h"
 #include "modifiers.h"
+#include "race.h"
 #include "update.h"
 
 #define SERVER
@@ -1524,7 +1525,7 @@ int Send_self(connection_t *connp,
 {
     int n;
 
-    warn("Send_self, status = 0x%02x", status);
+    // warn("Send_self, status = 0x%x", status);
 
     /* assumes connp->version >= 0x4203 */
     n = Packet_printf(&connp->w,

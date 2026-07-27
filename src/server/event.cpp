@@ -30,6 +30,7 @@
 #include "xperror.h"
 
 #include "frame.h"
+#include "race.h"
 #include "update.h"
 #include "server.h"
 

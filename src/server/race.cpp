@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "race.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
