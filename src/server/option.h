@@ -166,9 +166,6 @@ typedef struct options
     // Generate exhaust when cloaked?
     bool cloakedExhaust;
 
-    // Allowed to use shields when cloaked?
-    bool cloakedShield;
-
     // Do ecms reprogram mines?
     bool ecmsReprogramMines;
 

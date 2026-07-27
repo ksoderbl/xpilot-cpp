@@ -1845,8 +1845,6 @@ static void Robot_default_play_check_objects(player_t *pl,
             sqr(dx) + sqr(dy) <= sqr(shield_range) && (int)(rfrac() * 100) < (85 + (my_data->defense / 7) - (my_data->attack / 50)))
         {
             SET_BIT(pl->used, HAS_SHIELD);
-            if (!options.cloakedShield)
-                CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
             Thrust(pl, true);
 
             if ((shot->type == OBJ_TORPEDO ||
@@ -1945,8 +1943,6 @@ static void Robot_default_play_check_lasers(player_t *pl)
                     (85 + (my_data->defense / 7) - (my_data->attack / 50)))
             {
                 SET_BIT(pl->used, HAS_SHIELD);
-                if (!options.cloakedShield)
-                    CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
                 break;
             }
         }
@@ -2001,8 +1997,6 @@ static void Robot_default_play(player_t *pl)
     if (pl->damaged > 0)
     {
         SET_BIT(pl->used, HAS_SHIELD);
-        if (!options.cloakedShield)
-            CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
         return;
     }
 
@@ -2158,13 +2152,7 @@ static void Robot_default_play(player_t *pl)
     }
 
     if (ship_dist < 3 * SHIP_SZ && BIT(pl->have, HAS_SHIELD))
-    {
         SET_BIT(pl->used, HAS_SHIELD);
-        if (!options.cloakedShield)
-        {
-            CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-        }
-    }
 
     if (ship_dist <= 10 * BLOCK_SZ && pl->fuel.sum <= my_data->fuel_l3 && !BIT(World.rules->mode, TIMING))
     {
@@ -2219,21 +2207,13 @@ static void Robot_default_play(player_t *pl)
         if (Check_robot_evade(pl, mine_i, ship_i))
         {
             if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
-            {
                 SET_BIT(pl->used, HAS_SHIELD);
-                if (!options.cloakedShield)
-                    CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-            }
             else if (options.maxShieldedWallBounceSpeed >
                          options.maxUnshieldedWallBounceSpeed &&
                      options.maxShieldedWallBounceAngle >=
                          options.maxUnshieldedWallBounceAngle &&
                      BIT(pl->have, HAS_SHIELD))
-            {
                 SET_BIT(pl->used, HAS_SHIELD);
-                if (!options.cloakedShield)
-                    CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-            }
             return;
         }
     }
@@ -2322,11 +2302,7 @@ static void Robot_default_play(player_t *pl)
     if (Check_robot_hunt(pl))
     {
         if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
-        {
             SET_BIT(pl->used, HAS_SHIELD);
-            if (!options.cloakedShield)
-                CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-        }
         return;
     }
 
@@ -2334,11 +2310,7 @@ static void Robot_default_play(player_t *pl)
         return;
 
     if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
-    {
         SET_BIT(pl->used, HAS_SHIELD);
-        if (!options.cloakedShield)
-            CLR_BIT(pl->used, USES_CLOAKING_DEVICE);
-    }
 
     int x = OBJ_X_IN_BLOCKS(pl);
     int y = OBJ_Y_IN_BLOCKS(pl);
