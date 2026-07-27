@@ -23,41 +23,37 @@
 
 #pragma once
 
+#include <cstdint>
+
 /*
  * Bitfield definitions for playing mode.
  */
-#define CRASH_WITH_PLAYER (1 << 0)
-#define BOUNCE_WITH_PLAYER (1 << 1)
-#define PLAYER_KILLINGS (1 << 2)
-#define LIMITED_LIVES (1 << 3)
-#define TIMING (1 << 4)
-#define PLAYER_SHIELDING (1 << 6)
-#define LIMITED_VISIBILITY (1 << 7)
-#define TEAM_PLAY (1 << 8)
-#define WRAP_PLAY (1 << 9)
-#define ALLOW_NUKES (1 << 10)
-#define ALLOW_CLUSTERS (1 << 11)
-#define ALLOW_MODIFIERS (1 << 12)
-#define ALLOW_LASER_MODIFIERS (1 << 13)
-#define ALLIANCES (1 << 14)
+// constexpr int CRASH_WITH_PLAYER = (1 << 0);
+// constexpr int BOUNCE_WITH_PLAYER = (1 << 1);
+// constexpr int PLAYER_KILLINGS = (1 << 2);
+constexpr int LIMITED_LIVES = (1 << 3);
+constexpr int TIMING = (1 << 4);
+// constexpr int PLAYER_SHIELDING = (1 << 6);
+// constexpr int LIMITED_VISIBILITY = (1 << 7);
+constexpr int TEAM_PLAY = (1 << 8);
+constexpr int WRAP_PLAY = (1 << 9);
+// constexpr int ALLOW_NUKES = (1 << 10);
+// constexpr int ALLOW_CLUSTERS = (1 << 11);
+// constexpr int ALLOW_MODIFIERS = (1 << 12);
+// constexpr int ALLOW_LASER_MODIFIERS = (1 << 13);
+constexpr int ALLIANCES = (1 << 14);
 
 /*
  * Client uses only a subset of them:
  */
-#define CLIENT_RULES_MASK (WRAP_PLAY | TEAM_PLAY | TIMING | LIMITED_LIVES | \
-                           ALLIANCES)
+constexpr int CLIENT_RULES_MASK = (WRAP_PLAY | TEAM_PLAY | TIMING | LIMITED_LIVES | ALLIANCES);
 
 /*
- * Old player status bits, currently only used in network protocol.
+ * Player status bits, used in network protocol.
  * The bits that the client needs must fit into a byte,
  * so the first 8 bitvalues are reserved for that purpose.
  */
-#define OLD_PLAYING (1U << 0)   /* alive or killed */
-#define OLD_PAUSE (1U << 1)     /* paused */
-#define OLD_GAME_OVER (1U << 2) /* waiting or dead */
-
-typedef struct
-{
-    int lives;
-    long mode;
-} rules_t;
+constexpr uint8_t STATUS_PLAYING = (1U << 0);   /* alive or killed */
+constexpr uint8_t STATUS_PAUSE = (1U << 1);     /* paused */
+constexpr uint8_t STATUS_GAME_OVER = (1U << 2); /* waiting or dead */
+constexpr uint8_t STATUS_THRUSTING = (1L << 3); /* not used by client? */

@@ -35,9 +35,10 @@
 #include "click.h"
 #include "const.h"
 #include "item.h"
-#include "rules.h"
 #include "types.h"
 #include "commonproto.h"
+
+#include "serverrules.h"
 
 #define SPACE 0
 #define BASE 1

@@ -1317,19 +1317,21 @@ int Handle_self_items(uint8_t *newNumItems)
 
 static void update_status(int status)
 {
-    static int old_status = 0;
+    warn("update_status, status = 0x%02x", status);
 
-    if (BIT(old_status, OLD_GAME_OVER) && !BIT(status, OLD_GAME_OVER) && !BIT(status, OLD_PAUSE))
+    static int prev_status = 0;
+
+    if (BIT(prev_status, STATUS_GAME_OVER) && !BIT(status, STATUS_GAME_OVER) && !BIT(status, STATUS_PAUSE))
         Raise_window();
 
     /* Player appeared? */
-    if (BIT(old_status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) != OLD_PLAYING)
+    if (BIT(prev_status, STATUS_PLAYING | STATUS_PAUSE | STATUS_GAME_OVER) != STATUS_PLAYING)
     {
-        if (BIT(status, OLD_PLAYING | OLD_PAUSE | OLD_GAME_OVER) == OLD_PLAYING)
+        if (BIT(status, STATUS_PLAYING | STATUS_PAUSE | STATUS_GAME_OVER) == STATUS_PLAYING)
             Reset_shields();
     }
 
-    old_status = status;
+    prev_status = status;
 }
 
 int Handle_self(int x, int y, int vx, int vy, int newHeading,
@@ -1340,7 +1342,7 @@ int Handle_self(int x, int y, int vx, int vy, int newHeading,
                 double newFuelSum, double newFuelMax, int newPacketSize,
                 int status)
 {
-    // warn("Handle_self: newFuelSum: %f, newFuelMax: %f", newFuelSum, newFuelMax);
+    warn("Handle_self: status = 0x%08x", status);
 
     selfPos.x = x;
     selfPos.y = y;

@@ -324,18 +324,6 @@ void Player_pass_checkpoint(player_t *pl);
 void PlayerCheckpointCollision(player_t *pl);
 
 /*
- * Prototypes for rules.c
- */
-void Tune_item_probs(void);
-void Tune_item_packs(void);
-void Set_initial_resources(void);
-void Set_world_items(void);
-void Set_world_rules(void);
-void Set_world_asteroids(void);
-void Set_misc_item_limits(void);
-void Tune_asteroid_prob(void);
-
-/*
  * Prototypes for server.c
  */
 void End_game(void);
