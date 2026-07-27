@@ -320,6 +320,8 @@ static void Player_repair(player_t *pl)
 /* Player pressed pause key. */
 static void Player_toggle_pause(player_t *pl)
 {
+    world_t *world = &World;
+
     enum pausetype
     {
         unknown,
@@ -356,7 +358,7 @@ static void Player_toggle_pause(player_t *pl)
             minv = 5.0;
             pausetype = hoverpaused;
         }
-        minv += VECTOR_LENGTH(World.gravity[xi][yi]);
+        minv += VECTOR_LENGTH(World_gravity(world, pl->pos));
         if (pl->velocity > minv)
             return; // break;
     }

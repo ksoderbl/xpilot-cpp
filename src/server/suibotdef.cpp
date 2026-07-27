@@ -306,11 +306,12 @@ static void Robot_suibot_invite(player_t *pl, player_t *inviter)
 
 static inline int decide_travel_dir(player_t *pl)
 {
+    world_t *world = &World;
     double gdir;
 
     if (pl->velocity <= 0.2)
     {
-        vector_t grav = World_gravity(pl->pos);
+        vector_t grav = World_gravity(world, pl->pos);
 
         gdir = findDir(grav.x, grav.y);
     }

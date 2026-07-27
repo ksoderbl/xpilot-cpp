@@ -52,18 +52,20 @@ int roundtime = -1;               /* time left this round */
 static double time_to_tick = 1.0; /* game time till next tick */
 static bool tick = false;         /* new tick of game time this frame */
 
-static inline void update_object_speed(object_t *obj)
+static inline void update_object_speed(world_t *world, object_t *obj)
 {
-    // if (BIT(obj->obj_status, GRAVITY))
-    // {
-    //     obj->vel.x += obj->acc.x + World.gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].x;
-    //     obj->vel.y += obj->acc.y + World.gravity[OBJ_X_IN_BLOCKS(obj)][OBJ_Y_IN_BLOCKS(obj)].y;
-    // }
-    // else
-    // {
-    obj->vel.x += obj->acc.x;
-    obj->vel.y += obj->acc.y;
-    // }
+    if (BIT(obj->obj_status, GRAVITY))
+    {
+        vector_t gravity = World_gravity(world, obj->pos);
+
+        obj->vel.x += (obj->acc.x + gravity.x) * timeStep;
+        obj->vel.y += (obj->acc.y + gravity.y) * timeStep;
+    }
+    else
+    {
+        obj->vel.x += obj->acc.x * timeStep;
+        obj->vel.y += obj->acc.y * timeStep;
+    }
 }
 
 static char msg[MSG_LEN];
@@ -330,10 +332,10 @@ void Autopilot(player_t *pl, bool on)
  */
 static void do_Autopilot(player_t *pl)
 {
+    world_t *world = &World;
     int vad; /* Velocity Away Delta */
     int dir, afterburners;
-    int ix, iy;
-    double gx, gy;
+    vector_t gravity;
     double acc, vel, delta, turnspeed, power, a;
     const double emergency_thrust_settings_delta = 150.0 / FPS;
     const double auto_pilot_settings_delta = 15.0 / FPS;
@@ -366,10 +368,7 @@ static void do_Autopilot(player_t *pl)
     else
         afterburners = pl->item[ITEM_AFTERBURNER];
 
-    ix = OBJ_X_IN_BLOCKS(pl);
-    iy = OBJ_Y_IN_BLOCKS(pl);
-    gx = World.gravity[ix][iy].x;
-    gy = World.gravity[ix][iy].y;
+    gravity = World_gravity(world, pl->pos);
 
     /*
      * Due to rounding errors if the velocity is very small we were probably
@@ -387,7 +386,7 @@ static void do_Autopilot(player_t *pl)
      * Calculate power needed to change instantaneously to stopped.  We
      * must include gravity here for next time round the update loop.
      */
-    acc = LENGTH(gx, gy) + vel;
+    acc = LENGTH(gravity.x, gravity.y) + vel;
     power = acc * pl->mass;
     if (afterburners)
         power /= AFTER_BURN_POWER_FACTOR(afterburners);
@@ -397,15 +396,15 @@ static void do_Autopilot(player_t *pl)
      */
     if (vel == 0.0)
     {
-        if (gx == 0 && gy == 0)
-            vad = pl->dir;
+        if (gravity.x == 0 && gravity.y == 0)
+            a = pl->dir;
         else
-            vad = (int)findDir(-gx, -gy);
+            a = findDir(-gravity.x, -gravity.y);
     }
     else
-    {
-        vad = (int)findDir(-pl->vel.x, -pl->vel.y);
-    }
+        a = findDir(-pl->vel.x, -pl->vel.y);
+
+    vad = MOD2((int)(a + 0.5), ANGLE_RESOLUTION);
     vad = MOD2(vad - pl->dir, ANGLE_RESOLUTION);
     if (vad > ANGLE_RESOLUTION / 2)
     {
@@ -537,6 +536,7 @@ static void legacy_mode_ball_hack(ballobject_t *ball)
 
 static void Misc_object_update(void)
 {
+    world_t *world = &World;
     int i;
     object_t *obj;
 
@@ -578,7 +578,7 @@ static void Misc_object_update(void)
                 (wireobj->wire_rotation + (int)(wireobj->wire_turnspeed * timeStep * ANGLE_RESOLUTION)) % ANGLE_RESOLUTION;
         }
 
-        update_object_speed(obj);
+        update_object_speed(world, obj);
 
         if (!(obj->type == OBJ_ASTEROID))
             Move_object(obj);
@@ -855,6 +855,7 @@ static void Update_visibility(player_t *pl, int ind)
  */
 static void Update_players(void)
 {
+    world_t *world = &World;
     int i;
     player_t *pl;
 
@@ -1057,7 +1058,7 @@ static void Update_players(void)
 
         if (!Player_is_paused(pl))
         {
-            update_object_speed(OBJ_PTR(pl)); /* New position */
+            update_object_speed(world, OBJ_PTR(pl)); /* New position */
             Move_player(pl);
         }
 

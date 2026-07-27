@@ -56,9 +56,10 @@ typedef struct
 
 extern shape_t ball_wire, wormhole_wire, filled_wire;
 
-static inline vector_t World_gravity(clpos_t pos)
+static inline vector_t World_gravity(world_t *world, clpos_t pos)
 {
-    return World.gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
+    vector_t vec = world->gravity[CLICK_TO_BLOCK(pos.cx)][CLICK_TO_BLOCK(pos.cy)];
+    return vec;
 }
 
 /*
