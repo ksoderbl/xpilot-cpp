@@ -1,7 +1,5 @@
 /*
- * XPilot NG, a multiplayer space war game.
- *
- * Copyright (C) 1991-2001 by
+ * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
  *      Bjørn Stabell
  *      Ken Ronny Schouten
@@ -25,8 +23,16 @@
 
 #pragma once
 
+#include <cstdlib>
+
 #define META_PORT 5500 /* for server-metaserver communication */
 #define META_HOST "meta.xpilot.org"
 #define META_HOST_TWO "meta2.xpilot.org"
 #define META_IP "45.55.104.252"
 #define META_IP_TWO "132.235.197.27"
+
+void Meta_send(char *mesg, size_t len);
+int Meta_from(char *addr, int port);
+void Meta_gone(void);
+void Meta_init(void);
+void Meta_update(bool change);

@@ -112,6 +112,7 @@
 #include "commonproto.h"
 
 #include "frame.h"
+#include "metaserver.h"
 #include "modifiers.h"
 #include "update.h"
 

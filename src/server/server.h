@@ -360,12 +360,3 @@ void Queue_loop(void);
 int Queue_advance_player(char *name, char *msg, size_t size);
 int Queue_show_list(char *msg, size_t size);
 void Set_deny_hosts(void);
-
-/*
- * Prototypes for metaserver.c
- */
-void Meta_send(char *mesg, size_t len);
-int Meta_from(char *addr, int port);
-void Meta_gone(void);
-void Meta_init(void);
-void Meta_update(bool change);

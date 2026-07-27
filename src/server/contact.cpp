@@ -38,6 +38,7 @@
 #include "xpmemory.h"
 
 #include "frame.h"
+#include "metaserver.h"
 #include "parser.h"
 #include "score.h"
 #include "server.h"
