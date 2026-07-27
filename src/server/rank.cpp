@@ -29,6 +29,8 @@
 #include <expat.h>
 #include <unistd.h>
 
+#include "frame.h"
+
 #include "xperror.h"
 
 #include "server.h"

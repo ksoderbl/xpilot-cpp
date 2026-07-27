@@ -35,6 +35,8 @@
 #include "commonproto.h"
 
 #include "alliance.h"
+#include "frame.h"
+#include "parser.h"
 #include "rank.h"
 #include "server.h"
 

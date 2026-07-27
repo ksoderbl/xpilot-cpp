@@ -32,6 +32,8 @@
 #include "const.h"
 
 #include "alliance.h"
+#include "frame.h"
+#include "update.h"
 #include "server.h"
 
 #define SERVER

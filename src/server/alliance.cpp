@@ -30,6 +30,8 @@
 
 #include "commonproto.h"
 
+#include "frame.h"
+
 #define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"

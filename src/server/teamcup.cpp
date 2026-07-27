@@ -26,6 +26,7 @@
 #include "commonmacros.h"
 #include "xperror.h"
 
+#include "frame.h"
 #include "option.h"
 #include "player.h"
 #include "score.h"

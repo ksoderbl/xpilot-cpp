@@ -29,6 +29,7 @@
 
 #include "commonproto.h"
 
+#include "fileparser.h"
 #include "server.h"
 
 #define SERVER

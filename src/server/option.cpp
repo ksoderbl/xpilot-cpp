@@ -37,6 +37,7 @@
 #include "commonproto.h"
 #include "xpmemory.h"
 
+#include "fileparser.h"
 #include "server.h"
 
 #define SERVER

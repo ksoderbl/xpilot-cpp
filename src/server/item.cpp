@@ -31,7 +31,9 @@
 #include "const.h"
 
 // #include "object.h"
+#include "frame.h"
 #include "server.h"
+#include "update.h"
 #include "walls.h"
 
 #define SERVER

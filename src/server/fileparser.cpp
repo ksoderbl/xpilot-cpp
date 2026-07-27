@@ -21,6 +21,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+#include "fileparser.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>

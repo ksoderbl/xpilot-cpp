@@ -32,6 +32,7 @@
 
 #include "click.h"
 
+#include "frame.h"
 #include "server.h"
 
 #define SERVER

@@ -40,8 +40,11 @@
 #include "commonproto.h"
 
 #include "cannon.h"
+#include "frame.h"
+#include "parser.h"
 #include "score.h"
 #include "server.h"
+#include "update.h"
 #include "robot.h"
 
 #define SERVER

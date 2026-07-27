@@ -111,7 +111,9 @@
 #include "const.h"
 #include "commonproto.h"
 
+#include "frame.h"
 #include "modifiers.h"
+#include "update.h"
 
 #define SERVER
 #include "version.h"

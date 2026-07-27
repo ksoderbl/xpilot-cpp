@@ -35,6 +35,7 @@
 #include "commonproto.h"
 
 #include "server.h"
+#include "update.h"
 
 #define SERVER
 #include "version.h"

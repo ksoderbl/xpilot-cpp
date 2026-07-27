@@ -29,6 +29,8 @@
 #include "click.h"
 #include "xperror.h"
 
+#include "frame.h"
+#include "update.h"
 #include "server.h"
 
 #define SERVER

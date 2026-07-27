@@ -38,6 +38,8 @@
 #include "commonproto.h"
 
 #include "alliance.h"
+#include "frame.h"
+#include "update.h"
 
 #define SERVER
 #include "xpconfig.h"

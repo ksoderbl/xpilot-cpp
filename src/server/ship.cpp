@@ -34,6 +34,7 @@
 #include "alliance.h"
 #include "score.h"
 #include "server.h"
+#include "update.h"
 
 #define SERVER
 #include "xpconfig.h"

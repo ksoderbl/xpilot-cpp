@@ -37,6 +37,8 @@
 #include "const.h"
 #include "commonproto.h"
 #include "xperror.h"
+
+#include "frame.h"
 #include "server.h"
 
 #define SERVER

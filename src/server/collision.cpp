@@ -30,6 +30,10 @@
 #include <climits>
 #include <cassert>
 
+#include "frame.h"
+#include "laser.h"
+#include "update.h"
+
 #include "server.h"
 
 #define SERVER

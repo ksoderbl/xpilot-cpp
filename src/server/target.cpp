@@ -36,6 +36,7 @@
 #include "server.h"
 
 #include "cannon.h"
+#include "frame.h"
 
 #define SERVER
 #include "xpconfig.h"

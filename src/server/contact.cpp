@@ -37,6 +37,8 @@
 #include "commonproto.h"
 #include "xpmemory.h"
 
+#include "frame.h"
+#include "parser.h"
 #include "score.h"
 #include "server.h"
 
