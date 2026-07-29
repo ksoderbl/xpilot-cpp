@@ -123,10 +123,7 @@ void Place_general_mine(int id, int team, int status,
 {
     world_t *world = &World;
     int used, i, minis;
-    int life;
-    double drain_times_256;
-    double drain;
-    double mass;
+    double life, drain, mass;
     vector_t mv;
     player_t *pl = Player_by_id(id);
     // cannon_t *cannon = Cannon_by_id(id);
@@ -142,7 +139,7 @@ void Place_general_mine(int id, int team, int status,
         return;
 
     if (pl && Player_is_killed(pl))
-        life = (int)(rfrac() * 12);
+        life = rfrac() * 12;
     else if (BIT(status, FROMCANNON))
         life = CANNON_SHOT_LIFE;
     else
@@ -251,16 +248,14 @@ void Place_general_mine(int id, int team, int status,
         Object_position_init_clpos(OBJ_PTR(mine), pos);
         if (minis > 1)
         {
-            int space = ANGLE_RESOLUTION / minis;
-            int dir;
-            // double spread = (double)((unsigned)mods.spread + 1);
+            int space = ANGLE_RESOLUTION / minis, dir;
             double spread = (double)(Mods_get(mods, ModsSpread) + 1);
             /*
              * Dir gives (S is ship upwards);
              *
-             *                              o                    o   o
-             *        X2: o S        o        X3:   S                X4:   S
-             *                            o   o            o   o
+             *                         o              o   o
+             *  X2: o S o        X3:   S          X4:   S
+             *                       o   o            o   o
              */
             dir = (i * space) + space / 2 + (minis - 2) * (ANGLE_RESOLUTION / 2) + (pl ? pl->dir : 0);
             dir += (int)((rfrac() - 0.5) * space * 0.5);
@@ -714,10 +709,10 @@ void Fire_general_shot(int id, int team, bool cannon,
     fuse += (int)((2.0 * (double)SHIP_SZ) / speed + 1.0);
 
     /*
-     *                         Missile Racks and Spread
-     *                         ------------------------
+     *                  Missile Racks and Spread
+     *                  ------------------------
      *
-     *                     A short story by H. J. Thompson
+     *              A short story by H. J. Thompson
      *
      * Once upon a time, back in the "good old days" of XPilot, it was
      * relatively easy thing to remember the few keys needed to fly and shoot.
@@ -804,77 +799,77 @@ void Fire_general_shot(int id, int team, bool cannon,
      * reasonable and sensible directions based on the position of the
      * missile racks.
      *
-     *                         How It Actually Works
-     *                        ---------------------
+     *                  How It Actually Works
+     *                  ---------------------
      *
      * The first obstacle is getting the right number of missiles fired
      * from each combination of missile rack configurations;
      *
      *
-     *                Minis        1        2        3        4
+     *          Minis   1       2       3       4
      * Racks
-     *        1                1        2        3        4
+     *  1               1       2       3       4
      *
-     *        2                1/-        1/1        2/1        2/2
-     *                        -/1                1/2
+     *  2               1/-     1/1     2/1     2/2
+     *                  -/1             1/2
      *
-     *        3                1/-/-        1/1/-        1/1/1        2/1/1
-     *                        -/1/-        -/1/1                1/2/1
-     *                        -/-/1        1/-/1                1/1/2
+     *  3               1/-/-   1/1/-   1/1/1   2/1/1
+     *                  -/1/-   -/1/1           1/2/1
+     *                  -/-/1   1/-/1           1/1/2
      *
-     *        4                1/-/-/-        1/1/-/-        1/1/1/-        1/1/1/1
-     *                        -/1/-/-        -/1/1/-        -/1/1/1
-     *                        -/-/1/-        -/-/1/1        1/-/1/1
-     *                        -/-/-/1 1/-/-/1        1/1/-/1
+     *  4               1/-/-/- 1/1/-/- 1/1/1/- 1/1/1/1
+     *                  -/1/-/- -/1/1/- -/1/1/1
+     *                  -/-/1/- -/-/1/1 1/-/1/1
+     *                  -/-/-/1 1/-/-/1 1/1/-/1
      *
      * To read; For example with 2 Minis and 3 Racks, the first round will
      * fire 1/1/-, which is one missile from left and middle racks.  The
      * next time fired will be -/1/1; middle and right, next fire is
      * 1/-/1; left and right.  Next time goes to the beggining state.
      *
-     *                         Comment Point 1
-     *                        ---------------
+     *                  Comment Point 1
+     *                  ---------------
      *
      * The *starting* rack number for each salvo cycles through the number
      * of missiles racks.  This is stored in the player variable
-     * 'pl->missile_rack', and is only incremented after each salvo (not
+     * `pl->missile_rack', and is only incremented after each salvo (not
      * after each mini missile is fired).  This value is used to initialise
-     * 'rack_no', which stores the current rack that missiles are fired from.
+     * `rack_no', which stores the current rack that missiles are fired from.
      *
-     * 'on_this_rack' is computed to be the number of missiles that will be
-     * fired from 'rack_no', and 'r' is used as a counter to this value.
+     * `on_this_rack' is computed to be the number of missiles that will be
+     * fired from `rack_no', and `r' is used as a counter to this value.
      *
-     * 'racks_left' count how many unused missiles racks are left on the ship
+     * `racks_left' count how many unused missiles racks are left on the ship
      * in this mini missile salvo.
      *
-     *                         Comment Point 2
-     *                        ---------------
+     *                  Comment Point 2
+     *                  ---------------
      *
-     * When 'r' reaches 'on_this_rack' all the missiles have been fired for
-     * this rack, and the next rack should be used.  'rack_no' is incremented
-     * modulo the number of available racks, and 'racks_left' is decremented.
-     * At this point 'on_this_rack' is recomputed for the next rack, and 'r'
+     * When `r' reaches `on_this_rack' all the missiles have been fired for
+     * this rack, and the next rack should be used.  `rack_no' is incremented
+     * modulo the number of available racks, and `racks_left' is decremented.
+     * At this point `on_this_rack' is recomputed for the next rack, and `r'
      * reset to zero.  Thus initially these two variables are both zero, and
-     * 'rack_no' is one less, such that these variables can be computed inside
+     * `rack_no' is one less, such that these variables can be computed inside
      * the loop to make the code simpler.
      *
-     * The computation of 'on_this_rack' is as follows;  Given that there
+     * The computation of `on_this_rack' is as follows;  Given that there
      * are M missiles and R racks remaining;
      *
-     *        on_this_rack = int(M / R);        (ie. round down to lowest int)
+     *  on_this_rack = int(M / R);      (ie. round down to lowest int)
      *
      * Then;
      *
-     *        (M - on_this_rack) / (R - 1) < (M / R).
+     *  (M - on_this_rack) / (R - 1) < (M / R).
      *
      * That is, the number of missiles fired on the next rack will be
      * more precise, and trivially can be seen that when R is 1, will
      * give an exact number of missiles to fire on the last rack.
      *
-     * In the code 'M' is (minis - i), and 'R' is racks_left.
+     * In the code `M' is (minis - i), and `R' is racks_left.
      *
-     *                        Comment Point 3
-     *                        ---------------
+     *                  Comment Point 3
+     *                  ---------------
      *
      * In order that multiple missiles fired from one rack do not conincide,
      * each missile has to be "spread" based on the number of missiles
@@ -882,27 +877,27 @@ void Fire_general_shot(int id, int team, bool cannon,
      *
      * This is computed similar to the wide shot code;
      *
-     *        angle = (N - 1 - 2 * i) / (N - 1)
+     *  angle = (N - 1 - 2 * i) / (N - 1)
      *
      * Where N is the number of shots/missiles to be fired, and i is a counter
      * from 0 .. N-1.
      *
-     *                 i        0        1        2        3
+     *          i       0       1       2       3
      * N
      * 1                0
-     * 2                1        -1
-     * 3                1        0        -1
-     * 4                1        0.333        -0.333        -1
+     * 2                1       -1
+     * 3                1       0       -1
+     * 4                1       0.333   -0.333  -1
      *
-     * In this code 'N' is 'on_this_rack'.
+     * In this code `N' is `on_this_rack'.
      *
      * Also the position of the missile rack from the center line of the
-     * ship (stored in 'side') has a linear effect on the angle, such that
+     * ship (stored in `side') has a linear effect on the angle, such that
      * a point farthest from the center line contributes the largest angle;
      *
      * angle += (side / SHIP_SZ)
      *
-     * Since the eventual 'angle' value used in the code should be a
+     * Since the eventual `angle' value used in the code should be a
      * percentage of the unmodified launch angle, it should be ranged between
      * -1.00 and +1.00, and thus the first angle is reduced by 33% and the
      * second by 66%.
