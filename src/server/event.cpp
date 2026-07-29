@@ -557,7 +557,7 @@ void Pause_player(player_t *pl, bool on)
 
 int Handle_keyboard(player_t *pl)
 {
-    warn("Handle_keyboard: player %s", pl->name);
+    // warn("Handle_keyboard: player %s", pl->name);
 
     int i, j, k, key, pressed, xi, yi;
     double minv;

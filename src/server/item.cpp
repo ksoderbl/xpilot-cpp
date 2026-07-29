@@ -290,6 +290,7 @@ void Place_item(player_t *pl, int item)
                 int dvx = (int)(rfrac() * 8);
                 int dvy = (int)(rfrac() * 8);
                 const float drop_speed_factor = 0.75f;
+
                 vel.x *= drop_speed_factor;
                 vel.y *= drop_speed_factor;
                 if (vl < 1.0)
@@ -529,7 +530,8 @@ void General_tractor_beam(int id, clpos_t pos,
         Player_add_fuel(pl, cost);
 
     a = World_wrap_cfindDir(
-        world, pos.cx - victim->pos.cx,
+        world,
+        pos.cx - victim->pos.cx,
         pos.cy - victim->pos.cy);
     theta = (int)a;
 

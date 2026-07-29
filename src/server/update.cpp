@@ -1147,17 +1147,16 @@ void Update_objects(void)
             remove_temp_wormhole(i);
     }
 
-    // xpinfo("visibility");
-
     for (int ind = 0; ind < NumPlayers; ind++)
     {
         player_t *pl = PlayersArray[ind];
 
         pl->updateVisibility = false;
 
-        if (pl->forceVisible)
+        if (pl->forceVisible > 0)
         {
-            pl->forceVisible--;
+            if ((pl->forceVisible -= timeStep) <= 0)
+                pl->forceVisible = 0;
 
             if (!pl->forceVisible)
                 pl->updateVisibility = true;

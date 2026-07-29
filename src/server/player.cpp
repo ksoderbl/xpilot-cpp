@@ -1865,7 +1865,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
                 Player_set_state(pl, PL_STATE_WAITING);
             else
                 Player_set_state(pl, PL_STATE_DEAD);
-            Player_lock_closest(pl, 0);
+            Player_lock_closest(pl, false);
         }
     }
     else
@@ -1923,7 +1923,7 @@ void Player_death_reset(player_t *pl, bool add_rank_death)
     //         // SET_BIT(pl->obj_status, LEGACY_GAME_OVER);
     //         // pl->mychar = 'D';
     //         Player_set_state(pl, PL_STATE_DEAD);
-    //         Player_lock_closest(pl, 0);
+    //         Player_lock_closest(pl, false);
     //     }
     // }
     // else
@@ -1954,8 +1954,10 @@ bool Team_immune(int id1, int id2)
     /* owned stuff is never team immune */
     if (id1 == id2)
         return false;
+
     if (!options.teamImmunity)
         return false;
+
     if (id1 == NO_ID || id2 == NO_ID)
         /* can't find owner for cannon stuff */
         return false;

@@ -261,10 +261,12 @@ typedef struct
     visibility_t *visibility;
 
     bool updateVisibility;
-    int forceVisible;
-    int damaged;
+
+    double forceVisible;
+    double damaged;
+    double stunned;
+
     int wormDrawCount, wormHoleHit, wormHoleDest;
-    int stunned;
 
     int last_target_update;    /* index of last updated target */
     int last_cannon_update;    /* index of last updated cannon */

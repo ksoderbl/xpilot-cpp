@@ -2168,7 +2168,7 @@ static int Receive_keyboard(connection_t *connp)
     {
         connp->last_key_change = change;
         pl = Player_by_id(connp->id);
-        warn("--> Receive_keyboard, player %s", pl->name);
+        // warn("--> Receive_keyboard, player %s", pl->name);
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
         Handle_keyboard(pl);

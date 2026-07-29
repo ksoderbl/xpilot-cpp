@@ -304,8 +304,7 @@ void Detonate_mines(player_t *pl)
 {
     world_t *world = &World;
     int i, closest = -1;
-    double dist;
-    double min_dist = world->hypotenuse + 1;
+    double dist, min_dist = world->hypotenuse + 1;
 
     if (Player_is_phasing(pl))
         return;
@@ -323,10 +322,10 @@ void Detonate_mines(player_t *pl)
         if (mine->id == pl->id)
         {
             dist = World_wrap_length(
-                       world,
-                       pl->pos.cx - mine->pos.cx,
-                       pl->pos.cy - mine->pos.cy) /
-                   CLICK;
+                world,
+                pl->pos.cx - mine->pos.cx,
+                pl->pos.cy - mine->pos.cy);
+            dist /= CLICK;
             if (dist < min_dist)
             {
                 min_dist = dist;
@@ -399,11 +398,6 @@ char *Describe_shot(int type, int status, modifiers_t mods, int hit)
 
     sprintf(msg, "%s%s%s%s%s%s%s%s%s",
             howmany,
-            // ((mods.velocity || mods.spread || mods.power) ? "modified " : ""),
-            // (mods.mini ? "mini " : ""),
-            // (BIT(mods.nuclear, MODS_FULLNUCLEAR) ? "full " : ""),
-            // (BIT(mods.nuclear, MODS_NUCLEAR) ? "nuclear " : ""),
-            // (BIT(mods.warhead, IMPLOSION) ? "imploding " : ""),
             ((Mods_get(mods, ModsVelocity) || Mods_get(mods, ModsSpread) || Mods_get(mods, ModsPower)) ? "modified " : ""),
             (Mods_get(mods, ModsMini) ? "mini " : ""),
             ((Mods_get(mods, ModsNuclear) & MODS_FULLNUCLEAR) ? "full " : ""),
@@ -511,35 +505,26 @@ void Fire_general_shot(int id, int team, bool cannon,
                        clpos_t pos, int type, int dir,
                        modifiers_t mods, int target_id)
 {
-    // char msg[MSG_LEN];
+    world_t *world = &World;
     int used, fuse = 0, lock = 0, status = GRAVITY, i, ldir, minis;
     int pl_range, pl_radius, rack_no = 0, racks_left = 0, r, on_this_rack = 0;
     int side = 0, fired = 0;
-    int life = options.shotLife;
-    double drain;
-    double mass = options.shotMass,
-           speed = options.shotSpeed,
-           turnspeed = 0,
-           max_speed = SPEED_LIMIT,
-           angle,
-           spread;
+    double drain, mass = options.shotMass, life = options.shotLife;
+    double speed = options.shotSpeed, turnspeed = 0, max_speed = SPEED_LIMIT;
+    double angle, spread;
     vector_t mv;
     clpos_t shotpos;
     object_t *mini_objs[MODS_MINI_MAX + 1];
     torpobject_t *torp;
     player_t *pl = Player_by_id(id);
     // cannon_t *cannon = Cannon_by_id(id);
-    world_t *world = &World;
 
     if (NumObjs >= MAX_TOTAL_SHOTS)
         return;
 
     if (!Mods_get(mods, ModsCluster))
-        // mods.velocity = 0;
         Mods_set(&mods, ModsVelocity, 0);
-    // if (!mods.mini)
     if (!Mods_get(mods, ModsMini))
-        // mods.spread = 0;
         Mods_set(&mods, ModsSpread, 0);
 
     if (cannon)
@@ -638,7 +623,7 @@ void Fire_general_shot(int id, int team, bool cannon,
         }
 
         if (pl && Player_is_killed(pl))
-            life = (int)(rfrac() * 12);
+            life = rfrac() * 12;
         else if (!cannon)
             life = (options.missileLife ? options.missileLife : MISSILE_LIFETIME);
 
@@ -1179,6 +1164,10 @@ void Delete_shot(int ind)
 
     case OBJ_BALL:
         ball = BALL_PTR(shot);
+
+        warn("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
+        warn("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
+
         if (ball->id != NO_ID)
             Detach_ball(Player_by_id(ball->id), ball);
         else
@@ -1201,8 +1190,8 @@ void Delete_shot(int ind)
              * have been destroyed is by being knocked out of the goal.
              * Therefore we force the ball to be recreated.
              */
-            warn("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
-            warn("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
+            // warn("Delete_shot: Ball ball->ball_treasure      is %p", ball->ball_treasure);
+            // warn("Delete_shot: Ball ball->ball_treasure_copy is %p", ball->ball_treasure_copy);
             ball->ball_treasure->have = false;
             SET_BIT(ball->obj_status, RECREATE);
         }
