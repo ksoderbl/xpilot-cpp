@@ -81,7 +81,7 @@ extern shipshape_t *Default_ship(void);
 extern void Free_ship_shape(shipshape_t *ship);
 extern shipshape_t *Parse_shape_str(char *str);
 extern shipshape_t *Convert_shape_str(char *str);
-extern void Calculate_shield_radius(shipshape_t *ship);
+extern int Calculate_shield_radius(shipshape_t *ship);
 extern int Validate_shape_str(char *str);
 extern void Convert_ship_2_string(shipshape_t *ship, char *buf, char *ext,
                                   unsigned shape_version);

@@ -1647,19 +1647,21 @@ static int Get_shape_keyword(char *keyw)
     return (i);
 }
 
-void Calculate_shield_radius(shipshape_t *ship)
+int Calculate_shield_radius(shipshape_t *ship)
 {
     int i;
     int radius2, max_radius = 0;
 
     for (i = 0; i < ship->num_points; i++)
     {
-        radius2 = (int)(sqr(ship->pts[i][0].cx) + sqr(ship->pts[i][0].cy));
+        position_t pti = Ship_get_point_position(ship, i, 0);
+        radius2 = (int)(sqr(pti.x) + sqr(pti.y));
         if (radius2 > max_radius)
             max_radius = radius2;
     }
     max_radius = (int)(2.0 * sqrt((double)max_radius));
-    ship->shield_radius = (max_radius + 2 <= 34)
-                              ? 34
-                              : (max_radius + 2 - (max_radius & 1));
+    int shield_radius = (max_radius + 2 <= 34)
+                            ? 34
+                            : (max_radius + 2 - (max_radius & 1));
+    return shield_radius;
 }

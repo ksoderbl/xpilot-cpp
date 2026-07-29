@@ -1108,7 +1108,8 @@ int Handle_player(int id, int player_team, int mychar,
     other->max_chars_in_names = -1;
     scoresChanged = true;
     other->ship = Convert_shape_str(shape);
-    Calculate_shield_radius(other->ship);
+    int radius = Calculate_shield_radius(other->ship);
+    other->ship->shield_radius = radius;
 
     return 0;
 }

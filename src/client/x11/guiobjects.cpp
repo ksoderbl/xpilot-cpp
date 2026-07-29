@@ -884,11 +884,11 @@ static void Gui_paint_shields_deflectors(int x, int y, int radius, int shield,
     }
 }
 
-static void Set_drawstyle_dashed(int ship_color, int cloak);
+static void Set_drawstyle_dashed(int ship_color);
 
 static void Gui_paint_ship_cloaked(int ship_color, XPoint *points, int point_count)
 {
-    Set_drawstyle_dashed(ship_color, 1);
+    Set_drawstyle_dashed(ship_color);
     rd.drawLines(dpy, drawPixmap, gameGC, points, point_count, 0);
 }
 
@@ -921,9 +921,9 @@ static void Gui_paint_ship_uncloaked(int id, XPoint *points,
                        Complex, CoordModeOrigin);
 }
 
-static void Set_drawstyle_dashed(int ship_color, int cloak)
+static void Set_drawstyle_dashed(int ship_color)
 {
-    int mask;
+    unsigned long mask;
     if (gcv.line_style != LineOnOffDash)
     {
         gcv.line_style = LineOnOffDash;
@@ -1000,7 +1000,24 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
     if (cloak == 0 && phased == 0)
     {
         if (!texturedObjects)
+        {
             Gui_paint_ship_uncloaked(id, points, ship_color, cnt);
+            /* shipshapeshack by Mara */
+            // if (instruments.showShipShapesHack)
+            {
+                // int sshColor = ship_color;
+                // int sshColor = 5;
+                // Segment_add(sshColor,
+                //             (X(x + SHIP_SZ * tcos(dir))),
+                //             (Y(y + SHIP_SZ * tsin(dir))),
+                //             (X(x + (SHIP_SZ + 12) * tcos(dir))),
+                //             (Y(y + (SHIP_SZ + 12) * tsin(dir))));
+                // Arc_add(sshColor,
+                //         X(x - SHIP_SZ), Y(y + SHIP_SZ),
+                //         2 * SHIP_SZ, 2 * SHIP_SZ,
+                //         0, 64 * 360);
+            }
+        }
         else
         {
             if (ship_color == BLUE)
@@ -1024,7 +1041,7 @@ void Gui_paint_ship(int x, int y, int dir, int id, int cloak, int phased,
 
     if (shield || deflector)
     {
-        Set_drawstyle_dashed(ship_color, cloak);
+        Set_drawstyle_dashed(ship_color);
         Gui_paint_shields_deflectors(x, y, ship->shield_radius,
                                      shield, deflector,
                                      eshield, ship_color);

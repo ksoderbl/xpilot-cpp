@@ -342,8 +342,8 @@ static void Paint_lock(int hud_pos_x, int hud_pos_y)
     //     ship = Ship_by_id(lock_id);
     //     for (i = 0; i < ship->num_points; i++)
     //     {
-    //         points[i].x = WINSCALE((int)(hud_pos_x + ship->pts[i][dir].x / 2 + 60));
-    //         points[i].y = WINSCALE((int)(hud_pos_y + ship->pts[i][dir].y / 2 - 80));
+    //         points[i].x = WINSCALE((int)(hud_pos_x + ship->pts[i][dir].cx / 100 + 400));
+    //         points[i].y = WINSCALE((int)(hud_pos_y + ship->pts[i][dir].cy / 100 + 400));
     //     }
     //     points[i++] = points[0];
     //     SET_FG(colors[hudShipColor].pixel);
