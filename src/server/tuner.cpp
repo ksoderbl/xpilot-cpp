@@ -115,10 +115,8 @@ void tuner_allowshields(void)
         CLR_BIT(DEF_HAVE, HAS_SHIELD);
 
         for (i = 0; i < NumPlayers; i++)
-        {
-            Player_by_index(i)->shield_time = 2 * FPS;
-            /* 2 seconds to get to safety */
-        }
+            /* approx 2 seconds to get to safety */
+            Player_by_index(i)->shield_time = SHIELD_TIME;
     }
 }
 

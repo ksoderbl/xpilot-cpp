@@ -244,13 +244,10 @@ struct xp_smartobject
     // TODO: Remove these
     int new_info; /* smart re-lock id */
 
-    long info; /* Miscellaneous info */ // TODO: REMOVE
-    int count;                          // TODO: REMOVE
-
     double smart_ecm_range; /* Range from last ecm center*/
     double smart_count;     /* Misc snafus */
-    short smart_lock_id;    /* snafu */
-    short smart_relock_id;  /* smart re-lock id */
+    int smart_lock_id;      /* snafu */
+    int smart_relock_id;    /* smart re-lock id */
 
 #define SMART_IND(ind) ((smartobject_t *)Obj[(ind)])
 #define SMART_PTR(ptr) ((smartobject_t *)(ptr))
@@ -268,8 +265,8 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    int count; /* Misc timings */       // TODO: REMOVE
-    long info; /* Miscellaneous info */ // TODO: REMOVE
+    int dirty_torp_count; /* Misc timings */       // TODO: REMOVE
+    long dirty_torp_info; /* Miscellaneous info */ // TODO: REMOVE
 
     int torp_spread_left; /* how much spread time left: TODO: double */
     double torp_count;    /* Misc snafus */
@@ -290,11 +287,8 @@ struct xp_heatobject
 
     MISSILE_EXTEND
 
-    int count; /* Misc timings */       // TODO: REMOVE
-    long info; /* Miscellaneous info */ // TODO: REMOVE
-
-    double heat_count;  /* Misc snafus */
-    short heat_lock_id; /* snafu */
+    double heat_count; /* Misc snafus */
+    int heat_lock_id;  /* snafu */
 
 #define HEAT_IND(ind) ((heatobject_t *)Obj[(ind)])
 #define HEAT_PTR(ptr) ((heatobject_t *)(ptr))
@@ -361,7 +355,7 @@ struct xp_pulseobject
 
     OBJECT_EXTEND
 
-    int count; /* Misc timings */ // TODO: REMOVE
+    int dirty_pulse_count; /* Misc timings */ // TODO: REMOVE
 
     double pulse_len;  /* Length of the pulse */
     uint8_t pulse_dir; /* Direction of the pulse */
@@ -381,8 +375,8 @@ struct xp_itemobject
 
     OBJECT_EXTEND
 
-    long info; /* Miscellaneous info */ // TODO: REMOVE
-    int count; /* Misc timings */       // TODO: REMOVE
+    long dirty_item_info; /* Miscellaneous info */ // TODO: REMOVE
+    int dirty_item_count; /* Misc timings */       // TODO: REMOVE
 
     int item_type;  /* One of ITEM_* */
     int item_count; /* Misc snafus */

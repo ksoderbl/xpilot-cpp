@@ -302,7 +302,7 @@ typedef struct
 
     int privs; /* Player privileges */
 
-    int count; // TODO: REMOVE
+    int dirty_legacy_count_hack; // TODO: REMOVE
 
 #define PRIV_NOAUTOKICK 1
 #define PRIV_AUTOKICKLAST 2

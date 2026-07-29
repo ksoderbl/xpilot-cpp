@@ -107,9 +107,11 @@ void warn(const char *fmt, ...)
 
     va_start(ap, fmt);
 
+    char *s = showtime();
+
     if (progname[0] != '\0')
     {
-        fprintf(stderr, "%s: ", progname);
+        fprintf(stderr, "%s %s: ", s, progname);
     }
 
     vfprintf(stderr, fmt, ap);

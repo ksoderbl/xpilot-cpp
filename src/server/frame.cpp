@@ -945,10 +945,10 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         {
             itemobject_t *item = ITEM_PTR(shot);
 
-            if (item->info != item->item_type)
+            if (item->dirty_item_info != item->item_type)
             {
-                warn("Frame_shots: shot->info != item->item_type, shot->info = %ld, item->item_type = %d",
-                     item->count, item->item_type);
+                warn("----> Frame_shots: shot->dirty_item_info != item->item_type, shot->dirty_item_info = %ld, item->item_type = %d",
+                     item->dirty_item_info, item->item_type);
             }
 
             int item_type = item->item_type;
@@ -1070,8 +1070,9 @@ static void Frame_ships(connection_t *conn, player_t *pl)
 
         if (Player_is_paused(pl_i))
         {
-            warn("Sending paused: pl_i: %s, state %s, pause_count: %d",
-                 pl_i->name, Player_state_str(pl_i->pl_state), (int)pl_i->pause_count);
+            if ((((int)pl_i->pause_count) % 12) == 1)
+                warn("Sending paused: pl_i: %s, state %s, pause_count: %d",
+                     pl_i->name, Player_state_str(pl_i->pl_state), (int)pl_i->pause_count);
             Send_paused(conn, pl_i->pos, (int)pl_i->pause_count);
             continue;
         }

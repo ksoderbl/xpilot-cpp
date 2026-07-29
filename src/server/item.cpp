@@ -48,8 +48,6 @@
 #include "commonproto.h"
 #include "robot.h"
 
-#define CONFUSED_TIME 3
-
 static void Item_update_flags(player_t *pl)
 {
     if (pl->item[ITEM_CLOAK] <= 0 && BIT(pl->have, HAS_CLOAKING_DEVICE))
@@ -346,7 +344,7 @@ void Make_item(clpos_t pos, vector_t vel,
         return;
 
     item->type = OBJ_ITEM;
-    item->info = type; // TODO: remove
+    item->dirty_item_info = type; // TODO: remove
     item->item_type = type;
     item->color = RED;
     item->obj_status = status;
@@ -358,7 +356,7 @@ void Make_item(clpos_t pos, vector_t vel,
         item->acc.y = 0.0;
     item->mass = 10.0;
     item->obj_life = 1500 + rfrac() * 512;
-    item->count = num_per_pack; // TODO: remove
+    item->dirty_item_count = num_per_pack; // TODO: remove
     item->item_count = num_per_pack;
     item->pl_range = ITEM_SIZE / 2;
     item->pl_radius = ITEM_SIZE / 2;
@@ -1036,9 +1034,8 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
                 }
                 if (shot->type == OBJ_SMART_SHOT)
                 {
-                    smartobject_t *smart = SMART_PTR(shot);
-
-                    if (smart->info != owner_pl->id)
+                    smart = SMART_PTR(shot);
+                    if (smart->smart_lock_id != owner_pl->id)
                         continue;
                 }
             }
@@ -1056,8 +1053,11 @@ void Fire_general_ecm(int id, int team, clpos_t pos)
             smart = SMART_PTR(shot);
             SET_BIT(smart->obj_status, CONFUSED);
             smart->smart_ecm_range = range;
-            smart->count = CONFUSED_TIME;
-            if (pl && BIT(pl->lock.tagged, LOCK_PLAYER) && (pl->lock.distance <= pl->sensor_range || !BIT(World.rules->mode, LIMITED_VISIBILITY)) && pl->visibility[GetInd(pl->lock.pl_id)].canSee)
+            smart->smart_count = CONFUSED_TIME;
+            if (pl &&
+                BIT(pl->lock.tagged, LOCK_PLAYER) &&
+                (pl->lock.distance <= pl->sensor_range || !BIT(World.rules->mode, LIMITED_VISIBILITY)) &&
+                pl->visibility[GetInd(pl->lock.pl_id)].canSee)
                 smart->new_info = pl->lock.pl_id;
             else
                 smart->new_info = Player_by_index((int)(rfrac() * NumPlayers))->id;

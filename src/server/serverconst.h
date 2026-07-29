@@ -227,6 +227,7 @@ constexpr double ED_LASER_HIT = -100.0;
 #define SMART_TURNSPEED 2.6
 #define SMART_SHOT_MAX_SPEED 22.0
 #define SMART_SHOT_LOOK_AH 4
+constexpr double CONFUSED_TIME = 3.0;
 #define TORPEDO_SPEED_TIME (2 * 12)
 #define TORPEDO_ACC ((18.0 * SMART_SHOT_MAX_SPEED) / \
                      (12 * TORPEDO_SPEED_TIME))
@@ -239,16 +240,16 @@ constexpr double ED_LASER_HIT = -100.0;
 #define NUKE_MINE_EXPL_MULT 3
 #define NUKE_SMART_EXPL_MULT 4
 
-#define HEAT_RANGE (VISIBILITY_DISTANCE / 2)
-#define HEAT_SPEED_FACT 1.7
-#define HEAT_CLOSE_TIMEOUT (2 * 12)
-#define HEAT_CLOSE_RANGE HEAT_RANGE
-#define HEAT_CLOSE_ERROR 0
-#define HEAT_MID_TIMEOUT (4 * 12)
-#define HEAT_MID_RANGE (2 * HEAT_RANGE)
-#define HEAT_MID_ERROR 8
-#define HEAT_WIDE_TIMEOUT (8 * 12)
-#define HEAT_WIDE_ERROR 16
+constexpr double HEAT_RANGE = (VISIBILITY_DISTANCE / 2);
+constexpr double HEAT_SPEED_FACT = 1.7;
+constexpr int HEAT_CLOSE_TIMEOUT(2 * 12);
+constexpr double HEAT_CLOSE_RANGE = HEAT_RANGE;
+constexpr double HEAT_CLOSE_ERROR = 0;
+constexpr int HEAT_MID_TIMEOUT = (4 * 12);
+constexpr double HEAT_MID_RANGE = (2 * HEAT_RANGE);
+constexpr int HEAT_MID_ERROR = 8;
+constexpr double HEAT_WIDE_TIMEOUT = (8 * 12);
+constexpr int HEAT_WIDE_ERROR = 16;
 
 #define CLUSTER_MASS_SHOTS(mass) ((mass) * 0.9 / options.shotMass)
 #define CLUSTER_MASS_DRAIN(mass) (CLUSTER_MASS_SHOTS(mass) * ED_SHOT)

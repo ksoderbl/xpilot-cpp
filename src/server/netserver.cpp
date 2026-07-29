@@ -2148,6 +2148,8 @@ static int Receive_keyboard(connection_t *connp)
     uint8_t ch;
     size_t size = KEYBOARD_SIZE;
 
+    // warn("Receive_keyboard");
+
     if (connp->r.ptr - connp->r.buf + (int)size + 1 + 4 > connp->r.len)
         /*
          * Incomplete client packet.
@@ -2165,6 +2167,7 @@ static int Receive_keyboard(connection_t *connp)
     {
         connp->last_key_change = change;
         pl = Player_by_id(connp->id);
+        warn("--> Receive_keyboard, player %s", pl->name);
         memcpy(pl->last_keyv, connp->r.ptr, size);
         connp->r.ptr += size;
         Handle_keyboard(pl);

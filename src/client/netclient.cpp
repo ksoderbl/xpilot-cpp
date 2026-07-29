@@ -729,6 +729,7 @@ void Net_cleanup(void)
 void Net_key_change(void)
 {
     last_keyboard_change++;
+    warn("Net_key_change calling Key_update: %s,%d", __FILE__, __LINE__);
     Key_update();
 }
 
@@ -744,18 +745,22 @@ int Net_flush(void)
         return 0;
     }
     if (last_keyboard_ack != last_keyboard_change)
+    {
         /*
          * Since 3.2.10: just call Key_update to add our keyboard vector.
          * Key_update will call Send_keyboard to flush our buffer.
          */
+        warn("Net_flush calling Key_update: %s,%d", __FILE__, __LINE__);
         return Key_update();
+    }
 
     Send_talk();
     if (Sockbuf_flush(&wbuf) == -1)
         return -1;
 
     Sockbuf_clear(&wbuf);
-    last_send_anything = last_loops;
+    last_send_anything = time(nullptr);
+    warn("Net_flush, last_send_anything = %ld", (long)last_send_anything);
     return 1;
 }
 
@@ -1427,10 +1432,17 @@ int Net_input(void)
      * or if we haven't sent anything for a while (keepalive)
      * then we send our current keyboard state.
      */
-    if ((last_keyboard_ack != last_keyboard_change && last_keyboard_update /*+ 1*/ < last_loops) || last_loops - last_send_anything > 5 * Setup->frames_per_second)
+    time_now = time(nullptr);
+
+    // warn("Setup->frames_per_second = %d", Setup->frames_per_second);
+
+    if ((last_keyboard_ack != last_keyboard_change && last_keyboard_update /*+ 1*/ < last_loops) ||
+        time_now - last_send_anything > 5)
     {
+        warn("Net_input calling Key_update: %s,%d", __FILE__, __LINE__);
         Key_update();
-        last_send_anything = last_loops;
+        last_send_anything = time_now;
+        warn("Net_flush, last_send_anything = %ld", (long)time_now);
     }
     else
         /*
@@ -2551,6 +2563,8 @@ int Receive_reply(int *replyto, int *result)
 
 int Send_keyboard(uint8_t *keyboard_vector)
 {
+    warn("Send_keyboard");
+
     int size = KEYBOARD_SIZE;
 
     if (wbuf.size - wbuf.len < size + 1 + 4)
@@ -2560,6 +2574,9 @@ int Send_keyboard(uint8_t *keyboard_vector)
     memcpy(&wbuf.buf[wbuf.len], keyboard_vector, (size_t)size);
     wbuf.len += size;
     last_keyboard_update = last_loops;
+
+    warn("Send_keyboard, last_keyboard_update = %ld", last_keyboard_update);
+
     Net_keyboard_track();
     Send_talk();
     if (Sockbuf_flush(&wbuf) == -1)
@@ -2827,7 +2844,10 @@ int Send_pointer_move(int movement)
         return -1;
 
     if (dirPrediction)
+    {
+        warn("dirPred calling Net_key_change");
         Net_key_change();
+    }
 
     return 0;
 }

@@ -622,7 +622,7 @@ void Laser_pulse_collision(void)
         pulse_ptr->obj_life = 1;
         pulse_ptr->id = pulse->id;
         pulse_ptr->team = pulse->team;
-        pulse_ptr->count = 0;
+        pulse_ptr->dirty_pulse_count = 0;
         pulse_ptr->obj_status = 0;
         if (pulse->id == NO_ID)
             pulse_ptr->obj_status = FROMCANNON;

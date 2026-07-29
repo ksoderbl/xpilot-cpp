@@ -1317,9 +1317,10 @@ int Handle_self_items(uint8_t *newNumItems)
 
 static void update_status(int status)
 {
-    // warn("update_status, status = 0x%02x", status);
-
     static int prev_status = 0;
+
+    if (prev_status != status)
+        warn("update_status, prev_status = 0x%02x, status = 0x%02x", prev_status, status);
 
     if (BIT(prev_status, PLAYER_STATUS_GAME_OVER) && !BIT(status, PLAYER_STATUS_GAME_OVER) && !BIT(status, PLAYER_STATUS_PAUSE))
         Raise_window();

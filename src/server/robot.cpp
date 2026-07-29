@@ -952,7 +952,9 @@ static bool Robot_check_leave(player_t *pl)
     if (!options.robotsLeave)
         return false;
 
-    if (pl->pl_life > 0 && !BIT(World.rules->mode, LIMITED_LIVES) && (BIT(pl->obj_status, LEGACY_PLAYING) || pl->count <= 0))
+    if (pl->pl_life > 0 &&
+        !BIT(World.rules->mode, LIMITED_LIVES) &&
+        (BIT(pl->obj_status, LEGACY_PLAYING) || pl->dirty_legacy_count_hack <= 0))
     {
         if (options.robotLeaveLife > 0 && pl->pl_life >= options.robotLeaveLife)
         {
@@ -1073,7 +1075,7 @@ void Robot_update(bool tick)
         if (BIT(pl->obj_status, LEGACY_PLAYING | LEGACY_GAME_OVER) != LEGACY_PLAYING)
         {
             /* Only check for leave if not being transported to homebase. */
-            if (!pl->count)
+            if (!pl->dirty_legacy_count_hack)
             {
                 if (Robot_check_leave(pl))
                     i--;

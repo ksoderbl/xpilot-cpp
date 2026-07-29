@@ -492,10 +492,11 @@ void Tank_handle_detach(player_t *pl)
         {
             heatobject_t *heat = HEAT_PTR(obj);
 
-            if (heat->info > 0 && Player_by_id(heat->info) == pl)
-            {
-                heat->info = NumPlayers - 1;
-            }
+            if (heat->heat_lock_id > 0 && Player_by_id(heat->heat_lock_id) == pl)
+                // TODO: I think the idea here is that heat seekers locked on the player
+                // launching the tank now locks on the tank.
+                // The below code treats the tanks index as the id, which is probably a bug.
+                heat->heat_lock_id = NumPlayers - 1;
         }
     }
 

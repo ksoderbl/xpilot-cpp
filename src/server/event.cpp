@@ -282,6 +282,7 @@ static void Player_refuel(player_t *pl)
             world,
             pl->pos.cx - fs->pos.cx,
             pl->pos.cy - fs->pos.cy);
+
         if (!Player_is_refueling(pl) || l < dist)
         {
             SET_BIT(pl->used, USES_REFUEL);
@@ -324,6 +325,8 @@ static void Player_repair(player_t *pl)
 /* Player pressed pause key. */
 static void Player_toggle_pause(player_t *pl)
 {
+    warn("Player_toggle_pause: %s", pl->name);
+
     world_t *world = &World;
 
     enum pausetype
@@ -430,7 +433,7 @@ static void Player_toggle_pause(player_t *pl)
         }
         break;
     default:
-        // warn("Player_toggle_pause: BUG: unknown pause type.");
+        warn("Player_toggle_pause: BUG: unknown pause type.");
         break;
     }
 }
@@ -483,9 +486,12 @@ void Pause_player(player_t *pl, bool on)
 {
     int i;
 
+    warn("Pause_player: player = %s, on = %d", pl->name, on);
+
     /* kps - add support for pausing robots ? */
     if (!Player_is_human(pl))
         return;
+
     if (on && !Player_is_paused(pl))
     { /* Turn pause mode on */
         if (pl->team != TEAM_NOT_SET)
@@ -551,6 +557,8 @@ void Pause_player(player_t *pl, bool on)
 
 int Handle_keyboard(player_t *pl)
 {
+    warn("Handle_keyboard: player %s", pl->name);
+
     int i, j, k, key, pressed, xi, yi;
     double minv;
 
@@ -674,7 +682,10 @@ int Handle_keyboard(player_t *pl)
         }
 
         if (pressed)
-        { /* --- KEYPRESS --- */
+        {
+            warn("event.cpp KEYPRESS: player: %s, key %d", pl->name, key);
+
+            /* --- KEYPRESS --- */
             switch (key)
             {
 
@@ -1040,6 +1051,8 @@ int Handle_keyboard(player_t *pl)
         }
         else
         {
+            warn("event.cpp KEYRELEASE: player: %s, key %d", pl->name, key);
+
             /* --- KEYRELEASE --- */
             switch (key)
             {

@@ -188,7 +188,7 @@ void Pick_startpos(player_t *pl)
                 }
             }
             if (BIT(pl->obj_status, LEGACY_PLAYING) == 0)
-                pl->count = RECOVERY_DELAY;
+                pl->dirty_legacy_count_hack = RECOVERY_DELAY;
             else if (BIT(pl->obj_status, LEGACY_PAUSE | LEGACY_GAME_OVER))
                 Go_home(pl);
         }
@@ -198,7 +198,9 @@ void Pick_startpos(player_t *pl)
 void Go_home(player_t *pl)
 {
     int ind = GetInd(pl->id);
-    // printf("Go_home: ind = %d, pl->ind = %d\n", ind, pl->ind);
+
+    warn("===> Go_home: player %s, ind = %d, pl->ind = %d", pl->name, ind, pl->ind);
+
     if (ind != pl->ind)
     {
         player_t *pl1 = PlayersArray[ind];
@@ -535,7 +537,7 @@ int Init_player(int ind, shipshape_t *ship, int type)
             pl->ship = Default_ship();
     }
 
-    pl->count = -1;
+    pl->dirty_legacy_count_hack = -1;
 
     pl->power = pl->power_s = MAX_PLAYER_POWER;
     pl->turnspeed = pl->turnspeed_s = MIN_PLAYER_TURNSPEED;
@@ -797,7 +799,7 @@ void Reset_all_players(void)
             pl->pl_life = World.rules->lives;
             if (BIT(World.rules->mode, TIMING))
             {
-                pl->count = RECOVERY_DELAY;
+                pl->dirty_legacy_count_hack = RECOVERY_DELAY;
             }
         }
         if (Player_is_tank(pl))
@@ -940,8 +942,11 @@ static void Compute_end_of_round_values(double *average_score,
     /* ratio for this round */
     for (i = 0; i < NumPlayers; i++)
     {
-        if (Player_is_tank(Player_by_index(i)) ||
-            (BIT(Player_by_index(i)->obj_status, LEGACY_PAUSE) && Player_by_index(i)->count <= 0))
+        player_t *pl = Player_by_index(i);
+
+        if (Player_is_tank(pl) ||
+            (Player_is_paused(pl) && pl->pause_count <= 0) ||
+            Player_is_waiting(pl))
             continue;
         *average_score += Player_by_index(i)->score;
         ratio = (double)Player_by_index(i)->kills / (Player_by_index(i)->deaths + 1);

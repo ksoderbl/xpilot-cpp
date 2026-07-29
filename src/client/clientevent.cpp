@@ -168,6 +168,7 @@ int Key_init(void)
 
 int Key_update(void)
 {
+    warn("Key_update");
     return Send_keyboard(keyv);
 }
 
@@ -188,7 +189,7 @@ static bool Key_press_id_mode(void)
 
 static bool Key_press_autoshield_hack(void)
 {
-    // warn("Key_press_autoshield_hack");
+    warn("Key_press_autoshield_hack");
     if (auto_shield && BITV_ISSET(keyv, KEY_SHIELD))
         BITV_CLR(keyv, KEY_SHIELD);
     return false;
@@ -196,7 +197,7 @@ static bool Key_press_autoshield_hack(void)
 
 static bool Key_press_shield(keys_t key)
 {
-    // warn("Key_press_shield");
+    warn("Key_press_shield, key = %d, shields = %d", key, shields);
     if (toggle_shield)
     {
         shields = !shields;
@@ -470,7 +471,10 @@ void Key_clear_counts(void)
     }
 
     if (change)
+    {
+        warn("Key_clear_counts: calling Net_key_change");
         Net_key_change();
+    }
 }
 
 /* Remember which key we used to exit quit mode. */
@@ -493,7 +497,7 @@ static bool Quit_mode_key_press(keys_t key)
 
 bool Key_press(keys_t key)
 {
-    // warn("Key_press");
+    warn("Key_press, key = %d", key);
 
     bool countchange;
     int keycount, i;
@@ -742,6 +746,7 @@ void Reset_shields(void)
                 BITV_ISSET(keyv, KEY_DETACH_MINE))
                 BITV_CLR(keyv, KEY_SHIELD);
         }
+        warn("Reset_shields: calling Net_key_change");
         Net_key_change();
     }
 }
@@ -779,7 +784,10 @@ void Pointer_button_pressed(int button)
         key_change |= Key_press(buttonDefs[b_index][i]);
 
     if (key_change)
+    {
+        warn("Pointer_button_pressed: calling Net_key_change");
         Net_key_change();
+    }
 }
 
 void Pointer_button_released(int button)
@@ -794,7 +802,10 @@ void Pointer_button_released(int button)
         key_change |= Key_release(buttonDefs[b_index][i]);
 
     if (key_change)
+    {
+        warn("Pointer_button_released: calling Net_key_change");
         Net_key_change();
+    }
 }
 
 void Keyboard_button_pressed(xp_keysym_t ks)
@@ -817,11 +828,16 @@ void Keyboard_button_pressed(xp_keysym_t ks)
         change |= Key_press(key);
 
     if (change)
+    {
+        warn("Keyboard_button_pressed: calling Net_key_change");
         Net_key_change();
+    }
 }
 
 void Keyboard_button_released(xp_keysym_t ks)
 {
+    warn("Keyboard_button_released: ks = %d", ks);
+
     bool change = false;
     keys_t key;
 
@@ -831,7 +847,10 @@ void Keyboard_button_released(xp_keysym_t ks)
         change |= Key_release(key);
 
     if (change)
+    {
+        warn("Keyboard_button_released: calling Net_key_change");
         Net_key_change();
+    }
 }
 
 static void Bind_key_to_pointer_button(keys_t key, int ind)

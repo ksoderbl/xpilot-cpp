@@ -50,9 +50,9 @@
 #include "walls.h"
 #include "wormhole.h"
 
-int roundtime = -1;               /* time left this round */
-static double time_to_tick = 1.0; /* game time till next tick */
-static bool tick = false;         /* new tick of game time this frame */
+int roundtime = -1;                  /* time left this round */
+static double time_to_tick = 1.0;    /* game time till next tick */
+static bool tick_this_frame = false; /* new tick of game time this frame */
 
 static inline void update_object_speed(world_t *world, object_t *obj)
 {
@@ -649,9 +649,9 @@ static void Use_items(player_t *pl)
 {
     if (pl->shield_time > 0)
     {
-        pl->shield_time = 0;
         if ((pl->shield_time -= timeStep) <= 0)
         {
+            pl->shield_time = 0;
             if (!BIT(pl->used, USES_EMERGENCY_SHIELD))
                 CLR_BIT(pl->used, USES_SHIELD);
         }
@@ -711,6 +711,7 @@ static void Use_items(player_t *pl)
     /*
      * Compute energy drainage
      */
+    if (tick_this_frame)
     {
         if (BIT(pl->used, USES_SHIELD))
             Player_add_fuel(pl, ED_SHIELD);
@@ -1086,11 +1087,11 @@ void Update_objects(void)
     player_t *pl;
     object_t *obj;
 
-    tick = true;
+    tick_this_frame = true;
     /*
      * Update robots.
      */
-    Robot_update(tick);
+    Robot_update(tick_this_frame);
 
     /*
      * Autorepeat fire, must unfortunately be done here, not in
@@ -1123,9 +1124,8 @@ void Update_objects(void)
     if (Num_transporters() > 0)
         Transporter_update();
 
-    bool tick = true;
     if (Num_cannons() > 0)
-        Cannon_update(tick);
+        Cannon_update(tick_this_frame);
 
     if (Num_targets() > 0)
         Target_update();

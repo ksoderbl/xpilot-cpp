@@ -716,10 +716,6 @@ void Fire_general_shot(int id, int team, bool cannon,
     }
 
     minis = (Mods_get(mods, ModsMini) + 1);
-    // speed *= (1 + (mods.power * MISSILE_POWER_SPEED_FACT));
-    // max_speed *= (1 + (mods.power * MISSILE_POWER_SPEED_FACT));
-    // turnspeed *= (1 + (mods.power * MISSILE_POWER_TURNSPEED_FACT));
-    // spread = (double)((unsigned)mods.spread + 1);
     speed *= (1 + (Mods_get(mods, ModsPower) * MISSILE_POWER_SPEED_FACT));
     max_speed *= (1 + (Mods_get(mods, ModsPower) * MISSILE_POWER_SPEED_FACT));
     turnspeed *= (1 + (Mods_get(mods, ModsPower) * MISSILE_POWER_TURNSPEED_FACT));
@@ -962,8 +958,8 @@ void Fire_general_shot(int id, int team, bool cannon,
             torpobject_t *torp = TORP_PTR(shot);
             torp->missile_turnspeed = turnspeed;
             torp->missile_max_speed = max_speed;
-            torp->info = lock;
-            torp->count = 0;
+            torp->dirty_torp_info = lock;
+            torp->dirty_torp_count = 0;
         }
 
         else if (shot->type == OBJ_HEAT_SHOT)
@@ -971,8 +967,8 @@ void Fire_general_shot(int id, int team, bool cannon,
             heatobject_t *heat = HEAT_PTR(shot);
             heat->missile_turnspeed = turnspeed;
             heat->missile_max_speed = max_speed;
-            heat->info = lock;
-            heat->count = 0;
+            heat->heat_lock_id = lock;
+            heat->heat_count = 0.0;
         }
 
         else if (shot->type == OBJ_SMART_SHOT)
@@ -980,8 +976,8 @@ void Fire_general_shot(int id, int team, bool cannon,
             smartobject_t *smart = SMART_PTR(shot);
             smart->missile_turnspeed = turnspeed;
             smart->missile_max_speed = max_speed;
-            smart->info = lock;
-            smart->count = 0;
+            smart->smart_lock_id = lock;
+            smart->smart_count = 0.0;
         }
 
         else
@@ -1344,10 +1340,10 @@ void Delete_shot(int ind)
         /* Special items. */
     case OBJ_ITEM:
         item = ITEM_PTR(shot);
-        if (item->info != item->item_type)
+        if (item->dirty_item_info != item->item_type)
         {
-            warn("Delete_shot: shot->info != item->item_type, item->info = %ld, item->item_type = %d",
-                 item->info, item->item_type);
+            warn("Delete_shot: shot->info != item->item_type, item->dirty_item_info = %ld, item->item_type = %d",
+                 item->dirty_item_info, item->item_type);
         }
 
         switch (item->item_type)
@@ -1375,8 +1371,8 @@ void Delete_shot(int ind)
             break;
         }
 
-        if (item->info != item->item_type)
-            warn("item->info != item->item_type");
+        if (item->dirty_item_info != item->item_type)
+            warn("item->dirty_item_info != item->item_type");
         World.items[item->item_type].num--;
 
         break;
@@ -1548,9 +1544,9 @@ void Update_torpedo(torpobject_t *torp)
 {
     double acc;
     if (Mods_get(torp->mods, ModsNuclear))
-        acc = (torp->info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
+        acc = (torp->dirty_torp_info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
     else
-        acc = (torp->info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
+        acc = (torp->dirty_torp_info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
     // acc *= (1 + (torp->mods.power * MISSILE_POWER_SPEED_FACT));
     acc *= (1 + (Mods_get(torp->mods, ModsPower) * MISSILE_POWER_SPEED_FACT));
     if (torp->torp_spread_left-- <= 0)
@@ -1576,12 +1572,13 @@ void Update_missile(missileobject_t *missile)
         heatobject_t *heat = HEAT_PTR(missile);
 
         acc = SMART_SHOT_ACC * HEAT_SPEED_FACT;
-        if (heat->info >= 0)
+        // TODO: Use NO_ID
+        if (heat->heat_lock_id >= 0)
         {
             clpos_t engine;
 
             /* Get player and set min to distance */
-            pl = Player_by_id(heat->info);
+            pl = Player_by_id(heat->heat_lock_id);
             if (!pl)
                 return;
             engine = Ship_get_engine_clpos(pl->ship, pl->dir);
@@ -1594,8 +1591,8 @@ void Update_missile(missileobject_t *missile)
         else
         {
             /* No player. Number of moves so that new target is searched */
-            pl = 0;
-            heat->count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
+            pl = nullptr;
+            heat->heat_count = HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR;
         }
         if (pl && Player_is_thrusting(pl))
         {
@@ -1604,22 +1601,24 @@ void Update_missile(missileobject_t *missile)
              * set number to moves to correct error value
              */
             if (range < HEAT_CLOSE_RANGE)
-                heat->count = HEAT_CLOSE_ERROR;
+                heat->heat_count = HEAT_CLOSE_ERROR;
             else if (range < HEAT_MID_RANGE)
-                heat->count = HEAT_MID_ERROR;
+                heat->heat_count = HEAT_MID_ERROR;
             else
-                heat->count = HEAT_WIDE_ERROR;
+                heat->heat_count = HEAT_WIDE_ERROR;
         }
         else
         {
-            heat->count++;
+            heat->heat_count += timeStep;
             /* Look for new target */
-            if ((range < HEAT_CLOSE_RANGE && heat->count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) || (range < HEAT_MID_RANGE && heat->count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) || heat->count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
+            if ((range < HEAT_CLOSE_RANGE && heat->heat_count > HEAT_CLOSE_TIMEOUT + HEAT_CLOSE_ERROR) ||
+                (range < HEAT_MID_RANGE && heat->heat_count > HEAT_MID_TIMEOUT + HEAT_MID_ERROR) ||
+                heat->heat_count > HEAT_WIDE_TIMEOUT + HEAT_WIDE_ERROR)
             {
                 double l;
                 int i;
 
-                range = HEAT_RANGE * (heat->count / HEAT_CLOSE_TIMEOUT);
+                range = HEAT_RANGE * (heat->heat_count / HEAT_CLOSE_TIMEOUT);
                 for (i = 0; i < NumPlayers; i++)
                 {
                     player_t *pl_i = Player_by_index(i);
@@ -1639,13 +1638,13 @@ void Update_missile(missileobject_t *missile)
                      */
                     l *= MAX_AFTERBURNER + 1 - pl_i->item[ITEM_AFTERBURNER];
                     l /= MAX_AFTERBURNER + 1;
-                    if (BIT(pl_i->have, HAS_AFTERBURNER))
+                    if (Player_has_afterburner(pl_i))
                         l *= 16 - pl_i->item[ITEM_AFTERBURNER];
                     if (l < range)
                     {
-                        heat->info = Player_by_index(i)->id;
+                        heat->heat_lock_id = pl_i->id;
                         range = l;
-                        heat->count =
+                        heat->heat_count =
                             l < HEAT_CLOSE_RANGE ? HEAT_CLOSE_ERROR : l < HEAT_MID_RANGE ? HEAT_MID_ERROR
                                                                                          : HEAT_WIDE_ERROR;
                         pl = pl_i;
@@ -1653,29 +1652,31 @@ void Update_missile(missileobject_t *missile)
                 }
             }
         }
-        if (heat->info < 0)
+        if (heat->heat_lock_id < 0) // TODO: use NO_ID
             return;
         /*
          * Heat seekers cannot fly exactly, if target is far away or thrust
          * isn't active.  So simulate the error:
          */
-        x_dif = (int)(rfrac() * 4 * heat->count);
-        y_dif = (int)(rfrac() * 4 * heat->count);
+        x_dif = rfrac() * 4 * heat->heat_count;
+        y_dif = rfrac() * 4 * heat->heat_count;
     }
     else if (missile->type == OBJ_SMART_SHOT)
     {
         smartobject_t *smart = SMART_PTR(missile);
 
-        if (BIT(smart->obj_status, CONFUSED) && (!(frame_loops % CONFUSED_UPDATE_GRANULARITY) || smart->count == CONFUSED_TIME))
+        if (BIT(smart->obj_status, CONFUSED) && (!(frame_loops % CONFUSED_UPDATE_GRANULARITY) ||
+                                                 smart->smart_count == CONFUSED_TIME))
         {
 
-            if (smart->count)
+            if (smart->smart_count > 0.0)
             {
-                smart->info = PlayersArray[(int)(rfrac() * NumPlayers)]->id;
-                smart->count--;
+                smart->smart_lock_id = Player_by_index((int)(rfrac() * NumPlayers))->id;
+                smart->smart_count -= timeStep;
             }
             else
             {
+                smart->smart_count = 0.0;
                 CLR_BIT(smart->obj_status, CONFUSED);
 
                 /* range is percentage from center to periphery of ecm burst */
@@ -1689,18 +1690,14 @@ void Update_missile(missileobject_t *missile)
                  *   0                50
                  */
                 if ((int)(rfrac() * 100) <= ((int)(range / 2) + 50))
-                {
-                    smart->info = smart->new_info;
-                }
+                    smart->smart_lock_id = smart->new_info;
             }
         }
-        pl = Player_by_id(smart->info);
+        pl = Player_by_id(smart->smart_lock_id);
     }
     else
-    {
         /*NOTREACHED*/
         return;
-    }
 
     /* kps - Player_by_id might return NULL. */
     if (!pl)

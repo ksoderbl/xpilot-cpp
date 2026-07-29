@@ -842,14 +842,14 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 {
     int old_have;
 
-    if (item->count != item->item_count)
+    if (item->dirty_item_count != item->item_count)
     {
-        warn("item_index: item->count != item->item_count, item->count = %d, item->item_count = %d",
-             item->count, item->item_count);
+        warn("----> item_index: item->dirty_item_count != item->item_count, item->dirty_item_count = %d, item->item_count = %d",
+             item->dirty_item_count, item->item_count);
     }
 
-    item->item_count = item->count; // TODO: REMOVE
-    item->item_type = item->info;   // TODO: REMOVE
+    item->item_count = item->dirty_item_count; // TODO: REMOVE
+    item->item_type = item->dirty_item_info;   // TODO: REMOVE
 
     enum Item item_index = (enum Item)item->item_type;
 
@@ -1025,7 +1025,7 @@ static void Player_collides_with_item(player_t *pl, itemobject_t *item)
         /* impossible */
         break;
     default:
-        // warn("Player_collides_with_item: unknown item.");
+        warn("Player_collides_with_item: unknown item.");
         break;
     }
 
