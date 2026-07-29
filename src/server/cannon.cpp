@@ -193,7 +193,6 @@ void Cannon_throw_items(cannon_t *c)
             if (rfrac() < (options.dropItemOnKillProb * CANNON_DROP_ITEM_PROB) && (item = ITEM_PTR(Object_allocate())) != NULL)
             {
                 item->type = OBJ_ITEM;
-                item->dirty_item_info = i; // TODO: Remove
                 item->item_type = i;
                 item->color = RED;
                 item->obj_status = GRAVITY;
@@ -209,7 +208,6 @@ void Cannon_throw_items(cannon_t *c)
                 item->acc.y = 0;
                 item->mass = 10;
                 item->obj_life = 1500 + rfrac() * 512;
-                item->dirty_item_count = amount; // TODO: Remove
                 item->item_count = amount;
                 item->pl_range = ITEM_SIZE / 2;
                 item->pl_radius = ITEM_SIZE / 2;

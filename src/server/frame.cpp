@@ -944,13 +944,6 @@ static void Frame_shots(connection_t *conn, player_t *pl)
         case OBJ_ITEM:
         {
             itemobject_t *item = ITEM_PTR(shot);
-
-            if (item->dirty_item_info != item->item_type)
-            {
-                warn("----> Frame_shots: shot->dirty_item_info != item->item_type, shot->dirty_item_info = %ld, item->item_type = %d",
-                     item->dirty_item_info, item->item_type);
-            }
-
             int item_type = item->item_type;
 
             if (BIT(item->obj_status, RANDOM_ITEM))

@@ -958,8 +958,7 @@ void Fire_general_shot(int id, int team, bool cannon,
             torpobject_t *torp = TORP_PTR(shot);
             torp->missile_turnspeed = turnspeed;
             torp->missile_max_speed = max_speed;
-            torp->dirty_torp_info = lock;
-            torp->dirty_torp_count = 0;
+            torp->torp_count = 0.0;
         }
 
         else if (shot->type == OBJ_HEAT_SHOT)
@@ -1340,11 +1339,6 @@ void Delete_shot(int ind)
         /* Special items. */
     case OBJ_ITEM:
         item = ITEM_PTR(shot);
-        if (item->dirty_item_info != item->item_type)
-        {
-            warn("Delete_shot: shot->info != item->item_type, item->dirty_item_info = %ld, item->item_type = %d",
-                 item->dirty_item_info, item->item_type);
-        }
 
         switch (item->item_type)
         {
@@ -1369,18 +1363,17 @@ void Delete_shot(int ind)
             if (shot->obj_life == 0 && rfrac() < options.rogueMineProb)
                 addMine = 1;
             break;
+
+        default:
+            break;
         }
 
-        if (item->dirty_item_info != item->item_type)
-            warn("item->dirty_item_info != item->item_type");
         World.items[item->item_type].num--;
 
         break;
 
     default:
-        printf("%s Delete_shot(): Unkown shot type %d.\n",
-               showtime(), shot->type);
-        printf("%s Delete_shot(): Unkown shot type %d.\n",
+        printf("%s Delete_shot(): Unknown shot type %d.\n",
                showtime(), shot->type);
         break;
     }
@@ -1544,12 +1537,12 @@ void Update_torpedo(torpobject_t *torp)
 {
     double acc;
     if (Mods_get(torp->mods, ModsNuclear))
-        acc = (torp->dirty_torp_info++ < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
+        acc = (torp->torp_count < NUKE_SPEED_TIME) ? NUKE_ACC : 0.0;
     else
-        acc = (torp->dirty_torp_info++ < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
-    // acc *= (1 + (torp->mods.power * MISSILE_POWER_SPEED_FACT));
+        acc = (torp->torp_count < TORPEDO_SPEED_TIME) ? TORPEDO_ACC : 0.0;
+    torp->torp_count += timeStep;
     acc *= (1 + (Mods_get(torp->mods, ModsPower) * MISSILE_POWER_SPEED_FACT));
-    if (torp->torp_spread_left-- <= 0)
+    if ((torp->torp_spread_left -= timeStep) <= 0)
     {
         torp->acc.x = 0;
         torp->acc.y = 0;

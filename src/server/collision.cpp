@@ -841,16 +841,6 @@ static void Player_collides_with_ball(player_t *pl, ballobject_t *ball, int radi
 static void Player_collides_with_item(player_t *pl, itemobject_t *item)
 {
     int old_have;
-
-    if (item->dirty_item_count != item->item_count)
-    {
-        warn("----> item_index: item->dirty_item_count != item->item_count, item->dirty_item_count = %d, item->item_count = %d",
-             item->dirty_item_count, item->item_count);
-    }
-
-    item->item_count = item->dirty_item_count; // TODO: REMOVE
-    item->item_type = item->dirty_item_info;   // TODO: REMOVE
-
     enum Item item_index = (enum Item)item->item_type;
 
     if (IsOffensiveItem(item_index))

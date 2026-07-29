@@ -225,16 +225,15 @@ constexpr double ED_LASER_HIT = -100.0;
 #define SMART_SHOT_DECFACT 3
 #define SMART_SHOT_MIN_SPEED (SMART_SHOT_ACC * 8)
 #define SMART_TURNSPEED 2.6
-#define SMART_SHOT_MAX_SPEED 22.0
+constexpr double SMART_SHOT_MAX_SPEED = 22.0;
 #define SMART_SHOT_LOOK_AH 4
 constexpr double CONFUSED_TIME = 3.0;
 #define TORPEDO_SPEED_TIME (2 * 12)
-#define TORPEDO_ACC ((18.0 * SMART_SHOT_MAX_SPEED) / \
-                     (12 * TORPEDO_SPEED_TIME))
+constexpr double TORPEDO_ACC = ((18.0 * SMART_SHOT_MAX_SPEED) / (12 * TORPEDO_SPEED_TIME));
 #define TORPEDO_RANGE (MINE_RANGE * 0.45)
 
 #define NUKE_SPEED_TIME (2 * 12)
-#define NUKE_ACC (5 * TORPEDO_ACC)
+constexpr double NUKE_ACC = (5.0 * TORPEDO_ACC);
 #define NUKE_RANGE (MINE_RANGE * 1.5)
 #define NUKE_MASS_MULT 1
 #define NUKE_MINE_EXPL_MULT 3

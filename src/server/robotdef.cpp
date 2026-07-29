@@ -1786,7 +1786,7 @@ static void Robot_default_play_check_objects(player_t *pl,
                         /* It doesn't know what it is, so get it if it can */
                         imp = ROBOT_HANDY_ITEM;
                     else
-                        imp = Rank_item_value(pl, (Item_t)item->dirty_item_info);
+                        imp = Rank_item_value(pl, (enum Item)item->item_type);
 
                     if (imp > ROBOT_IGNORE_ITEM && imp >= *item_imp)
                     {
@@ -2245,8 +2245,6 @@ static void Robot_default_play(player_t *pl)
                 return;
         }
     }
-    if (item != NULL)
-        item->item_type = item->dirty_item_info; // TODO: REMOVE, item->dirty_item_info should not be used, only item->item_type
     if (item != NULL && 3 * enemy_dist > 2 * item_dist && item_dist < 12 * BLOCK_SZ && !BIT(my_data->longterm_mode, FETCH_TREASURE) && (!BIT(my_data->longterm_mode, NEED_FUEL) || item->item_type == ITEM_FUEL || item->item_type == ITEM_TANK))
     {
         if (item_imp != ROBOT_IGNORE_ITEM)

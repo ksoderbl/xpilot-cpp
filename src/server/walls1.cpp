@@ -1840,16 +1840,6 @@ static void Object_crash1(move_state_t *ms)
         {
             itemobject_t *item = ITEM_PTR(obj);
 
-            if (item->dirty_item_info != item->item_type)
-            {
-                warn("--> CrashCannon: item->dirty_item_info != item->item_type, item->dirty_item_info = %ld, item->item_type = %d",
-                     item->dirty_item_info, item->item_type);
-            }
-            if (item->dirty_item_count != item->item_count)
-            {
-                warn("--> CrashCannon: item->dirty_item_count != item->item_count, item->dirty_item_count = %d, item->item_count = %d",
-                     item->dirty_item_count, item->item_count);
-            }
             Cannon_add_item(Cannon_by_index(ms->cannon), item->item_type, item->item_count);
         }
         else

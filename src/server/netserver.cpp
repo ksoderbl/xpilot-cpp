@@ -1963,6 +1963,7 @@ int Send_ship(connection_t *connp, clpos_t pos, int id, int dir,
 
     if (!FEATURE(connp, F_SEPARATEPHASING))
         cloak |= phased;
+
     return Packet_printf(&connp->w,
                          "%c%hd%hd%hd"
                          "%c"

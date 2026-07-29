@@ -314,12 +314,10 @@ void Place_item(player_t *pl, int item)
         }
         else
         {
-            vel.x -= options.gravity * World.gravity[bx][by].x;
-            vel.y -= options.gravity * World.gravity[bx][by].y;
-            // vector_t gravity = World_gravity(pos);
+            vector_t gravity = World_gravity(world, pos);
 
-            // vel.x -= options.gravity * gravity.x;
-            // vel.y -= options.gravity * gravity.y;
+            vel.x -= options.gravity * gravity.x;
+            vel.y -= options.gravity * gravity.y;
             vel.x += (int)(rfrac() * 8) - 3;
             vel.y += (int)(rfrac() * 8) - 3;
         }
@@ -344,7 +342,6 @@ void Make_item(clpos_t pos, vector_t vel,
         return;
 
     item->type = OBJ_ITEM;
-    item->dirty_item_info = type; // TODO: remove
     item->item_type = type;
     item->color = RED;
     item->obj_status = status;
@@ -356,7 +353,6 @@ void Make_item(clpos_t pos, vector_t vel,
         item->acc.y = 0.0;
     item->mass = 10.0;
     item->obj_life = 1500 + rfrac() * 512;
-    item->dirty_item_count = num_per_pack; // TODO: remove
     item->item_count = num_per_pack;
     item->pl_range = ITEM_SIZE / 2;
     item->pl_radius = ITEM_SIZE / 2;
@@ -374,17 +370,16 @@ void Throw_items(player_t *pl)
 
     for (item = 0; item < NUM_ITEMS; item++)
     {
-        if (!BIT(1U << item, ITEM_BIT_FUEL | ITEM_BIT_TANK))
+        if (item == ITEM_FUEL || item == ITEM_TANK)
+            continue;
+        do
         {
-            do
-            {
-                num_items_to_throw = pl->item[item] - World.items[item].initial;
-                if (num_items_to_throw <= 0)
-                    break;
-                Place_item(pl, item);
-                remain = pl->item[item] - World.items[item].initial;
-            } while (remain > 0 && remain < num_items_to_throw);
-        }
+            num_items_to_throw = pl->item[item] - World.items[item].initial;
+            if (num_items_to_throw <= 0)
+                break;
+            Place_item(pl, item);
+            remain = pl->item[item] - World.items[item].initial;
+        } while (remain > 0 && remain < num_items_to_throw);
     }
 
     Item_update_flags(pl);

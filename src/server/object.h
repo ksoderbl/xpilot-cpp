@@ -265,7 +265,6 @@ struct xp_torpobject
 
     MISSILE_EXTEND
 
-    int dirty_torp_count; /* Misc timings */       // TODO: REMOVE
     long dirty_torp_info; /* Miscellaneous info */ // TODO: REMOVE
 
     int torp_spread_left; /* how much spread time left: TODO: double */
@@ -374,9 +373,6 @@ struct xp_itemobject
     OBJECT_BASE
 
     OBJECT_EXTEND
-
-    long dirty_item_info; /* Miscellaneous info */ // TODO: REMOVE
-    int dirty_item_count; /* Misc timings */       // TODO: REMOVE
 
     int item_type;  /* One of ITEM_* */
     int item_count; /* Misc snafus */

@@ -266,6 +266,9 @@ void Go_home(player_t *pl)
         SET_BIT(pl->used, HAS_SHIELD);
         if (!options.allowShields)
         {
+            // Shields are "not allowed". However, ships start shielded when appearing
+            // (on bases) so they can't be destroyed immediately. The shields are good
+            // for a maximum of about 2 seconds.
             pl->shield_time = SHIELD_TIME;
             SET_BIT(pl->have, HAS_SHIELD);
         }
