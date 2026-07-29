@@ -813,9 +813,8 @@ static void Choose_weapon_modifier(player_t *pl, int weapon_type)
  * 'dcx' and 'dcy' and 'min', taking into account wrapping.
  * Unit is clicks.
  */
-static inline double Wrap_length_min(double dcx, double dcy, double min)
+static inline double Wrap_length_min(world_t *world, double dcx, double dcy, double min)
 {
-    world_t *world = &World;
     double len;
 
     dcx = WORLD_WRAP_DCX(world, dcx);
@@ -1603,7 +1602,7 @@ static int Robot_default_play_check_map(player_t *pl)
 
         dcx = fs->pos.cx - pl->pos.cx;
         dcy = fs->pos.cy - pl->pos.cy;
-        distance = Wrap_length_min(dcx, dcy, fuel_dist * CLICK) / CLICK;
+        distance = Wrap_length_min(world, dcx, dcy, fuel_dist * CLICK) / CLICK;
         if (distance < fuel_dist)
         {
             fuel_i = j;
@@ -1623,7 +1622,7 @@ static int Robot_default_play_check_map(player_t *pl)
 
         dcx = targ->pos.cx - pl->pos.cx;
         dcy = targ->pos.cy - pl->pos.cy;
-        distance = Wrap_length_min(dcx, dcy, target_dist * CLICK) / CLICK;
+        distance = Wrap_length_min(world, dcx, dcy, target_dist * CLICK) / CLICK;
         if (distance < target_dist)
         {
             target_i = j;
@@ -1667,7 +1666,7 @@ static int Robot_default_play_check_map(player_t *pl)
 
         dcx = cannon->pos.cx - pl->pos.cx;
         dcy = cannon->pos.cy - pl->pos.cy;
-        distance = Wrap_length_min(dcx, dcy, cannon_dist * CLICK) / CLICK;
+        distance = Wrap_length_min(world, dcx, dcy, cannon_dist * CLICK) / CLICK;
         if (distance < cannon_dist)
         {
             cannon_i = j;
@@ -2313,10 +2312,8 @@ static void Robot_default_play(player_t *pl)
     if (!options.allowShields && options.playerStartsShielded && BIT(pl->have, HAS_SHIELD))
         SET_BIT(pl->used, HAS_SHIELD);
 
-    int x = OBJ_X_IN_BLOCKS(pl);
-    int y = OBJ_Y_IN_BLOCKS(pl);
-    x_speed = pl->vel.x - 2 * World.gravity[x][y].x;
-    y_speed = pl->vel.y - 2 * World.gravity[x][y].y;
+    x_speed = pl->vel.x - 2 * World_gravity(world, pl->pos).x;
+    y_speed = pl->vel.y - 2 * World_gravity(world, pl->pos).y;
 
     if (y_speed < (-my_data->robot_normal_speed) || (my_data->robot_count % 64) < 32)
     {
