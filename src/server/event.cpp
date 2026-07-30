@@ -627,7 +627,7 @@ int Handle_keyboard(player_t *pl)
 
     /*assert(!Player_is_killed(pl));*/
 
-    for (key = 0; key < NUM_KEYS; key++)
+    for (key = 0; key < NUM_SERVER_KEYS; key++)
     {
         /* Find first keyv element where last_keyv isn't equal to prev_keyv. */
         if (pl->last_keyv[key / BITV_SIZE] == pl->prev_keyv[key / BITV_SIZE])
@@ -639,10 +639,10 @@ int Handle_keyboard(player_t *pl)
         /* Now check which specific key it is that has changed state. */
         while (BITV_ISSET(pl->last_keyv, key) == BITV_ISSET(pl->prev_keyv, key))
         {
-            if (++key >= NUM_KEYS)
+            if (++key >= NUM_SERVER_KEYS)
                 break;
         }
-        if (key >= NUM_KEYS)
+        if (key >= NUM_SERVER_KEYS)
             break;
 
         pressed = (BITV_ISSET(pl->last_keyv, key) != 0) ? true : false;

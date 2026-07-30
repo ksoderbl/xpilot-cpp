@@ -760,7 +760,7 @@ int Net_flush(void)
 
     Sockbuf_clear(&wbuf);
     last_send_anything = time(nullptr);
-    warn("Net_flush, last_send_anything = %ld", (long)last_send_anything);
+    // warn("Net_flush, last_send_anything = %ld", (long)last_send_anything);
     return 1;
 }
 
@@ -1442,7 +1442,7 @@ int Net_input(void)
         warn("Net_input calling Key_update: %s,%d", __FILE__, __LINE__);
         Key_update();
         last_send_anything = time_now;
-        warn("Net_input, last_send_anything = %ld", (long)time_now);
+        // warn("Net_input, last_send_anything = %ld", (long)time_now);
     }
     else
         /*
@@ -2563,7 +2563,7 @@ int Receive_reply(int *replyto, int *result)
 
 int Send_keyboard(uint8_t *keyboard_vector)
 {
-    warn("Send_keyboard");
+    // warn("Send_keyboard");
 
     int size = KEYBOARD_SIZE;
 
@@ -2575,7 +2575,7 @@ int Send_keyboard(uint8_t *keyboard_vector)
     wbuf.len += size;
     last_keyboard_update = last_loops;
 
-    warn("Send_keyboard, last_keyboard_update = %ld", last_keyboard_update);
+    // warn("Send_keyboard, last_keyboard_update = %ld", last_keyboard_update);
 
     Net_keyboard_track();
     Send_talk();

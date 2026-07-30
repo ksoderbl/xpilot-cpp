@@ -278,8 +278,8 @@ typedef struct
     connection_t *conn; /* connection pointer, NULL if robot */
     unsigned version;   /* XPilot version number of client */
 
-    BITV_DECL(last_keyv, NUM_KEYS); /* Keyboard state */
-    BITV_DECL(prev_keyv, NUM_KEYS); /* Keyboard state */
+    BITV_DECL(last_keyv, NUM_SERVER_KEYS); /* Keyboard state */
+    BITV_DECL(prev_keyv, NUM_SERVER_KEYS); /* Keyboard state */
 
     long frame_last_busy; /* When player touched keyboard. */
 

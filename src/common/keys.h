@@ -104,7 +104,7 @@ typedef enum
     KEY_UNUSED_69,
     KEY_UNUSED_70, /* 70 */
     KEY_UNUSED_71,
-    NUM_KEYS /* The number of different keys_t */
+    NUM_SERVER_KEYS /* The number of different keys_t */
 
 // TODO: change 'SERVER' to 'DIRTY_CLIENT_KEY_HACK' or something like that.
 #ifndef SERVER
