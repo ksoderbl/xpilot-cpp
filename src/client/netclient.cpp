@@ -1442,7 +1442,7 @@ int Net_input(void)
         warn("Net_input calling Key_update: %s,%d", __FILE__, __LINE__);
         Key_update();
         last_send_anything = time_now;
-        warn("Net_flush, last_send_anything = %ld", (long)time_now);
+        warn("Net_input, last_send_anything = %ld", (long)time_now);
     }
     else
         /*

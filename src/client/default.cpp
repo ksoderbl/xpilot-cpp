@@ -840,7 +840,7 @@ xp_option_t default_options[] = {
 
     XP_BOOL_OPTION(
         "dirPrediction",
-        true,
+        false,
         &dirPrediction,
         Set_dirPrediction,
         XP_OPTFLAG_CONFIG_DEFAULT,
