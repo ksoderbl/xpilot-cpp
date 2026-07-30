@@ -372,3 +372,5 @@ typedef struct
 extern xp_keydefs_t *keydefs;
 extern int num_keydefs;
 extern int max_keydefs;
+
+extern std::vector<xp_keydefs_t> keydefsVector;

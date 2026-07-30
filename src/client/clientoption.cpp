@@ -341,6 +341,8 @@ xp_keydefs_t *keydefs = NULL;
 int num_keydefs = 0;
 int max_keydefs = 0;
 
+std::vector<xp_keydefs_t> keydefsVector;
+
 /*
  * This function is used when platform specific code has an event where
  * the user has pressed or released the key defined by the keysym 'ks'.
@@ -352,7 +354,7 @@ int max_keydefs = 0;
  */
 keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
 {
-    // warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, num_keydefs);
+    warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, num_keydefs);
 
     keys_t ret = KEY_DUMMY;
     static int i = 0;
@@ -391,7 +393,7 @@ static void Store_keydef(int ks, keys_t key)
 
         if (kd->keysym == ks && kd->key == key)
         {
-            /*warn("Pair (%d, %d) exist from before", ks, (int) key);*/
+            warn("Store_keydef: Pair (%d, %d) exist from before", ks, (int)key);
             /*
              * already exists, no need to store
              */
@@ -412,7 +414,7 @@ static void Store_keydef(int ks, keys_t key)
         if (kd->key == KEY_DUMMY)
         {
             assert(kd->keysym == XP_KS_UNKNOWN);
-            /*warn("Store_keydef: Found dummy at index %d", i);*/
+            warn("Store_keydef: Found dummy at index %d", i);
             *kd = keydef;
         }
     }
@@ -456,9 +458,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     assert(opt->key != KEY_DUMMY);
     assert(value);
 
-    /*
-     * warn("Setting key option %s to \"%s\"", opt->name, value);
-     */
+    warn("Set_key_option: Setting key option %s to \"%s\"", opt->name, value);
 
     /*
      * First remove the old setting.
