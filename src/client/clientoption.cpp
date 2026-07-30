@@ -43,7 +43,7 @@
 #include "messages.h"
 
 #include "client.h"
-#include "option.h"
+#include "clientoption.h"
 
 // int num_options = 0;
 // int max_options = 0;

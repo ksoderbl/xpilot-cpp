@@ -26,7 +26,7 @@
 #include "shipshape.h"
 #include "item.h"
 #include "connectparam.h"
-#include "option.h"
+#include "clientoption.h"
 #include "types.h"
 #include "clientmap.h"
 #include "other.h"

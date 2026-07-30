@@ -27,7 +27,7 @@
 #include "xperror.h"
 
 #include "frame.h"
-#include "option.h"
+#include "serveroption.h"
 #include "player.h"
 #include "score.h"
 #include "server.h"

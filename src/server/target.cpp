@@ -50,7 +50,7 @@
 #include "object.h"
 #include "robot.h"
 #include "map.h"
-#include "option.h"
+#include "serveroption.h"
 #include "server.h"
 
 /*

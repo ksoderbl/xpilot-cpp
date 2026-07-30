@@ -34,7 +34,7 @@
 #include "commonproto.h"
 
 #include "client.h"
-#include "option.h"
+#include "clientoption.h"
 #include "paint.h"
 
 #include "gfx2d.h"

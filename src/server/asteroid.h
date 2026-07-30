@@ -27,7 +27,7 @@
 #include <vector>
 
 #include "object.h"
-#include "option.h"
+#include "serveroption.h"
 
 /* maximum size of asteroid */
 #define ASTEROID_MAX_SIZE 4

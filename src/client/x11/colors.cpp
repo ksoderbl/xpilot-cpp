@@ -36,7 +36,7 @@
 #include "const.h"
 
 #include "paint.h"
-#include "option.h"
+#include "clientoption.h"
 
 #include "xpconfig.h"
 #include "types.h"

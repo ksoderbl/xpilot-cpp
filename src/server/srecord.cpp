@@ -22,7 +22,7 @@
 
 #include "xperror.h"
 
-#include "option.h"
+#include "serveroption.h"
 #include "server.h"
 
 #include <cstdio>

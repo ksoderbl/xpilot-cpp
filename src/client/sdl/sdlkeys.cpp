@@ -22,8 +22,7 @@
 
 #include <cstring>
 
-// Using ../ to point to the client, not server option.h
-#include "../option.h"
+#include "clientoption.h"
 
 #include "sdlkeys.h"
 

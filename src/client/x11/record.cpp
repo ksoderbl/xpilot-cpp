@@ -48,7 +48,7 @@
 #include "clientsetup.h"
 #include "messages.h"
 #include "netclient.h"
-#include "option.h"
+#include "clientoption.h"
 #include "paint.h"
 
 #include "xpaint.h"

@@ -45,7 +45,7 @@
 
 #include "configure.h"
 #include "messages.h"
-#include "option.h"
+#include "clientoption.h"
 #include "paint.h"
 
 #include "bitmaps.h"

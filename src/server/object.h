@@ -31,7 +31,7 @@
 #include "shipshape.h"
 
 #include "map.h"
-#include "option.h"
+#include "serveroption.h"
 #include "modifiers.h"
 #include "serverconst.h"
 

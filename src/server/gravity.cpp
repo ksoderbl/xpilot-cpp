@@ -29,7 +29,7 @@
 #include "types.h"
 
 #include "map.h"
-#include "option.h"
+#include "serveroption.h"
 #include "serverconst.h"
 
 #define GRAV_RANGE 10

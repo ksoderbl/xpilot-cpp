@@ -44,7 +44,7 @@
 #include "messages.h"
 #include "netclient.h"
 #include "paint.h"
-#include "option.h"
+#include "clientoption.h"
 #include "talk.h"
 
 #define MAX_BUTTON_DEFS 10

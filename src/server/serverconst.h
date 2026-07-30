@@ -26,7 +26,7 @@
 #include "const.h"
 
 #include "object.h"
-#include "option.h"
+#include "serveroption.h"
 
 /*
  * Two macros for edge wrap of x and y coordinates measured in pixels.

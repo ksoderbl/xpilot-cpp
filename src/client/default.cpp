@@ -40,7 +40,7 @@
 #include "messages.h"
 #include "netclient.h"
 #include "paint.h"
-#include "option.h"
+#include "clientoption.h"
 
 static double hudScale; /* Scale for HUD drawing */
 
