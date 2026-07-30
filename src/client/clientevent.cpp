@@ -498,7 +498,7 @@ static bool Quit_mode_key_press(keys_t key)
 
 bool Key_press(keys_t key)
 {
-    warn("Key_press, key = %d", key);
+    warn("Key_press: key %d: %s", key, keyToStr((keys_t)key).c_str());
 
     bool countchange;
     int keycount, i;
@@ -635,7 +635,7 @@ bool Key_press(keys_t key)
 
 bool Key_release(keys_t key)
 {
-    // warn("Key_release");
+    warn("Key_release: key %d: %s", key, keyToStr((keys_t)key).c_str());
 
     bool countchange;
     int keycount;
@@ -811,6 +811,8 @@ void Pointer_button_released(int button)
 
 void Keyboard_button_pressed(xp_keysym_t ks)
 {
+    warn("Keyboard_button_pressed: ks = %d", ks);
+
     bool change = false;
     keys_t key;
 

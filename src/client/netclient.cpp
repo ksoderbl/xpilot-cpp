@@ -729,7 +729,7 @@ void Net_cleanup(void)
 void Net_key_change(void)
 {
     last_keyboard_change++;
-    warn("Net_key_change calling Key_update: %s,%d", __FILE__, __LINE__);
+    // warn("Net_key_change calling Key_update: %s,%d", __FILE__, __LINE__);
     Key_update();
 }
 
@@ -750,7 +750,7 @@ int Net_flush(void)
          * Since 3.2.10: just call Key_update to add our keyboard vector.
          * Key_update will call Send_keyboard to flush our buffer.
          */
-        warn("Net_flush calling Key_update: %s,%d", __FILE__, __LINE__);
+        // warn("Net_flush calling Key_update: %s,%d", __FILE__, __LINE__);
         return Key_update();
     }
 
@@ -1439,7 +1439,7 @@ int Net_input(void)
     if ((last_keyboard_ack != last_keyboard_change && last_keyboard_update /*+ 1*/ < last_loops) ||
         time_now - last_send_anything > 5)
     {
-        warn("Net_input calling Key_update: %s,%d", __FILE__, __LINE__);
+        // warn("Net_input calling Key_update: %s,%d", __FILE__, __LINE__);
         Key_update();
         last_send_anything = time_now;
         // warn("Net_input, last_send_anything = %ld", (long)time_now);

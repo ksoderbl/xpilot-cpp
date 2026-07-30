@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <string>
+
 /*
  * The following enum type defines the possible actions as a result of
  * a keypress or keyrelease.
@@ -159,3 +161,5 @@ typedef enum
     KEY_NO,
     NUM_CLIENT_KEYS /* The number of keys really used by the client. */
 } keys_t;
+
+std::string keyToStr(keys_t key);

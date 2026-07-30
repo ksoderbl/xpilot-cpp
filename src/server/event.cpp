@@ -745,7 +745,7 @@ int Handle_keyboard(player_t *pl)
 
         if (pressed)
         {
-            warn("event.cpp KEYPRESS: player: %s, key %d", pl->name, key);
+            warn("event.cpp KEYPRESS: player: %s, key %d: %s", pl->name, key, keyToStr((keys_t)key).c_str());
 
             /* --- KEYPRESS --- */
             switch (key)
