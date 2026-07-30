@@ -350,11 +350,11 @@ int max_keydefs = 0;
  * should call some handler. The function should be called until it returns
  * KEY_DUMMY.
  */
-client_keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
+keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
 {
     // warn("Generic_lookup_key: ks = %d, reset = %d, num_keydefs = %d", ks, reset, num_keydefs);
 
-    client_keys_t ret = static_cast<client_keys_t>(KEY_DUMMY);
+    keys_t ret = KEY_DUMMY;
     static int i = 0;
 
     if (reset)
@@ -377,7 +377,7 @@ client_keys_t Generic_lookup_key(xp_keysym_t ks, bool reset)
     return ret;
 }
 
-static void Store_keydef(int ks, client_keys_t key)
+static void Store_keydef(int ks, keys_t key)
 {
     int i;
     xp_keydefs_t keydef;
@@ -409,7 +409,7 @@ static void Store_keydef(int ks, client_keys_t key)
     {
         xp_keydefs_t *kd = &keydefs[i];
 
-        if (kd->key == static_cast<client_keys_t>(KEY_DUMMY))
+        if (kd->key == KEY_DUMMY)
         {
             assert(kd->keysym == XP_KS_UNKNOWN);
             /*warn("Store_keydef: Found dummy at index %d", i);*/
@@ -423,11 +423,11 @@ static void Store_keydef(int ks, client_keys_t key)
     STORE(xp_keydefs_t, keydefs, num_keydefs, max_keydefs, keydef);
 }
 
-static void Remove_key_from_keydefs(client_keys_t key)
+static void Remove_key_from_keydefs(keys_t key)
 {
     int i;
 
-    assert(key != static_cast<client_keys_t>(KEY_DUMMY));
+    assert(key != KEY_DUMMY);
     for (i = 0; i < num_keydefs; i++)
     {
         xp_keydefs_t *kd = &keydefs[i];
@@ -439,7 +439,7 @@ static void Remove_key_from_keydefs(client_keys_t key)
         {
             /*warn("Remove_key_from_keydefs: Removing key at index %d", i);*/
             kd->keysym = XP_KS_UNKNOWN;
-            kd->key = static_cast<client_keys_t>(KEY_DUMMY);
+            kd->key = KEY_DUMMY;
         }
     }
 }
@@ -453,7 +453,7 @@ static bool Set_key_option(xp_option_t *opt, const char *value,
     assert(opt);
     assert(opt->name);
     assert(opt->type == xp_key_option);
-    assert(opt->key != static_cast<client_keys_t>(KEY_DUMMY));
+    assert(opt->key != KEY_DUMMY);
     assert(value);
 
     /*
@@ -765,7 +765,7 @@ void Store_option(xp_option_t *opt)
         break;
     case xp_key_option:
         assert(opt->key_defval);
-        assert(opt->key != static_cast<client_keys_t>(KEY_DUMMY));
+        assert(opt->key != KEY_DUMMY);
         Set_key_option(opt, opt->key_defval, xp_option_origin_default);
         break;
     default:
@@ -1223,7 +1223,7 @@ void Parse_options(int *argcp, char **argvp)
 #endif /* SOUND */
 }
 
-const char *Get_keyHelpString(client_keys_t key)
+const char *Get_keyHelpString(keys_t key)
 {
     int i;
     char *nl;
@@ -1245,7 +1245,7 @@ const char *Get_keyHelpString(client_keys_t key)
     return NULL;
 }
 
-const char *Get_keyResourceString(client_keys_t key)
+const char *Get_keyResourceString(keys_t key)
 {
     int i;
 

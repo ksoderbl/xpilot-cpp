@@ -4018,11 +4018,11 @@ static void ConfMenuWidget_Pause(void *data)
     }
 
     change = false;
-    change |= Key_press(static_cast<client_keys_t>(KEY_PAUSE));
+    change |= Key_press(KEY_PAUSE);
     if (change)
         Net_key_change();
     change = false;
-    change |= Key_release(static_cast<client_keys_t>(KEY_PAUSE));
+    change |= Key_release(KEY_PAUSE);
     if (change)
         Net_key_change();
 }
@@ -4051,11 +4051,11 @@ static void ConfMenuWidget_Join(void *data)
     if ((Setup->mode & TEAM_PLAY) == 0)
     {
         bool change = false;
-        change |= Key_press(static_cast<client_keys_t>(KEY_PAUSE));
+        change |= Key_press(KEY_PAUSE);
         if (change)
             Net_key_change();
         change = false;
-        change |= Key_release(static_cast<client_keys_t>(KEY_PAUSE));
+        change |= Key_release(KEY_PAUSE);
         if (change)
             Net_key_change();
     }

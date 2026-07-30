@@ -35,5 +35,5 @@ typedef struct
 
 extern keydefs_t *keyDefs;
 
-extern char *Get_keyHelpString(client_keys_t key);
-extern const char *Get_keyResourceString(client_keys_t key);
+extern char *Get_keyHelpString(keys_t key);
+extern const char *Get_keyResourceString(keys_t key);

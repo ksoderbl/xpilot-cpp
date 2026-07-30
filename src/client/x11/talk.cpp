@@ -270,19 +270,19 @@ static void Add_msg_to_history(char *message)
  * (thus save_talk not as parameter here)
  *
  */
-static char *Get_msg_from_history(int *pos, char *message, client_keys_t direction)
+static char *Get_msg_from_history(int *pos, char *message, keys_t direction)
 {
     int i;
     char **msg_set;
 
     if (direction != KEY_TALK_CURSOR_UP &&
         direction != KEY_TALK_CURSOR_DOWN &&
-        direction != static_cast<client_keys_t>(KEY_DUMMY))
+        direction != KEY_DUMMY)
     {
         return NULL;
     }
 
-    if (direction == static_cast<client_keys_t>(KEY_DUMMY) && (*pos < 0 || *pos > maxLinesInHistory - 1))
+    if (direction == KEY_DUMMY && (*pos < 0 || *pos > maxLinesInHistory - 1))
         *pos = 0;
 
     msg_set = HistoryMsg;
@@ -438,13 +438,12 @@ int Talk_do_event(XEvent *event)
         /* 'unprintables'? */
         if (XLookupString(&event->xkey, &ch, 1, &keysym, &compose) == NoSymbol)
         {
-
-            client_keys_t key; /* what key is it */
-            char *tmp;         /* for receiving a line from the history */
+            keys_t key; /* what key is it */
+            char *tmp;  /* for receiving a line from the history */
 
             /* search the 'key' */
             for (key = Lookup_key(event, keysym, true);
-                 key != static_cast<client_keys_t>(KEY_DUMMY);
+                 key != KEY_DUMMY;
                  key = Lookup_key(event, keysym, false))
             {
                 switch (key)

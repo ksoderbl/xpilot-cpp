@@ -67,9 +67,9 @@ static ipos_t delta;
 ipos_t mousePosition; /* position of mouse pointer. */
 int mouseMovement;    /* horizontal mouse movement. */
 
-client_keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
+keys_t Lookup_key(XEvent *event, KeySym ks, bool reset)
 {
-    client_keys_t ret = Generic_lookup_key((xp_keysym_t)ks, reset);
+    keys_t ret = Generic_lookup_key((xp_keysym_t)ks, reset);
 
 #ifdef DEVELOPMENT
     if (reset && ret == KEY_DUMMY)
