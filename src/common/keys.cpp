@@ -183,90 +183,90 @@ std::string keyToStr(keys_t key)
     //  * retaining compatibility.  Change this at the next major cleanup.
     //  */
     // ,
-    KEY_MSG_1:
+    case KEY_MSG_1:
         return "KEY_MSG_1";
-    KEY_MSG_2:
+    case KEY_MSG_2:
         return "KEY_MSG_2";
-    KEY_MSG_3:
+    case KEY_MSG_3:
         return "KEY_MSG_3";
-    KEY_MSG_4:
+    case KEY_MSG_4:
         return "KEY_MSG_4";
-    KEY_MSG_5:
+    case KEY_MSG_5:
         return "KEY_MSG_5";
-    KEY_MSG_6:
+    case KEY_MSG_6:
         return "KEY_MSG_6";
-    KEY_MSG_7:
+    case KEY_MSG_7:
         return "KEY_MSG_7";
-    KEY_MSG_8:
+    case KEY_MSG_8:
         return "KEY_MSG_8";
-    KEY_MSG_9:
+    case KEY_MSG_9:
         return "KEY_MSG_9";
-    KEY_MSG_10:
+    case KEY_MSG_10:
         return "KEY_MSG_10";
-    KEY_MSG_11:
+    case KEY_MSG_11:
         return "KEY: TODO";
-    KEY_MSG_12:
+    case KEY_MSG_12:
         return "KEY: TODO";
-    KEY_MSG_13:
+    case KEY_MSG_13:
         return "KEY: TODO";
-    KEY_MSG_14:
+    case KEY_MSG_14:
         return "KEY: TODO";
-    KEY_MSG_15:
+    case KEY_MSG_15:
         return "KEY: TODO";
-    KEY_MSG_16:
+    case KEY_MSG_16:
         return "KEY: TODO";
-    KEY_MSG_17:
+    case KEY_MSG_17:
         return "KEY: TODO";
-    KEY_MSG_18:
+    case KEY_MSG_18:
         return "KEY: TODO";
-    KEY_MSG_19:
+    case KEY_MSG_19:
         return "KEY: TODO";
-    KEY_MSG_20:
+    case KEY_MSG_20:
         return "KEY: TODO";
 
-    KEY_ID_MODE:
+    case KEY_ID_MODE:
         return "KEY: TODO";
-    KEY_TOGGLE_OWNED_ITEMS:
+    case KEY_TOGGLE_OWNED_ITEMS:
         return "KEY: TODO";
-    KEY_TOGGLE_MESSAGES:
+    case KEY_TOGGLE_MESSAGES:
         return "KEY: TODO";
-    KEY_POINTER_CONTROL:
+    case KEY_POINTER_CONTROL:
         return "KEY: TODO";
-    KEY_TOGGLE_RECORD:
+    case KEY_TOGGLE_RECORD:
         return "KEY: TODO";
-    KEY_TOGGLE_SOUND:
+    case KEY_TOGGLE_SOUND:
         return "KEY: TODO";
-    KEY_PRINT_MSGS_STDOUT:
+    case KEY_PRINT_MSGS_STDOUT:
         return "KEY: TODO";
-    KEY_TALK_CURSOR_LEFT:
+    case KEY_TALK_CURSOR_LEFT:
         return "KEY: TODO";
-    KEY_TALK_CURSOR_RIGHT:
+    case KEY_TALK_CURSOR_RIGHT:
         return "KEY: TODO";
-    KEY_TALK_CURSOR_UP:
+    case KEY_TALK_CURSOR_UP:
         return "KEY: TODO";
-    KEY_TALK_CURSOR_DOWN:
+    case KEY_TALK_CURSOR_DOWN:
         return "KEY: TODO";
-    KEY_SWAP_SCALEFACTOR:
+    case KEY_SWAP_SCALEFACTOR:
         return "KEY: TODO";
-    KEY_TOGGLE_RADAR_SCORE:
+    case KEY_TOGGLE_RADAR_SCORE:
         return "KEY: TODO";
-    KEY_INCREASE_POWER:
+    case KEY_INCREASE_POWER:
         return "KEY: TODO";
-    KEY_DECREASE_POWER:
+    case KEY_DECREASE_POWER:
         return "KEY: TODO";
-    KEY_INCREASE_TURNSPEED:
+    case KEY_INCREASE_TURNSPEED:
         return "KEY: TODO";
-    KEY_DECREASE_TURNSPEED:
+    case KEY_DECREASE_TURNSPEED:
         return "KEY: TODO";
-    KEY_TOGGLE_FULLSCREEN:
+    case KEY_TOGGLE_FULLSCREEN:
         return "KEY: TODO";
-    KEY_EXIT:
+    case KEY_EXIT:
         return "KEY: TODO";
-    KEY_YES:
+    case KEY_YES:
         return "KEY: TODO";
-    KEY_NO:
+    case KEY_NO:
         return "KEY: TODO";
-    NUM_CLIENT_KEYS:
+    case NUM_CLIENT_KEYS:
         return "KEY: TODO";
     }
     return "unknown";

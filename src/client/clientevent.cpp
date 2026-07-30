@@ -832,7 +832,7 @@ void Keyboard_button_pressed(xp_keysym_t ks)
 
     if (change)
     {
-        warn("Keyboard_button_pressed: calling Net_key_change");
+        // warn("Keyboard_button_pressed: calling Net_key_change");
         Net_key_change();
     }
 }
@@ -851,7 +851,7 @@ void Keyboard_button_released(xp_keysym_t ks)
 
     if (change)
     {
-        warn("Keyboard_button_released: calling Net_key_change");
+        // warn("Keyboard_button_released: calling Net_key_change");
         Net_key_change();
     }
 }
