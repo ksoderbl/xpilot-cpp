@@ -33,7 +33,6 @@
 
 #include "cannon.h"
 
-#define SERVER
 #include "bit.h"
 #include "commonmacros.h"
 #include "const.h"

@@ -23,8 +23,6 @@
 
 #pragma once
 
-#define SERVER
-
 #include "bit.h"
 #include "click.h"
 #include "connection.h"

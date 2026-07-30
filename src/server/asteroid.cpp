@@ -38,8 +38,6 @@
 #include "server.h"
 #include "ship.h"
 
-#define SERVER
-
 #include "bit.h"
 #include "click.h"
 #include "const.h"
@@ -52,18 +50,6 @@
 #include "saudio.h"
 #include "move.h"
 #include "walls.h"
-
-// #define SERVER
-// #include "xpconfig.h"
-// #include "serverconst.h"
-// #include "list.h"
-//
-// #include "proto.h"
-// #include "saudio.h"
-// #include "bit.h"
-// #include "objpos.h"
-// #include "asteroid.h"
-// #include "xpmath.h"
 
 /* list containing pointers to all asteroids */
 std::vector<wireobject_t *> Asteroid_vector;

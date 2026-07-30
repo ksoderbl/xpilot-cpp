@@ -41,7 +41,6 @@
 #include "ship.h"
 #include "server.h"
 
-#define SERVER
 #include "map.h"
 #include "xpconfig.h"
 #include "serverconst.h"

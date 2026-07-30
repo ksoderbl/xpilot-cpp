@@ -38,7 +38,6 @@
 #include "frame.h"
 #include "update.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 

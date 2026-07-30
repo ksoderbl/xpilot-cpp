@@ -42,7 +42,6 @@
 #include "server.h"
 #include "ship.h"
 
-#define SERVER
 #include "version.h"
 #include "serverconst.h"
 #include "xperror.h"

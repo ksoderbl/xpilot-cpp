@@ -34,7 +34,6 @@
 #include "ship.h"
 #include "target.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 

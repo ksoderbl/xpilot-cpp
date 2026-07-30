@@ -35,7 +35,6 @@
 #include "commonproto.h"
 #include "xperror.h"
 
-#define SERVER
 #include "xpconfig.h"
 
 #include "cannon.h"

@@ -46,7 +46,6 @@
 #include "score.h"
 #include "server.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "types.h"
 #include "serverconst.h"

@@ -39,7 +39,6 @@
 #include "frame.h"
 #include "ship.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 

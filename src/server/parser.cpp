@@ -32,7 +32,6 @@
 #include "fileparser.h"
 #include "server.h"
 
-#define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"

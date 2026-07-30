@@ -36,7 +36,6 @@
 #include "frame.h"
 #include "server.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "map.h"

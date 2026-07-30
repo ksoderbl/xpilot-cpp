@@ -118,7 +118,6 @@
 #include "race.h"
 #include "update.h"
 
-#define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"

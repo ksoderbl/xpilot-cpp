@@ -32,7 +32,6 @@
 
 #include "frame.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "server.h"

@@ -41,7 +41,6 @@
 #include <errno.h>
 #include <limits.h>
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 

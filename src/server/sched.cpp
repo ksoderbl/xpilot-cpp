@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "serverconst.h"

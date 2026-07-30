@@ -49,7 +49,6 @@
 #include "update.h"
 #include "robot.h"
 
-#define SERVER
 #include "version.h"
 #include "xpconfig.h"
 #include "types.h"

@@ -37,7 +37,6 @@
 #include "update.h"
 #include "walls.h"
 
-#define SERVER
 // #include "xpconfig.h"
 #include "serverconst.h"
 

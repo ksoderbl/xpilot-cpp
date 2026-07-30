@@ -37,7 +37,6 @@
 
 #include "server.h"
 
-#define SERVER
 #include "xpconfig.h"
 #include "serverconst.h"
 #include "defaults.h"

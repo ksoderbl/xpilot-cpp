@@ -29,7 +29,6 @@
 
 #include "server.h"
 
-#define SERVER
 #include "serverconst.h"
 
 #include "xperror.h"

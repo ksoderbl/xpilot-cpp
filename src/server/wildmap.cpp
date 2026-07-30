@@ -1480,7 +1480,6 @@ static int wildmain(int argc, char **argv)
     return 0;
 }
 
-#define SERVER
 #undef NELEM
 #include "serverconst.h"
 #include "object.h"

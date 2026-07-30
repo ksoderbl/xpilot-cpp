@@ -23,8 +23,6 @@
 
 #pragma once
 
-#define SERVER
-
 #include "xperror.h"
 #include "rules.h"
 #include "bit.h"
