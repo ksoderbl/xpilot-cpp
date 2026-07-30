@@ -38,6 +38,7 @@
 #include "xpconfig.h"
 
 #include "client.h"
+#include "clientkeys.h"
 #include "configure.h"
 #include "gfx2d.h"
 #include "messages.h"
@@ -51,7 +52,7 @@
 static BITV_DECL(keyv, NUM_SERVER_KEYS);
 static uint8_t keyv_new[NUM_SERVER_KEYS];
 
-keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
+client_keys_t buttonDefs[MAX_POINTER_BUTTONS][MAX_BUTTON_DEFS + 1];
 
 char *pointerButtonBindings[MAX_POINTER_BUTTONS] =
     {NULL, NULL, NULL, NULL, NULL};
@@ -172,7 +173,7 @@ int Key_update(void)
     return Send_keyboard(keyv);
 }
 
-static bool Key_check_talk_macro(keys_t key)
+static bool Key_check_talk_macro(client_keys_t key)
 {
     if (key >= KEY_MSG_1 && key < KEY_MSG_1 + TALK_FAST_NR_OF_MSGS)
         Talk_macro((int)(key - KEY_MSG_1));
@@ -195,7 +196,7 @@ static bool Key_press_autoshield_hack(void)
     return false;
 }
 
-static bool Key_press_shield(keys_t key)
+static bool Key_press_shield(client_keys_t key)
 {
     warn("Key_press_shield, key = %d, shields = %d", key, shields);
     if (toggle_shield)
@@ -419,7 +420,7 @@ static bool Key_press_exit(void)
     return false; /* server doesn't need to know */
 }
 
-static int Key_get_count(keys_t key)
+static int Key_get_count(client_keys_t key)
 {
     if (key >= NUM_SERVER_KEYS)
         return -1;
@@ -427,7 +428,7 @@ static int Key_get_count(keys_t key)
     return keyv_new[key];
 }
 
-static bool Key_inc_count(keys_t key)
+static bool Key_inc_count(client_keys_t key)
 {
     if (key >= NUM_SERVER_KEYS)
         return false;
@@ -441,7 +442,7 @@ static bool Key_inc_count(keys_t key)
     return false;
 }
 
-static bool Key_dec_count(keys_t key)
+static bool Key_dec_count(client_keys_t key)
 {
     if (key >= NUM_SERVER_KEYS)
         return false;
@@ -466,7 +467,7 @@ void Key_clear_counts(void)
         {
             /* set to one so that Key_release(i) will trigger */
             keyv_new[i] = 1;
-            change |= Key_release((keys_t)i);
+            change |= Key_release((client_keys_t)i);
         }
     }
 
@@ -478,9 +479,9 @@ void Key_clear_counts(void)
 }
 
 /* Remember which key we used to exit quit mode. */
-static keys_t quit_mode_exit_key = KEY_DUMMY;
+static client_keys_t quit_mode_exit_key = static_cast<client_keys_t>(KEY_DUMMY);
 
-static bool Quit_mode_key_press(keys_t key)
+static bool Quit_mode_key_press(client_keys_t key)
 {
     if (key == KEY_YES)
         Client_exit(0);
@@ -495,7 +496,7 @@ static bool Quit_mode_key_press(keys_t key)
     return false;
 }
 
-bool Key_press(keys_t key)
+bool Key_press(client_keys_t key)
 {
     warn("Key_press, key = %d", key);
 
@@ -632,7 +633,7 @@ bool Key_press(keys_t key)
     return true;
 }
 
-bool Key_release(keys_t key)
+bool Key_release(client_keys_t key)
 {
     // warn("Key_release");
 
@@ -645,8 +646,8 @@ bool Key_release(keys_t key)
      */
     if (key == quit_mode_exit_key)
     {
-        assert(key != KEY_DUMMY);
-        quit_mode_exit_key = KEY_DUMMY;
+        assert(key != static_cast<client_keys_t>(KEY_DUMMY));
+        quit_mode_exit_key = static_cast<client_keys_t>(KEY_DUMMY);
         return false;
     }
 
@@ -811,7 +812,7 @@ void Pointer_button_released(int button)
 void Keyboard_button_pressed(xp_keysym_t ks)
 {
     bool change = false;
-    keys_t key;
+    client_keys_t key;
 
 #if 0
     {
@@ -823,7 +824,7 @@ void Keyboard_button_pressed(xp_keysym_t ks)
 #endif
 
     for (key = Generic_lookup_key(ks, true);
-         key != KEY_DUMMY;
+         key != static_cast<client_keys_t>(KEY_DUMMY);
          key = Generic_lookup_key(ks, false))
         change |= Key_press(key);
 
@@ -839,10 +840,10 @@ void Keyboard_button_released(xp_keysym_t ks)
     warn("Keyboard_button_released: ks = %d", ks);
 
     bool change = false;
-    keys_t key;
+    client_keys_t key;
 
     for (key = Generic_lookup_key(ks, true);
-         key != KEY_DUMMY;
+         key != static_cast<client_keys_t>(KEY_DUMMY);
          key = Generic_lookup_key(ks, false))
         change |= Key_release(key);
 
@@ -853,13 +854,13 @@ void Keyboard_button_released(xp_keysym_t ks)
     }
 }
 
-static void Bind_key_to_pointer_button(keys_t key, int ind)
+static void Bind_key_to_pointer_button(client_keys_t key, int ind)
 {
     int num_defs;
 
     assert(ind >= 0);
     assert(ind < MAX_POINTER_BUTTONS);
-    assert(key != KEY_DUMMY);
+    assert(key != static_cast<client_keys_t>(KEY_DUMMY));
 
     num_defs = Num_buttonDefs(ind);
     if (num_defs == MAX_BUTTON_DEFS)
@@ -884,6 +885,8 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
     assert(value);
     XFREE(pointerButtonBindings[ind]);
 
+    warn("setPointerButtonBinding: option = %s, value = %s, ind = %d", opt->name, value, ind);
+
     Clear_buttonDefs(ind);
 
     pointerButtonBindings[ind] = xp_safe_strdup(value);
@@ -895,17 +898,26 @@ static bool setPointerButtonBinding(xp_option_t *opt, const char *value)
     {
         if (!strncasecmp(ptr, "key", 3))
             ptr += 3;
+
         for (j = 0; j < optionsVector.size(); j++)
         {
             xp_option_t *opt_j = Option_by_index(j);
             const char *opt_j_name;
-            keys_t opt_j_key;
+            client_keys_t opt_j_key;
+
+            // Ignore options that are not key options.
+            if (opt_j->type != xp_key_option)
+                continue;
 
             assert(opt_j);
             opt_j_name = Option_get_name(opt_j);
             opt_j_key = Option_get_key(opt_j);
-            if (opt_j_key != KEY_DUMMY && (!strcasecmp(ptr, opt_j_name + 3)))
+
+            warn("setPointerButtonBinding: name = %s, key = %d", opt_j_name, opt_j_key);
+
+            if (opt_j_key != static_cast<client_keys_t>(KEY_DUMMY) && (!strcasecmp(ptr, opt_j_name + 3)))
             {
+                warn("setPointerButtonBinding: call Bind_key_to_pointer_button for key = %d, ind = %d", opt_j_key, ind);
                 Bind_key_to_pointer_button(opt_j_key, ind);
                 break;
             }

@@ -23,6 +23,10 @@
 
 #pragma once
 
+#include <X11/Xlib.h>
+
+#include "clientkeys.h"
+
 extern int talk_key_repeating;
 extern XEvent talk_key_repeat_event;
 extern struct timeval talk_key_repeat_time;
@@ -30,9 +34,9 @@ extern struct timeval talk_key_repeat_time;
 extern ipos_t mousePosition; /* position of mouse pointer. */
 extern int mouseMovement;    /* horizontal mouse movement. */
 
-bool Key_binding_callback(keys_t key, const char *str);
+// bool Key_binding_callback(client_keys_t key, const char *str);
 
-keys_t Lookup_key(XEvent *event, KeySym ks, bool reset);
+client_keys_t Lookup_key(XEvent *event, KeySym ks, bool reset);
 void Key_event(XEvent *event);
 void Talk_event(XEvent *event);
 void xevent_keyboard(int queued);

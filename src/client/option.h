@@ -23,7 +23,7 @@
 #include <cassert>
 #include <vector>
 
-#include "keys.h"
+#include "clientkeys.h"
 
 typedef enum
 {
@@ -135,11 +135,11 @@ struct xp_option
     /* key option stuff */
 
 #define XP_KEY_OPTION_DUMMY \
-    NULL, NULL, KEY_DUMMY
+    NULL, NULL, static_cast<client_keys_t>(KEY_DUMMY)
 
     const char *key_defval;
     char *key_string;
-    keys_t key;
+    client_keys_t key;
 
     /* ... */
 };
@@ -173,8 +173,8 @@ extern void Set_command(const char *command);
 extern void Get_command(const char *command);
 
 extern void Usage(void);
-// extern const char *Get_keyHelpString(keys_t key); // TODO
-extern const char *Get_keyResourceString(keys_t key);
+// extern const char *Get_keyHelpString(client_keys_t key); // TODO
+extern const char *Get_keyResourceString(client_keys_t key);
 extern const char *Option_value_to_string(xp_option_t *opt);
 
 void Store_option(xp_option_t *);
@@ -216,7 +216,7 @@ static inline xp_option_origin_t Option_get_origin(xp_option_t *opt)
     return opt->origin;
 }
 
-static inline keys_t Option_get_key(xp_option_t *opt)
+static inline client_keys_t Option_get_key(xp_option_t *opt)
 {
     assert(opt);
     return opt->key;
@@ -354,19 +354,19 @@ static inline xp_option_t *Option_by_index(int ind)
         XP_STRING_OPTION_DUMMY,                \
         defval,                                \
         NULL,                                  \
-        key,                                   \
+        static_cast<client_keys_t>(key),       \
     }
 
 #define XP_KS_UNKNOWN (-1)
 typedef int xp_keysym_t;
 /* no const because of mfc client */
 extern xp_keysym_t String_to_xp_keysym(/*const*/ char *str);
-extern keys_t Generic_lookup_key(xp_keysym_t ks, bool reset);
+extern client_keys_t Generic_lookup_key(xp_keysym_t ks, bool reset);
 
 typedef struct
 {
     xp_keysym_t keysym;
-    keys_t key;
+    client_keys_t key;
 } xp_keydefs_t;
 
 extern xp_keydefs_t *keydefs;

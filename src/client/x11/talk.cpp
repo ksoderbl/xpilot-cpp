@@ -47,6 +47,7 @@
 #include "netclient.h"
 #include "paint.h"
 
+#include "xevent.h"
 #include "xinit.h"
 #include "xpaint.h"
 
@@ -89,7 +90,7 @@ static int history_pos = 0;
 selection_t selection;
 bool save_talk_str = false; /* see Get_msg_from_history */
 
-extern keys_t Lookup_key(XEvent *event, KeySym ks, bool reset);
+// extern client_keys_t Lookup_key(XEvent *event, KeySym ks, bool reset);
 
 static void Talk_create_window(void)
 {
@@ -269,17 +270,19 @@ static void Add_msg_to_history(char *message)
  * (thus save_talk not as parameter here)
  *
  */
-static char *Get_msg_from_history(int *pos, char *message, keys_t direction)
+static char *Get_msg_from_history(int *pos, char *message, client_keys_t direction)
 {
     int i;
     char **msg_set;
 
-    if (direction != KEY_TALK_CURSOR_UP && direction != KEY_TALK_CURSOR_DOWN && direction != KEY_DUMMY)
+    if (direction != KEY_TALK_CURSOR_UP &&
+        direction != KEY_TALK_CURSOR_DOWN &&
+        direction != static_cast<client_keys_t>(KEY_DUMMY))
     {
         return NULL;
     }
 
-    if (direction == KEY_DUMMY && (*pos < 0 || *pos > maxLinesInHistory - 1))
+    if (direction == static_cast<client_keys_t>(KEY_DUMMY) && (*pos < 0 || *pos > maxLinesInHistory - 1))
         *pos = 0;
 
     msg_set = HistoryMsg;
@@ -436,12 +439,12 @@ int Talk_do_event(XEvent *event)
         if (XLookupString(&event->xkey, &ch, 1, &keysym, &compose) == NoSymbol)
         {
 
-            keys_t key; /* what key is it */
-            char *tmp;  /* for receiving a line from the history */
+            client_keys_t key; /* what key is it */
+            char *tmp;         /* for receiving a line from the history */
 
             /* search the 'key' */
             for (key = Lookup_key(event, keysym, true);
-                 key != KEY_DUMMY;
+                 key != static_cast<client_keys_t>(KEY_DUMMY);
                  key = Lookup_key(event, keysym, false))
             {
                 switch (key)
