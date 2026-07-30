@@ -211,56 +211,112 @@ int Player_lock_closest(player_t *pl, bool next)
 static void Player_change_home(player_t *pl)
 {
     world_t *world = &World;
+    player_t *pl2 = nullptr;
+    base_t *base2 = nullptr;
+    base_t *enemybase = nullptr;
+    double l, dist = 1e19;
     int i;
 
     int xi = OBJ_X_IN_BLOCKS(pl);
     int yi = OBJ_Y_IN_BLOCKS(pl);
 
-    if (World.block[xi][yi] == BASE)
+    for (i = 0; i < Num_bases(); i++)
     {
-        msg[0] = '\0';
-        for (i = 0; i < Num_bases(); i++)
-        {
-            base_t *base = Base_by_index(i);
-            blkpos_t blkpos = Clpos_to_blkpos(base->pos);
+        base_t *base = Base_by_index(i);
+        blkpos_t blkpos = Clpos_to_blkpos(base->pos);
 
-            if (blkpos.bx == xi && blkpos.by == yi)
-            {
-                if (i == pl->home_base_ind)
-                {
-                    break;
-                }
-                if (World.bases[i].team != TEAM_NOT_SET && World.bases[i].team != pl->team)
-                    break;
-                pl->home_base_ind = i;
-                sprintf(msg, "%s has changed home base.",
-                        pl->name);
-                break;
-            }
-        }
-        for (i = 0; i < NumPlayers; i++)
+        if (blkpos.bx == xi && blkpos.by == yi)
         {
-            player_t *pl_i = Player_by_index(i);
+            // if (i == pl->home_base_ind)
+            // {
+            //     break;
+            // }
+            if (base->team != TEAM_NOT_SET && base->team != pl->team)
+            {
+                enemybase = base;
+                continue;
+            }
+            base2 = base;
+            // Set_message_f("%s has changed home base.", pl->name);
+            break;
+        }
+    }
 
-            if (pl_i->id != pl->id && !Player_is_tank(pl_i) && pl->home_base_ind == pl_i->home_base_ind)
-            {
-                Pick_startpos(pl_i);
-                sprintf(msg, "%s has taken over %s's home base.",
-                        pl->name, pl_i->name);
-            }
-        }
-        if (msg[0])
+    if (base2 == nullptr)
+    {
+        if (enemybase)
+            Set_player_message_f(pl, "Base belongs to team %d. "
+                                     "Enemy home bases can't be occupied. "
+                                     "[*Server notice*]",
+                                 enemybase->team);
+        else
+            Set_player_message(pl, "You are too far away from "
+                                   "a suitable base to change home. "
+                                   "[*Server notice*]");
+        return;
+    }
+
+    /* Maybe the base is our own base? */
+    if (base2 == pl->home_base)
+    {
+        warn("Own base for pl %s", pl->name); // TODO Remove
+        return;
+    }
+
+    /* Let's see if someone else in our has this base. */
+    for (i = 0; i < NumPlayers; i++)
+    {
+        player_t *pl_i = Player_by_index(i);
+
+        if (pl_i->id != pl->id &&
+            !Player_is_tank(pl_i) &&
+            base2 == pl_i->home_base)
         {
-            sound_play_all(CHANGE_HOME_SOUND);
-            Set_message(msg);
+            // Pick_startpos(pl_i);
+            // Set_message_f("%s has taken over %s's home base.",
+            //               pl->name, pl_i->name);
+            pl2 = pl_i;
+            break;
         }
-        for (i = 0; i < NumPlayers; i++)
-        {
-            if (Player_by_index(i)->conn != NULL)
-                Send_base(Player_by_index(i)->conn,
-                          pl->id,
-                          pl->home_base_ind);
-        }
+    }
+    // if (msg[0])
+    // {
+    //     sound_play_all(CHANGE_HOME_SOUND);
+    //     Set_message(msg);
+    // }
+
+#if 0
+    /* kps - perhaps this isn't a good idea. */
+    if (pl2 != NULL && Players_are_teammates(pl, pl2) && Get_Score(pl) <= Get_Score(pl2))
+    {
+        Set_player_message(pl, "You must have a higher score than your "
+                               "teammate to take over their base. "
+                               "[*Server notice*]");
+        return;
+    }
+#endif
+
+    pl->home_base = base2;
+    sound_play_all(CHANGE_HOME_SOUND);
+
+    if (pl2 != nullptr)
+    {
+        Pick_startpos(pl2);
+        Set_message_f("%s has taken over %s's home base.",
+                      pl->name, pl2->name);
+    }
+    else
+        Set_message_f("%s has changed home base.", pl->name);
+
+    /*
+     * Send info about new bases.
+     */
+    for (i = 0; i < NumPlayers; i++)
+    {
+        player_t *pl_i = Player_by_index(i);
+
+        if (pl_i->conn != nullptr)
+            Send_base(pl_i->conn, pl->id, pl->home_base->ind);
     }
 }
 
@@ -347,8 +403,11 @@ static void Player_toggle_pause(player_t *pl)
     {
         xi = OBJ_X_IN_BLOCKS(pl);
         yi = OBJ_Y_IN_BLOCKS(pl);
-        j = CLICK_TO_BLOCK(World.bases[pl->home_base_ind].pos.cx);
-        k = CLICK_TO_BLOCK(World.bases[pl->home_base_ind].pos.cy);
+        j = CLICK_TO_BLOCK(World.bases[pl->home_base->ind].pos.cx);
+        k = CLICK_TO_BLOCK(World.bases[pl->home_base->ind].pos.cy);
+
+        base_t *base = pl->home_base;
+
         if (j == xi && k == yi)
         {
             minv = 3.0;
@@ -367,7 +426,11 @@ static void Player_toggle_pause(player_t *pl)
         }
         minv += VECTOR_LENGTH(World_gravity(world, pl->pos));
         if (pl->velocity > minv)
-            return; // break;
+        {
+            Set_player_message(pl,
+                               "You need to slow down to pause. [*Server notice*]");
+            return;
+        }
     }
 
     switch (pausetype)

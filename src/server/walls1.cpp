@@ -2166,7 +2166,6 @@ static void Player_crash1(move_state_t *ms, int pt, bool turning)
     if (Player_is_killed(pl) && Get_Score(pl) < 0 && Player_is_robot(pl))
     {
         pl->home_base = Base_by_index(0);
-        pl->home_base_ind = 0;
         Pick_startpos(pl);
     }
 }

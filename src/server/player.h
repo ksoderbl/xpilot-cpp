@@ -224,7 +224,6 @@ typedef struct
     long last_wall_touch;              /* last time player touched a wall */
     double survival_time;              /* time player has survived unshielded*/
 
-    int home_base_ind; /* Num of home base */
     base_t *home_base;
     struct
     {

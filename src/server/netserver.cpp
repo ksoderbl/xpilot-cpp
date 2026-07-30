@@ -1153,7 +1153,7 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
 
     {
         printf("%s %s (%d) starts at startpos %d.\n", showtime(),
-               pl->name, NumPlayers, pl->home_base_ind);
+               pl->name, NumPlayers, pl->home_base ? pl->home_base->ind : -1);
     }
 
     /*
@@ -1162,8 +1162,8 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
     Send_player(pl->conn, pl->id);
     Send_score(pl->conn, pl->id, Get_Score(pl),
                pl->pl_life, pl->mychar, pl->alliance);
-    // if (pl->home_base)
-    Send_base(pl->conn, pl->id, pl->home_base_ind);
+    if (pl->home_base)
+        Send_base(pl->conn, pl->id, pl->home_base->ind);
     /*
      * And tell him about all the others.
      */
@@ -1175,8 +1175,8 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
         Send_player(pl->conn, pl_i->id);
         Send_score(pl->conn, pl_i->id, Get_Score(pl_i),
                    pl_i->pl_life, pl_i->mychar, pl_i->alliance);
-        if (!Player_is_tank(pl_i))
-            Send_base(pl->conn, pl_i->id, pl_i->home_base_ind);
+        if (!Player_is_tank(pl_i) && pl_i->home_base != nullptr)
+            Send_base(pl->conn, pl_i->id, pl_i->home_base->ind);
     }
     /*
      * And tell all the others about him.
@@ -1190,20 +1190,23 @@ static int Handle_login(connection_t *connp, char *errmsg, size_t errsize)
             Send_player(pl_i->conn, pl->id);
             Send_score(pl_i->conn, pl->id, Get_Score(pl),
                        pl->pl_life, pl->mychar, pl->alliance);
-            Send_base(pl_i->conn, pl->id, pl->home_base_ind);
+            if (pl->home_base)
+                Send_base(pl_i->conn, pl->id, pl->home_base->ind);
         }
     }
 
-    if (NumPlayers == 1)
-        Set_message_f("Welcome to \"%s\", made by %s.",
-                      World.name, World.author);
-    else if (Team_play(world))
-        Set_message_f("%s (%s, team %d) has entered \"%s\", made by %s.",
-                      pl->name, pl->username, pl->team,
-                      World.name, World.author);
-    else
-        Set_message_f("%s (%s) has entered \"%s\", made by %s.",
-                      pl->name, pl->username, World.name, World.author);
+    {
+        if (NumPlayers == 1)
+            Set_message_f("Welcome to \"%s\", made by %s.",
+                          World.name, World.author);
+        else if (Team_play(world))
+            Set_message_f("%s (%s, team %d) has entered \"%s\", made by %s.",
+                          pl->name, pl->username, pl->team,
+                          World.name, World.author);
+        else
+            Set_message_f("%s (%s) has entered \"%s\", made by %s.",
+                          pl->name, pl->username, World.name, World.author);
+    }
 
     if (options.greeting)
         Set_player_message_f(pl, "%s [*Server greeting*]", options.greeting);

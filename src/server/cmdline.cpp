@@ -1726,7 +1726,7 @@ static option_desc opts[] = {
      &options.baseMineRange,
      valInt,
      tuner_dummy,
-     "Range within which mines/bombs are not allowed.\n",
+     "Range within which mines/bombs are not allowed (unit blocks of 35 pixels).\n",
      OPT_ORIGIN_ANY | OPT_VISIBLE},
     {"mineShotDetonateDistance",
      "mineShotDetonateDistance",

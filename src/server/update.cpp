@@ -74,7 +74,6 @@ static char msg[MSG_LEN];
 
 static void Transport_to_home(player_t *pl)
 {
-    world_t *world = &World;
     /*
      * Transport a corpse from the place where it died back to its homebase,
      * or if in race mode, back to the last passed check point.
@@ -83,18 +82,17 @@ static void Transport_to_home(player_t *pl)
      * acceleration G, during the second part we make this a negative one -G.
      * This results in a visually pleasing take off and landing.
      */
+    world_t *world = &World;
     clpos_t startpos;
     double dx, dy, t, m;
     const double T = RECOVERY_DELAY;
 
-    /*
-    if (pl->home_base == NULL)
+    if (pl->home_base == nullptr)
     {
         pl->vel.x = 0;
         pl->vel.y = 0;
         return;
     }
-        */
 
     if (BIT(World.rules->mode, TIMING) && pl->round)
     {
@@ -107,7 +105,7 @@ static void Transport_to_home(player_t *pl)
         startpos = Check_by_index(check)->pos;
     }
     else
-        startpos = World.bases[pl->home_base_ind].pos;
+        startpos = pl->home_base->pos;
 
     dx = WORLD_WRAP_DCX(world, startpos.cx - pl->pos.cx);
     dy = WORLD_WRAP_DCY(world, startpos.cy - pl->pos.cy);
@@ -1209,11 +1207,11 @@ void Update_objects(void)
         }
 
         if (options.maxPauseTime > 0 &&
-            Player_is_human(pl) && Player_is_paused(pl) && frame_loops - pl->frame_last_busy > options.maxPauseTime)
+            Player_is_human(pl) &&
+            Player_is_paused(pl) &&
+            frame_loops - pl->frame_last_busy > options.maxPauseTime)
         {
-            sprintf(msg,
-                    "%s was auto-kicked for pausing too long [*Server notice*]",
-                    pl->name);
+            Set_message_f("%s was auto-kicked for pausing too long [*Server notice*]", pl->name);
             Set_message(msg);
             Destroy_connection(pl->conn, "auto-kicked: paused too long");
         }

@@ -394,7 +394,7 @@ void Parse_robot_file(void)
                 {
                     end_of_record = 1;
                     fclose(fp);
-                    fp = NULL;
+                    fp = nullptr;
                 }
                 else if (*buf == '\n')
                     end_of_record = 1;
@@ -488,7 +488,7 @@ void Parse_robot_file(void)
     }
 
 #ifdef DEVELOPMENT
-    if (getenv("XPILOTS_DUMP_ROBOTS_TO_ROBOT_FILE") != NULL)
+    if (getenv("XPILOTS_DUMP_ROBOTS_TO_ROBOT_FILE") != nullptr)
     {
         if (robotFile && *robotFile)
         {
@@ -663,12 +663,12 @@ static void Robot_create(void)
     if (peek_ID() == 0)
         return;
 
-    if ((new_data = XMALLOC(robot_data_t, 1)) == NULL)
+    if ((new_data = XMALLOC(robot_data_t, 1)) == nullptr)
     {
         error("malloc robot_data");
         return;
     }
-    new_data->private_data = NULL;
+    new_data->private_data = nullptr;
 
     most_used = 0;
     for (i = 0; i < MAX_ROBOTS; i++)
@@ -711,7 +711,7 @@ static void Robot_create(void)
     rob_type = &robot_types[new_data->robot_types_ind];
 
     Init_player(NumPlayers,
-                options.allowShipShapes ? Parse_shape_str(rob->shape) : NULL,
+                options.allowShipShapes ? Parse_shape_str(rob->shape) : nullptr,
                 PL_TYPE_ROBOT);
     robot = Player_by_index(NumPlayers);
     robot->robot_data_ptr = new_data;
@@ -738,10 +738,6 @@ static void Robot_create(void)
     if (robot->mychar != 'W')
         robot->mychar = 'R';
 
-    // robot->fuel.l1 = 100 * FUEL_SCALE_FACT;
-    // robot->fuel.l2 = 200 * FUEL_SCALE_FACT;
-    // robot->fuel.l3 = 500 * FUEL_SCALE_FACT;
-
     Pick_startpos(robot);
 
     (*rob_type->robot_create)(robot, rob->config);
@@ -758,10 +754,10 @@ static void Robot_create(void)
     {
         player_t *pl_i = Player_by_index(i);
 
-        if (pl_i->conn != NULL)
+        if (pl_i->conn != nullptr)
         {
             Send_player(pl_i->conn, robot->id);
-            Send_base(pl_i->conn, robot->id, robot->home_base_ind);
+            Send_base(pl_i->conn, robot->id, robot->home_base->ind);
         }
     }
 
@@ -770,7 +766,7 @@ static void Robot_create(void)
     if (options.logRobots)
         printf("%s %s (%d, %s) starts at startpos %d.\n",
                showtime(), robot->name, NumPlayers, robot->username,
-               robot->home_base_ind);
+               robot->home_base->ind);
 
     if (NumPlayers == 1)
     {
@@ -797,10 +793,10 @@ void Robot_delete(player_t *pl, bool kicked)
 {
     int i;
 
-    if (pl == NULL)
+    if (pl == nullptr)
     {
-        player_t *low_pl = NULL;
-        double low_score = (double)FLT_MAX;
+        player_t *low_pl = nullptr;
+        double low_score = (double)LONG_MAX;
 
         /*
          * Find the robot with the lowest score.
@@ -1046,7 +1042,7 @@ void Robot_update(bool tick)
         if (NumRobots > 0)
         {
             if ((num_playing_ships > Num_bases()) || (num_any_ships > NUM_IDS) || (num_playing_ships > options.maxRobots && NumRobots > options.minRobots))
-                Robot_delete(NULL, false);
+                Robot_delete(nullptr, false);
         }
     }
 

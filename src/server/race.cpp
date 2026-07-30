@@ -341,16 +341,14 @@ void Race_game_over(void)
         for (i = 0; i < num_ordered_players; i++)
         {
             pl = Player_by_index(order[i]);
-            if (pl->home_base_ind != World.baseorder[i].base_idx)
+            if (pl->home_base->ind != World.baseorder[i].base_idx)
             {
-                pl->home_base_ind = World.baseorder[i].base_idx;
+                pl->home_base->ind = World.baseorder[i].base_idx;
                 for (j = 0; j < NumPlayers; j++)
                 {
-                    if (PlayersArray[j]->conn != NULL)
-                    {
+                    if (PlayersArray[j]->conn != nullptr)
                         Send_base(Player_by_index(j)->conn,
-                                  pl->id, pl->home_base_ind);
-                    }
+                                  pl->id, pl->home_base->ind);
                 }
                 if (Player_is_paused(pl))
                     Go_home(pl);

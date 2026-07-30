@@ -2063,9 +2063,8 @@ static void Robot_default_play(player_t *pl)
         item = ITEM_PTR(Obj[item_i]);
 
     /* make sure robots take off from their bases */
-    base_t *home_base = Base_by_index(pl->home_base_ind);
-    if (QUICK_LENGTH(pl->pos.cx - home_base->pos.cx,
-                     pl->pos.cy - home_base->pos.cy) < BLOCK_CLICKS)
+    if (QUICK_LENGTH(pl->pos.cx - pl->home_base->pos.cx,
+                     pl->pos.cy - pl->home_base->pos.cy) < BLOCK_CLICKS)
         Thrust(pl, true);
 
     ship_i = NO_IND;
