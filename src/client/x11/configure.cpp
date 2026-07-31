@@ -66,9 +66,12 @@ static int Config_save(int widget_desc, void *data, const char **strptr);
 static int Config_save_confirm_callback(int widget_desc, void *popup_desc,
                                         const char **strptr);
 
+// TODO: Put these in std::vector
 static int num_default_options = 0;
 static int max_default_options = 0;
 static int *default_option_indices = NULL;
+
+// TODO: Put these in std::vector
 static int num_color_options = 0;
 static int max_color_options = 0;
 static int *color_option_indices = NULL;
